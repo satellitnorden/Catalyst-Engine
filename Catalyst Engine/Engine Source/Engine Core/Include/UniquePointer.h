@@ -33,7 +33,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	CATALYST_FORCE_INLINE CATALYST_NOALIAS CATALYST_RESTRICTED const ObjectType* operator->() const CATALYST_NOEXCEPT
+	CATALYST_FORCE_INLINE CATALYST_NOALIAS CATALYST_RESTRICTED const ObjectType* const operator->() const CATALYST_NOEXCEPT
 	{
 		return pointer;
 	}
