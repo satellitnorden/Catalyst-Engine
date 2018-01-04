@@ -491,5 +491,8 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\BitField.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\Map.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

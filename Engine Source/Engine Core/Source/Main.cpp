@@ -31,23 +31,41 @@ int main()
 //Tools.
 #include <MicroBenchmarker.h>
 
+#define MAP_ITERATIONS 1'000
+
 void Function1()
 {
-	Vector3 vector;
+	Map<float, std::string> myMap;
 
-	vector.NewRotate(Vector3(GameMath::RandomFloatInRange(0.0f, 360.0f), GameMath::RandomFloatInRange(0.0f, 360.0f), GameMath::RandomFloatInRange(0.0f, 360.0f)));
+	for (uint16 i = 0; i < MAP_ITERATIONS; ++i)
+	{
+		myMap.Emplace(GameMath::RandomFloatInRange(0.0f, 100.0f), "Hjalmar");
+	}
+
+	for (uint16 i = 0; i < MAP_ITERATIONS; ++i)
+	{
+		volatile std::string *CATALYST_RESTRICT myString = myMap.Find(GameMath::RandomFloatInRange(0.0f, 100.0f));
+	}
 }
 
 void Function2()
 {
-	Vector3 vector;
+	std::map<float, std::string> myMap;
 
-	vector.Rotate(Vector3(GameMath::RandomFloatInRange(0.0f, 360.0f), GameMath::RandomFloatInRange(0.0f, 360.0f), GameMath::RandomFloatInRange(0.0f, 360.0f)));
+	for (uint16 i = 0; i < MAP_ITERATIONS; ++i)
+	{
+		myMap.emplace(GameMath::RandomFloatInRange(0.0f, 100.0f), "Hjalmar");
+	}
+
+	for (uint16 i = 0; i < MAP_ITERATIONS; ++i)
+	{
+		volatile auto myString = myMap.find(GameMath::RandomFloatInRange(0.0f, 100.0f));
+	}
 }
 
 int main()
 {
-	MicroBenchmarker::StartBenchmark(100'000'000, &Function1, &Function2);
+	MicroBenchmarker::StartBenchmark(100'000, &Function1, &Function2);
 
 	std::cin.ignore();
 

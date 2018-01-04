@@ -99,5 +99,6 @@ using byte = uint8;
 //Core types.
 #include <Bitfield.h>
 #include <DynamicArray.h>
+#include <Map.h>
 #include <StaticArray.h>
 #include <UniquePointer.h>
