@@ -479,5 +479,8 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCore.h">
       <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\Semaphore.h">
+      <Filter>Engine Source\Multithreading\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

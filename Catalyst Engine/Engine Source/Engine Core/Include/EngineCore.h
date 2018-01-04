@@ -98,7 +98,6 @@ using byte = uint8;
 #include <DynamicArray.h>
 //#include "SharedPointer.h"
 //#include "Spinlock.h"
-//#include "Semaphore.h"
 #include <StaticArray.h>
 //#include "Threadlock.h"
 #include <UniquePointer.h>
