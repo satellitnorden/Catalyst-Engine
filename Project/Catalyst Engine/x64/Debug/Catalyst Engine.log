@@ -1,4 +1,0 @@
-﻿  Main.cpp
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-  Catalyst Engine.vcxproj -> C:\Users\Dennis\Desktop\Catalyst Engine\Project\x64\Debug\Catalyst Engine.exe
-  Catalyst Engine.vcxproj -> C:\Users\Dennis\Desktop\Catalyst Engine\Project\x64\Debug\Catalyst Engine.pdb (Partial PDB)
