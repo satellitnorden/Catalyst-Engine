@@ -1,0 +1,32 @@
+﻿  PhysicalEntity.cpp
+  EngineSystem.cpp
+  GraphicsSystem.cpp
+  VulkanCommandBuffer.cpp
+  VulkanCommandPool.cpp
+  VulkanDepthBuffer.cpp
+  VulkanDescriptorPool.cpp
+  VulkanDescriptorSet.cpp
+  VulkanDescriptorSetLayout.cpp
+  VulkanFramebuffer.cpp
+  VulkanIndexBuffer.cpp
+  VulkanInstance.cpp
+  VulkanInterface.cpp
+  VulkanLogicalDevice.cpp
+  VulkanPhysicalDevice.cpp
+  VulkanPipeline.cpp
+  VulkanRenderPass.cpp
+  VulkanSemaphore.cpp
+  VulkanShaderModule.cpp
+  VulkanSwapChain.cpp
+  Compiling...
+  VulkanTexture.cpp
+  VulkanUniformBuffer.cpp
+  VulkanVertexBuffer.cpp
+  ClairvoyantPlayer.cpp
+  WorldArchitect.cpp
+  Generating code
+  104 of 1496 functions ( 7.0%) were compiled, the rest were copied from previous compilation.
+    35 functions were new in current compilation
+    17 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Catalyst Engine.vcxproj -> C:\Users\Dennis\Desktop\Catalyst Engine\Project\x64\Release\Catalyst Engine.exe

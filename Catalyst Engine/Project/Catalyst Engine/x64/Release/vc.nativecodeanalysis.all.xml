@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?><DEFECTS><DEFECT>
+    <SFA>
+      <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+      <FILENAME>stb_image.h</FILENAME>
+      <LINE>3667</LINE>
+      <COLUMN>23</COLUMN>
+    </SFA>
+    <DEFECTCODE>6001</DEFECTCODE>
+    <DESCRIPTION>Using uninitialized memory 'coutput'.</DESCRIPTION>
+    <FUNCTION>load_jpeg_image</FUNCTION>
+    <DECORATED>?load_jpeg_image@@YAPEAEPEAUstbi__jpeg@@PEAH11H@Z</DECORATED>
+    <FUNCLINE>3524</FUNCLINE>
+    <PROBABILITY>1</PROBABILITY>
+    <RANK>3</RANK>
+    <CATEGORY>
+      <RULECATEGORY>mspft</RULECATEGORY>
+    </CATEGORY>
+    <PATH>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3526</LINE>
+        <COLUMN>7</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3526</LINE>
+        <COLUMN>10</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3526</LINE>
+        <COLUMN>20</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3527</LINE>
+        <COLUMN>15</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3530</LINE>
+        <COLUMN>20</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3533</LINE>
+        <COLUMN>7</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3536</LINE>
+        <COLUMN>5</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3538</LINE>
+        <COLUMN>10</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3540</LINE>
+        <COLUMN>33</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3543</LINE>
+        <COLUMN>15</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3547</LINE>
+        <COLUMN>10</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3548</LINE>
+        <COLUMN>19</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3548</LINE>
+        <COLUMN>21</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3549</LINE>
+        <COLUMN>15</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3550</LINE>
+        <COLUMN>15</COLUMN>
+        <KEYEVENT>
+          <ID>1</ID>
+          <KIND>declaration</KIND>
+          <IMPORTANCE>Essential</IMPORTANCE>
+          <MESSAGE>'coutput' is not initialized</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3552</LINE>
+        <COLUMN>21</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3554</LINE>
+        <COLUMN>12</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3554</LINE>
+        <COLUMN>18</COLUMN>
+        <KEYEVENT>
+          <ID>2</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Skip this loop, (assume 'k&lt;decode_n' is false)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3577</LINE>
+        <COLUMN>13</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3578</LINE>
+        <COLUMN>10</COLUMN>
+        <KEYEVENT>
+          <ID>3</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Skip this branch, (assume '!output' is false)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3581</LINE>
+        <COLUMN>12</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3581</LINE>
+        <COLUMN>18</COLUMN>
+        <KEYEVENT>
+          <ID>4</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Enter this loop, (assume 'j&lt;z-&gt;s-&gt;img_y')</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3582</LINE>
+        <COLUMN>17</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3583</LINE>
+        <COLUMN>15</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3583</LINE>
+        <COLUMN>21</COLUMN>
+        <KEYEVENT>
+          <ID>5</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Skip this loop, (assume 'k&lt;decode_n' is false)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3597</LINE>
+        <COLUMN>15</COLUMN>
+        <KEYEVENT>
+          <ID>6</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Skip this branch, (assume 'n&gt;=3' is false)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3640</LINE>
+        <COLUMN>16</COLUMN>
+        <KEYEVENT>
+          <ID>7</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Skip this branch, (assume 'is_rgb' is false)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3650</LINE>
+        <COLUMN>40</COLUMN>
+        <KEYEVENT>
+          <ID>8</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Skip this branch, (assume '&lt;branch condition&gt;' is false)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3660</LINE>
+        <COLUMN>40</COLUMN>
+        <KEYEVENT>
+          <ID>9</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Skip this branch, (assume '&lt;branch condition&gt;' is false)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>c:\users\dennis\google drive\catalyst engine\engine source\third party libraries\include\</FILEPATH>
+        <FILENAME>stb_image.h</FILENAME>
+        <LINE>3667</LINE>
+        <COLUMN>23</COLUMN>
+        <KEYEVENT>
+          <ID>10</ID>
+          <KIND>usage</KIND>
+          <IMPORTANCE>Essential</IMPORTANCE>
+          <MESSAGE>'coutput' is used, but may not have been initialized</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+    </PATH>
+  </DEFECT></DEFECTS>

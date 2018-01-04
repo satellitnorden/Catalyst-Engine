@@ -1,0 +1,7 @@
+#pragma once
+
+//Engine core.
+#include <EngineCore.h>
+
+#define PHYSICAL_CONSTANT_VIEW_DISTANCE 10'000.0f //Defines the view distance, in meters.
+#define PHYSICAL_CONSTANT_GRAVITATIONAL_STRENGTH 9.806'650f //Defines the gravitational strength, denoted in m/s squared.

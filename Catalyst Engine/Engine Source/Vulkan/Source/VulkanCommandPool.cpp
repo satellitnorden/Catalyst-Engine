@@ -1,0 +1,81 @@
+//Header file.
+#include <VulkanCommandPool.h>
+
+//Vulkan.
+#include <VulkanCommandBuffer.h>
+#include <VulkanInterface.h>
+#include <VulkanLogicalDevice.h>
+
+/*
+*	Default constructor.
+*/
+VulkanCommandPool::VulkanCommandPool() CATALYST_NOEXCEPT
+	:
+	vulkanCommandPool(nullptr)
+{
+
+}
+
+/*
+*	Default destructor.
+*/
+VulkanCommandPool::~VulkanCommandPool() CATALYST_NOEXCEPT
+{
+
+}
+
+/*
+*	Initializes this Vulkan command pool.
+*/
+void VulkanCommandPool::Initialize(const uint32 queueFamilyIndex) CATALYST_NOEXCEPT
+{
+	//Create the command pool create info.
+	VkCommandPoolCreateInfo commandPoolCreateInfo;
+	CreateCommandPoolCreateInfo(commandPoolCreateInfo, queueFamilyIndex);
+
+	//Create the command pool!
+	VkResult result = vkCreateCommandPool(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &commandPoolCreateInfo, nullptr, &vulkanCommandPool);
+
+#if !defined(CATALYST_FINAL)
+	if (result != VK_SUCCESS)
+		BREAKPOINT;
+#endif
+}
+
+/*
+*	Releases this Vulkan command pool.
+*/
+void VulkanCommandPool::Release() CATALYST_NOEXCEPT
+{
+	//Destroy the Vulkan command pool.
+	vkDestroyCommandPool(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanCommandPool, nullptr);
+}
+
+/*
+*	Allocates and returns a Vulkan command buffer.
+*/
+void VulkanCommandPool::AllocateVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const CATALYST_NOEXCEPT
+{
+	//Initialize the Vulkan command buffer.
+	vulkanCommandBuffer.Initialize(*this);
+}
+
+/*
+*	Frees a Vulkan command buffer.
+*/
+void VulkanCommandPool::FreeVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const CATALYST_NOEXCEPT
+{
+	//Free the Vulkan command buffer.
+	vkFreeCommandBuffers(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanCommandPool, 1, &vulkanCommandBuffer.Get());
+}
+
+/*
+*	Creates a command pool create info.
+*/
+void VulkanCommandPool::CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &commandPoolCreateInfo, const uint32 queueFamilyIndex) const CATALYST_NOEXCEPT
+{
+	commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	commandPoolCreateInfo.pNext = nullptr;
+	commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	commandPoolCreateInfo.queueFamilyIndex = queueFamilyIndex;
+}

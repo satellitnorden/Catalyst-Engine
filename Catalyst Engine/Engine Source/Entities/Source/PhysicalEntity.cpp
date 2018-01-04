@@ -1,0 +1,65 @@
+//Header file.
+#include <PhysicalEntity.h>
+
+//Entities.
+#include <CameraEntity.h>
+
+//Systems.
+#include <GraphicsSystem.h>
+
+//Static variable definitions.
+DynamicArray<PhysicalEntity *CATALYST_RESTRICT> PhysicalEntity::physicalEntities;
+
+/*
+*	Default constructor.
+*/
+PhysicalEntity::PhysicalEntity() CATALYST_NOEXCEPT
+{
+	//Add this physical entity to the universal container.
+	physicalEntities.Emplace(this);
+}
+
+/*
+*	Default destructor.
+*/
+PhysicalEntity::~PhysicalEntity() CATALYST_NOEXCEPT
+{
+	//Remove this physical entity from the universal container.
+	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : physicalEntities)
+	{
+		if (physicalEntity == this)
+		{
+			physicalEntity = physicalEntities.Back();
+			physicalEntities.Pop();
+
+			return;
+		}
+	}
+}
+
+/*
+*	Initializes this physical entity.
+*/
+void PhysicalEntity::Initialize(const PhysicalModel &newModel) CATALYST_NOEXCEPT
+{
+	//Set the model.
+	model = newModel;
+
+	//Create the uniform buffer.
+	uniformBuffer = GraphicsSystem::Instance->CreateUniformBuffer(sizeof(Matrix4));
+
+	//Create the descriptor set.
+	GraphicsSystem::Instance->CreatePhysicalDescriptorSet(descriptorSet, uniformBuffer, model.GetMaterial().GetAlbedoTexture(), model.GetMaterial().GetNormalMapTexture(), model.GetMaterial().GetRoughnessTexture(), model.GetMaterial().GetMetallicTexture(), model.GetMaterial().GetAmbientOcclusionTexture());
+}
+
+/*
+*	Updates the model matrix.
+*/
+void PhysicalEntity::UpdateModelMatrix() CATALYST_NOEXCEPT
+{
+	//Calculate the new model matrix.
+	modelMatrix = Matrix4(GetWorldPosition(), GetWorldRotation(), GetWorldScale());
+
+	//Upload the graphics matrix to the uniform buffer.
+	uniformBuffer->UploadData(static_cast<void *CATALYST_RESTRICT>(&modelMatrix));
+}

@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Engine Source\Engine Core\Source\Main.cpp" />
+    <ClCompile Include="..\..\Engine Source\Entities\Source\CameraEntity.cpp" />
+    <ClCompile Include="..\..\Engine Source\Entities\Source\Entity.cpp" />
+    <ClCompile Include="..\..\Engine Source\Entities\Source\LightEntity.cpp" />
+    <ClCompile Include="..\..\Engine Source\Entities\Source\PhysicalEntity.cpp" />
+    <ClCompile Include="..\..\Engine Source\Entities\Source\PointLightEntity.cpp" />
+    <ClCompile Include="..\..\Engine Source\Entities\Source\SpotLightEntity.cpp" />
+    <ClCompile Include="..\..\Engine Source\Graphics\Source\PhysicalMaterial.cpp" />
+    <ClCompile Include="..\..\Engine Source\Graphics\Source\PhysicalModel.cpp" />
+    <ClCompile Include="..\..\Engine Source\Graphics\Source\Vertex.cpp" />
+    <ClCompile Include="..\..\Engine Source\Graphics\Source\Window.cpp" />
+    <ClCompile Include="..\..\Engine Source\Math\Source\GameMath.cpp" />
+    <ClCompile Include="..\..\Engine Source\Math\Source\Matrix3.cpp" />
+    <ClCompile Include="..\..\Engine Source\Math\Source\Matrix4.cpp" />
+    <ClCompile Include="..\..\Engine Source\Math\Source\Vector2.cpp" />
+    <ClCompile Include="..\..\Engine Source\Math\Source\Vector3.cpp" />
+    <ClCompile Include="..\..\Engine Source\Math\Source\Vector4.cpp" />
+    <ClCompile Include="..\..\Engine Source\Multithreading\Source\Adventurer.cpp" />
+    <ClCompile Include="..\..\Engine Source\Multithreading\Source\Quest.cpp" />
+    <ClCompile Include="..\..\Engine Source\Multithreading\Source\QuestLog.cpp" />
+    <ClCompile Include="..\..\Engine Source\Systems\Source\EngineSystem.cpp" />
+    <ClCompile Include="..\..\Engine Source\Systems\Source\EntitySystem.cpp" />
+    <ClCompile Include="..\..\Engine Source\Systems\Source\GraphicsSystem.cpp" />
+    <ClCompile Include="..\..\Engine Source\Systems\Source\InputSystem.cpp" />
+    <ClCompile Include="..\..\Engine Source\Systems\Source\QuestSystem.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanAllocator.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCommandBuffer.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCommandPool.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDepthBuffer.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDescriptorPool.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDescriptorSet.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDescriptorSetLayout.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanFramebuffer.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanIndexBuffer.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanInstance.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanInterface.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanLogicalDevice.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanPhysicalDevice.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanPipeline.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanQueue.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanRenderPass.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSemaphore.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanShaderModule.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSurface.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSwapChain.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanTexture.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanUniformBuffer.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanVertexBuffer.cpp" />
+    <ClCompile Include="..\..\Game Source\Source\ClairvoyantGameSystem.cpp" />
+    <ClCompile Include="..\..\Game Source\Source\ClairvoyantPlayer.cpp" />
+    <ClCompile Include="..\..\Game Source\Source\WorldArchitect.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicArray.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\EngineCore.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\ProjectSettings.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\StaticArray.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\UniquePointer.h" />
+    <ClInclude Include="..\..\Engine Source\Entities\Include\CameraEntity.h" />
+    <ClInclude Include="..\..\Engine Source\Entities\Include\Entity.h" />
+    <ClInclude Include="..\..\Engine Source\Entities\Include\LightEntity.h" />
+    <ClInclude Include="..\..\Engine Source\Entities\Include\PhysicalEntity.h" />
+    <ClInclude Include="..\..\Engine Source\Entities\Include\PointLightEntity.h" />
+    <ClInclude Include="..\..\Engine Source\Entities\Include\SpotLightEntity.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\DynamicUniformData.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\GraphicsUtilities.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\ModelLoader.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalMaterial.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalModel.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\ShaderLoader.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureLoader.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\Vertex.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\Window.h" />
+    <ClInclude Include="..\..\Engine Source\Input\Include\GamepadState.h" />
+    <ClInclude Include="..\..\Engine Source\Input\Include\InputUtilities.h" />
+    <ClInclude Include="..\..\Engine Source\Math\Include\GameMath.h" />
+    <ClInclude Include="..\..\Engine Source\Math\Include\MathematicalConstants.h" />
+    <ClInclude Include="..\..\Engine Source\Math\Include\Matrix3.h" />
+    <ClInclude Include="..\..\Engine Source\Math\Include\Matrix4.h" />
+    <ClInclude Include="..\..\Engine Source\Math\Include\Vector2.h" />
+    <ClInclude Include="..\..\Engine Source\Math\Include\Vector3.h" />
+    <ClInclude Include="..\..\Engine Source\Math\Include\Vector4.h" />
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\Adventurer.h" />
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\AtomicQueue.h" />
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\MultithreadedResource.h" />
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\Quest.h" />
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\QuestLog.h" />
+    <ClInclude Include="..\..\Engine Source\Physics\Include\PhysicalConstants.h" />
+    <ClInclude Include="..\..\Engine Source\Systems\Include\EngineSystem.h" />
+    <ClInclude Include="..\..\Engine Source\Systems\Include\EntitySystem.h" />
+    <ClInclude Include="..\..\Engine Source\Systems\Include\GraphicsSystem.h" />
+    <ClInclude Include="..\..\Engine Source\Systems\Include\InputSystem.h" />
+    <ClInclude Include="..\..\Engine Source\Systems\Include\QuestSystem.h" />
+    <ClInclude Include="..\..\Engine Source\Tools\Include\MicroBenchmarker.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanAllocation.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanAllocator.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCommandBuffer.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCommandPool.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCore.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDepthBuffer.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDescriptorPool.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDescriptorSet.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDescriptorSetLayout.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanFramebuffer.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanIndexBuffer.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanInstance.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanInterface.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanLogicalDevice.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanPhysicalDevice.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanPipeline.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanPipelineCreationParameters.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanQueue.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanRenderPass.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanSemaphore.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanShaderModule.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanSurface.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanSwapChain.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanTexture.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUniformBuffer.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUtilities.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanVertexBuffer.h" />
+    <ClInclude Include="..\..\Game Source\Include\ClairvoyantGameSystem.h" />
+    <ClInclude Include="..\..\Game Source\Include\ClairvoyantPlayer.h" />
+    <ClInclude Include="..\..\Game Source\Include\WorldArchitect.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}</ProjectGuid>
+    <RootNamespace>Catalyst Engine</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <ProjectName>Catalyst Engine</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Entities\Include;..\..\Engine Source\Graphics\Include;..\..\Engine Source\Input\Include;..\..\Engine Source\Math\Include;..\..\Engine Source\Multithreading\Include;..\..\Engine Source\Physics\Include;..\..\Engine Source\Systems\Include;..\..\Engine Source\Third Party Libraries\Include;..\..\Engine Source\Tools\Include;..\..\Engine Source\Vulkan\Include;..\..\Game Source\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Engine Source\Entities\Source;..\..\Engine Source\Graphics\Source;..\..\Engine Source\Input\Source;..\..\Engine Source\Math\Source;..\..\Engine Source\Multithreading\Source;..\..\Engine Source\Physics\Source;..\..\Engine Source\Systems\Source;..\..\Engine Source\Third Party Libraries\Source;..\..\Engine Source\Tools\Source;..\..\Engine Source\Vulkan\Source;..\..\Game Source\Source;$(SourcePath)</SourcePath>
+    <LibraryPath>..\..\Engine Source\Third Party Libraries\Libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Entities\Include;..\..\Engine Source\Graphics\Include;..\..\Engine Source\Input\Include;..\..\Engine Source\Math\Include;..\..\Engine Source\Multithreading\Include;..\..\Engine Source\Physics\Include;..\..\Engine Source\Systems\Include;..\..\Engine Source\Third Party Libraries\Include;..\..\Engine Source\Tools\Include;..\..\Engine Source\Vulkan\Include;..\..\Game Source\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Engine Source\Entities\Source;..\..\Engine Source\Graphics\Source;..\..\Engine Source\Input\Source;..\..\Engine Source\Math\Source;..\..\Engine Source\Multithreading\Source;..\..\Engine Source\Physics\Source;..\..\Engine Source\Systems\Source;..\..\Engine Source\Third Party Libraries\Source;..\..\Engine Source\Tools\Source;..\..\Engine Source\Vulkan\Source;..\..\Game Source\Source;$(SourcePath)</SourcePath>
+    <LibraryPath>..\..\Engine Source\Third Party Libraries\Libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Entities\Include;..\..\Engine Source\Graphics\Include;..\..\Engine Source\Input\Include;..\..\Engine Source\Math\Include;..\..\Engine Source\Multithreading\Include;..\..\Engine Source\Physics\Include;..\..\Engine Source\Systems\Include;..\..\Engine Source\Third Party Libraries\Include;..\..\Engine Source\Tools\Include;..\..\Engine Source\Vulkan\Include;..\..\Game Source\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Engine Source\Entities\Source;..\..\Engine Source\Graphics\Source;..\..\Engine Source\Input\Source;..\..\Engine Source\Math\Source;..\..\Engine Source\Multithreading\Source;..\..\Engine Source\Physics\Source;..\..\Engine Source\Systems\Source;..\..\Engine Source\Third Party Libraries\Source;..\..\Engine Source\Tools\Source;..\..\Engine Source\Vulkan\Source;..\..\Game Source\Source;$(SourcePath)</SourcePath>
+    <LibraryPath>..\..\Engine Source\Third Party Libraries\Libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Entities\Include;..\..\Engine Source\Graphics\Include;..\..\Engine Source\Input\Include;..\..\Engine Source\Math\Include;..\..\Engine Source\Multithreading\Include;..\..\Engine Source\Physics\Include;..\..\Engine Source\Systems\Include;..\..\Engine Source\Third Party Libraries\Include;..\..\Engine Source\Tools\Include;..\..\Engine Source\Vulkan\Include;..\..\Game Source\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Engine Source\Entities\Source;..\..\Engine Source\Graphics\Source;..\..\Engine Source\Input\Source;..\..\Engine Source\Math\Source;..\..\Engine Source\Multithreading\Source;..\..\Engine Source\Physics\Source;..\..\Engine Source\Systems\Source;..\..\Engine Source\Third Party Libraries\Source;..\..\Engine Source\Tools\Source;..\..\Engine Source\Vulkan\Source;..\..\Game Source\Source;$(SourcePath)</SourcePath>
+    <LibraryPath>..\..\Engine Source\Third Party Libraries\Libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>assimp.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>assimp.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>assimp.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>assimp.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
