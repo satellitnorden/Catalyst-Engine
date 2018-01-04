@@ -97,8 +97,7 @@ using byte = uint8;
 #define THREAD_YIELD() std::this_thread::yield();
 
 //Core types.
-//#include "Bitfield.h"
+#include <Bitfield.h>
 #include <DynamicArray.h>
-//#include "SharedPointer.h"
 #include <StaticArray.h>
 #include <UniquePointer.h>

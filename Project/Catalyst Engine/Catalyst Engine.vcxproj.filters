@@ -488,5 +488,8 @@
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Spinlock.h">
       <Filter>Engine Source\Multithreading\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\BitField.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
