@@ -482,5 +482,11 @@
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Semaphore.h">
       <Filter>Engine Source\Multithreading\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\Threadlock.h">
+      <Filter>Engine Source\Multithreading\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\Spinlock.h">
+      <Filter>Engine Source\Multithreading\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

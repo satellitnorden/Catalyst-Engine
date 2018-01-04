@@ -1,5 +1,8 @@
 #pragma once
 
+//The project settings.
+#include <ProjectSettings.h>
+
 //Temporary defines.
 #define CATALYST_WINDOWS
 //#define CATALYST_FINAL
@@ -97,9 +100,5 @@ using byte = uint8;
 //#include "Bitfield.h"
 #include <DynamicArray.h>
 //#include "SharedPointer.h"
-//#include "Spinlock.h"
 #include <StaticArray.h>
-//#include "Threadlock.h"
 #include <UniquePointer.h>
-
-#include <ProjectSettings.h>

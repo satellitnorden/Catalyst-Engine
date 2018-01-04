@@ -107,6 +107,8 @@
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Quest.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\QuestLog.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Semaphore.h" />
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\Spinlock.h" />
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\Threadlock.h" />
     <ClInclude Include="..\..\Engine Source\Physics\Include\PhysicalConstants.h" />
     <ClInclude Include="..\..\Engine Source\Systems\Include\EngineSystem.h" />
     <ClInclude Include="..\..\Engine Source\Systems\Include\EntitySystem.h" />
