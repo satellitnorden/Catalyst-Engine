@@ -17,7 +17,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~Bitfield() CATALYST_NOEXCEPT
+	~BitField() CATALYST_NOEXCEPT
 	{
 
 	}
