@@ -38,7 +38,7 @@ public:
 private:
 
 	//The underlying Vulkan descriptor set.
-	VkDescriptorSet vulkanDescriptorSet;
+	VkDescriptorSet vulkanDescriptorSet{ nullptr };
 
 	/*
 	*	Creates a descriptor set allocate info.

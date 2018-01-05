@@ -52,7 +52,7 @@ public:
 private:
 
 	//The underlying Vulkan command pool.
-	VkCommandPool vulkanCommandPool;
+	VkCommandPool vulkanCommandPool{ nullptr };
 
 	/*
 	*	Creates a command pool create info.

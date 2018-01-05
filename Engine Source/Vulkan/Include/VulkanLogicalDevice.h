@@ -56,16 +56,16 @@ public:
 private:
 
 	//The underlying Vulkan logical device.
-	VkDevice vulkanLogicalDevice;
+	VkDevice vulkanLogicalDevice{ nullptr };
 
 	//The graphics queue.
-	VulkanQueue graphicsQueue;
+	VulkanQueue graphicsQueue{ };
 
 	//The present queue.
-	VulkanQueue presentQueue;
+	VulkanQueue presentQueue{ };
 
 	//The transfer queue.
-	VulkanQueue transferQueue;
+	VulkanQueue transferQueue{ };
 
 	/*
 	*	Creates the device queue create infos.

@@ -10,8 +10,6 @@
 *	Default constructor.
 */
 VulkanDescriptorSet::VulkanDescriptorSet() CATALYST_NOEXCEPT
-	:
-	vulkanDescriptorSet(nullptr)
 {
 
 }

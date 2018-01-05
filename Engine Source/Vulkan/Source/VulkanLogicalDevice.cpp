@@ -5,11 +5,6 @@
 *	Default constructor.
 */
 VulkanLogicalDevice::VulkanLogicalDevice() CATALYST_NOEXCEPT
-	:
-	vulkanLogicalDevice(nullptr),
-	graphicsQueue(),
-	presentQueue(),
-	transferQueue()
 {
 
 }

@@ -70,7 +70,7 @@ private:
 	VkPipelineLayout vulkanPipelineLayout{ nullptr };
 
 	//The Vulkan render pass.
-	VulkanRenderPass vulkanRenderPass{};
+	VulkanRenderPass vulkanRenderPass{ };
 
 	//The Vulkan descriptor set layout.
 	VulkanDescriptorSetLayout vulkanDescriptorSetLayout{ };

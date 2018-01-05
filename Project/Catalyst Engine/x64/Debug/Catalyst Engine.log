@@ -1,4 +1,17 @@
-﻿  WorldArchitect.cpp
+﻿  ClairvoyantGameSystem.cpp
+  VulkanLogicalDevice.cpp
+  VulkanInstance.cpp
+  VulkanDescriptorSet.cpp
+  VulkanCommandPool.cpp
+  SpotLightEntity.cpp
+  PointLightEntity.cpp
+  PhysicalEntity.cpp
+  Entity.cpp
+  CameraEntity.cpp
+  Main.cpp
+  Generating Code...
+  Compiling...
+  WorldArchitect.cpp
   ClairvoyantPlayer.cpp
   VulkanVertexBuffer.cpp
   VulkanUniformBuffer.cpp
@@ -11,19 +24,15 @@
   VulkanQueue.cpp
   VulkanPipeline.cpp
   VulkanPhysicalDevice.cpp
-  VulkanLogicalDevice.cpp
   VulkanInterface.cpp
-  VulkanInstance.cpp
   VulkanIndexBuffer.cpp
   VulkanFramebuffer.cpp
   VulkanDescriptorSetLayout.cpp
-  VulkanDescriptorSet.cpp
-  Generating Code...
-  Compiling...
   VulkanDescriptorPool.cpp
   VulkanDepthBuffer.cpp
-  VulkanCommandPool.cpp
   VulkanCommandBuffer.cpp
+  Generating Code...
+  Compiling...
   VulkanAllocator.cpp
   QuestSystem.cpp
   InputSystem.cpp
@@ -40,20 +49,10 @@
   Matrix3.cpp
   GameMath.cpp
   Window.cpp
-  Generating Code...
-  Compiling...
   Vertex.cpp
   PhysicalModel.cpp
   PhysicalMaterial.cpp
-  SpotLightEntity.cpp
-  PointLightEntity.cpp
-  PhysicalEntity.cpp
   LightEntity.cpp
-  Entity.cpp
-  Main.cpp
   Generating Code...
-  Skipping... (no relevant changes detected)
-  CameraEntity.cpp
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Catalyst Engine.vcxproj -> C:\Users\Dennis\Documents\GitHub\Catalyst-Engine\Project\x64\Debug\Catalyst Engine.exe
   Catalyst Engine.vcxproj -> C:\Users\Dennis\Documents\GitHub\Catalyst-Engine\Project\x64\Debug\Catalyst Engine.pdb (Partial PDB)

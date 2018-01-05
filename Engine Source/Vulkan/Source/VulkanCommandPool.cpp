@@ -10,8 +10,6 @@
 *	Default constructor.
 */
 VulkanCommandPool::VulkanCommandPool() CATALYST_NOEXCEPT
-	:
-	vulkanCommandPool(nullptr)
 {
 
 }

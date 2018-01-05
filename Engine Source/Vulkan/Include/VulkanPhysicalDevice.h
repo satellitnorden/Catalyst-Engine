@@ -82,7 +82,7 @@ private:
 	VULKAN_SURFACE_FORMAT_TYPE surfaceFormat{ };
 
 	//The physical device properties.
-	VkPhysicalDeviceProperties physicalDeviceProperties;
+	VkPhysicalDeviceProperties physicalDeviceProperties{ };
 
 	//The present mode.
 	VULKAN_PRESENT_MODE_TYPE presentMode{ };

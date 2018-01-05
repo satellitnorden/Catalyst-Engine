@@ -17,8 +17,6 @@ namespace
 *	Default constructor.
 */
 VulkanInstance::VulkanInstance() CATALYST_NOEXCEPT
-	:
-	vulkanInstance(nullptr)
 {
 
 }
