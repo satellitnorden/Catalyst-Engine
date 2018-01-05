@@ -19,16 +19,7 @@ Entity::Entity() CATALYST_NOEXCEPT
 Entity::~Entity() CATALYST_NOEXCEPT
 {
 	//Remove this entity from the universal container.
-	for (Entity * CATALYST_RESTRICT entity : entities)
-	{
-		if (entity == this)
-		{
-			entity = entities.Back();
-			entities.Pop();
-
-			return;
-		}
-	}
+	entities.Erase(this);
 }
 
 /*

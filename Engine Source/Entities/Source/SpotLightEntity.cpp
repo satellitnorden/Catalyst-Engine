@@ -19,16 +19,7 @@ SpotLightEntity::SpotLightEntity() CATALYST_NOEXCEPT
 SpotLightEntity::~SpotLightEntity() CATALYST_NOEXCEPT
 {
 	//Remove this spot light entity from the universal container.
-	for (SpotLightEntity * CATALYST_RESTRICT spotLightEntity : spotLightEntities)
-	{
-		if (spotLightEntity == this)
-		{
-			spotLightEntity = spotLightEntities.Back();
-			spotLightEntities.Pop();
-
-			return;
-		}
-	}
+	spotLightEntities.Erase(this);
 }
 
 /*

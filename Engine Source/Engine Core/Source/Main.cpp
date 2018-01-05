@@ -65,7 +65,7 @@ void Function2()
 
 int main()
 {
-	MicroBenchmarker::StartBenchmark(100'000, &Function1, &Function2);
+	MicroBenchmarker::StartBenchmark(100, &Function1, &Function2);
 
 	std::cin.ignore();
 

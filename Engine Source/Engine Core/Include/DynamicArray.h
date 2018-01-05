@@ -159,6 +159,102 @@ public:
 	}
 
 	/*
+	*	Returns the back of this dynamic array, const.
+	*/
+	CATALYST_NOALIAS const ObjectType& Back() const CATALYST_NOEXCEPT
+	{
+		return array[size - 1];
+	}
+
+	/*
+	*	Returns the back of this dynamic array, non-const.
+	*/
+	CATALYST_NOALIAS ObjectType& Back() CATALYST_NOEXCEPT
+	{
+		return array[size - 1];
+	}
+
+	/*
+	*	Given constructor arguments for the object type, construct a new object at the back of the array.
+	*/
+	template <class... Arguments>
+	CATALYST_NOALIAS void Emplace(Arguments&&... arguments) CATALYST_NOEXCEPT
+	{
+		if (size >= capacity)
+		{
+			Reserve(size > 0 ? size * 3 : 16);
+		}
+
+		new (&array[size++]) ObjectType(std::forward<Arguments>(arguments)...);
+	}
+
+	/*
+	*	Given constructor arguments for the object type, construct a new object at the back of the array without first checking if the array has the required capacity.
+	*/
+	template <class... Arguments>
+	CATALYST_NOALIAS void EmplaceUnsafe(Arguments&&... arguments) CATALYST_NOEXCEPT
+	{
+		new (&array[size++]) ObjectType(std::forward<Arguments>(arguments)...);
+	}
+
+	/*
+	*	Finds and erases an element in the array. Does not respect order of elements.
+	*/
+	void Erase(const ObjectType &objectToErase) CATALYST_NOEXCEPT
+	{
+		for (auto object : *this)
+		{
+			if (object == objectToErase)
+			{
+				object = std::move(Back());
+				Pop();
+
+				return;
+			}
+		}
+	}
+
+	/*
+	*	Finds an element and returns it, const.
+	*/
+	const Optional<ObjectType> Find(const ObjectType &objectToFind) const CATALYST_NOEXCEPT
+	{
+		for (auto object : *this)
+		{
+			if (object == objectToFind)
+			{
+				return Optional<ObjectType>(object);
+			}
+		}
+
+		return Optional<ObjectType>();
+	}
+
+	/*
+	*	Finds an element and returns it, non-const.
+	*/
+	Optional<ObjectType> Find(const ObjectType &objectToFind) CATALYST_NOEXCEPT
+	{
+		for (auto object : *this)
+		{
+			if (object == objectToFind)
+			{
+				return Optional<ObjectType>(object);
+			}
+		}
+
+		return Optional<ObjectType>();
+	}
+
+	/*
+	*	Pops an element from the back of this dynamic array.
+	*/
+	CATALYST_NOALIAS void Pop() CATALYST_NOEXCEPT
+	{
+		--size;
+	}
+
+	/*
 	*	Reserves a new chunk of memory, changing the array's capacity.
 	*/
 	CATALYST_NOALIAS void Reserve(const size_t newCapacity) CATALYST_NOEXCEPT
@@ -201,53 +297,6 @@ public:
 		array = newArray;
 		capacity = newCapacity;
 		size = newCapacity;
-	}
-
-	/*
-	*	Returns the back of this dynamic array, const.
-	*/
-	CATALYST_NOALIAS const ObjectType& Back() const CATALYST_NOEXCEPT
-	{
-		return array[size - 1];
-	}
-
-	/*
-	*	Returns the back of this dynamic array, non-const.
-	*/
-	CATALYST_NOALIAS ObjectType& Back() CATALYST_NOEXCEPT
-	{
-		return array[size - 1];
-	}
-
-	/*
-	*	Given constructor arguments for the object type, construct a new object at the back of the array.
-	*/
-	template <class... Arguments>
-	CATALYST_NOALIAS void Emplace(Arguments&&... arguments) CATALYST_NOEXCEPT
-	{
-		if (size >= capacity)
-		{
-			Reserve(size > 0 ? size * 3 : 16);
-		}
-
-		new (&array[size++]) ObjectType(std::forward<Arguments>(arguments)...);
-	}
-
-	/*
-	*	Given constructor arguments for the object type, construct a new object at the back of the array without first checking if the array has the required capacity.
-	*/
-	template <class... Arguments>
-	CATALYST_NOALIAS void EmplaceUnsafe(Arguments&&... arguments) CATALYST_NOEXCEPT
-	{
-		new (&array[size++]) ObjectType(std::forward<Arguments>(arguments)...);
-	}
-
-	/*
-	*	Pops an element from the back of this dynamic array.
-	*/
-	CATALYST_NOALIAS void Pop() CATALYST_NOEXCEPT
-	{
-		--size;
 	}
 
 private:

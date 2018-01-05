@@ -28,9 +28,6 @@ public:
 	template <class... Arguments>
 	void Emplace(Arguments&&... arguments) CATALYST_NOEXCEPT
 	{
-		//Mark this map as unsorted.
-		isSorted = false;
-
 		//Emplace the new pair.
 		map.Emplace(std::forward<Arguments>(arguments)...);
 	}
@@ -40,41 +37,8 @@ public:
 	*/
 	CATALYST_RESTRICTED ValueType* Find(const KeyType key) CATALYST_NOEXCEPT
 	{
-		//If the map is not sorted already, sort it.
-		if (!isSorted)
-		{
-			Sort();
-		}
-		
-		//Find the right pair with a binary search.
-		size_t currentIndex = map.Size() / 2;
-		size_t step = currentIndex / 2;
-
-		while (step > 0)
-		{
-			//Search in the upper half.
-			if (map[currentIndex].key < key)
-			{
-				currentIndex += step;
-				step /= 2;
-			}
-
-			//Search in the lower half.
-			else if (map[currentIndex].key < key)
-			{
-				currentIndex -= step;
-				step /= 2;
-			}
-
-			//Found the right pair!
-			else
-			{
-				return &map[currentIndex].value;
-			}
-		}
-
-		//A pair with this key does not exist.
-		return nullptr;
+		//For now, only do a regular linear search.
+		return LinearSearch(key);
 	}
 
 private:
@@ -139,9 +103,6 @@ private:
 	//The underlying array.
 	DynamicArray< Pair<KeyType, ValueType> > map;
 
-	//Keeps track of whether or not the map is sorted.
-	bool isSorted{ true };
-
 	/*
 	*	Sorts the underlying map.
 	*/
@@ -150,6 +111,60 @@ private:
 		std::sort(map.begin(), map.end());
 
 		isSorted = true;
+	}
+
+	/*
+	*	Performs a binary search for a given key and returns a pointer to the value associated with the key.
+	*/
+	CATALYST_RESTRICTED ValueType* BinarySearch(const KeyType key) CATALYST_NOEXCEPT
+	{
+		//If the map is not sorted already, sort it.
+		if (!isSorted)
+		{
+			Sort();
+		}
+
+		size_t minimum = 0;
+		size_t maximum = map.Size();
+
+		while (maximum >= minimum)
+		{
+			size_t middle = (maximum + minimum) / 2;
+
+			if (map[middle].key < key)
+			{
+				minimum = middle + 1;
+			}
+
+			else if (map[middle].key > key)
+			{
+				maximum = middle - 1;
+			}
+
+			else
+			{
+				return &map[middle].value;
+			}
+		}
+		
+		//A pair with this key does not exist.
+		return nullptr;
+	}
+
+	/*
+	*	Performs a linear search for a given key and returns a pointer to the value associated with the key.
+	*/
+	CATALYST_RESTRICTED ValueType* LinearSearch(const KeyType key) CATALYST_NOEXCEPT
+	{
+		for (auto &pair : map)
+		{
+			if (pair.key == key)
+			{
+				return &pair.value;
+			}
+		}
+
+		return nullptr;
 	}
 
 };

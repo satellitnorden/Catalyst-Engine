@@ -76,6 +76,7 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicArray.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\EngineCore.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\Map.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\Optional.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\ProjectSettings.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\StaticArray.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\UniquePointer.h" />

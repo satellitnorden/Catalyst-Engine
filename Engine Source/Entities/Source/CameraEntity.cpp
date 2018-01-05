@@ -26,14 +26,5 @@ CameraEntity::CameraEntity() CATALYST_NOEXCEPT
 CameraEntity::~CameraEntity() CATALYST_NOEXCEPT
 {
 	//Remove this camera entity from the universal container.
-	for (CameraEntity * CATALYST_RESTRICT cameraEntity : cameraEntities)
-	{
-		if (cameraEntity == this)
-		{
-			cameraEntity = cameraEntities.Back();
-			cameraEntities.Pop();
-
-			return;
-		}
-	}
+	cameraEntities.Erase(this);
 }

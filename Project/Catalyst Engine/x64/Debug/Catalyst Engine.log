@@ -1,7 +1,4 @@
-﻿  Main.cpp
-  Generating Code...
-  Skipping... (no relevant changes detected)
-  WorldArchitect.cpp
+﻿  WorldArchitect.cpp
   ClairvoyantPlayer.cpp
   VulkanVertexBuffer.cpp
   VulkanUniformBuffer.cpp
@@ -21,6 +18,8 @@
   VulkanFramebuffer.cpp
   VulkanDescriptorSetLayout.cpp
   VulkanDescriptorSet.cpp
+  Generating Code...
+  Compiling...
   VulkanDescriptorPool.cpp
   VulkanDepthBuffer.cpp
   VulkanCommandPool.cpp
@@ -41,6 +40,8 @@
   Matrix3.cpp
   GameMath.cpp
   Window.cpp
+  Generating Code...
+  Compiling...
   Vertex.cpp
   PhysicalModel.cpp
   PhysicalMaterial.cpp
@@ -49,6 +50,9 @@
   PhysicalEntity.cpp
   LightEntity.cpp
   Entity.cpp
+  Main.cpp
+  Generating Code...
+  Skipping... (no relevant changes detected)
   CameraEntity.cpp
 LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Catalyst Engine.vcxproj -> C:\Users\Dennis\Documents\GitHub\Catalyst-Engine\Project\x64\Debug\Catalyst Engine.exe

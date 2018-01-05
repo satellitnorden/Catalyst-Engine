@@ -19,14 +19,5 @@ PointLightEntity::PointLightEntity() CATALYST_NOEXCEPT
 PointLightEntity::~PointLightEntity() CATALYST_NOEXCEPT
 {
 	//Remove this point light entity from the universal container.
-	for (PointLightEntity * CATALYST_RESTRICT pointLightEntity : pointLightEntities)
-	{
-		if (pointLightEntity == this)
-		{
-			pointLightEntity = pointLightEntities.Back();
-			pointLightEntities.Pop();
-
-			return;
-		}
-	}
+	pointLightEntities.Erase(this);
 }

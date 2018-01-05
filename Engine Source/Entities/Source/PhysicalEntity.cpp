@@ -25,16 +25,7 @@ PhysicalEntity::PhysicalEntity() CATALYST_NOEXCEPT
 PhysicalEntity::~PhysicalEntity() CATALYST_NOEXCEPT
 {
 	//Remove this physical entity from the universal container.
-	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : physicalEntities)
-	{
-		if (physicalEntity == this)
-		{
-			physicalEntity = physicalEntities.Back();
-			physicalEntities.Pop();
-
-			return;
-		}
-	}
+	physicalEntities.Erase(this);
 }
 
 /*

@@ -96,9 +96,29 @@ using byte = uint8;
 
 #define THREAD_YIELD() std::this_thread::yield();
 
-//Core types.
+//Core types, forward declarations.
+template <uint8 BitFieldSize>
+class BitField;
+
+template <class ObjectType>
+class DynamicArray;
+
+template <class KeyType, class ValueType>
+class Map;
+
+template <class ObjectType>
+class Optional;
+
+template <class ObjectType, size_t ArraySize>
+class StaticArray;
+
+template <class ObjectType>
+class UniquePointer;
+
+//Core types, implementations.
 #include <Bitfield.h>
 #include <DynamicArray.h>
 #include <Map.h>
+#include <Optional.h>
 #include <StaticArray.h>
 #include <UniquePointer.h>
