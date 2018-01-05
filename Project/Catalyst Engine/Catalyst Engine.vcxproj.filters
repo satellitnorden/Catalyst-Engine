@@ -264,6 +264,9 @@
     <ClCompile Include="..\..\Engine Source\Systems\Source\QuestSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanFence.cpp">
+      <Filter>Engine Source\Vulkan\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Systems\Include\GraphicsSystem.h">
@@ -496,6 +499,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\Optional.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanFence.h">
+      <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

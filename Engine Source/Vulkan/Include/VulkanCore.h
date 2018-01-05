@@ -30,7 +30,7 @@
 *	Checks the result of a Vulkan function call and takes appropriate measures if it is not VK_SUCCESS in final.
 */
 #if !defined(CATALYST_FINAL)
-	#define VULKAN_ERROR_CHECK(function) { if ((function) != VKSUCCESS) BREAKPOINT; }
+	#define VULKAN_ERROR_CHECK(function) { if ((function) != VK_SUCCESS) BREAKPOINT; }
 #else
 	#define VULKAN_ERROR_CHECK(function) function
 #endif
