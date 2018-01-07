@@ -110,5 +110,5 @@ void UpdateInputSystemAsynchronous() CATALYST_NOEXCEPT
 void UpdateGraphicsSystemAsynchronous() CATALYST_NOEXCEPT
 {
 	while (!EngineSystem::Instance->ShouldTerminate())
-		CATALYST_BENCHMARK_AVERAGE("GraphicsSystem::UpdateAsystemSynchronous", GraphicsSystem::Instance->UpdateSystemAsynchronous());
+		GraphicsSystem::Instance->UpdateSystemAsynchronous();
 }

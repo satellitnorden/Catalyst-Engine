@@ -32,14 +32,14 @@ void VulkanQueue::Initialize(const VkQueue &newVulkanQueue) CATALYST_NOEXCEPT
 /*
 *	Submits a command buffer to this Vulkan queue.
 */
-void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const DynamicArray<VkSemaphore> &signalSemaphores) const CATALYST_NOEXCEPT
+void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const DynamicArray<VkSemaphore> &signalSemaphores, const VkFence fence) const CATALYST_NOEXCEPT
 {
 	//Create the submit info.
 	VkSubmitInfo submitInfo;
 	CreateSubmitInfo(submitInfo, waitSemaphores, waitStages, vulkanCommandBuffer, signalSemaphores);
 
 	//Submit the command buffer!
-	vkQueueSubmit(vulkanQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueSubmit(vulkanQueue, 1, &submitInfo, fence);
 }
 
 /*

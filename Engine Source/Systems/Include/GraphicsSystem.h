@@ -146,6 +146,9 @@ private:
 	//Container for all command buffers.
 	DynamicArray<VulkanCommandBuffer> commandBuffers{ };
 
+	//Container for all fences.
+	DynamicArray<VulkanFence *CATALYST_RESTRICT> fences{ };
+
 	//The current command buffer.
 	size_t currentCommandBuffer{ 0 };
 

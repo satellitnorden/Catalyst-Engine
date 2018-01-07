@@ -51,3 +51,21 @@ void VulkanFence::Release() CATALYST_NOEXCEPT
 	//Destroy the Vulkan fence.
 	vkDestroyFence(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanFence, nullptr);
 }
+
+/*
+*	Resets this Vulkan fence.
+*/
+void VulkanFence::Reset() CATALYST_NOEXCEPT
+{
+	//Reset this Vulkan fence.
+	vkResetFences(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), 1, &vulkanFence);
+}
+
+/*
+*	Waits for this Vulkan fence.
+*/
+void VulkanFence::WaitFor() const CATALYST_NOEXCEPT
+{
+	//Wait for this Vulkan fence.
+	vkWaitForFences(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), 1, &vulkanFence, VK_TRUE, UINT64_MAXIMUM);
+}

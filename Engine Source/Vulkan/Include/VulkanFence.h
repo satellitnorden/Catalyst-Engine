@@ -36,6 +36,16 @@ public:
 	*/
 	void Release() CATALYST_NOEXCEPT;
 
+	/*
+	*	Resets this Vulkan fence.
+	*/
+	void Reset() CATALYST_NOEXCEPT;
+
+	/*
+	*	Waits for this Vulkan fence.
+	*/
+	void WaitFor() const CATALYST_NOEXCEPT;
+
 private:
 
 	//The underlying Vulkan fence.

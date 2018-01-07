@@ -14,6 +14,7 @@
 #include <VulkanDescriptorPool.h>
 #include <VulkanDescriptorSet.h>
 #include <VulkanDescriptorSetLayout.h>
+#include <VulkanFence.h>
 #include <VulkanFrameBuffer.h>
 #include <VulkanIndexBuffer.h>
 #include <VulkanInstance.h>
@@ -143,6 +144,11 @@ public:
 	CATALYST_RESTRICTED VulkanDepthBuffer* CreateDepthBuffer(const VkExtent2D &depthBufferExtent) CATALYST_NOEXCEPT;
 
 	/*
+	*	Creates and returns a fence.
+	*/
+	CATALYST_RESTRICTED VulkanFence* CreateFence() CATALYST_NOEXCEPT;
+
+	/*
 	*	Creates and returns an index buffer.
 	*/
 	CATALYST_RESTRICTED VulkanIndexBuffer* CreateIndexBuffer(const DynamicArray<uint32> &indices) CATALYST_NOEXCEPT;
@@ -211,6 +217,9 @@ private:
 
 	//Container for all Vulkan depth buffers.
 	DynamicArray<VulkanDepthBuffer *CATALYST_RESTRICT> vulkanDepthBuffers{ };
+
+	//Container for all Vulkan fences.
+	DynamicArray<VulkanFence *CATALYST_RESTRICT> vulkanFences{ };
 
 	//Container for all Vulkan index buffers.
 	DynamicArray<VulkanIndexBuffer *CATALYST_RESTRICT> vulkanIndexBuffers{ };

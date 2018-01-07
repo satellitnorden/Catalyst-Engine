@@ -88,12 +88,21 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 	for (VulkanDepthBuffer * CATALYST_RESTRICT vulkanDepthBuffer : vulkanDepthBuffers)
 	{
 		vulkanDepthBuffer->Release();
+		delete vulkanDepthBuffer;
+	}
+
+	//Release all Vulkan fences.
+	for (VulkanFence * CATALYST_RESTRICT vulkanFence : vulkanFences)
+	{
+		vulkanFence->Release();
+		delete vulkanFence;
 	}
 
 	//Release all Vulkan index buffers.
 	for (VulkanIndexBuffer * CATALYST_RESTRICT vulkanIndexBuffer : vulkanIndexBuffers)
 	{
 		vulkanIndexBuffer->Release();
+		delete vulkanIndexBuffer;
 	}
 
 	//Release all Vulkan pipelines.
@@ -170,6 +179,19 @@ CATALYST_RESTRICTED VulkanDepthBuffer* VulkanInterface::CreateDepthBuffer(const 
 	vulkanDepthBuffers.Emplace(newDepthBuffer);
 
 	return newDepthBuffer;
+}
+
+/*
+*	Creates and returns a fence.
+*/
+CATALYST_RESTRICTED VulkanFence* VulkanInterface::CreateFence() CATALYST_NOEXCEPT
+{
+	VulkanFence *CATALYST_RESTRICT newFence = new VulkanFence;
+	newFence->Initialize();
+
+	vulkanFences.Emplace(newFence);
+
+	return newFence;
 }
 
 /*

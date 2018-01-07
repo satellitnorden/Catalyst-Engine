@@ -26,12 +26,12 @@
 
 //Windows.
 #if defined(CATALYST_WINDOWS)
-#include <Windows.h>
-#include <Xinput.h>
+	#include <Windows.h>
+	#include <Xinput.h>
 
-//Undefine annoying Windows defines. Fuck Windows. I hate everything.
-#undef max
-#undef min
+	//Undefine annoying Windows defines. Fuck Windows. I hate everything.
+	#undef max
+	#undef min
 #endif
 
 /*
@@ -65,6 +65,26 @@ using byte = uint8;
 #define CATALYST_UNLIKELY(expression) expression
 #define CATALYST_RESTRICT __restrict
 #define CATALYST_RESTRICTED __declspec(restrict)
+
+#define INT8_MAXIMUM std::numeric_limits<int8>::max()
+#define INT16_MAXIMUM std::numeric_limits<int16>::max()
+#define INT32_MAXIMUM std::numeric_limits<int32>::max()
+#define INT64_MAXIMUM std::numeric_limits<int64>::max()
+
+#define INT8_MINIMUM std::numeric_limits<int8>::min()
+#define INT16_MINIMUM std::numeric_limits<int16>::min()
+#define INT32_MINIMUM std::numeric_limits<int32>::min()
+#define INT64_MINIMUM std::numeric_limits<int64>::min()
+
+#define UINT8_MAXIMUM std::numeric_limits<uint8>::max()
+#define UINT16_MAXIMUM std::numeric_limits<uint16>::max()
+#define UINT32_MAXIMUM std::numeric_limits<uint32>::max()
+#define UINT64_MAXIMUM std::numeric_limits<uint64>::max()
+
+#define UINT8_MINIMUM std::numeric_limits<uint8>::min()
+#define UINT16_MINIMUM std::numeric_limits<uint16>::min()
+#define UINT32_MINIMUM std::numeric_limits<uint32>::min()
+#define UINT64_MINIMUM std::numeric_limits<uint64>::min()
 
 /*
 *	Preprocessor macros.
