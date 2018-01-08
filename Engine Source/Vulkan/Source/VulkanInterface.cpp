@@ -184,10 +184,10 @@ CATALYST_RESTRICTED VulkanDepthBuffer* VulkanInterface::CreateDepthBuffer(const 
 /*
 *	Creates and returns a fence.
 */
-CATALYST_RESTRICTED VulkanFence* VulkanInterface::CreateFence() CATALYST_NOEXCEPT
+CATALYST_RESTRICTED VulkanFence* VulkanInterface::CreateFence(const VkFenceCreateFlags flags) CATALYST_NOEXCEPT
 {
 	VulkanFence *CATALYST_RESTRICT newFence = new VulkanFence;
-	newFence->Initialize();
+	newFence->Initialize(flags);
 
 	vulkanFences.Emplace(newFence);
 

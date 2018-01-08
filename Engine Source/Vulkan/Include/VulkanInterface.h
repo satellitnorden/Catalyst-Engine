@@ -146,7 +146,7 @@ public:
 	/*
 	*	Creates and returns a fence.
 	*/
-	CATALYST_RESTRICTED VulkanFence* CreateFence() CATALYST_NOEXCEPT;
+	CATALYST_RESTRICTED VulkanFence* CreateFence(const VkFenceCreateFlags flags = 0) CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns an index buffer.

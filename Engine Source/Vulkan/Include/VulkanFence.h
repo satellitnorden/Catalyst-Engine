@@ -29,12 +29,17 @@ public:
 	/*
 	*	Initializes this Vulkan fence.
 	*/
-	void Initialize() CATALYST_NOEXCEPT;
+	void Initialize(const VkFenceCreateFlags flags) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan fence.
 	*/
 	void Release() CATALYST_NOEXCEPT;
+
+	/*
+	*	Returns whether or not this fence is signaled.
+	*/
+	bool IsSignaled() const CATALYST_NOEXCEPT;
 
 	/*
 	*	Resets this Vulkan fence.
@@ -54,6 +59,6 @@ private:
 	/*
 	*	Creates a fence create info.
 	*/
-	void CreateFenceCreateInfo(VkFenceCreateInfo &fenceCreateInfo) const CATALYST_NOEXCEPT;
+	void CreateFenceCreateInfo(VkFenceCreateInfo &fenceCreateInfo, const VkFenceCreateFlags flags) const CATALYST_NOEXCEPT;
 
 };

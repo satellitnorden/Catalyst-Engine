@@ -1,3 +1,31 @@
-﻿  GraphicsSystem.cpp
+﻿  VulkanInterface.cpp
+  VulkanFence.cpp
+  GraphicsSystem.cpp
+  Generating Code...
+  Compiling...
+  WorldArchitect.cpp
+  ClairvoyantPlayer.cpp
+  VulkanVertexBuffer.cpp
+  VulkanUniformBuffer.cpp
+  VulkanTexture.cpp
+  VulkanSwapChain.cpp
+  VulkanShaderModule.cpp
+  VulkanSemaphore.cpp
+  VulkanRenderPass.cpp
+  VulkanPipeline.cpp
+  VulkanPhysicalDevice.cpp
+  VulkanIndexBuffer.cpp
+  VulkanFramebuffer.cpp
+  VulkanDescriptorSetLayout.cpp
+  VulkanDescriptorSet.cpp
+  VulkanDescriptorPool.cpp
+  VulkanDepthBuffer.cpp
+  VulkanCommandPool.cpp
+  VulkanCommandBuffer.cpp
+  EngineSystem.cpp
+  Generating Code...
+  Compiling...
+  PhysicalEntity.cpp
+  Generating Code...
   Catalyst Engine.vcxproj -> C:\Users\Dennis\Documents\GitHub\Catalyst-Engine\Project\x64\Debug\Catalyst Engine.exe
   Catalyst Engine.vcxproj -> C:\Users\Dennis\Documents\GitHub\Catalyst-Engine\Project\x64\Debug\Catalyst Engine.pdb (Partial PDB)

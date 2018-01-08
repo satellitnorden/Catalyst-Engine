@@ -63,7 +63,7 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 
 	for (VulkanFence * CATALYST_RESTRICT &fence : fences)
 	{
-		fence = VulkanInterface::Instance->CreateFence();
+		fence = VulkanInterface::Instance->CreateFence(VK_FENCE_CREATE_SIGNALED_BIT);
 	}
 
 	//Initialize all shader modules.
