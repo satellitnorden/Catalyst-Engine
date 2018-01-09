@@ -20,7 +20,6 @@
 #include <map>
 #include <random>
 #include <set>
-#include <string>
 #include <thread>
 #include <unordered_map>
 
@@ -123,6 +122,8 @@ class BitField;
 template <class ObjectType>
 class DynamicArray;
 
+class DynamicString;
+
 template <class KeyType, class ValueType>
 class Map;
 
@@ -138,6 +139,7 @@ class UniquePointer;
 //Core types, implementations.
 #include <Bitfield.h>
 #include <DynamicArray.h>
+#include <DynamicString.h>
 #include <Map.h>
 #include <Optional.h>
 #include <StaticArray.h>

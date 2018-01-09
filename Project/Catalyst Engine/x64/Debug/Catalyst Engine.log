@@ -1,31 +1,61 @@
-﻿  VulkanInterface.cpp
-  VulkanFence.cpp
-  GraphicsSystem.cpp
+﻿  Main.cpp
   Generating Code...
   Compiling...
   WorldArchitect.cpp
   ClairvoyantPlayer.cpp
+  ClairvoyantGameSystem.cpp
   VulkanVertexBuffer.cpp
   VulkanUniformBuffer.cpp
   VulkanTexture.cpp
   VulkanSwapChain.cpp
+  VulkanSurface.cpp
   VulkanShaderModule.cpp
   VulkanSemaphore.cpp
   VulkanRenderPass.cpp
+  VulkanQueue.cpp
   VulkanPipeline.cpp
   VulkanPhysicalDevice.cpp
+  VulkanLogicalDevice.cpp
+  VulkanInterface.cpp
+  VulkanInstance.cpp
   VulkanIndexBuffer.cpp
   VulkanFramebuffer.cpp
+  VulkanFence.cpp
+  Generating Code...
+  Compiling...
   VulkanDescriptorSetLayout.cpp
   VulkanDescriptorSet.cpp
   VulkanDescriptorPool.cpp
   VulkanDepthBuffer.cpp
   VulkanCommandPool.cpp
   VulkanCommandBuffer.cpp
+  VulkanAllocator.cpp
+  QuestSystem.cpp
+  InputSystem.cpp
+  GraphicsSystem.cpp
+  EntitySystem.cpp
   EngineSystem.cpp
+  QuestLog.cpp
+  Quest.cpp
+  Adventurer.cpp
+  Vector4.cpp
+  Vector3.cpp
+  Vector2.cpp
+  Matrix4.cpp
+  Matrix3.cpp
   Generating Code...
   Compiling...
+  GameMath.cpp
+  Window.cpp
+  Vertex.cpp
+  PhysicalModel.cpp
+  PhysicalMaterial.cpp
+  SpotLightEntity.cpp
+  PointLightEntity.cpp
   PhysicalEntity.cpp
+  LightEntity.cpp
+  Entity.cpp
+  CameraEntity.cpp
   Generating Code...
   Catalyst Engine.vcxproj -> C:\Users\Dennis\Documents\GitHub\Catalyst-Engine\Project\x64\Debug\Catalyst Engine.exe
   Catalyst Engine.vcxproj -> C:\Users\Dennis\Documents\GitHub\Catalyst-Engine\Project\x64\Debug\Catalyst Engine.pdb (Partial PDB)

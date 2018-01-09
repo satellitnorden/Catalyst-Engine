@@ -125,7 +125,7 @@ bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulk
 bool VulkanPhysicalDevice::HasRequiredExtensions(const VkPhysicalDevice &vulkanPhysicalDevice) const CATALYST_NOEXCEPT
 {
 	//Define the list of the required extensions.
-	std::set<std::string> requiredExtensions{ VULKAN_SWAPCHAIN_EXTENSION_NAME };
+	std::set<DynamicString> requiredExtensions{ VULKAN_SWAPCHAIN_EXTENSION_NAME };
 
 	//Get the extension count.
 	uint32_t extensionCount;

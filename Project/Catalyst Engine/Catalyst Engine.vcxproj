@@ -75,6 +75,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\BitField.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicArray.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicString.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\EngineCore.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\Map.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\Optional.h" />

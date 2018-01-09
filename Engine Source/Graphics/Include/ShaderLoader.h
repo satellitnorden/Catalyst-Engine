@@ -14,10 +14,10 @@ namespace ShaderLoader
 	*/
 	DynamicArray<char> LoadShader(const char *CATALYST_RESTRICT shaderName) CATALYST_NOEXCEPT
 	{
-		std::string fullShaderName{ SHADERS_PATH };
+		DynamicString fullShaderName{ SHADERS_PATH };
 		fullShaderName += shaderName;
 
-		std::ifstream file(fullShaderName, std::ios::ate | std::ios::binary);
+		std::ifstream file(fullShaderName.CString(), std::ios::ate | std::ios::binary);
 
 #if !defined(CATALYST_FINAL)
 		if (!file.is_open())

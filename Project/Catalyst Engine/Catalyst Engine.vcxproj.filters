@@ -503,5 +503,8 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanFence.h">
       <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicString.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
