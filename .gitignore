@@ -1,21 +1,3 @@
-
-Catalyst Engine/Project/.vs/Catalyst Engine/v15/.suo
-Catalyst Engine/Project/.vs/Catalyst Engine/v15/Browse.VC.db
-*.ipch
-Catalyst Engine/Project/.vs/Catalyst Engine/v15/Solution.VC.db
-*.opendb
-*.obj
-Project/.vs/Catalyst Engine/v15/Browse.VC.db
-Project/.vs/Catalyst Engine/v15/Browse.VC.db
-Project/.vs/Catalyst Engine/v15/Browse.VC.db
-Project/Catalyst Engine/x64/Release/Catalyst Engine.log
-Project/Catalyst Engine/x64/Release/Catalyst Engine.tlog/Catalyst Engine.lastbuildstate
-Project/Catalyst Engine/x64/Release/Catalyst Engine.tlog/CL.read.1.tlog
-Project/Catalyst Engine/x64/Release/Catalyst Engine.tlog/CL.command.1.tlog
-Project/Catalyst Engine/x64/Release/Catalyst Engine.tlog/CL.write.1.tlog
-Project/Catalyst Engine/x64/Release/Catalyst Engine.tlog/unsuccessfulbuild
-Project/Catalyst Engine/x64/Release/vc141.pdb
-Project/x64/Release/Catalyst Engine.exe
-Project/.vs/Catalyst Engine/v15/Browse.VC.db
-Project/.vs/Catalyst Engine/v15/.suo
-Project/.vs/Catalyst Engine/v15/Browse.VC.db
+#Ignore everything in these folders.
+Project/.vs/*
+Project/Catalyst Engine/x64/*
