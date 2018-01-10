@@ -61,12 +61,12 @@ public:
 	/*
 	*	Pre-updates this Vulkan interface.
 	*/
-	void PreUpdate() CATALYST_NOEXCEPT;
+	void PreUpdate(const VulkanSemaphore *const CATALYST_RESTRICT imageAvailableSemaphore) CATALYST_NOEXCEPT;
 
 	/*
 	*	Post-updates this Vulkan interface.
 	*/
-	void PostUpdate() CATALYST_NOEXCEPT;
+	void PostUpdate(const VulkanSemaphore *const CATALYST_RESTRICT renderFinishedSemaphore) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan interface.
@@ -129,16 +129,6 @@ public:
 	CATALYST_FORCE_INLINE const VulkanDescriptorPool& GetVulkanDescriptorPool() const CATALYST_NOEXCEPT { return vulkanDescriptorPool; }
 
 	/*
-	*	Returns the image avabilable Vulkan semaphore.
-	*/
-	CATALYST_FORCE_INLINE const VulkanSemaphore& GetImageAvailableVulkanSemaphore() const CATALYST_NOEXCEPT { return vulkanSemaphores[Semaphore::ImageAvailableSemaphore]; }
-
-	/*
-	*	Returns the render finished Vulkan semaphore.
-	*/
-	CATALYST_FORCE_INLINE const VulkanSemaphore& GetRenderFinishedVulkanSemaphore() const CATALYST_NOEXCEPT { return vulkanSemaphores[Semaphore::RenderFinishedSemaphore]; }
-
-	/*
 	*	Creates and returns a depth buffer.
 	*/
 	CATALYST_RESTRICTED VulkanDepthBuffer* CreateDepthBuffer(const VkExtent2D &depthBufferExtent) CATALYST_NOEXCEPT;
@@ -157,6 +147,11 @@ public:
 	*	Creates and returns a pipeline.
 	*/
 	CATALYST_RESTRICTED VulkanPipeline* CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) CATALYST_NOEXCEPT;
+
+	/*
+	*	Creates and returns a semaphore.
+	*/
+	CATALYST_RESTRICTED VulkanSemaphore* CreateSemaphore() CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a shader module.
@@ -179,14 +174,6 @@ public:
 	CATALYST_RESTRICTED VulkanVertexBuffer* CreateVertexBuffer(const DynamicArray<Vertex> &vertices) CATALYST_NOEXCEPT;
 
 private:
-
-	//Enumeration covering all semaphores.
-	enum Semaphore : size_t
-	{
-		ImageAvailableSemaphore,
-		RenderFinishedSemaphore,
-		NumberOfSemaphores
-	};
 
 	//The Vulkan instance.
 	VulkanInstance vulkanInstance{ };
@@ -212,9 +199,6 @@ private:
 	//The Vulkan descriptor pool.
 	VulkanDescriptorPool vulkanDescriptorPool{ };
 
-	//Container for all Vulkan semaphores.
-	VulkanSemaphore vulkanSemaphores[Semaphore::NumberOfSemaphores]{ };
-
 	//Container for all Vulkan depth buffers.
 	DynamicArray<VulkanDepthBuffer *CATALYST_RESTRICT> vulkanDepthBuffers{ };
 
@@ -226,6 +210,9 @@ private:
 
 	//Container for all Vulkan pipelines.
 	DynamicArray<VulkanPipeline *CATALYST_RESTRICT> vulkanPipelines{ };
+
+	//Container for all Vulkan semaphores.
+	DynamicArray<VulkanSemaphore *CATALYST_RESTRICT> vulkanSemaphores{ };
 
 	//Container for all Vulkan shader modules.
 	DynamicArray<VulkanShaderModule *CATALYST_RESTRICT> vulkanShaderModules{ };

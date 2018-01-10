@@ -66,6 +66,10 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 	//Initialize all pipelines.
 	InitializePipelines();
 
+	//Initialize all semaphores.
+	semaphores[Semaphore::ImageAvailable] = VulkanInterface::Instance->CreateSemaphore();
+	semaphores[Semaphore::RenderFinished] = VulkanInterface::Instance->CreateSemaphore();
+
 	//Create the dynamic uniform data buffer.
 	uniformBuffers[UniformBuffer::DynamicUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(DynamicUniformData));
 
@@ -97,7 +101,7 @@ void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	}
 
 	//Pre-update the Vulkan interface.
-	VulkanInterface::Instance->PreUpdate();
+	VulkanInterface::Instance->PreUpdate(semaphores[Semaphore::ImageAvailable]);
 
 	//Begin the frame.
 	BeginFrame();
@@ -112,7 +116,7 @@ void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	EndFrame();
 
 	//Post-update the Vulkan interface.
-	VulkanInterface::Instance->PostUpdate();
+	VulkanInterface::Instance->PostUpdate(semaphores[Semaphore::RenderFinished]);
 }
 
 /*
@@ -435,9 +439,9 @@ void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
 {
 	//Set up the proper parameters.
-	static const DynamicArray<VkSemaphore> waitSemaphores{ VulkanInterface::Instance->GetImageAvailableVulkanSemaphore().Get() };
+	static const DynamicArray<VkSemaphore> waitSemaphores{ semaphores[Semaphore::ImageAvailable]->Get() };
 	static const VkPipelineStageFlags waitStages{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-	static const DynamicArray<VkSemaphore> signalSemaphores{ VulkanInterface::Instance->GetRenderFinishedVulkanSemaphore().Get() };
+	static const DynamicArray<VkSemaphore> signalSemaphores{ semaphores[Semaphore::RenderFinished]->Get() };
 
 	//End the current command buffer.
 	commandBuffers[currentCommandBuffer].CommandEndRenderPass();

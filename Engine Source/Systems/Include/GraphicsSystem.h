@@ -92,6 +92,14 @@ private:
 		NumberOfPipelines
 	};
 
+	//Enumeration covering all semaphores.
+	enum Semaphore : uint8
+	{
+		ImageAvailable,
+		RenderFinished,
+		NumberOfSemaphores
+	};
+
 	//Enumeration covering all shader modules.
 	enum ShaderModule : uint8
 	{
@@ -133,6 +141,9 @@ private:
 
 	//Container for all pipelines.
 	VulkanPipeline *CATALYST_RESTRICT pipelines[Pipeline::NumberOfPipelines];
+
+	//Container for all semaphores.
+	VulkanSemaphore *CATALYST_RESTRICT semaphores[Semaphore::NumberOfSemaphores];
 
 	//Container for all shader modules.
 	VulkanShaderModule *CATALYST_RESTRICT shaderModules[ShaderModule::NumberOfShaderModules];

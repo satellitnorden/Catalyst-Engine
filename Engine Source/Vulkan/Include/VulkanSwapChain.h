@@ -72,12 +72,12 @@ public:
 	/*
 	*	Updates the next image index in the swap chain.
 	*/
-	void UpdateNextImageIndex(const VulkanSemaphore &imageAvailableSemaphore) CATALYST_NOEXCEPT;
+	void UpdateNextImageIndex(const VulkanSemaphore *const CATALYST_RESTRICT imageAvailableSemaphore) CATALYST_NOEXCEPT;
 
 	/*
 	*	Presents the current image to the screen.
 	*/
-	void Present(const VulkanSemaphore &renderFinishedSemaphore, const VulkanQueue &presentQueue) CATALYST_NOEXCEPT;
+	void Present(const VulkanSemaphore *const CATALYST_RESTRICT renderFinishedSemaphore) CATALYST_NOEXCEPT;
 
 private:
 
@@ -112,6 +112,6 @@ private:
 	/*
 	*	Creates a present info.
 	*/
-	void CreatePresentInfo(VULKAN_PRESENT_INFO_TYPE &presentInfo, const VulkanSemaphore &renderFinishedSemaphore) const CATALYST_NOEXCEPT;
+	void CreatePresentInfo(VULKAN_PRESENT_INFO_TYPE &presentInfo, const VulkanSemaphore *const CATALYST_RESTRICT renderFinishedSemaphore) const CATALYST_NOEXCEPT;
 
 };

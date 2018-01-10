@@ -92,22 +92,22 @@ void VulkanSwapchain::Release() CATALYST_NOEXCEPT
 /*
 *	Updates the next image index in the swap chain.
 */
-void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore &imageAvailableSemaphore) CATALYST_NOEXCEPT
+void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const CATALYST_RESTRICT imageAvailableSemaphore) CATALYST_NOEXCEPT
 {
-	vkAcquireNextImageKHR(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanSwapChain, std::numeric_limits<uint64>::max(), imageAvailableSemaphore.Get(), VK_NULL_HANDLE, &currentImageIndex);
+	vkAcquireNextImageKHR(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanSwapChain, std::numeric_limits<uint64>::max(), imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &currentImageIndex);
 }
 
 /*
 *	Presents the current image to the screen.
 */
-void VulkanSwapchain::Present(const VulkanSemaphore &renderFinishedSemaphore, const VulkanQueue &presentQueue) CATALYST_NOEXCEPT
+void VulkanSwapchain::Present(const VulkanSemaphore *const CATALYST_RESTRICT renderFinishedSemaphore) CATALYST_NOEXCEPT
 {
 	//Create the present info.
 	VkPresentInfoKHR presentInfo;
 	CreatePresentInfo(presentInfo, renderFinishedSemaphore);
 
 	//Present on the present queue!
-	vkQueuePresentKHR(presentQueue.Get(), &presentInfo);
+	vkQueuePresentKHR(VulkanInterface::Instance->GetPresentVulkanQueue().Get(), &presentInfo);
 }
 
 /*
@@ -184,12 +184,12 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapCh
 /*
 *	Creates a present info.
 */
-void VulkanSwapchain::CreatePresentInfo(VkPresentInfoKHR &presentInfo, const VulkanSemaphore &renderFinishedSemaphore) const CATALYST_NOEXCEPT
+void VulkanSwapchain::CreatePresentInfo(VULKAN_PRESENT_INFO_TYPE &presentInfo, const VulkanSemaphore *const CATALYST_RESTRICT renderFinishedSemaphore) const CATALYST_NOEXCEPT
 {
 	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	presentInfo.pNext = nullptr;
 	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = &renderFinishedSemaphore.Get();
+	presentInfo.pWaitSemaphores = reinterpret_cast<const VkSemaphore *CATALYST_RESTRICT>(renderFinishedSemaphore);
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = &vulkanSwapChain;
 	presentInfo.pImageIndices = &currentImageIndex;

@@ -29,6 +29,7 @@
 	#include <Xinput.h>
 
 	//Undefine annoying Windows defines. Fuck Windows. I hate everything.
+	#undef CreateSemaphore
 	#undef max
 	#undef min
 #endif

@@ -48,30 +48,24 @@ void VulkanInterface::Initialize(Window &window) CATALYST_NOEXCEPT
 
 	//Initialize the Vulkan descriptor pool.
 	vulkanDescriptorPool.Initialize();
-
-	//Initialize all Vulkan semaphores.
-	for (size_t i = 0; i < Semaphore::NumberOfSemaphores; ++i)
-	{
-		vulkanSemaphores[i].Initialize();
-	}
 }
 
 /*
 *	Pre-updates this Vulkan interface.
 */
-void VulkanInterface::PreUpdate() CATALYST_NOEXCEPT
+void VulkanInterface::PreUpdate(const VulkanSemaphore *const CATALYST_RESTRICT imageAvailableSemaphore) CATALYST_NOEXCEPT
 {
 	//Update the next image index in the Vulkan swap chain.
-	vulkanSwapchain.UpdateNextImageIndex(vulkanSemaphores[Semaphore::ImageAvailableSemaphore]);
+	vulkanSwapchain.UpdateNextImageIndex(imageAvailableSemaphore);
 }
 
 /*
 *	Post-pdates this Vulkan interface.
 */
-void VulkanInterface::PostUpdate() CATALYST_NOEXCEPT
+void VulkanInterface::PostUpdate(const VulkanSemaphore *const CATALYST_RESTRICT renderFinishedSemaphore) CATALYST_NOEXCEPT
 {
 	//Present the final image!
-	vulkanSwapchain.Present(vulkanSemaphores[Semaphore::RenderFinishedSemaphore], vulkanLogicalDevice.GetPresentQueue());
+	vulkanSwapchain.Present(renderFinishedSemaphore);
 }
 
 /*
@@ -112,6 +106,13 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 		delete vulkanPipeline;
 	}
 
+	//Release all Vulkan semaphores.
+	for (VulkanSemaphore * CATALYST_RESTRICT vulkanSemaphore : vulkanSemaphores)
+	{
+		vulkanSemaphore->Release();
+		delete vulkanSemaphore;
+	}
+
 	//Release all Vulkan shader modules.
 	for (VulkanShaderModule * CATALYST_RESTRICT vulkanShaderModule : vulkanShaderModules)
 	{
@@ -138,12 +139,6 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 	{
 		vulkanVertexBuffer->Release();
 		delete vulkanVertexBuffer;
-	}
-
-	//Release all Vulkan semaphores.
-	for (size_t i = 0; i < Semaphore::NumberOfSemaphores; ++i)
-	{
-		vulkanSemaphores[i].Release();
 	}
 
 	//Release the Vulkan descriptor pool.
@@ -219,6 +214,20 @@ CATALYST_RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const Vulkan
 	vulkanPipelines.Emplace(newPipeline);
 
 	return newPipeline;
+}
+
+/*
+*	Creates and returns a semaphore.
+*/
+CATALYST_RESTRICTED VulkanSemaphore* VulkanInterface::CreateSemaphore() CATALYST_NOEXCEPT
+{
+	VulkanSemaphore *CATALYST_RESTRICT newSemaphore = new VulkanSemaphore;
+
+	newSemaphore->Initialize();
+
+	vulkanSemaphores.Emplace(newSemaphore);
+
+	return newSemaphore;
 }
 
 /*
