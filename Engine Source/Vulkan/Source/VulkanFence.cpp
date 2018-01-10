@@ -76,5 +76,5 @@ void VulkanFence::Reset() CATALYST_NOEXCEPT
 void VulkanFence::WaitFor() const CATALYST_NOEXCEPT
 {
 	//Wait for this Vulkan fence.
-	VULKAN_ERROR_CHECK(vkWaitForFences(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), 1, &vulkanFence, VK_TRUE, UINT64_MAXIMUM));
+	while (vkWaitForFences(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), 1, &vulkanFence, VK_TRUE, 0) == VK_TIMEOUT);
 }

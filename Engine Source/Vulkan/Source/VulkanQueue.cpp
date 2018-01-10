@@ -43,19 +43,6 @@ void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const D
 }
 
 /*
-*	Submits multiple command buffers to this Vulkan queue.
-*/
-void VulkanQueue::Submit(const DynamicArray<VulkanCommandBuffer> &vulkanCommandBuffers, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const DynamicArray<VkSemaphore> &signalSemaphores) const CATALYST_NOEXCEPT
-{
-	//Create the submit info.
-	VkSubmitInfo submitInfo;
-	CreateSubmitInfo(submitInfo, waitSemaphores, waitStages, vulkanCommandBuffers, signalSemaphores);
-
-	//Submit the command buffer!
-	vkQueueSubmit(vulkanQueue, 1, &submitInfo, VK_NULL_HANDLE);
-}
-
-/*
 *	Waits idle for this Vulkan queue.
 */
 void VulkanQueue::WaitIdle() const CATALYST_NOEXCEPT

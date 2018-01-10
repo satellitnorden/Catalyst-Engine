@@ -40,11 +40,6 @@ public:
 	void Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &waitSemaphores = DynamicArray<VkSemaphore>(), const VkPipelineStageFlags &waitStages = 0, const DynamicArray<VkSemaphore> &signalSemaphores = DynamicArray<VkSemaphore>(), const VkFence fence = VK_NULL_HANDLE) const CATALYST_NOEXCEPT;
 
 	/*
-	*	Submits multiple command buffers to this Vulkan queue.
-	*/
-	void Submit(const DynamicArray<VulkanCommandBuffer> &vulkanCommandBuffers, const DynamicArray<VkSemaphore> &waitSemaphores = DynamicArray<VkSemaphore>(), const VkPipelineStageFlags &waitStages = 0, const DynamicArray<VkSemaphore> &signalSemaphores = DynamicArray<VkSemaphore>()) const CATALYST_NOEXCEPT;
-
-	/*
 	*	Waits idle for this Vulkan queue.
 	*/
 	void WaitIdle() const CATALYST_NOEXCEPT;

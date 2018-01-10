@@ -35,77 +35,60 @@ WorldArchitect::~WorldArchitect() CATALYST_NOEXCEPT
 */
 void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 {
-	PhysicalEntity::physicalEntities.Reserve(2'750);
+	PhysicalEntity::physicalEntities.Reserve(1'250);
 
-	QuestLog floorQuest = QuestSystem::Instance->CarryOutQuest([&]()
+	VulkanTexture *floorAlbedoTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
+	VulkanTexture *floorNormalMapTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
+	VulkanTexture *floorRoughnessTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorRoughness.png");
+	VulkanTexture *floorAmbientOcclusionTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorAmbientOcclusion.png");
+
+	const PhysicalModel floorModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Floor.fbx", floorAlbedoTexture, floorNormalMapTexture, floorRoughnessTexture, nullptr, floorAmbientOcclusionTexture);
+
+	PhysicalEntity *floor = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
+	floor->Initialize(floorModel);
+	floor->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
+	floor->Scale(Vector3(1'000.0f, 1'000.0f, 1'000.0f));
+
+	VulkanTexture *gunAlbedoTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunAlbedo.png");
+	VulkanTexture *gunNormalMapTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunNormal.png");
+	VulkanTexture *gunRoughnessTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunRoughness.png");
+	VulkanTexture *gunMetallicTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunMetallic.png");
+	VulkanTexture *gunAmbientOcclusionTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunAmbientOcclusion.png");
+
+	const PhysicalModel gunModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Gun.fbx", gunAlbedoTexture, gunNormalMapTexture, gunRoughnessTexture, gunMetallicTexture, gunAmbientOcclusionTexture);
+
+	PhysicalEntity *gun = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
+	gun->Initialize(gunModel);
+	gun->Move(Vector3(0.0f, 10.0f, 0.0f));
+	gun->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
+	gun->Scale(Vector3(0.2f, 0.2f, 0.2f));
+
+	VulkanTexture *stoneAlbedoTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "StoneAlbedo.png");
+	VulkanTexture *stoneNormalMapTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "StoneNormalMap.png");
+	VulkanTexture *stoneRoughnessTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "StoneRoughness.png");
+
+	//Create the stone model.
+	const PhysicalModel stoneModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Stone.obj", stoneAlbedoTexture, stoneNormalMapTexture, stoneRoughnessTexture, nullptr, nullptr);
+
+	//Create the stones.
+	for (size_t i = 0; i < 1'000; ++i)
 	{
-		VulkanTexture *floorAlbedoTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
-		VulkanTexture *floorNormalMapTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
-		VulkanTexture *floorRoughnessTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorRoughness.png");
-		VulkanTexture *floorAmbientOcclusionTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorAmbientOcclusion.png");
+		PhysicalEntity *stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
+		stone->Initialize(stoneModel);
+		stone->Move(Vector3(GameMath::RandomFloatInRange(-250.0f, 250.0f), 0.0f, GameMath::RandomFloatInRange(-250.0f, 250.0f)));
+		stone->Rotate(Vector3(0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f), 0.0f));
+		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
+		stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
+	}
 
-		const PhysicalModel floorModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Floor.fbx", floorAlbedoTexture, floorNormalMapTexture, floorRoughnessTexture, nullptr, floorAmbientOcclusionTexture);
+	Vector3 pointLightPositions[5]{ Vector3(0.0f, 20.0f, 0.0f), Vector3(50.0f, 10.0f, 50.0f), Vector3(50.0f, 10.0f, -50.0f), Vector3(-50.0f, 10.0f, 50.0f), Vector3(-50.0f, 10.0f, -50.0f) };
 
-		PhysicalEntity *floor = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
-		floor->Initialize(floorModel);
-		floor->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
-		floor->Scale(Vector3(1'000.0f, 1'000.0f, 1'000.0f));
-	});
-
-	QuestLog gunQuest = QuestSystem::Instance->CarryOutQuest([&]()
+	for (size_t i = 0; i < 5; ++i)
 	{
-		VulkanTexture *gunAlbedoTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunAlbedo.png");
-		VulkanTexture *gunNormalMapTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunNormal.png");
-		VulkanTexture *gunRoughnessTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunRoughness.png");
-		VulkanTexture *gunMetallicTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunMetallic.png");
-		VulkanTexture *gunAmbientOcclusionTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunAmbientOcclusion.png");
-
-		const PhysicalModel gunModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Gun.fbx", gunAlbedoTexture, gunNormalMapTexture, gunRoughnessTexture, gunMetallicTexture, gunAmbientOcclusionTexture);
-
-		PhysicalEntity *gun = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
-		gun->Initialize(gunModel);
-		gun->Move(Vector3(0.0f, 10.0f, 0.0f));
-		gun->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
-		gun->Scale(Vector3(0.2f, 0.2f, 0.2f));
-	});
-
-	QuestLog stoneQuest = QuestSystem::Instance->CarryOutQuest([&]()
-	{
-		VulkanTexture *stoneAlbedoTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "StoneAlbedo.png");
-		VulkanTexture *stoneNormalMapTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "StoneNormalMap.png");
-		VulkanTexture *stoneRoughnessTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "StoneRoughness.png");
-
-		//Create the stone model.
-		const PhysicalModel stoneModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Stone.obj", stoneAlbedoTexture, stoneNormalMapTexture, stoneRoughnessTexture, nullptr, nullptr);
-
-		//Create the stones.
-		for (size_t i = 0; i < 2'500; ++i)
-		{
-			PhysicalEntity *stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
-			stone->Initialize(stoneModel);
-			stone->Move(Vector3(GameMath::RandomFloatInRange(-250.0f, 250.0f), 0.0f, GameMath::RandomFloatInRange(-250.0f, 250.0f)));
-			stone->Rotate(Vector3(0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f), 0.0f));
-			const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
-			stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
-		}
-	});
-
-	QuestLog lightsQuest = QuestSystem::Instance->CarryOutQuest([&]()
-	{
-		Vector3 pointLightPositions[5]{ Vector3(0.0f, 20.0f, 0.0f), Vector3(50.0f, 10.0f, 50.0f), Vector3(50.0f, 10.0f, -50.0f), Vector3(-50.0f, 10.0f, 50.0f), Vector3(-50.0f, 10.0f, -50.0f) };
-
-		for (size_t i = 0; i < 5; ++i)
-		{
-			PointLightEntity *light = EntitySystem::Instance->CreateEntity<PointLightEntity>();
-			light->SetAttenuationDistance(75.0f);
-			light->SetLightColor(Vector3(GameMath::RandomFloatInRange(0.5f, 1.0f), GameMath::RandomFloatInRange(0.5f, 1.0f), GameMath::RandomFloatInRange(0.5f, 1.0f)));
-			light->Move(pointLightPositions[i]);
-			light->SetIntensity(2.5f);
-		}
-	});
-
-	floorQuest.WaitForCompletion();
-	gunQuest.WaitForCompletion();
-	stoneQuest.WaitForCompletion();
-	lightsQuest.WaitForCompletion();
+		PointLightEntity *light = EntitySystem::Instance->CreateEntity<PointLightEntity>();
+		light->SetAttenuationDistance(75.0f);
+		light->SetLightColor(Vector3(GameMath::RandomFloatInRange(0.5f, 1.0f), GameMath::RandomFloatInRange(0.5f, 1.0f), GameMath::RandomFloatInRange(0.5f, 1.0f)));
+		light->Move(pointLightPositions[i]);
+		light->SetIntensity(2.5f);
+	}
 }

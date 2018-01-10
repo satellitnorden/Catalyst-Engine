@@ -53,17 +53,11 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 
 	//Resize the number of command buffers to be equal to the amount of swapchain images.
 	commandBuffers.Resize(VulkanInterface::Instance->GetVulkanSwapchain().GetSwapChainImages().Size());
-	fences.Resize(VulkanInterface::Instance->GetVulkanSwapchain().GetSwapChainImages().Size());
 
 	//Allocate all command buffers.
 	for (auto &commandBuffer : commandBuffers)
 	{
 		VulkanInterface::Instance->GetGraphicsVulkanCommandPool().AllocateVulkanCommandBuffer(commandBuffer);
-	}
-
-	for (VulkanFence * CATALYST_RESTRICT &fence : fences)
-	{
-		fence = VulkanInterface::Instance->CreateFence(VK_FENCE_CREATE_SIGNALED_BIT);
 	}
 
 	//Initialize all shader modules.
@@ -332,12 +326,11 @@ void GraphicsSystem::CalculateProjectionMatrix() CATALYST_NOEXCEPT
 */
 void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 {
+	//Wait for the graphics queue to finish.
+	VulkanInterface::Instance->GetGraphicsVulkanQueue().WaitIdle();
+
 	//Set the current command buffer.
 	currentCommandBuffer < (commandBuffers.Size() - 1) ? ++currentCommandBuffer : currentCommandBuffer = 0;
-
-	//Wait for the current fence to finish and reset it.
-	fences[currentCommandBuffer]->WaitFor();
-	fences[currentCommandBuffer]->Reset();
 
 	//Set up the current command buffer.
 	commandBuffers[currentCommandBuffer].Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -451,5 +444,5 @@ void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
 	commandBuffers[currentCommandBuffer].End();
 
 	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsVulkanQueue().Submit(commandBuffers[currentCommandBuffer], waitSemaphores, waitStages, signalSemaphores, fences[currentCommandBuffer]->Get());
+	VulkanInterface::Instance->GetGraphicsVulkanQueue().Submit(commandBuffers[currentCommandBuffer], waitSemaphores, waitStages, signalSemaphores);
 }
