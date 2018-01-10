@@ -1,3 +1,8 @@
 #Ignore everything in these folders.
 Project/.vs/*
 Project/Catalyst Engine/x64/*
+Project/x64/*
+
+#But not these!
+!Project/x64/Debug/assimp.dll
+!Project/x64/Release/assimp.dll
