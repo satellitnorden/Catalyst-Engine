@@ -27,17 +27,15 @@ int main()
 void Function1()
 {
 	DynamicString myString = "Hjalmar satt på en sten och tittade mot en stuga.";
-	myString += " Jajuste! Han runkade också.";
-	myString += " Plus att han faktiskt kom lite senare.";
-	myString += " Men gud vad jag är äcklig";
+	myString = "Hjalmar satt faktiskt inte alls på en sten, nu när jag tänker efter.";
+	volatile const char *pointer = myString.CString();
 }
 
 void Function2()
 {
 	std::string myString = "Hjalmar satt på en sten och tittade mot en stuga.";
-	myString += "Jajuste! Han runkade också.";
-	myString += " Plus att han faktiskt kom lite senare.";
-	myString += " Men gud vad jag är äcklig";
+	myString = "Hjalmar satt faktiskt inte alls på en sten, nu när jag tänker efter.";
+	volatile const char *pointer = myString.c_str();
 }
 
 int main()
