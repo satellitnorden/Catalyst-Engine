@@ -23,7 +23,7 @@ VulkanLogicalDevice::~VulkanLogicalDevice() CATALYST_NOEXCEPT
 void VulkanLogicalDevice::Initialize(const VulkanPhysicalDevice &vulkanPhysicalDevice) CATALYST_NOEXCEPT
 {
 	//Create the device queue create info.
-	const float queuePriorities = 1.0f;
+	static const float queuePriorities = 1.0f;
 
 	DynamicArray<VkDeviceQueueCreateInfo> deviceQueueCreateInfos;
 	CreateDeviceQueueCreateInfos(deviceQueueCreateInfos, vulkanPhysicalDevice, &queuePriorities);
