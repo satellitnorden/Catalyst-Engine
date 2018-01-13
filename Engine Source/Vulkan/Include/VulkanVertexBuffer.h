@@ -42,10 +42,10 @@ public:
 private:
 
 	//The underlying Vulkan buffer.
-	VkBuffer vulkanBuffer{ nullptr };
+	VkBuffer vulkanBuffer;
 
 	//The Vulkan device memory.
-	VkDeviceMemory vulkanDeviceMemory{ nullptr };
+	VkDeviceMemory vulkanDeviceMemory;
 
 	/*
 	*	Creates a buffer create info.

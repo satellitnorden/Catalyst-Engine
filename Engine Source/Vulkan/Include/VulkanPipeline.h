@@ -64,16 +64,16 @@ public:
 private:
 
 	//The underlying Vulkan pipeline.
-	VkPipeline vulkanPipeline{ nullptr };
+	VkPipeline vulkanPipeline;
 
 	//The underlying Vulkan pipeline layout.
-	VkPipelineLayout vulkanPipelineLayout{ nullptr };
+	VkPipelineLayout vulkanPipelineLayout;
 
 	//The Vulkan render pass.
-	VulkanRenderPass vulkanRenderPass{ };
+	VulkanRenderPass vulkanRenderPass;
 
 	//The Vulkan descriptor set layout.
-	VulkanDescriptorSetLayout vulkanDescriptorSetLayout{ };
+	VulkanDescriptorSetLayout vulkanDescriptorSetLayout;
 
 	/*
 	*	Creates a vertex pipeline shader stage create info.

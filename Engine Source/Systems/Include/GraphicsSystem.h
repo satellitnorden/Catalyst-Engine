@@ -125,19 +125,19 @@ private:
 	};
 
 	//The main window.
-	Window mainWindow{ };
+	Window mainWindow;
 
 	//The active camera.
-	CameraEntity *CATALYST_RESTRICT activeCamera{ nullptr };
+	CameraEntity *CATALYST_RESTRICT activeCamera;
 
 	//The current projection matrix.
-	Matrix4 projectionMatrix{ };
+	Matrix4 projectionMatrix;
 
 	//The current view matrix.
-	MultithreadedResource<Matrix4> viewMatrix{ };
+	MultithreadedResource<Matrix4> viewMatrix;
 
 	//The dynamic uniform data.
-	DynamicUniformData dynamicUniformData{ };
+	DynamicUniformData dynamicUniformData;
 
 	//Container for all pipelines.
 	VulkanPipeline *CATALYST_RESTRICT pipelines[Pipeline::NumberOfPipelines];
@@ -155,7 +155,7 @@ private:
 	VulkanTexture *CATALYST_RESTRICT defaultTextures[DefaultTexture::NumberOfDefaultTextures];
 
 	//Container for all command buffers.
-	DynamicArray<VulkanCommandBuffer> commandBuffers{ };
+	DynamicArray<VulkanCommandBuffer> commandBuffers;
 
 	//The current command buffer.
 	size_t currentCommandBuffer{ 0 };

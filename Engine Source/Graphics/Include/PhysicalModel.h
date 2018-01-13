@@ -88,18 +88,18 @@ public:
 private:
 
 	//The extent of this physical model.
-	std::atomic<float> extent{ 0.0f };
+	std::atomic<float> extent;
 
 	//The vertex buffer.
-	VulkanVertexBuffer *CATALYST_RESTRICT vertexBuffer{ nullptr };
+	VulkanVertexBuffer *CATALYST_RESTRICT vertexBuffer;
 
 	//The index buffer.
-	VulkanIndexBuffer *CATALYST_RESTRICT indexBuffer{ nullptr };
+	VulkanIndexBuffer *CATALYST_RESTRICT indexBuffer;
 
 	//The material.
-	PhysicalMaterial material{ };
+	PhysicalMaterial material;
 
 	//The number of indices that this physical model has.
-	uint32 indexCount{ 0 };
+	uint32 indexCount;
 
 };

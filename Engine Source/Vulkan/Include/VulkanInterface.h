@@ -176,54 +176,54 @@ public:
 private:
 
 	//The Vulkan instance.
-	VulkanInstance vulkanInstance{ };
+	VulkanInstance vulkanInstance;
 
 	//The Vulkan surface.
-	VulkanSurface vulkanSurface{ };
+	VulkanSurface vulkanSurface;
 
 	//The Vulkan physical device.
-	VulkanPhysicalDevice vulkanPhysicalDevice{ };
+	VulkanPhysicalDevice vulkanPhysicalDevice;
 
 	//The Vulkan logical device.
-	VulkanLogicalDevice vulkanLogicalDevice{ };
+	VulkanLogicalDevice vulkanLogicalDevice;
 
 	//The Vulkan swap chain.
-	VulkanSwapchain vulkanSwapchain{ };
+	VulkanSwapchain vulkanSwapchain;
 
 	//The graphics Vulkan command pool.
-	VulkanCommandPool graphicsVulkanCommandPool{ };
+	VulkanCommandPool graphicsVulkanCommandPool;
 
 	//The transfer Vulkan command pool.
-	VulkanCommandPool transferVulkanCommandPool{ };
+	VulkanCommandPool transferVulkanCommandPool;
 
 	//The Vulkan descriptor pool.
-	VulkanDescriptorPool vulkanDescriptorPool{ };
+	VulkanDescriptorPool vulkanDescriptorPool;
 
 	//Container for all Vulkan depth buffers.
-	DynamicArray<VulkanDepthBuffer *CATALYST_RESTRICT> vulkanDepthBuffers{ };
+	DynamicArray<VulkanDepthBuffer *CATALYST_RESTRICT> vulkanDepthBuffers;
 
 	//Container for all Vulkan fences.
-	DynamicArray<VulkanFence *CATALYST_RESTRICT> vulkanFences{ };
+	DynamicArray<VulkanFence *CATALYST_RESTRICT> vulkanFences;
 
 	//Container for all Vulkan index buffers.
-	DynamicArray<VulkanIndexBuffer *CATALYST_RESTRICT> vulkanIndexBuffers{ };
+	DynamicArray<VulkanIndexBuffer *CATALYST_RESTRICT> vulkanIndexBuffers;
 
 	//Container for all Vulkan pipelines.
-	DynamicArray<VulkanPipeline *CATALYST_RESTRICT> vulkanPipelines{ };
+	DynamicArray<VulkanPipeline *CATALYST_RESTRICT> vulkanPipelines;
 
 	//Container for all Vulkan semaphores.
-	DynamicArray<VulkanSemaphore *CATALYST_RESTRICT> vulkanSemaphores{ };
+	DynamicArray<VulkanSemaphore *CATALYST_RESTRICT> vulkanSemaphores;
 
 	//Container for all Vulkan shader modules.
-	DynamicArray<VulkanShaderModule *CATALYST_RESTRICT> vulkanShaderModules{ };
+	DynamicArray<VulkanShaderModule *CATALYST_RESTRICT> vulkanShaderModules;
 
 	//Container for all Vulkan textures.
-	DynamicArray<VulkanTexture *CATALYST_RESTRICT> vulkanTextures{ };
+	DynamicArray<VulkanTexture *CATALYST_RESTRICT> vulkanTextures;
 
 	//Container for all Vulkan uniform buffers.
-	DynamicArray<VulkanUniformBuffer *CATALYST_RESTRICT> vulkanUniformBuffers{ };
+	DynamicArray<VulkanUniformBuffer *CATALYST_RESTRICT> vulkanUniformBuffers;
 
 	//Container for all Vulkan vertex buffers.
-	DynamicArray<VulkanVertexBuffer *CATALYST_RESTRICT> vulkanVertexBuffers{ };
+	DynamicArray<VulkanVertexBuffer *CATALYST_RESTRICT> vulkanVertexBuffers;
 
 };

@@ -6,6 +6,9 @@
 //Entity.
 #include <Entity.h>
 
+//Physics.
+#include <PhysicalConstants.h>
+
 class CameraEntity : public Entity
 {
 
@@ -42,12 +45,12 @@ public:
 private:
 
 	//Defines the near plane of the frustum.
-	float nearPlane;
+	float nearPlane{ 0.1f };
 
 	//Defines the far plane of the frustum.
-	float farPlane;
+	float farPlane{ PHYSICAL_CONSTANT_VIEW_DISTANCE };
 
 	//Defines the field of view of this camera entity.
-	float fieldOfView;
+	float fieldOfView{ 60.0f };
 
 };

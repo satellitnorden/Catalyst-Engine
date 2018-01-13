@@ -47,10 +47,10 @@ public:
 private:
 
 	//The underlying Vulkan shader module.
-	VkShaderModule vulkanShaderModule{ nullptr };
+	VkShaderModule vulkanShaderModule;
 
 	//The stage where this shader module will be used.
-	VkShaderStageFlagBits stage{ VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM };
+	VkShaderStageFlagBits stage;
 
 	/*
 	*	Creates a shader module create info

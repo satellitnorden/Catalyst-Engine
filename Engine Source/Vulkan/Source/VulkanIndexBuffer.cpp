@@ -19,7 +19,7 @@ VulkanIndexBuffer::VulkanIndexBuffer() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-	VulkanIndexBuffer::~VulkanIndexBuffer() CATALYST_NOEXCEPT
+VulkanIndexBuffer::~VulkanIndexBuffer() CATALYST_NOEXCEPT
 {
 
 }

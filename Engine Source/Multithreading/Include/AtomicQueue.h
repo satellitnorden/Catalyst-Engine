@@ -84,10 +84,10 @@ public:
 private:
 
 	//The underlying queue.
-	ValueType *CATALYST_RESTRICT queue{ nullptr };
+	ValueType *CATALYST_RESTRICT queue;
 
 	//The size of the queue.
-	size_t queueSize{ 0 };
+	size_t queueSize;
 
 	//The first index in the queue.
 	std::atomic<size_t> firstIndex{ 0 };

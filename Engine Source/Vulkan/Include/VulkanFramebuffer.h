@@ -43,7 +43,7 @@ public:
 private:
 
 	//The underlying Vulkan framebuffer.
-	VkFramebuffer vulkanFramebuffer{ nullptr };
+	VkFramebuffer vulkanFramebuffer;
 
 	/*
 	*	Creates a framebuffer create info.

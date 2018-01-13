@@ -57,19 +57,19 @@ public:
 private:
 
 	//The underlying Vulkan buffer.
-	VkBuffer vulkanBuffer{ nullptr };
+	VkBuffer vulkanBuffer;
 
 	//The Vulkan device memory.
-	VkDeviceMemory vulkanDeviceMemory{ nullptr };
+	VkDeviceMemory vulkanDeviceMemory;
 
 	//The size of this uniform buffer.
-	VkDeviceSize uniformBufferSize{ 0 };
+	VkDeviceSize uniformBufferSize;
 
 	//The descriptor buffer info for this uniform buffer.
-	VkDescriptorBufferInfo vulkanDescriptorBufferInfo{ };
+	VkDescriptorBufferInfo vulkanDescriptorBufferInfo;
 
 	//The write descriptor set for this uniform buffer.
-	VkWriteDescriptorSet vulkanWriteDescriptorSet{ };
+	VkWriteDescriptorSet vulkanWriteDescriptorSet;
 
 	/*
 	*	Creates the descriptor buffer info.

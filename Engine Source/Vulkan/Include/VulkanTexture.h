@@ -57,22 +57,22 @@ public:
 private:
 
 	//The underlying Vulkan image.
-	VkImage vulkanImage{ nullptr };
+	VkImage vulkanImage;
 
 	//The Vulkan device memory.
-	VkDeviceMemory vulkanDeviceMemory{ nullptr };
+	VkDeviceMemory vulkanDeviceMemory;
 
 	//The Vulkan image view.
-	VkImageView vulkanImageView{ nullptr };
+	VkImageView vulkanImageView;
 
 	//The Vulkan sampler.
-	VkSampler vulkanSampler{ nullptr };
+	VkSampler vulkanSampler;
 
 	//The descriptor image info for this texture.
-	VkDescriptorImageInfo vulkanDescriptorImageInfo{ };
+	VkDescriptorImageInfo vulkanDescriptorImageInfo;
 
 	//The write descriptor set for this texture.
-	VkWriteDescriptorSet vulkanWriteDescriptorSet{ };
+	VkWriteDescriptorSet vulkanWriteDescriptorSet;
 
 	/*
 	*	Creates the descriptor image info.

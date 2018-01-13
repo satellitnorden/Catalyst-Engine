@@ -73,28 +73,28 @@ public:
 private:
 
 	//The underlying Vulkan physical device.
-	VkPhysicalDevice vulkanPhysicalDevice{ nullptr };
+	VkPhysicalDevice vulkanPhysicalDevice;
 
 	//The surface capabilities.
-	VULKAN_SURFACE_CAPABILITIES_TYPE surfaceCapabilities{ };
+	VULKAN_SURFACE_CAPABILITIES_TYPE surfaceCapabilities;
 
 	//The surface format.
-	VULKAN_SURFACE_FORMAT_TYPE surfaceFormat{ };
+	VULKAN_SURFACE_FORMAT_TYPE surfaceFormat;
 
 	//The physical device properties.
-	VkPhysicalDeviceProperties physicalDeviceProperties{ };
+	VkPhysicalDeviceProperties physicalDeviceProperties;
 
 	//The present mode.
-	VULKAN_PRESENT_MODE_TYPE presentMode{ };
+	VULKAN_PRESENT_MODE_TYPE presentMode;
 
 	//The index for the graphics queue family.
-	uint32 graphicsQueueFamilyIndex{ 0 };
+	uint32 graphicsQueueFamilyIndex;
 
 	//The index for the present queue family.
-	uint32 presentQueueFamilyIndex{ 0 };
+	uint32 presentQueueFamilyIndex;
 
 	//The index for the transfer queue family.
-	uint32 transferQueueFamilyIndex{ 0 };
+	uint32 transferQueueFamilyIndex;
 
 	/*
 	*	Given a Vulkan physical device, return if it is suitable for this game.

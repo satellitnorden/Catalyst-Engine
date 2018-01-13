@@ -50,10 +50,10 @@ public:
 private:
 
 	//Container for all device memories for all memory properties.
-	DynamicArray<VkDeviceMemory> deviceMemories[MemoryProperties::NumberOfMemoryProperties]{ };
+	DynamicArray<VkDeviceMemory> deviceMemories[MemoryProperties::NumberOfMemoryProperties];
 
 	//Container for all offsets for all memory properties.
-	uint32 offsets[MemoryProperties::NumberOfMemoryProperties]{ };
+	uint32 offsets[MemoryProperties::NumberOfMemoryProperties];
 
 	/*
 	*	Given a type filter and memory properties, returns the memory index.

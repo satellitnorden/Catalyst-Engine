@@ -43,6 +43,6 @@ public:
 private:
 
 	//The underlying Vulkan surface.
-	VULKAN_SURFACE_TYPE vulkanSurface{ nullptr };
+	VULKAN_SURFACE_TYPE vulkanSurface;
 
 };

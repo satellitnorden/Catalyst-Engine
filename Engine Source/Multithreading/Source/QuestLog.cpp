@@ -2,14 +2,6 @@
 #include <QuestLog.h>
 
 /*
-*	Default constructor.
-*/
-QuestLog::QuestLog() CATALYST_NOEXCEPT
-{
-
-}
-
-/*
 *	Default destructor.
 */
 QuestLog::~QuestLog() CATALYST_NOEXCEPT

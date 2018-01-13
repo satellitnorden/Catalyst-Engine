@@ -10,6 +10,8 @@ public:
 	*	Default constructor.
 	*/
 	Optional() CATALYST_NOEXCEPT
+		:
+		object(nullptr)
 	{
 
 	}
@@ -93,6 +95,6 @@ public:
 private:
 
 	//The underlying object.
-	const ObjectType *CATALYST_RESTRICT const object{ nullptr };
+	const ObjectType *CATALYST_RESTRICT const object;
 
 };

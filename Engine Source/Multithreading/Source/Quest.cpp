@@ -6,8 +6,7 @@
 */
 Quest::Quest(const std::function<void()> &newFunction) CATALYST_NOEXCEPT
 	:
-	function(newFunction),
-	completionState(QuestCompletionState::Available)
+	function(newFunction)
 {
 
 }
@@ -17,8 +16,7 @@ Quest::Quest(const std::function<void()> &newFunction) CATALYST_NOEXCEPT
 */
 Quest::Quest(const Quest &otherQuest) CATALYST_NOEXCEPT
 	:
-	function(otherQuest.GetFunction()),
-	completionState(QuestCompletionState::Available)
+	function(otherQuest.GetFunction())
 {
 
 }

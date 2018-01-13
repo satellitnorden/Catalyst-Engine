@@ -44,16 +44,16 @@ public:
 private:
 
 	//The Vulkan image.
-	VkImage vulkanImage{ nullptr };
+	VkImage vulkanImage;
 
 	//The Vulkan device memory.
-	VkDeviceMemory vulkanDeviceMemory{ nullptr };
+	VkDeviceMemory vulkanDeviceMemory;
 
 	//The Vulkan image view.
-	VkImageView vulkanImageView{ nullptr };
+	VkImageView vulkanImageView;
 
 	//The format of this depth buffer.
-	VkFormat format{ VK_FORMAT_UNDEFINED };
+	VkFormat format;
 
 	/*
 	*	Finds and returns the most desirable format for the depth buffer.

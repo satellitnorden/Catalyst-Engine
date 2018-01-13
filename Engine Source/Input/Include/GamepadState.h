@@ -41,14 +41,14 @@ public:
 	GamepadButtonState xButtonState{ GamepadButtonState::Released };
 	GamepadButtonState yButtonState{ GamepadButtonState::Released };
 
-	float leftTriggerValue{ 0.0f };
-	float rightTriggerValue{ 0.0f };
+	float leftTriggerValue;
+	float rightTriggerValue;
 
-	float leftThumbstickXValue{ 0.0f };
-	float leftThumbstickYValue{ 0.0f };
+	float leftThumbstickXValue;
+	float leftThumbstickYValue;
 
-	float rightThumbstickXValue{ 0.0f };
-	float rightThumbstickYValue{ 0.0f };
+	float rightThumbstickXValue;
+	float rightThumbstickYValue;
 
 	/*
 	*	Default constructor.

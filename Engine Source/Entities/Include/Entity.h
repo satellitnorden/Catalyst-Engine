@@ -138,13 +138,13 @@ protected:
 	Entity *CATALYST_RESTRICT parent{ nullptr };
 
 	//Pointers to this entity's children.
-	DynamicArray<Entity *CATALYST_RESTRICT> children{ };
+	DynamicArray<Entity *CATALYST_RESTRICT> children;
 
 	//The local position of this world entity.
-	MultithreadedResource<Vector3> localPosition{ 0.0f, 0.0f, 0.0f };
+	MultithreadedResource<Vector3> localPosition;
 
 	//The local rotation of this world entity.
-	Vector3 localRotation{ 0.0f, 0.0f, 0.0f };
+	Vector3 localRotation;
 
 	//The local scale of this world entity.
 	Vector3 localScale{ 1.0f, 1.0f, 1.0f };

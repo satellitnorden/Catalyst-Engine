@@ -49,7 +49,7 @@ public:
 private:
 
 	//The underlying Vulkan descriptor pool.
-	VkDescriptorPool vulkanDescriptorPool{ nullptr };
+	VkDescriptorPool vulkanDescriptorPool;
 
 	/*
 	*	Creates a descriptor pool size.

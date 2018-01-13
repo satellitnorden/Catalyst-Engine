@@ -62,10 +62,10 @@ private:
 	std::atomic<bool> shouldTerminate{ false };
 
 	//The delta time.
-	float deltaTime{ 0.0f };
+	float deltaTime;
 
 	//The current time.
-	std::chrono::time_point<std::chrono::steady_clock> currentTime{ };
+	std::chrono::time_point<std::chrono::steady_clock> currentTime;
 
 	//Container of all asynchronous threads.
 	std::thread asynchronousThreads[AsynchronousThread::NumberOfAsynchronousThreads];

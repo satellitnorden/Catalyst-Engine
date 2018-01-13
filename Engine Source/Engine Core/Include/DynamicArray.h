@@ -10,6 +10,10 @@ public:
 	*	Default constructor.
 	*/
 	CATALYST_NOALIAS DynamicArray() CATALYST_NOEXCEPT
+		:
+		array(nullptr),
+		size(0),
+		capacity(0)
 	{
 
 	}
@@ -33,6 +37,8 @@ public:
 	*	Constructor taking the initial capacity as it's argument.
 	*/
 	CATALYST_NOALIAS DynamicArray(const size_t initialCapacity) CATALYST_NOEXCEPT
+		:
+		size(0)
 	{
 		//Reserve the initial capacity.
 		Reserve(initialCapacity);
@@ -302,12 +308,12 @@ public:
 private:
 
 	//Pointer to the current array.
-	ObjectType *CATALYST_RESTRICT array{ nullptr };
+	ObjectType *CATALYST_RESTRICT array;
 
 	//The current size of this dynamic array.
-	size_t size{ 0 };
+	size_t size;
 
 	//The current capacity of this dynamic array.
-	size_t capacity{ 0 };
+	size_t capacity;
 
 };

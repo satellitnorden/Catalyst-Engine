@@ -49,6 +49,6 @@ public:
 private:
 
 	//The underlying pointer.
-	ObjectType *CATALYST_RESTRICT pointer{ nullptr };
+	ObjectType *CATALYST_RESTRICT pointer;
 
 };

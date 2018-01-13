@@ -82,22 +82,22 @@ public:
 private:
 
 	//The underlying Vulkan swap chain.
-	VULKAN_SWAPCHAIN_TYPE vulkanSwapChain{ nullptr };
+	VULKAN_SWAPCHAIN_TYPE vulkanSwapChain;
 
 	//The swap chain images.
-	DynamicArray<VkImage> swapChainImages{ };
+	DynamicArray<VkImage> swapChainImages;
 
 	//The swap chain image views.
-	DynamicArray<VkImageView> swapChainImageViews{ };
+	DynamicArray<VkImageView> swapChainImageViews;
 
 	//The Vulkan depth buffer.
-	VulkanDepthBuffer vulkanDepthBuffer{ };
+	VulkanDepthBuffer vulkanDepthBuffer;
 
 	//The extent of the swap chain.
-	VkExtent2D swapExtent{ 0, 0 };
+	VkExtent2D swapExtent;
 
 	//The current image index.
-	uint32 currentImageIndex{ 0 };
+	uint32 currentImageIndex;
 
 	/*
 	*	Finds the most optimal swap extent.

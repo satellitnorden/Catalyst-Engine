@@ -28,9 +28,9 @@ public:
 	}
 
 	//The device memory associated with this allocation.
-	VkDeviceMemory vulkanDeviceMemory{ nullptr };
+	VkDeviceMemory vulkanDeviceMemory;
 
 	//The offset into the device memory associated with this allocation.
-	uint32 offset{ 0 };
+	uint32 offset;
 
 };

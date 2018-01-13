@@ -54,7 +54,7 @@ public:
 private:
 
 	//The underlying Vulkan fence.
-	VkFence vulkanFence{ nullptr };
+	VkFence vulkanFence;
 
 	/*
 	*	Creates a fence create info.

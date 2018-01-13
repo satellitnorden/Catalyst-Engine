@@ -14,7 +14,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	QuestLog() CATALYST_NOEXCEPT;
+	QuestLog() CATALYST_NOEXCEPT = delete;
 
 	/*
 	*	Default destructor.
@@ -34,6 +34,6 @@ public:
 private:
 
 	//The underlying quest handle.
-	Quest *CATALYST_RESTRICT quest{ nullptr };
+	Quest *CATALYST_RESTRICT quest;
 
 };

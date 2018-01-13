@@ -39,7 +39,7 @@ public:
 private:
 
 	//The underlying Vulkan instance.
-	VkInstance vulkanInstance{ nullptr };
+	VkInstance vulkanInstance;
 
 	/*
 	*	Creates the application info.

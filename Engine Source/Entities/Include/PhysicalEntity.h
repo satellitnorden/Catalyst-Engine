@@ -75,18 +75,18 @@ public:
 private:
 
 	//The model matrix.
-	Matrix4 modelMatrix{ };
+	Matrix4 modelMatrix;
 
 	//The model.
-	PhysicalModel model{ };
+	PhysicalModel model;
 
 	//The uniform buffer.
-	VulkanUniformBuffer *CATALYST_RESTRICT uniformBuffer{ nullptr };
+	VulkanUniformBuffer *CATALYST_RESTRICT uniformBuffer;
 
 	//The descriptor set.
-	VulkanDescriptorSet descriptorSet{ };
+	VulkanDescriptorSet descriptorSet;
 
 	//Denotes whether or not this physical entity is in the view frustum.
-	std::atomic<bool> isInViewFrustum{ true };
+	std::atomic<bool> isInViewFrustum{ false };
 
 };

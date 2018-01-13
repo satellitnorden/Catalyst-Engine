@@ -142,7 +142,7 @@ public:
 private:
 
 	//The underlying C string.
-	char *CATALYST_RESTRICT string{ nullptr };
+	char *CATALYST_RESTRICT string;
 
 	//The length of the string.
 	size_t length;

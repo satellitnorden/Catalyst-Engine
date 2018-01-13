@@ -66,19 +66,19 @@ public:
 private:
 
 	//Denotes the number of adventurers.
-	uint8 numberOfAdventurers{ 0 };
+	uint8 numberOfAdventurers;
 
 	//Container for all threads.
-	DynamicArray<std::thread> threads{ };
+	DynamicArray<std::thread> threads;
 
 	//Container for all adventurers.
-	DynamicArray<Adventurer> adventurers{ };
+	DynamicArray<Adventurer> adventurers;
 
 	//Container for quests that are waiting to be carried out.
-	std::deque<Quest> quests{ };
+	std::deque<Quest> quests;
 
 	//The atomic queue for the quests that are waiting to be carried out.
-	AtomicQueue<Quest *CATALYST_RESTRICT> questsQueue{ };
+	AtomicQueue<Quest *CATALYST_RESTRICT> questsQueue;
 
 };
 

@@ -78,6 +78,6 @@ private:
 	ValueType resource;
 
 	//The atomic lock.
-	mutable std::atomic<bool> lock{ 0 };
+	mutable std::atomic<bool> lock{ false };
 
 };

@@ -93,7 +93,7 @@ public:
 private:
 
 	//The underlying Vulkan command buffer.
-	VkCommandBuffer vulkanCommandBuffer{ nullptr };
+	VkCommandBuffer vulkanCommandBuffer;
 
 	/*
 	*	Creates a command buffer allocate info.

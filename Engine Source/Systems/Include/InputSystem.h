@@ -55,7 +55,7 @@ public:
 private:
 
 	//The current gamepad state.
-	MultithreadedResource<GamepadState> currentGamepadState[4]{ };
+	MultithreadedResource<GamepadState> currentGamepadState[4];
 
 	//Defines whether or not to update gamepad buttons.
 	std::atomic<bool> updateGamepadButtons{ false };

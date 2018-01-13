@@ -47,7 +47,7 @@ public:
 private:
 
 	//The underlying Vulkan queue.
-	VkQueue vulkanQueue{ nullptr };
+	VkQueue vulkanQueue;
 
 	/*
 	*	Creates a submit info for a single command buffer.

@@ -39,7 +39,7 @@ public:
 private:
 
 	//The underlying Vulkan descriptor set layout.
-	VkDescriptorSetLayout vulkanDescriptorSetLayout{ nullptr };
+	VkDescriptorSetLayout vulkanDescriptorSetLayout;
 
 	/*
 	*	Creates a descriptor set layout create info.

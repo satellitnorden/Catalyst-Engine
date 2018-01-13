@@ -42,7 +42,7 @@ public:
 private:
 
 	//The underlying Vulkan semaphore.
-	VkSemaphore vulkanSemaphore{ nullptr };
+	VkSemaphore vulkanSemaphore;
 
 	/*
 	*	Creates a semaphore create info.

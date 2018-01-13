@@ -48,10 +48,10 @@ public:
 private:
 
 	//The underlying Vulkan render pass.
-	VkRenderPass vulkanRenderPass{ nullptr };
+	VkRenderPass vulkanRenderPass;
 
 	//Container for the Vulkan framebuffers for this Vulkan render pass.
-	DynamicArray<VulkanFramebuffer> framebuffers{ };
+	DynamicArray<VulkanFramebuffer> framebuffers;
 
 	/*
 	*	Creates an attachment description.

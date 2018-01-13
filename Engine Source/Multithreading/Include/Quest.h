@@ -54,7 +54,7 @@ public:
 private:
 
 	//The function to execute for this quest.
-	std::function<void()> function{ };
+	std::function<void()> function;
 
 	//Defines the completion status of this quest.
 	std::atomic<QuestCompletionState> completionState{ QuestCompletionState::Available };
