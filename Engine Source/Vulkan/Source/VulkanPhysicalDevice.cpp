@@ -199,12 +199,12 @@ VULKAN_SURFACE_FORMAT_TYPE VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() c
 	//Find the most optimal surface format.
 	if (availableFormats.Size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED)
 	{
-		return { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
+		return { VK_FORMAT_B8G8R8A8_UNORM, VULKAN_COLOR_SPACE_SRGB_NONLINEAR };
 	}
 
 	for (const auto& availableFormat : availableFormats)
 	{
-		if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+		if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace == VULKAN_COLOR_SPACE_SRGB_NONLINEAR)
 		{
 			return availableFormat;
 		}
@@ -230,11 +230,11 @@ VULKAN_PRESENT_MODE_TYPE VulkanPhysicalDevice::GetMostOptimalPresentMode() const
 	//Find the most optimal present mode.
 	for (const auto& availablePresentMode : availablePresentModes)
 	{
-		if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+		if (availablePresentMode == VULKAN_PRESENT_MODE_MAILBOX)
 		{
 			return availablePresentMode;
 		}
 	}
 
-	return VK_PRESENT_MODE_FIFO_KHR;
+	return VULKAN_PRESENT_MODE_FIFO;
 }

@@ -47,5 +47,5 @@ void VulkanSurface::Initialize(const VulkanInstance &vulkanInstance, Window &win
 void VulkanSurface::Release(const VulkanInstance &vulkanInstance) CATALYST_NOEXCEPT
 {
 	//Destroy the Vulkan surface.
-	vkDestroySurfaceKHR(vulkanInstance.Get(), vulkanSurface, nullptr);
+	VULKAN_DESTROY_SURFACE(vulkanInstance.Get(), vulkanSurface, nullptr);
 }
