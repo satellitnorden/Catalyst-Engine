@@ -334,7 +334,7 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 	VulkanInterface::Instance->GetGraphicsVulkanQueue().WaitIdle();
 
 	//Set the current command buffer.
-	currentCommandBuffer < (commandBuffers.Size() - 1) ? ++currentCommandBuffer : currentCommandBuffer = 0;
+	currentCommandBuffer = VulkanInterface::Instance->GetVulkanSwapchain().GetCurrentImageIndex();
 
 	//Set up the current command buffer.
 	commandBuffers[currentCommandBuffer].Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
