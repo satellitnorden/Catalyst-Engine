@@ -43,7 +43,7 @@ void VulkanIndexBuffer::Initialize(const DynamicArray<uint32> &indices) CATALYST
 	void *data;
 
 	vkMapMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingDeviceMemory, 0, indexBufferSize, 0, &data);
-	memcpy(data, indices.Data(), static_cast<size_t>(indexBufferSize));
+	MemoryUtilities::CopyMemory(data, indices.Data(), static_cast<size_t>(indexBufferSize));
 	vkUnmapMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingDeviceMemory);
 
 	//Create the vertex buffer.

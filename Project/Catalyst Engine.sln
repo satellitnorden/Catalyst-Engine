@@ -12,8 +12,8 @@ Global
 		Release|Windows 64-Bit = Release|Windows 64-Bit
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|Windows 64-Bit.ActiveCfg = Final|x64
-		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|Windows 64-Bit.Build.0 = Final|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|Windows 64-Bit.ActiveCfg = Debug|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|Windows 64-Bit.Build.0 = Debug|x64
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Final|Windows 64-Bit.ActiveCfg = Final|x64
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Final|Windows 64-Bit.Build.0 = Final|x64
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|Windows 64-Bit.ActiveCfg = Release|x64

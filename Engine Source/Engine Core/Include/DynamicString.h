@@ -25,10 +25,10 @@ public:
 		length = otherString.Length();
 
 		//Allocate sufficient memory for the underlying string.
-		string = static_cast<char *CATALYST_RESTRICT>(malloc(length + 1));
+		string = static_cast<char *CATALYST_RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
 
 		//Copy the contents of the other string.
-		memcpy(string, otherString.string, length + 1);
+		MemoryUtilities::CopyMemory(string, otherString.string, length + 1);
 	}
 
 	/*
@@ -53,10 +53,10 @@ public:
 		length = strlen(newString);
 
 		//Allocate sufficient memory to host the string.
-		string = static_cast<char *CATALYST_RESTRICT>(malloc(length + 1));
+		string = static_cast<char *CATALYST_RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
 
 		//Copy the string to the memory.
-		memcpy(static_cast<void *CATALYST_RESTRICT>(string), static_cast<const void *const CATALYST_RESTRICT>(newString), length + 1);
+		MemoryUtilities::CopyMemory(static_cast<void *CATALYST_RESTRICT>(string), static_cast<const void *const CATALYST_RESTRICT>(newString), length + 1);
 	}
 
 	/*
@@ -65,7 +65,7 @@ public:
 	~DynamicString() CATALYST_NOEXCEPT
 	{
 		//Free the underlying string.
-		free(string);
+		MemoryUtilities::FreeMemory(string);
 	}
 
 	/*
@@ -77,10 +77,10 @@ public:
 		length = otherString.Length();
 
 		//Reallocate sufficient memory for the underlying string.
-		string = static_cast<char *CATALYST_RESTRICT>(realloc(static_cast<void *CATALYST_RESTRICT>(string), length + 1));
+		string = static_cast<char *CATALYST_RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *CATALYST_RESTRICT>(string), length + 1));
 
 		//Copy the contents of the other string.
-		memcpy(string, otherString.string, length + 1);
+		MemoryUtilities::CopyMemory(string, otherString.string, length + 1);
 	}
 
 	/*
@@ -106,10 +106,10 @@ public:
 		const size_t newLength = length + newStringLength - 1;
 
 		//Allocate sufficient memory to host the concatenated string.
-		string = static_cast<char *CATALYST_RESTRICT>(realloc(static_cast<void *CATALYST_RESTRICT>(string), newLength + 1));
+		string = static_cast<char *CATALYST_RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *CATALYST_RESTRICT>(string), newLength + 1));
 
 		//Copy the new string.
-		memcpy(string + length, newString, newStringLength);
+		MemoryUtilities::CopyMemory(string + length, newString, newStringLength);
 
 		//Update the length of the string.
 		length = newLength;

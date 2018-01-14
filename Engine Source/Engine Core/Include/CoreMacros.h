@@ -1,0 +1,44 @@
+#pragma once
+
+/*
+*	Tracks the average execution time of a given function or section of code and prints the average execution time in non-final builds.
+*/
+#if !defined(CATALYST_FINAL)
+	#define CATALYST_BENCHMARK_AVERAGE(message, function)																											\
+		{																																							\
+			static DynamicArray<long long> durations;																												\
+			static long long averageDuration = 0;																													\
+			auto timeBeforeFunction = std::chrono::high_resolution_clock::now();																					\
+			function;																																				\
+			durations.Emplace(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - timeBeforeFunction).count());		\
+			averageDuration += durations.Back();																													\
+			float duration = static_cast<float>(averageDuration / durations.Size()) / 1'000.0f;																		\
+			PRINT_TO_CONSOLE(message << " - " << duration << " milliseconds.");																						\
+		}
+#else
+	#define CATALYST_BENCHMARK_AVERAGE(message, function) function;
+#endif
+
+/*
+*	Declares a singleton class. Must be done inside the class in the header file.
+*/
+#define DECLARE_SINGLETON(SingletonClass) static UniquePointer<SingletonClass> Instance;
+
+/*
+*	Defines a singleton class. Must be done in the source file.
+*/
+#define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance = new SingletonClass;
+
+/*
+*	Prints a message to the console in non-final builds.
+*/
+#if !defined(CATALYST_FINAL)
+	#define PRINT_TO_CONSOLE(message) std::cout << message << std::endl;
+#else
+	#define PRINT_TO_CONSOLE() #error "This should not be in final!"
+#endif
+
+/*
+*	Yields the current thread.
+*/
+#define THREAD_YIELD() std::this_thread::yield();

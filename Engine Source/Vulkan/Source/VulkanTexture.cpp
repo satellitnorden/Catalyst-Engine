@@ -42,7 +42,7 @@ void VulkanTexture::Initialize(const uint32 width, const uint32 height, const by
 	void *data;
 
 	vkMapMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, &data);
-	memcpy(data, textureData, static_cast<size_t>(imageSize));
+	MemoryUtilities::CopyMemory(data, textureData, static_cast<size_t>(imageSize));
 	vkUnmapMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingBufferDeviceMemory);
 
 	//Create the Vulkan image.

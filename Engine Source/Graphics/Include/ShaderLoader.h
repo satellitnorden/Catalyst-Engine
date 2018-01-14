@@ -26,7 +26,7 @@ namespace ShaderLoader
 
 		size_t fileSize = (size_t)file.tellg();
 		DynamicArray<char> buffer;
-		buffer.Reserve(fileSize);
+		buffer.Resize(fileSize);
 
 		file.seekg(0);
 		file.read(buffer.Data(), fileSize);

@@ -27,7 +27,7 @@ public:
 		Reserve(initializerList.size());
 
 		//Copy all elements of the initializer list to this dynamic array.
-		memcpy(array, initializerList.begin(), sizeof(ObjectType) * capacity);
+		MemoryUtilities::CopyMemory(array, initializerList.begin(), sizeof(ObjectType) * capacity);
 
 		//Set the size equal to the capacity.
 		size = capacity;
@@ -51,7 +51,7 @@ public:
 	{
 		Reserve(otherDynamicArray.capacity);
 
-		memcpy(array, otherDynamicArray.array, capacity);
+		MemoryUtilities::CopyMemory(array, otherDynamicArray.array, capacity);
 
 		size = capacity;
 	}
@@ -68,7 +68,7 @@ public:
 		}
 
 		//Free the memory used by the array.
-		free(static_cast<void*>(array));
+		MemoryUtilities::FreeMemory(static_cast<void*>(array));
 	}
 
 	/*
@@ -266,13 +266,13 @@ public:
 	CATALYST_NOALIAS void Reserve(const size_t newCapacity) CATALYST_NOEXCEPT
 	{
 		//Allocate the new array.
-		ObjectType *CATALYST_RESTRICT newArray{ static_cast<ObjectType*>(malloc(sizeof(ObjectType) * newCapacity)) };
+		ObjectType *CATALYST_RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		memcpy(newArray, array, sizeof(ObjectType) * size);
+		MemoryUtilities::CopyMemory(newArray, array, sizeof(ObjectType) * size);
 
 		//Free the old array.
-		free(static_cast<void*>(array));
+		MemoryUtilities::FreeMemory(static_cast<void*>(array));
 
 		//Update the array and the capacity.
 		array = newArray;
@@ -285,10 +285,10 @@ public:
 	CATALYST_NOALIAS void Resize(const size_t newCapacity) CATALYST_NOEXCEPT
 	{
 		//Allocate the new array.
-		ObjectType *CATALYST_RESTRICT newArray{ static_cast<ObjectType*>(malloc(sizeof(ObjectType) * newCapacity)) };
+		ObjectType *CATALYST_RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		memcpy(newArray, array, sizeof(ObjectType) * (size < newCapacity ? size : newCapacity));
+		MemoryUtilities::CopyMemory(newArray, array, sizeof(ObjectType) * (size < newCapacity ? size : newCapacity));
 
 		//Default construct the remaining objects.
 		for (size_t i = size; i < newCapacity; ++i)
@@ -297,7 +297,7 @@ public:
 		}
 
 		//Free the old array.
-		free(static_cast<void*>(array));
+		MemoryUtilities::FreeMemory(static_cast<void*>(array));
 
 		//Update the array and the capacity.
 		array = newArray;

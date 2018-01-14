@@ -506,5 +506,17 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicString.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\MemoryUtilities.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreDefines.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreTypeAliases.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreMacros.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -82,10 +82,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\BitField.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreDefines.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreMacros.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreTypeAliases.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicArray.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicString.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\EngineCore.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\Map.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\MemoryUtilities.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\Optional.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\ProjectSettings.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\StaticArray.h" />

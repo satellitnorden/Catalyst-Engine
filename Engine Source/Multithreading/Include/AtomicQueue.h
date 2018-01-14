@@ -28,7 +28,7 @@ public:
 	~AtomicQueue() CATALYST_NOEXCEPT
 	{
 		//Deallocate the memory for the queue.
-		free(queue);
+		MemoryUtilities::FreeMemory(queue);
 	}
 
 	/*
@@ -37,7 +37,7 @@ public:
 	void Initialize(const size_t &newQueueSize) CATALYST_NOEXCEPT
 	{
 		//Allocate memory for the queue.
-		queue = static_cast<ValueType*>(malloc(sizeof(ValueType) * newQueueSize));
+		queue = static_cast<ValueType*>(MemoryUtilities::AllocateMemory(sizeof(ValueType) * newQueueSize));
 
 		//Set the queue size.
 		queueSize = newQueueSize;
