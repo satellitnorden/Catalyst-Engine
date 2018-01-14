@@ -32,7 +32,7 @@ public:
 	/*
 	*	Initializes this Vulkan uniform buffer.
 	*/
-	void Initialize(const size_t newUniformBufferSize) CATALYST_NOEXCEPT;
+	void Initialize(const VkDeviceSize newUniformBufferSize) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan uniform buffer.

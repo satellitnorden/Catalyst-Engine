@@ -46,6 +46,7 @@
 
 #endif
 
+#if !defined(CATALYST_FINAL)
 /*
 *	Given a VkResult, return a string.
 */
@@ -102,6 +103,7 @@ static void PrintResultAndBreak(const VkResult result) CATALYST_NOEXCEPT
 		}
 	}
 }
+#endif
 
 /*
 *	Checks the result of a Vulkan function call and takes appropriate measures if it is not VK_SUCCESS in final.

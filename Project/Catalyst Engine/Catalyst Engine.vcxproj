@@ -5,6 +5,14 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Final|Win32">
+      <Configuration>Final</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Final|x64">
+      <Configuration>Final</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -174,6 +182,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -181,6 +196,13 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
@@ -198,10 +220,16 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -211,6 +239,11 @@
     <LibraryPath>..\..\Engine Source\Third Party Libraries\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Entities\Include;..\..\Engine Source\Graphics\Include;..\..\Engine Source\Input\Include;..\..\Engine Source\Math\Include;..\..\Engine Source\Multithreading\Include;..\..\Engine Source\Physics\Include;..\..\Engine Source\Systems\Include;..\..\Engine Source\Third Party Libraries\Include;..\..\Engine Source\Tools\Include;..\..\Engine Source\Vulkan\Include;..\..\Game Source\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Engine Source\Entities\Source;..\..\Engine Source\Graphics\Source;..\..\Engine Source\Input\Source;..\..\Engine Source\Math\Source;..\..\Engine Source\Multithreading\Source;..\..\Engine Source\Physics\Source;..\..\Engine Source\Systems\Source;..\..\Engine Source\Third Party Libraries\Source;..\..\Engine Source\Tools\Source;..\..\Engine Source\Vulkan\Source;..\..\Game Source\Source;$(SourcePath)</SourcePath>
+    <LibraryPath>..\..\Engine Source\Third Party Libraries\Libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">
     <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Entities\Include;..\..\Engine Source\Graphics\Include;..\..\Engine Source\Input\Include;..\..\Engine Source\Math\Include;..\..\Engine Source\Multithreading\Include;..\..\Engine Source\Physics\Include;..\..\Engine Source\Systems\Include;..\..\Engine Source\Third Party Libraries\Include;..\..\Engine Source\Tools\Include;..\..\Engine Source\Vulkan\Include;..\..\Game Source\Include;$(IncludePath)</IncludePath>
     <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Engine Source\Entities\Source;..\..\Engine Source\Graphics\Source;..\..\Engine Source\Input\Source;..\..\Engine Source\Math\Source;..\..\Engine Source\Multithreading\Source;..\..\Engine Source\Physics\Source;..\..\Engine Source\Systems\Source;..\..\Engine Source\Third Party Libraries\Source;..\..\Engine Source\Tools\Source;..\..\Engine Source\Vulkan\Source;..\..\Game Source\Source;$(SourcePath)</SourcePath>
     <LibraryPath>..\..\Engine Source\Third Party Libraries\Libraries;$(LibraryPath)</LibraryPath>
@@ -225,11 +258,19 @@
     <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Engine Source\Entities\Source;..\..\Engine Source\Graphics\Source;..\..\Engine Source\Input\Source;..\..\Engine Source\Math\Source;..\..\Engine Source\Multithreading\Source;..\..\Engine Source\Physics\Source;..\..\Engine Source\Systems\Source;..\..\Engine Source\Third Party Libraries\Source;..\..\Engine Source\Tools\Source;..\..\Engine Source\Vulkan\Source;..\..\Game Source\Source;$(SourcePath)</SourcePath>
     <LibraryPath>..\..\Engine Source\Third Party Libraries\Libraries;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Entities\Include;..\..\Engine Source\Graphics\Include;..\..\Engine Source\Input\Include;..\..\Engine Source\Math\Include;..\..\Engine Source\Multithreading\Include;..\..\Engine Source\Physics\Include;..\..\Engine Source\Systems\Include;..\..\Engine Source\Third Party Libraries\Include;..\..\Engine Source\Tools\Include;..\..\Engine Source\Vulkan\Include;..\..\Game Source\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Engine Source\Entities\Source;..\..\Engine Source\Graphics\Source;..\..\Engine Source\Input\Source;..\..\Engine Source\Math\Source;..\..\Engine Source\Multithreading\Source;..\..\Engine Source\Physics\Source;..\..\Engine Source\Systems\Source;..\..\Engine Source\Third Party Libraries\Source;..\..\Engine Source\Tools\Source;..\..\Engine Source\Vulkan\Source;..\..\Game Source\Source;$(SourcePath)</SourcePath>
+    <LibraryPath>..\..\Engine Source\Third Party Libraries\Libraries;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <AdditionalDependencies>assimp.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -240,6 +281,9 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <AdditionalDependencies>assimp.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -248,10 +292,30 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>assimp.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>CATALYST_FINAL;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -262,10 +326,30 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>assimp.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>CATALYST_FINAL;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

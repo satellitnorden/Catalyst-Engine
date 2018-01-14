@@ -6,3 +6,4 @@ Project/x64/*
 #But not these!
 !Project/x64/Debug/assimp.dll
 !Project/x64/Release/assimp.dll
+!Project/x64/Final/assimp.dll

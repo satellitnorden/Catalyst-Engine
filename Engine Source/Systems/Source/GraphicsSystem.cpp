@@ -359,11 +359,11 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 	dynamicUniformData.viewMatrix = viewMatrix.GetUnsafe();
 	dynamicUniformData.cameraWorldPosition = cameraWorldPosition;
 
-	uint64 counter = 0;
+	size_t counter = 0;
 
 	dynamicUniformData.numberOfPointLights = static_cast<uint64>(PointLightEntity::pointLightEntities.Size());
 
-	for (uint64 i = 0; i < static_cast<uint64>(PointLightEntity::pointLightEntities.Size()); ++i)
+	for (size_t i = 0; i < static_cast<uint64>(PointLightEntity::pointLightEntities.Size()); ++i)
 	{
 		if (!PointLightEntity::pointLightEntities[i]->GetEnabled())
 		{
@@ -384,7 +384,7 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 
 	dynamicUniformData.numberOfSpotLights = static_cast<uint64>(SpotLightEntity::spotLightEntities.Size());
 
-	for (uint64 i = 0; i < static_cast<uint64>(SpotLightEntity::spotLightEntities.Size()); ++i)
+	for (size_t i = 0; i < static_cast<uint64>(SpotLightEntity::spotLightEntities.Size()); ++i)
 	{
 		if (!SpotLightEntity::spotLightEntities[i]->GetEnabled())
 		{

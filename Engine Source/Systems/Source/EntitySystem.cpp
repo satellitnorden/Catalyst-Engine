@@ -45,7 +45,7 @@ void EntitySystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 void EntitySystem::ReleaseSystem() CATALYST_NOEXCEPT
 {
 	//Destroy all remaining entities.
-	for (int64 i = Entity::entities.Size() - 1; i >= 0; --i)
+	for (size_t i = Entity::entities.Size() - 1; i >= 0; --i)
 	{
 		delete Entity::entities[i];
 	}

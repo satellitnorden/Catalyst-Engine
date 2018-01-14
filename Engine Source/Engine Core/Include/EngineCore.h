@@ -3,10 +3,6 @@
 //The project settings.
 #include <ProjectSettings.h>
 
-//Temporary defines.
-#define CATALYST_WINDOWS
-//#define CATALYST_FINAL
-
 //STL.
 #include <algorithm>
 #include <atomic>
@@ -109,9 +105,9 @@ using byte = uint8;
 #define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance = new SingletonClass;
 
 #if !defined(CATALYST_FINAL)
-#define PRINT_TO_CONSOLE(message) std::cout << message << std::endl;
+	#define PRINT_TO_CONSOLE(message) std::cout << message << std::endl;
 #else
-#error "This should not be in final!"
+	#define PRINT_TO_CONSOLE() #error "This should not be in final!"
 #endif
 
 #define THREAD_YIELD() std::this_thread::yield();

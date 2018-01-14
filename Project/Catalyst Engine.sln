@@ -7,20 +7,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Catalyst Engine", "Catalyst
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
+		Debug|Windows 64-Bit = Debug|Windows 64-Bit
+		Final|Windows 64-Bit = Final|Windows 64-Bit
+		Release|Windows 64-Bit = Release|Windows 64-Bit
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|x64.ActiveCfg = Debug|x64
-		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|x64.Build.0 = Debug|x64
-		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|x86.ActiveCfg = Debug|Win32
-		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|x86.Build.0 = Debug|Win32
-		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|x64.ActiveCfg = Release|x64
-		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|x64.Build.0 = Release|x64
-		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|x86.ActiveCfg = Release|Win32
-		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|x86.Build.0 = Release|Win32
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|Windows 64-Bit.ActiveCfg = Final|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|Windows 64-Bit.Build.0 = Final|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Final|Windows 64-Bit.ActiveCfg = Final|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Final|Windows 64-Bit.Build.0 = Final|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|Windows 64-Bit.ActiveCfg = Release|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|Windows 64-Bit.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
