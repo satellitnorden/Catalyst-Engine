@@ -76,57 +76,57 @@ public:
 	/*
 	*	Returns the Vulkan instance.
 	*/
-	CATALYST_FORCE_INLINE const VulkanInstance& GetVulkanInstance() const CATALYST_NOEXCEPT { return vulkanInstance; }
+	const VulkanInstance& GetVulkanInstance() const CATALYST_NOEXCEPT { return vulkanInstance; }
 
 	/*
 	*	Returns the Vulkan surface.
 	*/
-	CATALYST_FORCE_INLINE const VulkanSurface& GetVulkanSurface() const CATALYST_NOEXCEPT { return vulkanSurface; }
+	const VulkanSurface& GetVulkanSurface() const CATALYST_NOEXCEPT { return vulkanSurface; }
 
 	/*
 	*	Returns the Vulkan physical device.
 	*/
-	CATALYST_FORCE_INLINE const VulkanPhysicalDevice& GetVulkanPhysicalDevice() const CATALYST_NOEXCEPT { return vulkanPhysicalDevice; }
+	const VulkanPhysicalDevice& GetVulkanPhysicalDevice() const CATALYST_NOEXCEPT { return vulkanPhysicalDevice; }
 
 	/*
 	*	Returns the Vulkan logical device.
 	*/
-	CATALYST_FORCE_INLINE const VulkanLogicalDevice& GetVulkanLogicalDevice() const CATALYST_NOEXCEPT { return vulkanLogicalDevice; }
+	const VulkanLogicalDevice& GetVulkanLogicalDevice() const CATALYST_NOEXCEPT { return vulkanLogicalDevice; }
 
 	/*
 	*	Returns the Vulkan swapchain.
 	*/
-	CATALYST_FORCE_INLINE const VulkanSwapchain& GetVulkanSwapchain() const CATALYST_NOEXCEPT { return vulkanSwapchain; }
+	const VulkanSwapchain& GetVulkanSwapchain() const CATALYST_NOEXCEPT { return vulkanSwapchain; }
 
 	/*
 	*	Returns the graphics Vulkan queue.
 	*/
-	CATALYST_FORCE_INLINE const VulkanQueue& GetGraphicsVulkanQueue() const CATALYST_NOEXCEPT { return vulkanLogicalDevice.GetGraphicsQueue(); }
+	const VulkanQueue& GetGraphicsVulkanQueue() const CATALYST_NOEXCEPT { return vulkanLogicalDevice.GetGraphicsQueue(); }
 
 	/*
 	*	Returns the present Vulkan queue.
 	*/
-	CATALYST_FORCE_INLINE const VulkanQueue& GetPresentVulkanQueue() const CATALYST_NOEXCEPT { return vulkanLogicalDevice.GetPresentQueue(); }
+	const VulkanQueue& GetPresentVulkanQueue() const CATALYST_NOEXCEPT { return vulkanLogicalDevice.GetPresentQueue(); }
 
 	/*
 	*	Returns the transfer Vulkan queue.
 	*/
-	CATALYST_FORCE_INLINE const VulkanQueue& GetTransferVulkanQueue() const CATALYST_NOEXCEPT { return vulkanLogicalDevice.GetTransferQueue(); }
+	const VulkanQueue& GetTransferVulkanQueue() const CATALYST_NOEXCEPT { return vulkanLogicalDevice.GetTransferQueue(); }
 
 	/*
 	*	Returns the graphics Vulkan command pool.
 	*/
-	CATALYST_FORCE_INLINE const VulkanCommandPool& GetGraphicsVulkanCommandPool() const CATALYST_NOEXCEPT { return graphicsVulkanCommandPool; }
+	const VulkanCommandPool& GetGraphicsVulkanCommandPool() const CATALYST_NOEXCEPT { return graphicsVulkanCommandPool; }
 
 	/*
 	*	Returns the transfer Vulkan command pool.
 	*/
-	CATALYST_FORCE_INLINE const VulkanCommandPool& GetTransferVulkanCommandPool() const CATALYST_NOEXCEPT { return transferVulkanCommandPool; }
+	const VulkanCommandPool& GetTransferVulkanCommandPool() const CATALYST_NOEXCEPT { return transferVulkanCommandPool; }
 
 	/*
 	*	Returns the Vulkan descriptor pool.
 	*/
-	CATALYST_FORCE_INLINE const VulkanDescriptorPool& GetVulkanDescriptorPool() const CATALYST_NOEXCEPT { return vulkanDescriptorPool; }
+	const VulkanDescriptorPool& GetVulkanDescriptorPool() const CATALYST_NOEXCEPT { return vulkanDescriptorPool; }
 
 	/*
 	*	Creates and returns a depth buffer.

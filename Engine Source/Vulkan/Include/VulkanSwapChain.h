@@ -32,7 +32,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan swap chain.
 	*/
-	CATALYST_FORCE_INLINE const VULKAN_SWAPCHAIN_TYPE& Get() const CATALYST_NOEXCEPT { return vulkanSwapChain; }
+	const VULKAN_SWAPCHAIN_TYPE& Get() const CATALYST_NOEXCEPT { return vulkanSwapChain; }
 
 	/*
 	*	Initializes this Vulkan swap chain.
@@ -47,27 +47,27 @@ public:
 	/*
 	*	Returns the swap chain images.
 	*/
-	CATALYST_FORCE_INLINE const DynamicArray<VkImage>& GetSwapChainImages() const CATALYST_NOEXCEPT { return swapChainImages; }
+	const DynamicArray<VkImage>& GetSwapChainImages() const CATALYST_NOEXCEPT { return swapChainImages; }
 
 	/*
 	*	Returns the swap chain image views.
 	*/
-	CATALYST_FORCE_INLINE const DynamicArray<VkImageView>& GetSwapChainImageViews() const CATALYST_NOEXCEPT { return swapChainImageViews; }
+	const DynamicArray<VkImageView>& GetSwapChainImageViews() const CATALYST_NOEXCEPT { return swapChainImageViews; }
 
 	/*
 	*	Returns the Vulkan depth buffer.
 	*/
-	CATALYST_FORCE_INLINE const VulkanDepthBuffer& GetDepthBuffer() const CATALYST_NOEXCEPT { return vulkanDepthBuffer; }
+	const VulkanDepthBuffer& GetDepthBuffer() const CATALYST_NOEXCEPT { return vulkanDepthBuffer; }
 
 	/*
 	*	Returns the swap extent.
 	*/
-	CATALYST_FORCE_INLINE VkExtent2D GetSwapExtent() const CATALYST_NOEXCEPT { return swapExtent; }
+	VkExtent2D GetSwapExtent() const CATALYST_NOEXCEPT { return swapExtent; }
 
 	/*
 	*	Returns the current image index.
 	*/
-	CATALYST_FORCE_INLINE uint32 GetCurrentImageIndex() const CATALYST_NOEXCEPT { return currentImageIndex; }
+	uint32 GetCurrentImageIndex() const CATALYST_NOEXCEPT { return currentImageIndex; }
 
 	/*
 	*	Updates the next image index in the swap chain.

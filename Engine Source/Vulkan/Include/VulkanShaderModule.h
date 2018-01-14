@@ -27,7 +27,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan shader module.
 	*/
-	CATALYST_FORCE_INLINE const VkShaderModule Get() const CATALYST_NOEXCEPT { return vulkanShaderModule; }
+	const VkShaderModule Get() const CATALYST_NOEXCEPT { return vulkanShaderModule; }
 
 	/*
 	*	Initializes this Vulkan shader module.
@@ -42,7 +42,7 @@ public:
 	/*
 	*	Returns the stage where this shader module will be used.
 	*/
-	CATALYST_FORCE_INLINE const VkShaderStageFlagBits GetStage() const CATALYST_NOEXCEPT { return stage; }
+	const VkShaderStageFlagBits GetStage() const CATALYST_NOEXCEPT { return stage; }
 
 private:
 

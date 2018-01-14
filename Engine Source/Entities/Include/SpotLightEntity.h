@@ -32,32 +32,32 @@ public:
 	/*
 	*	Returns the attenuation distance.
 	*/
-	CATALYST_FORCE_INLINE float GetAttenuationDistance() const CATALYST_NOEXCEPT { return attenuationDistance; }
+	float GetAttenuationDistance() const CATALYST_NOEXCEPT { return attenuationDistance; }
 
 	/*
 	*	Sets the attenuation distance.
 	*/
-	CATALYST_FORCE_INLINE void SetAttenuationDistance(const float newAttenuationDistane) CATALYST_NOEXCEPT { attenuationDistance = newAttenuationDistane; }
+	void SetAttenuationDistance(const float newAttenuationDistane) CATALYST_NOEXCEPT { attenuationDistance = newAttenuationDistane; }
 
 	/*
 	*	Returns the inner cutoff angle.
 	*/
-	CATALYST_FORCE_INLINE float GetInnerCutoffAngle() const CATALYST_NOEXCEPT { return innerCutoffAngle; }
+	float GetInnerCutoffAngle() const CATALYST_NOEXCEPT { return innerCutoffAngle; }
 
 	/*
 	*	Sets the inner cutoff angle.
 	*/
-	CATALYST_FORCE_INLINE void SetInnerCutoffAngle(const float newInnerCutoffAngle) CATALYST_NOEXCEPT { innerCutoffAngle = newInnerCutoffAngle; }
+	void SetInnerCutoffAngle(const float newInnerCutoffAngle) CATALYST_NOEXCEPT { innerCutoffAngle = newInnerCutoffAngle; }
 
 	/*
 	*	Returns the outer cutoff angle.
 	*/
-	CATALYST_FORCE_INLINE float GetOuterCutoffAngle() const CATALYST_NOEXCEPT { return outerCutoffAngle; }
+	float GetOuterCutoffAngle() const CATALYST_NOEXCEPT { return outerCutoffAngle; }
 
 	/*
 	*	Sets the outer cutoff angle.
 	*/
-	CATALYST_FORCE_INLINE void SetOuterCutoffAngle(const float newOuterCutoffAngle) CATALYST_NOEXCEPT { outerCutoffAngle = newOuterCutoffAngle; }
+	void SetOuterCutoffAngle(const float newOuterCutoffAngle) CATALYST_NOEXCEPT { outerCutoffAngle = newOuterCutoffAngle; }
 
 private:
 

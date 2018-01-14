@@ -50,7 +50,7 @@ public:
 	/*
 	*	Returns the current gamepad state.
 	*/
-	CATALYST_FORCE_INLINE GamepadState GetCurrentGamepadState(uint8 index = 0) const CATALYST_NOEXCEPT { return currentGamepadState[index].GetSafe(); }
+	GamepadState GetCurrentGamepadState(uint8 index = 0) const CATALYST_NOEXCEPT { return currentGamepadState[index].GetSafe(); }
 
 private:
 

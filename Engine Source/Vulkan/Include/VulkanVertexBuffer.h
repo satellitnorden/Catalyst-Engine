@@ -27,7 +27,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan buffer.
 	*/
-	CATALYST_FORCE_INLINE const VkBuffer& Get() const CATALYST_NOEXCEPT { return vulkanBuffer; }
+	const VkBuffer& Get() const CATALYST_NOEXCEPT { return vulkanBuffer; }
 
 	/*
 	*	Initializes this Vulkan vertex buffer.

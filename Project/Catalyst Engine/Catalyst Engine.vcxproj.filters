@@ -518,5 +518,8 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreMacros.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\SharedPointer.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

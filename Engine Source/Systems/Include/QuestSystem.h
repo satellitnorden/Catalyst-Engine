@@ -61,7 +61,7 @@ public:
 	/*
 	*	Returns the number of adventurers.
 	*/
-	CATALYST_FORCE_INLINE uint8 GetNumberOfAdventurers() const CATALYST_NOEXCEPT { return numberOfAdventurers; }
+	uint8 GetNumberOfAdventurers() const CATALYST_NOEXCEPT { return numberOfAdventurers; }
 
 private:
 

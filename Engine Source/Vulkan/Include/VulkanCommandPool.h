@@ -27,7 +27,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan command pool.
 	*/
-	CATALYST_FORCE_INLINE const VkCommandPool& Get() const CATALYST_NOEXCEPT { return vulkanCommandPool; }
+	const VkCommandPool& Get() const CATALYST_NOEXCEPT { return vulkanCommandPool; }
 
 	/*
 	*	Initializes this Vulkan command pool.

@@ -27,7 +27,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan image.
 	*/
-	CATALYST_FORCE_INLINE const VkImage& Get() const CATALYST_NOEXCEPT { return vulkanImage; }
+	const VkImage& Get() const CATALYST_NOEXCEPT { return vulkanImage; }
 
 	/*
 	*	Initializes this Vulkan texture.
@@ -42,12 +42,12 @@ public:
 	/*
 	*	Returns the Vulkan image view.
 	*/
-	CATALYST_FORCE_INLINE const VkImageView& GetImageView() const CATALYST_NOEXCEPT { return vulkanImageView; }
+	const VkImageView& GetImageView() const CATALYST_NOEXCEPT { return vulkanImageView; }
 
 	/*
 	*	Returns the Vulkan sampler.
 	*/
-	CATALYST_FORCE_INLINE const VkSampler& GetSampler() const CATALYST_NOEXCEPT { return vulkanSampler; }
+	const VkSampler& GetSampler() const CATALYST_NOEXCEPT { return vulkanSampler; }
 
 	/*
 	*	Returns the write descriptor set for this texture.

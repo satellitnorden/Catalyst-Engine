@@ -27,7 +27,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan semaphore.
 	*/
-	CATALYST_FORCE_INLINE const VkSemaphore& Get() const CATALYST_NOEXCEPT { return vulkanSemaphore; }
+	const VkSemaphore& Get() const CATALYST_NOEXCEPT { return vulkanSemaphore; }
 
 	/*
 	*	Initializes this Vulkan semaphore.

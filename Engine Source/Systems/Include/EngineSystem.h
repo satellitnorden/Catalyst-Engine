@@ -39,12 +39,12 @@ public:
 	/*
 	*	Returns whether or not the game should terminate.
 	*/
-	CATALYST_FORCE_INLINE bool ShouldTerminate() const CATALYST_NOEXCEPT { return shouldTerminate; }
+	bool ShouldTerminate() const CATALYST_NOEXCEPT { return shouldTerminate; }
 
 	/*
 	*	Terminates the game.
 	*/
-	CATALYST_FORCE_INLINE void Terminate() CATALYST_NOEXCEPT { shouldTerminate = true; }
+	void Terminate() CATALYST_NOEXCEPT { shouldTerminate = true; }
 
 private:
 

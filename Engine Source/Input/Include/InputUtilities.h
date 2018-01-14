@@ -16,7 +16,7 @@ namespace InputUtilities
 	/*
 	*	Updates a single gamepad button.
 	*/
-	CATALYST_FORCE_INLINE void UpdateGamepadButton(const WORD wButtons, const uint16 xInputButton, GamepadButtonState &gamepadButtonState) CATALYST_NOEXCEPT
+	void UpdateGamepadButton(const WORD wButtons, const uint16 xInputButton, GamepadButtonState &gamepadButtonState) CATALYST_NOEXCEPT
 	{
 		//The gamepad button is not pressed.
 		if (!(wButtons & xInputButton))

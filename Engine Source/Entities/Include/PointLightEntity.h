@@ -27,12 +27,12 @@ public:
 	/*
 	*	Returns the attenuation distance.
 	*/
-	CATALYST_FORCE_INLINE float GetAttenuationDistance() const CATALYST_NOEXCEPT { return attenuationDistance; }
+	float GetAttenuationDistance() const CATALYST_NOEXCEPT { return attenuationDistance; }
 
 	/*
 	*	Sets the attenuation distance.
 	*/
-	CATALYST_FORCE_INLINE void SetAttenuationDistance(const float newAttenuationDistane) CATALYST_NOEXCEPT { attenuationDistance = newAttenuationDistane; }
+	void SetAttenuationDistance(const float newAttenuationDistane) CATALYST_NOEXCEPT { attenuationDistance = newAttenuationDistane; }
 
 private:
 

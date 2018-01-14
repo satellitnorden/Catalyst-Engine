@@ -28,7 +28,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan descriptor set.
 	*/
-	CATALYST_FORCE_INLINE const VkDescriptorSet& Get() const CATALYST_NOEXCEPT { return vulkanDescriptorSet; }
+	const VkDescriptorSet& Get() const CATALYST_NOEXCEPT { return vulkanDescriptorSet; }
 
 	/*
 	*	Initializes this Vulkan descriptor set.

@@ -26,7 +26,7 @@ public:
 	/*
 	*	Tells this adventurer to stop carrying out quests.
 	*/
-	CATALYST_FORCE_INLINE void StopCarryingOutQuests() CATALYST_NOEXCEPT { shouldCarryOutQuests = false; }
+	void StopCarryingOutQuests() CATALYST_NOEXCEPT { shouldCarryOutQuests = false; }
 
 private:
 

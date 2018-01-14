@@ -50,27 +50,27 @@ public:
 	/*
 	*	Returns the model.
 	*/
-	CATALYST_FORCE_INLINE const PhysicalModel& GetModel() const CATALYST_NOEXCEPT { return model; }
+	const PhysicalModel& GetModel() const CATALYST_NOEXCEPT { return model; }
 
 	/*
 	*	Returns the uniform buffer.
 	*/
-	CATALYST_FORCE_INLINE CATALYST_RESTRICTED VulkanUniformBuffer* GetUniformBuffer() const CATALYST_NOEXCEPT { return uniformBuffer; }
+	CATALYST_RESTRICTED VulkanUniformBuffer* GetUniformBuffer() const CATALYST_NOEXCEPT { return uniformBuffer; }
 
 	/*
 	*	Returns the descriptor set.
 	*/
-	CATALYST_FORCE_INLINE const VulkanDescriptorSet& GetDescriptorSet() const CATALYST_NOEXCEPT { return descriptorSet; }
+	const VulkanDescriptorSet& GetDescriptorSet() const CATALYST_NOEXCEPT { return descriptorSet; }
 
 	/*
 	*	Sets whether or not this physical entity is in the view frustum.
 	*/
-	CATALYST_FORCE_INLINE void SetIsInViewFrustum(const bool newIsInViewFrustum) CATALYST_NOEXCEPT { isInViewFrustum.store(newIsInViewFrustum); }
+	void SetIsInViewFrustum(const bool newIsInViewFrustum) CATALYST_NOEXCEPT { isInViewFrustum.store(newIsInViewFrustum); }
 
 	/*
 	*	Returns whether or not this physical entity is in the view frustum.
 	*/
-	CATALYST_FORCE_INLINE bool IsInViewFrustum() const CATALYST_NOEXCEPT { return isInViewFrustum; }
+	bool IsInViewFrustum() const CATALYST_NOEXCEPT { return isInViewFrustum; }
 
 private:
 

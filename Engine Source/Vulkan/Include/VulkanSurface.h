@@ -28,7 +28,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan surface.
 	*/
-	CATALYST_FORCE_INLINE const VULKAN_SURFACE_TYPE& Get() const CATALYST_NOEXCEPT { return vulkanSurface; }
+	const VULKAN_SURFACE_TYPE& Get() const CATALYST_NOEXCEPT { return vulkanSurface; }
 
 	/*
 	*	Initializes this Vulkan surface.

@@ -34,7 +34,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan pipeline.
 	*/
-	CATALYST_FORCE_INLINE const VkPipeline Get() const CATALYST_NOEXCEPT { return vulkanPipeline; }
+	const VkPipeline Get() const CATALYST_NOEXCEPT { return vulkanPipeline; }
 
 	/*
 	*	Initializes this Vulkan pipeline.
@@ -49,17 +49,17 @@ public:
 	/*
 	*	Returns the Vulkan pipeline layout.
 	*/
-	CATALYST_FORCE_INLINE const VkPipelineLayout& GetPipelineLayout() const CATALYST_NOEXCEPT { return vulkanPipelineLayout; }
+	const VkPipelineLayout& GetPipelineLayout() const CATALYST_NOEXCEPT { return vulkanPipelineLayout; }
 
 	/*
 	*	Returns the Vulkan render pass.
 	*/
-	CATALYST_FORCE_INLINE const VulkanRenderPass& GetRenderPass() const CATALYST_NOEXCEPT { return vulkanRenderPass; }
+	const VulkanRenderPass& GetRenderPass() const CATALYST_NOEXCEPT { return vulkanRenderPass; }
 
 	/*
 	*	Returns the Vulkan Descriptor set.
 	*/
-	CATALYST_FORCE_INLINE const VulkanDescriptorSetLayout& GetDescriptorSetLayout() const CATALYST_NOEXCEPT { return vulkanDescriptorSetLayout; }
+	const VulkanDescriptorSetLayout& GetDescriptorSetLayout() const CATALYST_NOEXCEPT { return vulkanDescriptorSetLayout; }
 
 private:
 

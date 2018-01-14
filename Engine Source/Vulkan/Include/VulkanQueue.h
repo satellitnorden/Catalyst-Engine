@@ -27,7 +27,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan queue.
 	*/
-	CATALYST_FORCE_INLINE const VkQueue& Get() const CATALYST_NOEXCEPT { return vulkanQueue; }
+	const VkQueue& Get() const CATALYST_NOEXCEPT { return vulkanQueue; }
 
 	/*
 	*	Initializes this Vulkan queue.

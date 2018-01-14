@@ -24,7 +24,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan instance.
 	*/
-	CATALYST_FORCE_INLINE const VkInstance& Get() const CATALYST_NOEXCEPT { return vulkanInstance; }
+	const VkInstance& Get() const CATALYST_NOEXCEPT { return vulkanInstance; }
 
 	/*
 	*	Initializes this Vulkan instance.

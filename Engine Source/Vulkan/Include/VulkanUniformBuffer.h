@@ -27,7 +27,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan buffer.
 	*/
-	CATALYST_FORCE_INLINE const VkBuffer& Get() const CATALYST_NOEXCEPT { return vulkanBuffer; }
+	const VkBuffer& Get() const CATALYST_NOEXCEPT { return vulkanBuffer; }
 
 	/*
 	*	Initializes this Vulkan uniform buffer.
@@ -42,7 +42,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan buffer.
 	*/
-	CATALYST_FORCE_INLINE const VkDeviceSize& GetSize() const CATALYST_NOEXCEPT { return uniformBufferSize; }
+	const VkDeviceSize& GetSize() const CATALYST_NOEXCEPT { return uniformBufferSize; }
 
 	/*
 	*	Uploads new data to the uniform buffer.

@@ -28,7 +28,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan framebuffer.
 	*/
-	CATALYST_FORCE_INLINE const VkFramebuffer& Get() const CATALYST_NOEXCEPT { return vulkanFramebuffer; }
+	const VkFramebuffer& Get() const CATALYST_NOEXCEPT { return vulkanFramebuffer; }
 
 	/*
 	*	Initializes this Vulkan framebuffer.

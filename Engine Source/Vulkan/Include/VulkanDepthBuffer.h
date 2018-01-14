@@ -34,12 +34,12 @@ public:
 	/*
 	*	Returns the image view for this Vulkan depth buffer.
 	*/
-	CATALYST_FORCE_INLINE const VkImageView& GetImageView() const CATALYST_NOEXCEPT { return vulkanImageView; }
+	const VkImageView& GetImageView() const CATALYST_NOEXCEPT { return vulkanImageView; }
 
 	/*
 	*	Returns the format of this Vulkan depth buffer.
 	*/
-	CATALYST_FORCE_INLINE const VkFormat& GetFormat() const CATALYST_NOEXCEPT { return format; }
+	const VkFormat& GetFormat() const CATALYST_NOEXCEPT { return format; }
 
 private:
 

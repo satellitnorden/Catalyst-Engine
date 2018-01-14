@@ -26,7 +26,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan logical device.
 	*/
-	CATALYST_FORCE_INLINE const VkDevice& Get() const CATALYST_NOEXCEPT { return vulkanLogicalDevice; }
+	const VkDevice& Get() const CATALYST_NOEXCEPT { return vulkanLogicalDevice; }
 
 	/*
 	*	Initializes this Vulkan logical device.

@@ -34,22 +34,22 @@ public:
 	/*
 	*	Returns a const reference to the function to execute for this quest.
 	*/
-	CATALYST_FORCE_INLINE const std::function<void()>& GetFunction() const CATALYST_NOEXCEPT { return function; }
+	const std::function<void()>& GetFunction() const CATALYST_NOEXCEPT { return function; }
 
 	/*
 	*	Returns a reference to the function to execute for this quest.
 	*/
-	CATALYST_FORCE_INLINE std::function<void()>& GetFunction() CATALYST_NOEXCEPT { return function; }
+	std::function<void()>& GetFunction() CATALYST_NOEXCEPT { return function; }
 
 	/*
 	*	Returns the completion state of this quest.
 	*/
-	CATALYST_FORCE_INLINE QuestCompletionState GetCompletionState() const CATALYST_NOEXCEPT { return completionState; }
+	QuestCompletionState GetCompletionState() const CATALYST_NOEXCEPT { return completionState; }
 
 	/*
 	*	Sets the completion state of this quest.
 	*/
-	CATALYST_FORCE_INLINE void SetCompletionState(const QuestCompletionState newCompletionState) CATALYST_NOEXCEPT { completionState.store(newCompletionState); }
+	void SetCompletionState(const QuestCompletionState newCompletionState) CATALYST_NOEXCEPT { completionState.store(newCompletionState); }
 
 private:
 

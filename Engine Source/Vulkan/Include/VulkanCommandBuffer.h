@@ -33,7 +33,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan command buffer.
 	*/
-	CATALYST_FORCE_INLINE const VkCommandBuffer& Get() const CATALYST_NOEXCEPT { return vulkanCommandBuffer; }
+	const VkCommandBuffer& Get() const CATALYST_NOEXCEPT { return vulkanCommandBuffer; }
 
 	/*
 	*	Initializes this Vulkan command buffer.

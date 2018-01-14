@@ -28,7 +28,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan render pass.
 	*/
-	CATALYST_FORCE_INLINE const VkRenderPass& Get() const CATALYST_NOEXCEPT { return vulkanRenderPass; }
+	const VkRenderPass& Get() const CATALYST_NOEXCEPT { return vulkanRenderPass; }
 
 	/*
 	*	Initializes this Vulkan render pass.

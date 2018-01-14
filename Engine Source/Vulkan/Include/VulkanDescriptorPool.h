@@ -29,7 +29,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan descriptor pool.
 	*/
-	CATALYST_FORCE_INLINE const VkDescriptorPool& Get() const CATALYST_NOEXCEPT { return vulkanDescriptorPool; }
+	const VkDescriptorPool& Get() const CATALYST_NOEXCEPT { return vulkanDescriptorPool; }
 
 	/*
 	*	Initializes this Vulkan descriptor pool.

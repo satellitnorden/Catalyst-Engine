@@ -24,7 +24,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan descriptor set layout.
 	*/
-	CATALYST_FORCE_INLINE const VkDescriptorSetLayout& Get() const CATALYST_NOEXCEPT { return vulkanDescriptorSetLayout; }
+	const VkDescriptorSetLayout& Get() const CATALYST_NOEXCEPT { return vulkanDescriptorSetLayout; }
 
 	/*
 	*	Initializes this Vulkan descriptor set layout.

@@ -24,52 +24,52 @@ public:
 	/*
 	*	Returns the the albedo texture.
 	*/
-	CATALYST_FORCE_INLINE CATALYST_RESTRICTED const VulkanTexture* GetAlbedoTexture() const CATALYST_NOEXCEPT { return albedoTexture; }
+	CATALYST_RESTRICTED const VulkanTexture* GetAlbedoTexture() const CATALYST_NOEXCEPT { return albedoTexture; }
 
 	/*
 	*	Sets the the albedo texture.
 	*/
-	CATALYST_FORCE_INLINE void SetAlbedoTexture(VulkanTexture *CATALYST_RESTRICT newAlbedoTexture) CATALYST_NOEXCEPT { albedoTexture = newAlbedoTexture; }
+	void SetAlbedoTexture(VulkanTexture *CATALYST_RESTRICT newAlbedoTexture) CATALYST_NOEXCEPT { albedoTexture = newAlbedoTexture; }
 
 	/*
 	*	Returns the the normal map texture.
 	*/
-	CATALYST_FORCE_INLINE CATALYST_RESTRICTED const VulkanTexture* GetNormalMapTexture() const CATALYST_NOEXCEPT { return normalMapTexture; }
+	CATALYST_RESTRICTED const VulkanTexture* GetNormalMapTexture() const CATALYST_NOEXCEPT { return normalMapTexture; }
 
 	/*
 	*	Sets the the normal map texture.
 	*/
-	CATALYST_FORCE_INLINE void SetNormalMapTexture(VulkanTexture *CATALYST_RESTRICT newNormalMapTexture) CATALYST_NOEXCEPT { normalMapTexture = newNormalMapTexture; }
+	void SetNormalMapTexture(VulkanTexture *CATALYST_RESTRICT newNormalMapTexture) CATALYST_NOEXCEPT { normalMapTexture = newNormalMapTexture; }
 
 	/*
 	*	Returns the the roughness texture.
 	*/
-	CATALYST_FORCE_INLINE CATALYST_RESTRICTED const VulkanTexture* GetRoughnessTexture() const CATALYST_NOEXCEPT { return roughnessTexture; }
+	CATALYST_RESTRICTED const VulkanTexture* GetRoughnessTexture() const CATALYST_NOEXCEPT { return roughnessTexture; }
 
 	/*
 	*	Sets the the roughness texture.
 	*/
-	CATALYST_FORCE_INLINE void SetRoughnessTexture(VulkanTexture *CATALYST_RESTRICT newRoughnessTexture) CATALYST_NOEXCEPT { roughnessTexture = newRoughnessTexture; }
+	void SetRoughnessTexture(VulkanTexture *CATALYST_RESTRICT newRoughnessTexture) CATALYST_NOEXCEPT { roughnessTexture = newRoughnessTexture; }
 
 	/*
 	*	Returns the the metallic texture.
 	*/
-	CATALYST_FORCE_INLINE CATALYST_RESTRICTED const VulkanTexture* GetMetallicTexture() const CATALYST_NOEXCEPT { return metallicTexture; }
+	CATALYST_RESTRICTED const VulkanTexture* GetMetallicTexture() const CATALYST_NOEXCEPT { return metallicTexture; }
 
 	/*
 	*	Sets the the metallic texture.
 	*/
-	CATALYST_FORCE_INLINE void SetMetallicTexture(VulkanTexture *CATALYST_RESTRICT newMetallicTexture) CATALYST_NOEXCEPT { metallicTexture = newMetallicTexture; }
+	void SetMetallicTexture(VulkanTexture *CATALYST_RESTRICT newMetallicTexture) CATALYST_NOEXCEPT { metallicTexture = newMetallicTexture; }
 
 	/*
 	*	Returns the the ambient occlusion texture.
 	*/
-	CATALYST_FORCE_INLINE CATALYST_RESTRICTED const VulkanTexture* GetAmbientOcclusionTexture() const CATALYST_NOEXCEPT { return ambientOcclusiontexture; }
+	CATALYST_RESTRICTED const VulkanTexture* GetAmbientOcclusionTexture() const CATALYST_NOEXCEPT { return ambientOcclusiontexture; }
 
 	/*
 	*	Sets the the ambient occlusion texture.
 	*/
-	CATALYST_FORCE_INLINE void SetAmbientOcclusionTexture(VulkanTexture *CATALYST_RESTRICT newAmbientOcclusionTexture) CATALYST_NOEXCEPT { ambientOcclusiontexture = newAmbientOcclusionTexture; }
+	void SetAmbientOcclusionTexture(VulkanTexture *CATALYST_RESTRICT newAmbientOcclusionTexture) CATALYST_NOEXCEPT { ambientOcclusiontexture = newAmbientOcclusionTexture; }
 
 private:
 

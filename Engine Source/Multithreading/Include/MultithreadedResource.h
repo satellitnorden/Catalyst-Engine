@@ -39,7 +39,7 @@ public:
 	/*
 	*	Returns the underlying resource.
 	*/
-	CATALYST_FORCE_INLINE const ValueType GetSafe() const CATALYST_NOEXCEPT
+	const ValueType GetSafe() const CATALYST_NOEXCEPT
 	{
 		static bool expected = false;
 		while (!lock.compare_exchange_weak(expected, true));
@@ -54,7 +54,7 @@ public:
 	/*
 	*	Returns the underlying resource without locking it.
 	*/
-	CATALYST_FORCE_INLINE const ValueType& GetUnsafe() const CATALYST_NOEXCEPT
+	const ValueType& GetUnsafe() const CATALYST_NOEXCEPT
 	{
 		return resource;
 	}
@@ -62,7 +62,7 @@ public:
 	/*
 	*	Sets the underlying resource.
 	*/
-	CATALYST_FORCE_INLINE void Set(const ValueType &newResource) CATALYST_NOEXCEPT
+	void Set(const ValueType &newResource) CATALYST_NOEXCEPT
 	{
 		static bool expected = false;
 		while (!lock.compare_exchange_weak(expected, true));
