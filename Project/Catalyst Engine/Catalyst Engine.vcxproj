@@ -111,7 +111,9 @@
     <ClInclude Include="..\..\Engine Source\Graphics\Include\Vertex.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\Window.h" />
     <ClInclude Include="..\..\Engine Source\Input\Include\GamepadState.h" />
+    <ClInclude Include="..\..\Engine Source\Input\Include\InputConstants.h" />
     <ClInclude Include="..\..\Engine Source\Input\Include\InputUtilities.h" />
+    <ClInclude Include="..\..\Engine Source\Input\Include\KeyboardState.h" />
     <ClInclude Include="..\..\Engine Source\Math\Include\GameMath.h" />
     <ClInclude Include="..\..\Engine Source\Math\Include\MathematicalConstants.h" />
     <ClInclude Include="..\..\Engine Source\Math\Include\Matrix3.h" />

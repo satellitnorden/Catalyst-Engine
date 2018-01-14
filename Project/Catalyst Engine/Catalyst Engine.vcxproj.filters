@@ -521,5 +521,11 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\SharedPointer.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Input\Include\InputConstants.h">
+      <Filter>Engine Source\Input\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Input\Include\KeyboardState.h">
+      <Filter>Engine Source\Input\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

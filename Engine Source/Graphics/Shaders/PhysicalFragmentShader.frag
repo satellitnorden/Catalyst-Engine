@@ -273,9 +273,4 @@ void main()
 
     //Set the final fragment color.
     fragmentColor = vec4(finalFragment, 1.0f);
-
-    float faultyDotProduct = dot(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
-
-    if (faultyDotProduct > 1.0f)
-        fragmentColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }

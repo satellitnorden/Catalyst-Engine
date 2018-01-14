@@ -8,6 +8,8 @@
 
 //Input.
 #include <GamepadState.h>
+#include <InputConstants.h>
+#include <KeyboardState.h>
 
 class InputSystem
 {
@@ -54,10 +56,13 @@ public:
 
 private:
 
-	//The current gamepad state.
-	MultithreadedResource<GamepadState> currentGamepadState[4];
+	//The current gamepad states.
+	MultithreadedResource<GamepadState> currentGamepadState[INPUT_MAXIMUM_GAMEPADS];
 
-	//Defines whether or not to update gamepad buttons.
-	std::atomic<bool> updateGamepadButtons{ false };
+	//The current keyboard state.
+	MultithreadedResource<KeyboardState> currentKeyboardState;
+
+	//Defines whether or not to update buttons.
+	std::atomic<bool> updateButtons{ false };
 
 };

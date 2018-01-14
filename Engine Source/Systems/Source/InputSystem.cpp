@@ -36,8 +36,8 @@ void InputSystem::InitializeSystem() CATALYST_NOEXCEPT
 */
 void InputSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
-	//Update gamepad buttons.
-	updateGamepadButtons.store(true);
+	//Update buttons.
+	updateButtons.store(true);
 }
 
 /*
@@ -45,19 +45,35 @@ void InputSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 */
 void InputSystem::UpdateSystemAsynchronous() CATALYST_NOEXCEPT
 {
-	bool updateGamepadButtonsCopy{ false };
-	bool expectedUpdateHold{ true };
+	//Check if buttons should be updated.
+	bool updateButtonsCopy{ false };
+	bool expectedUpdateButtons{ true };
 
-	if (updateGamepadButtons.compare_exchange_strong(expectedUpdateHold, false))
-		updateGamepadButtonsCopy = true;
+	if (updateButtons.compare_exchange_strong(expectedUpdateButtons, false))
+		updateButtonsCopy = true;
 
-	for (uint8 i = 0; i < 4; ++i)
+	//If buttons should not be updated right now, yield the thread.
+	if (!updateButtonsCopy)
+		std::this_thread::yield();
+
+	//Update gamepad states.
+	for (uint8 i = 0; i < INPUT_MAXIMUM_GAMEPADS; ++i)
 	{
 		GamepadState currentGamepadStateCopy{ currentGamepadState[i].GetSafe() };
 
-		InputUtilities::GetCurrentGamepadState(i, updateGamepadButtonsCopy, currentGamepadStateCopy);
+		InputUtilities::GetCurrentGamepadState(i, updateButtonsCopy, currentGamepadStateCopy);
 
 		currentGamepadState[i].Set(currentGamepadStateCopy);
+	}
+
+	//Update the keyboard.
+	if (updateButtonsCopy)
+	{
+		KeyboardState currentKeyboardStateCopy{ currentKeyboardState.GetUnsafe() };
+
+		InputUtilities::GetCurrentKeyboardState(currentKeyboardStateCopy);
+
+		currentKeyboardState.Set(currentKeyboardStateCopy);
 	}
 }
 
