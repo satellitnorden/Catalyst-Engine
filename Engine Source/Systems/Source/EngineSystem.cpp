@@ -101,7 +101,7 @@ void EngineSystem::ReleaseSystem() CATALYST_NOEXCEPT
 void UpdateInputSystemAsynchronous() CATALYST_NOEXCEPT
 {
 	while (!EngineSystem::Instance->ShouldTerminate())
-		CATALYST_BENCHMARK_AVERAGE(InputSystem::Instance->UpdateSystemAsynchronous());
+		InputSystem::Instance->UpdateSystemAsynchronous();
 }
 
 /*
