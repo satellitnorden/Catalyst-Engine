@@ -26,51 +26,58 @@ VulkanPhysicalDevice::~VulkanPhysicalDevice() CATALYST_NOEXCEPT
 void VulkanPhysicalDevice::Initialize() CATALYST_NOEXCEPT
 {
 	//Get the number of available physical devices.
-	uint32 availablePhysicalDeviceCount = 0;
-	VkResult result = vkEnumeratePhysicalDevices(VulkanInterface::Instance->GetVulkanInstance().Get(), &availablePhysicalDeviceCount, nullptr);
+	uint32 availablePhysicalDeviceCount{ 0 };
+	VULKAN_ERROR_CHECK(vkEnumeratePhysicalDevices(VulkanInterface::Instance->GetInstance().Get(), &availablePhysicalDeviceCount, nullptr));
 
 	//Get all available physical devices.
 	DynamicArray<VkPhysicalDevice> availablePhysicalDevices;
 	availablePhysicalDevices.Resize(availablePhysicalDeviceCount);
-	vkEnumeratePhysicalDevices(VulkanInterface::Instance->GetVulkanInstance().Get(), &availablePhysicalDeviceCount, availablePhysicalDevices.Data());
+	VULKAN_ERROR_CHECK(vkEnumeratePhysicalDevices(VulkanInterface::Instance->GetInstance().Get(), &availablePhysicalDeviceCount, availablePhysicalDevices.Data()));
 
 	//Create and fill a list of suitable physical devices.
 	DynamicArray<VkPhysicalDevice> suitablePhysicalDevices;
 	suitablePhysicalDevices.Reserve(availablePhysicalDeviceCount);
 
-	for (auto &availablePhysicalDevice : availablePhysicalDevices)
+	for (const auto &availablePhysicalDevice : availablePhysicalDevices)
 	{
 		//Check if this physical device is suitable.
 		if (IsPhysicalDeviceSuitable(availablePhysicalDevice))
+		{
 			suitablePhysicalDevices.EmplaceUnsafe(availablePhysicalDevice);
+		}
 	}
 
 	//Of all suitable physical devices, choose the most suitable one.
 	vulkanPhysicalDevice = GetMostSuitableDevice(suitablePhysicalDevices);
 
-	//Now that a suitable physical device is choosen, get the surface capabilities.
-	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_CAPABILITIES(vulkanPhysicalDevice, VulkanInterface::Instance->GetVulkanSurface().Get(), &surfaceCapabilities);
+	//Now that a suitable physical device is choosen, get the physical device properties.
+	vkGetPhysicalDeviceProperties(vulkanPhysicalDevice, &physicalDeviceProperties);
+
+	//Get the physical device features.
+	vkGetPhysicalDeviceFeatures(vulkanPhysicalDevice, &physicalDeviceFeatures);
+
+	//Get the physical device memory properties.
+	vkGetPhysicalDeviceMemoryProperties(vulkanPhysicalDevice, &physicalDeviceMemoryProperties);
+
+	//Get the surface capabilities.
+	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_CAPABILITIES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities);
 
 	//Get the most optimal surface format.
 	surfaceFormat = GetMostOptimalSurfaceFormat();
 
-	//Get the physical device properties.
-	vkGetPhysicalDeviceProperties(vulkanPhysicalDevice, &physicalDeviceProperties);
-
 	//Get the most optimal present mode.
 	presentMode = GetMostOptimalPresentMode();
 
-	//Now that we have chosen a proper physical device, retrieve it's queue family count.
-	uint32 queueFamilyCount = 0;
+	//Retrieve the queue family properties.
+	uint32 queueFamilyCount{ 0 };
 	vkGetPhysicalDeviceQueueFamilyProperties(vulkanPhysicalDevice, &queueFamilyCount, nullptr);
 
-	//Retrieve the queue family properties.
 	DynamicArray<VkQueueFamilyProperties> queueFamilyProperties;
 	queueFamilyProperties.Resize(queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(vulkanPhysicalDevice, &queueFamilyCount, queueFamilyProperties.Data());
 
 	//Find the queue family for the graphics.
-	uint32 queueFamilyCounter = 0;
+	uint32 queueFamilyCounter{ 0 };
 
 	for (auto &queueFamilyProperty : queueFamilyProperties)
 	{
@@ -86,7 +93,7 @@ void VulkanPhysicalDevice::Initialize() CATALYST_NOEXCEPT
 
 		VkBool32 presentSupport = false;
 
-		VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(vulkanPhysicalDevice, queueFamilyCounter, VulkanInterface::Instance->GetVulkanSurface().Get(), &presentSupport);
+		VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(vulkanPhysicalDevice, queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &presentSupport);
 
 		if (queueFamilyProperty.queueCount > 0 && presentSupport)
 		{
@@ -153,21 +160,21 @@ bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vul
 {
 	//Query for format support.
 	uint32 formatsCount = 0; 
-	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetVulkanSurface().Get(), &formatsCount, nullptr);
+	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &formatsCount, nullptr);
 
 	DynamicArray<VULKAN_SURFACE_FORMAT_TYPE> formats;
 	formats.Resize(formatsCount);
 
-	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetVulkanSurface().Get(), &formatsCount, formats.Data());
+	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &formatsCount, formats.Data());
 
 	//Query for present mode support.
 	uint32 presentModesCount = 0;
-	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetVulkanSurface().Get(), &presentModesCount, nullptr);
+	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &presentModesCount, nullptr);
 
 	DynamicArray<VULKAN_PRESENT_MODE_TYPE> presentModes;
 	presentModes.Resize(presentModesCount);
 
-	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetVulkanSurface().Get(), &presentModesCount, presentModes.Data());
+	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &presentModesCount, presentModes.Data());
 
 	//If there are at least one format and one present mode available, this physical device is considered to have proper swap chain support.
 	return !formats.Empty() && !presentModes.Empty();
@@ -189,12 +196,12 @@ VULKAN_SURFACE_FORMAT_TYPE VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() c
 {
 	//Query for format support.
 	uint32 availableFormatsCount = 0;
-	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetVulkanSurface().Get(), &availableFormatsCount, nullptr);
+	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availableFormatsCount, nullptr);
 
 	DynamicArray<VULKAN_SURFACE_FORMAT_TYPE> availableFormats;
 	availableFormats.Resize(availableFormatsCount);
 
-	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetVulkanSurface().Get(), &availableFormatsCount, availableFormats.Data());
+	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availableFormatsCount, availableFormats.Data());
 
 	//Find the most optimal surface format.
 	if (availableFormats.Size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED)
@@ -220,12 +227,12 @@ VULKAN_PRESENT_MODE_TYPE VulkanPhysicalDevice::GetMostOptimalPresentMode() const
 {
 	//Query for present mode support.
 	uint32 availablePresentModesCount = 0;
-	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetVulkanSurface().Get(), &availablePresentModesCount, nullptr);
+	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, nullptr);
 
 	DynamicArray<VULKAN_PRESENT_MODE_TYPE> availablePresentModes;
 	availablePresentModes.Resize(availablePresentModesCount);
 
-	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetVulkanSurface().Get(), &availablePresentModesCount, availablePresentModes.Data());
+	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, availablePresentModes.Data());
 
 	//Find the most optimal present mode.
 	for (const auto& availablePresentMode : availablePresentModes)

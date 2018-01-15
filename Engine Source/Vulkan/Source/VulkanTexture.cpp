@@ -41,9 +41,9 @@ void VulkanTexture::Initialize(const uint32 width, const uint32 height, const by
 	//Copy the data into the staging buffer.
 	void *data;
 
-	vkMapMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, &data);
+	vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, &data);
 	MemoryUtilities::CopyMemory(data, textureData, static_cast<size_t>(imageSize));
-	vkUnmapMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingBufferDeviceMemory);
+	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 
 	//Create the Vulkan image.
 	VulkanUtilities::CreateVulkanImage(VK_FORMAT_R8G8B8A8_UNORM, width, height, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, vulkanImage, vulkanDeviceMemory);
@@ -58,8 +58,8 @@ void VulkanTexture::Initialize(const uint32 width, const uint32 height, const by
 	VulkanUtilities::TransitionImageToLayout(VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, vulkanImage);
 
 	//Clean up the staging buffer.
-	vkFreeMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingBufferDeviceMemory, nullptr);
-	vkDestroyBuffer(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingBuffer, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, nullptr);
+	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBuffer, nullptr);
 
 	//Create the image view.
 	VulkanUtilities::CreateVulkanImageView(VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, vulkanImage, vulkanImageView);
@@ -80,16 +80,16 @@ void VulkanTexture::Initialize(const uint32 width, const uint32 height, const by
 void VulkanTexture::Release() CATALYST_NOEXCEPT
 {
 	//Destroy Vulkan sampler.
-	vkDestroySampler(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanSampler, nullptr);
+	vkDestroySampler(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSampler, nullptr);
 
 	//Destroy the Vulkan image view.
-	vkDestroyImageView(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanImageView, nullptr);
+	vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImageView, nullptr);
 
 	//Free the Vulkan device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
 
 	//Destroy the Vulkan image.
-	vkDestroyImage(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanImage, nullptr);
+	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImage, nullptr);
 }
 
 /*

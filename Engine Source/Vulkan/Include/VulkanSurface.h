@@ -7,7 +7,6 @@
 #include <VulkanCore.h>
 
 //Forward declarations.
-class VulkanInstance;
 class Window;
 
 class VulkanSurface
@@ -33,12 +32,12 @@ public:
 	/*
 	*	Initializes this Vulkan surface.
 	*/
-	void Initialize(const VulkanInstance &vulkanInstance, Window &window) CATALYST_NOEXCEPT;
+	void Initialize(Window &window) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan surface.
 	*/
-	void Release(const VulkanInstance &vulkanInstance) CATALYST_NOEXCEPT;
+	void Release() CATALYST_NOEXCEPT;
 
 private:
 

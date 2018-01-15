@@ -32,7 +32,7 @@ void VulkanCommandPool::Initialize(const uint32 queueFamilyIndex) CATALYST_NOEXC
 	CreateCommandPoolCreateInfo(commandPoolCreateInfo, queueFamilyIndex);
 
 	//Create the command pool!
-	VkResult result = vkCreateCommandPool(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &commandPoolCreateInfo, nullptr, &vulkanCommandPool);
+	VkResult result = vkCreateCommandPool(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandPoolCreateInfo, nullptr, &vulkanCommandPool);
 
 #if !defined(CATALYST_FINAL)
 	if (result != VK_SUCCESS)
@@ -46,7 +46,7 @@ void VulkanCommandPool::Initialize(const uint32 queueFamilyIndex) CATALYST_NOEXC
 void VulkanCommandPool::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the Vulkan command pool.
-	vkDestroyCommandPool(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanCommandPool, nullptr);
+	vkDestroyCommandPool(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanCommandPool, nullptr);
 }
 
 /*
@@ -64,7 +64,7 @@ void VulkanCommandPool::AllocateVulkanCommandBuffer(VulkanCommandBuffer &vulkanC
 void VulkanCommandPool::FreeVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const CATALYST_NOEXCEPT
 {
 	//Free the Vulkan command buffer.
-	vkFreeCommandBuffers(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanCommandPool, 1, &vulkanCommandBuffer.Get());
+	vkFreeCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanCommandPool, 1, &vulkanCommandBuffer.Get());
 }
 
 /*

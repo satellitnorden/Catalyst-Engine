@@ -6,10 +6,6 @@
 //Vulkan.
 #include <VulkanCore.h>
 
-//Forward declarations.
-class VulkanInstance;
-class VulkanSurface;
-
 class VulkanPhysicalDevice
 {
 
@@ -36,6 +32,21 @@ public:
 	void Initialize() CATALYST_NOEXCEPT;
 
 	/*
+	*	Returns the physical device properties.
+	*/
+	const VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() const CATALYST_NOEXCEPT { return physicalDeviceProperties; }
+
+	/*
+	*	Returns the physical device features.
+	*/
+	const VkPhysicalDeviceFeatures& GetPhysicalDeviceFeatures() const CATALYST_NOEXCEPT { return physicalDeviceFeatures; }
+
+	/*
+	*	Returns the physical device memory properties.
+	*/
+	const VkPhysicalDeviceMemoryProperties& GetPhysicalDeviceMemoryProperties() const CATALYST_NOEXCEPT { return physicalDeviceMemoryProperties; }
+
+	/*
 	*	Returns the surface capabilities.
 	*/
 	const VULKAN_SURFACE_CAPABILITIES_TYPE& GetSurfaceCapabilities() const CATALYST_NOEXCEPT { return surfaceCapabilities; }
@@ -44,11 +55,6 @@ public:
 	*	Returns the surface format.
 	*/
 	const VULKAN_SURFACE_FORMAT_TYPE& GetSurfaceFormat() const CATALYST_NOEXCEPT { return surfaceFormat; }
-
-	/*
-	*	Returns the physical device properties.
-	*/
-	const VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() const CATALYST_NOEXCEPT { return physicalDeviceProperties; }
 
 	/*
 	*	Returns the surface format.
@@ -75,14 +81,20 @@ private:
 	//The underlying Vulkan physical device.
 	VkPhysicalDevice vulkanPhysicalDevice;
 
+	//The physical device properties.
+	VkPhysicalDeviceProperties physicalDeviceProperties;
+
+	//The physical device features.
+	VkPhysicalDeviceFeatures physicalDeviceFeatures;
+
+	//The physical device memory properties.
+	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
+
 	//The surface capabilities.
 	VULKAN_SURFACE_CAPABILITIES_TYPE surfaceCapabilities;
 
 	//The surface format.
 	VULKAN_SURFACE_FORMAT_TYPE surfaceFormat;
-
-	//The physical device properties.
-	VkPhysicalDeviceProperties physicalDeviceProperties;
 
 	//The present mode.
 	VULKAN_PRESENT_MODE_TYPE presentMode;

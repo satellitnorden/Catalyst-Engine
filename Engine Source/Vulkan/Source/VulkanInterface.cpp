@@ -29,7 +29,7 @@ void VulkanInterface::Initialize(Window &window) CATALYST_NOEXCEPT
 	vulkanInstance.Initialize();
 
 	//Initialize the Vulkan surface.
-	vulkanSurface.Initialize(vulkanInstance, window);
+	vulkanSurface.Initialize(window);
 
 	//Initialize the Vulkan physical device.
 	vulkanPhysicalDevice.Initialize();
@@ -157,7 +157,7 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 	vulkanLogicalDevice.Release();
 
 	//Release the Vulkan surface.
-	vulkanSurface.Release(vulkanInstance);
+	vulkanSurface.Release();
 
 	//Release the Vulkan instance.
 	vulkanInstance.Release();

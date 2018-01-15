@@ -24,7 +24,7 @@ namespace VulkanUtilities
 	{
 		//Create a command buffer for the copy operation.
 		VulkanCommandBuffer copyCommandBuffer;
-		VulkanInterface::Instance->GetTransferVulkanCommandPool().AllocateVulkanCommandBuffer(copyCommandBuffer);
+		VulkanInterface::Instance->GetTransferCommandPool().AllocateVulkanCommandBuffer(copyCommandBuffer);
 
 		//Begin the command buffer.
 		copyCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -43,13 +43,13 @@ namespace VulkanUtilities
 		copyCommandBuffer.End();
 
 		//Submit the command buffer to the transfer queue.
-		VulkanInterface::Instance->GetTransferVulkanQueue().Submit(copyCommandBuffer);
+		VulkanInterface::Instance->GetTransferQueue().Submit(copyCommandBuffer);
 
 		//Wait idle for the transfer queue to finish.
-		VulkanInterface::Instance->GetTransferVulkanQueue().WaitIdle();
+		VulkanInterface::Instance->GetTransferQueue().WaitIdle();
 
 		//Free the copy command buffer.
-		VulkanInterface::Instance->GetTransferVulkanCommandPool().FreeVulkanCommandBuffer(copyCommandBuffer);
+		VulkanInterface::Instance->GetTransferCommandPool().FreeVulkanCommandBuffer(copyCommandBuffer);
 	}
 
 	/*
@@ -59,7 +59,7 @@ namespace VulkanUtilities
 	{
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transferCommandBuffer;
-		VulkanInterface::Instance->GetTransferVulkanCommandPool().AllocateVulkanCommandBuffer(transferCommandBuffer);
+		VulkanInterface::Instance->GetTransferCommandPool().AllocateVulkanCommandBuffer(transferCommandBuffer);
 
 		//Create the buffer image copy.
 		VkBufferImageCopy bufferImageCopy;
@@ -84,13 +84,13 @@ namespace VulkanUtilities
 		transferCommandBuffer.End();
 
 		//Submit the command buffer.
-		VulkanInterface::Instance->GetTransferVulkanQueue().Submit(transferCommandBuffer);
+		VulkanInterface::Instance->GetTransferQueue().Submit(transferCommandBuffer);
 
 		//Wait for the transfer operation to finish.
-		VulkanInterface::Instance->GetTransferVulkanQueue().WaitIdle();
+		VulkanInterface::Instance->GetTransferQueue().WaitIdle();
 
 		//Free the transfer command buffer,
-		VulkanInterface::Instance->GetTransferVulkanCommandPool().FreeVulkanCommandBuffer(transferCommandBuffer);
+		VulkanInterface::Instance->GetTransferCommandPool().FreeVulkanCommandBuffer(transferCommandBuffer);
 	}
 
 	/*
@@ -111,7 +111,7 @@ namespace VulkanUtilities
 		bufferCreateInfo.pQueueFamilyIndices = nullptr;
 
 		//Create the Vulkan buffer!
-		VkResult result = vkCreateBuffer(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &bufferCreateInfo, nullptr, &vulkanBuffer);
+		VkResult result = vkCreateBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), &bufferCreateInfo, nullptr, &vulkanBuffer);
 
 #if !defined(CATALYST_FINAL)
 		if (result != VK_SUCCESS)
@@ -120,11 +120,11 @@ namespace VulkanUtilities
 
 		//Get the memory requirements.
 		VkMemoryRequirements memoryRequirements;
-		vkGetBufferMemoryRequirements(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanBuffer, &memoryRequirements);
+		vkGetBufferMemoryRequirements(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, &memoryRequirements);
 
 		//Find the memory type index.
 		VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
-		vkGetPhysicalDeviceMemoryProperties(VulkanInterface::Instance->GetVulkanPhysicalDevice().Get(), &physicalDeviceMemoryProperties);
+		vkGetPhysicalDeviceMemoryProperties(VulkanInterface::Instance->GetPhysicalDevice().Get(), &physicalDeviceMemoryProperties);
 
 		//Iterate over all memory types and find the proper memory type index.
 		uint32 memoryTypeIndex = 0;
@@ -147,7 +147,7 @@ namespace VulkanUtilities
 		memoryAllocateInfo.memoryTypeIndex = memoryTypeIndex;
 
 		//Allocate the memory!
-		result = vkAllocateMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &memoryAllocateInfo, nullptr, &vulkanDeviceMemory);
+		result = vkAllocateMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), &memoryAllocateInfo, nullptr, &vulkanDeviceMemory);
 
 #if !defined(CATALYST_FINAL)
 		if (result != VK_SUCCESS)
@@ -155,7 +155,7 @@ namespace VulkanUtilities
 #endif
 
 		//Bind the buffer to the memory.
-		vkBindBufferMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanBuffer, vulkanDeviceMemory, 0);
+		vkBindBufferMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, vulkanDeviceMemory, 0);
 	}
 
 	/*
@@ -202,7 +202,7 @@ namespace VulkanUtilities
 		imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 		//Create the image!
-		VkResult result = vkCreateImage(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &imageCreateInfo, nullptr, &vulkanImage);
+		VkResult result = vkCreateImage(VulkanInterface::Instance->GetLogicalDevice().Get(), &imageCreateInfo, nullptr, &vulkanImage);
 
 #if !defined(CATALYST_FINAL)
 		if (result != VK_SUCCESS)
@@ -211,11 +211,11 @@ namespace VulkanUtilities
 
 		//Get the memory requirements.
 		VkMemoryRequirements memoryRequirements;
-		vkGetImageMemoryRequirements(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanImage, &memoryRequirements);
+		vkGetImageMemoryRequirements(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImage, &memoryRequirements);
 
 		//Find the memory type index.
 		VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
-		vkGetPhysicalDeviceMemoryProperties(VulkanInterface::Instance->GetVulkanPhysicalDevice().Get(), &physicalDeviceMemoryProperties);
+		vkGetPhysicalDeviceMemoryProperties(VulkanInterface::Instance->GetPhysicalDevice().Get(), &physicalDeviceMemoryProperties);
 
 		//Iterate over all memory types and find the proper memory type index.
 		uint32 memoryTypeIndex = 0;
@@ -238,7 +238,7 @@ namespace VulkanUtilities
 		memoryAllocateInfo.memoryTypeIndex = memoryTypeIndex;
 
 		//Allocate the memory!
-		result = vkAllocateMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &memoryAllocateInfo, nullptr, &vulkanDeviceMemory);
+		result = vkAllocateMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), &memoryAllocateInfo, nullptr, &vulkanDeviceMemory);
 
 #if !defined(CATALYST_FINAL)
 		if (result != VK_SUCCESS)
@@ -246,7 +246,7 @@ namespace VulkanUtilities
 #endif
 
 		//Bind the image to the memory.
-		vkBindImageMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanImage, vulkanDeviceMemory, 0);
+		vkBindImageMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImage, vulkanDeviceMemory, 0);
 	}
 
 	/*
@@ -274,7 +274,7 @@ namespace VulkanUtilities
 		imageViewCreateInfo.subresourceRange.layerCount = 1;
 
 		//Create the image view!
-		VkResult result = vkCreateImageView(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &imageViewCreateInfo, nullptr, &vulkanImageView);
+		VkResult result = vkCreateImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), &imageViewCreateInfo, nullptr, &vulkanImageView);
 
 #if !defined(CATALYST_FINAL)
 		if (result != VK_SUCCESS)
@@ -310,7 +310,7 @@ namespace VulkanUtilities
 		samplerCreateInfo.unnormalizedCoordinates = VK_FALSE;
 
 		//Create the sampler!
-		VkResult result = vkCreateSampler(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &samplerCreateInfo, nullptr, &vulkanSampler);
+		VkResult result = vkCreateSampler(VulkanInterface::Instance->GetLogicalDevice().Get(), &samplerCreateInfo, nullptr, &vulkanSampler);
 
 #if !defined(CATALYST_FINAL)
 		if (result != VK_SUCCESS)
@@ -369,7 +369,7 @@ namespace VulkanUtilities
 	{
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transitionCommandBuffer;
-		VulkanInterface::Instance->GetGraphicsVulkanCommandPool().AllocateVulkanCommandBuffer(transitionCommandBuffer);
+		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(transitionCommandBuffer);
 
 		//Define the source and destination stage.
 		VkPipelineStageFlags sourceStageMask;
@@ -442,13 +442,13 @@ namespace VulkanUtilities
 		transitionCommandBuffer.End();
 
 		//Submit the command buffer.
-		VulkanInterface::Instance->GetGraphicsVulkanQueue().Submit(transitionCommandBuffer);
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(transitionCommandBuffer);
 
 		//Wait for the transfer operation to finish.
-		VulkanInterface::Instance->GetGraphicsVulkanQueue().WaitIdle();
+		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
 		//Free the transfer command buffer.
-		VulkanInterface::Instance->GetGraphicsVulkanCommandPool().FreeVulkanCommandBuffer(transitionCommandBuffer);
+		VulkanInterface::Instance->GetGraphicsCommandPool().FreeVulkanCommandBuffer(transitionCommandBuffer);
 	}
 
 }

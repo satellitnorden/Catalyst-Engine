@@ -52,12 +52,12 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 	VulkanInterface::Instance->Initialize(mainWindow);
 
 	//Resize the number of command buffers to be equal to the amount of swapchain images.
-	commandBuffers.Resize(VulkanInterface::Instance->GetVulkanSwapchain().GetSwapChainImages().Size());
+	commandBuffers.Resize(VulkanInterface::Instance->GetSwapchain().GetSwapChainImages().Size());
 
 	//Allocate all command buffers.
 	for (auto &commandBuffer : commandBuffers)
 	{
-		VulkanInterface::Instance->GetGraphicsVulkanCommandPool().AllocateVulkanCommandBuffer(commandBuffer);
+		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(commandBuffer);
 	}
 
 	//Initialize all shader modules.
@@ -182,7 +182,7 @@ void GraphicsSystem::ReleaseSystem() CATALYST_NOEXCEPT
 void GraphicsSystem::CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDescriptorSet, const VulkanUniformBuffer *CATALYST_RESTRICT modelDataUniformBuffer, const VulkanTexture *CATALYST_RESTRICT albedoTexture, const VulkanTexture *CATALYST_RESTRICT normalMapTexture, const VulkanTexture *CATALYST_RESTRICT roughnessTexture, const VulkanTexture *CATALYST_RESTRICT metallicTexture, const VulkanTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT
 {
 	//Allocate the descriptor set.
-	VulkanInterface::Instance->GetVulkanDescriptorPool().AllocateDescriptorSet(vulkanDescriptorSet, pipelines[Pipeline::PhysicalPipeline]->GetDescriptorSetLayout());
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(vulkanDescriptorSet, pipelines[Pipeline::PhysicalPipeline]->GetDescriptorSetLayout());
 
 	//Update the write descriptor sets.
 	DynamicArray<VkWriteDescriptorSet> writeDescriptorSets;
@@ -196,7 +196,7 @@ void GraphicsSystem::CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDesc
 	writeDescriptorSets.EmplaceUnsafe(metallicTexture ? metallicTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 5) : defaultTextures[DefaultTexture::Metallic]->GetWriteDescriptorSet(vulkanDescriptorSet, 5));
 	writeDescriptorSets.EmplaceUnsafe(ambientOcclusionTexture ? ambientOcclusionTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 6) : defaultTextures[DefaultTexture::AmbientOcclusion]->GetWriteDescriptorSet(vulkanDescriptorSet, 6));
 
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }
 
 /*
@@ -301,7 +301,7 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	physicalPipelineCreationParameters.shaderModules.Reserve(2);
 	physicalPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::PhysicalVertexShaderModule]);
 	physicalPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::PhysicalFragmentShaderModule]);
-	physicalPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetVulkanSwapchain().GetSwapExtent();
+	physicalPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(7);
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -310,8 +310,8 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	physicalPipelineCreationParameters.colorAttachmens = VulkanInterface::Instance->GetVulkanSwapchain().GetSwapChainImageViews();
-	physicalPipelineCreationParameters.depthBuffer = &VulkanInterface::Instance->GetVulkanSwapchain().GetDepthBuffer();
+	physicalPipelineCreationParameters.colorAttachmens = VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews();
+	physicalPipelineCreationParameters.depthBuffer = &VulkanInterface::Instance->GetSwapchain().GetDepthBuffer();
 
 	pipelines[Pipeline::PhysicalPipeline] = VulkanInterface::Instance->CreatePipeline(physicalPipelineCreationParameters);
 }
@@ -331,16 +331,16 @@ void GraphicsSystem::CalculateProjectionMatrix() CATALYST_NOEXCEPT
 void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 {
 	//Wait for the graphics queue to finish.
-	VulkanInterface::Instance->GetGraphicsVulkanQueue().WaitIdle();
+	VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
 	//Set the current command buffer.
-	currentCommandBuffer = VulkanInterface::Instance->GetVulkanSwapchain().GetCurrentImageIndex();
+	currentCommandBuffer = VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
 
 	//Set up the current command buffer.
 	commandBuffers[currentCommandBuffer].Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::PhysicalPipeline]);
-	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::PhysicalPipeline]->GetRenderPass(), VulkanInterface::Instance->GetVulkanSwapchain().GetCurrentImageIndex());
+	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::PhysicalPipeline]->GetRenderPass(), VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
 }
 
 /*
@@ -448,5 +448,5 @@ void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
 	commandBuffers[currentCommandBuffer].End();
 
 	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsVulkanQueue().Submit(commandBuffers[currentCommandBuffer], waitSemaphores, waitStages, signalSemaphores);
+	VulkanInterface::Instance->GetGraphicsQueue().Submit(commandBuffers[currentCommandBuffer], waitSemaphores, waitStages, signalSemaphores);
 }

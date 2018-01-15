@@ -5,7 +5,7 @@
 #include <Window.h>
 
 //Vulkan.
-#include <VulkanInstance.h>
+#include <VulkanInterface.h>
 
 //Third party libraries.
 #define GLFW_INCLUDE_VULKAN
@@ -30,22 +30,17 @@ VulkanSurface::~VulkanSurface() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan surface.
 */
-void VulkanSurface::Initialize(const VulkanInstance &vulkanInstance, Window &window) CATALYST_NOEXCEPT
+void VulkanSurface::Initialize(Window &window) CATALYST_NOEXCEPT
 {
 	//Create the Vulkan surface!
-	VkResult result = glfwCreateWindowSurface(vulkanInstance.Get(), window.Get(), nullptr, &vulkanSurface);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(glfwCreateWindowSurface(VulkanInterface::Instance->GetInstance().Get(), window.Get(), nullptr, &vulkanSurface));
 }
 
 /*
 *	Releases this Vulkan surface.
 */
-void VulkanSurface::Release(const VulkanInstance &vulkanInstance) CATALYST_NOEXCEPT
+void VulkanSurface::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the Vulkan surface.
-	VULKAN_DESTROY_SURFACE(vulkanInstance.Get(), vulkanSurface, nullptr);
+	VULKAN_DESTROY_SURFACE(VulkanInterface::Instance->GetInstance().Get(), vulkanSurface, nullptr);
 }

@@ -7,7 +7,7 @@
 #include <vulkan/vulkan.h>
 
 /*
-*	Alias types for platform specific Vulkantypes.
+*	Alias types for platform specific Vulkan types.
 */
 #if defined(CATALYST_WINDOWS)
 	
@@ -50,8 +50,10 @@
 /*
 *	Given a VkResult, return a string.
 */
-static void PrintResultAndBreak(const VkResult result) CATALYST_NOEXCEPT
+static void PrintResultAndBreak(const char *const CATALYST_RESTRICT function, const VkResult result) CATALYST_NOEXCEPT
 {
+	PRINT_TO_CONSOLE(function << " failed.");
+
 	switch (result)
 	{
 		default:
@@ -109,7 +111,7 @@ static void PrintResultAndBreak(const VkResult result) CATALYST_NOEXCEPT
 *	Checks the result of a Vulkan function call and takes appropriate measures if it is not VK_SUCCESS in final.
 */
 #if !defined(CATALYST_FINAL)
-	#define VULKAN_ERROR_CHECK(function) { const VkResult result = function; if (result != VK_SUCCESS) PrintResultAndBreak(result); }
+	#define VULKAN_ERROR_CHECK(function) { const VkResult result = function; if (result != VK_SUCCESS) PrintResultAndBreak(#function, result); }
 #else
 	#define VULKAN_ERROR_CHECK(function) function
 #endif

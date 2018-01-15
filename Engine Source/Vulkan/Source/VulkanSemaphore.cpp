@@ -30,7 +30,7 @@ void VulkanSemaphore::Initialize() CATALYST_NOEXCEPT
 	CreateSemaphoreCreateInfo(semaphoreCreateInfo);
 
 	//Create the Vulkan semaphore!
-	VkResult result = vkCreateSemaphore(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &semaphoreCreateInfo, nullptr, &vulkanSemaphore);
+	VkResult result = vkCreateSemaphore(VulkanInterface::Instance->GetLogicalDevice().Get(), &semaphoreCreateInfo, nullptr, &vulkanSemaphore);
 
 #if !defined(CATALYST_FINAL)
 	if (result != VK_SUCCESS)
@@ -44,7 +44,7 @@ void VulkanSemaphore::Initialize() CATALYST_NOEXCEPT
 void VulkanSemaphore::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the Vulkan semaphore.
-	vkDestroySemaphore(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanSemaphore, nullptr);
+	vkDestroySemaphore(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSemaphore, nullptr);
 }
 
 /*

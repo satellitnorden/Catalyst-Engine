@@ -30,7 +30,7 @@ void VulkanFramebuffer::Initialize(const VulkanRenderPass &vulkanRenderPass, con
 	CreateFramebufferCreateInfo(framebufferCreateInfo, vulkanRenderPass, attachments, extent);
 
 	//Create the Vulkan framebuffer!
-	VkResult result = vkCreateFramebuffer(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &framebufferCreateInfo, nullptr, &vulkanFramebuffer);
+	VkResult result = vkCreateFramebuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), &framebufferCreateInfo, nullptr, &vulkanFramebuffer);
 
 #if !defined(CATALYST_FINAL)
 	if (result != VK_SUCCESS)
@@ -44,7 +44,7 @@ void VulkanFramebuffer::Initialize(const VulkanRenderPass &vulkanRenderPass, con
 void VulkanFramebuffer::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the Vulkan framebuffer.
-	vkDestroyFramebuffer(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanFramebuffer, nullptr);
+	vkDestroyFramebuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanFramebuffer, nullptr);
 }
 
 /*

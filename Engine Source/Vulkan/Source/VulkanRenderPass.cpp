@@ -61,7 +61,7 @@ void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkan
 	CreateRenderPassCreateInfo(renderPassCreateInfo, attachmentDescriptions, subpassDescription, subpassDependency);
 
 	//Create the render pass!
-	VkResult result = vkCreateRenderPass(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &renderPassCreateInfo, nullptr, &vulkanRenderPass);
+	VkResult result = vkCreateRenderPass(VulkanInterface::Instance->GetLogicalDevice().Get(), &renderPassCreateInfo, nullptr, &vulkanRenderPass);
 
 #if !defined(CATALYST_FINAL)
 	if (result != VK_SUCCESS)
@@ -97,7 +97,7 @@ void VulkanRenderPass::Release() CATALYST_NOEXCEPT
 	}
 
 	//Destroy the Vulkan render pass.
-	vkDestroyRenderPass(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanRenderPass, nullptr);
+	vkDestroyRenderPass(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanRenderPass, nullptr);
 }
 
 /*
@@ -110,7 +110,7 @@ void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDes
 	VkAttachmentDescription depthAttachmentDescription;
 
 	depthAttachmentDescription.flags = 0;
-	depthAttachmentDescription.format = VulkanInterface::Instance->GetVulkanSwapchain().GetDepthBuffer().GetFormat();
+	depthAttachmentDescription.format = VulkanInterface::Instance->GetSwapchain().GetDepthBuffer().GetFormat();
 	depthAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
 	depthAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -124,7 +124,7 @@ void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDes
 	VkAttachmentDescription colorAttachmentDescription;
 
 	colorAttachmentDescription.flags = 0;
-	colorAttachmentDescription.format = VulkanInterface::Instance->GetVulkanPhysicalDevice().GetSurfaceFormat().format;
+	colorAttachmentDescription.format = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
 	colorAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
 	colorAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE;

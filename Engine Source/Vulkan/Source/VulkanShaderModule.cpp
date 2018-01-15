@@ -30,7 +30,7 @@ void VulkanShaderModule::Initialize(const DynamicArray<char> &shaderByteCode, co
 	CreateShaderModuleCreateInfo(shaderModuleCreateInfo, shaderByteCode);
 
 	//Create the shader module!
-	VkResult result = vkCreateShaderModule(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &shaderModuleCreateInfo, nullptr, &vulkanShaderModule);
+	VkResult result = vkCreateShaderModule(VulkanInterface::Instance->GetLogicalDevice().Get(), &shaderModuleCreateInfo, nullptr, &vulkanShaderModule);
 
 #if !defined(CATALYST_FINAL)
 	if (result != VK_SUCCESS)
@@ -47,7 +47,7 @@ void VulkanShaderModule::Initialize(const DynamicArray<char> &shaderByteCode, co
 void VulkanShaderModule::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the shader module.
-	vkDestroyShaderModule(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanShaderModule, nullptr);
+	vkDestroyShaderModule(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanShaderModule, nullptr);
 }
 
 /*

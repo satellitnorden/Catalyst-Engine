@@ -88,7 +88,7 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 	CreatePipelineLayoutCreateInfo(pipelineLayoutCreateInfo, vulkanDescriptorSetLayout);
 
 	//Create the Vulkan pipeline layout!
-	VkResult result = vkCreatePipelineLayout(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &pipelineLayoutCreateInfo, nullptr, &vulkanPipelineLayout);
+	VkResult result = vkCreatePipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &pipelineLayoutCreateInfo, nullptr, &vulkanPipelineLayout);
 
 #if !defined(CATALYST_FINAL)
 	if (result != VK_SUCCESS)
@@ -103,7 +103,7 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 	CreateGraphicsPipelineCreateInfo(graphicsPipelineCreateInfo, pipelineShaderStageCreateInfos, pipelineVertexInputStateCreateInfo, pipelineInputAssemblyStateCreateInfo, pipelineViewportStateCreateInfo, pipelineRasterizationStateCreateInfo, pipelineMultisampleStateCreateInfo, pipelineDepthStencilStateCreateInfo, pipelineColorBlendStateCreateInfo, vulkanPipelineLayout, vulkanRenderPass);
 
 	//Create the Vulkan pipeline!
-	result = vkCreateGraphicsPipelines(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &vulkanPipeline);
+	result = vkCreateGraphicsPipelines(VulkanInterface::Instance->GetLogicalDevice().Get(), VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &vulkanPipeline);
 
 #if !defined(CATALYST_FINAL)
 	if (result != VK_SUCCESS)
@@ -117,7 +117,7 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 void VulkanPipeline::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the Vulkan pipeline.
-	vkDestroyPipeline(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanPipeline, nullptr);
+	vkDestroyPipeline(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanPipeline, nullptr);
 
 	//Release the Vulkan render pass.
 	vulkanRenderPass.Release();
@@ -126,7 +126,7 @@ void VulkanPipeline::Release() CATALYST_NOEXCEPT
 	vulkanDescriptorSetLayout.Release();
 
 	//Destroy the Vulkan pipeline layout.
-	vkDestroyPipelineLayout(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanPipelineLayout, nullptr);
+	vkDestroyPipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanPipelineLayout, nullptr);
 }
 
 /*

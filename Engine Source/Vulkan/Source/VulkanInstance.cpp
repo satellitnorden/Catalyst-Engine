@@ -43,12 +43,7 @@ void VulkanInstance::Initialize() CATALYST_NOEXCEPT
 	CreateInstanceCreateInfo(instanceCreateInfo, applicationInfo);
 
 	//Create the instance!
-	VkResult result = vkCreateInstance(&instanceCreateInfo, nullptr, &vulkanInstance);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkCreateInstance(&instanceCreateInfo, nullptr, &vulkanInstance));
 }
 
 /*
@@ -79,8 +74,8 @@ void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) c
 */
 void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstanceInfo, const VkApplicationInfo &applicationInfo) const CATALYST_NOEXCEPT
 {
-	uint32 glfwExtensionCount = 0;
-	const char **glfwExtensions = nullptr;
+	uint32 glfwExtensionCount{ 0 };
+	const char *CATALYST_RESTRICT *CATALYST_RESTRICT glfwExtensions{ nullptr };
 
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 

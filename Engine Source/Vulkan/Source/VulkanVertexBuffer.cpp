@@ -42,9 +42,9 @@ void VulkanVertexBuffer::Initialize(const DynamicArray<Vertex> &vertices) CATALY
 	//Copy the vertices data into the staging buffer.
 	void *data;
 
-	vkMapMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingDeviceMemory, 0, vertexBufferSize, 0, &data);
+	vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, 0, vertexBufferSize, 0, &data);
 	MemoryUtilities::CopyMemory(data, vertices.Data(), static_cast<size_t>(vertexBufferSize));
-	vkUnmapMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingDeviceMemory);
+	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory);
 
 	//Create the vertex buffer.
 	VulkanUtilities::CreateVulkanBuffer(vertexBufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vulkanBuffer, vulkanDeviceMemory);
@@ -53,10 +53,10 @@ void VulkanVertexBuffer::Initialize(const DynamicArray<Vertex> &vertices) CATALY
 	VulkanUtilities::CopyBufferToBuffer(vertexBufferSize, stagingBuffer, vulkanBuffer);
 
 	//Free the staging device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingDeviceMemory, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, nullptr);
 
 	//Destroy the staging buffer.
-	vkDestroyBuffer(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), stagingBuffer, nullptr);
+	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBuffer, nullptr);
 }
 
 /*
@@ -65,8 +65,8 @@ void VulkanVertexBuffer::Initialize(const DynamicArray<Vertex> &vertices) CATALY
 void VulkanVertexBuffer::Release() CATALYST_NOEXCEPT
 {
 	//Free the Vulkan device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
 
 	//Destroy the Vulkan vertex buffer.
-	vkDestroyBuffer(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanBuffer, nullptr);
+	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, nullptr);
 }

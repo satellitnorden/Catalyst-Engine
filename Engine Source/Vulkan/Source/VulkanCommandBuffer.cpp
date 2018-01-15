@@ -32,7 +32,7 @@ void VulkanCommandBuffer::Initialize(const VulkanCommandPool &vulkanCommandPool)
 	CreateCommandBufferAllocateInfo(commandBufferAllocateInfo, vulkanCommandPool);
 
 	//Allocate the command buffer!
-	VkResult result = vkAllocateCommandBuffers(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &commandBufferAllocateInfo, &vulkanCommandBuffer);
+	VkResult result = vkAllocateCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandBufferAllocateInfo, &vulkanCommandBuffer);
 
 #if !defined(CATALYST_FINAL)
 	if (result != VK_SUCCESS)
@@ -83,7 +83,7 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanR
 	renderPassBeginInfo.renderPass = vulkanRenderPass.Get();
 	renderPassBeginInfo.framebuffer = vulkanRenderPass.GetFrameBuffers()[framebufferIndex].Get();
 	renderPassBeginInfo.renderArea.offset = { 0, 0 };
-	renderPassBeginInfo.renderArea.extent = VulkanInterface::Instance->GetVulkanSwapchain().GetSwapExtent();
+	renderPassBeginInfo.renderArea.extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 	renderPassBeginInfo.clearValueCount = static_cast<uint32>(clearValues.Size());
 	renderPassBeginInfo.pClearValues = clearValues.Data();
 

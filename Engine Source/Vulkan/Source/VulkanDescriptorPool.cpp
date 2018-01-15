@@ -42,7 +42,7 @@ void VulkanDescriptorPool::Initialize() CATALYST_NOEXCEPT
 	CreateDescriptorPoolCreateInfo(descriptorPoolCreateInfo, descriptorPoolSizes);
 
 	//Create the Vulkan descriptor pool!
-	VkResult result = vkCreateDescriptorPool(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &descriptorPoolCreateInfo, nullptr, &vulkanDescriptorPool);
+	VkResult result = vkCreateDescriptorPool(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorPoolCreateInfo, nullptr, &vulkanDescriptorPool);
 
 #if !defined(CATALYST_FINAL)
 	if (result != VK_SUCCESS)
@@ -56,7 +56,7 @@ void VulkanDescriptorPool::Initialize() CATALYST_NOEXCEPT
 void VulkanDescriptorPool::Release() CATALYST_NOEXCEPT
 {
 	//Destroy this Vulkan descriptor pool.
-	vkDestroyDescriptorPool(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanDescriptorPool, nullptr);
+	vkDestroyDescriptorPool(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDescriptorPool, nullptr);
 }
 
 /*

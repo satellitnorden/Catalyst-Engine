@@ -45,13 +45,13 @@ void VulkanDepthBuffer::Initialize(const VkExtent2D imageExtent) CATALYST_NOEXCE
 void VulkanDepthBuffer::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the Vulkan image.
-	vkDestroyImage(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanImage, nullptr);
+	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImage, nullptr);
 
 	//Free the device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
 
 	//Destroy the Vulkan image view.
-	vkDestroyImageView(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanImageView, nullptr);
+	vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImageView, nullptr);
 }
 
 /*
@@ -66,7 +66,7 @@ VkFormat VulkanDepthBuffer::FindMostDesirableDepthBufferFormat() const CATALYST_
 	{
 		//Get the physical device format properties for this format.
 		VkFormatProperties formatProperties;
-		vkGetPhysicalDeviceFormatProperties(VulkanInterface::Instance->GetVulkanPhysicalDevice().Get(), desirableFormat, &formatProperties);
+		vkGetPhysicalDeviceFormatProperties(VulkanInterface::Instance->GetPhysicalDevice().Get(), desirableFormat, &formatProperties);
 
 		if ((formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) == VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
 		{

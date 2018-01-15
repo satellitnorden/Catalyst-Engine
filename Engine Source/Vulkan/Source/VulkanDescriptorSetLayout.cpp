@@ -30,7 +30,7 @@ void VulkanDescriptorSetLayout::Initialize(const DynamicArray<VkDescriptorSetLay
 	CreateDescriptorSetLayoutCreateInfo(descriptorSetLayoutCreateInfo, descriptorSetLayoutBindings);
 
 	//Create the descriptor set layout!
-	VkResult result = vkCreateDescriptorSetLayout(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &descriptorSetLayoutCreateInfo, nullptr, &vulkanDescriptorSetLayout);
+	VkResult result = vkCreateDescriptorSetLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorSetLayoutCreateInfo, nullptr, &vulkanDescriptorSetLayout);
 
 #if !defined(CATALYST_FINAL)
 	if (result != VK_SUCCESS)
@@ -44,7 +44,7 @@ void VulkanDescriptorSetLayout::Initialize(const DynamicArray<VkDescriptorSetLay
 void VulkanDescriptorSetLayout::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the descriptor set layout.
-	vkDestroyDescriptorSetLayout(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanDescriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDescriptorSetLayout, nullptr);
 }
 
 /*

@@ -34,8 +34,8 @@ void VulkanSwapchain::Initialize() CATALYST_NOEXCEPT
 	FindMostOptimalSwapExtent();
 
 	//Set up the queue family indices.
-	const uint32 graphicsQueueFamilyIndex = VulkanInterface::Instance->GetVulkanPhysicalDevice().GetGraphicsQueueFamilyIndex();
-	const uint32 presentQueueFamilyIndex = VulkanInterface::Instance->GetVulkanPhysicalDevice().GetPresentQueueFamilyIndex();
+	const uint32 graphicsQueueFamilyIndex = VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex();
+	const uint32 presentQueueFamilyIndex = VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex();
 
 	uint32 queueFamilyIndices[] = { graphicsQueueFamilyIndex, presentQueueFamilyIndex };
 
@@ -44,7 +44,7 @@ void VulkanSwapchain::Initialize() CATALYST_NOEXCEPT
 	CreateSwapChainCreateInfo(swapChainCreateInfo, queueFamilyIndices, graphicsQueueFamilyIndex, presentQueueFamilyIndex);
 
 	//Create the swap chain!
-	const VkResult result = VULKAN_CREATE_SWAPCHAIN(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), &swapChainCreateInfo, nullptr, &vulkanSwapChain);
+	const VkResult result = VULKAN_CREATE_SWAPCHAIN(VulkanInterface::Instance->GetLogicalDevice().Get(), &swapChainCreateInfo, nullptr, &vulkanSwapChain);
 
 #if !defined(CATALYST_FINAL)
 	if (result != VK_SUCCESS)
@@ -54,17 +54,17 @@ void VulkanSwapchain::Initialize() CATALYST_NOEXCEPT
 	//Query the swap chain images.
 	uint32 swapChainImagesCount = 0;
 	
-	VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanSwapChain, &swapChainImagesCount, nullptr);
+	VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &swapChainImagesCount, nullptr);
 
 	swapChainImages.Resize(swapChainImagesCount);
-	VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanSwapChain, &swapChainImagesCount, swapChainImages.Data());
+	VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &swapChainImagesCount, swapChainImages.Data());
 
 	//Create the image views.
 	swapChainImageViews.Resize(swapChainImagesCount);
 
 	for (uint32 i = 0; i < swapChainImagesCount; ++i)
 	{
-		VulkanUtilities::CreateVulkanImageView(VulkanInterface::Instance->GetVulkanPhysicalDevice().GetSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT, swapChainImages[i], swapChainImageViews[i]);
+		VulkanUtilities::CreateVulkanImageView(VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT, swapChainImages[i], swapChainImageViews[i]);
 	}
 
 	//Initialize the depth buffer.
@@ -82,11 +82,11 @@ void VulkanSwapchain::Release() CATALYST_NOEXCEPT
 	//Destroy all image views.
 	for (auto &swapChainImageView : swapChainImageViews)
 	{
-		vkDestroyImageView(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), swapChainImageView, nullptr);
+		vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), swapChainImageView, nullptr);
 	}
 
 	//Destroy the Vulkan swap chain.
-	VULKAN_DESTROY_SWAPCHAIN(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanSwapChain, nullptr);
+	VULKAN_DESTROY_SWAPCHAIN(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, nullptr);
 }
 
 /*
@@ -94,7 +94,7 @@ void VulkanSwapchain::Release() CATALYST_NOEXCEPT
 */
 void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const CATALYST_RESTRICT imageAvailableSemaphore) CATALYST_NOEXCEPT
 {
-	VULKAN_AQUIRE_NEXT_IMAGE(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanSwapChain, std::numeric_limits<uint64>::max(), imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &currentImageIndex);
+	VULKAN_AQUIRE_NEXT_IMAGE(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, std::numeric_limits<uint64>::max(), imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &currentImageIndex);
 }
 
 /*
@@ -107,7 +107,7 @@ void VulkanSwapchain::Present(const VulkanSemaphore *const CATALYST_RESTRICT ren
 	CreatePresentInfo(presentInfo, renderFinishedSemaphore);
 
 	//Present on the present queue!
-	VULKAN_QUEUUE_PRESENT(VulkanInterface::Instance->GetPresentVulkanQueue().Get(), &presentInfo);
+	VULKAN_QUEUUE_PRESENT(VulkanInterface::Instance->GetPresentQueue().Get(), &presentInfo);
 }
 
 /*
@@ -116,7 +116,7 @@ void VulkanSwapchain::Present(const VulkanSemaphore *const CATALYST_RESTRICT ren
 void VulkanSwapchain::FindMostOptimalSwapExtent() CATALYST_NOEXCEPT
 {
 	VULKAN_SURFACE_CAPABILITIES_TYPE surfaceCapabilities;
-	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_CAPABILITIES(VulkanInterface::Instance->GetVulkanPhysicalDevice().Get(), VulkanInterface::Instance->GetVulkanSurface().Get(), &surfaceCapabilities);
+	VULKAN_GET_PHYSICAL_DEVICE_SURFACE_CAPABILITIES(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities);
 
 	if (surfaceCapabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
 	{
@@ -142,11 +142,11 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VULKAN_SWAPCHAIN_CREATE_INFO_TYP
 	swapChainCreateInfo.sType = VULKAN_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO;
 	swapChainCreateInfo.pNext = nullptr;
 	swapChainCreateInfo.flags = 0;
-	swapChainCreateInfo.surface = VulkanInterface::Instance->GetVulkanSurface().Get();
+	swapChainCreateInfo.surface = VulkanInterface::Instance->GetSurface().Get();
 
-	const auto &surfaceCapabilities = VulkanInterface::Instance->GetVulkanPhysicalDevice().GetSurfaceCapabilities();
-	const auto &surfaceFormat = VulkanInterface::Instance->GetVulkanPhysicalDevice().GetSurfaceFormat();
-	const auto &presentMode = VulkanInterface::Instance->GetVulkanPhysicalDevice().GetPresentMode();
+	const auto &surfaceCapabilities = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceCapabilities();
+	const auto &surfaceFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat();
+	const auto &presentMode = VulkanInterface::Instance->GetPhysicalDevice().GetPresentMode();
 
 	uint32 minimumImageCount = surfaceCapabilities.minImageCount + 1;
 

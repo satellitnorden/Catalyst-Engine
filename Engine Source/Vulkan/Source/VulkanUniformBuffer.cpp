@@ -46,10 +46,10 @@ void VulkanUniformBuffer::Initialize(const VkDeviceSize newUniformBufferSize) CA
 void VulkanUniformBuffer::Release() CATALYST_NOEXCEPT
 {
 	//Free the Vulkan device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
 
 	//Destroy the Vulkan vertex buffer.
-	vkDestroyBuffer(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanBuffer, nullptr);
+	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, nullptr);
 }
 
 /*
@@ -59,9 +59,9 @@ void VulkanUniformBuffer::UploadData(void *CATALYST_RESTRICT newData) const CATA
 {
 	void *mappedMemory;
 
-	vkMapMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanDeviceMemory, 0, uniformBufferSize, 0, &mappedMemory);
+	vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, 0, uniformBufferSize, 0, &mappedMemory);
 	MemoryUtilities::CopyMemory(mappedMemory, newData, static_cast<size_t>(uniformBufferSize));
-	vkUnmapMemory(VulkanInterface::Instance->GetVulkanLogicalDevice().Get(), vulkanDeviceMemory);
+	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory);
 }
 
 /*
