@@ -1,6 +1,9 @@
 //Header file.
 #include <VulkanLogicalDevice.h>
 
+//Vulkan.
+#include <VulkanInterface.h>
+
 /*
 *	Default constructor.
 */
@@ -20,13 +23,13 @@ VulkanLogicalDevice::~VulkanLogicalDevice() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan logical device.
 */
-void VulkanLogicalDevice::Initialize(const VulkanPhysicalDevice &vulkanPhysicalDevice) CATALYST_NOEXCEPT
+void VulkanLogicalDevice::Initialize() CATALYST_NOEXCEPT
 {
 	//Create the device queue create info.
 	static const float queuePriorities = 1.0f;
 
 	DynamicArray<VkDeviceQueueCreateInfo> deviceQueueCreateInfos;
-	CreateDeviceQueueCreateInfos(deviceQueueCreateInfos, vulkanPhysicalDevice, &queuePriorities);
+	CreateDeviceQueueCreateInfos(deviceQueueCreateInfos, &queuePriorities);
 
 	//Create the physical device features.
 	VkPhysicalDeviceFeatures physicalDeviceFeatures;
@@ -39,27 +42,16 @@ void VulkanLogicalDevice::Initialize(const VulkanPhysicalDevice &vulkanPhysicalD
 	CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, requiredExtensions, &physicalDeviceFeatures);
 
 	//Create the logical device!
-	VkResult result = vkCreateDevice(vulkanPhysicalDevice.Get(), &deviceCreateInfo, nullptr, &vulkanLogicalDevice);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkCreateDevice(VulkanInterface::Instance->GetPhysicalDevice().Get(), &deviceCreateInfo, nullptr, &vulkanLogicalDevice));
 
 	//Initialize the graphics queue.
-	VkQueue newGraphicsQueue;
-	vkGetDeviceQueue(vulkanLogicalDevice, vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex(), 0, &newGraphicsQueue);
-	graphicsQueue.Initialize(newGraphicsQueue);
+	graphicsQueue.Initialize(VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex());
 
 	//Initialize the present queue.
-	VkQueue newPresentQueue;
-	vkGetDeviceQueue(vulkanLogicalDevice, vulkanPhysicalDevice.GetPresentQueueFamilyIndex(), 0, &newPresentQueue);
-	presentQueue.Initialize(newPresentQueue);
+	presentQueue.Initialize(VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex());
 
 	//Initialize the transfer queue.
-	VkQueue newTransferQueue;
-	vkGetDeviceQueue(vulkanLogicalDevice, vulkanPhysicalDevice.GetTransferQueueFamilyIndex(), 0, &newTransferQueue);
-	transferQueue.Initialize(newTransferQueue);
+	transferQueue.Initialize(VulkanInterface::Instance->GetPhysicalDevice().GetTransferQueueFamilyIndex());
 }
 
 /*
@@ -74,14 +66,14 @@ void VulkanLogicalDevice::Release() CATALYST_NOEXCEPT
 /*
 *	Creates the device queue create info.
 */
-void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const VulkanPhysicalDevice &vulkanPhysicalDevice, const float *const CATALYST_RESTRICT queuePriorities) const CATALYST_NOEXCEPT
+void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const float *const CATALYST_RESTRICT queuePriorities) const CATALYST_NOEXCEPT
 {
 	VkDeviceQueueCreateInfo graphicsDeviceQueueCreateInfo;
 
 	graphicsDeviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	graphicsDeviceQueueCreateInfo.pNext = nullptr;
 	graphicsDeviceQueueCreateInfo.flags = 0;
-	graphicsDeviceQueueCreateInfo.queueFamilyIndex = vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex();
+	graphicsDeviceQueueCreateInfo.queueFamilyIndex = VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex();
 	graphicsDeviceQueueCreateInfo.queueCount = 1;
 	graphicsDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
 
@@ -90,7 +82,7 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 	presentDeviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	presentDeviceQueueCreateInfo.pNext = nullptr;
 	presentDeviceQueueCreateInfo.flags = 0;
-	presentDeviceQueueCreateInfo.queueFamilyIndex = vulkanPhysicalDevice.GetPresentQueueFamilyIndex();
+	presentDeviceQueueCreateInfo.queueFamilyIndex = VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex();
 	presentDeviceQueueCreateInfo.queueCount = 1;
 	presentDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
 

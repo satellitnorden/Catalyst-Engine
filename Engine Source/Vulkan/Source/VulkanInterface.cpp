@@ -35,7 +35,7 @@ void VulkanInterface::Initialize(Window &window) CATALYST_NOEXCEPT
 	vulkanPhysicalDevice.Initialize();
 
 	//Initialize the Vulkan logical device.
-	vulkanLogicalDevice.Initialize(vulkanPhysicalDevice);
+	vulkanLogicalDevice.Initialize();
 
 	//Initialize the graphics Vulkan command pool.
 	graphicsVulkanCommandPool.Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());

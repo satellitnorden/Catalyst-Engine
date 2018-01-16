@@ -2,7 +2,7 @@
 #include <VulkanQueue.h>
 
 //Vulkan.
-#include <VulkanCommandBuffer.h>
+#include <VulkanInterface.h>
 
 /*
 *	Default constructor.
@@ -23,10 +23,10 @@ VulkanQueue::~VulkanQueue() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan queue.
 */
-void VulkanQueue::Initialize(const VkQueue &newVulkanQueue) CATALYST_NOEXCEPT
+void VulkanQueue::Initialize(const uint32 queueIndex) CATALYST_NOEXCEPT
 {
-	//Set the Vulkan queue.
-	vulkanQueue = newVulkanQueue;
+	//Get the Vulkan queue.
+	vkGetDeviceQueue(VulkanInterface::Instance->GetLogicalDevice().Get(), queueIndex, 0, &vulkanQueue);
 }
 
 /*

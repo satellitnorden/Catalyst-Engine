@@ -32,7 +32,7 @@ public:
 	/*
 	*	Initializes this Vulkan queue.
 	*/
-	void Initialize(const VkQueue &newVulkanQueue) CATALYST_NOEXCEPT;
+	void Initialize(const uint32 queueIndex) CATALYST_NOEXCEPT;
 
 	/*
 	*	Submits a command buffer to this Vulkan queue.

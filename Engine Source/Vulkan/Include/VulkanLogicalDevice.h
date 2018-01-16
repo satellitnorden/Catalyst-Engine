@@ -31,7 +31,7 @@ public:
 	/*
 	*	Initializes this Vulkan logical device.
 	*/
-	void Initialize(const VulkanPhysicalDevice &vulkanPhysicalDevice) CATALYST_NOEXCEPT;
+	void Initialize() CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan logical device.
@@ -41,17 +41,17 @@ public:
 	/*
 	*	Returns the graphics queue.
 	*/
-	inline const VulkanQueue& GetGraphicsQueue() const CATALYST_NOEXCEPT { return graphicsQueue; }
+	const VulkanQueue& GetGraphicsQueue() const CATALYST_NOEXCEPT { return graphicsQueue; }
 
 	/*
 	*	Returns the present queue.
 	*/
-	inline const VulkanQueue& GetPresentQueue() const CATALYST_NOEXCEPT { return presentQueue; }
+	const VulkanQueue& GetPresentQueue() const CATALYST_NOEXCEPT { return presentQueue; }
 
 	/*
 	*	Returns the transfer queue.
 	*/
-	inline const VulkanQueue& GetTransferQueue() const CATALYST_NOEXCEPT { return transferQueue; }
+	const VulkanQueue& GetTransferQueue() const CATALYST_NOEXCEPT { return transferQueue; }
 
 private:
 
@@ -70,7 +70,7 @@ private:
 	/*
 	*	Creates the device queue create infos.
 	*/
-	void CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const VulkanPhysicalDevice &vulkanPhysicalDevice, const float *const CATALYST_RESTRICT queuePriorities) const CATALYST_NOEXCEPT;
+	void CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const float *const CATALYST_RESTRICT queuePriorities) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a physical device features.
