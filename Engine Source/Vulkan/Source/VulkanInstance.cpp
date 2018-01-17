@@ -1,11 +1,14 @@
 //Header file.
 #include <VulkanInstance.h>
 
+//Vulkan.
+#include <VulkanCore.h>
+
 //Third party libraries.
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#if !defined(CATALYST_FINAL)
+#if VULKAN_DEBUGGING
 //Define the validation layers.
 namespace
 {
@@ -84,7 +87,7 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 	createInstanceInfo.flags = 0;
 	createInstanceInfo.pApplicationInfo = &applicationInfo;
 
-#if !defined(CATALYST_FINAL)
+#if VULKAN_DEBUGGING
 	createInstanceInfo.enabledLayerCount = static_cast<uint32>(validationLayers.Size());
 	createInstanceInfo.ppEnabledLayerNames = validationLayers.Data();
 #else

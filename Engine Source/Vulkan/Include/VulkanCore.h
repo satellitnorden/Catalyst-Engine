@@ -7,7 +7,16 @@
 #include <vulkan/vulkan.h>
 
 /*
-*	Alias types for platform specific Vulkan types.
+*	Turns Vulkan debugging on/off.
+*/
+#if !defined(CATALYST_FINAL)
+	#define VULKAN_DEBUGGING true
+#else
+	#define VULKAN_DEBUGGING false
+#endif
+
+/*
+*	Defines for platform specific Vulkan types.
 */
 #if defined(CATALYST_WINDOWS)
 	
@@ -46,7 +55,7 @@
 
 #endif
 
-#if !defined(CATALYST_FINAL)
+#if VULKAN_DEBUGGING
 /*
 *	Given a VkResult, return a string.
 */
@@ -106,7 +115,7 @@ static void PrintResultAndBreak(const char *const CATALYST_RESTRICT function, co
 /*
 *	Checks the result of a Vulkan function call and takes appropriate measures if it is not VK_SUCCESS in final.
 */
-#if !defined(CATALYST_FINAL)
+#if VULKAN_DEBUGGING
 	#define VULKAN_ERROR_CHECK(function) { const VkResult result = function; if (result != VK_SUCCESS) PrintResultAndBreak(#function, result); }
 #else
 	#define VULKAN_ERROR_CHECK(function) function
