@@ -59,7 +59,6 @@ static void PrintResultAndBreak(const char *const CATALYST_RESTRICT function, co
 		default:
 		{
 			PRINT_TO_CONSOLE("Could not find a VkResult case for this result");
-			BREAKPOINT;
 
 			break;
 		}
@@ -67,7 +66,6 @@ static void PrintResultAndBreak(const char *const CATALYST_RESTRICT function, co
 		case VK_ERROR_DEVICE_LOST:
 		{
 			PRINT_TO_CONSOLE("Result was VK_ERROR_DEVICE_LOST.");
-			BREAKPOINT;
 
 			break;
 		}
@@ -75,7 +73,6 @@ static void PrintResultAndBreak(const char *const CATALYST_RESTRICT function, co
 		case VK_ERROR_OUT_OF_DEVICE_MEMORY:
 		{
 			PRINT_TO_CONSOLE("Result was VK_ERROR_OUT_OF_DEVICE_MEMORY.");
-			BREAKPOINT;
 
 			break;
 		}
@@ -83,7 +80,6 @@ static void PrintResultAndBreak(const char *const CATALYST_RESTRICT function, co
 		case VK_ERROR_OUT_OF_HOST_MEMORY:
 		{
 			PRINT_TO_CONSOLE("Result was VK_ERROR_OUT_OF_HOST_MEMORY.");
-			BREAKPOINT;
 
 			break;
 		}
@@ -91,7 +87,6 @@ static void PrintResultAndBreak(const char *const CATALYST_RESTRICT function, co
 		case VK_SUCCESS:
 		{
 			PRINT_TO_CONSOLE("Result was VK_SUCCESS.");
-			BREAKPOINT;
 
 			break;
 		}
@@ -99,11 +94,12 @@ static void PrintResultAndBreak(const char *const CATALYST_RESTRICT function, co
 		case VK_TIMEOUT:
 		{
 			PRINT_TO_CONSOLE("Result was VK_TIMEOUT.");
-			BREAKPOINT;
 
 			break;
 		}
 	}
+
+	BREAKPOINT;
 }
 #endif
 
