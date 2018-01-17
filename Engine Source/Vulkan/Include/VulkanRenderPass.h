@@ -43,7 +43,7 @@ public:
 	/*
 	*	Returns the framebuffers for this Vulkan render pass.
 	*/
-	inline const DynamicArray<VulkanFramebuffer>& GetFrameBuffers() const CATALYST_NOEXCEPT { return framebuffers; }
+	const DynamicArray<VulkanFramebuffer>& GetFrameBuffers() const CATALYST_NOEXCEPT { return framebuffers; }
 
 private:
 

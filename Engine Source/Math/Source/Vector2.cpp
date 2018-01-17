@@ -29,7 +29,7 @@ Vector2::Vector2(const float newX, const float newY) CATALYST_NOEXCEPT
 /*
 *	Returns the length of the vector.
 */
-inline float Vector2::Length() const CATALYST_NOEXCEPT
+float Vector2::Length() const CATALYST_NOEXCEPT
 {
 	return GameMath::SquareRoot((X * X) + (Y * Y));
 }

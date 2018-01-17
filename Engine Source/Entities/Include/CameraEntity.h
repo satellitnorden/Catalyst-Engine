@@ -30,17 +30,17 @@ public:
 	/*
 	*	Returns the near plane of the frustum.
 	*/
-	inline const float& GetNearPlane() const CATALYST_NOEXCEPT { return nearPlane; }
+	const float& GetNearPlane() const CATALYST_NOEXCEPT { return nearPlane; }
 
 	/*
 	*	Returns the far plane of the frustum.
 	*/
-	inline const float& GetFarPlane() const CATALYST_NOEXCEPT { return farPlane; }
+	const float& GetFarPlane() const CATALYST_NOEXCEPT { return farPlane; }
 
 	/*
 	*	Returns the field of view for this camera entity.
 	*/
-	inline const float& GetFieldOfView() const CATALYST_NOEXCEPT { return fieldOfView; }
+	const float& GetFieldOfView() const CATALYST_NOEXCEPT { return fieldOfView; }
 
 private:
 
