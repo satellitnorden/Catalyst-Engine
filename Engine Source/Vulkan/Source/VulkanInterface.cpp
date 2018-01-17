@@ -37,6 +37,15 @@ void VulkanInterface::Initialize(Window &window) CATALYST_NOEXCEPT
 	//Initialize the Vulkan logical device.
 	vulkanLogicalDevice.Initialize();
 
+	//Initialize the graphics queue.
+	queues[static_cast<uint8>(Queue::Graphics)].Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
+
+	//Initialize the present queue.
+	queues[static_cast<uint8>(Queue::Present)].Initialize(vulkanPhysicalDevice.GetPresentQueueFamilyIndex());
+
+	//Initialize the transfer queue.
+	queues[static_cast<uint8>(Queue::Transfer)].Initialize(vulkanPhysicalDevice.GetTransferQueueFamilyIndex());
+
 	//Initialize the graphics Vulkan command pool.
 	graphicsVulkanCommandPool.Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
 
@@ -74,9 +83,9 @@ void VulkanInterface::PostUpdate(const VulkanSemaphore *const CATALYST_RESTRICT 
 void VulkanInterface::Release() CATALYST_NOEXCEPT
 {
 	//Wait for all queues to finish.
-	vulkanLogicalDevice.GetGraphicsQueue().WaitIdle();
-	vulkanLogicalDevice.GetPresentQueue().WaitIdle();
-	vulkanLogicalDevice.GetTransferQueue().WaitIdle();
+	queues[static_cast<uint8>(Queue::Graphics)].WaitIdle();
+	queues[static_cast<uint8>(Queue::Present)].WaitIdle();
+	queues[static_cast<uint8>(Queue::Transfer)].WaitIdle();
 
 	//Release all Vulkan depth buffers.
 	for (VulkanDepthBuffer * CATALYST_RESTRICT vulkanDepthBuffer : vulkanDepthBuffers)

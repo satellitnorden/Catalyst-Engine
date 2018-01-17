@@ -101,17 +101,17 @@ public:
 	/*
 	*	Returns the graphics queue.
 	*/
-	const VulkanQueue& GetGraphicsQueue() const CATALYST_NOEXCEPT { return vulkanLogicalDevice.GetGraphicsQueue(); }
+	const VulkanQueue& GetGraphicsQueue() const CATALYST_NOEXCEPT { return queues[static_cast<uint8>(Queue::Graphics)]; }
 
 	/*
 	*	Returns the present queue.
 	*/
-	const VulkanQueue& GetPresentQueue() const CATALYST_NOEXCEPT { return vulkanLogicalDevice.GetPresentQueue(); }
+	const VulkanQueue& GetPresentQueue() const CATALYST_NOEXCEPT { return queues[static_cast<uint8>(Queue::Present)]; }
 
 	/*
 	*	Returns the transfer queue.
 	*/
-	const VulkanQueue& GetTransferQueue() const CATALYST_NOEXCEPT { return vulkanLogicalDevice.GetTransferQueue(); }
+	const VulkanQueue& GetTransferQueue() const CATALYST_NOEXCEPT { return queues[static_cast<uint8>(Queue::Transfer)]; }
 
 	/*
 	*	Returns the graphics command pool.
@@ -175,6 +175,15 @@ public:
 
 private:
 
+	//Enumeration covering all queues.
+	enum class Queue : uint8
+	{
+		Graphics,
+		Present,
+		Transfer,
+		NumberOfQueues
+	};
+
 	//The Vulkan instance.
 	VulkanInstance vulkanInstance;
 
@@ -198,6 +207,9 @@ private:
 
 	//The Vulkan descriptor pool.
 	VulkanDescriptorPool vulkanDescriptorPool;
+
+	//Container for all queues.
+	VulkanQueue queues[static_cast<uint8>(Queue::NumberOfQueues)];
 
 	//Container for all Vulkan depth buffers.
 	DynamicArray<VulkanDepthBuffer *CATALYST_RESTRICT> vulkanDepthBuffers;

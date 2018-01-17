@@ -43,15 +43,6 @@ void VulkanLogicalDevice::Initialize() CATALYST_NOEXCEPT
 
 	//Create the logical device!
 	VULKAN_ERROR_CHECK(vkCreateDevice(VulkanInterface::Instance->GetPhysicalDevice().Get(), &deviceCreateInfo, nullptr, &vulkanLogicalDevice));
-
-	//Initialize the graphics queue.
-	graphicsQueue.Initialize(VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex());
-
-	//Initialize the present queue.
-	presentQueue.Initialize(VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex());
-
-	//Initialize the transfer queue.
-	transferQueue.Initialize(VulkanInterface::Instance->GetPhysicalDevice().GetTransferQueueFamilyIndex());
 }
 
 /*

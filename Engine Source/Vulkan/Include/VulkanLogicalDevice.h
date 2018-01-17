@@ -38,34 +38,10 @@ public:
 	*/
 	void Release() CATALYST_NOEXCEPT;
 
-	/*
-	*	Returns the graphics queue.
-	*/
-	const VulkanQueue& GetGraphicsQueue() const CATALYST_NOEXCEPT { return graphicsQueue; }
-
-	/*
-	*	Returns the present queue.
-	*/
-	const VulkanQueue& GetPresentQueue() const CATALYST_NOEXCEPT { return presentQueue; }
-
-	/*
-	*	Returns the transfer queue.
-	*/
-	const VulkanQueue& GetTransferQueue() const CATALYST_NOEXCEPT { return transferQueue; }
-
 private:
 
 	//The underlying Vulkan logical device.
 	VkDevice vulkanLogicalDevice;
-
-	//The graphics queue.
-	VulkanQueue graphicsQueue;
-
-	//The present queue.
-	VulkanQueue presentQueue;
-
-	//The transfer queue.
-	VulkanQueue transferQueue;
 
 	/*
 	*	Creates the device queue create infos.
