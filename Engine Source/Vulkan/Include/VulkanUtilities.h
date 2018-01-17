@@ -111,12 +111,7 @@ namespace VulkanUtilities
 		bufferCreateInfo.pQueueFamilyIndices = nullptr;
 
 		//Create the Vulkan buffer!
-		VkResult result = vkCreateBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), &bufferCreateInfo, nullptr, &vulkanBuffer);
-
-#if !defined(CATALYST_FINAL)
-		if (result != VK_SUCCESS)
-			BREAKPOINT;
-#endif
+		VULKAN_ERROR_CHECK(vkCreateBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), &bufferCreateInfo, nullptr, &vulkanBuffer));
 
 		//Get the memory requirements.
 		VkMemoryRequirements memoryRequirements;
@@ -147,15 +142,10 @@ namespace VulkanUtilities
 		memoryAllocateInfo.memoryTypeIndex = memoryTypeIndex;
 
 		//Allocate the memory!
-		result = vkAllocateMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), &memoryAllocateInfo, nullptr, &vulkanDeviceMemory);
-
-#if !defined(CATALYST_FINAL)
-		if (result != VK_SUCCESS)
-			BREAKPOINT;
-#endif
+		VULKAN_ERROR_CHECK(vkAllocateMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), &memoryAllocateInfo, nullptr, &vulkanDeviceMemory));
 
 		//Bind the buffer to the memory.
-		vkBindBufferMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, vulkanDeviceMemory, 0);
+		VULKAN_ERROR_CHECK(vkBindBufferMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, vulkanDeviceMemory, 0));
 	}
 
 	/*
@@ -202,12 +192,7 @@ namespace VulkanUtilities
 		imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 		//Create the image!
-		VkResult result = vkCreateImage(VulkanInterface::Instance->GetLogicalDevice().Get(), &imageCreateInfo, nullptr, &vulkanImage);
-
-#if !defined(CATALYST_FINAL)
-		if (result != VK_SUCCESS)
-			BREAKPOINT;
-#endif
+		VULKAN_ERROR_CHECK(vkCreateImage(VulkanInterface::Instance->GetLogicalDevice().Get(), &imageCreateInfo, nullptr, &vulkanImage));
 
 		//Get the memory requirements.
 		VkMemoryRequirements memoryRequirements;
@@ -238,15 +223,10 @@ namespace VulkanUtilities
 		memoryAllocateInfo.memoryTypeIndex = memoryTypeIndex;
 
 		//Allocate the memory!
-		result = vkAllocateMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), &memoryAllocateInfo, nullptr, &vulkanDeviceMemory);
-
-#if !defined(CATALYST_FINAL)
-		if (result != VK_SUCCESS)
-			BREAKPOINT;
-#endif
+		VULKAN_ERROR_CHECK(vkAllocateMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), &memoryAllocateInfo, nullptr, &vulkanDeviceMemory));
 
 		//Bind the image to the memory.
-		vkBindImageMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImage, vulkanDeviceMemory, 0);
+		VULKAN_ERROR_CHECK(vkBindImageMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImage, vulkanDeviceMemory, 0));
 	}
 
 	/*
@@ -274,12 +254,7 @@ namespace VulkanUtilities
 		imageViewCreateInfo.subresourceRange.layerCount = 1;
 
 		//Create the image view!
-		VkResult result = vkCreateImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), &imageViewCreateInfo, nullptr, &vulkanImageView);
-
-#if !defined(CATALYST_FINAL)
-		if (result != VK_SUCCESS)
-			BREAKPOINT;
-#endif
+		VULKAN_ERROR_CHECK(vkCreateImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), &imageViewCreateInfo, nullptr, &vulkanImageView));
 	}
 
 	/*
@@ -310,12 +285,7 @@ namespace VulkanUtilities
 		samplerCreateInfo.unnormalizedCoordinates = VK_FALSE;
 
 		//Create the sampler!
-		VkResult result = vkCreateSampler(VulkanInterface::Instance->GetLogicalDevice().Get(), &samplerCreateInfo, nullptr, &vulkanSampler);
-
-#if !defined(CATALYST_FINAL)
-		if (result != VK_SUCCESS)
-			BREAKPOINT;
-#endif
+		VULKAN_ERROR_CHECK(vkCreateSampler(VulkanInterface::Instance->GetLogicalDevice().Get(), &samplerCreateInfo, nullptr, &vulkanSampler));
 	}
 
 	/*

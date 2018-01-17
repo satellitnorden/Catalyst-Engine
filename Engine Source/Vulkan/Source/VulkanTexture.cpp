@@ -41,7 +41,7 @@ void VulkanTexture::Initialize(const uint32 width, const uint32 height, const by
 	//Copy the data into the staging buffer.
 	void *data;
 
-	vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, &data);
+	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, &data));
 	MemoryUtilities::CopyMemory(data, textureData, static_cast<size_t>(imageSize));
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 

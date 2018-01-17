@@ -42,7 +42,7 @@ void VulkanVertexBuffer::Initialize(const DynamicArray<Vertex> &vertices) CATALY
 	//Copy the vertices data into the staging buffer.
 	void *data;
 
-	vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, 0, vertexBufferSize, 0, &data);
+	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, 0, vertexBufferSize, 0, &data));
 	MemoryUtilities::CopyMemory(data, vertices.Data(), static_cast<size_t>(vertexBufferSize));
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory);
 

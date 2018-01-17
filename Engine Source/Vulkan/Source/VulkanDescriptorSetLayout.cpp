@@ -30,12 +30,7 @@ void VulkanDescriptorSetLayout::Initialize(const DynamicArray<VkDescriptorSetLay
 	CreateDescriptorSetLayoutCreateInfo(descriptorSetLayoutCreateInfo, descriptorSetLayoutBindings);
 
 	//Create the descriptor set layout!
-	VkResult result = vkCreateDescriptorSetLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorSetLayoutCreateInfo, nullptr, &vulkanDescriptorSetLayout);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkCreateDescriptorSetLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorSetLayoutCreateInfo, nullptr, &vulkanDescriptorSetLayout));
 }
 
 /*

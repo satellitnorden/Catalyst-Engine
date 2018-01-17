@@ -42,12 +42,7 @@ void VulkanDescriptorPool::Initialize() CATALYST_NOEXCEPT
 	CreateDescriptorPoolCreateInfo(descriptorPoolCreateInfo, descriptorPoolSizes);
 
 	//Create the Vulkan descriptor pool!
-	VkResult result = vkCreateDescriptorPool(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorPoolCreateInfo, nullptr, &vulkanDescriptorPool);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkCreateDescriptorPool(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorPoolCreateInfo, nullptr, &vulkanDescriptorPool));
 }
 
 /*

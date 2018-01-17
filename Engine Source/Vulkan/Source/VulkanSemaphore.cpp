@@ -30,12 +30,7 @@ void VulkanSemaphore::Initialize() CATALYST_NOEXCEPT
 	CreateSemaphoreCreateInfo(semaphoreCreateInfo);
 
 	//Create the Vulkan semaphore!
-	VkResult result = vkCreateSemaphore(VulkanInterface::Instance->GetLogicalDevice().Get(), &semaphoreCreateInfo, nullptr, &vulkanSemaphore);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkCreateSemaphore(VulkanInterface::Instance->GetLogicalDevice().Get(), &semaphoreCreateInfo, nullptr, &vulkanSemaphore));
 }
 
 /*

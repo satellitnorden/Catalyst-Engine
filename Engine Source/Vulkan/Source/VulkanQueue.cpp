@@ -39,7 +39,7 @@ void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const D
 	CreateSubmitInfo(submitInfo, waitSemaphores, waitStages, vulkanCommandBuffer, signalSemaphores);
 
 	//Submit the command buffer!
-	vkQueueSubmit(vulkanQueue, 1, &submitInfo, fence);
+	VULKAN_ERROR_CHECK(vkQueueSubmit(vulkanQueue, 1, &submitInfo, fence));
 }
 
 /*
@@ -48,7 +48,7 @@ void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const D
 void VulkanQueue::WaitIdle() const CATALYST_NOEXCEPT
 {
 	//Wait idle for this Vulkan queue.
-	vkQueueWaitIdle(vulkanQueue);
+	VULKAN_ERROR_CHECK(vkQueueWaitIdle(vulkanQueue));
 }
 
 /*

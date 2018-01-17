@@ -30,12 +30,7 @@ void VulkanShaderModule::Initialize(const DynamicArray<char> &shaderByteCode, co
 	CreateShaderModuleCreateInfo(shaderModuleCreateInfo, shaderByteCode);
 
 	//Create the shader module!
-	VkResult result = vkCreateShaderModule(VulkanInterface::Instance->GetLogicalDevice().Get(), &shaderModuleCreateInfo, nullptr, &vulkanShaderModule);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkCreateShaderModule(VulkanInterface::Instance->GetLogicalDevice().Get(), &shaderModuleCreateInfo, nullptr, &vulkanShaderModule));
 
 	//Set the stage.
 	stage = newStage;

@@ -32,12 +32,7 @@ void VulkanDescriptorSet::Initialize(const VulkanDescriptorPool &vulkanDescripto
 	CreateDescriptorSetAllocateInfo(descriptorSetAllocateInfo, vulkanDescriptorPool, vulkanDescriptorSetLayout);
 
 	//Allocate the descriptor set!
-	VkResult result = vkAllocateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorSetAllocateInfo, &vulkanDescriptorSet);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkAllocateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorSetAllocateInfo, &vulkanDescriptorSet));
 }
 
 /*

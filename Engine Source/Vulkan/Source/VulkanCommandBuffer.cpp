@@ -32,12 +32,7 @@ void VulkanCommandBuffer::Initialize(const VulkanCommandPool &vulkanCommandPool)
 	CreateCommandBufferAllocateInfo(commandBufferAllocateInfo, vulkanCommandPool);
 
 	//Allocate the command buffer!
-	VkResult result = vkAllocateCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandBufferAllocateInfo, &vulkanCommandBuffer);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkAllocateCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandBufferAllocateInfo, &vulkanCommandBuffer));
 }
 
 /*
@@ -50,7 +45,7 @@ void VulkanCommandBuffer::Begin(const VkCommandBufferUsageFlags commandBufferUsa
 	CreateCommandBufferBeginInfo(commandBufferBeginInfo, commandBufferUsageFlags);
 
 	//Begin the command buffer!
-	vkBeginCommandBuffer(vulkanCommandBuffer, &commandBufferBeginInfo);
+	VULKAN_ERROR_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer, &commandBufferBeginInfo));
 }
 
 /*
@@ -145,12 +140,7 @@ void VulkanCommandBuffer::CommandEndRenderPass() CATALYST_NOEXCEPT
 void VulkanCommandBuffer::End() CATALYST_NOEXCEPT
 {
 	//End this Vulkan command buffer.
-	VkResult result = vkEndCommandBuffer(vulkanCommandBuffer);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkEndCommandBuffer(vulkanCommandBuffer));
 }
 
 /*
@@ -158,7 +148,7 @@ void VulkanCommandBuffer::End() CATALYST_NOEXCEPT
 */
 void VulkanCommandBuffer::Reset() CATALYST_NOEXCEPT
 {
-	vkResetCommandBuffer(vulkanCommandBuffer, 0);
+	VULKAN_ERROR_CHECK(vkResetCommandBuffer(vulkanCommandBuffer, 0));
 }
 
 /*

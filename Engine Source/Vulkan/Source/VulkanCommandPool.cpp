@@ -32,12 +32,7 @@ void VulkanCommandPool::Initialize(const uint32 queueFamilyIndex) CATALYST_NOEXC
 	CreateCommandPoolCreateInfo(commandPoolCreateInfo, queueFamilyIndex);
 
 	//Create the command pool!
-	VkResult result = vkCreateCommandPool(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandPoolCreateInfo, nullptr, &vulkanCommandPool);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkCreateCommandPool(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandPoolCreateInfo, nullptr, &vulkanCommandPool));
 }
 
 /*

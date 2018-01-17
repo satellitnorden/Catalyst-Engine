@@ -30,12 +30,7 @@ void VulkanFramebuffer::Initialize(const VulkanRenderPass &vulkanRenderPass, con
 	CreateFramebufferCreateInfo(framebufferCreateInfo, vulkanRenderPass, attachments, extent);
 
 	//Create the Vulkan framebuffer!
-	VkResult result = vkCreateFramebuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), &framebufferCreateInfo, nullptr, &vulkanFramebuffer);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkCreateFramebuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), &framebufferCreateInfo, nullptr, &vulkanFramebuffer));
 }
 
 /*

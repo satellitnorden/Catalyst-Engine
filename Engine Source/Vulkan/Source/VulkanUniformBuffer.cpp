@@ -59,7 +59,7 @@ void VulkanUniformBuffer::UploadData(void *CATALYST_RESTRICT newData) const CATA
 {
 	void *mappedMemory;
 
-	vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, 0, uniformBufferSize, 0, &mappedMemory);
+	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, 0, uniformBufferSize, 0, &mappedMemory));
 	MemoryUtilities::CopyMemory(mappedMemory, newData, static_cast<size_t>(uniformBufferSize));
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory);
 }

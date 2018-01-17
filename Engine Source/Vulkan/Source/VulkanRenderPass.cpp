@@ -61,12 +61,7 @@ void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkan
 	CreateRenderPassCreateInfo(renderPassCreateInfo, attachmentDescriptions, subpassDescription, subpassDependency);
 
 	//Create the render pass!
-	VkResult result = vkCreateRenderPass(VulkanInterface::Instance->GetLogicalDevice().Get(), &renderPassCreateInfo, nullptr, &vulkanRenderPass);
-
-#if !defined(CATALYST_FINAL)
-	if (result != VK_SUCCESS)
-		BREAKPOINT;
-#endif
+	VULKAN_ERROR_CHECK(vkCreateRenderPass(VulkanInterface::Instance->GetLogicalDevice().Get(), &renderPassCreateInfo, nullptr, &vulkanRenderPass));
 
 	//Create the framebuffers.
 	framebuffers.Resize(vulkanPipelineCreationParameters.colorAttachmens.Size());
