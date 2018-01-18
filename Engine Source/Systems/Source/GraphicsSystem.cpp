@@ -185,8 +185,7 @@ void GraphicsSystem::CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDesc
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(vulkanDescriptorSet, pipelines[Pipeline::PhysicalPipeline]->GetDescriptorSetLayout());
 
 	//Update the write descriptor sets.
-	DynamicArray<VkWriteDescriptorSet> writeDescriptorSets;
-	writeDescriptorSets.Reserve(7);
+	DynamicArray<VkWriteDescriptorSet, 7> writeDescriptorSets;
 
 	writeDescriptorSets.EmplaceUnsafe(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(vulkanDescriptorSet, 0));
 	writeDescriptorSets.EmplaceUnsafe(modelDataUniformBuffer->GetWriteDescriptorSet(vulkanDescriptorSet, 1));

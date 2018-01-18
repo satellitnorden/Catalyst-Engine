@@ -53,9 +53,7 @@ void VulkanCommandBuffer::Begin(const VkCommandBufferUsageFlags commandBufferUsa
 */
 void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex) CATALYST_NOEXCEPT
 {
-	DynamicArray<VkClearValue> clearValues;
-
-	clearValues.Reserve(2);
+	DynamicArray<VkClearValue, 2> clearValues;
 
 	VkClearValue depthClearValue;
 

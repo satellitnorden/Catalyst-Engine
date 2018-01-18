@@ -47,7 +47,7 @@
 template <uint8 BitFieldSize>
 class BitField;
 
-template <class ObjectType>
+template <class ObjectType, size_t InitialCapacity>
 class DynamicArray;
 
 class DynamicString;

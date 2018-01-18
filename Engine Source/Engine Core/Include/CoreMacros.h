@@ -6,7 +6,7 @@
 #if !defined(CATALYST_FINAL)
 	#define CATALYST_BENCHMARK_AVERAGE(function)																											\
 		{																																							\
-			static DynamicArray<long long> durations;																												\
+			static DynamicArray<long long, 1'000'000> durations;																												\
 			static long long averageDuration = 0;																													\
 			auto timeBeforeFunction = std::chrono::high_resolution_clock::now();																					\
 			function;																																				\

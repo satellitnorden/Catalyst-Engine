@@ -1,6 +1,6 @@
 #pragma once
 
-template <class ObjectType>
+template <class ObjectType, size_t InitialCapacity = 0>
 class DynamicArray
 {
 
@@ -11,11 +11,18 @@ public:
 	*/
 	CATALYST_NOALIAS DynamicArray() CATALYST_NOEXCEPT
 		:
-		array(nullptr),
-		size(0),
-		capacity(0)
+		size(0)
 	{
+		if (InitialCapacity > 0)
+		{
+			Reserve(InitialCapacity);
+		}
 
+		else
+		{
+			array = nullptr;
+			capacity = 0;
+		}
 	}
 
 	/*
@@ -31,17 +38,6 @@ public:
 
 		//Set the size equal to the capacity.
 		size = capacity;
-	}
-
-	/*
-	*	Constructor taking the initial capacity as it's argument.
-	*/
-	CATALYST_NOALIAS DynamicArray(const size_t initialCapacity) CATALYST_NOEXCEPT
-		:
-		size(0)
-	{
-		//Reserve the initial capacity.
-		Reserve(initialCapacity);
 	}
 
 	/*
