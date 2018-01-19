@@ -4,7 +4,7 @@
 #include <EngineCore.h>
 
 //Defines.
-#define GAMEPAD_DEADZONE 0.20f
+#define GAMEPAD_DEADZONE 0.1f
 
 //Enumeration for all possible gamepad button states.
 enum class GamepadButtonState : uint8
