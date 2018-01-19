@@ -113,7 +113,7 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() CATALYST_NOEXCEPT
 	VULKAN_SURFACE_CAPABILITIES_TYPE surfaceCapabilities;
 	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_CAPABILITIES(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
 
-	if (surfaceCapabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+	if (surfaceCapabilities.currentExtent.width != UINT32_MAXIMUM)
 	{
 		swapExtent = surfaceCapabilities.currentExtent;
 	}
