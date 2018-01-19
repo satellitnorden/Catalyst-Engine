@@ -44,6 +44,7 @@
     <ClCompile Include="..\..\Engine Source\Math\Source\Vector2.cpp" />
     <ClCompile Include="..\..\Engine Source\Math\Source\Vector3.cpp" />
     <ClCompile Include="..\..\Engine Source\Math\Source\Vector4.cpp" />
+    <ClCompile Include="..\..\Engine Source\Multithreading\Source\DailyGroupQuest.cpp" />
     <ClCompile Include="..\..\Engine Source\Multithreading\Source\DailyQuest.cpp" />
     <ClCompile Include="..\..\Engine Source\Systems\Source\EngineSystem.cpp" />
     <ClCompile Include="..\..\Engine Source\Systems\Source\EntitySystem.cpp" />
@@ -120,6 +121,7 @@
     <ClInclude Include="..\..\Engine Source\Math\Include\Vector3.h" />
     <ClInclude Include="..\..\Engine Source\Math\Include\Vector4.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\AtomicQueue.h" />
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\DailyGroupQuest.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\MultithreadedResource.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\DailyQuest.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Semaphore.h" />

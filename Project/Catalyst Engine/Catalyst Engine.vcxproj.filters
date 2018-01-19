@@ -261,6 +261,9 @@
     <ClCompile Include="..\..\Engine Source\Multithreading\Source\DailyQuest.cpp">
       <Filter>Engine Source\Multithreading\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Multithreading\Source\DailyGroupQuest.cpp">
+      <Filter>Engine Source\Multithreading\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Systems\Include\GraphicsSystem.h">
@@ -513,6 +516,9 @@
       <Filter>Engine Source\Input\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\DailyQuest.h">
+      <Filter>Engine Source\Multithreading\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\DailyGroupQuest.h">
       <Filter>Engine Source\Multithreading\Include</Filter>
     </ClInclude>
   </ItemGroup>

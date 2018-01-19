@@ -91,6 +91,17 @@ void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 {
 	//Register the graphics system asynchronous update daily quest.
 	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemAsynchronousUpdate, [](void *CATALYST_RESTRICT) { GraphicsSystem::Instance->UpdateSystemAsynchronous(); }, nullptr);
+
+	//Register the physical entity update daily group quest.
+	QuestSystem::Instance->RegisterDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate, [](void *CATALYST_RESTRICT element)
+	{
+		PhysicalEntity *CATALYST_RESTRICT physicalEntity = *static_cast<PhysicalEntity *CATALYST_RESTRICT *CATALYST_RESTRICT>(element);
+
+		if (physicalEntity->IsInViewFrustum())
+		{
+			physicalEntity->UpdateModelMatrix();
+		}
+	});
 }
 
 /*
@@ -100,6 +111,9 @@ void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
 	//Carry out the graphics system asynchronous update daily quest.
 	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemAsynchronousUpdate);
+
+	//Carry out the physical entity update daily group quest.
+	QuestSystem::Instance->CarryOutDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate, PhysicalEntity::physicalEntities.Data(), PhysicalEntity::physicalEntities.Size(), sizeof(PhysicalEntity*));
 
 	//Update the main window.
 	mainWindow.Update();
@@ -424,12 +438,12 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 */
 void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 {
+	//Wait for the physical entity update daily group quest to complete.
+	QuestSystem::Instance->WaitForDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate);
+
 	//Iterate over all physical entities and draw them all.
 	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : PhysicalEntity::physicalEntities)
 	{
-		//Update this physical entity's model matrix.
-		physicalEntity->UpdateModelMatrix();
-
 		//Don't draw this physical entity if it isn't in the view frustum.
 		if (!physicalEntity->IsInViewFrustum())
 			continue;

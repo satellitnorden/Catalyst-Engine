@@ -4,6 +4,7 @@
 #include <EngineCore.h>
 
 //Multithreading.
+#include <DailyGroupQuest.h>
 #include <DailyQuest.h>
 
 //Enumeration covering all daily quests.
@@ -12,6 +13,13 @@ enum class DailyQuests : uint8
 	GraphicsSystemAsynchronousUpdate,
 	InputSystemAsynchronousUpdate,
 	NumberOfDailyQuests
+};
+
+//Enumeration covering all daily quests.
+enum class DailyGroupQuests : uint8
+{
+	PhysicalEntityUpdate,
+	NumberOfDailyGroupQuests
 };
 
 class QuestSystem
@@ -58,9 +66,28 @@ public:
 	void RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction, void *CATALYST_RESTRICT arguments) CATALYST_NOEXCEPT;
 
 	/*
+	*	Registers a daily group quest.
+	*
+	*	dailyGroupQuest - The daily group quest that is being registered.
+	*	objectSize = The size in bytes of the objects contained in the container.
+	*	function = Pointer to a function that will take on 'void *CATALYST_RESTRICT' parameter - this corresponds to one element in the container.
+	*/
+	void RegisterDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, DailyGroupQuestFunction function) CATALYST_NOEXCEPT;
+
+	/*
 	*	Carries out a daily quest.
 	*/
 	void CarryOutDailyQuest(const DailyQuests dailyQuest) CATALYST_NOEXCEPT;
+
+	/*
+	*	Carries out a daily group quest.
+	*/
+	void CarryOutDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, void *CATALYST_RESTRICT container, const size_t containerSize, const size_t objectSize) CATALYST_NOEXCEPT;
+
+	/*
+	*	Waits for a daily group quest to begin.
+	*/
+	void WaitForDailyGroupQuest(const DailyGroupQuests dailyGroupQuest) const CATALYST_NOEXCEPT;
 
 private:
 
@@ -72,6 +99,9 @@ private:
 
 	//Container for all daily quests.
 	DailyQuest dailyQuests[static_cast<uint8>(DailyQuests::NumberOfDailyQuests)];
+
+	//Container for all daily group quests.
+	DailyGroupQuest dailyGroupQuests[static_cast<uint8>(DailyGroupQuests::NumberOfDailyGroupQuests)];
 
 	/*
 	*	Executes an adventurer.
