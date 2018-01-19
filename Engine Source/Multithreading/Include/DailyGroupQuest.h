@@ -111,9 +111,9 @@ public:
 	void SetCurrentNumberOfCompletions(const uint8 newCurrentNumberOfCompletions) CATALYST_NOEXCEPT { currentNumberOfCompletions.store(newCurrentNumberOfCompletions); }
 
 	/*
-	*	Carries out this daily quest.
+	*	Carries out this daily quest. Returns whether or not the quest was actually carried out.
 	*/
-	void CarryOut() CATALYST_NOEXCEPT;
+	bool CarryOut() CATALYST_NOEXCEPT;
 
 private:
 

@@ -36,7 +36,7 @@ void QuestSystem::InitializeSystem() CATALYST_NOEXCEPT
 		numberOfHardwareThreads = 8;
 
 	//Set the number of adventurers.
-	numberOfAdventurers = numberOfHardwareThreads / 2;
+	numberOfAdventurers = numberOfHardwareThreads;
 
 	//Kick off all adventurer threads.
 	adventurerThreads.Reserve(numberOfAdventurers);
@@ -78,10 +78,6 @@ void QuestSystem::RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFun
 
 /*
 *	Registers a daily group quest.
-*
-*	dailyGroupQuest - The daily group quest that is being registered.
-*	objectSize = The size in bytes of the objects contained in the container.
-*	function = Pointer to a function that will take on 'void *CATALYST_RESTRICT' parameter - this corresponds to one element in the container.
 */
 void QuestSystem::RegisterDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, DailyGroupQuestFunction function) CATALYST_NOEXCEPT
 {
@@ -140,16 +136,25 @@ void QuestSystem::ExecuteAdventurer() CATALYST_NOEXCEPT
 {
 	while (!EngineSystem::Instance->ShouldTerminate())
 	{
+		//Keeep track of how many quests were actually carried out.
+		uint8 carriedOutQuests{ 0 };
+
 		//Carry out all daily quests.
 		for (uint8 i = 0; i < static_cast<uint8>(DailyQuests::NumberOfDailyQuests); ++i)
 		{
-			dailyQuests[i].CarryOut();
+			carriedOutQuests += dailyQuests[i].CarryOut() ? 1 : 0;
 		}
 
 		//Carry out all daily group quests.
 		for (uint8 i = 0; i < static_cast<uint8>(DailyGroupQuests::NumberOfDailyGroupQuests); ++i)
 		{
-			dailyGroupQuests[i].CarryOut();
+			carriedOutQuests += dailyGroupQuests[i].CarryOut() ? 1 : 0;
+		}
+
+		//If there were no quests that were carried out, then pave the way for other hypothetical threads.
+		if (carriedOutQuests == 0)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
 	}
 }

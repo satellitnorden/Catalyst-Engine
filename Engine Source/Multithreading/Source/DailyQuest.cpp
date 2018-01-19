@@ -18,15 +18,15 @@ DailyQuest::~DailyQuest() CATALYST_NOEXCEPT
 }
 
 /*
-*	Carries out this daily quest.
+*	Carries out this daily quest. Returns whether or not the quest was actually carried out.
 */
-void DailyQuest::CarryOut() CATALYST_NOEXCEPT
+bool DailyQuest::CarryOut() CATALYST_NOEXCEPT
 {
 	//If this daily quest is not available, just return.
 	DailyQuestCompletionState currentQuestCompletionState = questCompletionState.load();
 
 	if (currentQuestCompletionState != DailyQuestCompletionState::Available)
-		return;
+		return false;
 
 	//Try to begin this daily quest.
 	if (questCompletionState.compare_exchange_strong(currentQuestCompletionState, DailyQuestCompletionState::InProgress))
@@ -36,4 +36,6 @@ void DailyQuest::CarryOut() CATALYST_NOEXCEPT
 
 		questCompletionState = DailyQuestCompletionState::Complete;
 	}
+
+	return true;
 }

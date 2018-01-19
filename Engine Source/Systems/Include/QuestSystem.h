@@ -67,10 +67,6 @@ public:
 
 	/*
 	*	Registers a daily group quest.
-	*
-	*	dailyGroupQuest - The daily group quest that is being registered.
-	*	objectSize = The size in bytes of the objects contained in the container.
-	*	function = Pointer to a function that will take on 'void *CATALYST_RESTRICT' parameter - this corresponds to one element in the container.
 	*/
 	void RegisterDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, DailyGroupQuestFunction function) CATALYST_NOEXCEPT;
 

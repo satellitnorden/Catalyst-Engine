@@ -61,9 +61,9 @@ public:
 	void SetArguments(void *CATALYST_RESTRICT newArguments) CATALYST_NOEXCEPT { arguments = newArguments; }
 
 	/*
-	*	Carries out this daily quest.
+	*	Carries out this daily quest. Returns whether or not the quest was actually carried out.
 	*/
-	void CarryOut() CATALYST_NOEXCEPT;
+	bool CarryOut() CATALYST_NOEXCEPT;
 
 private:
 
