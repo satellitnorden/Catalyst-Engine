@@ -36,7 +36,7 @@ void QuestSystem::InitializeSystem() CATALYST_NOEXCEPT
 		numberOfHardwareThreads = 8;
 
 	//Set the number of adventurers.
-	numberOfAdventurers = numberOfHardwareThreads - (numberOfHardwareThreads / 4);
+	numberOfAdventurers = numberOfHardwareThreads / 2;
 
 	//Kick off all adventurer threads.
 	adventurerThreads.Reserve(numberOfAdventurers);

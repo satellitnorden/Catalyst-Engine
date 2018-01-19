@@ -53,6 +53,9 @@ bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	//Update the game system.
 	GAME_SYSTEM_CLASS::Instance->UpdateSystemSynchronous(deltaTime);
 
+	//Pre-update the graphics system.
+	GraphicsSystem::Instance->PreUpdateSystemSynchronous();
+
 	//Update the input system.
 	InputSystem::Instance->UpdateSystemSynchronous();
 

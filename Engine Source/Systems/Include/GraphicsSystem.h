@@ -49,6 +49,11 @@ public:
 	void PostInitializeSystem() CATALYST_NOEXCEPT;
 
 	/*
+	*	Pre-updates the graphics system synchronously.
+	*/
+	void PreUpdateSystemSynchronous() CATALYST_NOEXCEPT;
+
+	/*
 	*	Updates the graphics system synchronously.
 	*/
 	void UpdateSystemSynchronous() CATALYST_NOEXCEPT;
