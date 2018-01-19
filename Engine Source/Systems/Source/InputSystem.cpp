@@ -4,6 +4,9 @@
 //Input.
 #include <InputUtilities.h>
 
+//Systems.
+#include <QuestSystem.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(InputSystem);
 
@@ -24,11 +27,20 @@ InputSystem::~InputSystem() CATALYST_NOEXCEPT
 }
 
 /*
-*	Initializes the input system.
+*	Pre-initializes the input system.
 */
-void InputSystem::InitializeSystem() CATALYST_NOEXCEPT
+void InputSystem::PreInitializeSystem() CATALYST_NOEXCEPT
 {
 
+}
+
+/*
+*	Post-initializes the input system.
+*/
+void InputSystem::PostInitializeSystem() CATALYST_NOEXCEPT
+{
+	//Register the input system asynchronous update daily quest.
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, [](void *CATALYST_RESTRICT) { InputSystem::Instance->UpdateSystemAsynchronous(); }, nullptr);
 }
 
 /*
@@ -36,8 +48,8 @@ void InputSystem::InitializeSystem() CATALYST_NOEXCEPT
 */
 void InputSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
-	//Update buttons.
-	updateButtons.store(true);
+	//Carry out the input system asynchronous update daily quest.
+	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::InputSystemAsynchronousUpdate);
 }
 
 /*
@@ -45,36 +57,22 @@ void InputSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 */
 void InputSystem::UpdateSystemAsynchronous() CATALYST_NOEXCEPT
 {
-	//Check if buttons should be updated.
-	bool updateButtonsCopy{ false };
-	bool expectedUpdateButtons{ true };
-
-	if (updateButtons.compare_exchange_strong(expectedUpdateButtons, false))
-		updateButtonsCopy = true;
-
-	//If buttons should not be updated right now, yield the thread.
-	if (!updateButtonsCopy)
-		std::this_thread::yield();
-
 	//Update gamepad states.
 	for (uint8 i = 0; i < INPUT_MAXIMUM_GAMEPADS; ++i)
 	{
 		GamepadState currentGamepadStateCopy{ currentGamepadState[i].GetSafe() };
 
-		InputUtilities::GetCurrentGamepadState(i, updateButtonsCopy, currentGamepadStateCopy);
+		InputUtilities::GetCurrentGamepadState(i, currentGamepadStateCopy);
 
 		currentGamepadState[i].Set(currentGamepadStateCopy);
 	}
 
 	//Update the keyboard.
-	if (updateButtonsCopy)
-	{
-		KeyboardState currentKeyboardStateCopy{ currentKeyboardState.GetUnsafe() };
+	KeyboardState currentKeyboardStateCopy{ currentKeyboardState.GetUnsafe() };
 
-		InputUtilities::GetCurrentKeyboardState(currentKeyboardStateCopy);
+	InputUtilities::GetCurrentKeyboardState(currentKeyboardStateCopy);
 
-		currentKeyboardState.Set(currentKeyboardStateCopy);
-	}
+	currentKeyboardState.Set(currentKeyboardStateCopy);
 }
 
 /*

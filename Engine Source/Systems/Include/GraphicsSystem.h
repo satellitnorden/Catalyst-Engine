@@ -39,9 +39,14 @@ public:
 	~GraphicsSystem() CATALYST_NOEXCEPT;
 
 	/*
-	*	Initializes the graphics system.
+	*	Pre-initializes the graphics system.
 	*/
-	void InitializeSystem() CATALYST_NOEXCEPT;
+	void PreInitializeSystem() CATALYST_NOEXCEPT;
+
+	/*
+	*	Post-initializes the graphics system.
+	*/
+	void PostInitializeSystem() CATALYST_NOEXCEPT;
 
 	/*
 	*	Updates the graphics system synchronously.

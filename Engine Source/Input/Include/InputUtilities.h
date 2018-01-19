@@ -89,7 +89,7 @@ namespace InputUtilities
 	/*
 	*	Returns the current gamepad state.
 	*/
-	bool GetCurrentGamepadState(const uint8 index, const bool updateGamepadButtons, GamepadState &currentGamepadState) CATALYST_NOEXCEPT
+	bool GetCurrentGamepadState(const uint8 index, GamepadState &currentGamepadState) CATALYST_NOEXCEPT
 	{
 		XINPUT_STATE xInputState;
 
@@ -105,27 +105,24 @@ namespace InputUtilities
 			currentGamepadState.isConnected = true;
 		}
 
-		if (updateGamepadButtons)
-		{
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_UP, currentGamepadState.dpadUpButtonState);
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_DOWN, currentGamepadState.dpadDownButtonState);
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_LEFT, currentGamepadState.dpadLeftButtonState);
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_RIGHT, currentGamepadState.dpadRightButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_UP, currentGamepadState.dpadUpButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_DOWN, currentGamepadState.dpadDownButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_LEFT, currentGamepadState.dpadLeftButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_RIGHT, currentGamepadState.dpadRightButtonState);
 
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_START, currentGamepadState.startButtonState);
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_BACK, currentGamepadState.backButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_START, currentGamepadState.startButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_BACK, currentGamepadState.backButtonState);
 
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_THUMB, currentGamepadState.leftThumbButtonState);
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_THUMB, currentGamepadState.rightThumbButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_THUMB, currentGamepadState.leftThumbButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_THUMB, currentGamepadState.rightThumbButtonState);
 
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_SHOULDER, currentGamepadState.leftShoulderButtonState);
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_SHOULDER, currentGamepadState.rightShoulderButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_SHOULDER, currentGamepadState.leftShoulderButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_SHOULDER, currentGamepadState.rightShoulderButtonState);
 
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_A, currentGamepadState.aButtonState);
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_B, currentGamepadState.bButtonState);
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_X, currentGamepadState.xButtonState);
-			UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_Y, currentGamepadState.yButtonState);
-		}
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_A, currentGamepadState.aButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_B, currentGamepadState.bButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_X, currentGamepadState.xButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_Y, currentGamepadState.yButtonState);
 
 		currentGamepadState.leftTriggerValue = static_cast<float>(xInputState.Gamepad.bLeftTrigger) / 255;
 		currentGamepadState.rightTriggerValue = static_cast<float>(xInputState.Gamepad.bRightTrigger) / 255;

@@ -1,6 +1,9 @@
 //Header file.
 #include <QuestSystem.h>
 
+//Systems.
+#include <EngineSystem.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(QuestSystem);
 
@@ -33,22 +36,14 @@ void QuestSystem::InitializeSystem() CATALYST_NOEXCEPT
 		numberOfHardwareThreads = 8;
 
 	//Set the number of adventurers.
-	numberOfAdventurers = numberOfHardwareThreads * 2;
+	numberOfAdventurers = 2;
 
-	//Initialize the quests queue.
-	questsQueue.Initialize(256 + static_cast<size_t>(numberOfAdventurers));
+	//Kick off all adventurer threads.
+	adventurerThreads.Reserve(numberOfAdventurers);
 
-	//Create the proper number of adventurers.
-	adventurers.Resize(numberOfAdventurers);
-	threads.Reserve(numberOfAdventurers);
-
-	//Fire off all adventurer threads.
-	for (auto &adventurer : adventurers)
+	for (uint8 i = 0; i < numberOfAdventurers; ++i)
 	{
-		threads.EmplaceUnsafe([&]()
-		{
-			adventurer.Update();
-		});
+		adventurerThreads.EmplaceUnsafe(std::move(std::thread(&QuestSystem::ExecuteAdventurer, this)));
 	}
 }
 
@@ -57,9 +52,7 @@ void QuestSystem::InitializeSystem() CATALYST_NOEXCEPT
 */
 void QuestSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
-	//Remove completed quests.
-	while (!quests.empty() && quests[0].GetCompletionState() == QuestCompletionState::Complete)
-		quests.pop_front();
+	//Nothing to do here yet.
 }
 
 /*
@@ -67,41 +60,47 @@ void QuestSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 */
 void QuestSystem::ReleaseSystem() CATALYST_NOEXCEPT
 {
-	//Tell all adventurers to stop carrying out their quests.
-	for (auto &adventurer : adventurers)
-	{
-		adventurer.StopCarryingOutQuests();
-	}
-
 	//Join all adventurer threads.
-	for (auto &thread : threads)
+	for (auto &adventurerThread : adventurerThreads)
 	{
-		thread.join();
+		adventurerThread.join();
 	}
 }
 
 /*
-*	Carries out a quest and returns a handle to the quest.
+*	Registers a daily quest.
 */
-QuestLog QuestSystem::CarryOutQuest(std::function<void()> &&function) CATALYST_NOEXCEPT
+void QuestSystem::RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction, void *CATALYST_RESTRICT arguments) CATALYST_NOEXCEPT
 {
-	//Add the new quest to the quests container.
-	quests.emplace_back(std::move(function));
-
-	//Add a pointer to the new quest to the quests queue.
-	questsQueue.Push(&quests.back());
-
-	return QuestLog(&quests.back());
+	dailyQuests[static_cast<uint8>(dailyQuest)].SetFunction(newFunction);
+	dailyQuests[static_cast<uint8>(dailyQuest)].SetArguments(arguments);
 }
 
 /*
-*	Returns a quest from the quest queue.
+*	Carries out a daily quest.
 */
-CATALYST_RESTRICTED Quest* QuestSystem::GetNewQuest() CATALYST_NOEXCEPT
+void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest) CATALYST_NOEXCEPT
 {
-	Quest *CATALYST_RESTRICT newQuest = nullptr;
+	//Only carry out the daily quest if it is not available or in progress.
+	DailyQuestCompletionState questCompletionState = dailyQuests[static_cast<uint8>(dailyQuest)].GetQuestCompletionState();
 
-	questsQueue.PopIfNotEmpty(newQuest);
+	if (questCompletionState == DailyQuestCompletionState::Unavailable || questCompletionState == DailyQuestCompletionState::Complete)
+	{
+		dailyQuests[static_cast<uint8>(dailyQuest)].SetQuestCompletionState(DailyQuestCompletionState::Available);
+	}
+}
 
-	return newQuest;
+/*
+*	Executes an adventurer.
+*/
+void QuestSystem::ExecuteAdventurer() CATALYST_NOEXCEPT
+{
+	while (!EngineSystem::Instance->ShouldTerminate())
+	{
+		//Carry out all daily quests.
+		for (uint8 i = 0; i < static_cast<uint8>(DailyQuests::NumberOfDailyQuests); ++i)
+		{
+			dailyQuests[i].CarryOut();
+		}
+	}
 }

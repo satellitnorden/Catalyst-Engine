@@ -12,10 +12,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(EngineSystem);
 
-//Forward declarations.
-void UpdateInputSystemAsynchronous() CATALYST_NOEXCEPT;
-void UpdateGraphicsSystemAsynchronous() CATALYST_NOEXCEPT;
-
 /*
 *	Default constructor.
 */
@@ -37,16 +33,16 @@ EngineSystem::~EngineSystem() CATALYST_NOEXCEPT
 */
 void EngineSystem::InitializeSystem() CATALYST_NOEXCEPT
 {
-	//Initialize all systems.
-	InputSystem::Instance->InitializeSystem();
+	//Pre-initialize all systems.
+	InputSystem::Instance->PreInitializeSystem();
 	EntitySystem::Instance->InitializeSystem();
-	GraphicsSystem::Instance->InitializeSystem();
+	GraphicsSystem::Instance->PreInitializeSystem();
 	QuestSystem::Instance->InitializeSystem();
 	GAME_SYSTEM_CLASS::Instance->InitializeSystem();
 
-	//Fire off all asynchronous threads.
-	asynchronousThreads[AsynchronousThread::InputSystem] = std::thread(&UpdateInputSystemAsynchronous);
-	asynchronousThreads[AsynchronousThread::GraphicsSystem] = std::thread(&UpdateGraphicsSystemAsynchronous);
+	//Post-initialize all systems.
+	InputSystem::Instance->PostInitializeSystem();
+	GraphicsSystem::Instance->PostInitializeSystem();
 }
 
 /*
@@ -64,7 +60,7 @@ bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	EntitySystem::Instance->UpdateSystemSynchronous();
 
 	//Update the graphics system.
-	/*CATALYST_BENCHMARK_AVERAGE("GraphicsSystem::UpdateSystemSynchronous", */GraphicsSystem::Instance->UpdateSystemSynchronous()/*)*/;
+	GraphicsSystem::Instance->UpdateSystemSynchronous();
 
 	//Update the quest system.
 	QuestSystem::Instance->UpdateSystemSynchronous();
@@ -83,32 +79,10 @@ bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 */
 void EngineSystem::ReleaseSystem() CATALYST_NOEXCEPT
 {
-	//Join off all asynchronous threads.
-	asynchronousThreads[AsynchronousThread::InputSystem].join();
-	asynchronousThreads[AsynchronousThread::GraphicsSystem].join();
-
 	//Release all systems.
 	GAME_SYSTEM_CLASS::Instance->ReleaseSystem();
 	InputSystem::Instance->ReleaseSystem();
 	EntitySystem::Instance->ReleaseSystem();
 	GraphicsSystem::Instance->ReleaseSystem();
 	QuestSystem::Instance->ReleaseSystem();
-}
-
-/*
-*	Updates the input system asynchronously.
-*/
-void UpdateInputSystemAsynchronous() CATALYST_NOEXCEPT
-{
-	while (!EngineSystem::Instance->ShouldTerminate())
-		InputSystem::Instance->UpdateSystemAsynchronous();
-}
-
-/*
-*	Updates the graphics system asynchronously.
-*/
-void UpdateGraphicsSystemAsynchronous() CATALYST_NOEXCEPT
-{
-	while (!EngineSystem::Instance->ShouldTerminate())
-		GraphicsSystem::Instance->UpdateSystemAsynchronous();
 }

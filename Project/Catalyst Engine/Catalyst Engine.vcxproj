@@ -44,9 +44,7 @@
     <ClCompile Include="..\..\Engine Source\Math\Source\Vector2.cpp" />
     <ClCompile Include="..\..\Engine Source\Math\Source\Vector3.cpp" />
     <ClCompile Include="..\..\Engine Source\Math\Source\Vector4.cpp" />
-    <ClCompile Include="..\..\Engine Source\Multithreading\Source\Adventurer.cpp" />
-    <ClCompile Include="..\..\Engine Source\Multithreading\Source\Quest.cpp" />
-    <ClCompile Include="..\..\Engine Source\Multithreading\Source\QuestLog.cpp" />
+    <ClCompile Include="..\..\Engine Source\Multithreading\Source\DailyQuest.cpp" />
     <ClCompile Include="..\..\Engine Source\Systems\Source\EngineSystem.cpp" />
     <ClCompile Include="..\..\Engine Source\Systems\Source\EntitySystem.cpp" />
     <ClCompile Include="..\..\Engine Source\Systems\Source\GraphicsSystem.cpp" />
@@ -121,11 +119,9 @@
     <ClInclude Include="..\..\Engine Source\Math\Include\Vector2.h" />
     <ClInclude Include="..\..\Engine Source\Math\Include\Vector3.h" />
     <ClInclude Include="..\..\Engine Source\Math\Include\Vector4.h" />
-    <ClInclude Include="..\..\Engine Source\Multithreading\Include\Adventurer.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\AtomicQueue.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\MultithreadedResource.h" />
-    <ClInclude Include="..\..\Engine Source\Multithreading\Include\Quest.h" />
-    <ClInclude Include="..\..\Engine Source\Multithreading\Include\QuestLog.h" />
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\DailyQuest.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Semaphore.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Spinlock.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Threadlock.h" />

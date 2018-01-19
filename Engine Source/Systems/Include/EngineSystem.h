@@ -48,16 +48,6 @@ public:
 
 private:
 
-	/*
-	*	Enumeration covering all asynchronous threads.
-	*/
-	enum AsynchronousThread : uint8
-	{
-		InputSystem,
-		GraphicsSystem,
-		NumberOfAsynchronousThreads
-	};
-
 	//Denotes whether or not the game should terminate.
 	std::atomic<bool> shouldTerminate{ false };
 
@@ -66,8 +56,5 @@ private:
 
 	//The current time.
 	std::chrono::time_point<std::chrono::steady_clock> currentTime;
-
-	//Container of all asynchronous threads.
-	std::thread asynchronousThreads[AsynchronousThread::NumberOfAsynchronousThreads];
 
 };

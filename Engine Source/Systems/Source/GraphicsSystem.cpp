@@ -41,9 +41,9 @@ GraphicsSystem::~GraphicsSystem() CATALYST_NOEXCEPT
 }
 
 /*
-*	Initializes the graphics system.
+*	Pre-initializes the graphics system.
 */
-void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
+void GraphicsSystem::PreInitializeSystem() CATALYST_NOEXCEPT
 {
 	//Initialize the main window.
 	mainWindow.Initialize();
@@ -85,10 +85,22 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 }
 
 /*
+*	Post-initializes the graphics system.
+*/
+void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
+{
+	//Register the graphics system asynchronous update daily quest.
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemAsynchronousUpdate, [](void *CATALYST_RESTRICT) { GraphicsSystem::Instance->UpdateSystemAsynchronous(); }, nullptr);
+}
+
+/*
 *	Updates the graphics system synchronously.
 */
 void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
+	//Carry out the graphics system asynchronous update daily quest.
+	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemAsynchronousUpdate);
+
 	//Update the main window.
 	mainWindow.Update();
 
@@ -412,15 +424,12 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 */
 void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 {
-	//Update the model matrix on all physical entities.
-	QuestSystem::Instance->DoForAll<PhysicalEntity *CATALYST_RESTRICT>(PhysicalEntity::physicalEntities, [](PhysicalEntity *CATALYST_RESTRICT physicalEntity)
-	{
-		physicalEntity->UpdateModelMatrix();
-	});
-
 	//Iterate over all physical entities and draw them all.
 	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : PhysicalEntity::physicalEntities)
 	{
+		//Update this physical entity's model matrix.
+		physicalEntity->UpdateModelMatrix();
+
 		//Don't draw this physical entity if it isn't in the view frustum.
 		if (!physicalEntity->IsInViewFrustum())
 			continue;

@@ -252,20 +252,14 @@
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanAllocator.cpp">
       <Filter>Engine Source\Vulkan\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Multithreading\Source\Adventurer.cpp">
-      <Filter>Engine Source\Multithreading\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Multithreading\Source\Quest.cpp">
-      <Filter>Engine Source\Multithreading\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Multithreading\Source\QuestLog.cpp">
-      <Filter>Engine Source\Multithreading\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine Source\Systems\Source\QuestSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanFence.cpp">
       <Filter>Engine Source\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Multithreading\Source\DailyQuest.cpp">
+      <Filter>Engine Source\Multithreading\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -446,16 +440,7 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanAllocation.h">
       <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Multithreading\Include\Adventurer.h">
-      <Filter>Engine Source\Multithreading\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\AtomicQueue.h">
-      <Filter>Engine Source\Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Multithreading\Include\Quest.h">
-      <Filter>Engine Source\Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Multithreading\Include\QuestLog.h">
       <Filter>Engine Source\Multithreading\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Systems\Include\QuestSystem.h">
@@ -526,6 +511,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Input\Include\KeyboardState.h">
       <Filter>Engine Source\Input\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\DailyQuest.h">
+      <Filter>Engine Source\Multithreading\Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

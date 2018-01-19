@@ -87,6 +87,6 @@ private:
 	VulkanDescriptorSet descriptorSet;
 
 	//Denotes whether or not this physical entity is in the view frustum.
-	std::atomic<bool> isInViewFrustum{ false };
+	std::atomic<bool> isInViewFrustum{ true };
 
 };
