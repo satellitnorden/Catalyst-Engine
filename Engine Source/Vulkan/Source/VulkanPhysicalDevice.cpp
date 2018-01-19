@@ -50,23 +50,23 @@ void VulkanPhysicalDevice::Initialize() CATALYST_NOEXCEPT
 	//Of all suitable physical devices, choose the most suitable one.
 	vulkanPhysicalDevice = GetMostSuitableDevice(suitablePhysicalDevices);
 
-	//Now that a suitable physical device is choosen, get the physical device properties.
-	vkGetPhysicalDeviceProperties(vulkanPhysicalDevice, &physicalDeviceProperties);
-
-	//Get the physical device features.
+	//Now that a suitable physical device is choosen, get the physical device features.
 	vkGetPhysicalDeviceFeatures(vulkanPhysicalDevice, &physicalDeviceFeatures);
 
 	//Get the physical device memory properties.
 	vkGetPhysicalDeviceMemoryProperties(vulkanPhysicalDevice, &physicalDeviceMemoryProperties);
+
+	//Get the physical device properties.
+	vkGetPhysicalDeviceProperties(vulkanPhysicalDevice, &physicalDeviceProperties);
+
+	//Get the most optimal present mode.
+	presentMode = GetMostOptimalPresentMode();
 
 	//Get the surface capabilities.
 	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_CAPABILITIES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
 
 	//Get the most optimal surface format.
 	surfaceFormat = GetMostOptimalSurfaceFormat();
-
-	//Get the most optimal present mode.
-	presentMode = GetMostOptimalPresentMode();
 
 	//Retrieve the queue family properties.
 	uint32 queueFamilyCount{ 0 };

@@ -118,8 +118,7 @@ namespace VulkanUtilities
 		vkGetBufferMemoryRequirements(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, &memoryRequirements);
 
 		//Find the memory type index.
-		VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
-		vkGetPhysicalDeviceMemoryProperties(VulkanInterface::Instance->GetPhysicalDevice().Get(), &physicalDeviceMemoryProperties);
+		const VkPhysicalDeviceMemoryProperties &physicalDeviceMemoryProperties = VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceMemoryProperties();
 
 		//Iterate over all memory types and find the proper memory type index.
 		uint32 memoryTypeIndex = 0;
@@ -199,8 +198,7 @@ namespace VulkanUtilities
 		vkGetImageMemoryRequirements(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImage, &memoryRequirements);
 
 		//Find the memory type index.
-		VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
-		vkGetPhysicalDeviceMemoryProperties(VulkanInterface::Instance->GetPhysicalDevice().Get(), &physicalDeviceMemoryProperties);
+		const VkPhysicalDeviceMemoryProperties &physicalDeviceMemoryProperties = VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceMemoryProperties();
 
 		//Iterate over all memory types and find the proper memory type index.
 		uint32 memoryTypeIndex = 0;
