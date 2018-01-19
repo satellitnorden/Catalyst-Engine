@@ -33,10 +33,8 @@ EngineSystem::~EngineSystem() CATALYST_NOEXCEPT
 */
 void EngineSystem::InitializeSystem() CATALYST_NOEXCEPT
 {
-	//Pre-initialize all systems.
-	InputSystem::Instance->PreInitializeSystem();
-	EntitySystem::Instance->InitializeSystem();
-	GraphicsSystem::Instance->PreInitializeSystem();
+	//Initialize all systems.
+	GraphicsSystem::Instance->InitializeSystem();
 	QuestSystem::Instance->InitializeSystem();
 	GAME_SYSTEM_CLASS::Instance->InitializeSystem();
 
@@ -59,14 +57,8 @@ bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	//Update the input system.
 	InputSystem::Instance->UpdateSystemSynchronous();
 
-	//Update the entity system.
-	EntitySystem::Instance->UpdateSystemSynchronous();
-
 	//Update the graphics system.
 	GraphicsSystem::Instance->UpdateSystemSynchronous();
-
-	//Update the quest system.
-	QuestSystem::Instance->UpdateSystemSynchronous();
 
 	//Calculate a new delta time.
 	auto newTime = std::chrono::high_resolution_clock::now();

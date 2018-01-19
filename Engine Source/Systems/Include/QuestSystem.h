@@ -46,11 +46,6 @@ public:
 	void InitializeSystem() CATALYST_NOEXCEPT;
 
 	/*
-	*	Updates the quest system synchronously.
-	*/
-	void UpdateSystemSynchronous() CATALYST_NOEXCEPT;
-
-	/*
 	*	Releases the quest system.
 	*/
 	void ReleaseSystem() CATALYST_NOEXCEPT;
@@ -81,7 +76,12 @@ public:
 	void CarryOutDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, void *CATALYST_RESTRICT container, const size_t containerSize, const size_t objectSize) CATALYST_NOEXCEPT;
 
 	/*
-	*	Waits for a daily group quest to begin.
+	*	Waits for a daily quest to be completed.
+	*/
+	void WaitForDailyQuest(const DailyQuests dailyQuest) const CATALYST_NOEXCEPT;
+
+	/*
+	*	Waits for a daily group quest to be completed.
 	*/
 	void WaitForDailyGroupQuest(const DailyGroupQuests dailyGroupQuest) const CATALYST_NOEXCEPT;
 

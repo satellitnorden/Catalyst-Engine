@@ -27,14 +27,6 @@ InputSystem::~InputSystem() CATALYST_NOEXCEPT
 }
 
 /*
-*	Pre-initializes the input system.
-*/
-void InputSystem::PreInitializeSystem() CATALYST_NOEXCEPT
-{
-
-}
-
-/*
 *	Post-initializes the input system.
 */
 void InputSystem::PostInitializeSystem() CATALYST_NOEXCEPT

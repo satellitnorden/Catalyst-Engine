@@ -25,16 +25,6 @@ public:
 	~EntitySystem() CATALYST_NOEXCEPT;
 
 	/*
-	*	Initializes the entity system.
-	*/
-	void InitializeSystem() CATALYST_NOEXCEPT;
-
-	/*
-	*	Updates the entity system synchronously.
-	*/
-	void UpdateSystemSynchronous() CATALYST_NOEXCEPT;
-
-	/*
 	*	Releases the entity system.
 	*/
 	void ReleaseSystem() CATALYST_NOEXCEPT;

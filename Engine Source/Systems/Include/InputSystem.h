@@ -30,11 +30,6 @@ public:
 	~InputSystem() CATALYST_NOEXCEPT;
 
 	/*
-	*	Pre-initializes the input system.
-	*/
-	void PreInitializeSystem() CATALYST_NOEXCEPT;
-
-	/*
 	*	Post-initializes the input system.
 	*/
 	void PostInitializeSystem() CATALYST_NOEXCEPT;

@@ -41,9 +41,9 @@ GraphicsSystem::~GraphicsSystem() CATALYST_NOEXCEPT
 }
 
 /*
-*	Pre-initializes the graphics system.
+*	Initializes the graphics system.
 */
-void GraphicsSystem::PreInitializeSystem() CATALYST_NOEXCEPT
+void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 {
 	//Initialize the main window.
 	mainWindow.Initialize();
@@ -97,10 +97,7 @@ void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 	{
 		PhysicalEntity *CATALYST_RESTRICT physicalEntity = *static_cast<PhysicalEntity *CATALYST_RESTRICT *CATALYST_RESTRICT>(element);
 
-		if (physicalEntity->IsInViewFrustum())
-		{
-			physicalEntity->UpdateModelMatrix();
-		}
+		physicalEntity->UpdateModelMatrix();
 	});
 }
 

@@ -48,14 +48,6 @@ void QuestSystem::InitializeSystem() CATALYST_NOEXCEPT
 }
 
 /*
-*	Updates the system synchronously.
-*/
-void QuestSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
-{
-	//Nothing to do here yet.
-}
-
-/*
 *	Releases the system.
 */
 void QuestSystem::ReleaseSystem() CATALYST_NOEXCEPT
@@ -115,6 +107,17 @@ void QuestSystem::CarryOutDailyGroupQuest(const DailyGroupQuests dailyGroupQuest
 		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetCurrentContainerIndex(0);
 		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetCurrentNumberOfCompletions(0);
 		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetQuestCompletionState(DailyGroupQuestCompletionState::Available);
+	}
+}
+
+/*
+*	Waits for a daily quest to be completed.
+*/
+void QuestSystem::WaitForDailyQuest(const DailyQuests dailyQuest) const CATALYST_NOEXCEPT
+{
+	while (dailyQuests[static_cast<uint8>(dailyQuest)].GetQuestCompletionState() != DailyQuestCompletionState::Complete)
+	{
+		std::this_thread::yield();
 	}
 }
 
