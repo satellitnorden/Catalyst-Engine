@@ -124,6 +124,7 @@
     <ClInclude Include="..\..\Engine Source\Math\Include\MathematicalConstants.h" />
     <ClInclude Include="..\..\Engine Source\Math\Include\Matrix3.h" />
     <ClInclude Include="..\..\Engine Source\Math\Include\Matrix4.h" />
+    <ClInclude Include="..\..\Engine Source\Math\Include\PerlinNoiseGenerator.h" />
     <ClInclude Include="..\..\Engine Source\Math\Include\Vector2.h" />
     <ClInclude Include="..\..\Engine Source\Math\Include\Vector3.h" />
     <ClInclude Include="..\..\Engine Source\Math\Include\Vector4.h" />

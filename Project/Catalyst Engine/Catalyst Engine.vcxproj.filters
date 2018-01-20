@@ -563,6 +563,9 @@
     <ClInclude Include="..\..\Game Source\Include\EntitySpawner.h">
       <Filter>Game Source\Clairvoyant</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Math\Include\PerlinNoiseGenerator.h">
+      <Filter>Engine Source\Math\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Engine Source\Systems\Inline\EntitySystem.inl">
