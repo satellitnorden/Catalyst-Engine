@@ -40,7 +40,7 @@ bool DailyGroupQuest::CarryOut() CATALYST_NOEXCEPT
 		void *CATALYST_RESTRICT myElement = static_cast<void *CATALYST_RESTRICT>(static_cast<byte *CATALYST_RESTRICT>(container) + (objectSize * myContainerIndex));
 
 		//Execute the function with my element!
-		function(myElement);
+		function(arguments, myElement);
 
 		//Aquire my next container index!
 		myContainerIndex = currentContainerIndex.fetch_add(1);

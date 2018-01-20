@@ -90,13 +90,13 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 {
 	//Register the graphics system update dynamic uniform data daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData, [](void *CATALYST_RESTRICT) { GraphicsSystem::Instance->UpdateDynamicUniformData(); }, nullptr);
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData, [](void *CATALYST_RESTRICT arguments) { static_cast<GraphicsSystem *CATALYST_RESTRICT>(arguments)->UpdateDynamicUniformData(); });
 
 	//Register the graphics system asynchronous update daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling, [](void *CATALYST_RESTRICT) { GraphicsSystem::Instance->UpdateViewFrustumCulling(); }, nullptr);
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling, [](void *CATALYST_RESTRICT arguments) { static_cast<GraphicsSystem *CATALYST_RESTRICT>(arguments)->UpdateViewFrustumCulling(); });
 
 	//Register the physical entity update daily group quest.
-	QuestSystem::Instance->RegisterDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate, [](void *CATALYST_RESTRICT element)
+	QuestSystem::Instance->RegisterDailyGroupQuest(DailyGroupQuests::GraphicsSystemPhysicalEntityUpdate, [](void *CATALYST_RESTRICT, void *CATALYST_RESTRICT element)
 	{
 		PhysicalEntity *CATALYST_RESTRICT physicalEntity = *static_cast<PhysicalEntity *CATALYST_RESTRICT *CATALYST_RESTRICT>(element);
 
@@ -110,10 +110,10 @@ void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
 	//Carry out the graphics system asynchronous update daily quest.
-	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling);
+	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling, this);
 
 	//Carry out the physical entity update daily group quest.
-	QuestSystem::Instance->CarryOutDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate, PhysicalEntity::physicalEntities.Data(), PhysicalEntity::physicalEntities.Size(), sizeof(PhysicalEntity*));
+	QuestSystem::Instance->CarryOutDailyGroupQuest(DailyGroupQuests::GraphicsSystemPhysicalEntityUpdate, nullptr, PhysicalEntity::physicalEntities.Data(), PhysicalEntity::physicalEntities.Size(), sizeof(PhysicalEntity*));
 
 	//Update the main window.
 	mainWindow.Update();
@@ -311,7 +311,7 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 	VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
 	//Carry out the graphics system update dynamic uniform data daily quest.
-	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData);
+	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData, this);
 
 	//Set the current command buffer.
 	currentCommandBuffer = VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
@@ -329,7 +329,7 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 {
 	//Wait for the physical entity update daily group quest to complete.
-	QuestSystem::Instance->WaitForDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate);
+	QuestSystem::Instance->WaitForDailyGroupQuest(DailyGroupQuests::GraphicsSystemPhysicalEntityUpdate);
 
 	//Iterate over all physical entities and draw them all.
 	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : PhysicalEntity::physicalEntities)

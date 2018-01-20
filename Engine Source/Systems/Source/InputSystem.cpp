@@ -32,7 +32,7 @@ InputSystem::~InputSystem() CATALYST_NOEXCEPT
 void InputSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 {
 	//Register the input system asynchronous update daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, [](void *CATALYST_RESTRICT) { InputSystem::Instance->UpdateSystemAsynchronous(); }, nullptr);
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, [](void *CATALYST_RESTRICT arguments) { static_cast<InputSystem *CATALYST_RESTRICT>(arguments)->UpdateSystemAsynchronous(); });
 }
 
 /*
@@ -41,7 +41,7 @@ void InputSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 void InputSystem::PreUpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
 	//Carry out the input system asynchronous update daily quest.
-	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::InputSystemAsynchronousUpdate);
+	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, this);
 }
 
 /*

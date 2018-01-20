@@ -19,7 +19,7 @@ enum class DailyQuests : uint8
 //Enumeration covering all daily quests.
 enum class DailyGroupQuests : uint8
 {
-	PhysicalEntityUpdate,
+	GraphicsSystemPhysicalEntityUpdate,
 	NumberOfDailyGroupQuests
 };
 
@@ -59,7 +59,7 @@ public:
 	/*
 	*	Registers a daily quest.
 	*/
-	void RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction, void *CATALYST_RESTRICT arguments) CATALYST_NOEXCEPT;
+	void RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction) CATALYST_NOEXCEPT;
 
 	/*
 	*	Registers a daily group quest.
@@ -69,12 +69,12 @@ public:
 	/*
 	*	Carries out a daily quest.
 	*/
-	void CarryOutDailyQuest(const DailyQuests dailyQuest) CATALYST_NOEXCEPT;
+	void CarryOutDailyQuest(const DailyQuests dailyQuest, void *CATALYST_RESTRICT arguments) CATALYST_NOEXCEPT;
 
 	/*
 	*	Carries out a daily group quest.
 	*/
-	void CarryOutDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, void *CATALYST_RESTRICT container, const size_t containerSize, const size_t objectSize) CATALYST_NOEXCEPT;
+	void CarryOutDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, void *CATALYST_RESTRICT arguments, void *CATALYST_RESTRICT container, const size_t containerSize, const size_t objectSize) CATALYST_NOEXCEPT;
 
 	/*
 	*	Waits for a daily quest to be completed.

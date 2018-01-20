@@ -54,10 +54,10 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	for (size_t i = 0; i < 5; ++i)
 	{
 		PointLightEntity *light = EntitySystem::Instance->CreateEntity<PointLightEntity>();
-		light->SetAttenuationDistance(250.0f);
-		light->SetLightColor(Vector3(GameMath::RandomFloatInRange(0.5f, 1.0f), GameMath::RandomFloatInRange(0.5f, 1.0f), GameMath::RandomFloatInRange(0.5f, 1.0f)));
+		light->SetAttenuationDistance(1'000.0f);
+		light->SetLightColor(Vector3(GameMath::RandomFloatInRange(0.0f, 1.0f), GameMath::RandomFloatInRange(0.0f, 1.0f), GameMath::RandomFloatInRange(0.0f, 1.0f)));
 		light->Move(pointLightPositions[i]);
-		light->SetIntensity(2.5f);
+		light->SetIntensity(10.0f);
 	}
 
 	/*

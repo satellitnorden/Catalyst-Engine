@@ -62,10 +62,9 @@ void QuestSystem::ReleaseSystem() CATALYST_NOEXCEPT
 /*
 *	Registers a daily quest.
 */
-void QuestSystem::RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction, void *CATALYST_RESTRICT arguments) CATALYST_NOEXCEPT
+void QuestSystem::RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction) CATALYST_NOEXCEPT
 {
 	dailyQuests[static_cast<uint8>(dailyQuest)].SetFunction(newFunction);
-	dailyQuests[static_cast<uint8>(dailyQuest)].SetArguments(arguments);
 }
 
 /*
@@ -80,13 +79,14 @@ void QuestSystem::RegisterDailyGroupQuest(const DailyGroupQuests dailyGroupQuest
 /*
 *	Carries out a daily quest.
 */
-void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest) CATALYST_NOEXCEPT
+void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest, void *CATALYST_RESTRICT arguments) CATALYST_NOEXCEPT
 {
 	//Only carry out the daily quest if it is not available or in progress.
 	DailyQuestCompletionState questCompletionState = dailyQuests[static_cast<uint8>(dailyQuest)].GetQuestCompletionState();
 
 	if (questCompletionState == DailyQuestCompletionState::Unavailable || questCompletionState == DailyQuestCompletionState::Complete)
 	{
+		dailyQuests[static_cast<uint8>(dailyQuest)].SetArguments(arguments);
 		dailyQuests[static_cast<uint8>(dailyQuest)].SetQuestCompletionState(DailyQuestCompletionState::Available);
 	}
 }
@@ -94,13 +94,14 @@ void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest) CATALYST_NOEX
 /*
 *	Carries out a daily group quest.
 */
-void QuestSystem::CarryOutDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, void *CATALYST_RESTRICT container, const size_t containerSize, const size_t objectSize) CATALYST_NOEXCEPT
+void QuestSystem::CarryOutDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, void *CATALYST_RESTRICT arguments, void *CATALYST_RESTRICT container, const size_t containerSize, const size_t objectSize) CATALYST_NOEXCEPT
 {
 	//Only carry out the daily group quest if it is not available or in progress.
 	DailyGroupQuestCompletionState questCompletionState = dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].GetQuestCompletionState();
 
 	if (questCompletionState == DailyGroupQuestCompletionState::Unavailable || questCompletionState == DailyGroupQuestCompletionState::Complete)
 	{
+		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetArguments(arguments);
 		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetContainer(container);
 		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetContainerSize(containerSize);
 		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetObjectSize(objectSize);

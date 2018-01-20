@@ -13,7 +13,7 @@ enum class DailyGroupQuestCompletionState : uint8
 };
 
 //Type aliases.
-using DailyGroupQuestFunction = void(*)(void *CATALYST_RESTRICT);
+using DailyGroupQuestFunction = void(*)(void *CATALYST_RESTRICT, void *CATALYST_RESTRICT);
 
 class DailyGroupQuest
 {
@@ -41,6 +41,26 @@ public:
 	void SetQuestCompletionState(const DailyGroupQuestCompletionState newQuestCompletionState) CATALYST_NOEXCEPT { questCompletionState.store(newQuestCompletionState); }
 
 	/*
+	*	Returns the function to execute for this daily group quest.
+	*/
+	CATALYST_RESTRICTED DailyGroupQuestFunction GetFunction() CATALYST_NOEXCEPT { return function; }
+
+	/*
+	*	Sets the function to execute for this daily group quest.
+	*/
+	void SetFunction(DailyGroupQuestFunction newFunction) CATALYST_NOEXCEPT { function = newFunction; }
+
+	/*
+	*	Returns the arguments to send to the function to execute for this daily quest.
+	*/
+	CATALYST_RESTRICTED void* GetArguments() CATALYST_NOEXCEPT { return arguments; }
+
+	/*
+	*	Sets the arguments to send to the function to execute for this daily quest.
+	*/
+	void SetArguments(void *CATALYST_RESTRICT newArguments) CATALYST_NOEXCEPT { arguments = newArguments; }
+
+	/*
 	*	Returns the container for this daily group quest.
 	*/
 	CATALYST_RESTRICTED void* GetContainer() CATALYST_NOEXCEPT { return container; }
@@ -59,16 +79,6 @@ public:
 	*	Sets the size of the objects contained in the container in bytes.
 	*/
 	void SetObjectSize(const size_t newObjectSize) CATALYST_NOEXCEPT { objectSize = newObjectSize; }
-
-	/*
-	*	Returns the function to execute for this daily group quest.
-	*/
-	CATALYST_RESTRICTED DailyGroupQuestFunction GetFunction() CATALYST_NOEXCEPT { return function; }
-
-	/*
-	*	Sets the function to execute for this daily group quest.
-	*/
-	void SetFunction(DailyGroupQuestFunction newFunction) CATALYST_NOEXCEPT { function = newFunction; }
 
 	/*
 	*	Returns the size of the container.
@@ -120,14 +130,17 @@ private:
 	//The quest completion state.
 	std::atomic<DailyGroupQuestCompletionState> questCompletionState{ DailyGroupQuestCompletionState::Unavailable };
 
+	//The function to execute for this daily quest.
+	DailyGroupQuestFunction function;
+
+	//The arguments to send to the function to execute for this daily quest.
+	void *CATALYST_RESTRICT arguments;
+
 	//Pointer to the container.
 	void *CATALYST_RESTRICT container;
 
 	//The size of the objects contained in the container in bytes.
 	size_t objectSize;
-
-	//The function to execute for this daily quest.
-	DailyGroupQuestFunction function;
 
 	//The size of the container
 	size_t containerSize;
