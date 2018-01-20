@@ -25,9 +25,9 @@ public:
 	*	Constructor forwarding constructor arguments to the underlying resource.
 	*/
 	template<class... Arguments>
-	MultithreadedResource(Arguments... arguments) CATALYST_NOEXCEPT
+	MultithreadedResource(Arguments&&... arguments) CATALYST_NOEXCEPT
 		:
-		resource(std::forward(arguments)...)
+		resource(std::forward<Arguments>(arguments)...)
 	{
 
 	}

@@ -174,10 +174,10 @@ protected:
 	DynamicArray<Entity *CATALYST_RESTRICT> children;
 
 	//The local position of this world entity.
-	MultithreadedResource<Vector3> localPosition;
+	MultithreadedResource<Vector3> localPosition{ 0.0f, 0.0f, 0.0f };
 
 	//The local rotation of this world entity.
-	Vector3 localRotation;
+	Vector3 localRotation{ 0.0f, 0.0f, 0.0f };
 
 	//The local scale of this world entity.
 	Vector3 localScale{ 1.0f, 1.0f, 1.0f };
