@@ -124,6 +124,7 @@
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\DailyGroupQuest.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\MultithreadedResource.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\DailyQuest.h" />
+    <ClInclude Include="..\..\Engine Source\Multithreading\Include\ScopedLock.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Semaphore.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Spinlock.h" />
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Threadlock.h" />

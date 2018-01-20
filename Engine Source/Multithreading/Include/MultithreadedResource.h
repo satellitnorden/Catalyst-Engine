@@ -3,6 +3,10 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Multithreading.
+#include <ScopedLock.h>
+#include <SpinLock.h>
+
 template <class ValueType>
 class MultithreadedResource
 {
@@ -23,7 +27,7 @@ public:
 	template<class... Arguments>
 	MultithreadedResource(Arguments... arguments) CATALYST_NOEXCEPT
 		:
-		resource(arguments...)
+		resource(std::forward(arguments)...)
 	{
 
 	}
@@ -41,14 +45,9 @@ public:
 	*/
 	const ValueType GetSafe() const CATALYST_NOEXCEPT
 	{
-		static bool expected = false;
-		while (!lock.compare_exchange_weak(expected, true));
+		ScopedLock<Spinlock> scopedLock{ spinlock };
 
-		const ValueType copy = resource;
-
-		lock.store(false);
-
-		return copy;
+		return resource;
 	}
 
 	/*
@@ -64,12 +63,9 @@ public:
 	*/
 	void Set(const ValueType &newResource) CATALYST_NOEXCEPT
 	{
-		static bool expected = false;
-		while (!lock.compare_exchange_weak(expected, true));
+		ScopedLock<Spinlock> scopedLock{ spinlock };
 
 		resource = newResource;
-
-		lock.store(false);
 	}
 
 private:
@@ -77,7 +73,7 @@ private:
 	//The underlying resource.
 	ValueType resource;
 
-	//The atomic lock.
-	mutable std::atomic<bool> lock{ false };
+	//The spin lock.
+	mutable Spinlock spinlock;
 
 };
