@@ -157,7 +157,7 @@ void QuestSystem::ExecuteAdventurer() CATALYST_NOEXCEPT
 		//If there were no quests that were carried out, then pave the way for other hypothetical threads.
 		if (carriedOutQuests == 0)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 		}
 	}
 }
