@@ -48,6 +48,8 @@ void EngineSystem::InitializeSystem() CATALYST_NOEXCEPT
 */
 bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
+	CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game loop: ",
+
 	//Update the game system.
 	GAME_SYSTEM_CLASS::Instance->UpdateSystemSynchronous(deltaTime);
 
@@ -64,6 +66,8 @@ bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	auto newTime = std::chrono::high_resolution_clock::now();
 	deltaTime = std::chrono::duration<float>(newTime - currentTime).count();
 	currentTime = newTime;
+
+	);
 
 	//Return whether or not the game should terminate.
 	return shouldTerminate;

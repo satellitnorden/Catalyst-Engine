@@ -59,11 +59,6 @@ public:
 	void UpdateSystemSynchronous() CATALYST_NOEXCEPT;
 
 	/*
-	*	Updates the graphics system asynchronously.
-	*/
-	void UpdateSystemAsynchronous() CATALYST_NOEXCEPT;
-
-	/*
 	*	Releases the graphics system.
 	*/
 	void ReleaseSystem() CATALYST_NOEXCEPT;
@@ -191,11 +186,6 @@ private:
 	void BeginFrame() CATALYST_NOEXCEPT;
 
 	/*
-	*	Updates the dynamic uniform data.
-	*/
-	void UpdateDynamicUniformData() CATALYST_NOEXCEPT;
-
-	/*
 	*	Renders all physical entities.
 	*/
 	void RenderPhysicalEntities() CATALYST_NOEXCEPT;
@@ -204,5 +194,15 @@ private:
 	*	Ends the frame.
 	*/
 	void EndFrame() CATALYST_NOEXCEPT;
+
+	/*
+	*	Updates the dynamic uniform data.
+	*/
+	void UpdateDynamicUniformData() CATALYST_NOEXCEPT;
+
+	/*
+	*	Updates the view frustum culling.
+	*/
+	void UpdateViewFrustumCulling() CATALYST_NOEXCEPT;
 
 };

@@ -89,11 +89,11 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 */
 void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 {
-	//Register the graphics system asynchronous update daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemAsynchronousUpdate, [](void *CATALYST_RESTRICT) { GraphicsSystem::Instance->UpdateSystemAsynchronous(); }, nullptr);
-
 	//Register the graphics system update dynamic uniform data daily quest.
 	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData, [](void *CATALYST_RESTRICT) { GraphicsSystem::Instance->UpdateDynamicUniformData(); }, nullptr);
+
+	//Register the graphics system asynchronous update daily quest.
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling, [](void *CATALYST_RESTRICT) { GraphicsSystem::Instance->UpdateViewFrustumCulling(); }, nullptr);
 
 	//Register the physical entity update daily group quest.
 	QuestSystem::Instance->RegisterDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate, [](void *CATALYST_RESTRICT element)
@@ -110,7 +110,7 @@ void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 void GraphicsSystem::PreUpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
 	//Carry out the graphics system asynchronous update daily quest.
-	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemAsynchronousUpdate);
+	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling);
 
 	//Carry out the physical entity update daily group quest.
 	QuestSystem::Instance->CarryOutDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate, PhysicalEntity::physicalEntities.Data(), PhysicalEntity::physicalEntities.Size(), sizeof(PhysicalEntity*));
@@ -146,51 +146,6 @@ void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 
 	//Post-update the Vulkan interface.
 	VulkanInterface::Instance->PostUpdate(semaphores[Semaphore::RenderFinished]);
-}
-
-/*
-*	Updates the graphics system asynchronously.
-*/
-void GraphicsSystem::UpdateSystemAsynchronous() CATALYST_NOEXCEPT
-{
-	//Make a local copies of all values that will be worked with.
-	const Matrix4 localViewMatrix = viewMatrix.GetSafe();
-
-	//Iterate over all physical entities to check if they are in the view frustum.
-	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : PhysicalEntity::physicalEntities)
-	{
-		//Make a local copy of the physical entity's position.
-		const Vector3 position = physicalEntity->GetWorldPosition();
-		const Vector3 scale = physicalEntity->GetWorldScale();
-		const float extent = physicalEntity->GetModel().GetExtent();
-		const float biggestScale = GameMath::Maximum(scale.X, GameMath::Maximum(scale.Y, scale.Z));
-		const float scaledExtent = extent * biggestScale;
-
-		Vector4 corners[8];
-
-		corners[0] = Vector4(-scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
-		corners[1] = Vector4(-scaledExtent, scaledExtent, -scaledExtent, 1.0f);
-		corners[2] = Vector4(scaledExtent, scaledExtent, -scaledExtent, 1.0f);
-		corners[3] = Vector4(scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
-
-		corners[4] = Vector4(-scaledExtent, -scaledExtent, scaledExtent, 1.0f);
-		corners[5] = Vector4(-scaledExtent, scaledExtent, scaledExtent, 1.0f);
-		corners[6] = Vector4(scaledExtent, scaledExtent, scaledExtent, 1.0f);
-		corners[7] = Vector4(scaledExtent, -scaledExtent, scaledExtent, 1.0f);
-
-		for (uint8 i = 0; i < 8; ++i)
-		{
-			corners[i] += Vector4(position.X, position.Y, position.Z, 0.0f);
-
-			corners[i] = localViewMatrix * corners[i];
-
-			corners[i].X /= corners[i].W;
-			corners[i].Y /= corners[i].W;
-			corners[i].Z /= corners[i].W;
-		}
-
-		physicalEntity->SetIsInViewFrustum(GraphicsUtilities::IsCubeWithinViewFrustum(corners));
-	}
 }
 
 /*
@@ -375,6 +330,49 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 }
 
 /*
+*	Renders all physical entities.
+*/
+void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
+{
+	//Wait for the physical entity update daily group quest to complete.
+	QuestSystem::Instance->WaitForDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate);
+
+	//Iterate over all physical entities and draw them all.
+	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : PhysicalEntity::physicalEntities)
+	{
+		//Don't draw this physical entity if it isn't in the view frustum.
+		if (!physicalEntity->IsInViewFrustum())
+			continue;
+
+		commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::PhysicalPipeline], physicalEntity->GetDescriptorSet());
+		commandBuffers[currentCommandBuffer].CommandBindVertexBuffers(*physicalEntity->GetModel().GetVertexBuffer());
+		commandBuffers[currentCommandBuffer].CommandBindIndexBuffer(*physicalEntity->GetModel().GetIndexBuffer());
+		commandBuffers[currentCommandBuffer].CommandDrawIndexed(physicalEntity->GetModel().GetIndexCount());
+	}
+}
+
+/*
+*	Ends the frame.
+*/
+void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
+{
+	//Set up the proper parameters.
+	static const DynamicArray<VkSemaphore> waitSemaphores{ semaphores[Semaphore::ImageAvailable]->Get() };
+	static const VkPipelineStageFlags waitStages{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	static const DynamicArray<VkSemaphore> signalSemaphores{ semaphores[Semaphore::RenderFinished]->Get() };
+
+	//End the current command buffer.
+	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
+	commandBuffers[currentCommandBuffer].End();
+
+	//Wait for the graphics system update dynamic uniform data daily quest to finish.
+	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData);
+
+	//Submit current command buffer.
+	VulkanInterface::Instance->GetGraphicsQueue().Submit(commandBuffers[currentCommandBuffer], waitSemaphores, waitStages, signalSemaphores);
+}
+
+/*
 *	Updates the dynamic uniform data.
 */
 void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
@@ -440,44 +438,46 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 }
 
 /*
-*	Renders all physical entities.
+*	Updates the view frustum culling.
 */
-void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
+void GraphicsSystem::UpdateViewFrustumCulling() CATALYST_NOEXCEPT
 {
-	//Wait for the physical entity update daily group quest to complete.
-	QuestSystem::Instance->WaitForDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate);
+	//Make a local copies of all values that will be worked with.
+	const Matrix4 localViewMatrix = viewMatrix.GetSafe();
 
-	//Iterate over all physical entities and draw them all.
+	//Iterate over all physical entities to check if they are in the view frustum.
 	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : PhysicalEntity::physicalEntities)
 	{
-		//Don't draw this physical entity if it isn't in the view frustum.
-		if (!physicalEntity->IsInViewFrustum())
-			continue;
+		//Make a local copy of the physical entity's position.
+		const Vector3 position = physicalEntity->GetWorldPosition();
+		const Vector3 scale = physicalEntity->GetWorldScale();
+		const float extent = physicalEntity->GetModel().GetExtent();
+		const float biggestScale = GameMath::Maximum(scale.X, GameMath::Maximum(scale.Y, scale.Z));
+		const float scaledExtent = extent * biggestScale;
 
-		commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::PhysicalPipeline], physicalEntity->GetDescriptorSet());
-		commandBuffers[currentCommandBuffer].CommandBindVertexBuffers(*physicalEntity->GetModel().GetVertexBuffer());
-		commandBuffers[currentCommandBuffer].CommandBindIndexBuffer(*physicalEntity->GetModel().GetIndexBuffer());
-		commandBuffers[currentCommandBuffer].CommandDrawIndexed(physicalEntity->GetModel().GetIndexCount());
+		Vector4 corners[8];
+
+		corners[0] = Vector4(-scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
+		corners[1] = Vector4(-scaledExtent, scaledExtent, -scaledExtent, 1.0f);
+		corners[2] = Vector4(scaledExtent, scaledExtent, -scaledExtent, 1.0f);
+		corners[3] = Vector4(scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
+
+		corners[4] = Vector4(-scaledExtent, -scaledExtent, scaledExtent, 1.0f);
+		corners[5] = Vector4(-scaledExtent, scaledExtent, scaledExtent, 1.0f);
+		corners[6] = Vector4(scaledExtent, scaledExtent, scaledExtent, 1.0f);
+		corners[7] = Vector4(scaledExtent, -scaledExtent, scaledExtent, 1.0f);
+
+		for (uint8 i = 0; i < 8; ++i)
+		{
+			corners[i] += Vector4(position.X, position.Y, position.Z, 0.0f);
+
+			corners[i] = localViewMatrix * corners[i];
+
+			corners[i].X /= corners[i].W;
+			corners[i].Y /= corners[i].W;
+			corners[i].Z /= corners[i].W;
+		}
+
+		physicalEntity->SetIsInViewFrustum(GraphicsUtilities::IsCubeWithinViewFrustum(corners));
 	}
-}
-
-/*
-*	Ends the frame.
-*/
-void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
-{
-	//Set up the proper parameters.
-	static const DynamicArray<VkSemaphore> waitSemaphores{ semaphores[Semaphore::ImageAvailable]->Get() };
-	static const VkPipelineStageFlags waitStages{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-	static const DynamicArray<VkSemaphore> signalSemaphores{ semaphores[Semaphore::RenderFinished]->Get() };
-
-	//End the current command buffer.
-	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
-	commandBuffers[currentCommandBuffer].End();
-
-	//Wait for the graphics system update dynamic uniform data daily quest to finish.
-	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData);
-
-	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue().Submit(commandBuffers[currentCommandBuffer], waitSemaphores, waitStages, signalSemaphores);
 }
