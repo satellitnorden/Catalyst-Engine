@@ -92,6 +92,9 @@ void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 	//Register the graphics system asynchronous update daily quest.
 	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemAsynchronousUpdate, [](void *CATALYST_RESTRICT) { GraphicsSystem::Instance->UpdateSystemAsynchronous(); }, nullptr);
 
+	//Register the graphics system update dynamic uniform data daily quest.
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData, [](void *CATALYST_RESTRICT) { GraphicsSystem::Instance->UpdateDynamicUniformData(); }, nullptr);
+
 	//Register the physical entity update daily group quest.
 	QuestSystem::Instance->RegisterDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate, [](void *CATALYST_RESTRICT element)
 	{
@@ -134,9 +137,6 @@ void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 
 	//Begin the frame.
 	BeginFrame();
-
-	//Update the dynamic uniform data.
-	UpdateDynamicUniformData();
 
 	//Render all physical entities.
 	RenderPhysicalEntities();
@@ -361,6 +361,9 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 	//Wait for the graphics queue to finish.
 	VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
+	//Carry out the graphics system update dynamic uniform data daily quest.
+	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData);
+
 	//Set the current command buffer.
 	currentCommandBuffer = VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
 
@@ -471,6 +474,9 @@ void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
 	//End the current command buffer.
 	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
 	commandBuffers[currentCommandBuffer].End();
+
+	//Wait for the graphics system update dynamic uniform data daily quest to finish.
+	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData);
 
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(commandBuffers[currentCommandBuffer], waitSemaphores, waitStages, signalSemaphores);

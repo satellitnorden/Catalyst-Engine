@@ -11,6 +11,7 @@
 enum class DailyQuests : uint8
 {
 	GraphicsSystemAsynchronousUpdate,
+	GraphicsSystemUpdateDynamicUniformData,
 	InputSystemAsynchronousUpdate,
 	NumberOfDailyQuests
 };
