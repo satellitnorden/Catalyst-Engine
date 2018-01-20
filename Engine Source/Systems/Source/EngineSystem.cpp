@@ -7,6 +7,7 @@
 #include <EntitySystem.h>
 #include <GraphicsSystem.h>
 #include <InputSystem.h>
+#include <PhysicsSystem.h>
 #include <QuestSystem.h>
 
 //Singleton definition.
@@ -33,6 +34,9 @@ EngineSystem::~EngineSystem() CATALYST_NOEXCEPT
 */
 void EngineSystem::InitializeSystem() CATALYST_NOEXCEPT
 {
+	//Initialize the current time.
+	currentTime = std::chrono::high_resolution_clock::now();
+
 	//Initialize all systems.
 	GraphicsSystem::Instance->InitializeSystem();
 	QuestSystem::Instance->InitializeSystem();
@@ -53,11 +57,14 @@ bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	//Update the game system.
 	GAME_SYSTEM_CLASS::Instance->UpdateSystemSynchronous(deltaTime);
 
-	//Pre-update the graphics system.
-	GraphicsSystem::Instance->PreUpdateSystemSynchronous();
+	//Pre-update the input system.
+	InputSystem::Instance->PreUpdateSystemSynchronous();
 
-	//Update the input system.
-	InputSystem::Instance->UpdateSystemSynchronous();
+	//Pre-update the entity system.
+	EntitySystem::Instance->PreUpdateSystemSynchronous();
+
+	//Update the physics system.
+	PhysicsSystem::Instance->UpdateSystemSynchronous(deltaTime);
 
 	//Update the graphics system.
 	GraphicsSystem::Instance->UpdateSystemSynchronous();

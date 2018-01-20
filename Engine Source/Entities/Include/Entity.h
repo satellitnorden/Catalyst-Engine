@@ -3,6 +3,9 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Components.
+#include <PhysicsComponent.h>
+
 //Math.
 #include <Vector3.h>
 
@@ -46,6 +49,11 @@ public:
 	*	Adds a child to this entity.
 	*/
 	void AddChild(Entity *CATALYST_RESTRICT newChildEntity) CATALYST_NOEXCEPT { children.Emplace(newChildEntity); }
+
+	/*
+	*	Marks this entitiy for destruction.
+	*/
+	void MarkForDestruction() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the world position of this entity.
@@ -132,6 +140,31 @@ public:
 	*/
 	Vector3 GetUpVector() const CATALYST_NOEXCEPT { return Vector3(0.0f, 1.0f, 0.0f).Rotated(GetWorldRotation()); }
 
+	/*
+	*	Initializes physics for this entity.
+	*/
+	void InitializePhysics(const float initialMass, const Vector3 &initialVelocity) CATALYST_NOEXCEPT;
+
+	/*
+	*	Returns the physics component, const, safe.
+	*/
+	CATALYST_RESTRICTED const PhysicsComponent* GetPhysicsComponentSafe() const { const auto iterator = components.Find(ComponentType::PhysicsComponent); if (iterator) return *reinterpret_cast<const PhysicsComponent *const CATALYST_RESTRICT * CATALYST_RESTRICT>(iterator); else return nullptr; }
+
+	/*
+	*	Returns the physics component, non-const, safe.
+	*/
+	CATALYST_RESTRICTED PhysicsComponent* GetPhysicsComponentSafe() { const auto iterator = components.Find(ComponentType::PhysicsComponent); if (iterator) return *reinterpret_cast<PhysicsComponent *CATALYST_RESTRICT * CATALYST_RESTRICT>(iterator); else return nullptr; }
+
+	/*
+	*	Returns the physics component, const, unsafe.
+	*/
+	CATALYST_RESTRICTED const PhysicsComponent* GetPhysicsComponentUnsafe() const { return *reinterpret_cast<const PhysicsComponent *const CATALYST_RESTRICT * CATALYST_RESTRICT>(components.Find(ComponentType::PhysicsComponent)); }
+	
+	/*
+	*	Returns the physics component, non-const, unsafe.
+	*/
+	CATALYST_RESTRICTED PhysicsComponent* GetPhysicsComponentUnsafe() { return *reinterpret_cast<PhysicsComponent * CATALYST_RESTRICT * CATALYST_RESTRICT>(components.Find(ComponentType::PhysicsComponent)); }
+
 protected:
 
 	//Pointer to this entity's parent.
@@ -148,5 +181,18 @@ protected:
 
 	//The local scale of this world entity.
 	Vector3 localScale{ 1.0f, 1.0f, 1.0f };
+
+private:
+
+	//Friend declarations.
+	friend class EntitySystem;
+
+	//Container of all components.
+	Map<ComponentType, void *CATALYST_RESTRICT> components;
+
+	/*
+	*	Destroys this entity.
+	*/
+	void Destroy() CATALYST_NOEXCEPT;
 
 };

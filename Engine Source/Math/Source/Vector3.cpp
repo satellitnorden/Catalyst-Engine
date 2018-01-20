@@ -56,6 +56,19 @@ Vector3::Vector3() CATALYST_NOEXCEPT
 
 }
 
+
+/*
+*	Constructor taking a single scalar, applying it to both X, Y and Z.
+*/
+Vector3::Vector3(const float scalar) CATALYST_NOEXCEPT
+	:
+	X(scalar),
+	Y(scalar),
+	Z(scalar)
+{
+
+}
+
 /*
 *	Constructor taking X, Y and Z as arguments.
 */

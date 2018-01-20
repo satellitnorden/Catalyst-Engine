@@ -105,22 +105,16 @@ void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 }
 
 /*
-*	Pre-updates the graphics system synchronously.
+*	Updates the graphics system synchronously.
 */
-void GraphicsSystem::PreUpdateSystemSynchronous() CATALYST_NOEXCEPT
+void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
 	//Carry out the graphics system asynchronous update daily quest.
 	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling);
 
 	//Carry out the physical entity update daily group quest.
 	QuestSystem::Instance->CarryOutDailyGroupQuest(DailyGroupQuests::PhysicalEntityUpdate, PhysicalEntity::physicalEntities.Data(), PhysicalEntity::physicalEntities.Size(), sizeof(PhysicalEntity*));
-}
 
-/*
-*	Updates the graphics system synchronously.
-*/
-void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
-{
 	//Update the main window.
 	mainWindow.Update();
 

@@ -35,9 +35,9 @@ public:
 	void PostInitializeSystem() CATALYST_NOEXCEPT;
 
 	/*
-	*	Updates the input system synchronously.
+	*	Pre-updates the input system synchronously.
 	*/
-	void UpdateSystemSynchronous() CATALYST_NOEXCEPT;
+	void PreUpdateSystemSynchronous() CATALYST_NOEXCEPT;
 
 	/*
 	*	Updates the input system asynchronously.

@@ -43,6 +43,11 @@ public:
 	Vector3() CATALYST_NOEXCEPT;
 
 	/*
+	*	Constructor taking a single scalar, applying it to both X, Y and Z.
+	*/
+	Vector3(const float scalar) CATALYST_NOEXCEPT;
+
+	/*
 	*	Constructor taking X, Y and Z as arguments.
 	*/
 	Vector3(const float newX, const float newY, const float newZ) CATALYST_NOEXCEPT;

@@ -48,6 +48,9 @@ void ClairvoyantGameSystem::UpdateSystemSynchronous(const float deltaTime) CATAL
 {
 	//Update the player.
 	player->Update(deltaTime);
+
+	//Update the entity spawner.
+	entitySpawner.Update(deltaTime);
 }
 
 /*

@@ -52,7 +52,7 @@ private:
 	std::atomic<bool> shouldTerminate{ false };
 
 	//The delta time.
-	float deltaTime;
+	float deltaTime{ 0.0f };
 
 	//The current time.
 	std::chrono::time_point<std::chrono::steady_clock> currentTime;

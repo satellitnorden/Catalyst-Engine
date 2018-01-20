@@ -109,6 +109,18 @@
     <Filter Include="Engine Source\Tools\Source">
       <UniqueIdentifier>{9fd7695f-5c68-4195-b021-160c58dbe058}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Components">
+      <UniqueIdentifier>{db93f27b-1370-4ec1-b3af-0b487626ed46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Components\Include">
+      <UniqueIdentifier>{bd04b2e5-e08d-46ac-993a-519a23b75519}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Components\Source">
+      <UniqueIdentifier>{1f5d281b-14ed-420d-bda8-c9c606bb85fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Systems\Inline">
+      <UniqueIdentifier>{c629e6a5-f067-4b77-ab7d-8c27fb807ef6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine Source\Engine Core\Source\Main.cpp">
@@ -263,6 +275,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\Vulkan2DTexture.cpp">
       <Filter>Engine Source\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Systems\Source\PhysicsSystem.cpp">
+      <Filter>Engine Source\Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Components\Source\Component.cpp">
+      <Filter>Engine Source\Components\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Components\Source\PhysicsComponent.cpp">
+      <Filter>Engine Source\Components\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Game Source\Include\EntitySpawner.cpp">
+      <Filter>Game Source\Clairvoyant</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -479,9 +503,6 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\BitField.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Engine Core\Include\Map.h">
-      <Filter>Engine Source\Engine Core\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\Optional.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
@@ -524,5 +545,28 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\Vulkan2DTexture.h">
       <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Systems\Include\PhysicsSystem.h">
+      <Filter>Engine Source\Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\Component.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\PhysicsComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\Pair.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\Map.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Game Source\Include\EntitySpawner.h">
+      <Filter>Game Source\Clairvoyant</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Engine Source\Systems\Inline\EntitySystem.inl">
+      <Filter>Engine Source\Systems\Inline</Filter>
+    </None>
   </ItemGroup>
 </Project>

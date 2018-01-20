@@ -49,6 +49,18 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	floor->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
 	floor->Scale(Vector3(1'000.0f, 1'000.0f, 1'000.0f));
 
+	Vector3 pointLightPositions[5]{ Vector3(0.0f, 20.0f, 0.0f), Vector3(50.0f, 10.0f, 50.0f), Vector3(50.0f, 10.0f, -50.0f), Vector3(-50.0f, 10.0f, 50.0f), Vector3(-50.0f, 10.0f, -50.0f) };
+
+	for (size_t i = 0; i < 5; ++i)
+	{
+		PointLightEntity *light = EntitySystem::Instance->CreateEntity<PointLightEntity>();
+		light->SetAttenuationDistance(250.0f);
+		light->SetLightColor(Vector3(GameMath::RandomFloatInRange(0.5f, 1.0f), GameMath::RandomFloatInRange(0.5f, 1.0f), GameMath::RandomFloatInRange(0.5f, 1.0f)));
+		light->Move(pointLightPositions[i]);
+		light->SetIntensity(2.5f);
+	}
+
+	/*
 	Vulkan2DTexture *gunAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunAlbedo.png");
 	Vulkan2DTexture *gunNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunNormal.png");
 	Vulkan2DTexture *gunRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunRoughness.png");
@@ -80,15 +92,5 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
 		stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
 	}
-
-	Vector3 pointLightPositions[5]{ Vector3(0.0f, 20.0f, 0.0f), Vector3(50.0f, 10.0f, 50.0f), Vector3(50.0f, 10.0f, -50.0f), Vector3(-50.0f, 10.0f, 50.0f), Vector3(-50.0f, 10.0f, -50.0f) };
-
-	for (size_t i = 0; i < 5; ++i)
-	{
-		PointLightEntity *light = EntitySystem::Instance->CreateEntity<PointLightEntity>();
-		light->SetAttenuationDistance(75.0f);
-		light->SetLightColor(Vector3(GameMath::RandomFloatInRange(0.5f, 1.0f), GameMath::RandomFloatInRange(0.5f, 1.0f), GameMath::RandomFloatInRange(0.5f, 1.0f)));
-		light->Move(pointLightPositions[i]);
-		light->SetIntensity(2.5f);
-	}
+	*/
 }

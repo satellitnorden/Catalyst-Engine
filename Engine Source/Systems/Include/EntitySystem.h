@@ -25,6 +25,11 @@ public:
 	~EntitySystem() CATALYST_NOEXCEPT;
 
 	/*
+	*	Pre-updates the entity system synchronously.
+	*/
+	void PreUpdateSystemSynchronous() CATALYST_NOEXCEPT;
+
+	/*
 	*	Releases the entity system.
 	*/
 	void ReleaseSystem() CATALYST_NOEXCEPT;
@@ -41,31 +46,17 @@ public:
 	template <class EntityClass>
 	CATALYST_RESTRICTED EntityClass* CreateChildEntity(Entity *CATALYST_RESTRICT parentEntity) const CATALYST_NOEXCEPT;
 
+	/*
+	*	Marks a given entity for destruction.
+	*/
+	void MarkForDestruction(Entity *CATALYST_RESTRICT entityToBeDestroyed) CATALYST_NOEXCEPT;
+
+private:
+
+	//Container for all entities that are marked for destruction.
+	DynamicArray<Entity *CATALYST_RESTRICT>entitiesToBeDestroyed;
+
 };
 
-//////////////////////////////////////////////////////////////////////
-//////////			Templated function definitions.			//////////
-//////////////////////////////////////////////////////////////////////
-
-/*
-*	Creates a new entity.
-*/
-template <class EntityClass>
-CATALYST_RESTRICTED EntityClass* EntitySystem::CreateEntity() const CATALYST_NOEXCEPT
-{
-	return new EntityClass();
-}
-
-/*
-*	Creates a new child entity.
-*/
-template <class EntityClass>
-CATALYST_RESTRICTED EntityClass* EntitySystem::CreateChildEntity(Entity *CATALYST_RESTRICT parentEntity) const CATALYST_NOEXCEPT
-{
-	EntityClass *CATALYST_RESTRICT newChild = new EntityClass();
-
-	parentEntity->AddChild(newChild);
-	newChild->SetParent(parentEntity);
-
-	return newChild;
-}
+//Templated function definitions.
+#include <EntitySystem.inl>

@@ -4,6 +4,7 @@
 #include <EngineCore.h>
 
 //Clairvoyant.
+#include <EntitySpawner.h>
 #include <WorldArchitect.h>
 
 //Forward declarations.
@@ -46,6 +47,9 @@ private:
 
 	//The player.
 	ClairvoyantPlayer *player{ nullptr };
+
+	//The entity spawner.
+	EntitySpawner entitySpawner{ };
 
 	//The world architect.
 	WorldArchitect worldArchitect{ };

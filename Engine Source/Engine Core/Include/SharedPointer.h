@@ -83,7 +83,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	CATALYST_NOALIAS CATALYST_RESTRICTED const ObjectType* const operator->() const CATALYST_NOEXCEPT
+	CATALYST_RESTRICTED const ObjectType* const operator->() const CATALYST_NOEXCEPT
 	{
 		return pointer;
 	}
@@ -91,7 +91,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	CATALYST_NOALIAS CATALYST_RESTRICTED ObjectType* operator->() CATALYST_NOEXCEPT
+	CATALYST_RESTRICTED ObjectType* operator->() CATALYST_NOEXCEPT
 	{
 		return pointer;
 	}

@@ -9,7 +9,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	CATALYST_NOALIAS DynamicArray() CATALYST_NOEXCEPT
+	DynamicArray() CATALYST_NOEXCEPT
 		:
 		size(0)
 	{
@@ -28,7 +28,7 @@ public:
 	/*
 	*	Constructor taking an initializer list.
 	*/
-	CATALYST_NOALIAS DynamicArray(std::initializer_list<ObjectType> &&initializerList) CATALYST_NOEXCEPT
+	DynamicArray(std::initializer_list<ObjectType> &&initializerList) CATALYST_NOEXCEPT
 	{
 		//Reserve memory for all the elements in the initializer list.
 		Reserve(initializerList.size());
@@ -43,7 +43,7 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	CATALYST_NOALIAS DynamicArray(const DynamicArray &otherDynamicArray) CATALYST_NOEXCEPT
+	DynamicArray(const DynamicArray &otherDynamicArray) CATALYST_NOEXCEPT
 	{
 		Reserve(otherDynamicArray.capacity);
 
@@ -55,7 +55,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	CATALYST_NOALIAS ~DynamicArray() CATALYST_NOEXCEPT
+	~DynamicArray() CATALYST_NOEXCEPT
 	{
 		//Call the destructor on all objects in the array.
 		for (size_t i = 0; i < size; ++i)
@@ -70,7 +70,7 @@ public:
 	/*
 	*	Copy assignment operator overload.
 	*/
-	CATALYST_NOALIAS void operator=(const DynamicArray &otherDynamicArray) CATALYST_NOEXCEPT
+	void operator=(const DynamicArray &otherDynamicArray) CATALYST_NOEXCEPT
 	{
 		Reserve(otherDynamicArray.capacity);
 		size = capacity;
@@ -84,7 +84,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	CATALYST_NOALIAS const ObjectType& operator[](const size_t index) const CATALYST_NOEXCEPT
+	const ObjectType& operator[](const size_t index) const CATALYST_NOEXCEPT
 	{
 		return array[index];
 	}
@@ -92,7 +92,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	CATALYST_NOALIAS ObjectType& operator[](const size_t index) CATALYST_NOEXCEPT
+	ObjectType& operator[](const size_t index) CATALYST_NOEXCEPT
 	{
 		return array[index];
 	}
@@ -100,7 +100,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	CATALYST_NOALIAS CATALYST_RESTRICTED const ObjectType* begin() const  CATALYST_NOEXCEPT
+	CATALYST_RESTRICTED const ObjectType* begin() const  CATALYST_NOEXCEPT
 	{
 		return array;
 	}
@@ -108,7 +108,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	CATALYST_NOALIAS CATALYST_RESTRICTED ObjectType* begin()  CATALYST_NOEXCEPT
+	CATALYST_RESTRICTED ObjectType* begin()  CATALYST_NOEXCEPT
 	{
 		return array;
 	}
@@ -116,7 +116,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	CATALYST_NOALIAS CATALYST_RESTRICTED const ObjectType* end() const CATALYST_NOEXCEPT
+	CATALYST_RESTRICTED const ObjectType* end() const CATALYST_NOEXCEPT
 	{
 		return array + size;
 	}
@@ -124,7 +124,7 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	CATALYST_NOALIAS CATALYST_RESTRICTED ObjectType* end() CATALYST_NOEXCEPT
+	CATALYST_RESTRICTED ObjectType* end() CATALYST_NOEXCEPT
 	{
 		return array + size;
 	}
@@ -132,22 +132,22 @@ public:
 	/*
 	*	Returns the capacity of this dynamic array.
 	*/
-	CATALYST_NOALIAS size_t Capacity() const CATALYST_NOEXCEPT { return capacity; }
+	size_t Capacity() const CATALYST_NOEXCEPT { return capacity; }
 
 	/*
 	*	Returns the size of this dynamic array.
 	*/
-	CATALYST_NOALIAS size_t Size() const CATALYST_NOEXCEPT { return size; }
+	size_t Size() const CATALYST_NOEXCEPT { return size; }
 
 	/*
 	*	Returns whether or not this dynamic array is empty.
 	*/
-	CATALYST_NOALIAS bool Empty() const CATALYST_NOEXCEPT { return size == 0; }
+	bool Empty() const CATALYST_NOEXCEPT { return size == 0; }
 
 	/*
 	*	Returns a pointer to the data of this dynamic array, const.
 	*/
-	CATALYST_NOALIAS CATALYST_RESTRICTED const ObjectType* Data() const CATALYST_NOEXCEPT
+	CATALYST_RESTRICTED const ObjectType* Data() const CATALYST_NOEXCEPT
 	{
 		return CATALYST_LIKELY(array) ? array : nullptr;
 	}
@@ -155,7 +155,7 @@ public:
 	/*
 	*	Returns a pointer to the data of this dynamic array, non-const.
 	*/
-	CATALYST_NOALIAS CATALYST_RESTRICTED ObjectType* Data() CATALYST_NOEXCEPT
+	CATALYST_RESTRICTED ObjectType* Data() CATALYST_NOEXCEPT
 	{
 		return CATALYST_LIKELY(array) ? array : nullptr;
 	}
@@ -163,7 +163,7 @@ public:
 	/*
 	*	Returns the back of this dynamic array, const.
 	*/
-	CATALYST_NOALIAS const ObjectType& Back() const CATALYST_NOEXCEPT
+	const ObjectType& Back() const CATALYST_NOEXCEPT
 	{
 		return array[size - 1];
 	}
@@ -171,7 +171,7 @@ public:
 	/*
 	*	Returns the back of this dynamic array, non-const.
 	*/
-	CATALYST_NOALIAS ObjectType& Back() CATALYST_NOEXCEPT
+	ObjectType& Back() CATALYST_NOEXCEPT
 	{
 		return array[size - 1];
 	}
@@ -180,7 +180,7 @@ public:
 	*	Given constructor arguments for the object type, construct a new object at the back of the array.
 	*/
 	template <class... Arguments>
-	CATALYST_NOALIAS void Emplace(Arguments&&... arguments) CATALYST_NOEXCEPT
+	void Emplace(Arguments&&... arguments) CATALYST_NOEXCEPT
 	{
 		if (size >= capacity)
 		{
@@ -194,7 +194,7 @@ public:
 	*	Given constructor arguments for the object type, construct a new object at the back of the array without first checking if the array has the required capacity.
 	*/
 	template <class... Arguments>
-	CATALYST_NOALIAS void EmplaceUnsafe(Arguments&&... arguments) CATALYST_NOEXCEPT
+	void EmplaceUnsafe(Arguments&&... arguments) CATALYST_NOEXCEPT
 	{
 		new (&array[size++]) ObjectType(std::forward<Arguments>(arguments)...);
 	}
@@ -251,7 +251,7 @@ public:
 	/*
 	*	Pops an element from the back of this dynamic array.
 	*/
-	CATALYST_NOALIAS void Pop() CATALYST_NOEXCEPT
+	void Pop() CATALYST_NOEXCEPT
 	{
 		--size;
 	}
@@ -259,7 +259,7 @@ public:
 	/*
 	*	Reserves a new chunk of memory, changing the array's capacity.
 	*/
-	CATALYST_NOALIAS void Reserve(const size_t newCapacity) CATALYST_NOEXCEPT
+	void Reserve(const size_t newCapacity) CATALYST_NOEXCEPT
 	{
 		//Allocate the new array.
 		ObjectType *CATALYST_RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
@@ -278,7 +278,7 @@ public:
 	/*
 	*	Resizes this dynamic array, filling it with default constructed objects.
 	*/
-	CATALYST_NOALIAS void Resize(const size_t newCapacity) CATALYST_NOEXCEPT
+	void Resize(const size_t newCapacity) CATALYST_NOEXCEPT
 	{
 		//Allocate the new array.
 		ObjectType *CATALYST_RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };

@@ -52,11 +52,14 @@ class DynamicArray;
 
 class DynamicString;
 
-template <class KeyType, class ValueType>
+template <class KeyType, class ObjectType>
 class Map;
 
 template <class ObjectType>
 class Optional;
+
+template <class FirstType, class SecondType>
+class Pair;
 
 template <class ObjectType, size_t ArraySize>
 class StaticArray;
@@ -70,5 +73,6 @@ class UniquePointer;
 #include <DynamicString.h>
 #include <Map.h>
 #include <Optional.h>
+#include <Pair.h>
 #include <StaticArray.h>
 #include <UniquePointer.h>
