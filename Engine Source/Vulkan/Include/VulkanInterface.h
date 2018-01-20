@@ -7,6 +7,7 @@
 #include <Vertex.h>
 
 //Vulkan.
+#include <Vulkan2DTexture.h>
 #include <VulkanCommandBuffer.h>
 #include <VulkanCommandPool.h>
 #include <VulkanCore.h>
@@ -28,7 +29,6 @@
 #include <VulkanShaderModule.h>
 #include <VulkanSurface.h>
 #include <VulkanSwapChain.h>
-#include <VulkanTexture.h>
 #include <VulkanUniformBuffer.h>
 #include <VulkanVertexBuffer.h>
 
@@ -129,6 +129,11 @@ public:
 	const VulkanDescriptorPool& GetDescriptorPool() const CATALYST_NOEXCEPT { return vulkanDescriptorPool; }
 
 	/*
+	*	Creates and returns a 2D texture.
+	*/
+	CATALYST_RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 width, const uint32 height, const byte *textureData) CATALYST_NOEXCEPT;
+
+	/*
 	*	Creates and returns a depth buffer.
 	*/
 	CATALYST_RESTRICTED VulkanDepthBuffer* CreateDepthBuffer(const VkExtent2D &depthBufferExtent) CATALYST_NOEXCEPT;
@@ -157,11 +162,6 @@ public:
 	*	Creates and returns a shader module.
 	*/
 	CATALYST_RESTRICTED VulkanShaderModule* CreateShaderModule(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits stage) CATALYST_NOEXCEPT;
-
-	/*
-	*	Creates and returns a texture.
-	*/
-	CATALYST_RESTRICTED VulkanTexture* CreateTexture(const uint32 width, const uint32 height, const byte *textureData) CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.
@@ -211,6 +211,9 @@ private:
 	//Container for all queues.
 	VulkanQueue queues[static_cast<uint8>(Queue::NumberOfQueues)];
 
+	//Container for all Vulkan 2Dtextures.
+	DynamicArray<Vulkan2DTexture *CATALYST_RESTRICT> vulkan2DTextures;
+
 	//Container for all Vulkan depth buffers.
 	DynamicArray<VulkanDepthBuffer *CATALYST_RESTRICT> vulkanDepthBuffers;
 
@@ -228,9 +231,6 @@ private:
 
 	//Container for all Vulkan shader modules.
 	DynamicArray<VulkanShaderModule *CATALYST_RESTRICT> vulkanShaderModules;
-
-	//Container for all Vulkan textures.
-	DynamicArray<VulkanTexture *CATALYST_RESTRICT> vulkanTextures;
 
 	//Container for all Vulkan uniform buffers.
 	DynamicArray<VulkanUniformBuffer *CATALYST_RESTRICT> vulkanUniformBuffers;

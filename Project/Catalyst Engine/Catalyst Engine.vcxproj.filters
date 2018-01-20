@@ -237,9 +237,6 @@
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSwapChain.cpp">
       <Filter>Engine Source\Vulkan\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanTexture.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanUniformBuffer.cpp">
       <Filter>Engine Source\Vulkan\Source</Filter>
     </ClCompile>
@@ -263,6 +260,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Multithreading\Source\DailyGroupQuest.cpp">
       <Filter>Engine Source\Multithreading\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\Vulkan2DTexture.cpp">
+      <Filter>Engine Source\Vulkan\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -422,9 +422,6 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanSwapChain.h">
       <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanTexture.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUniformBuffer.h">
       <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
@@ -523,6 +520,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\ScopedLock.h">
       <Filter>Engine Source\Multithreading\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\Vulkan2DTexture.h">
+      <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

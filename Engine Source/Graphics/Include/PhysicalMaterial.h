@@ -4,7 +4,7 @@
 #include <EngineCore.h>
 
 //Forward declarations.
-class VulkanTexture;
+class Vulkan2DTexture;
 
 class PhysicalMaterial
 {
@@ -24,68 +24,68 @@ public:
 	/*
 	*	Returns the the albedo texture.
 	*/
-	CATALYST_RESTRICTED const VulkanTexture* GetAlbedoTexture() const CATALYST_NOEXCEPT { return albedoTexture; }
+	CATALYST_RESTRICTED const Vulkan2DTexture* GetAlbedoTexture() const CATALYST_NOEXCEPT { return albedoTexture; }
 
 	/*
 	*	Sets the the albedo texture.
 	*/
-	void SetAlbedoTexture(VulkanTexture *CATALYST_RESTRICT newAlbedoTexture) CATALYST_NOEXCEPT { albedoTexture = newAlbedoTexture; }
+	void SetAlbedoTexture(Vulkan2DTexture *CATALYST_RESTRICT newAlbedoTexture) CATALYST_NOEXCEPT { albedoTexture = newAlbedoTexture; }
 
 	/*
 	*	Returns the the normal map texture.
 	*/
-	CATALYST_RESTRICTED const VulkanTexture* GetNormalMapTexture() const CATALYST_NOEXCEPT { return normalMapTexture; }
+	CATALYST_RESTRICTED const Vulkan2DTexture* GetNormalMapTexture() const CATALYST_NOEXCEPT { return normalMapTexture; }
 
 	/*
 	*	Sets the the normal map texture.
 	*/
-	void SetNormalMapTexture(VulkanTexture *CATALYST_RESTRICT newNormalMapTexture) CATALYST_NOEXCEPT { normalMapTexture = newNormalMapTexture; }
+	void SetNormalMapTexture(Vulkan2DTexture *CATALYST_RESTRICT newNormalMapTexture) CATALYST_NOEXCEPT { normalMapTexture = newNormalMapTexture; }
 
 	/*
 	*	Returns the the roughness texture.
 	*/
-	CATALYST_RESTRICTED const VulkanTexture* GetRoughnessTexture() const CATALYST_NOEXCEPT { return roughnessTexture; }
+	CATALYST_RESTRICTED const Vulkan2DTexture* GetRoughnessTexture() const CATALYST_NOEXCEPT { return roughnessTexture; }
 
 	/*
 	*	Sets the the roughness texture.
 	*/
-	void SetRoughnessTexture(VulkanTexture *CATALYST_RESTRICT newRoughnessTexture) CATALYST_NOEXCEPT { roughnessTexture = newRoughnessTexture; }
+	void SetRoughnessTexture(Vulkan2DTexture *CATALYST_RESTRICT newRoughnessTexture) CATALYST_NOEXCEPT { roughnessTexture = newRoughnessTexture; }
 
 	/*
 	*	Returns the the metallic texture.
 	*/
-	CATALYST_RESTRICTED const VulkanTexture* GetMetallicTexture() const CATALYST_NOEXCEPT { return metallicTexture; }
+	CATALYST_RESTRICTED const Vulkan2DTexture* GetMetallicTexture() const CATALYST_NOEXCEPT { return metallicTexture; }
 
 	/*
 	*	Sets the the metallic texture.
 	*/
-	void SetMetallicTexture(VulkanTexture *CATALYST_RESTRICT newMetallicTexture) CATALYST_NOEXCEPT { metallicTexture = newMetallicTexture; }
+	void SetMetallicTexture(Vulkan2DTexture *CATALYST_RESTRICT newMetallicTexture) CATALYST_NOEXCEPT { metallicTexture = newMetallicTexture; }
 
 	/*
 	*	Returns the the ambient occlusion texture.
 	*/
-	CATALYST_RESTRICTED const VulkanTexture* GetAmbientOcclusionTexture() const CATALYST_NOEXCEPT { return ambientOcclusiontexture; }
+	CATALYST_RESTRICTED const Vulkan2DTexture* GetAmbientOcclusionTexture() const CATALYST_NOEXCEPT { return ambientOcclusiontexture; }
 
 	/*
 	*	Sets the the ambient occlusion texture.
 	*/
-	void SetAmbientOcclusionTexture(VulkanTexture *CATALYST_RESTRICT newAmbientOcclusionTexture) CATALYST_NOEXCEPT { ambientOcclusiontexture = newAmbientOcclusionTexture; }
+	void SetAmbientOcclusionTexture(Vulkan2DTexture *CATALYST_RESTRICT newAmbientOcclusionTexture) CATALYST_NOEXCEPT { ambientOcclusiontexture = newAmbientOcclusionTexture; }
 
 private:
 
 	//The albedo texture.
-	VulkanTexture *CATALYST_RESTRICT albedoTexture{ nullptr };
+	Vulkan2DTexture *CATALYST_RESTRICT albedoTexture{ nullptr };
 
 	//The normal map texture.
-	VulkanTexture *CATALYST_RESTRICT normalMapTexture{ nullptr };
+	Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture{ nullptr };
 
 	//The roughness texture.
-	VulkanTexture *CATALYST_RESTRICT roughnessTexture{ nullptr };
+	Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture{ nullptr };
 
 	//The metallic texture.
-	VulkanTexture *CATALYST_RESTRICT metallicTexture{ nullptr };
+	Vulkan2DTexture *CATALYST_RESTRICT metallicTexture{ nullptr };
 
 	//The ambient occlusion texture.
-	VulkanTexture *CATALYST_RESTRICT ambientOcclusiontexture{ nullptr };
+	Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusiontexture{ nullptr };
 
 };

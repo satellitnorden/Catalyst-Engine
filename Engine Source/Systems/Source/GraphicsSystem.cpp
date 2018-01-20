@@ -75,13 +75,13 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 
 	//Create all default textures.
 	const byte defaultRoughness[]{ 255 };
-	defaultTextures[DefaultTexture::Roughness] = VulkanInterface::Instance->CreateTexture(1, 1, defaultRoughness);
+	defaultTextures[DefaultTexture::Roughness] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultRoughness);
 
 	const byte defaultMetallic[]{ 0 };
-	defaultTextures[DefaultTexture::Metallic] = VulkanInterface::Instance->CreateTexture(1, 1, defaultMetallic);
+	defaultTextures[DefaultTexture::Metallic] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultMetallic);
 
 	const byte defaultAmbientOcclusion[]{ 255 };
-	defaultTextures[DefaultTexture::AmbientOcclusion] = VulkanInterface::Instance->CreateTexture(1, 1, defaultAmbientOcclusion);
+	defaultTextures[DefaultTexture::AmbientOcclusion] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultAmbientOcclusion);
 }
 
 /*
@@ -163,7 +163,7 @@ void GraphicsSystem::ReleaseSystem() CATALYST_NOEXCEPT
 /*
 *	Creates a physical descriptor set.
 */
-void GraphicsSystem::CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDescriptorSet, const VulkanUniformBuffer *CATALYST_RESTRICT modelDataUniformBuffer, const VulkanTexture *CATALYST_RESTRICT albedoTexture, const VulkanTexture *CATALYST_RESTRICT normalMapTexture, const VulkanTexture *CATALYST_RESTRICT roughnessTexture, const VulkanTexture *CATALYST_RESTRICT metallicTexture, const VulkanTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT
+void GraphicsSystem::CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDescriptorSet, const VulkanUniformBuffer *CATALYST_RESTRICT modelDataUniformBuffer, const Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, const Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, const Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, const Vulkan2DTexture *CATALYST_RESTRICT metallicTexture, const Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT
 {
 	//Allocate the descriptor set.
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(vulkanDescriptorSet, pipelines[Pipeline::PhysicalPipeline]->GetDescriptorSetLayout());
@@ -185,7 +185,7 @@ void GraphicsSystem::CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDesc
 /*
 *	Creates and returns physical model.
 */
-const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RESTRICT modelPath, VulkanTexture *CATALYST_RESTRICT albedoTexture, VulkanTexture *CATALYST_RESTRICT normalMapTexture, VulkanTexture *CATALYST_RESTRICT roughnessTexture, VulkanTexture *CATALYST_RESTRICT metallicTexture, VulkanTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT
+const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RESTRICT modelPath, Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, Vulkan2DTexture *CATALYST_RESTRICT metallicTexture, Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT
 {
 	//Load the model.
 	DynamicArray<Vertex> vertices;
@@ -219,7 +219,7 @@ const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RES
 /*
 *	Creates a texture and returns the identifier for the texture.
 */
-VulkanTexture* GraphicsSystem::CreateTexture(const char *CATALYST_RESTRICT texturePath) const CATALYST_NOEXCEPT
+Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *CATALYST_RESTRICT texturePath) const CATALYST_NOEXCEPT
 {
 	//Load the texture.
 	int width = 0;
@@ -229,14 +229,14 @@ VulkanTexture* GraphicsSystem::CreateTexture(const char *CATALYST_RESTRICT textu
 
 	TextureLoader::LoadTexture(texturePath, width, height, numberOfChannels, &textureData);
 
-	//Create the Vulkan texture.
-	VulkanTexture *CATALYST_RESTRICT newTexture = VulkanInterface::Instance->CreateTexture(static_cast<uint32>(width), static_cast<uint32>(height), textureData);
+	//Create the Vulkan 2D texture.
+	Vulkan2DTexture *CATALYST_RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(width), static_cast<uint32>(height), textureData);
 
 	//Free the texture.
 	TextureLoader::FreeTexture(textureData);
 
 	//Return the texture.
-	return newTexture;
+	return new2DTexture;
 }
 
 /*

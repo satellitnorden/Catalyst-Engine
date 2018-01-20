@@ -66,17 +66,17 @@ public:
 	/*
 	*	Creates a physical descriptor set.
 	*/
-	void CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDescriptorSet, const VulkanUniformBuffer *CATALYST_RESTRICT modelDataUniformBuffer, const VulkanTexture *CATALYST_RESTRICT albedoTexture, const VulkanTexture *CATALYST_RESTRICT normalMapTexture, const VulkanTexture *CATALYST_RESTRICT roughnessTexture, const VulkanTexture *CATALYST_RESTRICT metallicTexture, const VulkanTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT;
+	void CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDescriptorSet, const VulkanUniformBuffer *CATALYST_RESTRICT modelDataUniformBuffer, const Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, const Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, const Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, const Vulkan2DTexture *CATALYST_RESTRICT metallicTexture, const Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns physical model.
 	*/
-	const PhysicalModel CreatePhysicalModel(const char *CATALYST_RESTRICT modelPath, VulkanTexture *CATALYST_RESTRICT albedoTexture, VulkanTexture *CATALYST_RESTRICT normalMapTexture, VulkanTexture *CATALYST_RESTRICT roughnessTexture, VulkanTexture *CATALYST_RESTRICT, VulkanTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT;
+	const PhysicalModel CreatePhysicalModel(const char *CATALYST_RESTRICT modelPath, Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, Vulkan2DTexture *CATALYST_RESTRICT, Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a texture.
 	*/
-	CATALYST_RESTRICTED VulkanTexture* CreateTexture(const char *CATALYST_RESTRICT texturePath) const CATALYST_NOEXCEPT;
+	CATALYST_RESTRICTED Vulkan2DTexture* Create2DTexture(const char *CATALYST_RESTRICT texturePath) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.
@@ -157,7 +157,7 @@ private:
 	VulkanUniformBuffer *CATALYST_RESTRICT uniformBuffers[UniformBuffer::NumberOfUniformBuffers];
 
 	//Container for all default textures.
-	VulkanTexture *CATALYST_RESTRICT defaultTextures[DefaultTexture::NumberOfDefaultTextures];
+	Vulkan2DTexture *CATALYST_RESTRICT defaultTextures[DefaultTexture::NumberOfDefaultTextures];
 
 	//Container for all command buffers.
 	DynamicArray<VulkanCommandBuffer> commandBuffers;

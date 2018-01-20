@@ -9,7 +9,7 @@
 //Forward declarations.
 class VulkanDescriptorSet;
 
-class VulkanTexture
+class Vulkan2DTexture
 {
 
 public:
@@ -17,12 +17,12 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanTexture() CATALYST_NOEXCEPT;
+	Vulkan2DTexture() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default desctuctor.
 	*/
-	~VulkanTexture() CATALYST_NOEXCEPT;
+	~Vulkan2DTexture() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan image.
@@ -30,12 +30,12 @@ public:
 	const VkImage& Get() const CATALYST_NOEXCEPT { return vulkanImage; }
 
 	/*
-	*	Initializes this Vulkan texture.
+	*	Initializes this texture.
 	*/
 	void Initialize(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT;
 
 	/*
-	*	Releases this Vulkan texture.
+	*	Releases this texture.
 	*/
 	void Release() CATALYST_NOEXCEPT;
 

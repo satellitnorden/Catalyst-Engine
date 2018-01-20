@@ -1,5 +1,5 @@
 //Header file.
-#include <VulkanTexture.h>
+#include <Vulkan2DTexture.h>
 
 //Vulkan.
 #include <VulkanInterface.h>
@@ -10,7 +10,7 @@
 /*
 *	Default constructor.
 */
-VulkanTexture::VulkanTexture() CATALYST_NOEXCEPT
+Vulkan2DTexture::Vulkan2DTexture() CATALYST_NOEXCEPT
 {
 
 }
@@ -18,15 +18,15 @@ VulkanTexture::VulkanTexture() CATALYST_NOEXCEPT
 /*
 *	Default desctuctor.
 */
-VulkanTexture::~VulkanTexture() CATALYST_NOEXCEPT
+Vulkan2DTexture::~Vulkan2DTexture() CATALYST_NOEXCEPT
 {
 
 }
 
 /*
-*	Initializes this Vulkan texture.
+*	Initializes this Vulkan 2D texture.
 */
-void VulkanTexture::Initialize(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT
+void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT
 {
 	//Calculate the image size.
 	const VkDeviceSize imageSize = width * height * 4;
@@ -75,9 +75,9 @@ void VulkanTexture::Initialize(const uint32 width, const uint32 height, const by
 }
 
 /*
-*	Releases this Vulkan texture.
+*	Releases this Vulkan 2D texture.
 */
-void VulkanTexture::Release() CATALYST_NOEXCEPT
+void Vulkan2DTexture::Release() CATALYST_NOEXCEPT
 {
 	//Destroy Vulkan sampler.
 	vkDestroySampler(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSampler, nullptr);
@@ -93,9 +93,9 @@ void VulkanTexture::Release() CATALYST_NOEXCEPT
 }
 
 /*
-*	Returns the write descriptor set for this uniform buffer.
+*	Returns the write descriptor set for this texture.
 */
-VkWriteDescriptorSet VulkanTexture::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const CATALYST_NOEXCEPT
+VkWriteDescriptorSet Vulkan2DTexture::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const CATALYST_NOEXCEPT
 {
 	VkWriteDescriptorSet vulkanWriteDescriptorSetCopy{ vulkanWriteDescriptorSet };
 
@@ -109,7 +109,7 @@ VkWriteDescriptorSet VulkanTexture::GetWriteDescriptorSet(const VulkanDescriptor
 /*
 *	Creates the descriptor image info.
 */
-void VulkanTexture::CreateDescriptorImageInfo() CATALYST_NOEXCEPT
+void Vulkan2DTexture::CreateDescriptorImageInfo() CATALYST_NOEXCEPT
 {
 	vulkanDescriptorImageInfo.sampler = vulkanSampler;
 	vulkanDescriptorImageInfo.imageView = vulkanImageView;
@@ -119,7 +119,7 @@ void VulkanTexture::CreateDescriptorImageInfo() CATALYST_NOEXCEPT
 /*
 *	Creates the write descriptor set.
 */
-void VulkanTexture::CreateWriteDescriptorSet() CATALYST_NOEXCEPT
+void Vulkan2DTexture::CreateWriteDescriptorSet() CATALYST_NOEXCEPT
 {
 	vulkanWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	vulkanWriteDescriptorSet.pNext = nullptr;

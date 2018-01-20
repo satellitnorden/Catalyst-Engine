@@ -130,10 +130,10 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 	}
 
 	//Release all Vulkan textures.
-	for (VulkanTexture * CATALYST_RESTRICT vulkanTexture : vulkanTextures)
+	for (Vulkan2DTexture * CATALYST_RESTRICT vulkan2DTexture : vulkan2DTextures)
 	{
-		vulkanTexture->Release();
-		delete vulkanTexture;
+		vulkan2DTexture->Release();
+		delete vulkan2DTexture;
 	}
 
 	//Release all Vulkan uniform buffers.
@@ -170,6 +170,19 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 
 	//Release the Vulkan instance.
 	vulkanInstance.Release();
+}
+
+/*
+*	Creates and returns a 2D texture.
+*/
+CATALYST_RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 width, const uint32 height, const byte *textureData) CATALYST_NOEXCEPT
+{
+	Vulkan2DTexture *CATALYST_RESTRICT new2DTexture = new Vulkan2DTexture;
+	new2DTexture->Initialize(width, height, textureData);
+
+	vulkan2DTextures.Emplace(new2DTexture);
+
+	return new2DTexture;
 }
 
 /*
@@ -250,19 +263,6 @@ CATALYST_RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(cons
 	vulkanShaderModules.Emplace(newShaderModule);
 
 	return newShaderModule;
-}
-
-/*
-*	Creates and returns a texture.
-*/
-CATALYST_RESTRICTED VulkanTexture* VulkanInterface::CreateTexture(const uint32 width, const uint32 height, const byte *textureData) CATALYST_NOEXCEPT
-{
-	VulkanTexture *CATALYST_RESTRICT newTexture = new VulkanTexture;
-	newTexture->Initialize(width, height, textureData);
-
-	vulkanTextures.Emplace(newTexture);
-
-	return newTexture;
 }
 
 /*

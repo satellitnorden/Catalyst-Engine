@@ -72,7 +72,7 @@
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanShaderModule.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSurface.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSwapChain.cpp" />
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanTexture.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanUniformBuffer.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanVertexBuffer.cpp" />
     <ClCompile Include="..\..\Game Source\Source\ClairvoyantGameSystem.cpp" />
@@ -159,7 +159,7 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanShaderModule.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanSurface.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanSwapChain.h" />
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanTexture.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\Vulkan2DTexture.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUniformBuffer.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUtilities.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanVertexBuffer.h" />

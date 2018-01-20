@@ -37,10 +37,10 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 {
 	PhysicalEntity::physicalEntities.Reserve(1'250);
 
-	VulkanTexture *floorAlbedoTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
-	VulkanTexture *floorNormalMapTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
-	VulkanTexture *floorRoughnessTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorRoughness.png");
-	VulkanTexture *floorAmbientOcclusionTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "FloorAmbientOcclusion.png");
+	Vulkan2DTexture *floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
+	Vulkan2DTexture *floorNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
+	Vulkan2DTexture *floorRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorRoughness.png");
+	Vulkan2DTexture *floorAmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAmbientOcclusion.png");
 
 	const PhysicalModel floorModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Floor.fbx", floorAlbedoTexture, floorNormalMapTexture, floorRoughnessTexture, nullptr, floorAmbientOcclusionTexture);
 
@@ -49,11 +49,11 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	floor->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
 	floor->Scale(Vector3(1'000.0f, 1'000.0f, 1'000.0f));
 
-	VulkanTexture *gunAlbedoTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunAlbedo.png");
-	VulkanTexture *gunNormalMapTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunNormal.png");
-	VulkanTexture *gunRoughnessTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunRoughness.png");
-	VulkanTexture *gunMetallicTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunMetallic.png");
-	VulkanTexture *gunAmbientOcclusionTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "GunAmbientOcclusion.png");
+	Vulkan2DTexture *gunAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunAlbedo.png");
+	Vulkan2DTexture *gunNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunNormal.png");
+	Vulkan2DTexture *gunRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunRoughness.png");
+	Vulkan2DTexture *gunMetallicTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunMetallic.png");
+	Vulkan2DTexture *gunAmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunAmbientOcclusion.png");
 
 	const PhysicalModel gunModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Gun.fbx", gunAlbedoTexture, gunNormalMapTexture, gunRoughnessTexture, gunMetallicTexture, gunAmbientOcclusionTexture);
 
@@ -63,9 +63,9 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	gun->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
 	gun->Scale(Vector3(0.2f, 0.2f, 0.2f));
 
-	VulkanTexture *stoneAlbedoTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "StoneAlbedo.png");
-	VulkanTexture *stoneNormalMapTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "StoneNormalMap.png");
-	VulkanTexture *stoneRoughnessTexture = GraphicsSystem::Instance->CreateTexture(GAME_TEXTURES_FOLDER "StoneRoughness.png");
+	Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneAlbedo.png");
+	Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneNormalMap.png");
+	Vulkan2DTexture *stoneRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneRoughness.png");
 
 	//Create the stone model.
 	const PhysicalModel stoneModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Stone.obj", stoneAlbedoTexture, stoneNormalMapTexture, stoneRoughnessTexture, nullptr, nullptr);
