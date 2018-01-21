@@ -11,6 +11,7 @@
 #include <VulkanCommandBuffer.h>
 #include <VulkanCommandPool.h>
 #include <VulkanCore.h>
+#include <VulkanCubeMapTexture.h>
 #include <VulkanDepthBuffer.h>
 #include <VulkanDescriptorPool.h>
 #include <VulkanDescriptorSet.h>
@@ -131,7 +132,12 @@ public:
 	/*
 	*	Creates and returns a 2D texture.
 	*/
-	CATALYST_RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 width, const uint32 height, const byte *textureData) CATALYST_NOEXCEPT;
+	CATALYST_RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT;
+
+	/*
+	*	Creates and returns a cube map texture.
+	*/
+	CATALYST_RESTRICTED VulkanCubeMapTexture* CreateCubeMapTexture(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a depth buffer.
@@ -211,8 +217,11 @@ private:
 	//Container for all queues.
 	VulkanQueue queues[static_cast<uint8>(Queue::NumberOfQueues)];
 
-	//Container for all Vulkan 2Dtextures.
+	//Container for all Vulkan 2D textures.
 	DynamicArray<Vulkan2DTexture *CATALYST_RESTRICT> vulkan2DTextures;
+
+	//Container for all Vulkan cube map textures.
+	DynamicArray<VulkanCubeMapTexture *CATALYST_RESTRICT> vulkanCubeMapTextures;
 
 	//Container for all Vulkan depth buffers.
 	DynamicArray<VulkanDepthBuffer *CATALYST_RESTRICT> vulkanDepthBuffers;

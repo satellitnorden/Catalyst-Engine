@@ -99,12 +99,12 @@ void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDes
 	depthAttachmentDescription.flags = 0;
 	depthAttachmentDescription.format = VulkanInterface::Instance->GetSwapchain().GetDepthBuffer().GetFormat();
 	depthAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
-	depthAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	depthAttachmentDescription.loadOp = vulkanPipelineCreationParameters.attachmentLoadOperator;
 	depthAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	depthAttachmentDescription.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	depthAttachmentDescription.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depthAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	depthAttachmentDescription.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	depthAttachmentDescription.initialLayout = vulkanPipelineCreationParameters.depthAttachmentInitialLayout;
+	depthAttachmentDescription.finalLayout = vulkanPipelineCreationParameters.depthAttachmentFinalLayout;
 
 	attachmentDescriptions.EmplaceUnsafe(depthAttachmentDescription);
 
@@ -113,12 +113,12 @@ void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDes
 	colorAttachmentDescription.flags = 0;
 	colorAttachmentDescription.format = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
 	colorAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
-	colorAttachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	colorAttachmentDescription.loadOp = vulkanPipelineCreationParameters.attachmentLoadOperator;
 	colorAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	colorAttachmentDescription.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colorAttachmentDescription.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachmentDescription.finalLayout = VULKAN_IMAGE_LAYOUT_PRESENT_SRC;
+	colorAttachmentDescription.initialLayout = vulkanPipelineCreationParameters.colorAttachmentInitialLayout;
+	colorAttachmentDescription.finalLayout = vulkanPipelineCreationParameters.colorAttachmentFinalLayout;
 
 	attachmentDescriptions.EmplaceUnsafe(colorAttachmentDescription);
 }

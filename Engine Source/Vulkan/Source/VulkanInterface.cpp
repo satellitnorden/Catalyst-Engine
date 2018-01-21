@@ -87,6 +87,20 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 	queues[static_cast<uint8>(Queue::Present)].WaitIdle();
 	queues[static_cast<uint8>(Queue::Transfer)].WaitIdle();
 
+	//Release all Vulkan 2D textures.
+	for (Vulkan2DTexture * CATALYST_RESTRICT vulkan2DTexture : vulkan2DTextures)
+	{
+		vulkan2DTexture->Release();
+		delete vulkan2DTexture;
+	}
+
+	//Release all Vulkan cube map textures.
+	for (VulkanCubeMapTexture * CATALYST_RESTRICT vulkanCubeMapTexture : vulkanCubeMapTextures)
+	{
+		vulkanCubeMapTexture->Release();
+		delete vulkanCubeMapTexture;
+	}
+
 	//Release all Vulkan depth buffers.
 	for (VulkanDepthBuffer * CATALYST_RESTRICT vulkanDepthBuffer : vulkanDepthBuffers)
 	{
@@ -129,13 +143,6 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 		delete vulkanShaderModule;
 	}
 
-	//Release all Vulkan textures.
-	for (Vulkan2DTexture * CATALYST_RESTRICT vulkan2DTexture : vulkan2DTextures)
-	{
-		vulkan2DTexture->Release();
-		delete vulkan2DTexture;
-	}
-
 	//Release all Vulkan uniform buffers.
 	for (VulkanUniformBuffer * CATALYST_RESTRICT vulkanUniformBuffer : vulkanUniformBuffers)
 	{
@@ -175,7 +182,7 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 /*
 *	Creates and returns a 2D texture.
 */
-CATALYST_RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 width, const uint32 height, const byte *textureData) CATALYST_NOEXCEPT
+CATALYST_RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT
 {
 	Vulkan2DTexture *CATALYST_RESTRICT new2DTexture = new Vulkan2DTexture;
 	new2DTexture->Initialize(width, height, textureData);
@@ -183,6 +190,19 @@ CATALYST_RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint
 	vulkan2DTextures.Emplace(new2DTexture);
 
 	return new2DTexture;
+}
+
+/*
+*	Creates and returns a cube map texture.
+*/
+CATALYST_RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT
+{
+	VulkanCubeMapTexture *CATALYST_RESTRICT newCubeMapTexture = new VulkanCubeMapTexture;
+	newCubeMapTexture->Initialize(width, height, textureData);
+
+	vulkanCubeMapTextures.Emplace(newCubeMapTexture);
+
+	return newCubeMapTexture;
 }
 
 /*

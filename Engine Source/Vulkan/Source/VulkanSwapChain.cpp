@@ -59,7 +59,7 @@ void VulkanSwapchain::Initialize() CATALYST_NOEXCEPT
 
 	for (uint32 i = 0; i < swapChainImagesCount; ++i)
 	{
-		VulkanUtilities::CreateVulkanImageView(VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT, swapChainImages[i], swapChainImageViews[i]);
+		VulkanUtilities::CreateVulkanImageView(swapChainImages[i], VK_IMAGE_VIEW_TYPE_2D, VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT, 1, swapChainImageViews[i]);
 	}
 
 	//Initialize the depth buffer.

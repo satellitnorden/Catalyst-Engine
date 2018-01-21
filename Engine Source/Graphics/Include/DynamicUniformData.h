@@ -17,6 +17,7 @@ class DynamicUniformData
 public:
 
 	//Camera data.
+	Matrix4 originViewMatrix;
 	Matrix4 viewMatrix;
 	Vector4 cameraWorldPosition;
 

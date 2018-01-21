@@ -55,7 +55,7 @@ namespace VulkanUtilities
 	/*
 	*	Copies a Vulkan buffer to a Vulkan image.
 	*/
-	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 width, const uint32 height) CATALYST_NOEXCEPT
+	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 layerCount, const uint32 width, const uint32 height) CATALYST_NOEXCEPT
 	{
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transferCommandBuffer;
@@ -70,7 +70,7 @@ namespace VulkanUtilities
 		bufferImageCopy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		bufferImageCopy.imageSubresource.mipLevel = 0;
 		bufferImageCopy.imageSubresource.baseArrayLayer = 0;
-		bufferImageCopy.imageSubresource.layerCount = 1;
+		bufferImageCopy.imageSubresource.layerCount = layerCount;
 		bufferImageCopy.imageOffset = { 0, 0, 0 };
 		bufferImageCopy.imageExtent = { width, height, 1 };
 
@@ -167,21 +167,21 @@ namespace VulkanUtilities
 	/*
 	*	Creates a Vulkan image.
 	*/
-	static void CreateVulkanImage(const VkFormat format, const uint32 width, const uint32 height, const VkImageUsageFlags usage, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) CATALYST_NOEXCEPT
+	static void CreateVulkanImage(const VkImageCreateFlags flags, const VkFormat format, const uint32 width, const uint32 height, const uint32 arrayLayers, const VkImageUsageFlags usage, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) CATALYST_NOEXCEPT
 	{
 		//Create the image create info.
 		VkImageCreateInfo imageCreateInfo;
 		
 		imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		imageCreateInfo.pNext = nullptr;
-		imageCreateInfo.flags = 0;
+		imageCreateInfo.flags = flags;
 		imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
 		imageCreateInfo.format = format;
 		imageCreateInfo.extent.width = width;
 		imageCreateInfo.extent.height = height;
 		imageCreateInfo.extent.depth = 1;
 		imageCreateInfo.mipLevels = 1;
-		imageCreateInfo.arrayLayers = 1;
+		imageCreateInfo.arrayLayers = arrayLayers;
 		imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 		imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 		imageCreateInfo.usage = usage;
@@ -230,7 +230,7 @@ namespace VulkanUtilities
 	/*
 	*	Creates a Vulkan image view.
 	*/
-	static void CreateVulkanImageView(const VkFormat format, const VkImageAspectFlags aspectMask, const VkImage &vulkanImage, VkImageView &vulkanImageView) CATALYST_NOEXCEPT
+	static void CreateVulkanImageView(const VkImage &vulkanImage, const VkImageViewType viewType, const VkFormat format, const VkImageAspectFlags aspectMask, const uint32 layerCount, VkImageView &vulkanImageView) CATALYST_NOEXCEPT
 	{
 		//Create the image view create info.
 		VkImageViewCreateInfo imageViewCreateInfo;
@@ -239,7 +239,7 @@ namespace VulkanUtilities
 		imageViewCreateInfo.pNext = nullptr;
 		imageViewCreateInfo.flags = 0;
 		imageViewCreateInfo.image = vulkanImage;
-		imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		imageViewCreateInfo.viewType = viewType;
 		imageViewCreateInfo.format = format;
 		imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
 		imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
@@ -249,7 +249,7 @@ namespace VulkanUtilities
 		imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
 		imageViewCreateInfo.subresourceRange.levelCount = 1;
 		imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
-		imageViewCreateInfo.subresourceRange.layerCount = 1;
+		imageViewCreateInfo.subresourceRange.layerCount = layerCount;
 
 		//Create the image view!
 		VULKAN_ERROR_CHECK(vkCreateImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), &imageViewCreateInfo, nullptr, &vulkanImageView));
@@ -286,7 +286,7 @@ namespace VulkanUtilities
 		VULKAN_ERROR_CHECK(vkCreateSampler(VulkanInterface::Instance->GetLogicalDevice().Get(), &samplerCreateInfo, nullptr, &vulkanSampler));
 	}
 
-	/*
+	/*A>Z
 	*	Returns the vertex input attribute descriptions for Vertices.
 	*/
 	static StaticArray<VkVertexInputAttributeDescription, 4> GetVertexInputAttributeDescriptions() CATALYST_NOEXCEPT
@@ -333,9 +333,9 @@ namespace VulkanUtilities
 	/*
 	*	Transitions a Vulkan image to a layout.
 	*/
-	static void TransitionImageToLayout(const VkFormat format, const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageAspectFlags aspectMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, VkImage &vulkanImage) CATALYST_NOEXCEPT
+	static void TransitionImageToLayout(const VkFormat format, const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageAspectFlags aspectMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, const uint32 layerCount, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, VkImage &vulkanImage) CATALYST_NOEXCEPT
 	{
-		//Create the transfer command buffer.
+		//Create the transition command buffer.
 		VulkanCommandBuffer transitionCommandBuffer;
 		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(transitionCommandBuffer);
 
@@ -357,21 +357,21 @@ namespace VulkanUtilities
 		imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
 		imageMemoryBarrier.subresourceRange.levelCount = 1;
 		imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
-		imageMemoryBarrier.subresourceRange.layerCount = 1;
+		imageMemoryBarrier.subresourceRange.layerCount = layerCount;
 
-		//Begin the transfer command buffer.
+		//Begin the transition command buffer.
 		transitionCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-		//Record thepipeline barrier command.
+		//Record the pipeline barrier command.
 		vkCmdPipelineBarrier(transitionCommandBuffer.Get(), sourceStageMask, destinationStageMask, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
 
-		//End the transfer command buffer.
+		//End the transition command buffer.
 		transitionCommandBuffer.End();
 
 		//Submit the command buffer.
 		VulkanInterface::Instance->GetGraphicsQueue().Submit(transitionCommandBuffer);
 
-		//Wait for the transfer operation to finish.
+		//Wait for the transition operation to finish.
 		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
 		//Free the transition command buffer.

@@ -16,6 +16,7 @@
 
 //Math.
 #include <GameMath.h>
+#include <Matrix3.h>
 
 //Systems.
 #include <EngineSystem.h>
@@ -135,6 +136,9 @@ void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	//Render all physical entities.
 	RenderPhysicalEntities();
 
+	//Render the sky box.
+	RenderSkyBox();
+
 	//End the frame.
 	EndFrame();
 
@@ -211,9 +215,9 @@ const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RES
 }
 
 /*
-*	Creates a texture and returns the identifier for the texture.
+*	Creates and returns a 2D texture.
 */
-Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *CATALYST_RESTRICT texturePath) const CATALYST_NOEXCEPT
+CATALYST_RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *CATALYST_RESTRICT texturePath) const CATALYST_NOEXCEPT
 {
 	//Load the texture.
 	int width = 0;
@@ -231,6 +235,40 @@ Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *CATALYST_RESTRICT t
 
 	//Return the texture.
 	return new2DTexture;
+}
+
+/*
+*	Creates and returns a cube map texture.
+*/
+CATALYST_RESTRICTED VulkanCubeMapTexture* GraphicsSystem::CreateCubeMapTexture(const char *CATALYST_RESTRICT leftTexturePath, const char *CATALYST_RESTRICT rightTexturePath, const char *CATALYST_RESTRICT downTexturePath, const char *CATALYST_RESTRICT upTexturePath, const char *CATALYST_RESTRICT backTexturePath, const char *CATALYST_RESTRICT frontTexturePath) const CATALYST_NOEXCEPT
+{
+	//Load all textures.
+	byte *CATALYST_RESTRICT textureData[6];
+
+	int width = 0;
+	int height = 0;
+	int numberOfChannels = 0;
+
+	TextureLoader::LoadTexture(frontTexturePath, width, height, numberOfChannels, &textureData[0]);
+	TextureLoader::LoadTexture(backTexturePath, width, height, numberOfChannels, &textureData[1]);
+	TextureLoader::LoadTexture(upTexturePath, width, height, numberOfChannels, &textureData[2]);
+	TextureLoader::LoadTexture(downTexturePath, width, height, numberOfChannels, &textureData[3]);
+	TextureLoader::LoadTexture(rightTexturePath, width, height, numberOfChannels, &textureData[4]);
+	TextureLoader::LoadTexture(leftTexturePath, width, height, numberOfChannels, &textureData[5]);
+
+	//Create the Vulkan 2D texture.
+	VulkanCubeMapTexture *CATALYST_RESTRICT newCubeMapTexture = VulkanInterface::Instance->CreateCubeMapTexture(static_cast<uint32>(width), static_cast<uint32>(height), reinterpret_cast<const byte *CATALYST_RESTRICT *CATALYST_RESTRICT>(&textureData));
+
+	//Free the texture.
+	TextureLoader::FreeTexture(textureData[0]);
+	TextureLoader::FreeTexture(textureData[1]);
+	TextureLoader::FreeTexture(textureData[2]);
+	TextureLoader::FreeTexture(textureData[3]);
+	TextureLoader::FreeTexture(textureData[4]);
+	TextureLoader::FreeTexture(textureData[5]);
+
+	//Return the texture.
+	return newCubeMapTexture;
 }
 
 /*
@@ -254,6 +292,23 @@ void GraphicsSystem::SetActiveCamera(CameraEntity *CATALYST_RESTRICT newActiveCa
 }
 
 /*
+*	Sets the active sky box cube map texture.
+*/
+void GraphicsSystem::SetActiveSkyBox(const VulkanCubeMapTexture *CATALYST_RESTRICT newSkyBox) CATALYST_NOEXCEPT
+{
+	//Allocate the sky box descriptor set.
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(skyBoxDescriptorSet, pipelines[Pipeline::CubeMapPipeline]->GetDescriptorSetLayout());
+
+	//Update the write descriptor sets.
+	DynamicArray<VkWriteDescriptorSet, 2> writeDescriptorSets;
+
+	writeDescriptorSets.EmplaceUnsafe(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(skyBoxDescriptorSet, 0));
+	writeDescriptorSets.EmplaceUnsafe(newSkyBox->GetWriteDescriptorSet(skyBoxDescriptorSet, 1));
+
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+}
+
+/*
 *	Initializes all shader modules.
 */
 void GraphicsSystem::InitializeShaderModules() CATALYST_NOEXCEPT
@@ -266,13 +321,13 @@ void GraphicsSystem::InitializeShaderModules() CATALYST_NOEXCEPT
 	const auto physicalFragmentShaderByteCode = ShaderLoader::LoadShader("PhysicalFragmentShader.spv");
 	shaderModules[ShaderModule::PhysicalFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(physicalFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
-	//Initialize the post processing vertex shader module.
-	const auto postProcessingVertexShaderByteCode = ShaderLoader::LoadShader("PostProcessingVertexShader.spv");
-	shaderModules[ShaderModule::PostProcessingVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(postProcessingVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+	//Initialize the cube map vertex shader module.
+	const auto cubeMapVertexShaderByteCode = ShaderLoader::LoadShader("CubeMapVertexShader.spv");
+	shaderModules[ShaderModule::CubeMapVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(cubeMapVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
-	//Initialize the physical fragment shader module.
-	const auto postProcessingFragmentShaderByteCode = ShaderLoader::LoadShader("PostProcessingFragmentShader.spv");
-	shaderModules[ShaderModule::PostProcessingFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(postProcessingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//Initialize the cube map fragment shader module.
+	const auto cubeMapFragmentShaderByteCode = ShaderLoader::LoadShader("CubeMapFragmentShader.spv");
+	shaderModules[ShaderModule::CubeMapFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(cubeMapFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 }
 
 /*
@@ -309,33 +364,41 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 		physicalPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(swapchainImageViews[i]);
 	}
 
+	physicalPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	physicalPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	physicalPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	physicalPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	physicalPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
 	pipelines[Pipeline::PhysicalPipeline] = VulkanInterface::Instance->CreatePipeline(physicalPipelineCreationParameters);
 
-	//Create the post processing pipeline.
-	VulkanPipelineCreationParameters postProcessingPipelineCreationParameters;
+	//Create the cube map pipeline.
+	VulkanPipelineCreationParameters cubeMapPipelineCreationParameters;
 
-	postProcessingPipelineCreationParameters.shaderModules.Reserve(2);
-	postProcessingPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::PostProcessingVertexShaderModule]);
-	postProcessingPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::PostProcessingFragmentShaderModule]);
-	postProcessingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(7);
-	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	
-	postProcessingPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
+	cubeMapPipelineCreationParameters.shaderModules.Reserve(2);
+	cubeMapPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::CubeMapVertexShaderModule]);
+	cubeMapPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::CubeMapFragmentShaderModule]);
+	cubeMapPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(2);
+	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+	cubeMapPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
 
 	for (size_t i = 0; i < swapchainImageViewsSize; ++i)
 	{
-		postProcessingPipelineCreationParameters.colorAttachments[i].Reserve(2);
-		postProcessingPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(depthBufferImageView);
-		postProcessingPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(swapchainImageViews[i]);
+		cubeMapPipelineCreationParameters.colorAttachments[i].Reserve(2);
+		cubeMapPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(depthBufferImageView);
+		cubeMapPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(swapchainImageViews[i]);
 	}
 
-	pipelines[Pipeline::PostProcessingPipeline] = VulkanInterface::Instance->CreatePipeline(postProcessingPipelineCreationParameters);
+	cubeMapPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
+	cubeMapPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	cubeMapPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	cubeMapPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	cubeMapPipelineCreationParameters.colorAttachmentFinalLayout = VULKAN_IMAGE_LAYOUT_PRESENT_SRC;
+
+	pipelines[Pipeline::CubeMapPipeline] = VulkanInterface::Instance->CreatePipeline(cubeMapPipelineCreationParameters);
 }
 
 /*
@@ -365,7 +428,7 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 	commandBuffers[currentCommandBuffer].Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::PhysicalPipeline]);
-	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::PhysicalPipeline]->GetRenderPass(), VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
+	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::PhysicalPipeline]->GetRenderPass(), currentCommandBuffer, true);
 }
 
 /*
@@ -388,6 +451,30 @@ void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 		commandBuffers[currentCommandBuffer].CommandBindIndexBuffer(*physicalEntity->GetModel().GetIndexBuffer());
 		commandBuffers[currentCommandBuffer].CommandDrawIndexed(physicalEntity->GetModel().GetIndexCount());
 	}
+
+	//End the render pass.
+	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
+}
+
+/*
+*	Renders sky box.
+*/
+void GraphicsSystem::RenderSkyBox() CATALYST_NOEXCEPT
+{
+	//Bind the cube map pipeline.
+	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::CubeMapPipeline]);
+
+	//Bind the cube map render pass.
+	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::CubeMapPipeline]->GetRenderPass(), currentCommandBuffer, false);
+
+	//Bind the sky box descriptor set.
+	commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::CubeMapPipeline], skyBoxDescriptorSet);
+
+	//Draw the sky box!
+	commandBuffers[currentCommandBuffer].CommandDraw(36);
+
+	//End the cube map render pass.
+	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
 }
 
 /*
@@ -401,7 +488,6 @@ void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
 	static const DynamicArray<VkSemaphore> signalSemaphores{ semaphores[Semaphore::RenderFinished]->Get() };
 
 	//End the current command buffer.
-	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
 	commandBuffers[currentCommandBuffer].End();
 
 	//Wait for the graphics system update dynamic uniform data daily quest to finish.
@@ -424,6 +510,10 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 	Matrix4 cameraMatrix = Matrix4::LookAt(cameraWorldPosition, cameraWorldPosition + forwardVector, upVector);
 	viewMatrix.Set(projectionMatrix * cameraMatrix);
 
+	Matrix4 cameraOriginMatrix{ cameraMatrix };
+	cameraOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
+
+	dynamicUniformData.originViewMatrix = projectionMatrix * cameraOriginMatrix;
 	dynamicUniformData.viewMatrix = viewMatrix.GetUnsafe();
 	dynamicUniformData.cameraWorldPosition = cameraWorldPosition;
 

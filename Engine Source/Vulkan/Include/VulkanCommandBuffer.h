@@ -48,7 +48,7 @@ public:
 	/*
 	*	Records a begin render pass command.
 	*/
-	void CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex = 0) CATALYST_NOEXCEPT;
+	void CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex, const bool clear) CATALYST_NOEXCEPT;
 
 	/*
 	*	Records a bind descriptor sets command.
@@ -69,6 +69,11 @@ public:
 	*	Records a bind vertex buffers command.
 	*/
 	void CommandBindVertexBuffers(const VulkanVertexBuffer &vulkanVertexBuffer) CATALYST_NOEXCEPT;
+
+	/*
+	*	Records a draw command.
+	*/
+	void CommandDraw(const uint32 vertexCount) CATALYST_NOEXCEPT;
 
 	/*
 	*	Records a draw indexed command.

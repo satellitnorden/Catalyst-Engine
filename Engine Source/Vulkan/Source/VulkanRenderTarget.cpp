@@ -29,10 +29,10 @@ void VulkanRenderTarget::Initialize(const uint32 width, const uint32 height) CAT
 	const VkDeviceSize imageSize = width * height * 4;
 
 	//Create the Vulkan image.
-	VulkanUtilities::CreateVulkanImage(VK_FORMAT_R8G8B8A8_UNORM, width, height, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, vulkanImage, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(0, VK_FORMAT_R8G8B8A8_UNORM, width, height, 1, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, vulkanImage, vulkanDeviceMemory);
 
 	//Create the image view.
-	VulkanUtilities::CreateVulkanImageView(VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, vulkanImage, vulkanImageView);
+	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, 1, vulkanImageView);
 
 	//Create the Vulkan sampler.
 	VulkanUtilities::CreateVulkanSampler(vulkanSampler);

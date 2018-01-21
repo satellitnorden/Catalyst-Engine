@@ -194,7 +194,7 @@ void VulkanPipeline::CreatePipelineRasterizationStateCreateInfo(VkPipelineRaster
 	pipelineRasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;
-	pipelineRasterizationStateCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;
+	pipelineRasterizationStateCreateInfo.cullMode = VK_CULL_MODE_NONE;
 	pipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	pipelineRasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.depthBiasConstantFactor = 0.0f;
@@ -229,7 +229,7 @@ void VulkanPipeline::CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthSt
 	pipelineDepthStencilStateCreateInfo.flags = 0;
 	pipelineDepthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
 	pipelineDepthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
-	pipelineDepthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+	pipelineDepthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
 	pipelineDepthStencilStateCreateInfo.depthBoundsTestEnable = VK_FALSE;
 	pipelineDepthStencilStateCreateInfo.stencilTestEnable = VK_FALSE;
 	pipelineDepthStencilStateCreateInfo.front = {};

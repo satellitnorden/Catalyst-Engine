@@ -8,27 +8,28 @@
 
 layout (std140, binding = 0) uniform DynamicUniformData
 {
-	//Camera data.
-    mat4 viewMatrix;
-    vec3 cameraWorldPosition;
-    float padding1;
+  //Camera data.
+  mat4 originViewMatrix;
+  mat4 viewMatrix;
+  vec3 cameraWorldPosition;
+  float padding1;
 
-    //Point light data.
-    int numberOfPointLights;
-	float pointLightAttenuationDistances[MaximumNumberOfPointLights];
-	float pointLightIntensities[MaximumNumberOfPointLights];
-	vec3 pointLightColors[MaximumNumberOfPointLights];
-	vec3 pointLightWorldPositions[MaximumNumberOfPointLights];
+  //Point light data.
+  int numberOfPointLights;
+    float pointLightAttenuationDistances[MaximumNumberOfPointLights];
+    float pointLightIntensities[MaximumNumberOfPointLights];
+    vec3 pointLightColors[MaximumNumberOfPointLights];
+    vec3 pointLightWorldPositions[MaximumNumberOfPointLights];
 
-    //Spot light data.
-    int numberOfSpotLights;
-    float spotLightAttenuationDistances[MaximumNumberOfSpotLights];
-    float spotLightIntensities[MaximumNumberOfSpotLights];
-    float spotLightInnerCutoffAngles[MaximumNumberOfSpotLights];
-    float spotLightOuterCutoffAngles[MaximumNumberOfSpotLights];
-    vec3 spotLightColors[MaximumNumberOfSpotLights];
-    vec3 spotLightDirections[MaximumNumberOfSpotLights];
-    vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
+  //Spot light data.
+  int numberOfSpotLights;
+  float spotLightAttenuationDistances[MaximumNumberOfSpotLights];
+  float spotLightIntensities[MaximumNumberOfSpotLights];
+  float spotLightInnerCutoffAngles[MaximumNumberOfSpotLights];
+  float spotLightOuterCutoffAngles[MaximumNumberOfSpotLights];
+  vec3 spotLightColors[MaximumNumberOfSpotLights];
+  vec3 spotLightDirections[MaximumNumberOfSpotLights];
+  vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
 };
 
 //Preprocessor defines.

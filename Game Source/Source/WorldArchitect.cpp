@@ -35,6 +35,10 @@ WorldArchitect::~WorldArchitect() CATALYST_NOEXCEPT
 */
 void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 {
+	//Create the sky!
+	VulkanCubeMapTexture *CATALYST_RESTRICT sky = GraphicsSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyLeft.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyFront.png");
+	GraphicsSystem::Instance->SetActiveSkyBox(sky);
+
 	PhysicalEntity::physicalEntities.Reserve(1'250);
 
 	Vulkan2DTexture *floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");

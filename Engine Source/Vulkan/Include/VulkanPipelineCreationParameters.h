@@ -51,4 +51,19 @@ public:
 	//The color attachments.
 	DynamicArray<DynamicArray<VkImageView>> colorAttachments{ };
 
+	//The attachment load operator.
+	VkAttachmentLoadOp attachmentLoadOperator;
+
+	//The initial layout that depth attachments will be in when a render pass instance begins.
+	VkImageLayout depthAttachmentInitialLayout;
+
+	//The final layout that depth attachments will be in when a render pass instance begins.
+	VkImageLayout depthAttachmentFinalLayout;
+
+	//The initial layout that color attachments will be in when a render pass instance begins.
+	VkImageLayout colorAttachmentInitialLayout;
+
+	//The final layout that color attachments will be in when a render pass instance begins.
+	VkImageLayout colorAttachmentFinalLayout;
+
 };

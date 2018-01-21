@@ -69,9 +69,14 @@ public:
 	const PhysicalModel CreatePhysicalModel(const char *CATALYST_RESTRICT modelPath, Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, Vulkan2DTexture *CATALYST_RESTRICT, Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT;
 
 	/*
-	*	Creates and returns a texture.
+	*	Creates and returns a 2D texture.
 	*/
 	CATALYST_RESTRICTED Vulkan2DTexture* Create2DTexture(const char *CATALYST_RESTRICT texturePath) const CATALYST_NOEXCEPT;
+
+	/*
+	*	Creates and returns a cube map texture.
+	*/
+	CATALYST_RESTRICTED VulkanCubeMapTexture* CreateCubeMapTexture(const char *CATALYST_RESTRICT leftTexturePath, const char *CATALYST_RESTRICT rightTexturePath, const char *CATALYST_RESTRICT downTexturePath, const char *CATALYST_RESTRICT upTexturePath, const char *CATALYST_RESTRICT backTexturePath, const char *CATALYST_RESTRICT frontTexturePath) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.
@@ -83,13 +88,18 @@ public:
 	*/
 	void SetActiveCamera(CameraEntity *CATALYST_RESTRICT newActiveCamera) CATALYST_NOEXCEPT;
 
+	/*
+	*	Sets the active sky box cube map texture.
+	*/
+	void SetActiveSkyBox(const VulkanCubeMapTexture *CATALYST_RESTRICT newSkyBox) CATALYST_NOEXCEPT;
+
 private:
 
 	//Enumeration covering all pipelines.
 	enum Pipeline : uint8
 	{
 		PhysicalPipeline,
-		PostProcessingPipeline,
+		CubeMapPipeline,
 		NumberOfPipelines
 	};
 
@@ -106,8 +116,8 @@ private:
 	{
 		PhysicalVertexShaderModule,
 		PhysicalFragmentShaderModule,
-		PostProcessingVertexShaderModule,
-		PostProcessingFragmentShaderModule,
+		CubeMapVertexShaderModule,
+		CubeMapFragmentShaderModule,
 		NumberOfShaderModules
 	};
 
@@ -163,6 +173,9 @@ private:
 	//The current command buffer.
 	size_t currentCommandBuffer{ 0 };
 
+	//The sky box descriptor set.
+	VulkanDescriptorSet skyBoxDescriptorSet;
+
 	/*
 	*	Initializes all shader modules.
 	*/
@@ -187,6 +200,11 @@ private:
 	*	Renders all physical entities.
 	*/
 	void RenderPhysicalEntities() CATALYST_NOEXCEPT;
+
+	/*
+	*	Renders sky box.
+	*/
+	void RenderSkyBox() CATALYST_NOEXCEPT;
 
 	/*
 	*	Ends the frame.

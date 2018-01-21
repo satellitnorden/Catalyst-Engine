@@ -56,39 +56,43 @@ void ClairvoyantPlayer::Update(const float deltaTime) CATALYST_NOEXCEPT
 	//Get the current gamepad state and use this to control the movement of the character.
 	const GamepadState &currentGamepadState = InputSystem::Instance->GetCurrentGamepadState();
 
-	const float movementSpeed = 1.0f + (currentGamepadState.rightTriggerValue * 10.0f);
-
-	//Calculate camera movement.
-	Rotate(Vector3(0.0f, currentGamepadState.rightThumbstickXValue * -cameraLookSpeed * deltaTime, 0.0f));
-	camera->Rotate(Vector3(currentGamepadState.rightThumbstickYValue * cameraLookSpeed * deltaTime, 0.0f, 0.0f));
-	
-	Vector3 cameraLocalRotation = camera->GetLocalRotation();
-
-	if (cameraLocalRotation.X > 89.0f)
-		cameraLocalRotation.X = 89.0f;
-
-	else if (cameraLocalRotation.X < -89.0f)
-		cameraLocalRotation.X = -89.0f;
-
-	camera->SetLocalRotation(cameraLocalRotation);
-
-	//Move.
-	Move(GetRightVector() * currentGamepadState.leftThumbstickXValue * deltaTime * movementSpeed);
-	Move(GetForwardVector() * currentGamepadState.leftThumbstickYValue * deltaTime * movementSpeed);
-
-	if (currentGamepadState.rightShoulderButtonState == GamepadButtonState::Pressed || currentGamepadState.rightShoulderButtonState == GamepadButtonState::PressedHold)
+	if (currentGamepadState.isConnected)
 	{
-		Move(GetUpVector() * deltaTime * movementSpeed);
-	}
 
-	else if (currentGamepadState.leftShoulderButtonState == GamepadButtonState::Pressed || currentGamepadState.leftShoulderButtonState == GamepadButtonState::PressedHold)
-	{
-		Move(GetUpVector() * deltaTime * movementSpeed * -1.0f);
-	}
+		const float movementSpeed = 1.0f + (currentGamepadState.rightTriggerValue * 100.0f);
 
-	//Toggle the flashlight.
-	if (currentGamepadState.yButtonState == GamepadButtonState::Pressed)
-	{
-		flashlight->SetEnabled(!flashlight->GetEnabled());
+		//Calculate camera movement.
+		Rotate(Vector3(0.0f, currentGamepadState.rightThumbstickXValue * -cameraLookSpeed * deltaTime, 0.0f));
+		camera->Rotate(Vector3(currentGamepadState.rightThumbstickYValue * cameraLookSpeed * deltaTime, 0.0f, 0.0f));
+
+		Vector3 cameraLocalRotation = camera->GetLocalRotation();
+
+		if (cameraLocalRotation.X > 89.0f)
+			cameraLocalRotation.X = 89.0f;
+
+		else if (cameraLocalRotation.X < -89.0f)
+			cameraLocalRotation.X = -89.0f;
+
+		camera->SetLocalRotation(cameraLocalRotation);
+
+		//Move.
+		Move(GetRightVector() * currentGamepadState.leftThumbstickXValue * deltaTime * movementSpeed);
+		Move(GetForwardVector() * currentGamepadState.leftThumbstickYValue * deltaTime * movementSpeed);
+
+		if (currentGamepadState.rightShoulderButtonState == GamepadButtonState::Pressed || currentGamepadState.rightShoulderButtonState == GamepadButtonState::PressedHold)
+		{
+			Move(GetUpVector() * deltaTime * movementSpeed);
+		}
+
+		else if (currentGamepadState.leftShoulderButtonState == GamepadButtonState::Pressed || currentGamepadState.leftShoulderButtonState == GamepadButtonState::PressedHold)
+		{
+			Move(GetUpVector() * deltaTime * movementSpeed * -1.0f);
+		}
+
+		//Toggle the flashlight.
+		if (currentGamepadState.yButtonState == GamepadButtonState::Pressed)
+		{
+			flashlight->SetEnabled(!flashlight->GetEnabled());
+		}
 	}
 }

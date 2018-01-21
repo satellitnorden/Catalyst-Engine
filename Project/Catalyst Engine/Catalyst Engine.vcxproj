@@ -57,6 +57,7 @@
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanAllocator.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCommandBuffer.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCommandPool.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCubeMapTexture.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDepthBuffer.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDescriptorPool.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDescriptorSet.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCommandBuffer.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCommandPool.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCore.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCubeMapTexture.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDepthBuffer.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDescriptorPool.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDescriptorSet.h" />

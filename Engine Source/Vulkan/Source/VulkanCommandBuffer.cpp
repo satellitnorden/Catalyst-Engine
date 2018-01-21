@@ -51,23 +51,26 @@ void VulkanCommandBuffer::Begin(const VkCommandBufferUsageFlags commandBufferUsa
 /*
 *	Records a begin render pass command.
 */
-void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex, const bool clear) CATALYST_NOEXCEPT
 {
 	DynamicArray<VkClearValue, 2> clearValues;
 
-	VkClearValue depthClearValue;
+	if (clear)
+	{
+		VkClearValue depthClearValue;
 
-	depthClearValue.color = { 0.0f, 0.0f, 0.0f, 0.0f };
-	depthClearValue.depthStencil = { 1.0f, 0 };
+		depthClearValue.color = { 0.0f, 0.0f, 0.0f, 0.0f };
+		depthClearValue.depthStencil = { 1.0f, 0 };
 
-	clearValues.EmplaceUnsafe(depthClearValue);
+		clearValues.EmplaceUnsafe(depthClearValue);
 
-	VkClearValue colorClearValue;
+		VkClearValue colorClearValue;
 
-	colorClearValue.color = { 0.0f, 0.0f, 0.0f, 1.0f };
-	colorClearValue.depthStencil = { 0.0f, 0 };
+		colorClearValue.color = { 0.0f, 0.0f, 0.0f, 1.0f };
+		colorClearValue.depthStencil = { 0.0f, 0 };
 
-	clearValues.EmplaceUnsafe(colorClearValue);
+		clearValues.EmplaceUnsafe(colorClearValue);
+	}
 
 	VkRenderPassBeginInfo renderPassBeginInfo;
 
@@ -114,6 +117,14 @@ void VulkanCommandBuffer::CommandBindVertexBuffers(const VulkanVertexBuffer &vul
 {
 	VkDeviceSize offset{ 0 };
 	vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, &vulkanVertexBuffer.Get(), &offset);
+}
+
+/*
+*	Records a draw command.
+*/
+void VulkanCommandBuffer::CommandDraw(const uint32 vertexCount) CATALYST_NOEXCEPT
+{
+	vkCmdDraw(vulkanCommandBuffer, vertexCount, 1, 0, 0);
 }
 
 /*
