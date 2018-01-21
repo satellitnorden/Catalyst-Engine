@@ -295,8 +295,19 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	physicalPipelineCreationParameters.colorAttachmens = VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews();
-	physicalPipelineCreationParameters.depthBuffer = &VulkanInterface::Instance->GetSwapchain().GetDepthBuffer();
+
+	const DynamicArray<VkImageView> &swapchainImageViews = VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews();
+	const size_t swapchainImageViewsSize = swapchainImageViews.Size();
+	const VkImageView &depthBufferImageView = VulkanInterface::Instance->GetSwapchain().GetDepthBuffer().GetImageView();
+
+	physicalPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
+
+	for (size_t i = 0; i < swapchainImageViewsSize; ++i)
+	{
+		physicalPipelineCreationParameters.colorAttachments[i].Reserve(2);
+		physicalPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(depthBufferImageView);
+		physicalPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(swapchainImageViews[i]);
+	}
 
 	pipelines[Pipeline::PhysicalPipeline] = VulkanInterface::Instance->CreatePipeline(physicalPipelineCreationParameters);
 
@@ -314,8 +325,15 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	postProcessingPipelineCreationParameters.colorAttachmens = VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews();
-	postProcessingPipelineCreationParameters.depthBuffer = &VulkanInterface::Instance->GetSwapchain().GetDepthBuffer();
+	
+	postProcessingPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
+
+	for (size_t i = 0; i < swapchainImageViewsSize; ++i)
+	{
+		postProcessingPipelineCreationParameters.colorAttachments[i].Reserve(2);
+		postProcessingPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(depthBufferImageView);
+		postProcessingPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(swapchainImageViews[i]);
+	}
 
 	pipelines[Pipeline::PostProcessingPipeline] = VulkanInterface::Instance->CreatePipeline(postProcessingPipelineCreationParameters);
 }

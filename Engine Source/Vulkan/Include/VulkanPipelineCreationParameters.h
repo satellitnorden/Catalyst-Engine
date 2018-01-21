@@ -49,9 +49,6 @@ public:
 	DynamicArray<DescriptorLayoutBindingInformation> descriptorLayoutBindingInformations{ };
 
 	//The color attachments.
-	DynamicArray<VkImageView> colorAttachmens{ };
-
-	//The depth buffer.
-	const VulkanDepthBuffer *depthBuffer{ nullptr };
+	DynamicArray<DynamicArray<VkImageView>> colorAttachments{ };
 
 };

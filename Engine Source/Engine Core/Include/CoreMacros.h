@@ -4,7 +4,7 @@
 *	Tracks the average execution time of a given function or section of code and prints the average execution time in non-final builds.
 */
 #if !defined(CATALYST_FINAL)
-	#define CATALYST_BENCHMARK_SECTION_AVERAGE(function)																												\
+	#define CATALYST_BENCHMARK_SECTION_AVERAGE(function)																										\
 	{																																							\
 		static DynamicArray<long long, 1'000'000> durations;																									\
 		static long long averageDuration = 0;																													\
@@ -16,7 +16,7 @@
 		PRINT_TO_CONSOLE(#function << " - " << duration << " milliseconds.");																					\
 	}
 #else
-	#define CATALYST_BENCHMARK_AVERAGE(function) function;
+	#define CATALYST_BENCHMARK_SECTION_AVERAGE(function) function;
 #endif
 
 /*
@@ -24,7 +24,7 @@
 *	Allows for a personalized message.
 */
 #if !defined(CATALYST_FINAL)
-	#define CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE(message, function)																										\
+	#define CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE(message, function)																							\
 	{																																							\
 		static DynamicArray<long long, 1'000'000> durations;																									\
 		static long long averageDuration = 0;																													\
@@ -36,7 +36,7 @@
 		PRINT_TO_CONSOLE(message << " - " << duration << " milliseconds.");																						\
 	}
 #else
-	#define CATALYST_BENCHMARK_AVERAGE(function) function;
+	#define CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE(message, function) function;
 #endif
 
 /*

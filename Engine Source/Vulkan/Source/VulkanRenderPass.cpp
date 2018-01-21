@@ -64,19 +64,11 @@ void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkan
 	VULKAN_ERROR_CHECK(vkCreateRenderPass(VulkanInterface::Instance->GetLogicalDevice().Get(), &renderPassCreateInfo, nullptr, &vulkanRenderPass));
 
 	//Create the framebuffers.
-	framebuffers.Resize(vulkanPipelineCreationParameters.colorAttachmens.Size());
+	framebuffers.Resize(vulkanPipelineCreationParameters.colorAttachments.Size());
 
-	for (size_t i = 0; i < vulkanPipelineCreationParameters.colorAttachmens.Size(); ++i)
+	for (size_t i = 0, size = vulkanPipelineCreationParameters.colorAttachments.Size(); i < size; ++i)
 	{
-		DynamicArray<VkImageView> attachments;
-		attachments.Reserve(vulkanPipelineCreationParameters.depthBuffer ? 2 : 1);
-
-		if (vulkanPipelineCreationParameters.depthBuffer)
-			attachments.EmplaceUnsafe(vulkanPipelineCreationParameters.depthBuffer->GetImageView());
-
-		attachments.EmplaceUnsafe(vulkanPipelineCreationParameters.colorAttachmens[i]);
-
-		framebuffers[i].Initialize(*this, attachments, vulkanPipelineCreationParameters.viewportExtent);
+		framebuffers[i].Initialize(*this, vulkanPipelineCreationParameters.colorAttachments[i], vulkanPipelineCreationParameters.viewportExtent);
 	}
 }
 
