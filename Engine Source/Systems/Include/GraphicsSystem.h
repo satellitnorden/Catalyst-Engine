@@ -89,6 +89,7 @@ private:
 	enum Pipeline : uint8
 	{
 		PhysicalPipeline,
+		PostProcessingPipeline,
 		NumberOfPipelines
 	};
 
@@ -105,6 +106,8 @@ private:
 	{
 		PhysicalVertexShaderModule,
 		PhysicalFragmentShaderModule,
+		PostProcessingVertexShaderModule,
+		PostProcessingFragmentShaderModule,
 		NumberOfShaderModules
 	};
 

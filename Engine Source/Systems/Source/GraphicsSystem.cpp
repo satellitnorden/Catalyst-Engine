@@ -265,6 +265,14 @@ void GraphicsSystem::InitializeShaderModules() CATALYST_NOEXCEPT
 	//Initialize the physical fragment shader module.
 	const auto physicalFragmentShaderByteCode = ShaderLoader::LoadShader("PhysicalFragmentShader.spv");
 	shaderModules[ShaderModule::PhysicalFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(physicalFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+	//Initialize the post processing vertex shader module.
+	const auto postProcessingVertexShaderByteCode = ShaderLoader::LoadShader("PostProcessingVertexShader.spv");
+	shaderModules[ShaderModule::PostProcessingVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(postProcessingVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+
+	//Initialize the physical fragment shader module.
+	const auto postProcessingFragmentShaderByteCode = ShaderLoader::LoadShader("PostProcessingFragmentShader.spv");
+	shaderModules[ShaderModule::PostProcessingFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(postProcessingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 }
 
 /*
@@ -291,6 +299,25 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	physicalPipelineCreationParameters.depthBuffer = &VulkanInterface::Instance->GetSwapchain().GetDepthBuffer();
 
 	pipelines[Pipeline::PhysicalPipeline] = VulkanInterface::Instance->CreatePipeline(physicalPipelineCreationParameters);
+
+	//Create the post processing pipeline.
+	VulkanPipelineCreationParameters postProcessingPipelineCreationParameters;
+
+	postProcessingPipelineCreationParameters.shaderModules.Reserve(2);
+	postProcessingPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::PostProcessingVertexShaderModule]);
+	postProcessingPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::PostProcessingFragmentShaderModule]);
+	postProcessingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(7);
+	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	postProcessingPipelineCreationParameters.colorAttachmens = VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews();
+	postProcessingPipelineCreationParameters.depthBuffer = &VulkanInterface::Instance->GetSwapchain().GetDepthBuffer();
+
+	pipelines[Pipeline::PostProcessingPipeline] = VulkanInterface::Instance->CreatePipeline(postProcessingPipelineCreationParameters);
 }
 
 /*

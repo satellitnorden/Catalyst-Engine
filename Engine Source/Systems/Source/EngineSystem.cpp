@@ -52,7 +52,7 @@ void EngineSystem::InitializeSystem() CATALYST_NOEXCEPT
 */
 bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
-	CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game loop: ",
+	CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game loop",
 
 	//Update the game system.
 	GAME_SYSTEM_CLASS::Instance->UpdateSystemSynchronous(deltaTime);
