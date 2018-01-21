@@ -109,7 +109,7 @@ vec3 CalculateFresnel(float lightViewAngle)
 */
 vec3 CalculateAmbient()
 {
-    vec3 specularComponent = mix(vec3(0.0f), CalculateFresnelRoughness(viewAngle), 0.1f);
+    vec3 specularComponent = vec3(0.0f);
     vec3 diffuseComponent = 1.0f - specularComponent;
     diffuseComponent *= 1.0f - metallic;
 
