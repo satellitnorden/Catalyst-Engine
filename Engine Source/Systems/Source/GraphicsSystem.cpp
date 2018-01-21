@@ -240,7 +240,7 @@ CATALYST_RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char 
 /*
 *	Creates and returns a cube map texture.
 */
-CATALYST_RESTRICTED VulkanCubeMapTexture* GraphicsSystem::CreateCubeMapTexture(const char *CATALYST_RESTRICT leftTexturePath, const char *CATALYST_RESTRICT rightTexturePath, const char *CATALYST_RESTRICT downTexturePath, const char *CATALYST_RESTRICT upTexturePath, const char *CATALYST_RESTRICT backTexturePath, const char *CATALYST_RESTRICT frontTexturePath) const CATALYST_NOEXCEPT
+CATALYST_RESTRICTED VulkanCubeMapTexture* GraphicsSystem::CreateCubeMapTexture(const char *CATALYST_RESTRICT frontTexturePath, const char *CATALYST_RESTRICT backTexturePath, const char *CATALYST_RESTRICT upTexturePath, const char *CATALYST_RESTRICT downTexturePath, const char *CATALYST_RESTRICT rightTexturePath, const char *CATALYST_RESTRICT leftTexturePath) const CATALYST_NOEXCEPT
 {
 	//Load all textures.
 	byte *CATALYST_RESTRICT textureData[6];
