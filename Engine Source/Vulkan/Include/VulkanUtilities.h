@@ -333,15 +333,11 @@ namespace VulkanUtilities
 	/*
 	*	Transitions a Vulkan image to a layout.
 	*/
-	static void TransitionImageToLayout(const VkFormat format, const VkImageLayout oldLayout, const VkImageLayout newLayout, VkImage &vulkanImage) CATALYST_NOEXCEPT
+	static void TransitionImageToLayout(const VkFormat format, const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageAspectFlags aspectMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, VkImage &vulkanImage) CATALYST_NOEXCEPT
 	{
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transitionCommandBuffer;
 		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(transitionCommandBuffer);
-
-		//Define the source and destination stage.
-		VkPipelineStageFlags sourceStageMask;
-		VkPipelineStageFlags destinationStageMask;
 
 		//Create the image memory barrier.
 		VkImageMemoryBarrier imageMemoryBarrier;
@@ -351,35 +347,28 @@ namespace VulkanUtilities
 
 		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
 		{
-			imageMemoryBarrier.srcAccessMask = 0;
-			imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			imageMemoryBarrier.srcAccessMask = sourceAccessMask;
+			imageMemoryBarrier.dstAccessMask = destinationAccessMask;
 
-			sourceStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-			destinationStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
 
-			imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			imageMemoryBarrier.subresourceRange.aspectMask = aspectMask;
 		}
 
 		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 		{
-			imageMemoryBarrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-			imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+			imageMemoryBarrier.srcAccessMask = sourceAccessMask;
+			imageMemoryBarrier.dstAccessMask = destinationAccessMask;
 
-			sourceStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
-			destinationStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 
-			imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			imageMemoryBarrier.subresourceRange.aspectMask = aspectMask;
 		}
 
 		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
 		{
-			imageMemoryBarrier.srcAccessMask = 0;
-			imageMemoryBarrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			imageMemoryBarrier.srcAccessMask = sourceAccessMask;
+			imageMemoryBarrier.dstAccessMask = destinationAccessMask;
 
-			sourceStageMask = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-			destinationStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-
-			imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+			imageMemoryBarrier.subresourceRange.aspectMask = aspectMask;
 		}
 
 #if !defined(CATALYST_FINAL)
@@ -415,7 +404,7 @@ namespace VulkanUtilities
 		//Wait for the transfer operation to finish.
 		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
-		//Free the transfer command buffer.
+		//Free the transition command buffer.
 		VulkanInterface::Instance->GetGraphicsCommandPool().FreeVulkanCommandBuffer(transitionCommandBuffer);
 	}
 

@@ -36,7 +36,7 @@ void VulkanDepthBuffer::Initialize(const VkExtent2D imageExtent) CATALYST_NOEXCE
 	VulkanUtilities::CreateVulkanImageView(format, VK_IMAGE_ASPECT_DEPTH_BIT, vulkanImage, vulkanImageView);
 
 	//Transition the image layout to a more appropriate layout.
-	VulkanUtilities::TransitionImageToLayout(format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, vulkanImage);
+	VulkanUtilities::TransitionImageToLayout(format, 0, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, vulkanImage);
 }
 
 /*

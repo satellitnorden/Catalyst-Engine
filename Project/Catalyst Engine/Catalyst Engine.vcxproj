@@ -71,6 +71,7 @@
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanPipeline.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanQueue.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanRenderPass.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanRenderTarget.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSemaphore.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanShaderModule.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSurface.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanPipelineCreationParameters.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanQueue.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanRenderPass.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanRenderTarget.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanSemaphore.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanShaderModule.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanSurface.h" />

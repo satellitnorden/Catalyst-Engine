@@ -288,6 +288,9 @@
     <ClCompile Include="..\..\Game Source\Include\EntitySpawner.cpp">
       <Filter>Game Source\Clairvoyant</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanRenderTarget.cpp">
+      <Filter>Engine Source\Vulkan\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Systems\Include\GraphicsSystem.h">
@@ -565,6 +568,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Math\Include\PerlinNoiseGenerator.h">
       <Filter>Engine Source\Math\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanRenderTarget.h">
+      <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
