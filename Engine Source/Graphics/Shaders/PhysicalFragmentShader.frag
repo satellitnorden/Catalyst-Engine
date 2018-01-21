@@ -34,14 +34,14 @@ layout (std140, binding = 0) uniform DynamicUniformData
 
 //Preprocessor defines.
 #define PI 3.141592f
-#define AmbientMultiplier 0.025f
 
 //Texture samplers.
-layout (binding = 2) uniform sampler2D albedoTexture;
-layout (binding = 3) uniform sampler2D normalMapTexture;
-layout (binding = 4) uniform sampler2D roughnessTexture;
-layout (binding = 5) uniform sampler2D metallicTexture;
-layout (binding = 6) uniform sampler2D ambientOcclusionTexture;
+layout (binding = 2) uniform samplerCube skyBoxTexture;
+layout (binding = 3) uniform sampler2D albedoTexture;
+layout (binding = 4) uniform sampler2D normalMapTexture;
+layout (binding = 5) uniform sampler2D roughnessTexture;
+layout (binding = 6) uniform sampler2D metallicTexture;
+layout (binding = 7) uniform sampler2D ambientOcclusionTexture;
 
 layout (location = 0) in vec3 fragmentWorldPosition;
 layout (location = 1) in mat3 fragmentTangentSpaceMatrix;
@@ -109,7 +109,18 @@ vec3 CalculateFresnel(float lightViewAngle)
 */
 vec3 CalculateAmbient()
 {
-    return albedoColor * AmbientMultiplier;
+    vec3 specularComponent = mix(vec3(0.0f), CalculateFresnelRoughness(viewAngle), 0.1f);
+    vec3 diffuseComponent = 1.0f - specularComponent;
+    diffuseComponent *= 1.0f - metallic;
+
+    vec3 irradiance = texture(skyBoxTexture, normalDirection).rgb;
+    vec3 diffuse = irradiance * albedoColor;
+
+    vec3 reclectionDirection = reflect(-viewDirection, normalDirection);
+    vec3 specularIrradiance = texture(skyBoxTexture, normalDirection).rgb;
+    vec3 specular = mix(specularIrradiance, irradiance, roughness);
+
+    return (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion;
 }
 
 /*

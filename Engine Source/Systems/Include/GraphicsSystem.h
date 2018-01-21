@@ -91,7 +91,7 @@ public:
 	/*
 	*	Sets the active sky box cube map texture.
 	*/
-	void SetActiveSkyBox(const VulkanCubeMapTexture *CATALYST_RESTRICT newSkyBox) CATALYST_NOEXCEPT;
+	void SetActiveSkyBox(VulkanCubeMapTexture *CATALYST_RESTRICT newSkyBox) CATALYST_NOEXCEPT;
 
 private:
 
@@ -172,6 +172,9 @@ private:
 
 	//The current command buffer.
 	size_t currentCommandBuffer{ 0 };
+
+	//The sky box cude map texture.
+	VulkanCubeMapTexture *CATALYST_RESTRICT skyBoxTexture;
 
 	//The sky box descriptor set.
 	VulkanDescriptorSet skyBoxDescriptorSet;

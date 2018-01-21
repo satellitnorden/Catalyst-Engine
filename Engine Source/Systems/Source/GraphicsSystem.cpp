@@ -167,15 +167,16 @@ void GraphicsSystem::CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDesc
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(vulkanDescriptorSet, pipelines[Pipeline::PhysicalPipeline]->GetDescriptorSetLayout());
 
 	//Update the write descriptor sets.
-	DynamicArray<VkWriteDescriptorSet, 7> writeDescriptorSets;
+	DynamicArray<VkWriteDescriptorSet, 8> writeDescriptorSets;
 
 	writeDescriptorSets.EmplaceUnsafe(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(vulkanDescriptorSet, 0));
 	writeDescriptorSets.EmplaceUnsafe(modelDataUniformBuffer->GetWriteDescriptorSet(vulkanDescriptorSet, 1));
-	writeDescriptorSets.EmplaceUnsafe(albedoTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 2));
-	writeDescriptorSets.EmplaceUnsafe(normalMapTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 3));
-	writeDescriptorSets.EmplaceUnsafe(roughnessTexture ? roughnessTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 4) : defaultTextures[DefaultTexture::Roughness]->GetWriteDescriptorSet(vulkanDescriptorSet, 4));
-	writeDescriptorSets.EmplaceUnsafe(metallicTexture ? metallicTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 5) : defaultTextures[DefaultTexture::Metallic]->GetWriteDescriptorSet(vulkanDescriptorSet, 5));
-	writeDescriptorSets.EmplaceUnsafe(ambientOcclusionTexture ? ambientOcclusionTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 6) : defaultTextures[DefaultTexture::AmbientOcclusion]->GetWriteDescriptorSet(vulkanDescriptorSet, 6));
+	writeDescriptorSets.EmplaceUnsafe(skyBoxTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 2));
+	writeDescriptorSets.EmplaceUnsafe(albedoTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 3));
+	writeDescriptorSets.EmplaceUnsafe(normalMapTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 4));
+	writeDescriptorSets.EmplaceUnsafe(roughnessTexture ? roughnessTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 5) : defaultTextures[DefaultTexture::Roughness]->GetWriteDescriptorSet(vulkanDescriptorSet, 4));
+	writeDescriptorSets.EmplaceUnsafe(metallicTexture ? metallicTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 6) : defaultTextures[DefaultTexture::Metallic]->GetWriteDescriptorSet(vulkanDescriptorSet, 5));
+	writeDescriptorSets.EmplaceUnsafe(ambientOcclusionTexture ? ambientOcclusionTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 7) : defaultTextures[DefaultTexture::AmbientOcclusion]->GetWriteDescriptorSet(vulkanDescriptorSet, 6));
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }
@@ -294,8 +295,11 @@ void GraphicsSystem::SetActiveCamera(CameraEntity *CATALYST_RESTRICT newActiveCa
 /*
 *	Sets the active sky box cube map texture.
 */
-void GraphicsSystem::SetActiveSkyBox(const VulkanCubeMapTexture *CATALYST_RESTRICT newSkyBox) CATALYST_NOEXCEPT
+void GraphicsSystem::SetActiveSkyBox(VulkanCubeMapTexture *CATALYST_RESTRICT newSkyBox) CATALYST_NOEXCEPT
 {
+	//Update the sky box texture.
+	skyBoxTexture = newSkyBox;
+
 	//Allocate the sky box descriptor set.
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(skyBoxDescriptorSet, pipelines[Pipeline::CubeMapPipeline]->GetDescriptorSetLayout());
 
@@ -342,7 +346,7 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	physicalPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::PhysicalVertexShaderModule]);
 	physicalPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::PhysicalFragmentShaderModule]);
 	physicalPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(7);
+	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(8);
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
@@ -350,6 +354,7 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(7, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	const DynamicArray<VkImageView> &swapchainImageViews = VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews();
 	const size_t swapchainImageViewsSize = swapchainImageViews.Size();
