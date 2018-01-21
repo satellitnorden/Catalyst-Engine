@@ -344,39 +344,9 @@ namespace VulkanUtilities
 
 		imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 		imageMemoryBarrier.pNext = nullptr;
-
-		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
-		{
-			imageMemoryBarrier.srcAccessMask = sourceAccessMask;
-			imageMemoryBarrier.dstAccessMask = destinationAccessMask;
-
-
-			imageMemoryBarrier.subresourceRange.aspectMask = aspectMask;
-		}
-
-		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-		{
-			imageMemoryBarrier.srcAccessMask = sourceAccessMask;
-			imageMemoryBarrier.dstAccessMask = destinationAccessMask;
-
-
-			imageMemoryBarrier.subresourceRange.aspectMask = aspectMask;
-		}
-
-		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
-		{
-			imageMemoryBarrier.srcAccessMask = sourceAccessMask;
-			imageMemoryBarrier.dstAccessMask = destinationAccessMask;
-
-			imageMemoryBarrier.subresourceRange.aspectMask = aspectMask;
-		}
-
-#if !defined(CATALYST_FINAL)
-		else
-		{
-			BREAKPOINT;
-		}
-#endif
+		imageMemoryBarrier.srcAccessMask = sourceAccessMask;
+		imageMemoryBarrier.dstAccessMask = destinationAccessMask;
+		imageMemoryBarrier.subresourceRange.aspectMask = aspectMask;
 
 		imageMemoryBarrier.oldLayout = oldLayout;
 		imageMemoryBarrier.newLayout = newLayout;
