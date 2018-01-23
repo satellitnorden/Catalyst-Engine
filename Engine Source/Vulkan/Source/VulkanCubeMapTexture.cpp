@@ -30,7 +30,7 @@ void VulkanCubeMapTexture::Initialize(const uint32 width, const uint32 height, c
 {
 	//Calculate the image size and the side size.
 	const VkDeviceSize imageSize = width * height * 4 * 6;
-	const VkDeviceSize sideSize = imageSize / 6;
+	const VkDeviceSize layerSize = imageSize / 6;
 
 	//Set up the staging buffer.
 	VkBuffer stagingBuffer;
@@ -39,15 +39,16 @@ void VulkanCubeMapTexture::Initialize(const uint32 width, const uint32 height, c
 	//Create the staging buffer.
 	VulkanUtilities::CreateVulkanBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferDeviceMemory);
 
+	void *CATALYST_RESTRICT data;
+	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, &data));
+
 	//Copy the data into the staging buffer.
 	for (uint8 i = 0; i < 6; ++i)
 	{
-		void *data;
-
-		VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, sideSize * i, sideSize, 0, &data));
-		MemoryUtilities::CopyMemory(data, textureData[i], static_cast<size_t>(sideSize));
-		vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
+		MemoryUtilities::CopyMemory(static_cast<byte *CATALYST_RESTRICT>(data) + (layerSize * i), textureData[i], static_cast<size_t>(layerSize));
 	}
+
+	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 
 	//Create the Vulkan image.
 	VulkanUtilities::CreateVulkanImage(VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VK_FORMAT_R8G8B8A8_UNORM, width, height, 6, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
