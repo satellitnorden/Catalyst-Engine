@@ -9,7 +9,7 @@
 */
 
 template <class ValueType>
-class AtomicQueue
+class AtomicQueue final
 {
 
 public:

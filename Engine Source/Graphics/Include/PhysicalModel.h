@@ -10,7 +10,7 @@
 class VulkanIndexBuffer;
 class VulkanVertexBuffer;
 
-class PhysicalModel
+class PhysicalModel final
 {
 
 public:

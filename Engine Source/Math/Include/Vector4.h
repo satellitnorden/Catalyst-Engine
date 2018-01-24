@@ -6,7 +6,7 @@
 //Forward declarations.
 class Vector3;
 
-class Vector4
+class Vector4 final
 {
 
 public:

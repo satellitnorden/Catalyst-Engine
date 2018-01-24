@@ -6,7 +6,7 @@
 //Forward declarations.
 struct GLFWwindow;
 
-class Window
+class Window final
 {
 
 public:

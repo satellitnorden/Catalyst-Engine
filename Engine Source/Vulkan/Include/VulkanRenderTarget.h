@@ -6,7 +6,7 @@
 //Vulkan.
 #include <VulkanCore.h>
 
-class VulkanRenderTarget
+class VulkanRenderTarget final
 {
 
 public:
@@ -24,7 +24,7 @@ public:
 	/*
 	*	Initializes this Vulkan render target.
 	*/
-	void Initialize(const uint32 width, const uint32 height) CATALYST_NOEXCEPT;
+	void Initialize(const VkExtent2D extent) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan render target.

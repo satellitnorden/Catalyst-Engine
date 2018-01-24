@@ -3,7 +3,7 @@
 //Engine core.
 #include <EngineCore.h>
 
-class Threadlock
+class Threadlock final
 {
 
 public:

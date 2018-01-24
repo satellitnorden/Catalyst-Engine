@@ -20,7 +20,7 @@
 class CameraEntity;
 class PhysicalModel;
 
-class GraphicsSystem
+class GraphicsSystem final
 {
 
 public:
@@ -95,12 +95,28 @@ public:
 
 private:
 
+	//Enumeration covering all depth buffers.
+	enum DepthBuffer : uint8
+	{
+		SceneBufferDepthBuffer,
+		NumberOfDepthBuffers
+	};
+
 	//Enumeration covering all pipelines.
 	enum Pipeline : uint8
 	{
+		SceneBufferPipeline,
+		LightingPipeline,
 		PhysicalPipeline,
 		CubeMapPipeline,
 		NumberOfPipelines
+	};
+
+	//Enumeration covering all render targets.
+	enum RenderTarget : uint8
+	{
+		SceneBufferAlbedoColorRenderTarget,
+		NumberOfRenderTargets
 	};
 
 	//Enumeration covering all semaphores.
@@ -114,6 +130,8 @@ private:
 	//Enumeration covering all shader modules.
 	enum ShaderModule : uint8
 	{
+		SceneBufferVertexShaderModule,
+		SceneBufferFragmentShaderModule,
 		PhysicalVertexShaderModule,
 		PhysicalFragmentShaderModule,
 		CubeMapVertexShaderModule,
@@ -151,6 +169,12 @@ private:
 
 	//The dynamic uniform data.
 	DynamicUniformData dynamicUniformData;
+
+	//Container for all depth buffers.
+	VulkanDepthBuffer *CATALYST_RESTRICT depthBuffers[DepthBuffer::NumberOfDepthBuffers];
+
+	//Container for all render targets.
+	VulkanRenderTarget *CATALYST_RESTRICT renderTargets[RenderTarget::NumberOfRenderTargets];
 
 	//Container for all pipelines.
 	VulkanPipeline *CATALYST_RESTRICT pipelines[Pipeline::NumberOfPipelines];

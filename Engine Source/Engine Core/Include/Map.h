@@ -1,7 +1,7 @@
 #pragma once
 
 template <class KeyType, class ObjectType>
-class Map
+class Map final
 {
 
 public:

@@ -8,7 +8,7 @@
 #include <SpinLock.h>
 
 template <class ResourceType>
-class MultithreadedResource
+class MultithreadedResource final
 {
 
 public:

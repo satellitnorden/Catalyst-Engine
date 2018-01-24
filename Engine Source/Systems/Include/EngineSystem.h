@@ -3,7 +3,7 @@
 //Engine core.
 #include <EngineCore.h>
 
-class EngineSystem
+class EngineSystem final
 {
 
 public:

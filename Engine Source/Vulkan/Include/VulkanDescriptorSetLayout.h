@@ -6,7 +6,7 @@
 //Vulkan.
 #include <VulkanCore.h>
 
-class VulkanDescriptorSetLayout
+class VulkanDescriptorSetLayout final
 {
 
 public:

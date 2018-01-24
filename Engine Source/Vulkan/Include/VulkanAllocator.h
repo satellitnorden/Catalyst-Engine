@@ -17,7 +17,7 @@ enum MemoryProperties : uint8
 	NumberOfMemoryProperties
 };
 
-class VulkanAllocator
+class VulkanAllocator final
 {
 
 public:

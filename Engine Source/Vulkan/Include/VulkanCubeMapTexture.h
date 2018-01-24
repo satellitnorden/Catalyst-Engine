@@ -9,7 +9,7 @@
 //Forward declarations.
 class VulkanDescriptorSet;
 
-class VulkanCubeMapTexture
+class VulkanCubeMapTexture final
 {
 
 public:

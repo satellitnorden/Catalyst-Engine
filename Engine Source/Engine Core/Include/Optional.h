@@ -1,7 +1,7 @@
 #pragma once
 
 template <class ObjectType>
-class Optional
+class Optional final
 {
 
 public:

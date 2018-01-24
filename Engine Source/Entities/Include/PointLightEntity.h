@@ -22,7 +22,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~PointLightEntity() CATALYST_NOEXCEPT;
+	virtual ~PointLightEntity() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the attenuation distance.

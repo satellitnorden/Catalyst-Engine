@@ -11,7 +11,7 @@
 #include <InputConstants.h>
 #include <KeyboardState.h>
 
-class InputSystem
+class InputSystem final
 {
 
 public:

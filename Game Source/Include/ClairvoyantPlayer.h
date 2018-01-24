@@ -10,7 +10,7 @@
 class CameraEntity;
 class SpotLightEntity;
 
-class ClairvoyantPlayer : public Entity
+class ClairvoyantPlayer final : public Entity
 {
 
 public:

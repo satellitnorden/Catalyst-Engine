@@ -15,7 +15,7 @@ enum class DailyQuestCompletionState : uint8
 //Type aliases.
 using DailyQuestFunction = void(*)(void *CATALYST_RESTRICT);
 
-class DailyQuest
+class DailyQuest final
 {
 
 public:

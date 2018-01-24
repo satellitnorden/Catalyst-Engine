@@ -6,7 +6,7 @@
 //Vulkan.
 #include <VulkanCore.h>
 
-class VulkanAllocation
+class VulkanAllocation final
 {
 
 public:

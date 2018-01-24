@@ -15,7 +15,7 @@ class VulkanPipeline;
 class VulkanRenderPass;
 class VulkanVertexBuffer;
 
-class VulkanCommandBuffer
+class VulkanCommandBuffer final
 {
 
 public:

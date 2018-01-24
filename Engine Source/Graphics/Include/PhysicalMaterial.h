@@ -6,7 +6,7 @@
 //Forward declarations.
 class Vulkan2DTexture;
 
-class PhysicalMaterial
+class PhysicalMaterial final
 {
 
 public:

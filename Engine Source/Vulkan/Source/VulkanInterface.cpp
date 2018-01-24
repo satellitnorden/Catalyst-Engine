@@ -259,6 +259,20 @@ CATALYST_RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const Vulkan
 }
 
 /*
+*	Creates and returns a render target.
+*/
+CATALYST_RESTRICTED VulkanRenderTarget* VulkanInterface::CreateRenderTarget(const VkExtent2D extent) CATALYST_NOEXCEPT
+{
+	VulkanRenderTarget *CATALYST_RESTRICT newRenderTarget = new VulkanRenderTarget;
+
+	newRenderTarget->Initialize(extent);
+
+	vulkanRenderTargets.Emplace(newRenderTarget);
+
+	return newRenderTarget;
+}
+
+/*
 *	Creates and returns a semaphore.
 */
 CATALYST_RESTRICTED VulkanSemaphore* VulkanInterface::CreateSemaphore() CATALYST_NOEXCEPT

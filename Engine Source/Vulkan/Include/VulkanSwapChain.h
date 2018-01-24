@@ -14,7 +14,7 @@ class VulkanSemaphore;
 class VulkanSurface;
 class VulkanQueue;
 
-class VulkanSwapchain
+class VulkanSwapchain final
 {
 
 public:

@@ -10,7 +10,7 @@
 class Matrix3;
 class Vector3;
 
-class Matrix4
+class Matrix4 final
 {
 
 public:

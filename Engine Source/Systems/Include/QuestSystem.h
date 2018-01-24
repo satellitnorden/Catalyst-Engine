@@ -23,7 +23,7 @@ enum class DailyGroupQuests : uint8
 	NumberOfDailyGroupQuests
 };
 
-class QuestSystem
+class QuestSystem final
 {
 
 public:

@@ -3,7 +3,7 @@
 //Engine core.
 #include <EngineCore.h>
 
-class Spinlock
+class Spinlock final
 {
 
 public:

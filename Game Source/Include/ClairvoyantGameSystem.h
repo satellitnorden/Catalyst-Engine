@@ -10,7 +10,7 @@
 //Forward declarations.
 class ClairvoyantPlayer;
 
-class ClairvoyantGameSystem
+class ClairvoyantGameSystem final
 {
 
 public:

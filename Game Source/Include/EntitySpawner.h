@@ -3,7 +3,7 @@
 //Engine core.
 #include <EngineCore.h>
 
-class EntitySpawner
+class EntitySpawner final
 {
 
 public:

@@ -1,6 +1,6 @@
 #pragma once
 
-class DynamicString
+class DynamicString final
 {
 
 public:

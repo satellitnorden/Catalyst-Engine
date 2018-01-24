@@ -9,7 +9,7 @@
 //Forward declarations.
 #include <VulkanDescriptorSet.h>
 
-class VulkanUniformBuffer
+class VulkanUniformBuffer final
 {
 
 public:

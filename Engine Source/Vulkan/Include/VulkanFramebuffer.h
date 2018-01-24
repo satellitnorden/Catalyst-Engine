@@ -10,7 +10,7 @@
 class VulkanLogicalDevice;
 class VulkanRenderPass;
 
-class VulkanFramebuffer
+class VulkanFramebuffer final
 {
 
 public:

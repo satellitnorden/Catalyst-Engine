@@ -25,7 +25,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~CameraEntity() CATALYST_NOEXCEPT;
+	virtual ~CameraEntity() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the near plane of the frustum.

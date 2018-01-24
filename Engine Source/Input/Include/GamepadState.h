@@ -15,7 +15,7 @@ enum class GamepadButtonState : uint8
 	ReleasedHold
 };
 
-class GamepadState
+class GamepadState final
 {
 
 public:

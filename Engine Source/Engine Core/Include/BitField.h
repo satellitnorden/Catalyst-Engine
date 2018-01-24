@@ -1,7 +1,7 @@
 #pragma once
 
 template <uint8 BitFieldSize>
-class BitField
+class BitField final
 {
 
 public:

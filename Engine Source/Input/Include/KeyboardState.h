@@ -153,7 +153,7 @@ enum class KeyboardButton : uint8
 	NumberOfKeyboardButtons
 };
 
-class KeyboardState
+class KeyboardState final
 {
 
 public:

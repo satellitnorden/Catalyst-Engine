@@ -3,7 +3,7 @@
 //Engine core.
 #include <EngineCore.h>
 
-class Semaphore
+class Semaphore final
 {
 
 public:

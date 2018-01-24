@@ -10,7 +10,7 @@
 class VulkanDescriptorPool;
 class VulkanDescriptorSetLayout;
 
-class VulkanDescriptorSet
+class VulkanDescriptorSet final
 {
 
 public:

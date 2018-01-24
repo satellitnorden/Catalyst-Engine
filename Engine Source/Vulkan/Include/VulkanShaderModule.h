@@ -9,7 +9,7 @@
 //Forward declarations.
 class VulkanLogicalDevice;
 
-class VulkanShaderModule
+class VulkanShaderModule final
 {
 
 public:

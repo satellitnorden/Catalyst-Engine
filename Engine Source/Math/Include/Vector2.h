@@ -3,7 +3,7 @@
 //Engine core.
 #include <EngineCore.h>
 
-class Vector2
+class Vector2 final
 {
 
 public:

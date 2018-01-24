@@ -9,7 +9,7 @@
 //Forward declarations.
 class VulkanCommandBuffer;
 
-class VulkanCommandPool
+class VulkanCommandPool final
 {
 
 public:

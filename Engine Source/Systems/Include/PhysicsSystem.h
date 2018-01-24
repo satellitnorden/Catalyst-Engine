@@ -6,7 +6,7 @@
 //Forward declarations.
 class PhysicsComponent;
 
-class PhysicsSystem
+class PhysicsSystem final
 {
 
 public:

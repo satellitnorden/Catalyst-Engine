@@ -8,7 +8,7 @@
 #include <VulkanPhysicalDevice.h>
 #include <VulkanQueue.h>
 
-class VulkanLogicalDevice
+class VulkanLogicalDevice final
 {
 
 public:

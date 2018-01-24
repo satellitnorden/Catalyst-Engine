@@ -1,7 +1,7 @@
 #pragma once
 
 template <class FirstType, class SecondType>
-class Pair
+class Pair final
 {
 
 public:

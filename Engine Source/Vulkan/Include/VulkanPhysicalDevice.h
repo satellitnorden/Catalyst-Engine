@@ -6,7 +6,7 @@
 //Vulkan.
 #include <VulkanCore.h>
 
-class VulkanPhysicalDevice
+class VulkanPhysicalDevice final
 {
 
 public:

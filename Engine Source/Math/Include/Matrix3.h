@@ -9,7 +9,7 @@
 //Forward declarations.
 class Matrix4;
 
-class Matrix3
+class Matrix3 final
 {
 
 public:

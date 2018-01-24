@@ -35,7 +35,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~PhysicalEntity() CATALYST_NOEXCEPT;
+	virtual ~PhysicalEntity() CATALYST_NOEXCEPT;
 
 	/*
 	*	Initializes this physical entity.

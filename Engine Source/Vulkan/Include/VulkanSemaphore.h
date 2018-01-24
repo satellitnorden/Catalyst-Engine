@@ -9,7 +9,7 @@
 //Forward declarations.
 class VulkanLogicalDevice;
 
-class VulkanSemaphore
+class VulkanSemaphore final
 {
 
 public:

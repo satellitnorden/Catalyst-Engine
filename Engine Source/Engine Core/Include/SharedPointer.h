@@ -1,7 +1,7 @@
 #pragma once
 
 template <class ObjectType>
-class SharedPointer
+class SharedPointer final
 {
 
 public:

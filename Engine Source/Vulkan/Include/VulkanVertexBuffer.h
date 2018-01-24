@@ -9,7 +9,7 @@
 //Forward declarations.
 class Vertex;
 
-class VulkanVertexBuffer
+class VulkanVertexBuffer final
 {
 
 public:

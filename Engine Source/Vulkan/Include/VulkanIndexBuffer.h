@@ -6,7 +6,7 @@
 //Vulkan.
 #include <VulkanCore.h>
 
-class VulkanIndexBuffer
+class VulkanIndexBuffer final
 {
 
 public:

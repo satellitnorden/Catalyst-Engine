@@ -11,7 +11,7 @@
 #include <Matrix4.h>
 #include <Vector4.h>
 
-class DynamicUniformData
+class DynamicUniformData final
 {
 
 public:

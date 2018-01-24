@@ -31,7 +31,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~Component() CATALYST_NOEXCEPT;
+	virtual ~Component() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the component type of this component.

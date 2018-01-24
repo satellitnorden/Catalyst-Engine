@@ -10,7 +10,7 @@
 //Forward declarations.
 class VulkanPipelineCreationParameters;
 
-class VulkanRenderPass
+class VulkanRenderPass final
 {
 
 public:

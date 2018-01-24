@@ -9,7 +9,7 @@
 //Preprocessor defines.
 #define GAME_MATH_SINE_PRECISION 0.1f
 
-class GameMath
+class GameMath final
 {
 
 public:

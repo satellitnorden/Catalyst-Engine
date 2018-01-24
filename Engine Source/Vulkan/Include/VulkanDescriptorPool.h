@@ -11,7 +11,7 @@ class VulkanDescriptorSet;
 class VulkanDescriptorSetLayout;
 class VulkanLogicalDevice;
 
-class VulkanDescriptorPool
+class VulkanDescriptorPool final
 {
 
 public:

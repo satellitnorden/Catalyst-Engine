@@ -16,7 +16,7 @@ class VulkanDescriptorSetLayout;
 class VulkanPipelineCreationParameters;
 class VulkanShaderModule;
 
-class VulkanPipeline
+class VulkanPipeline final
 {
 
 public:

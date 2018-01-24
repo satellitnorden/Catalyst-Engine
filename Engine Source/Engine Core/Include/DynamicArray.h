@@ -1,7 +1,7 @@
 #pragma once
 
 template <class ObjectType, size_t InitialCapacity = 0>
-class DynamicArray
+class DynamicArray final
 {
 
 public:

@@ -26,6 +26,7 @@
 #include <VulkanPipelineCreationParameters.h>
 #include <VulkanQueue.h>
 #include <VulkanRenderPass.h>
+#include <VulkanRenderTarget.h>
 #include <VulkanSemaphore.h>
 #include <VulkanShaderModule.h>
 #include <VulkanSurface.h>
@@ -36,7 +37,7 @@
 //Forward declarations.
 class Window;
 
-class VulkanInterface
+class VulkanInterface final
 {
 
 public:
@@ -160,6 +161,11 @@ public:
 	CATALYST_RESTRICTED VulkanPipeline* CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) CATALYST_NOEXCEPT;
 
 	/*
+	*	Creates and returns a render target.
+	*/
+	CATALYST_RESTRICTED VulkanRenderTarget* CreateRenderTarget(const VkExtent2D extent) CATALYST_NOEXCEPT;
+
+	/*
 	*	Creates and returns a semaphore.
 	*/
 	CATALYST_RESTRICTED VulkanSemaphore* CreateSemaphore() CATALYST_NOEXCEPT;
@@ -234,6 +240,9 @@ private:
 
 	//Container for all Vulkan pipelines.
 	DynamicArray<VulkanPipeline *CATALYST_RESTRICT> vulkanPipelines;
+
+	//Container for all Vulkan render targets.
+	DynamicArray<VulkanRenderTarget *CATALYST_RESTRICT> vulkanRenderTargets;
 
 	//Container for all Vulkan semaphores.
 	DynamicArray<VulkanSemaphore *CATALYST_RESTRICT> vulkanSemaphores;

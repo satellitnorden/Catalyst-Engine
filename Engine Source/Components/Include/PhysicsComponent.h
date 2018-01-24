@@ -9,7 +9,7 @@
 //Math.
 #include <Vector3.h>
 
-class PhysicsComponent : public Component
+class PhysicsComponent final : public Component
 {
 
 public:

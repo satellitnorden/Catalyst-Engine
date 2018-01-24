@@ -6,7 +6,7 @@
 //Vulkan.
 #include <VulkanCore.h>
 
-class VulkanFence
+class VulkanFence final
 {
 
 public:

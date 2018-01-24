@@ -1,7 +1,7 @@
 #pragma once
 
 template <class ObjectType>
-class UniquePointer
+class UniquePointer final
 {
 
 public:

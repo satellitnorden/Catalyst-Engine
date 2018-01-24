@@ -1,7 +1,7 @@
 #pragma once
 
 template <class ObjectType, size_t ArraySize>
-class StaticArray
+class StaticArray final
 {
 
 public:

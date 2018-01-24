@@ -7,7 +7,7 @@
 #include <VulkanCore.h>
 #include <VulkanShaderModule.h>
 
-class DescriptorLayoutBindingInformation
+class DescriptorLayoutBindingInformation final
 {
 
 public:

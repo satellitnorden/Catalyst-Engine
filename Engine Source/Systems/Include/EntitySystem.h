@@ -6,7 +6,7 @@
 //Forward declarations.
 class Entity;
 
-class EntitySystem
+class EntitySystem final
 {
 
 public:

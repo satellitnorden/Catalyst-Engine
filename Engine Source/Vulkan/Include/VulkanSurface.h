@@ -9,7 +9,7 @@
 //Forward declarations.
 class Window;
 
-class VulkanSurface
+class VulkanSurface final
 {
 
 public:

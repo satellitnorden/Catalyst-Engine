@@ -22,7 +22,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~SpotLightEntity() CATALYST_NOEXCEPT;
+	virtual ~SpotLightEntity() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the direction of this spot light.

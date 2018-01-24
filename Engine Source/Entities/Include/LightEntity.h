@@ -19,7 +19,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~LightEntity() CATALYST_NOEXCEPT;
+	virtual ~LightEntity() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns if this light entity is enabled or not.

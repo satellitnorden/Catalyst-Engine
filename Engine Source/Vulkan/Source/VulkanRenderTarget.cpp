@@ -23,13 +23,13 @@ VulkanRenderTarget::~VulkanRenderTarget() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan render target.
 */
-void VulkanRenderTarget::Initialize(const uint32 width, const uint32 height) CATALYST_NOEXCEPT
+void VulkanRenderTarget::Initialize(const VkExtent2D extent) CATALYST_NOEXCEPT
 {
 	//Calculate the image size.
-	const VkDeviceSize imageSize = width * height * 4;
+	const VkDeviceSize imageSize = extent.width * extent.height * 4;
 
 	//Create the Vulkan image.
-	VulkanUtilities::CreateVulkanImage(0, VK_FORMAT_R8G8B8A8_UNORM, width, height, 1, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, vulkanImage, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(0, VK_FORMAT_R8G8B8A8_UNORM, extent.width, extent.height, 1, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, vulkanImage, vulkanDeviceMemory);
 
 	//Create the image view.
 	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, 1, vulkanImageView);

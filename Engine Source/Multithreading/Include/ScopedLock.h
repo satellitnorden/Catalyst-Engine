@@ -4,7 +4,7 @@
 #include <EngineCore.h>
 
 template <class LockType>
-class ScopedLock
+class ScopedLock final
 {
 
 public:

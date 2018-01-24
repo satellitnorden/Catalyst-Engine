@@ -6,7 +6,7 @@
 //Vulkan.
 #include <VulkanCore.h>
 
-class VulkanInstance
+class VulkanInstance final
 {
 
 public:

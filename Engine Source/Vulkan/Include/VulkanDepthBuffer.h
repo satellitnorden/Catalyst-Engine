@@ -6,7 +6,7 @@
 //Vulkan.
 #include <VulkanCore.h>
 
-class VulkanDepthBuffer
+class VulkanDepthBuffer final
 {
 
 public:
