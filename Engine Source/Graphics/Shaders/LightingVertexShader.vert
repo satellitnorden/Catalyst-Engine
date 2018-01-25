@@ -34,17 +34,32 @@ layout (std140, binding = 0) uniform DynamicUniformData
     vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
 };
 
-//In parameters.
-layout (location = 0) in vec3 fragmentTextureCoordinate;
+//The viewport vertices.
+vec3 viewportVertices[4] = vec3[]
+(
+	vec3(-1.0f, 1.0f, 0.0f),
+	vec3(-1.0f, -1.0f, 0.0f),
+	vec3(1.0f, -1.0f, 0.0f),
+ 	vec3(1.0f, 1.0f, 0.0f)
+);
 
-//Texture samplers.
-layout (binding = 1) uniform samplerCube cubeMapTexture;
+//The viewport texture coordinates.
+vec2 viewportTextureCoordinates[4] = vec2[]
+(
+	vec2(0.0f, 1.0f),
+	vec2(0.0f, 0.0f),
+	vec2(1.0f, 0.0f),
+	vec2(1.0f, 1.0f)
+);
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentColor;
+layout (location = 0) out vec2 fragmentTextureCoordinate;
 
 void main()
 {
-    //Set the final fragment color.
-    fragmentColor = texture(cubeMapTexture, fragmentTextureCoordinate);
-}
+	//Set the fragment texture coordinate.
+    fragmentTextureCoordinate = viewportTextureCoordinates[gl_VertexIndex];
+
+    //Set the vertex position.
+    gl_Position = vec4(viewportVertices[gl_VertexIndex], 1.0f);
+} 

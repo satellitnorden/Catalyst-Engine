@@ -88,7 +88,7 @@ private:
 	/*
 	*	Creates a pipeline inpit assembly state create info.
 	*/
-	void CreatePipelineInputAssemblyStateCreateInfo(VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo) const CATALYST_NOEXCEPT;
+	void CreatePipelineInputAssemblyStateCreateInfo(VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a pipeline viewport state create info.
@@ -108,17 +108,17 @@ private:
 	/*
 	*	Creates a pipeline depth stencil state create info.
 	*/
-	void CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo) const CATALYST_NOEXCEPT;
+	void CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a pipeline color blend attachment state.
 	*/
-	void CreatePipelineColorBlendAttachmentState(VkPipelineColorBlendAttachmentState &pipelineColorBlendAttachmentState) const CATALYST_NOEXCEPT;
+	void CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a pipeline color state create info.
 	*/
-	void CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const VkPipelineColorBlendAttachmentState &pipelineColorBlendAttachmentState) const CATALYST_NOEXCEPT;
+	void CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates) const CATALYST_NOEXCEPT;
 	/*
 	*	Creates a pipeline layout create info.
 	*/

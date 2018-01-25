@@ -44,7 +44,7 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 
 	//Create the pipeline input assembly state create info.
 	VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo;
-	CreatePipelineInputAssemblyStateCreateInfo(pipelineInputAssemblyStateCreateInfo);
+	CreatePipelineInputAssemblyStateCreateInfo(pipelineInputAssemblyStateCreateInfo, vulkanPipelineCreationParameters);
 
 	//Create the pipeline viewport state create info.
 	VkPipelineViewportStateCreateInfo pipelineViewportStateCreateInfo;
@@ -62,15 +62,15 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 
 	//Create the pipeline depth stencil state create info.
 	VkPipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo;
-	CreatePipelineDepthStencilStateCreateInfo(pipelineDepthStencilStateCreateInfo);
+	CreatePipelineDepthStencilStateCreateInfo(pipelineDepthStencilStateCreateInfo, vulkanPipelineCreationParameters);
 
 	//Create the pipeline color blend attachment state.
-	VkPipelineColorBlendAttachmentState pipelineColorBlendAttachmentState;
-	CreatePipelineColorBlendAttachmentState(pipelineColorBlendAttachmentState);
+	DynamicArray<VkPipelineColorBlendAttachmentState> pipelineColorBlendAttachmentStates;
+	CreatePipelineColorBlendAttachmentStates(pipelineColorBlendAttachmentStates, vulkanPipelineCreationParameters);
 
 	//Create the pipeline color blend state create info.
 	VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo;
-	CreatePipelineColorBlendStateCreateInfo(pipelineColorBlendStateCreateInfo, pipelineColorBlendAttachmentState);
+	CreatePipelineColorBlendStateCreateInfo(pipelineColorBlendStateCreateInfo, pipelineColorBlendAttachmentStates);
 
 	//Create the pipeline layout create info.
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo;
@@ -150,12 +150,12 @@ void VulkanPipeline::CreatePipelineVertexInputStateCreateInfo(VkPipelineVertexIn
 /*
 *	Creates a pipeline inpit assembly state create info.
 */
-void VulkanPipeline::CreatePipelineInputAssemblyStateCreateInfo(VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo) const CATALYST_NOEXCEPT
+void VulkanPipeline::CreatePipelineInputAssemblyStateCreateInfo(VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT
 {
 	pipelineInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	pipelineInputAssemblyStateCreateInfo.pNext = nullptr;
 	pipelineInputAssemblyStateCreateInfo.flags = 0;
-	pipelineInputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	pipelineInputAssemblyStateCreateInfo.topology = vulkanPipelineCreationParameters.topology;
 	pipelineInputAssemblyStateCreateInfo.primitiveRestartEnable = VK_FALSE;
 }
 
@@ -194,7 +194,7 @@ void VulkanPipeline::CreatePipelineRasterizationStateCreateInfo(VkPipelineRaster
 	pipelineRasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;
-	pipelineRasterizationStateCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;
+	pipelineRasterizationStateCreateInfo.cullMode = VK_CULL_MODE_NONE;
 	pipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	pipelineRasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.depthBiasConstantFactor = 0.0f;
@@ -222,13 +222,13 @@ void VulkanPipeline::CreatePipelineMultisampleStateCreateInfo(VkPipelineMultisam
 /*
 *	Creates a pipeline depth stencil state create info.
 */
-void VulkanPipeline::CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo) const CATALYST_NOEXCEPT
+void VulkanPipeline::CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT
 {
 	pipelineDepthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 	pipelineDepthStencilStateCreateInfo.pNext = nullptr;
 	pipelineDepthStencilStateCreateInfo.flags = 0;
-	pipelineDepthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
-	pipelineDepthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
+	pipelineDepthStencilStateCreateInfo.depthTestEnable = vulkanPipelineCreationParameters.depthTestEnable;
+	pipelineDepthStencilStateCreateInfo.depthWriteEnable = vulkanPipelineCreationParameters.depthWriteEnable;
 	pipelineDepthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
 	pipelineDepthStencilStateCreateInfo.depthBoundsTestEnable = VK_FALSE;
 	pipelineDepthStencilStateCreateInfo.stencilTestEnable = VK_FALSE;
@@ -241,30 +241,37 @@ void VulkanPipeline::CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthSt
 /*
 *	Creates a pipeline color blend attachment state.
 */
-void VulkanPipeline::CreatePipelineColorBlendAttachmentState(VkPipelineColorBlendAttachmentState &pipelineColorBlendAttachmentState) const CATALYST_NOEXCEPT
+void VulkanPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT
 {
-	pipelineColorBlendAttachmentState.blendEnable = VK_FALSE;
-	pipelineColorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-	pipelineColorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
-	pipelineColorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
-	pipelineColorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-	pipelineColorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-	pipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
-	pipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+	for (VkImageView colorAttachment : vulkanPipelineCreationParameters.colorAttachments[0])
+	{
+		VkPipelineColorBlendAttachmentState newPipelineColorBlendAttachmentState;
+
+		newPipelineColorBlendAttachmentState.blendEnable = VK_FALSE;
+		newPipelineColorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+		newPipelineColorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
+		newPipelineColorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
+		newPipelineColorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		newPipelineColorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		newPipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
+		newPipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+		pipelineColorBlendAttachmentStates.Emplace(newPipelineColorBlendAttachmentState);
+	}
 }
 
 /*
 *	Creates a pipeline color state create info.
 */
-void VulkanPipeline::CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const VkPipelineColorBlendAttachmentState &pipelineColorBlendAttachmentState) const CATALYST_NOEXCEPT
+void VulkanPipeline::CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates) const CATALYST_NOEXCEPT
 {
 	pipelineColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	pipelineColorBlendStateCreateInfo.pNext = nullptr;
 	pipelineColorBlendStateCreateInfo.flags = 0;
 	pipelineColorBlendStateCreateInfo.logicOpEnable = VK_FALSE;
 	pipelineColorBlendStateCreateInfo.logicOp = VK_LOGIC_OP_COPY;
-	pipelineColorBlendStateCreateInfo.attachmentCount = 1;
-	pipelineColorBlendStateCreateInfo.pAttachments = &pipelineColorBlendAttachmentState;
+	pipelineColorBlendStateCreateInfo.attachmentCount = static_cast<uint32>(pipelineColorBlendAttachmentStates.Size());
+	pipelineColorBlendStateCreateInfo.pAttachments = pipelineColorBlendAttachmentStates.Data();
 	pipelineColorBlendStateCreateInfo.blendConstants[0] = 0.0f;
 	pipelineColorBlendStateCreateInfo.blendConstants[1] = 0.0f;
 	pipelineColorBlendStateCreateInfo.blendConstants[2] = 0.0f;

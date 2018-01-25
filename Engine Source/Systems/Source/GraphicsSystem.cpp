@@ -52,11 +52,8 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 	//Initialize the Vulkan interface.
 	VulkanInterface::Instance->Initialize(mainWindow);
 
-	//Initialize all depth buffers.
-	depthBuffers[DepthBuffer::SceneBufferDepthBuffer] = VulkanInterface::Instance->CreateDepthBuffer(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
-
 	//Initialize all render targets.
-	renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	InitializeRenderTargets();
 
 	//Resize the number of command buffers to be equal to the amount of swapchain images.
 	commandBuffers.Resize(VulkanInterface::Instance->GetSwapchain().GetSwapChainImages().Size());
@@ -67,18 +64,21 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(commandBuffer);
 	}
 
+	//Create the dynamic uniform data buffer.
+	uniformBuffers[UniformBuffer::DynamicUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(DynamicUniformData));
+
 	//Initialize all shader modules.
 	InitializeShaderModules();
 
 	//Initialize all pipelines.
 	InitializePipelines();
 
+	//Initialize all descriptor sets.
+	InitializeDescriptorSets();
+
 	//Initialize all semaphores.
 	semaphores[Semaphore::ImageAvailable] = VulkanInterface::Instance->CreateSemaphore();
 	semaphores[Semaphore::RenderFinished] = VulkanInterface::Instance->CreateSemaphore();
-
-	//Create the dynamic uniform data buffer.
-	uniformBuffers[UniformBuffer::DynamicUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(DynamicUniformData));
 
 	//Create all default textures.
 	const byte defaultRoughness[]{ 255 };
@@ -142,6 +142,9 @@ void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	//Render all physical entities.
 	RenderPhysicalEntities();
 
+	//Render the lighting.
+	RenderLighting();
+
 	//Render the sky box.
 	RenderSkyBox();
 
@@ -170,19 +173,18 @@ void GraphicsSystem::ReleaseSystem() CATALYST_NOEXCEPT
 void GraphicsSystem::CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDescriptorSet, const VulkanUniformBuffer *CATALYST_RESTRICT modelDataUniformBuffer, const Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, const Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, const Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, const Vulkan2DTexture *CATALYST_RESTRICT metallicTexture, const Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT
 {
 	//Allocate the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(vulkanDescriptorSet, pipelines[Pipeline::PhysicalPipeline]->GetDescriptorSetLayout());
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(vulkanDescriptorSet, pipelines[Pipeline::SceneBufferPipeline]->GetDescriptorSetLayout());
 
 	//Update the write descriptor sets.
-	DynamicArray<VkWriteDescriptorSet, 8> writeDescriptorSets;
+	DynamicArray<VkWriteDescriptorSet, 7> writeDescriptorSets;
 
 	writeDescriptorSets.EmplaceUnsafe(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(vulkanDescriptorSet, 0));
 	writeDescriptorSets.EmplaceUnsafe(modelDataUniformBuffer->GetWriteDescriptorSet(vulkanDescriptorSet, 1));
-	writeDescriptorSets.EmplaceUnsafe(skyBoxTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 2));
-	writeDescriptorSets.EmplaceUnsafe(albedoTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 3));
-	writeDescriptorSets.EmplaceUnsafe(normalMapTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 4));
-	writeDescriptorSets.EmplaceUnsafe(roughnessTexture ? roughnessTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 5) : defaultTextures[DefaultTexture::Roughness]->GetWriteDescriptorSet(vulkanDescriptorSet, 4));
-	writeDescriptorSets.EmplaceUnsafe(metallicTexture ? metallicTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 6) : defaultTextures[DefaultTexture::Metallic]->GetWriteDescriptorSet(vulkanDescriptorSet, 5));
-	writeDescriptorSets.EmplaceUnsafe(ambientOcclusionTexture ? ambientOcclusionTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 7) : defaultTextures[DefaultTexture::AmbientOcclusion]->GetWriteDescriptorSet(vulkanDescriptorSet, 6));
+	writeDescriptorSets.EmplaceUnsafe(albedoTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 2));
+	writeDescriptorSets.EmplaceUnsafe(normalMapTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 3));
+	writeDescriptorSets.EmplaceUnsafe(roughnessTexture ? roughnessTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 4) : defaultTextures[DefaultTexture::Roughness]->GetWriteDescriptorSet(vulkanDescriptorSet, 4));
+	writeDescriptorSets.EmplaceUnsafe(metallicTexture ? metallicTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 5) : defaultTextures[DefaultTexture::Metallic]->GetWriteDescriptorSet(vulkanDescriptorSet, 5));
+	writeDescriptorSets.EmplaceUnsafe(ambientOcclusionTexture ? ambientOcclusionTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 6) : defaultTextures[DefaultTexture::AmbientOcclusion]->GetWriteDescriptorSet(vulkanDescriptorSet, 6));
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }
@@ -319,6 +321,20 @@ void GraphicsSystem::SetActiveSkyBox(VulkanCubeMapTexture *CATALYST_RESTRICT new
 }
 
 /*
+*	Initializes all render targets.
+*/
+void GraphicsSystem::InitializeRenderTargets() CATALYST_NOEXCEPT
+{
+	//Initialize all depth buffers.
+	depthBuffers[DepthBuffer::SceneBufferDepthBuffer] = VulkanInterface::Instance->CreateDepthBuffer(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+
+	//Initialize all render targets.
+	renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	renderTargets[RenderTarget::SceneBufferNormalDirectionDepthRenderTarget] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	renderTargets[RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+}
+
+/*
 *	Initializes all shader modules.
 */
 void GraphicsSystem::InitializeShaderModules() CATALYST_NOEXCEPT
@@ -327,17 +343,17 @@ void GraphicsSystem::InitializeShaderModules() CATALYST_NOEXCEPT
 	const auto sceneBufferVertexShaderByteCode = ShaderLoader::LoadShader("SceneBufferVertexShader.spv");
 	shaderModules[ShaderModule::SceneBufferVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(sceneBufferVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
-	//Initialize the physical fragment shader module.
+	//Initialize the scene buffer fragment shader module.
 	const auto sceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader("SceneBufferFragmentShader.spv");
 	shaderModules[ShaderModule::SceneBufferFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(sceneBufferFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
-	//Initialize the physical vertex shader module.
-	const auto physicalVertexShaderByteCode = ShaderLoader::LoadShader("PhysicalVertexShader.spv");
-	shaderModules[ShaderModule::PhysicalVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(physicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+	//Initialize the lighting vertex shader module.
+	const auto lightingVertexShaderByteCode = ShaderLoader::LoadShader("LightingVertexShader.spv");
+	shaderModules[ShaderModule::LightingVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(lightingVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
-	//Initialize the physical fragment shader module.
-	const auto physicalFragmentShaderByteCode = ShaderLoader::LoadShader("PhysicalFragmentShader.spv");
-	shaderModules[ShaderModule::PhysicalFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(physicalFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//Initialize the lighting fragment shader module.
+	const auto lightingFragmentShaderByteCode = ShaderLoader::LoadShader("LightingFragmentShader.spv");
+	shaderModules[ShaderModule::LightingFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(lightingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the cube map vertex shader module.
 	const auto cubeMapVertexShaderByteCode = ShaderLoader::LoadShader("CubeMapVertexShader.spv");
@@ -369,57 +385,69 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	sceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	sceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 
+	sceneBufferPipelineCreationParameters.depthBuffers.Reserve(1);
+	sceneBufferPipelineCreationParameters.depthBuffers.EmplaceUnsafe(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
+
 	sceneBufferPipelineCreationParameters.colorAttachments.Resize(1);
 
-	sceneBufferPipelineCreationParameters.colorAttachments[0].Reserve(2);
-	sceneBufferPipelineCreationParameters.colorAttachments[0].EmplaceUnsafe(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]->GetImageView());
+	sceneBufferPipelineCreationParameters.colorAttachments[0].Reserve(3);
 	sceneBufferPipelineCreationParameters.colorAttachments[0].EmplaceUnsafe(renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget]->GetImageView());
+	sceneBufferPipelineCreationParameters.colorAttachments[0].EmplaceUnsafe(renderTargets[RenderTarget::SceneBufferNormalDirectionDepthRenderTarget]->GetImageView());
+	sceneBufferPipelineCreationParameters.colorAttachments[0].EmplaceUnsafe(renderTargets[RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget]->GetImageView());
 
 	sceneBufferPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	sceneBufferPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	sceneBufferPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	sceneBufferPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	sceneBufferPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR;
+	sceneBufferPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	sceneBufferPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	sceneBufferPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R8G8B8A8_UNORM;
+	sceneBufferPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	sceneBufferPipelineCreationParameters.depthTestEnable = VK_TRUE;
+	sceneBufferPipelineCreationParameters.depthWriteEnable = VK_TRUE;
 
 	pipelines[Pipeline::SceneBufferPipeline] = VulkanInterface::Instance->CreatePipeline(sceneBufferPipelineCreationParameters);
 
 	//Create the physical pipeline.
-	VulkanPipelineCreationParameters physicalPipelineCreationParameters;
+	VulkanPipelineCreationParameters lightingPipelineCreationParameters;
 
-	physicalPipelineCreationParameters.shaderModules.Reserve(2);
-	physicalPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::PhysicalVertexShaderModule]);
-	physicalPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::PhysicalFragmentShaderModule]);
-	physicalPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(8);
-	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	physicalPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(7, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	lightingPipelineCreationParameters.shaderModules.Reserve(2);
+	lightingPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::LightingVertexShaderModule]);
+	lightingPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::LightingFragmentShaderModule]);
+	lightingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(7);
+	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	const DynamicArray<VkImageView> &swapchainImageViews = VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews();
 	const size_t swapchainImageViewsSize = swapchainImageViews.Size();
-	const VkImageView &depthBufferImageView = VulkanInterface::Instance->GetSwapchain().GetDepthBuffer().GetImageView();
+	const VulkanDepthBuffer &depthBuffer = VulkanInterface::Instance->GetSwapchain().GetDepthBuffer();
 
-	physicalPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
+	lightingPipelineCreationParameters.depthBuffers.Reserve(swapchainImageViewsSize);
+	lightingPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
 
 	for (size_t i = 0; i < swapchainImageViewsSize; ++i)
 	{
-		physicalPipelineCreationParameters.colorAttachments[i].Reserve(2);
-		physicalPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(depthBufferImageView);
-		physicalPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(swapchainImageViews[i]);
+		lightingPipelineCreationParameters.colorAttachments[i].Reserve(1);
+		lightingPipelineCreationParameters.depthBuffers.EmplaceUnsafe(&depthBuffer);
+		lightingPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(swapchainImageViews[i]);
 	}
 
-	physicalPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	physicalPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	physicalPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	physicalPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	physicalPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	lightingPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
+	lightingPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	lightingPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	lightingPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	lightingPipelineCreationParameters.colorAttachmentFinalLayout = VULKAN_IMAGE_LAYOUT_PRESENT_SRC;
+	lightingPipelineCreationParameters.colorAttachmentFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
+	lightingPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+	lightingPipelineCreationParameters.depthTestEnable = VK_FALSE;
+	lightingPipelineCreationParameters.depthWriteEnable = VK_FALSE;
 
-	pipelines[Pipeline::PhysicalPipeline] = VulkanInterface::Instance->CreatePipeline(physicalPipelineCreationParameters);
+	pipelines[Pipeline::LightingPipeline] = VulkanInterface::Instance->CreatePipeline(lightingPipelineCreationParameters);
 
 	//Create the cube map pipeline.
 	VulkanPipelineCreationParameters cubeMapPipelineCreationParameters;
@@ -432,22 +460,47 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
 	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 
+	cubeMapPipelineCreationParameters.depthBuffers.Reserve(swapchainImageViewsSize);
 	cubeMapPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
 
 	for (size_t i = 0; i < swapchainImageViewsSize; ++i)
 	{
-		cubeMapPipelineCreationParameters.colorAttachments[i].Reserve(2);
-		cubeMapPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(depthBufferImageView);
+		cubeMapPipelineCreationParameters.depthBuffers.EmplaceUnsafe(&depthBuffer);
+		cubeMapPipelineCreationParameters.colorAttachments[i].Reserve(1);
 		cubeMapPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(swapchainImageViews[i]);
 	}
 
 	cubeMapPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-	cubeMapPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	cubeMapPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	cubeMapPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	cubeMapPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	cubeMapPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	cubeMapPipelineCreationParameters.colorAttachmentFinalLayout = VULKAN_IMAGE_LAYOUT_PRESENT_SRC;
+	cubeMapPipelineCreationParameters.colorAttachmentFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
+	cubeMapPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	cubeMapPipelineCreationParameters.depthTestEnable = VK_TRUE;
+	cubeMapPipelineCreationParameters.depthWriteEnable = VK_TRUE;
 
 	pipelines[Pipeline::CubeMapPipeline] = VulkanInterface::Instance->CreatePipeline(cubeMapPipelineCreationParameters);
+}
+
+/*
+*	Initializes all descriptor sets.
+*/
+void GraphicsSystem::InitializeDescriptorSets() CATALYST_NOEXCEPT
+{
+	//Initialize the scene buffer descriptor set.
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], pipelines[Pipeline::LightingPipeline]->GetDescriptorSetLayout());
+
+	//Update the write descriptor sets.
+	DynamicArray<VkWriteDescriptorSet, 5> writeDescriptorSets;
+
+	writeDescriptorSets.EmplaceUnsafe(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 0));
+	writeDescriptorSets.EmplaceUnsafe(renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 1));
+	writeDescriptorSets.EmplaceUnsafe(renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 2));
+	writeDescriptorSets.EmplaceUnsafe(renderTargets[RenderTarget::SceneBufferNormalDirectionDepthRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 3));
+	writeDescriptorSets.EmplaceUnsafe(renderTargets[RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4));
+
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }
 
 /*
@@ -476,8 +529,8 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 	//Set up the current command buffer.
 	commandBuffers[currentCommandBuffer].Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::PhysicalPipeline]);
-	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::PhysicalPipeline]->GetRenderPass(), currentCommandBuffer, true);
+	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::SceneBufferPipeline]);
+	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::SceneBufferPipeline]->GetRenderPass(), 0, 4);
 }
 
 /*
@@ -495,11 +548,32 @@ void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 		if (!physicalEntity->IsInViewFrustum())
 			continue;
 
-		commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::PhysicalPipeline], physicalEntity->GetDescriptorSet());
+		commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::SceneBufferPipeline], physicalEntity->GetDescriptorSet());
 		commandBuffers[currentCommandBuffer].CommandBindVertexBuffers(*physicalEntity->GetModel().GetVertexBuffer());
 		commandBuffers[currentCommandBuffer].CommandBindIndexBuffer(*physicalEntity->GetModel().GetIndexBuffer());
 		commandBuffers[currentCommandBuffer].CommandDrawIndexed(physicalEntity->GetModel().GetIndexCount());
 	}
+
+	//End the render pass.
+	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
+}
+
+/*
+*	Renders lighting.
+*/
+void GraphicsSystem::RenderLighting() CATALYST_NOEXCEPT
+{
+	//Bind the lighting pipeline.
+	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::LightingPipeline]);
+
+	//Bind the lighting render pass.
+	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::LightingPipeline]->GetRenderPass(), currentCommandBuffer, 2);
+
+	//Bind the scene buffer descriptor set.
+	commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::LightingPipeline], descriptorSets[DescriptorSet::LightingDescriptorSet]);
+
+	//Draw the viewport!
+	commandBuffers[currentCommandBuffer].CommandDraw(4);
 
 	//End the render pass.
 	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
@@ -559,9 +633,17 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 	Matrix4 cameraMatrix = Matrix4::LookAt(cameraWorldPosition, cameraWorldPosition + forwardVector, upVector);
 	viewMatrix.Set(projectionMatrix * cameraMatrix);
 
+	Matrix4 inverseCameraMatrix{ cameraMatrix };
+	inverseCameraMatrix.Inverse();
+
 	Matrix4 cameraOriginMatrix{ cameraMatrix };
 	cameraOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
 
+	Matrix4 inverseProjectionMatrix{ projectionMatrix };
+	inverseProjectionMatrix.Inverse();
+
+	dynamicUniformData.inverseCameraMatrix = inverseCameraMatrix;
+	dynamicUniformData.inverseProjectionMatrix = inverseProjectionMatrix;
 	dynamicUniformData.originViewMatrix = projectionMatrix * cameraOriginMatrix;
 	dynamicUniformData.viewMatrix = viewMatrix.GetUnsafe();
 	dynamicUniformData.cameraWorldPosition = cameraWorldPosition;

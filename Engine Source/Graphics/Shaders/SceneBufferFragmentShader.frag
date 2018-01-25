@@ -8,28 +8,30 @@
 
 layout (std140, binding = 0) uniform DynamicUniformData
 {
-  //Camera data.
-  mat4 originViewMatrix;
-  mat4 viewMatrix;
-  vec3 cameraWorldPosition;
-  float padding1;
+    //Camera data.
+    mat4 inverseCameraMatrix;
+    mat4 inverseProjectionMatrix;
+    mat4 originViewMatrix;
+    mat4 viewMatrix;
+    vec3 cameraWorldPosition;
+    float padding1;
 
-  //Point light data.
-  int numberOfPointLights;
+    //Point light data.
+    int numberOfPointLights;
     float pointLightAttenuationDistances[MaximumNumberOfPointLights];
     float pointLightIntensities[MaximumNumberOfPointLights];
     vec3 pointLightColors[MaximumNumberOfPointLights];
     vec3 pointLightWorldPositions[MaximumNumberOfPointLights];
 
-  //Spot light data.
-  int numberOfSpotLights;
-  float spotLightAttenuationDistances[MaximumNumberOfSpotLights];
-  float spotLightIntensities[MaximumNumberOfSpotLights];
-  float spotLightInnerCutoffAngles[MaximumNumberOfSpotLights];
-  float spotLightOuterCutoffAngles[MaximumNumberOfSpotLights];
-  vec3 spotLightColors[MaximumNumberOfSpotLights];
-  vec3 spotLightDirections[MaximumNumberOfSpotLights];
-  vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
+    //Spot light data.
+    int numberOfSpotLights;
+    float spotLightAttenuationDistances[MaximumNumberOfSpotLights];
+    float spotLightIntensities[MaximumNumberOfSpotLights];
+    float spotLightInnerCutoffAngles[MaximumNumberOfSpotLights];
+    float spotLightOuterCutoffAngles[MaximumNumberOfSpotLights];
+    vec3 spotLightColors[MaximumNumberOfSpotLights];
+    vec3 spotLightDirections[MaximumNumberOfSpotLights];
+    vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
 };
 
 //In parameters.
@@ -46,9 +48,26 @@ layout (binding = 6) uniform sampler2D ambientOcclusionTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
+layout (location = 1) out vec4 normalDirectionDepth;
+layout (location = 2) out vec4 roughnessMetallicAmbientOcclusion;
 
 void main()
 {
     //Set the albedo color.
     albedoColor = texture(albedoTexture, fragmentTextureCoordinate);
+
+    //Set the normal.
+    vec3 normalDirection = texture(normalMapTexture, fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
+    normalDirection = fragmentTangentSpaceMatrix * normalDirection;
+    normalDirection = normalize(normalDirection);
+    normalDirectionDepth = vec4(normalDirection, gl_FragCoord.z);
+
+    //Set the roughness.
+    roughnessMetallicAmbientOcclusion.r = texture(roughnessTexture, fragmentTextureCoordinate).r;
+
+    //Set the metallic.
+    roughnessMetallicAmbientOcclusion.g = texture(metallicTexture, fragmentTextureCoordinate).r;
+
+    //Set the ambient occlusion.
+    roughnessMetallicAmbientOcclusion.b = texture(ambientOcclusionTexture, fragmentTextureCoordinate).r;
 }

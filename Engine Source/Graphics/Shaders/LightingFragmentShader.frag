@@ -8,56 +8,59 @@
 
 layout (std140, binding = 0) uniform DynamicUniformData
 {
-  //Camera data.
-  mat4 originViewMatrix;
-  mat4 viewMatrix;
-  vec3 cameraWorldPosition;
-  float padding1;
+    //Camera data.
+    mat4 inverseCameraMatrix;
+    mat4 inverseProjectionMatrix;
+    mat4 originViewMatrix;
+    mat4 viewMatrix;
+    vec3 cameraWorldPosition;
+    float padding1;
 
-  //Point light data.
-  int numberOfPointLights;
+    //Point light data.
+    int numberOfPointLights;
     float pointLightAttenuationDistances[MaximumNumberOfPointLights];
     float pointLightIntensities[MaximumNumberOfPointLights];
     vec3 pointLightColors[MaximumNumberOfPointLights];
     vec3 pointLightWorldPositions[MaximumNumberOfPointLights];
 
-  //Spot light data.
-  int numberOfSpotLights;
-  float spotLightAttenuationDistances[MaximumNumberOfSpotLights];
-  float spotLightIntensities[MaximumNumberOfSpotLights];
-  float spotLightInnerCutoffAngles[MaximumNumberOfSpotLights];
-  float spotLightOuterCutoffAngles[MaximumNumberOfSpotLights];
-  vec3 spotLightColors[MaximumNumberOfSpotLights];
-  vec3 spotLightDirections[MaximumNumberOfSpotLights];
-  vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
+    //Spot light data.
+    int numberOfSpotLights;
+    float spotLightAttenuationDistances[MaximumNumberOfSpotLights];
+    float spotLightIntensities[MaximumNumberOfSpotLights];
+    float spotLightInnerCutoffAngles[MaximumNumberOfSpotLights];
+    float spotLightOuterCutoffAngles[MaximumNumberOfSpotLights];
+    vec3 spotLightColors[MaximumNumberOfSpotLights];
+    vec3 spotLightDirections[MaximumNumberOfSpotLights];
+    vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
 };
 
 //Preprocessor defines.
 #define PI 3.141592f
 
+//In parameters.
+layout (location = 0) in vec2 fragmentTextureCoordinate;
+
 //Texture samplers.
-layout (binding = 2) uniform samplerCube skyBoxTexture;
-layout (binding = 3) uniform sampler2D albedoTexture;
-layout (binding = 4) uniform sampler2D normalMapTexture;
-layout (binding = 5) uniform sampler2D roughnessTexture;
-layout (binding = 6) uniform sampler2D metallicTexture;
-layout (binding = 7) uniform sampler2D ambientOcclusionTexture;
+layout (binding = 1) uniform samplerCube skyBoxTexture;
+layout (binding = 2) uniform sampler2D albedoTexture;
+layout (binding = 3) uniform sampler2D normalDirectionDepthTexture;
+layout (binding = 4) uniform sampler2D roughnessMetallicAmbientOcclusionTexture;
 
-layout (location = 0) in vec3 fragmentWorldPosition;
-layout (location = 1) in mat3 fragmentTangentSpaceMatrix;
-layout (location = 4) in vec2 fragmentTextureCoordinate;
-
+//Out parameters.
 layout (location = 0) out vec4 fragmentColor;
 
 //Globals.
-vec3 albedoColor;
-vec3 normalDirection;
+float fragmentDepth;
 float roughness;
 float metallic;
 float ambientOcclusion;
-vec3 viewDirection;
 float viewAngle;
+vec3 viewDirection;
 vec3 surfaceColor;
+vec3 fragmentWorldPosition;
+vec3 albedoColor;
+vec3 normalDirection;
+
 
 /*
 *   Calculates the distribution.
@@ -245,15 +248,33 @@ void main()
 {
     //Sample values from the textures.
     albedoColor = pow(texture(albedoTexture, fragmentTextureCoordinate).rgb, vec3(2.2f));
+    vec4 normalDirectionDepthSampler = texture(normalDirectionDepthTexture, fragmentTextureCoordinate);
+    vec4 roughnessMetallicAmbientOcclusionSampler = texture(roughnessMetallicAmbientOcclusionTexture, fragmentTextureCoordinate);
 
-    //Calculate the normal direction.
-    normalDirection = texture(normalMapTexture, fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
-    normalDirection = fragmentTangentSpaceMatrix * normalDirection;
-    normalDirection = normalize(normalDirection);
+    //Set the normal direction.
+    normalDirection = normalDirectionDepthSampler.xyz;
 
-    roughness = texture(roughnessTexture, fragmentTextureCoordinate).r;
-    metallic = texture(metallicTexture, fragmentTextureCoordinate).r;
-    ambientOcclusion = texture(ambientOcclusionTexture, fragmentTextureCoordinate).r;
+    //Set the fragment depth.
+    fragmentDepth = normalDirectionDepthSampler.a * 2.0f - 1.0f;
+
+    //Calculate the world position of this fragment.
+    vec2 nearPlaneCoordinate = fragmentTextureCoordinate * 2.0f - 1.0f;
+    nearPlaneCoordinate.y *= -1.0f;
+    vec4 clipSpacePosition = vec4(nearPlaneCoordinate, fragmentDepth, 1.0f);
+    vec4 viewSpacePosition = inverseProjectionMatrix * clipSpacePosition;
+    viewSpacePosition /= viewSpacePosition.w;
+    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
+
+    fragmentWorldPosition = worldSpacePosition.xyz;
+
+    //Set the roughness.
+    roughness = roughnessMetallicAmbientOcclusionSampler.r;
+
+    //Set the metallic.
+    metallic = roughnessMetallicAmbientOcclusionSampler.g;
+
+    //Set the ambient occlusion.
+    ambientOcclusion = roughnessMetallicAmbientOcclusionSampler.b;
 
     //Calculate globals.
     viewDirection = normalize(cameraWorldPosition - fragmentWorldPosition);
@@ -261,7 +282,7 @@ void main()
     surfaceColor = mix(vec3(0.04f), albedoColor, metallic);
 
     //Start off with just the ambient lighting.
-    vec3 finalFragment = CalculateAmbient();
+    vec3 finalFragment = albedoColor * 0.025f;
 
     /*
     //Calculate the directional light.
@@ -284,5 +305,5 @@ void main()
     finalFragment = pow(finalFragment, vec3(1.0f / 2.2f));
 
     //Set the final fragment color.
-    fragmentColor = vec4(finalFragment, 1.0f);
+   fragmentColor = vec4(finalFragment, 1.0f);
 }

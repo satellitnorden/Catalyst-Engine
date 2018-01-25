@@ -66,12 +66,12 @@ private:
 	/*
 	*	Creates a color attachment reference.
 	*/
-	void CreateColorAttachmentReference(VkAttachmentReference &attachmentReference) const CATALYST_NOEXCEPT;
+	void CreateColorAttachmentReference(DynamicArray<VkAttachmentReference> &attachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates an subpass description.
 	*/
-	void CreateSubpassDescription(VkSubpassDescription &subpassDescription, const VkAttachmentReference &depthAttachmentReference, const VkAttachmentReference &colorAttachmentReference) const CATALYST_NOEXCEPT;
+	void CreateSubpassDescription(VkSubpassDescription &subpassDescription, const VkAttachmentReference &depthAttachmentReference, const DynamicArray<VkAttachmentReference> &colorAttachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates an subpass dependency.

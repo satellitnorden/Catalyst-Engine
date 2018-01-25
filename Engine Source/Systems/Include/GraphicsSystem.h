@@ -102,12 +102,18 @@ private:
 		NumberOfDepthBuffers
 	};
 
+	//Enumeration covering all descriptor sets.
+	enum DescriptorSet : uint8
+	{
+		LightingDescriptorSet,
+		NumberOfDescriptorSet
+	};
+
 	//Enumeration covering all pipelines.
 	enum Pipeline : uint8
 	{
 		SceneBufferPipeline,
 		LightingPipeline,
-		PhysicalPipeline,
 		CubeMapPipeline,
 		NumberOfPipelines
 	};
@@ -116,6 +122,8 @@ private:
 	enum RenderTarget : uint8
 	{
 		SceneBufferAlbedoColorRenderTarget,
+		SceneBufferNormalDirectionDepthRenderTarget,
+		SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget,
 		NumberOfRenderTargets
 	};
 
@@ -132,8 +140,8 @@ private:
 	{
 		SceneBufferVertexShaderModule,
 		SceneBufferFragmentShaderModule,
-		PhysicalVertexShaderModule,
-		PhysicalFragmentShaderModule,
+		LightingVertexShaderModule,
+		LightingFragmentShaderModule,
 		CubeMapVertexShaderModule,
 		CubeMapFragmentShaderModule,
 		NumberOfShaderModules
@@ -173,6 +181,9 @@ private:
 	//Container for all depth buffers.
 	VulkanDepthBuffer *CATALYST_RESTRICT depthBuffers[DepthBuffer::NumberOfDepthBuffers];
 
+	//Container for all descriptor sets.
+	VulkanDescriptorSet descriptorSets[DescriptorSet::NumberOfDescriptorSet];
+
 	//Container for all render targets.
 	VulkanRenderTarget *CATALYST_RESTRICT renderTargets[RenderTarget::NumberOfRenderTargets];
 
@@ -204,6 +215,11 @@ private:
 	VulkanDescriptorSet skyBoxDescriptorSet;
 
 	/*
+	*	Initializes all render targets.
+	*/
+	void InitializeRenderTargets() CATALYST_NOEXCEPT;
+
+	/*
 	*	Initializes all shader modules.
 	*/
 	void InitializeShaderModules() CATALYST_NOEXCEPT;
@@ -212,6 +228,11 @@ private:
 	*	Initializes all pipelines.
 	*/
 	void InitializePipelines() CATALYST_NOEXCEPT;
+
+	/*
+	*	Initializes all descriptor sets.
+	*/
+	void InitializeDescriptorSets() CATALYST_NOEXCEPT;
 
 	/*
 	*	Calculates the projection matrix.
@@ -227,6 +248,11 @@ private:
 	*	Renders all physical entities.
 	*/
 	void RenderPhysicalEntities() CATALYST_NOEXCEPT;
+
+	/*
+	*	Renders lighting.
+	*/
+	void RenderLighting() CATALYST_NOEXCEPT;
 
 	/*
 	*	Renders sky box.

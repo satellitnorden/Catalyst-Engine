@@ -51,25 +51,27 @@ void VulkanCommandBuffer::Begin(const VkCommandBufferUsageFlags commandBufferUsa
 /*
 *	Records a begin render pass command.
 */
-void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex, const bool clear) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex, const uint32 numberOfClearValues) CATALYST_NOEXCEPT
 {
-	DynamicArray<VkClearValue, 2> clearValues;
+	DynamicArray<VkClearValue> clearValues;
 
-	if (clear)
+	for (uint32 i = 0; i < numberOfClearValues; ++i)
 	{
-		VkClearValue depthClearValue;
+		VkClearValue newClearValue;
 
-		depthClearValue.color = { 0.0f, 0.0f, 0.0f, 0.0f };
-		depthClearValue.depthStencil = { 1.0f, 0 };
+		if (i == 0)
+		{
+			newClearValue.color = { 0.0f, 0.0f, 0.0f, 0.0f };
+			newClearValue.depthStencil = { 1.0f, 0 };
+		}
+		
+		else
+		{
+			newClearValue.color = { 0.0f, 0.0f, 0.0f, 1.0f };
+			newClearValue.depthStencil = { 0.0f, 0 };
+		}
 
-		clearValues.EmplaceUnsafe(depthClearValue);
-
-		VkClearValue colorClearValue;
-
-		colorClearValue.color = { 0.0f, 0.0f, 0.0f, 1.0f };
-		colorClearValue.depthStencil = { 0.0f, 0 };
-
-		clearValues.EmplaceUnsafe(colorClearValue);
+		clearValues.Emplace(newClearValue);
 	}
 
 	VkRenderPassBeginInfo renderPassBeginInfo;

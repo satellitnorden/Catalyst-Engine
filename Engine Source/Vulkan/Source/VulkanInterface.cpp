@@ -122,6 +122,13 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 		delete vulkanIndexBuffer;
 	}
 
+	//Release all Vulkan render targets.
+	for (VulkanRenderTarget * CATALYST_RESTRICT vulkanRenderTarget : vulkanRenderTargets)
+	{
+		vulkanRenderTarget->Release();
+		delete vulkanRenderTarget;
+	}
+
 	//Release all Vulkan pipelines.
 	for (VulkanPipeline * CATALYST_RESTRICT vulkanPipeline : vulkanPipelines)
 	{

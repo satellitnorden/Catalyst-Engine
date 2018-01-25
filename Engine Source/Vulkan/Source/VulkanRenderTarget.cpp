@@ -31,11 +31,20 @@ void VulkanRenderTarget::Initialize(const VkExtent2D extent) CATALYST_NOEXCEPT
 	//Create the Vulkan image.
 	VulkanUtilities::CreateVulkanImage(0, VK_FORMAT_R8G8B8A8_UNORM, extent.width, extent.height, 1, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, vulkanImage, vulkanDeviceMemory);
 
+	//Transition the image to the correct layout.
+	VulkanUtilities::TransitionImageToLayout(VK_FORMAT_R8G8B8A8_UNORM, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, vulkanImage);
+
 	//Create the image view.
 	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, 1, vulkanImageView);
 
 	//Create the Vulkan sampler.
 	VulkanUtilities::CreateVulkanSampler(vulkanSampler);
+
+	//Create the descriptor image info.
+	CreateDescriptorImageInfo();
+
+	//Create the write descriptor set.
+	CreateWriteDescriptorSet();
 }
 
 /*
@@ -57,33 +66,42 @@ void VulkanRenderTarget::Release() CATALYST_NOEXCEPT
 }
 
 /*
-*	Prepares this render target for reading.
+*	Returns the write descriptor set for this texture.
 */
-void VulkanRenderTarget::PrepareForRead() CATALYST_NOEXCEPT
+VkWriteDescriptorSet VulkanRenderTarget::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const CATALYST_NOEXCEPT
 {
-	//If the image is already in the correct layout, don't proceed.
-	if (currentImageLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-		return;
+	VkWriteDescriptorSet vulkanWriteDescriptorSetCopy{ vulkanWriteDescriptorSet };
 
-	//Transition the image to the correct layout.
-	//VulkanUtilities::TransitionImageToLayout(VK_FORMAT_R8G8B8A8_UNORM, currentImageLayout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, vulkanImage);
+	vulkanWriteDescriptorSetCopy.dstSet = vulkanDescriptorSet.Get();
+	vulkanWriteDescriptorSetCopy.dstBinding = binding;
+	vulkanWriteDescriptorSetCopy.pImageInfo = &vulkanDescriptorImageInfo;
 
-	//Set the current image layout.
-	currentImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	return vulkanWriteDescriptorSetCopy;
 }
 
 /*
-*	Prepares this render target for writing.
+*	Creates the descriptor image info.
 */
-void VulkanRenderTarget::PrepareForWrite() CATALYST_NOEXCEPT
+void VulkanRenderTarget::CreateDescriptorImageInfo() CATALYST_NOEXCEPT
 {
-	//If the image is already in the correct layout, don't proceed.
-	if (currentImageLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
-		return;
+	vulkanDescriptorImageInfo.sampler = vulkanSampler;
+	vulkanDescriptorImageInfo.imageView = vulkanImageView;
+	vulkanDescriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+}
 
-	//Transition the image to the correct layout.
-	//VulkanUtilities::TransitionImageToLayout(VK_FORMAT_R8G8B8A8_UNORM, currentImageLayout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, vulkanImage);
-
-	//Set the current image layout.
-	currentImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+/*
+*	Creates the write descriptor set.
+*/
+void VulkanRenderTarget::CreateWriteDescriptorSet() CATALYST_NOEXCEPT
+{
+	vulkanWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	vulkanWriteDescriptorSet.pNext = nullptr;
+	vulkanWriteDescriptorSet.dstSet = VK_NULL_HANDLE;
+	vulkanWriteDescriptorSet.dstBinding = 0;
+	vulkanWriteDescriptorSet.dstArrayElement = 0;
+	vulkanWriteDescriptorSet.descriptorCount = 1;
+	vulkanWriteDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	vulkanWriteDescriptorSet.pImageInfo = &vulkanDescriptorImageInfo;
+	vulkanWriteDescriptorSet.pBufferInfo = nullptr;
+	vulkanWriteDescriptorSet.pTexelBufferView = nullptr;
 }

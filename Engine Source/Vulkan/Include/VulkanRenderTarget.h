@@ -6,6 +6,9 @@
 //Vulkan.
 #include <VulkanCore.h>
 
+//Forward declarations.
+class VulkanDescriptorSet;
+
 class VulkanRenderTarget final
 {
 
@@ -47,14 +50,9 @@ public:
 	const VkSampler& GetSampler() const CATALYST_NOEXCEPT { return vulkanSampler; }
 
 	/*
-	*	Prepares this render target for reading.
+	*	Returns the write descriptor set for this texture.
 	*/
-	void PrepareForRead() CATALYST_NOEXCEPT;
-
-	/*
-	*	Prepares this render target for writing.
-	*/
-	void PrepareForWrite() CATALYST_NOEXCEPT;
+	VkWriteDescriptorSet GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const CATALYST_NOEXCEPT;
 
 private:
 
@@ -70,7 +68,20 @@ private:
 	//The Vulkan sampler.
 	VkSampler vulkanSampler;
 
-	//The current image layout.
-	VkImageLayout currentImageLayout{ VK_IMAGE_LAYOUT_UNDEFINED };
+	//The descriptor image info for this texture.
+	VkDescriptorImageInfo vulkanDescriptorImageInfo;
+
+	//The write descriptor set for this texture.
+	VkWriteDescriptorSet vulkanWriteDescriptorSet;
+
+	/*
+	*	Creates the descriptor image info.
+	*/
+	void CreateDescriptorImageInfo() CATALYST_NOEXCEPT;
+
+	/*
+	*	Creates the write descriptor set.
+	*/
+	void CreateWriteDescriptorSet() CATALYST_NOEXCEPT;
 
 };

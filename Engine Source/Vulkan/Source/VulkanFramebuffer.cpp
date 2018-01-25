@@ -23,11 +23,31 @@ VulkanFramebuffer::~VulkanFramebuffer() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan framebuffer.
 */
-void VulkanFramebuffer::Initialize(const VulkanRenderPass &vulkanRenderPass, const DynamicArray<VkImageView> &attachments, const VkExtent2D &extent) CATALYST_NOEXCEPT
+void VulkanFramebuffer::Initialize(const VulkanRenderPass &vulkanRenderPass, const VulkanDepthBuffer *CATALYST_RESTRICT depthBuffer, const DynamicArray<VkImageView> &colorAttachments, const VkExtent2D &extent) CATALYST_NOEXCEPT
 {
 	//Create the framebuffer create info.
 	VkFramebufferCreateInfo framebufferCreateInfo;
-	CreateFramebufferCreateInfo(framebufferCreateInfo, vulkanRenderPass, attachments, extent);
+
+	DynamicArray<VkImageView> attachments;
+
+	if (depthBuffer)
+	{
+		attachments.Reserve(colorAttachments.Size() + 1);
+
+		attachments.EmplaceUnsafe(depthBuffer->GetImageView());
+
+		for (auto colorAttachment : colorAttachments)
+		{
+			attachments.EmplaceUnsafe(colorAttachment);
+		}
+
+		CreateFramebufferCreateInfo(framebufferCreateInfo, vulkanRenderPass, attachments, extent);
+	}
+
+	else
+	{
+		CreateFramebufferCreateInfo(framebufferCreateInfo, vulkanRenderPass, colorAttachments, extent);
+	}
 
 	//Create the Vulkan framebuffer!
 	VULKAN_ERROR_CHECK(vkCreateFramebuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), &framebufferCreateInfo, nullptr, &vulkanFramebuffer));

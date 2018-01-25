@@ -7,6 +7,7 @@
 #include <VulkanCore.h>
 
 //Forward declarations.
+class VulkanDepthBuffer;
 class VulkanLogicalDevice;
 class VulkanRenderPass;
 
@@ -33,7 +34,7 @@ public:
 	/*
 	*	Initializes this Vulkan framebuffer.
 	*/
-	void Initialize(const VulkanRenderPass &vulkanRenderPass, const DynamicArray<VkImageView> &attachments, const VkExtent2D &extent) CATALYST_NOEXCEPT;
+	void Initialize(const VulkanRenderPass &vulkanRenderPass, const VulkanDepthBuffer *CATALYST_RESTRICT depthBuffer, const DynamicArray<VkImageView> &colorAttachments, const VkExtent2D &extent) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan framebuffer.

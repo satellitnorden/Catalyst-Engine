@@ -39,6 +39,9 @@ class VulkanPipelineCreationParameters
 
 public:
 
+	//The depth buffers.
+	DynamicArray<const VulkanDepthBuffer *CATALYST_RESTRICT> depthBuffers{ };
+
 	//The shader modules.
 	DynamicArray<VulkanShaderModule *CATALYST_RESTRICT> shaderModules{ };
 
@@ -65,5 +68,17 @@ public:
 
 	//The final layout that color attachments will be in when a render pass instance begins.
 	VkImageLayout colorAttachmentFinalLayout;
+
+	//The format of the color attachments.
+	VkFormat colorAttachmentFormat;
+
+	//The topology of the pipeline.
+	VkPrimitiveTopology topology;
+
+	//Defines whether or not to enable depth test.
+	VkBool32 depthTestEnable;
+
+	//Defines whether or not to enable depth write.
+	VkBool32 depthWriteEnable;
 
 };
