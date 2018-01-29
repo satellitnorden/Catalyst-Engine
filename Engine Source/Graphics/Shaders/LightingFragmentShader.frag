@@ -255,15 +255,14 @@ void main()
     normalDirection = normalDirectionDepthSampler.xyz;
 
     //Set the fragment depth.
-    fragmentDepth = normalDirectionDepthSampler.a * 2.0f - 1.0f;
+    fragmentDepth = normalDirectionDepthSampler.a;
 
     //Calculate the world position of this fragment.
     vec2 nearPlaneCoordinate = fragmentTextureCoordinate * 2.0f - 1.0f;
-    nearPlaneCoordinate.y *= -1.0f;
     vec4 clipSpacePosition = vec4(nearPlaneCoordinate, fragmentDepth, 1.0f);
-    vec4 viewSpacePosition = inverseProjectionMatrix * clipSpacePosition;
+    vec4 viewSpacePosition = inverse(inverseProjectionMatrix) * clipSpacePosition;
     viewSpacePosition /= viewSpacePosition.w;
-    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
+    vec4 worldSpacePosition = inverse(inverseCameraMatrix) * viewSpacePosition;
 
     fragmentWorldPosition = worldSpacePosition.xyz;
 

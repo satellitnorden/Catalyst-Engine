@@ -400,7 +400,7 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	sceneBufferPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR;
 	sceneBufferPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	sceneBufferPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	sceneBufferPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R8G8B8A8_UNORM;
+	sceneBufferPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	sceneBufferPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	sceneBufferPipelineCreationParameters.depthTestEnable = VK_TRUE;
 	sceneBufferPipelineCreationParameters.depthWriteEnable = VK_TRUE;
@@ -634,13 +634,13 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 	viewMatrix.Set(projectionMatrix * cameraMatrix);
 
 	Matrix4 inverseCameraMatrix{ cameraMatrix };
-	inverseCameraMatrix.Inverse();
+	//inverseCameraMatrix.Inverse();
 
 	Matrix4 cameraOriginMatrix{ cameraMatrix };
 	cameraOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
 
 	Matrix4 inverseProjectionMatrix{ projectionMatrix };
-	inverseProjectionMatrix.Inverse();
+	//inverseProjectionMatrix.Inverse();
 
 	dynamicUniformData.inverseCameraMatrix = inverseCameraMatrix;
 	dynamicUniformData.inverseProjectionMatrix = inverseProjectionMatrix;
