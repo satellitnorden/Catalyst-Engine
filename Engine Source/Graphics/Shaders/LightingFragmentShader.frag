@@ -281,7 +281,7 @@ void main()
     surfaceColor = mix(vec3(0.04f), albedoColor, metallic);
 
     //Start off with just the ambient lighting.
-    vec3 finalFragment = albedoColor * 0.025f;
+    vec3 finalFragment = CalculateAmbient();
 
     /*
     //Calculate the directional light.

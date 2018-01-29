@@ -265,6 +265,11 @@ private:
 	void EndFrame() CATALYST_NOEXCEPT;
 
 	/*
+	*	Re-initializes all descriptor sets.
+	*/
+	void ReinitializeDescriptorSets() CATALYST_NOEXCEPT;
+
+	/*
 	*	Updates the dynamic uniform data.
 	*/
 	void UpdateDynamicUniformData() CATALYST_NOEXCEPT;

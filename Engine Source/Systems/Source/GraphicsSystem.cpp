@@ -318,6 +318,9 @@ void GraphicsSystem::SetActiveSkyBox(VulkanCubeMapTexture *CATALYST_RESTRICT new
 	writeDescriptorSets.EmplaceUnsafe(newSkyBox->GetWriteDescriptorSet(skyBoxDescriptorSet, 1));
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+
+	//Reinitialize the descriptor sets.
+	ReinitializeDescriptorSets();
 }
 
 /*
@@ -426,7 +429,6 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 
 	const DynamicArray<VkImageView> &swapchainImageViews = VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews();
 	const size_t swapchainImageViewsSize = swapchainImageViews.Size();
-	const VulkanDepthBuffer &depthBuffer = VulkanInterface::Instance->GetSwapchain().GetDepthBuffer();
 
 	lightingPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
 
@@ -462,7 +464,7 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 
 	for (size_t i = 0; i < swapchainImageViewsSize; ++i)
 	{
-		cubeMapPipelineCreationParameters.depthBuffers.EmplaceUnsafe(&depthBuffer);
+		cubeMapPipelineCreationParameters.depthBuffers.EmplaceUnsafe(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
 		cubeMapPipelineCreationParameters.colorAttachments[i].Reserve(1);
 		cubeMapPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(swapchainImageViews[i]);
 	}
@@ -619,6 +621,23 @@ void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
 
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(commandBuffers[currentCommandBuffer], waitSemaphores, waitStages, signalSemaphores);
+}
+
+/*
+*	Re-initializes all descriptor sets.
+*/
+void GraphicsSystem::ReinitializeDescriptorSets() CATALYST_NOEXCEPT
+{
+	//Update the write descriptor sets.
+	DynamicArray<VkWriteDescriptorSet, 5> writeDescriptorSets;
+
+	writeDescriptorSets.EmplaceUnsafe(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 0));
+	writeDescriptorSets.EmplaceUnsafe(skyBoxTexture->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 1));
+	writeDescriptorSets.EmplaceUnsafe(renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 2));
+	writeDescriptorSets.EmplaceUnsafe(renderTargets[RenderTarget::SceneBufferNormalDirectionDepthRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 3));
+	writeDescriptorSets.EmplaceUnsafe(renderTargets[RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4));
+
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }
 
 /*

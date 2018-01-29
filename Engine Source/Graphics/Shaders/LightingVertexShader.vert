@@ -37,19 +37,19 @@ layout (std140, binding = 0) uniform DynamicUniformData
 //The viewport vertices.
 vec3 viewportVertices[4] = vec3[]
 (
-	vec3(-1.0f, 1.0f, 0.0f),
 	vec3(-1.0f, -1.0f, 0.0f),
-	vec3(1.0f, -1.0f, 0.0f),
- 	vec3(1.0f, 1.0f, 0.0f)
+	vec3(-1.0f, 1.0f, 0.0f),
+	vec3(1.0f, 1.0f, 0.0f),
+ 	vec3(1.0f, -1.0f, 0.0f)
 );
 
 //The viewport texture coordinates.
 vec2 viewportTextureCoordinates[4] = vec2[]
 (
-	vec2(0.0f, 1.0f),
 	vec2(0.0f, 0.0f),
-	vec2(1.0f, 0.0f),
-	vec2(1.0f, 1.0f)
+	vec2(0.0f, 1.0f),
+	vec2(1.0f, 1.0f),
+	vec2(1.0f, 0.0f)
 );
 
 //Out parameters.
