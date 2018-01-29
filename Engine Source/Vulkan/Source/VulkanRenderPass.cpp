@@ -68,7 +68,7 @@ void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkan
 
 	for (size_t i = 0, size = vulkanPipelineCreationParameters.colorAttachments.Size(); i < size; ++i)
 	{
-		framebuffers[i].Initialize(*this, vulkanPipelineCreationParameters.depthBuffers[i], vulkanPipelineCreationParameters.colorAttachments[i], vulkanPipelineCreationParameters.viewportExtent);
+		framebuffers[i].Initialize(*this, vulkanPipelineCreationParameters.depthBuffers.Empty() ? nullptr : vulkanPipelineCreationParameters.depthBuffers[i], vulkanPipelineCreationParameters.colorAttachments[i], vulkanPipelineCreationParameters.viewportExtent);
 	}
 }
 
@@ -141,7 +141,7 @@ void VulkanRenderPass::CreateDepthAttachmentReference(VkAttachmentReference &att
 */
 void VulkanRenderPass::CreateColorAttachmentReference(DynamicArray<VkAttachmentReference> &attachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT
 {
-	uint32 counter{ 1 };
+	uint32 counter{ vulkanPipelineCreationParameters.depthBuffers.Empty() ? static_cast<uint32>(0) : static_cast<uint32>(1) };
 	for (VkImageView colorAttachment : vulkanPipelineCreationParameters.colorAttachments[0])
 	{
 		VkAttachmentReference newAttachmentReference;
@@ -164,7 +164,7 @@ void VulkanRenderPass::CreateSubpassDescription(VkSubpassDescription &subpassDes
 	subpassDescription.colorAttachmentCount = static_cast<uint32>(colorAttachmentReferences.Size());
 	subpassDescription.pColorAttachments = colorAttachmentReferences.Data();
 	subpassDescription.pResolveAttachments = nullptr;
-	subpassDescription.pDepthStencilAttachment = &depthAttachmentReference;
+	subpassDescription.pDepthStencilAttachment = vulkanPipelineCreationParameters.depthBuffers.Empty() ? nullptr : &depthAttachmentReference;
 	subpassDescription.preserveAttachmentCount = 0;
 	subpassDescription.pPreserveAttachments = nullptr;
 }

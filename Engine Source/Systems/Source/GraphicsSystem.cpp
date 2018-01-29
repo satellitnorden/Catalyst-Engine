@@ -397,13 +397,14 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 
 	sceneBufferPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	sceneBufferPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	sceneBufferPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR;
+	sceneBufferPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	sceneBufferPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	sceneBufferPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	sceneBufferPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	sceneBufferPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	sceneBufferPipelineCreationParameters.depthTestEnable = VK_TRUE;
 	sceneBufferPipelineCreationParameters.depthWriteEnable = VK_TRUE;
+	sceneBufferPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 
 	pipelines[Pipeline::SceneBufferPipeline] = VulkanInterface::Instance->CreatePipeline(sceneBufferPipelineCreationParameters);
 
@@ -427,13 +428,11 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	const size_t swapchainImageViewsSize = swapchainImageViews.Size();
 	const VulkanDepthBuffer &depthBuffer = VulkanInterface::Instance->GetSwapchain().GetDepthBuffer();
 
-	lightingPipelineCreationParameters.depthBuffers.Reserve(swapchainImageViewsSize);
 	lightingPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
 
 	for (size_t i = 0; i < swapchainImageViewsSize; ++i)
 	{
 		lightingPipelineCreationParameters.colorAttachments[i].Reserve(1);
-		lightingPipelineCreationParameters.depthBuffers.EmplaceUnsafe(&depthBuffer);
 		lightingPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(swapchainImageViews[i]);
 	}
 
@@ -446,19 +445,17 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	lightingPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
 	lightingPipelineCreationParameters.depthTestEnable = VK_FALSE;
 	lightingPipelineCreationParameters.depthWriteEnable = VK_FALSE;
+	lightingPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 
 	pipelines[Pipeline::LightingPipeline] = VulkanInterface::Instance->CreatePipeline(lightingPipelineCreationParameters);
 
 	//Create the cube map pipeline.
 	VulkanPipelineCreationParameters cubeMapPipelineCreationParameters;
 
-	cubeMapPipelineCreationParameters.shaderModules.Reserve(2);
-	cubeMapPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::CubeMapVertexShaderModule]);
-	cubeMapPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::CubeMapFragmentShaderModule]);
-	cubeMapPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(2);
-	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	cubeMapPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
+	cubeMapPipelineCreationParameters.colorAttachmentFinalLayout = VULKAN_IMAGE_LAYOUT_PRESENT_SRC;
+	cubeMapPipelineCreationParameters.colorAttachmentFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
+	cubeMapPipelineCreationParameters.colorAttachmentInitialLayout = VULKAN_IMAGE_LAYOUT_PRESENT_SRC;
 
 	cubeMapPipelineCreationParameters.depthBuffers.Reserve(swapchainImageViewsSize);
 	cubeMapPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
@@ -470,16 +467,20 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 		cubeMapPipelineCreationParameters.colorAttachments[i].EmplaceUnsafe(swapchainImageViews[i]);
 	}
 
-	cubeMapPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-	cubeMapPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	cubeMapPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	cubeMapPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	cubeMapPipelineCreationParameters.colorAttachmentFinalLayout = VULKAN_IMAGE_LAYOUT_PRESENT_SRC;
-	cubeMapPipelineCreationParameters.colorAttachmentFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
-	cubeMapPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	cubeMapPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	cubeMapPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
 	cubeMapPipelineCreationParameters.depthTestEnable = VK_TRUE;
 	cubeMapPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-
+	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(2);
+	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceUnsafe(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	cubeMapPipelineCreationParameters.shaderModules.Reserve(2);
+	cubeMapPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::CubeMapVertexShaderModule]);
+	cubeMapPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::CubeMapFragmentShaderModule]);
+	cubeMapPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	cubeMapPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+	
 	pipelines[Pipeline::CubeMapPipeline] = VulkanInterface::Instance->CreatePipeline(cubeMapPipelineCreationParameters);
 }
 
@@ -530,7 +531,7 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 	commandBuffers[currentCommandBuffer].Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::SceneBufferPipeline]);
-	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::SceneBufferPipeline]->GetRenderPass(), 0, 4);
+	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::SceneBufferPipeline]->GetRenderPass(), 0, true, 4);
 }
 
 /*
@@ -567,7 +568,7 @@ void GraphicsSystem::RenderLighting() CATALYST_NOEXCEPT
 	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::LightingPipeline]);
 
 	//Bind the lighting render pass.
-	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::LightingPipeline]->GetRenderPass(), currentCommandBuffer, 2);
+	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::LightingPipeline]->GetRenderPass(), currentCommandBuffer, false, 2);
 
 	//Bind the scene buffer descriptor set.
 	commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::LightingPipeline], descriptorSets[DescriptorSet::LightingDescriptorSet]);
@@ -588,7 +589,7 @@ void GraphicsSystem::RenderSkyBox() CATALYST_NOEXCEPT
 	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::CubeMapPipeline]);
 
 	//Bind the cube map render pass.
-	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::CubeMapPipeline]->GetRenderPass(), currentCommandBuffer, false);
+	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::CubeMapPipeline]->GetRenderPass(), currentCommandBuffer, false, 0);
 
 	//Bind the sky box descriptor set.
 	commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::CubeMapPipeline], skyBoxDescriptorSet);
@@ -634,13 +635,13 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 	viewMatrix.Set(projectionMatrix * cameraMatrix);
 
 	Matrix4 inverseCameraMatrix{ cameraMatrix };
-	//inverseCameraMatrix.Inverse();
+	inverseCameraMatrix.Inverse();
 
 	Matrix4 cameraOriginMatrix{ cameraMatrix };
 	cameraOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
 
 	Matrix4 inverseProjectionMatrix{ projectionMatrix };
-	//inverseProjectionMatrix.Inverse();
+	inverseProjectionMatrix.Inverse();
 
 	dynamicUniformData.inverseCameraMatrix = inverseCameraMatrix;
 	dynamicUniformData.inverseProjectionMatrix = inverseProjectionMatrix;

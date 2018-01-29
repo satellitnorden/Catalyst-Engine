@@ -229,11 +229,11 @@ void VulkanPipeline::CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthSt
 	pipelineDepthStencilStateCreateInfo.flags = 0;
 	pipelineDepthStencilStateCreateInfo.depthTestEnable = vulkanPipelineCreationParameters.depthTestEnable;
 	pipelineDepthStencilStateCreateInfo.depthWriteEnable = vulkanPipelineCreationParameters.depthWriteEnable;
-	pipelineDepthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+	pipelineDepthStencilStateCreateInfo.depthCompareOp = vulkanPipelineCreationParameters.depthCompareOp;
 	pipelineDepthStencilStateCreateInfo.depthBoundsTestEnable = VK_FALSE;
 	pipelineDepthStencilStateCreateInfo.stencilTestEnable = VK_FALSE;
-	pipelineDepthStencilStateCreateInfo.front = {};
-	pipelineDepthStencilStateCreateInfo.back = {};
+	pipelineDepthStencilStateCreateInfo.front = { };
+	pipelineDepthStencilStateCreateInfo.back = { };
 	pipelineDepthStencilStateCreateInfo.minDepthBounds = 0.0f;
 	pipelineDepthStencilStateCreateInfo.maxDepthBounds = 1.0f;
 }

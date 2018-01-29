@@ -51,7 +51,7 @@ void VulkanCommandBuffer::Begin(const VkCommandBufferUsageFlags commandBufferUsa
 /*
 *	Records a begin render pass command.
 */
-void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex, const uint32 numberOfClearValues) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex, const bool clearDepth, const uint32 numberOfClearValues) CATALYST_NOEXCEPT
 {
 	DynamicArray<VkClearValue> clearValues;
 
@@ -59,7 +59,7 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanR
 	{
 		VkClearValue newClearValue;
 
-		if (i == 0)
+		if (clearDepth && i == 0)
 		{
 			newClearValue.color = { 0.0f, 0.0f, 0.0f, 0.0f };
 			newClearValue.depthStencil = { 1.0f, 0 };

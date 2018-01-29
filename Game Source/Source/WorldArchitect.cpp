@@ -53,7 +53,6 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	floor->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
 	floor->Scale(Vector3(1'000.0f, 1'000.0f, 1'000.0f));
 
-	/*
 	Vector3 pointLightPositions[5]{ Vector3(0.0f, 20.0f, 0.0f), Vector3(50.0f, 10.0f, 50.0f), Vector3(50.0f, 10.0f, -50.0f), Vector3(-50.0f, 10.0f, 50.0f), Vector3(-50.0f, 10.0f, -50.0f) };
 
 	for (size_t i = 0; i < 5; ++i)
@@ -65,6 +64,7 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 		light->SetIntensity(10.0f);
 	}
 
+	/*
 	Vulkan2DTexture *gunAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunAlbedo.png");
 	Vulkan2DTexture *gunNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunNormal.png");
 	Vulkan2DTexture *gunRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunRoughness.png");
