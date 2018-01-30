@@ -95,10 +95,10 @@ private:
 	DynamicArray<std::thread> adventurerThreads;
 
 	//Container for all daily quests.
-	DailyQuest dailyQuests[static_cast<uint8>(DailyQuests::NumberOfDailyQuests)];
+	StaticArray<DailyQuest, static_cast<uint8>(DailyQuests::NumberOfDailyQuests)> dailyQuests;
 
 	//Container for all daily group quests.
-	DailyGroupQuest dailyGroupQuests[static_cast<uint8>(DailyGroupQuests::NumberOfDailyGroupQuests)];
+	StaticArray<DailyGroupQuest, static_cast<uint8>(DailyGroupQuests::NumberOfDailyGroupQuests)> dailyGroupQuests;
 
 	/*
 	*	Executes an adventurer.

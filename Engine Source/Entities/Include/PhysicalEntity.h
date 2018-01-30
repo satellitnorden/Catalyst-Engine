@@ -50,17 +50,22 @@ public:
 	/*
 	*	Returns the model.
 	*/
-	const PhysicalModel& GetModel() const CATALYST_NOEXCEPT { return model; }
+	PhysicalModel& GetModel() CATALYST_NOEXCEPT { return model; }
 
 	/*
 	*	Returns the uniform buffer.
 	*/
-	CATALYST_RESTRICTED VulkanUniformBuffer* GetUniformBuffer() const CATALYST_NOEXCEPT { return uniformBuffer; }
+	CATALYST_RESTRICTED const VulkanUniformBuffer* GetUniformBuffer() const CATALYST_NOEXCEPT { return uniformBuffer; }
+
+	/*
+	*	Sets the uniform buffer.
+	*/
+	void SetUniformBuffer(VulkanUniformBuffer *CATALYST_RESTRICT newUniformBuffer) CATALYST_NOEXCEPT { uniformBuffer = newUniformBuffer; }
 
 	/*
 	*	Returns the descriptor set.
 	*/
-	const VulkanDescriptorSet& GetDescriptorSet() const CATALYST_NOEXCEPT { return descriptorSet; }
+	VulkanDescriptorSet& GetDescriptorSet() CATALYST_NOEXCEPT { return descriptorSet; }
 
 	/*
 	*	Sets whether or not this physical entity is in the view frustum.

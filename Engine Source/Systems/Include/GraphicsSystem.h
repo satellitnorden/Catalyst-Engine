@@ -19,6 +19,7 @@
 
 //Forward declarations.
 class CameraEntity;
+class PhysicalEntity;
 class PhysicalModel;
 
 class GraphicsSystem final
@@ -60,14 +61,14 @@ public:
 	void ReleaseSystem() CATALYST_NOEXCEPT;
 
 	/*
-	*	Creates a physical descriptor set.
-	*/
-	void CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDescriptorSet, const VulkanUniformBuffer *CATALYST_RESTRICT modelDataUniformBuffer, const Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, const Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, const Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, const Vulkan2DTexture *CATALYST_RESTRICT metallicTexture, const Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT;
-
-	/*
 	*	Creates and returns physical model.
 	*/
 	const PhysicalModel CreatePhysicalModel(const char *CATALYST_RESTRICT modelPath, Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, Vulkan2DTexture *CATALYST_RESTRICT, Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT;
+
+	/*
+	*	Initializes a physical entity.
+	*/
+	void InitializePhysicalEntity(PhysicalEntity &physicalEntity) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture.
@@ -115,6 +116,22 @@ public:
 	void SetPostProcessingSharpenAmount(const float newSharpenAmount) CATALYST_NOEXCEPT;
 
 private:
+
+	//Enumeration covering all command buffers.
+	enum CommandBuffer : uint8
+	{
+		SceneBufferCommandBuffer,
+		NumberOfCommandBuffers
+	};
+
+	//Enumeration covering all default textures.
+	enum DefaultTexture : uint8
+	{
+		Roughness,
+		Metallic,
+		AmbientOcclusion,
+		NumberOfDefaultTextures
+	};
 
 	//Enumeration covering all depth buffers.
 	enum DepthBuffer : uint8
@@ -180,15 +197,6 @@ private:
 		NumberOfUniformBuffers
 	};
 
-	//Enumeration covering all default textures.
-	enum DefaultTexture : uint8
-	{
-		Roughness,
-		Metallic,
-		AmbientOcclusion,
-		NumberOfDefaultTextures
-	};
-
 	//The main window.
 	Window mainWindow;
 
@@ -207,29 +215,32 @@ private:
 	//The post processing uniform data.
 	PostProcessingUniformData postProcessingUniformData;
 
-	//Container for all depth buffers.
-	VulkanDepthBuffer *CATALYST_RESTRICT depthBuffers[DepthBuffer::NumberOfDepthBuffers];
-
-	//Container for all descriptor sets.
-	VulkanDescriptorSet descriptorSets[DescriptorSet::NumberOfDescriptorSet];
-
-	//Container for all render targets.
-	VulkanRenderTarget *CATALYST_RESTRICT renderTargets[RenderTarget::NumberOfRenderTargets];
-
-	//Container for all pipelines.
-	VulkanPipeline *CATALYST_RESTRICT pipelines[Pipeline::NumberOfPipelines];
-
-	//Container for all semaphores.
-	VulkanSemaphore *CATALYST_RESTRICT semaphores[Semaphore::NumberOfSemaphores];
-
-	//Container for all shader modules.
-	VulkanShaderModule *CATALYST_RESTRICT shaderModules[ShaderModule::NumberOfShaderModules];
-
-	//Container for all uniform buffers.
-	VulkanUniformBuffer *CATALYST_RESTRICT uniformBuffers[UniformBuffer::NumberOfUniformBuffers];
+	//Container for all command buffers.
+	StaticArray<VulkanCommandBuffer, CommandBuffer::NumberOfCommandBuffers> commandBuffers;
 
 	//Container for all default textures.
-	Vulkan2DTexture *CATALYST_RESTRICT defaultTextures[DefaultTexture::NumberOfDefaultTextures];
+	StaticArray<Vulkan2DTexture *CATALYST_RESTRICT, DefaultTexture::NumberOfDefaultTextures> defaultTextures;
+
+	//Container for all depth buffers.
+	StaticArray<VulkanDepthBuffer *CATALYST_RESTRICT, DepthBuffer::NumberOfDepthBuffers> depthBuffers;
+
+	//Container for all descriptor sets.
+	StaticArray<VulkanDescriptorSet, DescriptorSet::NumberOfDescriptorSet> descriptorSets;
+
+	//Container for all render targets.
+	StaticArray<VulkanRenderTarget *CATALYST_RESTRICT, RenderTarget::NumberOfRenderTargets> renderTargets;
+
+	//Container for all pipelines.
+	StaticArray<VulkanPipeline *CATALYST_RESTRICT, Pipeline::NumberOfPipelines> pipelines;
+
+	//Container for all semaphores.
+	StaticArray<VulkanSemaphore *CATALYST_RESTRICT, Semaphore::NumberOfSemaphores> semaphores;
+
+	//Container for all shader modules.
+	StaticArray<VulkanShaderModule *CATALYST_RESTRICT, ShaderModule::NumberOfShaderModules> shaderModules;
+
+	//Container for all uniform buffers.
+	StaticArray<VulkanUniformBuffer *CATALYST_RESTRICT, UniformBuffer::NumberOfUniformBuffers> uniformBuffers;
 
 	//Container for all swapchain command buffers.
 	DynamicArray<VulkanCommandBuffer> swapchainCommandBuffers;
@@ -247,6 +258,11 @@ private:
 	*	Initializes all render targets.
 	*/
 	void InitializeRenderTargets() CATALYST_NOEXCEPT;
+
+	/*
+	*	Initializes all semaphores.
+	*/
+	void InitializeSemaphores() CATALYST_NOEXCEPT;
 
 	/*
 	*	Initializes all uniform buffers.

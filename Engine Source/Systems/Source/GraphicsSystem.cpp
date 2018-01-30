@@ -55,6 +55,9 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 	//Initialize all render targets.
 	InitializeRenderTargets();
 
+	//Initialize all semaphores.
+	InitializeSemaphores();
+
 	//Initialize all uniform buffers.
 	InitializeUniformBuffers();
 
@@ -75,10 +78,6 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 
 	//Initialize all descriptor sets.
 	InitializeDescriptorSets();
-
-	//Initialize all semaphores.
-	semaphores[Semaphore::ImageAvailable] = VulkanInterface::Instance->CreateSemaphore();
-	semaphores[Semaphore::RenderFinished] = VulkanInterface::Instance->CreateSemaphore();
 
 	//Create all default textures.
 	const byte defaultRoughness[]{ 255 };
@@ -171,28 +170,6 @@ void GraphicsSystem::ReleaseSystem() CATALYST_NOEXCEPT
 }
 
 /*
-*	Creates a physical descriptor set.
-*/
-void GraphicsSystem::CreatePhysicalDescriptorSet(VulkanDescriptorSet &vulkanDescriptorSet, const VulkanUniformBuffer *CATALYST_RESTRICT modelDataUniformBuffer, const Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, const Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, const Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, const Vulkan2DTexture *CATALYST_RESTRICT metallicTexture, const Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT
-{
-	//Allocate the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(vulkanDescriptorSet, pipelines[Pipeline::SceneBufferPipeline]->GetDescriptorSetLayout());
-
-	//Update the write descriptor sets.
-	DynamicArray<VkWriteDescriptorSet, 7> writeDescriptorSets;
-
-	writeDescriptorSets.EmplaceUnsafe(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(vulkanDescriptorSet, 0));
-	writeDescriptorSets.EmplaceUnsafe(modelDataUniformBuffer->GetWriteDescriptorSet(vulkanDescriptorSet, 1));
-	writeDescriptorSets.EmplaceUnsafe(albedoTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 2));
-	writeDescriptorSets.EmplaceUnsafe(normalMapTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 3));
-	writeDescriptorSets.EmplaceUnsafe(roughnessTexture ? roughnessTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 4) : defaultTextures[DefaultTexture::Roughness]->GetWriteDescriptorSet(vulkanDescriptorSet, 4));
-	writeDescriptorSets.EmplaceUnsafe(metallicTexture ? metallicTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 5) : defaultTextures[DefaultTexture::Metallic]->GetWriteDescriptorSet(vulkanDescriptorSet, 5));
-	writeDescriptorSets.EmplaceUnsafe(ambientOcclusionTexture ? ambientOcclusionTexture->GetWriteDescriptorSet(vulkanDescriptorSet, 6) : defaultTextures[DefaultTexture::AmbientOcclusion]->GetWriteDescriptorSet(vulkanDescriptorSet, 6));
-
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-}
-
-/*
 *	Creates and returns physical model.
 */
 const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RESTRICT modelPath, Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, Vulkan2DTexture *CATALYST_RESTRICT metallicTexture, Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT
@@ -224,6 +201,41 @@ const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RES
 	newPhysicalModel.SetIndexCount(static_cast<uint32>(indices.Size()));
 
 	return newPhysicalModel;
+}
+
+/*
+*	Initializes a physical entity.
+*/
+void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity) const CATALYST_NOEXCEPT
+{
+	//Cache relevant data.
+	VulkanDescriptorSet &descriptorSet = physicalEntity.GetDescriptorSet();
+	const PhysicalModel &model = physicalEntity.GetModel();
+	const PhysicalMaterial &material = model.GetMaterial();
+	const Vulkan2DTexture *CATALYST_RESTRICT albedoTexture = material.GetAlbedoTexture();
+	const Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture = material.GetNormalMapTexture();
+	const Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture = material.GetRoughnessTexture();
+	const Vulkan2DTexture *CATALYST_RESTRICT metallicTexture = material.GetMetallicTexture();
+	const Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture = material.GetAmbientOcclusionTexture();
+
+	//Create the uniform buffer.
+	physicalEntity.SetUniformBuffer(CreateUniformBuffer(sizeof(Matrix4)));
+
+	//Allocate the descriptor set.
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSet, pipelines[Pipeline::SceneBufferPipeline]->GetDescriptorSetLayout());
+
+	//Update the write descriptor sets.
+	DynamicArray<VkWriteDescriptorSet, 7> writeDescriptorSets;
+
+	writeDescriptorSets.EmplaceUnsafe(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(descriptorSet, 0));
+	writeDescriptorSets.EmplaceUnsafe(physicalEntity.GetUniformBuffer()->GetWriteDescriptorSet(descriptorSet, 1));
+	writeDescriptorSets.EmplaceUnsafe(albedoTexture->GetWriteDescriptorSet(descriptorSet, 2));
+	writeDescriptorSets.EmplaceUnsafe(normalMapTexture->GetWriteDescriptorSet(descriptorSet, 3));
+	writeDescriptorSets.EmplaceUnsafe(roughnessTexture ? roughnessTexture->GetWriteDescriptorSet(descriptorSet, 4) : defaultTextures[DefaultTexture::Roughness]->GetWriteDescriptorSet(descriptorSet, 4));
+	writeDescriptorSets.EmplaceUnsafe(metallicTexture ? metallicTexture->GetWriteDescriptorSet(descriptorSet, 5) : defaultTextures[DefaultTexture::Metallic]->GetWriteDescriptorSet(descriptorSet, 5));
+	writeDescriptorSets.EmplaceUnsafe(ambientOcclusionTexture ? ambientOcclusionTexture->GetWriteDescriptorSet(descriptorSet, 6) : defaultTextures[DefaultTexture::AmbientOcclusion]->GetWriteDescriptorSet(descriptorSet, 6));
+
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }
 
 /*
@@ -387,6 +399,16 @@ void GraphicsSystem::InitializeRenderTargets() CATALYST_NOEXCEPT
 	renderTargets[RenderTarget::SceneBufferNormalDirectionDepthRenderTarget] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 	renderTargets[RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 	renderTargets[RenderTarget::SceneRenderTarget] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+}
+
+/*
+*	Initializes all semaphores.
+*/
+void GraphicsSystem::InitializeSemaphores() CATALYST_NOEXCEPT
+{
+	//Initialize all semaphores.
+	semaphores[Semaphore::ImageAvailable] = VulkanInterface::Instance->CreateSemaphore();
+	semaphores[Semaphore::RenderFinished] = VulkanInterface::Instance->CreateSemaphore();
 }
 
 /*

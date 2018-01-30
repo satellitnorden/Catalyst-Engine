@@ -36,11 +36,8 @@ void PhysicalEntity::Initialize(const PhysicalModel &newModel) CATALYST_NOEXCEPT
 	//Set the model.
 	model = newModel;
 
-	//Create the uniform buffer.
-	uniformBuffer = GraphicsSystem::Instance->CreateUniformBuffer(sizeof(Matrix4));
-
-	//Create the descriptor set.
-	GraphicsSystem::Instance->CreatePhysicalDescriptorSet(descriptorSet, uniformBuffer, model.GetMaterial().GetAlbedoTexture(), model.GetMaterial().GetNormalMapTexture(), model.GetMaterial().GetRoughnessTexture(), model.GetMaterial().GetMetallicTexture(), model.GetMaterial().GetAmbientOcclusionTexture());
+	//Initialize this physical entity.
+	GraphicsSystem::Instance->InitializePhysicalEntity(*this);
 }
 
 /*
