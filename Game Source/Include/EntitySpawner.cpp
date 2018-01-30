@@ -44,9 +44,9 @@ void EntitySpawner::Update(const float deltaTime) CATALYST_NOEXCEPT
 
 	spawnTimer += deltaTime;
 
-	while (spawnTimer > 0.25f)
+	while (spawnTimer > 0.1f)
 	{
-		spawnTimer -= 0.25f;
+		spawnTimer -= 0.1f;
 
 		PhysicalEntity *stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
 		stone->Initialize(stoneModel);
