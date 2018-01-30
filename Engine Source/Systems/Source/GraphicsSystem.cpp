@@ -342,29 +342,29 @@ void GraphicsSystem::InitializeRenderTargets() CATALYST_NOEXCEPT
 */
 void GraphicsSystem::InitializeShaderModules() CATALYST_NOEXCEPT
 {
-	//Initialize the scene buffer vertex shader module.
-	const auto sceneBufferVertexShaderByteCode = ShaderLoader::LoadShader("SceneBufferVertexShader.spv");
-	shaderModules[ShaderModule::SceneBufferVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(sceneBufferVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
-
-	//Initialize the scene buffer fragment shader module.
-	const auto sceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader("SceneBufferFragmentShader.spv");
-	shaderModules[ShaderModule::SceneBufferFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(sceneBufferFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
-
-	//Initialize the lighting vertex shader module.
-	const auto lightingVertexShaderByteCode = ShaderLoader::LoadShader("LightingVertexShader.spv");
-	shaderModules[ShaderModule::LightingVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(lightingVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
-
-	//Initialize the lighting fragment shader module.
-	const auto lightingFragmentShaderByteCode = ShaderLoader::LoadShader("LightingFragmentShader.spv");
-	shaderModules[ShaderModule::LightingFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(lightingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//Initialize the cube map fragment shader module.
+	const auto cubeMapFragmentShaderByteCode = ShaderLoader::LoadShader("CubeMapFragmentShader.spv");
+	shaderModules[ShaderModule::CubeMapFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(cubeMapFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the cube map vertex shader module.
 	const auto cubeMapVertexShaderByteCode = ShaderLoader::LoadShader("CubeMapVertexShader.spv");
 	shaderModules[ShaderModule::CubeMapVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(cubeMapVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
-	//Initialize the cube map fragment shader module.
-	const auto cubeMapFragmentShaderByteCode = ShaderLoader::LoadShader("CubeMapFragmentShader.spv");
-	shaderModules[ShaderModule::CubeMapFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(cubeMapFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//Initialize the lighting fragment shader module.
+	const auto lightingFragmentShaderByteCode = ShaderLoader::LoadShader("LightingFragmentShader.spv");
+	shaderModules[ShaderModule::LightingFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(lightingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+	//Initialize the scene buffer fragment shader module.
+	const auto sceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader("SceneBufferFragmentShader.spv");
+	shaderModules[ShaderModule::SceneBufferFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(sceneBufferFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+	//Initialize the scene buffer vertex shader module.
+	const auto sceneBufferVertexShaderByteCode = ShaderLoader::LoadShader("SceneBufferVertexShader.spv");
+	shaderModules[ShaderModule::SceneBufferVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(sceneBufferVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+
+	//Initialize the lighting vertex shader module.
+	const auto viewportVertexShaderByteCode = ShaderLoader::LoadShader("ViewportVertexShader.spv");
+	shaderModules[ShaderModule::ViewportVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(viewportVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 }
 
 /*
@@ -415,7 +415,7 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 	VulkanPipelineCreationParameters lightingPipelineCreationParameters;
 
 	lightingPipelineCreationParameters.shaderModules.Reserve(2);
-	lightingPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::LightingVertexShaderModule]);
+	lightingPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::ViewportVertexShaderModule]);
 	lightingPipelineCreationParameters.shaderModules.EmplaceUnsafe(shaderModules[ShaderModule::LightingFragmentShaderModule]);
 	lightingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(7);

@@ -138,12 +138,12 @@ private:
 	//Enumeration covering all shader modules.
 	enum ShaderModule : uint8
 	{
-		SceneBufferVertexShaderModule,
-		SceneBufferFragmentShaderModule,
-		LightingVertexShaderModule,
-		LightingFragmentShaderModule,
-		CubeMapVertexShaderModule,
 		CubeMapFragmentShaderModule,
+		CubeMapVertexShaderModule,
+		LightingFragmentShaderModule,
+		SceneBufferFragmentShaderModule,
+		SceneBufferVertexShaderModule,
+		ViewportVertexShaderModule,
 		NumberOfShaderModules
 	};
 
