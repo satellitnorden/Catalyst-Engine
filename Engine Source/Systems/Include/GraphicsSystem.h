@@ -5,6 +5,7 @@
 
 //Graphics.
 #include <DynamicUniformData.h>
+#include <PostProcessingUniformData.h>
 #include <Window.h>
 
 //Math.
@@ -106,6 +107,7 @@ private:
 	enum DescriptorSet : uint8
 	{
 		LightingDescriptorSet,
+		PostProcessingDescriptorSet,
 		NumberOfDescriptorSet
 	};
 
@@ -115,6 +117,7 @@ private:
 		SceneBufferPipeline,
 		LightingPipeline,
 		CubeMapPipeline,
+		PostProcessingPipeline,
 		NumberOfPipelines
 	};
 
@@ -124,6 +127,7 @@ private:
 		SceneBufferAlbedoColorRenderTarget,
 		SceneBufferNormalDirectionDepthRenderTarget,
 		SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget,
+		SceneRenderTarget,
 		NumberOfRenderTargets
 	};
 
@@ -141,6 +145,7 @@ private:
 		CubeMapFragmentShaderModule,
 		CubeMapVertexShaderModule,
 		LightingFragmentShaderModule,
+		PostProcessingFragmentShaderModule,
 		SceneBufferFragmentShaderModule,
 		SceneBufferVertexShaderModule,
 		ViewportVertexShaderModule,
@@ -151,6 +156,7 @@ private:
 	enum UniformBuffer : uint8
 	{
 		DynamicUniformDataBuffer,
+		PostProcessingUniformDataBuffer,
 		NumberOfUniformBuffers
 	};
 
@@ -177,6 +183,9 @@ private:
 
 	//The dynamic uniform data.
 	DynamicUniformData dynamicUniformData;
+
+	//The post processing uniform data.
+	PostProcessingUniformData postProcessingUniformData;
 
 	//Container for all depth buffers.
 	VulkanDepthBuffer *CATALYST_RESTRICT depthBuffers[DepthBuffer::NumberOfDepthBuffers];
@@ -220,6 +229,11 @@ private:
 	void InitializeRenderTargets() CATALYST_NOEXCEPT;
 
 	/*
+	*	Initializes all uniform buffers.
+	*/
+	void InitializeUniformBuffers() CATALYST_NOEXCEPT;
+
+	/*
 	*	Initializes all shader modules.
 	*/
 	void InitializeShaderModules() CATALYST_NOEXCEPT;
@@ -258,6 +272,11 @@ private:
 	*	Renders sky box.
 	*/
 	void RenderSkyBox() CATALYST_NOEXCEPT;
+
+	/*
+	*	Renders the post processing.
+	*/
+	void RenderPostProcessing() CATALYST_NOEXCEPT;
 
 	/*
 	*	Ends the frame.

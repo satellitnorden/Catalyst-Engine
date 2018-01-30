@@ -34,23 +34,29 @@ layout (std140, binding = 0) uniform DynamicUniformData
     vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
 };
 
+//Post processing data.
+layout (std140, binding = 1) uniform PostProcessingUniformData
+{
+    float blurAmount;
+};
+
 //In parameters.
-layout (location = 0) in vec3 fragmentTextureCoordinate;
+layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (binding = 1) uniform samplerCube cubeMapTexture;
+layout (binding = 2) uniform sampler2D sceneTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
 
 void main()
 {
-    //Sample the cube map texture.
-    vec3 cubeMapTextureSampler = texture(cubeMapTexture, fragmentTextureCoordinate).rgb;
+    //Sample the scene texture.
+    vec3 sceneTextureSampler = texture(sceneTexture, fragmentTextureCoordinate).rgb;
 
     //Apply gamma correction.
-    cubeMapTextureSampler = pow(cubeMapTextureSampler, vec3(2.2f));
+    sceneTextureSampler = pow(sceneTextureSampler, vec3(1.0f / 2.2f));
 
     //Set the fragment color.
-    fragmentColor = vec4(cubeMapTextureSampler, 1.0f);
+    fragmentColor = vec4(sceneTextureSampler, 1.0f);
 }

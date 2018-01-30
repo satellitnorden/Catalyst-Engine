@@ -300,9 +300,6 @@ void main()
         finalFragment += CalculateSpotLight(i);
     }
 
-    //Apply gamma correction.
-    finalFragment = pow(finalFragment, vec3(1.0f / 2.2f));
-
     //Set the final fragment color.
-   fragmentColor = vec4(finalFragment, 1.0f);
+    fragmentColor = vec4(finalFragment, 1.0f);
 }

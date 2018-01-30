@@ -578,6 +578,9 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCubeMapTexture.h">
       <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\PostProcessingUniformData.h">
+      <Filter>Engine Source\Graphics\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Engine Source\Systems\Inline\EntitySystem.inl">
