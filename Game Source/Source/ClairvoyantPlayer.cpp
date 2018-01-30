@@ -6,6 +6,9 @@
 #include <PointLightEntity.h>
 #include <SpotLightEntity.h>
 
+//Math.
+#include <GameMath.h>
+
 //Systems.
 #include <EntitySystem.h>
 #include <InputSystem.h>
@@ -94,5 +97,8 @@ void ClairvoyantPlayer::Update(const float deltaTime) CATALYST_NOEXCEPT
 		{
 			flashlight->SetEnabled(!flashlight->GetEnabled());
 		}
+
+		//Lerp post processing effects.
+		GraphicsSystem::Instance->SetPostProcessingChromaticAberrationAmount(GameMath::LinearlyInterpolate(0.0f, 0.01f, currentGamepadState.leftTriggerValue));
 	}
 }

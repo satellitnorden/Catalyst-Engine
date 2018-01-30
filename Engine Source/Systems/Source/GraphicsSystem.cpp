@@ -59,10 +59,10 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 	InitializeUniformBuffers();
 
 	//Resize the number of command buffers to be equal to the amount of swapchain images.
-	commandBuffers.Resize(VulkanInterface::Instance->GetSwapchain().GetSwapChainImages().Size());
+	swapchainCommandBuffers.Resize(VulkanInterface::Instance->GetSwapchain().GetSwapChainImages().Size());
 
 	//Allocate all command buffers.
-	for (auto &commandBuffer : commandBuffers)
+	for (auto &commandBuffer : swapchainCommandBuffers)
 	{
 		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(commandBuffer);
 	}
@@ -327,6 +327,54 @@ void GraphicsSystem::SetActiveSkyBox(VulkanCubeMapTexture *CATALYST_RESTRICT new
 }
 
 /*
+*	Sets the post processing blur amount.
+*/
+void GraphicsSystem::SetPostProcessingBlurAmount(const float newBlurAmount) CATALYST_NOEXCEPT
+{
+	//Update the post processing uniform data.
+	postProcessingUniformData.blurAmount = newBlurAmount;
+
+	//Upload the data to the post processing data uniform buffer.
+	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&postProcessingUniformData);
+}
+
+/*
+*	Sets the post processing chromatic aberration amount.
+*/
+void GraphicsSystem::SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) CATALYST_NOEXCEPT
+{
+	//Update the post processing uniform data.
+	postProcessingUniformData.chromaticAberrationAmount = newChromaticAberrationAmount;
+
+	//Upload the data to the post processing data uniform buffer.
+	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&postProcessingUniformData);
+}
+
+/*
+*	Sets the post processing saturation.
+*/
+void GraphicsSystem::SetPostProcessingSaturation(const float newSaturation) CATALYST_NOEXCEPT
+{
+	//Update the post processing uniform data.
+	postProcessingUniformData.saturation = newSaturation;
+
+	//Upload the data to the post processing data uniform buffer.
+	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&postProcessingUniformData);
+}
+
+/*
+*	Sets the post processing sharpen amount.
+*/
+void GraphicsSystem::SetPostProcessingSharpenAmount(const float newSharpenAmount) CATALYST_NOEXCEPT
+{
+	//Update the post processing uniform data.
+	postProcessingUniformData.sharpenAmount = newSharpenAmount;
+
+	//Upload the data to the post processing data uniform buffer.
+	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&postProcessingUniformData);
+}
+
+/*
 *	Initializes all render targets.
 */
 void GraphicsSystem::InitializeRenderTargets() CATALYST_NOEXCEPT
@@ -583,13 +631,13 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData, this);
 
 	//Set the current command buffer.
-	currentCommandBuffer = VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
+	currentSwapchainCommandBuffer = VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
 
 	//Set up the current command buffer.
-	commandBuffers[currentCommandBuffer].Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::SceneBufferPipeline]);
-	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::SceneBufferPipeline]->GetRenderPass(), 0, true, 4);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::SceneBufferPipeline]);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::SceneBufferPipeline]->GetRenderPass(), 0, true, 4);
 }
 
 /*
@@ -607,14 +655,14 @@ void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 		if (!physicalEntity->IsInViewFrustum())
 			continue;
 
-		commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::SceneBufferPipeline], physicalEntity->GetDescriptorSet());
-		commandBuffers[currentCommandBuffer].CommandBindVertexBuffers(*physicalEntity->GetModel().GetVertexBuffer());
-		commandBuffers[currentCommandBuffer].CommandBindIndexBuffer(*physicalEntity->GetModel().GetIndexBuffer());
-		commandBuffers[currentCommandBuffer].CommandDrawIndexed(physicalEntity->GetModel().GetIndexCount());
+		swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::SceneBufferPipeline], physicalEntity->GetDescriptorSet());
+		swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindVertexBuffers(*physicalEntity->GetModel().GetVertexBuffer());
+		swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindIndexBuffer(*physicalEntity->GetModel().GetIndexBuffer());
+		swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandDrawIndexed(physicalEntity->GetModel().GetIndexCount());
 	}
 
 	//End the render pass.
-	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandEndRenderPass();
 }
 
 /*
@@ -623,19 +671,19 @@ void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 void GraphicsSystem::RenderLighting() CATALYST_NOEXCEPT
 {
 	//Bind the lighting pipeline.
-	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::LightingPipeline]);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::LightingPipeline]);
 
 	//Bind the lighting render pass.
-	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::LightingPipeline]->GetRenderPass(), 0, false, 1);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::LightingPipeline]->GetRenderPass(), 0, false, 1);
 
 	//Bind the scene buffer descriptor set.
-	commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::LightingPipeline], descriptorSets[DescriptorSet::LightingDescriptorSet]);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::LightingPipeline], descriptorSets[DescriptorSet::LightingDescriptorSet]);
 
 	//Draw the viewport!
-	commandBuffers[currentCommandBuffer].CommandDraw(4);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandDraw(4);
 
 	//End the render pass.
-	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandEndRenderPass();
 }
 
 /*
@@ -644,19 +692,19 @@ void GraphicsSystem::RenderLighting() CATALYST_NOEXCEPT
 void GraphicsSystem::RenderSkyBox() CATALYST_NOEXCEPT
 {
 	//Bind the cube map pipeline.
-	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::CubeMapPipeline]);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::CubeMapPipeline]);
 
 	//Bind the cube map render pass.
-	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::CubeMapPipeline]->GetRenderPass(), 0, false, 0);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::CubeMapPipeline]->GetRenderPass(), 0, false, 0);
 
 	//Bind the sky box descriptor set.
-	commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::CubeMapPipeline], skyBoxDescriptorSet);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::CubeMapPipeline], skyBoxDescriptorSet);
 
 	//Draw the sky box!
-	commandBuffers[currentCommandBuffer].CommandDraw(36);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandDraw(36);
 
 	//End the cube map render pass.
-	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandEndRenderPass();
 }
 
 /*
@@ -665,19 +713,19 @@ void GraphicsSystem::RenderSkyBox() CATALYST_NOEXCEPT
 void GraphicsSystem::RenderPostProcessing() CATALYST_NOEXCEPT
 {
 	//Bind the post processing pipeline.
-	commandBuffers[currentCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::PostProcessingPipeline]);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::PostProcessingPipeline]);
 
 	//Bind the post processing render pass.
-	commandBuffers[currentCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::PostProcessingPipeline]->GetRenderPass(), currentCommandBuffer, false, 1);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::PostProcessingPipeline]->GetRenderPass(), currentSwapchainCommandBuffer, false, 1);
 
 	//Bind the post processing descriptor set.
-	commandBuffers[currentCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::PostProcessingPipeline], descriptorSets[DescriptorSet::PostProcessingDescriptorSet]);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::PostProcessingPipeline], descriptorSets[DescriptorSet::PostProcessingDescriptorSet]);
 
 	//Draw the viewport!
-	commandBuffers[currentCommandBuffer].CommandDraw(4);
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandDraw(4);
 
 	//End the post processing render pass.
-	commandBuffers[currentCommandBuffer].CommandEndRenderPass();
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandEndRenderPass();
 }
 
 /*
@@ -691,13 +739,13 @@ void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
 	static const DynamicArray<VkSemaphore> signalSemaphores{ semaphores[Semaphore::RenderFinished]->Get() };
 
 	//End the current command buffer.
-	commandBuffers[currentCommandBuffer].End();
+	swapchainCommandBuffers[currentSwapchainCommandBuffer].End();
 
 	//Wait for the graphics system update dynamic uniform data daily quest to finish.
 	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData);
 
 	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue().Submit(commandBuffers[currentCommandBuffer], waitSemaphores, waitStages, signalSemaphores);
+	VulkanInterface::Instance->GetGraphicsQueue().Submit(swapchainCommandBuffers[currentSwapchainCommandBuffer], waitSemaphores, waitStages, signalSemaphores);
 }
 
 /*

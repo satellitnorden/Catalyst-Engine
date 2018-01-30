@@ -94,6 +94,26 @@ public:
 	*/
 	void SetActiveSkyBox(VulkanCubeMapTexture *CATALYST_RESTRICT newSkyBox) CATALYST_NOEXCEPT;
 
+	/*
+	*	Sets the post processing blur amount.
+	*/
+	void SetPostProcessingBlurAmount(const float newBlurAmount) CATALYST_NOEXCEPT;
+
+	/*
+	*	Sets the post processing chromatic aberration amount.
+	*/
+	void SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) CATALYST_NOEXCEPT;
+
+	/*
+	*	Sets the post processing saturation.
+	*/
+	void SetPostProcessingSaturation(const float newSaturation) CATALYST_NOEXCEPT;
+
+	/*
+	*	Sets the post processing sharpen amount.
+	*/
+	void SetPostProcessingSharpenAmount(const float newSharpenAmount) CATALYST_NOEXCEPT;
+
 private:
 
 	//Enumeration covering all depth buffers.
@@ -211,11 +231,11 @@ private:
 	//Container for all default textures.
 	Vulkan2DTexture *CATALYST_RESTRICT defaultTextures[DefaultTexture::NumberOfDefaultTextures];
 
-	//Container for all command buffers.
-	DynamicArray<VulkanCommandBuffer> commandBuffers;
+	//Container for all swapchain command buffers.
+	DynamicArray<VulkanCommandBuffer> swapchainCommandBuffers;
 
-	//The current command buffer.
-	size_t currentCommandBuffer{ 0 };
+	//The current swapchain command buffer.
+	size_t currentSwapchainCommandBuffer{ 0 };
 
 	//The sky box cude map texture.
 	VulkanCubeMapTexture *CATALYST_RESTRICT skyBoxTexture;

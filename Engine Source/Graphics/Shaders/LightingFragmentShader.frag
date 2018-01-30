@@ -96,7 +96,7 @@ float CalculateGeometry(float lightAngle)
 */
 vec3 CalculateFresnelRoughness(float lightViewAngle)
 {
-    return surfaceColor + (max(vec3(1.0f - roughness), surfaceColor) - surfaceColor) * pow(1.0f - lightViewAngle, 5.0f);
+    return surfaceColor + (max(vec3(1.0f - roughness), surfaceColor) - surfaceColor) * pow(max(1.0f - lightViewAngle, 0.0f), 5.0f);
 }
 
 /*
