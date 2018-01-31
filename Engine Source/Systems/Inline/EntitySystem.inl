@@ -3,19 +3,21 @@
 /*
 *	Creates a new entity.
 */
-template <class EntityClass>
-CATALYST_RESTRICTED EntityClass* EntitySystem::CreateEntity() const CATALYST_NOEXCEPT
+template <class EntityClass, class... Arguments>
+CATALYST_RESTRICTED EntityClass* EntitySystem::CreateEntity(Arguments&&... arguments) const CATALYST_NOEXCEPT
 {
-	return new EntityClass();
+	//EntityClass::Instances.Emplace(std::forward<Arguments>(arguments)...)
+
+	return new EntityClass(std::forward<Arguments>(arguments)...);
 }
 
 /*
 *	Creates a new child entity.
 */
-template <class EntityClass>
-CATALYST_RESTRICTED EntityClass* EntitySystem::CreateChildEntity(Entity *CATALYST_RESTRICT parentEntity) const CATALYST_NOEXCEPT
+template <class EntityClass, class... Arguments>
+CATALYST_RESTRICTED EntityClass* EntitySystem::CreateChildEntity(Entity *CATALYST_RESTRICT parentEntity, Arguments&&... arguments) const CATALYST_NOEXCEPT
 {
-	EntityClass *CATALYST_RESTRICT newChild = new EntityClass();
+	EntityClass *CATALYST_RESTRICT newChild = new EntityClass(std::forward<Arguments>(arguments)...);
 
 	parentEntity->AddChild(newChild);
 	newChild->SetParent(parentEntity);

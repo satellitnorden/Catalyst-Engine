@@ -29,10 +29,10 @@ EntitySystem::~EntitySystem() CATALYST_NOEXCEPT
 void EntitySystem::ReleaseSystem() CATALYST_NOEXCEPT
 {
 	//Destroy all remaining entities.
-	for (int64 i = Entity::entities.Size() - 1; i >= 0; --i)
+	for (int64 i = Entity::instances.Size() - 1; i >= 0; --i)
 	{
-		Entity::entities[i]->Destroy();
-		delete Entity::entities[i];
+		Entity::instances[i]->Destroy();
+		delete Entity::instances[i];
 	}
 }
 

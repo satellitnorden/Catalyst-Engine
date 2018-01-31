@@ -48,7 +48,7 @@ void EntitySpawner::Update(const float deltaTime) CATALYST_NOEXCEPT
 	{
 		spawnTimer -= 0.1f;
 
-		PhysicalEntity *stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
+		PhysicalEntity *CATALYST_RESTRICT stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
 		stone->Initialize(stoneModel);
 		stone->Move(Vector3(GameMath::RandomFloatInRange(-250.0f, 250.0f), GameMath::RandomFloatInRange(100.0f, 1'000.0f), GameMath::RandomFloatInRange(-250.0f, 250.0f)));
 		stone->Rotate(Vector3(0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f), 0.0f));

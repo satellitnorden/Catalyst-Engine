@@ -15,7 +15,7 @@ class CameraEntity : public Entity
 public:
 
 	//Universal container of all camera entities.
-	static DynamicArray<CameraEntity *CATALYST_RESTRICT> cameraEntities;
+	static DynamicArray<CameraEntity *CATALYST_RESTRICT> instances;
 
 	/*
 	*	Default constructor.

@@ -12,7 +12,7 @@ class SpotLightEntity : public LightEntity
 public:
 
 	//Universal container of all light entities.
-	static DynamicArray<SpotLightEntity *CATALYST_RESTRICT> spotLightEntities;
+	static DynamicArray<SpotLightEntity *CATALYST_RESTRICT> instances;
 
 	/*
 	*	Default constructor.

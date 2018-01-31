@@ -2,7 +2,7 @@
 #include <PointLightEntity.h>
 
 //Static variable definitions.
-DynamicArray<PointLightEntity *CATALYST_RESTRICT> PointLightEntity::pointLightEntities;
+DynamicArray<PointLightEntity *CATALYST_RESTRICT> PointLightEntity::instances;
 
 /*
 *	Default constructor.
@@ -10,7 +10,7 @@ DynamicArray<PointLightEntity *CATALYST_RESTRICT> PointLightEntity::pointLightEn
 PointLightEntity::PointLightEntity() CATALYST_NOEXCEPT
 {
 	//Add this point light entity to the universal container.
-	pointLightEntities.Emplace(this);
+	instances.Emplace(this);
 }
 
 /*
@@ -19,5 +19,5 @@ PointLightEntity::PointLightEntity() CATALYST_NOEXCEPT
 PointLightEntity::~PointLightEntity() CATALYST_NOEXCEPT
 {
 	//Remove this point light entity from the universal container.
-	pointLightEntities.Erase(this);
+	instances.Erase(this);
 }

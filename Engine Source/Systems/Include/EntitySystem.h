@@ -37,14 +37,14 @@ public:
 	/*
 	*	Creates a new entity.
 	*/
-	template <class EntityClass>
-	CATALYST_RESTRICTED EntityClass* CreateEntity() const CATALYST_NOEXCEPT;
+	template <class EntityClass, class... Arguments>
+	CATALYST_RESTRICTED EntityClass* CreateEntity(Arguments&&... arguments) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a new child entity.
 	*/
-	template <class EntityClass>
-	CATALYST_RESTRICTED EntityClass* CreateChildEntity(Entity *CATALYST_RESTRICT parentEntity) const CATALYST_NOEXCEPT;
+	template <class EntityClass, class... Arguments>
+	CATALYST_RESTRICTED EntityClass* CreateChildEntity(Entity *CATALYST_RESTRICT parentEntity, Arguments&&... arguments) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Marks a given entity for destruction.

@@ -122,7 +122,7 @@ void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling, this);
 
 	//Carry out the physical entity update daily group quest.
-	QuestSystem::Instance->CarryOutDailyGroupQuest(DailyGroupQuests::GraphicsSystemPhysicalEntityUpdate, nullptr, PhysicalEntity::physicalEntities.Data(), PhysicalEntity::physicalEntities.Size(), sizeof(PhysicalEntity*));
+	QuestSystem::Instance->CarryOutDailyGroupQuest(DailyGroupQuests::GraphicsSystemPhysicalEntityUpdate, nullptr, PhysicalEntity::instances.Data(), PhysicalEntity::instances.Size(), sizeof(PhysicalEntity*));
 
 	//Update the main window.
 	mainWindow.Update();
@@ -248,7 +248,7 @@ void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, co
 	newPhysicalGraphicsComponent.indexBuffer = *model.GetIndexBuffer();
 	newPhysicalGraphicsComponent.indexCount = model.GetIndexCount();
 
-	physicalEntity.SetPhysicalGraphicsComponent(newPhysicalGraphicsComponentIndex);
+	physicalEntity.SetPhysicalGraphicsComponentIndex(newPhysicalGraphicsComponentIndex);
 }
 
 /*
@@ -702,7 +702,7 @@ void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 	}
 
 	//End the render pass.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandEndRenderPass();
+	commandBuffer.CommandEndRenderPass();
 }
 
 /*
@@ -835,45 +835,45 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 
 	size_t counter = 0;
 
-	dynamicUniformData.numberOfPointLights = static_cast<uint64>(PointLightEntity::pointLightEntities.Size());
+	dynamicUniformData.numberOfPointLights = static_cast<uint64>(PointLightEntity::instances.Size());
 
-	for (size_t i = 0; i < static_cast<uint64>(PointLightEntity::pointLightEntities.Size()); ++i)
+	for (size_t i = 0; i < static_cast<uint64>(PointLightEntity::instances.Size()); ++i)
 	{
-		if (!PointLightEntity::pointLightEntities[i]->GetEnabled())
+		if (!PointLightEntity::instances[i]->GetEnabled())
 		{
 			--dynamicUniformData.numberOfPointLights;
 
 			continue;
 		}
 
-		dynamicUniformData.pointLightAttenuationDistances[counter] = PointLightEntity::pointLightEntities[counter]->GetAttenuationDistance();
-		dynamicUniformData.pointLightIntensities[counter] = PointLightEntity::pointLightEntities[counter]->GetIntensity();
-		dynamicUniformData.pointLightColors[i] = PointLightEntity::pointLightEntities[counter]->GetLightColor();
-		dynamicUniformData.pointLightWorldPositions[counter] = PointLightEntity::pointLightEntities[counter]->GetWorldPosition();
+		dynamicUniformData.pointLightAttenuationDistances[counter] = PointLightEntity::instances[counter]->GetAttenuationDistance();
+		dynamicUniformData.pointLightIntensities[counter] = PointLightEntity::instances[counter]->GetIntensity();
+		dynamicUniformData.pointLightColors[i] = PointLightEntity::instances[counter]->GetLightColor();
+		dynamicUniformData.pointLightWorldPositions[counter] = PointLightEntity::instances[counter]->GetWorldPosition();
 
 		++counter;
 	}
 
 	counter = 0;
 
-	dynamicUniformData.numberOfSpotLights = static_cast<uint64>(SpotLightEntity::spotLightEntities.Size());
+	dynamicUniformData.numberOfSpotLights = static_cast<uint64>(SpotLightEntity::instances.Size());
 
-	for (size_t i = 0; i < static_cast<uint64>(SpotLightEntity::spotLightEntities.Size()); ++i)
+	for (size_t i = 0; i < static_cast<uint64>(SpotLightEntity::instances.Size()); ++i)
 	{
-		if (!SpotLightEntity::spotLightEntities[i]->GetEnabled())
+		if (!SpotLightEntity::instances[i]->GetEnabled())
 		{
 			--dynamicUniformData.numberOfSpotLights;
 
 			continue;
 		}
 
-		dynamicUniformData.spotLightAttenuationDistances[counter] = SpotLightEntity::spotLightEntities[i]->GetAttenuationDistance();
-		dynamicUniformData.spotLightIntensities[counter] = SpotLightEntity::spotLightEntities[i]->GetIntensity();
-		dynamicUniformData.spotLightInnerCutoffAngles[counter] = GameMath::CosineDegrees(SpotLightEntity::spotLightEntities[i]->GetInnerCutoffAngle());
-		dynamicUniformData.spotLightOuterCutoffAngles[counter] = GameMath::CosineDegrees(SpotLightEntity::spotLightEntities[i]->GetOuterCutoffAngle());
-		dynamicUniformData.spotLightColors[counter] = SpotLightEntity::spotLightEntities[i]->GetLightColor();
-		dynamicUniformData.spotLightDirections[counter] = SpotLightEntity::spotLightEntities[i]->GetDirection();
-		dynamicUniformData.spotLightWorldPositions[counter] = SpotLightEntity::spotLightEntities[i]->GetWorldPosition();
+		dynamicUniformData.spotLightAttenuationDistances[counter] = SpotLightEntity::instances[i]->GetAttenuationDistance();
+		dynamicUniformData.spotLightIntensities[counter] = SpotLightEntity::instances[i]->GetIntensity();
+		dynamicUniformData.spotLightInnerCutoffAngles[counter] = GameMath::CosineDegrees(SpotLightEntity::instances[i]->GetInnerCutoffAngle());
+		dynamicUniformData.spotLightOuterCutoffAngles[counter] = GameMath::CosineDegrees(SpotLightEntity::instances[i]->GetOuterCutoffAngle());
+		dynamicUniformData.spotLightColors[counter] = SpotLightEntity::instances[i]->GetLightColor();
+		dynamicUniformData.spotLightDirections[counter] = SpotLightEntity::instances[i]->GetDirection();
+		dynamicUniformData.spotLightWorldPositions[counter] = SpotLightEntity::instances[i]->GetWorldPosition();
 
 		++counter;
 	}
@@ -891,8 +891,11 @@ void GraphicsSystem::UpdateViewFrustumCulling() CATALYST_NOEXCEPT
 	const Matrix4 localViewMatrix = viewMatrix.GetSafe();
 
 	//Iterate over all physical entities to check if they are in the view frustum.
-	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : PhysicalEntity::physicalEntities)
+	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : PhysicalEntity::instances)
 	{
+		const size_t physicalGraphicsComponentIndex{ physicalEntity->GetPhysicalGraphicsComponentIndex() };
+		PhysicalGraphicsComponent &physicalGraphicsComponent{ ComponentManager::GetPhysicalGraphicsComponentNonConst(physicalGraphicsComponentIndex) };
+
 		//Make a local copy of the physical entity's position.
 		const Vector3 position = physicalEntity->GetWorldPosition();
 		const Vector3 scale = physicalEntity->GetWorldScale();
@@ -923,6 +926,6 @@ void GraphicsSystem::UpdateViewFrustumCulling() CATALYST_NOEXCEPT
 			corners[i].Z /= corners[i].W;
 		}
 
-		physicalEntity->SetIsInViewFrustum(GraphicsUtilities::IsCubeWithinViewFrustum(corners));
+		physicalGraphicsComponent.isInViewFrustum.store(GraphicsUtilities::IsCubeWithinViewFrustum(corners));
 	}
 }

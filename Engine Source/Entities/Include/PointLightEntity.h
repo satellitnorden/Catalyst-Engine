@@ -12,7 +12,7 @@ class PointLightEntity : public LightEntity
 public:
 
 	//Universal container of all point light entities.
-	static DynamicArray<PointLightEntity *CATALYST_RESTRICT> pointLightEntities;
+	static DynamicArray<PointLightEntity *CATALYST_RESTRICT> instances;
 
 	/*
 	*	Default constructor.

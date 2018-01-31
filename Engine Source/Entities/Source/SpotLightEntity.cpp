@@ -2,7 +2,7 @@
 #include <SpotLightEntity.h>
 
 //Static variable definitions.
-DynamicArray<SpotLightEntity *CATALYST_RESTRICT> SpotLightEntity::spotLightEntities;
+DynamicArray<SpotLightEntity *CATALYST_RESTRICT> SpotLightEntity::instances;
 
 /*
 *	Default constructor.
@@ -10,7 +10,7 @@ DynamicArray<SpotLightEntity *CATALYST_RESTRICT> SpotLightEntity::spotLightEntit
 SpotLightEntity::SpotLightEntity() CATALYST_NOEXCEPT
 {
 	//Add this spot light entity to the universal container.
-	spotLightEntities.Emplace(this);
+	instances.Emplace(this);
 }
 
 /*
@@ -19,7 +19,7 @@ SpotLightEntity::SpotLightEntity() CATALYST_NOEXCEPT
 SpotLightEntity::~SpotLightEntity() CATALYST_NOEXCEPT
 {
 	//Remove this spot light entity from the universal container.
-	spotLightEntities.Erase(this);
+	instances.Erase(this);
 }
 
 /*

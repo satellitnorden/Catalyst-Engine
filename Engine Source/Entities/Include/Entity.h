@@ -18,7 +18,7 @@ class Entity
 public:
 
 	//Universal container of all entities.
-	static DynamicArray<Entity *CATALYST_RESTRICT> entities;
+	static DynamicArray<Entity *CATALYST_RESTRICT> instances;
 
 	/*
 	*	Default constructor.

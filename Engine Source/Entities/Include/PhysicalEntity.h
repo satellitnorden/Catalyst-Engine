@@ -28,7 +28,7 @@ class PhysicalEntity : public Entity
 public:
 
 	//Universal container of all physical entities.
-	static DynamicArray<PhysicalEntity *CATALYST_RESTRICT> physicalEntities;
+	static DynamicArray<PhysicalEntity *CATALYST_RESTRICT> instances;
 
 	/*
 	*	Default constructor.
@@ -66,19 +66,14 @@ public:
 	void SetUniformBuffer(VulkanUniformBuffer *CATALYST_RESTRICT newUniformBuffer) CATALYST_NOEXCEPT { uniformBuffer = newUniformBuffer; }
 
 	/*
+	*	Returns the index for the physical graphics component.
+	*/
+	size_t GetPhysicalGraphicsComponentIndex() const CATALYST_NOEXCEPT { return physicalGraphicsComponent; }
+
+	/*
 	*	Sets the index for the physical graphics component.
 	*/
-	void SetPhysicalGraphicsComponent(const size_t newPhysicalGraphicsComponent) CATALYST_NOEXCEPT { physicalGraphicsComponent = newPhysicalGraphicsComponent; }
-
-	/*
-	*	Sets whether or not this physical entity is in the view frustum.
-	*/
-	void SetIsInViewFrustum(const bool newIsInViewFrustum) CATALYST_NOEXCEPT { ComponentManager::GetPhysicalGraphicsComponentNonConst(physicalGraphicsComponent).isInViewFrustum.store(newIsInViewFrustum); }
-
-	/*
-	*	Returns whether or not this physical entity is in the view frustum.
-	*/
-	bool IsInViewFrustum() const CATALYST_NOEXCEPT { return ComponentManager::GetPhysicalGraphicsComponentConst(physicalGraphicsComponent).isInViewFrustum.load(); }
+	void SetPhysicalGraphicsComponentIndex(const size_t newPhysicalGraphicsComponent) CATALYST_NOEXCEPT { physicalGraphicsComponent = newPhysicalGraphicsComponent; }
 
 private:
 

@@ -2,7 +2,7 @@
 #include <CameraEntity.h>
 
 //Static variable definitions.
-DynamicArray<CameraEntity *CATALYST_RESTRICT> CameraEntity::cameraEntities;
+DynamicArray<CameraEntity *CATALYST_RESTRICT> CameraEntity::instances;
 
 /*
 *	Default constructor.
@@ -10,7 +10,7 @@ DynamicArray<CameraEntity *CATALYST_RESTRICT> CameraEntity::cameraEntities;
 CameraEntity::CameraEntity() CATALYST_NOEXCEPT
 {
 	//Add this camera entity to the universal container.
-	cameraEntities.Emplace(this);
+	instances.Emplace(this);
 }
 
 /*
@@ -19,5 +19,5 @@ CameraEntity::CameraEntity() CATALYST_NOEXCEPT
 CameraEntity::~CameraEntity() CATALYST_NOEXCEPT
 {
 	//Remove this camera entity from the universal container.
-	cameraEntities.Erase(this);
+	instances.Erase(this);
 }
