@@ -68,7 +68,7 @@ public:
 	/*
 	*	Initializes a physical entity.
 	*/
-	void InitializePhysicalEntity(PhysicalEntity &physicalEntity) const CATALYST_NOEXCEPT;
+	void InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture.

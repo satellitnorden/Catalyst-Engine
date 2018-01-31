@@ -33,11 +33,11 @@ PhysicalEntity::~PhysicalEntity() CATALYST_NOEXCEPT
 */
 void PhysicalEntity::Initialize(const PhysicalModel &newModel) CATALYST_NOEXCEPT
 {
-	//Set the model.
-	model = newModel;
+	//Set the model extent.
+	modelExtent = newModel.GetExtent();
 
 	//Initialize this physical entity.
-	GraphicsSystem::Instance->InitializePhysicalEntity(*this);
+	GraphicsSystem::Instance->InitializePhysicalEntity(*this, newModel);
 }
 
 /*

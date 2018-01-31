@@ -1,6 +1,9 @@
 //Header file.
 #include <GraphicsSystem.h>
 
+//Components.
+#include <ComponentManager.h>
+
 //Entities.
 #include <CameraEntity.h>
 #include <PhysicalEntity.h>
@@ -206,11 +209,13 @@ const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RES
 /*
 *	Initializes a physical entity.
 */
-void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity) const CATALYST_NOEXCEPT
+void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const CATALYST_NOEXCEPT
 {
+	//Create the uniform buffer.
+	physicalEntity.SetUniformBuffer(CreateUniformBuffer(sizeof(Matrix4)));
+
 	//Cache relevant data.
-	VulkanDescriptorSet &descriptorSet = physicalEntity.GetDescriptorSet();
-	const PhysicalModel &model = physicalEntity.GetModel();
+	VulkanDescriptorSet newDescriptorSet;
 	const PhysicalMaterial &material = model.GetMaterial();
 	const Vulkan2DTexture *CATALYST_RESTRICT albedoTexture = material.GetAlbedoTexture();
 	const Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture = material.GetNormalMapTexture();
@@ -218,24 +223,32 @@ void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity) co
 	const Vulkan2DTexture *CATALYST_RESTRICT metallicTexture = material.GetMetallicTexture();
 	const Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture = material.GetAmbientOcclusionTexture();
 
-	//Create the uniform buffer.
-	physicalEntity.SetUniformBuffer(CreateUniformBuffer(sizeof(Matrix4)));
-
 	//Allocate the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSet, pipelines[Pipeline::SceneBufferPipeline]->GetDescriptorSetLayout());
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, pipelines[Pipeline::SceneBufferPipeline]->GetDescriptorSetLayout());
 
 	//Update the write descriptor sets.
 	DynamicArray<VkWriteDescriptorSet, 7> writeDescriptorSets;
 
-	writeDescriptorSets.EmplaceUnsafe(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(descriptorSet, 0));
-	writeDescriptorSets.EmplaceUnsafe(physicalEntity.GetUniformBuffer()->GetWriteDescriptorSet(descriptorSet, 1));
-	writeDescriptorSets.EmplaceUnsafe(albedoTexture->GetWriteDescriptorSet(descriptorSet, 2));
-	writeDescriptorSets.EmplaceUnsafe(normalMapTexture->GetWriteDescriptorSet(descriptorSet, 3));
-	writeDescriptorSets.EmplaceUnsafe(roughnessTexture ? roughnessTexture->GetWriteDescriptorSet(descriptorSet, 4) : defaultTextures[DefaultTexture::Roughness]->GetWriteDescriptorSet(descriptorSet, 4));
-	writeDescriptorSets.EmplaceUnsafe(metallicTexture ? metallicTexture->GetWriteDescriptorSet(descriptorSet, 5) : defaultTextures[DefaultTexture::Metallic]->GetWriteDescriptorSet(descriptorSet, 5));
-	writeDescriptorSets.EmplaceUnsafe(ambientOcclusionTexture ? ambientOcclusionTexture->GetWriteDescriptorSet(descriptorSet, 6) : defaultTextures[DefaultTexture::AmbientOcclusion]->GetWriteDescriptorSet(descriptorSet, 6));
+	writeDescriptorSets.EmplaceUnsafe(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(newDescriptorSet, 0));
+	writeDescriptorSets.EmplaceUnsafe(physicalEntity.GetUniformBuffer()->GetWriteDescriptorSet(newDescriptorSet, 1));
+	writeDescriptorSets.EmplaceUnsafe(albedoTexture->GetWriteDescriptorSet(newDescriptorSet, 2));
+	writeDescriptorSets.EmplaceUnsafe(normalMapTexture->GetWriteDescriptorSet(newDescriptorSet, 3));
+	writeDescriptorSets.EmplaceUnsafe(roughnessTexture ? roughnessTexture->GetWriteDescriptorSet(newDescriptorSet, 4) : defaultTextures[DefaultTexture::Roughness]->GetWriteDescriptorSet(newDescriptorSet, 4));
+	writeDescriptorSets.EmplaceUnsafe(metallicTexture ? metallicTexture->GetWriteDescriptorSet(newDescriptorSet, 5) : defaultTextures[DefaultTexture::Metallic]->GetWriteDescriptorSet(newDescriptorSet, 5));
+	writeDescriptorSets.EmplaceUnsafe(ambientOcclusionTexture ? ambientOcclusionTexture->GetWriteDescriptorSet(newDescriptorSet, 6) : defaultTextures[DefaultTexture::AmbientOcclusion]->GetWriteDescriptorSet(newDescriptorSet, 6));
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+
+	//Fill the physical graphics component with all the data.
+	const size_t newPhysicalGraphicsComponentIndex{ ComponentManager::GetNewPhysicalGraphicsComponent() };
+	PhysicalGraphicsComponent &newPhysicalGraphicsComponent{ ComponentManager::GetPhysicalGraphicsComponentNonConst(newPhysicalGraphicsComponentIndex) };
+
+	newPhysicalGraphicsComponent.descriptorSet = newDescriptorSet;
+	newPhysicalGraphicsComponent.vertexBuffer = *model.GetVertexBuffer();
+	newPhysicalGraphicsComponent.indexBuffer = *model.GetIndexBuffer();
+	newPhysicalGraphicsComponent.indexCount = model.GetIndexCount();
+
+	physicalEntity.SetPhysicalGraphicsComponent(newPhysicalGraphicsComponentIndex);
 }
 
 /*
@@ -668,19 +681,24 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 {
 	//Wait for the physical entity update daily group quest to complete.
+	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling);
 	QuestSystem::Instance->WaitForDailyGroupQuest(DailyGroupQuests::GraphicsSystemPhysicalEntityUpdate);
 
-	//Iterate over all physical entities and draw them all.
-	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : PhysicalEntity::physicalEntities)
+	//Cache the pipeline.
+	VulkanPipeline &sceneBufferPipeline{ *pipelines[Pipeline::SceneBufferPipeline] };
+	VulkanCommandBuffer &commandBuffer{ swapchainCommandBuffers[currentSwapchainCommandBuffer] };
+
+	//Iterate over all physical graphics components and draw them all.
+	for (const PhysicalGraphicsComponent &physicalGraphicsComponent : ComponentManager::GetPhysicalGraphicsComponents())
 	{
 		//Don't draw this physical entity if it isn't in the view frustum.
-		if (!physicalEntity->IsInViewFrustum())
+		if (!physicalGraphicsComponent.isInViewFrustum)
 			continue;
 
-		swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::SceneBufferPipeline], physicalEntity->GetDescriptorSet());
-		swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindVertexBuffers(*physicalEntity->GetModel().GetVertexBuffer());
-		swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindIndexBuffer(*physicalEntity->GetModel().GetIndexBuffer());
-		swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandDrawIndexed(physicalEntity->GetModel().GetIndexCount());
+		commandBuffer.CommandBindDescriptorSets(sceneBufferPipeline, physicalGraphicsComponent.descriptorSet);
+		commandBuffer.CommandBindVertexBuffers(physicalGraphicsComponent.vertexBuffer);
+		commandBuffer.CommandBindIndexBuffer(physicalGraphicsComponent.indexBuffer);
+		commandBuffer.CommandDrawIndexed(physicalGraphicsComponent.indexCount);
 	}
 
 	//End the render pass.
@@ -878,7 +896,7 @@ void GraphicsSystem::UpdateViewFrustumCulling() CATALYST_NOEXCEPT
 		//Make a local copy of the physical entity's position.
 		const Vector3 position = physicalEntity->GetWorldPosition();
 		const Vector3 scale = physicalEntity->GetWorldScale();
-		const float extent = physicalEntity->GetModel().GetExtent();
+		const float extent = physicalEntity->GetModelExtent();
 		const float biggestScale = GameMath::Maximum(scale.X, GameMath::Maximum(scale.Y, scale.Z));
 		const float scaledExtent = extent * biggestScale;
 

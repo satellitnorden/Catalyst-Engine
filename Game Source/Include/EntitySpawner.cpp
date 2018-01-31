@@ -44,7 +44,7 @@ void EntitySpawner::Update(const float deltaTime) CATALYST_NOEXCEPT
 
 	spawnTimer += deltaTime;
 
-	while (spawnTimer > 0.1f)
+	while (false)
 	{
 		spawnTimer -= 0.1f;
 

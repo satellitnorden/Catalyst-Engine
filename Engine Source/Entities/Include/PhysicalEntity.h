@@ -3,6 +3,9 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Components.
+#include <ComponentManager.h>
+
 //Entities.
 #include <Entity.h>
 
@@ -48,9 +51,9 @@ public:
 	void UpdateModelMatrix() CATALYST_NOEXCEPT;
 
 	/*
-	*	Returns the model.
+	*	Returns the model extent.
 	*/
-	PhysicalModel& GetModel() CATALYST_NOEXCEPT { return model; }
+	float GetModelExtent() const CATALYST_NOEXCEPT { return modelExtent; }
 
 	/*
 	*	Returns the uniform buffer.
@@ -63,35 +66,32 @@ public:
 	void SetUniformBuffer(VulkanUniformBuffer *CATALYST_RESTRICT newUniformBuffer) CATALYST_NOEXCEPT { uniformBuffer = newUniformBuffer; }
 
 	/*
-	*	Returns the descriptor set.
+	*	Sets the index for the physical graphics component.
 	*/
-	VulkanDescriptorSet& GetDescriptorSet() CATALYST_NOEXCEPT { return descriptorSet; }
+	void SetPhysicalGraphicsComponent(const size_t newPhysicalGraphicsComponent) CATALYST_NOEXCEPT { physicalGraphicsComponent = newPhysicalGraphicsComponent; }
 
 	/*
 	*	Sets whether or not this physical entity is in the view frustum.
 	*/
-	void SetIsInViewFrustum(const bool newIsInViewFrustum) CATALYST_NOEXCEPT { isInViewFrustum.store(newIsInViewFrustum); }
+	void SetIsInViewFrustum(const bool newIsInViewFrustum) CATALYST_NOEXCEPT { ComponentManager::GetPhysicalGraphicsComponentNonConst(physicalGraphicsComponent).isInViewFrustum.store(newIsInViewFrustum); }
 
 	/*
 	*	Returns whether or not this physical entity is in the view frustum.
 	*/
-	bool IsInViewFrustum() const CATALYST_NOEXCEPT { return isInViewFrustum; }
+	bool IsInViewFrustum() const CATALYST_NOEXCEPT { return ComponentManager::GetPhysicalGraphicsComponentConst(physicalGraphicsComponent).isInViewFrustum.load(); }
 
 private:
 
 	//The model matrix.
 	Matrix4 modelMatrix;
 
-	//The model.
-	PhysicalModel model;
+	//The model extent.
+	float modelExtent;
 
 	//The uniform buffer.
 	VulkanUniformBuffer *CATALYST_RESTRICT uniformBuffer;
 
-	//The descriptor set.
-	VulkanDescriptorSet descriptorSet;
-
-	//Denotes whether or not this physical entity is in the view frustum.
-	std::atomic<bool> isInViewFrustum{ true };
+	//The index for the physical graphics component.
+	size_t physicalGraphicsComponent;
 
 };
