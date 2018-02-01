@@ -111,16 +111,3 @@ void PhysicalEntity::Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT
 		child->Scale(scaleVector);
 	}
 }
-
-/*
-*	Updates the model matrix.
-*/
-void PhysicalEntity::UpdateModelMatrix() CATALYST_NOEXCEPT
-{
-	//Calculate the new model matrix.
-	const TransformComponent &transformComponent{ ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex] };
-	Matrix4 modelMatrix{ Matrix4(transformComponent.position, transformComponent.rotation, transformComponent.scale) };
-
-	//Upload the graphics matrix to the uniform buffer.
-	uniformBuffer->UploadData(static_cast<void *CATALYST_RESTRICT>(&modelMatrix));
-}

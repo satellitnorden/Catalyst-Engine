@@ -101,16 +101,11 @@ void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 	//Register the graphics system update dynamic uniform data daily quest.
 	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData, [](void *CATALYST_RESTRICT arguments) { static_cast<GraphicsSystem *CATALYST_RESTRICT>(arguments)->UpdateDynamicUniformData(); });
 
-	//Register the graphics system asynchronous update daily quest.
+	//Register the graphics system update physical entities graphics buffers daily quest.
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdatePhysicalEntitiesGraphicsBuffers, [](void *CATALYST_RESTRICT arguments) { static_cast<GraphicsSystem *CATALYST_RESTRICT>(arguments)->UpdatePhysicalEntitiesGraphicsBuffers(); });
+
+	//Register the graphics system update view frustum culling daily quest.
 	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling, [](void *CATALYST_RESTRICT arguments) { static_cast<GraphicsSystem *CATALYST_RESTRICT>(arguments)->UpdateViewFrustumCulling(); });
-
-	//Register the physical entity update daily group quest.
-	QuestSystem::Instance->RegisterDailyGroupQuest(DailyGroupQuests::GraphicsSystemPhysicalEntityUpdate, [](void *CATALYST_RESTRICT, void *CATALYST_RESTRICT element)
-	{
-		PhysicalEntity *CATALYST_RESTRICT physicalEntity = *static_cast<PhysicalEntity *CATALYST_RESTRICT *CATALYST_RESTRICT>(element);
-
-		physicalEntity->UpdateModelMatrix();
-	});
 }
 
 /*
@@ -118,11 +113,11 @@ void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 */
 void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
+	//Carry out the graphics system update physical entities graphics buffers daily quest.
+	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdatePhysicalEntitiesGraphicsBuffers, this);
+
 	//Carry out the graphics system asynchronous update daily quest.
 	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling, this);
-
-	//Carry out the physical entity update daily group quest.
-	QuestSystem::Instance->CarryOutDailyGroupQuest(DailyGroupQuests::GraphicsSystemPhysicalEntityUpdate, nullptr, PhysicalEntity::instances.Data(), PhysicalEntity::instances.Size(), sizeof(PhysicalEntity*));
 
 	//Update the main window.
 	mainWindow.Update();
@@ -211,11 +206,9 @@ const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RES
 */
 void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const CATALYST_NOEXCEPT
 {
-	//Create the uniform buffer.
-	physicalEntity.SetUniformBuffer(CreateUniformBuffer(sizeof(Matrix4)));
-
 	//Cache relevant data.
 	VulkanDescriptorSet newDescriptorSet;
+	VulkanUniformBuffer newUniformBuffer{ *CreateUniformBuffer(sizeof(Matrix4)) };
 	const PhysicalMaterial &material = model.GetMaterial();
 	const Vulkan2DTexture *CATALYST_RESTRICT albedoTexture = material.GetAlbedoTexture();
 	const Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture = material.GetNormalMapTexture();
@@ -230,7 +223,7 @@ void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, co
 	DynamicArray<VkWriteDescriptorSet, 7> writeDescriptorSets;
 
 	writeDescriptorSets.EmplaceUnsafe(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(newDescriptorSet, 0));
-	writeDescriptorSets.EmplaceUnsafe(physicalEntity.GetUniformBuffer()->GetWriteDescriptorSet(newDescriptorSet, 1));
+	writeDescriptorSets.EmplaceUnsafe(newUniformBuffer.GetWriteDescriptorSet(newDescriptorSet, 1));
 	writeDescriptorSets.EmplaceUnsafe(albedoTexture->GetWriteDescriptorSet(newDescriptorSet, 2));
 	writeDescriptorSets.EmplaceUnsafe(normalMapTexture->GetWriteDescriptorSet(newDescriptorSet, 3));
 	writeDescriptorSets.EmplaceUnsafe(roughnessTexture ? roughnessTexture->GetWriteDescriptorSet(newDescriptorSet, 4) : defaultTextures[DefaultTexture::Roughness]->GetWriteDescriptorSet(newDescriptorSet, 4));
@@ -241,9 +234,11 @@ void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, co
 
 	//Fill the physical entity components with the relevant data.
 	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents()[physicalEntity.GetComponentsIndex()] };
+	GraphicsBufferComponent &graphicsBufferComponent{ ComponentManager::GetPhysicalEntityGraphicsBufferComponents()[physicalEntity.GetComponentsIndex()] };
 	RenderComponent &renderComponent{ ComponentManager::GetPhysicalEntityRenderComponents()[physicalEntity.GetComponentsIndex()] };
 
 	frustumCullingComponent.modelExtent = model.GetExtent();
+	graphicsBufferComponent.uniformBuffer = newUniformBuffer;
 	renderComponent.descriptorSet = newDescriptorSet;
 	renderComponent.vertexBuffer = *model.GetVertexBuffer();
 	renderComponent.indexBuffer = *model.GetIndexBuffer();
@@ -680,8 +675,7 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 {
 	//Wait for the physical entity update daily group quest to complete.
-	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling);
-	QuestSystem::Instance->WaitForDailyGroupQuest(DailyGroupQuests::GraphicsSystemPhysicalEntityUpdate);
+	//QuestSystem::Instance->WaitForDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling);
 
 	//Cache the pipeline.
 	VulkanPipeline &sceneBufferPipeline{ *pipelines[Pipeline::SceneBufferPipeline] };
@@ -787,6 +781,9 @@ void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
 	//Wait for the graphics system update dynamic uniform data daily quest to finish.
 	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData);
 
+	//Wait for the graphics system update physical entities graphics buffers daily quest to finish.
+	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::GraphicsSystemUpdatePhysicalEntitiesGraphicsBuffers);
+
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(swapchainCommandBuffers[currentSwapchainCommandBuffer], waitSemaphores, waitStages, signalSemaphores);
 }
@@ -819,7 +816,7 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 	Vector3 upVector = activeCamera->GetUpVector();
 
 	Matrix4 cameraMatrix = Matrix4::LookAt(cameraWorldPosition, cameraWorldPosition + forwardVector, upVector);
-	viewMatrix.Set(projectionMatrix * cameraMatrix);
+	Matrix4 viewMatrix{ projectionMatrix * cameraMatrix };
 
 	Matrix4 inverseCameraMatrix{ cameraMatrix };
 	inverseCameraMatrix.Inverse();
@@ -833,7 +830,7 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 	dynamicUniformData.inverseCameraMatrix = inverseCameraMatrix;
 	dynamicUniformData.inverseProjectionMatrix = inverseProjectionMatrix;
 	dynamicUniformData.originViewMatrix = projectionMatrix * cameraOriginMatrix;
-	dynamicUniformData.viewMatrix = viewMatrix.GetUnsafe();
+	dynamicUniformData.viewMatrix = viewMatrix;
 	dynamicUniformData.cameraWorldPosition = cameraWorldPosition;
 
 	size_t counter = 0;
@@ -892,12 +889,37 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 }
 
 /*
+*	Updates the physical entities graphics buffers.
+*/
+void GraphicsSystem::UpdatePhysicalEntitiesGraphicsBuffers() CATALYST_NOEXCEPT
+{
+	//Iterate over all physical entity components and update the graphics buffers.
+	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
+	GraphicsBufferComponent *CATALYST_RESTRICT graphicsBufferComponent{ ComponentManager::GetPhysicalEntityGraphicsBufferComponents() };
+	const TransformComponent *CATALYST_RESTRICT transformComponent{ ComponentManager::GetPhysicalEntityTransformComponents() };
+
+	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++graphicsBufferComponent, ++transformComponent)
+	{
+		//Calculate the model matrix.
+		Matrix4 modelMatrix{ transformComponent->position, transformComponent->rotation, transformComponent->scale };
+
+		//Upload the model matrix.
+		graphicsBufferComponent->uniformBuffer.UploadData(&modelMatrix);
+	}
+}
+
+/*
 *	Updates the view frustum culling.
 */
 void GraphicsSystem::UpdateViewFrustumCulling() CATALYST_NOEXCEPT
 {
-	//Make a local copies of all values that will be worked with.
-	const Matrix4 localViewMatrix = viewMatrix.GetSafe();
+	//Calulate the view matrix.
+	Vector3 cameraWorldPosition = activeCamera->GetPosition();
+	Vector3 forwardVector = activeCamera->GetForwardVector();
+	Vector3 upVector = activeCamera->GetUpVector();
+
+	Matrix4 cameraMatrix = Matrix4::LookAt(cameraWorldPosition, cameraWorldPosition + forwardVector, upVector);
+	Matrix4 viewMatrix{ projectionMatrix * cameraMatrix };
 
 	//Iterate over all physical entity components to check if they are in the view frustum.
 	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
@@ -929,7 +951,7 @@ void GraphicsSystem::UpdateViewFrustumCulling() CATALYST_NOEXCEPT
 		{
 			corners[i] += Vector4(position.X, position.Y, position.Z, 0.0f);
 
-			corners[i] = localViewMatrix * corners[i];
+			corners[i] = viewMatrix * corners[i];
 
 			corners[i].X /= corners[i].W;
 			corners[i].Y /= corners[i].W;

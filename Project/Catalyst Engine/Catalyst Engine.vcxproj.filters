@@ -587,6 +587,9 @@
     <ClInclude Include="..\..\Engine Source\Components\Include\RenderComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\GraphicsBufferComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Engine Source\Systems\Inline\EntitySystem.inl">

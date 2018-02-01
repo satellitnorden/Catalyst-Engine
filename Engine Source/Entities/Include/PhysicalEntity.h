@@ -63,24 +63,4 @@ public:
 	*/
 	void Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT final override;
 
-	/*
-	*	Updates the model matrix.
-	*/
-	void UpdateModelMatrix() CATALYST_NOEXCEPT;
-
-	/*
-	*	Returns the uniform buffer.
-	*/
-	CATALYST_RESTRICTED const VulkanUniformBuffer* GetUniformBuffer() const CATALYST_NOEXCEPT { return uniformBuffer; }
-
-	/*
-	*	Sets the uniform buffer.
-	*/
-	void SetUniformBuffer(VulkanUniformBuffer *CATALYST_RESTRICT newUniformBuffer) CATALYST_NOEXCEPT { uniformBuffer = newUniformBuffer; }
-
-private:
-
-	//The uniform buffer.
-	VulkanUniformBuffer *CATALYST_RESTRICT uniformBuffer;
-
 };

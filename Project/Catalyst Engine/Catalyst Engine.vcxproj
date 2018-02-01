@@ -87,6 +87,7 @@
     <ClInclude Include="..\..\Engine Source\Components\Include\CameraComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\ComponentManager.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\FrustumCullingComponent.h" />
+    <ClInclude Include="..\..\Engine Source\Components\Include\GraphicsBufferComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\RenderComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\PointLightComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\SpotLightComponent.h" />

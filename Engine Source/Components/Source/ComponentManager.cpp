@@ -7,6 +7,7 @@ DynamicArray<CameraComponent> ComponentManager::cameraEntityCameraComponents;
 
 size_t ComponentManager::numberOfPhysicalEntityComponents = 0;
 DynamicArray<FrustumCullingComponent> ComponentManager::physicalEntityFrustumCullingComponents;
+DynamicArray<GraphicsBufferComponent> ComponentManager::physicalEntityGraphicsBufferComponents;
 DynamicArray<RenderComponent> ComponentManager::physicalEntityRenderComponents;
 DynamicArray<TransformComponent> ComponentManager::physicalEntityTransformComponents;
 
@@ -53,6 +54,7 @@ size_t ComponentManager::GetNewPhysicalEntityComponentsIndex() CATALYST_NOEXCEPT
 {
 	//Create the relevant components.
 	physicalEntityFrustumCullingComponents.Emplace();
+	physicalEntityGraphicsBufferComponents.Emplace();
 	physicalEntityRenderComponents.Emplace();
 	physicalEntityTransformComponents.Emplace();
 
@@ -76,6 +78,15 @@ CATALYST_RESTRICTED FrustumCullingComponent* ComponentManager::GetPhysicalEntity
 {
 	//Return the physical entity frustum culling components.
 	return physicalEntityFrustumCullingComponents.Data();
+}
+
+/*
+*	Returns the physical entity graphics buffer components.
+*/
+CATALYST_RESTRICTED GraphicsBufferComponent* ComponentManager::GetPhysicalEntityGraphicsBufferComponents() CATALYST_NOEXCEPT
+{
+	//Return the physical entity graphics buffer components.
+	return physicalEntityGraphicsBufferComponents.Data();
 }
 
 /*

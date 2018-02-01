@@ -206,9 +206,6 @@ private:
 	//The current projection matrix.
 	Matrix4 projectionMatrix;
 
-	//The current view matrix.
-	MultithreadedResource<Matrix4> viewMatrix;
-
 	//The dynamic uniform data.
 	DynamicUniformData dynamicUniformData;
 
@@ -328,6 +325,11 @@ private:
 	*	Updates the dynamic uniform data.
 	*/
 	void UpdateDynamicUniformData() CATALYST_NOEXCEPT;
+
+	/*
+	*	Updates the physical entities graphics buffers.
+	*/
+	void UpdatePhysicalEntitiesGraphicsBuffers() CATALYST_NOEXCEPT;
 
 	/*
 	*	Updates the view frustum culling.
