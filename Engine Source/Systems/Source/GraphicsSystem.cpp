@@ -241,13 +241,13 @@ void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, co
 
 	//Fill the physical entity components with the relevant data.
 	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents()[physicalEntity.GetComponentsIndex()] };
-	PhysicalGraphicsComponent &newPhysicalGraphicsComponent{ ComponentManager::GetPhysicalEntityGraphicsComponents()[physicalEntity.GetComponentsIndex()] };
+	RenderComponent &renderComponent{ ComponentManager::GetPhysicalEntityRenderComponents()[physicalEntity.GetComponentsIndex()] };
 
 	frustumCullingComponent.modelExtent = model.GetExtent();
-	newPhysicalGraphicsComponent.descriptorSet = newDescriptorSet;
-	newPhysicalGraphicsComponent.vertexBuffer = *model.GetVertexBuffer();
-	newPhysicalGraphicsComponent.indexBuffer = *model.GetIndexBuffer();
-	newPhysicalGraphicsComponent.indexCount = model.GetIndexCount();
+	renderComponent.descriptorSet = newDescriptorSet;
+	renderComponent.vertexBuffer = *model.GetVertexBuffer();
+	renderComponent.indexBuffer = *model.GetIndexBuffer();
+	renderComponent.indexCount = model.GetIndexCount();
 }
 
 /*
@@ -690,18 +690,18 @@ void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 	//Iterate over all physical entity components and draw them all.
 	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
 	const FrustumCullingComponent *CATALYST_RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents() };
-	const PhysicalGraphicsComponent *CATALYST_RESTRICT graphicsComponent{ ComponentManager::GetPhysicalEntityGraphicsComponents() };
+	const RenderComponent *CATALYST_RESTRICT renderComponent{ ComponentManager::GetPhysicalEntityRenderComponents() };
 
-	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++graphicsComponent)
+	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{
 		//Don't draw this physical entity if it isn't in the view frustum.
 		if (!frustumCullingComponent->isInViewFrustum)
 			continue;
 
-		commandBuffer.CommandBindDescriptorSets(sceneBufferPipeline, graphicsComponent->descriptorSet);
-		commandBuffer.CommandBindVertexBuffers(graphicsComponent->vertexBuffer);
-		commandBuffer.CommandBindIndexBuffer(graphicsComponent->indexBuffer);
-		commandBuffer.CommandDrawIndexed(graphicsComponent->indexCount);
+		commandBuffer.CommandBindDescriptorSets(sceneBufferPipeline, renderComponent->descriptorSet);
+		commandBuffer.CommandBindVertexBuffers(renderComponent->vertexBuffer);
+		commandBuffer.CommandBindIndexBuffer(renderComponent->indexBuffer);
+		commandBuffer.CommandDrawIndexed(renderComponent->indexCount);
 	}
 
 	//End the render pass.

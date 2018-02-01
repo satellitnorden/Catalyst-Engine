@@ -8,7 +8,7 @@
 #include <VulkanIndexBuffer.h>
 #include <VulkanVertexBuffer.h>
 
-class PhysicalGraphicsComponent
+class RenderComponent
 {
 
 public:

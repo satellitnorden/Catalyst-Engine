@@ -6,7 +6,7 @@
 //Components.
 #include <CameraComponent.h>
 #include <FrustumCullingComponent.h>
-#include <PhysicalGraphicsComponent.h>
+#include <RenderComponent.h>
 #include <PointLightComponent.h>
 #include <SpotLightComponent.h>
 #include <TransformComponent.h>
@@ -65,9 +65,9 @@ public:
 	CATALYST_RESTRICTED static FrustumCullingComponent* GetPhysicalEntityFrustumCullingComponents() CATALYST_NOEXCEPT;
 
 	/*
-	*	Returns the physical entity graphics components.
+	*	Returns the physical entity render components.
 	*/
-	CATALYST_RESTRICTED static PhysicalGraphicsComponent* GetPhysicalEntityGraphicsComponents() CATALYST_NOEXCEPT;
+	CATALYST_RESTRICTED static RenderComponent* GetPhysicalEntityRenderComponents() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the physical entity transform components.
@@ -82,8 +82,8 @@ private:
 	//The physical entity frustum culling components.
 	static DynamicArray<FrustumCullingComponent> physicalEntityFrustumCullingComponents;
 
-	//The physical entity graphics components.
-	static DynamicArray<PhysicalGraphicsComponent> physicalEntityGraphicsComponents;
+	//The physical entity render components.
+	static DynamicArray<RenderComponent> physicalEntityRenderComponents;
 
 	//The physical entity transform components.
 	static DynamicArray<TransformComponent> physicalEntityTransformComponents;

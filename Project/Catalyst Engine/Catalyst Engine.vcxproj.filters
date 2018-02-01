@@ -566,9 +566,6 @@
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PostProcessingUniformData.h">
       <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Components\Include\PhysicalGraphicsComponent.h">
-      <Filter>Engine Source\Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Components\Include\ComponentManager.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
@@ -585,6 +582,9 @@
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Components\Include\SpotLightComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\RenderComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
   </ItemGroup>

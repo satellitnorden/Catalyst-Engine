@@ -7,7 +7,7 @@ DynamicArray<CameraComponent> ComponentManager::cameraEntityCameraComponents;
 
 size_t ComponentManager::numberOfPhysicalEntityComponents = 0;
 DynamicArray<FrustumCullingComponent> ComponentManager::physicalEntityFrustumCullingComponents;
-DynamicArray<PhysicalGraphicsComponent> ComponentManager::physicalEntityGraphicsComponents;
+DynamicArray<RenderComponent> ComponentManager::physicalEntityRenderComponents;
 DynamicArray<TransformComponent> ComponentManager::physicalEntityTransformComponents;
 
 size_t ComponentManager::numberOfPointLightEntityComponents = 0;
@@ -53,7 +53,7 @@ size_t ComponentManager::GetNewPhysicalEntityComponentsIndex() CATALYST_NOEXCEPT
 {
 	//Create the relevant components.
 	physicalEntityFrustumCullingComponents.Emplace();
-	physicalEntityGraphicsComponents.Emplace();
+	physicalEntityRenderComponents.Emplace();
 	physicalEntityTransformComponents.Emplace();
 
 	//Return the new index.
@@ -74,17 +74,17 @@ size_t ComponentManager::GetNumberOfPhysicalEntityComponents() CATALYST_NOEXCEPT
 */
 CATALYST_RESTRICTED FrustumCullingComponent* ComponentManager::GetPhysicalEntityFrustumCullingComponents() CATALYST_NOEXCEPT
 {
-	//Return physical entity frustum culling components.
+	//Return the physical entity frustum culling components.
 	return physicalEntityFrustumCullingComponents.Data();
 }
 
 /*
-*	Returns the physical entity graphics components.
+*	Returns the physical entity render components.
 */
-CATALYST_RESTRICTED PhysicalGraphicsComponent* ComponentManager::GetPhysicalEntityGraphicsComponents() CATALYST_NOEXCEPT
+CATALYST_RESTRICTED RenderComponent* ComponentManager::GetPhysicalEntityRenderComponents() CATALYST_NOEXCEPT
 {
-	//Return physical entity graphics components.
-	return physicalEntityGraphicsComponents.Data();
+	//Return the physical entity render components.
+	return physicalEntityRenderComponents.Data();
 }
 
 /*
@@ -92,7 +92,7 @@ CATALYST_RESTRICTED PhysicalGraphicsComponent* ComponentManager::GetPhysicalEnti
 */
 CATALYST_RESTRICTED TransformComponent* ComponentManager::GetPhysicalEntityTransformComponents() CATALYST_NOEXCEPT
 {
-	//Return physical entity frustum transform components.
+	//Return the physical entity frustum transform components.
 	return physicalEntityTransformComponents.Data();
 }
 
@@ -122,7 +122,7 @@ size_t ComponentManager::GetNumberOfPointLightEntityComponents() CATALYST_NOEXCE
 */
 CATALYST_RESTRICTED PointLightComponent* ComponentManager::GetPointLightEntityPointLightComponents() CATALYST_NOEXCEPT
 {
-	//Return point light entity point light components.
+	//Return the point light entity point light components.
 	return pointLightEntityPointLightComponents.Data();
 }
 
