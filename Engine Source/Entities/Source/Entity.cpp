@@ -87,34 +87,3 @@ Vector3 Entity::GetWorldScale() const CATALYST_NOEXCEPT
 
 	return worldScale;
 }
-
-/*
-*	Initializes physics for this entity.
-*/
-void Entity::InitializePhysics(const float initialMass, const Vector3 &initialVelocity) CATALYST_NOEXCEPT
-{
-	//Create the physics component.
-	PhysicsComponent *CATALYST_RESTRICT newPhysicsComponent = new PhysicsComponent(this, initialMass, initialVelocity);
-
-	//Register the physics component.
-	PhysicsSystem::Instance->RegisterPhysicsComponent(newPhysicsComponent);
-
-	//Add it to the components container.
-	components.Emplace(ComponentType::PhysicsComponent, static_cast<void *CATALYST_RESTRICT>(newPhysicsComponent));
-}
-
-/*
-*	Destroys this entity.
-*/
-void Entity::Destroy() CATALYST_NOEXCEPT
-{
-	//Destroy all components.
-	if (PhysicsComponent *CATALYST_RESTRICT physicsComponent{ GetPhysicsComponentSafe() })
-	{
-		//Unregister the physics component.
-		PhysicsSystem::Instance->UnregisterPhysicsComponent(physicsComponent);
-
-		//Delete it.
-		delete physicsComponent;
-	}
-}

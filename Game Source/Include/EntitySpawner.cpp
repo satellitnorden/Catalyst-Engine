@@ -54,7 +54,5 @@ void EntitySpawner::Update(const float deltaTime) CATALYST_NOEXCEPT
 		stone->Rotate(Vector3(0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f), 0.0f));
 		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
 		stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
-
-		stone->InitializePhysics(1'000.0f * stoneScale, Vector3(0.0f));
 	}
 }

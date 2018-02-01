@@ -31,7 +31,6 @@ void EntitySystem::ReleaseSystem() CATALYST_NOEXCEPT
 	//Destroy all remaining entities.
 	for (int64 i = Entity::instances.Size() - 1; i >= 0; --i)
 	{
-		Entity::instances[i]->Destroy();
 		delete Entity::instances[i];
 	}
 }
@@ -44,7 +43,6 @@ void EntitySystem::PreUpdateSystemSynchronous() CATALYST_NOEXCEPT
 	//Destroy all entities that are marked to be destroyed.
 	for (int64 i = entitiesToBeDestroyed.Size() - 1; i >= 0; --i)
 	{
-		entitiesToBeDestroyed[i]->Destroy();
 		delete entitiesToBeDestroyed[i];
 	}
 }

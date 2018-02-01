@@ -29,7 +29,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\Engine Source\Components\Source\Component.cpp" />
     <ClCompile Include="..\..\Engine Source\Components\Source\ComponentManager.cpp" />
-    <ClCompile Include="..\..\Engine Source\Components\Source\PhysicsComponent.cpp" />
     <ClCompile Include="..\..\Engine Source\Engine Core\Source\Main.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\CameraEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\Entity.cpp" />
@@ -91,7 +90,6 @@
     <ClInclude Include="..\..\Engine Source\Components\Include\ComponentManager.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\FrustumCullingComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\PhysicalGraphicsComponent.h" />
-    <ClInclude Include="..\..\Engine Source\Components\Include\PhysicsComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\TransformComponent.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\BitField.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreDefines.h" />
