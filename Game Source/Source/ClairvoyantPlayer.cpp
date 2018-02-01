@@ -61,7 +61,6 @@ void ClairvoyantPlayer::Update(const float deltaTime) CATALYST_NOEXCEPT
 
 	if (currentGamepadState.isConnected)
 	{
-
 		const float movementSpeed = 1.0f + (currentGamepadState.rightTriggerValue * 100.0f);
 
 		//Calculate camera movement.
