@@ -46,14 +46,24 @@ public:
 	void Initialize(const PhysicalModel &newModel) CATALYST_NOEXCEPT;
 
 	/*
+	*	Moves this physical entity.
+	*/
+	void Move(const Vector3 &moveVector) CATALYST_NOEXCEPT final override;
+
+	/*
+	*	Rotates this physical entity.
+	*/
+	void Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT final override;
+
+	/*
+	*	Scales this physical entity.
+	*/
+	void Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT final override;
+
+	/*
 	*	Updates the model matrix.
 	*/
 	void UpdateModelMatrix() CATALYST_NOEXCEPT;
-
-	/*
-	*	Returns the model extent.
-	*/
-	float GetModelExtent() const CATALYST_NOEXCEPT { return modelExtent; }
 
 	/*
 	*	Returns the uniform buffer.
@@ -65,28 +75,12 @@ public:
 	*/
 	void SetUniformBuffer(VulkanUniformBuffer *CATALYST_RESTRICT newUniformBuffer) CATALYST_NOEXCEPT { uniformBuffer = newUniformBuffer; }
 
-	/*
-	*	Returns the index for the physical graphics component.
-	*/
-	size_t GetPhysicalGraphicsComponentIndex() const CATALYST_NOEXCEPT { return physicalGraphicsComponent; }
-
-	/*
-	*	Sets the index for the physical graphics component.
-	*/
-	void SetPhysicalGraphicsComponentIndex(const size_t newPhysicalGraphicsComponent) CATALYST_NOEXCEPT { physicalGraphicsComponent = newPhysicalGraphicsComponent; }
-
 private:
 
 	//The model matrix.
 	Matrix4 modelMatrix;
 
-	//The model extent.
-	float modelExtent;
-
 	//The uniform buffer.
 	VulkanUniformBuffer *CATALYST_RESTRICT uniformBuffer;
-
-	//The index for the physical graphics component.
-	size_t physicalGraphicsComponent;
 
 };

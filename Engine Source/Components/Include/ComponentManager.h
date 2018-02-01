@@ -4,7 +4,9 @@
 #include <EngineCore.h>
 
 //Components.
+#include <FrustumCullingComponent.h>
 #include <PhysicalGraphicsComponent.h>
+#include <TransformComponent.h>
 
 class ComponentManager
 {
@@ -12,28 +14,42 @@ class ComponentManager
 public:
 
 	/*
-	*	Returns the physical graphics components.
+	*	Returns a new components index for physical entities.
 	*/
-	static const DynamicArray<PhysicalGraphicsComponent>& GetPhysicalGraphicsComponents() CATALYST_NOEXCEPT;
+	static size_t GetNewPhysicalEntityComponentsIndex() CATALYST_NOEXCEPT;
 
 	/*
-	*	Returns the index for a new physical entity graphics component.
+	*	Returns the number of physical entity components.
 	*/
-	static size_t GetNewPhysicalGraphicsComponent() CATALYST_NOEXCEPT;
+	static size_t GetNumberOfPhysicalEntityComponents() CATALYST_NOEXCEPT;
 
 	/*
-	*	Returns the physical entity graphics component at the specified index, const.
+	*	Returns physical entity frustum culling components.
 	*/
-	static const PhysicalGraphicsComponent& GetPhysicalGraphicsComponentConst(const size_t index) CATALYST_NOEXCEPT;
+	CATALYST_RESTRICTED static FrustumCullingComponent* GetPhysicalEntityFrustumCullingComponents() CATALYST_NOEXCEPT;
 
 	/*
-	*	Returns the physical entity graphics component at the specified index, non-const.
+	*	Returns physical entity graphics components.
 	*/
-	static PhysicalGraphicsComponent& GetPhysicalGraphicsComponentNonConst(const size_t index) CATALYST_NOEXCEPT;
+	CATALYST_RESTRICTED static PhysicalGraphicsComponent* GetPhysicalEntityGraphicsComponents() CATALYST_NOEXCEPT;
+
+	/*
+	*	Returns physical entity transform components.
+	*/
+	CATALYST_RESTRICTED static TransformComponent* GetPhysicalEntityTransformComponents() CATALYST_NOEXCEPT;
 
 private:
 
-	//The physical graphics components.
-	static DynamicArray<PhysicalGraphicsComponent> physicalGraphicsComponents;
+	//The number of physical entity components.
+	static size_t numberOfPhysicalEntityComponents;
+
+	//The physical entity frustum culling components.
+	static DynamicArray<FrustumCullingComponent> physicalEntityFrustumCullingComponents;
+
+	//The physical entity graphics components.
+	static DynamicArray<PhysicalGraphicsComponent> physicalEntityGraphicsComponents;
+
+	//The physical entity transform components.
+	static DynamicArray<TransformComponent> physicalEntityTransformComponents;
 
 };

@@ -239,16 +239,15 @@ void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, co
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
-	//Fill the physical graphics component with all the data.
-	const size_t newPhysicalGraphicsComponentIndex{ ComponentManager::GetNewPhysicalGraphicsComponent() };
-	PhysicalGraphicsComponent &newPhysicalGraphicsComponent{ ComponentManager::GetPhysicalGraphicsComponentNonConst(newPhysicalGraphicsComponentIndex) };
+	//Fill the physical entity components with the relevant data.
+	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents()[physicalEntity.GetComponentsIndex()] };
+	PhysicalGraphicsComponent &newPhysicalGraphicsComponent{ ComponentManager::GetPhysicalEntityGraphicsComponents()[physicalEntity.GetComponentsIndex()] };
 
+	frustumCullingComponent.modelExtent = model.GetExtent();
 	newPhysicalGraphicsComponent.descriptorSet = newDescriptorSet;
 	newPhysicalGraphicsComponent.vertexBuffer = *model.GetVertexBuffer();
 	newPhysicalGraphicsComponent.indexBuffer = *model.GetIndexBuffer();
 	newPhysicalGraphicsComponent.indexCount = model.GetIndexCount();
-
-	physicalEntity.SetPhysicalGraphicsComponentIndex(newPhysicalGraphicsComponentIndex);
 }
 
 /*
@@ -688,17 +687,21 @@ void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 	VulkanPipeline &sceneBufferPipeline{ *pipelines[Pipeline::SceneBufferPipeline] };
 	VulkanCommandBuffer &commandBuffer{ swapchainCommandBuffers[currentSwapchainCommandBuffer] };
 
-	//Iterate over all physical graphics components and draw them all.
-	for (const PhysicalGraphicsComponent &physicalGraphicsComponent : ComponentManager::GetPhysicalGraphicsComponents())
+	//Iterate over all physical entity components and draw them all.
+	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
+	const FrustumCullingComponent *CATALYST_RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents() };
+	const PhysicalGraphicsComponent *CATALYST_RESTRICT graphicsComponent{ ComponentManager::GetPhysicalEntityGraphicsComponents() };
+
+	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++graphicsComponent)
 	{
 		//Don't draw this physical entity if it isn't in the view frustum.
-		if (!physicalGraphicsComponent.isInViewFrustum)
+		if (!frustumCullingComponent->isInViewFrustum)
 			continue;
 
-		commandBuffer.CommandBindDescriptorSets(sceneBufferPipeline, physicalGraphicsComponent.descriptorSet);
-		commandBuffer.CommandBindVertexBuffers(physicalGraphicsComponent.vertexBuffer);
-		commandBuffer.CommandBindIndexBuffer(physicalGraphicsComponent.indexBuffer);
-		commandBuffer.CommandDrawIndexed(physicalGraphicsComponent.indexCount);
+		commandBuffer.CommandBindDescriptorSets(sceneBufferPipeline, graphicsComponent->descriptorSet);
+		commandBuffer.CommandBindVertexBuffers(graphicsComponent->vertexBuffer);
+		commandBuffer.CommandBindIndexBuffer(graphicsComponent->indexBuffer);
+		commandBuffer.CommandDrawIndexed(graphicsComponent->indexCount);
 	}
 
 	//End the render pass.
@@ -890,16 +893,17 @@ void GraphicsSystem::UpdateViewFrustumCulling() CATALYST_NOEXCEPT
 	//Make a local copies of all values that will be worked with.
 	const Matrix4 localViewMatrix = viewMatrix.GetSafe();
 
-	//Iterate over all physical entities to check if they are in the view frustum.
-	for (PhysicalEntity * CATALYST_RESTRICT physicalEntity : PhysicalEntity::instances)
-	{
-		const size_t physicalGraphicsComponentIndex{ physicalEntity->GetPhysicalGraphicsComponentIndex() };
-		PhysicalGraphicsComponent &physicalGraphicsComponent{ ComponentManager::GetPhysicalGraphicsComponentNonConst(physicalGraphicsComponentIndex) };
+	//Iterate over all physical entity components to check if they are in the view frustum.
+	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
+	FrustumCullingComponent *CATALYST_RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents() };
+	const TransformComponent *CATALYST_RESTRICT transformComponent{ ComponentManager::GetPhysicalEntityTransformComponents() };
 
+	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++transformComponent)
+	{
 		//Make a local copy of the physical entity's position.
-		const Vector3 position = physicalEntity->GetWorldPosition();
-		const Vector3 scale = physicalEntity->GetWorldScale();
-		const float extent = physicalEntity->GetModelExtent();
+		const Vector3 position = transformComponent->position;
+		const Vector3 scale = transformComponent->scale;
+		const float extent = frustumCullingComponent->modelExtent;
 		const float biggestScale = GameMath::Maximum(scale.X, GameMath::Maximum(scale.Y, scale.Z));
 		const float scaledExtent = extent * biggestScale;
 
@@ -926,6 +930,6 @@ void GraphicsSystem::UpdateViewFrustumCulling() CATALYST_NOEXCEPT
 			corners[i].Z /= corners[i].W;
 		}
 
-		physicalGraphicsComponent.isInViewFrustum.store(GraphicsUtilities::IsCubeWithinViewFrustum(corners));
+		frustumCullingComponent->isInViewFrustum = GraphicsUtilities::IsCubeWithinViewFrustum(corners);
 	}
 }

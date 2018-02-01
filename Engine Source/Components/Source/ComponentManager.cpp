@@ -2,43 +2,57 @@
 #include <ComponentManager.h>
 
 //Static variable definitions.
-DynamicArray<PhysicalGraphicsComponent> ComponentManager::physicalGraphicsComponents;
+size_t ComponentManager::numberOfPhysicalEntityComponents = 0;
+DynamicArray<FrustumCullingComponent> ComponentManager::physicalEntityFrustumCullingComponents;
+DynamicArray<PhysicalGraphicsComponent> ComponentManager::physicalEntityGraphicsComponents;
+DynamicArray<TransformComponent> ComponentManager::physicalEntityTransformComponents;
 
 /*
-*	Returns the physical graphics components.
+*	Returns a new components index for physical entities.
 */
-const DynamicArray<PhysicalGraphicsComponent>& ComponentManager::GetPhysicalGraphicsComponents() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNewPhysicalEntityComponentsIndex() CATALYST_NOEXCEPT
 {
-	//Return the physical graphics components.
-	return physicalGraphicsComponents;
-}
-
-/*
-*	Returns the index for a new physical entity graphics component.
-*/
-size_t ComponentManager::GetNewPhysicalGraphicsComponent() CATALYST_NOEXCEPT
-{
-	//Emplace a new physical graphics component.
-	physicalGraphicsComponents.Emplace();
+	//Create the relevant components.
+	physicalEntityFrustumCullingComponents.Emplace();
+	physicalEntityGraphicsComponents.Emplace();
+	physicalEntityTransformComponents.Emplace();
 
 	//Return the new index.
-	return physicalGraphicsComponents.Size() - 1;
+	return numberOfPhysicalEntityComponents++;
 }
 
 /*
-*	Returns the physical entity graphics component at the specified index.
+*	Returns the number of physical entity components.
 */
-const PhysicalGraphicsComponent& ComponentManager::GetPhysicalGraphicsComponentConst(const size_t index) CATALYST_NOEXCEPT
+size_t ComponentManager::GetNumberOfPhysicalEntityComponents() CATALYST_NOEXCEPT
 {
-	//Return the physical entity graphics component at the specified index.
-	return physicalGraphicsComponents[index];
+	//Return the number of physical entity components.
+	return numberOfPhysicalEntityComponents;
 }
 
 /*
-*	Returns the physical entity graphics component at the specified index, non-const.
+*	Returns physical entity frustum culling components.
 */
-PhysicalGraphicsComponent& ComponentManager::GetPhysicalGraphicsComponentNonConst(const size_t index) CATALYST_NOEXCEPT
+CATALYST_RESTRICTED FrustumCullingComponent* ComponentManager::GetPhysicalEntityFrustumCullingComponents() CATALYST_NOEXCEPT
 {
-	//Return the physical entity graphics component at the specified index.
-	return physicalGraphicsComponents[index];
+	//Return physical entity frustum culling components.
+	return physicalEntityFrustumCullingComponents.Data();
+}
+
+/*
+*	Returns physical entity graphics components.
+*/
+CATALYST_RESTRICTED PhysicalGraphicsComponent* ComponentManager::GetPhysicalEntityGraphicsComponents() CATALYST_NOEXCEPT
+{
+	//Return physical entity graphics components.
+	return physicalEntityGraphicsComponents.Data();
+}
+
+/*
+*	Returns physical entity frustum transform components.
+*/
+CATALYST_RESTRICTED TransformComponent* ComponentManager::GetPhysicalEntityTransformComponents() CATALYST_NOEXCEPT
+{
+	//Return physical entity frustum transform components.
+	return physicalEntityTransformComponents.Data();
 }

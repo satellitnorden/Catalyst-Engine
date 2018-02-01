@@ -590,6 +590,12 @@
     <ClInclude Include="..\..\Engine Source\Components\Include\ComponentManager.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\TransformComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\FrustumCullingComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Engine Source\Systems\Inline\EntitySystem.inl">

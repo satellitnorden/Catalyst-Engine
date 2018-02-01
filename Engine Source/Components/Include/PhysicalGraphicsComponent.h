@@ -13,9 +13,6 @@ class PhysicalGraphicsComponent
 
 public:
 
-	//Denotes whether or not the physical entity is in the view frustum.
-	std::atomic<bool> isInViewFrustum{ true };
-
 	//The descriptor set.
 	VulkanDescriptorSet descriptorSet;
 

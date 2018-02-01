@@ -31,6 +31,11 @@ public:
 	virtual ~Entity() CATALYST_NOEXCEPT;
 
 	/*
+	*	Returns the component index.
+	*/
+	size_t GetComponentsIndex() const CATALYST_NOEXCEPT { return componentsIndex; }
+
+	/*
 	*	Returns a pointer to the parent of this entity.
 	*/
 	CATALYST_RESTRICTED const Entity* GetParent() const CATALYST_NOEXCEPT { return parent; }
@@ -106,24 +111,19 @@ public:
 	void SetLocalRotation(const Vector3 &newLocalRotation) CATALYST_NOEXCEPT { localRotation = newLocalRotation; }
 
 	/*
-	*	Sets the local scale of this entity.
-	*/
-	void SetLocalScale(const Vector3 &newLocalScale) CATALYST_NOEXCEPT { localScale = newLocalScale; }
-
-	/*
 	*	Move the local position by a certain amount.
 	*/
-	void Move(const Vector3 &moveVector) CATALYST_NOEXCEPT { localPosition.Set(localPosition.GetSafe() + moveVector); }
+	virtual void Move(const Vector3 &moveVector) CATALYST_NOEXCEPT { localPosition.Set(localPosition.GetSafe() + moveVector); }
 
 	/*
 	*	Rotate the local rotation by a certain amount.
 	*/
-	void Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT { localRotation += rotateVector; }
+	virtual void Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT { localRotation += rotateVector; }
 
 	/*
 	*	Scale the local scale by a certain amount.
 	*/
-	void Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT { localScale *= scaleVector; }
+	virtual void Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT { localScale *= scaleVector; }
 
 	/*
 	*	Returns the forward vector.
@@ -172,6 +172,9 @@ protected:
 
 	//Pointers to this entity's children.
 	DynamicArray<Entity *CATALYST_RESTRICT> children;
+
+	//The components index for this entity.
+	size_t componentsIndex;
 
 	//The local position of this world entity.
 	MultithreadedResource<Vector3> localPosition{ 0.0f, 0.0f, 0.0f };
