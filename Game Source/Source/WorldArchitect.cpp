@@ -6,6 +6,9 @@
 #include <PointLightEntity.h>
 #include <SpotLightEntity.h>
 
+//Graphics.
+#include <PhysicalModel.h>
+
 //Math.
 #include <GameMath.h>
 
@@ -59,7 +62,7 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	{
 		PointLightEntity *light = EntitySystem::Instance->CreateEntity<PointLightEntity>();
 		light->SetAttenuationDistance(1'000.0f);
-		light->SetLightColor(Vector3(GameMath::RandomFloatInRange(0.0f, 1.0f), GameMath::RandomFloatInRange(0.0f, 1.0f), GameMath::RandomFloatInRange(0.0f, 1.0f)));
+		light->SetColor(Vector3(GameMath::RandomFloatInRange(0.0f, 1.0f), GameMath::RandomFloatInRange(0.0f, 1.0f), GameMath::RandomFloatInRange(0.0f, 1.0f)));
 		light->Move(pointLightPositions[i]);
 		light->SetIntensity(10.0f);
 	}

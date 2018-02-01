@@ -3,11 +3,8 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Math.
-#include <Vector3.h>
-
-//Multithreading.
-#include <MultithreadedResource.h>
+//Forward declarations.
+class Vector3;
 
 class Entity
 {
@@ -58,84 +55,34 @@ public:
 	void MarkForDestruction() CATALYST_NOEXCEPT;
 
 	/*
-	*	Returns the world position of this entity.
+	*	Returns the position of this entity.
 	*/
-	Vector3 GetWorldPosition() const CATALYST_NOEXCEPT;
+	virtual Vector3& GetPosition() CATALYST_NOEXCEPT = 0;
 
 	/*
-	*	Returns the world rotation of this entity.
+	*	Returns the rotation of this entity.
 	*/
-	Vector3 GetWorldRotation() const CATALYST_NOEXCEPT;
+	virtual Vector3& GetRotation() CATALYST_NOEXCEPT = 0;
 
 	/*
-	*	Returns the world position of this entity.
+	*	Returns the scale of this entity.
 	*/
-	Vector3 GetWorldScale() const CATALYST_NOEXCEPT;
+	virtual Vector3& GetScale() CATALYST_NOEXCEPT = 0;
 
 	/*
-	*	Returns the local rotation of this entity, const.
+	*	Moves this entity.
 	*/
-	const Vector3& GetLocalRotation() const CATALYST_NOEXCEPT { return localRotation; }
+	virtual void Move(const Vector3 &moveVector) CATALYST_NOEXCEPT = 0;
 
 	/*
-	*	Returns the local scale of this entity, const.
+	*	Rotates this entity.
 	*/
-	const Vector3& GetLocalScale() const CATALYST_NOEXCEPT { return localScale; }
+	virtual void Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT = 0;
 
 	/*
-	*	Returns the local position of this entity, non-const.
+	*	Scales this entity.
 	*/
-	Vector3 GetLocalPosition() const CATALYST_NOEXCEPT { return localPosition.GetSafe(); }
-
-	/*
-	*	Returns the local rotation of this entity, non-const.
-	*/
-	Vector3 GetLocalRotation() CATALYST_NOEXCEPT { return localRotation; }
-
-	/*
-	*	Returns the local scale of this entity, non-const.
-	*/
-	Vector3 GetLocalScale() CATALYST_NOEXCEPT { return localScale; }
-
-	/*
-	*	Sets the local position of this entity.
-	*/
-	void SetLocalPosition(const Vector3 &newLocalPosition) CATALYST_NOEXCEPT { localPosition.Set(newLocalPosition); }
-
-	/*
-	*	Sets the local rotation of this entity.
-	*/
-	void SetLocalRotation(const Vector3 &newLocalRotation) CATALYST_NOEXCEPT { localRotation = newLocalRotation; }
-
-	/*
-	*	Move the local position by a certain amount.
-	*/
-	virtual void Move(const Vector3 &moveVector) CATALYST_NOEXCEPT { localPosition.Set(localPosition.GetSafe() + moveVector); }
-
-	/*
-	*	Rotate the local rotation by a certain amount.
-	*/
-	virtual void Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT { localRotation += rotateVector; }
-
-	/*
-	*	Scale the local scale by a certain amount.
-	*/
-	virtual void Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT { localScale *= scaleVector; }
-
-	/*
-	*	Returns the forward vector.
-	*/
-	Vector3 GetForwardVector() const CATALYST_NOEXCEPT { return Vector3(0.0f, 0.0f, -1.0f).Rotated(GetWorldRotation()); }
-
-	/*
-	*	Returns the right vector.
-	*/
-	Vector3 GetRightVector() const CATALYST_NOEXCEPT { return Vector3(1.0f, 0.0f, 0.0f).Rotated(GetWorldRotation()); }
-
-	/*
-	*	Returns the up vector.
-	*/
-	Vector3 GetUpVector() const CATALYST_NOEXCEPT { return Vector3(0.0f, 1.0f, 0.0f).Rotated(GetWorldRotation()); }
+	virtual void Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT = 0;
 
 protected:
 
@@ -147,15 +94,6 @@ protected:
 
 	//The components index for this entity.
 	size_t componentsIndex;
-
-	//The local position of this world entity.
-	MultithreadedResource<Vector3> localPosition{ 0.0f, 0.0f, 0.0f };
-
-	//The local rotation of this world entity.
-	Vector3 localRotation{ 0.0f, 0.0f, 0.0f };
-
-	//The local scale of this world entity.
-	Vector3 localScale{ 1.0f, 1.0f, 1.0f };
 
 private:
 

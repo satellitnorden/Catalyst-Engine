@@ -14,15 +14,15 @@ class PhysicalGraphicsComponent
 public:
 
 	//The descriptor set.
-	VulkanDescriptorSet descriptorSet;
+	VulkanDescriptorSet descriptorSet{ };
 
 	//The vertex buffer.
-	VulkanVertexBuffer vertexBuffer;
+	VulkanVertexBuffer vertexBuffer{};
 
 	//The index buffer.
-	VulkanIndexBuffer indexBuffer;
+	VulkanIndexBuffer indexBuffer{};
 
 	//The index count.
-	uint32 indexCount;
+	uint32 indexCount{ 0 };
 
 };

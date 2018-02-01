@@ -29,19 +29,4 @@ public:
 	*/
 	void UpdateSystemSynchronous(const float deltaTime) CATALYST_NOEXCEPT;
 
-	/*
-	*	Registers a physics component.
-	*/
-	void RegisterPhysicsComponent(PhysicsComponent *CATALYST_RESTRICT newPhysicsComponent) CATALYST_NOEXCEPT;
-
-	/*
-	*	Unregisters a physics component.
-	*/
-	void UnregisterPhysicsComponent(PhysicsComponent *CATALYST_RESTRICT physicsComponent) CATALYST_NOEXCEPT;
-
-private:
-
-	//Container for all physics component.
-	DynamicArray<PhysicsComponent *CATALYST_RESTRICT> physicsComponents;
-
 };

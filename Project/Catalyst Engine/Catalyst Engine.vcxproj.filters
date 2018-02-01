@@ -186,9 +186,6 @@
     <ClCompile Include="..\..\Game Source\Source\WorldArchitect.cpp">
       <Filter>Game Source\Clairvoyant</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Entities\Source\LightEntity.cpp">
-      <Filter>Engine Source\Entities\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine Source\Entities\Source\PointLightEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
@@ -382,9 +379,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Game Source\Include\WorldArchitect.h">
       <Filter>Game Source\Clairvoyant</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Entities\Include\LightEntity.h">
-      <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Entities\Include\PointLightEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
@@ -582,6 +576,15 @@
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Components\Include\FrustumCullingComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\PointLightComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\CameraComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\SpotLightComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
   </ItemGroup>

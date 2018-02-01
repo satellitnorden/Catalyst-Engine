@@ -814,7 +814,7 @@ void GraphicsSystem::ReinitializeDescriptorSets() CATALYST_NOEXCEPT
 void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 {
 	//Calculate the camera data
-	Vector3 cameraWorldPosition = activeCamera->GetWorldPosition();
+	Vector3 cameraWorldPosition = activeCamera->GetPosition();
 	Vector3 forwardVector = activeCamera->GetForwardVector();
 	Vector3 upVector = activeCamera->GetUpVector();
 
@@ -838,45 +838,51 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 
 	size_t counter = 0;
 
-	dynamicUniformData.numberOfPointLights = static_cast<uint64>(PointLightEntity::instances.Size());
+	const size_t numberOfPointLightEntityComponents{ ComponentManager::GetNumberOfPointLightEntityComponents() };
+	const PointLightComponent *CATALYST_RESTRICT pointLightComponent{ ComponentManager::GetPointLightEntityPointLightComponents() };
 
-	for (size_t i = 0; i < static_cast<uint64>(PointLightEntity::instances.Size()); ++i)
+	dynamicUniformData.numberOfPointLights = numberOfPointLightEntityComponents;
+
+	for (size_t i = 0; i < static_cast<uint64>(PointLightEntity::instances.Size()); ++i, ++pointLightComponent)
 	{
-		if (!PointLightEntity::instances[i]->GetEnabled())
+		if (!pointLightComponent->enabled)
 		{
 			--dynamicUniformData.numberOfPointLights;
 
 			continue;
 		}
 
-		dynamicUniformData.pointLightAttenuationDistances[counter] = PointLightEntity::instances[counter]->GetAttenuationDistance();
-		dynamicUniformData.pointLightIntensities[counter] = PointLightEntity::instances[counter]->GetIntensity();
-		dynamicUniformData.pointLightColors[i] = PointLightEntity::instances[counter]->GetLightColor();
-		dynamicUniformData.pointLightWorldPositions[counter] = PointLightEntity::instances[counter]->GetWorldPosition();
+		dynamicUniformData.pointLightAttenuationDistances[counter] = pointLightComponent->attenuationDistance;
+		dynamicUniformData.pointLightIntensities[counter] = pointLightComponent->intensity;
+		dynamicUniformData.pointLightColors[counter] = pointLightComponent->color;
+		dynamicUniformData.pointLightWorldPositions[counter] = pointLightComponent->position;
 
 		++counter;
 	}
 
 	counter = 0;
 
-	dynamicUniformData.numberOfSpotLights = static_cast<uint64>(SpotLightEntity::instances.Size());
+	const size_t numberOfSpotLightEntityComponents{ ComponentManager::GetNumberOfSpotLightEntityComponents() };
+	const SpotLightComponent *CATALYST_RESTRICT spotLightComponent{ ComponentManager::GetSpotLightEntitySpotLightComponents() };
 
-	for (size_t i = 0; i < static_cast<uint64>(SpotLightEntity::instances.Size()); ++i)
+	dynamicUniformData.numberOfSpotLights = numberOfSpotLightEntityComponents;
+
+	for (size_t i = 0; i < static_cast<uint64>(SpotLightEntity::instances.Size()); ++i, ++spotLightComponent)
 	{
-		if (!SpotLightEntity::instances[i]->GetEnabled())
+		if (!spotLightComponent->enabled)
 		{
 			--dynamicUniformData.numberOfSpotLights;
 
 			continue;
 		}
 
-		dynamicUniformData.spotLightAttenuationDistances[counter] = SpotLightEntity::instances[i]->GetAttenuationDistance();
-		dynamicUniformData.spotLightIntensities[counter] = SpotLightEntity::instances[i]->GetIntensity();
-		dynamicUniformData.spotLightInnerCutoffAngles[counter] = GameMath::CosineDegrees(SpotLightEntity::instances[i]->GetInnerCutoffAngle());
-		dynamicUniformData.spotLightOuterCutoffAngles[counter] = GameMath::CosineDegrees(SpotLightEntity::instances[i]->GetOuterCutoffAngle());
-		dynamicUniformData.spotLightColors[counter] = SpotLightEntity::instances[i]->GetLightColor();
-		dynamicUniformData.spotLightDirections[counter] = SpotLightEntity::instances[i]->GetDirection();
-		dynamicUniformData.spotLightWorldPositions[counter] = SpotLightEntity::instances[i]->GetWorldPosition();
+		dynamicUniformData.spotLightAttenuationDistances[counter] = spotLightComponent->attenuationDistance;
+		dynamicUniformData.spotLightIntensities[counter] = spotLightComponent->intensity;
+		dynamicUniformData.spotLightInnerCutoffAngles[counter] = GameMath::CosineDegrees(spotLightComponent->innerCutoffAngle);
+		dynamicUniformData.spotLightOuterCutoffAngles[counter] = GameMath::CosineDegrees(spotLightComponent->outerCutoffAngle);
+		dynamicUniformData.spotLightColors[counter] = spotLightComponent->color;
+		dynamicUniformData.spotLightDirections[counter] = Vector3(0.0f, 0.0f, -1.0f).Rotated(spotLightComponent->rotation);
+		dynamicUniformData.spotLightWorldPositions[counter] = spotLightComponent->position;
 
 		++counter;
 	}

@@ -4,13 +4,12 @@
 #include <EngineCore.h>
 
 //Entities.
-#include <Entity.h>
+#include <CameraEntity.h>
 
 //Forward declarations.
-class CameraEntity;
 class SpotLightEntity;
 
-class ClairvoyantPlayer final : public Entity
+class ClairvoyantPlayer final : public CameraEntity
 {
 
 public:
@@ -36,9 +35,6 @@ public:
 	void Update(const float deltaTime) CATALYST_NOEXCEPT;
 
 private:
-
-	//The camera of the player.
-	CameraEntity *camera{ nullptr };
 
 	//The flashlight of this player.
 	SpotLightEntity *flashlight;

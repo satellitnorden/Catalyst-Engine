@@ -3,23 +3,11 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Components.
-#include <ComponentManager.h>
-
 //Entities.
 #include <Entity.h>
 
-//Graphics.
-#include <PhysicalModel.h>
-
-//Math.
-#include <Matrix4.h>
-
-//Vulkan.
-#include <VulkanDescriptorSet.h>
-
 //Forward declarations.
-class CameraEntity;
+class PhysicalModel;
 class VulkanUniformBuffer;
 
 class PhysicalEntity : public Entity
@@ -46,17 +34,32 @@ public:
 	void Initialize(const PhysicalModel &newModel) CATALYST_NOEXCEPT;
 
 	/*
-	*	Moves this physical entity.
+	*	Returns the position of this entity.
+	*/
+	Vector3& GetPosition() CATALYST_NOEXCEPT final override;
+
+	/*
+	*	Returns the rotation of this entity.
+	*/
+	Vector3& GetRotation() CATALYST_NOEXCEPT final override;
+
+	/*
+	*	Returns the scale of this entity.
+	*/
+	Vector3& GetScale() CATALYST_NOEXCEPT final override;
+
+	/*
+	*	Moves this entity.
 	*/
 	void Move(const Vector3 &moveVector) CATALYST_NOEXCEPT final override;
 
 	/*
-	*	Rotates this physical entity.
+	*	Rotates this entity.
 	*/
 	void Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT final override;
 
 	/*
-	*	Scales this physical entity.
+	*	Scales this entity.
 	*/
 	void Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT final override;
 
@@ -76,9 +79,6 @@ public:
 	void SetUniformBuffer(VulkanUniformBuffer *CATALYST_RESTRICT newUniformBuffer) CATALYST_NOEXCEPT { uniformBuffer = newUniformBuffer; }
 
 private:
-
-	//The model matrix.
-	Matrix4 modelMatrix;
 
 	//The uniform buffer.
 	VulkanUniformBuffer *CATALYST_RESTRICT uniformBuffer;

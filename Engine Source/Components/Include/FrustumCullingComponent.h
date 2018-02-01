@@ -9,9 +9,9 @@ class FrustumCullingComponent
 public:
 
 	//Whether or not the entity is in the view frustum.
-	bool isInViewFrustum;
+	bool isInViewFrustum{ true };
 
 	//The model extent.
-	float modelExtent;
+	float modelExtent{ 0.0f };
 
 };

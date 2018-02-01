@@ -31,7 +31,6 @@
     <ClCompile Include="..\..\Engine Source\Engine Core\Source\Main.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\CameraEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\Entity.cpp" />
-    <ClCompile Include="..\..\Engine Source\Entities\Source\LightEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\PhysicalEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\PointLightEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\SpotLightEntity.cpp" />
@@ -85,9 +84,12 @@
     <ClCompile Include="..\..\Game Source\Source\WorldArchitect.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Engine Source\Components\Include\CameraComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\ComponentManager.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\FrustumCullingComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\PhysicalGraphicsComponent.h" />
+    <ClInclude Include="..\..\Engine Source\Components\Include\PointLightComponent.h" />
+    <ClInclude Include="..\..\Engine Source\Components\Include\SpotLightComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\TransformComponent.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\BitField.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreDefines.h" />
@@ -106,7 +108,6 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\UniquePointer.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\CameraEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\Entity.h" />
-    <ClInclude Include="..\..\Engine Source\Entities\Include\LightEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\PhysicalEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\PointLightEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\SpotLightEntity.h" />

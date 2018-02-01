@@ -36,12 +36,10 @@ ClairvoyantPlayer::~ClairvoyantPlayer() CATALYST_NOEXCEPT
 void ClairvoyantPlayer::Initialize() CATALYST_NOEXCEPT
 {
 	//Add a camera.
-	camera = EntitySystem::Instance->CreateChildEntity<CameraEntity>(this);
-	camera->Move(Vector3(0.0f, 2.0f, 0.0f));
-	GraphicsSystem::Instance->SetActiveCamera(camera);
+	GraphicsSystem::Instance->SetActiveCamera(this);
 
 	//Add the flashlight.
-	flashlight = EntitySystem::Instance->CreateChildEntity<SpotLightEntity>(camera);
+	flashlight = EntitySystem::Instance->CreateChildEntity<SpotLightEntity>(this);
 	flashlight->SetEnabled(false);
 	flashlight->SetAttenuationDistance(100.0f);
 	flashlight->SetIntensity(25.0f);
@@ -65,17 +63,15 @@ void ClairvoyantPlayer::Update(const float deltaTime) CATALYST_NOEXCEPT
 
 		//Calculate camera movement.
 		Rotate(Vector3(0.0f, currentGamepadState.rightThumbstickXValue * -cameraLookSpeed * deltaTime, 0.0f));
-		camera->Rotate(Vector3(currentGamepadState.rightThumbstickYValue * cameraLookSpeed * deltaTime, 0.0f, 0.0f));
+		Rotate(Vector3(currentGamepadState.rightThumbstickYValue * cameraLookSpeed * deltaTime, 0.0f, 0.0f));
 
-		Vector3 cameraLocalRotation = camera->GetLocalRotation();
+		Vector3 &rotation = GetRotation();
 
-		if (cameraLocalRotation.X > 89.0f)
-			cameraLocalRotation.X = 89.0f;
+		if (rotation.X > 89.0f)
+			rotation.X = 89.0f;
 
-		else if (cameraLocalRotation.X < -89.0f)
-			cameraLocalRotation.X = -89.0f;
-
-		camera->SetLocalRotation(cameraLocalRotation);
+		else if (rotation.X < -89.0f)
+			rotation.X = -89.0f;
 
 		//Move.
 		Move(GetRightVector() * currentGamepadState.leftThumbstickXValue * deltaTime * movementSpeed);

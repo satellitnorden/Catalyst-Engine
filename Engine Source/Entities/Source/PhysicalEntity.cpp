@@ -4,9 +4,6 @@
 //Components.
 #include <ComponentManager.h>
 
-//Entities.
-#include <CameraEntity.h>
-
 //Systems.
 #include <GraphicsSystem.h>
 
@@ -44,30 +41,75 @@ void PhysicalEntity::Initialize(const PhysicalModel &newModel) CATALYST_NOEXCEPT
 }
 
 /*
-*	Moves this physical entity.
+*	Returns the position of this entity.
+*/
+Vector3& PhysicalEntity::GetPosition() CATALYST_NOEXCEPT
+{
+	//Return the position of this entity.
+	return ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].position;
+}
+
+/*
+*	Returns the rotation of this entity.
+*/
+Vector3& PhysicalEntity::GetRotation() CATALYST_NOEXCEPT
+{
+	//Return the rotation of this entity.
+	return ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].rotation;
+}
+
+/*
+*	Returns the scale of this entity.
+*/
+Vector3& PhysicalEntity::GetScale() CATALYST_NOEXCEPT
+{
+	//Return the scale of this entity.
+	return ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].scale;
+}
+
+/*
+*	Moves this entity.
 */
 void PhysicalEntity::Move(const Vector3 &moveVector) CATALYST_NOEXCEPT
 {
-	//Move this physical entity.
+	//Move this entity.
 	ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].position += moveVector;
+
+	//Move all children.
+	for (auto child : children)
+	{
+		child->Move(moveVector);
+	}
 }
 
 /*
-*	Rotates this physical entity.
+*	Rotates this entity.
 */
 void PhysicalEntity::Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT
 {
-	//Rotate this physical entity.
+	//Rotate this entity.
 	ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].rotation += rotateVector;
+
+	//Rotate all children.
+	for (auto child : children)
+	{
+		child->Rotate(rotateVector);
+	}
 }
 
 /*
-*	Scales this physical entity.
+*	Scales this entity.
 */
 void PhysicalEntity::Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT
 {
 	//Scale this physical entity.
 	ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].scale *= scaleVector;
+
+	//Scale all children.
+	for (auto child : children)
+	{
+		child->Scale(scaleVector);
+	}
 }
 
 /*
@@ -77,7 +119,7 @@ void PhysicalEntity::UpdateModelMatrix() CATALYST_NOEXCEPT
 {
 	//Calculate the new model matrix.
 	const TransformComponent &transformComponent{ ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex] };
-	modelMatrix = Matrix4(transformComponent.position, transformComponent.rotation, transformComponent.scale);
+	Matrix4 modelMatrix{ Matrix4(transformComponent.position, transformComponent.rotation, transformComponent.scale) };
 
 	//Upload the graphics matrix to the uniform buffer.
 	uniformBuffer->UploadData(static_cast<void *CATALYST_RESTRICT>(&modelMatrix));
