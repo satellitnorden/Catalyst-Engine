@@ -27,7 +27,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Engine Source\Components\Source\Component.cpp" />
     <ClCompile Include="..\..\Engine Source\Components\Source\ComponentManager.cpp" />
     <ClCompile Include="..\..\Engine Source\Engine Core\Source\Main.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\CameraEntity.cpp" />
@@ -86,7 +85,6 @@
     <ClCompile Include="..\..\Game Source\Source\WorldArchitect.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Engine Source\Components\Include\Component.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\ComponentManager.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\FrustumCullingComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\PhysicalGraphicsComponent.h" />
