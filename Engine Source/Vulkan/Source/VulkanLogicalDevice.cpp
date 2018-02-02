@@ -59,28 +59,26 @@ void VulkanLogicalDevice::Release() CATALYST_NOEXCEPT
 */
 void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const float *const CATALYST_RESTRICT queuePriorities) const CATALYST_NOEXCEPT
 {
-	VkDeviceQueueCreateInfo graphicsDeviceQueueCreateInfo;
+	//Gather all unique indices and how many queues will be created from them.
+	std::map<uint32, uint8> uniqueQueueFamilyIndices;
 
-	graphicsDeviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	graphicsDeviceQueueCreateInfo.pNext = nullptr;
-	graphicsDeviceQueueCreateInfo.flags = 0;
-	graphicsDeviceQueueCreateInfo.queueFamilyIndex = VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex();
-	graphicsDeviceQueueCreateInfo.queueCount = 1;
-	graphicsDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
+	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex()];
+	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetPhysicalDevice().GetTransferQueueFamilyIndex()];
+	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex()];
 
-	VkDeviceQueueCreateInfo presentDeviceQueueCreateInfo;
+	for (const auto uniqueQueueFamilyIndex : uniqueQueueFamilyIndices)
+	{
+		VkDeviceQueueCreateInfo newDeviceQueueCreateInfo;
 
-	presentDeviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	presentDeviceQueueCreateInfo.pNext = nullptr;
-	presentDeviceQueueCreateInfo.flags = 0;
-	presentDeviceQueueCreateInfo.queueFamilyIndex = VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex();
-	presentDeviceQueueCreateInfo.queueCount = 1;
-	presentDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
+		newDeviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		newDeviceQueueCreateInfo.pNext = nullptr;
+		newDeviceQueueCreateInfo.flags = 0;
+		newDeviceQueueCreateInfo.queueFamilyIndex = uniqueQueueFamilyIndex.first;
+		newDeviceQueueCreateInfo.queueCount = uniqueQueueFamilyIndex.second;
+		newDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
 
-	deviceQueueCreateInfos.Reserve(2);
-
-	deviceQueueCreateInfos.EmplaceUnsafe(graphicsDeviceQueueCreateInfo);
-	deviceQueueCreateInfos.EmplaceUnsafe(presentDeviceQueueCreateInfo);
+		deviceQueueCreateInfos.Emplace(newDeviceQueueCreateInfo);
+	}
 }
 
 /*
