@@ -66,7 +66,7 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetPhysicalDevice().GetTransferQueueFamilyIndex()];
 	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex()];
 
-	for (const auto uniqueQueueFamilyIndex : uniqueQueueFamilyIndices)
+	for (const auto &uniqueQueueFamilyIndex : uniqueQueueFamilyIndices)
 	{
 		VkDeviceQueueCreateInfo newDeviceQueueCreateInfo;
 
