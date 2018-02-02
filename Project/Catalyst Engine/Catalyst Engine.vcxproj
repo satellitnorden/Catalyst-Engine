@@ -30,6 +30,7 @@
     <ClCompile Include="..\..\Engine Source\Components\Source\ComponentManager.cpp" />
     <ClCompile Include="..\..\Engine Source\Engine Core\Source\Main.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\CameraEntity.cpp" />
+    <ClCompile Include="..\..\Engine Source\Entities\Source\DirectionalLightEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\Entity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\PhysicalEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\PointLightEntity.cpp" />
@@ -86,6 +87,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Components\Include\CameraComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\ComponentManager.h" />
+    <ClInclude Include="..\..\Engine Source\Components\Include\DirectionalLightComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\FrustumCullingComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\GraphicsBufferComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\RenderComponent.h" />
@@ -108,6 +110,7 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\StaticArray.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\UniquePointer.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\CameraEntity.h" />
+    <ClInclude Include="..\..\Engine Source\Entities\Include\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\Entity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\PhysicalEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\PointLightEntity.h" />

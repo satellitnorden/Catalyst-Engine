@@ -2,6 +2,7 @@
 #include <WorldArchitect.h>
 
 //Entities.
+#include <DirectionalLightEntity.h>
 #include <PhysicalEntity.h>
 #include <PointLightEntity.h>
 #include <SpotLightEntity.h>
@@ -38,11 +39,15 @@ WorldArchitect::~WorldArchitect() CATALYST_NOEXCEPT
 */
 void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 {
+	//Create the sun!
+	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
+	sun->SetIntensity(25.0f);
+
 	//Create the sky!
 	VulkanCubeMapTexture *CATALYST_RESTRICT sky = GraphicsSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
 	GraphicsSystem::Instance->SetActiveSkyBox(sky);
 
-	PhysicalEntity::instances.Reserve(5'000);
+	PhysicalEntity::Instances.Reserve(5'000);
 
 	Vulkan2DTexture *floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
 	Vulkan2DTexture *floorNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
@@ -56,6 +61,7 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	floor->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
 	floor->Scale(Vector3(1'000.0f, 1'000.0f, 1'000.0f));
 
+	/*
 	Vector3 pointLightPositions[5]{ Vector3(0.0f, 20.0f, 0.0f), Vector3(50.0f, 10.0f, 50.0f), Vector3(50.0f, 10.0f, -50.0f), Vector3(-50.0f, 10.0f, 50.0f), Vector3(-50.0f, 10.0f, -50.0f) };
 
 	for (size_t i = 0; i < 5; ++i)
@@ -67,7 +73,6 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 		light->SetIntensity(10.0f);
 	}
 
-	/*
 	Vulkan2DTexture *gunAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunAlbedo.png");
 	Vulkan2DTexture *gunNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunNormal.png");
 	Vulkan2DTexture *gunRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunRoughness.png");
@@ -91,7 +96,7 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	const PhysicalModel stoneModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Stone.obj", stoneAlbedoTexture, stoneNormalMapTexture, stoneRoughnessTexture, nullptr, nullptr);
 
 	//Create the stones.
-	for (size_t i = 0; i < 3'000; ++i)
+	for (size_t i = 0; i < 250; ++i)
 	{
 		PhysicalEntity *stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
 		stone->Initialize(stoneModel);
@@ -100,4 +105,16 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
 		stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
 	}
+
+	SpotLightEntity *CATALYST_RESTRICT spotLight = EntitySystem::Instance->CreateEntity<SpotLightEntity>();
+	spotLight->Move(Vector3(0.0f, 1.0f, 0.0f));
+}
+
+/*
+*	Updates the world architects.
+*/
+void WorldArchitect::Update(const float deltaTime) CATALYST_NOEXCEPT
+{
+	//Constantly rotate the sun.
+	sun->Rotate(Vector3(-1.0f * deltaTime, 0.0f, 0.0f));
 }

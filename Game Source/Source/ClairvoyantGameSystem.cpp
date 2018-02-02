@@ -46,6 +46,9 @@ void ClairvoyantGameSystem::InitializeSystem() CATALYST_NOEXCEPT
 */
 void ClairvoyantGameSystem::UpdateSystemSynchronous(const float deltaTime) CATALYST_NOEXCEPT
 {
+	//Update the world architect.
+	worldArchitect.Update(deltaTime);
+
 	//Update the player.
 	player->Update(deltaTime);
 

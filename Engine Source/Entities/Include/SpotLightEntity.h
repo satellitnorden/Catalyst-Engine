@@ -11,8 +11,8 @@ class SpotLightEntity : public Entity
 
 public:
 
-	//Universal container of all light entities.
-	static DynamicArray<SpotLightEntity *CATALYST_RESTRICT> instances;
+	//Declare the entity class.
+	DECLARE_ENTITY_CLASS(SpotLightEntity);
 
 	/*
 	*	Default constructor.

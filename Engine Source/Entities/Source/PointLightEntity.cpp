@@ -7,8 +7,8 @@
 //Math.
 #include <Vector3.h>
 
-//Static variable definitions.
-DynamicArray<PointLightEntity *CATALYST_RESTRICT> PointLightEntity::instances;
+//Define the entity class.
+DEFINE_ENTITY_CLASS(PointLightEntity);
 
 /*
 *	Default constructor.
@@ -19,7 +19,7 @@ PointLightEntity::PointLightEntity() CATALYST_NOEXCEPT
 	componentsIndex = ComponentManager::GetNewPointLightEntitiesEntityComponentsIndex();
 
 	//Add this point light entity to the universal container.
-	instances.Emplace(this);
+	Instances.Emplace(this);
 }
 
 /*
@@ -28,7 +28,7 @@ PointLightEntity::PointLightEntity() CATALYST_NOEXCEPT
 PointLightEntity::~PointLightEntity() CATALYST_NOEXCEPT
 {
 	//Remove this point light entity from the universal container.
-	instances.Erase(this);
+	Instances.Erase(this);
 }
 
 /*

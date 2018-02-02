@@ -23,9 +23,16 @@ public:
 	Matrix4 viewMatrix;
 	Vector4 cameraWorldPosition;
 
+	//Directional light data.
+	float directionalLightIntensity;
+	uint64 padding1{ 0 };
+	//uint32 padding4{ 0 };
+	Vector4 directionalLightDirection;
+	Vector4 directionalLightColor;
+
 	//Point light data.
 	uint64 numberOfPointLights;
-	uint64 padding1;
+	uint64 padding2{ 0 };
 	Vector4 pointLightAttenuationDistances[MaximumNumberOfPointLights];
 	Vector4 pointLightIntensities[MaximumNumberOfPointLights];
 	Vector4 pointLightColors[MaximumNumberOfPointLights];
@@ -33,7 +40,7 @@ public:
 
 	//Spot light data.
 	uint64 numberOfSpotLights;
-	uint64 padding2;
+	uint64 padding3{ 0 };
 	Vector4 spotLightAttenuationDistances[MaximumNumberOfSpotLights];
 	Vector4 spotLightIntensities[MaximumNumberOfSpotLights];
 	Vector4 spotLightInnerCutoffAngles[MaximumNumberOfSpotLights];

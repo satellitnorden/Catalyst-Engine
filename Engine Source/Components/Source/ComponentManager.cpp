@@ -5,6 +5,9 @@
 size_t ComponentManager::numberOfCameraEntityComponents = 0;
 DynamicArray<CameraComponent> ComponentManager::cameraEntityCameraComponents;
 
+size_t ComponentManager::numberOfDirectionalLightEntityComponents = 0;
+DynamicArray<DirectionalLightComponent> ComponentManager::directionalLightEntityDirectionalLightComponents;
+
 size_t ComponentManager::numberOfPhysicalEntityComponents = 0;
 DynamicArray<FrustumCullingComponent> ComponentManager::physicalEntityFrustumCullingComponents;
 DynamicArray<GraphicsBufferComponent> ComponentManager::physicalEntityGraphicsBufferComponents;
@@ -45,6 +48,36 @@ CATALYST_RESTRICTED CameraComponent* ComponentManager::GetCameraEntityCameraComp
 {
 	//Return the camera entity camera components.
 	return cameraEntityCameraComponents.Data();
+}
+
+/*
+*	Returns a new components index for directional light entities.
+*/
+size_t ComponentManager::GetNewDirectionalLightEntityComponentsIndex() CATALYST_NOEXCEPT
+{
+	//Create the relevant components.
+	directionalLightEntityDirectionalLightComponents.Emplace();
+
+	//Return the new index.
+	return numberOfDirectionalLightEntityComponents++;
+}
+
+/*
+*	Returns the number of directional light entity components.
+*/
+size_t ComponentManager::GetNumberOfDirectionalLightEntityComponents() CATALYST_NOEXCEPT
+{
+	//Return the number of directional light entity components.
+	return numberOfDirectionalLightEntityComponents;
+}
+
+/*
+*	Returns the directional light entity directional light components.
+*/
+CATALYST_RESTRICTED DirectionalLightComponent* ComponentManager::GetDirectionalLightEntityDirectionalLightComponents() CATALYST_NOEXCEPT
+{
+	//Return the directional light entity directional light components.
+	return directionalLightEntityDirectionalLightComponents.Data();
 }
 
 /*

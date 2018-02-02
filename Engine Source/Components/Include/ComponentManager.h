@@ -5,6 +5,7 @@
 
 //Components.
 #include <CameraComponent.h>
+#include <DirectionalLightComponent.h>
 #include <FrustumCullingComponent.h>
 #include <GraphicsBufferComponent.h>
 #include <RenderComponent.h>
@@ -43,6 +44,35 @@ private:
 
 	//The camera entity camera components.
 	static DynamicArray<CameraComponent> cameraEntityCameraComponents;
+
+public:
+
+	/*										*/
+	/*	Directional Light Entity Interface.	*/
+	/*										*/
+
+	/*
+	*	Returns a new components index for directional light entities.
+	*/
+	static size_t GetNewDirectionalLightEntityComponentsIndex() CATALYST_NOEXCEPT;
+
+	/*
+	*	Returns the number of directional light entity components.
+	*/
+	static size_t GetNumberOfDirectionalLightEntityComponents() CATALYST_NOEXCEPT;
+
+	/*
+	*	Returns the directional light entity directional light components.
+	*/
+	CATALYST_RESTRICTED static DirectionalLightComponent* GetDirectionalLightEntityDirectionalLightComponents() CATALYST_NOEXCEPT;
+
+private:
+
+	//The number of directional lighgt entity components.
+	static size_t numberOfDirectionalLightEntityComponents;
+
+	//The the directional light entity directional light components.
+	static DynamicArray<DirectionalLightComponent> directionalLightEntityDirectionalLightComponents;
 
 public:
 

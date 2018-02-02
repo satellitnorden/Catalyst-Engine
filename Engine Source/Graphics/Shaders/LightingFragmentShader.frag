@@ -16,6 +16,12 @@ layout (std140, binding = 0) uniform DynamicUniformData
     vec3 cameraWorldPosition;
     float padding1;
 
+    //Directional light data.
+    float directionalLightIntensity;
+    vec3 directionalLightDirection;
+    vec3 directionalLightColor;
+    float padding2;
+
     //Point light data.
     int numberOfPointLights;
     float pointLightAttenuationDistances[MaximumNumberOfPointLights];
@@ -190,16 +196,16 @@ float CalculateDirectionalLightShadowMultiplier()
 
 /*
 *   Calculates the directional light.
-
+*/
 vec3 CalculateDirectionalLight()
 {
     //Calculate the directional light.
     vec3 lightDirection = -directionalLightDirection;
     vec3 radiance = directionalLightColor;
 
-    return CalculateLight(lightDirection, radiance, directionalLightIntensity) * CalculateDirectionalLightShadowMultiplier();
+    return CalculateLight(lightDirection, radiance, directionalLightIntensity);
+    //return vec3(directionalLightDirection);
 }
-*/
 
 /*
 *   Calculates a single point light.
@@ -283,10 +289,8 @@ void main()
     //Start off with just the ambient lighting.
     vec3 finalFragment = CalculateAmbient();
 
-    /*
     //Calculate the directional light.
     finalFragment += CalculateDirectionalLight();
-    */
 
     //Calculate all point lights.
     for (int i = 0; i < numberOfPointLights; ++i)

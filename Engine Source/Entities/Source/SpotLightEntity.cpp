@@ -4,8 +4,8 @@
 //Components.
 #include <ComponentManager.h>
 
-//Static variable definitions.
-DynamicArray<SpotLightEntity *CATALYST_RESTRICT> SpotLightEntity::instances;
+//Define the entity class.
+DEFINE_ENTITY_CLASS(SpotLightEntity);
 
 /*
 *	Default constructor.
@@ -16,7 +16,7 @@ SpotLightEntity::SpotLightEntity() CATALYST_NOEXCEPT
 	componentsIndex = ComponentManager::GetNewSpotLightEntitiesEntityComponentsIndex();
 
 	//Add this spot light entity to the universal container.
-	instances.Emplace(this);
+	Instances.Emplace(this);
 }
 
 /*
@@ -25,7 +25,7 @@ SpotLightEntity::SpotLightEntity() CATALYST_NOEXCEPT
 SpotLightEntity::~SpotLightEntity() CATALYST_NOEXCEPT
 {
 	//Remove this spot light entity from the universal container.
-	instances.Erase(this);
+	Instances.Erase(this);
 }
 
 /*

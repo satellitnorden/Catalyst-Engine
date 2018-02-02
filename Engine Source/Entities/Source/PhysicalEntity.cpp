@@ -7,8 +7,8 @@
 //Systems.
 #include <GraphicsSystem.h>
 
-//Static variable definitions.
-DynamicArray<PhysicalEntity *CATALYST_RESTRICT> PhysicalEntity::instances;
+//Define the entity class.
+DEFINE_ENTITY_CLASS(PhysicalEntity);
 
 /*
 *	Default constructor.
@@ -19,7 +19,7 @@ PhysicalEntity::PhysicalEntity() CATALYST_NOEXCEPT
 	componentsIndex = ComponentManager::GetNewPhysicalEntityComponentsIndex();
 
 	//Add this physical entity to the universal container.
-	instances.Emplace(this);
+	Instances.Emplace(this);
 }
 
 /*
@@ -28,7 +28,7 @@ PhysicalEntity::PhysicalEntity() CATALYST_NOEXCEPT
 PhysicalEntity::~PhysicalEntity() CATALYST_NOEXCEPT
 {
 	//Remove this physical entity from the universal container.
-	instances.Erase(this);
+	Instances.Erase(this);
 }
 
 /*

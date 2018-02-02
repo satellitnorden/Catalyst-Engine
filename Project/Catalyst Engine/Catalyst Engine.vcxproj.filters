@@ -288,6 +288,9 @@
     <ClCompile Include="..\..\Engine Source\Components\Source\ComponentManager.cpp">
       <Filter>Engine Source\Components\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Entities\Source\DirectionalLightEntity.cpp">
+      <Filter>Engine Source\Entities\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Systems\Include\GraphicsSystem.h">
@@ -589,6 +592,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Components\Include\GraphicsBufferComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\DirectionalLightComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Entities\Include\DirectionalLightEntity.h">
+      <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

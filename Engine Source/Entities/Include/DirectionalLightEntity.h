@@ -6,23 +6,23 @@
 //Entities.
 #include <Entity.h>
 
-class PointLightEntity : public Entity
+class DirectionalLightEntity : public Entity
 {
 
 public:
 
 	//Declare the entity class.
-	DECLARE_ENTITY_CLASS(PointLightEntity);
+	DECLARE_ENTITY_CLASS(DirectionalLightEntity);
 
 	/*
 	*	Default constructor.
 	*/
-	PointLightEntity() CATALYST_NOEXCEPT;
+	DirectionalLightEntity() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	virtual ~PointLightEntity() CATALYST_NOEXCEPT;
+	virtual ~DirectionalLightEntity() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the position of this entity.
@@ -55,22 +55,12 @@ public:
 	void Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT final override;
 
 	/*
-	*	Sets whether or not this point light is enabled.
-	*/
-	void SetEnabled(const bool newEnabled) CATALYST_NOEXCEPT;
-
-	/*
-	*	Sets the attenuation distance.
-	*/
-	void SetAttenuationDistance(const float newAttenuationDistance) CATALYST_NOEXCEPT;
-
-	/*
-	*	Sets the intensity.
+	*	Sets the intensity of this directional light entity.
 	*/
 	void SetIntensity(const float newIntensity) CATALYST_NOEXCEPT;
 
 	/*
-	*	Sets the color.
+	*	Sets the color of this directional light entity.
 	*/
 	void SetColor(const Vector3 &newColor) CATALYST_NOEXCEPT;
 

@@ -3,6 +3,12 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Declares an entity class.
+#define DECLARE_ENTITY_CLASS(EntityClass) static DynamicArray<EntityClass *CATALYST_RESTRICT> Instances;
+
+//Defines an entity class.
+#define DEFINE_ENTITY_CLASS(EntityClass) DynamicArray<EntityClass *CATALYST_RESTRICT> EntityClass::Instances;
+
 //Forward declarations.
 class Vector3;
 
@@ -11,8 +17,8 @@ class Entity
 
 public:
 
-	//Universal container of all entities.
-	static DynamicArray<Entity *CATALYST_RESTRICT> instances;
+	//Declare the entity class.
+	DECLARE_ENTITY_CLASS(Entity);
 
 	/*
 	*	Default constructor.

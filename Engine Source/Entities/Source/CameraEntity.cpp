@@ -4,8 +4,8 @@
 //Components.
 #include <ComponentManager.h>
 
-//Static variable definitions.
-DynamicArray<CameraEntity *CATALYST_RESTRICT> CameraEntity::instances;
+//Define the entity class.
+DEFINE_ENTITY_CLASS(CameraEntity);
 
 /*
 *	Default constructor.
@@ -16,7 +16,7 @@ CameraEntity::CameraEntity() CATALYST_NOEXCEPT
 	componentsIndex = ComponentManager::GetNewCameraEntityComponentsIndex();
 
 	//Add this camera entity to the universal container.
-	instances.Emplace(this);
+	Instances.Emplace(this);
 }
 
 /*
@@ -25,7 +25,7 @@ CameraEntity::CameraEntity() CATALYST_NOEXCEPT
 CameraEntity::~CameraEntity() CATALYST_NOEXCEPT
 {
 	//Remove this camera entity from the universal container.
-	instances.Erase(this);
+	Instances.Erase(this);
 }
 
 /*

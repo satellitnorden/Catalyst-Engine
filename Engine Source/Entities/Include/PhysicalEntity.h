@@ -15,8 +15,8 @@ class PhysicalEntity : public Entity
 
 public:
 
-	//Universal container of all physical entities.
-	static DynamicArray<PhysicalEntity *CATALYST_RESTRICT> instances;
+	//Declare the entity class.
+	DECLARE_ENTITY_CLASS(PhysicalEntity);
 
 	/*
 	*	Default constructor.

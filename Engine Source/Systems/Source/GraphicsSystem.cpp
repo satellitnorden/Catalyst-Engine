@@ -833,6 +833,24 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 	dynamicUniformData.viewMatrix = viewMatrix;
 	dynamicUniformData.cameraWorldPosition = cameraWorldPosition;
 
+	const size_t numberOfDirectionalLightEntityComponents{ ComponentManager::GetNumberOfDirectionalLightEntityComponents() };
+
+	if (numberOfDirectionalLightEntityComponents > 0)
+	{
+		const DirectionalLightComponent *CATALYST_RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightEntityDirectionalLightComponents() };
+
+		dynamicUniformData.directionalLightIntensity = directionalLightComponent->intensity;
+		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->rotation);
+		dynamicUniformData.directionalLightColor = directionalLightComponent->color;
+	}
+
+	else
+	{
+		dynamicUniformData.directionalLightIntensity = 0.0f;
+		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, 0.0f);
+		dynamicUniformData.directionalLightColor = Vector3(0.0f, 0.0f, 0.0f);
+	}
+
 	size_t counter = 0;
 
 	const size_t numberOfPointLightEntityComponents{ ComponentManager::GetNumberOfPointLightEntityComponents() };
@@ -840,7 +858,7 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 
 	dynamicUniformData.numberOfPointLights = numberOfPointLightEntityComponents;
 
-	for (size_t i = 0; i < static_cast<uint64>(PointLightEntity::instances.Size()); ++i, ++pointLightComponent)
+	for (size_t i = 0; i < numberOfPointLightEntityComponents; ++i, ++pointLightComponent)
 	{
 		if (!pointLightComponent->enabled)
 		{
@@ -864,7 +882,7 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 
 	dynamicUniformData.numberOfSpotLights = numberOfSpotLightEntityComponents;
 
-	for (size_t i = 0; i < static_cast<uint64>(SpotLightEntity::instances.Size()); ++i, ++spotLightComponent)
+	for (size_t i = 0; i < numberOfSpotLightEntityComponents; ++i, ++spotLightComponent)
 	{
 		if (!spotLightComponent->enabled)
 		{
@@ -878,7 +896,8 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 		dynamicUniformData.spotLightInnerCutoffAngles[counter] = GameMath::CosineDegrees(spotLightComponent->innerCutoffAngle);
 		dynamicUniformData.spotLightOuterCutoffAngles[counter] = GameMath::CosineDegrees(spotLightComponent->outerCutoffAngle);
 		dynamicUniformData.spotLightColors[counter] = spotLightComponent->color;
-		dynamicUniformData.spotLightDirections[counter] = Vector3(0.0f, 0.0f, -1.0f).Rotated(spotLightComponent->rotation);
+		dynamicUniformData.spotLightDirections[counter] = Vector3(0.0f, -1.0f, 0.0f).Rotated(spotLightComponent->rotation);
+		dynamicUniformData.spotLightDirections[counter].Y *= -1.0f;
 		dynamicUniformData.spotLightWorldPositions[counter] = spotLightComponent->position;
 
 		++counter;

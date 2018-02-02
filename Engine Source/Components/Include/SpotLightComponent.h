@@ -27,12 +27,12 @@ public:
 	float outerCutoffAngle{ 25.0f };
 
 	//The color.
-	Vector3 color;
+	Vector3 color{ 1.0f, 1.0f, 1.0f };
 
 	//The rotation.
-	Vector3 rotation;
+	Vector3 rotation{ 0.0f, 0.0f, 0.0f };
 
 	//The position.
-	Vector3 position;
+	Vector3 position{ 0.0f, 0.0f, 0.0f };
 
 };

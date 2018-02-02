@@ -5,8 +5,8 @@
 #include <EntitySystem.h>
 #include <PhysicsSystem.h>
 
-//Static variable definitions.
-DynamicArray<Entity *CATALYST_RESTRICT> Entity::instances;
+//Define the entity class.
+DEFINE_ENTITY_CLASS(Entity);
 
 /*
 *	Default constructor.
@@ -14,7 +14,7 @@ DynamicArray<Entity *CATALYST_RESTRICT> Entity::instances;
 Entity::Entity() CATALYST_NOEXCEPT
 {
 	//Add this entity to the universal container.
-	instances.Emplace(this);
+	Instances.Emplace(this);
 }
 
 /*
@@ -23,7 +23,7 @@ Entity::Entity() CATALYST_NOEXCEPT
 Entity::~Entity() CATALYST_NOEXCEPT
 {
 	//Remove this entity from the universal container.
-	instances.Erase(this);
+	Instances.Erase(this);
 }
 
 /*
