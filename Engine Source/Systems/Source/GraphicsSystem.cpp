@@ -842,6 +842,10 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 		dynamicUniformData.directionalLightIntensity = directionalLightComponent->intensity;
 		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->rotation);
 		dynamicUniformData.directionalLightColor = directionalLightComponent->color;
+		dynamicUniformData.directionalLightScreenSpacePosition = viewMatrix * Vector4(-dynamicUniformData.directionalLightDirection.X * 100.0f + cameraWorldPosition.X, -dynamicUniformData.directionalLightDirection.Y * 100.0f + cameraWorldPosition.Y, -dynamicUniformData.directionalLightDirection.Z * 100.0f + cameraWorldPosition.Z, 1.0f);
+		dynamicUniformData.directionalLightScreenSpacePosition.X /= dynamicUniformData.directionalLightScreenSpacePosition.W;
+		dynamicUniformData.directionalLightScreenSpacePosition.Y /= dynamicUniformData.directionalLightScreenSpacePosition.W;
+		dynamicUniformData.directionalLightScreenSpacePosition.Z /= dynamicUniformData.directionalLightScreenSpacePosition.W;
 	}
 
 	else
@@ -849,6 +853,7 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 		dynamicUniformData.directionalLightIntensity = 0.0f;
 		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, 0.0f);
 		dynamicUniformData.directionalLightColor = Vector3(0.0f, 0.0f, 0.0f);
+		dynamicUniformData.directionalLightScreenSpacePosition = Vector3(0.0f, 0.0f, 0.0f);
 	}
 
 	size_t counter = 0;

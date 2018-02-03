@@ -20,6 +20,7 @@ layout (std140, binding = 0) uniform DynamicUniformData
     float directionalLightIntensity;
     vec3 directionalLightDirection;
     vec3 directionalLightColor;
+    vec3 directionalLightScreenSpacePosition;
     float padding2;
 
     //Point light data.
@@ -41,6 +42,7 @@ layout (std140, binding = 0) uniform DynamicUniformData
 };
 
 //Preprocessor defines.
+#define DIRECTIONAL_LIGHT_SCREEN_SHADE_SHADOWS_SAMPLES 250
 #define PI 3.141592f
 
 //In parameters.
@@ -63,6 +65,7 @@ float ambientOcclusion;
 float viewAngle;
 vec3 viewDirection;
 vec3 surfaceColor;
+vec3 fragmentScreenSpacePosition;
 vec3 fragmentWorldPosition;
 vec3 albedoColor;
 vec3 normalDirection;
@@ -157,6 +160,49 @@ vec3 CalculateLight(vec3 lightDirection, vec3 radiance, float intensity)
 }
 
 /*
+*   Returns the directional light screen space shadow multiplier.
+*/
+float CalculateDirectionalLightScreenSpaceShadowMultiplier()
+{
+    return 1.0f;
+
+    vec3 rayDirection = directionalLightScreenSpacePosition - vec3((fragmentScreenSpacePosition.xy) + 1.0f / 2.0f, fragmentScreenSpacePosition.z);
+    vec3 rayStep = rayDirection / DIRECTIONAL_LIGHT_SCREEN_SHADE_SHADOWS_SAMPLES;
+    vec3 currentScreenSpacePosition = fragmentScreenSpacePosition;
+    currentScreenSpacePosition.xy = (currentScreenSpacePosition.xy) + 1.0f / 2.0f;
+
+    for (int i = 0; i < DIRECTIONAL_LIGHT_SCREEN_SHADE_SHADOWS_SAMPLES; ++i)
+    {
+        //Calculate the texture coordinates.
+        vec2 sampleTextureCoordinates = vec2(currentScreenSpacePosition.xy);
+
+        //Don't sample outside of the screen quad. ):
+        if (sampleTextureCoordinates.x < 0.0f || sampleTextureCoordinates.x > 1.0f || sampleTextureCoordinates.y < 0.0f || sampleTextureCoordinates.y > 1.0f)
+        {
+            return 1.0f;
+        }
+
+        //Sample the depth at this point.
+        float sampleDepth = texture(normalDirectionDepthTexture, sampleTextureCoordinates).a;
+
+        //If the sampled depth is lower than the depth of the current screen space position, an occlusion has been found.
+        if (sampleDepth < currentScreenSpacePosition.z)
+        {
+            return 0.0f;
+        }
+
+        //Else advance the current screen space position.
+        else
+        {
+            currentScreenSpacePosition += rayStep;
+        }
+    }
+
+    //No occlusion was found.
+    return 1.0f;   
+}
+
+/*
 *   Calculates the directional light shadow multiplier.
 
 float CalculateDirectionalLightShadowMultiplier()
@@ -203,8 +249,7 @@ vec3 CalculateDirectionalLight()
     vec3 lightDirection = -directionalLightDirection;
     vec3 radiance = directionalLightColor;
 
-    return CalculateLight(lightDirection, radiance, directionalLightIntensity);
-    //return vec3(directionalLightDirection);
+    return CalculateLight(lightDirection, radiance, directionalLightIntensity) * CalculateDirectionalLightScreenSpaceShadowMultiplier();
 }
 
 /*
@@ -265,8 +310,8 @@ void main()
 
     //Calculate the world position of this fragment.
     vec2 nearPlaneCoordinate = fragmentTextureCoordinate * 2.0f - 1.0f;
-    vec4 clipSpacePosition = vec4(nearPlaneCoordinate, fragmentDepth, 1.0f);
-    vec4 viewSpacePosition = inverseProjectionMatrix * clipSpacePosition;
+    fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, fragmentDepth);
+    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
     viewSpacePosition /= viewSpacePosition.w;
     vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
 

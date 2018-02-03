@@ -20,6 +20,7 @@ layout (std140, binding = 0) uniform DynamicUniformData
     float directionalLightIntensity;
     vec3 directionalLightDirection;
     vec3 directionalLightColor;
+    vec3 directionalLightScreenSpacePosition;
     float padding2;
 
     //Point light data.

@@ -177,6 +177,27 @@ public:
 	}
 
 	/*
+	*	Clears this dynamic array of elements without calling the destructor on the underlying elements.
+	*/
+	void ClearFast() CATALYST_NOEXCEPT
+	{
+		size = 0;
+	}
+
+	/*
+	*	Clears this dynamic array of elements, calling the destructor on the underlying elements.
+	*/
+	void ClearSlow() CATALYST_NOEXCEPT
+	{
+		for (size_t i = 0; i < size; ++i)
+		{
+			array[i].~ÕbjectType();
+		}
+
+		size = 0;
+	}
+
+	/*
 	*	Given constructor arguments for the object type, construct a new object at the back of the array.
 	*/
 	template <class... Arguments>

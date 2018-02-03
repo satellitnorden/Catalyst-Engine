@@ -26,9 +26,9 @@ public:
 	//Directional light data.
 	float directionalLightIntensity;
 	uint64 padding1{ 0 };
-	//uint32 padding4{ 0 };
 	Vector4 directionalLightDirection;
 	Vector4 directionalLightColor;
+	Vector4 directionalLightScreenSpacePosition;
 
 	//Point light data.
 	uint64 numberOfPointLights;
