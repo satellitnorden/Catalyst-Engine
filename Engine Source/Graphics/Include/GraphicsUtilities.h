@@ -15,12 +15,12 @@ namespace GraphicsUtilities
 	*/
 	bool IsCubeWithinViewFrustum(const Vector4 *CATALYST_RESTRICT corners) CATALYST_NOEXCEPT
 	{
-		float highestX{ -FLT_MAX };
-		float lowestX{ FLT_MAX };
-		float highestY{ -FLT_MAX };
-		float lowestY{ FLT_MAX };
-		float highestZ{ -FLT_MAX };
-		float lowestZ{ FLT_MAX };
+		float highestX{ -FLOAT_MAXIMUM };
+		float lowestX{ FLOAT_MAXIMUM };
+		float highestY{ -FLOAT_MAXIMUM };
+		float lowestY{ FLOAT_MAXIMUM };
+		float highestZ{ -FLOAT_MAXIMUM };
+		float lowestZ{ FLOAT_MAXIMUM };
 
 		for (uint8 i = 0; i < 8; ++i)
 		{
