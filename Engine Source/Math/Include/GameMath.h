@@ -191,6 +191,14 @@ public:
 	}
 
 	/*
+	*	Given a number, returns the signum of that number.
+	*/
+	static constexpr float Signum(const float number) CATALYST_NOEXCEPT
+	{
+		return static_cast<float>((number > 0.0f) - (number < 0.0f));
+	}
+
+	/*
 	*	Given a degrees value, returns the sine of the angle.
 	*/
 	static float SineDegrees(const float number) CATALYST_NOEXCEPT
