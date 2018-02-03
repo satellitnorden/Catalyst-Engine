@@ -115,6 +115,7 @@
     <ClInclude Include="..\..\Engine Source\Entities\Include\PhysicalEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\PointLightEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\SpotLightEntity.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\DynamicUniformData.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\GraphicsUtilities.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\ModelLoader.h" />

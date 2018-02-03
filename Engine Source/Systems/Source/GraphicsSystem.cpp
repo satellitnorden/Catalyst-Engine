@@ -188,7 +188,8 @@ const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RES
 	//Set up the physical model.
 	PhysicalModel newPhysicalModel;
 
-	newPhysicalModel.SetExtent(extent);
+	newPhysicalModel.GetAxisAlignedBoundingBox().minimum = Vector3(-extent, -extent, -extent);
+	newPhysicalModel.GetAxisAlignedBoundingBox().maximum = Vector3(extent, extent, extent);
 	newPhysicalModel.SetVertexBuffer(vertexBuffer);
 	newPhysicalModel.SetIndexBuffer(indexBuffer);
 	newPhysicalModel.GetMaterial().SetAlbedoTexture(albedoTexture);
@@ -237,7 +238,7 @@ void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, co
 	GraphicsBufferComponent &graphicsBufferComponent{ ComponentManager::GetPhysicalEntityGraphicsBufferComponents()[physicalEntity.GetComponentsIndex()] };
 	RenderComponent &renderComponent{ ComponentManager::GetPhysicalEntityRenderComponents()[physicalEntity.GetComponentsIndex()] };
 
-	frustumCullingComponent.modelExtent = model.GetExtent();
+	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
 	graphicsBufferComponent.uniformBuffer = newUniformBuffer;
 	renderComponent.descriptorSet = newDescriptorSet;
 	renderComponent.vertexBuffer = *model.GetVertexBuffer();
@@ -955,9 +956,8 @@ void GraphicsSystem::UpdateViewFrustumCulling() CATALYST_NOEXCEPT
 		//Make a local copy of the physical entity's position.
 		const Vector3 position = transformComponent->position;
 		const Vector3 scale = transformComponent->scale;
-		const float extent = frustumCullingComponent->modelExtent;
 		const float biggestScale = GameMath::Maximum(scale.X, GameMath::Maximum(scale.Y, scale.Z));
-		const float scaledExtent = extent * biggestScale;
+		const float scaledExtent = frustumCullingComponent->axisAlignedBoundingBox.maximum.X * biggestScale;
 
 		Vector4 corners[8];
 

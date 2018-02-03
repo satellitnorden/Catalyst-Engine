@@ -14,7 +14,7 @@ PhysicalModel::PhysicalModel() CATALYST_NOEXCEPT
 */
 PhysicalModel::PhysicalModel(const PhysicalModel &otherPhysicalModel) CATALYST_NOEXCEPT
 	:
-	extent(otherPhysicalModel.extent.load()),
+	axisAlignedBoundingBox(otherPhysicalModel.axisAlignedBoundingBox),
 	vertexBuffer(otherPhysicalModel.vertexBuffer),
 	indexBuffer(otherPhysicalModel.indexBuffer),
 	material(otherPhysicalModel.material),
@@ -36,7 +36,7 @@ PhysicalModel::~PhysicalModel() CATALYST_NOEXCEPT
 */
 PhysicalModel& PhysicalModel::operator=(const PhysicalModel &otherPhysicalModel) CATALYST_NOEXCEPT
 {
-	extent = otherPhysicalModel.extent.load();
+	axisAlignedBoundingBox = otherPhysicalModel.axisAlignedBoundingBox;
 	vertexBuffer = otherPhysicalModel.vertexBuffer;
 	indexBuffer = otherPhysicalModel.indexBuffer;
 	material = otherPhysicalModel.material;

@@ -4,6 +4,7 @@
 #include <EngineCore.h>
 
 //Graphics.
+#include <AxisAlignedBoundingBox.h>
 #include <PhysicalMaterial.h>
 
 //Forward declarations.
@@ -36,14 +37,14 @@ public:
 	PhysicalModel& operator=(const PhysicalModel &otherPhysicalModel) CATALYST_NOEXCEPT;
 
 	/*
-	*	Returns the extent of this physical model.
+	*	Returns the axis aligned bounding box of this physical model, const.
 	*/
-	float GetExtent() const CATALYST_NOEXCEPT { return extent; }
+	const AxisAlignedBoundingBox& GetAxisAlignedBoundingBox() const CATALYST_NOEXCEPT { return axisAlignedBoundingBox; }
 
 	/*
-	*	Sets extent of this physical model.
+	*	Returns the axis aligned bounding box of this physical model, non-const.
 	*/
-	void SetExtent(const float newExtent) CATALYST_NOEXCEPT { extent = newExtent; }
+	AxisAlignedBoundingBox& GetAxisAlignedBoundingBox() CATALYST_NOEXCEPT { return axisAlignedBoundingBox; }
 
 	/*
 	*	Returns the vertex buffer.
@@ -87,8 +88,8 @@ public:
 
 private:
 
-	//The extent of this physical model.
-	std::atomic<float> extent;
+	//The axis aligned bounding box of this physical model.
+	AxisAlignedBoundingBox axisAlignedBoundingBox;
 
 	//The vertex buffer.
 	VulkanVertexBuffer *CATALYST_RESTRICT vertexBuffer;
