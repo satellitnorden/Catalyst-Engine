@@ -55,6 +55,7 @@
     <ClCompile Include="..\..\Engine Source\Systems\Source\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\Engine Source\Systems\Source\QuestSystem.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanAllocator.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanBuffer.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCommandBuffer.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCommandPool.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCubeMapTexture.cpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="..\..\Engine Source\Components\Include\PointLightComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\SpotLightComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\TerrainComponent.h" />
+    <ClInclude Include="..\..\Engine Source\Components\Include\TerrainRenderComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\TransformComponent.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\BitField.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreDefines.h" />
@@ -128,6 +130,7 @@
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalModel.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PostProcessingUniformData.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\ShaderLoader.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureCreationParameters.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureLoader.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\Vertex.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\Window.h" />
@@ -161,6 +164,7 @@
     <ClInclude Include="..\..\Engine Source\Tools\Include\MicroBenchmarker.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanAllocation.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanAllocator.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanBuffer.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCommandBuffer.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCommandPool.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCore.h" />

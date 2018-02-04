@@ -13,14 +13,14 @@ namespace GraphicsUtilities
 	/*
 	*	Given a resolution, generate plane vertices and indices.
 	*/
-	static void GeneratePlane(const uint64 resolution, DynamicArray<float> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
+	static void GeneratePlane(const uint32 resolution, DynamicArray<float> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
 	{
-		vertices.Reserve(resolution * 5);
+		vertices.Reserve((resolution + 1) * (resolution + 1) * 5);
 		indices.Reserve(resolution * resolution * 6);
 
-		for (uint16 i = 0; i <= resolution; ++i)
+		for (uint32 i = 0; i <= resolution; ++i)
 		{
-			for (uint16 j = 0; j <= resolution; ++j)
+			for (uint32 j = 0; j <= resolution; ++j)
 			{
 				vertices.EmplaceUnsafe(-1.0f + (2.0f * static_cast<float>(i) / static_cast<float>(resolution)));
 				vertices.EmplaceUnsafe(0.0f);

@@ -12,6 +12,7 @@
 #include <PointLightComponent.h>
 #include <SpotLightComponent.h>
 #include <TerrainComponent.h>
+#include <TerrainRenderComponent.h>
 #include <TransformComponent.h>
 
 class ComponentManager final
@@ -207,6 +208,11 @@ public:
 	*/
 	RESTRICTED static TerrainComponent* GetTerrainEntityTerrainComponents() NOEXCEPT;
 
+	/*
+	*	Returns the terrain entity terrain render components.
+	*/
+	RESTRICTED static TerrainRenderComponent* GetTerrainEntityTerrainRenderComponents() NOEXCEPT;
+
 private:
 
 	//The number of terrain entity components.
@@ -214,5 +220,8 @@ private:
 
 	//The terrain entity terrain components.
 	static DynamicArray<TerrainComponent> terrainEntityTerrainComponents;
+
+	//The terrain entity terrain render components.
+	static DynamicArray<TerrainRenderComponent> terrainEntityTerrainRenderComponents;
 
 };

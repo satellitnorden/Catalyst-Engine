@@ -4,6 +4,9 @@
 //Components.
 #include <ComponentManager.h>
 
+//Systems.
+#include <GraphicsSystem.h>
+
 //Define the entity class.
 DEFINE_ENTITY_CLASS(TerrainEntity);
 
@@ -97,7 +100,8 @@ void TerrainEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 /*
 *	Initializes this terrain entity.
 */
-void TerrainEntity::Initialize(const HeightMap &initialHeightMap) NOEXCEPT
+void TerrainEntity::Initialize(const uint32 terrainResolution, const HeightMap &initialHeightMap) NOEXCEPT
 {
-
+	//Initialize this terrain entity.
+	GraphicsSystem::Instance->InitializeTerrainEntity(*this, terrainResolution);
 }

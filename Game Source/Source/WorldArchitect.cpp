@@ -53,6 +53,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	VulkanCubeMapTexture *RESTRICT sky = GraphicsSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
 	GraphicsSystem::Instance->SetActiveSkyBox(sky);
 
+	/*
 	//Create the height map!
 	HeightMap heightMap{ HEIGHT_MAP_RESOLUTION };
 
@@ -68,6 +69,8 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
+	terrain->Initialize(128, heightMap);
+	*/
 
 	Vulkan2DTexture *floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
 	Vulkan2DTexture *floorNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
@@ -106,6 +109,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	gun->Move(Vector3(0.0f, 10.0f, 0.0f));
 	gun->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
 	gun->Scale(Vector3(0.2f, 0.2f, 0.2f));
+	*/
 
 	Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneAlbedo.png");
 	Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneNormalMap.png");
@@ -115,7 +119,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	const PhysicalModel stoneModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Stone.obj", stoneAlbedoTexture, stoneNormalMapTexture, stoneRoughnessTexture, nullptr, nullptr);
 
 	//Create the stones.
-	for (size_t i = 0; i < 100; ++i)
+	for (size_t i = 0; i < 3'000; ++i)
 	{
 		PhysicalEntity *stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
 		stone->Initialize(stoneModel);
@@ -124,10 +128,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
 		stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
 	}
-
-	SpotLightEntity *RESTRICT spotLight = EntitySystem::Instance->CreateEntity<SpotLightEntity>();
-	spotLight->Move(Vector3(0.0f, 1.0f, 0.0f));
-	*/
 }
 
 /*

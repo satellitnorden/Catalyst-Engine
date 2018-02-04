@@ -21,6 +21,7 @@
 class CameraEntity;
 class PhysicalEntity;
 class PhysicalModel;
+class TerrainEntity;
 
 class GraphicsSystem final
 {
@@ -69,6 +70,11 @@ public:
 	*	Initializes a physical entity.
 	*/
 	void InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const NOEXCEPT;
+
+	/*
+	*	Initializes a terrain entity.
+	*/
+	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainResolution) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture.

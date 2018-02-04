@@ -294,6 +294,9 @@
     <ClCompile Include="..\..\Engine Source\Entities\Source\TerrainEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanBuffer.cpp">
+      <Filter>Engine Source\Vulkan\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Systems\Include\GraphicsSystem.h">
@@ -619,6 +622,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DefaultProjectSettings.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureCreationParameters.h">
+      <Filter>Engine Source\Graphics\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\TerrainRenderComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanBuffer.h">
+      <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

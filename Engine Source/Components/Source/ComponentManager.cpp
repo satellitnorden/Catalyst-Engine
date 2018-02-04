@@ -22,6 +22,8 @@ DynamicArray<SpotLightComponent> ComponentManager::spotLightEntitySpotLightCompo
 
 size_t ComponentManager::numberOfTerrainEntityComponents = 0;
 DynamicArray<TerrainComponent> ComponentManager::terrainEntityTerrainComponents;
+DynamicArray<TerrainRenderComponent> ComponentManager::terrainEntityTerrainRenderComponents;
+;
 
 /*
 *	Returns a new components index for camera entities.
@@ -210,6 +212,7 @@ size_t ComponentManager::GetNewTerrainEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	terrainEntityTerrainComponents.Emplace();
+	terrainEntityTerrainRenderComponents.Emplace();
 
 	//Return the new index.
 	return numberOfTerrainEntityComponents++;
@@ -231,4 +234,13 @@ RESTRICTED TerrainComponent* ComponentManager::GetTerrainEntityTerrainComponents
 {
 	//Return the terrain entity terrain components.
 	return terrainEntityTerrainComponents.Data();
+}
+
+/*
+*	Returns the terrain entity terrain render components.
+*/
+RESTRICTED TerrainRenderComponent* ComponentManager::GetTerrainEntityTerrainRenderComponents() NOEXCEPT
+{
+	//Return the terrain entity terrain render components.
+	return terrainEntityTerrainRenderComponents.Data();
 }

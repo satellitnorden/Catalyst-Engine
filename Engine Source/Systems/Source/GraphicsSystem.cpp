@@ -9,6 +9,7 @@
 #include <PhysicalEntity.h>
 #include <PointLightEntity.h>
 #include <SpotLightEntity.h>
+#include <TerrainEntity.h>
 
 //Graphics.
 #include <GraphicsUtilities.h>
@@ -244,6 +245,29 @@ void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, co
 	renderComponent.vertexBuffer = *model.GetVertexBuffer();
 	renderComponent.indexBuffer = *model.GetIndexBuffer();
 	renderComponent.indexCount = model.GetIndexCount();
+}
+
+/*
+*	Initializes a terrain entity.
+*/
+void GraphicsSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainResolution) const NOEXCEPT
+{
+	//Generate the plane vertices and indices.
+	DynamicArray<float> terrainVertices;
+	DynamicArray<uint32> terrainIndices;
+	GraphicsUtilities::GeneratePlane(terrainResolution, terrainVertices, terrainIndices);
+
+	//Create the vertex buffer.
+	const void *RESTRICT terrainData[]{ terrainVertices.Data(), terrainIndices.Data() };
+	const VkDeviceSize terrainDataSizes[]{ sizeof(float) * terrainVertices.Size(), sizeof(uint32) * terrainIndices.Size() };
+	const VulkanBuffer terrainVertexBuffer{ *VulkanInterface::Instance->CreateBuffer(terrainData, terrainDataSizes, 2) };
+
+	//Fill the terrain entity components with the relevant data.
+	TerrainRenderComponent &terrainBufferComponent{ ComponentManager::GetTerrainEntityTerrainRenderComponents()[terrainEntity.GetComponentsIndex()] };
+
+	//terrainBufferComponent.descriptorSet = newDescriptorSet;
+	terrainBufferComponent.vertexAndIndexBuffer = terrainVertexBuffer;
+	terrainBufferComponent.indexCount = static_cast<uint32>(terrainIndices.Size());
 }
 
 /*

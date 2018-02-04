@@ -94,6 +94,13 @@ void VulkanInterface::Release() NOEXCEPT
 		delete vulkan2DTexture;
 	}
 
+	//Release all Vulkan bufferrs.
+	for (VulkanBuffer * RESTRICT vulkanBuffer : vulkanBuffers)
+	{
+		vulkanBuffer->Release();
+		delete vulkanBuffer;
+	}
+
 	//Release all Vulkan cube map textures.
 	for (VulkanCubeMapTexture * RESTRICT vulkanCubeMapTexture : vulkanCubeMapTextures)
 	{
@@ -197,6 +204,19 @@ RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 width,
 	vulkan2DTextures.Emplace(new2DTexture);
 
 	return new2DTexture;
+}
+
+/*
+*	Creates and returns a buffer.
+*/
+RESTRICTED VulkanBuffer* VulkanInterface::CreateBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
+{
+	VulkanBuffer *RESTRICT newBuffer = new VulkanBuffer;
+	newBuffer->Initialize(data, dataSizes, dataChunks);
+
+	vulkanBuffers.Emplace(newBuffer);
+
+	return newBuffer;
 }
 
 /*

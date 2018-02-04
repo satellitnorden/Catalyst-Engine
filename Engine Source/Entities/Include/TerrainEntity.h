@@ -60,6 +60,6 @@ public:
 	/*
 	*	Initializes this terrain entity.
 	*/
-	void Initialize(const HeightMap &initialHeightMap) NOEXCEPT;
+	void Initialize(const uint32 terrainResolution, const HeightMap &initialHeightMap) NOEXCEPT;
 
 };

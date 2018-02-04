@@ -8,6 +8,7 @@
 
 //Vulkan.
 #include <Vulkan2DTexture.h>
+#include <VulkanBuffer.h>
 #include <VulkanCommandBuffer.h>
 #include <VulkanCommandPool.h>
 #include <VulkanCore.h>
@@ -136,6 +137,11 @@ public:
 	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 width, const uint32 height, const byte *RESTRICT textureData) NOEXCEPT;
 
 	/*
+	*	Creates and returns a buffer.
+	*/
+	RESTRICTED VulkanBuffer* CreateBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
+
+	/*
 	*	Creates and returns a cube map texture.
 	*/
 	RESTRICTED VulkanCubeMapTexture* CreateCubeMapTexture(const uint32 width, const uint32 height, const byte *RESTRICT *RESTRICT textureData) NOEXCEPT;
@@ -225,6 +231,9 @@ private:
 
 	//Container for all Vulkan 2D textures.
 	DynamicArray<Vulkan2DTexture *RESTRICT> vulkan2DTextures;
+
+	//Container for all Vulkan buffers.
+	DynamicArray<VulkanBuffer *RESTRICT> vulkanBuffers;
 
 	//Container for all Vulkan cube map textures.
 	DynamicArray<VulkanCubeMapTexture *RESTRICT> vulkanCubeMapTextures;
