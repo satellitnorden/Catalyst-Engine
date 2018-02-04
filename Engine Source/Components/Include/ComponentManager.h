@@ -14,7 +14,7 @@
 #include <TerrainComponent.h>
 #include <TransformComponent.h>
 
-class ComponentManager
+class ComponentManager final
 {
 
 public:

@@ -121,6 +121,7 @@
     <ClInclude Include="..\..\Engine Source\Graphics\Include\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\DynamicUniformData.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\GraphicsUtilities.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\HeightMap.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\ModelLoader.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalMaterial.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalModel.h" />

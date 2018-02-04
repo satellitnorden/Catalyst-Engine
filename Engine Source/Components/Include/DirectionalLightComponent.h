@@ -6,7 +6,7 @@
 //Math.
 #include <Vector3.h>
 
-class DirectionalLightComponent
+class DirectionalLightComponent final
 {
 
 public:

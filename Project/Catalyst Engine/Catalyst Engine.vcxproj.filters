@@ -611,6 +611,9 @@
     <ClInclude Include="..\..\Engine Source\Components\Include\TerrainComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\HeightMap.h">
+      <Filter>Engine Source\Graphics\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Engine Source\Systems\Inline\EntitySystem.inl">

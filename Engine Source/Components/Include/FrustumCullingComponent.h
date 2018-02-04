@@ -6,7 +6,7 @@
 //Graphics.
 #include <AxisAlignedBoundingBox.h>
 
-class FrustumCullingComponent
+class FrustumCullingComponent final
 {
 
 public:
