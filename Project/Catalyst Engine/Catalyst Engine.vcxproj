@@ -100,6 +100,7 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreDefines.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreMacros.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreTypeAliases.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\DefaultProjectSettings.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicArray.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicString.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\EngineCore.h" />
@@ -190,6 +191,7 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanVertexBuffer.h" />
     <ClInclude Include="..\..\Game Source\Include\ClairvoyantGameSystem.h" />
     <ClInclude Include="..\..\Game Source\Include\ClairvoyantPlayer.h" />
+    <ClInclude Include="..\..\Game Source\Include\ClairvoyantSettings.h" />
     <ClInclude Include="..\..\Game Source\Include\EntitySpawner.h" />
     <ClInclude Include="..\..\Game Source\Include\WorldArchitect.h" />
   </ItemGroup>

@@ -614,6 +614,12 @@
     <ClInclude Include="..\..\Engine Source\Graphics\Include\HeightMap.h">
       <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Game Source\Include\ClairvoyantSettings.h">
+      <Filter>Game Source\Clairvoyant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\DefaultProjectSettings.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Engine Source\Systems\Inline\EntitySystem.inl">

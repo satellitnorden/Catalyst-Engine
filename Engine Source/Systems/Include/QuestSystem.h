@@ -17,13 +17,6 @@ enum class DailyQuests : uint8
 	NumberOfDailyQuests
 };
 
-//Enumeration covering all daily quests.
-enum class DailyGroupQuests : uint8
-{
-	ThisIsHereBecauseIDontKnowWhatToPutHere,
-	NumberOfDailyGroupQuests
-};
-
 class QuestSystem final
 {
 
@@ -63,29 +56,14 @@ public:
 	void RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction) CATALYST_NOEXCEPT;
 
 	/*
-	*	Registers a daily group quest.
-	*/
-	void RegisterDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, DailyGroupQuestFunction function) CATALYST_NOEXCEPT;
-
-	/*
 	*	Carries out a daily quest.
 	*/
 	void CarryOutDailyQuest(const DailyQuests dailyQuest, void *CATALYST_RESTRICT arguments) CATALYST_NOEXCEPT;
 
 	/*
-	*	Carries out a daily group quest.
-	*/
-	void CarryOutDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, void *CATALYST_RESTRICT arguments, void *CATALYST_RESTRICT container, const size_t containerSize, const size_t objectSize) CATALYST_NOEXCEPT;
-
-	/*
 	*	Waits for a daily quest to be completed.
 	*/
 	void WaitForDailyQuest(const DailyQuests dailyQuest) const CATALYST_NOEXCEPT;
-
-	/*
-	*	Waits for a daily group quest to be completed.
-	*/
-	void WaitForDailyGroupQuest(const DailyGroupQuests dailyGroupQuest) const CATALYST_NOEXCEPT;
 
 private:
 
@@ -97,9 +75,6 @@ private:
 
 	//Container for all daily quests.
 	StaticArray<DailyQuest, static_cast<uint8>(DailyQuests::NumberOfDailyQuests)> dailyQuests;
-
-	//Container for all daily group quests.
-	StaticArray<DailyGroupQuest, static_cast<uint8>(DailyGroupQuests::NumberOfDailyGroupQuests)> dailyGroupQuests;
 
 	/*
 	*	Executes an adventurer.

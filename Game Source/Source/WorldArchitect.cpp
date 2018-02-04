@@ -6,6 +6,7 @@
 #include <PhysicalEntity.h>
 #include <PointLightEntity.h>
 #include <SpotLightEntity.h>
+#include <TerrainEntity.h>
 
 //Graphics.
 #include <HeightMap.h>
@@ -64,6 +65,9 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 		}
 	}
 	);
+
+	//Create the terrain entity!
+	TerrainEntity *CATALYST_RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
 
 	Vulkan2DTexture *floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
 	Vulkan2DTexture *floorNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
