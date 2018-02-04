@@ -40,6 +40,11 @@ public:
 	void PreUpdateSystemSynchronous() CATALYST_NOEXCEPT;
 
 	/*
+	*	Post-updates the input system synchronously.
+	*/
+	void PostUpdateSystemSynchronous() CATALYST_NOEXCEPT;
+
+	/*
 	*	Updates the input system asynchronously.
 	*/
 	void UpdateSystemAsynchronous() CATALYST_NOEXCEPT;

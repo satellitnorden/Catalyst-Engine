@@ -45,6 +45,15 @@ void InputSystem::PreUpdateSystemSynchronous() CATALYST_NOEXCEPT
 }
 
 /*
+*	Post-updates the input system synchronously.
+*/
+void InputSystem::PostUpdateSystemSynchronous() CATALYST_NOEXCEPT
+{
+	//Wait for the input system asynchronous update daily quest to finish.
+	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::InputSystemAsynchronousUpdate);
+}
+
+/*
 *	Updates the input system asynchronously.
 */
 void InputSystem::UpdateSystemAsynchronous() CATALYST_NOEXCEPT

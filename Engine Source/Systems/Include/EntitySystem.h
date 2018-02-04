@@ -25,9 +25,9 @@ public:
 	~EntitySystem() CATALYST_NOEXCEPT;
 
 	/*
-	*	Pre-updates the entity system synchronously.
+	*	Updates the entity system synchronously.
 	*/
-	void PreUpdateSystemSynchronous() CATALYST_NOEXCEPT;
+	void UpdateSystemSynchronous() CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases the entity system.
