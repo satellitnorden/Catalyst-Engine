@@ -8,15 +8,20 @@
 #include <SpotLightEntity.h>
 
 //Graphics.
+#include <HeightMap.h>
 #include <PhysicalModel.h>
 
 //Math.
 #include <GameMath.h>
+#include <PerlinNoiseGenerator.h>
 
 //Systems.
 #include <EntitySystem.h>
 #include <GraphicsSystem.h>
 #include <QuestSystem.h>
+
+//Preprocessor defines.
+#define HEIGHT_MAP_RESOLUTION 2'048
 
 /*
 *	Default constructor.
@@ -47,7 +52,18 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	VulkanCubeMapTexture *CATALYST_RESTRICT sky = GraphicsSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
 	GraphicsSystem::Instance->SetActiveSkyBox(sky);
 
-	PhysicalEntity::Instances.Reserve(5'000);
+	//Create the height map!
+	HeightMap heightMap{ HEIGHT_MAP_RESOLUTION };
+
+	CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Height Map Generation",
+	for (size_t i = 0; i < HEIGHT_MAP_RESOLUTION; ++i)
+	{
+		for (size_t j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
+		{
+			heightMap.At(i, j) = PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION), static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION), 0.0f);
+		}
+	}
+	);
 
 	Vulkan2DTexture *floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
 	Vulkan2DTexture *floorNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
@@ -86,7 +102,6 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	gun->Move(Vector3(0.0f, 10.0f, 0.0f));
 	gun->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
 	gun->Scale(Vector3(0.2f, 0.2f, 0.2f));
-	*/
 
 	Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneAlbedo.png");
 	Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneNormalMap.png");
@@ -108,6 +123,7 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 
 	SpotLightEntity *CATALYST_RESTRICT spotLight = EntitySystem::Instance->CreateEntity<SpotLightEntity>();
 	spotLight->Move(Vector3(0.0f, 1.0f, 0.0f));
+	*/
 }
 
 /*
