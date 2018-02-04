@@ -33,20 +33,20 @@ public:
 	//Point light data.
 	uint64 numberOfPointLights;
 	uint64 padding2{ 0 };
-	Vector4 pointLightAttenuationDistances[MaximumNumberOfPointLights];
-	Vector4 pointLightIntensities[MaximumNumberOfPointLights];
-	Vector4 pointLightColors[MaximumNumberOfPointLights];
-	Vector4 pointLightWorldPositions[MaximumNumberOfPointLights];
+	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightAttenuationDistances;
+	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightIntensities;
+	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightColors;
+	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightWorldPositions;
 
 	//Spot light data.
 	uint64 numberOfSpotLights;
 	uint64 padding3{ 0 };
-	Vector4 spotLightAttenuationDistances[MaximumNumberOfSpotLights];
-	Vector4 spotLightIntensities[MaximumNumberOfSpotLights];
-	Vector4 spotLightInnerCutoffAngles[MaximumNumberOfSpotLights];
-	Vector4 spotLightOuterCutoffAngles[MaximumNumberOfSpotLights];
-	Vector4 spotLightColors[MaximumNumberOfSpotLights];
-	Vector4 spotLightDirections[MaximumNumberOfSpotLights];
-	Vector4 spotLightWorldPositions[MaximumNumberOfSpotLights];
+	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightAttenuationDistances;
+	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightIntensities;
+	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightInnerCutoffAngles;
+	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightOuterCutoffAngles;
+	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightColors;
+	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightDirections;
+	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightWorldPositions;
 
 };

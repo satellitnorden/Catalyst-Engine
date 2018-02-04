@@ -197,6 +197,6 @@ public:
 private:
 
 	//The underlying keyboard button states.
-	KeyboardButtonState keyboardButtonStates[static_cast<uint8>(KeyboardButton::NumberOfKeyboardButtons)]{ };
+	StaticArray<KeyboardButtonState, static_cast<uint8>(KeyboardButton::NumberOfKeyboardButtons)> keyboardButtonStates{ };
 
 };

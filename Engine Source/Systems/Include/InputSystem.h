@@ -57,7 +57,7 @@ public:
 private:
 
 	//The current gamepad states.
-	MultithreadedResource<GamepadState> currentGamepadState[INPUT_MAXIMUM_GAMEPADS];
+	StaticArray<MultithreadedResource<GamepadState>, INPUT_MAXIMUM_GAMEPADS> currentGamepadState;
 
 	//The current keyboard state.
 	MultithreadedResource<KeyboardState> currentKeyboardState;
