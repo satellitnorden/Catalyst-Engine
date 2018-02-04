@@ -11,6 +11,7 @@
 #include <RenderComponent.h>
 #include <PointLightComponent.h>
 #include <SpotLightComponent.h>
+#include <TerrainComponent.h>
 #include <TransformComponent.h>
 
 class ComponentManager
@@ -184,5 +185,34 @@ private:
 
 	//The spot light entity spot light components.
 	static DynamicArray<SpotLightComponent> spotLightEntitySpotLightComponents;
+
+public:
+
+	/*								*/
+	/*	Terrain Entity Interface.	*/
+	/*								*/
+
+	/*
+	*	Returns a new components index for terrain entities.
+	*/
+	static size_t GetNewTerrainEntityComponentsIndex() CATALYST_NOEXCEPT;
+
+	/*
+	*	Returns the number of terrain entity components.
+	*/
+	static size_t GetNumberOfTerrainEntityComponents() CATALYST_NOEXCEPT;
+
+	/*
+	*	Returns the terrain entity terrain components.
+	*/
+	CATALYST_RESTRICTED static TerrainComponent* GetTerrainEntityTerrainComponents() CATALYST_NOEXCEPT;
+
+private:
+
+	//The number of terrain entity components.
+	static size_t numberOfTerrainEntityComponents;
+
+	//The terrain entity terrain components.
+	static DynamicArray<TerrainComponent> terrainEntityTerrainComponents;
 
 };

@@ -291,6 +291,9 @@
     <ClCompile Include="..\..\Engine Source\Entities\Source\DirectionalLightEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Entities\Source\TerrainEntity.cpp">
+      <Filter>Engine Source\Entities\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Systems\Include\GraphicsSystem.h">
@@ -601,6 +604,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Graphics\Include\AxisAlignedBoundingBox.h">
       <Filter>Engine Source\Graphics\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Entities\Include\TerrainEntity.h">
+      <Filter>Engine Source\Entities\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Components\Include\TerrainComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

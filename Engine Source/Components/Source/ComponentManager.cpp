@@ -20,6 +20,9 @@ DynamicArray<PointLightComponent> ComponentManager::pointLightEntityPointLightCo
 size_t ComponentManager::numberOfSpotLightEntityComponents = 0;
 DynamicArray<SpotLightComponent> ComponentManager::spotLightEntitySpotLightComponents;
 
+size_t ComponentManager::numberOfTerrainEntityComponents = 0;
+DynamicArray<TerrainComponent> ComponentManager::terrainEntityTerrainComponents;
+
 /*
 *	Returns a new components index for camera entities.
 */
@@ -198,4 +201,34 @@ CATALYST_RESTRICTED SpotLightComponent* ComponentManager::GetSpotLightEntitySpot
 {
 	//Return the spot light entity spot light components.
 	return spotLightEntitySpotLightComponents.Data();
+}
+
+/*
+*	Returns a new components index for terrain entities.
+*/
+size_t ComponentManager::GetNewTerrainEntityComponentsIndex() CATALYST_NOEXCEPT
+{
+	//Create the relevant components.
+	terrainEntityTerrainComponents.Emplace();
+
+	//Return the new index.
+	return numberOfTerrainEntityComponents++;
+}
+
+/*
+*	Returns the number of terrain entity components.
+*/
+size_t ComponentManager::GetNumberOfTerrainEntityComponents() CATALYST_NOEXCEPT
+{
+	//Return the number of terrain entity components.
+	return numberOfTerrainEntityComponents;
+}
+
+/*
+*	Returns the terrain entity terrain components.
+*/
+CATALYST_RESTRICTED TerrainComponent* ComponentManager::GetTerrainEntityTerrainComponents() CATALYST_NOEXCEPT
+{
+	//Return the terrain entity terrain components.
+	return terrainEntityTerrainComponents.Data();
 }

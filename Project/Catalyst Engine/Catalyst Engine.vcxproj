@@ -35,6 +35,7 @@
     <ClCompile Include="..\..\Engine Source\Entities\Source\PhysicalEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\PointLightEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\SpotLightEntity.cpp" />
+    <ClCompile Include="..\..\Engine Source\Entities\Source\TerrainEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Graphics\Source\PhysicalMaterial.cpp" />
     <ClCompile Include="..\..\Engine Source\Graphics\Source\PhysicalModel.cpp" />
     <ClCompile Include="..\..\Engine Source\Graphics\Source\Vertex.cpp" />
@@ -93,6 +94,7 @@
     <ClInclude Include="..\..\Engine Source\Components\Include\RenderComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\PointLightComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\SpotLightComponent.h" />
+    <ClInclude Include="..\..\Engine Source\Components\Include\TerrainComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\TransformComponent.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\BitField.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreDefines.h" />
@@ -115,6 +117,7 @@
     <ClInclude Include="..\..\Engine Source\Entities\Include\PhysicalEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\PointLightEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\SpotLightEntity.h" />
+    <ClInclude Include="..\..\Engine Source\Entities\Include\TerrainEntity.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\DynamicUniformData.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\GraphicsUtilities.h" />
