@@ -40,27 +40,50 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Vector3() CATALYST_NOEXCEPT;
+	constexpr Vector3() CATALYST_NOEXCEPT
+		:
+		X(0.0f),
+		Y(0.0f),
+		Z(0.0f)
+	{
+
+	}
 
 	/*
 	*	Constructor taking a single scalar, applying it to both X, Y and Z.
 	*/
-	Vector3(const float scalar) CATALYST_NOEXCEPT;
+	constexpr Vector3(const float scalar) CATALYST_NOEXCEPT
+		:
+		X(scalar),
+		Y(scalar),
+		Z(scalar)
+	{
+
+	}
 
 	/*
 	*	Constructor taking X, Y and Z as arguments.
 	*/
-	Vector3(const float newX, const float newY, const float newZ) CATALYST_NOEXCEPT;
+	constexpr Vector3(const float newX, const float newY, const float newZ) CATALYST_NOEXCEPT
+		:
+		X(newX),
+		Y(newY),
+		Z(newZ)
+	{
+
+	}
 
 	/*
 	*	Copy constructor taking another vector as argument.
 	*/
-	Vector3(const Vector3 &otherVector) CATALYST_NOEXCEPT;
+	constexpr Vector3(const Vector3 &otherVector) CATALYST_NOEXCEPT
+		:
+		X(otherVector.X),
+		Y(otherVector.Y),
+		Z(otherVector.Z)
+	{
 
-	/*
-	*	Default destructor.
-	*/
-	~Vector3() CATALYST_NOEXCEPT;
+	}
 
 	/*
 	*	Assignment operator overload.

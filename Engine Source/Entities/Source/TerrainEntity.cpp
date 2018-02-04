@@ -31,7 +31,7 @@ TerrainEntity::~TerrainEntity() CATALYST_NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-Vector3& TerrainEntity::GetPosition() CATALYST_NOEXCEPT
+const Vector3& TerrainEntity::GetPosition() CATALYST_NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetTerrainEntityTerrainComponents()[componentsIndex].position;
@@ -40,23 +40,19 @@ Vector3& TerrainEntity::GetPosition() CATALYST_NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-Vector3& TerrainEntity::GetRotation() CATALYST_NOEXCEPT
+const Vector3& TerrainEntity::GetRotation() CATALYST_NOEXCEPT
 {
 	//Terrain entities has no rotation.
-	static Vector3 defaultRotation{ 0.0f, 0.0f, 0.0f };
-
-	return defaultRotation;
+	return Entity::defaultRotation;
 }
 
 /*
 *	Returns the scale of this entity.
 */
-Vector3& TerrainEntity::GetScale() CATALYST_NOEXCEPT
+const Vector3& TerrainEntity::GetScale() CATALYST_NOEXCEPT
 {
 	//Terrain entities has no scale.
-	static Vector3 defaultScale{ 1.0f, 1.0f, 1.0f };
-
-	return defaultScale;
+	return Entity::defaultScale;
 }
 
 /*

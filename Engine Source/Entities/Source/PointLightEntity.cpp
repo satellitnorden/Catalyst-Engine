@@ -34,7 +34,7 @@ PointLightEntity::~PointLightEntity() CATALYST_NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-Vector3& PointLightEntity::GetPosition() CATALYST_NOEXCEPT
+const Vector3& PointLightEntity::GetPosition() CATALYST_NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].position;
@@ -43,23 +43,19 @@ Vector3& PointLightEntity::GetPosition() CATALYST_NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-Vector3& PointLightEntity::GetRotation() CATALYST_NOEXCEPT
+const Vector3& PointLightEntity::GetRotation() CATALYST_NOEXCEPT
 {
 	//Point light entities has no rotation.
-	static Vector3 defaultRotation{ 0.0f, 0.0f, 0.0f };
-
-	return defaultRotation;
+	return Entity::defaultRotation;
 }
 
 /*
 *	Returns the scale of this entity.
 */
-Vector3& PointLightEntity::GetScale() CATALYST_NOEXCEPT
+const Vector3& PointLightEntity::GetScale() CATALYST_NOEXCEPT
 {
 	//Point light entities has no scale.
-	static Vector3 defaultScale{ 1.0f, 1.0f, 1.0f };
-
-	return defaultScale;
+	return Entity::defaultScale;
 }
 
 /*

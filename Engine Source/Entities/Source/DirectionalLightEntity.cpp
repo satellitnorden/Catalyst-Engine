@@ -34,18 +34,16 @@ DirectionalLightEntity::~DirectionalLightEntity() CATALYST_NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-Vector3& DirectionalLightEntity::GetPosition() CATALYST_NOEXCEPT
+const Vector3& DirectionalLightEntity::GetPosition() CATALYST_NOEXCEPT
 {
 	//Directional light entities has no scale.
-	static Vector3 defaultPosition{ 0.0f, 0.0f, 0.0f };
-
-	return defaultPosition;
+	return Entity::defaultPosition;
 }
 
 /*
 *	Returns the rotation of this entity.
 */
-Vector3& DirectionalLightEntity::GetRotation() CATALYST_NOEXCEPT
+const Vector3& DirectionalLightEntity::GetRotation() CATALYST_NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return ComponentManager::GetDirectionalLightEntityDirectionalLightComponents()[componentsIndex].rotation;
@@ -54,12 +52,10 @@ Vector3& DirectionalLightEntity::GetRotation() CATALYST_NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-Vector3& DirectionalLightEntity::GetScale() CATALYST_NOEXCEPT
+const Vector3& DirectionalLightEntity::GetScale() CATALYST_NOEXCEPT
 {
 	//Point light entities has no scale.
-	static Vector3 defaultScale{ 1.0f, 1.0f, 1.0f };
-
-	return defaultScale;
+	return Entity::defaultScale;
 }
 
 /*

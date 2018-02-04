@@ -30,17 +30,17 @@ public:
 	/*
 	*	Returns the position of this entity.
 	*/
-	Vector3& GetPosition() CATALYST_NOEXCEPT final override;
+	const Vector3& GetPosition() CATALYST_NOEXCEPT final override;
 
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	Vector3& GetRotation() CATALYST_NOEXCEPT final override;
+	const Vector3& GetRotation() CATALYST_NOEXCEPT final override;
 
 	/*
 	*	Returns the scale of this entity.
 	*/
-	Vector3& GetScale() CATALYST_NOEXCEPT final override;
+	const Vector3& GetScale() CATALYST_NOEXCEPT final override;
 
 	/*
 	*	Moves this entity.

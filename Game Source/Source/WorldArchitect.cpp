@@ -96,7 +96,7 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	const PhysicalModel stoneModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Stone.obj", stoneAlbedoTexture, stoneNormalMapTexture, stoneRoughnessTexture, nullptr, nullptr);
 
 	//Create the stones.
-	for (size_t i = 0; i < 3'000; ++i)
+	for (size_t i = 0; i < 100; ++i)
 	{
 		PhysicalEntity *stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
 		stone->Initialize(stoneModel);

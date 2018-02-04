@@ -3,14 +3,14 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Math.
+#include <Vector3.h>
+
 //Declares an entity class.
 #define DECLARE_ENTITY_CLASS(EntityClass) static DynamicArray<EntityClass *CATALYST_RESTRICT> Instances;
 
 //Defines an entity class.
 #define DEFINE_ENTITY_CLASS(EntityClass) DynamicArray<EntityClass *CATALYST_RESTRICT> EntityClass::Instances;
-
-//Forward declarations.
-class Vector3;
 
 class Entity
 {
@@ -63,17 +63,17 @@ public:
 	/*
 	*	Returns the position of this entity.
 	*/
-	virtual Vector3& GetPosition() CATALYST_NOEXCEPT = 0;
+	virtual const Vector3& GetPosition() CATALYST_NOEXCEPT = 0;
 
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	virtual Vector3& GetRotation() CATALYST_NOEXCEPT = 0;
+	virtual const Vector3& GetRotation() CATALYST_NOEXCEPT = 0;
 
 	/*
 	*	Returns the scale of this entity.
 	*/
-	virtual Vector3& GetScale() CATALYST_NOEXCEPT = 0;
+	virtual const Vector3& GetScale() CATALYST_NOEXCEPT = 0;
 
 	/*
 	*	Moves this entity.
@@ -91,6 +91,15 @@ public:
 	virtual void Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT = 0;
 
 protected:
+
+	//The default position.
+	static constexpr Vector3 defaultPosition{ 0.0f, 0.0f, 0.0f };
+
+	//The default rotation.
+	static constexpr Vector3 defaultRotation{ 0.0f, 0.0f, 0.0f };
+
+	//The default scale.
+	static constexpr Vector3 defaultScale{ 1.0f, 1.0f, 1.0f };
 
 	//Pointer to this entity's parent.
 	Entity *CATALYST_RESTRICT parent{ nullptr };

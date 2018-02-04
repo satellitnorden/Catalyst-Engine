@@ -31,7 +31,7 @@ SpotLightEntity::~SpotLightEntity() CATALYST_NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-Vector3& SpotLightEntity::GetPosition() CATALYST_NOEXCEPT
+const Vector3& SpotLightEntity::GetPosition() CATALYST_NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].position;
@@ -40,7 +40,7 @@ Vector3& SpotLightEntity::GetPosition() CATALYST_NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-Vector3& SpotLightEntity::GetRotation() CATALYST_NOEXCEPT
+const Vector3& SpotLightEntity::GetRotation() CATALYST_NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].rotation;
@@ -49,12 +49,10 @@ Vector3& SpotLightEntity::GetRotation() CATALYST_NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-Vector3& SpotLightEntity::GetScale() CATALYST_NOEXCEPT
+const Vector3& SpotLightEntity::GetScale() CATALYST_NOEXCEPT
 {
 	//Spot light entities has no scale.
-	static Vector3 defaultScale{ 1.0f, 1.0f, 1.0f };
-
-	return defaultScale;
+	return Entity::defaultScale;
 }
 
 /*
