@@ -3,4 +3,4 @@
 
 //Static variable definitions.
 std::random_device GameMath::randomDevice;
-std::mt19937 GameMath::randomEngine{ 0 };
+std::mt19937 GameMath::randomEngine{ randomDevice() };
