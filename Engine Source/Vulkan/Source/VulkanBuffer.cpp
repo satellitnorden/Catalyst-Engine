@@ -59,9 +59,8 @@ void VulkanBuffer::Initialize(const void *RESTRICT data[], const VkDeviceSize *d
 		currentOffset = dataSizes[i];
 	}
 	
-
 	//Create the buffer.
-	VulkanUtilities::CreateVulkanBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vulkanBuffer, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vulkanBuffer, vulkanDeviceMemory);
 
 	//Copy the staging buffer data to the buffer.
 	VulkanUtilities::CopyBufferToBuffer(bufferSize, stagingBuffer, vulkanBuffer);

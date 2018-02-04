@@ -15,8 +15,8 @@ PhysicalModel::PhysicalModel() NOEXCEPT
 PhysicalModel::PhysicalModel(const PhysicalModel &otherPhysicalModel) NOEXCEPT
 	:
 	axisAlignedBoundingBox(otherPhysicalModel.axisAlignedBoundingBox),
-	vertexBuffer(otherPhysicalModel.vertexBuffer),
-	indexBuffer(otherPhysicalModel.indexBuffer),
+	buffer(otherPhysicalModel.buffer),
+	indexOffset(otherPhysicalModel.indexOffset),
 	material(otherPhysicalModel.material),
 	indexCount(otherPhysicalModel.indexCount)
 {
@@ -37,8 +37,8 @@ PhysicalModel::~PhysicalModel() NOEXCEPT
 PhysicalModel& PhysicalModel::operator=(const PhysicalModel &otherPhysicalModel) NOEXCEPT
 {
 	axisAlignedBoundingBox = otherPhysicalModel.axisAlignedBoundingBox;
-	vertexBuffer = otherPhysicalModel.vertexBuffer;
-	indexBuffer = otherPhysicalModel.indexBuffer;
+	buffer = otherPhysicalModel.buffer;
+	indexOffset = otherPhysicalModel.indexOffset;
 	material = otherPhysicalModel.material;
 	indexCount = otherPhysicalModel.indexCount;
 

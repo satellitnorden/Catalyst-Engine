@@ -7,13 +7,12 @@
 #include <VulkanCore.h>
 
 //Forward declarations.
+class VulkanBuffer;
 class VulkanCommandPool;
 class VulkanDescriptorSet;
-class VulkanIndexBuffer;
 class VulkanLogicalDevice;
 class VulkanPipeline;
 class VulkanRenderPass;
-class VulkanVertexBuffer;
 
 class VulkanCommandBuffer final
 {
@@ -58,7 +57,7 @@ public:
 	/*
 	*	Records a bind index buffer command.
 	*/
-	void CommandBindIndexBuffer(const VulkanIndexBuffer &vulkanIndexBuffer) NOEXCEPT;
+	void CommandBindIndexBuffer(const VulkanBuffer &vulkanIndexBuffer, const VkDeviceSize offset = 0) NOEXCEPT;
 
 	/*
 	*	Records a bind pipeline command.
@@ -68,7 +67,7 @@ public:
 	/*
 	*	Records a bind vertex buffers command.
 	*/
-	void CommandBindVertexBuffers(const VulkanVertexBuffer &vulkanVertexBuffer) NOEXCEPT;
+	void CommandBindVertexBuffers(const VulkanBuffer &vulkanVertexBuffer, const VkDeviceSize offset = 0) NOEXCEPT;
 
 	/*
 	*	Records a draw command.

@@ -2,9 +2,7 @@
 #include <VulkanCommandBuffer.h>
 
 //Vulkan.
-#include <VulkanCommandPool.h>
 #include <VulkanInterface.h>
-#include <VulkanLogicalDevice.h>
 
 /*
 *	Default constructor.
@@ -99,9 +97,9 @@ void VulkanCommandBuffer::CommandBindDescriptorSets(const VulkanPipeline &vulkan
 /*
 *	Records a bind index buffer command.
 */
-void VulkanCommandBuffer::CommandBindIndexBuffer(const VulkanIndexBuffer &vulkanIndexBuffer) NOEXCEPT
+void VulkanCommandBuffer::CommandBindIndexBuffer(const VulkanBuffer &vulkanIndexBuffer, const VkDeviceSize offset) NOEXCEPT
 {
-	vkCmdBindIndexBuffer(vulkanCommandBuffer, vulkanIndexBuffer.Get(), 0, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(vulkanCommandBuffer, vulkanIndexBuffer.Get(), offset, VK_INDEX_TYPE_UINT32);
 }
 
 /*
@@ -115,9 +113,8 @@ void VulkanCommandBuffer::CommandBindPipeline(const VulkanPipeline &vulkanPipeli
 /*
 *	Records a bind vertex buffers command.
 */
-void VulkanCommandBuffer::CommandBindVertexBuffers(const VulkanVertexBuffer &vulkanVertexBuffer) NOEXCEPT
+void VulkanCommandBuffer::CommandBindVertexBuffers(const VulkanBuffer &vulkanVertexBuffer, const VkDeviceSize offset) NOEXCEPT
 {
-	VkDeviceSize offset{ 0 };
 	vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, &vulkanVertexBuffer.Get(), &offset);
 }
 

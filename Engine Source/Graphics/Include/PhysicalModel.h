@@ -8,8 +8,7 @@
 #include <PhysicalMaterial.h>
 
 //Forward declarations.
-class VulkanIndexBuffer;
-class VulkanVertexBuffer;
+class VulkanBuffer;
 
 class PhysicalModel final
 {
@@ -47,24 +46,24 @@ public:
 	AxisAlignedBoundingBox& GetAxisAlignedBoundingBox() NOEXCEPT { return axisAlignedBoundingBox; }
 
 	/*
-	*	Returns the vertex buffer.
+	*	Returns the buffer.
 	*/
-	RESTRICTED const VulkanVertexBuffer* GetVertexBuffer() const NOEXCEPT { return vertexBuffer; }
+	RESTRICTED const VulkanBuffer* GetBuffer() const NOEXCEPT { return buffer; }
 
 	/*
-	*	Sets the vertex buffer.
+	*	Sets the buffer.
 	*/
-	void SetVertexBuffer(VulkanVertexBuffer *RESTRICT newVertexBuffer) NOEXCEPT { vertexBuffer = newVertexBuffer; }
+	void SetBuffer(VulkanBuffer *RESTRICT newBuffer) NOEXCEPT { buffer = newBuffer; }
 
 	/*
-	*	Returns the index buffer.
+	*	Returns the index offset.
 	*/
-	RESTRICTED const VulkanIndexBuffer* GetIndexBuffer() const NOEXCEPT { return indexBuffer; }
+	uint64 GetIndexOffset() const NOEXCEPT { return indexOffset; }
 
 	/*
-	*	Sets  the index buffer.
+	*	Sets the index offset.
 	*/
-	void SetIndexBuffer(VulkanIndexBuffer *RESTRICT newIndexBuffer) NOEXCEPT { indexBuffer = newIndexBuffer; }
+	void SetIndexOffset(const uint64 newIndexOffset) NOEXCEPT { indexOffset = newIndexOffset; }
 
 	/*
 	*	Returns the material, const version.
@@ -91,11 +90,11 @@ private:
 	//The axis aligned bounding box of this physical model.
 	AxisAlignedBoundingBox axisAlignedBoundingBox;
 
-	//The vertex buffer.
-	VulkanVertexBuffer *RESTRICT vertexBuffer;
+	//The buffer.
+	VulkanBuffer *RESTRICT buffer;
 
-	//The index buffer.
-	VulkanIndexBuffer *RESTRICT indexBuffer;
+	//The index offset in the buffer.
+	uint64 indexOffset;
 
 	//The material.
 	PhysicalMaterial material;

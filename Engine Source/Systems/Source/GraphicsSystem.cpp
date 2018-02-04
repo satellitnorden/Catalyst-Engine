@@ -180,19 +180,18 @@ const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *RESTRICT mod
 
 	ModelLoader::LoadModel(modelPath, vertices, indices, extent);
 
-	//Create the vertex buffer.
-	VulkanVertexBuffer *RESTRICT vertexBuffer = VulkanInterface::Instance->CreateVertexBuffer(vertices);
-
-	//Create the index buffer.
-	VulkanIndexBuffer *RESTRICT indexBuffer = VulkanInterface::Instance->CreateIndexBuffer(indices);
+	//Create the vertex and index buffer.
+	const void *RESTRICT modelData[]{ vertices.Data(), indices.Data() };
+	const VkDeviceSize modelDataSizes[]{ sizeof(Vertex) * vertices.Size(), sizeof(uint32) * indices.Size() };
+	VulkanBuffer *RESTRICT buffer = VulkanInterface::Instance->CreateBuffer(modelData, modelDataSizes, 2);
 
 	//Set up the physical model.
 	PhysicalModel newPhysicalModel;
 
 	newPhysicalModel.GetAxisAlignedBoundingBox().minimum = Vector3(-extent, -extent, -extent);
 	newPhysicalModel.GetAxisAlignedBoundingBox().maximum = Vector3(extent, extent, extent);
-	newPhysicalModel.SetVertexBuffer(vertexBuffer);
-	newPhysicalModel.SetIndexBuffer(indexBuffer);
+	newPhysicalModel.SetBuffer(buffer);
+	newPhysicalModel.SetIndexOffset(modelDataSizes[0]);
 	newPhysicalModel.GetMaterial().SetAlbedoTexture(albedoTexture);
 	newPhysicalModel.GetMaterial().SetNormalMapTexture(normalMapTexture);
 	newPhysicalModel.GetMaterial().SetRoughnessTexture(roughnessTexture ? roughnessTexture : defaultTextures[DefaultTexture::Roughness]);
@@ -242,8 +241,8 @@ void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, co
 	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
 	graphicsBufferComponent.uniformBuffer = newUniformBuffer;
 	renderComponent.descriptorSet = newDescriptorSet;
-	renderComponent.vertexBuffer = *model.GetVertexBuffer();
-	renderComponent.indexBuffer = *model.GetIndexBuffer();
+	renderComponent.buffer = *model.GetBuffer();
+	renderComponent.indexOffset = model.GetIndexOffset();
 	renderComponent.indexCount = model.GetIndexCount();
 }
 
@@ -257,7 +256,7 @@ void GraphicsSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const
 	DynamicArray<uint32> terrainIndices;
 	GraphicsUtilities::GeneratePlane(terrainResolution, terrainVertices, terrainIndices);
 
-	//Create the vertex buffer.
+	//Create the vertex and index buffer.
 	const void *RESTRICT terrainData[]{ terrainVertices.Data(), terrainIndices.Data() };
 	const VkDeviceSize terrainDataSizes[]{ sizeof(float) * terrainVertices.Size(), sizeof(uint32) * terrainIndices.Size() };
 	const VulkanBuffer terrainVertexBuffer{ *VulkanInterface::Instance->CreateBuffer(terrainData, terrainDataSizes, 2) };
@@ -718,8 +717,8 @@ void GraphicsSystem::RenderPhysicalEntities() NOEXCEPT
 			continue;
 
 		commandBuffer.CommandBindDescriptorSets(sceneBufferPipeline, renderComponent->descriptorSet);
-		commandBuffer.CommandBindVertexBuffers(renderComponent->vertexBuffer);
-		commandBuffer.CommandBindIndexBuffer(renderComponent->indexBuffer);
+		commandBuffer.CommandBindVertexBuffers(renderComponent->buffer);
+		commandBuffer.CommandBindIndexBuffer(renderComponent->buffer, renderComponent->indexOffset);
 		commandBuffer.CommandDrawIndexed(renderComponent->indexCount);
 	}
 
