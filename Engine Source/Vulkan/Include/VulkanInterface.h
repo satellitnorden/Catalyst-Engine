@@ -19,7 +19,6 @@
 #include <VulkanDescriptorSetLayout.h>
 #include <VulkanFence.h>
 #include <VulkanFrameBuffer.h>
-#include <VulkanIndexBuffer.h>
 #include <VulkanInstance.h>
 #include <VulkanLogicalDevice.h>
 #include <VulkanPhysicalDevice.h>
@@ -33,7 +32,6 @@
 #include <VulkanSurface.h>
 #include <VulkanSwapChain.h>
 #include <VulkanUniformBuffer.h>
-#include <VulkanVertexBuffer.h>
 
 //Forward declarations.
 class Window;
@@ -157,11 +155,6 @@ public:
 	RESTRICTED VulkanFence* CreateFence(const VkFenceCreateFlags flags = 0) NOEXCEPT;
 
 	/*
-	*	Creates and returns an index buffer.
-	*/
-	RESTRICTED VulkanIndexBuffer* CreateIndexBuffer(const DynamicArray<uint32> &indices) NOEXCEPT;
-
-	/*
 	*	Creates and returns a pipeline.
 	*/
 	RESTRICTED VulkanPipeline* CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT;
@@ -185,11 +178,6 @@ public:
 	*	Creates and returns a uniform buffer.
 	*/
 	RESTRICTED VulkanUniformBuffer* CreateUniformBuffer(const size_t newUniformBufferSize) NOEXCEPT;
-
-	/*
-	*	Creates and returns a vertex buffer.
-	*/
-	RESTRICTED VulkanVertexBuffer* CreateVertexBuffer(const DynamicArray<Vertex> &vertices) NOEXCEPT;
 
 private:
 
@@ -244,9 +232,6 @@ private:
 	//Container for all Vulkan fences.
 	DynamicArray<VulkanFence *RESTRICT> vulkanFences;
 
-	//Container for all Vulkan index buffers.
-	DynamicArray<VulkanIndexBuffer *RESTRICT> vulkanIndexBuffers;
-
 	//Container for all Vulkan pipelines.
 	DynamicArray<VulkanPipeline *RESTRICT> vulkanPipelines;
 
@@ -261,8 +246,5 @@ private:
 
 	//Container for all Vulkan uniform buffers.
 	DynamicArray<VulkanUniformBuffer *RESTRICT> vulkanUniformBuffers;
-
-	//Container for all Vulkan vertex buffers.
-	DynamicArray<VulkanVertexBuffer *RESTRICT> vulkanVertexBuffers;
 
 };

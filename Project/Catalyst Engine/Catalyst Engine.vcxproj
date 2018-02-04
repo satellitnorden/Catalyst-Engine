@@ -65,7 +65,6 @@
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDescriptorSetLayout.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanFence.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanFramebuffer.cpp" />
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanIndexBuffer.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanInstance.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanInterface.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanLogicalDevice.cpp" />
@@ -80,7 +79,6 @@
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSwapChain.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanUniformBuffer.cpp" />
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanVertexBuffer.cpp" />
     <ClCompile Include="..\..\Game Source\Include\EntitySpawner.cpp" />
     <ClCompile Include="..\..\Game Source\Source\ClairvoyantGameSystem.cpp" />
     <ClCompile Include="..\..\Game Source\Source\ClairvoyantPlayer.cpp" />
@@ -175,7 +173,6 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDescriptorSetLayout.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanFence.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanFramebuffer.h" />
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanIndexBuffer.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanInstance.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanInterface.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanLogicalDevice.h" />
@@ -192,7 +189,6 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\Vulkan2DTexture.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUniformBuffer.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUtilities.h" />
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanVertexBuffer.h" />
     <ClInclude Include="..\..\Game Source\Include\ClairvoyantGameSystem.h" />
     <ClInclude Include="..\..\Game Source\Include\ClairvoyantPlayer.h" />
     <ClInclude Include="..\..\Game Source\Include\ClairvoyantSettings.h" />

@@ -210,9 +210,6 @@
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanFramebuffer.cpp">
       <Filter>Engine Source\Vulkan\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanIndexBuffer.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanInstance.cpp">
       <Filter>Engine Source\Vulkan\Source</Filter>
     </ClCompile>
@@ -247,9 +244,6 @@
       <Filter>Engine Source\Vulkan\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanUniformBuffer.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanVertexBuffer.cpp">
       <Filter>Engine Source\Vulkan\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Entities\Source\SpotLightEntity.cpp">
@@ -413,9 +407,6 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanFramebuffer.h">
       <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanIndexBuffer.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanInstance.h">
       <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
@@ -456,9 +447,6 @@
       <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUtilities.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanVertexBuffer.h">
       <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Entities\Include\SpotLightEntity.h">

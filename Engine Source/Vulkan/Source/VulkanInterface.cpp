@@ -122,13 +122,6 @@ void VulkanInterface::Release() NOEXCEPT
 		delete vulkanFence;
 	}
 
-	//Release all Vulkan index buffers.
-	for (VulkanIndexBuffer * RESTRICT vulkanIndexBuffer : vulkanIndexBuffers)
-	{
-		vulkanIndexBuffer->Release();
-		delete vulkanIndexBuffer;
-	}
-
 	//Release all Vulkan render targets.
 	for (VulkanRenderTarget * RESTRICT vulkanRenderTarget : vulkanRenderTargets)
 	{
@@ -162,13 +155,6 @@ void VulkanInterface::Release() NOEXCEPT
 	{
 		vulkanUniformBuffer->Release();
 		delete vulkanUniformBuffer;
-	}
-
-	//Release all Vulkan vertex buffers.
-	for (VulkanVertexBuffer * RESTRICT vulkanVertexBuffer : vulkanVertexBuffers)
-	{
-		vulkanVertexBuffer->Release();
-		delete vulkanVertexBuffer;
 	}
 
 	//Release the Vulkan descriptor pool.
@@ -259,19 +245,6 @@ RESTRICTED VulkanFence* VulkanInterface::CreateFence(const VkFenceCreateFlags fl
 }
 
 /*
-*	Creates and returns an index buffer.
-*/
-RESTRICTED VulkanIndexBuffer* VulkanInterface::CreateIndexBuffer(const DynamicArray<uint32> &indices) NOEXCEPT
-{
-	VulkanIndexBuffer *RESTRICT newIndexBuffer = new VulkanIndexBuffer;
-	newIndexBuffer->Initialize(indices);
-
-	vulkanIndexBuffers.Emplace(newIndexBuffer);
-
-	return newIndexBuffer;
-}
-
-/*
 *	Creates and returns a pipeline.
 */
 RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT
@@ -337,17 +310,4 @@ RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(const size_
 	vulkanUniformBuffers.Emplace(newUniformBuffer);
 
 	return newUniformBuffer;
-}
-
-/*
-*	Creates and returns a vertex buffer.
-*/
-RESTRICTED VulkanVertexBuffer* VulkanInterface::CreateVertexBuffer(const DynamicArray<Vertex> &vertices) NOEXCEPT
-{
-	VulkanVertexBuffer *RESTRICT newVertexBuffer = new VulkanVertexBuffer;
-	newVertexBuffer->Initialize(vertices);
-
-	vulkanVertexBuffers.Emplace(newVertexBuffer);
-
-	return newVertexBuffer;
 }
