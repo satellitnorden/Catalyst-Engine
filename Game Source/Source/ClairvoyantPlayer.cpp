@@ -17,7 +17,7 @@
 /*
 *	Default constructor.
 */
-ClairvoyantPlayer::ClairvoyantPlayer() CATALYST_NOEXCEPT
+ClairvoyantPlayer::ClairvoyantPlayer() NOEXCEPT
 {
 
 }
@@ -25,7 +25,7 @@ ClairvoyantPlayer::ClairvoyantPlayer() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-ClairvoyantPlayer::~ClairvoyantPlayer() CATALYST_NOEXCEPT
+ClairvoyantPlayer::~ClairvoyantPlayer() NOEXCEPT
 {
 
 }
@@ -33,7 +33,7 @@ ClairvoyantPlayer::~ClairvoyantPlayer() CATALYST_NOEXCEPT
 /*
 *	Initializes the player.
 */
-void ClairvoyantPlayer::Initialize() CATALYST_NOEXCEPT
+void ClairvoyantPlayer::Initialize() NOEXCEPT
 {
 	//Add a camera.
 	GraphicsSystem::Instance->SetActiveCamera(this);
@@ -50,7 +50,7 @@ void ClairvoyantPlayer::Initialize() CATALYST_NOEXCEPT
 /*
 *	Updates the player.
 */
-void ClairvoyantPlayer::Update(const float deltaTime) CATALYST_NOEXCEPT
+void ClairvoyantPlayer::Update(const float deltaTime) NOEXCEPT
 {
 	static const float cameraLookSpeed = 50.0f;
 

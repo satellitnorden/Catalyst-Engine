@@ -11,12 +11,12 @@ public:
 	/*
 	*	Default constructor, prohibited - must be constructed with the proper values..
 	*/
-	HeightMap() CATALYST_NOEXCEPT = delete;
+	HeightMap() NOEXCEPT = delete;
 
 	/*
 	*	Constructor taking in the resolution of the height map.
 	*/
-	HeightMap(const size_t initialResolution) CATALYST_NOEXCEPT
+	HeightMap(const size_t initialResolution) NOEXCEPT
 	{
 		//Resize the underlying height map data to be able to hold all the data.
 		heightMapData.Resize(initialResolution * initialResolution);
@@ -25,7 +25,7 @@ public:
 	/*
 	*	Returns the height map value at the specified index, const.
 	*/
-	float At(const size_t xIndex, const size_t yIndex) const CATALYST_NOEXCEPT
+	float At(const size_t xIndex, const size_t yIndex) const NOEXCEPT
 	{
 		return heightMapData[xIndex + yIndex];
 	}
@@ -33,7 +33,7 @@ public:
 	/*
 	*	Returns the height map value at the specified index, non-const.
 	*/
-	float& At(const size_t xIndex, const size_t yIndex) CATALYST_NOEXCEPT
+	float& At(const size_t xIndex, const size_t yIndex) NOEXCEPT
 	{
 		return heightMapData[xIndex + yIndex];
 	}

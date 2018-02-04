@@ -16,7 +16,7 @@ DEFINE_SINGLETON(EngineSystem);
 /*
 *	Default constructor.
 */
-EngineSystem::EngineSystem() CATALYST_NOEXCEPT
+EngineSystem::EngineSystem() NOEXCEPT
 {
 
 }
@@ -24,7 +24,7 @@ EngineSystem::EngineSystem() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-EngineSystem::~EngineSystem() CATALYST_NOEXCEPT
+EngineSystem::~EngineSystem() NOEXCEPT
 {
 
 }
@@ -32,7 +32,7 @@ EngineSystem::~EngineSystem() CATALYST_NOEXCEPT
 /*
 *	Initializes the engine system.
 */
-void EngineSystem::InitializeSystem() CATALYST_NOEXCEPT
+void EngineSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize the current time.
 	currentTime = std::chrono::high_resolution_clock::now();
@@ -50,7 +50,7 @@ void EngineSystem::InitializeSystem() CATALYST_NOEXCEPT
 /*
 *	Updates the engine system synchronously. Returns whether or not the game should terminate.
 */
-bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
+bool EngineSystem::UpdateSystemSynchronous() NOEXCEPT
 {
 	//CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game loop",
 
@@ -86,7 +86,7 @@ bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 /*
 *	Releases the engine system.
 */
-void EngineSystem::ReleaseSystem() CATALYST_NOEXCEPT
+void EngineSystem::ReleaseSystem() NOEXCEPT
 {
 	//Release all systems.
 	GAME_SYSTEM_CLASS::Instance->ReleaseSystem();

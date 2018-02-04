@@ -22,42 +22,42 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	InputSystem() CATALYST_NOEXCEPT;
+	InputSystem() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~InputSystem() CATALYST_NOEXCEPT;
+	~InputSystem() NOEXCEPT;
 
 	/*
 	*	Post-initializes the input system.
 	*/
-	void PostInitializeSystem() CATALYST_NOEXCEPT;
+	void PostInitializeSystem() NOEXCEPT;
 
 	/*
 	*	Pre-updates the input system synchronously.
 	*/
-	void PreUpdateSystemSynchronous() CATALYST_NOEXCEPT;
+	void PreUpdateSystemSynchronous() NOEXCEPT;
 
 	/*
 	*	Post-updates the input system synchronously.
 	*/
-	void PostUpdateSystemSynchronous() CATALYST_NOEXCEPT;
+	void PostUpdateSystemSynchronous() NOEXCEPT;
 
 	/*
 	*	Updates the input system asynchronously.
 	*/
-	void UpdateSystemAsynchronous() CATALYST_NOEXCEPT;
+	void UpdateSystemAsynchronous() NOEXCEPT;
 
 	/*
 	*	Releases the input system.
 	*/
-	void ReleaseSystem() CATALYST_NOEXCEPT;
+	void ReleaseSystem() NOEXCEPT;
 
 	/*
 	*	Returns the current gamepad state.
 	*/
-	GamepadState GetCurrentGamepadState(uint8 index = 0) const CATALYST_NOEXCEPT { return currentGamepadState[index].GetSafe(); }
+	GamepadState GetCurrentGamepadState(uint8 index = 0) const NOEXCEPT { return currentGamepadState[index].GetSafe(); }
 
 private:
 

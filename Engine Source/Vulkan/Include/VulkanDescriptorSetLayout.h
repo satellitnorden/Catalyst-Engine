@@ -14,27 +14,27 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanDescriptorSetLayout() CATALYST_NOEXCEPT;
+	VulkanDescriptorSetLayout() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanDescriptorSetLayout() CATALYST_NOEXCEPT;
+	~VulkanDescriptorSetLayout() NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan descriptor set layout.
 	*/
-	const VkDescriptorSetLayout& Get() const CATALYST_NOEXCEPT { return vulkanDescriptorSetLayout; }
+	const VkDescriptorSetLayout& Get() const NOEXCEPT { return vulkanDescriptorSetLayout; }
 
 	/*
 	*	Initializes this Vulkan descriptor set layout.
 	*/
-	void Initialize(const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) CATALYST_NOEXCEPT;
+	void Initialize(const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan descriptor set layout.
 	*/
-	void Release() CATALYST_NOEXCEPT;
+	void Release() NOEXCEPT;
 
 private:
 
@@ -44,6 +44,6 @@ private:
 	/*
 	*	Creates a descriptor set layout create info.
 	*/
-	void CreateDescriptorSetLayoutCreateInfo(VkDescriptorSetLayoutCreateInfo &descriptorSetLayoutCreateInfo, const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) const CATALYST_NOEXCEPT;
+	void CreateDescriptorSetLayoutCreateInfo(VkDescriptorSetLayoutCreateInfo &descriptorSetLayoutCreateInfo, const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) const NOEXCEPT;
 
 };

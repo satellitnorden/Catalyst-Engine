@@ -45,7 +45,7 @@ public:
 	/*
 	*	Generates noise at the given coordinates.
 	*/
-	static constexpr float GenerateNoise(float X, float Y, float Z, const float randomOffset = 0.0f) CATALYST_NOEXCEPT
+	static constexpr float GenerateNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
 	{
 		X += randomOffset;
 		Y += randomOffset;
@@ -90,7 +90,7 @@ public:
 	/*
 	*	Generates octaved noise.
 	*/
-	float constexpr GenerateOctavedNoise(float X, float Y, float Z, const uint8 octaves, const float persistence) CATALYST_NOEXCEPT
+	float constexpr GenerateOctavedNoise(float X, float Y, float Z, const uint8 octaves, const float persistence) NOEXCEPT
 	{
 		float total{ 0.0f };
 		float frequency{ 1.0f };
@@ -113,7 +113,7 @@ public:
 	/*
 	*	The fade function.
 	*/
-	static constexpr float Fade(const float value) CATALYST_NOEXCEPT
+	static constexpr float Fade(const float value) NOEXCEPT
 	{
 		return value * value * value * (value * (value * 6.0f - 15.0f) + 10.0f);
 	}
@@ -121,7 +121,7 @@ public:
 	/*
 	*	The gradient function.
 	*/
-	static constexpr float Gradient(uint32 hash, float X, float Y, float Z) CATALYST_NOEXCEPT
+	static constexpr float Gradient(uint32 hash, float X, float Y, float Z) NOEXCEPT
 	{
 		switch (hash & 0xF)
 		{

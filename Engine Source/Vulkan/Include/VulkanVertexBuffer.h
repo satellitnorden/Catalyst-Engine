@@ -17,27 +17,27 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanVertexBuffer() CATALYST_NOEXCEPT;
+	VulkanVertexBuffer() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanVertexBuffer() CATALYST_NOEXCEPT;
+	~VulkanVertexBuffer() NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan buffer.
 	*/
-	const VkBuffer& Get() const CATALYST_NOEXCEPT { return vulkanBuffer; }
+	const VkBuffer& Get() const NOEXCEPT { return vulkanBuffer; }
 
 	/*
 	*	Initializes this Vulkan vertex buffer.
 	*/
-	void Initialize(const DynamicArray<Vertex> &vertices) CATALYST_NOEXCEPT;
+	void Initialize(const DynamicArray<Vertex> &vertices) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan vertex buffer.
 	*/
-	void Release() CATALYST_NOEXCEPT;
+	void Release() NOEXCEPT;
 
 private:
 
@@ -50,21 +50,21 @@ private:
 	/*
 	*	Creates a buffer create info.
 	*/
-	void CreateBufferCreateInfo(VkBufferCreateInfo &bufferCreateInfo, const DynamicArray<Vertex> &vertices, const VkBufferUsageFlags &bufferUsageFlags, const uint32 *CATALYST_RESTRICT queueFamilyIndices) const CATALYST_NOEXCEPT;
+	void CreateBufferCreateInfo(VkBufferCreateInfo &bufferCreateInfo, const DynamicArray<Vertex> &vertices, const VkBufferUsageFlags &bufferUsageFlags, const uint32 *RESTRICT queueFamilyIndices) const NOEXCEPT;
 
 	/*
 	*	Finds the memory type index.
 	*/
-	uint32 FindMemoryTypeIndex(const uint32 typeFilter, const VkMemoryPropertyFlags memoryPropertyFlags) const CATALYST_NOEXCEPT;
+	uint32 FindMemoryTypeIndex(const uint32 typeFilter, const VkMemoryPropertyFlags memoryPropertyFlags) const NOEXCEPT;
 
 	/*
 	*	Creates a memory allocate info.
 	*/
-	void CreateMemoryAllocateInfo(VkMemoryAllocateInfo &memoryAllocateInfo, const uint64 allocationSize, const uint32 memoryTypeIndex) const CATALYST_NOEXCEPT;
+	void CreateMemoryAllocateInfo(VkMemoryAllocateInfo &memoryAllocateInfo, const uint64 allocationSize, const uint32 memoryTypeIndex) const NOEXCEPT;
 
 	/*
 	*	Creates a buffer copy.
 	*/
-	void CreateBufferCopy(VkBufferCopy &bufferCopy, const uint64 size) CATALYST_NOEXCEPT;
+	void CreateBufferCopy(VkBufferCopy &bufferCopy, const uint64 size) NOEXCEPT;
 
 };

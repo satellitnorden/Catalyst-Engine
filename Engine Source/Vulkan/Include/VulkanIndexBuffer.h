@@ -14,27 +14,27 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanIndexBuffer() CATALYST_NOEXCEPT;
+	VulkanIndexBuffer() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanIndexBuffer() CATALYST_NOEXCEPT;
+	~VulkanIndexBuffer() NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan buffer.
 	*/
-	const VkBuffer& Get() const CATALYST_NOEXCEPT { return vulkanBuffer; }
+	const VkBuffer& Get() const NOEXCEPT { return vulkanBuffer; }
 
 	/*
 	*	Initializes this Vulkan index buffer.
 	*/
-	void Initialize(const DynamicArray<uint32> &indices) CATALYST_NOEXCEPT;
+	void Initialize(const DynamicArray<uint32> &indices) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan index buffer.
 	*/
-	void Release() CATALYST_NOEXCEPT;
+	void Release() NOEXCEPT;
 
 private:
 

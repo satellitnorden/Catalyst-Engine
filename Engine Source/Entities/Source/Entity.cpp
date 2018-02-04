@@ -11,7 +11,7 @@ DEFINE_ENTITY_CLASS(Entity);
 /*
 *	Default constructor.
 */
-Entity::Entity() CATALYST_NOEXCEPT
+Entity::Entity() NOEXCEPT
 {
 	//Add this entity to the universal container.
 	Instances.Emplace(this);
@@ -20,7 +20,7 @@ Entity::Entity() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-Entity::~Entity() CATALYST_NOEXCEPT
+Entity::~Entity() NOEXCEPT
 {
 	//Remove this entity from the universal container.
 	Instances.Erase(this);
@@ -29,7 +29,7 @@ Entity::~Entity() CATALYST_NOEXCEPT
 /*
 *	Marks this entitiy for destruction.
 */
-void Entity::MarkForDestruction() CATALYST_NOEXCEPT
+void Entity::MarkForDestruction() NOEXCEPT
 {
 
 }

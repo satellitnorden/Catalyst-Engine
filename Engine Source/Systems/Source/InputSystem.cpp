@@ -13,7 +13,7 @@ DEFINE_SINGLETON(InputSystem);
 /*
 *	Default constructor.
 */
-InputSystem::InputSystem() CATALYST_NOEXCEPT
+InputSystem::InputSystem() NOEXCEPT
 {
 
 }
@@ -21,7 +21,7 @@ InputSystem::InputSystem() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-InputSystem::~InputSystem() CATALYST_NOEXCEPT
+InputSystem::~InputSystem() NOEXCEPT
 {
 
 }
@@ -29,16 +29,16 @@ InputSystem::~InputSystem() CATALYST_NOEXCEPT
 /*
 *	Post-initializes the input system.
 */
-void InputSystem::PostInitializeSystem() CATALYST_NOEXCEPT
+void InputSystem::PostInitializeSystem() NOEXCEPT
 {
 	//Register the input system asynchronous update daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, [](void *CATALYST_RESTRICT arguments) { static_cast<InputSystem *CATALYST_RESTRICT>(arguments)->UpdateSystemAsynchronous(); });
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, [](void *RESTRICT arguments) { static_cast<InputSystem *RESTRICT>(arguments)->UpdateSystemAsynchronous(); });
 }
 
 /*
 *	Pre-updates the input system synchronously.
 */
-void InputSystem::PreUpdateSystemSynchronous() CATALYST_NOEXCEPT
+void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
 	//Carry out the input system asynchronous update daily quest.
 	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, this);
@@ -47,7 +47,7 @@ void InputSystem::PreUpdateSystemSynchronous() CATALYST_NOEXCEPT
 /*
 *	Post-updates the input system synchronously.
 */
-void InputSystem::PostUpdateSystemSynchronous() CATALYST_NOEXCEPT
+void InputSystem::PostUpdateSystemSynchronous() NOEXCEPT
 {
 	//Wait for the input system asynchronous update daily quest to finish.
 	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::InputSystemAsynchronousUpdate);
@@ -56,7 +56,7 @@ void InputSystem::PostUpdateSystemSynchronous() CATALYST_NOEXCEPT
 /*
 *	Updates the input system asynchronously.
 */
-void InputSystem::UpdateSystemAsynchronous() CATALYST_NOEXCEPT
+void InputSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
 	//Update gamepad states.
 	for (uint8 i = 0; i < INPUT_MAXIMUM_GAMEPADS; ++i)
@@ -79,7 +79,7 @@ void InputSystem::UpdateSystemAsynchronous() CATALYST_NOEXCEPT
 /*
 *	Releases the input system.
 */
-void InputSystem::ReleaseSystem() CATALYST_NOEXCEPT
+void InputSystem::ReleaseSystem() NOEXCEPT
 {
 	
 }

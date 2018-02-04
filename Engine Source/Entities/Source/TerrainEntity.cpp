@@ -10,7 +10,7 @@ DEFINE_ENTITY_CLASS(TerrainEntity);
 /*
 *	Default constructor.
 */
-TerrainEntity::TerrainEntity() CATALYST_NOEXCEPT
+TerrainEntity::TerrainEntity() NOEXCEPT
 {
 	//Get a new components index.
 	componentsIndex = ComponentManager::GetNewTerrainEntityComponentsIndex();
@@ -22,7 +22,7 @@ TerrainEntity::TerrainEntity() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-TerrainEntity::~TerrainEntity() CATALYST_NOEXCEPT
+TerrainEntity::~TerrainEntity() NOEXCEPT
 {
 	//Remove this terrain entity from the universal container.
 	Instances.Erase(this);
@@ -31,7 +31,7 @@ TerrainEntity::~TerrainEntity() CATALYST_NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-const Vector3& TerrainEntity::GetPosition() CATALYST_NOEXCEPT
+const Vector3& TerrainEntity::GetPosition() NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetTerrainEntityTerrainComponents()[componentsIndex].position;
@@ -40,7 +40,7 @@ const Vector3& TerrainEntity::GetPosition() CATALYST_NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& TerrainEntity::GetRotation() CATALYST_NOEXCEPT
+const Vector3& TerrainEntity::GetRotation() NOEXCEPT
 {
 	//Terrain entities has no rotation.
 	return Entity::defaultRotation;
@@ -49,7 +49,7 @@ const Vector3& TerrainEntity::GetRotation() CATALYST_NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& TerrainEntity::GetScale() CATALYST_NOEXCEPT
+const Vector3& TerrainEntity::GetScale() NOEXCEPT
 {
 	//Terrain entities has no scale.
 	return Entity::defaultScale;
@@ -58,7 +58,7 @@ const Vector3& TerrainEntity::GetScale() CATALYST_NOEXCEPT
 /*
 *	Moves this entity.
 */
-void TerrainEntity::Move(const Vector3 &moveVector) CATALYST_NOEXCEPT
+void TerrainEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
 	ComponentManager::GetTerrainEntityTerrainComponents()[componentsIndex].position += moveVector;
@@ -73,7 +73,7 @@ void TerrainEntity::Move(const Vector3 &moveVector) CATALYST_NOEXCEPT
 /*
 *	Rotates this entity.
 */
-void TerrainEntity::Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT
+void TerrainEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate all children.
 	for (auto child : children)
@@ -85,11 +85,19 @@ void TerrainEntity::Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT
 /*
 *	Scales this entity.
 */
-void TerrainEntity::Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT
+void TerrainEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale all children.
 	for (auto child : children)
 	{
 		child->Scale(scaleVector);
 	}
+}
+
+/*
+*	Initializes this terrain entity.
+*/
+void TerrainEntity::Initialize(const HeightMap &initialHeightMap) NOEXCEPT
+{
+
 }

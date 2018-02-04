@@ -26,7 +26,7 @@ DynamicArray<TerrainComponent> ComponentManager::terrainEntityTerrainComponents;
 /*
 *	Returns a new components index for camera entities.
 */
-size_t ComponentManager::GetNewCameraEntityComponentsIndex() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNewCameraEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	cameraEntityCameraComponents.Emplace();
@@ -38,7 +38,7 @@ size_t ComponentManager::GetNewCameraEntityComponentsIndex() CATALYST_NOEXCEPT
 /*
 *	Returns the number of camera entity components.
 */
-size_t ComponentManager::GetNumberOfCameraEntityComponents() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNumberOfCameraEntityComponents() NOEXCEPT
 {
 	//Return the number of camera entity components.
 	return numberOfCameraEntityComponents;
@@ -47,7 +47,7 @@ size_t ComponentManager::GetNumberOfCameraEntityComponents() CATALYST_NOEXCEPT
 /*
 *	Returns the camera entity camera components.
 */
-CATALYST_RESTRICTED CameraComponent* ComponentManager::GetCameraEntityCameraComponents() CATALYST_NOEXCEPT
+RESTRICTED CameraComponent* ComponentManager::GetCameraEntityCameraComponents() NOEXCEPT
 {
 	//Return the camera entity camera components.
 	return cameraEntityCameraComponents.Data();
@@ -56,7 +56,7 @@ CATALYST_RESTRICTED CameraComponent* ComponentManager::GetCameraEntityCameraComp
 /*
 *	Returns a new components index for directional light entities.
 */
-size_t ComponentManager::GetNewDirectionalLightEntityComponentsIndex() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNewDirectionalLightEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	directionalLightEntityDirectionalLightComponents.Emplace();
@@ -68,7 +68,7 @@ size_t ComponentManager::GetNewDirectionalLightEntityComponentsIndex() CATALYST_
 /*
 *	Returns the number of directional light entity components.
 */
-size_t ComponentManager::GetNumberOfDirectionalLightEntityComponents() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNumberOfDirectionalLightEntityComponents() NOEXCEPT
 {
 	//Return the number of directional light entity components.
 	return numberOfDirectionalLightEntityComponents;
@@ -77,7 +77,7 @@ size_t ComponentManager::GetNumberOfDirectionalLightEntityComponents() CATALYST_
 /*
 *	Returns the directional light entity directional light components.
 */
-CATALYST_RESTRICTED DirectionalLightComponent* ComponentManager::GetDirectionalLightEntityDirectionalLightComponents() CATALYST_NOEXCEPT
+RESTRICTED DirectionalLightComponent* ComponentManager::GetDirectionalLightEntityDirectionalLightComponents() NOEXCEPT
 {
 	//Return the directional light entity directional light components.
 	return directionalLightEntityDirectionalLightComponents.Data();
@@ -86,7 +86,7 @@ CATALYST_RESTRICTED DirectionalLightComponent* ComponentManager::GetDirectionalL
 /*
 *	Returns a new components index for physical entities.
 */
-size_t ComponentManager::GetNewPhysicalEntityComponentsIndex() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNewPhysicalEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	physicalEntityFrustumCullingComponents.Emplace();
@@ -101,7 +101,7 @@ size_t ComponentManager::GetNewPhysicalEntityComponentsIndex() CATALYST_NOEXCEPT
 /*
 *	Returns the number of physical entity components.
 */
-size_t ComponentManager::GetNumberOfPhysicalEntityComponents() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNumberOfPhysicalEntityComponents() NOEXCEPT
 {
 	//Return the number of physical entity components.
 	return numberOfPhysicalEntityComponents;
@@ -110,7 +110,7 @@ size_t ComponentManager::GetNumberOfPhysicalEntityComponents() CATALYST_NOEXCEPT
 /*
 *	Returns the physical entity frustum culling components.
 */
-CATALYST_RESTRICTED FrustumCullingComponent* ComponentManager::GetPhysicalEntityFrustumCullingComponents() CATALYST_NOEXCEPT
+RESTRICTED FrustumCullingComponent* ComponentManager::GetPhysicalEntityFrustumCullingComponents() NOEXCEPT
 {
 	//Return the physical entity frustum culling components.
 	return physicalEntityFrustumCullingComponents.Data();
@@ -119,7 +119,7 @@ CATALYST_RESTRICTED FrustumCullingComponent* ComponentManager::GetPhysicalEntity
 /*
 *	Returns the physical entity graphics buffer components.
 */
-CATALYST_RESTRICTED GraphicsBufferComponent* ComponentManager::GetPhysicalEntityGraphicsBufferComponents() CATALYST_NOEXCEPT
+RESTRICTED GraphicsBufferComponent* ComponentManager::GetPhysicalEntityGraphicsBufferComponents() NOEXCEPT
 {
 	//Return the physical entity graphics buffer components.
 	return physicalEntityGraphicsBufferComponents.Data();
@@ -128,7 +128,7 @@ CATALYST_RESTRICTED GraphicsBufferComponent* ComponentManager::GetPhysicalEntity
 /*
 *	Returns the physical entity render components.
 */
-CATALYST_RESTRICTED RenderComponent* ComponentManager::GetPhysicalEntityRenderComponents() CATALYST_NOEXCEPT
+RESTRICTED RenderComponent* ComponentManager::GetPhysicalEntityRenderComponents() NOEXCEPT
 {
 	//Return the physical entity render components.
 	return physicalEntityRenderComponents.Data();
@@ -137,7 +137,7 @@ CATALYST_RESTRICTED RenderComponent* ComponentManager::GetPhysicalEntityRenderCo
 /*
 *	Returns the physical entity frustum transform components.
 */
-CATALYST_RESTRICTED TransformComponent* ComponentManager::GetPhysicalEntityTransformComponents() CATALYST_NOEXCEPT
+RESTRICTED TransformComponent* ComponentManager::GetPhysicalEntityTransformComponents() NOEXCEPT
 {
 	//Return the physical entity frustum transform components.
 	return physicalEntityTransformComponents.Data();
@@ -146,7 +146,7 @@ CATALYST_RESTRICTED TransformComponent* ComponentManager::GetPhysicalEntityTrans
 /*
 *	Returns a new components index for point light entities.
 */
-size_t ComponentManager::GetNewPointLightEntitiesEntityComponentsIndex() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNewPointLightEntitiesEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	pointLightEntityPointLightComponents.Emplace();
@@ -158,7 +158,7 @@ size_t ComponentManager::GetNewPointLightEntitiesEntityComponentsIndex() CATALYS
 /*
 *	Returns the number of point light entity components.
 */
-size_t ComponentManager::GetNumberOfPointLightEntityComponents() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNumberOfPointLightEntityComponents() NOEXCEPT
 {
 	//Return the number of point light entity components.
 	return numberOfPointLightEntityComponents;
@@ -167,7 +167,7 @@ size_t ComponentManager::GetNumberOfPointLightEntityComponents() CATALYST_NOEXCE
 /*
 *	Returns the point light entity point light components.
 */
-CATALYST_RESTRICTED PointLightComponent* ComponentManager::GetPointLightEntityPointLightComponents() CATALYST_NOEXCEPT
+RESTRICTED PointLightComponent* ComponentManager::GetPointLightEntityPointLightComponents() NOEXCEPT
 {
 	//Return the point light entity point light components.
 	return pointLightEntityPointLightComponents.Data();
@@ -176,7 +176,7 @@ CATALYST_RESTRICTED PointLightComponent* ComponentManager::GetPointLightEntityPo
 /*
 *	Returns a new components index for spot light entities.
 */
-size_t ComponentManager::GetNewSpotLightEntitiesEntityComponentsIndex() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNewSpotLightEntitiesEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	spotLightEntitySpotLightComponents.Emplace();
@@ -188,7 +188,7 @@ size_t ComponentManager::GetNewSpotLightEntitiesEntityComponentsIndex() CATALYST
 /*
 *	Returns the number of spot light entity components.
 */
-size_t ComponentManager::GetNumberOfSpotLightEntityComponents() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNumberOfSpotLightEntityComponents() NOEXCEPT
 {
 	//Return the number of spot light entity components.
 	return numberOfSpotLightEntityComponents;
@@ -197,7 +197,7 @@ size_t ComponentManager::GetNumberOfSpotLightEntityComponents() CATALYST_NOEXCEP
 /*
 *	Returns the spot light entity spot light components.
 */
-CATALYST_RESTRICTED SpotLightComponent* ComponentManager::GetSpotLightEntitySpotLightComponents() CATALYST_NOEXCEPT
+RESTRICTED SpotLightComponent* ComponentManager::GetSpotLightEntitySpotLightComponents() NOEXCEPT
 {
 	//Return the spot light entity spot light components.
 	return spotLightEntitySpotLightComponents.Data();
@@ -206,7 +206,7 @@ CATALYST_RESTRICTED SpotLightComponent* ComponentManager::GetSpotLightEntitySpot
 /*
 *	Returns a new components index for terrain entities.
 */
-size_t ComponentManager::GetNewTerrainEntityComponentsIndex() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNewTerrainEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	terrainEntityTerrainComponents.Emplace();
@@ -218,7 +218,7 @@ size_t ComponentManager::GetNewTerrainEntityComponentsIndex() CATALYST_NOEXCEPT
 /*
 *	Returns the number of terrain entity components.
 */
-size_t ComponentManager::GetNumberOfTerrainEntityComponents() CATALYST_NOEXCEPT
+size_t ComponentManager::GetNumberOfTerrainEntityComponents() NOEXCEPT
 {
 	//Return the number of terrain entity components.
 	return numberOfTerrainEntityComponents;
@@ -227,7 +227,7 @@ size_t ComponentManager::GetNumberOfTerrainEntityComponents() CATALYST_NOEXCEPT
 /*
 *	Returns the terrain entity terrain components.
 */
-CATALYST_RESTRICTED TerrainComponent* ComponentManager::GetTerrainEntityTerrainComponents() CATALYST_NOEXCEPT
+RESTRICTED TerrainComponent* ComponentManager::GetTerrainEntityTerrainComponents() NOEXCEPT
 {
 	//Return the terrain entity terrain components.
 	return terrainEntityTerrainComponents.Data();

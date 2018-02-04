@@ -21,46 +21,46 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	PhysicalEntity() CATALYST_NOEXCEPT;
+	PhysicalEntity() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	virtual ~PhysicalEntity() CATALYST_NOEXCEPT;
+	virtual ~PhysicalEntity() NOEXCEPT;
 
 	/*
 	*	Initializes this physical entity.
 	*/
-	void Initialize(const PhysicalModel &newModel) CATALYST_NOEXCEPT;
+	void Initialize(const PhysicalModel &newModel) NOEXCEPT;
 
 	/*
 	*	Returns the position of this entity.
 	*/
-	const Vector3& GetPosition() CATALYST_NOEXCEPT final override;
+	const Vector3& GetPosition() NOEXCEPT final override;
 
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	const Vector3& GetRotation() CATALYST_NOEXCEPT final override;
+	const Vector3& GetRotation() NOEXCEPT final override;
 
 	/*
 	*	Returns the scale of this entity.
 	*/
-	const Vector3& GetScale() CATALYST_NOEXCEPT final override;
+	const Vector3& GetScale() NOEXCEPT final override;
 
 	/*
 	*	Moves this entity.
 	*/
-	void Move(const Vector3 &moveVector) CATALYST_NOEXCEPT final override;
+	void Move(const Vector3 &moveVector) NOEXCEPT final override;
 
 	/*
 	*	Rotates this entity.
 	*/
-	void Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT final override;
+	void Rotate(const Vector3 &rotateVector) NOEXCEPT final override;
 
 	/*
 	*	Scales this entity.
 	*/
-	void Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT final override;
+	void Scale(const Vector3 &scaleVector) NOEXCEPT final override;
 
 };

@@ -11,7 +11,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Threadlock() CATALYST_NOEXCEPT
+	Threadlock() NOEXCEPT
 	{
 
 	}
@@ -19,7 +19,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~Threadlock() CATALYST_NOEXCEPT
+	~Threadlock() NOEXCEPT
 	{
 
 	}
@@ -27,7 +27,7 @@ public:
 	/*
 	*	Locks this threadlock.
 	*/
-	void Lock() CATALYST_NOEXCEPT
+	void Lock() NOEXCEPT
 	{
 		static bool expected = false;
 		while (!lock.compare_exchange_weak(expected, true))
@@ -39,7 +39,7 @@ public:
 	/*
 	*	Unlocks this threadlock.
 	*/
-	void Unlock() CATALYST_NOEXCEPT
+	void Unlock() NOEXCEPT
 	{
 		lock.store(false);
 	}

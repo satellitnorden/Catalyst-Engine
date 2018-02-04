@@ -7,7 +7,7 @@
 /*
 *	Returns the dot product of two vectors.
 */
-float Vector3::DotProduct(const Vector3 &firstVector, const Vector3 &secondVector) CATALYST_NOEXCEPT
+float Vector3::DotProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
 {
 	return (firstVector.X * secondVector.X) + (firstVector.Y * secondVector.Y) + (firstVector.Z * secondVector.Z);
 }
@@ -15,7 +15,7 @@ float Vector3::DotProduct(const Vector3 &firstVector, const Vector3 &secondVecto
 /*
 *	Returns the cross product of two vectors.
 */
-Vector3 Vector3::CrossProduct(const Vector3 &firstVector, const Vector3 &secondVector) CATALYST_NOEXCEPT
+Vector3 Vector3::CrossProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
 {
 	return Vector3{ (firstVector.Y * secondVector.Z) - (firstVector.Z * secondVector.Y), (firstVector.Z * secondVector.X) - (firstVector.X * secondVector.Z), (firstVector.X * secondVector.Y) - (firstVector.Y * secondVector.X) };
 }
@@ -23,7 +23,7 @@ Vector3 Vector3::CrossProduct(const Vector3 &firstVector, const Vector3 &secondV
 /*
 *	Given a vector, return it's length squared.
 */
-float Vector3::LengthSquared(const Vector3 &vector) CATALYST_NOEXCEPT
+float Vector3::LengthSquared(const Vector3 &vector) NOEXCEPT
 {
 	const float absoluteX = GameMath::Absolute(vector.X);
 	const float absoluteY = GameMath::Absolute(vector.Y);
@@ -35,7 +35,7 @@ float Vector3::LengthSquared(const Vector3 &vector) CATALYST_NOEXCEPT
 /*
 *	Given a vector, return it's unit vector counterpart.
 */
-Vector3 Vector3::Normalize(const Vector3 &vector) CATALYST_NOEXCEPT
+Vector3 Vector3::Normalize(const Vector3 &vector) NOEXCEPT
 {
 	Vector3 unitVector{ vector };
 
@@ -47,7 +47,7 @@ Vector3 Vector3::Normalize(const Vector3 &vector) CATALYST_NOEXCEPT
 /*
 *	Returns the length of the vector.
 */
-float Vector3::Length() const CATALYST_NOEXCEPT
+float Vector3::Length() const NOEXCEPT
 {
 	return GameMath::SquareRoot((X * X) + (Y * Y) + (Z *Z));
 }
@@ -55,7 +55,7 @@ float Vector3::Length() const CATALYST_NOEXCEPT
 /*
 *	Normalize the vector to a unit vector.
 */
-void Vector3::Normalize() CATALYST_NOEXCEPT
+void Vector3::Normalize() NOEXCEPT
 {
 	const float length = Length();
 
@@ -67,7 +67,7 @@ void Vector3::Normalize() CATALYST_NOEXCEPT
 /*
 *	Given a rotation vector, rotate this vector.
 */
-void Vector3::Rotate(const Vector3& rotationVector) CATALYST_NOEXCEPT
+void Vector3::Rotate(const Vector3& rotationVector) NOEXCEPT
 {
 	//Rotate the roll.
 	float tempY = Y * GameMath::CosineDegrees(rotationVector.X) - Z * GameMath::SineDegrees(rotationVector.X);
@@ -88,7 +88,7 @@ void Vector3::Rotate(const Vector3& rotationVector) CATALYST_NOEXCEPT
 /*
 *	Given a rotation vector, rotate this vector.
 */
-void Vector3::NewRotate(const Vector3& rotationVector) CATALYST_NOEXCEPT
+void Vector3::NewRotate(const Vector3& rotationVector) NOEXCEPT
 {
 	const float xRadians = GameMath::DegreesToRadians(rotationVector.X);
 	const float yRadians = GameMath::DegreesToRadians(rotationVector.Y);
@@ -113,7 +113,7 @@ void Vector3::NewRotate(const Vector3& rotationVector) CATALYST_NOEXCEPT
 /*
 *	Returns a rotate copy of this vector.
 */
-Vector3 Vector3::Rotated(const Vector3& rotationVector) const CATALYST_NOEXCEPT
+Vector3 Vector3::Rotated(const Vector3& rotationVector) const NOEXCEPT
 {
 	Vector3 rotatedVector{ *this };
 	rotatedVector.Rotate(rotationVector);

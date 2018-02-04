@@ -4,7 +4,7 @@
 /*
 *	Default constructor.
 */
-PhysicalModel::PhysicalModel() CATALYST_NOEXCEPT
+PhysicalModel::PhysicalModel() NOEXCEPT
 {
 
 }
@@ -12,7 +12,7 @@ PhysicalModel::PhysicalModel() CATALYST_NOEXCEPT
 /*
 *	Copy constructor.
 */
-PhysicalModel::PhysicalModel(const PhysicalModel &otherPhysicalModel) CATALYST_NOEXCEPT
+PhysicalModel::PhysicalModel(const PhysicalModel &otherPhysicalModel) NOEXCEPT
 	:
 	axisAlignedBoundingBox(otherPhysicalModel.axisAlignedBoundingBox),
 	vertexBuffer(otherPhysicalModel.vertexBuffer),
@@ -26,7 +26,7 @@ PhysicalModel::PhysicalModel(const PhysicalModel &otherPhysicalModel) CATALYST_N
 /*
 *	Default destructor.
 */
-PhysicalModel::~PhysicalModel() CATALYST_NOEXCEPT
+PhysicalModel::~PhysicalModel() NOEXCEPT
 {
 
 }
@@ -34,7 +34,7 @@ PhysicalModel::~PhysicalModel() CATALYST_NOEXCEPT
 /*
 *	Copy assignment overload.
 */
-PhysicalModel& PhysicalModel::operator=(const PhysicalModel &otherPhysicalModel) CATALYST_NOEXCEPT
+PhysicalModel& PhysicalModel::operator=(const PhysicalModel &otherPhysicalModel) NOEXCEPT
 {
 	axisAlignedBoundingBox = otherPhysicalModel.axisAlignedBoundingBox;
 	vertexBuffer = otherPhysicalModel.vertexBuffer;

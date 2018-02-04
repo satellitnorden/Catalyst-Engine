@@ -7,7 +7,7 @@
 /*
 *	Default constructor.
 */
-VulkanPhysicalDevice::VulkanPhysicalDevice() CATALYST_NOEXCEPT
+VulkanPhysicalDevice::VulkanPhysicalDevice() NOEXCEPT
 {
 
 }
@@ -15,7 +15,7 @@ VulkanPhysicalDevice::VulkanPhysicalDevice() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanPhysicalDevice::~VulkanPhysicalDevice() CATALYST_NOEXCEPT
+VulkanPhysicalDevice::~VulkanPhysicalDevice() NOEXCEPT
 {
 
 }
@@ -23,7 +23,7 @@ VulkanPhysicalDevice::~VulkanPhysicalDevice() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan physical device.
 */
-void VulkanPhysicalDevice::Initialize() CATALYST_NOEXCEPT
+void VulkanPhysicalDevice::Initialize() NOEXCEPT
 {
 	//Get the number of available physical devices.
 	uint32 availablePhysicalDeviceCount{ 0 };
@@ -107,7 +107,7 @@ void VulkanPhysicalDevice::Initialize() CATALYST_NOEXCEPT
 /*
 *	Given a Vulkan physical device, return if it is suitable for this game.
 */
-bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulkanPhysicalDevice) const CATALYST_NOEXCEPT
+bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT
 {
 	//Check if it has the required extensions.
 	if (!HasRequiredExtensions(vulkanPhysicalDevice))
@@ -124,7 +124,7 @@ bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulk
 /*
 *	Given a Vulkan physical device, return if it has the required extensions.
 */
-bool VulkanPhysicalDevice::HasRequiredExtensions(const VkPhysicalDevice &vulkanPhysicalDevice) const CATALYST_NOEXCEPT
+bool VulkanPhysicalDevice::HasRequiredExtensions(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT
 {
 	//Define the list of the required extensions.
 	std::set<DynamicString> requiredExtensions{ VULKAN_SWAPCHAIN_EXTENSION_NAME };
@@ -151,7 +151,7 @@ bool VulkanPhysicalDevice::HasRequiredExtensions(const VkPhysicalDevice &vulkanP
 /*
 *	Given a Vulkan physical device and a Vulkan surface, return if the Physical device has the proper swap chain support.
 */
-bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vulkanPhysicalDevice) const CATALYST_NOEXCEPT
+bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT
 {
 	//Query for format support.
 	uint32 formatsCount = 0; 
@@ -178,7 +178,7 @@ bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vul
 /*
 *	Given a list of suitable physical devices, return most suitable physical device.
 */
-VkPhysicalDevice VulkanPhysicalDevice::GetMostSuitableDevice(const DynamicArray<VkPhysicalDevice> &suitablePhysicalDevices) const CATALYST_NOEXCEPT
+VkPhysicalDevice VulkanPhysicalDevice::GetMostSuitableDevice(const DynamicArray<VkPhysicalDevice> &suitablePhysicalDevices) const NOEXCEPT
 {
 	//For now just return the first one.
 	return suitablePhysicalDevices[0];
@@ -187,7 +187,7 @@ VkPhysicalDevice VulkanPhysicalDevice::GetMostSuitableDevice(const DynamicArray<
 /*
 *	Given a physical device and a surface, returns the most optimal surface format.
 */
-VULKAN_SURFACE_FORMAT_TYPE VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() const CATALYST_NOEXCEPT
+VULKAN_SURFACE_FORMAT_TYPE VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() const NOEXCEPT
 {
 	//Query for format support.
 	uint32 availableFormatsCount = 0;
@@ -218,7 +218,7 @@ VULKAN_SURFACE_FORMAT_TYPE VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() c
 /*
 *	Given a physical device and a surface, returns the most optimal present mode.
 */
-VULKAN_PRESENT_MODE_TYPE VulkanPhysicalDevice::GetMostOptimalPresentMode() const CATALYST_NOEXCEPT
+VULKAN_PRESENT_MODE_TYPE VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEPT
 {
 	//Query for present mode support.
 	uint32 availablePresentModesCount = 0;

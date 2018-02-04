@@ -15,12 +15,12 @@ public:
 	/*
 	*	Default constructor - prohibited, must be constructed with the proper arguments.
 	*/
-	DescriptorLayoutBindingInformation() CATALYST_NOEXCEPT = delete;
+	DescriptorLayoutBindingInformation() NOEXCEPT = delete;
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	DescriptorLayoutBindingInformation(const uint32 newBinding, const VkDescriptorType newDescriptorType, const VkShaderStageFlags newShaderStage) CATALYST_NOEXCEPT
+	DescriptorLayoutBindingInformation(const uint32 newBinding, const VkDescriptorType newDescriptorType, const VkShaderStageFlags newShaderStage) NOEXCEPT
 		:
 		binding(newBinding),
 		descriptorType(newDescriptorType),
@@ -61,7 +61,7 @@ public:
 	VkImageLayout depthAttachmentInitialLayout;
 
 	//The depth buffers.
-	DynamicArray<const VulkanDepthBuffer *CATALYST_RESTRICT> depthBuffers{};
+	DynamicArray<const VulkanDepthBuffer *RESTRICT> depthBuffers{};
 
 	//The depth compare operator.
 	VkCompareOp depthCompareOp;
@@ -76,7 +76,7 @@ public:
 	DynamicArray<DescriptorLayoutBindingInformation> descriptorLayoutBindingInformations{};
 
 	//The shader modules.
-	DynamicArray<VulkanShaderModule *CATALYST_RESTRICT> shaderModules{};
+	DynamicArray<VulkanShaderModule *RESTRICT> shaderModules{};
 
 	//The topology of the pipeline.
 	VkPrimitiveTopology topology;

@@ -8,7 +8,7 @@
 /*
 *	Default constructor.
 */
-VulkanDepthBuffer::VulkanDepthBuffer() CATALYST_NOEXCEPT
+VulkanDepthBuffer::VulkanDepthBuffer() NOEXCEPT
 {
 
 }
@@ -16,7 +16,7 @@ VulkanDepthBuffer::VulkanDepthBuffer() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanDepthBuffer::~VulkanDepthBuffer() CATALYST_NOEXCEPT
+VulkanDepthBuffer::~VulkanDepthBuffer() NOEXCEPT
 {
 
 }
@@ -24,7 +24,7 @@ VulkanDepthBuffer::~VulkanDepthBuffer() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan depth buffer.
 */
-void VulkanDepthBuffer::Initialize(const VkExtent2D imageExtent) CATALYST_NOEXCEPT
+void VulkanDepthBuffer::Initialize(const VkExtent2D imageExtent) NOEXCEPT
 {
 	//Find the most desirable depth buffer format.
 	format = FindMostDesirableDepthBufferFormat();
@@ -42,7 +42,7 @@ void VulkanDepthBuffer::Initialize(const VkExtent2D imageExtent) CATALYST_NOEXCE
 /*
 *	Releases this Vulkan depth buffer.
 */
-void VulkanDepthBuffer::Release() CATALYST_NOEXCEPT
+void VulkanDepthBuffer::Release() NOEXCEPT
 {
 	//Destroy the Vulkan image.
 	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImage, nullptr);
@@ -57,7 +57,7 @@ void VulkanDepthBuffer::Release() CATALYST_NOEXCEPT
 /*
 *	Finds and returns the most desirable format for the depth buffer.
 */
-VkFormat VulkanDepthBuffer::FindMostDesirableDepthBufferFormat() const CATALYST_NOEXCEPT
+VkFormat VulkanDepthBuffer::FindMostDesirableDepthBufferFormat() const NOEXCEPT
 {
 	//Create a list of desirable formats, ranked from most desirable to least desirable.
 	const DynamicArray<VkFormat> desirableFormats{ VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT, VK_FORMAT_D16_UNORM_S8_UINT };

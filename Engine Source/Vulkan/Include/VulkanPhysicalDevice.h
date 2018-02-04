@@ -14,67 +14,67 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanPhysicalDevice() CATALYST_NOEXCEPT;
+	VulkanPhysicalDevice() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanPhysicalDevice() CATALYST_NOEXCEPT;
+	~VulkanPhysicalDevice() NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan physical device object.
 	*/
-	const VkPhysicalDevice& Get() const CATALYST_NOEXCEPT { return vulkanPhysicalDevice; }
+	const VkPhysicalDevice& Get() const NOEXCEPT { return vulkanPhysicalDevice; }
 
 	/*
 	*	Initializes this Vulkan physical device.
 	*/
-	void Initialize() CATALYST_NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Returns the physical device features.
 	*/
-	const VkPhysicalDeviceFeatures& GetPhysicalDeviceFeatures() const CATALYST_NOEXCEPT { return physicalDeviceFeatures; }
+	const VkPhysicalDeviceFeatures& GetPhysicalDeviceFeatures() const NOEXCEPT { return physicalDeviceFeatures; }
 
 	/*
 	*	Returns the physical device memory properties.
 	*/
-	const VkPhysicalDeviceMemoryProperties& GetPhysicalDeviceMemoryProperties() const CATALYST_NOEXCEPT { return physicalDeviceMemoryProperties; }
+	const VkPhysicalDeviceMemoryProperties& GetPhysicalDeviceMemoryProperties() const NOEXCEPT { return physicalDeviceMemoryProperties; }
 
 	/*
 	*	Returns the physical device properties.
 	*/
-	const VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() const CATALYST_NOEXCEPT { return physicalDeviceProperties; }
+	const VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() const NOEXCEPT { return physicalDeviceProperties; }
 
 	/*
 	*	Returns the surface format.
 	*/
-	const VULKAN_PRESENT_MODE_TYPE& GetPresentMode() const CATALYST_NOEXCEPT { return presentMode; }
+	const VULKAN_PRESENT_MODE_TYPE& GetPresentMode() const NOEXCEPT { return presentMode; }
 
 	/*
 	*	Returns the surface capabilities.
 	*/
-	const VULKAN_SURFACE_CAPABILITIES_TYPE& GetSurfaceCapabilities() const CATALYST_NOEXCEPT { return surfaceCapabilities; }
+	const VULKAN_SURFACE_CAPABILITIES_TYPE& GetSurfaceCapabilities() const NOEXCEPT { return surfaceCapabilities; }
 
 	/*
 	*	Returns the surface format.
 	*/
-	const VULKAN_SURFACE_FORMAT_TYPE& GetSurfaceFormat() const CATALYST_NOEXCEPT { return surfaceFormat; }
+	const VULKAN_SURFACE_FORMAT_TYPE& GetSurfaceFormat() const NOEXCEPT { return surfaceFormat; }
 
 	/*
 	*	Returns the graphics queue family index.
 	*/
-	uint32 GetGraphicsQueueFamilyIndex() const CATALYST_NOEXCEPT { return graphicsQueueFamilyIndex; }
+	uint32 GetGraphicsQueueFamilyIndex() const NOEXCEPT { return graphicsQueueFamilyIndex; }
 
 	/*
 	*	Returns the present queue family index.
 	*/
-	uint32 GetPresentQueueFamilyIndex() const CATALYST_NOEXCEPT { return presentQueueFamilyIndex; }
+	uint32 GetPresentQueueFamilyIndex() const NOEXCEPT { return presentQueueFamilyIndex; }
 
 	/*
 	*	Returns the transfer queue family index.
 	*/
-	uint32 GetTransferQueueFamilyIndex() const CATALYST_NOEXCEPT { return transferQueueFamilyIndex; }
+	uint32 GetTransferQueueFamilyIndex() const NOEXCEPT { return transferQueueFamilyIndex; }
 
 private:
 
@@ -111,31 +111,31 @@ private:
 	/*
 	*	Given a Vulkan physical device, return if it is suitable for this game.
 	*/
-	bool IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulkanPhysicalDevice) const CATALYST_NOEXCEPT;
+	bool IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT;
 
 	/*
 	*	Given a Vulkan physical device, return if it has the required extensions.
 	*/
-	bool HasRequiredExtensions(const VkPhysicalDevice &vulkanPhysicalDevice) const CATALYST_NOEXCEPT;
+	bool HasRequiredExtensions(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT;
 
 	/*
 	*	Given a Vulkan physical device and a Vulkan surface, return if the Physical device has the proper swap chain support.
 	*/
-	bool HasProperSwapChainSupport(const VkPhysicalDevice &vulkanPhysicalDevice) const CATALYST_NOEXCEPT;
+	bool HasProperSwapChainSupport(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT;
 
 	/*
 	*	Given a list of suitable physical devices, return most suitable physical device.
 	*/
-	VkPhysicalDevice GetMostSuitableDevice(const DynamicArray<VkPhysicalDevice> &suitablePhysicalDevices) const CATALYST_NOEXCEPT;
+	VkPhysicalDevice GetMostSuitableDevice(const DynamicArray<VkPhysicalDevice> &suitablePhysicalDevices) const NOEXCEPT;
 
 	/*
 	*	Given a physical device and a surface, returns the most optimal surface format.
 	*/
-	VULKAN_SURFACE_FORMAT_TYPE GetMostOptimalSurfaceFormat() const CATALYST_NOEXCEPT;
+	VULKAN_SURFACE_FORMAT_TYPE GetMostOptimalSurfaceFormat() const NOEXCEPT;
 
 	/*
 	*	Given a physical device and a surface, returns the most optimal present mode.
 	*/
-	VULKAN_PRESENT_MODE_TYPE GetMostOptimalPresentMode() const CATALYST_NOEXCEPT;
+	VULKAN_PRESENT_MODE_TYPE GetMostOptimalPresentMode() const NOEXCEPT;
 
 };

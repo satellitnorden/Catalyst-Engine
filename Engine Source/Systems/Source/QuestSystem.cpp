@@ -10,7 +10,7 @@ DEFINE_SINGLETON(QuestSystem);
 /*
 *	Default constructor.
 */
-QuestSystem::QuestSystem() CATALYST_NOEXCEPT
+QuestSystem::QuestSystem() NOEXCEPT
 {
 
 }
@@ -18,7 +18,7 @@ QuestSystem::QuestSystem() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-QuestSystem::~QuestSystem() CATALYST_NOEXCEPT
+QuestSystem::~QuestSystem() NOEXCEPT
 {
 
 }
@@ -26,7 +26,7 @@ QuestSystem::~QuestSystem() CATALYST_NOEXCEPT
 /*
 *	Initializes the quest system.
 */
-void QuestSystem::InitializeSystem() CATALYST_NOEXCEPT
+void QuestSystem::InitializeSystem() NOEXCEPT
 {
 	//Find out how many hardware threads there is.
 	uint8 numberOfHardwareThreads = std::thread::hardware_concurrency();
@@ -50,7 +50,7 @@ void QuestSystem::InitializeSystem() CATALYST_NOEXCEPT
 /*
 *	Releases the system.
 */
-void QuestSystem::ReleaseSystem() CATALYST_NOEXCEPT
+void QuestSystem::ReleaseSystem() NOEXCEPT
 {
 	//Join all adventurer threads.
 	for (auto &adventurerThread : adventurerThreads)
@@ -62,7 +62,7 @@ void QuestSystem::ReleaseSystem() CATALYST_NOEXCEPT
 /*
 *	Registers a daily quest.
 */
-void QuestSystem::RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction) CATALYST_NOEXCEPT
+void QuestSystem::RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction) NOEXCEPT
 {
 	dailyQuests[static_cast<uint8>(dailyQuest)].SetFunction(newFunction);
 }
@@ -70,7 +70,7 @@ void QuestSystem::RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFun
 /*
 *	Carries out a daily quest.
 */
-void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest, void *CATALYST_RESTRICT arguments) CATALYST_NOEXCEPT
+void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest, void *RESTRICT arguments) NOEXCEPT
 {
 	//Only carry out the daily quest if it is not available or in progress.
 	DailyQuestCompletionState questCompletionState = dailyQuests[static_cast<uint8>(dailyQuest)].GetQuestCompletionState();
@@ -85,7 +85,7 @@ void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest, void *CATALYS
 /*
 *	Waits for a daily quest to be completed.
 */
-void QuestSystem::WaitForDailyQuest(const DailyQuests dailyQuest) const CATALYST_NOEXCEPT
+void QuestSystem::WaitForDailyQuest(const DailyQuests dailyQuest) const NOEXCEPT
 {
 	while (dailyQuests[static_cast<uint8>(dailyQuest)].GetQuestCompletionState() != DailyQuestCompletionState::Complete)
 	{
@@ -96,7 +96,7 @@ void QuestSystem::WaitForDailyQuest(const DailyQuests dailyQuest) const CATALYST
 /*
 *	Executes an adventurer.
 */
-void QuestSystem::ExecuteAdventurer() CATALYST_NOEXCEPT
+void QuestSystem::ExecuteAdventurer() NOEXCEPT
 {
 	while (!EngineSystem::Instance->ShouldTerminate())
 	{

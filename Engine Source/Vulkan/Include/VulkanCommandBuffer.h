@@ -23,77 +23,77 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanCommandBuffer() CATALYST_NOEXCEPT;
+	VulkanCommandBuffer() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanCommandBuffer() CATALYST_NOEXCEPT;
+	~VulkanCommandBuffer() NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan command buffer.
 	*/
-	const VkCommandBuffer& Get() const CATALYST_NOEXCEPT { return vulkanCommandBuffer; }
+	const VkCommandBuffer& Get() const NOEXCEPT { return vulkanCommandBuffer; }
 
 	/*
 	*	Initializes this Vulkan command buffer.
 	*/
-	void Initialize(const VulkanCommandPool &vulkanCommandPool) CATALYST_NOEXCEPT;
+	void Initialize(const VulkanCommandPool &vulkanCommandPool) NOEXCEPT;
 
 	/*
 	*	Begins this Vulkan command buffer.
 	*/
-	void Begin(const VkCommandBufferUsageFlags commandBufferUsageFlags) CATALYST_NOEXCEPT;
+	void Begin(const VkCommandBufferUsageFlags commandBufferUsageFlags) NOEXCEPT;
 
 	/*
 	*	Records a begin render pass command.
 	*/
-	void CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex, const bool clearDepth, const uint32 numberOfClearValues) CATALYST_NOEXCEPT;
+	void CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex, const bool clearDepth, const uint32 numberOfClearValues) NOEXCEPT;
 
 	/*
 	*	Records a bind descriptor sets command.
 	*/
-	void CommandBindDescriptorSets(const VulkanPipeline &vulkanPipeline, const VulkanDescriptorSet &vulkanDescriptorSet) CATALYST_NOEXCEPT;
+	void CommandBindDescriptorSets(const VulkanPipeline &vulkanPipeline, const VulkanDescriptorSet &vulkanDescriptorSet) NOEXCEPT;
 
 	/*
 	*	Records a bind index buffer command.
 	*/
-	void CommandBindIndexBuffer(const VulkanIndexBuffer &vulkanIndexBuffer) CATALYST_NOEXCEPT;
+	void CommandBindIndexBuffer(const VulkanIndexBuffer &vulkanIndexBuffer) NOEXCEPT;
 
 	/*
 	*	Records a bind pipeline command.
 	*/
-	void CommandBindPipeline(const VulkanPipeline &vulkanPipeline) CATALYST_NOEXCEPT;
+	void CommandBindPipeline(const VulkanPipeline &vulkanPipeline) NOEXCEPT;
 
 	/*
 	*	Records a bind vertex buffers command.
 	*/
-	void CommandBindVertexBuffers(const VulkanVertexBuffer &vulkanVertexBuffer) CATALYST_NOEXCEPT;
+	void CommandBindVertexBuffers(const VulkanVertexBuffer &vulkanVertexBuffer) NOEXCEPT;
 
 	/*
 	*	Records a draw command.
 	*/
-	void CommandDraw(const uint32 vertexCount) CATALYST_NOEXCEPT;
+	void CommandDraw(const uint32 vertexCount) NOEXCEPT;
 
 	/*
 	*	Records a draw indexed command.
 	*/
-	void CommandDrawIndexed(const uint32 indexCount) CATALYST_NOEXCEPT;
+	void CommandDrawIndexed(const uint32 indexCount) NOEXCEPT;
 
 	/*
 	*	Records an end render pass command.
 	*/
-	void CommandEndRenderPass() CATALYST_NOEXCEPT;
+	void CommandEndRenderPass() NOEXCEPT;
 
 	/*
 	*	Ends this Vulkan command buffer.
 	*/
-	void End() CATALYST_NOEXCEPT;
+	void End() NOEXCEPT;
 
 	/*
 	*	Resets this Vulkan command buffer.
 	*/
-	void Reset() CATALYST_NOEXCEPT;
+	void Reset() NOEXCEPT;
 
 private:
 
@@ -103,11 +103,11 @@ private:
 	/*
 	*	Creates a command buffer allocate info.
 	*/
-	void CreateCommandBufferAllocateInfo(VkCommandBufferAllocateInfo &commandBufferAllocateInfo, const VulkanCommandPool &vulkanCommandPool) const CATALYST_NOEXCEPT;
+	void CreateCommandBufferAllocateInfo(VkCommandBufferAllocateInfo &commandBufferAllocateInfo, const VulkanCommandPool &vulkanCommandPool) const NOEXCEPT;
 
 	/*
 	*	Creates a command buffer begin info.
 	*/
-	void CreateCommandBufferBeginInfo(VkCommandBufferBeginInfo &commandBufferBeginInfo, const VkCommandBufferUsageFlags commandBufferUsageFlags) const CATALYST_NOEXCEPT;
+	void CreateCommandBufferBeginInfo(VkCommandBufferBeginInfo &commandBufferBeginInfo, const VkCommandBufferUsageFlags commandBufferUsageFlags) const NOEXCEPT;
 
 };

@@ -27,7 +27,7 @@
 /*
 *	Default constructor.
 */
-WorldArchitect::WorldArchitect() CATALYST_NOEXCEPT
+WorldArchitect::WorldArchitect() NOEXCEPT
 {
 
 }
@@ -35,7 +35,7 @@ WorldArchitect::WorldArchitect() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-WorldArchitect::~WorldArchitect() CATALYST_NOEXCEPT
+WorldArchitect::~WorldArchitect() NOEXCEPT
 {
 
 }
@@ -43,14 +43,14 @@ WorldArchitect::~WorldArchitect() CATALYST_NOEXCEPT
 /*
 *	Initializes the world architect.
 */
-void WorldArchitect::Initialize() CATALYST_NOEXCEPT
+void WorldArchitect::Initialize() NOEXCEPT
 {
 	//Create the sun!
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	sun->SetIntensity(25.0f);
 
 	//Create the sky!
-	VulkanCubeMapTexture *CATALYST_RESTRICT sky = GraphicsSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
+	VulkanCubeMapTexture *RESTRICT sky = GraphicsSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
 	GraphicsSystem::Instance->SetActiveSkyBox(sky);
 
 	//Create the height map!
@@ -67,7 +67,7 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 	);
 
 	//Create the terrain entity!
-	TerrainEntity *CATALYST_RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
+	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
 
 	Vulkan2DTexture *floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
 	Vulkan2DTexture *floorNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
@@ -125,7 +125,7 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 		stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
 	}
 
-	SpotLightEntity *CATALYST_RESTRICT spotLight = EntitySystem::Instance->CreateEntity<SpotLightEntity>();
+	SpotLightEntity *RESTRICT spotLight = EntitySystem::Instance->CreateEntity<SpotLightEntity>();
 	spotLight->Move(Vector3(0.0f, 1.0f, 0.0f));
 	*/
 }
@@ -133,7 +133,7 @@ void WorldArchitect::Initialize() CATALYST_NOEXCEPT
 /*
 *	Updates the world architects.
 */
-void WorldArchitect::Update(const float deltaTime) CATALYST_NOEXCEPT
+void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 {
 	//Constantly rotate the sun.
 	sun->Rotate(Vector3(-1.0f * deltaTime, 0.0f, 0.0f));

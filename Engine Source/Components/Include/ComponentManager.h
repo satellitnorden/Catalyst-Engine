@@ -26,17 +26,17 @@ public:
 	/*
 	*	Returns a new components index for camera entities.
 	*/
-	static size_t GetNewCameraEntityComponentsIndex() CATALYST_NOEXCEPT;
+	static size_t GetNewCameraEntityComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of camera entity components.
 	*/
-	static size_t GetNumberOfCameraEntityComponents() CATALYST_NOEXCEPT;
+	static size_t GetNumberOfCameraEntityComponents() NOEXCEPT;
 
 	/*
 	*	Returns the camera entity camera components.
 	*/
-	CATALYST_RESTRICTED static CameraComponent* GetCameraEntityCameraComponents() CATALYST_NOEXCEPT;
+	RESTRICTED static CameraComponent* GetCameraEntityCameraComponents() NOEXCEPT;
 
 private:
 
@@ -55,17 +55,17 @@ public:
 	/*
 	*	Returns a new components index for directional light entities.
 	*/
-	static size_t GetNewDirectionalLightEntityComponentsIndex() CATALYST_NOEXCEPT;
+	static size_t GetNewDirectionalLightEntityComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of directional light entity components.
 	*/
-	static size_t GetNumberOfDirectionalLightEntityComponents() CATALYST_NOEXCEPT;
+	static size_t GetNumberOfDirectionalLightEntityComponents() NOEXCEPT;
 
 	/*
 	*	Returns the directional light entity directional light components.
 	*/
-	CATALYST_RESTRICTED static DirectionalLightComponent* GetDirectionalLightEntityDirectionalLightComponents() CATALYST_NOEXCEPT;
+	RESTRICTED static DirectionalLightComponent* GetDirectionalLightEntityDirectionalLightComponents() NOEXCEPT;
 
 private:
 
@@ -84,32 +84,32 @@ public:
 	/*
 	*	Returns a new components index for physical entities.
 	*/
-	static size_t GetNewPhysicalEntityComponentsIndex() CATALYST_NOEXCEPT;
+	static size_t GetNewPhysicalEntityComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of physical entity components.
 	*/
-	static size_t GetNumberOfPhysicalEntityComponents() CATALYST_NOEXCEPT;
+	static size_t GetNumberOfPhysicalEntityComponents() NOEXCEPT;
 
 	/*
 	*	Returns the physical entity frustum culling components.
 	*/
-	CATALYST_RESTRICTED static FrustumCullingComponent* GetPhysicalEntityFrustumCullingComponents() CATALYST_NOEXCEPT;
+	RESTRICTED static FrustumCullingComponent* GetPhysicalEntityFrustumCullingComponents() NOEXCEPT;
 
 	/*
 	*	Returns the physical entity graphics buffer components.
 	*/
-	CATALYST_RESTRICTED static GraphicsBufferComponent* GetPhysicalEntityGraphicsBufferComponents() CATALYST_NOEXCEPT;
+	RESTRICTED static GraphicsBufferComponent* GetPhysicalEntityGraphicsBufferComponents() NOEXCEPT;
 
 	/*
 	*	Returns the physical entity render components.
 	*/
-	CATALYST_RESTRICTED static RenderComponent* GetPhysicalEntityRenderComponents() CATALYST_NOEXCEPT;
+	RESTRICTED static RenderComponent* GetPhysicalEntityRenderComponents() NOEXCEPT;
 
 	/*
 	*	Returns the physical entity transform components.
 	*/
-	CATALYST_RESTRICTED static TransformComponent* GetPhysicalEntityTransformComponents() CATALYST_NOEXCEPT;
+	RESTRICTED static TransformComponent* GetPhysicalEntityTransformComponents() NOEXCEPT;
 
 private:
 
@@ -137,17 +137,17 @@ public:
 	/*
 	*	Returns a new components index for point light entities.
 	*/
-	static size_t GetNewPointLightEntitiesEntityComponentsIndex() CATALYST_NOEXCEPT;
+	static size_t GetNewPointLightEntitiesEntityComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of point light entity components.
 	*/
-	static size_t GetNumberOfPointLightEntityComponents() CATALYST_NOEXCEPT;
+	static size_t GetNumberOfPointLightEntityComponents() NOEXCEPT;
 
 	/*
 	*	Returns the point light entity point light components.
 	*/
-	CATALYST_RESTRICTED static PointLightComponent* GetPointLightEntityPointLightComponents() CATALYST_NOEXCEPT;
+	RESTRICTED static PointLightComponent* GetPointLightEntityPointLightComponents() NOEXCEPT;
 
 private:
 
@@ -166,17 +166,17 @@ public:
 	/*
 	*	Returns a new components index for spot light entities.
 	*/
-	static size_t GetNewSpotLightEntitiesEntityComponentsIndex() CATALYST_NOEXCEPT;
+	static size_t GetNewSpotLightEntitiesEntityComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of spot light entity components.
 	*/
-	static size_t GetNumberOfSpotLightEntityComponents() CATALYST_NOEXCEPT;
+	static size_t GetNumberOfSpotLightEntityComponents() NOEXCEPT;
 
 	/*
 	*	Returns the spot light entity spot light components.
 	*/
-	CATALYST_RESTRICTED static SpotLightComponent* GetSpotLightEntitySpotLightComponents() CATALYST_NOEXCEPT;
+	RESTRICTED static SpotLightComponent* GetSpotLightEntitySpotLightComponents() NOEXCEPT;
 
 private:
 
@@ -195,17 +195,17 @@ public:
 	/*
 	*	Returns a new components index for terrain entities.
 	*/
-	static size_t GetNewTerrainEntityComponentsIndex() CATALYST_NOEXCEPT;
+	static size_t GetNewTerrainEntityComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of terrain entity components.
 	*/
-	static size_t GetNumberOfTerrainEntityComponents() CATALYST_NOEXCEPT;
+	static size_t GetNumberOfTerrainEntityComponents() NOEXCEPT;
 
 	/*
 	*	Returns the terrain entity terrain components.
 	*/
-	CATALYST_RESTRICTED static TerrainComponent* GetTerrainEntityTerrainComponents() CATALYST_NOEXCEPT;
+	RESTRICTED static TerrainComponent* GetTerrainEntityTerrainComponents() NOEXCEPT;
 
 private:
 

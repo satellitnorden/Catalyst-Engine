@@ -13,7 +13,7 @@ DEFINE_ENTITY_CLASS(DirectionalLightEntity);
 /*
 *	Default constructor.
 */
-DirectionalLightEntity::DirectionalLightEntity() CATALYST_NOEXCEPT
+DirectionalLightEntity::DirectionalLightEntity() NOEXCEPT
 {
 	//Get a new components index.
 	componentsIndex = ComponentManager::GetNewDirectionalLightEntityComponentsIndex();
@@ -25,7 +25,7 @@ DirectionalLightEntity::DirectionalLightEntity() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-DirectionalLightEntity::~DirectionalLightEntity() CATALYST_NOEXCEPT
+DirectionalLightEntity::~DirectionalLightEntity() NOEXCEPT
 {
 	//Remove this directional light entity from the universal container.
 	Instances.Erase(this);
@@ -34,7 +34,7 @@ DirectionalLightEntity::~DirectionalLightEntity() CATALYST_NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-const Vector3& DirectionalLightEntity::GetPosition() CATALYST_NOEXCEPT
+const Vector3& DirectionalLightEntity::GetPosition() NOEXCEPT
 {
 	//Directional light entities has no scale.
 	return Entity::defaultPosition;
@@ -43,7 +43,7 @@ const Vector3& DirectionalLightEntity::GetPosition() CATALYST_NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& DirectionalLightEntity::GetRotation() CATALYST_NOEXCEPT
+const Vector3& DirectionalLightEntity::GetRotation() NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return ComponentManager::GetDirectionalLightEntityDirectionalLightComponents()[componentsIndex].rotation;
@@ -52,7 +52,7 @@ const Vector3& DirectionalLightEntity::GetRotation() CATALYST_NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& DirectionalLightEntity::GetScale() CATALYST_NOEXCEPT
+const Vector3& DirectionalLightEntity::GetScale() NOEXCEPT
 {
 	//Point light entities has no scale.
 	return Entity::defaultScale;
@@ -61,7 +61,7 @@ const Vector3& DirectionalLightEntity::GetScale() CATALYST_NOEXCEPT
 /*
 *	Moves this entity.
 */
-void DirectionalLightEntity::Move(const Vector3 &moveVector) CATALYST_NOEXCEPT
+void DirectionalLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move all children.
 	for (auto child : children)
@@ -73,7 +73,7 @@ void DirectionalLightEntity::Move(const Vector3 &moveVector) CATALYST_NOEXCEPT
 /*
 *	Rotates this entity.
 */
-void DirectionalLightEntity::Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT
+void DirectionalLightEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate this entity.
 	ComponentManager::GetDirectionalLightEntityDirectionalLightComponents()[componentsIndex].rotation += rotateVector;
@@ -88,7 +88,7 @@ void DirectionalLightEntity::Rotate(const Vector3 &rotateVector) CATALYST_NOEXCE
 /*
 *	Scales this entity.
 */
-void DirectionalLightEntity::Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT
+void DirectionalLightEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale all children.
 	for (auto child : children)
@@ -100,7 +100,7 @@ void DirectionalLightEntity::Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT
 /*
 *	Sets the intensity of this directional light entity.
 */
-void DirectionalLightEntity::SetIntensity(const float newIntensity) CATALYST_NOEXCEPT
+void DirectionalLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 {
 	//Set the intensity of this directional light entity.
 	ComponentManager::GetDirectionalLightEntityDirectionalLightComponents()[componentsIndex].intensity = newIntensity;
@@ -109,7 +109,7 @@ void DirectionalLightEntity::SetIntensity(const float newIntensity) CATALYST_NOE
 /*
 *	Sets the color of this directional light entity.
 */
-void DirectionalLightEntity::SetColor(const Vector3 &newColor) CATALYST_NOEXCEPT
+void DirectionalLightEntity::SetColor(const Vector3 &newColor) NOEXCEPT
 {
 
 }

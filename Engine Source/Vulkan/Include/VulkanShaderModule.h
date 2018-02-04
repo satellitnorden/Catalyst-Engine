@@ -17,32 +17,32 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanShaderModule() CATALYST_NOEXCEPT;
+	VulkanShaderModule() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanShaderModule() CATALYST_NOEXCEPT;
+	~VulkanShaderModule() NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan shader module.
 	*/
-	const VkShaderModule Get() const CATALYST_NOEXCEPT { return vulkanShaderModule; }
+	const VkShaderModule Get() const NOEXCEPT { return vulkanShaderModule; }
 
 	/*
 	*	Initializes this Vulkan shader module.
 	*/
-	void Initialize(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits newStage) CATALYST_NOEXCEPT;
+	void Initialize(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits newStage) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan shader module.
 	*/
-	void Release() CATALYST_NOEXCEPT;
+	void Release() NOEXCEPT;
 
 	/*
 	*	Returns the stage where this shader module will be used.
 	*/
-	const VkShaderStageFlagBits GetStage() const CATALYST_NOEXCEPT { return stage; }
+	const VkShaderStageFlagBits GetStage() const NOEXCEPT { return stage; }
 
 private:
 
@@ -55,6 +55,6 @@ private:
 	/*
 	*	Creates a shader module create info
 	*/
-	void CreateShaderModuleCreateInfo(VkShaderModuleCreateInfo &shaderModuleCreateInfo, const DynamicArray<char> & shaderByteCode) const CATALYST_NOEXCEPT;
+	void CreateShaderModuleCreateInfo(VkShaderModuleCreateInfo &shaderModuleCreateInfo, const DynamicArray<char> & shaderByteCode) const NOEXCEPT;
 
 };

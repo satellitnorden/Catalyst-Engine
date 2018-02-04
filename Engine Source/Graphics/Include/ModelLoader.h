@@ -20,7 +20,7 @@ namespace ModelLoader
 	/*
 	*	Processes a single Assimp mesh.
 	*/
-	void ProcessMesh(aiMesh *CATALYST_RESTRICT mesh, const aiScene *CATALYST_RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) CATALYST_NOEXCEPT
+	void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		//Process the vertices.
 		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
@@ -47,7 +47,7 @@ namespace ModelLoader
 	/*
 	*	Processes a single Assimp node.
 	*/
-	void ProcessNode(aiNode *CATALYST_RESTRICT node, const aiScene *CATALYST_RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) CATALYST_NOEXCEPT
+	void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		//Process all meshes.
 		for (uint32 i = 0; i < node->mNumMeshes; ++i)
@@ -65,7 +65,7 @@ namespace ModelLoader
 	/*
 	*	Given a path, loads a model and outputs the vertices and indices in the supplied containers.
 	*/
-	void LoadModel(const char *CATALYST_RESTRICT modelPath, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) CATALYST_NOEXCEPT
+	void LoadModel(const char *RESTRICT modelPath, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		vertices.Reserve(1'000'000);
 		indices.Reserve(1'000'000);

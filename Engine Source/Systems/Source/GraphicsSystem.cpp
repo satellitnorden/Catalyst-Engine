@@ -31,7 +31,7 @@ DEFINE_SINGLETON(GraphicsSystem);
 /*
 *	Default constructor.
 */
-GraphicsSystem::GraphicsSystem() CATALYST_NOEXCEPT
+GraphicsSystem::GraphicsSystem() NOEXCEPT
 {
 
 }
@@ -39,7 +39,7 @@ GraphicsSystem::GraphicsSystem() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-GraphicsSystem::~GraphicsSystem() CATALYST_NOEXCEPT
+GraphicsSystem::~GraphicsSystem() NOEXCEPT
 {
 
 }
@@ -47,7 +47,7 @@ GraphicsSystem::~GraphicsSystem() CATALYST_NOEXCEPT
 /*
 *	Initializes the graphics system.
 */
-void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
+void GraphicsSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize the main window.
 	mainWindow.Initialize();
@@ -96,22 +96,22 @@ void GraphicsSystem::InitializeSystem() CATALYST_NOEXCEPT
 /*
 *	Post-initializes the graphics system.
 */
-void GraphicsSystem::PostInitializeSystem() CATALYST_NOEXCEPT
+void GraphicsSystem::PostInitializeSystem() NOEXCEPT
 {
 	//Register the graphics system update dynamic uniform data daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData, [](void *CATALYST_RESTRICT arguments) { static_cast<GraphicsSystem *CATALYST_RESTRICT>(arguments)->UpdateDynamicUniformData(); });
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateDynamicUniformData, [](void *RESTRICT arguments) { static_cast<GraphicsSystem *RESTRICT>(arguments)->UpdateDynamicUniformData(); });
 
 	//Register the graphics system update physical entities graphics buffers daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdatePhysicalEntitiesGraphicsBuffers, [](void *CATALYST_RESTRICT arguments) { static_cast<GraphicsSystem *CATALYST_RESTRICT>(arguments)->UpdatePhysicalEntitiesGraphicsBuffers(); });
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdatePhysicalEntitiesGraphicsBuffers, [](void *RESTRICT arguments) { static_cast<GraphicsSystem *RESTRICT>(arguments)->UpdatePhysicalEntitiesGraphicsBuffers(); });
 
 	//Register the graphics system update view frustum culling daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling, [](void *CATALYST_RESTRICT arguments) { static_cast<GraphicsSystem *CATALYST_RESTRICT>(arguments)->UpdateViewFrustumCulling(); });
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling, [](void *RESTRICT arguments) { static_cast<GraphicsSystem *RESTRICT>(arguments)->UpdateViewFrustumCulling(); });
 }
 
 /*
 *	Updates the graphics system synchronously.
 */
-void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
+void GraphicsSystem::UpdateSystemSynchronous() NOEXCEPT
 {
 	//Carry out the graphics system update physical entities graphics buffers daily quest.
 	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::GraphicsSystemUpdatePhysicalEntitiesGraphicsBuffers, this);
@@ -158,7 +158,7 @@ void GraphicsSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 /*
 *	Releases the graphics system.
 */
-void GraphicsSystem::ReleaseSystem() CATALYST_NOEXCEPT
+void GraphicsSystem::ReleaseSystem() NOEXCEPT
 {
 	//Release the main window.
 	mainWindow.Release();
@@ -170,7 +170,7 @@ void GraphicsSystem::ReleaseSystem() CATALYST_NOEXCEPT
 /*
 *	Creates and returns physical model.
 */
-const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RESTRICT modelPath, Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, Vulkan2DTexture *CATALYST_RESTRICT metallicTexture, Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT
+const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *RESTRICT modelPath, Vulkan2DTexture *RESTRICT albedoTexture, Vulkan2DTexture *RESTRICT normalMapTexture, Vulkan2DTexture *RESTRICT roughnessTexture, Vulkan2DTexture *RESTRICT metallicTexture, Vulkan2DTexture *RESTRICT ambientOcclusionTexture) const NOEXCEPT
 {
 	//Load the model.
 	DynamicArray<Vertex> vertices;
@@ -180,10 +180,10 @@ const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RES
 	ModelLoader::LoadModel(modelPath, vertices, indices, extent);
 
 	//Create the vertex buffer.
-	VulkanVertexBuffer *CATALYST_RESTRICT vertexBuffer = VulkanInterface::Instance->CreateVertexBuffer(vertices);
+	VulkanVertexBuffer *RESTRICT vertexBuffer = VulkanInterface::Instance->CreateVertexBuffer(vertices);
 
 	//Create the index buffer.
-	VulkanIndexBuffer *CATALYST_RESTRICT indexBuffer = VulkanInterface::Instance->CreateIndexBuffer(indices);
+	VulkanIndexBuffer *RESTRICT indexBuffer = VulkanInterface::Instance->CreateIndexBuffer(indices);
 
 	//Set up the physical model.
 	PhysicalModel newPhysicalModel;
@@ -205,17 +205,17 @@ const PhysicalModel GraphicsSystem::CreatePhysicalModel(const char *CATALYST_RES
 /*
 *	Initializes a physical entity.
 */
-void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const CATALYST_NOEXCEPT
+void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const NOEXCEPT
 {
 	//Cache relevant data.
 	VulkanDescriptorSet newDescriptorSet;
 	VulkanUniformBuffer newUniformBuffer{ *CreateUniformBuffer(sizeof(Matrix4)) };
 	const PhysicalMaterial &material = model.GetMaterial();
-	const Vulkan2DTexture *CATALYST_RESTRICT albedoTexture = material.GetAlbedoTexture();
-	const Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture = material.GetNormalMapTexture();
-	const Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture = material.GetRoughnessTexture();
-	const Vulkan2DTexture *CATALYST_RESTRICT metallicTexture = material.GetMetallicTexture();
-	const Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture = material.GetAmbientOcclusionTexture();
+	const Vulkan2DTexture *RESTRICT albedoTexture = material.GetAlbedoTexture();
+	const Vulkan2DTexture *RESTRICT normalMapTexture = material.GetNormalMapTexture();
+	const Vulkan2DTexture *RESTRICT roughnessTexture = material.GetRoughnessTexture();
+	const Vulkan2DTexture *RESTRICT metallicTexture = material.GetMetallicTexture();
+	const Vulkan2DTexture *RESTRICT ambientOcclusionTexture = material.GetAmbientOcclusionTexture();
 
 	//Allocate the descriptor set.
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, pipelines[Pipeline::SceneBufferPipeline]->GetDescriptorSetLayout());
@@ -249,7 +249,7 @@ void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, co
 /*
 *	Creates and returns a 2D texture.
 */
-CATALYST_RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *CATALYST_RESTRICT texturePath) const CATALYST_NOEXCEPT
+RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *RESTRICT texturePath) const NOEXCEPT
 {
 	//Load the texture.
 	int width = 0;
@@ -260,7 +260,7 @@ CATALYST_RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char 
 	TextureLoader::LoadTexture(texturePath, width, height, numberOfChannels, &textureData);
 
 	//Create the Vulkan 2D texture.
-	Vulkan2DTexture *CATALYST_RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(width), static_cast<uint32>(height), textureData);
+	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(width), static_cast<uint32>(height), textureData);
 
 	//Free the texture.
 	TextureLoader::FreeTexture(textureData);
@@ -272,10 +272,10 @@ CATALYST_RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char 
 /*
 *	Creates and returns a cube map texture.
 */
-CATALYST_RESTRICTED VulkanCubeMapTexture* GraphicsSystem::CreateCubeMapTexture(const char *CATALYST_RESTRICT frontTexturePath, const char *CATALYST_RESTRICT backTexturePath, const char *CATALYST_RESTRICT upTexturePath, const char *CATALYST_RESTRICT downTexturePath, const char *CATALYST_RESTRICT rightTexturePath, const char *CATALYST_RESTRICT leftTexturePath) const CATALYST_NOEXCEPT
+RESTRICTED VulkanCubeMapTexture* GraphicsSystem::CreateCubeMapTexture(const char *RESTRICT frontTexturePath, const char *RESTRICT backTexturePath, const char *RESTRICT upTexturePath, const char *RESTRICT downTexturePath, const char *RESTRICT rightTexturePath, const char *RESTRICT leftTexturePath) const NOEXCEPT
 {
 	//Load all textures.
-	byte *CATALYST_RESTRICT textureData[6];
+	byte *RESTRICT textureData[6];
 
 	int width = 0;
 	int height = 0;
@@ -289,7 +289,7 @@ CATALYST_RESTRICTED VulkanCubeMapTexture* GraphicsSystem::CreateCubeMapTexture(c
 	TextureLoader::LoadTexture(leftTexturePath, width, height, numberOfChannels, &textureData[5]);
 
 	//Create the Vulkan 2D texture.
-	VulkanCubeMapTexture *CATALYST_RESTRICT newCubeMapTexture = VulkanInterface::Instance->CreateCubeMapTexture(static_cast<uint32>(width), static_cast<uint32>(height), reinterpret_cast<const byte *CATALYST_RESTRICT *CATALYST_RESTRICT>(&textureData));
+	VulkanCubeMapTexture *RESTRICT newCubeMapTexture = VulkanInterface::Instance->CreateCubeMapTexture(static_cast<uint32>(width), static_cast<uint32>(height), reinterpret_cast<const byte *RESTRICT *RESTRICT>(&textureData));
 
 	//Free the texture.
 	TextureLoader::FreeTexture(textureData[0]);
@@ -306,7 +306,7 @@ CATALYST_RESTRICTED VulkanCubeMapTexture* GraphicsSystem::CreateCubeMapTexture(c
 /*
 *	Creates a uniform buffer and returns the identifier for the uniform buffer.
 */
-CATALYST_RESTRICTED VulkanUniformBuffer* GraphicsSystem::CreateUniformBuffer(const size_t uniformBufferSize) const CATALYST_NOEXCEPT
+RESTRICTED VulkanUniformBuffer* GraphicsSystem::CreateUniformBuffer(const size_t uniformBufferSize) const NOEXCEPT
 {
 	return VulkanInterface::Instance->CreateUniformBuffer(uniformBufferSize);
 }
@@ -314,7 +314,7 @@ CATALYST_RESTRICTED VulkanUniformBuffer* GraphicsSystem::CreateUniformBuffer(con
 /*
 *	Sets the active camera.
 */
-void GraphicsSystem::SetActiveCamera(CameraEntity *CATALYST_RESTRICT newActiveCamera) CATALYST_NOEXCEPT
+void GraphicsSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT
 {
 	//Set the active camera.
 	activeCamera = newActiveCamera;
@@ -326,7 +326,7 @@ void GraphicsSystem::SetActiveCamera(CameraEntity *CATALYST_RESTRICT newActiveCa
 /*
 *	Sets the active sky box cube map texture.
 */
-void GraphicsSystem::SetActiveSkyBox(VulkanCubeMapTexture *CATALYST_RESTRICT newSkyBox) CATALYST_NOEXCEPT
+void GraphicsSystem::SetActiveSkyBox(VulkanCubeMapTexture *RESTRICT newSkyBox) NOEXCEPT
 {
 	//Update the sky box texture.
 	skyBoxTexture = newSkyBox;
@@ -349,7 +349,7 @@ void GraphicsSystem::SetActiveSkyBox(VulkanCubeMapTexture *CATALYST_RESTRICT new
 /*
 *	Sets the post processing blur amount.
 */
-void GraphicsSystem::SetPostProcessingBlurAmount(const float newBlurAmount) CATALYST_NOEXCEPT
+void GraphicsSystem::SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT
 {
 	//Update the post processing uniform data.
 	postProcessingUniformData.blurAmount = newBlurAmount;
@@ -361,7 +361,7 @@ void GraphicsSystem::SetPostProcessingBlurAmount(const float newBlurAmount) CATA
 /*
 *	Sets the post processing chromatic aberration amount.
 */
-void GraphicsSystem::SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) CATALYST_NOEXCEPT
+void GraphicsSystem::SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) NOEXCEPT
 {
 	//Update the post processing uniform data.
 	postProcessingUniformData.chromaticAberrationAmount = newChromaticAberrationAmount;
@@ -373,7 +373,7 @@ void GraphicsSystem::SetPostProcessingChromaticAberrationAmount(const float newC
 /*
 *	Sets the post processing saturation.
 */
-void GraphicsSystem::SetPostProcessingSaturation(const float newSaturation) CATALYST_NOEXCEPT
+void GraphicsSystem::SetPostProcessingSaturation(const float newSaturation) NOEXCEPT
 {
 	//Update the post processing uniform data.
 	postProcessingUniformData.saturation = newSaturation;
@@ -385,7 +385,7 @@ void GraphicsSystem::SetPostProcessingSaturation(const float newSaturation) CATA
 /*
 *	Sets the post processing sharpen amount.
 */
-void GraphicsSystem::SetPostProcessingSharpenAmount(const float newSharpenAmount) CATALYST_NOEXCEPT
+void GraphicsSystem::SetPostProcessingSharpenAmount(const float newSharpenAmount) NOEXCEPT
 {
 	//Update the post processing uniform data.
 	postProcessingUniformData.sharpenAmount = newSharpenAmount;
@@ -397,7 +397,7 @@ void GraphicsSystem::SetPostProcessingSharpenAmount(const float newSharpenAmount
 /*
 *	Initializes all render targets.
 */
-void GraphicsSystem::InitializeRenderTargets() CATALYST_NOEXCEPT
+void GraphicsSystem::InitializeRenderTargets() NOEXCEPT
 {
 	//Initialize all depth buffers.
 	depthBuffers[DepthBuffer::SceneBufferDepthBuffer] = VulkanInterface::Instance->CreateDepthBuffer(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
@@ -412,7 +412,7 @@ void GraphicsSystem::InitializeRenderTargets() CATALYST_NOEXCEPT
 /*
 *	Initializes all semaphores.
 */
-void GraphicsSystem::InitializeSemaphores() CATALYST_NOEXCEPT
+void GraphicsSystem::InitializeSemaphores() NOEXCEPT
 {
 	//Initialize all semaphores.
 	semaphores[Semaphore::ImageAvailable] = VulkanInterface::Instance->CreateSemaphore();
@@ -422,7 +422,7 @@ void GraphicsSystem::InitializeSemaphores() CATALYST_NOEXCEPT
 /*
 *	Initializes all uniform buffers.
 */
-void GraphicsSystem::InitializeUniformBuffers() CATALYST_NOEXCEPT
+void GraphicsSystem::InitializeUniformBuffers() NOEXCEPT
 {
 	//Create the dynamic uniform data buffer.
 	uniformBuffers[UniformBuffer::DynamicUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(DynamicUniformData));
@@ -437,7 +437,7 @@ void GraphicsSystem::InitializeUniformBuffers() CATALYST_NOEXCEPT
 /*
 *	Initializes all shader modules.
 */
-void GraphicsSystem::InitializeShaderModules() CATALYST_NOEXCEPT
+void GraphicsSystem::InitializeShaderModules() NOEXCEPT
 {
 	//Initialize the cube map fragment shader module.
 	const auto cubeMapFragmentShaderByteCode = ShaderLoader::LoadShader("CubeMapFragmentShader.spv");
@@ -471,7 +471,7 @@ void GraphicsSystem::InitializeShaderModules() CATALYST_NOEXCEPT
 /*
 *	Initializes all pipelines.
 */
-void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
+void GraphicsSystem::InitializePipelines() NOEXCEPT
 {
 	//Create the scene buffer pipeline.
 	VulkanPipelineCreationParameters sceneBufferPipelineCreationParameters;
@@ -607,7 +607,7 @@ void GraphicsSystem::InitializePipelines() CATALYST_NOEXCEPT
 /*
 *	Initializes all descriptor sets.
 */
-void GraphicsSystem::InitializeDescriptorSets() CATALYST_NOEXCEPT
+void GraphicsSystem::InitializeDescriptorSets() NOEXCEPT
 {
 	{
 		//Initialize the lighting descriptor set.
@@ -643,7 +643,7 @@ void GraphicsSystem::InitializeDescriptorSets() CATALYST_NOEXCEPT
 /*
 *	Calculates the projection matrix.
 */
-void GraphicsSystem::CalculateProjectionMatrix() CATALYST_NOEXCEPT
+void GraphicsSystem::CalculateProjectionMatrix() NOEXCEPT
 {
 	//Calculate the projection matrix.
 	projectionMatrix = Matrix4::Perspective(GameMath::DegreesToRadians(activeCamera->GetFieldOfView()), 1920.0f / 1080.0f, activeCamera->GetNearPlane(), activeCamera->GetFarPlane());
@@ -652,7 +652,7 @@ void GraphicsSystem::CalculateProjectionMatrix() CATALYST_NOEXCEPT
 /*
 *	Begins the frame.
 */
-void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
+void GraphicsSystem::BeginFrame() NOEXCEPT
 {
 	//Wait for the graphics queue to finish.
 	VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
@@ -673,7 +673,7 @@ void GraphicsSystem::BeginFrame() CATALYST_NOEXCEPT
 /*
 *	Renders all physical entities.
 */
-void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
+void GraphicsSystem::RenderPhysicalEntities() NOEXCEPT
 {
 	//Wait for the physical entity update daily group quest to complete.
 	//QuestSystem::Instance->WaitForDailyQuest(DailyQuests::GraphicsSystemUpdateViewFrustumCulling);
@@ -684,8 +684,8 @@ void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 
 	//Iterate over all physical entity components and draw them all.
 	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
-	const FrustumCullingComponent *CATALYST_RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents() };
-	const RenderComponent *CATALYST_RESTRICT renderComponent{ ComponentManager::GetPhysicalEntityRenderComponents() };
+	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents() };
+	const RenderComponent *RESTRICT renderComponent{ ComponentManager::GetPhysicalEntityRenderComponents() };
 
 	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{
@@ -706,7 +706,7 @@ void GraphicsSystem::RenderPhysicalEntities() CATALYST_NOEXCEPT
 /*
 *	Renders lighting.
 */
-void GraphicsSystem::RenderLighting() CATALYST_NOEXCEPT
+void GraphicsSystem::RenderLighting() NOEXCEPT
 {
 	//Bind the lighting pipeline.
 	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::LightingPipeline]);
@@ -727,7 +727,7 @@ void GraphicsSystem::RenderLighting() CATALYST_NOEXCEPT
 /*
 *	Renders sky box.
 */
-void GraphicsSystem::RenderSkyBox() CATALYST_NOEXCEPT
+void GraphicsSystem::RenderSkyBox() NOEXCEPT
 {
 	//Bind the cube map pipeline.
 	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::CubeMapPipeline]);
@@ -748,7 +748,7 @@ void GraphicsSystem::RenderSkyBox() CATALYST_NOEXCEPT
 /*
 *	Renders the post processing.
 */
-void GraphicsSystem::RenderPostProcessing() CATALYST_NOEXCEPT
+void GraphicsSystem::RenderPostProcessing() NOEXCEPT
 {
 	//Bind the post processing pipeline.
 	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::PostProcessingPipeline]);
@@ -769,7 +769,7 @@ void GraphicsSystem::RenderPostProcessing() CATALYST_NOEXCEPT
 /*
 *	Ends the frame.
 */
-void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
+void GraphicsSystem::EndFrame() NOEXCEPT
 {
 	//Set up the proper parameters.
 	static const DynamicArray<VkSemaphore> waitSemaphores{ semaphores[Semaphore::ImageAvailable]->Get() };
@@ -792,7 +792,7 @@ void GraphicsSystem::EndFrame() CATALYST_NOEXCEPT
 /*
 *	Re-initializes all descriptor sets.
 */
-void GraphicsSystem::ReinitializeDescriptorSets() CATALYST_NOEXCEPT
+void GraphicsSystem::ReinitializeDescriptorSets() NOEXCEPT
 {
 	//Update the write descriptor sets.
 	DynamicArray<VkWriteDescriptorSet, 5> writeDescriptorSets;
@@ -809,7 +809,7 @@ void GraphicsSystem::ReinitializeDescriptorSets() CATALYST_NOEXCEPT
 /*
 *	Updates the dynamic uniform data.
 */
-void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
+void GraphicsSystem::UpdateDynamicUniformData() NOEXCEPT
 {
 	//Calculate the camera data
 	Vector3 cameraWorldPosition = activeCamera->GetPosition();
@@ -838,7 +838,7 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 
 	if (numberOfDirectionalLightEntityComponents > 0)
 	{
-		const DirectionalLightComponent *CATALYST_RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightEntityDirectionalLightComponents() };
+		const DirectionalLightComponent *RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightEntityDirectionalLightComponents() };
 
 		dynamicUniformData.directionalLightIntensity = directionalLightComponent->intensity;
 		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->rotation);
@@ -860,7 +860,7 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 	size_t counter = 0;
 
 	const size_t numberOfPointLightEntityComponents{ ComponentManager::GetNumberOfPointLightEntityComponents() };
-	const PointLightComponent *CATALYST_RESTRICT pointLightComponent{ ComponentManager::GetPointLightEntityPointLightComponents() };
+	const PointLightComponent *RESTRICT pointLightComponent{ ComponentManager::GetPointLightEntityPointLightComponents() };
 
 	dynamicUniformData.numberOfPointLights = numberOfPointLightEntityComponents;
 
@@ -884,7 +884,7 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 	counter = 0;
 
 	const size_t numberOfSpotLightEntityComponents{ ComponentManager::GetNumberOfSpotLightEntityComponents() };
-	const SpotLightComponent *CATALYST_RESTRICT spotLightComponent{ ComponentManager::GetSpotLightEntitySpotLightComponents() };
+	const SpotLightComponent *RESTRICT spotLightComponent{ ComponentManager::GetSpotLightEntitySpotLightComponents() };
 
 	dynamicUniformData.numberOfSpotLights = numberOfSpotLightEntityComponents;
 
@@ -916,12 +916,12 @@ void GraphicsSystem::UpdateDynamicUniformData() CATALYST_NOEXCEPT
 /*
 *	Updates the physical entities graphics buffers.
 */
-void GraphicsSystem::UpdatePhysicalEntitiesGraphicsBuffers() CATALYST_NOEXCEPT
+void GraphicsSystem::UpdatePhysicalEntitiesGraphicsBuffers() NOEXCEPT
 {
 	//Iterate over all physical entity components and update the graphics buffers.
 	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
-	GraphicsBufferComponent *CATALYST_RESTRICT graphicsBufferComponent{ ComponentManager::GetPhysicalEntityGraphicsBufferComponents() };
-	const TransformComponent *CATALYST_RESTRICT transformComponent{ ComponentManager::GetPhysicalEntityTransformComponents() };
+	GraphicsBufferComponent *RESTRICT graphicsBufferComponent{ ComponentManager::GetPhysicalEntityGraphicsBufferComponents() };
+	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetPhysicalEntityTransformComponents() };
 
 	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++graphicsBufferComponent, ++transformComponent)
 	{
@@ -936,7 +936,7 @@ void GraphicsSystem::UpdatePhysicalEntitiesGraphicsBuffers() CATALYST_NOEXCEPT
 /*
 *	Updates the view frustum culling.
 */
-void GraphicsSystem::UpdateViewFrustumCulling() CATALYST_NOEXCEPT
+void GraphicsSystem::UpdateViewFrustumCulling() NOEXCEPT
 {
 	//Calulate the view matrix.
 	Vector3 cameraWorldPosition = activeCamera->GetPosition();
@@ -948,8 +948,8 @@ void GraphicsSystem::UpdateViewFrustumCulling() CATALYST_NOEXCEPT
 
 	//Iterate over all physical entity components to check if they are in the view frustum.
 	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
-	FrustumCullingComponent *CATALYST_RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents() };
-	const TransformComponent *CATALYST_RESTRICT transformComponent{ ComponentManager::GetPhysicalEntityTransformComponents() };
+	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents() };
+	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetPhysicalEntityTransformComponents() };
 
 	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++transformComponent)
 	{

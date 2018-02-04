@@ -11,7 +11,7 @@
 /*
 *	Default constructor.
 */
-VulkanIndexBuffer::VulkanIndexBuffer() CATALYST_NOEXCEPT
+VulkanIndexBuffer::VulkanIndexBuffer() NOEXCEPT
 {
 
 }
@@ -19,7 +19,7 @@ VulkanIndexBuffer::VulkanIndexBuffer() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanIndexBuffer::~VulkanIndexBuffer() CATALYST_NOEXCEPT
+VulkanIndexBuffer::~VulkanIndexBuffer() NOEXCEPT
 {
 
 }
@@ -27,7 +27,7 @@ VulkanIndexBuffer::~VulkanIndexBuffer() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan vertex buffer.
 */
-void VulkanIndexBuffer::Initialize(const DynamicArray<uint32> &indices) CATALYST_NOEXCEPT
+void VulkanIndexBuffer::Initialize(const DynamicArray<uint32> &indices) NOEXCEPT
 {
 	//Calculate the size of the vertex buffer.
 	const VkDeviceSize indexBufferSize = sizeof(uint32) * indices.Size();
@@ -62,7 +62,7 @@ void VulkanIndexBuffer::Initialize(const DynamicArray<uint32> &indices) CATALYST
 /*
 *	Releases this Vulkan vertex buffer.
 */
-void VulkanIndexBuffer::Release() CATALYST_NOEXCEPT
+void VulkanIndexBuffer::Release() NOEXCEPT
 {
 	//Free the Vulkan device memory.
 	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);

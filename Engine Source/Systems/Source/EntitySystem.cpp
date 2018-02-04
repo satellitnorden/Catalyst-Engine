@@ -10,7 +10,7 @@ DEFINE_SINGLETON(EntitySystem);
 /*
 *	Default constructor.
 */
-EntitySystem::EntitySystem() CATALYST_NOEXCEPT
+EntitySystem::EntitySystem() NOEXCEPT
 {
 
 }
@@ -18,7 +18,7 @@ EntitySystem::EntitySystem() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-EntitySystem::~EntitySystem() CATALYST_NOEXCEPT
+EntitySystem::~EntitySystem() NOEXCEPT
 {
 
 }
@@ -26,7 +26,7 @@ EntitySystem::~EntitySystem() CATALYST_NOEXCEPT
 /*
 *	Releases the entity system.
 */
-void EntitySystem::ReleaseSystem() CATALYST_NOEXCEPT
+void EntitySystem::ReleaseSystem() NOEXCEPT
 {
 	//Destroy all remaining entities.
 	for (int64 i = Entity::Instances.Size() - 1; i >= 0; --i)
@@ -38,7 +38,7 @@ void EntitySystem::ReleaseSystem() CATALYST_NOEXCEPT
 /*
 *	Updates the entity system synchronously.
 */
-void EntitySystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
+void EntitySystem::UpdateSystemSynchronous() NOEXCEPT
 {
 	//Destroy all entities that are marked to be destroyed.
 	for (int64 i = entitiesToBeDestroyed.Size() - 1; i >= 0; --i)
@@ -50,7 +50,7 @@ void EntitySystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 /*
 *	Marks a given entity for destruction.
 */
-void EntitySystem::MarkForDestruction(Entity *const CATALYST_RESTRICT entityToBeDestroyed) CATALYST_NOEXCEPT
+void EntitySystem::MarkForDestruction(Entity *const RESTRICT entityToBeDestroyed) NOEXCEPT
 {
 	entitiesToBeDestroyed.Emplace(entityToBeDestroyed);
 }

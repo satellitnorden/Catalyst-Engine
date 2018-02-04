@@ -59,7 +59,7 @@
 /*
 *	Given a VkResult, return a string.
 */
-static void PrintResultAndBreak(const char *const CATALYST_RESTRICT function, const VkResult result) CATALYST_NOEXCEPT
+static void PrintResultAndBreak(const char *const RESTRICT function, const VkResult result) NOEXCEPT
 {
 	PRINT_TO_CONSOLE(function << " failed.");
 

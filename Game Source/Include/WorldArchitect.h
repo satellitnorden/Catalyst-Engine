@@ -14,26 +14,26 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	WorldArchitect() CATALYST_NOEXCEPT;
+	WorldArchitect() NOEXCEPT;
 
 	/*
 	*	Default destructor.	
 	*/
-	~WorldArchitect() CATALYST_NOEXCEPT;
+	~WorldArchitect() NOEXCEPT;
 
 	/*
 	*	Initializes the world architect.
 	*/
-	void Initialize() CATALYST_NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Updates the world architects.
 	*/
-	void Update(const float deltaTime) CATALYST_NOEXCEPT;
+	void Update(const float deltaTime) NOEXCEPT;
 
 private:
 
 	//The sun.
-	DirectionalLightEntity *CATALYST_RESTRICT sun;
+	DirectionalLightEntity *RESTRICT sun;
 
 };

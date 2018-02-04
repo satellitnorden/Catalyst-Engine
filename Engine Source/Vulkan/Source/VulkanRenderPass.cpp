@@ -18,7 +18,7 @@
 /*
 *	Default constructor.
 */
-VulkanRenderPass::VulkanRenderPass() CATALYST_NOEXCEPT
+VulkanRenderPass::VulkanRenderPass() NOEXCEPT
 {
 
 }
@@ -26,7 +26,7 @@ VulkanRenderPass::VulkanRenderPass() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanRenderPass::~VulkanRenderPass() CATALYST_NOEXCEPT
+VulkanRenderPass::~VulkanRenderPass() NOEXCEPT
 {
 
 }
@@ -34,7 +34,7 @@ VulkanRenderPass::~VulkanRenderPass() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan render pass.
 */
-void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) CATALYST_NOEXCEPT
+void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT
 {
 	//Create the attachment description.
 	DynamicArray<VkAttachmentDescription> attachmentDescriptions;
@@ -75,7 +75,7 @@ void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkan
 /*
 *	Releases this Vulkan render pass.
 */
-void VulkanRenderPass::Release() CATALYST_NOEXCEPT
+void VulkanRenderPass::Release() NOEXCEPT
 {
 	//Destroy all framebuffers.
 	for (auto &framebuffer : framebuffers)
@@ -90,7 +90,7 @@ void VulkanRenderPass::Release() CATALYST_NOEXCEPT
 /*
 *	Creates an attachment description.
 */
-void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDescription> &attachmentDescriptions, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT
+void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDescription> &attachmentDescriptions, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
 	if (!vulkanPipelineCreationParameters.depthBuffers.Empty())
 	{
@@ -130,7 +130,7 @@ void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDes
 /*
 *	Creates a depth attachment reference.
 */
-void VulkanRenderPass::CreateDepthAttachmentReference(VkAttachmentReference &attachmentReference) const CATALYST_NOEXCEPT
+void VulkanRenderPass::CreateDepthAttachmentReference(VkAttachmentReference &attachmentReference) const NOEXCEPT
 {
 	attachmentReference.attachment = 0;
 	attachmentReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -139,7 +139,7 @@ void VulkanRenderPass::CreateDepthAttachmentReference(VkAttachmentReference &att
 /*
 *	Creates a color attachment reference.
 */
-void VulkanRenderPass::CreateColorAttachmentReference(DynamicArray<VkAttachmentReference> &attachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT
+void VulkanRenderPass::CreateColorAttachmentReference(DynamicArray<VkAttachmentReference> &attachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
 	uint32 counter{ vulkanPipelineCreationParameters.depthBuffers.Empty() ? static_cast<uint32>(0) : static_cast<uint32>(1) };
 	for (VkImageView colorAttachment : vulkanPipelineCreationParameters.colorAttachments[0])
@@ -155,7 +155,7 @@ void VulkanRenderPass::CreateColorAttachmentReference(DynamicArray<VkAttachmentR
 /*
 *	Creates an subpass description.
 */
-void VulkanRenderPass::CreateSubpassDescription(VkSubpassDescription &subpassDescription, const VkAttachmentReference &depthAttachmentReference, const DynamicArray<VkAttachmentReference> &colorAttachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT
+void VulkanRenderPass::CreateSubpassDescription(VkSubpassDescription &subpassDescription, const VkAttachmentReference &depthAttachmentReference, const DynamicArray<VkAttachmentReference> &colorAttachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
 	subpassDescription.flags = 0;
 	subpassDescription.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
@@ -172,7 +172,7 @@ void VulkanRenderPass::CreateSubpassDescription(VkSubpassDescription &subpassDes
 /*
 *	Creates an subpass dependency.
 */
-void VulkanRenderPass::CreateSubpassDependency(VkSubpassDependency &subpassDependency) const CATALYST_NOEXCEPT
+void VulkanRenderPass::CreateSubpassDependency(VkSubpassDependency &subpassDependency) const NOEXCEPT
 {
 	subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
 	subpassDependency.dstSubpass = 0;
@@ -186,7 +186,7 @@ void VulkanRenderPass::CreateSubpassDependency(VkSubpassDependency &subpassDepen
 /*
 *	Creates a render pass create info.
 */
-void VulkanRenderPass::CreateRenderPassCreateInfo(VkRenderPassCreateInfo &renderPassCreateInfo, const DynamicArray<VkAttachmentDescription> &attachmentDescriptions, const VkSubpassDescription &subpassDescription, const VkSubpassDependency &subpassDependency) const CATALYST_NOEXCEPT
+void VulkanRenderPass::CreateRenderPassCreateInfo(VkRenderPassCreateInfo &renderPassCreateInfo, const DynamicArray<VkAttachmentDescription> &attachmentDescriptions, const VkSubpassDescription &subpassDescription, const VkSubpassDependency &subpassDependency) const NOEXCEPT
 {
 	renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassCreateInfo.pNext = nullptr;

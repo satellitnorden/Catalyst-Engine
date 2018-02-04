@@ -7,7 +7,7 @@ DEFINE_SINGLETON(VulkanInterface);
 /*
 *	Default constructor.
 */
-VulkanInterface::VulkanInterface() CATALYST_NOEXCEPT
+VulkanInterface::VulkanInterface() NOEXCEPT
 {
 
 }
@@ -15,7 +15,7 @@ VulkanInterface::VulkanInterface() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanInterface::~VulkanInterface() CATALYST_NOEXCEPT
+VulkanInterface::~VulkanInterface() NOEXCEPT
 {
 
 }
@@ -23,7 +23,7 @@ VulkanInterface::~VulkanInterface() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan interface.
 */
-void VulkanInterface::Initialize(Window &window) CATALYST_NOEXCEPT
+void VulkanInterface::Initialize(Window &window) NOEXCEPT
 {
 	//Initialize the Vulkan instance.
 	vulkanInstance.Initialize();
@@ -62,7 +62,7 @@ void VulkanInterface::Initialize(Window &window) CATALYST_NOEXCEPT
 /*
 *	Pre-updates this Vulkan interface.
 */
-void VulkanInterface::PreUpdate(const VulkanSemaphore *const CATALYST_RESTRICT imageAvailableSemaphore) CATALYST_NOEXCEPT
+void VulkanInterface::PreUpdate(const VulkanSemaphore *const RESTRICT imageAvailableSemaphore) NOEXCEPT
 {
 	//Update the next image index in the Vulkan swap chain.
 	vulkanSwapchain.UpdateNextImageIndex(imageAvailableSemaphore);
@@ -71,7 +71,7 @@ void VulkanInterface::PreUpdate(const VulkanSemaphore *const CATALYST_RESTRICT i
 /*
 *	Post-pdates this Vulkan interface.
 */
-void VulkanInterface::PostUpdate(const VulkanSemaphore *const CATALYST_RESTRICT renderFinishedSemaphore) CATALYST_NOEXCEPT
+void VulkanInterface::PostUpdate(const VulkanSemaphore *const RESTRICT renderFinishedSemaphore) NOEXCEPT
 {
 	//Present the final image!
 	vulkanSwapchain.Present(renderFinishedSemaphore);
@@ -80,7 +80,7 @@ void VulkanInterface::PostUpdate(const VulkanSemaphore *const CATALYST_RESTRICT 
 /*
 *	Releases this Vulkan interface.
 */
-void VulkanInterface::Release() CATALYST_NOEXCEPT
+void VulkanInterface::Release() NOEXCEPT
 {
 	//Wait for all queues to finish.
 	queues[static_cast<uint8>(Queue::Graphics)].WaitIdle();
@@ -88,77 +88,77 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 	queues[static_cast<uint8>(Queue::Transfer)].WaitIdle();
 
 	//Release all Vulkan 2D textures.
-	for (Vulkan2DTexture * CATALYST_RESTRICT vulkan2DTexture : vulkan2DTextures)
+	for (Vulkan2DTexture * RESTRICT vulkan2DTexture : vulkan2DTextures)
 	{
 		vulkan2DTexture->Release();
 		delete vulkan2DTexture;
 	}
 
 	//Release all Vulkan cube map textures.
-	for (VulkanCubeMapTexture * CATALYST_RESTRICT vulkanCubeMapTexture : vulkanCubeMapTextures)
+	for (VulkanCubeMapTexture * RESTRICT vulkanCubeMapTexture : vulkanCubeMapTextures)
 	{
 		vulkanCubeMapTexture->Release();
 		delete vulkanCubeMapTexture;
 	}
 
 	//Release all Vulkan depth buffers.
-	for (VulkanDepthBuffer * CATALYST_RESTRICT vulkanDepthBuffer : vulkanDepthBuffers)
+	for (VulkanDepthBuffer * RESTRICT vulkanDepthBuffer : vulkanDepthBuffers)
 	{
 		vulkanDepthBuffer->Release();
 		delete vulkanDepthBuffer;
 	}
 
 	//Release all Vulkan fences.
-	for (VulkanFence * CATALYST_RESTRICT vulkanFence : vulkanFences)
+	for (VulkanFence * RESTRICT vulkanFence : vulkanFences)
 	{
 		vulkanFence->Release();
 		delete vulkanFence;
 	}
 
 	//Release all Vulkan index buffers.
-	for (VulkanIndexBuffer * CATALYST_RESTRICT vulkanIndexBuffer : vulkanIndexBuffers)
+	for (VulkanIndexBuffer * RESTRICT vulkanIndexBuffer : vulkanIndexBuffers)
 	{
 		vulkanIndexBuffer->Release();
 		delete vulkanIndexBuffer;
 	}
 
 	//Release all Vulkan render targets.
-	for (VulkanRenderTarget * CATALYST_RESTRICT vulkanRenderTarget : vulkanRenderTargets)
+	for (VulkanRenderTarget * RESTRICT vulkanRenderTarget : vulkanRenderTargets)
 	{
 		vulkanRenderTarget->Release();
 		delete vulkanRenderTarget;
 	}
 
 	//Release all Vulkan pipelines.
-	for (VulkanPipeline * CATALYST_RESTRICT vulkanPipeline : vulkanPipelines)
+	for (VulkanPipeline * RESTRICT vulkanPipeline : vulkanPipelines)
 	{
 		vulkanPipeline->Release();
 		delete vulkanPipeline;
 	}
 
 	//Release all Vulkan semaphores.
-	for (VulkanSemaphore * CATALYST_RESTRICT vulkanSemaphore : vulkanSemaphores)
+	for (VulkanSemaphore * RESTRICT vulkanSemaphore : vulkanSemaphores)
 	{
 		vulkanSemaphore->Release();
 		delete vulkanSemaphore;
 	}
 
 	//Release all Vulkan shader modules.
-	for (VulkanShaderModule * CATALYST_RESTRICT vulkanShaderModule : vulkanShaderModules)
+	for (VulkanShaderModule * RESTRICT vulkanShaderModule : vulkanShaderModules)
 	{
 		vulkanShaderModule->Release();
 		delete vulkanShaderModule;
 	}
 
 	//Release all Vulkan uniform buffers.
-	for (VulkanUniformBuffer * CATALYST_RESTRICT vulkanUniformBuffer : vulkanUniformBuffers)
+	for (VulkanUniformBuffer * RESTRICT vulkanUniformBuffer : vulkanUniformBuffers)
 	{
 		vulkanUniformBuffer->Release();
 		delete vulkanUniformBuffer;
 	}
 
 	//Release all Vulkan vertex buffers.
-	for (VulkanVertexBuffer * CATALYST_RESTRICT vulkanVertexBuffer : vulkanVertexBuffers)
+	for (VulkanVertexBuffer * RESTRICT vulkanVertexBuffer : vulkanVertexBuffers)
 	{
 		vulkanVertexBuffer->Release();
 		delete vulkanVertexBuffer;
@@ -189,9 +189,9 @@ void VulkanInterface::Release() CATALYST_NOEXCEPT
 /*
 *	Creates and returns a 2D texture.
 */
-CATALYST_RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT
+RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 width, const uint32 height, const byte *RESTRICT textureData) NOEXCEPT
 {
-	Vulkan2DTexture *CATALYST_RESTRICT new2DTexture = new Vulkan2DTexture;
+	Vulkan2DTexture *RESTRICT new2DTexture = new Vulkan2DTexture;
 	new2DTexture->Initialize(width, height, textureData);
 
 	vulkan2DTextures.Emplace(new2DTexture);
@@ -202,9 +202,9 @@ CATALYST_RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint
 /*
 *	Creates and returns a cube map texture.
 */
-CATALYST_RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT
+RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const uint32 width, const uint32 height, const byte *RESTRICT *RESTRICT textureData) NOEXCEPT
 {
-	VulkanCubeMapTexture *CATALYST_RESTRICT newCubeMapTexture = new VulkanCubeMapTexture;
+	VulkanCubeMapTexture *RESTRICT newCubeMapTexture = new VulkanCubeMapTexture;
 	newCubeMapTexture->Initialize(width, height, textureData);
 
 	vulkanCubeMapTextures.Emplace(newCubeMapTexture);
@@ -215,9 +215,9 @@ CATALYST_RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(
 /*
 *	Creates and returns a depth buffer.
 */
-CATALYST_RESTRICTED VulkanDepthBuffer* VulkanInterface::CreateDepthBuffer(const VkExtent2D &depthBufferExtent) CATALYST_NOEXCEPT
+RESTRICTED VulkanDepthBuffer* VulkanInterface::CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT
 {
-	VulkanDepthBuffer *CATALYST_RESTRICT newDepthBuffer = new VulkanDepthBuffer;
+	VulkanDepthBuffer *RESTRICT newDepthBuffer = new VulkanDepthBuffer;
 	newDepthBuffer->Initialize(depthBufferExtent);
 
 	vulkanDepthBuffers.Emplace(newDepthBuffer);
@@ -228,9 +228,9 @@ CATALYST_RESTRICTED VulkanDepthBuffer* VulkanInterface::CreateDepthBuffer(const 
 /*
 *	Creates and returns a fence.
 */
-CATALYST_RESTRICTED VulkanFence* VulkanInterface::CreateFence(const VkFenceCreateFlags flags) CATALYST_NOEXCEPT
+RESTRICTED VulkanFence* VulkanInterface::CreateFence(const VkFenceCreateFlags flags) NOEXCEPT
 {
-	VulkanFence *CATALYST_RESTRICT newFence = new VulkanFence;
+	VulkanFence *RESTRICT newFence = new VulkanFence;
 	newFence->Initialize(flags);
 
 	vulkanFences.Emplace(newFence);
@@ -241,9 +241,9 @@ CATALYST_RESTRICTED VulkanFence* VulkanInterface::CreateFence(const VkFenceCreat
 /*
 *	Creates and returns an index buffer.
 */
-CATALYST_RESTRICTED VulkanIndexBuffer* VulkanInterface::CreateIndexBuffer(const DynamicArray<uint32> &indices) CATALYST_NOEXCEPT
+RESTRICTED VulkanIndexBuffer* VulkanInterface::CreateIndexBuffer(const DynamicArray<uint32> &indices) NOEXCEPT
 {
-	VulkanIndexBuffer *CATALYST_RESTRICT newIndexBuffer = new VulkanIndexBuffer;
+	VulkanIndexBuffer *RESTRICT newIndexBuffer = new VulkanIndexBuffer;
 	newIndexBuffer->Initialize(indices);
 
 	vulkanIndexBuffers.Emplace(newIndexBuffer);
@@ -254,9 +254,9 @@ CATALYST_RESTRICTED VulkanIndexBuffer* VulkanInterface::CreateIndexBuffer(const 
 /*
 *	Creates and returns a pipeline.
 */
-CATALYST_RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) CATALYST_NOEXCEPT
+RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT
 {
-	VulkanPipeline *CATALYST_RESTRICT newPipeline = new VulkanPipeline;
+	VulkanPipeline *RESTRICT newPipeline = new VulkanPipeline;
 
 	newPipeline->Initialize(vulkanPipelineCreationParameters);
 
@@ -268,9 +268,9 @@ CATALYST_RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const Vulkan
 /*
 *	Creates and returns a render target.
 */
-CATALYST_RESTRICTED VulkanRenderTarget* VulkanInterface::CreateRenderTarget(const VkExtent2D extent) CATALYST_NOEXCEPT
+RESTRICTED VulkanRenderTarget* VulkanInterface::CreateRenderTarget(const VkExtent2D extent) NOEXCEPT
 {
-	VulkanRenderTarget *CATALYST_RESTRICT newRenderTarget = new VulkanRenderTarget;
+	VulkanRenderTarget *RESTRICT newRenderTarget = new VulkanRenderTarget;
 
 	newRenderTarget->Initialize(extent);
 
@@ -282,9 +282,9 @@ CATALYST_RESTRICTED VulkanRenderTarget* VulkanInterface::CreateRenderTarget(cons
 /*
 *	Creates and returns a semaphore.
 */
-CATALYST_RESTRICTED VulkanSemaphore* VulkanInterface::CreateSemaphore() CATALYST_NOEXCEPT
+RESTRICTED VulkanSemaphore* VulkanInterface::CreateSemaphore() NOEXCEPT
 {
-	VulkanSemaphore *CATALYST_RESTRICT newSemaphore = new VulkanSemaphore;
+	VulkanSemaphore *RESTRICT newSemaphore = new VulkanSemaphore;
 
 	newSemaphore->Initialize();
 
@@ -296,9 +296,9 @@ CATALYST_RESTRICTED VulkanSemaphore* VulkanInterface::CreateSemaphore() CATALYST
 /*
 *	Creates and returns a shader module.
 */
-CATALYST_RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits stage) CATALYST_NOEXCEPT
+RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits stage) NOEXCEPT
 {
-	VulkanShaderModule *CATALYST_RESTRICT newShaderModule = new VulkanShaderModule;
+	VulkanShaderModule *RESTRICT newShaderModule = new VulkanShaderModule;
 	newShaderModule->Initialize(shaderByteCode, stage);
 
 	vulkanShaderModules.Emplace(newShaderModule);
@@ -309,9 +309,9 @@ CATALYST_RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(cons
 /*
 *	Creates and returns a uniform buffer.
 */
-CATALYST_RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(const size_t newUniformBufferSize) CATALYST_NOEXCEPT
+RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(const size_t newUniformBufferSize) NOEXCEPT
 {
-	VulkanUniformBuffer *CATALYST_RESTRICT newUniformBuffer = new VulkanUniformBuffer;
+	VulkanUniformBuffer *RESTRICT newUniformBuffer = new VulkanUniformBuffer;
 	newUniformBuffer->Initialize(newUniformBufferSize);
 
 	vulkanUniformBuffers.Emplace(newUniformBuffer);
@@ -322,9 +322,9 @@ CATALYST_RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(co
 /*
 *	Creates and returns a vertex buffer.
 */
-CATALYST_RESTRICTED VulkanVertexBuffer* VulkanInterface::CreateVertexBuffer(const DynamicArray<Vertex> &vertices) CATALYST_NOEXCEPT
+RESTRICTED VulkanVertexBuffer* VulkanInterface::CreateVertexBuffer(const DynamicArray<Vertex> &vertices) NOEXCEPT
 {
-	VulkanVertexBuffer *CATALYST_RESTRICT newVertexBuffer = new VulkanVertexBuffer;
+	VulkanVertexBuffer *RESTRICT newVertexBuffer = new VulkanVertexBuffer;
 	newVertexBuffer->Initialize(vertices);
 
 	vulkanVertexBuffers.Emplace(newVertexBuffer);

@@ -13,7 +13,7 @@ DEFINE_SINGLETON(ClairvoyantGameSystem);
 /*
 *	Default constructor.
 */
-ClairvoyantGameSystem::ClairvoyantGameSystem() CATALYST_NOEXCEPT
+ClairvoyantGameSystem::ClairvoyantGameSystem() NOEXCEPT
 {
 
 }
@@ -21,7 +21,7 @@ ClairvoyantGameSystem::ClairvoyantGameSystem() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-ClairvoyantGameSystem::~ClairvoyantGameSystem() CATALYST_NOEXCEPT
+ClairvoyantGameSystem::~ClairvoyantGameSystem() NOEXCEPT
 {
 
 }
@@ -29,7 +29,7 @@ ClairvoyantGameSystem::~ClairvoyantGameSystem() CATALYST_NOEXCEPT
 /*
 *	Initializes the game system.
 */
-void ClairvoyantGameSystem::InitializeSystem() CATALYST_NOEXCEPT
+void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 {
 	//Create the player.
 	player = EntitySystem::Instance->CreateEntity<ClairvoyantPlayer>();
@@ -44,7 +44,7 @@ void ClairvoyantGameSystem::InitializeSystem() CATALYST_NOEXCEPT
 /*
 *	Updates the game system synchronously.
 */
-void ClairvoyantGameSystem::UpdateSystemSynchronous(const float deltaTime) CATALYST_NOEXCEPT
+void ClairvoyantGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
 	//Update the world architect.
 	worldArchitect.Update(deltaTime);
@@ -59,7 +59,7 @@ void ClairvoyantGameSystem::UpdateSystemSynchronous(const float deltaTime) CATAL
 /*
 *	Releases the game system.
 */
-void ClairvoyantGameSystem::ReleaseSystem() CATALYST_NOEXCEPT
+void ClairvoyantGameSystem::ReleaseSystem() NOEXCEPT
 {
 
 }

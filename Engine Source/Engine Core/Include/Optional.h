@@ -9,7 +9,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Optional() CATALYST_NOEXCEPT
+	Optional() NOEXCEPT
 		:
 		object(nullptr)
 	{
@@ -19,7 +19,7 @@ public:
 	/*
 	*	Constructor taking the underlying object by lvalue as an argument.
 	*/
-	Optional(const ObjectType &newObject) CATALYST_NOEXCEPT
+	Optional(const ObjectType &newObject) NOEXCEPT
 		:
 		object(newObject)
 	{
@@ -29,7 +29,7 @@ public:
 	/*
 	*	Constructor taking the underlying object by rvalue as an argument.
 	*/
-	Optional(ObjectType &&newObject) CATALYST_NOEXCEPT
+	Optional(ObjectType &&newObject) NOEXCEPT
 		:
 		object(newObject)
 	{
@@ -39,7 +39,7 @@ public:
 	/*
 	*	Arrow operator overload, const.
 	*/
-	CATALYST_RESTRICTED const ObjectType* operator->() const CATALYST_NOEXCEPT
+	RESTRICTED const ObjectType* operator->() const NOEXCEPT
 	{
 		return object;
 	}
@@ -47,7 +47,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	CATALYST_RESTRICTED ObjectType* operator->() CATALYST_NOEXCEPT
+	RESTRICTED ObjectType* operator->() NOEXCEPT
 	{
 		return object;
 	}
@@ -55,7 +55,7 @@ public:
 	/*
 	*	Bool operator overload.
 	*/
-	operator bool() const CATALYST_NOEXCEPT
+	operator bool() const NOEXCEPT
 	{
 		return object != nullptr;
 	}
@@ -63,7 +63,7 @@ public:
 	/*
 	*	Dereference operator overload, const.
 	*/
-	const ObjectType& operator*() const CATALYST_NOEXCEPT
+	const ObjectType& operator*() const NOEXCEPT
 	{
 		return *object;
 	}
@@ -71,7 +71,7 @@ public:
 	/*
 	*	Dereference operator overload, non-const.
 	*/
-	ObjectType& operator*() CATALYST_NOEXCEPT
+	ObjectType& operator*() NOEXCEPT
 	{
 		return *object;
 	}
@@ -79,7 +79,7 @@ public:
 	/*
 	*	Returns the underlying object, const.
 	*/
-	const ObjectType& Get() const CATALYST_NOEXCEPT
+	const ObjectType& Get() const NOEXCEPT
 	{
 		return *object;
 	}
@@ -87,7 +87,7 @@ public:
 	/*
 	*	Returns the underlying object, non-const.
 	*/
-	ObjectType& Get() CATALYST_NOEXCEPT
+	ObjectType& Get() NOEXCEPT
 	{
 		return *object;
 	}
@@ -95,6 +95,6 @@ public:
 private:
 
 	//The underlying object.
-	const ObjectType *CATALYST_RESTRICT const object;
+	const ObjectType *RESTRICT const object;
 
 };

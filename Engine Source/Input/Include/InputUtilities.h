@@ -17,7 +17,7 @@ namespace InputUtilities
 	/*
 	*	Updates a single gamepad button.
 	*/
-	void UpdateGamepadButton(const WORD wButtons, const uint16 xInputButton, GamepadButtonState &gamepadButtonState) CATALYST_NOEXCEPT
+	void UpdateGamepadButton(const WORD wButtons, const uint16 xInputButton, GamepadButtonState &gamepadButtonState) NOEXCEPT
 	{
 		//The gamepad button is not pressed.
 		if (!(wButtons & xInputButton))
@@ -53,7 +53,7 @@ namespace InputUtilities
 	/*
 	*	Updates a single keyboard button.
 	*/
-	void UpdateKeyboardButton(const uint16 button, KeyboardButtonState &keyboardButtonState) CATALYST_NOEXCEPT
+	void UpdateKeyboardButton(const uint16 button, KeyboardButtonState &keyboardButtonState) NOEXCEPT
 	{
 		//The keyboard button is not pressed.
 		if (!static_cast<bool>(GetKeyState(button) & 0x8000))
@@ -89,7 +89,7 @@ namespace InputUtilities
 	/*
 	*	Returns the current gamepad state.
 	*/
-	bool GetCurrentGamepadState(const uint8 index, GamepadState &currentGamepadState) CATALYST_NOEXCEPT
+	bool GetCurrentGamepadState(const uint8 index, GamepadState &currentGamepadState) NOEXCEPT
 	{
 		XINPUT_STATE xInputState;
 
@@ -153,7 +153,7 @@ namespace InputUtilities
 	/*
 	*	Returns the current keyboard state.
 	*/
-	bool GetCurrentKeyboardState(KeyboardState &currentKeyboardState) CATALYST_NOEXCEPT
+	bool GetCurrentKeyboardState(KeyboardState &currentKeyboardState) NOEXCEPT
 	{
 		UpdateKeyboardButton(VK_BACK, currentKeyboardState[KeyboardButton::Backspace]);
 		UpdateKeyboardButton(VK_TAB, currentKeyboardState[KeyboardButton::Tab]);

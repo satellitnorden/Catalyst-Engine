@@ -9,7 +9,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Map() CATALYST_NOEXCEPT
+	Map() NOEXCEPT
 	{
 
 	}
@@ -17,7 +17,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~Map() CATALYST_NOEXCEPT
+	~Map() NOEXCEPT
 	{
 
 	}
@@ -25,7 +25,7 @@ public:
 	/*
 	*	Finds the object associated with specific key and returns a pointer to that object. Returns nullptr if it can't find the object, const.
 	*/
-	CATALYST_RESTRICTED const ObjectType* Find(const KeyType &keyToFind) const CATALYST_NOEXCEPT
+	RESTRICTED const ObjectType* Find(const KeyType &keyToFind) const NOEXCEPT
 	{
 		for (auto &mapEntry : map)
 		{
@@ -41,7 +41,7 @@ public:
 	/*
 	*	Finds the object associated with specific key and returns a pointer to that object. Returns nullptr if it can't find the object, non-const.
 	*/
-	CATALYST_RESTRICTED ObjectType* Find(const KeyType &keyToFind) CATALYST_NOEXCEPT
+	RESTRICTED ObjectType* Find(const KeyType &keyToFind) NOEXCEPT
 	{
 		for (auto &mapEntry : map)
 		{

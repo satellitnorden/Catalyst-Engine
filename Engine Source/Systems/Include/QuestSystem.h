@@ -28,42 +28,42 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	QuestSystem() CATALYST_NOEXCEPT;
+	QuestSystem() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~QuestSystem() CATALYST_NOEXCEPT;
+	~QuestSystem() NOEXCEPT;
 
 	/*
 	*	Initializes the quest system.
 	*/
-	void InitializeSystem() CATALYST_NOEXCEPT;
+	void InitializeSystem() NOEXCEPT;
 
 	/*
 	*	Releases the quest system.
 	*/
-	void ReleaseSystem() CATALYST_NOEXCEPT;
+	void ReleaseSystem() NOEXCEPT;
 
 	/*
 	*	Returns the number of adventurers.
 	*/
-	uint8 GetNumberOfAdventurers() const CATALYST_NOEXCEPT { return numberOfAdventurers; }
+	uint8 GetNumberOfAdventurers() const NOEXCEPT { return numberOfAdventurers; }
 
 	/*
 	*	Registers a daily quest.
 	*/
-	void RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction) CATALYST_NOEXCEPT;
+	void RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction) NOEXCEPT;
 
 	/*
 	*	Carries out a daily quest.
 	*/
-	void CarryOutDailyQuest(const DailyQuests dailyQuest, void *CATALYST_RESTRICT arguments) CATALYST_NOEXCEPT;
+	void CarryOutDailyQuest(const DailyQuests dailyQuest, void *RESTRICT arguments) NOEXCEPT;
 
 	/*
 	*	Waits for a daily quest to be completed.
 	*/
-	void WaitForDailyQuest(const DailyQuests dailyQuest) const CATALYST_NOEXCEPT;
+	void WaitForDailyQuest(const DailyQuests dailyQuest) const NOEXCEPT;
 
 private:
 
@@ -79,6 +79,6 @@ private:
 	/*
 	*	Executes an adventurer.
 	*/
-	void ExecuteAdventurer() CATALYST_NOEXCEPT;
+	void ExecuteAdventurer() NOEXCEPT;
 
 };
