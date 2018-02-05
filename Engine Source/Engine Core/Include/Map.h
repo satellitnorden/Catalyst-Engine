@@ -57,9 +57,9 @@ public:
 	/*
 	*	Emplaces a new pair into the map.
 	*/
-	void Emplace(const KeyType &newKey, const ObjectType &newObject)
+	void EmplaceSlow(const KeyType &newKey, const ObjectType &newObject)
 	{
-		map.Emplace(newKey, newObject);
+		map.EmplaceSlow(newKey, newObject);
 	}
 
 private:

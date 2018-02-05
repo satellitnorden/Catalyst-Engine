@@ -75,14 +75,14 @@ void VulkanDescriptorPool::CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPo
 	combinedImageSamplerDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	combinedImageSamplerDescriptorPoolSize.descriptorCount = VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS;
 
-	descriptorPoolSizes.EmplaceUnsafe(combinedImageSamplerDescriptorPoolSize);
+	descriptorPoolSizes.EmplaceFast(combinedImageSamplerDescriptorPoolSize);
 
 	VkDescriptorPoolSize uniformBufferDescriptorPoolSize;
 
 	uniformBufferDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	uniformBufferDescriptorPoolSize.descriptorCount = VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS;
 
-	descriptorPoolSizes.EmplaceUnsafe(uniformBufferDescriptorPoolSize);
+	descriptorPoolSizes.EmplaceFast(uniformBufferDescriptorPoolSize);
 }
 
 /*

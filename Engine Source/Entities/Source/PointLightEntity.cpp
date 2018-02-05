@@ -19,7 +19,7 @@ PointLightEntity::PointLightEntity() NOEXCEPT
 	componentsIndex = ComponentManager::GetNewPointLightEntitiesEntityComponentsIndex();
 
 	//Add this point light entity to the universal container.
-	Instances.Emplace(this);
+	Instances.EmplaceSlow(this);
 }
 
 /*

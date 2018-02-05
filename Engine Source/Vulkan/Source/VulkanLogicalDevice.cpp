@@ -77,7 +77,7 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 		newDeviceQueueCreateInfo.queueCount = uniqueQueueFamilyIndex.second;
 		newDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
 
-		deviceQueueCreateInfos.Emplace(newDeviceQueueCreateInfo);
+		deviceQueueCreateInfos.EmplaceSlow(newDeviceQueueCreateInfo);
 	}
 }
 

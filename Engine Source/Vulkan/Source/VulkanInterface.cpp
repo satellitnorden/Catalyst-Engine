@@ -187,7 +187,7 @@ RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 width,
 	Vulkan2DTexture *RESTRICT new2DTexture = new Vulkan2DTexture;
 	new2DTexture->Initialize(width, height, textureData);
 
-	vulkan2DTextures.Emplace(new2DTexture);
+	vulkan2DTextures.EmplaceSlow(new2DTexture);
 
 	return new2DTexture;
 }
@@ -200,7 +200,7 @@ RESTRICTED VulkanBuffer* VulkanInterface::CreateBuffer(const void *RESTRICT data
 	VulkanBuffer *RESTRICT newBuffer = new VulkanBuffer;
 	newBuffer->Initialize(data, dataSizes, dataChunks);
 
-	vulkanBuffers.Emplace(newBuffer);
+	vulkanBuffers.EmplaceSlow(newBuffer);
 
 	return newBuffer;
 }
@@ -213,7 +213,7 @@ RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const uin
 	VulkanCubeMapTexture *RESTRICT newCubeMapTexture = new VulkanCubeMapTexture;
 	newCubeMapTexture->Initialize(width, height, textureData);
 
-	vulkanCubeMapTextures.Emplace(newCubeMapTexture);
+	vulkanCubeMapTextures.EmplaceSlow(newCubeMapTexture);
 
 	return newCubeMapTexture;
 }
@@ -226,7 +226,7 @@ RESTRICTED VulkanDepthBuffer* VulkanInterface::CreateDepthBuffer(const VkExtent2
 	VulkanDepthBuffer *RESTRICT newDepthBuffer = new VulkanDepthBuffer;
 	newDepthBuffer->Initialize(depthBufferExtent);
 
-	vulkanDepthBuffers.Emplace(newDepthBuffer);
+	vulkanDepthBuffers.EmplaceSlow(newDepthBuffer);
 
 	return newDepthBuffer;
 }
@@ -239,7 +239,7 @@ RESTRICTED VulkanFence* VulkanInterface::CreateFence(const VkFenceCreateFlags fl
 	VulkanFence *RESTRICT newFence = new VulkanFence;
 	newFence->Initialize(flags);
 
-	vulkanFences.Emplace(newFence);
+	vulkanFences.EmplaceSlow(newFence);
 
 	return newFence;
 }
@@ -253,7 +253,7 @@ RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const VulkanPipelineC
 
 	newPipeline->Initialize(vulkanPipelineCreationParameters);
 
-	vulkanPipelines.Emplace(newPipeline);
+	vulkanPipelines.EmplaceSlow(newPipeline);
 
 	return newPipeline;
 }
@@ -267,7 +267,7 @@ RESTRICTED VulkanRenderTarget* VulkanInterface::CreateRenderTarget(const VkExten
 
 	newRenderTarget->Initialize(extent);
 
-	vulkanRenderTargets.Emplace(newRenderTarget);
+	vulkanRenderTargets.EmplaceSlow(newRenderTarget);
 
 	return newRenderTarget;
 }
@@ -281,7 +281,7 @@ RESTRICTED VulkanSemaphore* VulkanInterface::CreateSemaphore() NOEXCEPT
 
 	newSemaphore->Initialize();
 
-	vulkanSemaphores.Emplace(newSemaphore);
+	vulkanSemaphores.EmplaceSlow(newSemaphore);
 
 	return newSemaphore;
 }
@@ -294,7 +294,7 @@ RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(const Dynamic
 	VulkanShaderModule *RESTRICT newShaderModule = new VulkanShaderModule;
 	newShaderModule->Initialize(shaderByteCode, stage);
 
-	vulkanShaderModules.Emplace(newShaderModule);
+	vulkanShaderModules.EmplaceSlow(newShaderModule);
 
 	return newShaderModule;
 }
@@ -307,7 +307,7 @@ RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(const size_
 	VulkanUniformBuffer *RESTRICT newUniformBuffer = new VulkanUniformBuffer;
 	newUniformBuffer->Initialize(newUniformBufferSize);
 
-	vulkanUniformBuffers.Emplace(newUniformBuffer);
+	vulkanUniformBuffers.EmplaceSlow(newUniformBuffer);
 
 	return newUniformBuffer;
 }

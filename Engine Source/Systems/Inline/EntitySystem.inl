@@ -6,7 +6,7 @@
 template <class EntityClass, class... Arguments>
 RESTRICTED EntityClass* EntitySystem::CreateEntity(Arguments&&... arguments) const NOEXCEPT
 {
-	//EntityClass::Instances.Emplace(std::forward<Arguments>(arguments)...)
+	//EntityClass::Instances.EmplaceSlow(std::forward<Arguments>(arguments)...)
 
 	return new EntityClass(std::forward<Arguments>(arguments)...);
 }

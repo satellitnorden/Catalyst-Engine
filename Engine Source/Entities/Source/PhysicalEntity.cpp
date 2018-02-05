@@ -19,7 +19,7 @@ PhysicalEntity::PhysicalEntity() NOEXCEPT
 	componentsIndex = ComponentManager::GetNewPhysicalEntityComponentsIndex();
 
 	//Add this physical entity to the universal container.
-	Instances.Emplace(this);
+	Instances.EmplaceSlow(this);
 }
 
 /*

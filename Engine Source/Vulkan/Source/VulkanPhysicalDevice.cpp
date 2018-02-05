@@ -43,7 +43,7 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 		//Check if this physical device is suitable.
 		if (IsPhysicalDeviceSuitable(availablePhysicalDevice))
 		{
-			suitablePhysicalDevices.EmplaceUnsafe(availablePhysicalDevice);
+			suitablePhysicalDevices.EmplaceFast(availablePhysicalDevice);
 		}
 	}
 

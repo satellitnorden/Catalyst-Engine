@@ -34,11 +34,11 @@ void VulkanFramebuffer::Initialize(const VulkanRenderPass &vulkanRenderPass, con
 	{
 		attachments.Reserve(colorAttachments.Size() + 1);
 
-		attachments.EmplaceUnsafe(depthBuffer->GetImageView());
+		attachments.EmplaceFast(depthBuffer->GetImageView());
 
 		for (auto colorAttachment : colorAttachments)
 		{
-			attachments.EmplaceUnsafe(colorAttachment);
+			attachments.EmplaceFast(colorAttachment);
 		}
 
 		CreateFramebufferCreateInfo(framebufferCreateInfo, vulkanRenderPass, attachments, extent);

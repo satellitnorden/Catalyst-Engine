@@ -16,7 +16,7 @@ SpotLightEntity::SpotLightEntity() NOEXCEPT
 	componentsIndex = ComponentManager::GetNewSpotLightEntitiesEntityComponentsIndex();
 
 	//Add this spot light entity to the universal container.
-	Instances.Emplace(this);
+	Instances.EmplaceSlow(this);
 }
 
 /*

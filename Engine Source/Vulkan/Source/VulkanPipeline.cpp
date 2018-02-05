@@ -80,7 +80,7 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 
 	for (auto &descriptorLayoutBindignInformation : vulkanPipelineCreationParameters.descriptorLayoutBindingInformations)
 	{
-		descriptorSetLayoutsBindings.EmplaceUnsafe(VulkanUtilities::CreateDescriptorSetLayoutBinding(descriptorLayoutBindignInformation.binding, descriptorLayoutBindignInformation.descriptorType, descriptorLayoutBindignInformation.shaderStages));
+		descriptorSetLayoutsBindings.EmplaceFast(VulkanUtilities::CreateDescriptorSetLayoutBinding(descriptorLayoutBindignInformation.binding, descriptorLayoutBindignInformation.descriptorType, descriptorLayoutBindignInformation.shaderStages));
 	}
 
 	vulkanDescriptorSetLayout.Initialize(descriptorSetLayoutsBindings);
@@ -256,7 +256,7 @@ void VulkanPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPip
 		newPipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
 		newPipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
-		pipelineColorBlendAttachmentStates.Emplace(newPipelineColorBlendAttachmentState);
+		pipelineColorBlendAttachmentStates.EmplaceSlow(newPipelineColorBlendAttachmentState);
 	}
 }
 

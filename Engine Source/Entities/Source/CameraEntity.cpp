@@ -16,7 +16,7 @@ CameraEntity::CameraEntity() NOEXCEPT
 	componentsIndex = ComponentManager::GetNewCameraEntityComponentsIndex();
 
 	//Add this camera entity to the universal container.
-	Instances.Emplace(this);
+	Instances.EmplaceSlow(this);
 }
 
 /*

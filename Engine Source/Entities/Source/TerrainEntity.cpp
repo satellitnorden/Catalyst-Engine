@@ -19,7 +19,7 @@ TerrainEntity::TerrainEntity() NOEXCEPT
 	componentsIndex = ComponentManager::GetNewTerrainEntityComponentsIndex();
 
 	//Add this terrain entity to the universal container.
-	Instances.Emplace(this);
+	Instances.EmplaceSlow(this);
 }
 
 /*

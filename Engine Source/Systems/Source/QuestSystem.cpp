@@ -43,7 +43,7 @@ void QuestSystem::InitializeSystem() NOEXCEPT
 
 	for (uint8 i = 0; i < numberOfAdventurers; ++i)
 	{
-		adventurerThreads.EmplaceUnsafe(std::move(std::thread(&QuestSystem::ExecuteAdventurer, this)));
+		adventurerThreads.EmplaceFast(std::move(std::thread(&QuestSystem::ExecuteAdventurer, this)));
 	}
 }
 

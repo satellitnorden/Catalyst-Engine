@@ -69,7 +69,7 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanR
 			newClearValue.depthStencil = { 0.0f, 0 };
 		}
 
-		clearValues.Emplace(newClearValue);
+		clearValues.EmplaceSlow(newClearValue);
 	}
 
 	VkRenderPassBeginInfo renderPassBeginInfo;

@@ -106,7 +106,7 @@ void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDes
 		depthAttachmentDescription.initialLayout = vulkanPipelineCreationParameters.depthAttachmentInitialLayout;
 		depthAttachmentDescription.finalLayout = vulkanPipelineCreationParameters.depthAttachmentFinalLayout;
 
-		attachmentDescriptions.Emplace(depthAttachmentDescription);
+		attachmentDescriptions.EmplaceSlow(depthAttachmentDescription);
 	}
 
 	for (VkImageView imageView : vulkanPipelineCreationParameters.colorAttachments[0])
@@ -123,7 +123,7 @@ void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDes
 		colorAttachmentDescription.initialLayout = vulkanPipelineCreationParameters.colorAttachmentInitialLayout;
 		colorAttachmentDescription.finalLayout = vulkanPipelineCreationParameters.colorAttachmentFinalLayout;
 
-		attachmentDescriptions.Emplace(colorAttachmentDescription);
+		attachmentDescriptions.EmplaceSlow(colorAttachmentDescription);
 	}
 }
 
@@ -148,7 +148,7 @@ void VulkanRenderPass::CreateColorAttachmentReference(DynamicArray<VkAttachmentR
 		newAttachmentReference.attachment = counter++;
 		newAttachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-		attachmentReferences.Emplace(newAttachmentReference);
+		attachmentReferences.EmplaceSlow(newAttachmentReference);
 	}
 }
 

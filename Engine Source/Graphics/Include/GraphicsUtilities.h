@@ -22,21 +22,21 @@ namespace GraphicsUtilities
 		{
 			for (uint32 j = 0; j <= resolution; ++j)
 			{
-				vertices.EmplaceUnsafe(-1.0f + (2.0f * static_cast<float>(i) / static_cast<float>(resolution)));
-				vertices.EmplaceUnsafe(0.0f);
-				vertices.EmplaceUnsafe(-1.0f + (2.0f * static_cast<float>(j) / static_cast<float>(resolution)));
-				vertices.EmplaceUnsafe(static_cast<float>(i) / static_cast<float>(resolution));
-				vertices.EmplaceUnsafe(static_cast<float>(j) / static_cast<float>(resolution));
+				vertices.EmplaceFast(-1.0f + (2.0f * static_cast<float>(i) / static_cast<float>(resolution)));
+				vertices.EmplaceFast(0.0f);
+				vertices.EmplaceFast(-1.0f + (2.0f * static_cast<float>(j) / static_cast<float>(resolution)));
+				vertices.EmplaceFast(static_cast<float>(i) / static_cast<float>(resolution));
+				vertices.EmplaceFast(static_cast<float>(j) / static_cast<float>(resolution));
 
 				if (i != resolution && j != resolution)
 				{
-					indices.EmplaceUnsafe((i * (resolution + 1)) + j);
-					indices.EmplaceUnsafe((i * (resolution + 1)) + j + 1);
-					indices.EmplaceUnsafe(((i + 1) * (resolution + 1)) + j);
+					indices.EmplaceFast((i * (resolution + 1)) + j);
+					indices.EmplaceFast((i * (resolution + 1)) + j + 1);
+					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j);
 
-					indices.EmplaceUnsafe((i * (resolution + 1)) + j + 1);
-					indices.EmplaceUnsafe(((i + 1) * (resolution + 1)) + j + 1);
-					indices.EmplaceUnsafe(((i + 1) * (resolution + 1)) + j);
+					indices.EmplaceFast((i * (resolution + 1)) + j + 1);
+					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j + 1);
+					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j);
 				}
 			}
 		}

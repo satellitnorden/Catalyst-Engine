@@ -201,7 +201,7 @@ public:
 	*	Given constructor arguments for the object type, construct a new object at the back of the array.
 	*/
 	template <class... Arguments>
-	void Emplace(Arguments&&... arguments) NOEXCEPT
+	void EmplaceSlow(Arguments&&... arguments) NOEXCEPT
 	{
 		if (size >= capacity)
 		{
@@ -215,7 +215,7 @@ public:
 	*	Given constructor arguments for the object type, construct a new object at the back of the array without first checking if the array has the required capacity.
 	*/
 	template <class... Arguments>
-	void EmplaceUnsafe(Arguments&&... arguments) NOEXCEPT
+	void EmplaceFast(Arguments&&... arguments) NOEXCEPT
 	{
 		new (&array[size++]) ObjectType(std::forward<Arguments>(arguments)...);
 	}

@@ -53,7 +53,7 @@ public:
 	/*
 	*	Adds a child to this entity.
 	*/
-	void AddChild(Entity *RESTRICT newChildEntity) NOEXCEPT { children.Emplace(newChildEntity); }
+	void AddChild(Entity *RESTRICT newChildEntity) NOEXCEPT { children.EmplaceSlow(newChildEntity); }
 
 	/*
 	*	Marks this entitiy for destruction.

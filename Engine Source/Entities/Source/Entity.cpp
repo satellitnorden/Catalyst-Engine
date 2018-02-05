@@ -14,7 +14,7 @@ DEFINE_ENTITY_CLASS(Entity);
 Entity::Entity() NOEXCEPT
 {
 	//Add this entity to the universal container.
-	Instances.Emplace(this);
+	Instances.EmplaceSlow(this);
 }
 
 /*

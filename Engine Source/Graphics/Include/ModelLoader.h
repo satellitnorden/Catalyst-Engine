@@ -25,7 +25,7 @@ namespace ModelLoader
 		//Process the vertices.
 		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
 		{
-			vertices.Emplace(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+			vertices.EmplaceSlow(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
 			extent = GameMath::Maximum(extent, GameMath::Absolute(vertices.Back().position.X));
 			extent = GameMath::Maximum(extent, GameMath::Absolute(vertices.Back().position.Y));
@@ -39,7 +39,7 @@ namespace ModelLoader
 
 			for (unsigned int j = 0; j < face.mNumIndices; ++j)
 			{
-				indices.Emplace(face.mIndices[j]);
+				indices.EmplaceSlow(face.mIndices[j]);
 			}
 		}
 	}

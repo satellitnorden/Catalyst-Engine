@@ -19,7 +19,7 @@ DirectionalLightEntity::DirectionalLightEntity() NOEXCEPT
 	componentsIndex = ComponentManager::GetNewDirectionalLightEntityComponentsIndex();
 
 	//Add this directional light entity to the universal container.
-	Instances.Emplace(this);
+	Instances.EmplaceSlow(this);
 }
 
 /*

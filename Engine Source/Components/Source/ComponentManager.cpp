@@ -31,7 +31,7 @@ DynamicArray<TerrainRenderComponent> ComponentManager::terrainEntityTerrainRende
 size_t ComponentManager::GetNewCameraEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	cameraEntityCameraComponents.Emplace();
+	cameraEntityCameraComponents.EmplaceSlow();
 
 	//Return the new index.
 	return numberOfCameraEntityComponents++;
@@ -61,7 +61,7 @@ RESTRICTED CameraComponent* ComponentManager::GetCameraEntityCameraComponents() 
 size_t ComponentManager::GetNewDirectionalLightEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	directionalLightEntityDirectionalLightComponents.Emplace();
+	directionalLightEntityDirectionalLightComponents.EmplaceSlow();
 
 	//Return the new index.
 	return numberOfDirectionalLightEntityComponents++;
@@ -91,10 +91,10 @@ RESTRICTED DirectionalLightComponent* ComponentManager::GetDirectionalLightEntit
 size_t ComponentManager::GetNewPhysicalEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	physicalEntityFrustumCullingComponents.Emplace();
-	physicalEntityGraphicsBufferComponents.Emplace();
-	physicalEntityRenderComponents.Emplace();
-	physicalEntityTransformComponents.Emplace();
+	physicalEntityFrustumCullingComponents.EmplaceSlow();
+	physicalEntityGraphicsBufferComponents.EmplaceSlow();
+	physicalEntityRenderComponents.EmplaceSlow();
+	physicalEntityTransformComponents.EmplaceSlow();
 
 	//Return the new index.
 	return numberOfPhysicalEntityComponents++;
@@ -151,7 +151,7 @@ RESTRICTED TransformComponent* ComponentManager::GetPhysicalEntityTransformCompo
 size_t ComponentManager::GetNewPointLightEntitiesEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	pointLightEntityPointLightComponents.Emplace();
+	pointLightEntityPointLightComponents.EmplaceSlow();
 
 	//Return the new index.
 	return numberOfPointLightEntityComponents++;
@@ -181,7 +181,7 @@ RESTRICTED PointLightComponent* ComponentManager::GetPointLightEntityPointLightC
 size_t ComponentManager::GetNewSpotLightEntitiesEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	spotLightEntitySpotLightComponents.Emplace();
+	spotLightEntitySpotLightComponents.EmplaceSlow();
 
 	//Return the new index.
 	return numberOfSpotLightEntityComponents++;
@@ -211,8 +211,8 @@ RESTRICTED SpotLightComponent* ComponentManager::GetSpotLightEntitySpotLightComp
 size_t ComponentManager::GetNewTerrainEntityComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	terrainEntityTerrainComponents.Emplace();
-	terrainEntityTerrainRenderComponents.Emplace();
+	terrainEntityTerrainComponents.EmplaceSlow();
+	terrainEntityTerrainRenderComponents.EmplaceSlow();
 
 	//Return the new index.
 	return numberOfTerrainEntityComponents++;

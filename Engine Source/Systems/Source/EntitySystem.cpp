@@ -52,5 +52,5 @@ void EntitySystem::UpdateSystemSynchronous() NOEXCEPT
 */
 void EntitySystem::MarkForDestruction(Entity *const RESTRICT entityToBeDestroyed) NOEXCEPT
 {
-	entitiesToBeDestroyed.Emplace(entityToBeDestroyed);
+	entitiesToBeDestroyed.EmplaceSlow(entityToBeDestroyed);
 }
