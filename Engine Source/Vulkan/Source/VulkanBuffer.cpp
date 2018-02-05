@@ -48,17 +48,18 @@ void VulkanBuffer::Initialize(const void *RESTRICT data[], const VkDeviceSize *d
 	//Copy the data into the staging buffer.
 	VkDeviceSize currentOffset{ 0 };
 
+	void *mappedMemory;
+	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, 0, VK_WHOLE_SIZE, 0, &mappedMemory));
+
 	for (uint32 i = 0; i < dataChunks; ++i)
 	{
-		void *mappedMemory;
-
-		VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, currentOffset, dataSizes[i], 0, &mappedMemory));
-		MemoryUtilities::CopyMemory(mappedMemory, data[i], dataSizes[i]);
-		vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory);
+		MemoryUtilities::CopyMemory(static_cast<void*>(static_cast<byte*>(mappedMemory) + currentOffset), data[i], dataSizes[i]);
 
 		currentOffset = dataSizes[i];
 	}
 	
+	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory);
+
 	//Create the buffer.
 	VulkanUtilities::CreateVulkanBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vulkanBuffer, vulkanDeviceMemory);
 
