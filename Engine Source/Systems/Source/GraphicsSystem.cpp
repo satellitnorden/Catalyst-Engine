@@ -262,11 +262,17 @@ void GraphicsSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const
 	const VulkanBuffer terrainVertexBuffer{ *VulkanInterface::Instance->CreateBuffer(terrainData, terrainDataSizes, 2) };
 
 	//Fill the terrain entity components with the relevant data.
-	TerrainRenderComponent &terrainBufferComponent{ ComponentManager::GetTerrainEntityTerrainRenderComponents()[terrainEntity.GetComponentsIndex()] };
+	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainEntityTerrainComponents()[terrainEntity.GetComponentsIndex()] };
+	TerrainRenderComponent &terrainRenderComponent{ ComponentManager::GetTerrainEntityTerrainRenderComponents()[terrainEntity.GetComponentsIndex()] };
 
-	//terrainBufferComponent.descriptorSet = newDescriptorSet;
-	terrainBufferComponent.vertexAndIndexBuffer = terrainVertexBuffer;
-	terrainBufferComponent.indexCount = static_cast<uint32>(terrainIndices.Size());
+	terrainComponent.terrainUniformData.terrainPosition = Vector3(0.0f, 0.0f, 0.0f);
+	terrainComponent.terrainUniformData.terrainSize = 1'000.0f;
+	terrainComponent.uniformBuffer = *VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));
+	terrainComponent.uniformBuffer.UploadData(&terrainComponent.terrainUniformData);
+	//terrainRenderComponent.descriptorSet = newDescriptorSet;
+	terrainRenderComponent.vertexAndIndexBuffer = terrainVertexBuffer;
+	terrainRenderComponent.indexBufferOffset = static_cast<uint32>(sizeof(float) * terrainVertices.Size());
+	terrainRenderComponent.indexCount = static_cast<uint32>(terrainIndices.Size());
 }
 
 /*

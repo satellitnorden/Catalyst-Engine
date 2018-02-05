@@ -37,7 +37,7 @@ TerrainEntity::~TerrainEntity() NOEXCEPT
 const Vector3& TerrainEntity::GetPosition() NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetTerrainEntityTerrainComponents()[componentsIndex].position;
+	return ComponentManager::GetTerrainEntityTerrainComponents()[componentsIndex].terrainUniformData.terrainPosition;
 }
 
 /*
@@ -64,7 +64,7 @@ const Vector3& TerrainEntity::GetScale() NOEXCEPT
 void TerrainEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetTerrainEntityTerrainComponents()[componentsIndex].position += moveVector;
+	ComponentManager::GetTerrainEntityTerrainComponents()[componentsIndex].terrainUniformData.terrainPosition += moveVector;
 
 	//Move all children.
 	for (auto child : children)

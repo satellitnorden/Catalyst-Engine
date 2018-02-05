@@ -3,15 +3,21 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Math.
-#include <Vector3.h>
+//Graphics.
+#include <TerrainUniformData.h>
+
+//Vulkan.
+#include <VulkanUniformBuffer.h>
 
 class TerrainComponent final
 {
 
 public:
 
-	//The position.
-	Vector3 position;
+	//The terrain uniform data.
+	TerrainUniformData terrainUniformData;
+
+	//The uniform buffer.
+	VulkanUniformBuffer uniformBuffer;
 
 };
