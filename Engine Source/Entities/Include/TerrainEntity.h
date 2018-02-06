@@ -7,7 +7,8 @@
 #include <Entity.h>
 
 //Forward declarations.
-class HeightMap;
+class TerrainUniformData;
+class Vulkan2DTexture;
 
 class TerrainEntity : public Entity
 {
@@ -60,6 +61,6 @@ public:
 	/*
 	*	Initializes this terrain entity.
 	*/
-	void Initialize(const uint32 terrainResolution, const HeightMap &initialHeightMap) NOEXCEPT;
+	void Initialize(const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Vulkan2DTexture *RESTRICT terrainHeightMapTexture, const Vulkan2DTexture *RESTRICT terrainNormalMapTexture, const Vulkan2DTexture *RESTRICT albedoTexture, const Vulkan2DTexture *RESTRICT normalMapTexture, const Vulkan2DTexture *RESTRICT roughnessTexture, const Vulkan2DTexture *RESTRICT metallicTexture, const Vulkan2DTexture *RESTRICT ambientOcclusionTexture, const Vulkan2DTexture *RESTRICT displacementTexture) NOEXCEPT;
 
 };

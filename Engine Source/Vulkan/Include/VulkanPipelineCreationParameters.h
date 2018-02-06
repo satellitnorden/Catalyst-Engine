@@ -81,6 +81,12 @@ public:
 	//The topology of the pipeline.
 	VkPrimitiveTopology topology;
 
+	//The vertex input attribute descriptions.
+	DynamicArray<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
+
+	//The vertex input binding description.
+	VkVertexInputBindingDescription vertexInputBindingDescription;
+
 	//The viewport extent.
 	VkExtent2D viewportExtent{ 0, 0 };
 

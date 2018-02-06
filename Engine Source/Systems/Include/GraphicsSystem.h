@@ -19,9 +19,12 @@
 
 //Forward declarations.
 class CameraEntity;
+class HeightMap;
+class NormalMap;
 class PhysicalEntity;
 class PhysicalModel;
 class TerrainEntity;
+class TerrainUniformData;
 
 class GraphicsSystem final
 {
@@ -74,12 +77,22 @@ public:
 	/*
 	*	Initializes a terrain entity.
 	*/
-	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainResolution) const NOEXCEPT;
+	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Vulkan2DTexture *RESTRICT terrainHeightMapTexture, const Vulkan2DTexture *RESTRICT terrainNormalMapTexture, const Vulkan2DTexture *RESTRICT albedoTexture, const Vulkan2DTexture *RESTRICT normalMapTexture, const Vulkan2DTexture *RESTRICT roughnessTexture, const Vulkan2DTexture *RESTRICT metallicTexture, const Vulkan2DTexture *RESTRICT ambientOcclusionTexture, const Vulkan2DTexture *RESTRICT displacementTexture) const NOEXCEPT;
 
 	/*
-	*	Creates and returns a 2D texture.
+	*	Creates and returns a 2D texture given a texture path.
 	*/
 	RESTRICTED Vulkan2DTexture* Create2DTexture(const char *RESTRICT texturePath) const NOEXCEPT;
+
+	/*
+	*	Creates and returns a 2D texture given a height map.
+	*/
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const HeightMap &heightMap) const NOEXCEPT;
+
+	/*
+	*	Creates and returns a 2D texture given a normal map.
+	*/
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const NormalMap &normalMap) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a cube map texture.
@@ -136,6 +149,7 @@ private:
 		Roughness,
 		Metallic,
 		AmbientOcclusion,
+		Displacement,
 		NumberOfDefaultTextures
 	};
 
@@ -157,6 +171,7 @@ private:
 	//Enumeration covering all pipelines.
 	enum Pipeline : uint8
 	{
+		TerrainSceneBufferPipeline,
 		SceneBufferPipeline,
 		LightingPipeline,
 		CubeMapPipeline,
@@ -191,6 +206,10 @@ private:
 		PostProcessingFragmentShaderModule,
 		SceneBufferFragmentShaderModule,
 		SceneBufferVertexShaderModule,
+		TerrainSceneBufferFragmentShaderModule,
+		TerrainSceneBufferTessellationControlShaderModule,
+		TerrainSceneBufferTessellationEvaluationShaderModule,
+		TerrainSceneBufferVertexShaderModule,
 		ViewportVertexShaderModule,
 		NumberOfShaderModules
 	};
@@ -288,6 +307,11 @@ private:
 	void InitializeDescriptorSets() NOEXCEPT;
 
 	/*
+	*	Initializes all default textures.
+	*/
+	void InitializeDefaultTextures() NOEXCEPT;
+
+	/*
 	*	Calculates the projection matrix.
 	*/
 	void CalculateProjectionMatrix() NOEXCEPT;
@@ -296,6 +320,11 @@ private:
 	*	Begins the frame.
 	*/
 	void BeginFrame() NOEXCEPT;
+
+	/*
+	*	Renders the terrain.
+	*/
+	void RenderTerrain() NOEXCEPT;
 
 	/*
 	*	Renders all physical entities.

@@ -100,8 +100,8 @@ void TerrainEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 /*
 *	Initializes this terrain entity.
 */
-void TerrainEntity::Initialize(const uint32 terrainResolution, const HeightMap &initialHeightMap) NOEXCEPT
+void TerrainEntity::Initialize(const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Vulkan2DTexture *RESTRICT terrainHeightMapTexture, const Vulkan2DTexture *RESTRICT terrainNormalMapTexture, const Vulkan2DTexture *RESTRICT albedoTexture, const Vulkan2DTexture *RESTRICT normalMapTexture, const Vulkan2DTexture *RESTRICT roughnessTexture, const Vulkan2DTexture *RESTRICT metallicTexture, const Vulkan2DTexture *RESTRICT ambientOcclusionTexture, const Vulkan2DTexture *RESTRICT displacementTexture) NOEXCEPT
 {
 	//Initialize this terrain entity.
-	GraphicsSystem::Instance->InitializeTerrainEntity(*this, terrainResolution);
+	GraphicsSystem::Instance->InitializeTerrainEntity(*this, terrainPlaneResolution, terrainUniformData, terrainHeightMapTexture, terrainNormalMapTexture, albedoTexture, normalMapTexture, roughnessTexture, metallicTexture, ambientOcclusionTexture, displacementTexture);
 }

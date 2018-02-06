@@ -17,10 +17,17 @@ public:
 	*	Constructor taking in the resolution of the height map.
 	*/
 	HeightMap(const size_t initialResolution) NOEXCEPT
+		:
+		heightMapResolution(initialResolution)
 	{
 		//Resize the underlying height map data to be able to hold all the data.
 		heightMapData.Resize(initialResolution * initialResolution);
 	}
+
+	/*
+	*	Returns the height map data.
+	*/
+	RESTRICTED const float* Data() const NOEXCEPT { return heightMapData.Data(); }
 
 	/*
 	*	Returns the height map value at the specified index, const.
@@ -38,9 +45,17 @@ public:
 		return heightMapData[xIndex + yIndex];
 	}
 
+	/*
+	*	Returns the resolution of the height map.
+	*/
+	size_t GetResolution() const NOEXCEPT { return heightMapResolution; }
+
 private:
 
 	//The underlying height map data.
 	DynamicArray<float> heightMapData;
+
+	//The resolution of the height map.
+	size_t heightMapResolution;
 
 };

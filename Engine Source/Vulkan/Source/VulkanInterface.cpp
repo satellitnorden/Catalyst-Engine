@@ -182,10 +182,10 @@ void VulkanInterface::Release() NOEXCEPT
 /*
 *	Creates and returns a 2D texture.
 */
-RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 width, const uint32 height, const byte *RESTRICT textureData) NOEXCEPT
+RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 width, const uint32 height, const uint32 channels, const void *RESTRICT textureData) NOEXCEPT
 {
 	Vulkan2DTexture *RESTRICT new2DTexture = new Vulkan2DTexture;
-	new2DTexture->Initialize(width, height, textureData);
+	new2DTexture->Initialize(width, height, channels, textureData);
 
 	vulkan2DTextures.EmplaceSlow(new2DTexture);
 

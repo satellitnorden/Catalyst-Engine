@@ -13,10 +13,10 @@ class TerrainRenderComponent final
 public:
 
 	//The descriptor set.
-	VulkanDescriptorSet descriptorSet{};
+	VulkanDescriptorSet descriptorSet{ };
 
 	//The vertex buffer.
-	VulkanBuffer vertexAndIndexBuffer{};
+	VulkanBuffer vertexAndIndexBuffer{ };
 
 	//The index buffer offset.
 	uint32 indexBufferOffset{ 0 };

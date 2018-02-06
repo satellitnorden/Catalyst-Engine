@@ -10,7 +10,9 @@
 
 //Graphics.
 #include <HeightMap.h>
+#include <NormalMap.h>
 #include <PhysicalModel.h>
+#include <TerrainUniformData.h>
 
 //Math.
 #include <GameMath.h>
@@ -23,6 +25,8 @@
 
 //Preprocessor defines.
 #define HEIGHT_MAP_RESOLUTION 2'048
+#define TERRAIN_HEIGHT 512.0f
+#define TERRAIN_SIZE 2'048.0f
 
 /*
 *	Default constructor.
@@ -53,11 +57,9 @@ void WorldArchitect::Initialize() NOEXCEPT
 	VulkanCubeMapTexture *RESTRICT sky = GraphicsSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
 	GraphicsSystem::Instance->SetActiveSkyBox(sky);
 
-	/*
 	//Create the height map!
 	HeightMap heightMap{ HEIGHT_MAP_RESOLUTION };
 
-	CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Height Map Generation",
 	for (size_t i = 0; i < HEIGHT_MAP_RESOLUTION; ++i)
 	{
 		for (size_t j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
@@ -65,12 +67,43 @@ void WorldArchitect::Initialize() NOEXCEPT
 			heightMap.At(i, j) = PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION), static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION), 0.0f);
 		}
 	}
-	);
+
+	Vulkan2DTexture *terrainHeightMapTexture = GraphicsSystem::Instance->Create2DTexture(heightMap);
+
+	//Create the normal map!
+	NormalMap normalMap{ HEIGHT_MAP_RESOLUTION };
+	const float heightMapPositionoffset = TERRAIN_SIZE / HEIGHT_MAP_RESOLUTION;
+
+	for (size_t i = 0; i < HEIGHT_MAP_RESOLUTION; ++i)
+	{
+		for (size_t j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
+		{
+			const Vector3 left{ -heightMapPositionoffset, heightMap.At(i > 0 ? i - 1 : i, j) * TERRAIN_HEIGHT, 0.0f };
+			const Vector3 right{ heightMapPositionoffset, heightMap.At(i < HEIGHT_MAP_RESOLUTION - 1 ? i + 1 : i, j) * TERRAIN_HEIGHT, 0.0f };
+			const Vector3 up{ 0.0f, heightMap.At(i, j > 0 ? j - 1 : j) * TERRAIN_HEIGHT, -heightMapPositionoffset };
+			const Vector3 down{ 0.0f, heightMap.At(i, j < HEIGHT_MAP_RESOLUTION - 1 ? j + 1 : j) * TERRAIN_HEIGHT, heightMapPositionoffset };
+			const Vector3 center{ 0.0f, heightMap.At(i, j) * TERRAIN_HEIGHT, 0.0f };
+
+			const Vector3 normal1 = Vector3::CrossProduct(up - center, left - center);
+			const Vector3 normal2 = Vector3::CrossProduct(right - center, up - center);
+			const Vector3 normal3 = Vector3::CrossProduct(down - center, right - center);
+			const Vector3 normal4 = Vector3::CrossProduct(left - center, down - center);
+
+			normalMap.At(i, j) = (Vector3::Normalize(normal1 + normal2 + normal3 + normal4) + 1.0f) * 0.5f;
+		}
+	}
+
+	Vulkan2DTexture *terrainNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(normalMap);
+
+	//Load the remaining terrain textures.
+	Vulkan2DTexture *RESTRICT terrainAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1Albedo.png");
+	Vulkan2DTexture *RESTRICT terrainNormalTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1Normal.png");
+	Vulkan2DTexture *RESTRICT terrainAmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1AmbientOcclusion.png");
+	Vulkan2DTexture *RESTRICT terrainDisplacementTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1Displacement.png");
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(128, heightMap);
-	*/
+	terrain->Initialize(128, TerrainUniformData(2.5f, TERRAIN_HEIGHT, TERRAIN_SIZE, Vector3(0.0f, 0.0f, 0.0f)), terrainHeightMapTexture, terrainNormalMapTexture, terrainAlbedoTexture, terrainNormalTexture, nullptr, nullptr, terrainAmbientOcclusionTexture, terrainDisplacementTexture);
 
 	Vulkan2DTexture *floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
 	Vulkan2DTexture *floorNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
@@ -109,8 +142,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	gun->Move(Vector3(0.0f, 10.0f, 0.0f));
 	gun->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
 	gun->Scale(Vector3(0.2f, 0.2f, 0.2f));
-	*/
-
+	
 	Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneAlbedo.png");
 	Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneNormalMap.png");
 	Vulkan2DTexture *stoneRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneRoughness.png");
@@ -128,6 +160,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
 		stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
 	}
+	*/
 }
 
 /*

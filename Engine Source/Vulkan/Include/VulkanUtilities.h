@@ -3,9 +3,6 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Graphics.
-#include <Vertex.h>
-
 //Vulkan.
 #include <VulkanCore.h>
 #include <VulkanCommandBuffer.h>
@@ -284,50 +281,6 @@ namespace VulkanUtilities
 
 		//Create the sampler!
 		VULKAN_ERROR_CHECK(vkCreateSampler(VulkanInterface::Instance->GetLogicalDevice().Get(), &samplerCreateInfo, nullptr, &vulkanSampler));
-	}
-
-	/*A>Z
-	*	Returns the vertex input attribute descriptions for Vertices.
-	*/
-	static StaticArray<VkVertexInputAttributeDescription, 4> GetVertexInputAttributeDescriptions() NOEXCEPT
-	{
-		StaticArray<VkVertexInputAttributeDescription, 4> vertexInputAttributeDescriptions;
-
-		vertexInputAttributeDescriptions[0].location = 0;
-		vertexInputAttributeDescriptions[0].binding = 0;
-		vertexInputAttributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-		vertexInputAttributeDescriptions[0].offset = offsetof(Vertex, position);
-
-		vertexInputAttributeDescriptions[1].location = 1;
-		vertexInputAttributeDescriptions[1].binding = 0;
-		vertexInputAttributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		vertexInputAttributeDescriptions[1].offset = offsetof(Vertex, normal);
-
-		vertexInputAttributeDescriptions[2].location = 2;
-		vertexInputAttributeDescriptions[2].binding = 0;
-		vertexInputAttributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
-		vertexInputAttributeDescriptions[2].offset = offsetof(Vertex, tangent);
-
-		vertexInputAttributeDescriptions[3].location = 3;
-		vertexInputAttributeDescriptions[3].binding = 0;
-		vertexInputAttributeDescriptions[3].format = VK_FORMAT_R32G32_SFLOAT;
-		vertexInputAttributeDescriptions[3].offset = offsetof(Vertex, textureCoordinate);
-
-		return vertexInputAttributeDescriptions;
-	}
-
-	/*
-	*	Returns the vertex input binding description for Vertices. 
-	*/
-	static VkVertexInputBindingDescription GetVertexInputBindingDescription() NOEXCEPT
-	{
-		VkVertexInputBindingDescription vertexInputBindingDescription;
-
-		vertexInputBindingDescription.binding = 0;
-		vertexInputBindingDescription.stride = sizeof(Vertex);
-		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-		return vertexInputBindingDescription;
 	}
 
 	/*

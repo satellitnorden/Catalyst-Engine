@@ -124,6 +124,7 @@
     <ClInclude Include="..\..\Engine Source\Graphics\Include\GraphicsUtilities.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\HeightMap.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\ModelLoader.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\NormalMap.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalMaterial.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalModel.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PostProcessingUniformData.h" />

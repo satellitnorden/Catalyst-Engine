@@ -11,6 +11,82 @@ namespace GraphicsUtilities
 {
 
 	/*
+	*	Returns the default vertex input binding description.
+	*/
+	static void GetDefaultVertexInputBindingDescription(VkVertexInputBindingDescription &vertexInputBindingDescription) NOEXCEPT
+	{
+		vertexInputBindingDescription.binding = 0;
+		vertexInputBindingDescription.stride = 0;
+		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+	}
+
+	/*
+	*	Returns the vertex input attribute descriptions for the physical entity scene buffer render pass.
+	*/
+	static void GetPhysicalVertexInputAttributeDescriptions(DynamicArray<VkVertexInputAttributeDescription> &vertexInputAttributeDescriptions) NOEXCEPT
+	{
+		vertexInputAttributeDescriptions.Resize(4);
+
+		vertexInputAttributeDescriptions[0].location = 0;
+		vertexInputAttributeDescriptions[0].binding = 0;
+		vertexInputAttributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertexInputAttributeDescriptions[0].offset = offsetof(Vertex, position);
+
+		vertexInputAttributeDescriptions[1].location = 1;
+		vertexInputAttributeDescriptions[1].binding = 0;
+		vertexInputAttributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertexInputAttributeDescriptions[1].offset = offsetof(Vertex, normal);
+
+		vertexInputAttributeDescriptions[2].location = 2;
+		vertexInputAttributeDescriptions[2].binding = 0;
+		vertexInputAttributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertexInputAttributeDescriptions[2].offset = offsetof(Vertex, tangent);
+
+		vertexInputAttributeDescriptions[3].location = 3;
+		vertexInputAttributeDescriptions[3].binding = 0;
+		vertexInputAttributeDescriptions[3].format = VK_FORMAT_R32G32_SFLOAT;
+		vertexInputAttributeDescriptions[3].offset = offsetof(Vertex, textureCoordinate);
+	}
+
+	/*
+	*	Returns the vertex input binding description for the physical entity scene buffer render pass.
+	*/
+	static void GetPhysicalVertexInputBindingDescription(VkVertexInputBindingDescription &vertexInputBindingDescription) NOEXCEPT
+	{
+		vertexInputBindingDescription.binding = 0;
+		vertexInputBindingDescription.stride = sizeof(Vertex);
+		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+	}
+
+	/*
+	*	Returns the vertex input attribute descriptions for the terrain entity scene buffer render pass.
+	*/
+	static void GetTerrainVertexInputAttributeDescriptions(DynamicArray<VkVertexInputAttributeDescription> &vertexInputAttributeDescriptions) NOEXCEPT
+	{
+		vertexInputAttributeDescriptions.Resize(2);
+
+		vertexInputAttributeDescriptions[0].location = 0;
+		vertexInputAttributeDescriptions[0].binding = 0;
+		vertexInputAttributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertexInputAttributeDescriptions[0].offset = 0;
+
+		vertexInputAttributeDescriptions[1].location = 1;
+		vertexInputAttributeDescriptions[1].binding = 0;
+		vertexInputAttributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
+		vertexInputAttributeDescriptions[1].offset = sizeof(float) * 3;
+	}
+
+	/*
+	*	Returns the vertex input binding description for the terrain entity scene buffer render pass.
+	*/
+	static void GetTerrainVertexInputBindingDescription(VkVertexInputBindingDescription &vertexInputBindingDescription) NOEXCEPT
+	{
+		vertexInputBindingDescription.binding = 0;
+		vertexInputBindingDescription.stride = sizeof(float) * 5;
+		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+	}
+
+	/*
 	*	Given a resolution, generate plane vertices and indices.
 	*/
 	static void GeneratePlane(const uint32 resolution, DynamicArray<float> &vertices, DynamicArray<uint32> &indices) NOEXCEPT

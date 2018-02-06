@@ -623,6 +623,9 @@
     <ClInclude Include="..\..\Engine Source\Graphics\Include\TerrainUniformData.h">
       <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\NormalMap.h">
+      <Filter>Engine Source\Graphics\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Engine Source\Systems\Inline\EntitySystem.inl">
