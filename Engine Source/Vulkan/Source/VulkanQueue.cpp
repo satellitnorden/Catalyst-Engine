@@ -23,10 +23,10 @@ VulkanQueue::~VulkanQueue() NOEXCEPT
 /*
 *	Initializes this Vulkan queue.
 */
-void VulkanQueue::Initialize(const uint32 queueIndex) NOEXCEPT
+void VulkanQueue::Initialize(const uint32 queueFamilyIndex) NOEXCEPT
 {
 	//Get the Vulkan queue.
-	vkGetDeviceQueue(VulkanInterface::Instance->GetLogicalDevice().Get(), queueIndex, 0, &vulkanQueue);
+	vkGetDeviceQueue(VulkanInterface::Instance->GetLogicalDevice().Get(), queueFamilyIndex, 0, &vulkanQueue);
 }
 
 /*
