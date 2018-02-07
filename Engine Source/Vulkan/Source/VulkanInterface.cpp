@@ -40,11 +40,13 @@ void VulkanInterface::Initialize(Window &window) NOEXCEPT
 	//Initialize the graphics queue.
 	queues[static_cast<uint8>(Queue::Graphics)].Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
 
+#if !RENDERDOC_DEBUGGING
 	//Initialize the present queue.
 	queues[static_cast<uint8>(Queue::Present)].Initialize(vulkanPhysicalDevice.GetPresentQueueFamilyIndex());
 
 	//Initialize the transfer queue.
 	queues[static_cast<uint8>(Queue::Transfer)].Initialize(vulkanPhysicalDevice.GetTransferQueueFamilyIndex());
+#endif
 
 	//Initialize the graphics Vulkan command pool.
 	graphicsVulkanCommandPool.Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
@@ -84,8 +86,10 @@ void VulkanInterface::Release() NOEXCEPT
 {
 	//Wait for all queues to finish.
 	queues[static_cast<uint8>(Queue::Graphics)].WaitIdle();
+#if !RENDERDOC_DEBUGGING
 	queues[static_cast<uint8>(Queue::Present)].WaitIdle();
 	queues[static_cast<uint8>(Queue::Transfer)].WaitIdle();
+#endif
 
 	//Release all Vulkan 2D textures.
 	for (Vulkan2DTexture * RESTRICT vulkan2DTexture : vulkan2DTextures)

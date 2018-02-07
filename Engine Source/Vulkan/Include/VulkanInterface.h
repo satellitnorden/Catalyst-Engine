@@ -107,12 +107,20 @@ public:
 	/*
 	*	Returns the present queue.
 	*/
+#if RENDERDOC_DEBUGGING
+	const VulkanQueue& GetPresentQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Graphics)]; }
+#else
 	const VulkanQueue& GetPresentQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Present)]; }
+#endif
 
 	/*
 	*	Returns the transfer queue.
 	*/
+#if RENDERDOC_DEBUGGING
+	const VulkanQueue& GetTransferQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Graphics)]; }
+#else
 	const VulkanQueue& GetTransferQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Transfer)]; }
+#endif
 
 	/*
 	*	Returns the graphics command pool.
@@ -122,7 +130,11 @@ public:
 	/*
 	*	Returns the transfer command pool.
 	*/
+#if RENDERDOC_DEBUGGING
+	const VulkanCommandPool& GetTransferCommandPool() const NOEXCEPT { return graphicsVulkanCommandPool; }
+#else
 	const VulkanCommandPool& GetTransferCommandPool() const NOEXCEPT { return transferVulkanCommandPool; }
+#endif
 
 	/*
 	*	Returns the descriptor pool.
