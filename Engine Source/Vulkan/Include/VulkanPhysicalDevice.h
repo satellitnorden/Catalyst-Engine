@@ -100,13 +100,13 @@ private:
 	VULKAN_SURFACE_FORMAT_TYPE surfaceFormat;
 
 	//The index for the graphics queue family.
-	uint32 graphicsQueueFamilyIndex;
+	uint32 graphicsQueueFamilyIndex{ UINT32_MAXIMUM };
 
 	//The index for the present queue family.
-	uint32 presentQueueFamilyIndex;
+	uint32 presentQueueFamilyIndex{ UINT32_MAXIMUM };
 
 	//The index for the transfer queue family.
-	uint32 transferQueueFamilyIndex;
+	uint32 transferQueueFamilyIndex{ UINT32_MAXIMUM };
 
 	/*
 	*	Given a Vulkan physical device, return if it is suitable for this game.

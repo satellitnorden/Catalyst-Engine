@@ -76,31 +76,69 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 	queueFamilyProperties.Resize(queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(vulkanPhysicalDevice, &queueFamilyCount, queueFamilyProperties.Data());
 
-	//Find the queue family for the graphics.
+	/*
+	*	Find the queue family for the graphics.
+	*	Do two runs here - First, try to find a unique queue family index for each type of queue. If this can't be done, do a second run to fill in the blanks.
+	*/
 	uint32 queueFamilyCounter{ 0 };
 
 	for (auto &queueFamilyProperty : queueFamilyProperties)
 	{
-		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && graphicsQueueFamilyIndex == UINT32_MAXIMUM)
 		{
-			graphicsQueueFamilyIndex = queueFamilyCounter;
+			graphicsQueueFamilyIndex = queueFamilyCounter++;
+
+			continue;
 		}
 
-		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT)
+		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT && transferQueueFamilyIndex == UINT32_MAXIMUM)
 		{
-			transferQueueFamilyIndex = queueFamilyCounter;
+			transferQueueFamilyIndex = queueFamilyCounter++;
+
+			continue;
 		}
 
 		VkBool32 presentSupport = false;
 
 		VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(vulkanPhysicalDevice, queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &presentSupport));
 
-		if (queueFamilyProperty.queueCount > 0 && presentSupport)
+		if (queueFamilyProperty.queueCount > 0 && presentSupport && presentQueueFamilyIndex == UINT32_MAXIMUM)
 		{
-			presentQueueFamilyIndex = queueFamilyCounter;
-		}
+			presentQueueFamilyIndex = queueFamilyCounter++;
 
-		++queueFamilyCounter;
+			continue;
+		}
+	}
+
+	if (	graphicsQueueFamilyIndex == UINT32_MAXIMUM ||
+			transferQueueFamilyIndex == UINT32_MAXIMUM ||
+			presentQueueFamilyIndex == UINT32_MAXIMUM	)
+	{
+		queueFamilyCounter = 0;
+
+		for (auto &queueFamilyProperty : queueFamilyProperties)
+		{
+			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && graphicsQueueFamilyIndex == UINT32_MAXIMUM)
+			{
+				graphicsQueueFamilyIndex = queueFamilyCounter;
+			}
+
+			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT && transferQueueFamilyIndex == UINT32_MAXIMUM)
+			{
+				transferQueueFamilyIndex = queueFamilyCounter;
+			}
+
+			VkBool32 presentSupport = false;
+
+			VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(vulkanPhysicalDevice, queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &presentSupport));
+
+			if (queueFamilyProperty.queueCount > 0 && presentSupport && presentQueueFamilyIndex == UINT32_MAXIMUM)
+			{
+				presentQueueFamilyIndex = queueFamilyCounter;
+			}
+
+			++queueFamilyCounter;
+		}
 	}
 }
 
