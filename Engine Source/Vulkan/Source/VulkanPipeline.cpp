@@ -175,7 +175,7 @@ void VulkanPipeline::CreatePipelineTessellationStateCreateInfo(VkPipelineTessell
 	pipelineTessellationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
 	pipelineTessellationStateCreateInfo.pNext = nullptr;
 	pipelineTessellationStateCreateInfo.flags = 0;
-	pipelineTessellationStateCreateInfo.patchControlPoints = VulkanInterface::Instance->GetPhysicalDevice().GetPhysicalDeviceProperties().limits.maxTessellationPatchSize;
+	pipelineTessellationStateCreateInfo.patchControlPoints = 3;
 }
 
 /*
