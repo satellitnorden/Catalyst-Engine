@@ -85,9 +85,9 @@ void main()
 		//float averageDistanceToCameraSquared = (tesselationControlDistanceToCameraSquared[0] + tesselationControlDistanceToCameraSquared[1] + tesselationControlDistanceToCameraSquared[2]) / 3.0f;
 		//float tesselationLevel = GetTesselationLevel(averageDistanceToCameraSquared);
 
-		gl_TessLevelInner[0] = 16.0f;
-    	gl_TessLevelOuter[0] = 16.0f;
-    	gl_TessLevelOuter[1] = 16.0f;
-    	gl_TessLevelOuter[2] = 16.0f;
+		gl_TessLevelInner[0] = 2.0f;
+    	gl_TessLevelOuter[0] = 2.0f;
+    	gl_TessLevelOuter[1] = 2.0f;
+    	gl_TessLevelOuter[2] = 2.0f;
 	}
 }

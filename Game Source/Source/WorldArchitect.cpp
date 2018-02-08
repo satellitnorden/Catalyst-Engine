@@ -24,9 +24,9 @@
 #include <QuestSystem.h>
 
 //Preprocessor defines.
-#define HEIGHT_MAP_RESOLUTION 2'048
+#define HEIGHT_MAP_RESOLUTION 1'024
 #define TERRAIN_HEIGHT 512.0f
-#define TERRAIN_SIZE 2'048.0f
+#define TERRAIN_SIZE 4'096.0f
 
 /*
 *	Default constructor.
@@ -50,8 +50,8 @@ WorldArchitect::~WorldArchitect() NOEXCEPT
 void WorldArchitect::Initialize() NOEXCEPT
 {
 	//Create the sun!
-	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
-	sun->SetIntensity(25.0f);
+	//sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
+	//sun->SetIntensity(25.0f);
 
 	//Create the sky!
 	VulkanCubeMapTexture *RESTRICT sky = GraphicsSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
@@ -68,7 +68,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		}
 	}
 
-	Vulkan2DTexture *terrainHeightMapTexture = GraphicsSystem::Instance->Create2DTexture(heightMap);
+	Vulkan2DTexture *terrainHeightMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/HeightMap.jpg");
 
 	//Create the normal map!
 	NormalMap normalMap{ HEIGHT_MAP_RESOLUTION };
@@ -93,7 +93,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		}
 	}
 
-	Vulkan2DTexture *terrainNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(normalMap);
+	Vulkan2DTexture *terrainNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/TerrainNormalMap.png");
 
 	//Load the remaining terrain textures.
 	Vulkan2DTexture *RESTRICT terrainAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1Albedo.png");
@@ -169,5 +169,5 @@ void WorldArchitect::Initialize() NOEXCEPT
 void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 {
 	//Constantly rotate the sun.
-	sun->Rotate(Vector3(-1.0f * deltaTime, 0.0f, 0.0f));
+	//sun->Rotate(Vector3(-1.0f * deltaTime, 0.0f, 0.0f));
 }
