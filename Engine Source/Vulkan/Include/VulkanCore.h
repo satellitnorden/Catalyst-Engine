@@ -10,7 +10,7 @@
 *	Turns RenderDoc debugging on/off.
 */
 #if !defined(CATALYST_FINAL)
-	#define RENDERDOC_DEBUGGING true
+	#define RENDERDOC_DEBUGGING false
 #else
 	#define RENDERDOC_DEBUGGING false
 #endif
