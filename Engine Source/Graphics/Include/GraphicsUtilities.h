@@ -102,17 +102,17 @@ namespace GraphicsUtilities
 				vertices.EmplaceFast(0.0f);
 				vertices.EmplaceFast(-1.0f + (2.0f * static_cast<float>(j) / static_cast<float>(resolution)));
 				vertices.EmplaceFast(static_cast<float>(i) / static_cast<float>(resolution));
-				vertices.EmplaceFast(static_cast<float>(j) / static_cast<float>(resolution));
+				vertices.EmplaceFast(1.0f - static_cast<float>(j) / static_cast<float>(resolution));
 
 				if (i != resolution && j != resolution)
 				{
 					indices.EmplaceFast((i * (resolution + 1)) + j);
-					indices.EmplaceFast((i * (resolution + 1)) + j + 1);
 					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j);
+					indices.EmplaceFast((i * (resolution + 1)) + j + 1);
 
 					indices.EmplaceFast((i * (resolution + 1)) + j + 1);
-					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j + 1);
 					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j);
+					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j + 1);
 				}
 			}
 		}
