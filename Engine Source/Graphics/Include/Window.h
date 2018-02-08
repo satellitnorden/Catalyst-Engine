@@ -14,47 +14,47 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Window() CATALYST_NOEXCEPT;
+	Window() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~Window() CATALYST_NOEXCEPT;
+	~Window() NOEXCEPT;
 
 	/*
 	*	Returns the underlying GLFW window, const version.
 	*/
-	CATALYST_RESTRICTED const GLFWwindow* const Get() const CATALYST_NOEXCEPT { return window; }
+	RESTRICTED const GLFWwindow* const Get() const NOEXCEPT { return window; }
 
 	/*
 	*	Returns the underlying GLFW window, non-const version.
 	*/
-	CATALYST_RESTRICTED GLFWwindow* Get() CATALYST_NOEXCEPT { return window; }
+	RESTRICTED GLFWwindow* Get() NOEXCEPT { return window; }
 
 	/*
 	*	Initializes this window.
 	*/
-	void Initialize() CATALYST_NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Updates this window.
 	*/
-	void Update() const CATALYST_NOEXCEPT;
+	void Update() const NOEXCEPT;
 
 	/*
 	*	Releases this window.
 	*/
-	void Release() CATALYST_NOEXCEPT;
+	void Release() NOEXCEPT;
 
 	/*
 	*	Returns whether or not this window should close.
 	*/
-	bool ShouldClose() const CATALYST_NOEXCEPT;
+	bool ShouldClose() const NOEXCEPT;
 
 private:
 
 	//The underlying GLFW window.
-	GLFWwindow *CATALYST_RESTRICT window;
+	GLFWwindow *RESTRICT window;
 
 	//The width of the window.
 	uint16 width;

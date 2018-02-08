@@ -9,7 +9,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	SharedPointer() CATALYST_NOEXCEPT
+	SharedPointer() NOEXCEPT
 	{
 
 	}
@@ -17,7 +17,7 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	SharedPointer(const SharedPointer &otherPointer) CATALYST_NOEXCEPT
+	SharedPointer(const SharedPointer &otherPointer) NOEXCEPT
 		:
 		pointer(otherPointer.pointer),
 		referenceCount(otherPointer.referenceCount)
@@ -28,7 +28,7 @@ public:
 	/*
 	*	Move constructor.
 	*/
-	SharedPointer(SharedPointer &&otherPointer) CATALYST_NOEXCEPT
+	SharedPointer(SharedPointer &&otherPointer) NOEXCEPT
 		:
 		pointer(otherPointer.pointer),
 		referenceCount(otherPointer.referenceCount)
@@ -39,7 +39,7 @@ public:
 	/*
 	*	Constructor taking a raw pointer as it's argument.
 	*/
-	SharedPointer(ObjectType *const CATALYST_RESTRICT newPointer) CATALYST_RESTRICT
+	SharedPointer(ObjectType *const RESTRICT newPointer) RESTRICT
 		:
 		pointer(newPointer),
 		referenceCount(new int8)
@@ -50,7 +50,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~SharedPointer() CATALYST_NOEXCEPT
+	~SharedPointer() NOEXCEPT
 	{
 		//Decrement the reference count and delete the pointer if it's reached 0.
 		if (--(*referenceCount) == 0)
@@ -63,7 +63,7 @@ public:
 	/*
 	*	Copy assignment operator overload.
 	*/
-	void operator=(const SharedPointer &otherPointer) CATALYST_NOEXCEPT
+	void operator=(const SharedPointer &otherPointer) NOEXCEPT
 	{
 		pointer = otherPointer.pointer;
 		referenceCount = otherPointer.referenceCount;
@@ -74,7 +74,7 @@ public:
 	/*
 	*	Move assignment operator overload.
 	*/
-	void operator=(SharedPointer &&otherPointer) CATALYST_NOEXCEPT
+	void operator=(SharedPointer &&otherPointer) NOEXCEPT
 	{
 		pointer = otherPointer.pointer;
 		referenceCount = otherPointer.referenceCount;
@@ -83,7 +83,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	CATALYST_RESTRICTED const ObjectType* const operator->() const CATALYST_NOEXCEPT
+	RESTRICTED const ObjectType* const operator->() const NOEXCEPT
 	{
 		return pointer;
 	}
@@ -91,7 +91,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	CATALYST_RESTRICTED ObjectType* operator->() CATALYST_NOEXCEPT
+	RESTRICTED ObjectType* operator->() NOEXCEPT
 	{
 		return pointer;
 	}
@@ -99,9 +99,9 @@ public:
 private:
 
 	//The underlying pointer.
-	ObjectType *CATALYST_RESTRICT pointer;
+	ObjectType *RESTRICT pointer;
 
 	//The reference count for this shared pointer.
-	int8 *CATALYST_RESTRICT referenceCount;
+	int8 *RESTRICT referenceCount;
 
 };

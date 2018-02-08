@@ -30,10 +30,12 @@
     <ClCompile Include="..\..\Engine Source\Components\Source\ComponentManager.cpp" />
     <ClCompile Include="..\..\Engine Source\Engine Core\Source\Main.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\CameraEntity.cpp" />
+    <ClCompile Include="..\..\Engine Source\Entities\Source\DirectionalLightEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\Entity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\PhysicalEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\PointLightEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Entities\Source\SpotLightEntity.cpp" />
+    <ClCompile Include="..\..\Engine Source\Entities\Source\TerrainEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Graphics\Source\PhysicalMaterial.cpp" />
     <ClCompile Include="..\..\Engine Source\Graphics\Source\PhysicalModel.cpp" />
     <ClCompile Include="..\..\Engine Source\Graphics\Source\Vertex.cpp" />
@@ -53,6 +55,7 @@
     <ClCompile Include="..\..\Engine Source\Systems\Source\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\Engine Source\Systems\Source\QuestSystem.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanAllocator.cpp" />
+    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanBuffer.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCommandBuffer.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCommandPool.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCubeMapTexture.cpp" />
@@ -62,7 +65,6 @@
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDescriptorSetLayout.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanFence.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanFramebuffer.cpp" />
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanIndexBuffer.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanInstance.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanInterface.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanLogicalDevice.cpp" />
@@ -77,7 +79,6 @@
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSwapChain.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanUniformBuffer.cpp" />
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanVertexBuffer.cpp" />
     <ClCompile Include="..\..\Game Source\Include\EntitySpawner.cpp" />
     <ClCompile Include="..\..\Game Source\Source\ClairvoyantGameSystem.cpp" />
     <ClCompile Include="..\..\Game Source\Source\ClairvoyantPlayer.cpp" />
@@ -86,16 +87,20 @@
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Components\Include\CameraComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\ComponentManager.h" />
+    <ClInclude Include="..\..\Engine Source\Components\Include\DirectionalLightComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\FrustumCullingComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\GraphicsBufferComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\RenderComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\PointLightComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\SpotLightComponent.h" />
+    <ClInclude Include="..\..\Engine Source\Components\Include\TerrainComponent.h" />
+    <ClInclude Include="..\..\Engine Source\Components\Include\TerrainRenderComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\TransformComponent.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\BitField.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreDefines.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreMacros.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\CoreTypeAliases.h" />
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\DefaultProjectSettings.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicArray.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicString.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\EngineCore.h" />
@@ -108,17 +113,24 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\StaticArray.h" />
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\UniquePointer.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\CameraEntity.h" />
+    <ClInclude Include="..\..\Engine Source\Entities\Include\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\Entity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\PhysicalEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\PointLightEntity.h" />
     <ClInclude Include="..\..\Engine Source\Entities\Include\SpotLightEntity.h" />
+    <ClInclude Include="..\..\Engine Source\Entities\Include\TerrainEntity.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\DynamicUniformData.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\GraphicsUtilities.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\HeightMap.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\ModelLoader.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\NormalMap.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalMaterial.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalModel.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PostProcessingUniformData.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\ShaderLoader.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\TerrainUniformData.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureCreationParameters.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureLoader.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\Vertex.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\Window.h" />
@@ -152,6 +164,7 @@
     <ClInclude Include="..\..\Engine Source\Tools\Include\MicroBenchmarker.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanAllocation.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanAllocator.h" />
+    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanBuffer.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCommandBuffer.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCommandPool.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCore.h" />
@@ -162,7 +175,6 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDescriptorSetLayout.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanFence.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanFramebuffer.h" />
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanIndexBuffer.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanInstance.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanInterface.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanLogicalDevice.h" />
@@ -179,9 +191,9 @@
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\Vulkan2DTexture.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUniformBuffer.h" />
     <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUtilities.h" />
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanVertexBuffer.h" />
     <ClInclude Include="..\..\Game Source\Include\ClairvoyantGameSystem.h" />
     <ClInclude Include="..\..\Game Source\Include\ClairvoyantPlayer.h" />
+    <ClInclude Include="..\..\Game Source\Include\ClairvoyantSettings.h" />
     <ClInclude Include="..\..\Game Source\Include\EntitySpawner.h" />
     <ClInclude Include="..\..\Game Source\Include\WorldArchitect.h" />
   </ItemGroup>

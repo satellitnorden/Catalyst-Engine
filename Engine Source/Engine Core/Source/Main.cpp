@@ -5,7 +5,7 @@
 //Systems.
 #include <EngineSystem.h>
 
-int main()
+int main() NOEXCEPT
 {
 	//Initialize the engine system.
 	EngineSystem::Instance->InitializeSystem();

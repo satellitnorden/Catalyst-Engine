@@ -17,42 +17,42 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanRenderTarget() CATALYST_NOEXCEPT;
+	VulkanRenderTarget() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanRenderTarget() CATALYST_NOEXCEPT;
+	~VulkanRenderTarget() NOEXCEPT;
 
 	/*
 	*	Initializes this Vulkan render target.
 	*/
-	void Initialize(const VkExtent2D extent) CATALYST_NOEXCEPT;
+	void Initialize(const VkExtent2D extent) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan render target.
 	*/
-	void Release() CATALYST_NOEXCEPT;
+	void Release() NOEXCEPT;
 
 	/*
 	*	Returns the Vulkan image.
 	*/
-	const VkImage& GetImage() const CATALYST_NOEXCEPT { return vulkanImage; }
+	const VkImage& GetImage() const NOEXCEPT { return vulkanImage; }
 
 	/*
 	*	Returns the Vulkan image view.
 	*/
-	const VkImageView& GetImageView() const CATALYST_NOEXCEPT { return vulkanImageView; }
+	const VkImageView& GetImageView() const NOEXCEPT { return vulkanImageView; }
 
 	/*
 	*	Returns the Vulkan sampler.
 	*/
-	const VkSampler& GetSampler() const CATALYST_NOEXCEPT { return vulkanSampler; }
+	const VkSampler& GetSampler() const NOEXCEPT { return vulkanSampler; }
 
 	/*
 	*	Returns the write descriptor set for this texture.
 	*/
-	VkWriteDescriptorSet GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const CATALYST_NOEXCEPT;
+	VkWriteDescriptorSet GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT;
 
 private:
 
@@ -77,11 +77,11 @@ private:
 	/*
 	*	Creates the descriptor image info.
 	*/
-	void CreateDescriptorImageInfo() CATALYST_NOEXCEPT;
+	void CreateDescriptorImageInfo() NOEXCEPT;
 
 	/*
 	*	Creates the write descriptor set.
 	*/
-	void CreateWriteDescriptorSet() CATALYST_NOEXCEPT;
+	void CreateWriteDescriptorSet() NOEXCEPT;
 
 };

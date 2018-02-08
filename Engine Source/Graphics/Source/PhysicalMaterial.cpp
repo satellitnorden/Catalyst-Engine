@@ -4,7 +4,7 @@
 /*
 *	Default constructor.
 */
-PhysicalMaterial::PhysicalMaterial() CATALYST_NOEXCEPT
+PhysicalMaterial::PhysicalMaterial() NOEXCEPT
 {
 
 }
@@ -12,7 +12,7 @@ PhysicalMaterial::PhysicalMaterial() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-PhysicalMaterial::~PhysicalMaterial() CATALYST_NOEXCEPT
+PhysicalMaterial::~PhysicalMaterial() NOEXCEPT
 {
 
 }

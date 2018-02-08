@@ -7,7 +7,7 @@
 /*
 *	Default constructor.
 */
-VulkanShaderModule::VulkanShaderModule() CATALYST_NOEXCEPT
+VulkanShaderModule::VulkanShaderModule() NOEXCEPT
 {
 
 }
@@ -15,7 +15,7 @@ VulkanShaderModule::VulkanShaderModule() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanShaderModule::~VulkanShaderModule() CATALYST_NOEXCEPT
+VulkanShaderModule::~VulkanShaderModule() NOEXCEPT
 {
 
 }
@@ -23,7 +23,7 @@ VulkanShaderModule::~VulkanShaderModule() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan shader module.
 */
-void VulkanShaderModule::Initialize(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits newStage) CATALYST_NOEXCEPT
+void VulkanShaderModule::Initialize(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits newStage) NOEXCEPT
 {
 	//Create the shader module create info.
 	VkShaderModuleCreateInfo shaderModuleCreateInfo;
@@ -39,7 +39,7 @@ void VulkanShaderModule::Initialize(const DynamicArray<char> &shaderByteCode, co
 /*
 *	Releases this Vulkan shader module.
 */
-void VulkanShaderModule::Release() CATALYST_NOEXCEPT
+void VulkanShaderModule::Release() NOEXCEPT
 {
 	//Destroy the shader module.
 	vkDestroyShaderModule(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanShaderModule, nullptr);
@@ -48,7 +48,7 @@ void VulkanShaderModule::Release() CATALYST_NOEXCEPT
 /*
 *	Creates a shader module create info
 */
-void VulkanShaderModule::CreateShaderModuleCreateInfo(VkShaderModuleCreateInfo &shaderModuleCreateInfo, const DynamicArray<char> & shaderByteCode) const CATALYST_NOEXCEPT
+void VulkanShaderModule::CreateShaderModuleCreateInfo(VkShaderModuleCreateInfo &shaderModuleCreateInfo, const DynamicArray<char> & shaderByteCode) const NOEXCEPT
 {
 	shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	shaderModuleCreateInfo.pNext = nullptr;

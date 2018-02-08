@@ -12,7 +12,7 @@
 /*
 *	Default constructor.
 */
-VulkanSwapchain::VulkanSwapchain() CATALYST_NOEXCEPT
+VulkanSwapchain::VulkanSwapchain() NOEXCEPT
 {
 
 }
@@ -20,7 +20,7 @@ VulkanSwapchain::VulkanSwapchain() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanSwapchain::~VulkanSwapchain() CATALYST_NOEXCEPT
+VulkanSwapchain::~VulkanSwapchain() NOEXCEPT
 {
 
 }
@@ -28,7 +28,7 @@ VulkanSwapchain::~VulkanSwapchain() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan swap chain.
 */
-void VulkanSwapchain::Initialize() CATALYST_NOEXCEPT
+void VulkanSwapchain::Initialize() NOEXCEPT
 {
 	//Find the most optimal swap extent.
 	FindMostOptimalSwapExtent();
@@ -69,7 +69,7 @@ void VulkanSwapchain::Initialize() CATALYST_NOEXCEPT
 /*
 *	Releases this Vulkan swap chain.
 */
-void VulkanSwapchain::Release() CATALYST_NOEXCEPT
+void VulkanSwapchain::Release() NOEXCEPT
 {
 	//Release the depth buffer.
 	vulkanDepthBuffer.Release();
@@ -87,7 +87,7 @@ void VulkanSwapchain::Release() CATALYST_NOEXCEPT
 /*
 *	Updates the next image index in the swap chain.
 */
-void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const CATALYST_RESTRICT imageAvailableSemaphore) CATALYST_NOEXCEPT
+void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const RESTRICT imageAvailableSemaphore) NOEXCEPT
 {
 	VULKAN_ERROR_CHECK(VULKAN_AQUIRE_NEXT_IMAGE(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, UINT64_MAXIMUM, imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &currentImageIndex));
 }
@@ -95,7 +95,7 @@ void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const CATALYST
 /*
 *	Presents the current image to the screen.
 */
-void VulkanSwapchain::Present(const VulkanSemaphore *const CATALYST_RESTRICT renderFinishedSemaphore) CATALYST_NOEXCEPT
+void VulkanSwapchain::Present(const VulkanSemaphore *const RESTRICT renderFinishedSemaphore) NOEXCEPT
 {
 	//Create the present info.
 	VULKAN_PRESENT_INFO_TYPE presentInfo;
@@ -108,7 +108,7 @@ void VulkanSwapchain::Present(const VulkanSemaphore *const CATALYST_RESTRICT ren
 /*
 *	Finds the most optimal swap extent.
 */
-void VulkanSwapchain::FindMostOptimalSwapExtent() CATALYST_NOEXCEPT
+void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 {
 	VULKAN_SURFACE_CAPABILITIES_TYPE surfaceCapabilities;
 	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_CAPABILITIES(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
@@ -132,7 +132,7 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() CATALYST_NOEXCEPT
 /*
 *	Creates the swap chain create info.
 */
-void VulkanSwapchain::CreateSwapChainCreateInfo(VULKAN_SWAPCHAIN_CREATE_INFO_TYPE &swapChainCreateInfo, uint32 *CATALYST_RESTRICT queueFamilyIndices, const uint32 graphicsQueueFamilyIndex, const uint32 presentQueueFamilyIndex) const CATALYST_NOEXCEPT
+void VulkanSwapchain::CreateSwapChainCreateInfo(VULKAN_SWAPCHAIN_CREATE_INFO_TYPE &swapChainCreateInfo, uint32 *RESTRICT queueFamilyIndices, const uint32 graphicsQueueFamilyIndex, const uint32 presentQueueFamilyIndex) const NOEXCEPT
 {
 	swapChainCreateInfo.sType = VULKAN_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO;
 	swapChainCreateInfo.pNext = nullptr;
@@ -179,12 +179,12 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VULKAN_SWAPCHAIN_CREATE_INFO_TYP
 /*
 *	Creates a present info.
 */
-void VulkanSwapchain::CreatePresentInfo(VULKAN_PRESENT_INFO_TYPE &presentInfo, const VulkanSemaphore *const CATALYST_RESTRICT renderFinishedSemaphore) const CATALYST_NOEXCEPT
+void VulkanSwapchain::CreatePresentInfo(VULKAN_PRESENT_INFO_TYPE &presentInfo, const VulkanSemaphore *const RESTRICT renderFinishedSemaphore) const NOEXCEPT
 {
 	presentInfo.sType = VULKAN_STRUCTURE_TYPE_PRESENT_INFO;
 	presentInfo.pNext = nullptr;
 	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = reinterpret_cast<const VkSemaphore *CATALYST_RESTRICT>(renderFinishedSemaphore);
+	presentInfo.pWaitSemaphores = reinterpret_cast<const VkSemaphore *RESTRICT>(renderFinishedSemaphore);
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = &vulkanSwapChain;
 	presentInfo.pImageIndices = &currentImageIndex;

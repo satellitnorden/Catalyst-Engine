@@ -17,7 +17,7 @@ public:
 	/*
 	*	Returns the absolute value of the one passed in.
 	*/
-	constexpr static float Absolute(const float value) CATALYST_NOEXCEPT
+	constexpr static float Absolute(const float value) NOEXCEPT
 	{
 		return value >= 0.0f ? value : value * -1.0f;
 
@@ -26,7 +26,7 @@ public:
 	/*
 	*	Clamps a float value between a lower and an upper limit and returns the clamped value.
 	*/
-	constexpr static float Clamp(const float value, const float lowerLimit, const float upperLimit) CATALYST_NOEXCEPT
+	constexpr static float Clamp(const float value, const float lowerLimit, const float upperLimit) NOEXCEPT
 	{
 		return value < lowerLimit ? lowerLimit : value > upperLimit ? upperLimit : value;
 	}
@@ -34,7 +34,7 @@ public:
 	/*
 	*	Given a degrees value, returns the cosine of the angle.
 	*/
-	static float CosineDegrees(const float number) CATALYST_NOEXCEPT
+	static float CosineDegrees(const float number) NOEXCEPT
 	{
 		return CosineRadians(DegreesToRadians(number));
 	}
@@ -42,7 +42,7 @@ public:
 	/*
 	*	Given a radians value, returns the cosine of the angle.
 	*/
-	static float CosineRadians(const float number) CATALYST_NOEXCEPT
+	static float CosineRadians(const float number) NOEXCEPT
 	{
 		return cos(number);
 	}
@@ -50,7 +50,7 @@ public:
 	/*
 	*	Given a number in degrees, return it in radians.
 	*/
-	constexpr static float DegreesToRadians(const float number) CATALYST_NOEXCEPT
+	constexpr static float DegreesToRadians(const float number) NOEXCEPT
 	{
 		return number * DEGREES_TO_RADIANS;
 	}
@@ -58,7 +58,7 @@ public:
 	/*
 	*	Given an integral number, return the factorial of that number.
 	*/
-	static constexpr uint64 Factorial(const uint8 number) CATALYST_NOEXCEPT
+	static constexpr uint64 Factorial(const uint8 number) NOEXCEPT
 	{
 		return number != 0 ? number * Factorial(number - 1) : 1;
 	}
@@ -66,7 +66,7 @@ public:
 	/*
 	*	Given an interpolation value in the range 0.0f to 1.0f, returns a smooth interpolation value.
 	*/
-	constexpr static float GetSmoothInterpolationValue(const float linearInterpolationValue) CATALYST_NOEXCEPT
+	constexpr static float GetSmoothInterpolationValue(const float linearInterpolationValue) NOEXCEPT
 	{
 		return linearInterpolationValue * linearInterpolationValue * (3.0f - 2.0f * linearInterpolationValue);
 	}
@@ -74,7 +74,7 @@ public:
 	/*
 	*	Given an interpolation value in the range 0.0f to 1.0f, returns a smoother interpolation value.
 	*/
-	constexpr static float GetSmootherInterpolationValue(const float linearInterpolationValue) CATALYST_NOEXCEPT
+	constexpr static float GetSmootherInterpolationValue(const float linearInterpolationValue) NOEXCEPT
 	{
 		return linearInterpolationValue * linearInterpolationValue * linearInterpolationValue * (linearInterpolationValue * (linearInterpolationValue * 6.0f - 15.0f) + 10.0f);
 	}
@@ -83,7 +83,7 @@ public:
 	*	Returns whether or not an integer is even or not.
 	*/
 	template <class IntegerType>
-	constexpr static IntegerType IsEven(const IntegerType number) CATALYST_NOEXCEPT
+	constexpr static IntegerType IsEven(const IntegerType number) NOEXCEPT
 	{
 		return Modulo(number, 2) == 0;
 	}
@@ -92,7 +92,7 @@ public:
 	*	Returns whether or not an integer is odd or not.
 	*/
 	template <class IntegerType>
-	constexpr static IntegerType IsOdd(const IntegerType number) CATALYST_NOEXCEPT
+	constexpr static IntegerType IsOdd(const IntegerType number) NOEXCEPT
 	{
 		return Modulo(number, 2) != 0;
 	}
@@ -100,7 +100,7 @@ public:
 	/*
 	*	Linearly interpolate between two values.
 	*/
-	constexpr static float LinearlyInterpolate(const float valueA, const float valueB, const float alpha) CATALYST_NOEXCEPT
+	constexpr static float LinearlyInterpolate(const float valueA, const float valueB, const float alpha) NOEXCEPT
 	{
 		return (valueA * (1.0f - alpha)) + (valueB * alpha);
 	}
@@ -109,33 +109,33 @@ public:
 	*	Returns the maximum of two numbers.
 	*/
 	template <class NumberType>
-	constexpr static NumberType Maximum(const NumberType firstNumber, const NumberType secondNumber) CATALYST_NOEXCEPT
+	constexpr static NumberType Maximum(const NumberType firstNumber, const NumberType secondNumber) NOEXCEPT
 	{
-		return CATALYST_LIKELY(firstNumber > secondNumber) ? firstNumber : secondNumber;
+		return LIKELY(firstNumber > secondNumber) ? firstNumber : secondNumber;
 	}
 
 	/*
 	*	Returns the minimum of two numbers.
 	*/
 	template <class NumberType>
-	constexpr static NumberType Minimum(const NumberType firstNumber, const NumberType secondNumber) CATALYST_NOEXCEPT
+	constexpr static NumberType Minimum(const NumberType firstNumber, const NumberType secondNumber) NOEXCEPT
 	{
-		return CATALYST_LIKELY(firstNumber < secondNumber) ? firstNumber : secondNumber;
+		return LIKELY(firstNumber < secondNumber) ? firstNumber : secondNumber;
 	}
 
 	/*
 	*	Returns the modulo of two integers.
 	*/
 	template <class IntegerType>
-	constexpr static IntegerType Modulo(const IntegerType input, const IntegerType ceiling) CATALYST_NOEXCEPT
+	constexpr static IntegerType Modulo(const IntegerType input, const IntegerType ceiling) NOEXCEPT
 	{
-		return CATALYST_UNLIKELY(input >= ceiling) ? input % ceiling : input;
+		return UNLIKELY(input >= ceiling) ? input % ceiling : input;
 	}
 
 	/*
 	*	Given a number and an exponent, returns the power of the exponent.
 	*/
-	constexpr static float PowerOf(float number, const uint8 exponent) CATALYST_NOEXCEPT
+	constexpr static float PowerOf(float number, const uint8 exponent) NOEXCEPT
 	{
 		const float originalNumber = number;
 
@@ -150,7 +150,7 @@ public:
 	/*
 	*	Given a number in radians, return it in degrees.
 	*/
-	constexpr static float RadiansToDegrees(const float number) CATALYST_NOEXCEPT
+	constexpr static float RadiansToDegrees(const float number) NOEXCEPT
 	{
 		return number * RADIANS_TO_DEGREES;
 	}
@@ -158,7 +158,7 @@ public:
 	/*
 	*	Given a range, returns a floating point value in that range.
 	*/
-	static float RandomFloatInRange(const float minimum, const float maximum) CATALYST_NOEXCEPT
+	static float RandomFloatInRange(const float minimum, const float maximum) NOEXCEPT
 	{
 		std::uniform_real_distribution<float> distribution(minimum, maximum);
 
@@ -168,7 +168,7 @@ public:
 	/*
 	*	Rounds a float to the nearest integral value, with halfway cases rounded away from zero.
 	*/
-	static float RoundToFloat(const float value) CATALYST_NOEXCEPT
+	static float RoundToFloat(const float value) NOEXCEPT
 	{
 		return round(value);
 	}
@@ -177,7 +177,7 @@ public:
 	*	Rounds a float to the nearest integral value, with halfway cases rounded away from zero.
 	*/
 	template <class IntegerType>
-	constexpr static IntegerType RoundToInteger(const float value) CATALYST_NOEXCEPT
+	constexpr static IntegerType RoundToInteger(const float value) NOEXCEPT
 	{
 		return static_cast<IntegerType>(round(value));
 	}
@@ -185,15 +185,23 @@ public:
 	/*
 	*	Given a value and an original range, scale the value to a range between 0.0f and 1.0f.
 	*/
-	static void ScaleFloatToNormalizedRange(float &value, const float originalRangeMinimum, const float originalRangeMaximum) CATALYST_NOEXCEPT
+	static void ScaleFloatToNormalizedRange(float &value, const float originalRangeMinimum, const float originalRangeMaximum) NOEXCEPT
 	{
 		value = (value - originalRangeMinimum) / (originalRangeMaximum - originalRangeMinimum);
 	}
 
 	/*
+	*	Given a number, returns the signum of that number.
+	*/
+	static constexpr float Signum(const float number) NOEXCEPT
+	{
+		return static_cast<float>((number > 0.0f) - (number < 0.0f));
+	}
+
+	/*
 	*	Given a degrees value, returns the sine of the angle.
 	*/
-	static float SineDegrees(const float number) CATALYST_NOEXCEPT
+	static float SineDegrees(const float number) NOEXCEPT
 	{
 		return SineRadians(DegreesToRadians(number));
 	}
@@ -201,7 +209,7 @@ public:
 	/*
 	*	Given a radians value, returns the sine of the angle.
 	*/
-	static float SineRadians(float number) CATALYST_NOEXCEPT
+	static float SineRadians(float number) NOEXCEPT
 	{
 		return sin(number);
 	}
@@ -209,7 +217,7 @@ public:
 	/*
 	*	Given a number, returns the square root.
 	*/
-	constexpr static float SquareRoot(const float number) CATALYST_NOEXCEPT
+	constexpr static float SquareRoot(const float number) NOEXCEPT
 	{
 		float squareRoot = number * 0.25f;
 
@@ -224,7 +232,7 @@ public:
 	/*
 	*	Given a number in degrees, return the tangent.
 	*/
-	static float TangentDegrees(const float number) CATALYST_NOEXCEPT
+	static float TangentDegrees(const float number) NOEXCEPT
 	{
 		return TangentRadians(DegreesToRadians(number));
 	}
@@ -232,7 +240,7 @@ public:
 	/*
 	*	Given a number in radians, return the tangent.
 	*/
-	static float TangentRadians(const float number) CATALYST_NOEXCEPT
+	static float TangentRadians(const float number) NOEXCEPT
 	{
 		return tan(number);
 	}

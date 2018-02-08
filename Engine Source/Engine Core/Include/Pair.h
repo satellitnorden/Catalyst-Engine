@@ -9,7 +9,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Pair() CATALYST_NOEXCEPT
+	Pair() NOEXCEPT
 	{
 
 	}
@@ -17,7 +17,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	Pair(const FirstType &initialFirstValue, const SecondType &initialSecondValue) CATALYST_NOEXCEPT
+	Pair(const FirstType &initialFirstValue, const SecondType &initialSecondValue) NOEXCEPT
 		:
 		firstValue(initialFirstValue),
 		secondValue(initialSecondValue)
@@ -28,7 +28,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~Pair() CATALYST_NOEXCEPT
+	~Pair() NOEXCEPT
 	{
 
 	}
@@ -36,22 +36,22 @@ public:
 	/*
 	*	Returns the first value, const.
 	*/
-	const FirstType& GetFirstValue() const CATALYST_NOEXCEPT { return firstValue; }
+	const FirstType& GetFirstValue() const NOEXCEPT { return firstValue; }
 
 	/*
 	*	Returns the first value, non-const.
 	*/
-	FirstType& GetFirstValue() CATALYST_NOEXCEPT { return firstValue; }
+	FirstType& GetFirstValue() NOEXCEPT { return firstValue; }
 
 	/*
 	*	Returns the second value, const.
 	*/
-	const SecondType& GetSecondValue() const CATALYST_NOEXCEPT { return secondValue; }
+	const SecondType& GetSecondValue() const NOEXCEPT { return secondValue; }
 
 	/*
 	*	Returns the second value, non-const.
 	*/
-	SecondType& GetSecondValue() CATALYST_NOEXCEPT { return secondValue; }
+	SecondType& GetSecondValue() NOEXCEPT { return secondValue; }
 
 private:
 

@@ -20,12 +20,12 @@ namespace ModelLoader
 	/*
 	*	Processes a single Assimp mesh.
 	*/
-	void ProcessMesh(aiMesh *CATALYST_RESTRICT mesh, const aiScene *CATALYST_RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) CATALYST_NOEXCEPT
+	void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		//Process the vertices.
 		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
 		{
-			vertices.Emplace(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+			vertices.EmplaceSlow(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
 			extent = GameMath::Maximum(extent, GameMath::Absolute(vertices.Back().position.X));
 			extent = GameMath::Maximum(extent, GameMath::Absolute(vertices.Back().position.Y));
@@ -39,7 +39,7 @@ namespace ModelLoader
 
 			for (unsigned int j = 0; j < face.mNumIndices; ++j)
 			{
-				indices.Emplace(face.mIndices[j]);
+				indices.EmplaceSlow(face.mIndices[j]);
 			}
 		}
 	}
@@ -47,7 +47,7 @@ namespace ModelLoader
 	/*
 	*	Processes a single Assimp node.
 	*/
-	void ProcessNode(aiNode *CATALYST_RESTRICT node, const aiScene *CATALYST_RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) CATALYST_NOEXCEPT
+	void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		//Process all meshes.
 		for (uint32 i = 0; i < node->mNumMeshes; ++i)
@@ -65,7 +65,7 @@ namespace ModelLoader
 	/*
 	*	Given a path, loads a model and outputs the vertices and indices in the supplied containers.
 	*/
-	void LoadModel(const char *CATALYST_RESTRICT modelPath, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) CATALYST_NOEXCEPT
+	void LoadModel(const char *RESTRICT modelPath, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		vertices.Reserve(1'000'000);
 		indices.Reserve(1'000'000);

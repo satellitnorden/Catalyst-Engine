@@ -14,32 +14,32 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanDepthBuffer() CATALYST_NOEXCEPT;
+	VulkanDepthBuffer() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanDepthBuffer() CATALYST_NOEXCEPT;
+	~VulkanDepthBuffer() NOEXCEPT;
 
 	/*
 	*	Initializes this Vulkan depth buffer.
 	*/
-	void Initialize(const VkExtent2D imageExtent) CATALYST_NOEXCEPT;
+	void Initialize(const VkExtent2D imageExtent) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan depth buffer.
 	*/
-	void Release() CATALYST_NOEXCEPT;
+	void Release() NOEXCEPT;
 
 	/*
 	*	Returns the image view for this Vulkan depth buffer.
 	*/
-	const VkImageView& GetImageView() const CATALYST_NOEXCEPT { return vulkanImageView; }
+	const VkImageView& GetImageView() const NOEXCEPT { return vulkanImageView; }
 
 	/*
 	*	Returns the format of this Vulkan depth buffer.
 	*/
-	const VkFormat& GetFormat() const CATALYST_NOEXCEPT { return format; }
+	const VkFormat& GetFormat() const NOEXCEPT { return format; }
 
 private:
 
@@ -58,6 +58,6 @@ private:
 	/*
 	*	Finds and returns the most desirable format for the depth buffer.
 	*/
-	VkFormat FindMostDesirableDepthBufferFormat() const CATALYST_NOEXCEPT;
+	VkFormat FindMostDesirableDepthBufferFormat() const NOEXCEPT;
 
 };

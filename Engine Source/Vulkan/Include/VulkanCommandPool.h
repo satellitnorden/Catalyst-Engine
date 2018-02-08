@@ -17,37 +17,37 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanCommandPool() CATALYST_NOEXCEPT;
+	VulkanCommandPool() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanCommandPool() CATALYST_NOEXCEPT;
+	~VulkanCommandPool() NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan command pool.
 	*/
-	const VkCommandPool& Get() const CATALYST_NOEXCEPT { return vulkanCommandPool; }
+	const VkCommandPool& Get() const NOEXCEPT { return vulkanCommandPool; }
 
 	/*
 	*	Initializes this Vulkan command pool.
 	*/
-	void Initialize(const uint32 queueFamilyIndex) CATALYST_NOEXCEPT;
+	void Initialize(const uint32 queueFamilyIndex) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan command pool.
 	*/
-	void Release() CATALYST_NOEXCEPT;
+	void Release() NOEXCEPT;
 
 	/*
 	*	Allocates and returns a Vulkan command buffer.
 	*/
-	void AllocateVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const CATALYST_NOEXCEPT;
+	void AllocateVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT;
 
 	/*
 	*	Frees a Vulkan command buffer.
 	*/
-	void FreeVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const CATALYST_NOEXCEPT;
+	void FreeVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT;
 
 private:
 
@@ -57,6 +57,6 @@ private:
 	/*
 	*	Creates a command pool create info.
 	*/
-	void CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &commandPoolCreateInfo, const uint32 queueFamilyIndex) const CATALYST_NOEXCEPT;
+	void CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &commandPoolCreateInfo, const uint32 queueFamilyIndex) const NOEXCEPT;
 
 };

@@ -18,32 +18,32 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanRenderPass() CATALYST_NOEXCEPT;
+	VulkanRenderPass() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanRenderPass() CATALYST_NOEXCEPT;
+	~VulkanRenderPass() NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan render pass.
 	*/
-	const VkRenderPass& Get() const CATALYST_NOEXCEPT { return vulkanRenderPass; }
+	const VkRenderPass& Get() const NOEXCEPT { return vulkanRenderPass; }
 
 	/*
 	*	Initializes this Vulkan render pass.
 	*/
-	void Initialize(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) CATALYST_NOEXCEPT;
+	void Initialize(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan render pass.
 	*/
-	void Release() CATALYST_NOEXCEPT;
+	void Release() NOEXCEPT;
 
 	/*
 	*	Returns the framebuffers for this Vulkan render pass.
 	*/
-	const DynamicArray<VulkanFramebuffer>& GetFrameBuffers() const CATALYST_NOEXCEPT { return framebuffers; }
+	const DynamicArray<VulkanFramebuffer>& GetFrameBuffers() const NOEXCEPT { return framebuffers; }
 
 private:
 
@@ -56,31 +56,31 @@ private:
 	/*
 	*	Creates an attachment description.
 	*/
-	void CreateAttachmentDescriptions(DynamicArray<VkAttachmentDescription> &attachmentDescriptions, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
+	void CreateAttachmentDescriptions(DynamicArray<VkAttachmentDescription> &attachmentDescriptions, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
 
 	/*
 	*	Creates a depth attachment reference.
 	*/
-	void CreateDepthAttachmentReference(VkAttachmentReference &attachmentReference) const CATALYST_NOEXCEPT;
+	void CreateDepthAttachmentReference(VkAttachmentReference &attachmentReference) const NOEXCEPT;
 
 	/*
 	*	Creates a color attachment reference.
 	*/
-	void CreateColorAttachmentReference(DynamicArray<VkAttachmentReference> &attachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
+	void CreateColorAttachmentReference(DynamicArray<VkAttachmentReference> &attachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
 
 	/*
 	*	Creates an subpass description.
 	*/
-	void CreateSubpassDescription(VkSubpassDescription &subpassDescription, const VkAttachmentReference &depthAttachmentReference, const DynamicArray<VkAttachmentReference> &colorAttachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
+	void CreateSubpassDescription(VkSubpassDescription &subpassDescription, const VkAttachmentReference &depthAttachmentReference, const DynamicArray<VkAttachmentReference> &colorAttachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
 
 	/*
 	*	Creates an subpass dependency.
 	*/
-	void CreateSubpassDependency(VkSubpassDependency &subpassDependency) const CATALYST_NOEXCEPT;
+	void CreateSubpassDependency(VkSubpassDependency &subpassDependency) const NOEXCEPT;
 
 	/*
 	*	Creates a render pass create info.
 	*/
-	void CreateRenderPassCreateInfo(VkRenderPassCreateInfo &renderPassCreateInfo, const DynamicArray<VkAttachmentDescription> &attachmentDescriptions, const VkSubpassDescription &subpassDescription, const VkSubpassDependency &subpassDependency) const CATALYST_NOEXCEPT;
+	void CreateRenderPassCreateInfo(VkRenderPassCreateInfo &renderPassCreateInfo, const DynamicArray<VkAttachmentDescription> &attachmentDescriptions, const VkSubpassDescription &subpassDescription, const VkSubpassDependency &subpassDependency) const NOEXCEPT;
 
 };

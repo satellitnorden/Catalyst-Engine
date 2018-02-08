@@ -10,7 +10,7 @@
 /*
 *	Default constructor.
 */
-VulkanCubeMapTexture::VulkanCubeMapTexture() CATALYST_NOEXCEPT
+VulkanCubeMapTexture::VulkanCubeMapTexture() NOEXCEPT
 {
 
 }
@@ -18,7 +18,7 @@ VulkanCubeMapTexture::VulkanCubeMapTexture() CATALYST_NOEXCEPT
 /*
 *	Default desctuctor.
 */
-VulkanCubeMapTexture::~VulkanCubeMapTexture() CATALYST_NOEXCEPT
+VulkanCubeMapTexture::~VulkanCubeMapTexture() NOEXCEPT
 {
 
 }
@@ -26,7 +26,7 @@ VulkanCubeMapTexture::~VulkanCubeMapTexture() CATALYST_NOEXCEPT
 /*
 *	Initializes this texture.
 */
-void VulkanCubeMapTexture::Initialize(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT
+void VulkanCubeMapTexture::Initialize(const uint32 width, const uint32 height, const byte *RESTRICT *RESTRICT textureData) NOEXCEPT
 {
 	//Calculate the image size and the side size.
 	const VkDeviceSize imageSize = width * height * 4 * 6;
@@ -39,13 +39,13 @@ void VulkanCubeMapTexture::Initialize(const uint32 width, const uint32 height, c
 	//Create the staging buffer.
 	VulkanUtilities::CreateVulkanBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferDeviceMemory);
 
-	void *CATALYST_RESTRICT data;
+	void *RESTRICT data;
 	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, &data));
 
 	//Copy the data into the staging buffer.
 	for (uint8 i = 0; i < 6; ++i)
 	{
-		MemoryUtilities::CopyMemory(static_cast<byte *CATALYST_RESTRICT>(data) + (layerSize * i), textureData[i], static_cast<size_t>(layerSize));
+		MemoryUtilities::CopyMemory(static_cast<byte *RESTRICT>(data) + (layerSize * i), textureData[i], static_cast<size_t>(layerSize));
 	}
 
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
@@ -82,7 +82,7 @@ void VulkanCubeMapTexture::Initialize(const uint32 width, const uint32 height, c
 /*
 *	Releases this texture.
 */
-void VulkanCubeMapTexture::Release() CATALYST_NOEXCEPT
+void VulkanCubeMapTexture::Release() NOEXCEPT
 {
 	//Destroy Vulkan sampler.
 	vkDestroySampler(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSampler, nullptr);
@@ -100,7 +100,7 @@ void VulkanCubeMapTexture::Release() CATALYST_NOEXCEPT
 /*
 *	Returns the write descriptor set for this texture.
 */
-VkWriteDescriptorSet VulkanCubeMapTexture::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const CATALYST_NOEXCEPT
+VkWriteDescriptorSet VulkanCubeMapTexture::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT
 {
 	VkWriteDescriptorSet vulkanWriteDescriptorSetCopy{ vulkanWriteDescriptorSet };
 
@@ -114,7 +114,7 @@ VkWriteDescriptorSet VulkanCubeMapTexture::GetWriteDescriptorSet(const VulkanDes
 /*
 *	Creates the descriptor image info.
 */
-void VulkanCubeMapTexture::CreateDescriptorImageInfo() CATALYST_NOEXCEPT
+void VulkanCubeMapTexture::CreateDescriptorImageInfo() NOEXCEPT
 {
 	vulkanDescriptorImageInfo.sampler = vulkanSampler;
 	vulkanDescriptorImageInfo.imageView = vulkanImageView;
@@ -124,7 +124,7 @@ void VulkanCubeMapTexture::CreateDescriptorImageInfo() CATALYST_NOEXCEPT
 /*
 *	Creates the write descriptor set.
 */
-void VulkanCubeMapTexture::CreateWriteDescriptorSet() CATALYST_NOEXCEPT
+void VulkanCubeMapTexture::CreateWriteDescriptorSet() NOEXCEPT
 {
 	vulkanWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	vulkanWriteDescriptorSet.pNext = nullptr;

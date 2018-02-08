@@ -4,7 +4,7 @@
 /*
 *	Default constructor.
 */
-PhysicalModel::PhysicalModel() CATALYST_NOEXCEPT
+PhysicalModel::PhysicalModel() NOEXCEPT
 {
 
 }
@@ -12,11 +12,11 @@ PhysicalModel::PhysicalModel() CATALYST_NOEXCEPT
 /*
 *	Copy constructor.
 */
-PhysicalModel::PhysicalModel(const PhysicalModel &otherPhysicalModel) CATALYST_NOEXCEPT
+PhysicalModel::PhysicalModel(const PhysicalModel &otherPhysicalModel) NOEXCEPT
 	:
-	extent(otherPhysicalModel.extent.load()),
-	vertexBuffer(otherPhysicalModel.vertexBuffer),
-	indexBuffer(otherPhysicalModel.indexBuffer),
+	axisAlignedBoundingBox(otherPhysicalModel.axisAlignedBoundingBox),
+	buffer(otherPhysicalModel.buffer),
+	indexOffset(otherPhysicalModel.indexOffset),
 	material(otherPhysicalModel.material),
 	indexCount(otherPhysicalModel.indexCount)
 {
@@ -26,7 +26,7 @@ PhysicalModel::PhysicalModel(const PhysicalModel &otherPhysicalModel) CATALYST_N
 /*
 *	Default destructor.
 */
-PhysicalModel::~PhysicalModel() CATALYST_NOEXCEPT
+PhysicalModel::~PhysicalModel() NOEXCEPT
 {
 
 }
@@ -34,11 +34,11 @@ PhysicalModel::~PhysicalModel() CATALYST_NOEXCEPT
 /*
 *	Copy assignment overload.
 */
-PhysicalModel& PhysicalModel::operator=(const PhysicalModel &otherPhysicalModel) CATALYST_NOEXCEPT
+PhysicalModel& PhysicalModel::operator=(const PhysicalModel &otherPhysicalModel) NOEXCEPT
 {
-	extent = otherPhysicalModel.extent.load();
-	vertexBuffer = otherPhysicalModel.vertexBuffer;
-	indexBuffer = otherPhysicalModel.indexBuffer;
+	axisAlignedBoundingBox = otherPhysicalModel.axisAlignedBoundingBox;
+	buffer = otherPhysicalModel.buffer;
+	indexOffset = otherPhysicalModel.indexOffset;
 	material = otherPhysicalModel.material;
 	indexCount = otherPhysicalModel.indexCount;
 

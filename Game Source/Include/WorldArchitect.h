@@ -3,6 +3,9 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Forward declarations.
+class DirectionalLightEntity;
+
 class WorldArchitect final
 {
 
@@ -11,16 +14,26 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	WorldArchitect() CATALYST_NOEXCEPT;
+	WorldArchitect() NOEXCEPT;
 
 	/*
 	*	Default destructor.	
 	*/
-	~WorldArchitect() CATALYST_NOEXCEPT;
+	~WorldArchitect() NOEXCEPT;
 
 	/*
 	*	Initializes the world architect.
 	*/
-	void Initialize() CATALYST_NOEXCEPT;
+	void Initialize() NOEXCEPT;
+
+	/*
+	*	Updates the world architects.
+	*/
+	void Update(const float deltaTime) NOEXCEPT;
+
+private:
+
+	//The sun.
+	DirectionalLightEntity *RESTRICT sun;
 
 };

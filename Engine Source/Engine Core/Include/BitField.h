@@ -9,7 +9,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	BitField() CATALYST_NOEXCEPT
+	BitField() NOEXCEPT
 	{
 
 	}
@@ -17,7 +17,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~BitField() CATALYST_NOEXCEPT
+	~BitField() NOEXCEPT
 	{
 
 	}
@@ -25,7 +25,7 @@ public:
 	/*
 	*	Returns whether or not a bit at a specified index is set.
 	*/
-	bool IsBitSet(const uint8 index) const CATALYST_NOEXCEPT
+	bool IsBitSet(const uint8 index) const NOEXCEPT
 	{
 		return bitField & (static_cast<uint64>(0x00000001) << index);
 	}
@@ -33,7 +33,7 @@ public:
 	/*
 	*	Sets the bit at the given index.
 	*/
-	void SetBit(const uint8 index) CATALYST_NOEXCEPT
+	void SetBit(const uint8 index) NOEXCEPT
 	{
 		bitField |= static_cast<uint64>(0x00000001) << index;
 	}
@@ -41,7 +41,7 @@ public:
 	/*
 	*	Unsets the bit at the given index.
 	*/
-	void UnsetBit(const uint8 index) CATALYST_NOEXCEPT
+	void UnsetBit(const uint8 index) NOEXCEPT
 	{
 		bitField &= ~(static_cast<uint64>(0x00000001) << index);
 	}
@@ -49,7 +49,7 @@ public:
 	/*
 	*	Toggles the bit at the given index.
 	*/
-	void ToggleBit(const uint8 index) CATALYST_NOEXCEPT
+	void ToggleBit(const uint8 index) NOEXCEPT
 	{
 		bitField ^= static_cast<uint64>(0x00000001) << index;
 	}

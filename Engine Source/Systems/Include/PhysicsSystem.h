@@ -17,16 +17,16 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	PhysicsSystem() CATALYST_NOEXCEPT;
+	PhysicsSystem() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~PhysicsSystem() CATALYST_NOEXCEPT;
+	~PhysicsSystem() NOEXCEPT;
 
 	/*
 	*	Updates the physics system synchronously.
 	*/
-	void UpdateSystemSynchronous(const float deltaTime) CATALYST_NOEXCEPT;
+	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
 
 };
