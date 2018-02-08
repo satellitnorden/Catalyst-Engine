@@ -12,14 +12,14 @@
 //Define the validation layers.
 namespace
 {
-	const DynamicArray<const char *CATALYST_RESTRICT> validationLayers{ "VK_LAYER_LUNARG_standard_validation" };
+	const DynamicArray<const char *RESTRICT> validationLayers{ "VK_LAYER_LUNARG_standard_validation" };
 }
 #endif
 
 /*
 *	Default constructor.
 */
-VulkanInstance::VulkanInstance() CATALYST_NOEXCEPT
+VulkanInstance::VulkanInstance() NOEXCEPT
 {
 
 }
@@ -27,7 +27,7 @@ VulkanInstance::VulkanInstance() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanInstance::~VulkanInstance() CATALYST_NOEXCEPT
+VulkanInstance::~VulkanInstance() NOEXCEPT
 {
 
 }
@@ -35,7 +35,7 @@ VulkanInstance::~VulkanInstance() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan instance.
 */
-void VulkanInstance::Initialize() CATALYST_NOEXCEPT
+void VulkanInstance::Initialize() NOEXCEPT
 {
 	//Create the application info.
 	VkApplicationInfo applicationInfo;
@@ -52,7 +52,7 @@ void VulkanInstance::Initialize() CATALYST_NOEXCEPT
 /*
 *	Releases this Vulkan instance.
 */
-void VulkanInstance::Release() CATALYST_NOEXCEPT
+void VulkanInstance::Release() NOEXCEPT
 {
 	//Destroy the Vulkan instance.
 	vkDestroyInstance(vulkanInstance, nullptr);
@@ -61,7 +61,7 @@ void VulkanInstance::Release() CATALYST_NOEXCEPT
 /*
 *	Creates the application info.
 */
-void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) const CATALYST_NOEXCEPT
+void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) const NOEXCEPT
 {
 	applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	applicationInfo.pNext = nullptr;
@@ -75,10 +75,10 @@ void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) c
 /*
 *	Creates the instance create info.
 */
-void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstanceInfo, const VkApplicationInfo &applicationInfo) const CATALYST_NOEXCEPT
+void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstanceInfo, const VkApplicationInfo &applicationInfo) const NOEXCEPT
 {
 	uint32 glfwExtensionCount{ 0 };
-	const char *CATALYST_RESTRICT *CATALYST_RESTRICT glfwExtensions{ nullptr };
+	const char *RESTRICT *RESTRICT glfwExtensions{ nullptr };
 
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 

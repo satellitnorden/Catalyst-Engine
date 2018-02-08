@@ -8,7 +8,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	DynamicString() CATALYST_NOEXCEPT
+	DynamicString() NOEXCEPT
 		:
 		string(nullptr),
 		length(0)
@@ -19,13 +19,13 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	DynamicString(const DynamicString &otherString) CATALYST_NOEXCEPT
+	DynamicString(const DynamicString &otherString) NOEXCEPT
 	{
 		//Set the length of this string.
 		length = otherString.Length();
 
 		//Allocate sufficient memory for the underlying string.
-		string = static_cast<char *CATALYST_RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
+		string = static_cast<char *RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
 
 		//Copy the contents of the other string.
 		MemoryUtilities::CopyMemory(string, otherString.string, length + 1);
@@ -34,7 +34,7 @@ public:
 	/*
 	*	Move constructor.
 	*/
-	DynamicString(DynamicString &&otherString) CATALYST_NOEXCEPT
+	DynamicString(DynamicString &&otherString) NOEXCEPT
 	{
 		//Steal the other string's underlying string and set it to null!
 		string = otherString.string;
@@ -47,22 +47,22 @@ public:
 	/*
 	*	Constructor taking a C string.
 	*/
-	DynamicString(const char *const CATALYST_RESTRICT newString)
+	DynamicString(const char *const RESTRICT newString)
 	{
 		//Determine how long the C string is.
 		length = strlen(newString);
 
 		//Allocate sufficient memory to host the string.
-		string = static_cast<char *CATALYST_RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
+		string = static_cast<char *RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
 
 		//Copy the string to the memory.
-		MemoryUtilities::CopyMemory(static_cast<void *CATALYST_RESTRICT>(string), static_cast<const void *const CATALYST_RESTRICT>(newString), length + 1);
+		MemoryUtilities::CopyMemory(static_cast<void *RESTRICT>(string), static_cast<const void *const RESTRICT>(newString), length + 1);
 	}
 
 	/*
 	*	Default destructor.
 	*/
-	~DynamicString() CATALYST_NOEXCEPT
+	~DynamicString() NOEXCEPT
 	{
 		//Free the underlying string.
 		MemoryUtilities::FreeMemory(string);
@@ -71,13 +71,13 @@ public:
 	/*
 	*	Copy assignment operator overload.
 	*/
-	void operator=(const DynamicString &otherString) CATALYST_NOEXCEPT
+	void operator=(const DynamicString &otherString) NOEXCEPT
 	{
 		//Update the length of this string.
 		length = otherString.Length();
 
 		//Reallocate sufficient memory for the underlying string.
-		string = static_cast<char *CATALYST_RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *CATALYST_RESTRICT>(string), length + 1));
+		string = static_cast<char *RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *RESTRICT>(string), length + 1));
 
 		//Copy the contents of the other string.
 		MemoryUtilities::CopyMemory(string, otherString.string, length + 1);
@@ -86,7 +86,7 @@ public:
 	/*
 	*	Move assignment operator overload.
 	*/
-	void operator=(DynamicString &&otherString) CATALYST_NOEXCEPT
+	void operator=(DynamicString &&otherString) NOEXCEPT
 	{
 		//Steal the other string's underlying string and set it to nullptr!
 		string = otherString.string;
@@ -99,14 +99,14 @@ public:
 	/*
 	*	Addition assignment operator overload.
 	*/
-	void operator+=(const char *const CATALYST_RESTRICT newString) CATALYST_NOEXCEPT
+	void operator+=(const char *const RESTRICT newString) NOEXCEPT
 	{
 		//Calculate the new length.
 		const size_t newStringLength = strlen(newString) + 1;
 		const size_t newLength = length + newStringLength - 1;
 
 		//Allocate sufficient memory to host the concatenated string.
-		string = static_cast<char *CATALYST_RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *CATALYST_RESTRICT>(string), newLength + 1));
+		string = static_cast<char *RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *RESTRICT>(string), newLength + 1));
 
 		//Copy the new string.
 		MemoryUtilities::CopyMemory(string + length, newString, newStringLength);
@@ -118,7 +118,7 @@ public:
 	/*
 	*	Less than operator overload.
 	*/
-	bool operator<(const DynamicString &otherString) const CATALYST_NOEXCEPT
+	bool operator<(const DynamicString &otherString) const NOEXCEPT
 	{
 		return false;
 	}
@@ -126,7 +126,7 @@ public:
 	/*
 	*	Returns the underlying C string.
 	*/
-	CATALYST_RESTRICTED const char *const CString() const CATALYST_NOEXCEPT
+	RESTRICTED const char *const CString() const NOEXCEPT
 	{
 		return string;
 	}
@@ -134,7 +134,7 @@ public:
 	/*
 	*	Returns the length of the string.
 	*/
-	size_t Length() const CATALYST_NOEXCEPT
+	size_t Length() const NOEXCEPT
 	{
 		return length;
 	}
@@ -142,7 +142,7 @@ public:
 private:
 
 	//The underlying C string.
-	char *CATALYST_RESTRICT string;
+	char *RESTRICT string;
 
 	//The length of the string.
 	size_t length;

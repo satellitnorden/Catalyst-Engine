@@ -4,11 +4,10 @@
 #include <EngineCore.h>
 
 //Vulkan.
+#include <VulkanBuffer.h>
 #include <VulkanDescriptorSet.h>
-#include <VulkanIndexBuffer.h>
-#include <VulkanVertexBuffer.h>
 
-class RenderComponent
+class RenderComponent final
 {
 
 public:
@@ -16,11 +15,11 @@ public:
 	//The descriptor set.
 	VulkanDescriptorSet descriptorSet{ };
 
-	//The vertex buffer.
-	VulkanVertexBuffer vertexBuffer{};
+	//The buffer.
+	VulkanBuffer buffer{ };
 
-	//The index buffer.
-	VulkanIndexBuffer indexBuffer{};
+	//The offset for the indices in the buffer.
+	uint64 indexOffset{ 0 };
 
 	//The index count.
 	uint32 indexCount{ 0 };

@@ -16,7 +16,7 @@ DEFINE_SINGLETON(EngineSystem);
 /*
 *	Default constructor.
 */
-EngineSystem::EngineSystem() CATALYST_NOEXCEPT
+EngineSystem::EngineSystem() NOEXCEPT
 {
 
 }
@@ -24,7 +24,7 @@ EngineSystem::EngineSystem() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-EngineSystem::~EngineSystem() CATALYST_NOEXCEPT
+EngineSystem::~EngineSystem() NOEXCEPT
 {
 
 }
@@ -32,7 +32,7 @@ EngineSystem::~EngineSystem() CATALYST_NOEXCEPT
 /*
 *	Initializes the engine system.
 */
-void EngineSystem::InitializeSystem() CATALYST_NOEXCEPT
+void EngineSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize the current time.
 	currentTime = std::chrono::high_resolution_clock::now();
@@ -50,9 +50,9 @@ void EngineSystem::InitializeSystem() CATALYST_NOEXCEPT
 /*
 *	Updates the engine system synchronously. Returns whether or not the game should terminate.
 */
-bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
+bool EngineSystem::UpdateSystemSynchronous() NOEXCEPT
 {
-	CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game loop",
+	//CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game loop",
 
 	//Update the game system.
 	GAME_SYSTEM_CLASS::Instance->UpdateSystemSynchronous(deltaTime);
@@ -60,8 +60,8 @@ bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	//Pre-update the input system.
 	InputSystem::Instance->PreUpdateSystemSynchronous();
 
-	//Pre-update the entity system.
-	EntitySystem::Instance->PreUpdateSystemSynchronous();
+	//Update the entity system.
+	EntitySystem::Instance->UpdateSystemSynchronous();
 
 	//Update the physics system.
 	PhysicsSystem::Instance->UpdateSystemSynchronous(deltaTime);
@@ -69,12 +69,15 @@ bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 	//Update the graphics system.
 	GraphicsSystem::Instance->UpdateSystemSynchronous();
 
+	//Post-update the input system.
+	InputSystem::Instance->PostUpdateSystemSynchronous();
+
 	//Calculate a new delta time.
 	auto newTime = std::chrono::high_resolution_clock::now();
 	deltaTime = std::chrono::duration<float>(newTime - currentTime).count();
 	currentTime = newTime;
 
-	);
+	//);
 
 	//Return whether or not the game should terminate.
 	return shouldTerminate;
@@ -83,7 +86,7 @@ bool EngineSystem::UpdateSystemSynchronous() CATALYST_NOEXCEPT
 /*
 *	Releases the engine system.
 */
-void EngineSystem::ReleaseSystem() CATALYST_NOEXCEPT
+void EngineSystem::ReleaseSystem() NOEXCEPT
 {
 	//Release all systems.
 	GAME_SYSTEM_CLASS::Instance->ReleaseSystem();

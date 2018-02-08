@@ -7,7 +7,7 @@
 /*
 *	Default constructor.
 */
-VulkanDescriptorSetLayout::VulkanDescriptorSetLayout() CATALYST_NOEXCEPT
+VulkanDescriptorSetLayout::VulkanDescriptorSetLayout() NOEXCEPT
 {
 
 }
@@ -15,7 +15,7 @@ VulkanDescriptorSetLayout::VulkanDescriptorSetLayout() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanDescriptorSetLayout::~VulkanDescriptorSetLayout() CATALYST_NOEXCEPT
+VulkanDescriptorSetLayout::~VulkanDescriptorSetLayout() NOEXCEPT
 {
 
 }
@@ -23,7 +23,7 @@ VulkanDescriptorSetLayout::~VulkanDescriptorSetLayout() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan descriptor set layout.
 */
-void VulkanDescriptorSetLayout::Initialize(const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) CATALYST_NOEXCEPT
+void VulkanDescriptorSetLayout::Initialize(const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) NOEXCEPT
 {
 	//Create the descriptor set layout create info.
 	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo;
@@ -36,7 +36,7 @@ void VulkanDescriptorSetLayout::Initialize(const DynamicArray<VkDescriptorSetLay
 /*
 *	Releases this Vulkan descriptor set layout.
 */
-void VulkanDescriptorSetLayout::Release() CATALYST_NOEXCEPT
+void VulkanDescriptorSetLayout::Release() NOEXCEPT
 {
 	//Destroy the descriptor set layout.
 	vkDestroyDescriptorSetLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDescriptorSetLayout, nullptr);
@@ -45,7 +45,7 @@ void VulkanDescriptorSetLayout::Release() CATALYST_NOEXCEPT
 /*
 *	Creates a descriptor set layout create info.
 */
-void VulkanDescriptorSetLayout::CreateDescriptorSetLayoutCreateInfo(VkDescriptorSetLayoutCreateInfo &descriptorSetLayoutCreateInfo, const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) const CATALYST_NOEXCEPT
+void VulkanDescriptorSetLayout::CreateDescriptorSetLayoutCreateInfo(VkDescriptorSetLayoutCreateInfo &descriptorSetLayoutCreateInfo, const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) const NOEXCEPT
 {
 	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	descriptorSetLayoutCreateInfo.pNext = nullptr;

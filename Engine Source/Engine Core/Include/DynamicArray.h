@@ -9,7 +9,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	DynamicArray() CATALYST_NOEXCEPT
+	DynamicArray() NOEXCEPT
 		:
 		size(0)
 	{
@@ -28,7 +28,7 @@ public:
 	/*
 	*	Constructor taking an initializer list.
 	*/
-	DynamicArray(std::initializer_list<ObjectType> &&initializerList) CATALYST_NOEXCEPT
+	DynamicArray(std::initializer_list<ObjectType> &&initializerList) NOEXCEPT
 	{
 		//Reserve memory for all the elements in the initializer list.
 		Reserve(initializerList.size());
@@ -43,7 +43,7 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	DynamicArray(const DynamicArray &otherDynamicArray) CATALYST_NOEXCEPT
+	DynamicArray(const DynamicArray &otherDynamicArray) NOEXCEPT
 	{
 		Reserve(otherDynamicArray.capacity);
 
@@ -55,7 +55,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~DynamicArray() CATALYST_NOEXCEPT
+	~DynamicArray() NOEXCEPT
 	{
 		//Call the destructor on all objects in the array.
 		for (size_t i = 0; i < size; ++i)
@@ -70,7 +70,7 @@ public:
 	/*
 	*	Copy assignment operator overload.
 	*/
-	void operator=(const DynamicArray &otherDynamicArray) CATALYST_NOEXCEPT
+	void operator=(const DynamicArray &otherDynamicArray) NOEXCEPT
 	{
 		Reserve(otherDynamicArray.capacity);
 		size = capacity;
@@ -84,7 +84,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	const ObjectType& operator[](const size_t index) const CATALYST_NOEXCEPT
+	const ObjectType& operator[](const size_t index) const NOEXCEPT
 	{
 		return array[index];
 	}
@@ -92,7 +92,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	ObjectType& operator[](const size_t index) CATALYST_NOEXCEPT
+	ObjectType& operator[](const size_t index) NOEXCEPT
 	{
 		return array[index];
 	}
@@ -100,7 +100,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	CATALYST_RESTRICTED const ObjectType* begin() const  CATALYST_NOEXCEPT
+	RESTRICTED const ObjectType* begin() const  NOEXCEPT
 	{
 		return array;
 	}
@@ -108,7 +108,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	CATALYST_RESTRICTED ObjectType* begin()  CATALYST_NOEXCEPT
+	RESTRICTED ObjectType* begin()  NOEXCEPT
 	{
 		return array;
 	}
@@ -116,7 +116,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	CATALYST_RESTRICTED const ObjectType* end() const CATALYST_NOEXCEPT
+	RESTRICTED const ObjectType* end() const NOEXCEPT
 	{
 		return array + size;
 	}
@@ -124,7 +124,7 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	CATALYST_RESTRICTED ObjectType* end() CATALYST_NOEXCEPT
+	RESTRICTED ObjectType* end() NOEXCEPT
 	{
 		return array + size;
 	}
@@ -132,38 +132,38 @@ public:
 	/*
 	*	Returns the capacity of this dynamic array.
 	*/
-	size_t Capacity() const CATALYST_NOEXCEPT { return capacity; }
+	size_t Capacity() const NOEXCEPT { return capacity; }
 
 	/*
 	*	Returns the size of this dynamic array.
 	*/
-	size_t Size() const CATALYST_NOEXCEPT { return size; }
+	size_t Size() const NOEXCEPT { return size; }
 
 	/*
 	*	Returns whether or not this dynamic array is empty.
 	*/
-	bool Empty() const CATALYST_NOEXCEPT { return size == 0; }
+	bool Empty() const NOEXCEPT { return size == 0; }
 
 	/*
 	*	Returns a pointer to the data of this dynamic array, const.
 	*/
-	CATALYST_RESTRICTED const ObjectType* Data() const CATALYST_NOEXCEPT
+	RESTRICTED const ObjectType* Data() const NOEXCEPT
 	{
-		return CATALYST_LIKELY(array) ? array : nullptr;
+		return LIKELY(array) ? array : nullptr;
 	}
 
 	/*
 	*	Returns a pointer to the data of this dynamic array, non-const.
 	*/
-	CATALYST_RESTRICTED ObjectType* Data() CATALYST_NOEXCEPT
+	RESTRICTED ObjectType* Data() NOEXCEPT
 	{
-		return CATALYST_LIKELY(array) ? array : nullptr;
+		return LIKELY(array) ? array : nullptr;
 	}
 
 	/*
 	*	Returns the back of this dynamic array, const.
 	*/
-	const ObjectType& Back() const CATALYST_NOEXCEPT
+	const ObjectType& Back() const NOEXCEPT
 	{
 		return array[size - 1];
 	}
@@ -171,16 +171,37 @@ public:
 	/*
 	*	Returns the back of this dynamic array, non-const.
 	*/
-	ObjectType& Back() CATALYST_NOEXCEPT
+	ObjectType& Back() NOEXCEPT
 	{
 		return array[size - 1];
+	}
+
+	/*
+	*	Clears this dynamic array of elements without calling the destructor on the underlying elements.
+	*/
+	void ClearFast() NOEXCEPT
+	{
+		size = 0;
+	}
+
+	/*
+	*	Clears this dynamic array of elements, calling the destructor on the underlying elements.
+	*/
+	void ClearSlow() NOEXCEPT
+	{
+		for (size_t i = 0; i < size; ++i)
+		{
+			array[i].~ÕbjectType();
+		}
+
+		size = 0;
 	}
 
 	/*
 	*	Given constructor arguments for the object type, construct a new object at the back of the array.
 	*/
 	template <class... Arguments>
-	void Emplace(Arguments&&... arguments) CATALYST_NOEXCEPT
+	void EmplaceSlow(Arguments&&... arguments) NOEXCEPT
 	{
 		if (size >= capacity)
 		{
@@ -194,7 +215,7 @@ public:
 	*	Given constructor arguments for the object type, construct a new object at the back of the array without first checking if the array has the required capacity.
 	*/
 	template <class... Arguments>
-	void EmplaceUnsafe(Arguments&&... arguments) CATALYST_NOEXCEPT
+	void EmplaceFast(Arguments&&... arguments) NOEXCEPT
 	{
 		new (&array[size++]) ObjectType(std::forward<Arguments>(arguments)...);
 	}
@@ -202,7 +223,7 @@ public:
 	/*
 	*	Finds and erases an element in the array. Does not respect order of elements.
 	*/
-	void Erase(const ObjectType &objectToErase) CATALYST_NOEXCEPT
+	void Erase(const ObjectType &objectToErase) NOEXCEPT
 	{
 		for (auto object : *this)
 		{
@@ -219,7 +240,7 @@ public:
 	/*
 	*	Finds an element and returns it, const.
 	*/
-	const Optional<ObjectType> Find(const ObjectType &objectToFind) const CATALYST_NOEXCEPT
+	const Optional<ObjectType> Find(const ObjectType &objectToFind) const NOEXCEPT
 	{
 		for (auto object : *this)
 		{
@@ -235,7 +256,7 @@ public:
 	/*
 	*	Finds an element and returns it, non-const.
 	*/
-	Optional<ObjectType> Find(const ObjectType &objectToFind) CATALYST_NOEXCEPT
+	Optional<ObjectType> Find(const ObjectType &objectToFind) NOEXCEPT
 	{
 		for (auto object : *this)
 		{
@@ -251,7 +272,7 @@ public:
 	/*
 	*	Pops an element from the back of this dynamic array.
 	*/
-	void Pop() CATALYST_NOEXCEPT
+	void Pop() NOEXCEPT
 	{
 		--size;
 	}
@@ -259,10 +280,10 @@ public:
 	/*
 	*	Reserves a new chunk of memory, changing the array's capacity.
 	*/
-	void Reserve(const size_t newCapacity) CATALYST_NOEXCEPT
+	void Reserve(const size_t newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		ObjectType *CATALYST_RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
+		ObjectType *RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
 		MemoryUtilities::CopyMemory(newArray, array, sizeof(ObjectType) * size);
@@ -278,10 +299,10 @@ public:
 	/*
 	*	Resizes this dynamic array, filling it with default constructed objects.
 	*/
-	void Resize(const size_t newCapacity) CATALYST_NOEXCEPT
+	void Resize(const size_t newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		ObjectType *CATALYST_RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
+		ObjectType *RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
 		MemoryUtilities::CopyMemory(newArray, array, sizeof(ObjectType) * (size < newCapacity ? size : newCapacity));
@@ -304,7 +325,7 @@ public:
 private:
 
 	//Pointer to the current array.
-	ObjectType *CATALYST_RESTRICT array;
+	ObjectType *RESTRICT array;
 
 	//The current size of this dynamic array.
 	size_t size;

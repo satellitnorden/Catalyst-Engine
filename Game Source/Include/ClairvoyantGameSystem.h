@@ -21,27 +21,27 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	ClairvoyantGameSystem() CATALYST_NOEXCEPT;
+	ClairvoyantGameSystem() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~ClairvoyantGameSystem() CATALYST_NOEXCEPT;
+	~ClairvoyantGameSystem() NOEXCEPT;
 
 	/*
 	*	Initializes the game system.
 	*/
-	void InitializeSystem() CATALYST_NOEXCEPT;
+	void InitializeSystem() NOEXCEPT;
 
 	/*
 	*	Updates the game system synchronously.
 	*/
-	void UpdateSystemSynchronous(const float deltaTime) CATALYST_NOEXCEPT;
+	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
 
 	/*
 	*	Releases the game system.
 	*/
-	void ReleaseSystem() CATALYST_NOEXCEPT;
+	void ReleaseSystem() NOEXCEPT;
 
 private:
 

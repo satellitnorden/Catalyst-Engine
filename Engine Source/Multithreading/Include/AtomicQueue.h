@@ -17,7 +17,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	AtomicQueue() CATALYST_NOEXCEPT
+	AtomicQueue() NOEXCEPT
 	{
 		
 	}
@@ -25,7 +25,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~AtomicQueue() CATALYST_NOEXCEPT
+	~AtomicQueue() NOEXCEPT
 	{
 		//Deallocate the memory for the queue.
 		MemoryUtilities::FreeMemory(queue);
@@ -34,7 +34,7 @@ public:
 	/*
 	*	Initializes this atomic queue.
 	*/
-	void Initialize(const size_t &newQueueSize) CATALYST_NOEXCEPT
+	void Initialize(const size_t &newQueueSize) NOEXCEPT
 	{
 		//Allocate memory for the queue.
 		queue = static_cast<ValueType*>(MemoryUtilities::AllocateMemory(sizeof(ValueType) * newQueueSize));
@@ -46,7 +46,7 @@ public:
 	/*
 	*	Pushes a new value into the queue.
 	*/
-	void Push(ValueType newValue) CATALYST_NOEXCEPT
+	void Push(ValueType newValue) NOEXCEPT
 	{
 		queue[lastIndex] = newValue;
 
@@ -56,7 +56,7 @@ public:
 	/*
 	*	Pops a value from the queue, if the queue is not empty. Returns if the pop was succesful.
 	*/
-	bool PopIfNotEmpty(ValueType &poppedValue) CATALYST_NOEXCEPT
+	bool PopIfNotEmpty(ValueType &poppedValue) NOEXCEPT
 	{
 		ValueType temporaryValue;
 		size_t oldFirstIndex;
@@ -84,7 +84,7 @@ public:
 private:
 
 	//The underlying queue.
-	ValueType *CATALYST_RESTRICT queue;
+	ValueType *RESTRICT queue;
 
 	//The size of the queue.
 	size_t queueSize;

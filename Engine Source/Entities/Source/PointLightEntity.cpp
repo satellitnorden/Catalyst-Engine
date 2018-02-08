@@ -7,34 +7,34 @@
 //Math.
 #include <Vector3.h>
 
-//Static variable definitions.
-DynamicArray<PointLightEntity *CATALYST_RESTRICT> PointLightEntity::instances;
+//Define the entity class.
+DEFINE_ENTITY_CLASS(PointLightEntity);
 
 /*
 *	Default constructor.
 */
-PointLightEntity::PointLightEntity() CATALYST_NOEXCEPT
+PointLightEntity::PointLightEntity() NOEXCEPT
 {
 	//Get a new components index.
 	componentsIndex = ComponentManager::GetNewPointLightEntitiesEntityComponentsIndex();
 
 	//Add this point light entity to the universal container.
-	instances.Emplace(this);
+	Instances.EmplaceSlow(this);
 }
 
 /*
 *	Default destructor.
 */
-PointLightEntity::~PointLightEntity() CATALYST_NOEXCEPT
+PointLightEntity::~PointLightEntity() NOEXCEPT
 {
 	//Remove this point light entity from the universal container.
-	instances.Erase(this);
+	Instances.Erase(this);
 }
 
 /*
 *	Returns the position of this entity.
 */
-Vector3& PointLightEntity::GetPosition() CATALYST_NOEXCEPT
+const Vector3& PointLightEntity::GetPosition() NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].position;
@@ -43,29 +43,25 @@ Vector3& PointLightEntity::GetPosition() CATALYST_NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-Vector3& PointLightEntity::GetRotation() CATALYST_NOEXCEPT
+const Vector3& PointLightEntity::GetRotation() NOEXCEPT
 {
 	//Point light entities has no rotation.
-	static Vector3 defaultRotation{ 0.0f, 0.0f, 0.0f };
-
-	return defaultRotation;
+	return Entity::defaultRotation;
 }
 
 /*
 *	Returns the scale of this entity.
 */
-Vector3& PointLightEntity::GetScale() CATALYST_NOEXCEPT
+const Vector3& PointLightEntity::GetScale() NOEXCEPT
 {
 	//Point light entities has no scale.
-	static Vector3 defaultScale{ 1.0f, 1.0f, 1.0f };
-
-	return defaultScale;
+	return Entity::defaultScale;
 }
 
 /*
 *	Moves this entity.
 */
-void PointLightEntity::Move(const Vector3 &moveVector) CATALYST_NOEXCEPT
+void PointLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
 	ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].position += moveVector;
@@ -80,7 +76,7 @@ void PointLightEntity::Move(const Vector3 &moveVector) CATALYST_NOEXCEPT
 /*
 *	Rotates this entity.
 */
-void PointLightEntity::Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT
+void PointLightEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate all children.
 	for (auto child : children)
@@ -92,7 +88,7 @@ void PointLightEntity::Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT
 /*
 *	Scales this entity.
 */
-void PointLightEntity::Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT
+void PointLightEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale all children.
 	for (auto child : children)
@@ -104,7 +100,7 @@ void PointLightEntity::Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT
 /*
 *	Sets whether or not this point light is enabled.
 */
-void PointLightEntity::SetEnabled(const bool newEnabled) CATALYST_NOEXCEPT
+void PointLightEntity::SetEnabled(const bool newEnabled) NOEXCEPT
 {
 	//Set whether or not this point light is enabled.
 	ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].enabled = newEnabled;
@@ -113,7 +109,7 @@ void PointLightEntity::SetEnabled(const bool newEnabled) CATALYST_NOEXCEPT
 /*
 *	Sets the attenuation distance.
 */
-void PointLightEntity::SetAttenuationDistance(const float newAttenuationDistance) CATALYST_NOEXCEPT
+void PointLightEntity::SetAttenuationDistance(const float newAttenuationDistance) NOEXCEPT
 {
 	//Set the attenuation distance.
 	ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].attenuationDistance = newAttenuationDistance;
@@ -122,7 +118,7 @@ void PointLightEntity::SetAttenuationDistance(const float newAttenuationDistance
 /*
 *	Sets the intensity.
 */
-void PointLightEntity::SetIntensity(const float newIntensity) CATALYST_NOEXCEPT
+void PointLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 {
 	//Set the intensity.
 	ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].intensity = newIntensity;
@@ -131,7 +127,7 @@ void PointLightEntity::SetIntensity(const float newIntensity) CATALYST_NOEXCEPT
 /*
 *	Sets the color.
 */
-void PointLightEntity::SetColor(const Vector3 &newColor) CATALYST_NOEXCEPT
+void PointLightEntity::SetColor(const Vector3 &newColor) NOEXCEPT
 {
 	//Set the color.
 	ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].color = newColor;

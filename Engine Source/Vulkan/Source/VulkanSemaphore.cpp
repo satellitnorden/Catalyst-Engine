@@ -7,7 +7,7 @@
 /*
 *	Default constructor.
 */
-VulkanSemaphore::VulkanSemaphore() CATALYST_NOEXCEPT
+VulkanSemaphore::VulkanSemaphore() NOEXCEPT
 {
 
 }
@@ -15,7 +15,7 @@ VulkanSemaphore::VulkanSemaphore() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanSemaphore::~VulkanSemaphore() CATALYST_NOEXCEPT
+VulkanSemaphore::~VulkanSemaphore() NOEXCEPT
 {
 
 }
@@ -23,7 +23,7 @@ VulkanSemaphore::~VulkanSemaphore() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan semaphore.
 */
-void VulkanSemaphore::Initialize() CATALYST_NOEXCEPT
+void VulkanSemaphore::Initialize() NOEXCEPT
 {
 	//Create the semaphore create info.
 	VkSemaphoreCreateInfo semaphoreCreateInfo;
@@ -36,7 +36,7 @@ void VulkanSemaphore::Initialize() CATALYST_NOEXCEPT
 /*
 *	Releases this Vulkan semaphore.
 */
-void VulkanSemaphore::Release() CATALYST_NOEXCEPT
+void VulkanSemaphore::Release() NOEXCEPT
 {
 	//Destroy the Vulkan semaphore.
 	vkDestroySemaphore(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSemaphore, nullptr);
@@ -45,7 +45,7 @@ void VulkanSemaphore::Release() CATALYST_NOEXCEPT
 /*
 *	Creates a semaphore create info.
 */
-void VulkanSemaphore::CreateSemaphoreCreateInfo(VkSemaphoreCreateInfo &semaphoreCreateInfo) const CATALYST_NOEXCEPT
+void VulkanSemaphore::CreateSemaphoreCreateInfo(VkSemaphoreCreateInfo &semaphoreCreateInfo) const NOEXCEPT
 {
 	semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 	semaphoreCreateInfo.pNext = nullptr;

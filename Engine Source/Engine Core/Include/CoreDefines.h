@@ -12,37 +12,37 @@
 /*
 *	Stronger hint than the regular inline to inline a given function. Note that this does not guarantee it will actually be inlined.
 */
-#define CATALYST_FORCE_INLINE __forceinline
+#define FORCE_INLINE __forceinline
 
 /*
 *	Indicates to the branch predictor that an expression is expected to most times be true.
 */
-#define CATALYST_LIKELY(expression) expression
+#define LIKELY(expression) expression
 
 /*
 *	Indicates to the compiler that a given function does not modify memory outside the first level of indirection from the function's parameters.
 */
-#define CATALYST_NOALIAS __declspec(noalias)
+#define NOALIAS __declspec(noalias)
 
 /*
 *	Declares that a function will never throw exception. Actually throwing an exception will result in immediate termination.
 */
-#define CATALYST_NOEXCEPT noexcept
+#define NOEXCEPT noexcept
 
 /*
 *	Indicates to the branch predictor that an expression is expected to most times not be true.
 */
-#define CATALYST_UNLIKELY(expression) expression
+#define UNLIKELY(expression) expression
 
 /*
 *	Indicates to the compiler that within the scope of the given pointer, it does not alias with other pointers in the same scope.
 */
-#define CATALYST_RESTRICT __restrict
+#define RESTRICT __restrict
 
 /*
 *	Indicates to the compiler that the pointer returned by a given function does not alias with other pointers in the same scope.
 */
-#define CATALYST_RESTRICTED __declspec(restrict)
+#define RESTRICTED __declspec(restrict)
 
 /*
 *	Type maximums/minimums.

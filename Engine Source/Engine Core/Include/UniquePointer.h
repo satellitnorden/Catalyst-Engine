@@ -9,12 +9,12 @@ public:
 	/*
 	*	Default constructor, prohibied - must be constructed with the proper arguments.
 	*/
-	UniquePointer() CATALYST_NOEXCEPT = delete;
+	UniquePointer() NOEXCEPT = delete;
 
 	/*
 	*	Constructor taking the underlying pointer as the argument.
 	*/
-	UniquePointer(ObjectType *const CATALYST_RESTRICT newPointer) CATALYST_NOEXCEPT
+	UniquePointer(ObjectType *const RESTRICT newPointer) NOEXCEPT
 		:
 		pointer(newPointer)
 	{
@@ -24,7 +24,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~UniquePointer() CATALYST_NOEXCEPT
+	~UniquePointer() NOEXCEPT
 	{
 		//Delete the underlying pointer.
 		delete pointer;
@@ -33,7 +33,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	CATALYST_RESTRICTED const ObjectType* const operator->() const CATALYST_NOEXCEPT
+	RESTRICTED const ObjectType* const operator->() const NOEXCEPT
 	{
 		return pointer;
 	}
@@ -41,7 +41,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	CATALYST_RESTRICTED ObjectType* operator->() CATALYST_NOEXCEPT
+	RESTRICTED ObjectType* operator->() NOEXCEPT
 	{
 		return pointer;
 	}
@@ -49,6 +49,6 @@ public:
 private:
 
 	//The underlying pointer.
-	ObjectType *CATALYST_RESTRICT pointer;
+	ObjectType *RESTRICT pointer;
 
 };

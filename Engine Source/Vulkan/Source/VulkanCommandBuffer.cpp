@@ -2,14 +2,12 @@
 #include <VulkanCommandBuffer.h>
 
 //Vulkan.
-#include <VulkanCommandPool.h>
 #include <VulkanInterface.h>
-#include <VulkanLogicalDevice.h>
 
 /*
 *	Default constructor.
 */
-VulkanCommandBuffer::VulkanCommandBuffer() CATALYST_NOEXCEPT
+VulkanCommandBuffer::VulkanCommandBuffer() NOEXCEPT
 {
 	
 }
@@ -17,7 +15,7 @@ VulkanCommandBuffer::VulkanCommandBuffer() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanCommandBuffer::~VulkanCommandBuffer() CATALYST_NOEXCEPT
+VulkanCommandBuffer::~VulkanCommandBuffer() NOEXCEPT
 {
 
 }
@@ -25,7 +23,7 @@ VulkanCommandBuffer::~VulkanCommandBuffer() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan command buffer.
 */
-void VulkanCommandBuffer::Initialize(const VulkanCommandPool &vulkanCommandPool) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::Initialize(const VulkanCommandPool &vulkanCommandPool) NOEXCEPT
 {
 	//Create the command buffer allocate info.
 	VkCommandBufferAllocateInfo commandBufferAllocateInfo;
@@ -38,7 +36,7 @@ void VulkanCommandBuffer::Initialize(const VulkanCommandPool &vulkanCommandPool)
 /*
 *	Begins this Vulkan command buffer.
 */
-void VulkanCommandBuffer::Begin(const VkCommandBufferUsageFlags commandBufferUsageFlags) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::Begin(const VkCommandBufferUsageFlags commandBufferUsageFlags) NOEXCEPT
 {
 	//Create the command buffer begin info.
 	VkCommandBufferBeginInfo commandBufferBeginInfo;
@@ -51,7 +49,7 @@ void VulkanCommandBuffer::Begin(const VkCommandBufferUsageFlags commandBufferUsa
 /*
 *	Records a begin render pass command.
 */
-void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex, const bool clearDepth, const uint32 numberOfClearValues) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex, const bool clearDepth, const uint32 numberOfClearValues) NOEXCEPT
 {
 	DynamicArray<VkClearValue> clearValues;
 
@@ -71,7 +69,7 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanR
 			newClearValue.depthStencil = { 0.0f, 0 };
 		}
 
-		clearValues.Emplace(newClearValue);
+		clearValues.EmplaceSlow(newClearValue);
 	}
 
 	VkRenderPassBeginInfo renderPassBeginInfo;
@@ -91,7 +89,7 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanR
 /*
 *	Records a bind descriptor sets command.
 */
-void VulkanCommandBuffer::CommandBindDescriptorSets(const VulkanPipeline &vulkanPipeline, const VulkanDescriptorSet &vulkanDescriptorSet) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CommandBindDescriptorSets(const VulkanPipeline &vulkanPipeline, const VulkanDescriptorSet &vulkanDescriptorSet) NOEXCEPT
 {
 	vkCmdBindDescriptorSets(vulkanCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline.GetPipelineLayout(), 0, 1, &vulkanDescriptorSet.Get(), 0, nullptr);
 }
@@ -99,15 +97,15 @@ void VulkanCommandBuffer::CommandBindDescriptorSets(const VulkanPipeline &vulkan
 /*
 *	Records a bind index buffer command.
 */
-void VulkanCommandBuffer::CommandBindIndexBuffer(const VulkanIndexBuffer &vulkanIndexBuffer) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CommandBindIndexBuffer(const VulkanBuffer &vulkanIndexBuffer, const VkDeviceSize offset) NOEXCEPT
 {
-	vkCmdBindIndexBuffer(vulkanCommandBuffer, vulkanIndexBuffer.Get(), 0, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(vulkanCommandBuffer, vulkanIndexBuffer.Get(), offset, VK_INDEX_TYPE_UINT32);
 }
 
 /*
 *	Records a bind pipeline command.
 */
-void VulkanCommandBuffer::CommandBindPipeline(const VulkanPipeline &vulkanPipeline) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CommandBindPipeline(const VulkanPipeline &vulkanPipeline) NOEXCEPT
 {
 	vkCmdBindPipeline(vulkanCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline.Get());
 }
@@ -115,16 +113,15 @@ void VulkanCommandBuffer::CommandBindPipeline(const VulkanPipeline &vulkanPipeli
 /*
 *	Records a bind vertex buffers command.
 */
-void VulkanCommandBuffer::CommandBindVertexBuffers(const VulkanVertexBuffer &vulkanVertexBuffer) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CommandBindVertexBuffers(const VulkanBuffer &vulkanVertexBuffer, const VkDeviceSize offset) NOEXCEPT
 {
-	VkDeviceSize offset{ 0 };
 	vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, &vulkanVertexBuffer.Get(), &offset);
 }
 
 /*
 *	Records a draw command.
 */
-void VulkanCommandBuffer::CommandDraw(const uint32 vertexCount) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CommandDraw(const uint32 vertexCount) NOEXCEPT
 {
 	vkCmdDraw(vulkanCommandBuffer, vertexCount, 1, 0, 0);
 }
@@ -132,7 +129,7 @@ void VulkanCommandBuffer::CommandDraw(const uint32 vertexCount) CATALYST_NOEXCEP
 /*
 *	Records a draw indexed command.
 */
-void VulkanCommandBuffer::CommandDrawIndexed(const uint32 indexCount) CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CommandDrawIndexed(const uint32 indexCount) NOEXCEPT
 {
 	vkCmdDrawIndexed(vulkanCommandBuffer, indexCount, 1, 0, 0, 0);
 }
@@ -140,7 +137,7 @@ void VulkanCommandBuffer::CommandDrawIndexed(const uint32 indexCount) CATALYST_N
 /*
 *	Records an end render pass command.
 */
-void VulkanCommandBuffer::CommandEndRenderPass() CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CommandEndRenderPass() NOEXCEPT
 {
 	vkCmdEndRenderPass(vulkanCommandBuffer);
 }
@@ -148,7 +145,7 @@ void VulkanCommandBuffer::CommandEndRenderPass() CATALYST_NOEXCEPT
 /*
 *	Ends this Vulkan command buffer.
 */
-void VulkanCommandBuffer::End() CATALYST_NOEXCEPT
+void VulkanCommandBuffer::End() NOEXCEPT
 {
 	//End this Vulkan command buffer.
 	VULKAN_ERROR_CHECK(vkEndCommandBuffer(vulkanCommandBuffer));
@@ -157,7 +154,7 @@ void VulkanCommandBuffer::End() CATALYST_NOEXCEPT
 /*
 *	Resets this Vulkan command buffer.
 */
-void VulkanCommandBuffer::Reset() CATALYST_NOEXCEPT
+void VulkanCommandBuffer::Reset() NOEXCEPT
 {
 	VULKAN_ERROR_CHECK(vkResetCommandBuffer(vulkanCommandBuffer, 0));
 }
@@ -165,7 +162,7 @@ void VulkanCommandBuffer::Reset() CATALYST_NOEXCEPT
 /*
 *	Creates a command buffer allocate info.
 */
-void VulkanCommandBuffer::CreateCommandBufferAllocateInfo(VkCommandBufferAllocateInfo &commandBufferAllocateInfo, const VulkanCommandPool &vulkanCommandPool) const CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CreateCommandBufferAllocateInfo(VkCommandBufferAllocateInfo &commandBufferAllocateInfo, const VulkanCommandPool &vulkanCommandPool) const NOEXCEPT
 {
 	commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	commandBufferAllocateInfo.pNext = nullptr;
@@ -177,7 +174,7 @@ void VulkanCommandBuffer::CreateCommandBufferAllocateInfo(VkCommandBufferAllocat
 /*
 *	Creates a command buffer begin info.
 */
-void VulkanCommandBuffer::CreateCommandBufferBeginInfo(VkCommandBufferBeginInfo &commandBufferBeginInfo, const VkCommandBufferUsageFlags commandBufferUsageFlags) const CATALYST_NOEXCEPT
+void VulkanCommandBuffer::CreateCommandBufferBeginInfo(VkCommandBufferBeginInfo &commandBufferBeginInfo, const VkCommandBufferUsageFlags commandBufferUsageFlags) const NOEXCEPT
 {
 	commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	commandBufferBeginInfo.pNext = nullptr;

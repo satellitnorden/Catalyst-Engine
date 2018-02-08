@@ -9,7 +9,7 @@
 /*
 *	Default constructor.
 */
-VulkanCommandPool::VulkanCommandPool() CATALYST_NOEXCEPT
+VulkanCommandPool::VulkanCommandPool() NOEXCEPT
 {
 
 }
@@ -17,7 +17,7 @@ VulkanCommandPool::VulkanCommandPool() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanCommandPool::~VulkanCommandPool() CATALYST_NOEXCEPT
+VulkanCommandPool::~VulkanCommandPool() NOEXCEPT
 {
 
 }
@@ -25,7 +25,7 @@ VulkanCommandPool::~VulkanCommandPool() CATALYST_NOEXCEPT
 /*
 *	Initializes this Vulkan command pool.
 */
-void VulkanCommandPool::Initialize(const uint32 queueFamilyIndex) CATALYST_NOEXCEPT
+void VulkanCommandPool::Initialize(const uint32 queueFamilyIndex) NOEXCEPT
 {
 	//Create the command pool create info.
 	VkCommandPoolCreateInfo commandPoolCreateInfo;
@@ -38,7 +38,7 @@ void VulkanCommandPool::Initialize(const uint32 queueFamilyIndex) CATALYST_NOEXC
 /*
 *	Releases this Vulkan command pool.
 */
-void VulkanCommandPool::Release() CATALYST_NOEXCEPT
+void VulkanCommandPool::Release() NOEXCEPT
 {
 	//Destroy the Vulkan command pool.
 	vkDestroyCommandPool(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanCommandPool, nullptr);
@@ -47,7 +47,7 @@ void VulkanCommandPool::Release() CATALYST_NOEXCEPT
 /*
 *	Allocates and returns a Vulkan command buffer.
 */
-void VulkanCommandPool::AllocateVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const CATALYST_NOEXCEPT
+void VulkanCommandPool::AllocateVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT
 {
 	//Initialize the Vulkan command buffer.
 	vulkanCommandBuffer.Initialize(*this);
@@ -56,7 +56,7 @@ void VulkanCommandPool::AllocateVulkanCommandBuffer(VulkanCommandBuffer &vulkanC
 /*
 *	Frees a Vulkan command buffer.
 */
-void VulkanCommandPool::FreeVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const CATALYST_NOEXCEPT
+void VulkanCommandPool::FreeVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT
 {
 	//Free the Vulkan command buffer.
 	vkFreeCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanCommandPool, 1, &vulkanCommandBuffer.Get());
@@ -65,7 +65,7 @@ void VulkanCommandPool::FreeVulkanCommandBuffer(VulkanCommandBuffer &vulkanComma
 /*
 *	Creates a command pool create info.
 */
-void VulkanCommandPool::CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &commandPoolCreateInfo, const uint32 queueFamilyIndex) const CATALYST_NOEXCEPT
+void VulkanCommandPool::CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &commandPoolCreateInfo, const uint32 queueFamilyIndex) const NOEXCEPT
 {
 	commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	commandPoolCreateInfo.pNext = nullptr;

@@ -17,36 +17,36 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Vector2() CATALYST_NOEXCEPT;
+	Vector2() NOEXCEPT;
 
 	/*
 	*	Constructor taking X and Y arguments.
 	*/
-	Vector2(const float newX, const float newY) CATALYST_NOEXCEPT;
+	Vector2(const float newX, const float newY) NOEXCEPT;
 
 	/*
 	*	Returns a pointer to this vector's data.
 	*/
-	CATALYST_RESTRICTED float* Data() CATALYST_NOEXCEPT { return &X; }
+	RESTRICTED float* Data() NOEXCEPT { return &X; }
 
 	/*
 	*	Returns the length of the vector.
 	*/
-	float Length() const CATALYST_NOEXCEPT;
+	float Length() const NOEXCEPT;
 
 	/*
 	*	Returns the length of the vector squared.
 	*/
-	float LengthSquared() const  CATALYST_NOEXCEPT { return (X * X) + (Y * Y); }
+	float LengthSquared() const  NOEXCEPT { return (X * X) + (Y * Y); }
 
 	/*
 	*	Normalize the vector to a unit vector.
 	*/
-	void Normalize() CATALYST_NOEXCEPT;
+	void Normalize() NOEXCEPT;
 
 	/*
 	*	Given an amount of degrees, rotate the vector.
 	*/
-	void Rotate(const float degrees) CATALYST_NOEXCEPT;
+	void Rotate(const float degrees) NOEXCEPT;
 
 };

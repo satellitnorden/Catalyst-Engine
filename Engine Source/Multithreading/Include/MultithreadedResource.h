@@ -16,7 +16,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	MultithreadedResource() CATALYST_NOEXCEPT
+	MultithreadedResource() NOEXCEPT
 	{
 
 	}
@@ -25,7 +25,7 @@ public:
 	*	Constructor forwarding constructor arguments to the underlying resource.
 	*/
 	template<class... Arguments>
-	MultithreadedResource(Arguments&&... arguments) CATALYST_NOEXCEPT
+	MultithreadedResource(Arguments&&... arguments) NOEXCEPT
 		:
 		resource(std::forward<Arguments>(arguments)...)
 	{
@@ -35,7 +35,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~MultithreadedResource() CATALYST_NOEXCEPT
+	~MultithreadedResource() NOEXCEPT
 	{
 
 	}
@@ -43,7 +43,7 @@ public:
 	/*
 	*	Returns the underlying resource.
 	*/
-	const ResourceType GetSafe() const CATALYST_NOEXCEPT
+	const ResourceType GetSafe() const NOEXCEPT
 	{
 		ScopedLock<Spinlock>{ spinlock };
 
@@ -53,7 +53,7 @@ public:
 	/*
 	*	Returns the underlying resource without locking it.
 	*/
-	const ResourceType& GetUnsafe() const CATALYST_NOEXCEPT
+	const ResourceType& GetUnsafe() const NOEXCEPT
 	{
 		return resource;
 	}
@@ -61,7 +61,7 @@ public:
 	/*
 	*	Sets the underlying resource.
 	*/
-	void Set(const ResourceType &newResource) CATALYST_NOEXCEPT
+	void Set(const ResourceType &newResource) NOEXCEPT
 	{
 		ScopedLock<Spinlock>{ spinlock };
 

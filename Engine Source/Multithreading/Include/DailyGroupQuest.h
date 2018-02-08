@@ -13,7 +13,7 @@ enum class DailyGroupQuestCompletionState : uint8
 };
 
 //Type aliases.
-using DailyGroupQuestFunction = void(*)(void *CATALYST_RESTRICT, void *CATALYST_RESTRICT);
+using DailyGroupQuestFunction = void(*)(void *RESTRICT, void *RESTRICT);
 
 class DailyGroupQuest final
 {
@@ -23,107 +23,107 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	DailyGroupQuest() CATALYST_NOEXCEPT;
+	DailyGroupQuest() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~DailyGroupQuest() CATALYST_NOEXCEPT;
+	~DailyGroupQuest() NOEXCEPT;
 
 	/*
 	*	Returns the quest completion state for this daily group quest.
 	*/
-	DailyGroupQuestCompletionState GetQuestCompletionState() const CATALYST_NOEXCEPT { return questCompletionState.load(); }
+	DailyGroupQuestCompletionState GetQuestCompletionState() const NOEXCEPT { return questCompletionState.load(); }
 
 	/*
 	*	Sets the quest completion state for this daily group quest.
 	*/
-	void SetQuestCompletionState(const DailyGroupQuestCompletionState newQuestCompletionState) CATALYST_NOEXCEPT { questCompletionState.store(newQuestCompletionState); }
+	void SetQuestCompletionState(const DailyGroupQuestCompletionState newQuestCompletionState) NOEXCEPT { questCompletionState.store(newQuestCompletionState); }
 
 	/*
 	*	Returns the function to execute for this daily group quest.
 	*/
-	CATALYST_RESTRICTED DailyGroupQuestFunction GetFunction() CATALYST_NOEXCEPT { return function; }
+	RESTRICTED DailyGroupQuestFunction GetFunction() NOEXCEPT { return function; }
 
 	/*
 	*	Sets the function to execute for this daily group quest.
 	*/
-	void SetFunction(DailyGroupQuestFunction newFunction) CATALYST_NOEXCEPT { function = newFunction; }
+	void SetFunction(DailyGroupQuestFunction newFunction) NOEXCEPT { function = newFunction; }
 
 	/*
 	*	Returns the arguments to send to the function to execute for this daily quest.
 	*/
-	CATALYST_RESTRICTED void* GetArguments() CATALYST_NOEXCEPT { return arguments; }
+	RESTRICTED void* GetArguments() NOEXCEPT { return arguments; }
 
 	/*
 	*	Sets the arguments to send to the function to execute for this daily quest.
 	*/
-	void SetArguments(void *CATALYST_RESTRICT newArguments) CATALYST_NOEXCEPT { arguments = newArguments; }
+	void SetArguments(void *RESTRICT newArguments) NOEXCEPT { arguments = newArguments; }
 
 	/*
 	*	Returns the container for this daily group quest.
 	*/
-	CATALYST_RESTRICTED void* GetContainer() CATALYST_NOEXCEPT { return container; }
+	RESTRICTED void* GetContainer() NOEXCEPT { return container; }
 
 	/*
 	*	Sets the container for this daily group quest.
 	*/
-	void SetContainer(void *CATALYST_RESTRICT newContainer) CATALYST_NOEXCEPT { container = newContainer; }
+	void SetContainer(void *RESTRICT newContainer) NOEXCEPT { container = newContainer; }
 
 	/*
 	*	Returns the size of the objects contained in the container in bytes.
 	*/
-	size_t GetObjectSize() const CATALYST_NOEXCEPT { return objectSize; }
+	size_t GetObjectSize() const NOEXCEPT { return objectSize; }
 
 	/*
 	*	Sets the size of the objects contained in the container in bytes.
 	*/
-	void SetObjectSize(const size_t newObjectSize) CATALYST_NOEXCEPT { objectSize = newObjectSize; }
+	void SetObjectSize(const size_t newObjectSize) NOEXCEPT { objectSize = newObjectSize; }
 
 	/*
 	*	Returns the size of the container.
 	*/
-	size_t GetContainerSize() const CATALYST_NOEXCEPT { return containerSize; }
+	size_t GetContainerSize() const NOEXCEPT { return containerSize; }
 
 	/*
 	*	Sets the size of the container.
 	*/
-	void SetContainerSize(const size_t newContainerSize) CATALYST_NOEXCEPT { containerSize = newContainerSize; }
+	void SetContainerSize(const size_t newContainerSize) NOEXCEPT { containerSize = newContainerSize; }
 
 	/*
 	*	Returns the current container index.
 	*/
-	size_t GetCurrentContainerIndex() const CATALYST_NOEXCEPT { return currentContainerIndex; }
+	size_t GetCurrentContainerIndex() const NOEXCEPT { return currentContainerIndex; }
 
 	/*
 	*	Sets the current container index.
 	*/
-	void SetCurrentContainerIndex(const size_t newCurrentContainerIndex) CATALYST_NOEXCEPT { currentContainerIndex = newCurrentContainerIndex; }
+	void SetCurrentContainerIndex(const size_t newCurrentContainerIndex) NOEXCEPT { currentContainerIndex = newCurrentContainerIndex; }
 
 	/*
 	*	Returns the number of completions required for this daily group quest to be deemed complete.
 	*/
-	uint8 GetNumberOfCompletionsRequired() const CATALYST_NOEXCEPT { return numberOfCompletionsRequired; }
+	uint8 GetNumberOfCompletionsRequired() const NOEXCEPT { return numberOfCompletionsRequired; }
 
 	/*
 	*	Sets the number of completions required for this daily group quest to be deemed complete.
 	*/
-	void SetNumberOfCompletionsRequired(const uint8 newNumberOfCompletionsRequired) CATALYST_NOEXCEPT { numberOfCompletionsRequired = newNumberOfCompletionsRequired; }
+	void SetNumberOfCompletionsRequired(const uint8 newNumberOfCompletionsRequired) NOEXCEPT { numberOfCompletionsRequired = newNumberOfCompletionsRequired; }
 
 	/*
 	*	Returns the current number of completions.
 	*/
-	uint8 GetCurrentNumberOfCompletions() const CATALYST_NOEXCEPT { return currentNumberOfCompletions.load(); }
+	uint8 GetCurrentNumberOfCompletions() const NOEXCEPT { return currentNumberOfCompletions.load(); }
 
 	/*
 	*	Sets the current number of completions.
 	*/
-	void SetCurrentNumberOfCompletions(const uint8 newCurrentNumberOfCompletions) CATALYST_NOEXCEPT { currentNumberOfCompletions.store(newCurrentNumberOfCompletions); }
+	void SetCurrentNumberOfCompletions(const uint8 newCurrentNumberOfCompletions) NOEXCEPT { currentNumberOfCompletions.store(newCurrentNumberOfCompletions); }
 
 	/*
 	*	Carries out this daily quest. Returns whether or not the quest was actually carried out.
 	*/
-	bool CarryOut() CATALYST_NOEXCEPT;
+	bool CarryOut() NOEXCEPT;
 
 private:
 
@@ -134,10 +134,10 @@ private:
 	DailyGroupQuestFunction function;
 
 	//The arguments to send to the function to execute for this daily quest.
-	void *CATALYST_RESTRICT arguments;
+	void *RESTRICT arguments;
 
 	//Pointer to the container.
-	void *CATALYST_RESTRICT container;
+	void *RESTRICT container;
 
 	//The size of the objects contained in the container in bytes.
 	size_t objectSize;

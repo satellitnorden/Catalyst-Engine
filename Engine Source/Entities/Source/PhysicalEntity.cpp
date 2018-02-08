@@ -7,34 +7,34 @@
 //Systems.
 #include <GraphicsSystem.h>
 
-//Static variable definitions.
-DynamicArray<PhysicalEntity *CATALYST_RESTRICT> PhysicalEntity::instances;
+//Define the entity class.
+DEFINE_ENTITY_CLASS(PhysicalEntity);
 
 /*
 *	Default constructor.
 */
-PhysicalEntity::PhysicalEntity() CATALYST_NOEXCEPT
+PhysicalEntity::PhysicalEntity() NOEXCEPT
 {
 	//Get a new components index.
 	componentsIndex = ComponentManager::GetNewPhysicalEntityComponentsIndex();
 
 	//Add this physical entity to the universal container.
-	instances.Emplace(this);
+	Instances.EmplaceSlow(this);
 }
 
 /*
 *	Default destructor.
 */
-PhysicalEntity::~PhysicalEntity() CATALYST_NOEXCEPT
+PhysicalEntity::~PhysicalEntity() NOEXCEPT
 {
 	//Remove this physical entity from the universal container.
-	instances.Erase(this);
+	Instances.Erase(this);
 }
 
 /*
 *	Initializes this physical entity.
 */
-void PhysicalEntity::Initialize(const PhysicalModel &newModel) CATALYST_NOEXCEPT
+void PhysicalEntity::Initialize(const PhysicalModel &newModel) NOEXCEPT
 {
 	//Initialize this physical entity.
 	GraphicsSystem::Instance->InitializePhysicalEntity(*this, newModel);
@@ -43,7 +43,7 @@ void PhysicalEntity::Initialize(const PhysicalModel &newModel) CATALYST_NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-Vector3& PhysicalEntity::GetPosition() CATALYST_NOEXCEPT
+const Vector3& PhysicalEntity::GetPosition() NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].position;
@@ -52,7 +52,7 @@ Vector3& PhysicalEntity::GetPosition() CATALYST_NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-Vector3& PhysicalEntity::GetRotation() CATALYST_NOEXCEPT
+const Vector3& PhysicalEntity::GetRotation() NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].rotation;
@@ -61,7 +61,7 @@ Vector3& PhysicalEntity::GetRotation() CATALYST_NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-Vector3& PhysicalEntity::GetScale() CATALYST_NOEXCEPT
+const Vector3& PhysicalEntity::GetScale() NOEXCEPT
 {
 	//Return the scale of this entity.
 	return ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].scale;
@@ -70,7 +70,7 @@ Vector3& PhysicalEntity::GetScale() CATALYST_NOEXCEPT
 /*
 *	Moves this entity.
 */
-void PhysicalEntity::Move(const Vector3 &moveVector) CATALYST_NOEXCEPT
+void PhysicalEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
 	ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].position += moveVector;
@@ -85,7 +85,7 @@ void PhysicalEntity::Move(const Vector3 &moveVector) CATALYST_NOEXCEPT
 /*
 *	Rotates this entity.
 */
-void PhysicalEntity::Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT
+void PhysicalEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate this entity.
 	ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].rotation += rotateVector;
@@ -100,7 +100,7 @@ void PhysicalEntity::Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT
 /*
 *	Scales this entity.
 */
-void PhysicalEntity::Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT
+void PhysicalEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale this physical entity.
 	ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].scale *= scaleVector;

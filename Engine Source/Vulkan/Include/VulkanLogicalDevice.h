@@ -16,27 +16,27 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanLogicalDevice() CATALYST_NOEXCEPT;
+	VulkanLogicalDevice() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanLogicalDevice() CATALYST_NOEXCEPT;
+	~VulkanLogicalDevice() NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan logical device.
 	*/
-	const VkDevice& Get() const CATALYST_NOEXCEPT { return vulkanLogicalDevice; }
+	const VkDevice& Get() const NOEXCEPT { return vulkanLogicalDevice; }
 
 	/*
 	*	Initializes this Vulkan logical device.
 	*/
-	void Initialize() CATALYST_NOEXCEPT;
+	void Initialize() NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan logical device.
 	*/
-	void Release() CATALYST_NOEXCEPT;
+	void Release() NOEXCEPT;
 
 private:
 
@@ -46,16 +46,16 @@ private:
 	/*
 	*	Creates the device queue create infos.
 	*/
-	void CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const float *const CATALYST_RESTRICT queuePriorities) const CATALYST_NOEXCEPT;
+	void CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const float *const RESTRICT queuePriorities) const NOEXCEPT;
 
 	/*
 	*	Creates a physical device features.
 	*/
-	void CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures &physicalDeviceFeatures) const CATALYST_NOEXCEPT;
+	void CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures &physicalDeviceFeatures) const NOEXCEPT;
 
 	/*
 	*	Creates the device create info.
 	*/
-	void CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreateInfo, const DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const DynamicArray<const char *CATALYST_RESTRICT> &requiredExtensions, const VkPhysicalDeviceFeatures *CATALYST_RESTRICT enabledFeatures) const CATALYST_NOEXCEPT;
+	void CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreateInfo, const DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const DynamicArray<const char *RESTRICT> &requiredExtensions, const VkPhysicalDeviceFeatures *RESTRICT enabledFeatures) const NOEXCEPT;
 
 };

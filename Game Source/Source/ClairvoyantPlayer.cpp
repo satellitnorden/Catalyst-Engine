@@ -17,7 +17,7 @@
 /*
 *	Default constructor.
 */
-ClairvoyantPlayer::ClairvoyantPlayer() CATALYST_NOEXCEPT
+ClairvoyantPlayer::ClairvoyantPlayer() NOEXCEPT
 {
 
 }
@@ -25,7 +25,7 @@ ClairvoyantPlayer::ClairvoyantPlayer() CATALYST_NOEXCEPT
 /*
 *	Default destructor.
 */
-ClairvoyantPlayer::~ClairvoyantPlayer() CATALYST_NOEXCEPT
+ClairvoyantPlayer::~ClairvoyantPlayer() NOEXCEPT
 {
 
 }
@@ -33,7 +33,7 @@ ClairvoyantPlayer::~ClairvoyantPlayer() CATALYST_NOEXCEPT
 /*
 *	Initializes the player.
 */
-void ClairvoyantPlayer::Initialize() CATALYST_NOEXCEPT
+void ClairvoyantPlayer::Initialize() NOEXCEPT
 {
 	//Add a camera.
 	GraphicsSystem::Instance->SetActiveCamera(this);
@@ -50,7 +50,7 @@ void ClairvoyantPlayer::Initialize() CATALYST_NOEXCEPT
 /*
 *	Updates the player.
 */
-void ClairvoyantPlayer::Update(const float deltaTime) CATALYST_NOEXCEPT
+void ClairvoyantPlayer::Update(const float deltaTime) NOEXCEPT
 {
 	static const float cameraLookSpeed = 50.0f;
 
@@ -65,13 +65,19 @@ void ClairvoyantPlayer::Update(const float deltaTime) CATALYST_NOEXCEPT
 		Rotate(Vector3(0.0f, currentGamepadState.rightThumbstickXValue * -cameraLookSpeed * deltaTime, 0.0f));
 		Rotate(Vector3(currentGamepadState.rightThumbstickYValue * cameraLookSpeed * deltaTime, 0.0f, 0.0f));
 
-		Vector3 &rotation = GetRotation();
+		const Vector3 &rotation = GetRotation();
 
 		if (rotation.X > 89.0f)
-			rotation.X = 89.0f;
-
+		{
+			const Vector3 rotateVector{ -(rotation.X - 89.0f), 0.0f, 0.0f };
+			Rotate(rotateVector);
+		}
+			
 		else if (rotation.X < -89.0f)
-			rotation.X = -89.0f;
+		{
+			const Vector3 rotateVector{ -(rotation.X + 89.0f), 0.0f, 0.0f };
+			Rotate(rotateVector);
+		}
 
 		//Move.
 		Move(GetRightVector() * currentGamepadState.leftThumbstickXValue * deltaTime * movementSpeed);

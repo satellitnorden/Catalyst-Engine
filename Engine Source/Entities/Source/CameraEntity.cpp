@@ -4,34 +4,34 @@
 //Components.
 #include <ComponentManager.h>
 
-//Static variable definitions.
-DynamicArray<CameraEntity *CATALYST_RESTRICT> CameraEntity::instances;
+//Define the entity class.
+DEFINE_ENTITY_CLASS(CameraEntity);
 
 /*
 *	Default constructor.
 */
-CameraEntity::CameraEntity() CATALYST_NOEXCEPT
+CameraEntity::CameraEntity() NOEXCEPT
 {
 	//Get a new components index.
 	componentsIndex = ComponentManager::GetNewCameraEntityComponentsIndex();
 
 	//Add this camera entity to the universal container.
-	instances.Emplace(this);
+	Instances.EmplaceSlow(this);
 }
 
 /*
 *	Default destructor.
 */
-CameraEntity::~CameraEntity() CATALYST_NOEXCEPT
+CameraEntity::~CameraEntity() NOEXCEPT
 {
 	//Remove this camera entity from the universal container.
-	instances.Erase(this);
+	Instances.Erase(this);
 }
 
 /*
 *	Returns the position of this entity.
 */
-Vector3& CameraEntity::GetPosition() CATALYST_NOEXCEPT
+const Vector3& CameraEntity::GetPosition() NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].position;
@@ -40,7 +40,7 @@ Vector3& CameraEntity::GetPosition() CATALYST_NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-Vector3& CameraEntity::GetRotation() CATALYST_NOEXCEPT
+const Vector3& CameraEntity::GetRotation() NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].rotation;
@@ -49,18 +49,16 @@ Vector3& CameraEntity::GetRotation() CATALYST_NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-Vector3& CameraEntity::GetScale() CATALYST_NOEXCEPT
+const Vector3& CameraEntity::GetScale() NOEXCEPT
 {
 	//Camera entities has no scale.
-	static Vector3 defaultScale{ 1.0f, 1.0f, 1.0f };
-
-	return defaultScale;
+	return Entity::defaultScale;
 }
 
 /*
 *	Moves this entity.
 */
-void CameraEntity::Move(const Vector3 &moveVector) CATALYST_NOEXCEPT
+void CameraEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
 	ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].position += moveVector;
@@ -75,7 +73,7 @@ void CameraEntity::Move(const Vector3 &moveVector) CATALYST_NOEXCEPT
 /*
 *	Rotates this entity.
 */
-void CameraEntity::Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT
+void CameraEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate this entity.
 	ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].rotation += rotateVector;
@@ -90,7 +88,7 @@ void CameraEntity::Rotate(const Vector3 &rotateVector) CATALYST_NOEXCEPT
 /*
 *	Scales this entity.
 */
-void CameraEntity::Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT
+void CameraEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale all children.
 	for (auto child : children)
@@ -102,7 +100,7 @@ void CameraEntity::Scale(const Vector3 &scaleVector) CATALYST_NOEXCEPT
 /*
 *	Returns the forward vector of this entity.
 */
-Vector3 CameraEntity::GetForwardVector() CATALYST_NOEXCEPT
+Vector3 CameraEntity::GetForwardVector() NOEXCEPT
 {
 	//Return the forward vector of this entity.
 	return Vector3(0.0f, 0.0f, -1.0f).Rotated(GetRotation());
@@ -111,7 +109,7 @@ Vector3 CameraEntity::GetForwardVector() CATALYST_NOEXCEPT
 /*
 *	Returns the right vector of this entity.
 */
-Vector3 CameraEntity::GetRightVector() CATALYST_NOEXCEPT
+Vector3 CameraEntity::GetRightVector() NOEXCEPT
 {
 	//Return the right vector of this entity.
 	return Vector3(1.0f, 0.0f, 0.0f).Rotated(GetRotation());
@@ -120,7 +118,7 @@ Vector3 CameraEntity::GetRightVector() CATALYST_NOEXCEPT
 /*
 *	Returns the up vector of this entity.
 */
-Vector3 CameraEntity::GetUpVector() CATALYST_NOEXCEPT
+Vector3 CameraEntity::GetUpVector() NOEXCEPT
 {
 	//Return the up vector of this entity.
 	return Vector3(0.0f, 1.0f, 0.0f).Rotated(GetRotation());
@@ -129,7 +127,7 @@ Vector3 CameraEntity::GetUpVector() CATALYST_NOEXCEPT
 /*
 *	Returns the field of view for this camera entity.
 */
-float CameraEntity::GetFieldOfView() const CATALYST_NOEXCEPT
+float CameraEntity::GetFieldOfView() const NOEXCEPT
 {
 	//Return the field of view for this camera entity.
 	return ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].fieldOfView;
@@ -138,7 +136,7 @@ float CameraEntity::GetFieldOfView() const CATALYST_NOEXCEPT
 /*
 *	Returns the near plane of the frustum.
 */
-float CameraEntity::GetNearPlane() const CATALYST_NOEXCEPT
+float CameraEntity::GetNearPlane() const NOEXCEPT
 {
 	//Return the near plane of the frustum.
 	return ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].nearPlane;
@@ -147,7 +145,7 @@ float CameraEntity::GetNearPlane() const CATALYST_NOEXCEPT
 /*
 *	Returns the far plane of the frustum.
 */
-float CameraEntity::GetFarPlane() const CATALYST_NOEXCEPT
+float CameraEntity::GetFarPlane() const NOEXCEPT
 {
 	//Return the far plane of the frustum.
 	return ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].farPlane;

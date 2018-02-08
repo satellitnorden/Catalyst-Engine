@@ -19,8 +19,12 @@
 
 //Forward declarations.
 class CameraEntity;
+class HeightMap;
+class NormalMap;
 class PhysicalEntity;
 class PhysicalModel;
+class TerrainEntity;
+class TerrainUniformData;
 
 class GraphicsSystem final
 {
@@ -33,87 +37,102 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	GraphicsSystem() CATALYST_NOEXCEPT;
+	GraphicsSystem() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~GraphicsSystem() CATALYST_NOEXCEPT;
+	~GraphicsSystem() NOEXCEPT;
 
 	/*
 	*	Initializes the graphics system.
 	*/
-	void InitializeSystem() CATALYST_NOEXCEPT;
+	void InitializeSystem() NOEXCEPT;
 
 	/*
 	*	Post-initializes the graphics system.
 	*/
-	void PostInitializeSystem() CATALYST_NOEXCEPT;
+	void PostInitializeSystem() NOEXCEPT;
 
 	/*
 	*	Updates the graphics system synchronously.
 	*/
-	void UpdateSystemSynchronous() CATALYST_NOEXCEPT;
+	void UpdateSystemSynchronous() NOEXCEPT;
 
 	/*
 	*	Releases the graphics system.
 	*/
-	void ReleaseSystem() CATALYST_NOEXCEPT;
+	void ReleaseSystem() NOEXCEPT;
 
 	/*
 	*	Creates and returns physical model.
 	*/
-	const PhysicalModel CreatePhysicalModel(const char *CATALYST_RESTRICT modelPath, Vulkan2DTexture *CATALYST_RESTRICT albedoTexture, Vulkan2DTexture *CATALYST_RESTRICT normalMapTexture, Vulkan2DTexture *CATALYST_RESTRICT roughnessTexture, Vulkan2DTexture *CATALYST_RESTRICT, Vulkan2DTexture *CATALYST_RESTRICT ambientOcclusionTexture) const CATALYST_NOEXCEPT;
+	const PhysicalModel CreatePhysicalModel(const char *RESTRICT modelPath, Vulkan2DTexture *RESTRICT albedoTexture, Vulkan2DTexture *RESTRICT normalMapTexture, Vulkan2DTexture *RESTRICT roughnessTexture, Vulkan2DTexture *RESTRICT, Vulkan2DTexture *RESTRICT ambientOcclusionTexture) const NOEXCEPT;
 
 	/*
 	*	Initializes a physical entity.
 	*/
-	void InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const CATALYST_NOEXCEPT;
+	void InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const NOEXCEPT;
 
 	/*
-	*	Creates and returns a 2D texture.
+	*	Initializes a terrain entity.
 	*/
-	CATALYST_RESTRICTED Vulkan2DTexture* Create2DTexture(const char *CATALYST_RESTRICT texturePath) const CATALYST_NOEXCEPT;
+	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Vulkan2DTexture *RESTRICT terrainHeightMapTexture, const Vulkan2DTexture *RESTRICT terrainNormalMapTexture, const Vulkan2DTexture *RESTRICT albedoTexture, const Vulkan2DTexture *RESTRICT normalMapTexture, const Vulkan2DTexture *RESTRICT roughnessTexture, const Vulkan2DTexture *RESTRICT metallicTexture, const Vulkan2DTexture *RESTRICT ambientOcclusionTexture, const Vulkan2DTexture *RESTRICT displacementTexture) const NOEXCEPT;
+
+	/*
+	*	Creates and returns a 2D texture given a texture path.
+	*/
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const char *RESTRICT texturePath) const NOEXCEPT;
+
+	/*
+	*	Creates and returns a 2D texture given a height map.
+	*/
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const HeightMap &heightMap) const NOEXCEPT;
+
+	/*
+	*	Creates and returns a 2D texture given a normal map.
+	*/
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const NormalMap &normalMap) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a cube map texture.
 	*/
-	CATALYST_RESTRICTED VulkanCubeMapTexture* CreateCubeMapTexture(const char *CATALYST_RESTRICT leftTexturePath, const char *CATALYST_RESTRICT rightTexturePath, const char *CATALYST_RESTRICT downTexturePath, const char *CATALYST_RESTRICT upTexturePath, const char *CATALYST_RESTRICT backTexturePath, const char *CATALYST_RESTRICT frontTexturePath) const CATALYST_NOEXCEPT;
+	RESTRICTED VulkanCubeMapTexture* CreateCubeMapTexture(const char *RESTRICT leftTexturePath, const char *RESTRICT rightTexturePath, const char *RESTRICT downTexturePath, const char *RESTRICT upTexturePath, const char *RESTRICT backTexturePath, const char *RESTRICT frontTexturePath) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.
 	*/
-	CATALYST_RESTRICTED VulkanUniformBuffer* CreateUniformBuffer(const size_t uniformBufferSize) const CATALYST_NOEXCEPT;
+	RESTRICTED VulkanUniformBuffer* CreateUniformBuffer(const size_t uniformBufferSize) const NOEXCEPT;
 
 	/*
 	*	Sets the active camera.
 	*/
-	void SetActiveCamera(CameraEntity *CATALYST_RESTRICT newActiveCamera) CATALYST_NOEXCEPT;
+	void SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT;
 
 	/*
 	*	Sets the active sky box cube map texture.
 	*/
-	void SetActiveSkyBox(VulkanCubeMapTexture *CATALYST_RESTRICT newSkyBox) CATALYST_NOEXCEPT;
+	void SetActiveSkyBox(VulkanCubeMapTexture *RESTRICT newSkyBox) NOEXCEPT;
 
 	/*
 	*	Sets the post processing blur amount.
 	*/
-	void SetPostProcessingBlurAmount(const float newBlurAmount) CATALYST_NOEXCEPT;
+	void SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT;
 
 	/*
 	*	Sets the post processing chromatic aberration amount.
 	*/
-	void SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) CATALYST_NOEXCEPT;
+	void SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) NOEXCEPT;
 
 	/*
 	*	Sets the post processing saturation.
 	*/
-	void SetPostProcessingSaturation(const float newSaturation) CATALYST_NOEXCEPT;
+	void SetPostProcessingSaturation(const float newSaturation) NOEXCEPT;
 
 	/*
 	*	Sets the post processing sharpen amount.
 	*/
-	void SetPostProcessingSharpenAmount(const float newSharpenAmount) CATALYST_NOEXCEPT;
+	void SetPostProcessingSharpenAmount(const float newSharpenAmount) NOEXCEPT;
 
 private:
 
@@ -130,6 +149,7 @@ private:
 		Roughness,
 		Metallic,
 		AmbientOcclusion,
+		Displacement,
 		NumberOfDefaultTextures
 	};
 
@@ -151,6 +171,7 @@ private:
 	//Enumeration covering all pipelines.
 	enum Pipeline : uint8
 	{
+		TerrainSceneBufferPipeline,
 		SceneBufferPipeline,
 		LightingPipeline,
 		CubeMapPipeline,
@@ -185,6 +206,10 @@ private:
 		PostProcessingFragmentShaderModule,
 		SceneBufferFragmentShaderModule,
 		SceneBufferVertexShaderModule,
+		TerrainSceneBufferFragmentShaderModule,
+		TerrainSceneBufferTessellationControlShaderModule,
+		TerrainSceneBufferTessellationEvaluationShaderModule,
+		TerrainSceneBufferVertexShaderModule,
 		ViewportVertexShaderModule,
 		NumberOfShaderModules
 	};
@@ -201,7 +226,7 @@ private:
 	Window mainWindow;
 
 	//The active camera.
-	CameraEntity *CATALYST_RESTRICT activeCamera;
+	CameraEntity *RESTRICT activeCamera;
 
 	//The current projection matrix.
 	Matrix4 projectionMatrix;
@@ -216,28 +241,28 @@ private:
 	StaticArray<VulkanCommandBuffer, CommandBuffer::NumberOfCommandBuffers> commandBuffers;
 
 	//Container for all default textures.
-	StaticArray<Vulkan2DTexture *CATALYST_RESTRICT, DefaultTexture::NumberOfDefaultTextures> defaultTextures;
+	StaticArray<Vulkan2DTexture *RESTRICT, DefaultTexture::NumberOfDefaultTextures> defaultTextures;
 
 	//Container for all depth buffers.
-	StaticArray<VulkanDepthBuffer *CATALYST_RESTRICT, DepthBuffer::NumberOfDepthBuffers> depthBuffers;
+	StaticArray<VulkanDepthBuffer *RESTRICT, DepthBuffer::NumberOfDepthBuffers> depthBuffers;
 
 	//Container for all descriptor sets.
 	StaticArray<VulkanDescriptorSet, DescriptorSet::NumberOfDescriptorSet> descriptorSets;
 
 	//Container for all render targets.
-	StaticArray<VulkanRenderTarget *CATALYST_RESTRICT, RenderTarget::NumberOfRenderTargets> renderTargets;
+	StaticArray<VulkanRenderTarget *RESTRICT, RenderTarget::NumberOfRenderTargets> renderTargets;
 
 	//Container for all pipelines.
-	StaticArray<VulkanPipeline *CATALYST_RESTRICT, Pipeline::NumberOfPipelines> pipelines;
+	StaticArray<VulkanPipeline *RESTRICT, Pipeline::NumberOfPipelines> pipelines;
 
 	//Container for all semaphores.
-	StaticArray<VulkanSemaphore *CATALYST_RESTRICT, Semaphore::NumberOfSemaphores> semaphores;
+	StaticArray<VulkanSemaphore *RESTRICT, Semaphore::NumberOfSemaphores> semaphores;
 
 	//Container for all shader modules.
-	StaticArray<VulkanShaderModule *CATALYST_RESTRICT, ShaderModule::NumberOfShaderModules> shaderModules;
+	StaticArray<VulkanShaderModule *RESTRICT, ShaderModule::NumberOfShaderModules> shaderModules;
 
 	//Container for all uniform buffers.
-	StaticArray<VulkanUniformBuffer *CATALYST_RESTRICT, UniformBuffer::NumberOfUniformBuffers> uniformBuffers;
+	StaticArray<VulkanUniformBuffer *RESTRICT, UniformBuffer::NumberOfUniformBuffers> uniformBuffers;
 
 	//Container for all swapchain command buffers.
 	DynamicArray<VulkanCommandBuffer> swapchainCommandBuffers;
@@ -246,7 +271,7 @@ private:
 	size_t currentSwapchainCommandBuffer{ 0 };
 
 	//The sky box cude map texture.
-	VulkanCubeMapTexture *CATALYST_RESTRICT skyBoxTexture;
+	VulkanCubeMapTexture *RESTRICT skyBoxTexture;
 
 	//The sky box descriptor set.
 	VulkanDescriptorSet skyBoxDescriptorSet;
@@ -254,86 +279,96 @@ private:
 	/*
 	*	Initializes all render targets.
 	*/
-	void InitializeRenderTargets() CATALYST_NOEXCEPT;
+	void InitializeRenderTargets() NOEXCEPT;
 
 	/*
 	*	Initializes all semaphores.
 	*/
-	void InitializeSemaphores() CATALYST_NOEXCEPT;
+	void InitializeSemaphores() NOEXCEPT;
 
 	/*
 	*	Initializes all uniform buffers.
 	*/
-	void InitializeUniformBuffers() CATALYST_NOEXCEPT;
+	void InitializeUniformBuffers() NOEXCEPT;
 
 	/*
 	*	Initializes all shader modules.
 	*/
-	void InitializeShaderModules() CATALYST_NOEXCEPT;
+	void InitializeShaderModules() NOEXCEPT;
 
 	/*
 	*	Initializes all pipelines.
 	*/
-	void InitializePipelines() CATALYST_NOEXCEPT;
+	void InitializePipelines() NOEXCEPT;
 
 	/*
 	*	Initializes all descriptor sets.
 	*/
-	void InitializeDescriptorSets() CATALYST_NOEXCEPT;
+	void InitializeDescriptorSets() NOEXCEPT;
+
+	/*
+	*	Initializes all default textures.
+	*/
+	void InitializeDefaultTextures() NOEXCEPT;
 
 	/*
 	*	Calculates the projection matrix.
 	*/
-	void CalculateProjectionMatrix() CATALYST_NOEXCEPT;
+	void CalculateProjectionMatrix() NOEXCEPT;
 
 	/*
 	*	Begins the frame.
 	*/
-	void BeginFrame() CATALYST_NOEXCEPT;
+	void BeginFrame() NOEXCEPT;
+
+	/*
+	*	Renders the terrain.
+	*/
+	void RenderTerrain() NOEXCEPT;
 
 	/*
 	*	Renders all physical entities.
 	*/
-	void RenderPhysicalEntities() CATALYST_NOEXCEPT;
+	void RenderPhysicalEntities() NOEXCEPT;
 
 	/*
 	*	Renders lighting.
 	*/
-	void RenderLighting() CATALYST_NOEXCEPT;
+	void RenderLighting() NOEXCEPT;
 
 	/*
 	*	Renders sky box.
 	*/
-	void RenderSkyBox() CATALYST_NOEXCEPT;
+	void RenderSkyBox() NOEXCEPT;
 
 	/*
 	*	Renders the post processing.
 	*/
-	void RenderPostProcessing() CATALYST_NOEXCEPT;
+	void RenderPostProcessing() NOEXCEPT;
 
 	/*
 	*	Ends the frame.
 	*/
-	void EndFrame() CATALYST_NOEXCEPT;
+	void EndFrame() NOEXCEPT;
 
 	/*
 	*	Re-initializes all descriptor sets.
 	*/
-	void ReinitializeDescriptorSets() CATALYST_NOEXCEPT;
+	void ReinitializeDescriptorSets() NOEXCEPT;
 
 	/*
 	*	Updates the dynamic uniform data.
 	*/
-	void UpdateDynamicUniformData() CATALYST_NOEXCEPT;
+	void UpdateDynamicUniformData() NOEXCEPT;
 
 	/*
 	*	Updates the physical entities graphics buffers.
 	*/
-	void UpdatePhysicalEntitiesGraphicsBuffers() CATALYST_NOEXCEPT;
+	void UpdatePhysicalEntitiesGraphicsBuffers() NOEXCEPT;
 
 	/*
 	*	Updates the view frustum culling.
 	*/
-	void UpdateViewFrustumCulling() CATALYST_NOEXCEPT;
+	void UpdateViewFrustumCulling() NOEXCEPT;
 
 };
