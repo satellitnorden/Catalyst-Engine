@@ -7,15 +7,6 @@
 #include <vulkan/vulkan.h>
 
 /*
-*	Turns RenderDoc debugging on/off.
-*/
-#if !defined(CATALYST_FINAL)
-	#define RENDERDOC_DEBUGGING true
-#else
-	#define RENDERDOC_DEBUGGING false
-#endif
-
-/*
 *	Turns Vulkan debugging on/off.
 */
 #if !defined(CATALYST_FINAL)
@@ -68,7 +59,7 @@
 /*
 *	Given a VkResult, return a string.
 */
-static void PrintResultAndBreak(const char *const RESTRICT function, const VkResult result) NOEXCEPT
+static void PrintResultAndBreak(const char *const CATALYST_RESTRICT function, const VkResult result) CATALYST_NOEXCEPT
 {
 	PRINT_TO_CONSOLE(function << " failed.");
 

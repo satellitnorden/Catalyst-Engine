@@ -11,17 +11,17 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	EntitySpawner() NOEXCEPT;
+	EntitySpawner() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~EntitySpawner() NOEXCEPT;
+	~EntitySpawner() CATALYST_NOEXCEPT;
 
 	/*
 	*	Updates this entity spawner.
 	*/
-	void Update(const float deltaTime) NOEXCEPT;
+	void Update(const float deltaTime) CATALYST_NOEXCEPT;
 
 private:
 

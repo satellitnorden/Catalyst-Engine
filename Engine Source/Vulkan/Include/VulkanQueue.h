@@ -17,32 +17,32 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanQueue() NOEXCEPT;
+	VulkanQueue() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanQueue() NOEXCEPT;
+	~VulkanQueue() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan queue.
 	*/
-	const VkQueue& Get() const NOEXCEPT { return vulkanQueue; }
+	const VkQueue& Get() const CATALYST_NOEXCEPT { return vulkanQueue; }
 
 	/*
 	*	Initializes this Vulkan queue.
 	*/
-	void Initialize(const uint32 queueFamilyIndex) NOEXCEPT;
+	void Initialize(const uint32 queueIndex) CATALYST_NOEXCEPT;
 
 	/*
 	*	Submits a command buffer to this Vulkan queue.
 	*/
-	void Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &waitSemaphores = DynamicArray<VkSemaphore>(), const VkPipelineStageFlags &waitStages = 0, const DynamicArray<VkSemaphore> &signalSemaphores = DynamicArray<VkSemaphore>(), const VkFence fence = VK_NULL_HANDLE) const NOEXCEPT;
+	void Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &waitSemaphores = DynamicArray<VkSemaphore>(), const VkPipelineStageFlags &waitStages = 0, const DynamicArray<VkSemaphore> &signalSemaphores = DynamicArray<VkSemaphore>(), const VkFence fence = VK_NULL_HANDLE) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Waits idle for this Vulkan queue.
 	*/
-	void WaitIdle() const NOEXCEPT;
+	void WaitIdle() const CATALYST_NOEXCEPT;
 
 private:
 
@@ -52,11 +52,11 @@ private:
 	/*
 	*	Creates a submit info for a single command buffer.
 	*/
-	void CreateSubmitInfo(VkSubmitInfo &submitInfo, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &signalSemaphores) const NOEXCEPT;
+	void CreateSubmitInfo(VkSubmitInfo &submitInfo, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &signalSemaphores) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a submit info for multiple command buffers.
 	*/
-	void CreateSubmitInfo(VkSubmitInfo &submitInfo, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const DynamicArray<VulkanCommandBuffer> &vulkanCommandBuffers, const DynamicArray<VkSemaphore> &signalSemaphores) const NOEXCEPT;
+	void CreateSubmitInfo(VkSubmitInfo &submitInfo, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const DynamicArray<VulkanCommandBuffer> &vulkanCommandBuffers, const DynamicArray<VkSemaphore> &signalSemaphores) const CATALYST_NOEXCEPT;
 
 };

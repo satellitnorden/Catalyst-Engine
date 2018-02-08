@@ -22,47 +22,42 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	InputSystem() NOEXCEPT;
+	InputSystem() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~InputSystem() NOEXCEPT;
+	~InputSystem() CATALYST_NOEXCEPT;
 
 	/*
 	*	Post-initializes the input system.
 	*/
-	void PostInitializeSystem() NOEXCEPT;
+	void PostInitializeSystem() CATALYST_NOEXCEPT;
 
 	/*
 	*	Pre-updates the input system synchronously.
 	*/
-	void PreUpdateSystemSynchronous() NOEXCEPT;
-
-	/*
-	*	Post-updates the input system synchronously.
-	*/
-	void PostUpdateSystemSynchronous() NOEXCEPT;
+	void PreUpdateSystemSynchronous() CATALYST_NOEXCEPT;
 
 	/*
 	*	Updates the input system asynchronously.
 	*/
-	void UpdateSystemAsynchronous() NOEXCEPT;
+	void UpdateSystemAsynchronous() CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases the input system.
 	*/
-	void ReleaseSystem() NOEXCEPT;
+	void ReleaseSystem() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the current gamepad state.
 	*/
-	GamepadState GetCurrentGamepadState(uint8 index = 0) const NOEXCEPT { return currentGamepadState[index].GetSafe(); }
+	GamepadState GetCurrentGamepadState(uint8 index = 0) const CATALYST_NOEXCEPT { return currentGamepadState[index].GetSafe(); }
 
 private:
 
 	//The current gamepad states.
-	StaticArray<MultithreadedResource<GamepadState>, INPUT_MAXIMUM_GAMEPADS> currentGamepadState;
+	MultithreadedResource<GamepadState> currentGamepadState[INPUT_MAXIMUM_GAMEPADS];
 
 	//The current keyboard state.
 	MultithreadedResource<KeyboardState> currentKeyboardState;

@@ -9,7 +9,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Map() NOEXCEPT
+	Map() CATALYST_NOEXCEPT
 	{
 
 	}
@@ -17,7 +17,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~Map() NOEXCEPT
+	~Map() CATALYST_NOEXCEPT
 	{
 
 	}
@@ -25,7 +25,7 @@ public:
 	/*
 	*	Finds the object associated with specific key and returns a pointer to that object. Returns nullptr if it can't find the object, const.
 	*/
-	RESTRICTED const ObjectType* Find(const KeyType &keyToFind) const NOEXCEPT
+	CATALYST_RESTRICTED const ObjectType* Find(const KeyType &keyToFind) const CATALYST_NOEXCEPT
 	{
 		for (auto &mapEntry : map)
 		{
@@ -41,7 +41,7 @@ public:
 	/*
 	*	Finds the object associated with specific key and returns a pointer to that object. Returns nullptr if it can't find the object, non-const.
 	*/
-	RESTRICTED ObjectType* Find(const KeyType &keyToFind) NOEXCEPT
+	CATALYST_RESTRICTED ObjectType* Find(const KeyType &keyToFind) CATALYST_NOEXCEPT
 	{
 		for (auto &mapEntry : map)
 		{
@@ -57,9 +57,9 @@ public:
 	/*
 	*	Emplaces a new pair into the map.
 	*/
-	void EmplaceSlow(const KeyType &newKey, const ObjectType &newObject)
+	void Emplace(const KeyType &newKey, const ObjectType &newObject)
 	{
-		map.EmplaceSlow(newKey, newObject);
+		map.Emplace(newKey, newObject);
 	}
 
 private:

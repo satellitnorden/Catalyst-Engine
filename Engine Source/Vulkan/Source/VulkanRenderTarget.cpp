@@ -7,7 +7,7 @@
 /*
 *	Default constructor.
 */
-VulkanRenderTarget::VulkanRenderTarget() NOEXCEPT
+VulkanRenderTarget::VulkanRenderTarget() CATALYST_NOEXCEPT
 {
 
 }
@@ -15,7 +15,7 @@ VulkanRenderTarget::VulkanRenderTarget() NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanRenderTarget::~VulkanRenderTarget() NOEXCEPT
+VulkanRenderTarget::~VulkanRenderTarget() CATALYST_NOEXCEPT
 {
 
 }
@@ -23,7 +23,7 @@ VulkanRenderTarget::~VulkanRenderTarget() NOEXCEPT
 /*
 *	Initializes this Vulkan render target.
 */
-void VulkanRenderTarget::Initialize(const VkExtent2D extent) NOEXCEPT
+void VulkanRenderTarget::Initialize(const VkExtent2D extent) CATALYST_NOEXCEPT
 {
 	//Calculate the image size.
 	const VkDeviceSize imageSize = extent.width * extent.height * 4;
@@ -50,7 +50,7 @@ void VulkanRenderTarget::Initialize(const VkExtent2D extent) NOEXCEPT
 /*
 *	Releases this Vulkan render target.
 */
-void VulkanRenderTarget::Release() NOEXCEPT
+void VulkanRenderTarget::Release() CATALYST_NOEXCEPT
 {
 	//Destroy Vulkan sampler.
 	vkDestroySampler(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSampler, nullptr);
@@ -68,7 +68,7 @@ void VulkanRenderTarget::Release() NOEXCEPT
 /*
 *	Returns the write descriptor set for this texture.
 */
-VkWriteDescriptorSet VulkanRenderTarget::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT
+VkWriteDescriptorSet VulkanRenderTarget::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const CATALYST_NOEXCEPT
 {
 	VkWriteDescriptorSet vulkanWriteDescriptorSetCopy{ vulkanWriteDescriptorSet };
 
@@ -82,7 +82,7 @@ VkWriteDescriptorSet VulkanRenderTarget::GetWriteDescriptorSet(const VulkanDescr
 /*
 *	Creates the descriptor image info.
 */
-void VulkanRenderTarget::CreateDescriptorImageInfo() NOEXCEPT
+void VulkanRenderTarget::CreateDescriptorImageInfo() CATALYST_NOEXCEPT
 {
 	vulkanDescriptorImageInfo.sampler = vulkanSampler;
 	vulkanDescriptorImageInfo.imageView = vulkanImageView;
@@ -92,7 +92,7 @@ void VulkanRenderTarget::CreateDescriptorImageInfo() NOEXCEPT
 /*
 *	Creates the write descriptor set.
 */
-void VulkanRenderTarget::CreateWriteDescriptorSet() NOEXCEPT
+void VulkanRenderTarget::CreateWriteDescriptorSet() CATALYST_NOEXCEPT
 {
 	vulkanWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	vulkanWriteDescriptorSet.pNext = nullptr;

@@ -18,22 +18,22 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanDescriptorSet() NOEXCEPT;
+	VulkanDescriptorSet() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanDescriptorSet() NOEXCEPT;
+	~VulkanDescriptorSet() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan descriptor set.
 	*/
-	const VkDescriptorSet& Get() const NOEXCEPT { return vulkanDescriptorSet; }
+	const VkDescriptorSet& Get() const CATALYST_NOEXCEPT { return vulkanDescriptorSet; }
 
 	/*
 	*	Initializes this Vulkan descriptor set.
 	*/
-	void Initialize(const VulkanDescriptorPool &vulkanDescriptorPool, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) NOEXCEPT;
+	void Initialize(const VulkanDescriptorPool &vulkanDescriptorPool, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) CATALYST_NOEXCEPT;
 
 private:
 
@@ -43,7 +43,7 @@ private:
 	/*
 	*	Creates a descriptor set allocate info.
 	*/
-	void CreateDescriptorSetAllocateInfo(VkDescriptorSetAllocateInfo &descriptorSetAllocateInfo, const VulkanDescriptorPool &vulkanDescriptorPool, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const NOEXCEPT;
+	void CreateDescriptorSetAllocateInfo(VkDescriptorSetAllocateInfo &descriptorSetAllocateInfo, const VulkanDescriptorPool &vulkanDescriptorPool, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const CATALYST_NOEXCEPT;
 
 
 };

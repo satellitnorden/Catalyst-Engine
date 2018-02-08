@@ -14,12 +14,12 @@ public:
 	/*
 	*	Default constructor - prohibited, must be constructed with the proper arguments.
 	*/
-	VulkanAllocation() NOEXCEPT = delete;
+	VulkanAllocation() CATALYST_NOEXCEPT = delete;
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	VulkanAllocation(const VkDeviceMemory newVulkanDeviceMemory, const uint32 newOffset) NOEXCEPT
+	VulkanAllocation(const VkDeviceMemory newVulkanDeviceMemory, const uint32 newOffset) CATALYST_NOEXCEPT
 		:
 		vulkanDeviceMemory(newVulkanDeviceMemory),
 		offset(newOffset)

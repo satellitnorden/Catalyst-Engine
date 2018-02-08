@@ -15,7 +15,7 @@
 /*
 *	Default constructor.
 */
-VulkanDescriptorPool::VulkanDescriptorPool() NOEXCEPT
+VulkanDescriptorPool::VulkanDescriptorPool() CATALYST_NOEXCEPT
 {
 
 }
@@ -23,7 +23,7 @@ VulkanDescriptorPool::VulkanDescriptorPool() NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanDescriptorPool::~VulkanDescriptorPool() NOEXCEPT
+VulkanDescriptorPool::~VulkanDescriptorPool() CATALYST_NOEXCEPT
 {
 
 }
@@ -31,7 +31,7 @@ VulkanDescriptorPool::~VulkanDescriptorPool() NOEXCEPT
 /*
 *	Initializes this Vulkan descriptor pool.
 */
-void VulkanDescriptorPool::Initialize() NOEXCEPT
+void VulkanDescriptorPool::Initialize() CATALYST_NOEXCEPT
 {
 	//Create a descriptor pool sizes.
 	DynamicArray<VkDescriptorPoolSize> descriptorPoolSizes;
@@ -48,7 +48,7 @@ void VulkanDescriptorPool::Initialize() NOEXCEPT
 /*
 *	Releases this Vulkan descriptor pool.
 */
-void VulkanDescriptorPool::Release() NOEXCEPT
+void VulkanDescriptorPool::Release() CATALYST_NOEXCEPT
 {
 	//Destroy this Vulkan descriptor pool.
 	vkDestroyDescriptorPool(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDescriptorPool, nullptr);
@@ -57,7 +57,7 @@ void VulkanDescriptorPool::Release() NOEXCEPT
 /*
 *	Allocates a Vulkan descriptor set.
 */
-void VulkanDescriptorPool::AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescriptorSet, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const NOEXCEPT
+void VulkanDescriptorPool::AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescriptorSet, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const CATALYST_NOEXCEPT
 {
 	//Initialize the Vulkan descriptor set.
 	vulkaDescriptorSet.Initialize(*this, vulkanDescriptorSetLayout);
@@ -66,7 +66,7 @@ void VulkanDescriptorPool::AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescr
 /*
 *	Creates a descriptor pool size.
 */
-void VulkanDescriptorPool::CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPoolSize> &descriptorPoolSizes) const NOEXCEPT
+void VulkanDescriptorPool::CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPoolSize> &descriptorPoolSizes) const CATALYST_NOEXCEPT
 {
 	descriptorPoolSizes.Reserve(2);
 
@@ -75,20 +75,20 @@ void VulkanDescriptorPool::CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPo
 	combinedImageSamplerDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	combinedImageSamplerDescriptorPoolSize.descriptorCount = VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS;
 
-	descriptorPoolSizes.EmplaceFast(combinedImageSamplerDescriptorPoolSize);
+	descriptorPoolSizes.EmplaceUnsafe(combinedImageSamplerDescriptorPoolSize);
 
 	VkDescriptorPoolSize uniformBufferDescriptorPoolSize;
 
 	uniformBufferDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	uniformBufferDescriptorPoolSize.descriptorCount = VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS;
 
-	descriptorPoolSizes.EmplaceFast(uniformBufferDescriptorPoolSize);
+	descriptorPoolSizes.EmplaceUnsafe(uniformBufferDescriptorPoolSize);
 }
 
 /*
 *	Creates a descriptor pool create info.
 */
-void VulkanDescriptorPool::CreateDescriptorPoolCreateInfo(VkDescriptorPoolCreateInfo &descriptorPoolCreateInfo, const DynamicArray<VkDescriptorPoolSize> &descriptorPoolSizes) const NOEXCEPT
+void VulkanDescriptorPool::CreateDescriptorPoolCreateInfo(VkDescriptorPoolCreateInfo &descriptorPoolCreateInfo, const DynamicArray<VkDescriptorPoolSize> &descriptorPoolSizes) const CATALYST_NOEXCEPT
 {
 	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	descriptorPoolCreateInfo.pNext = nullptr;

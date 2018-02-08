@@ -4,11 +4,11 @@
 #include <EngineCore.h>
 
 //Graphics.
-#include <AxisAlignedBoundingBox.h>
 #include <PhysicalMaterial.h>
 
 //Forward declarations.
-class VulkanBuffer;
+class VulkanIndexBuffer;
+class VulkanVertexBuffer;
 
 class PhysicalModel final
 {
@@ -18,83 +18,83 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	PhysicalModel() NOEXCEPT;
+	PhysicalModel() CATALYST_NOEXCEPT;
 
 	/*
 	*	Copy constructor.
 	*/
-	PhysicalModel(const PhysicalModel &otherPhysicalModel) NOEXCEPT;
+	PhysicalModel(const PhysicalModel &otherPhysicalModel) CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~PhysicalModel() NOEXCEPT;
+	~PhysicalModel() CATALYST_NOEXCEPT;
 
 	/*
 	*	Copy assignment overload.
 	*/
-	PhysicalModel& operator=(const PhysicalModel &otherPhysicalModel) NOEXCEPT;
+	PhysicalModel& operator=(const PhysicalModel &otherPhysicalModel) CATALYST_NOEXCEPT;
 
 	/*
-	*	Returns the axis aligned bounding box of this physical model, const.
+	*	Returns the extent of this physical model.
 	*/
-	const AxisAlignedBoundingBox& GetAxisAlignedBoundingBox() const NOEXCEPT { return axisAlignedBoundingBox; }
+	float GetExtent() const CATALYST_NOEXCEPT { return extent; }
 
 	/*
-	*	Returns the axis aligned bounding box of this physical model, non-const.
+	*	Sets extent of this physical model.
 	*/
-	AxisAlignedBoundingBox& GetAxisAlignedBoundingBox() NOEXCEPT { return axisAlignedBoundingBox; }
+	void SetExtent(const float newExtent) CATALYST_NOEXCEPT { extent = newExtent; }
 
 	/*
-	*	Returns the buffer.
+	*	Returns the vertex buffer.
 	*/
-	RESTRICTED const VulkanBuffer* GetBuffer() const NOEXCEPT { return buffer; }
+	CATALYST_RESTRICTED const VulkanVertexBuffer* GetVertexBuffer() const CATALYST_NOEXCEPT { return vertexBuffer; }
 
 	/*
-	*	Sets the buffer.
+	*	Sets the vertex buffer.
 	*/
-	void SetBuffer(VulkanBuffer *RESTRICT newBuffer) NOEXCEPT { buffer = newBuffer; }
+	void SetVertexBuffer(VulkanVertexBuffer *CATALYST_RESTRICT newVertexBuffer) CATALYST_NOEXCEPT { vertexBuffer = newVertexBuffer; }
 
 	/*
-	*	Returns the index offset.
+	*	Returns the index buffer.
 	*/
-	uint64 GetIndexOffset() const NOEXCEPT { return indexOffset; }
+	CATALYST_RESTRICTED const VulkanIndexBuffer* GetIndexBuffer() const CATALYST_NOEXCEPT { return indexBuffer; }
 
 	/*
-	*	Sets the index offset.
+	*	Sets  the index buffer.
 	*/
-	void SetIndexOffset(const uint64 newIndexOffset) NOEXCEPT { indexOffset = newIndexOffset; }
+	void SetIndexBuffer(VulkanIndexBuffer *CATALYST_RESTRICT newIndexBuffer) CATALYST_NOEXCEPT { indexBuffer = newIndexBuffer; }
 
 	/*
 	*	Returns the material, const version.
 	*/
-	const PhysicalMaterial& GetMaterial() const NOEXCEPT { return material; }
+	const PhysicalMaterial& GetMaterial() const CATALYST_NOEXCEPT { return material; }
 
 	/*
 	*	Returns the material, non-const version.
 	*/
-	PhysicalMaterial& GetMaterial() NOEXCEPT { return material; }
+	PhysicalMaterial& GetMaterial() CATALYST_NOEXCEPT { return material; }
 
 	/*
 	*	Returns the index count.
 	*/
-	uint32 GetIndexCount() const NOEXCEPT { return indexCount; }
+	uint32 GetIndexCount() const CATALYST_NOEXCEPT { return indexCount; }
 
 	/*
 	*	Sets the index count.
 	*/
-	void SetIndexCount(const uint32 newIndexCount) NOEXCEPT { indexCount = newIndexCount; }
+	void SetIndexCount(const uint32 newIndexCount) CATALYST_NOEXCEPT { indexCount = newIndexCount; }
 
 private:
 
-	//The axis aligned bounding box of this physical model.
-	AxisAlignedBoundingBox axisAlignedBoundingBox;
+	//The extent of this physical model.
+	std::atomic<float> extent;
 
-	//The buffer.
-	VulkanBuffer *RESTRICT buffer;
+	//The vertex buffer.
+	VulkanVertexBuffer *CATALYST_RESTRICT vertexBuffer;
 
-	//The index offset in the buffer.
-	uint64 indexOffset;
+	//The index buffer.
+	VulkanIndexBuffer *CATALYST_RESTRICT indexBuffer;
 
 	//The material.
 	PhysicalMaterial material;

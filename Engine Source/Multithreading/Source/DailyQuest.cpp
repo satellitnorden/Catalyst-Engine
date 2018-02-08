@@ -4,7 +4,7 @@
 /*
 *	Default constructor.
 */
-DailyQuest::DailyQuest() NOEXCEPT
+DailyQuest::DailyQuest() CATALYST_NOEXCEPT
 {
 
 }
@@ -12,7 +12,7 @@ DailyQuest::DailyQuest() NOEXCEPT
 /*
 *	Default destructor.
 */
-DailyQuest::~DailyQuest() NOEXCEPT
+DailyQuest::~DailyQuest() CATALYST_NOEXCEPT
 {
 
 }
@@ -20,7 +20,7 @@ DailyQuest::~DailyQuest() NOEXCEPT
 /*
 *	Carries out this daily quest. Returns whether or not the quest was actually carried out.
 */
-bool DailyQuest::CarryOut() NOEXCEPT
+bool DailyQuest::CarryOut() CATALYST_NOEXCEPT
 {
 	//If this daily quest is not available, just return.
 	DailyQuestCompletionState currentQuestCompletionState = questCompletionState.load();

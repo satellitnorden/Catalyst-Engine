@@ -4,9 +4,9 @@
 *	Creates a new entity.
 */
 template <class EntityClass, class... Arguments>
-RESTRICTED EntityClass* EntitySystem::CreateEntity(Arguments&&... arguments) const NOEXCEPT
+CATALYST_RESTRICTED EntityClass* EntitySystem::CreateEntity(Arguments&&... arguments) const CATALYST_NOEXCEPT
 {
-	//EntityClass::Instances.EmplaceSlow(std::forward<Arguments>(arguments)...)
+	//EntityClass::Instances.Emplace(std::forward<Arguments>(arguments)...)
 
 	return new EntityClass(std::forward<Arguments>(arguments)...);
 }
@@ -15,9 +15,9 @@ RESTRICTED EntityClass* EntitySystem::CreateEntity(Arguments&&... arguments) con
 *	Creates a new child entity.
 */
 template <class EntityClass, class... Arguments>
-RESTRICTED EntityClass* EntitySystem::CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) const NOEXCEPT
+CATALYST_RESTRICTED EntityClass* EntitySystem::CreateChildEntity(Entity *CATALYST_RESTRICT parentEntity, Arguments&&... arguments) const CATALYST_NOEXCEPT
 {
-	EntityClass *RESTRICT newChild = new EntityClass(std::forward<Arguments>(arguments)...);
+	EntityClass *CATALYST_RESTRICT newChild = new EntityClass(std::forward<Arguments>(arguments)...);
 
 	parentEntity->AddChild(newChild);
 	newChild->SetParent(parentEntity);

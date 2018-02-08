@@ -13,7 +13,7 @@ DEFINE_SINGLETON(PhysicsSystem);
 /*
 *	Default constructor.
 */
-PhysicsSystem::PhysicsSystem() NOEXCEPT
+PhysicsSystem::PhysicsSystem() CATALYST_NOEXCEPT
 {
 
 }
@@ -21,7 +21,7 @@ PhysicsSystem::PhysicsSystem() NOEXCEPT
 /*
 *	Default destructor.
 */
-PhysicsSystem::~PhysicsSystem() NOEXCEPT
+PhysicsSystem::~PhysicsSystem() CATALYST_NOEXCEPT
 {
 
 }
@@ -29,7 +29,7 @@ PhysicsSystem::~PhysicsSystem() NOEXCEPT
 /*
 *	Updates the physics system synchronously.
 */
-void PhysicsSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
+void PhysicsSystem::UpdateSystemSynchronous(const float deltaTime) CATALYST_NOEXCEPT
 {
 	
 }

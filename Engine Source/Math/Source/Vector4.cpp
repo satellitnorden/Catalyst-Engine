@@ -7,7 +7,7 @@
 /*
 *	Default constructor.
 */
-Vector4::Vector4() NOEXCEPT
+Vector4::Vector4() CATALYST_NOEXCEPT
 	:
 	X(0.0f),
 	Y(0.0f),
@@ -20,7 +20,7 @@ Vector4::Vector4() NOEXCEPT
 /*
 *	Constructor taking a single float as argument.
 */
-Vector4::Vector4(const float newValue) NOEXCEPT
+Vector4::Vector4(const float newValue) CATALYST_NOEXCEPT
 	:
 	X(newValue),
 	Y(newValue),
@@ -33,7 +33,7 @@ Vector4::Vector4(const float newValue) NOEXCEPT
 /*
 *	Constructor taking a Vector3 as argument.
 */
-Vector4::Vector4(const Vector3 &otherVector) NOEXCEPT
+Vector4::Vector4(const Vector3 &otherVector) CATALYST_NOEXCEPT
 	:
 	X(otherVector.X),
 	Y(otherVector.Y),
@@ -46,7 +46,7 @@ Vector4::Vector4(const Vector3 &otherVector) NOEXCEPT
 /*
 *	Constructor taking the X, Y, Z and W components as arguments.
 */
-Vector4::Vector4(const float newX, const float newY, const float newZ, const float newW) NOEXCEPT
+Vector4::Vector4(const float newX, const float newY, const float newZ, const float newW) CATALYST_NOEXCEPT
 	:
 	X(newX),
 	Y(newY),

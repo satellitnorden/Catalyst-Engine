@@ -12,7 +12,7 @@ namespace ShaderLoader
 	/*
 	*	Given a shader name, returns a vector of bytes.
 	*/
-	DynamicArray<char> LoadShader(const char *RESTRICT shaderName) NOEXCEPT
+	DynamicArray<char> LoadShader(const char *CATALYST_RESTRICT shaderName) CATALYST_NOEXCEPT
 	{
 		DynamicString fullShaderName{ SHADERS_PATH };
 		fullShaderName += shaderName;

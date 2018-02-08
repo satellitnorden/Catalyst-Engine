@@ -9,7 +9,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	StaticArray() NOEXCEPT
+	StaticArray() CATALYST_NOEXCEPT
 	{
 
 	}
@@ -17,7 +17,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~StaticArray() NOEXCEPT
+	~StaticArray() CATALYST_NOEXCEPT
 	{
 
 	}
@@ -25,7 +25,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	const ObjectType& operator[](const size_t index) const NOEXCEPT
+	const ObjectType& operator[](const size_t index) const CATALYST_NOEXCEPT
 	{
 		return array[index];
 	}
@@ -33,7 +33,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	ObjectType& operator[](const size_t index) NOEXCEPT
+	ObjectType& operator[](const size_t index) CATALYST_NOEXCEPT
 	{
 		return array[index];
 	}
@@ -41,7 +41,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	RESTRICTED const ObjectType* begin() const NOEXCEPT
+	CATALYST_RESTRICTED const ObjectType* begin() const CATALYST_NOEXCEPT
 	{
 		return array;
 	}
@@ -49,7 +49,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	RESTRICTED ObjectType* begin()  NOEXCEPT
+	CATALYST_RESTRICTED ObjectType* begin()  CATALYST_NOEXCEPT
 	{
 		return array;
 	}
@@ -57,7 +57,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	RESTRICTED const ObjectType* end() const NOEXCEPT
+	CATALYST_RESTRICTED const ObjectType* end() const CATALYST_NOEXCEPT
 	{
 		return array + ArraySize;
 	}
@@ -65,7 +65,7 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	RESTRICTED ObjectType* end() NOEXCEPT
+	CATALYST_RESTRICTED ObjectType* end() CATALYST_NOEXCEPT
 	{
 		return array + ArraySize;
 	}
@@ -73,7 +73,7 @@ public:
 	/*
 	*	Returns a pointer to the data of the array, const.
 	*/
-	RESTRICTED const ObjectType* const Data() const NOEXCEPT
+	CATALYST_RESTRICTED const ObjectType* const Data() const CATALYST_NOEXCEPT
 	{
 		return array;
 	}
@@ -81,7 +81,7 @@ public:
 	/*
 	*	Returns a pointer to the data of the array, non-const.
 	*/
-	RESTRICTED ObjectType* Data() NOEXCEPT
+	CATALYST_RESTRICTED ObjectType* Data() CATALYST_NOEXCEPT
 	{
 		return array;
 	}
@@ -89,7 +89,7 @@ public:
 	/*
 	*	Returns the size of this array.
 	*/
-	size_t Size() const NOEXCEPT
+	size_t Size() const CATALYST_NOEXCEPT
 	{
 		return ArraySize;
 	}

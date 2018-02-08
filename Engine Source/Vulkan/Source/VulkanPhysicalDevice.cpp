@@ -7,7 +7,7 @@
 /*
 *	Default constructor.
 */
-VulkanPhysicalDevice::VulkanPhysicalDevice() NOEXCEPT
+VulkanPhysicalDevice::VulkanPhysicalDevice() CATALYST_NOEXCEPT
 {
 
 }
@@ -15,7 +15,7 @@ VulkanPhysicalDevice::VulkanPhysicalDevice() NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanPhysicalDevice::~VulkanPhysicalDevice() NOEXCEPT
+VulkanPhysicalDevice::~VulkanPhysicalDevice() CATALYST_NOEXCEPT
 {
 
 }
@@ -23,7 +23,7 @@ VulkanPhysicalDevice::~VulkanPhysicalDevice() NOEXCEPT
 /*
 *	Initializes this Vulkan physical device.
 */
-void VulkanPhysicalDevice::Initialize() NOEXCEPT
+void VulkanPhysicalDevice::Initialize() CATALYST_NOEXCEPT
 {
 	//Get the number of available physical devices.
 	uint32 availablePhysicalDeviceCount{ 0 };
@@ -43,7 +43,7 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 		//Check if this physical device is suitable.
 		if (IsPhysicalDeviceSuitable(availablePhysicalDevice))
 		{
-			suitablePhysicalDevices.EmplaceFast(availablePhysicalDevice);
+			suitablePhysicalDevices.EmplaceUnsafe(availablePhysicalDevice);
 		}
 	}
 
@@ -76,76 +76,38 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 	queueFamilyProperties.Resize(queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(vulkanPhysicalDevice, &queueFamilyCount, queueFamilyProperties.Data());
 
-	/*
-	*	Find the queue family for the graphics.
-	*	Do two runs here - First, try to find a unique queue family index for each type of queue. If this can't be done, do a second run to fill in the blanks.
-	*/
+	//Find the queue family for the graphics.
 	uint32 queueFamilyCounter{ 0 };
 
 	for (auto &queueFamilyProperty : queueFamilyProperties)
 	{
-		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && graphicsQueueFamilyIndex == UINT32_MAXIMUM)
+		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 		{
-			graphicsQueueFamilyIndex = queueFamilyCounter++;
-
-			continue;
+			graphicsQueueFamilyIndex = queueFamilyCounter;
 		}
 
-		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT && transferQueueFamilyIndex == UINT32_MAXIMUM)
+		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT)
 		{
-			transferQueueFamilyIndex = queueFamilyCounter++;
-
-			continue;
+			transferQueueFamilyIndex = queueFamilyCounter;
 		}
 
 		VkBool32 presentSupport = false;
 
 		VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(vulkanPhysicalDevice, queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &presentSupport));
 
-		if (queueFamilyProperty.queueCount > 0 && presentSupport && presentQueueFamilyIndex == UINT32_MAXIMUM)
+		if (queueFamilyProperty.queueCount > 0 && presentSupport)
 		{
-			presentQueueFamilyIndex = queueFamilyCounter++;
-
-			continue;
+			presentQueueFamilyIndex = queueFamilyCounter;
 		}
-	}
 
-	if (	graphicsQueueFamilyIndex == UINT32_MAXIMUM ||
-			transferQueueFamilyIndex == UINT32_MAXIMUM ||
-			presentQueueFamilyIndex == UINT32_MAXIMUM	)
-	{
-		queueFamilyCounter = 0;
-
-		for (auto &queueFamilyProperty : queueFamilyProperties)
-		{
-			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && graphicsQueueFamilyIndex == UINT32_MAXIMUM)
-			{
-				graphicsQueueFamilyIndex = queueFamilyCounter;
-			}
-
-			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT && transferQueueFamilyIndex == UINT32_MAXIMUM)
-			{
-				transferQueueFamilyIndex = queueFamilyCounter;
-			}
-
-			VkBool32 presentSupport = false;
-
-			VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(vulkanPhysicalDevice, queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &presentSupport));
-
-			if (queueFamilyProperty.queueCount > 0 && presentSupport && presentQueueFamilyIndex == UINT32_MAXIMUM)
-			{
-				presentQueueFamilyIndex = queueFamilyCounter;
-			}
-
-			++queueFamilyCounter;
-		}
+		++queueFamilyCounter;
 	}
 }
 
 /*
 *	Given a Vulkan physical device, return if it is suitable for this game.
 */
-bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT
+bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulkanPhysicalDevice) const CATALYST_NOEXCEPT
 {
 	//Check if it has the required extensions.
 	if (!HasRequiredExtensions(vulkanPhysicalDevice))
@@ -162,7 +124,7 @@ bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulk
 /*
 *	Given a Vulkan physical device, return if it has the required extensions.
 */
-bool VulkanPhysicalDevice::HasRequiredExtensions(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT
+bool VulkanPhysicalDevice::HasRequiredExtensions(const VkPhysicalDevice &vulkanPhysicalDevice) const CATALYST_NOEXCEPT
 {
 	//Define the list of the required extensions.
 	std::set<DynamicString> requiredExtensions{ VULKAN_SWAPCHAIN_EXTENSION_NAME };
@@ -189,7 +151,7 @@ bool VulkanPhysicalDevice::HasRequiredExtensions(const VkPhysicalDevice &vulkanP
 /*
 *	Given a Vulkan physical device and a Vulkan surface, return if the Physical device has the proper swap chain support.
 */
-bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT
+bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vulkanPhysicalDevice) const CATALYST_NOEXCEPT
 {
 	//Query for format support.
 	uint32 formatsCount = 0; 
@@ -216,7 +178,7 @@ bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vul
 /*
 *	Given a list of suitable physical devices, return most suitable physical device.
 */
-VkPhysicalDevice VulkanPhysicalDevice::GetMostSuitableDevice(const DynamicArray<VkPhysicalDevice> &suitablePhysicalDevices) const NOEXCEPT
+VkPhysicalDevice VulkanPhysicalDevice::GetMostSuitableDevice(const DynamicArray<VkPhysicalDevice> &suitablePhysicalDevices) const CATALYST_NOEXCEPT
 {
 	//For now just return the first one.
 	return suitablePhysicalDevices[0];
@@ -225,7 +187,7 @@ VkPhysicalDevice VulkanPhysicalDevice::GetMostSuitableDevice(const DynamicArray<
 /*
 *	Given a physical device and a surface, returns the most optimal surface format.
 */
-VULKAN_SURFACE_FORMAT_TYPE VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() const NOEXCEPT
+VULKAN_SURFACE_FORMAT_TYPE VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() const CATALYST_NOEXCEPT
 {
 	//Query for format support.
 	uint32 availableFormatsCount = 0;
@@ -256,7 +218,7 @@ VULKAN_SURFACE_FORMAT_TYPE VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() c
 /*
 *	Given a physical device and a surface, returns the most optimal present mode.
 */
-VULKAN_PRESENT_MODE_TYPE VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEPT
+VULKAN_PRESENT_MODE_TYPE VulkanPhysicalDevice::GetMostOptimalPresentMode() const CATALYST_NOEXCEPT
 {
 	//Query for present mode support.
 	uint32 availablePresentModesCount = 0;

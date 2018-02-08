@@ -17,27 +17,27 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanSemaphore() NOEXCEPT;
+	VulkanSemaphore() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanSemaphore() NOEXCEPT;
+	~VulkanSemaphore() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan semaphore.
 	*/
-	const VkSemaphore& Get() const NOEXCEPT { return vulkanSemaphore; }
+	const VkSemaphore& Get() const CATALYST_NOEXCEPT { return vulkanSemaphore; }
 
 	/*
 	*	Initializes this Vulkan semaphore.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize() CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan semaphore.
 	*/
-	void Release() NOEXCEPT;
+	void Release() CATALYST_NOEXCEPT;
 
 private:
 
@@ -47,6 +47,6 @@ private:
 	/*
 	*	Creates a semaphore create info.
 	*/
-	void CreateSemaphoreCreateInfo(VkSemaphoreCreateInfo &semaphoreCreateInfo) const NOEXCEPT;
+	void CreateSemaphoreCreateInfo(VkSemaphoreCreateInfo &semaphoreCreateInfo) const CATALYST_NOEXCEPT;
 
 };

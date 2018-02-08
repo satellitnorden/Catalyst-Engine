@@ -17,44 +17,44 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	EntitySystem() NOEXCEPT;
+	EntitySystem() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~EntitySystem() NOEXCEPT;
+	~EntitySystem() CATALYST_NOEXCEPT;
 
 	/*
-	*	Updates the entity system synchronously.
+	*	Pre-updates the entity system synchronously.
 	*/
-	void UpdateSystemSynchronous() NOEXCEPT;
+	void PreUpdateSystemSynchronous() CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases the entity system.
 	*/
-	void ReleaseSystem() NOEXCEPT;
+	void ReleaseSystem() CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a new entity.
 	*/
 	template <class EntityClass, class... Arguments>
-	RESTRICTED EntityClass* CreateEntity(Arguments&&... arguments) const NOEXCEPT;
+	CATALYST_RESTRICTED EntityClass* CreateEntity(Arguments&&... arguments) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a new child entity.
 	*/
 	template <class EntityClass, class... Arguments>
-	RESTRICTED EntityClass* CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) const NOEXCEPT;
+	CATALYST_RESTRICTED EntityClass* CreateChildEntity(Entity *CATALYST_RESTRICT parentEntity, Arguments&&... arguments) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Marks a given entity for destruction.
 	*/
-	void MarkForDestruction(Entity *RESTRICT entityToBeDestroyed) NOEXCEPT;
+	void MarkForDestruction(Entity *CATALYST_RESTRICT entityToBeDestroyed) CATALYST_NOEXCEPT;
 
 private:
 
 	//Container for all entities that are marked for destruction.
-	DynamicArray<Entity *RESTRICT>entitiesToBeDestroyed;
+	DynamicArray<Entity *CATALYST_RESTRICT>entitiesToBeDestroyed;
 
 };
 

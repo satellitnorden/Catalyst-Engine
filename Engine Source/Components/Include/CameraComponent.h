@@ -9,7 +9,7 @@
 //Physics.
 #include <PhysicalConstants.h>
 
-class CameraComponent final
+class CameraComponent
 {
 
 public:

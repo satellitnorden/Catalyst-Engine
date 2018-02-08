@@ -53,7 +53,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	GamepadState() NOEXCEPT
+	GamepadState() CATALYST_NOEXCEPT
 	{
 
 	}

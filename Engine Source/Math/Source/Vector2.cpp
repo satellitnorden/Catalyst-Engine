@@ -7,7 +7,7 @@
 /*
 *	Default constructor.
 */
-Vector2::Vector2() NOEXCEPT
+Vector2::Vector2() CATALYST_NOEXCEPT
 	:
 	X(0.0f),
 	Y(0.0f)
@@ -18,7 +18,7 @@ Vector2::Vector2() NOEXCEPT
 /*
 *	Constructor taking X and Y as arguments.
 */
-Vector2::Vector2(const float newX, const float newY) NOEXCEPT
+Vector2::Vector2(const float newX, const float newY) CATALYST_NOEXCEPT
 	:
 	X(newX),
 	Y(newY)
@@ -29,7 +29,7 @@ Vector2::Vector2(const float newX, const float newY) NOEXCEPT
 /*
 *	Returns the length of the vector.
 */
-float Vector2::Length() const NOEXCEPT
+float Vector2::Length() const CATALYST_NOEXCEPT
 {
 	return GameMath::SquareRoot((X * X) + (Y * Y));
 }
@@ -37,7 +37,7 @@ float Vector2::Length() const NOEXCEPT
 /*
 *	Normalize the vector to a unit vector.
 */
-void Vector2::Normalize() NOEXCEPT
+void Vector2::Normalize() CATALYST_NOEXCEPT
 {
 	const float length = Length();
 
@@ -48,7 +48,7 @@ void Vector2::Normalize() NOEXCEPT
 /*
 *	Given an amount of degrees, rotate the vector.
 */
-void Vector2::Rotate(const float degrees) NOEXCEPT
+void Vector2::Rotate(const float degrees) CATALYST_NOEXCEPT
 {
 	const float theta = GameMath::DegreesToRadians(degrees);
 

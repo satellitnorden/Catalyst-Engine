@@ -17,7 +17,7 @@
 /*
 *	Default constructor.
 */
-EntitySpawner::EntitySpawner() NOEXCEPT
+EntitySpawner::EntitySpawner() CATALYST_NOEXCEPT
 {
 
 }
@@ -25,7 +25,7 @@ EntitySpawner::EntitySpawner() NOEXCEPT
 /*
 *	Default destructor.
 */
-EntitySpawner::~EntitySpawner() NOEXCEPT
+EntitySpawner::~EntitySpawner() CATALYST_NOEXCEPT
 {
 
 }
@@ -33,7 +33,7 @@ EntitySpawner::~EntitySpawner() NOEXCEPT
 /*
 *	Updates this entity spawner.
 */
-void EntitySpawner::Update(const float deltaTime) NOEXCEPT
+void EntitySpawner::Update(const float deltaTime) CATALYST_NOEXCEPT
 {
 	static Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneAlbedo.png");
 	static Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneNormalMap.png");
@@ -48,7 +48,7 @@ void EntitySpawner::Update(const float deltaTime) NOEXCEPT
 	{
 		spawnTimer -= 0.1f;
 
-		PhysicalEntity *RESTRICT stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
+		PhysicalEntity *CATALYST_RESTRICT stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
 		stone->Initialize(stoneModel);
 		stone->Move(Vector3(GameMath::RandomFloatInRange(-250.0f, 250.0f), GameMath::RandomFloatInRange(100.0f, 1'000.0f), GameMath::RandomFloatInRange(-250.0f, 250.0f)));
 		stone->Rotate(Vector3(0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f), 0.0f));

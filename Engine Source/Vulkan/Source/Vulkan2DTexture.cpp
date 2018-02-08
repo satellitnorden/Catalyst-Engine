@@ -10,7 +10,7 @@
 /*
 *	Default constructor.
 */
-Vulkan2DTexture::Vulkan2DTexture() NOEXCEPT
+Vulkan2DTexture::Vulkan2DTexture() CATALYST_NOEXCEPT
 {
 
 }
@@ -18,7 +18,7 @@ Vulkan2DTexture::Vulkan2DTexture() NOEXCEPT
 /*
 *	Default desctuctor.
 */
-Vulkan2DTexture::~Vulkan2DTexture() NOEXCEPT
+Vulkan2DTexture::~Vulkan2DTexture() CATALYST_NOEXCEPT
 {
 
 }
@@ -26,10 +26,10 @@ Vulkan2DTexture::~Vulkan2DTexture() NOEXCEPT
 /*
 *	Initializes this Vulkan 2D texture.
 */
-void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const uint32 channels, const void *RESTRICT textureData) NOEXCEPT
+void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT
 {
 	//Calculate the image size.
-	const VkDeviceSize imageSize = width * height * channels;
+	const VkDeviceSize imageSize = width * height * 4;
 
 	//Set up the staging buffer.
 	VkBuffer stagingBuffer;
@@ -45,54 +45,24 @@ void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const 
 	MemoryUtilities::CopyMemory(data, textureData, static_cast<size_t>(imageSize));
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 
-	//Determine the format of the picture.
-	VkFormat format;
-
-	switch (channels)
-	{
-		default:
-		{
-#if !defined(CATALYST_FINAL)
-			PRINT_TO_CONSOLE("Unsupported number of channels!");
-			BREAKPOINT;
-#endif
-
-			break;
-		}
-
-		case 1:
-		{
-			format = VK_FORMAT_R8_UNORM;
-
-			break;
-		}
-
-		case 4:
-		{
-			format = VK_FORMAT_R8G8B8A8_UNORM;
-
-			break;
-		}
-	}
-
 	//Create the Vulkan image.
-	VulkanUtilities::CreateVulkanImage(0, format, width, height, 1, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(0, VK_FORMAT_R8G8B8A8_UNORM, width, height, 1, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
 
 	//Transition the Vulkan image to the correct layout for writing.
-	VulkanUtilities::TransitionImageToLayout(format, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, vulkanImage);
+	VulkanUtilities::TransitionImageToLayout(VK_FORMAT_R8G8B8A8_UNORM, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, vulkanImage);
 
 	//Copy the buffer to the Vulkan image.
 	VulkanUtilities::CopyBufferToImage(stagingBuffer, vulkanImage, 1, width, height);
 
 	//Transition the Vulkan image to the correct layout for reading.
-	VulkanUtilities::TransitionImageToLayout(format, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, vulkanImage);
+	VulkanUtilities::TransitionImageToLayout(VK_FORMAT_R8G8B8A8_UNORM, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, vulkanImage);
 
 	//Clean up the staging buffer.
 	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, nullptr);
 	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBuffer, nullptr);
 
 	//Create the image view.
-	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, 1, vulkanImageView);
+	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, 1, vulkanImageView);
 
 	//Create the Vulkan sampler.
 	VulkanUtilities::CreateVulkanSampler(vulkanSampler);
@@ -107,7 +77,7 @@ void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const 
 /*
 *	Releases this Vulkan 2D texture.
 */
-void Vulkan2DTexture::Release() NOEXCEPT
+void Vulkan2DTexture::Release() CATALYST_NOEXCEPT
 {
 	//Destroy Vulkan sampler.
 	vkDestroySampler(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSampler, nullptr);
@@ -125,7 +95,7 @@ void Vulkan2DTexture::Release() NOEXCEPT
 /*
 *	Returns the write descriptor set for this texture.
 */
-VkWriteDescriptorSet Vulkan2DTexture::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT
+VkWriteDescriptorSet Vulkan2DTexture::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const CATALYST_NOEXCEPT
 {
 	VkWriteDescriptorSet vulkanWriteDescriptorSetCopy{ vulkanWriteDescriptorSet };
 
@@ -139,7 +109,7 @@ VkWriteDescriptorSet Vulkan2DTexture::GetWriteDescriptorSet(const VulkanDescript
 /*
 *	Creates the descriptor image info.
 */
-void Vulkan2DTexture::CreateDescriptorImageInfo() NOEXCEPT
+void Vulkan2DTexture::CreateDescriptorImageInfo() CATALYST_NOEXCEPT
 {
 	vulkanDescriptorImageInfo.sampler = vulkanSampler;
 	vulkanDescriptorImageInfo.imageView = vulkanImageView;
@@ -149,7 +119,7 @@ void Vulkan2DTexture::CreateDescriptorImageInfo() NOEXCEPT
 /*
 *	Creates the write descriptor set.
 */
-void Vulkan2DTexture::CreateWriteDescriptorSet() NOEXCEPT
+void Vulkan2DTexture::CreateWriteDescriptorSet() CATALYST_NOEXCEPT
 {
 	vulkanWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	vulkanWriteDescriptorSet.pNext = nullptr;

@@ -13,7 +13,7 @@ DEFINE_SINGLETON(InputSystem);
 /*
 *	Default constructor.
 */
-InputSystem::InputSystem() NOEXCEPT
+InputSystem::InputSystem() CATALYST_NOEXCEPT
 {
 
 }
@@ -21,7 +21,7 @@ InputSystem::InputSystem() NOEXCEPT
 /*
 *	Default destructor.
 */
-InputSystem::~InputSystem() NOEXCEPT
+InputSystem::~InputSystem() CATALYST_NOEXCEPT
 {
 
 }
@@ -29,34 +29,25 @@ InputSystem::~InputSystem() NOEXCEPT
 /*
 *	Post-initializes the input system.
 */
-void InputSystem::PostInitializeSystem() NOEXCEPT
+void InputSystem::PostInitializeSystem() CATALYST_NOEXCEPT
 {
 	//Register the input system asynchronous update daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, [](void *RESTRICT arguments) { static_cast<InputSystem *RESTRICT>(arguments)->UpdateSystemAsynchronous(); });
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, [](void *CATALYST_RESTRICT arguments) { static_cast<InputSystem *CATALYST_RESTRICT>(arguments)->UpdateSystemAsynchronous(); });
 }
 
 /*
 *	Pre-updates the input system synchronously.
 */
-void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
+void InputSystem::PreUpdateSystemSynchronous() CATALYST_NOEXCEPT
 {
 	//Carry out the input system asynchronous update daily quest.
 	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, this);
 }
 
 /*
-*	Post-updates the input system synchronously.
-*/
-void InputSystem::PostUpdateSystemSynchronous() NOEXCEPT
-{
-	//Wait for the input system asynchronous update daily quest to finish.
-	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::InputSystemAsynchronousUpdate);
-}
-
-/*
 *	Updates the input system asynchronously.
 */
-void InputSystem::UpdateSystemAsynchronous() NOEXCEPT
+void InputSystem::UpdateSystemAsynchronous() CATALYST_NOEXCEPT
 {
 	//Update gamepad states.
 	for (uint8 i = 0; i < INPUT_MAXIMUM_GAMEPADS; ++i)
@@ -79,7 +70,7 @@ void InputSystem::UpdateSystemAsynchronous() NOEXCEPT
 /*
 *	Releases the input system.
 */
-void InputSystem::ReleaseSystem() NOEXCEPT
+void InputSystem::ReleaseSystem() CATALYST_NOEXCEPT
 {
 	
 }

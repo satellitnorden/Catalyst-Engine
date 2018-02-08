@@ -9,7 +9,7 @@
 /*
 *	Default constructor.
 */
-VulkanDescriptorSet::VulkanDescriptorSet() NOEXCEPT
+VulkanDescriptorSet::VulkanDescriptorSet() CATALYST_NOEXCEPT
 {
 
 }
@@ -17,7 +17,7 @@ VulkanDescriptorSet::VulkanDescriptorSet() NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanDescriptorSet::~VulkanDescriptorSet() NOEXCEPT
+VulkanDescriptorSet::~VulkanDescriptorSet() CATALYST_NOEXCEPT
 {
 
 }
@@ -25,7 +25,7 @@ VulkanDescriptorSet::~VulkanDescriptorSet() NOEXCEPT
 /*
 *	Initializes this Vulkan descriptor set.
 */
-void VulkanDescriptorSet::Initialize(const VulkanDescriptorPool &vulkanDescriptorPool, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) NOEXCEPT
+void VulkanDescriptorSet::Initialize(const VulkanDescriptorPool &vulkanDescriptorPool, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) CATALYST_NOEXCEPT
 {
 	//Create the descriptor set allocate info.
 	VkDescriptorSetAllocateInfo descriptorSetAllocateInfo;
@@ -38,7 +38,7 @@ void VulkanDescriptorSet::Initialize(const VulkanDescriptorPool &vulkanDescripto
 /*
 *	Creates a descriptor set allocate info.
 */
-void VulkanDescriptorSet::CreateDescriptorSetAllocateInfo(VkDescriptorSetAllocateInfo &descriptorSetAllocateInfo, const VulkanDescriptorPool &vulkanDescriptorPool, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const NOEXCEPT
+void VulkanDescriptorSet::CreateDescriptorSetAllocateInfo(VkDescriptorSetAllocateInfo &descriptorSetAllocateInfo, const VulkanDescriptorPool &vulkanDescriptorPool, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const CATALYST_NOEXCEPT
 {
 	descriptorSetAllocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	descriptorSetAllocateInfo.pNext = nullptr;

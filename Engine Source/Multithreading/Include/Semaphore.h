@@ -11,7 +11,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Semaphore() NOEXCEPT
+	Semaphore() CATALYST_NOEXCEPT
 	{
 
 	}
@@ -19,7 +19,7 @@ public:
 	/*
 	*	Constructor taking the signal count as an argument.
 	*/
-	Semaphore(const uint64 newSignalCount) NOEXCEPT
+	Semaphore(const uint64 newSignalCount) CATALYST_NOEXCEPT
 		:
 		signalCount(newSignalCount)
 	{
@@ -29,7 +29,7 @@ public:
 	/*
 	*	Initializes the signal count of this semaphore.
 	*/
-	void InitializeSignalCount(const uint64 newSignalCount) NOEXCEPT
+	void InitializeSignalCount(const uint64 newSignalCount) CATALYST_NOEXCEPT
 	{
 		signalCount = newSignalCount;
 	}
@@ -37,17 +37,17 @@ public:
 	/*
 	*	Resets this semaphore.
 	*/
-	void Reset() NOEXCEPT { signalCounter.store(0); }
+	void Reset() CATALYST_NOEXCEPT { signalCounter.store(0); }
 
 	/*
 	*	Signals this semaphore.
 	*/
-	void Signal() NOEXCEPT { ++signalCounter; }
+	void Signal() CATALYST_NOEXCEPT { ++signalCounter; }
 
 	/*
 	*	Waits for this semaphore.
 	*/
-	void WaitFor() NOEXCEPT { while (signalCounter < signalCount) THREAD_YIELD(); }
+	void WaitFor() CATALYST_NOEXCEPT { while (signalCounter < signalCount) THREAD_YIELD(); }
 
 private:
 

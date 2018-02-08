@@ -10,7 +10,7 @@ DEFINE_SINGLETON(QuestSystem);
 /*
 *	Default constructor.
 */
-QuestSystem::QuestSystem() NOEXCEPT
+QuestSystem::QuestSystem() CATALYST_NOEXCEPT
 {
 
 }
@@ -18,7 +18,7 @@ QuestSystem::QuestSystem() NOEXCEPT
 /*
 *	Default destructor.
 */
-QuestSystem::~QuestSystem() NOEXCEPT
+QuestSystem::~QuestSystem() CATALYST_NOEXCEPT
 {
 
 }
@@ -26,7 +26,7 @@ QuestSystem::~QuestSystem() NOEXCEPT
 /*
 *	Initializes the quest system.
 */
-void QuestSystem::InitializeSystem() NOEXCEPT
+void QuestSystem::InitializeSystem() CATALYST_NOEXCEPT
 {
 	//Find out how many hardware threads there is.
 	uint8 numberOfHardwareThreads = std::thread::hardware_concurrency();
@@ -43,14 +43,14 @@ void QuestSystem::InitializeSystem() NOEXCEPT
 
 	for (uint8 i = 0; i < numberOfAdventurers; ++i)
 	{
-		adventurerThreads.EmplaceFast(std::move(std::thread(&QuestSystem::ExecuteAdventurer, this)));
+		adventurerThreads.EmplaceUnsafe(std::move(std::thread(&QuestSystem::ExecuteAdventurer, this)));
 	}
 }
 
 /*
 *	Releases the system.
 */
-void QuestSystem::ReleaseSystem() NOEXCEPT
+void QuestSystem::ReleaseSystem() CATALYST_NOEXCEPT
 {
 	//Join all adventurer threads.
 	for (auto &adventurerThread : adventurerThreads)
@@ -62,15 +62,24 @@ void QuestSystem::ReleaseSystem() NOEXCEPT
 /*
 *	Registers a daily quest.
 */
-void QuestSystem::RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction) NOEXCEPT
+void QuestSystem::RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction) CATALYST_NOEXCEPT
 {
 	dailyQuests[static_cast<uint8>(dailyQuest)].SetFunction(newFunction);
 }
 
 /*
+*	Registers a daily group quest.
+*/
+void QuestSystem::RegisterDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, DailyGroupQuestFunction function) CATALYST_NOEXCEPT
+{
+	dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetFunction(function);
+	dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetNumberOfCompletionsRequired(numberOfAdventurers);
+}
+
+/*
 *	Carries out a daily quest.
 */
-void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest, void *RESTRICT arguments) NOEXCEPT
+void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest, void *CATALYST_RESTRICT arguments) CATALYST_NOEXCEPT
 {
 	//Only carry out the daily quest if it is not available or in progress.
 	DailyQuestCompletionState questCompletionState = dailyQuests[static_cast<uint8>(dailyQuest)].GetQuestCompletionState();
@@ -83,9 +92,29 @@ void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest, void *RESTRIC
 }
 
 /*
+*	Carries out a daily group quest.
+*/
+void QuestSystem::CarryOutDailyGroupQuest(const DailyGroupQuests dailyGroupQuest, void *CATALYST_RESTRICT arguments, void *CATALYST_RESTRICT container, const size_t containerSize, const size_t objectSize) CATALYST_NOEXCEPT
+{
+	//Only carry out the daily group quest if it is not available or in progress.
+	DailyGroupQuestCompletionState questCompletionState = dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].GetQuestCompletionState();
+
+	if (questCompletionState == DailyGroupQuestCompletionState::Unavailable || questCompletionState == DailyGroupQuestCompletionState::Complete)
+	{
+		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetArguments(arguments);
+		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetContainer(container);
+		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetContainerSize(containerSize);
+		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetObjectSize(objectSize);
+		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetCurrentContainerIndex(0);
+		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetCurrentNumberOfCompletions(0);
+		dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].SetQuestCompletionState(DailyGroupQuestCompletionState::Available);
+	}
+}
+
+/*
 *	Waits for a daily quest to be completed.
 */
-void QuestSystem::WaitForDailyQuest(const DailyQuests dailyQuest) const NOEXCEPT
+void QuestSystem::WaitForDailyQuest(const DailyQuests dailyQuest) const CATALYST_NOEXCEPT
 {
 	while (dailyQuests[static_cast<uint8>(dailyQuest)].GetQuestCompletionState() != DailyQuestCompletionState::Complete)
 	{
@@ -94,9 +123,20 @@ void QuestSystem::WaitForDailyQuest(const DailyQuests dailyQuest) const NOEXCEPT
 }
 
 /*
+*	Waits for a daily group quest to begin.
+*/
+void QuestSystem::WaitForDailyGroupQuest(const DailyGroupQuests dailyGroupQuest) const CATALYST_NOEXCEPT
+{
+	while (dailyGroupQuests[static_cast<uint8>(dailyGroupQuest)].GetQuestCompletionState() != DailyGroupQuestCompletionState::Complete)
+	{
+		std::this_thread::yield();
+	}
+}
+
+/*
 *	Executes an adventurer.
 */
-void QuestSystem::ExecuteAdventurer() NOEXCEPT
+void QuestSystem::ExecuteAdventurer() CATALYST_NOEXCEPT
 {
 	while (!EngineSystem::Instance->ShouldTerminate())
 	{
@@ -107,6 +147,12 @@ void QuestSystem::ExecuteAdventurer() NOEXCEPT
 		for (uint8 i = 0; i < static_cast<uint8>(DailyQuests::NumberOfDailyQuests); ++i)
 		{
 			carriedOutQuests += dailyQuests[i].CarryOut() ? 1 : 0;
+		}
+
+		//Carry out all daily group quests.
+		for (uint8 i = 0; i < static_cast<uint8>(DailyGroupQuests::NumberOfDailyGroupQuests); ++i)
+		{
+			carriedOutQuests += dailyGroupQuests[i].CarryOut() ? 1 : 0;
 		}
 
 		//If there were no quests that were carried out, then pave the way for other hypothetical threads.

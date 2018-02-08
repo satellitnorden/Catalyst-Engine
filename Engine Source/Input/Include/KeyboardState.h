@@ -161,7 +161,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	KeyboardState() NOEXCEPT
+	KeyboardState() CATALYST_NOEXCEPT
 	{
 		//Set all keyboard button states to the default value.
 		for (uint8 i = 0; i < static_cast<uint8>(KeyboardButton::NumberOfKeyboardButtons); ++i)
@@ -173,7 +173,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~KeyboardState() NOEXCEPT
+	~KeyboardState() CATALYST_NOEXCEPT
 	{
 
 	}
@@ -181,7 +181,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	const KeyboardButtonState& operator[](const KeyboardButton button) const NOEXCEPT
+	const KeyboardButtonState& operator[](const KeyboardButton button) const CATALYST_NOEXCEPT
 	{
 		return keyboardButtonStates[static_cast<uint8>(button)];
 	}
@@ -189,7 +189,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	KeyboardButtonState& operator[](const KeyboardButton button) NOEXCEPT
+	KeyboardButtonState& operator[](const KeyboardButton button) CATALYST_NOEXCEPT
 	{
 		return keyboardButtonStates[static_cast<uint8>(button)];
 	}
@@ -197,6 +197,6 @@ public:
 private:
 
 	//The underlying keyboard button states.
-	StaticArray<KeyboardButtonState, static_cast<uint8>(KeyboardButton::NumberOfKeyboardButtons)> keyboardButtonStates{ };
+	KeyboardButtonState keyboardButtonStates[static_cast<uint8>(KeyboardButton::NumberOfKeyboardButtons)]{ };
 
 };

@@ -4,7 +4,7 @@
 /*
 *	Default constructor.
 */
-DailyGroupQuest::DailyGroupQuest() NOEXCEPT
+DailyGroupQuest::DailyGroupQuest() CATALYST_NOEXCEPT
 {
 
 }
@@ -12,7 +12,7 @@ DailyGroupQuest::DailyGroupQuest() NOEXCEPT
 /*
 *	Default destructor.
 */
-DailyGroupQuest::~DailyGroupQuest() NOEXCEPT
+DailyGroupQuest::~DailyGroupQuest() CATALYST_NOEXCEPT
 {
 
 }
@@ -20,7 +20,7 @@ DailyGroupQuest::~DailyGroupQuest() NOEXCEPT
 /*
 *	Carries out this daily quest. Returns whether or not the quest was actually carried out.
 */
-bool DailyGroupQuest::CarryOut() NOEXCEPT
+bool DailyGroupQuest::CarryOut() CATALYST_NOEXCEPT
 {
 	//If this daily quest is not available, just return.
 	DailyGroupQuestCompletionState currentQuestCompletionState = questCompletionState.load();
@@ -37,7 +37,7 @@ bool DailyGroupQuest::CarryOut() NOEXCEPT
 	while (myContainerIndex < containerSize)
 	{
 		//Get the element at your container index!
-		void *RESTRICT myElement = static_cast<void *RESTRICT>(static_cast<byte *RESTRICT>(container) + (objectSize * myContainerIndex));
+		void *CATALYST_RESTRICT myElement = static_cast<void *CATALYST_RESTRICT>(static_cast<byte *CATALYST_RESTRICT>(container) + (objectSize * myContainerIndex));
 
 		//Execute the function with my element!
 		function(arguments, myElement);

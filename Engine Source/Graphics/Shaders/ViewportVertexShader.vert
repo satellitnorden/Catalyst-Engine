@@ -16,13 +16,6 @@ layout (std140, binding = 0) uniform DynamicUniformData
     vec3 cameraWorldPosition;
     float padding1;
 
-    //Directional light data.
-    float directionalLightIntensity;
-    vec3 directionalLightDirection;
-    vec3 directionalLightColor;
-    vec3 directionalLightScreenSpacePosition;
-    float padding2;
-
     //Point light data.
     int numberOfPointLights;
     float pointLightAttenuationDistances[MaximumNumberOfPointLights];

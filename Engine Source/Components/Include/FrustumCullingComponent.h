@@ -3,10 +3,7 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Graphics.
-#include <AxisAlignedBoundingBox.h>
-
-class FrustumCullingComponent final
+class FrustumCullingComponent
 {
 
 public:
@@ -14,7 +11,7 @@ public:
 	//Whether or not the entity is in the view frustum.
 	bool isInViewFrustum{ true };
 
-	//The axis aligned bounding box.
-	AxisAlignedBoundingBox axisAlignedBoundingBox;
+	//The model extent.
+	float modelExtent{ 0.0f };
 
 };

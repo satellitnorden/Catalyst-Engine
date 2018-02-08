@@ -9,7 +9,7 @@
 /*
 *	Calculates a look at matrix.
 */
-Matrix4 Matrix4::LookAt(const Vector3 &position, const Vector3 &direction, const Vector3 &up) NOEXCEPT
+Matrix4 Matrix4::LookAt(const Vector3 &position, const Vector3 &direction, const Vector3 &up) CATALYST_NOEXCEPT
 {
 	Vector3 F{ Vector3::Normalize(direction - position) };
 	Vector3 S{ Vector3::CrossProduct(F, up) };
@@ -39,7 +39,7 @@ Matrix4 Matrix4::LookAt(const Vector3 &position, const Vector3 &direction, const
 /*
 *	Calculates an ortographic projection matrix.
 */
-Matrix4 Matrix4::Ortographic(const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane) NOEXCEPT
+Matrix4 Matrix4::Ortographic(const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane) CATALYST_NOEXCEPT
 {
 	Matrix4 result;
 
@@ -57,7 +57,7 @@ Matrix4 Matrix4::Ortographic(const float left, const float right, const float bo
 /*
 *	Calculates a projection matrix.
 */
-Matrix4 Matrix4::Perspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
+Matrix4 Matrix4::Perspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) CATALYST_NOEXCEPT
 {
 	const float halfFovTangent = GameMath::TangentRadians(fov * 0.5f);
 
@@ -75,7 +75,7 @@ Matrix4 Matrix4::Perspective(const float fov, const float aspectRatio, const flo
 /*
 *	Default constructor.
 */
-Matrix4::Matrix4() NOEXCEPT
+Matrix4::Matrix4() CATALYST_NOEXCEPT
 	:
 	matrix{ { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } }
 {
@@ -85,7 +85,7 @@ Matrix4::Matrix4() NOEXCEPT
 /*
 *	Copy constructor.
 */
-Matrix4::Matrix4(const Matrix4 &otherMatrix) NOEXCEPT
+Matrix4::Matrix4(const Matrix4 &otherMatrix) CATALYST_NOEXCEPT
 	:
 	matrix{ otherMatrix.matrix[0], otherMatrix.matrix[1], otherMatrix.matrix[2], otherMatrix.matrix[3] }
 {
@@ -95,7 +95,7 @@ Matrix4::Matrix4(const Matrix4 &otherMatrix) NOEXCEPT
 /*
 *	Constructor taking a scalar.
 */
-Matrix4::Matrix4(const float scalar) NOEXCEPT
+Matrix4::Matrix4(const float scalar) CATALYST_NOEXCEPT
 	:
 	matrix{ { scalar, 0.0f, 0.0f, 0.0f }, { 0.0f, scalar, 0.0f, 0.0f }, { 0.0f, 0.0f, scalar, 0.0f }, { 0.0f, 0.0f, 0.0f, scalar } }
 {
@@ -105,7 +105,7 @@ Matrix4::Matrix4(const float scalar) NOEXCEPT
 /*
 *	Constructor taking a Matrix3.
 */
-Matrix4::Matrix4(const Matrix3 &otherMatrix) NOEXCEPT
+Matrix4::Matrix4(const Matrix3 &otherMatrix) CATALYST_NOEXCEPT
 	:
 	matrix{ { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } }
 {
@@ -115,7 +115,7 @@ Matrix4::Matrix4(const Matrix3 &otherMatrix) NOEXCEPT
 /*
 *	Constructor taking the four vectors as arguments.
 */
-Matrix4::Matrix4(const Vector4 &vector1, const Vector4 &vector2, const Vector4 &vector3, const Vector4 &vector4) NOEXCEPT
+Matrix4::Matrix4(const Vector4 &vector1, const Vector4 &vector2, const Vector4 &vector3, const Vector4 &vector4) CATALYST_NOEXCEPT
 	:
 	matrix{ vector1, vector2, vector3, vector4 }
 {
@@ -125,7 +125,7 @@ Matrix4::Matrix4(const Vector4 &vector1, const Vector4 &vector2, const Vector4 &
 /*
 *	Constructor taking in position, rotation and scale as arguments.
 */
-Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) NOEXCEPT
+Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) CATALYST_NOEXCEPT
 	:
 	matrix{ { scale.X, 0.0f, 0.0f, 0.0f },{ 0.0f, scale.Y, 0.0f, 0.0f },{ 0.0f, 0.0f, scale.Z, 0.0f },{ position.X, position.Y, position.Z, 1.0f } }
 {
@@ -169,7 +169,7 @@ Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3
 /*
 *	Returns the translation.
 */
-Vector3 Matrix4::GetTranslation() const NOEXCEPT
+Vector3 Matrix4::GetTranslation() const CATALYST_NOEXCEPT
 {
 	return Vector3(matrix[3].X, matrix[3].Y, matrix[3].Z);
 }
@@ -177,7 +177,7 @@ Vector3 Matrix4::GetTranslation() const NOEXCEPT
 /*
 *	Returns the scale.
 */
-Vector3 Matrix4::GetScale() const NOEXCEPT
+Vector3 Matrix4::GetScale() const CATALYST_NOEXCEPT
 {
 	return Vector3(matrix[0].X, matrix[1].Y, matrix[2].Z);
 }
@@ -185,7 +185,7 @@ Vector3 Matrix4::GetScale() const NOEXCEPT
 /*
 *	Sets the translation.
 */
-void Matrix4::SetTranslation(const Vector3 &newTranslation) NOEXCEPT
+void Matrix4::SetTranslation(const Vector3 &newTranslation) CATALYST_NOEXCEPT
 {
 	matrix[3].X = newTranslation.X;
 	matrix[3].Y = newTranslation.Y;
@@ -195,7 +195,7 @@ void Matrix4::SetTranslation(const Vector3 &newTranslation) NOEXCEPT
 /*
 *	Sets the scale.
 */
-void Matrix4::SetScale(const Vector3 & newScale) NOEXCEPT
+void Matrix4::SetScale(const Vector3 & newScale) CATALYST_NOEXCEPT
 {
 	matrix[0].X = newScale.X;
 	matrix[1].Y = newScale.Y;
@@ -205,7 +205,7 @@ void Matrix4::SetScale(const Vector3 & newScale) NOEXCEPT
 /*
 *	Returns the determinant of this matrix.
 */
-float Matrix4::GetDeterminant() NOEXCEPT
+float Matrix4::GetDeterminant() CATALYST_NOEXCEPT
 {
 	float X1 = matrix[1].Y * ((matrix[2].Z * matrix[3].W) - (matrix[3].Z * matrix[2].W));
 	float X2 = matrix[1].Z * -((matrix[2].Y * matrix[3].W) - (matrix[3].Y * matrix[2].W));
@@ -237,7 +237,7 @@ float Matrix4::GetDeterminant() NOEXCEPT
 /*
 *	Inverses the matrix.
 */
-void Matrix4::Inverse() NOEXCEPT
+void Matrix4::Inverse() CATALYST_NOEXCEPT
 {
 	float Coef00 = matrix[2].Z * matrix[3].W - matrix[3].Z * matrix[2].W;
 	float Coef02 = matrix[1].Z * matrix[3].W - matrix[3].Z * matrix[1].W;
@@ -302,7 +302,7 @@ void Matrix4::Inverse() NOEXCEPT
 /*
 *	Transposes the matrix.
 */
-void Matrix4::Transpose() NOEXCEPT
+void Matrix4::Transpose() CATALYST_NOEXCEPT
 {
 	Vector4 transposedMatrix[4];
 
@@ -335,7 +335,7 @@ void Matrix4::Transpose() NOEXCEPT
 /*
 *	Multiplication overload.
 */
-Matrix4 Matrix4::operator*(const Matrix4 &otherMatrix) const NOEXCEPT
+Matrix4 Matrix4::operator*(const Matrix4 &otherMatrix) const CATALYST_NOEXCEPT
 {
 	Matrix4 multipliedMatrix{ otherMatrix };
 
@@ -365,7 +365,7 @@ Matrix4 Matrix4::operator*(const Matrix4 &otherMatrix) const NOEXCEPT
 /*
 *	Matrix4 by scalar multiplication assignment overload.
 */
-void Matrix4::operator*=(const float scalar) NOEXCEPT
+void Matrix4::operator*=(const float scalar) CATALYST_NOEXCEPT
 {
 	matrix[0].X *= scalar;
 	matrix[0].Y *= scalar;
@@ -391,7 +391,7 @@ void Matrix4::operator*=(const float scalar) NOEXCEPT
 /*
 *	Matrix/Vector multiplication overload.
 */
-Vector4 Matrix4::operator*(const Vector4 &vector) const NOEXCEPT
+Vector4 Matrix4::operator*(const Vector4 &vector) const CATALYST_NOEXCEPT
 {
 	Vector4 multipliedVector{ };
 

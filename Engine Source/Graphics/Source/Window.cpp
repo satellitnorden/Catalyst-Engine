@@ -12,7 +12,7 @@
 /*
 *	Default constructor.
 */
-Window::Window() NOEXCEPT
+Window::Window() CATALYST_NOEXCEPT
 	:
 	window(nullptr),
 	width(WINDOW_WIDTH),
@@ -24,7 +24,7 @@ Window::Window() NOEXCEPT
 /*
 *	Default destructor.
 */
-Window::~Window() NOEXCEPT
+Window::~Window() CATALYST_NOEXCEPT
 {
 
 }
@@ -32,7 +32,7 @@ Window::~Window() NOEXCEPT
 /*
 *	Initializes this window.
 */
-void Window::Initialize() NOEXCEPT
+void Window::Initialize() CATALYST_NOEXCEPT
 {
 	//Initialize GLFW.
 	glfwInit();
@@ -50,7 +50,7 @@ void Window::Initialize() NOEXCEPT
 /*
 *	Updates this window.
 */
-void Window::Update() const NOEXCEPT
+void Window::Update() const CATALYST_NOEXCEPT
 {
 	//Poll events.
 	glfwPollEvents();
@@ -59,7 +59,7 @@ void Window::Update() const NOEXCEPT
 /*
 *	Releases this window.
 */
-void Window::Release() NOEXCEPT
+void Window::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the window.
 	glfwDestroyWindow(window);
@@ -71,7 +71,7 @@ void Window::Release() NOEXCEPT
 /*
 *	Returns whether or not this window should close.
 */
-bool Window::ShouldClose() const NOEXCEPT
+bool Window::ShouldClose() const CATALYST_NOEXCEPT
 {
 	return static_cast<bool>(glfwWindowShouldClose(window));
 }

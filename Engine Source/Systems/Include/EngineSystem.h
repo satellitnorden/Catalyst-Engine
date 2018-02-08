@@ -14,37 +14,37 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	EngineSystem() NOEXCEPT;
+	EngineSystem() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~EngineSystem() NOEXCEPT;
+	~EngineSystem() CATALYST_NOEXCEPT;
 
 	/*
 	*	Initializes the engine system.
 	*/
-	void InitializeSystem() NOEXCEPT;
+	void InitializeSystem() CATALYST_NOEXCEPT;
 
 	/*
 	*	Updates the engine system synchronously. Returns whether or not the game should terminate.
 	*/
-	bool UpdateSystemSynchronous() NOEXCEPT;
+	bool UpdateSystemSynchronous() CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases the engine system.
 	*/
-	void ReleaseSystem() NOEXCEPT;
+	void ReleaseSystem() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns whether or not the game should terminate.
 	*/
-	bool ShouldTerminate() const NOEXCEPT { return shouldTerminate; }
+	bool ShouldTerminate() const CATALYST_NOEXCEPT { return shouldTerminate; }
 
 	/*
 	*	Terminates the game.
 	*/
-	void Terminate() NOEXCEPT { shouldTerminate = true; }
+	void Terminate() CATALYST_NOEXCEPT { shouldTerminate = true; }
 
 private:
 

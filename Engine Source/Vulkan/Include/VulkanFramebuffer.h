@@ -19,27 +19,27 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanFramebuffer() NOEXCEPT;
+	VulkanFramebuffer() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanFramebuffer() NOEXCEPT;
+	~VulkanFramebuffer() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan framebuffer.
 	*/
-	const VkFramebuffer& Get() const NOEXCEPT { return vulkanFramebuffer; }
+	const VkFramebuffer& Get() const CATALYST_NOEXCEPT { return vulkanFramebuffer; }
 
 	/*
 	*	Initializes this Vulkan framebuffer.
 	*/
-	void Initialize(const VulkanRenderPass &vulkanRenderPass, const VulkanDepthBuffer *RESTRICT depthBuffer, const DynamicArray<VkImageView> &colorAttachments, const VkExtent2D &extent) NOEXCEPT;
+	void Initialize(const VulkanRenderPass &vulkanRenderPass, const VulkanDepthBuffer *CATALYST_RESTRICT depthBuffer, const DynamicArray<VkImageView> &colorAttachments, const VkExtent2D &extent) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan framebuffer.
 	*/
-	void Release() NOEXCEPT;
+	void Release() CATALYST_NOEXCEPT;
 
 private:
 
@@ -49,6 +49,6 @@ private:
 	/*
 	*	Creates a framebuffer create info.
 	*/
-	void CreateFramebufferCreateInfo(VkFramebufferCreateInfo &framebufferCreateInfo, const VulkanRenderPass &vulkanRenderPass, const DynamicArray<VkImageView> &attachments, const VkExtent2D &extent) const NOEXCEPT;
+	void CreateFramebufferCreateInfo(VkFramebufferCreateInfo &framebufferCreateInfo, const VulkanRenderPass &vulkanRenderPass, const DynamicArray<VkImageView> &attachments, const VkExtent2D &extent) const CATALYST_NOEXCEPT;
 
 };

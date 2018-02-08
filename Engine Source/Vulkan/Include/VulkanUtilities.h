@@ -3,6 +3,9 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Graphics.
+#include <Vertex.h>
+
 //Vulkan.
 #include <VulkanCore.h>
 #include <VulkanCommandBuffer.h>
@@ -17,7 +20,7 @@ namespace VulkanUtilities
 	/*
 	*	Copies a Vulkan buffer to another Vulkan buffer.
 	*/
-	static void CopyBufferToBuffer(const VkDeviceSize &size, const VkBuffer &sourceBuffer, VkBuffer &destinationBuffer) NOEXCEPT
+	static void CopyBufferToBuffer(const VkDeviceSize &size, const VkBuffer &sourceBuffer, VkBuffer &destinationBuffer) CATALYST_NOEXCEPT
 	{
 		//Create a command buffer for the copy operation.
 		VulkanCommandBuffer copyCommandBuffer;
@@ -52,7 +55,7 @@ namespace VulkanUtilities
 	/*
 	*	Copies a Vulkan buffer to a Vulkan image.
 	*/
-	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 layerCount, const uint32 width, const uint32 height) NOEXCEPT
+	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 layerCount, const uint32 width, const uint32 height) CATALYST_NOEXCEPT
 	{
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transferCommandBuffer;
@@ -93,7 +96,7 @@ namespace VulkanUtilities
 	/*
 	*	Creates a Vulkan buffer.
 	*/
-	static void CreateVulkanBuffer(const VkDeviceSize bufferSize, const VkBufferUsageFlags bufferUsageFlags, const VkMemoryPropertyFlags memoryPropertyFlags, VkBuffer &vulkanBuffer, VkDeviceMemory &vulkanDeviceMemory) NOEXCEPT
+	static void CreateVulkanBuffer(const VkDeviceSize bufferSize, const VkBufferUsageFlags bufferUsageFlags, const VkMemoryPropertyFlags memoryPropertyFlags, VkBuffer &vulkanBuffer, VkDeviceMemory &vulkanDeviceMemory) CATALYST_NOEXCEPT
 	{
 		//Create the buffer create info.
 		VkBufferCreateInfo bufferCreateInfo;
@@ -147,7 +150,7 @@ namespace VulkanUtilities
 	/*
 	*	Creates a Vulkan descriptor set layout binding.
 	*/
-	static VkDescriptorSetLayoutBinding CreateDescriptorSetLayoutBinding(const uint32 binding, const VkDescriptorType descriptorType, const VkShaderStageFlags stageFlags) NOEXCEPT
+	static VkDescriptorSetLayoutBinding CreateDescriptorSetLayoutBinding(const uint32 binding, const VkDescriptorType descriptorType, const VkShaderStageFlags stageFlags) CATALYST_NOEXCEPT
 	{
 		//Create the descriptor set layout binding.
 		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding;
@@ -164,7 +167,7 @@ namespace VulkanUtilities
 	/*
 	*	Creates a Vulkan image.
 	*/
-	static void CreateVulkanImage(const VkImageCreateFlags flags, const VkFormat format, const uint32 width, const uint32 height, const uint32 arrayLayers, const VkImageUsageFlags usage, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) NOEXCEPT
+	static void CreateVulkanImage(const VkImageCreateFlags flags, const VkFormat format, const uint32 width, const uint32 height, const uint32 arrayLayers, const VkImageUsageFlags usage, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) CATALYST_NOEXCEPT
 	{
 		//Create the image create info.
 		VkImageCreateInfo imageCreateInfo;
@@ -227,7 +230,7 @@ namespace VulkanUtilities
 	/*
 	*	Creates a Vulkan image view.
 	*/
-	static void CreateVulkanImageView(const VkImage &vulkanImage, const VkImageViewType viewType, const VkFormat format, const VkImageAspectFlags aspectMask, const uint32 layerCount, VkImageView &vulkanImageView) NOEXCEPT
+	static void CreateVulkanImageView(const VkImage &vulkanImage, const VkImageViewType viewType, const VkFormat format, const VkImageAspectFlags aspectMask, const uint32 layerCount, VkImageView &vulkanImageView) CATALYST_NOEXCEPT
 	{
 		//Create the image view create info.
 		VkImageViewCreateInfo imageViewCreateInfo;
@@ -255,7 +258,7 @@ namespace VulkanUtilities
 	/*
 	*	Creates a Vulkan sampler.
 	*/
-	static void CreateVulkanSampler(VkSampler &vulkanSampler) NOEXCEPT
+	static void CreateVulkanSampler(VkSampler &vulkanSampler) CATALYST_NOEXCEPT
 	{
 		//Create the image view create info.
 		VkSamplerCreateInfo samplerCreateInfo;
@@ -283,10 +286,54 @@ namespace VulkanUtilities
 		VULKAN_ERROR_CHECK(vkCreateSampler(VulkanInterface::Instance->GetLogicalDevice().Get(), &samplerCreateInfo, nullptr, &vulkanSampler));
 	}
 
+	/*A>Z
+	*	Returns the vertex input attribute descriptions for Vertices.
+	*/
+	static StaticArray<VkVertexInputAttributeDescription, 4> GetVertexInputAttributeDescriptions() CATALYST_NOEXCEPT
+	{
+		StaticArray<VkVertexInputAttributeDescription, 4> vertexInputAttributeDescriptions;
+
+		vertexInputAttributeDescriptions[0].location = 0;
+		vertexInputAttributeDescriptions[0].binding = 0;
+		vertexInputAttributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertexInputAttributeDescriptions[0].offset = offsetof(Vertex, position);
+
+		vertexInputAttributeDescriptions[1].location = 1;
+		vertexInputAttributeDescriptions[1].binding = 0;
+		vertexInputAttributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertexInputAttributeDescriptions[1].offset = offsetof(Vertex, normal);
+
+		vertexInputAttributeDescriptions[2].location = 2;
+		vertexInputAttributeDescriptions[2].binding = 0;
+		vertexInputAttributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertexInputAttributeDescriptions[2].offset = offsetof(Vertex, tangent);
+
+		vertexInputAttributeDescriptions[3].location = 3;
+		vertexInputAttributeDescriptions[3].binding = 0;
+		vertexInputAttributeDescriptions[3].format = VK_FORMAT_R32G32_SFLOAT;
+		vertexInputAttributeDescriptions[3].offset = offsetof(Vertex, textureCoordinate);
+
+		return vertexInputAttributeDescriptions;
+	}
+
+	/*
+	*	Returns the vertex input binding description for Vertices. 
+	*/
+	static VkVertexInputBindingDescription GetVertexInputBindingDescription() CATALYST_NOEXCEPT
+	{
+		VkVertexInputBindingDescription vertexInputBindingDescription;
+
+		vertexInputBindingDescription.binding = 0;
+		vertexInputBindingDescription.stride = sizeof(Vertex);
+		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		return vertexInputBindingDescription;
+	}
+
 	/*
 	*	Transitions a Vulkan image to a layout.
 	*/
-	static void TransitionImageToLayout(const VkFormat format, const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageAspectFlags aspectMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, const uint32 layerCount, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, VkImage &vulkanImage) NOEXCEPT
+	static void TransitionImageToLayout(const VkFormat format, const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageAspectFlags aspectMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, const uint32 layerCount, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, VkImage &vulkanImage) CATALYST_NOEXCEPT
 	{
 		//Create the transition command buffer.
 		VulkanCommandBuffer transitionCommandBuffer;

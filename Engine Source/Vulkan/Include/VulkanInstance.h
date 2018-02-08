@@ -14,27 +14,27 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanInstance() NOEXCEPT;
+	VulkanInstance() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanInstance() NOEXCEPT;
+	~VulkanInstance() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan instance.
 	*/
-	const VkInstance& Get() const NOEXCEPT { return vulkanInstance; }
+	const VkInstance& Get() const CATALYST_NOEXCEPT { return vulkanInstance; }
 
 	/*
 	*	Initializes this Vulkan instance.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize() CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan instance.
 	*/
-	void Release() NOEXCEPT;
+	void Release() CATALYST_NOEXCEPT;
 
 private:
 
@@ -44,11 +44,11 @@ private:
 	/*
 	*	Creates the application info.
 	*/
-	void CreateApplicationInfo(VkApplicationInfo &applicationInfo) const NOEXCEPT;
+	void CreateApplicationInfo(VkApplicationInfo &applicationInfo) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates the instance create info.
 	*/
-	void CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstanceInfo, const VkApplicationInfo &applicationInfo) const NOEXCEPT;
+	void CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstanceInfo, const VkApplicationInfo &applicationInfo) const CATALYST_NOEXCEPT;
 
 };

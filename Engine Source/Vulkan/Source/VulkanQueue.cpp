@@ -7,7 +7,7 @@
 /*
 *	Default constructor.
 */
-VulkanQueue::VulkanQueue() NOEXCEPT
+VulkanQueue::VulkanQueue() CATALYST_NOEXCEPT
 {
 
 }
@@ -15,7 +15,7 @@ VulkanQueue::VulkanQueue() NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanQueue::~VulkanQueue() NOEXCEPT
+VulkanQueue::~VulkanQueue() CATALYST_NOEXCEPT
 {
 
 }
@@ -23,16 +23,16 @@ VulkanQueue::~VulkanQueue() NOEXCEPT
 /*
 *	Initializes this Vulkan queue.
 */
-void VulkanQueue::Initialize(const uint32 queueFamilyIndex) NOEXCEPT
+void VulkanQueue::Initialize(const uint32 queueIndex) CATALYST_NOEXCEPT
 {
 	//Get the Vulkan queue.
-	vkGetDeviceQueue(VulkanInterface::Instance->GetLogicalDevice().Get(), queueFamilyIndex, 0, &vulkanQueue);
+	vkGetDeviceQueue(VulkanInterface::Instance->GetLogicalDevice().Get(), queueIndex, 0, &vulkanQueue);
 }
 
 /*
 *	Submits a command buffer to this Vulkan queue.
 */
-void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const DynamicArray<VkSemaphore> &signalSemaphores, const VkFence fence) const NOEXCEPT
+void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const DynamicArray<VkSemaphore> &signalSemaphores, const VkFence fence) const CATALYST_NOEXCEPT
 {
 	//Create the submit info.
 	VkSubmitInfo submitInfo;
@@ -45,7 +45,7 @@ void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const D
 /*
 *	Waits idle for this Vulkan queue.
 */
-void VulkanQueue::WaitIdle() const NOEXCEPT
+void VulkanQueue::WaitIdle() const CATALYST_NOEXCEPT
 {
 	//Wait idle for this Vulkan queue.
 	VULKAN_ERROR_CHECK(vkQueueWaitIdle(vulkanQueue));
@@ -54,7 +54,7 @@ void VulkanQueue::WaitIdle() const NOEXCEPT
 /*
 *	Creates a submit info for a single command buffer.
 */
-void VulkanQueue::CreateSubmitInfo(VkSubmitInfo &submitInfo, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &signalSemaphores) const NOEXCEPT
+void VulkanQueue::CreateSubmitInfo(VkSubmitInfo &submitInfo, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &signalSemaphores) const CATALYST_NOEXCEPT
 {
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.pNext = nullptr;
@@ -70,7 +70,7 @@ void VulkanQueue::CreateSubmitInfo(VkSubmitInfo &submitInfo, const DynamicArray<
 /*
 *	Creates a submit info for multiple command buffers.
 */
-void VulkanQueue::CreateSubmitInfo(VkSubmitInfo &submitInfo, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const DynamicArray<VulkanCommandBuffer> &vulkanCommandBuffers, const DynamicArray<VkSemaphore> &signalSemaphores) const NOEXCEPT
+void VulkanQueue::CreateSubmitInfo(VkSubmitInfo &submitInfo, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const DynamicArray<VulkanCommandBuffer> &vulkanCommandBuffers, const DynamicArray<VkSemaphore> &signalSemaphores) const CATALYST_NOEXCEPT
 {
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.pNext = nullptr;

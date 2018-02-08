@@ -14,42 +14,42 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanFence() NOEXCEPT;
+	VulkanFence() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanFence() NOEXCEPT;
+	~VulkanFence() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan fence.
 	*/
-	const VkFence& Get() const NOEXCEPT { return vulkanFence; }
+	const VkFence& Get() const CATALYST_NOEXCEPT { return vulkanFence; }
 
 	/*
 	*	Initializes this Vulkan fence.
 	*/
-	void Initialize(const VkFenceCreateFlags flags) NOEXCEPT;
+	void Initialize(const VkFenceCreateFlags flags) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan fence.
 	*/
-	void Release() NOEXCEPT;
+	void Release() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns whether or not this fence is signaled.
 	*/
-	bool IsSignaled() const NOEXCEPT;
+	bool IsSignaled() const CATALYST_NOEXCEPT;
 
 	/*
 	*	Resets this Vulkan fence.
 	*/
-	void Reset() NOEXCEPT;
+	void Reset() CATALYST_NOEXCEPT;
 
 	/*
 	*	Waits for this Vulkan fence.
 	*/
-	void WaitFor() const NOEXCEPT;
+	void WaitFor() const CATALYST_NOEXCEPT;
 
 private:
 
@@ -59,6 +59,6 @@ private:
 	/*
 	*	Creates a fence create info.
 	*/
-	void CreateFenceCreateInfo(VkFenceCreateInfo &fenceCreateInfo, const VkFenceCreateFlags flags) const NOEXCEPT;
+	void CreateFenceCreateInfo(VkFenceCreateInfo &fenceCreateInfo, const VkFenceCreateFlags flags) const CATALYST_NOEXCEPT;
 
 };

@@ -6,7 +6,7 @@
 //Vulkan.
 #include <VulkanUniformBuffer.h>
 
-class GraphicsBufferComponent final
+class GraphicsBufferComponent
 {
 
 public:

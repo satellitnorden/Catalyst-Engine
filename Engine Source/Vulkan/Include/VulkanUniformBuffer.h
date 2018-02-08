@@ -17,42 +17,42 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanUniformBuffer() NOEXCEPT;
+	VulkanUniformBuffer() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanUniformBuffer() NOEXCEPT;
+	~VulkanUniformBuffer() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan buffer.
 	*/
-	const VkBuffer& Get() const NOEXCEPT { return vulkanBuffer; }
+	const VkBuffer& Get() const CATALYST_NOEXCEPT { return vulkanBuffer; }
 
 	/*
 	*	Initializes this Vulkan uniform buffer.
 	*/
-	void Initialize(const VkDeviceSize newUniformBufferSize) NOEXCEPT;
+	void Initialize(const VkDeviceSize newUniformBufferSize) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan uniform buffer.
 	*/
-	void Release() NOEXCEPT;
+	void Release() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan buffer.
 	*/
-	const VkDeviceSize& GetSize() const NOEXCEPT { return uniformBufferSize; }
+	const VkDeviceSize& GetSize() const CATALYST_NOEXCEPT { return uniformBufferSize; }
 
 	/*
 	*	Uploads new data to the uniform buffer.
 	*/
-	void UploadData(void *RESTRICT newData) const NOEXCEPT;
+	void UploadData(void *CATALYST_RESTRICT newData) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the write descriptor set for this uniform buffer.
 	*/
-	VkWriteDescriptorSet GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT;
+	VkWriteDescriptorSet GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const CATALYST_NOEXCEPT;
 
 private:
 
@@ -74,11 +74,11 @@ private:
 	/*
 	*	Creates the descriptor buffer info.
 	*/
-	void CreateDescriptorBufferInfo() NOEXCEPT;
+	void CreateDescriptorBufferInfo() CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates the write descriptor set.
 	*/
-	void CreateWriteDescriptorSet() NOEXCEPT;
+	void CreateWriteDescriptorSet() CATALYST_NOEXCEPT;
 
 };

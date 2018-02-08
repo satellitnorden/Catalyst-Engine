@@ -8,7 +8,6 @@
 
 //Vulkan.
 #include <Vulkan2DTexture.h>
-#include <VulkanBuffer.h>
 #include <VulkanCommandBuffer.h>
 #include <VulkanCommandPool.h>
 #include <VulkanCore.h>
@@ -19,6 +18,7 @@
 #include <VulkanDescriptorSetLayout.h>
 #include <VulkanFence.h>
 #include <VulkanFrameBuffer.h>
+#include <VulkanIndexBuffer.h>
 #include <VulkanInstance.h>
 #include <VulkanLogicalDevice.h>
 #include <VulkanPhysicalDevice.h>
@@ -32,6 +32,7 @@
 #include <VulkanSurface.h>
 #include <VulkanSwapChain.h>
 #include <VulkanUniformBuffer.h>
+#include <VulkanVertexBuffer.h>
 
 //Forward declarations.
 class Window;
@@ -47,149 +48,142 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanInterface() NOEXCEPT;
+	VulkanInterface() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanInterface() NOEXCEPT;
+	~VulkanInterface() CATALYST_NOEXCEPT;
 
 	/*
 	*	Initializes this Vulkan interface.
 	*/
-	void Initialize(Window &window) NOEXCEPT;
+	void Initialize(Window &window) CATALYST_NOEXCEPT;
 
 	/*
 	*	Pre-updates this Vulkan interface.
 	*/
-	void PreUpdate(const VulkanSemaphore *const RESTRICT imageAvailableSemaphore) NOEXCEPT;
+	void PreUpdate(const VulkanSemaphore *const CATALYST_RESTRICT imageAvailableSemaphore) CATALYST_NOEXCEPT;
 
 	/*
 	*	Post-updates this Vulkan interface.
 	*/
-	void PostUpdate(const VulkanSemaphore *const RESTRICT renderFinishedSemaphore) NOEXCEPT;
+	void PostUpdate(const VulkanSemaphore *const CATALYST_RESTRICT renderFinishedSemaphore) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan interface.
 	*/
-	void Release() NOEXCEPT;
+	void Release() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the instance.
 	*/
-	const VulkanInstance& GetInstance() const NOEXCEPT { return vulkanInstance; }
+	const VulkanInstance& GetInstance() const CATALYST_NOEXCEPT { return vulkanInstance; }
 
 	/*
 	*	Returns the surface.
 	*/
-	const VulkanSurface& GetSurface() const NOEXCEPT { return vulkanSurface; }
+	const VulkanSurface& GetSurface() const CATALYST_NOEXCEPT { return vulkanSurface; }
 
 	/*
 	*	Returns the physical device.
 	*/
-	const VulkanPhysicalDevice& GetPhysicalDevice() const NOEXCEPT { return vulkanPhysicalDevice; }
+	const VulkanPhysicalDevice& GetPhysicalDevice() const CATALYST_NOEXCEPT { return vulkanPhysicalDevice; }
 
 	/*
 	*	Returns the logical device.
 	*/
-	const VulkanLogicalDevice& GetLogicalDevice() const NOEXCEPT { return vulkanLogicalDevice; }
+	const VulkanLogicalDevice& GetLogicalDevice() const CATALYST_NOEXCEPT { return vulkanLogicalDevice; }
 
 	/*
 	*	Returns the swapchain.
 	*/
-	const VulkanSwapchain& GetSwapchain() const NOEXCEPT { return vulkanSwapchain; }
+	const VulkanSwapchain& GetSwapchain() const CATALYST_NOEXCEPT { return vulkanSwapchain; }
 
 	/*
 	*	Returns the graphics queue.
 	*/
-	const VulkanQueue& GetGraphicsQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Graphics)]; }
+	const VulkanQueue& GetGraphicsQueue() const CATALYST_NOEXCEPT { return queues[static_cast<uint8>(Queue::Graphics)]; }
 
 	/*
 	*	Returns the present queue.
 	*/
-#if RENDERDOC_DEBUGGING
-	const VulkanQueue& GetPresentQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Graphics)]; }
-#else
-	const VulkanQueue& GetPresentQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Present)]; }
-#endif
+	const VulkanQueue& GetPresentQueue() const CATALYST_NOEXCEPT { return queues[static_cast<uint8>(Queue::Present)]; }
 
 	/*
 	*	Returns the transfer queue.
 	*/
-#if RENDERDOC_DEBUGGING
-	const VulkanQueue& GetTransferQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Graphics)]; }
-#else
-	const VulkanQueue& GetTransferQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Transfer)]; }
-#endif
+	const VulkanQueue& GetTransferQueue() const CATALYST_NOEXCEPT { return queues[static_cast<uint8>(Queue::Transfer)]; }
 
 	/*
 	*	Returns the graphics command pool.
 	*/
-	const VulkanCommandPool& GetGraphicsCommandPool() const NOEXCEPT { return graphicsVulkanCommandPool; }
+	const VulkanCommandPool& GetGraphicsCommandPool() const CATALYST_NOEXCEPT { return graphicsVulkanCommandPool; }
 
 	/*
 	*	Returns the transfer command pool.
 	*/
-#if RENDERDOC_DEBUGGING
-	const VulkanCommandPool& GetTransferCommandPool() const NOEXCEPT { return graphicsVulkanCommandPool; }
-#else
-	const VulkanCommandPool& GetTransferCommandPool() const NOEXCEPT { return transferVulkanCommandPool; }
-#endif
+	const VulkanCommandPool& GetTransferCommandPool() const CATALYST_NOEXCEPT { return transferVulkanCommandPool; }
 
 	/*
 	*	Returns the descriptor pool.
 	*/
-	const VulkanDescriptorPool& GetDescriptorPool() const NOEXCEPT { return vulkanDescriptorPool; }
+	const VulkanDescriptorPool& GetDescriptorPool() const CATALYST_NOEXCEPT { return vulkanDescriptorPool; }
 
 	/*
 	*	Creates and returns a 2D texture.
 	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 width, const uint32 height, const uint32 channels, const void *RESTRICT textureData) NOEXCEPT;
-
-	/*
-	*	Creates and returns a buffer.
-	*/
-	RESTRICTED VulkanBuffer* CreateBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
+	CATALYST_RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a cube map texture.
 	*/
-	RESTRICTED VulkanCubeMapTexture* CreateCubeMapTexture(const uint32 width, const uint32 height, const byte *RESTRICT *RESTRICT textureData) NOEXCEPT;
+	CATALYST_RESTRICTED VulkanCubeMapTexture* CreateCubeMapTexture(const uint32 width, const uint32 height, const byte *CATALYST_RESTRICT *CATALYST_RESTRICT textureData) CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a depth buffer.
 	*/
-	RESTRICTED VulkanDepthBuffer* CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT;
+	CATALYST_RESTRICTED VulkanDepthBuffer* CreateDepthBuffer(const VkExtent2D &depthBufferExtent) CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a fence.
 	*/
-	RESTRICTED VulkanFence* CreateFence(const VkFenceCreateFlags flags = 0) NOEXCEPT;
+	CATALYST_RESTRICTED VulkanFence* CreateFence(const VkFenceCreateFlags flags = 0) CATALYST_NOEXCEPT;
+
+	/*
+	*	Creates and returns an index buffer.
+	*/
+	CATALYST_RESTRICTED VulkanIndexBuffer* CreateIndexBuffer(const DynamicArray<uint32> &indices) CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a pipeline.
 	*/
-	RESTRICTED VulkanPipeline* CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT;
+	CATALYST_RESTRICTED VulkanPipeline* CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a render target.
 	*/
-	RESTRICTED VulkanRenderTarget* CreateRenderTarget(const VkExtent2D extent) NOEXCEPT;
+	CATALYST_RESTRICTED VulkanRenderTarget* CreateRenderTarget(const VkExtent2D extent) CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a semaphore.
 	*/
-	RESTRICTED VulkanSemaphore* CreateSemaphore() NOEXCEPT;
+	CATALYST_RESTRICTED VulkanSemaphore* CreateSemaphore() CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a shader module.
 	*/
-	RESTRICTED VulkanShaderModule* CreateShaderModule(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits stage) NOEXCEPT;
+	CATALYST_RESTRICTED VulkanShaderModule* CreateShaderModule(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits stage) CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.
 	*/
-	RESTRICTED VulkanUniformBuffer* CreateUniformBuffer(const size_t newUniformBufferSize) NOEXCEPT;
+	CATALYST_RESTRICTED VulkanUniformBuffer* CreateUniformBuffer(const size_t newUniformBufferSize) CATALYST_NOEXCEPT;
+
+	/*
+	*	Creates and returns a vertex buffer.
+	*/
+	CATALYST_RESTRICTED VulkanVertexBuffer* CreateVertexBuffer(const DynamicArray<Vertex> &vertices) CATALYST_NOEXCEPT;
 
 private:
 
@@ -230,33 +224,36 @@ private:
 	VulkanQueue queues[static_cast<uint8>(Queue::NumberOfQueues)];
 
 	//Container for all Vulkan 2D textures.
-	DynamicArray<Vulkan2DTexture *RESTRICT> vulkan2DTextures;
-
-	//Container for all Vulkan buffers.
-	DynamicArray<VulkanBuffer *RESTRICT> vulkanBuffers;
+	DynamicArray<Vulkan2DTexture *CATALYST_RESTRICT> vulkan2DTextures;
 
 	//Container for all Vulkan cube map textures.
-	DynamicArray<VulkanCubeMapTexture *RESTRICT> vulkanCubeMapTextures;
+	DynamicArray<VulkanCubeMapTexture *CATALYST_RESTRICT> vulkanCubeMapTextures;
 
 	//Container for all Vulkan depth buffers.
-	DynamicArray<VulkanDepthBuffer *RESTRICT> vulkanDepthBuffers;
+	DynamicArray<VulkanDepthBuffer *CATALYST_RESTRICT> vulkanDepthBuffers;
 
 	//Container for all Vulkan fences.
-	DynamicArray<VulkanFence *RESTRICT> vulkanFences;
+	DynamicArray<VulkanFence *CATALYST_RESTRICT> vulkanFences;
+
+	//Container for all Vulkan index buffers.
+	DynamicArray<VulkanIndexBuffer *CATALYST_RESTRICT> vulkanIndexBuffers;
 
 	//Container for all Vulkan pipelines.
-	DynamicArray<VulkanPipeline *RESTRICT> vulkanPipelines;
+	DynamicArray<VulkanPipeline *CATALYST_RESTRICT> vulkanPipelines;
 
 	//Container for all Vulkan render targets.
-	DynamicArray<VulkanRenderTarget *RESTRICT> vulkanRenderTargets;
+	DynamicArray<VulkanRenderTarget *CATALYST_RESTRICT> vulkanRenderTargets;
 
 	//Container for all Vulkan semaphores.
-	DynamicArray<VulkanSemaphore *RESTRICT> vulkanSemaphores;
+	DynamicArray<VulkanSemaphore *CATALYST_RESTRICT> vulkanSemaphores;
 
 	//Container for all Vulkan shader modules.
-	DynamicArray<VulkanShaderModule *RESTRICT> vulkanShaderModules;
+	DynamicArray<VulkanShaderModule *CATALYST_RESTRICT> vulkanShaderModules;
 
 	//Container for all Vulkan uniform buffers.
-	DynamicArray<VulkanUniformBuffer *RESTRICT> vulkanUniformBuffers;
+	DynamicArray<VulkanUniformBuffer *CATALYST_RESTRICT> vulkanUniformBuffers;
+
+	//Container for all Vulkan vertex buffers.
+	DynamicArray<VulkanVertexBuffer *CATALYST_RESTRICT> vulkanVertexBuffers;
 
 };

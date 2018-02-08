@@ -14,7 +14,7 @@
 /*
 *	Default constructor.
 */
-VulkanSurface::VulkanSurface() NOEXCEPT
+VulkanSurface::VulkanSurface() CATALYST_NOEXCEPT
 {
 
 }
@@ -22,7 +22,7 @@ VulkanSurface::VulkanSurface() NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanSurface::~VulkanSurface() NOEXCEPT
+VulkanSurface::~VulkanSurface() CATALYST_NOEXCEPT
 {
 
 }
@@ -30,7 +30,7 @@ VulkanSurface::~VulkanSurface() NOEXCEPT
 /*
 *	Initializes this Vulkan surface.
 */
-void VulkanSurface::Initialize(Window &window) NOEXCEPT
+void VulkanSurface::Initialize(Window &window) CATALYST_NOEXCEPT
 {
 	//Create the Vulkan surface!
 	VULKAN_ERROR_CHECK(glfwCreateWindowSurface(VulkanInterface::Instance->GetInstance().Get(), window.Get(), nullptr, &vulkanSurface));
@@ -39,7 +39,7 @@ void VulkanSurface::Initialize(Window &window) NOEXCEPT
 /*
 *	Releases this Vulkan surface.
 */
-void VulkanSurface::Release() NOEXCEPT
+void VulkanSurface::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the Vulkan surface.
 	VULKAN_DESTROY_SURFACE(VulkanInterface::Instance->GetInstance().Get(), vulkanSurface, nullptr);

@@ -6,7 +6,7 @@
 //Math.
 #include <Vector3.h>
 
-class SpotLightComponent final
+class SpotLightComponent
 {
 
 public:
@@ -27,12 +27,12 @@ public:
 	float outerCutoffAngle{ 25.0f };
 
 	//The color.
-	Vector3 color{ 1.0f, 1.0f, 1.0f };
+	Vector3 color;
 
 	//The rotation.
-	Vector3 rotation{ 0.0f, 0.0f, 0.0f };
+	Vector3 rotation;
 
 	//The position.
-	Vector3 position{ 0.0f, 0.0f, 0.0f };
+	Vector3 position;
 
 };

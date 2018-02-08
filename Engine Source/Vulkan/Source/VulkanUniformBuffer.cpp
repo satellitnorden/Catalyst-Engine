@@ -9,7 +9,7 @@
 /*
 *	Default constructor.
 */
-VulkanUniformBuffer::VulkanUniformBuffer() NOEXCEPT
+VulkanUniformBuffer::VulkanUniformBuffer() CATALYST_NOEXCEPT
 {
 
 }
@@ -17,7 +17,7 @@ VulkanUniformBuffer::VulkanUniformBuffer() NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanUniformBuffer::~VulkanUniformBuffer() NOEXCEPT
+VulkanUniformBuffer::~VulkanUniformBuffer() CATALYST_NOEXCEPT
 {
 
 }
@@ -25,7 +25,7 @@ VulkanUniformBuffer::~VulkanUniformBuffer() NOEXCEPT
 /*
 *	Initializes this Vulkan uniform buffer.
 */
-void VulkanUniformBuffer::Initialize(const VkDeviceSize newUniformBufferSize) NOEXCEPT
+void VulkanUniformBuffer::Initialize(const VkDeviceSize newUniformBufferSize) CATALYST_NOEXCEPT
 {
 	//Set the uniform buffer properties.
 	uniformBufferSize = newUniformBufferSize;
@@ -43,7 +43,7 @@ void VulkanUniformBuffer::Initialize(const VkDeviceSize newUniformBufferSize) NO
 /*
 *	Releases this Vulkan uniform buffer.
 */
-void VulkanUniformBuffer::Release() NOEXCEPT
+void VulkanUniformBuffer::Release() CATALYST_NOEXCEPT
 {
 	//Free the Vulkan device memory.
 	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
@@ -55,7 +55,7 @@ void VulkanUniformBuffer::Release() NOEXCEPT
 /*
 *	Sets the data in the uniform buffer.
 */
-void VulkanUniformBuffer::UploadData(void *RESTRICT newData) const NOEXCEPT
+void VulkanUniformBuffer::UploadData(void *CATALYST_RESTRICT newData) const CATALYST_NOEXCEPT
 {
 	void *mappedMemory;
 
@@ -67,7 +67,7 @@ void VulkanUniformBuffer::UploadData(void *RESTRICT newData) const NOEXCEPT
 /*
 *	Returns the write descriptor set for this uniform buffer.
 */
-VkWriteDescriptorSet VulkanUniformBuffer::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT
+VkWriteDescriptorSet VulkanUniformBuffer::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const CATALYST_NOEXCEPT
 {
 	VkWriteDescriptorSet vulkanWriteDescriptorSetCopy{ vulkanWriteDescriptorSet };
 
@@ -81,7 +81,7 @@ VkWriteDescriptorSet VulkanUniformBuffer::GetWriteDescriptorSet(const VulkanDesc
 /*
 *	Creates the descriptor buffer info.
 */
-void VulkanUniformBuffer::CreateDescriptorBufferInfo() NOEXCEPT
+void VulkanUniformBuffer::CreateDescriptorBufferInfo() CATALYST_NOEXCEPT
 {
 	vulkanDescriptorBufferInfo.buffer = vulkanBuffer;
 	vulkanDescriptorBufferInfo.offset = 0;
@@ -91,7 +91,7 @@ void VulkanUniformBuffer::CreateDescriptorBufferInfo() NOEXCEPT
 /*
 *	Creates the write descriptor set.
 */
-void VulkanUniformBuffer::CreateWriteDescriptorSet() NOEXCEPT
+void VulkanUniformBuffer::CreateWriteDescriptorSet() CATALYST_NOEXCEPT
 {
 	vulkanWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	vulkanWriteDescriptorSet.pNext = nullptr;

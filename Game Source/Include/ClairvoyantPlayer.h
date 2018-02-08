@@ -17,22 +17,22 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	ClairvoyantPlayer() NOEXCEPT;
+	ClairvoyantPlayer() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~ClairvoyantPlayer() NOEXCEPT;
+	~ClairvoyantPlayer() CATALYST_NOEXCEPT;
 
 	/*
 	*	Initializes the player.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize() CATALYST_NOEXCEPT;
 
 	/*
 	*	Updates the player.
 	*/
-	void Update(const float deltaTime) NOEXCEPT;
+	void Update(const float deltaTime) CATALYST_NOEXCEPT;
 
 private:
 

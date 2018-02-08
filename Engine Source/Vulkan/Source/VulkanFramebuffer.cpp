@@ -7,7 +7,7 @@
 /*
 *	Default constructor.
 */
-VulkanFramebuffer::VulkanFramebuffer() NOEXCEPT
+VulkanFramebuffer::VulkanFramebuffer() CATALYST_NOEXCEPT
 {
 
 }
@@ -15,7 +15,7 @@ VulkanFramebuffer::VulkanFramebuffer() NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanFramebuffer::~VulkanFramebuffer() NOEXCEPT
+VulkanFramebuffer::~VulkanFramebuffer() CATALYST_NOEXCEPT
 {
 
 }
@@ -23,7 +23,7 @@ VulkanFramebuffer::~VulkanFramebuffer() NOEXCEPT
 /*
 *	Initializes this Vulkan framebuffer.
 */
-void VulkanFramebuffer::Initialize(const VulkanRenderPass &vulkanRenderPass, const VulkanDepthBuffer *RESTRICT depthBuffer, const DynamicArray<VkImageView> &colorAttachments, const VkExtent2D &extent) NOEXCEPT
+void VulkanFramebuffer::Initialize(const VulkanRenderPass &vulkanRenderPass, const VulkanDepthBuffer *CATALYST_RESTRICT depthBuffer, const DynamicArray<VkImageView> &colorAttachments, const VkExtent2D &extent) CATALYST_NOEXCEPT
 {
 	//Create the framebuffer create info.
 	VkFramebufferCreateInfo framebufferCreateInfo;
@@ -34,11 +34,11 @@ void VulkanFramebuffer::Initialize(const VulkanRenderPass &vulkanRenderPass, con
 	{
 		attachments.Reserve(colorAttachments.Size() + 1);
 
-		attachments.EmplaceFast(depthBuffer->GetImageView());
+		attachments.EmplaceUnsafe(depthBuffer->GetImageView());
 
 		for (auto colorAttachment : colorAttachments)
 		{
-			attachments.EmplaceFast(colorAttachment);
+			attachments.EmplaceUnsafe(colorAttachment);
 		}
 
 		CreateFramebufferCreateInfo(framebufferCreateInfo, vulkanRenderPass, attachments, extent);
@@ -56,7 +56,7 @@ void VulkanFramebuffer::Initialize(const VulkanRenderPass &vulkanRenderPass, con
 /*
 *	Releases this Vulkan framebuffer.
 */
-void VulkanFramebuffer::Release() NOEXCEPT
+void VulkanFramebuffer::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the Vulkan framebuffer.
 	vkDestroyFramebuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanFramebuffer, nullptr);
@@ -65,7 +65,7 @@ void VulkanFramebuffer::Release() NOEXCEPT
 /*
 *	Creates a framebuffer create info.
 */
-void VulkanFramebuffer::CreateFramebufferCreateInfo(VkFramebufferCreateInfo &framebufferCreateInfo, const VulkanRenderPass &vulkanRenderPass, const DynamicArray<VkImageView> &attachments, const VkExtent2D &extent) const NOEXCEPT
+void VulkanFramebuffer::CreateFramebufferCreateInfo(VkFramebufferCreateInfo &framebufferCreateInfo, const VulkanRenderPass &vulkanRenderPass, const DynamicArray<VkImageView> &attachments, const VkExtent2D &extent) const CATALYST_NOEXCEPT
 {
 	framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 	framebufferCreateInfo.pNext = nullptr;

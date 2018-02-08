@@ -17,27 +17,27 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanSurface() NOEXCEPT;
+	VulkanSurface() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanSurface() NOEXCEPT;
+	~VulkanSurface() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan surface.
 	*/
-	const VULKAN_SURFACE_TYPE& Get() const NOEXCEPT { return vulkanSurface; }
+	const VULKAN_SURFACE_TYPE& Get() const CATALYST_NOEXCEPT { return vulkanSurface; }
 
 	/*
 	*	Initializes this Vulkan surface.
 	*/
-	void Initialize(Window &window) NOEXCEPT;
+	void Initialize(Window &window) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan surface.
 	*/
-	void Release() NOEXCEPT;
+	void Release() CATALYST_NOEXCEPT;
 
 private:
 

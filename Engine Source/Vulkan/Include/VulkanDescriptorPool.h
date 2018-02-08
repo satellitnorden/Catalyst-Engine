@@ -19,32 +19,32 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanDescriptorPool() NOEXCEPT;
+	VulkanDescriptorPool() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanDescriptorPool() NOEXCEPT;
+	~VulkanDescriptorPool() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan descriptor pool.
 	*/
-	const VkDescriptorPool& Get() const NOEXCEPT { return vulkanDescriptorPool; }
+	const VkDescriptorPool& Get() const CATALYST_NOEXCEPT { return vulkanDescriptorPool; }
 
 	/*
 	*	Initializes this Vulkan descriptor pool.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize() CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan descriptor pool.
 	*/
-	void Release() NOEXCEPT;
+	void Release() CATALYST_NOEXCEPT;
 
 	/*
 	*	Allocates a Vulkan descriptor set.
 	*/
-	void AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescriptorSet, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const NOEXCEPT;
+	void AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescriptorSet, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const CATALYST_NOEXCEPT;
 
 private:
 
@@ -54,11 +54,11 @@ private:
 	/*
 	*	Creates a descriptor pool size.
 	*/
-	void CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPoolSize> &descriptorPoolSizes) const NOEXCEPT;
+	void CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPoolSize> &descriptorPoolSizes) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a descriptor pool create info.
 	*/
-	void CreateDescriptorPoolCreateInfo(VkDescriptorPoolCreateInfo &descriptorPoolCreateInfo, const DynamicArray<VkDescriptorPoolSize> &descriptorPoolSizes) const NOEXCEPT;
+	void CreateDescriptorPoolCreateInfo(VkDescriptorPoolCreateInfo &descriptorPoolCreateInfo, const DynamicArray<VkDescriptorPoolSize> &descriptorPoolSizes) const CATALYST_NOEXCEPT;
 
 };

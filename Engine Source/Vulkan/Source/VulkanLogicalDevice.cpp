@@ -7,7 +7,7 @@
 /*
 *	Default constructor.
 */
-VulkanLogicalDevice::VulkanLogicalDevice() NOEXCEPT
+VulkanLogicalDevice::VulkanLogicalDevice() CATALYST_NOEXCEPT
 {
 
 }
@@ -15,7 +15,7 @@ VulkanLogicalDevice::VulkanLogicalDevice() NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanLogicalDevice::~VulkanLogicalDevice() NOEXCEPT
+VulkanLogicalDevice::~VulkanLogicalDevice() CATALYST_NOEXCEPT
 {
 
 }
@@ -23,7 +23,7 @@ VulkanLogicalDevice::~VulkanLogicalDevice() NOEXCEPT
 /*
 *	Initializes this Vulkan logical device.
 */
-void VulkanLogicalDevice::Initialize() NOEXCEPT
+void VulkanLogicalDevice::Initialize() CATALYST_NOEXCEPT
 {
 	//Create the device queue create info.
 	static const float queuePriorities = 1.0f;
@@ -36,7 +36,7 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 	CreatePhysicalDeviceFeatures(physicalDeviceFeatures);
 
 	//Create the device create info.
-	const DynamicArray<const char *RESTRICT> requiredExtensions{ VULKAN_SWAPCHAIN_EXTENSION_NAME };
+	const DynamicArray<const char *CATALYST_RESTRICT> requiredExtensions{ VULKAN_SWAPCHAIN_EXTENSION_NAME };
 
 	VkDeviceCreateInfo deviceCreateInfo;
 	CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, requiredExtensions, &physicalDeviceFeatures);
@@ -48,7 +48,7 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 /*
 *	Releases this Vulkan logical device.
 */
-void VulkanLogicalDevice::Release() NOEXCEPT
+void VulkanLogicalDevice::Release() CATALYST_NOEXCEPT
 {
 	//Destroy the Vulkan logical device.
 	vkDestroyDevice(vulkanLogicalDevice, nullptr);
@@ -57,20 +57,8 @@ void VulkanLogicalDevice::Release() NOEXCEPT
 /*
 *	Creates the device queue create info.
 */
-void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const float *const RESTRICT queuePriorities) const NOEXCEPT
+void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const float *const CATALYST_RESTRICT queuePriorities) const CATALYST_NOEXCEPT
 {
-#if RENDERDOC_DEBUGGING
-	VkDeviceQueueCreateInfo newDeviceQueueCreateInfo;
-
-	newDeviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	newDeviceQueueCreateInfo.pNext = nullptr;
-	newDeviceQueueCreateInfo.flags = 0;
-	newDeviceQueueCreateInfo.queueFamilyIndex = VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex();
-	newDeviceQueueCreateInfo.queueCount = 1;
-	newDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
-
-	deviceQueueCreateInfos.EmplaceSlow(newDeviceQueueCreateInfo);
-#else
 	//Gather all unique indices and how many queues will be created from them.
 	std::map<uint32, uint8> uniqueQueueFamilyIndices;
 
@@ -89,22 +77,21 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 		newDeviceQueueCreateInfo.queueCount = uniqueQueueFamilyIndex.second;
 		newDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
 
-		deviceQueueCreateInfos.EmplaceSlow(newDeviceQueueCreateInfo);
+		deviceQueueCreateInfos.Emplace(newDeviceQueueCreateInfo);
 	}
-#endif
 }
 
 /*
 *	Creates a physical device features.
 */
-void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures &physicalDeviceFeatures) const NOEXCEPT
+void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures &physicalDeviceFeatures) const CATALYST_NOEXCEPT
 {
 	physicalDeviceFeatures.robustBufferAccess = VK_FALSE;
 	physicalDeviceFeatures.fullDrawIndexUint32 = VK_FALSE;
 	physicalDeviceFeatures.imageCubeArray = VK_FALSE;
 	physicalDeviceFeatures.independentBlend = VK_FALSE;
 	physicalDeviceFeatures.geometryShader = VK_FALSE;
-	physicalDeviceFeatures.tessellationShader = VK_TRUE;
+	physicalDeviceFeatures.tessellationShader = VK_FALSE;
 	physicalDeviceFeatures.sampleRateShading = VK_FALSE;
 	physicalDeviceFeatures.dualSrcBlend = VK_FALSE;
 	physicalDeviceFeatures.logicOp = VK_FALSE;
@@ -159,7 +146,7 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 /*
 *	Creates the device create info.
 */
-void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreateInfo, const DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const DynamicArray<const char *RESTRICT> &requiredExtensions, const VkPhysicalDeviceFeatures *RESTRICT enabledFeatures) const NOEXCEPT
+void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreateInfo, const DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const DynamicArray<const char *CATALYST_RESTRICT> &requiredExtensions, const VkPhysicalDeviceFeatures *CATALYST_RESTRICT enabledFeatures) const CATALYST_NOEXCEPT
 {
 	//Define the required extensions.
 	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

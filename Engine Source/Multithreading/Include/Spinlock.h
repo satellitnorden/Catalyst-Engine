@@ -11,7 +11,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Spinlock() NOEXCEPT
+	Spinlock() CATALYST_NOEXCEPT
 	{
 
 	}
@@ -19,7 +19,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~Spinlock() NOEXCEPT
+	~Spinlock() CATALYST_NOEXCEPT
 	{
 
 	}
@@ -27,7 +27,7 @@ public:
 	/*
 	*	Locks this spinlock.
 	*/
-	void Lock() NOEXCEPT
+	void Lock() CATALYST_NOEXCEPT
 	{
 		static bool expected = false;
 		while (!lock.compare_exchange_weak(expected, true));
@@ -36,7 +36,7 @@ public:
 	/*
 	*	Unlocks this spinlock.
 	*/
-	void Unlock() NOEXCEPT
+	void Unlock() CATALYST_NOEXCEPT
 	{
 		lock.store(false);
 	}

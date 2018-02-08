@@ -20,21 +20,21 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Matrix3() NOEXCEPT;
+	Matrix3() CATALYST_NOEXCEPT;
 
 	/*
 	*	Constructor taking a Matrix4.
 	*/
-	Matrix3(const Matrix4 &otherMatrix) NOEXCEPT;
+	Matrix3(const Matrix4 &otherMatrix) CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns a data to the pointer of this matrix.
 	*/
-	RESTRICTED float* Data() NOEXCEPT { return &(matrix[0].X); }
+	CATALYST_RESTRICTED float* Data() CATALYST_NOEXCEPT { return &(matrix[0].X); }
 
 	/*
 	*	Matrix3 by vector3 multiplcation overload.
 	*/
-	Vector3 operator*(const Vector3 &vector) NOEXCEPT;
+	Vector3 operator*(const Vector3 &vector) CATALYST_NOEXCEPT;
 
 };

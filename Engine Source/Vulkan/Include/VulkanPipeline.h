@@ -24,42 +24,42 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanPipeline() NOEXCEPT;
+	VulkanPipeline() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanPipeline() NOEXCEPT;
+	~VulkanPipeline() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan pipeline.
 	*/
-	const VkPipeline Get() const NOEXCEPT { return vulkanPipeline; }
+	const VkPipeline Get() const CATALYST_NOEXCEPT { return vulkanPipeline; }
 
 	/*
 	*	Initializes this Vulkan pipeline.
 	*/
-	void Initialize(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT;
+	void Initialize(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan pipeline.
 	*/
-	void Release() NOEXCEPT;
+	void Release() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns the Vulkan pipeline layout.
 	*/
-	const VkPipelineLayout& GetPipelineLayout() const NOEXCEPT { return vulkanPipelineLayout; }
+	const VkPipelineLayout& GetPipelineLayout() const CATALYST_NOEXCEPT { return vulkanPipelineLayout; }
 
 	/*
 	*	Returns the Vulkan render pass.
 	*/
-	const VulkanRenderPass& GetRenderPass() const NOEXCEPT { return vulkanRenderPass; }
+	const VulkanRenderPass& GetRenderPass() const CATALYST_NOEXCEPT { return vulkanRenderPass; }
 
 	/*
 	*	Returns the Vulkan Descriptor set.
 	*/
-	const VulkanDescriptorSetLayout& GetDescriptorSetLayout() const NOEXCEPT { return vulkanDescriptorSetLayout; }
+	const VulkanDescriptorSetLayout& GetDescriptorSetLayout() const CATALYST_NOEXCEPT { return vulkanDescriptorSetLayout; }
 
 private:
 
@@ -78,60 +78,55 @@ private:
 	/*
 	*	Creates a vertex pipeline shader stage create info.
 	*/
-	void CreatePipelineShaderStageCreateInfo(VkPipelineShaderStageCreateInfo &pipelineShaderStageCreateInfo, const VulkanShaderModule *RESTRICT vulkanShaderModule) const NOEXCEPT;
+	void CreatePipelineShaderStageCreateInfo(VkPipelineShaderStageCreateInfo &pipelineShaderStageCreateInfo, const VulkanShaderModule *CATALYST_RESTRICT vulkanShaderModule) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a pipeline vertex input state create info.
 	*/
-	void CreatePipelineVertexInputStateCreateInfo(VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkVertexInputBindingDescription &vertexInputBindingDescription, const DynamicArray<VkVertexInputAttributeDescription> &vertexInputAttributeDescriptions) const NOEXCEPT;
+	void CreatePipelineVertexInputStateCreateInfo(VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkVertexInputBindingDescription &vertexInputBindingDescription, const StaticArray<VkVertexInputAttributeDescription, 4> &vertexInputAttributeDescriptions) const CATALYST_NOEXCEPT;
 
 	/*
-	*	Creates a pipeline input assembly state create info.
+	*	Creates a pipeline inpit assembly state create info.
 	*/
-	void CreatePipelineInputAssemblyStateCreateInfo(VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
-
-	/*
-	*	Creates a pipeline tessellation state create info.
-	*/
-	void CreatePipelineTessellationStateCreateInfo(VkPipelineTessellationStateCreateInfo &pipelineTessellationStateCreateInfo) const NOEXCEPT;
+	void CreatePipelineInputAssemblyStateCreateInfo(VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a pipeline viewport state create info.
 	*/
-	void CreatePipelineViewportStateCreateInfo(VkPipelineViewportStateCreateInfo &pipelineViewportStateCreateInfo, VkViewport &viewport, VkRect2D &scissors, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
+	void CreatePipelineViewportStateCreateInfo(VkPipelineViewportStateCreateInfo &pipelineViewportStateCreateInfo, VkViewport &viewport, VkRect2D &scissors, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a pipeline rasterization state create info.
 	*/
-	void CreatePipelineRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo) const NOEXCEPT;
+	void CreatePipelineRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a pipeline multisample state create info.
 	*/
-	void CreatePipelineMultisampleStateCreateInfo(VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo) const NOEXCEPT;
+	void CreatePipelineMultisampleStateCreateInfo(VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a pipeline depth stencil state create info.
 	*/
-	void CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
+	void CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a pipeline color blend attachment state.
 	*/
-	void CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
+	void CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a pipeline color state create info.
 	*/
-	void CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates) const NOEXCEPT;
+	void CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates) const CATALYST_NOEXCEPT;
 	/*
 	*	Creates a pipeline layout create info.
 	*/
-	void CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &pipelineLayoutCreateInfo, const VulkanDescriptorSetLayout &descriptorSetLayout) const NOEXCEPT;
+	void CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &pipelineLayoutCreateInfo, const VulkanDescriptorSetLayout &descriptorSetLayout) const CATALYST_NOEXCEPT;
 
 	/*
 	*	Creates a graphics pipeline create info.
 	*/
-	void CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateInfo &graphicsPipelineCreateInfo, const DynamicArray<VkPipelineShaderStageCreateInfo> &pipelineShaderStageCreateInfos, const VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VkPipelineTessellationStateCreateInfo *pipelineTessellationStateCreateInfo, const VkPipelineViewportStateCreateInfo &pipelineViewportStateCreateInfo, const VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo, const VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo, const VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const VkPipelineLayout &pipelineLayout, const VulkanRenderPass &vulkanRenderPass) const NOEXCEPT;
+	void CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateInfo &graphicsPipelineCreateInfo, const DynamicArray<VkPipelineShaderStageCreateInfo> &pipelineShaderStageCreateInfos, const VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VkPipelineViewportStateCreateInfo &pipelineViewportStateCreateInfo, const VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo, const VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo, const VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const VkPipelineLayout &pipelineLayout, const VulkanRenderPass &vulkanRenderPass) const CATALYST_NOEXCEPT;
 
 };

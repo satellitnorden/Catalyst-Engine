@@ -25,27 +25,27 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanAllocator() NOEXCEPT;
+	VulkanAllocator() CATALYST_NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanAllocator() NOEXCEPT;
+	~VulkanAllocator() CATALYST_NOEXCEPT;
 
 	/*
 	*	Initializes the Vulkan allocator.
 	*/
-	void Initialize() NOEXCEPT;
+	void Initialize() CATALYST_NOEXCEPT;
 
 	/*
 	*	Releases the Vulkan allocator.
 	*/
-	void Release() NOEXCEPT;
+	void Release() CATALYST_NOEXCEPT;
 
 	/*
 	*	Returns an allocation.
 	*/
-	VulkanAllocation GetAllocation(const MemoryProperties memoryProperties, const VkDeviceSize allocationSize) NOEXCEPT;
+	VulkanAllocation GetAllocation(const MemoryProperties memoryProperties, const VkDeviceSize allocationSize) CATALYST_NOEXCEPT;
 
 private:
 
@@ -58,6 +58,6 @@ private:
 	/*
 	*	Given a type filter and memory properties, returns the memory index.
 	*/
-	uint32 FindMemoryTypeIndex(const uint32 typeFilter, const VkMemoryPropertyFlags memoryProperties) const NOEXCEPT;
+	uint32 FindMemoryTypeIndex(const uint32 typeFilter, const VkMemoryPropertyFlags memoryProperties) const CATALYST_NOEXCEPT;
 
 };

@@ -12,12 +12,12 @@ public:
 	/*
 	*	Default constructor - prohibited, must be constructed with the proper arguments.
 	*/
-	ScopedLock() NOEXCEPT = delete;
+	ScopedLock() CATALYST_NOEXCEPT = delete;
 
 	/*
 	*	Constructor taking the lock as it's argument.
 	*/
-	ScopedLock(LockType &newLock) NOEXCEPT
+	ScopedLock(LockType &newLock) CATALYST_NOEXCEPT
 		:
 	lock(newLock)
 	{
@@ -28,7 +28,7 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	~ScopedLock() NOEXCEPT
+	~ScopedLock() CATALYST_NOEXCEPT
 	{
 		//Unlock the lock.
 		lock.Unlock();

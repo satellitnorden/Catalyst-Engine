@@ -1,5 +1,8 @@
 #pragma once
 
+//Project settings.
+#include <ProjectSettings.h>
+
 //STL.
 #include <algorithm>
 #include <atomic>
@@ -73,6 +76,3 @@ class UniquePointer;
 #include <Pair.h>
 #include <StaticArray.h>
 #include <UniquePointer.h>
-
-//The project settings.
-#include <ProjectSettings.h>

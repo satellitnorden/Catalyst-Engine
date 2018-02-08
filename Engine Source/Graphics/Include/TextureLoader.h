@@ -13,7 +13,7 @@ namespace TextureLoader
 	/*
 	*	Given a path, loads a texture and outputs the result in the supplied parameters.
 	*/
-	void LoadTexture(const char *RESTRICT texturePath, int &width, int &height, int&numberOfChannels, byte * RESTRICT * RESTRICT data) NOEXCEPT
+	void LoadTexture(const char *CATALYST_RESTRICT texturePath, int &width, int &height, int&numberOfChannels, byte * CATALYST_RESTRICT * CATALYST_RESTRICT data) CATALYST_NOEXCEPT
 	{
 		//Load the texture data.
 		*data = stbi_load(texturePath, &width, &height, &numberOfChannels, STBI_rgb_alpha);
@@ -22,7 +22,7 @@ namespace TextureLoader
 	/*
 	*	Frees the texture data.
 	*/
-	void FreeTexture(byte *RESTRICT data) NOEXCEPT
+	void FreeTexture(byte *CATALYST_RESTRICT data) CATALYST_NOEXCEPT
 	{
 		//Free the texture data.
 		stbi_image_free(data);
