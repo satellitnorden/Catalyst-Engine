@@ -26,7 +26,7 @@
 //Preprocessor defines.
 #define HEIGHT_MAP_RESOLUTION 1'024
 #define TERRAIN_HEIGHT 512.0f
-#define TERRAIN_SIZE 4'096.0f
+#define TERRAIN_SIZE 4'096.0f * 2.0f
 
 /*
 *	Default constructor.
