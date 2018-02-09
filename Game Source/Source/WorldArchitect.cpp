@@ -24,9 +24,9 @@
 #include <QuestSystem.h>
 
 //Preprocessor defines.
-#define HEIGHT_MAP_RESOLUTION 1'024
-#define TERRAIN_HEIGHT 512.0f
-#define TERRAIN_SIZE 4'096.0f * 2.0f
+#define HEIGHT_MAP_RESOLUTION 1
+#define TERRAIN_HEIGHT 1'024.0f
+#define TERRAIN_SIZE 4'096.0f
 
 /*
 *	Default constructor.
@@ -68,7 +68,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		}
 	}
 
-	Vulkan2DTexture *terrainHeightMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/HeightMap.jpg");
+	Vulkan2DTexture *terrainHeightMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/HeightMap.png");
 
 	//Create the normal map!
 	NormalMap normalMap{ HEIGHT_MAP_RESOLUTION };
@@ -98,12 +98,13 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Load the remaining terrain textures.
 	Vulkan2DTexture *RESTRICT terrainAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1Albedo.png");
 	Vulkan2DTexture *RESTRICT terrainNormalTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1Normal.png");
+	Vulkan2DTexture *RESTRICT terrainRoughnessTexture = nullptr;
 	Vulkan2DTexture *RESTRICT terrainAmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1AmbientOcclusion.png");
 	Vulkan2DTexture *RESTRICT terrainDisplacementTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1Displacement.png");
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(128, TerrainUniformData(2.5f, TERRAIN_HEIGHT, TERRAIN_SIZE, Vector3(0.0f, 0.0f, 0.0f)), terrainHeightMapTexture, terrainNormalMapTexture, terrainAlbedoTexture, terrainNormalTexture, nullptr, nullptr, terrainAmbientOcclusionTexture, terrainDisplacementTexture);
+	terrain->Initialize(128, TerrainUniformData(2.5f, TERRAIN_HEIGHT, TERRAIN_SIZE, Vector3(0.0f, 0.0f, 0.0f)), terrainHeightMapTexture, terrainNormalMapTexture, terrainAlbedoTexture, terrainNormalTexture, terrainRoughnessTexture, nullptr, terrainAmbientOcclusionTexture, terrainDisplacementTexture);
 
 	Vulkan2DTexture *floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
 	Vulkan2DTexture *floorNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
