@@ -1010,6 +1010,7 @@ void GraphicsSystem::UpdateDynamicUniformData() NOEXCEPT
 	Matrix4 inverseProjectionMatrix{ projectionMatrix };
 	inverseProjectionMatrix.Inverse();
 
+	dynamicUniformData.cameraFieldOfViewRadians = GameMath::DegreesToRadians(activeCamera->GetFieldOfView());
 	dynamicUniformData.inverseCameraMatrix = inverseCameraMatrix;
 	dynamicUniformData.inverseProjectionMatrix = inverseProjectionMatrix;
 	dynamicUniformData.originViewMatrix = projectionMatrix * cameraOriginMatrix;
