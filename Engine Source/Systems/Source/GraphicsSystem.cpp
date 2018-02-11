@@ -12,10 +12,9 @@
 #include <TerrainEntity.h>
 
 //Graphics.
+#include <CPUTexture4.h>
 #include <GraphicsUtilities.h>
-#include <HeightMap.h>
 #include <ModelLoader.h>
-#include <NormalMap.h>
 #include <PhysicalModel.h>
 #include <ShaderLoader.h>
 #include <TextureLoader.h>
@@ -304,7 +303,7 @@ RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *RESTRICT
 	TextureLoader::LoadTexture(texturePath, width, height, numberOfChannels, &textureData);
 
 	//Create the Vulkan 2D texture.
-	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(width), static_cast<uint32>(height), 4, textureData);
+	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(width), static_cast<uint32>(height), textureData, VK_FORMAT_R8G8B8A8_UNORM, sizeof(byte));
 
 	//Free the texture.
 	TextureLoader::FreeTexture(textureData);
@@ -314,24 +313,12 @@ RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *RESTRICT
 }
 
 /*
-*	Creates and returns a 2D texture given a height map.
+*	Creates and returns a 2D texture given a CPU texture with 4 channels.
 */
-RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const HeightMap &heightMap) const NOEXCEPT
+RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const CPUTexture4 &texture) const NOEXCEPT
 {
 	//Create the Vulkan 2D texture.
-	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(heightMap.GetResolution()), static_cast<uint32>(heightMap.GetResolution()), 1, heightMap.Data());
-
-	//Return the texture.
-	return new2DTexture;
-}
-
-/*
-*	Creates and returns a 2D texture given a normal map.
-*/
-RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const NormalMap &normalMap) const NOEXCEPT
-{
-	//Create the Vulkan 2D texture.
-	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(normalMap.GetResolution()), static_cast<uint32>(normalMap.GetResolution()), 4, normalMap.Data());
+	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(texture.GetResolution(), texture.GetResolution(), texture.Data(), VK_FORMAT_R32G32B32A32_SFLOAT, sizeof(float));
 
 	//Return the texture.
 	return new2DTexture;
@@ -780,16 +767,16 @@ void GraphicsSystem::InitializeDefaultTextures() NOEXCEPT
 {
 	//Create all default textures.
 	const byte defaultRoughness[]{ 255 };
-	defaultTextures[DefaultTexture::Roughness] = VulkanInterface::Instance->Create2DTexture(1, 1, 1, defaultRoughness);
+	defaultTextures[DefaultTexture::Roughness] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultRoughness, VK_FORMAT_R8_UNORM, sizeof(byte));
 
 	const byte defaultMetallic[]{ 0 };
-	defaultTextures[DefaultTexture::Metallic] = VulkanInterface::Instance->Create2DTexture(1, 1, 1, defaultMetallic);
+	defaultTextures[DefaultTexture::Metallic] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultMetallic, VK_FORMAT_R8_UNORM, sizeof(byte));
 
 	const byte defaultAmbientOcclusion[]{ 255 };
-	defaultTextures[DefaultTexture::AmbientOcclusion] = VulkanInterface::Instance->Create2DTexture(1, 1, 1, defaultAmbientOcclusion);
+	defaultTextures[DefaultTexture::AmbientOcclusion] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultAmbientOcclusion, VK_FORMAT_R8_UNORM, sizeof(byte));
 
 	const byte defaultDisplacement[]{ 0 };
-	defaultTextures[DefaultTexture::Displacement] = VulkanInterface::Instance->Create2DTexture(1, 1, 1, defaultDisplacement);
+	defaultTextures[DefaultTexture::Displacement] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultDisplacement, VK_FORMAT_R8_UNORM, sizeof(byte));
 }
 
 /*

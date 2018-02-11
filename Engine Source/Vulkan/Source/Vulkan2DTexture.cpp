@@ -26,10 +26,10 @@ Vulkan2DTexture::~Vulkan2DTexture() NOEXCEPT
 /*
 *	Initializes this Vulkan 2D texture.
 */
-void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const uint32 channels, const void *RESTRICT textureData, const VkFormat format) NOEXCEPT
+void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const void *RESTRICT textureData, const VkFormat format, const VkDeviceSize sizeOfTexel) NOEXCEPT
 {
 	//Calculate the image size.
-	const VkDeviceSize imageSize = width * height * channels;
+	const VkDeviceSize imageSize = width * height * 4 * sizeOfTexel;
 
 	//Set up the staging buffer.
 	VkBuffer stagingBuffer;
@@ -41,7 +41,7 @@ void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const 
 	//Copy the data into the staging buffer.
 	void *data;
 
-	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, &data));
+	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, VK_WHOLE_SIZE, 0, &data));
 	MemoryUtilities::CopyMemory(data, textureData, static_cast<size_t>(imageSize));
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 

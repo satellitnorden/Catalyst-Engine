@@ -19,8 +19,7 @@
 
 //Forward declarations.
 class CameraEntity;
-class HeightMap;
-class NormalMap;
+class CPUTexture4;
 class PhysicalEntity;
 class PhysicalModel;
 class TerrainEntity;
@@ -85,14 +84,9 @@ public:
 	RESTRICTED Vulkan2DTexture* Create2DTexture(const char *RESTRICT texturePath) const NOEXCEPT;
 
 	/*
-	*	Creates and returns a 2D texture given a height map.
+	*	Creates and returns a 2D texture given a CPU texture with 4 channels.
 	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const HeightMap &heightMap) const NOEXCEPT;
-
-	/*
-	*	Creates and returns a 2D texture given a normal map.
-	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const NormalMap &normalMap) const NOEXCEPT;
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const CPUTexture4 &texture) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a cube map texture.

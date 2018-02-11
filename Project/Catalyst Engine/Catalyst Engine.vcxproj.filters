@@ -602,9 +602,6 @@
     <ClInclude Include="..\..\Engine Source\Components\Include\TerrainComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\HeightMap.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Game Source\Include\ClairvoyantSettings.h">
       <Filter>Game Source\Clairvoyant</Filter>
     </ClInclude>
@@ -623,7 +620,7 @@
     <ClInclude Include="..\..\Engine Source\Graphics\Include\TerrainUniformData.h">
       <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\NormalMap.h">
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\CPUTexture4.h">
       <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
   </ItemGroup>

@@ -144,7 +144,7 @@ public:
 	/*
 	*	Creates and returns a 2D texture.
 	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 width, const uint32 height, const uint32 channels, const void *RESTRICT textureData) NOEXCEPT;
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 width, const uint32 height, const void *RESTRICT textureData, const VkFormat format, const VkDeviceSize sizeOfTexel) NOEXCEPT;
 
 	/*
 	*	Creates and returns a buffer.
