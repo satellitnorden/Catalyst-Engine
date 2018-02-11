@@ -9,11 +9,12 @@
 layout (std140, binding = 0) uniform DynamicUniformData
 {
     //Camera data.
-    float cameraFieldOfViewRadians;
+    float cameraFieldOfViewCosine;
     mat4 inverseCameraMatrix;
     mat4 inverseProjectionMatrix;
     mat4 originViewMatrix;
     mat4 viewMatrix;
+    vec3 cameraForwardVector;
     vec3 cameraWorldPosition;
     float padding1;
 
@@ -66,16 +67,29 @@ layout (location = 1) out vec2 tessellationEvaluationTextureCoordinate[];
 layout (location = 2) out vec3 tessellationEvaluationPosition[];
 
 /*
+*   Returns the length of a vector squared.
+*/
+float LengthSquared(vec3 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+}
+
+/*
 *   Given a distance to the camera squared, return the proper tesselation level.
 */
-float GetTesselationLevel(float distanceSquared)
+float GetTesselationLevel()
 {
+    //Determine the distance from the camera of this triangle, squared.
+    vec3 middleOfTriangle = (tessellationEvaluationPosition[0] + tessellationEvaluationPosition[1] + tessellationEvaluationPosition[2]) / 3.0f;
+    float distanceToCameraSquared = LengthSquared(middleOfTriangle - cameraWorldPosition);
+
     float tesselationLevel = 1.0f;
 
-    tesselationLevel = distanceSquared < 256.0f * 256.0f ? 2.0f : tesselationLevel;
-    tesselationLevel = distanceSquared < 128.0f * 128.0f ? 4.0f : tesselationLevel;
-    tesselationLevel = distanceSquared < 64.0f * 64.0f ? 16.0f : tesselationLevel;
-    tesselationLevel = distanceSquared < 32.0f * 32.0f ? 64.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 1024.0f * 1024.0f ? 2.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 512.0f * 512.0f ? 4.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 256.0f * 256.0f ? 8.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 128.0f * 128.0f ? 16.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 64.0f * 64.0f ? 32.0f : tesselationLevel;
 
     return tesselationLevel;
 }
@@ -90,12 +104,9 @@ void main()
     //Calculate tht tessellation levels.
     if (gl_InvocationID == 0)
     {
-        float averageDistanceToCameraSquared = (tesselationControlDistanceToCameraSquared[0] + tesselationControlDistanceToCameraSquared[1] + tesselationControlDistanceToCameraSquared[2]) / 3.0f;
-        float tesselationLevel = GetTesselationLevel(averageDistanceToCameraSquared);
-
-        gl_TessLevelInner[0] = tesselationLevel;
-        gl_TessLevelOuter[0] = 32;
-        gl_TessLevelOuter[1] = 32;
-        gl_TessLevelOuter[2] = 32;
+        gl_TessLevelInner[0] = GetTesselationLevel();
+        gl_TessLevelOuter[0] = 32.0f;
+        gl_TessLevelOuter[1] = 32.0f;
+        gl_TessLevelOuter[2] = 32.0f; 
     }
 }

@@ -104,7 +104,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(128, TerrainUniformData(2.5f, TERRAIN_HEIGHT, TERRAIN_SIZE, Vector3(0.0f, 0.0f, 0.0f)), terrainHeightMapTexture, terrainNormalMapTexture, terrainAlbedoTexture, terrainNormalTexture, terrainRoughnessTexture, nullptr, terrainAmbientOcclusionTexture, terrainDisplacementTexture);
+	terrain->Initialize(64, TerrainUniformData(2.5f, TERRAIN_HEIGHT, TERRAIN_SIZE, Vector3(0.0f, 0.0f, 0.0f)), terrainHeightMapTexture, terrainNormalMapTexture, terrainAlbedoTexture, terrainNormalTexture, terrainRoughnessTexture, nullptr, terrainAmbientOcclusionTexture, terrainDisplacementTexture);
 
 	Vulkan2DTexture *floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
 	Vulkan2DTexture *floorNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");

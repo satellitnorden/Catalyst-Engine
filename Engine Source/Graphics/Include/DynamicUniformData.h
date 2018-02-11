@@ -17,11 +17,12 @@ class DynamicUniformData final
 public:
 
 	//Camera data.
-	Vector4 cameraFieldOfViewRadians;
+	Vector4 cameraFieldOfViewCosine;
 	Matrix4 inverseCameraMatrix;
 	Matrix4 inverseProjectionMatrix;
 	Matrix4 originViewMatrix;
 	Matrix4 viewMatrix;
+	Vector4 cameraForwardVector;
 	Vector4 cameraWorldPosition;
 
 	//Directional light data.

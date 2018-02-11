@@ -26,7 +26,7 @@ Vulkan2DTexture::~Vulkan2DTexture() NOEXCEPT
 /*
 *	Initializes this Vulkan 2D texture.
 */
-void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const uint32 channels, const void *RESTRICT textureData) NOEXCEPT
+void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const uint32 channels, const void *RESTRICT textureData, const VkFormat format) NOEXCEPT
 {
 	//Calculate the image size.
 	const VkDeviceSize imageSize = width * height * channels;
@@ -44,36 +44,6 @@ void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const 
 	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, &data));
 	MemoryUtilities::CopyMemory(data, textureData, static_cast<size_t>(imageSize));
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
-
-	//Determine the format of the picture.
-	VkFormat format;
-
-	switch (channels)
-	{
-		default:
-		{
-#if !defined(CATALYST_FINAL)
-			PRINT_TO_CONSOLE("Unsupported number of channels!");
-			BREAKPOINT;
-#endif
-
-			break;
-		}
-
-		case 1:
-		{
-			format = VK_FORMAT_R8_UNORM;
-
-			break;
-		}
-
-		case 4:
-		{
-			format = VK_FORMAT_R8G8B8A8_UNORM;
-
-			break;
-		}
-	}
 
 	//Create the Vulkan image.
 	VulkanUtilities::CreateVulkanImage(0, format, width, height, 1, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);

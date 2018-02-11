@@ -32,7 +32,7 @@ public:
 	/*
 	*	Initializes this texture.
 	*/
-	void Initialize(const uint32 width, const uint32 height, const uint32 channels, const void *RESTRICT textureData) NOEXCEPT;
+	void Initialize(const uint32 width, const uint32 height, const uint32 channels, const void *RESTRICT textureData, const VkFormat format) NOEXCEPT;
 
 	/*
 	*	Releases this texture.

@@ -9,11 +9,12 @@
 layout (std140, binding = 0) uniform DynamicUniformData
 {
     //Camera data.
-    float cameraFieldOfViewRadians;
+    float cameraFieldOfViewCosine;
     mat4 inverseCameraMatrix;
     mat4 inverseProjectionMatrix;
     mat4 originViewMatrix;
     mat4 viewMatrix;
+    vec3 cameraForwardVector;
     vec3 cameraWorldPosition;
     float padding1;
 
