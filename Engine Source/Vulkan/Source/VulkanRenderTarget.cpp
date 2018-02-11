@@ -29,7 +29,7 @@ void VulkanRenderTarget::Initialize(const VkExtent2D extent) NOEXCEPT
 	const VkDeviceSize imageSize = extent.width * extent.height * 4;
 
 	//Create the Vulkan image.
-	VulkanUtilities::CreateVulkanImage(0, VK_FORMAT_R32G32B32A32_SFLOAT, extent.width, extent.height, 1, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, vulkanImage, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(0, VK_FORMAT_R32G32B32A32_SFLOAT, extent.width, extent.height, 1, 1, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, vulkanImage, vulkanDeviceMemory);
 
 	//Transition the image to the correct layout.
 	VulkanUtilities::TransitionImageToLayout(VK_FORMAT_R32G32B32A32_SFLOAT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, vulkanImage);
@@ -38,7 +38,7 @@ void VulkanRenderTarget::Initialize(const VkExtent2D extent) NOEXCEPT
 	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, 1, vulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(vulkanSampler);
+	VulkanUtilities::CreateVulkanSampler(vulkanSampler, TextureCreationParameters(TextureFilter::Nearest, MipmapMode::Nearest));
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();

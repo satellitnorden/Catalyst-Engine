@@ -17,6 +17,7 @@
 #include <ModelLoader.h>
 #include <PhysicalModel.h>
 #include <ShaderLoader.h>
+#include <TextureCreationParameters.h>
 #include <TextureLoader.h>
 
 //Math.
@@ -292,7 +293,7 @@ void GraphicsSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const
 /*
 *	Creates and returns a 2D texture.
 */
-RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *RESTRICT texturePath) const NOEXCEPT
+RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *RESTRICT texturePath, const TextureCreationParameters &textureCreationParameters) const NOEXCEPT
 {
 	//Load the texture.
 	int width = 0;
@@ -303,7 +304,7 @@ RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *RESTRICT
 	TextureLoader::LoadTexture(texturePath, width, height, numberOfChannels, &textureData);
 
 	//Create the Vulkan 2D texture.
-	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(width), static_cast<uint32>(height), textureData, VK_FORMAT_R8G8B8A8_UNORM, sizeof(byte));
+	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(width), static_cast<uint32>(height), textureData, VK_FORMAT_R8G8B8A8_UNORM, sizeof(byte), textureCreationParameters);
 
 	//Free the texture.
 	TextureLoader::FreeTexture(textureData);
@@ -315,10 +316,10 @@ RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *RESTRICT
 /*
 *	Creates and returns a 2D texture given a CPU texture with 4 channels.
 */
-RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const CPUTexture4 &texture) const NOEXCEPT
+RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const CPUTexture4 &texture, const TextureCreationParameters &textureCreationParameters) const NOEXCEPT
 {
 	//Create the Vulkan 2D texture.
-	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(texture.GetResolution(), texture.GetResolution(), texture.Data(), VK_FORMAT_R32G32B32A32_SFLOAT, sizeof(float));
+	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(texture.GetResolution(), texture.GetResolution(), texture.Data(), VK_FORMAT_R32G32B32A32_SFLOAT, sizeof(float), textureCreationParameters);
 
 	//Return the texture.
 	return new2DTexture;
@@ -766,17 +767,19 @@ void GraphicsSystem::InitializeDescriptorSets() NOEXCEPT
 void GraphicsSystem::InitializeDefaultTextures() NOEXCEPT
 {
 	//Create all default textures.
+	TextureCreationParameters defaultTextureCreationParameters;
+
 	const byte defaultRoughness[]{ 255 };
-	defaultTextures[DefaultTexture::Roughness] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultRoughness, VK_FORMAT_R8_UNORM, sizeof(byte));
+	defaultTextures[DefaultTexture::Roughness] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultRoughness, VK_FORMAT_R8_UNORM, sizeof(byte), defaultTextureCreationParameters);
 
 	const byte defaultMetallic[]{ 0 };
-	defaultTextures[DefaultTexture::Metallic] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultMetallic, VK_FORMAT_R8_UNORM, sizeof(byte));
+	defaultTextures[DefaultTexture::Metallic] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultMetallic, VK_FORMAT_R8_UNORM, sizeof(byte), defaultTextureCreationParameters);
 
 	const byte defaultAmbientOcclusion[]{ 255 };
-	defaultTextures[DefaultTexture::AmbientOcclusion] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultAmbientOcclusion, VK_FORMAT_R8_UNORM, sizeof(byte));
+	defaultTextures[DefaultTexture::AmbientOcclusion] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultAmbientOcclusion, VK_FORMAT_R8_UNORM, sizeof(byte), defaultTextureCreationParameters);
 
 	const byte defaultDisplacement[]{ 0 };
-	defaultTextures[DefaultTexture::Displacement] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultDisplacement, VK_FORMAT_R8_UNORM, sizeof(byte));
+	defaultTextures[DefaultTexture::Displacement] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultDisplacement, VK_FORMAT_R8_UNORM, sizeof(byte), defaultTextureCreationParameters);
 }
 
 /*

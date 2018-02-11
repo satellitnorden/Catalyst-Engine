@@ -12,6 +12,7 @@
 #include <CPUTexture4.h>
 #include <PhysicalModel.h>
 #include <TerrainUniformData.h>
+#include <TextureCreationParameters.h>
 
 //Math.
 #include <GameMath.h>
@@ -77,7 +78,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		}
 	}
 
-	Vulkan2DTexture *RESTRICT terrainHeightMapTexture = GraphicsSystem::Instance->Create2DTexture(heightMap);
+	Vulkan2DTexture *RESTRICT terrainHeightMapTexture = GraphicsSystem::Instance->Create2DTexture(heightMap, TextureCreationParameters());
 
 	//Create the normal map!
 	CPUTexture4 normalMap{ HEIGHT_MAP_RESOLUTION };
@@ -102,18 +103,20 @@ void WorldArchitect::Initialize() NOEXCEPT
 		}
 	}
 
-	Vulkan2DTexture *RESTRICT terrainNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(normalMap);
+	Vulkan2DTexture *RESTRICT terrainNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(normalMap, TextureCreationParameters());
 
 	//Load the remaining terrain textures.
-	Vulkan2DTexture *RESTRICT terrainAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Albedo.png");
-	Vulkan2DTexture *RESTRICT terrainNormalTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMap.png");
-	Vulkan2DTexture *RESTRICT terrainRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Roughness.png");
-	Vulkan2DTexture *RESTRICT terrainAmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Roughness.png");
-	Vulkan2DTexture *RESTRICT terrainDisplacementTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Roughness.png");
+	TextureCreationParameters terrainTextureCreationParameters;
+
+	Vulkan2DTexture *RESTRICT terrainAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Albedo.png", terrainTextureCreationParameters);
+	Vulkan2DTexture *RESTRICT terrainNormalTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMap.png", terrainTextureCreationParameters);
+	Vulkan2DTexture *RESTRICT terrainRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Roughness.png", terrainTextureCreationParameters);
+	Vulkan2DTexture *RESTRICT terrainAmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Roughness.png", terrainTextureCreationParameters);
+	Vulkan2DTexture *RESTRICT terrainDisplacementTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Roughness.png", terrainTextureCreationParameters);
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(128, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.1f, Vector3(0.0f, 0.0f, 0.0f)), terrainHeightMapTexture, terrainNormalMapTexture, terrainAlbedoTexture, terrainNormalTexture, terrainRoughnessTexture, nullptr, terrainAmbientOcclusionTexture, terrainDisplacementTexture);
+	terrain->Initialize(128, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.025f, Vector3(0.0f, 0.0f, 0.0f)), terrainHeightMapTexture, terrainNormalMapTexture, terrainAlbedoTexture, terrainNormalTexture, terrainRoughnessTexture, nullptr, terrainAmbientOcclusionTexture, terrainDisplacementTexture);
 
 	/*
 	Vulkan2DTexture *RESTRICT floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");

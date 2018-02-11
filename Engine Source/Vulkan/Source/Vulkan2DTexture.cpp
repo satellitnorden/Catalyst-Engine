@@ -1,6 +1,9 @@
 //Header file.
 #include <Vulkan2DTexture.h>
 
+//Graphics.
+#include <TextureCreationParameters.h>
+
 //Vulkan.
 #include <VulkanInterface.h>
 #include <VulkanLogicalDevice.h>
@@ -26,7 +29,7 @@ Vulkan2DTexture::~Vulkan2DTexture() NOEXCEPT
 /*
 *	Initializes this Vulkan 2D texture.
 */
-void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const void *RESTRICT textureData, const VkFormat format, const VkDeviceSize sizeOfTexel) NOEXCEPT
+void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const void *RESTRICT textureData, const VkFormat format, const VkDeviceSize sizeOfTexel, const TextureCreationParameters &textureCreationParameters) NOEXCEPT
 {
 	//Calculate the image size.
 	const VkDeviceSize imageSize = width * height * 4 * sizeOfTexel;
@@ -46,7 +49,7 @@ void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const 
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 
 	//Create the Vulkan image.
-	VulkanUtilities::CreateVulkanImage(0, format, width, height, 1, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(0, format, width, height, 1, 1, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
 
 	//Transition the Vulkan image to the correct layout for writing.
 	VulkanUtilities::TransitionImageToLayout(format, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, vulkanImage);
@@ -65,7 +68,7 @@ void Vulkan2DTexture::Initialize(const uint32 width, const uint32 height, const 
 	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, 1, vulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(vulkanSampler);
+	VulkanUtilities::CreateVulkanSampler(vulkanSampler, textureCreationParameters);
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();

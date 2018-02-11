@@ -3,6 +3,9 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Graphics.
+#include <TextureCreationParameters.h>
+
 //Vulkan.
 #include <VulkanCore.h>
 #include <VulkanCommandBuffer.h>
@@ -11,8 +14,10 @@
 #include <VulkanLogicalDevice.h>
 #include <VulkanPhysicalDevice.h>
 
-namespace VulkanUtilities
+class VulkanUtilities
 {
+
+public:
 
 	/*
 	*	Copies a Vulkan buffer to another Vulkan buffer.
@@ -164,7 +169,7 @@ namespace VulkanUtilities
 	/*
 	*	Creates a Vulkan image.
 	*/
-	static void CreateVulkanImage(const VkImageCreateFlags flags, const VkFormat format, const uint32 width, const uint32 height, const uint32 arrayLayers, const VkImageUsageFlags usage, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) NOEXCEPT
+	static void CreateVulkanImage(const VkImageCreateFlags flags, const VkFormat format, const uint32 width, const uint32 height, const uint32 mipLevels, const uint32 arrayLayers, const VkImageUsageFlags usage, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) NOEXCEPT
 	{
 		//Create the image create info.
 		VkImageCreateInfo imageCreateInfo;
@@ -177,7 +182,7 @@ namespace VulkanUtilities
 		imageCreateInfo.extent.width = width;
 		imageCreateInfo.extent.height = height;
 		imageCreateInfo.extent.depth = 1;
-		imageCreateInfo.mipLevels = 1;
+		imageCreateInfo.mipLevels = mipLevels;
 		imageCreateInfo.arrayLayers = arrayLayers;
 		imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 		imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
@@ -255,7 +260,7 @@ namespace VulkanUtilities
 	/*
 	*	Creates a Vulkan sampler.
 	*/
-	static void CreateVulkanSampler(VkSampler &vulkanSampler) NOEXCEPT
+	static void CreateVulkanSampler(VkSampler &vulkanSampler, const TextureCreationParameters &textureCreationParameters) NOEXCEPT
 	{
 		//Create the image view create info.
 		VkSamplerCreateInfo samplerCreateInfo;
@@ -263,9 +268,9 @@ namespace VulkanUtilities
 		samplerCreateInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		samplerCreateInfo.pNext = nullptr;
 		samplerCreateInfo.flags = 0;
-		samplerCreateInfo.magFilter = VK_FILTER_LINEAR;
-		samplerCreateInfo.minFilter = VK_FILTER_LINEAR;
-		samplerCreateInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		samplerCreateInfo.magFilter = GetVulkanTextureFilter(textureCreationParameters.magnificationFilter);
+		samplerCreateInfo.minFilter = VK_FILTER_NEAREST;
+		samplerCreateInfo.mipmapMode = GetVulkanMipmapMode(textureCreationParameters.mipmapMode);
 		samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
@@ -331,4 +336,45 @@ namespace VulkanUtilities
 		VulkanInterface::Instance->GetGraphicsCommandPool().FreeVulkanCommandBuffer(transitionCommandBuffer);
 	}
 
-}
+private:
+
+	/*
+	*	Given a mipmap mode, return the corresponding Vulkan mipmap mode.
+	*/
+	static VkSamplerMipmapMode GetVulkanMipmapMode(const MipmapMode mipmapMode) NOEXCEPT
+	{
+		switch (mipmapMode)
+		{
+			case MipmapMode::Linear: return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+			case MipmapMode::Nearest: return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+
+			default:
+			{
+#if !defined(CATALYST_FINAL)
+				PRINT_TO_CONSOLE("Unknown texture filter."); BREAKPOINT;
+#endif
+				return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+			}
+		}
+	}
+
+	/*
+	*	Given a texture filter, return the corresponding Vulkan texture filter.
+	*/
+	static VkFilter GetVulkanTextureFilter(const TextureFilter textureFilter) NOEXCEPT
+	{
+		switch (textureFilter)
+		{
+			case TextureFilter::Linear: return VK_FILTER_LINEAR;
+			case TextureFilter::Nearest: return VK_FILTER_NEAREST;
+
+			default:
+			{
+#if !defined(CATALYST_FINAL)
+				PRINT_TO_CONSOLE("Unknown texture filter."); BREAKPOINT;
+#endif
+				return VK_FILTER_NEAREST;
+			}
+		}
+	}
+};

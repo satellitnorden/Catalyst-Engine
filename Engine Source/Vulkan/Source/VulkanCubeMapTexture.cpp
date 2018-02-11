@@ -51,7 +51,7 @@ void VulkanCubeMapTexture::Initialize(const uint32 width, const uint32 height, c
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 
 	//Create the Vulkan image.
-	VulkanUtilities::CreateVulkanImage(VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VK_FORMAT_R8G8B8A8_UNORM, width, height, 6, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT, VK_FORMAT_R8G8B8A8_UNORM, width, height, 1, 6, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
 
 	//Transition the Vulkan image to the correct layout for writing.
 	VulkanUtilities::TransitionImageToLayout(VK_FORMAT_R8G8B8A8_UNORM, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 6, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, vulkanImage);
@@ -70,7 +70,7 @@ void VulkanCubeMapTexture::Initialize(const uint32 width, const uint32 height, c
 	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, 6, vulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(vulkanSampler);
+	VulkanUtilities::CreateVulkanSampler(vulkanSampler, TextureCreationParameters(TextureFilter::Nearest, MipmapMode::Nearest));
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();

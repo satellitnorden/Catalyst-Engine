@@ -24,6 +24,7 @@ class PhysicalEntity;
 class PhysicalModel;
 class TerrainEntity;
 class TerrainUniformData;
+class TextureCreationParameters;
 
 class GraphicsSystem final
 {
@@ -81,12 +82,12 @@ public:
 	/*
 	*	Creates and returns a 2D texture given a texture path.
 	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const char *RESTRICT texturePath) const NOEXCEPT;
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const char *RESTRICT texturePath, const TextureCreationParameters &textureCreationParameters) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given a CPU texture with 4 channels.
 	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const CPUTexture4 &texture) const NOEXCEPT;
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const CPUTexture4 &texture, const TextureCreationParameters &textureCreationParameters) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a cube map texture.

@@ -30,7 +30,7 @@ void VulkanDepthBuffer::Initialize(const VkExtent2D imageExtent) NOEXCEPT
 	format = FindMostDesirableDepthBufferFormat();
 
 	//Create the depth buffer image!
-	VulkanUtilities::CreateVulkanImage(0, format, imageExtent.width, imageExtent.height, 1, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(0, format, imageExtent.width, imageExtent.height, 1, 1, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
 
 	//Create the depth buffer image view!
 	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_DEPTH_BIT, 1, vulkanImageView);

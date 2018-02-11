@@ -34,6 +34,7 @@
 #include <VulkanUniformBuffer.h>
 
 //Forward declarations.
+class TextureCreationParameters;
 class Window;
 
 class VulkanInterface final
@@ -144,7 +145,7 @@ public:
 	/*
 	*	Creates and returns a 2D texture.
 	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 width, const uint32 height, const void *RESTRICT textureData, const VkFormat format, const VkDeviceSize sizeOfTexel) NOEXCEPT;
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 width, const uint32 height, const void *RESTRICT textureData, const VkFormat format, const VkDeviceSize sizeOfTexel, const TextureCreationParameters &textureCreationParameters) NOEXCEPT;
 
 	/*
 	*	Creates and returns a buffer.
