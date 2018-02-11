@@ -847,14 +847,19 @@ void GraphicsSystem::RenderPhysicalEntities() NOEXCEPT
 	VulkanPipeline &sceneBufferPipeline{ *pipelines[Pipeline::SceneBufferPipeline] };
 	VulkanCommandBuffer &commandBuffer{ swapchainCommandBuffers[currentSwapchainCommandBuffer] };
 
-	//Begin the pipeline and render pass.
-	commandBuffer.CommandBindPipeline(sceneBufferPipeline);
-	commandBuffer.CommandBeginRenderPass(sceneBufferPipeline.GetRenderPass(), 0, false, 0);
-
 	//Iterate over all physical entity components and draw them all.
 	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
 	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents() };
 	const RenderComponent *RESTRICT renderComponent{ ComponentManager::GetPhysicalEntityRenderComponents() };
+
+	if (numberOfPhysicalEntityComponents == 0)
+	{
+		return;
+	}
+
+	//Begin the pipeline and render pass.
+	commandBuffer.CommandBindPipeline(sceneBufferPipeline);
+	commandBuffer.CommandBeginRenderPass(sceneBufferPipeline.GetRenderPass(), 0, false, 0);
 
 	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{

@@ -46,10 +46,11 @@ layout (std140, binding = 0) uniform DynamicUniformData
 //Terrain uniform buffer.
 layout (std140, binding = 1) uniform TerrainUniformData
 {
-	float terrainDisplacementHeight;
-	float terrainHeight;
+    float terrainDisplacementHeight;
+    float terrainHeight;
     float terrainSize;
-	vec3 terrainPosition;
+    float terrainTextureTilingFactor;
+    vec3 terrainPosition;
 };
 
 //In parameters.

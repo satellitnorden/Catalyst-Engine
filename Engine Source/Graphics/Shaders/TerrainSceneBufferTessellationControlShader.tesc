@@ -46,20 +46,20 @@ layout (std140, binding = 0) uniform DynamicUniformData
 //Terrain uniform buffer.
 layout (std140, binding = 1) uniform TerrainUniformData
 {
-	float terrainDisplacementHeight;
-	float terrainHeight;
+    float terrainDisplacementHeight;
+    float terrainHeight;
     float terrainSize;
-	vec3 terrainPosition;
+    float terrainTextureTilingFactor;
+    vec3 terrainPosition;
 };
 
 //Layout specification.
 layout (vertices = 3) out;
 
 //In parameters.
-layout (location = 0) in float tesselationControlDistanceToCameraSquared[];
-layout (location = 1) in vec2 tessellationControlHeightMapTextureCoordinate[];
-layout (location = 2) in vec2 tessellationControlTextureCoordinate[];
-layout (location = 3) in vec3 tessellationControlPosition[];
+layout (location = 0) in vec2 tessellationControlHeightMapTextureCoordinate[];
+layout (location = 1) in vec2 tessellationControlTextureCoordinate[];
+layout (location = 2) in vec3 tessellationControlPosition[];
 
 //Out parameters.
 layout (location = 0) out vec2 tessellationEvaluationHeightMapTextureCoordinate[];

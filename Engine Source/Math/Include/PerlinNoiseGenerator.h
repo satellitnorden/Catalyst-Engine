@@ -43,7 +43,7 @@ public:
 											};
 
 	/*
-	*	Generates noise at the given coordinates.
+	*	Generates noise at the given coordinates and returns a value between -1.0f and 1.0f.
 	*/
 	static constexpr float GenerateNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
 	{
@@ -84,13 +84,13 @@ public:
 
 		float y2 = GameMath::LinearlyInterpolate(x1, x2, v);
 
-		return (GameMath::LinearlyInterpolate(y1, y2, w) + 1.0f) / 2.0f;
+		return GameMath::LinearlyInterpolate(y1, y2, w);
 	}
 
 	/*
 	*	Generates octaved noise.
 	*/
-	float constexpr GenerateOctavedNoise(float X, float Y, float Z, const uint8 octaves, const float persistence) NOEXCEPT
+	static float constexpr GenerateOctavedNoise(float X, float Y, float Z, const uint8 octaves, const float persistence) NOEXCEPT
 	{
 		float total{ 0.0f };
 		float frequency{ 1.0f };

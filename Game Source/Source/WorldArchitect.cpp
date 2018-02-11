@@ -23,9 +23,9 @@
 #include <QuestSystem.h>
 
 //Preprocessor defines.
-#define HEIGHT_MAP_RESOLUTION 1'024
-#define TERRAIN_HEIGHT 1'024.0f
-#define TERRAIN_SIZE 4'096.0f
+#define HEIGHT_MAP_RESOLUTION 1'000
+#define TERRAIN_HEIGHT 1'000.0f
+#define TERRAIN_SIZE 10'000.0f //Generate 10 x 10 km blocks at a time.
 
 /*
 *	Default constructor.
@@ -49,8 +49,8 @@ WorldArchitect::~WorldArchitect() NOEXCEPT
 void WorldArchitect::Initialize() NOEXCEPT
 {
 	//Create the sun!
-	//sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
-	//sun->SetIntensity(25.0f);
+	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
+	sun->SetIntensity(10.0f);
 
 	//Create the sky!
 	VulkanCubeMapTexture *RESTRICT sky = GraphicsSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
@@ -63,7 +63,17 @@ void WorldArchitect::Initialize() NOEXCEPT
 	{
 		for (uint32 j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
 		{
-			heightMap.At(i, j) = PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION), static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION), 0.0f);
+			float totalMultiplier = 0.0f;
+
+			float frequency = 1.0f;
+			float multiplier = 1.0f;
+			heightMap.At(i, j) = PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f) * multiplier;
+			totalMultiplier += multiplier;
+
+			frequency *= 5.0f;
+			multiplier *= 0.5f;
+			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f) * multiplier;
+			totalMultiplier += multiplier;
 		}
 	}
 
@@ -95,16 +105,17 @@ void WorldArchitect::Initialize() NOEXCEPT
 	Vulkan2DTexture *RESTRICT terrainNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(normalMap);
 
 	//Load the remaining terrain textures.
-	Vulkan2DTexture *RESTRICT terrainAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1Albedo.png");
-	Vulkan2DTexture *RESTRICT terrainNormalTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1Normal.png");
-	Vulkan2DTexture *RESTRICT terrainRoughnessTexture = nullptr;
-	Vulkan2DTexture *RESTRICT terrainAmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1AmbientOcclusion.png");
-	Vulkan2DTexture *RESTRICT terrainDisplacementTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Sand1Displacement.png");
+	Vulkan2DTexture *RESTRICT terrainAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Albedo.png");
+	Vulkan2DTexture *RESTRICT terrainNormalTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMap.png");
+	Vulkan2DTexture *RESTRICT terrainRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Roughness.png");
+	Vulkan2DTexture *RESTRICT terrainAmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Roughness.png");
+	Vulkan2DTexture *RESTRICT terrainDisplacementTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "Terrain/Grass1Roughness.png");
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(64, TerrainUniformData(2.5f, TERRAIN_HEIGHT, TERRAIN_SIZE, Vector3(0.0f, 0.0f, 0.0f)), terrainHeightMapTexture, terrainNormalMapTexture, terrainAlbedoTexture, terrainNormalTexture, terrainRoughnessTexture, nullptr, terrainAmbientOcclusionTexture, terrainDisplacementTexture);
+	terrain->Initialize(128, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.1f, Vector3(0.0f, 0.0f, 0.0f)), terrainHeightMapTexture, terrainNormalMapTexture, terrainAlbedoTexture, terrainNormalTexture, terrainRoughnessTexture, nullptr, terrainAmbientOcclusionTexture, terrainDisplacementTexture);
 
+	/*
 	Vulkan2DTexture *RESTRICT floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
 	Vulkan2DTexture *RESTRICT floorNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
 	Vulkan2DTexture *RESTRICT floorRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorRoughness.png");
@@ -117,7 +128,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 	floor->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
 	floor->Scale(Vector3(1'000.0f, 1'000.0f, 1'000.0f));
 
-	/*
 	Vector3 pointLightPositions[5]{ Vector3(0.0f, 20.0f, 0.0f), Vector3(50.0f, 10.0f, 50.0f), Vector3(50.0f, 10.0f, -50.0f), Vector3(-50.0f, 10.0f, 50.0f), Vector3(-50.0f, 10.0f, -50.0f) };
 
 	for (size_t i = 0; i < 5; ++i)
@@ -169,5 +179,5 @@ void WorldArchitect::Initialize() NOEXCEPT
 void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 {
 	//Constantly rotate the sun.
-	//sun->Rotate(Vector3(-1.0f * deltaTime, 0.0f, 0.0f));
+	sun->Rotate(Vector3(-1.0f * deltaTime, 0.0f, 0.0f));
 }

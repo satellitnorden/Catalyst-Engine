@@ -46,10 +46,11 @@ layout (std140, binding = 0) uniform DynamicUniformData
 //Terrain uniform buffer.
 layout (std140, binding = 1) uniform TerrainUniformData
 {
-	float terrainDisplacementHeight;
-	float terrainHeight;
+    float terrainDisplacementHeight;
+    float terrainHeight;
     float terrainSize;
-	vec3 terrainPosition;
+    float terrainTextureTilingFactor;
+    vec3 terrainPosition;
 };
 
 //In parameters.
@@ -57,28 +58,17 @@ layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec2 vertexTextureCoordinate;
 
 //Out parameters.
-layout (location = 0) out float tesselationControlDistanceToCameraSquared;
-layout (location = 1) out vec2 tessellationControlHeightMapTextureCoordinate;
-layout (location = 2) out vec2 tessellationControlTextureCoordinate;
-layout (location = 3) out vec3 tessellationControlPosition;
-
-/*
-*	Returns the squared 2D length of a vector, not taking height into account.
-*/
-float Squared2DLength(vec3 vector)
-{
-	return vector.x * vector.x + vector.z * vector.z;
-}
+layout (location = 0) out vec2 tessellationControlHeightMapTextureCoordinate;
+layout (location = 1) out vec2 tessellationControlTextureCoordinate;
+layout (location = 2) out vec3 tessellationControlPosition;
 
 void main()
 {	
 	//Pass the texture coordinate to the tesselation control shader.
 	tessellationControlHeightMapTextureCoordinate = vertexTextureCoordinate;
-	tessellationControlTextureCoordinate = tessellationControlHeightMapTextureCoordinate * (terrainSize * 0.5f);
+	tessellationControlTextureCoordinate = tessellationControlHeightMapTextureCoordinate * terrainTextureTilingFactor;
 
 	vec3 finalVertexPosition = vertexPosition * (terrainSize * 0.5f) + terrainPosition;
-
-	tesselationControlDistanceToCameraSquared = Squared2DLength(cameraWorldPosition - finalVertexPosition);
 
 	//Pass the unmodified vertex position to the tesselation control shader.
 	tessellationControlPosition = finalVertexPosition;
