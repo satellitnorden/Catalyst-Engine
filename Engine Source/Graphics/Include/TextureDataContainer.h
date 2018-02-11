@@ -82,6 +82,37 @@ public:
 	}
 
 	/*
+	*	Array taking an array of texture paths, for mip generation.
+	*/
+	TextureDataContainer(const DynamicArray<const char *RESTRICT> &texturePaths) NOEXCEPT
+	{
+		const size_t numberOfTextures{ texturePaths.Size() };
+		textureData.Reserve(numberOfTextures);
+
+		//Load the texture.
+		for (size_t i = 0; i < numberOfTextures; ++i)
+		{
+			byte *RESTRICT data;
+			uint16 tempWidth, tempHeight;
+			uint8 tempNumberOfChannels;
+			TextureLoader::LoadTexture(texturePaths[i], tempWidth, tempHeight, tempNumberOfChannels, &data);
+
+			//Only store the width/height for the base mip, it is assumed that following mip layers are half it's size
+			if (i == 0)
+			{
+				textureWidth = tempWidth;
+				textureHeight = tempHeight;
+				textureChannels = 4;
+				textureTexelSize = sizeof(byte);
+			}
+
+			textureData.EmplaceFast(data);
+		}
+		
+		releaseOnDestruction = true;
+	}
+
+	/*
 	*	Default destructor.
 	*/
 	~TextureDataContainer() NOEXCEPT

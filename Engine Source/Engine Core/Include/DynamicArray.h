@@ -15,7 +15,7 @@ public:
 	{
 		if (InitialCapacity > 0)
 		{
-			Reserve(InitialCapacity);
+			ReserveConstruct(InitialCapacity);
 		}
 
 		else
@@ -31,7 +31,7 @@ public:
 	DynamicArray(std::initializer_list<ObjectType> &&initializerList) NOEXCEPT
 	{
 		//Reserve memory for all the elements in the initializer list.
-		Reserve(initializerList.size());
+		ReserveConstruct(initializerList.size());
 
 		//Copy all elements of the initializer list to this dynamic array.
 		MemoryUtilities::CopyMemory(array, initializerList.begin(), sizeof(ObjectType) * capacity);
@@ -45,7 +45,7 @@ public:
 	*/
 	DynamicArray(const DynamicArray &otherDynamicArray) NOEXCEPT
 	{
-		Reserve(otherDynamicArray.capacity);
+		ReserveConstruct(otherDynamicArray.capacity);
 
 		MemoryUtilities::CopyMemory(array, otherDynamicArray.array, capacity);
 
@@ -64,7 +64,7 @@ public:
 		}
 
 		//Free the memory used by the array.
-		MemoryUtilities::FreeMemory(static_cast<void*>(array));
+		MemoryUtilities::FreeMemory(static_cast<void *RESTRICT>(array));
 	}
 
 	/*
@@ -332,5 +332,17 @@ private:
 
 	//The current capacity of this dynamic array.
 	size_t capacity;
+
+	/*
+	*	Reserves a new chunk of memory, changing the array's capacity, without copying over the old array.
+	*/
+	void ReserveConstruct(const size_t newCapacity) NOEXCEPT
+	{
+		//Allocate the new array.
+		array = static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity));
+
+		//Update the capacity.
+		capacity = newCapacity;
+	}
 
 };
