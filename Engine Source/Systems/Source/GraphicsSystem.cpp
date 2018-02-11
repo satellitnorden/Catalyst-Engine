@@ -17,8 +17,7 @@
 #include <ModelLoader.h>
 #include <PhysicalModel.h>
 #include <ShaderLoader.h>
-#include <TextureCreationParameters.h>
-#include <TextureLoader.h>
+#include <TextureData.h>
 
 //Math.
 #include <GameMath.h>
@@ -291,35 +290,12 @@ void GraphicsSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const
 }
 
 /*
-*	Creates and returns a 2D texture.
+*	Creates and returns a 2D texture given the texture data.
 */
-RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const char *RESTRICT texturePath, const TextureCreationParameters &textureCreationParameters) const NOEXCEPT
-{
-	//Load the texture.
-	int width = 0;
-	int height = 0;
-	int numberOfChannels = 0;
-	byte *textureData = nullptr;
-
-	TextureLoader::LoadTexture(texturePath, width, height, numberOfChannels, &textureData);
-
-	//Create the Vulkan 2D texture.
-	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(width), static_cast<uint32>(height), textureData, VK_FORMAT_R8G8B8A8_UNORM, sizeof(byte), textureCreationParameters);
-
-	//Free the texture.
-	TextureLoader::FreeTexture(textureData);
-
-	//Return the texture.
-	return new2DTexture;
-}
-
-/*
-*	Creates and returns a 2D texture given a CPU texture with 4 channels.
-*/
-RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const CPUTexture4 &texture, const TextureCreationParameters &textureCreationParameters) const NOEXCEPT
+RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const TextureData &textureData) const NOEXCEPT
 {
 	//Create the Vulkan 2D texture.
-	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(texture.GetResolution(), texture.GetResolution(), texture.Data(), VK_FORMAT_R32G32B32A32_SFLOAT, sizeof(float), textureCreationParameters);
+	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(textureData);
 
 	//Return the texture.
 	return new2DTexture;
@@ -333,9 +309,9 @@ RESTRICTED VulkanCubeMapTexture* GraphicsSystem::CreateCubeMapTexture(const char
 	//Load all textures.
 	byte *RESTRICT textureData[6];
 
-	int width = 0;
-	int height = 0;
-	int numberOfChannels = 0;
+	uint16 width = 0;
+	uint16 height = 0;
+	uint8 numberOfChannels = 0;
 
 	TextureLoader::LoadTexture(frontTexturePath, width, height, numberOfChannels, &textureData[0]);
 	TextureLoader::LoadTexture(backTexturePath, width, height, numberOfChannels, &textureData[1]);
@@ -766,20 +742,17 @@ void GraphicsSystem::InitializeDescriptorSets() NOEXCEPT
 */
 void GraphicsSystem::InitializeDefaultTextures() NOEXCEPT
 {
-	//Create all default textures.
-	TextureCreationParameters defaultTextureCreationParameters;
+	byte defaultRoughness[]{ 255 };
+	defaultTextures[DefaultTexture::Roughness] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultRoughness, 1, 1, 1), TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
 
-	const byte defaultRoughness[]{ 255 };
-	defaultTextures[DefaultTexture::Roughness] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultRoughness, VK_FORMAT_R8_UNORM, sizeof(byte), defaultTextureCreationParameters);
+	byte defaultMetallic[]{ 0 };
+	defaultTextures[DefaultTexture::Metallic] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultMetallic, 1, 1, 1), TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
 
-	const byte defaultMetallic[]{ 0 };
-	defaultTextures[DefaultTexture::Metallic] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultMetallic, VK_FORMAT_R8_UNORM, sizeof(byte), defaultTextureCreationParameters);
+	byte defaultAmbientOcclusion[]{ 255 };
+	defaultTextures[DefaultTexture::AmbientOcclusion] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultAmbientOcclusion, 1, 1, 1), TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
 
-	const byte defaultAmbientOcclusion[]{ 255 };
-	defaultTextures[DefaultTexture::AmbientOcclusion] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultAmbientOcclusion, VK_FORMAT_R8_UNORM, sizeof(byte), defaultTextureCreationParameters);
-
-	const byte defaultDisplacement[]{ 0 };
-	defaultTextures[DefaultTexture::Displacement] = VulkanInterface::Instance->Create2DTexture(1, 1, defaultDisplacement, VK_FORMAT_R8_UNORM, sizeof(byte), defaultTextureCreationParameters);
+	byte defaultDisplacement[]{ 0 };
+	defaultTextures[DefaultTexture::Displacement] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultDisplacement, 1, 1, 1), TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
 }
 
 /*

@@ -8,7 +8,7 @@
 
 //Forward declarations.
 class VulkanDescriptorSet;
-class TextureCreationParameters;
+class TextureData;
 
 class Vulkan2DTexture final
 {
@@ -33,7 +33,7 @@ public:
 	/*
 	*	Initializes this texture.
 	*/
-	void Initialize(const uint32 width, const uint32 height, const void *RESTRICT textureData, const VkFormat format, const VkDeviceSize sizeOfTexel, const TextureCreationParameters &textureCreationParameters) NOEXCEPT;
+	void Initialize(const TextureData &textureData) NOEXCEPT;
 
 	/*
 	*	Releases this texture.

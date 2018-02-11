@@ -38,6 +38,7 @@
     <ClCompile Include="..\..\Engine Source\Entities\Source\TerrainEntity.cpp" />
     <ClCompile Include="..\..\Engine Source\Graphics\Source\PhysicalMaterial.cpp" />
     <ClCompile Include="..\..\Engine Source\Graphics\Source\PhysicalModel.cpp" />
+    <ClCompile Include="..\..\Engine Source\Graphics\Source\TextureLoader.cpp" />
     <ClCompile Include="..\..\Engine Source\Graphics\Source\Vertex.cpp" />
     <ClCompile Include="..\..\Engine Source\Graphics\Source\Window.cpp" />
     <ClCompile Include="..\..\Engine Source\Math\Source\GameMath.cpp" />
@@ -129,7 +130,8 @@
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PostProcessingUniformData.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\ShaderLoader.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\TerrainUniformData.h" />
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureCreationParameters.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureData.h" />
+    <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureDataContainer.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureLoader.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\Vertex.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\Window.h" />

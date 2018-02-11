@@ -31,9 +31,14 @@ public:
 	}
 
 	/*
-	*	Returns the texture data.
+	*	Returns the texture data, const.
 	*/
 	RESTRICTED const Vector4* Data() const NOEXCEPT { return data.Data(); }
+
+	/*
+	*	Returns the texture data, non-const.
+	*/
+	RESTRICTED Vector4* Data() NOEXCEPT { return data.Data(); }
 
 	/*
 	*	Returns the texture value at the specified index, const.

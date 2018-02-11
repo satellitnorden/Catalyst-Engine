@@ -19,12 +19,11 @@
 
 //Forward declarations.
 class CameraEntity;
-class CPUTexture4;
 class PhysicalEntity;
 class PhysicalModel;
 class TerrainEntity;
 class TerrainUniformData;
-class TextureCreationParameters;
+class TextureData;
 
 class GraphicsSystem final
 {
@@ -80,14 +79,9 @@ public:
 	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Vulkan2DTexture *RESTRICT terrainHeightMapTexture, const Vulkan2DTexture *RESTRICT terrainNormalMapTexture, const Vulkan2DTexture *RESTRICT albedoTexture, const Vulkan2DTexture *RESTRICT normalMapTexture, const Vulkan2DTexture *RESTRICT roughnessTexture, const Vulkan2DTexture *RESTRICT metallicTexture, const Vulkan2DTexture *RESTRICT ambientOcclusionTexture, const Vulkan2DTexture *RESTRICT displacementTexture) const NOEXCEPT;
 
 	/*
-	*	Creates and returns a 2D texture given a texture path.
+	*	Creates and returns a 2D texture given the texture data.
 	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const char *RESTRICT texturePath, const TextureCreationParameters &textureCreationParameters) const NOEXCEPT;
-
-	/*
-	*	Creates and returns a 2D texture given a CPU texture with 4 channels.
-	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const CPUTexture4 &texture, const TextureCreationParameters &textureCreationParameters) const NOEXCEPT;
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const TextureData &textureData) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a cube map texture.

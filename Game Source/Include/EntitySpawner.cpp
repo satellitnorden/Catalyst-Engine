@@ -6,7 +6,6 @@
 
 //Graphics.
 #include <PhysicalModel.h>
-#include <TextureCreationParameters.h>
 
 //Math.
 #include <GameMath.h>
@@ -36,6 +35,7 @@ EntitySpawner::~EntitySpawner() NOEXCEPT
 */
 void EntitySpawner::Update(const float deltaTime) NOEXCEPT
 {
+	/*
 	static Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneAlbedo.png", TextureCreationParameters());
 	static Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneNormalMap.png", TextureCreationParameters());
 	static Vulkan2DTexture *stoneRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneRoughness.png", TextureCreationParameters());
@@ -56,4 +56,5 @@ void EntitySpawner::Update(const float deltaTime) NOEXCEPT
 		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
 		stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
 	}
+	*/
 }
