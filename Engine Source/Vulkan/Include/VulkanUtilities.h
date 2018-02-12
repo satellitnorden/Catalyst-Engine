@@ -244,7 +244,7 @@ public:
 	/*
 	*	Creates a Vulkan image view.
 	*/
-	static void CreateVulkanImageView(const VkImage &vulkanImage, const VkImageViewType viewType, const VkFormat format, const VkImageAspectFlags aspectMask, const uint32 layerCount, VkImageView &vulkanImageView) NOEXCEPT
+	static void CreateVulkanImageView(const VkImage &vulkanImage, const VkImageViewType viewType, const VkFormat format, const VkImageAspectFlags aspectMask, const uint32 levelCount, const uint32 layerCount, VkImageView &vulkanImageView) NOEXCEPT
 	{
 		//Create the image view create info.
 		VkImageViewCreateInfo imageViewCreateInfo;
@@ -261,7 +261,7 @@ public:
 		imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 		imageViewCreateInfo.subresourceRange.aspectMask = aspectMask;
 		imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
-		imageViewCreateInfo.subresourceRange.levelCount = 1;
+		imageViewCreateInfo.subresourceRange.levelCount = levelCount;
 		imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
 		imageViewCreateInfo.subresourceRange.layerCount = layerCount;
 
@@ -272,7 +272,7 @@ public:
 	/*
 	*	Creates a Vulkan sampler.
 	*/
-	static void CreateVulkanSampler(VkSampler &vulkanSampler, const TextureFilter magnificationFilter, const MipmapMode mipmapMode) NOEXCEPT
+	static void CreateVulkanSampler(VkSampler &vulkanSampler, const TextureFilter magnificationFilter, const MipmapMode mipmapMode, const float maxLod) NOEXCEPT
 	{
 		//Create the image view create info.
 		VkSamplerCreateInfo samplerCreateInfo;
@@ -292,7 +292,7 @@ public:
 		samplerCreateInfo.compareEnable = VK_FALSE;
 		samplerCreateInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 		samplerCreateInfo.minLod = 0.0f;
-		samplerCreateInfo.maxLod = 1.0f;
+		samplerCreateInfo.maxLod = maxLod;
 		samplerCreateInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 		samplerCreateInfo.unnormalizedCoordinates = VK_FALSE;
 

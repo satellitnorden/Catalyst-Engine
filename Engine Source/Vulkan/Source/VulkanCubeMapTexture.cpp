@@ -67,10 +67,10 @@ void VulkanCubeMapTexture::Initialize(const uint32 width, const uint32 height, c
 	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBuffer, nullptr);
 
 	//Create the image view.
-	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, 6, vulkanImageView);
+	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, 1, 6, vulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(vulkanSampler, TextureFilter::Nearest, MipmapMode::Nearest);
+	VulkanUtilities::CreateVulkanSampler(vulkanSampler, TextureFilter::Nearest, MipmapMode::Nearest, 0.0f);
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();
