@@ -32,7 +32,13 @@ Vulkan2DTexture::~Vulkan2DTexture() NOEXCEPT
 void Vulkan2DTexture::Initialize(const TextureData &textureData) NOEXCEPT
 {
 	//Calculate the image size.
-	const VkDeviceSize imageSize = textureData.textureDataContainer.textureWidth * textureData.textureDataContainer.textureHeight * textureData.textureDataContainer.textureChannels * textureData.textureDataContainer.textureTexelSize;
+	VkDeviceSize imageSize{ 0 };
+	const size_t textureDataSize{ textureData.textureDataContainer.textureData.Size() };
+
+	for (size_t i = 0; i < textureDataSize; ++i)
+	{
+		imageSize += (textureData.textureDataContainer.textureWidth >> i) * (textureData.textureDataContainer.textureHeight >> i) * textureData.textureDataContainer.textureChannels * textureData.textureDataContainer.textureTexelSize;
+	}
 
 	//Set up the staging buffer.
 	VkBuffer stagingBuffer;
@@ -45,23 +51,33 @@ void Vulkan2DTexture::Initialize(const TextureData &textureData) NOEXCEPT
 	void *data;
 
 	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, VK_WHOLE_SIZE, 0, &data));
-	MemoryUtilities::CopyMemory(data, textureData.textureDataContainer.textureData[0], static_cast<size_t>(imageSize));
+
+	size_t currentOffset{ 0 };
+
+	for (size_t i = 0; i < textureDataSize; ++i)
+	{
+		const size_t mipSize{ (textureData.textureDataContainer.textureWidth >> i) * (textureData.textureDataContainer.textureHeight >> i) * textureData.textureDataContainer.textureChannels * static_cast<size_t>(textureData.textureDataContainer.textureTexelSize) };
+		MemoryUtilities::CopyMemory(static_cast<byte*>(data) + currentOffset, textureData.textureDataContainer.textureData[i], mipSize);
+
+		currentOffset += mipSize;
+	}
+	
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 
 	//Deduce the format of the images.
 	VkFormat format{ VulkanUtilities::GetVulkanFormat(textureData.textureFormat) };
 
 	//Create the Vulkan image.
-	VulkanUtilities::CreateVulkanImage(0, format, textureData.textureDataContainer.textureWidth, textureData.textureDataContainer.textureHeight, 1, 1, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(0, format, textureData.textureDataContainer.textureWidth, textureData.textureDataContainer.textureHeight, static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), 1, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
 
 	//Transition the Vulkan image to the correct layout for writing.
-	VulkanUtilities::TransitionImageToLayout(format, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, vulkanImage);
+	VulkanUtilities::TransitionImageToLayout(format, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), 1, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, vulkanImage);
 
 	//Copy the buffer to the Vulkan image.
-	VulkanUtilities::CopyBufferToImage(stagingBuffer, vulkanImage, 1, textureData.textureDataContainer.textureWidth, textureData.textureDataContainer.textureHeight);
+	VulkanUtilities::CopyBufferToImage(stagingBuffer, vulkanImage, static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), 1, textureData.textureDataContainer.textureWidth, textureData.textureDataContainer.textureHeight);
 
 	//Transition the Vulkan image to the correct layout for reading.
-	VulkanUtilities::TransitionImageToLayout(format, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, vulkanImage);
+	VulkanUtilities::TransitionImageToLayout(format, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, vulkanImage);
 
 	//Clean up the staging buffer.
 	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, nullptr);

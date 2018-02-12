@@ -57,30 +57,42 @@ public:
 	/*
 	*	Copies a Vulkan buffer to a Vulkan image.
 	*/
-	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 layerCount, const uint32 width, const uint32 height) NOEXCEPT
+	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 mipLevels, const uint32 layerCount, const uint32 width, const uint32 height) NOEXCEPT
 	{
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transferCommandBuffer;
 		VulkanInterface::Instance->GetTransferCommandPool().AllocateVulkanCommandBuffer(transferCommandBuffer);
 
 		//Create the buffer image copy.
-		VkBufferImageCopy bufferImageCopy;
+		DynamicArray<VkBufferImageCopy> bufferImageCopies;
+		bufferImageCopies.Reserve(mipLevels);
 
-		bufferImageCopy.bufferOffset = 0;
-		bufferImageCopy.bufferRowLength = 0;
-		bufferImageCopy.bufferImageHeight = 0;
-		bufferImageCopy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		bufferImageCopy.imageSubresource.mipLevel = 0;
-		bufferImageCopy.imageSubresource.baseArrayLayer = 0;
-		bufferImageCopy.imageSubresource.layerCount = layerCount;
-		bufferImageCopy.imageOffset = { 0, 0, 0 };
-		bufferImageCopy.imageExtent = { width, height, 1 };
+		VkDeviceSize currentOffset{ 0 };
+
+		for (uint32 i = 0; i < mipLevels; ++i)
+		{
+			VkBufferImageCopy bufferImageCopy;
+
+			bufferImageCopy.bufferOffset = currentOffset;
+			bufferImageCopy.bufferRowLength = 0;
+			bufferImageCopy.bufferImageHeight = 0;
+			bufferImageCopy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			bufferImageCopy.imageSubresource.mipLevel = i;
+			bufferImageCopy.imageSubresource.baseArrayLayer = 0;
+			bufferImageCopy.imageSubresource.layerCount = layerCount;
+			bufferImageCopy.imageOffset = { 0, 0, 0 };
+			bufferImageCopy.imageExtent = { width >> i, height >> i, 1 };
+
+			bufferImageCopies.EmplaceFast(bufferImageCopy);
+
+			currentOffset += (width >> i) * (height >> i) * 4 * sizeof(byte);
+		}
 
 		//Begin the ctransfer ommand buffer.
 		transferCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Record the copy command to the transfer command buffer.
-		vkCmdCopyBufferToImage(transferCommandBuffer.Get(), vulkanBuffer, vulkanImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &bufferImageCopy);
+		vkCmdCopyBufferToImage(transferCommandBuffer.Get(), vulkanBuffer, vulkanImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32>(bufferImageCopies.Size()), bufferImageCopies.Data());
 
 		//End the transfer command buffer.
 		transferCommandBuffer.End();
@@ -280,7 +292,7 @@ public:
 		samplerCreateInfo.compareEnable = VK_FALSE;
 		samplerCreateInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 		samplerCreateInfo.minLod = 0.0f;
-		samplerCreateInfo.maxLod = 0.0f;
+		samplerCreateInfo.maxLod = 1.0f;
 		samplerCreateInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 		samplerCreateInfo.unnormalizedCoordinates = VK_FALSE;
 
@@ -352,7 +364,7 @@ public:
 	/*
 	*	Transitions a Vulkan image to a layout.
 	*/
-	static void TransitionImageToLayout(const VkFormat format, const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageAspectFlags aspectMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, const uint32 layerCount, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, VkImage &vulkanImage) NOEXCEPT
+	static void TransitionImageToLayout(const VkFormat format, const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageAspectFlags aspectMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, const uint32 mipLevels, const uint32 layerCount, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, VkImage &vulkanImage) NOEXCEPT
 	{
 		//Create the transition command buffer.
 		VulkanCommandBuffer transitionCommandBuffer;
@@ -374,7 +386,7 @@ public:
 		imageMemoryBarrier.image = vulkanImage;
 		
 		imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
-		imageMemoryBarrier.subresourceRange.levelCount = 1;
+		imageMemoryBarrier.subresourceRange.levelCount = mipLevels;
 		imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
 		imageMemoryBarrier.subresourceRange.layerCount = layerCount;
 
