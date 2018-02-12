@@ -272,7 +272,7 @@ public:
 	/*
 	*	Creates a Vulkan sampler.
 	*/
-	static void CreateVulkanSampler(VkSampler &vulkanSampler, const TextureFilter magnificationFilter, const MipmapMode mipmapMode, const float maxLod) NOEXCEPT
+	static void CreateVulkanSampler(VkSampler &vulkanSampler, const TextureFilter magnificationFilter, const MipmapMode mipmapMode, const AddressMode addressMode, const float maxLod) NOEXCEPT
 	{
 		//Create the image view create info.
 		VkSamplerCreateInfo samplerCreateInfo;
@@ -283,9 +283,10 @@ public:
 		samplerCreateInfo.magFilter = GetVulkanTextureFilter(magnificationFilter);
 		samplerCreateInfo.minFilter = VK_FILTER_NEAREST;
 		samplerCreateInfo.mipmapMode = GetVulkanMipmapMode(mipmapMode);
-		samplerCreateInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		samplerCreateInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		samplerCreateInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		const VkSamplerAddressMode vulkanAddressMode{ GetVulkanAddressMode(addressMode) };
+		samplerCreateInfo.addressModeU = vulkanAddressMode;
+		samplerCreateInfo.addressModeV = vulkanAddressMode;
+		samplerCreateInfo.addressModeW = vulkanAddressMode;
 		samplerCreateInfo.mipLodBias = 0.0f;
 		samplerCreateInfo.anisotropyEnable = VK_TRUE;
 		samplerCreateInfo.maxAnisotropy = 16;
@@ -298,6 +299,29 @@ public:
 
 		//Create the sampler!
 		VULKAN_ERROR_CHECK(vkCreateSampler(VulkanInterface::Instance->GetLogicalDevice().Get(), &samplerCreateInfo, nullptr, &vulkanSampler));
+	}
+
+	/*
+	*	Given an address mode, return the corresponding Vulkan address mode.
+	*/
+	static VkSamplerAddressMode GetVulkanAddressMode(const AddressMode addressMode) NOEXCEPT
+	{
+		switch (addressMode)
+		{
+			case AddressMode::ClampToBorder: return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+			case AddressMode::ClampToEdge: return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			case AddressMode::MirrorClampToEdge: return VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
+			case AddressMode::MirroredRepeat: return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+			case AddressMode::Repeat: return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+
+			default:
+			{
+#if !defined(CATALYST_FINAL)
+				PRINT_TO_CONSOLE("Unknown address mode."); BREAKPOINT;
+#endif
+				return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+			}
+		}
 	}
 
 	/*

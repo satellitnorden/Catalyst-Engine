@@ -87,7 +87,7 @@ void Vulkan2DTexture::Initialize(const TextureData &textureData) NOEXCEPT
 	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), 1, vulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(vulkanSampler, textureData.magnificationFilter, textureData.mipmapMode, static_cast<float>(textureData.textureDataContainer.textureData.Size()));
+	VulkanUtilities::CreateVulkanSampler(vulkanSampler, textureData.magnificationFilter, textureData.mipmapMode, textureData.addressMode, static_cast<float>(textureData.textureDataContainer.textureData.Size()));
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();

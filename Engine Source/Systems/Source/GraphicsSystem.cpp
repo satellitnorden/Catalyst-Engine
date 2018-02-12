@@ -743,16 +743,16 @@ void GraphicsSystem::InitializeDescriptorSets() NOEXCEPT
 void GraphicsSystem::InitializeDefaultTextures() NOEXCEPT
 {
 	byte defaultRoughness[]{ 255 };
-	defaultTextures[DefaultTexture::Roughness] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultRoughness, 1, 1, 1), TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
+	defaultTextures[DefaultTexture::Roughness] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultRoughness, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
 
 	byte defaultMetallic[]{ 0 };
-	defaultTextures[DefaultTexture::Metallic] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultMetallic, 1, 1, 1), TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
+	defaultTextures[DefaultTexture::Metallic] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultMetallic, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
 
 	byte defaultAmbientOcclusion[]{ 255 };
-	defaultTextures[DefaultTexture::AmbientOcclusion] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultAmbientOcclusion, 1, 1, 1), TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
+	defaultTextures[DefaultTexture::AmbientOcclusion] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultAmbientOcclusion, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
 
 	byte defaultDisplacement[]{ 0 };
-	defaultTextures[DefaultTexture::Displacement] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultDisplacement, 1, 1, 1), TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
+	defaultTextures[DefaultTexture::Displacement] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultDisplacement, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
 }
 
 /*

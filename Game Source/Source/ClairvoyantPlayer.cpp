@@ -44,7 +44,6 @@ void ClairvoyantPlayer::Initialize() NOEXCEPT
 	flashlight->SetAttenuationDistance(100.0f);
 	flashlight->SetIntensity(25.0f);
 	flashlight->Rotate(Vector3(-90.0f, 180.0f, 0.0f));
-	//flashlight->Move(Vector3(0.0f, -1.0f, 0.0f));
 }
 
 /*
@@ -59,7 +58,7 @@ void ClairvoyantPlayer::Update(const float deltaTime) NOEXCEPT
 
 	if (currentGamepadState.isConnected)
 	{
-		const float movementSpeed = 1.0f + (currentGamepadState.rightTriggerValue * 100.0f);
+		const float movementSpeed = 1.0f + (currentGamepadState.rightTriggerValue * 1'000.0f);
 
 		//Calculate camera movement.
 		Rotate(Vector3(0.0f, currentGamepadState.rightThumbstickXValue * -cameraLookSpeed * deltaTime, 0.0f));

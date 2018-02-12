@@ -6,6 +6,16 @@
 //Graphics.
 #include <TextureDataContainer.h>
 
+//Enumeration covering all address modes.
+enum class AddressMode : uint8
+{
+	ClampToBorder,
+	ClampToEdge,
+	MirrorClampToEdge,
+	MirroredRepeat,
+	Repeat
+};
+
 //Enumeration covering all mipmap modes.
 enum class MipmapMode : uint8
 {
@@ -41,9 +51,10 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	TextureData(const TextureDataContainer &initialTextureDataContainer, const TextureFilter initialMagnificationFilter, const MipmapMode initialMipmapMode, const TextureFormat initialTextureFormat) NOEXCEPT
+	TextureData(const TextureDataContainer &initialTextureDataContainer, const AddressMode initialAddressMode, const TextureFilter initialMagnificationFilter, const MipmapMode initialMipmapMode, const TextureFormat initialTextureFormat) NOEXCEPT
 		:
 		textureDataContainer(initialTextureDataContainer),
+		addressMode(initialAddressMode),
 		magnificationFilter(initialMagnificationFilter),
 		mipmapMode(initialMipmapMode),
 		textureFormat(initialTextureFormat)
@@ -54,10 +65,13 @@ public:
 	//The texture data container.
 	TextureDataContainer textureDataContainer;
 
+	//Defines the address mode.
+	AddressMode addressMode;
+
 	//Defines the magnification filter.
 	TextureFilter magnificationFilter;
 
-	//Defines the mipmsp mode.
+	//Defines the mipmap mode.
 	MipmapMode mipmapMode;
 
 	//The texture format.
