@@ -85,11 +85,11 @@ float GetTesselationLevel()
 
     float tesselationLevel = 1.0f;
 
-    tesselationLevel = distanceToCameraSquared < 1024.0f * 1024.0f ? 2.0f : tesselationLevel;
-    tesselationLevel = distanceToCameraSquared < 512.0f * 512.0f ? 4.0f : tesselationLevel;
-    tesselationLevel = distanceToCameraSquared < 256.0f * 256.0f ? 8.0f : tesselationLevel;
-    tesselationLevel = distanceToCameraSquared < 128.0f * 128.0f ? 16.0f : tesselationLevel;
-    tesselationLevel = distanceToCameraSquared < 64.0f * 64.0f ? 32.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 512.0f * 512.0f ? 2.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 256.0f * 256.0f ? 4.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 128.0f * 128.0f ? 8.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 64.0f * 64.0f ? 16.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 32.0f * 32.0f ? 32.0f : tesselationLevel;
 
     return tesselationLevel;
 }
