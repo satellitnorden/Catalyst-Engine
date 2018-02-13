@@ -173,7 +173,7 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VULKAN_SWAPCHAIN_CREATE_INFO_TYP
 	swapChainCreateInfo.compositeAlpha = VULKAN_COMPOSITE_ALPHA_OPAQUE_BIT;
 	swapChainCreateInfo.presentMode = presentMode;
 	swapChainCreateInfo.clipped = VK_TRUE;
-	swapChainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
+	swapChainCreateInfo.oldSwapchain = nullptr;
 }
 
 /*
