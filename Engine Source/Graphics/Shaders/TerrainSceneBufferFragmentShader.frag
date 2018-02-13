@@ -54,26 +54,87 @@ layout (std140, binding = 1) uniform TerrainUniformData
 };
 
 //In parameters.
-layout (location = 0) in vec2 fragmentHeightMapTextureCoordinate;
-layout (location = 1) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in float fragmentLayer1Weight;
+layout (location = 1) in vec2 fragmentHeightMapTextureCoordinate;
+layout (location = 2) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (binding = 4) uniform sampler2D terrainNormalTexture;
-layout (binding = 5) uniform sampler2D albedoTexture;
-layout (binding = 6) uniform sampler2D normalMapTexture;
-layout (binding = 7) uniform sampler2D roughnessTexture;
-layout (binding = 8) uniform sampler2D metallicTexture;
-layout (binding = 9) uniform sampler2D ambientOcclusionTexture;
+layout (binding = 3) uniform sampler2D terrainNormalTexture;
+layout (binding = 5) uniform sampler2D layer1AlbedoTexture;
+layout (binding = 6) uniform sampler2D layer1NormalMapTexture;
+layout (binding = 7) uniform sampler2D layer1RoughnessTexture;
+layout (binding = 8) uniform sampler2D layer1MetallicTexture;
+layout (binding = 9) uniform sampler2D layer1AmbientOcclusionTexture;
+layout (binding = 12) uniform sampler2D layer2AlbedoTexture;
+layout (binding = 13) uniform sampler2D layer2NormalMapTexture;
+layout (binding = 14) uniform sampler2D layer2RoughnessTexture;
+layout (binding = 15) uniform sampler2D layer2MetallicTexture;
+layout (binding = 16) uniform sampler2D layer2AmbientOcclusionTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
 layout (location = 1) out vec4 normalDirectionDepth;
 layout (location = 2) out vec4 roughnessMetallicAmbientOcclusion;
 
+/*
+*	Returns the albedo.
+*/
+vec4 GetAlbedo()
+{
+    vec4 layer1Albedo = texture(layer1AlbedoTexture, fragmentTextureCoordinate);
+    vec4 layer2Albedo = texture(layer2AlbedoTexture, fragmentTextureCoordinate);
+
+    return mix(layer2Albedo, layer1Albedo, fragmentLayer1Weight);
+}
+
+/*
+*	Returns the normal direction.
+*/
+vec3 GetNormalDirection()
+{
+	vec3 layer1NormalDirection = texture(layer1NormalMapTexture, fragmentTextureCoordinate).xyz;
+    vec3 layer2NormalDirection = texture(layer2NormalMapTexture, fragmentTextureCoordinate).xyz;
+
+    return mix(layer2NormalDirection, layer1NormalDirection, fragmentLayer1Weight) * 2.0f - 1.0f;
+}
+
+/*
+*	Returns the roughness.
+*/
+float GetRoughness()
+{
+	float layer1Roughness = texture(layer1RoughnessTexture, fragmentTextureCoordinate).r;
+    float layer2Roughness = texture(layer2RoughnessTexture, fragmentTextureCoordinate).r;
+
+    return mix(layer2Roughness, layer1Roughness, fragmentLayer1Weight);
+}
+
+/*
+*	Returns the metallic.
+*/
+float GetMetallic()
+{
+	float layer1Metallic = texture(layer1MetallicTexture, fragmentTextureCoordinate).r;
+    float layer2Metallic = texture(layer2MetallicTexture, fragmentTextureCoordinate).r;
+
+    return mix(layer2Metallic, layer1Metallic, fragmentLayer1Weight);
+}
+
+/*
+*	Returns the ambient occlusion.
+*/
+float GetAmbientOcclusion()
+{
+	float layer1AmbientOcclusion = texture(layer1AmbientOcclusionTexture, fragmentTextureCoordinate).r;
+    float layer2AmbientOcclusion = texture(layer2AmbientOcclusionTexture, fragmentTextureCoordinate).r;
+
+    return mix(layer2AmbientOcclusion, layer1AmbientOcclusion, fragmentLayer1Weight);
+}
+
 void main()
 {
 	//Set the albedo color.
-	albedoColor = texture(albedoTexture, fragmentTextureCoordinate);
+	albedoColor = GetAlbedo();
 
 	//Calculate the tangent space matrix.
 	vec3 normal = texture(terrainNormalTexture, fragmentHeightMapTextureCoordinate).xyz * 2.0f - 1.0f;
@@ -83,17 +144,17 @@ void main()
 	mat3 tangentSpaceMatrix = mat3(tangent, bitangent, normal);
 
 	//Set the normal.
-    vec3 normalDirection = texture(normalMapTexture, fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
+    vec3 normalDirection = GetNormalDirection();
     normalDirection = tangentSpaceMatrix * normalDirection;
     normalDirection = normalize(normalDirection);
     normalDirectionDepth = vec4(normalDirection, gl_FragCoord.z);
 
 	//Set the roughness.
-    roughnessMetallicAmbientOcclusion.r = texture(roughnessTexture, fragmentTextureCoordinate).r;
+    roughnessMetallicAmbientOcclusion.r = GetRoughness();
 
     //Set the metallic.
-    roughnessMetallicAmbientOcclusion.g = texture(metallicTexture, fragmentTextureCoordinate).r;
+    roughnessMetallicAmbientOcclusion.g = GetMetallic();
 
     //Set the ambient occlusion.
-    roughnessMetallicAmbientOcclusion.b = texture(ambientOcclusionTexture, fragmentTextureCoordinate).r;
+    roughnessMetallicAmbientOcclusion.b = GetAmbientOcclusion();
 }

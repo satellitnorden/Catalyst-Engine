@@ -76,7 +76,7 @@ public:
 	/*
 	*	Initializes a terrain entity.
 	*/
-	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Vulkan2DTexture *RESTRICT terrainHeightMapTexture, const Vulkan2DTexture *RESTRICT terrainNormalMapTexture, const Vulkan2DTexture *RESTRICT albedoTexture, const Vulkan2DTexture *RESTRICT normalMapTexture, const Vulkan2DTexture *RESTRICT roughnessTexture, const Vulkan2DTexture *RESTRICT metallicTexture, const Vulkan2DTexture *RESTRICT ambientOcclusionTexture, const Vulkan2DTexture *RESTRICT displacementTexture) const NOEXCEPT;
+	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Vulkan2DTexture *RESTRICT terrainHeightMapTexture, const Vulkan2DTexture *RESTRICT terrainNormalMapTexture, const Vulkan2DTexture *RESTRICT layer1WeightTexture, const Vulkan2DTexture *RESTRICT layer1AlbedoTexture, const Vulkan2DTexture *RESTRICT layer1NormalMapTexture, const Vulkan2DTexture *RESTRICT layer1RoughnessTexture, const Vulkan2DTexture *RESTRICT layer1MetallicTexture, const Vulkan2DTexture *RESTRICT layer1AmbientOcclusionTexture, const Vulkan2DTexture *RESTRICT layer1DisplacementTexture, const Vulkan2DTexture *RESTRICT layer2WeightTexture = nullptr, const Vulkan2DTexture *RESTRICT layer2AlbedoTexture = nullptr, const Vulkan2DTexture *RESTRICT layer2NormalMapTexture = nullptr, const Vulkan2DTexture *RESTRICT layer2RoughnessTexture = nullptr, const Vulkan2DTexture *RESTRICT layer2MetallicTexture = nullptr, const Vulkan2DTexture *RESTRICT layer2AmbientOcclusionTexture = nullptr, const Vulkan2DTexture *RESTRICT layer2DisplacementTexture = nullptr) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given the texture data.
@@ -135,10 +135,8 @@ private:
 	//Enumeration covering all default textures.
 	enum DefaultTexture : uint8
 	{
-		Roughness,
-		Metallic,
-		AmbientOcclusion,
-		Displacement,
+		Black,
+		White,
 		NumberOfDefaultTextures
 	};
 
