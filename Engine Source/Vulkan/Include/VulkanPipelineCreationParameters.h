@@ -60,6 +60,9 @@ public:
 	//The initial layout that depth attachments will be in when a render pass instance begins.
 	VkImageLayout depthAttachmentInitialLayout;
 
+	//The store op for the depth attachment.
+	VkAttachmentStoreOp depthAttachmentStoreOp;
+
 	//The depth buffers.
 	DynamicArray<const VulkanDepthBuffer *RESTRICT> depthBuffers{};
 

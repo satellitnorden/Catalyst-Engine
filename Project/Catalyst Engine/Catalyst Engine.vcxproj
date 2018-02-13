@@ -205,7 +205,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}</ProjectGuid>
     <RootNamespace>Catalyst Engine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
     <ProjectName>Catalyst Engine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
