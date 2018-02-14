@@ -46,7 +46,7 @@ public:
 	/*
 	*	Vector4 by scalar multiplication overload.
 	*/
-	Vector4 operator*(const float scalar) NOEXCEPT
+	Vector4 operator*(const float scalar) const NOEXCEPT
 	{
 		return Vector4(X * scalar, Y * scalar, Z * scalar, W * scalar);
 	}
@@ -54,7 +54,7 @@ public:
 	/*
 	*	Vector4 by Vector4 addition overload.
 	*/
-	Vector4 operator+(const Vector4 &vector) NOEXCEPT
+	Vector4 operator+(const Vector4 &vector) const NOEXCEPT
 	{
 		return Vector4(X + vector.X, Y + vector.Y, Z + vector.Z, W + vector.W);
 	}
@@ -75,7 +75,7 @@ public:
 	/*
 	*	Vector4 by Vector4 multiplication overload.
 	*/
-	Vector4 operator*(const Vector4 &vector) NOEXCEPT
+	Vector4 operator*(const Vector4 &vector) const NOEXCEPT
 	{
 		return Vector4(X * vector.X, Y * vector.Y, Z * vector.Z, W * vector.W);
 	}
@@ -83,7 +83,7 @@ public:
 	/*
 	*	Vector4 by Vector4 subtraction overload.
 	*/
-	Vector4 operator-(const Vector4 &vector) NOEXCEPT
+	Vector4 operator-(const Vector4 &vector) const NOEXCEPT
 	{
 		return Vector4(X - vector.X, Y - vector.Y, Z - vector.Z, W - vector.W);
 	}

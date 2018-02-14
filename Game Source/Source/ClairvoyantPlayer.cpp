@@ -13,6 +13,7 @@
 #include <EntitySystem.h>
 #include <InputSystem.h>
 #include <GraphicsSystem.h>
+#include <PhysicsSystem.h>
 
 /*
 *	Default constructor.
@@ -58,7 +59,17 @@ void ClairvoyantPlayer::Update(const float deltaTime) NOEXCEPT
 
 	if (currentGamepadState.isConnected)
 	{
-		const float movementSpeed = 1.0f + (currentGamepadState.rightTriggerValue * 1'000.0f);
+		float movementSpeed{ 2.5f };
+
+		if (constrainToGround)
+		{
+			movementSpeed += (currentGamepadState.rightTriggerValue * 10.0f);
+		}
+
+		else
+		{
+			movementSpeed += (currentGamepadState.rightTriggerValue * 1'000.0f);
+		}
 
 		//Calculate camera movement.
 		Rotate(Vector3(0.0f, currentGamepadState.rightThumbstickXValue * -cameraLookSpeed * deltaTime, 0.0f));
@@ -100,5 +111,20 @@ void ClairvoyantPlayer::Update(const float deltaTime) NOEXCEPT
 
 		//Lerp post processing effects.
 		GraphicsSystem::Instance->SetPostProcessingChromaticAberrationAmount(GameMath::LinearlyInterpolate(0.0f, 0.01f, currentGamepadState.leftTriggerValue));
+
+		if (currentGamepadState.aButtonState == GamepadButtonState::Pressed)
+		{
+			constrainToGround = !constrainToGround;
+		}
+	}
+
+	if (constrainToGround)
+	{
+		//Always set the position to be 2 meters above the terrain.
+		Vector3 currentPosition{ GetPosition() };
+		const float terrainHeight{ PhysicsSystem::Instance->GetTerrainHeightAtPosition(currentPosition) };
+		const float heightDifference{ terrainHeight - currentPosition.Y };
+
+		Move(Vector3(0.0f, heightDifference + 2.0f, 0.0f));
 	}
 }

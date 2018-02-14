@@ -71,7 +71,7 @@ layout (location = 2) out vec3 tessellationEvaluationPosition[];
 */
 float LengthSquared(vec3 vector)
 {
-    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+    return abs(vector.x * vector.x) + abs(vector.y * vector.y) + abs(vector.z * vector.z);
 }
 
 /*
@@ -97,12 +97,8 @@ float GetTesselationLevel(float distanceToCameraSquared)
 {
     float tesselationLevel = 1.0f;
 
-    tesselationLevel = distanceToCameraSquared < 512.0f * 512.0f ? 2.0f : tesselationLevel;
-    tesselationLevel = distanceToCameraSquared < 256.0f * 256.0f ? 4.0f : tesselationLevel;
-    tesselationLevel = distanceToCameraSquared < 128.0f * 128.0f ? 8.0f : tesselationLevel;
-    tesselationLevel = distanceToCameraSquared < 64.0f * 64.0f ? 16.0f : tesselationLevel;
-    tesselationLevel = distanceToCameraSquared < 32.0f * 32.0f ? 32.0f : tesselationLevel;
-    tesselationLevel = distanceToCameraSquared < 16.0f * 16.0f ? 64.0f : tesselationLevel;
+    //tesselationLevel = distanceToCameraSquared < 50.0f * 50.0f ? 32.0f : tesselationLevel;
+    //tesselationLevel = distanceToCameraSquared < 25.0f * 25.0f ? 64.0f : tesselationLevel;
 
     return tesselationLevel;
 }
@@ -117,9 +113,9 @@ void main()
     //Calculate tht tessellation levels.
     if (gl_InvocationID == 0)
     {
-        vec3 middlePoint1 = GetMiddlePoint(tessellationControlPosition[0], tessellationControlPosition[1]);
-        vec3 middlePoint2 = GetMiddlePoint(tessellationControlPosition[1], tessellationControlPosition[2]);
-        vec3 middlePoint3 = GetMiddlePoint(tessellationControlPosition[2], tessellationControlPosition[0]);
+        vec3 middlePoint1 = GetMiddlePoint(tessellationControlPosition[1], tessellationControlPosition[2]);
+        vec3 middlePoint2 = GetMiddlePoint(tessellationControlPosition[2], tessellationControlPosition[0]);
+        vec3 middlePoint3 = GetMiddlePoint(tessellationControlPosition[0], tessellationControlPosition[1]);
 
         vec3 middleOfTriangle = GetMiddlePoint(middlePoint1, middlePoint2, middlePoint3);
 

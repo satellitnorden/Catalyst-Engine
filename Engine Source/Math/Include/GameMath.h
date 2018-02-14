@@ -5,6 +5,7 @@
 
 //Math.
 #include <MathematicalConstants.h>
+#include <Vector4.h>
 
 //Preprocessor defines.
 #define GAME_MATH_SINE_PRECISION 0.1f
@@ -24,9 +25,10 @@ public:
 	}
 
 	/*
-	*	Clamps a float value between a lower and an upper limit and returns the clamped value.
+	*	Clamps a value between a lower and an upper limit and returns the clamped value.
 	*/
-	constexpr static float Clamp(const float value, const float lowerLimit, const float upperLimit) NOEXCEPT
+	template <class NumberType>
+	constexpr static NumberType Clamp(const NumberType value, const NumberType lowerLimit, const NumberType upperLimit) NOEXCEPT
 	{
 		return value < lowerLimit ? lowerLimit : value > upperLimit ? upperLimit : value;
 	}
@@ -64,6 +66,14 @@ public:
 	}
 
 	/*
+	*	Given a float, return the fractional part of that float.
+	*/
+	static constexpr float Fractional(const float number) NOEXCEPT
+	{
+		return number - static_cast<float>(static_cast<int32>(number));
+	}
+
+	/*
 	*	Given an interpolation value in the range 0.0f to 1.0f, returns a smooth interpolation value.
 	*/
 	constexpr static float GetSmoothInterpolationValue(const float linearInterpolationValue) NOEXCEPT
@@ -98,9 +108,17 @@ public:
 	}
 
 	/*
-	*	Linearly interpolate between two values.
+	*	Linearly interpolate between two float values.
 	*/
 	constexpr static float LinearlyInterpolate(const float valueA, const float valueB, const float alpha) NOEXCEPT
+	{
+		return (valueA * (1.0f - alpha)) + (valueB * alpha);
+	}
+
+	/*
+	*	Linearly interpolate between two Vector4 values.
+	*/
+	static Vector4 LinearlyInterpolate(const Vector4 &valueA, const Vector4 &valueB, const float alpha) NOEXCEPT
 	{
 		return (valueA * (1.0f - alpha)) + (valueB * alpha);
 	}

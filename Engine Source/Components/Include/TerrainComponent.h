@@ -4,6 +4,7 @@
 #include <EngineCore.h>
 
 //Graphics.
+#include <CPUTexture4.h>
 #include <TerrainUniformData.h>
 
 //Vulkan.
@@ -19,5 +20,8 @@ public:
 
 	//The uniform buffer.
 	VulkanUniformBuffer uniformBuffer;
+
+	//The height map.
+	CPUTexture4 heightMap;
 
 };

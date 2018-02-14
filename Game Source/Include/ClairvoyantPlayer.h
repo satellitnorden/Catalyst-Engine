@@ -39,4 +39,7 @@ private:
 	//The flashlight of this player.
 	SpotLightEntity *flashlight;
 
+	//Defines whether or not to constrain the player to the ground. 
+	bool constrainToGround{ false };
+
 };

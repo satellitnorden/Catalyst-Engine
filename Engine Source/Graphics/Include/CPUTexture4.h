@@ -4,6 +4,7 @@
 #include <EngineCore.h>
 
 //Math.
+#include <GameMath.h>
 #include <Vector4.h>
 
 /*
@@ -15,14 +16,19 @@ class CPUTexture4 final
 public:
 
 	/*
-	*	Default constructor, prohibited - must be constructed with the proper values.
+	*	Default constructor.
 	*/
-	CPUTexture4() NOEXCEPT = delete;
+	CPUTexture4() NOEXCEPT
+		:
+		resolution(0)
+	{
+
+	}
 
 	/*
 	*	Constructor taking in the resolution of the texture.
 	*/
-	CPUTexture4(const uint32 initialResolution) NOEXCEPT
+	CPUTexture4(const size_t initialResolution) NOEXCEPT
 		:
 		resolution(initialResolution)
 	{
@@ -41,25 +47,64 @@ public:
 	RESTRICTED Vector4* Data() NOEXCEPT { return data.Data(); }
 
 	/*
-	*	Returns the texture value at the specified index, const.
+	*	Returns the texture value at the specified indices, const.
 	*/
-	const Vector4& At(const uint32 xIndex, const uint32 yIndex) const NOEXCEPT
+	const Vector4& At(const size_t xIndex, const size_t yIndex) const NOEXCEPT
 	{
-		return data[(xIndex * resolution) + yIndex];
+		return data[xIndex + (yIndex * resolution)];
 	}
 
 	/*
-	*	Returns the texture value at the specified index, non-const.
+	*	Returns the texture value at the specified indices, non-const.
 	*/
-	Vector4& At(const uint32 xIndex, const uint32 yIndex) NOEXCEPT
+	Vector4& At(const size_t xIndex, const size_t yIndex) NOEXCEPT
 	{
-		return data[(xIndex * resolution) + yIndex];
+		return data[xIndex + (yIndex * resolution)];
+	}
+
+	/*
+	*	Returns the texture value at the specified index, const, using linear sampling.
+	*/
+	const Vector4 At(const float xIndex, const float yIndex) const NOEXCEPT
+	{
+		const float texelSize{ 1.0f / static_cast<float>(resolution) };
+
+		const float xPixelPosition{ xIndex / texelSize + 0.5f };
+		const float yPixelPosition{ yIndex / texelSize + 0.5f };
+
+		const float xFractional{ GameMath::Fractional(xPixelPosition) };
+		const float yFractional{ GameMath::Fractional(yPixelPosition) };
+
+		const float xStartTexel{ (xPixelPosition - xFractional) * texelSize };
+		const float yStartTexel{ (yPixelPosition - yFractional) * texelSize };
+
+		const size_t xBottomLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(xStartTexel * static_cast<float>(resolution)), 0, resolution - 1) };
+		const size_t yBottomLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(yStartTexel * static_cast<float>(resolution)), 0, resolution - 1) };
+
+		const size_t xBottomRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((xStartTexel + texelSize) * static_cast<float>(resolution)), 0, resolution - 1) };
+		const size_t yBottomRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(yStartTexel * static_cast<float>(resolution)), 0, resolution - 1) };
+
+		const size_t xTopLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(xStartTexel * static_cast<float>(resolution)), 0, resolution - 1) };
+		const size_t yTopLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((yStartTexel + texelSize) * static_cast<float>(resolution)), 0, resolution - 1) };
+
+		const size_t xTopRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((xStartTexel + texelSize) * static_cast<float>(resolution)), 0, resolution - 1) };
+		const size_t yTopRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((yStartTexel + texelSize) * static_cast<float>(resolution)), 0, resolution - 1) };
+
+		const Vector4 &bottomLeftValue{ data[xBottomLeftCoordinate + (yBottomLeftCoordinate * resolution)] };
+		const Vector4 &bottomRightValue{ data[xBottomRightCoordinate + (yBottomRightCoordinate * resolution)] };
+		const Vector4 &topLeftValue{ data[xTopLeftCoordinate + (yTopLeftCoordinate * resolution)] };
+		const Vector4 &topRightValue{ data[xTopRightCoordinate + (yTopRightCoordinate * resolution)] };
+
+		const Vector4 mixA{ GameMath::LinearlyInterpolate(bottomLeftValue, topLeftValue, yFractional) };
+		const Vector4 mixB{ GameMath::LinearlyInterpolate(bottomRightValue, topRightValue, yFractional) };
+
+		return GameMath::LinearlyInterpolate(mixA, mixB, xFractional);
 	}
 
 	/*
 	*	Returns the resolution of the texture.
 	*/
-	uint32 GetResolution() const NOEXCEPT { return resolution; }
+	size_t GetResolution() const NOEXCEPT { return resolution; }
 
 private:
 
@@ -67,6 +112,6 @@ private:
 	DynamicArray<Vector4> data;
 
 	//The resolution of the texture.
-	uint32 resolution;
+	size_t resolution;
 
 };

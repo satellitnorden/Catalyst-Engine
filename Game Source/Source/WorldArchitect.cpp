@@ -21,10 +21,11 @@
 //Systems.
 #include <EntitySystem.h>
 #include <GraphicsSystem.h>
+#include <PhysicsSystem.h>
 #include <QuestSystem.h>
 
 //Preprocessor defines.
-#define HEIGHT_MAP_RESOLUTION 1'000
+#define HEIGHT_MAP_RESOLUTION 4'096
 #define TERRAIN_HEIGHT 2'500.0f
 #define TERRAIN_SIZE 10'000.0f //Generate 10 x 10 km blocks at a time.
 
@@ -74,9 +75,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 			multiplier = 0.25f;
 			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
-			frequency = 10'000.0f;
-			multiplier = 0.0075f;
-			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			heightMap.At(i, j) = GameMath::LinearlyInterpolate(heightMap.At(i, j).X, GameMath::GetSmoothInterpolationValue(heightMap.At(i, j).X), 0.25f);
 		}
 	}
 
@@ -129,7 +128,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		{
 			const float heightMapValue{ heightMap.At(i, j).X };
 
-			if (heightMapValue < 0.35f)
+			if (heightMapValue < 0.45f)
 			{
 				layer2Weight.At(i, j) = 1.0f;
 			}
@@ -141,7 +140,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 			else
 			{
-				layer2Weight.At(i, j) = 1.0f - ((heightMapValue - 0.35f) * 5.0f);
+				layer2Weight.At(i, j) = 1.0f - ((heightMapValue - 0.45f) * 10.0f);
 			}
 		}
 	}
@@ -169,68 +168,32 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(	32, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.01f, Vector3(0.0f, 0.0f, 0.0f)),
+	terrain->Initialize(	heightMap, 256, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.075f, Vector3(0.0f, 0.0f, 0.0f)),
 							terrainHeightMapTexture, terrainNormalMapTexture,
 							layer1WeightTexture, layer1AlbedoTexture, layer1NormalMapTexture, layer1RoughnessTexture, nullptr, layer1AmbientOcclusionTexture, layer1DisplacementTexture,
 							layer2WeightTexture, layer2AlbedoTexture, layer2NormalMapTexture, layer2RoughnessTexture, nullptr, layer2AmbientOcclusionTexture, layer2DisplacementTexture,
 							nullptr, layer3AlbedoTexture, layer3NormalMapTexture, layer3RoughnessTexture, nullptr, nullptr, layer3DisplacementTexture);
 
-	/*
-	Vulkan2DTexture *RESTRICT floorAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAlbedo.png");
-	Vulkan2DTexture *RESTRICT floorNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorNormalMap.png");
-	Vulkan2DTexture *RESTRICT floorRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorRoughness.png");
-	Vulkan2DTexture *RESTRICT floorAmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "FloorAmbientOcclusion.png");
-
-	const PhysicalModel floorModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Floor.fbx", floorAlbedoTexture, floorNormalMapTexture, floorRoughnessTexture, nullptr, floorAmbientOcclusionTexture);
-
-	PhysicalEntity *RESTRICT floor = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
-	floor->Initialize(floorModel);
-	floor->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
-	floor->Scale(Vector3(1'000.0f, 1'000.0f, 1'000.0f));
-
-	Vector3 pointLightPositions[5]{ Vector3(0.0f, 20.0f, 0.0f), Vector3(50.0f, 10.0f, 50.0f), Vector3(50.0f, 10.0f, -50.0f), Vector3(-50.0f, 10.0f, 50.0f), Vector3(-50.0f, 10.0f, -50.0f) };
-
-	for (size_t i = 0; i < 5; ++i)
-	{
-		PointLightEntity *light = EntitySystem::Instance->CreateEntity<PointLightEntity>();
-		light->SetAttenuationDistance(1'000.0f);
-		light->SetColor(Vector3(GameMath::RandomFloatInRange(0.0f, 1.0f), GameMath::RandomFloatInRange(0.0f, 1.0f), GameMath::RandomFloatInRange(0.0f, 1.0f)));
-		light->Move(pointLightPositions[i]);
-		light->SetIntensity(10.0f);
-	}
-
-	Vulkan2DTexture *gunAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunAlbedo.png");
-	Vulkan2DTexture *gunNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunNormal.png");
-	Vulkan2DTexture *gunRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunRoughness.png");
-	Vulkan2DTexture *gunMetallicTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunMetallic.png");
-	Vulkan2DTexture *gunAmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "GunAmbientOcclusion.png");
-
-	const PhysicalModel gunModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Gun.fbx", gunAlbedoTexture, gunNormalMapTexture, gunRoughnessTexture, gunMetallicTexture, gunAmbientOcclusionTexture);
-
-	PhysicalEntity *gun = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
-	gun->Initialize(gunModel);
-	gun->Move(Vector3(0.0f, 10.0f, 0.0f));
-	gun->Rotate(Vector3(-90.0f, 0.0f, 0.0f));
-	gun->Scale(Vector3(0.2f, 0.2f, 0.2f));
-	
-	Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneAlbedo.png");
-	Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneNormalMap.png");
-	Vulkan2DTexture *stoneRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneRoughness.png");
+	//Place some stones. (:
+	Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "StoneAlbedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "StoneNormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Vulkan2DTexture *stoneRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "StoneRoughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the stone model.
 	const PhysicalModel stoneModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Stone.obj", stoneAlbedoTexture, stoneNormalMapTexture, stoneRoughnessTexture, nullptr, nullptr);
 
 	//Create the stones.
-	for (size_t i = 0; i < 3'000; ++i)
+	for (size_t i = 0; i < 1'000; ++i)
 	{
 		PhysicalEntity *stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
 		stone->Initialize(stoneModel);
-		stone->Move(Vector3(GameMath::RandomFloatInRange(-250.0f, 250.0f), 0.0f, GameMath::RandomFloatInRange(-250.0f, 250.0f)));
+		Vector3 position{ Vector3(GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
+		position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
+		stone->Move(position);
 		stone->Rotate(Vector3(0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f), 0.0f));
 		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
 		stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
 	}
-	*/
 }
 
 /*

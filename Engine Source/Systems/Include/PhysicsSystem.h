@@ -5,6 +5,7 @@
 
 //Forward declarations.
 class PhysicsComponent;
+class Vector3;
 
 class PhysicsSystem final
 {
@@ -28,5 +29,10 @@ public:
 	*	Updates the physics system synchronously.
 	*/
 	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
+
+	/*
+	*	Given a world position, returns the height of the terrain at that point.
+	*/
+	float GetTerrainHeightAtPosition(const Vector3 &position) const NOEXCEPT;
 
 };
