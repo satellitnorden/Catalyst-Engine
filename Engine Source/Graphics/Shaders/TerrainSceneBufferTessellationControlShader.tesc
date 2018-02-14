@@ -61,6 +61,9 @@ layout (location = 0) in vec2 tessellationControlHeightMapTextureCoordinate[];
 layout (location = 1) in vec2 tessellationControlTextureCoordinate[];
 layout (location = 2) in vec3 tessellationControlPosition[];
 
+//Texture samplers.
+layout (binding = 2) uniform sampler2D heightMapTexture;
+
 //Out parameters.
 layout (location = 0) out vec2 tessellationEvaluationHeightMapTextureCoordinate[];
 layout (location = 1) out vec2 tessellationEvaluationTextureCoordinate[];
@@ -71,7 +74,7 @@ layout (location = 2) out vec3 tessellationEvaluationPosition[];
 */
 float LengthSquared(vec3 vector)
 {
-    return abs(vector.x * vector.x) + abs(vector.y * vector.y) + abs(vector.z * vector.z);
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 }
 
 /*
@@ -97,8 +100,9 @@ float GetTesselationLevel(float distanceToCameraSquared)
 {
     float tesselationLevel = 1.0f;
 
-    //tesselationLevel = distanceToCameraSquared < 50.0f * 50.0f ? 32.0f : tesselationLevel;
-    //tesselationLevel = distanceToCameraSquared < 25.0f * 25.0f ? 64.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 300.0f * 300.0f ? 4.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 200.0f * 200.0f ? 16.0f : tesselationLevel;
+    tesselationLevel = distanceToCameraSquared < 100.0f * 100.0f ? 64.0f : tesselationLevel;
 
     return tesselationLevel;
 }
@@ -113,9 +117,13 @@ void main()
     //Calculate tht tessellation levels.
     if (gl_InvocationID == 0)
     {
-        vec3 middlePoint1 = GetMiddlePoint(tessellationControlPosition[1], tessellationControlPosition[2]);
-        vec3 middlePoint2 = GetMiddlePoint(tessellationControlPosition[2], tessellationControlPosition[0]);
-        vec3 middlePoint3 = GetMiddlePoint(tessellationControlPosition[0], tessellationControlPosition[1]);
+        vec3 position1 = tessellationControlPosition[0] + vec3(0.0f, texture(heightMapTexture, tessellationEvaluationHeightMapTextureCoordinate[0]).r * terrainHeight, 0.0f);
+        vec3 position2 = tessellationControlPosition[1] + vec3(0.0f, texture(heightMapTexture, tessellationEvaluationHeightMapTextureCoordinate[1]).r * terrainHeight, 0.0f);
+        vec3 position3 = tessellationControlPosition[2] + vec3(0.0f, texture(heightMapTexture, tessellationEvaluationHeightMapTextureCoordinate[2]).r * terrainHeight, 0.0f);
+
+        vec3 middlePoint1 = GetMiddlePoint(position2, position3);
+        vec3 middlePoint2 = GetMiddlePoint(position3, position1);
+        vec3 middlePoint3 = GetMiddlePoint(position1, position2);
 
         vec3 middleOfTriangle = GetMiddlePoint(middlePoint1, middlePoint2, middlePoint3);
 
