@@ -231,9 +231,9 @@ void GraphicsSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, co
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
 	//Fill the physical entity components with the relevant data.
-	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents()[physicalEntity.GetComponentsIndex()] };
-	GraphicsBufferComponent &graphicsBufferComponent{ ComponentManager::GetPhysicalEntityGraphicsBufferComponents()[physicalEntity.GetComponentsIndex()] };
-	RenderComponent &renderComponent{ ComponentManager::GetPhysicalEntityRenderComponents()[physicalEntity.GetComponentsIndex()] };
+	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetPhysicalFrustumCullingComponents()[physicalEntity.GetComponentsIndex()] };
+	GraphicsBufferComponent &graphicsBufferComponent{ ComponentManager::GetPhysicalGraphicsBufferComponents()[physicalEntity.GetComponentsIndex()] };
+	RenderComponent &renderComponent{ ComponentManager::GetPhysicalRenderComponents()[physicalEntity.GetComponentsIndex()] };
 
 	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
 	graphicsBufferComponent.uniformBuffer = newUniformBuffer;
@@ -259,8 +259,8 @@ void GraphicsSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const
 	const VulkanBuffer terrainVertexBuffer{ *VulkanInterface::Instance->CreateBuffer(terrainData, terrainDataSizes, 2) };
 
 	//Fill the terrain entity components with the relevant data.
-	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainEntityTerrainComponents()[terrainEntity.GetComponentsIndex()] };
-	TerrainRenderComponent &terrainRenderComponent{ ComponentManager::GetTerrainEntityTerrainRenderComponents()[terrainEntity.GetComponentsIndex()] };
+	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[terrainEntity.GetComponentsIndex()] };
+	TerrainRenderComponent &terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents()[terrainEntity.GetComponentsIndex()] };
 
 	terrainComponent.terrainUniformData = terrainUniformData;
 	terrainComponent.uniformBuffer = *VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));
@@ -824,8 +824,8 @@ void GraphicsSystem::RenderTerrain() NOEXCEPT
 	commandBuffer.CommandBeginRenderPass(terrainSceneBufferPipeline.GetRenderPass(), 0, true, 4);
 
 	//Iterate over all terrain entity components and draw them all.
-	const size_t numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainEntityComponents() };
-	const TerrainRenderComponent *RESTRICT terrainRenderComponent{ ComponentManager::GetTerrainEntityTerrainRenderComponents() };
+	const size_t numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
+	const TerrainRenderComponent *RESTRICT terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents() };
 
 	for (size_t i = 0; i < numberOfTerrainEntityComponents; ++i, ++terrainRenderComponent)
 	{
@@ -852,9 +852,9 @@ void GraphicsSystem::RenderPhysicalEntities() NOEXCEPT
 	VulkanCommandBuffer &commandBuffer{ swapchainCommandBuffers[currentSwapchainCommandBuffer] };
 
 	//Iterate over all physical entity components and draw them all.
-	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
-	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents() };
-	const RenderComponent *RESTRICT renderComponent{ ComponentManager::GetPhysicalEntityRenderComponents() };
+	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
+	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalFrustumCullingComponents() };
+	const RenderComponent *RESTRICT renderComponent{ ComponentManager::GetPhysicalRenderComponents() };
 
 	if (numberOfPhysicalEntityComponents == 0)
 	{
@@ -1014,11 +1014,11 @@ void GraphicsSystem::UpdateDynamicUniformData() NOEXCEPT
 	dynamicUniformData.cameraForwardVector = forwardVector;
 	dynamicUniformData.cameraWorldPosition = cameraWorldPosition;
 
-	const size_t numberOfDirectionalLightEntityComponents{ ComponentManager::GetNumberOfDirectionalLightEntityComponents() };
+	const size_t numberOfDirectionalLightEntityComponents{ ComponentManager::GetNumberOfDirectionalLightComponents() };
 
 	if (numberOfDirectionalLightEntityComponents > 0)
 	{
-		const DirectionalLightComponent *RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightEntityDirectionalLightComponents() };
+		const DirectionalLightComponent *RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightComponents() };
 
 		dynamicUniformData.directionalLightIntensity = directionalLightComponent->intensity;
 		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->rotation);
@@ -1039,8 +1039,8 @@ void GraphicsSystem::UpdateDynamicUniformData() NOEXCEPT
 
 	size_t counter = 0;
 
-	const size_t numberOfPointLightEntityComponents{ ComponentManager::GetNumberOfPointLightEntityComponents() };
-	const PointLightComponent *RESTRICT pointLightComponent{ ComponentManager::GetPointLightEntityPointLightComponents() };
+	const size_t numberOfPointLightEntityComponents{ ComponentManager::GetNumberOfPointLightComponents() };
+	const PointLightComponent *RESTRICT pointLightComponent{ ComponentManager::GetPointLightComponents() };
 
 	dynamicUniformData.numberOfPointLights = numberOfPointLightEntityComponents;
 
@@ -1063,8 +1063,8 @@ void GraphicsSystem::UpdateDynamicUniformData() NOEXCEPT
 
 	counter = 0;
 
-	const size_t numberOfSpotLightEntityComponents{ ComponentManager::GetNumberOfSpotLightEntityComponents() };
-	const SpotLightComponent *RESTRICT spotLightComponent{ ComponentManager::GetSpotLightEntitySpotLightComponents() };
+	const size_t numberOfSpotLightEntityComponents{ ComponentManager::GetNumberOfSpotLightComponents() };
+	const SpotLightComponent *RESTRICT spotLightComponent{ ComponentManager::GetSpotLightComponents() };
 
 	dynamicUniformData.numberOfSpotLights = numberOfSpotLightEntityComponents;
 
@@ -1099,9 +1099,9 @@ void GraphicsSystem::UpdateDynamicUniformData() NOEXCEPT
 void GraphicsSystem::UpdatePhysicalEntitiesGraphicsBuffers() NOEXCEPT
 {
 	//Iterate over all physical entity components and update the graphics buffers.
-	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
-	GraphicsBufferComponent *RESTRICT graphicsBufferComponent{ ComponentManager::GetPhysicalEntityGraphicsBufferComponents() };
-	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetPhysicalEntityTransformComponents() };
+	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
+	GraphicsBufferComponent *RESTRICT graphicsBufferComponent{ ComponentManager::GetPhysicalGraphicsBufferComponents() };
+	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetPhysicalTransformComponents() };
 
 	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++graphicsBufferComponent, ++transformComponent)
 	{
@@ -1127,9 +1127,9 @@ void GraphicsSystem::UpdateViewFrustumCulling() NOEXCEPT
 	Matrix4 viewMatrix{ projectionMatrix * cameraMatrix };
 
 	//Iterate over all physical entity components to check if they are in the view frustum.
-	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalEntityComponents() };
-	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalEntityFrustumCullingComponents() };
-	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetPhysicalEntityTransformComponents() };
+	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
+	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalFrustumCullingComponents() };
+	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetPhysicalTransformComponents() };
 
 	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++transformComponent)
 	{

@@ -13,7 +13,7 @@ DEFINE_ENTITY_CLASS(SpotLightEntity);
 SpotLightEntity::SpotLightEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewSpotLightEntitiesEntityComponentsIndex();
+	componentsIndex = ComponentManager::GetNewSpotLightComponentsIndex();
 
 	//Add this spot light entity to the universal container.
 	Instances.EmplaceSlow(this);
@@ -34,7 +34,7 @@ SpotLightEntity::~SpotLightEntity() NOEXCEPT
 const Vector3& SpotLightEntity::GetPosition() NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].position;
+	return ComponentManager::GetSpotLightComponents()[componentsIndex].position;
 }
 
 /*
@@ -43,7 +43,7 @@ const Vector3& SpotLightEntity::GetPosition() NOEXCEPT
 const Vector3& SpotLightEntity::GetRotation() NOEXCEPT
 {
 	//Return the rotation of this entity.
-	return ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].rotation;
+	return ComponentManager::GetSpotLightComponents()[componentsIndex].rotation;
 }
 
 /*
@@ -61,7 +61,7 @@ const Vector3& SpotLightEntity::GetScale() NOEXCEPT
 void SpotLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].position += moveVector;
+	ComponentManager::GetSpotLightComponents()[componentsIndex].position += moveVector;
 
 	//Move all children.
 	for (auto child : children)
@@ -76,7 +76,7 @@ void SpotLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void SpotLightEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate this entity.
-	ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].rotation += rotateVector;
+	ComponentManager::GetSpotLightComponents()[componentsIndex].rotation += rotateVector;
 
 	//Rotate all children.
 	for (auto child : children)
@@ -103,7 +103,7 @@ void SpotLightEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 bool SpotLightEntity::GetEnabled() const NOEXCEPT
 {
 	//Return whether or not this spot light is enabled.
-	return ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].enabled;
+	return ComponentManager::GetSpotLightComponents()[componentsIndex].enabled;
 }
 
 /*
@@ -112,7 +112,7 @@ bool SpotLightEntity::GetEnabled() const NOEXCEPT
 void SpotLightEntity::SetEnabled(const bool newEnabled) NOEXCEPT
 {
 	//Set whether or not this spot light is enabled.
-	ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].enabled = newEnabled;
+	ComponentManager::GetSpotLightComponents()[componentsIndex].enabled = newEnabled;
 }
 
 /*
@@ -121,7 +121,7 @@ void SpotLightEntity::SetEnabled(const bool newEnabled) NOEXCEPT
 void SpotLightEntity::SetAttenuationDistance(const float newAttenuationDistance) NOEXCEPT
 {
 	//Set the attenuation distance.
-	ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].attenuationDistance = newAttenuationDistance;
+	ComponentManager::GetSpotLightComponents()[componentsIndex].attenuationDistance = newAttenuationDistance;
 }
 
 /*
@@ -130,7 +130,7 @@ void SpotLightEntity::SetAttenuationDistance(const float newAttenuationDistance)
 void SpotLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 {
 	//Set the intensity.
-	ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].intensity = newIntensity;
+	ComponentManager::GetSpotLightComponents()[componentsIndex].intensity = newIntensity;
 }
 
 /*
@@ -139,7 +139,7 @@ void SpotLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 void SpotLightEntity::SetInnerCutoffAngle(const float newInnerCutoffAngle) NOEXCEPT
 {
 	//Set the inner cutoff angle.
-	ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].innerCutoffAngle = newInnerCutoffAngle;
+	ComponentManager::GetSpotLightComponents()[componentsIndex].innerCutoffAngle = newInnerCutoffAngle;
 }
 
 /*
@@ -148,7 +148,7 @@ void SpotLightEntity::SetInnerCutoffAngle(const float newInnerCutoffAngle) NOEXC
 void SpotLightEntity::SetOuterCutoffAngle(const float newOuterCutoffAngle) NOEXCEPT
 {
 	//Set the outer cutoff angle.
-	ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].outerCutoffAngle = newOuterCutoffAngle;
+	ComponentManager::GetSpotLightComponents()[componentsIndex].outerCutoffAngle = newOuterCutoffAngle;
 }
 
 /*
@@ -157,5 +157,5 @@ void SpotLightEntity::SetOuterCutoffAngle(const float newOuterCutoffAngle) NOEXC
 void SpotLightEntity::SetColor(const Vector3 &newColor) NOEXCEPT
 {
 	//Set the color.
-	ComponentManager::GetSpotLightEntitySpotLightComponents()[componentsIndex].color = newColor;
+	ComponentManager::GetSpotLightComponents()[componentsIndex].color = newColor;
 }

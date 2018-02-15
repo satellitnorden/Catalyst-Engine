@@ -13,7 +13,7 @@ DEFINE_ENTITY_CLASS(CameraEntity);
 CameraEntity::CameraEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewCameraEntityComponentsIndex();
+	componentsIndex = ComponentManager::GetNewCameraComponentsIndex();
 
 	//Add this camera entity to the universal container.
 	Instances.EmplaceSlow(this);
@@ -34,7 +34,7 @@ CameraEntity::~CameraEntity() NOEXCEPT
 const Vector3& CameraEntity::GetPosition() NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].position;
+	return ComponentManager::GetCameraComponents()[componentsIndex].position;
 }
 
 /*
@@ -43,7 +43,7 @@ const Vector3& CameraEntity::GetPosition() NOEXCEPT
 const Vector3& CameraEntity::GetRotation() NOEXCEPT
 {
 	//Return the rotation of this entity.
-	return ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].rotation;
+	return ComponentManager::GetCameraComponents()[componentsIndex].rotation;
 }
 
 /*
@@ -61,7 +61,7 @@ const Vector3& CameraEntity::GetScale() NOEXCEPT
 void CameraEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].position += moveVector;
+	ComponentManager::GetCameraComponents()[componentsIndex].position += moveVector;
 
 	//Move all children.
 	for (auto child : children)
@@ -76,7 +76,7 @@ void CameraEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void CameraEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate this entity.
-	ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].rotation += rotateVector;
+	ComponentManager::GetCameraComponents()[componentsIndex].rotation += rotateVector;
 
 	//Rotate all children.
 	for (auto child : children)
@@ -130,7 +130,7 @@ Vector3 CameraEntity::GetUpVector() NOEXCEPT
 float CameraEntity::GetFieldOfView() const NOEXCEPT
 {
 	//Return the field of view for this camera entity.
-	return ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].fieldOfView;
+	return ComponentManager::GetCameraComponents()[componentsIndex].fieldOfView;
 }
 
 /*
@@ -139,7 +139,7 @@ float CameraEntity::GetFieldOfView() const NOEXCEPT
 float CameraEntity::GetNearPlane() const NOEXCEPT
 {
 	//Return the near plane of the frustum.
-	return ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].nearPlane;
+	return ComponentManager::GetCameraComponents()[componentsIndex].nearPlane;
 }
 
 /*
@@ -148,5 +148,5 @@ float CameraEntity::GetNearPlane() const NOEXCEPT
 float CameraEntity::GetFarPlane() const NOEXCEPT
 {
 	//Return the far plane of the frustum.
-	return ComponentManager::GetCameraEntityCameraComponents()[componentsIndex].farPlane;
+	return ComponentManager::GetCameraComponents()[componentsIndex].farPlane;
 }

@@ -27,25 +27,25 @@ public:
 	/*
 	*	Returns a new components index for camera entities.
 	*/
-	static size_t GetNewCameraEntityComponentsIndex() NOEXCEPT;
+	static size_t GetNewCameraComponentsIndex() NOEXCEPT;
 
 	/*
-	*	Returns the number of camera entity components.
+	*	Returns the number of camera components.
 	*/
-	static size_t GetNumberOfCameraEntityComponents() NOEXCEPT;
+	static size_t GetNumberOfCameraComponents() NOEXCEPT;
 
 	/*
-	*	Returns the camera entity camera components.
+	*	Returns the camera components.
 	*/
-	RESTRICTED static CameraComponent* GetCameraEntityCameraComponents() NOEXCEPT;
+	RESTRICTED static CameraComponent* GetCameraComponents() NOEXCEPT;
 
 private:
 
-	//The number of camera entity components.
-	static size_t numberOfCameraEntityComponents;
+	//The number of camera components.
+	static size_t numberOfCameraComponents;
 
-	//The camera entity camera components.
-	static DynamicArray<CameraComponent> cameraEntityCameraComponents;
+	//The camera ecomponents.
+	static DynamicArray<CameraComponent> cameraComponents;
 
 public:
 
@@ -56,25 +56,25 @@ public:
 	/*
 	*	Returns a new components index for directional light entities.
 	*/
-	static size_t GetNewDirectionalLightEntityComponentsIndex() NOEXCEPT;
+	static size_t GetNewDirectionalLightComponentsIndex() NOEXCEPT;
 
 	/*
-	*	Returns the number of directional light entity components.
+	*	Returns the number of directional light components.
 	*/
-	static size_t GetNumberOfDirectionalLightEntityComponents() NOEXCEPT;
+	static size_t GetNumberOfDirectionalLightComponents() NOEXCEPT;
 
 	/*
-	*	Returns the directional light entity directional light components.
+	*	Returns the directional light components.
 	*/
-	RESTRICTED static DirectionalLightComponent* GetDirectionalLightEntityDirectionalLightComponents() NOEXCEPT;
+	RESTRICTED static DirectionalLightComponent* GetDirectionalLightComponents() NOEXCEPT;
 
 private:
 
-	//The number of directional lighgt entity components.
-	static size_t numberOfDirectionalLightEntityComponents;
+	//The number of directional light components.
+	static size_t numberOfDirectionalLightComponents;
 
-	//The the directional light entity directional light components.
-	static DynamicArray<DirectionalLightComponent> directionalLightEntityDirectionalLightComponents;
+	//The the directional light components.
+	static DynamicArray<DirectionalLightComponent> directionalLightComponents;
 
 public:
 
@@ -85,49 +85,49 @@ public:
 	/*
 	*	Returns a new components index for physical entities.
 	*/
-	static size_t GetNewPhysicalEntityComponentsIndex() NOEXCEPT;
+	static size_t GetNewPhysicalComponentsIndex() NOEXCEPT;
 
 	/*
-	*	Returns the number of physical entity components.
+	*	Returns the number of physical components.
 	*/
-	static size_t GetNumberOfPhysicalEntityComponents() NOEXCEPT;
+	static size_t GetNumberOfPhysicalComponents() NOEXCEPT;
 
 	/*
-	*	Returns the physical entity frustum culling components.
+	*	Returns the physical frustum culling components.
 	*/
-	RESTRICTED static FrustumCullingComponent* GetPhysicalEntityFrustumCullingComponents() NOEXCEPT;
+	RESTRICTED static FrustumCullingComponent* GetPhysicalFrustumCullingComponents() NOEXCEPT;
 
 	/*
-	*	Returns the physical entity graphics buffer components.
+	*	Returns the physical  graphics buffer components.
 	*/
-	RESTRICTED static GraphicsBufferComponent* GetPhysicalEntityGraphicsBufferComponents() NOEXCEPT;
+	RESTRICTED static GraphicsBufferComponent* GetPhysicalGraphicsBufferComponents() NOEXCEPT;
 
 	/*
-	*	Returns the physical entity render components.
+	*	Returns the physical render components.
 	*/
-	RESTRICTED static RenderComponent* GetPhysicalEntityRenderComponents() NOEXCEPT;
+	RESTRICTED static RenderComponent* GetPhysicalRenderComponents() NOEXCEPT;
 
 	/*
-	*	Returns the physical entity transform components.
+	*	Returns the physical transform components.
 	*/
-	RESTRICTED static TransformComponent* GetPhysicalEntityTransformComponents() NOEXCEPT;
+	RESTRICTED static TransformComponent* GetPhysicalTransformComponents() NOEXCEPT;
 
 private:
 
-	//The number of physical entity components.
-	static size_t numberOfPhysicalEntityComponents;
+	//The number of physical components.
+	static size_t numberOfPhysicalComponents;
 
-	//The physical entity frustum culling components.
-	static DynamicArray<FrustumCullingComponent> physicalEntityFrustumCullingComponents;
+	//The physical frustum culling components.
+	static DynamicArray<FrustumCullingComponent> physicalFrustumCullingComponents;
 
-	//The physical entity graphics buffer components.
-	static DynamicArray<GraphicsBufferComponent> physicalEntityGraphicsBufferComponents;
+	//The physical graphics buffer components.
+	static DynamicArray<GraphicsBufferComponent> physicalGraphicsBufferComponents;
 
-	//The physical entity render components.
-	static DynamicArray<RenderComponent> physicalEntityRenderComponents;
+	//The physical render components.
+	static DynamicArray<RenderComponent> physicalRenderComponents;
 
-	//The physical entity transform components.
-	static DynamicArray<TransformComponent> physicalEntityTransformComponents;
+	//The physical transform components.
+	static DynamicArray<TransformComponent> physicalTransformComponents;
 
 public:
 
@@ -138,25 +138,25 @@ public:
 	/*
 	*	Returns a new components index for point light entities.
 	*/
-	static size_t GetNewPointLightEntitiesEntityComponentsIndex() NOEXCEPT;
+	static size_t GetNewPointLightComponentsIndex() NOEXCEPT;
 
 	/*
-	*	Returns the number of point light entity components.
+	*	Returns the number of point light components.
 	*/
-	static size_t GetNumberOfPointLightEntityComponents() NOEXCEPT;
+	static size_t GetNumberOfPointLightComponents() NOEXCEPT;
 
 	/*
-	*	Returns the point light entity point light components.
+	*	Returns the point light components.
 	*/
-	RESTRICTED static PointLightComponent* GetPointLightEntityPointLightComponents() NOEXCEPT;
+	RESTRICTED static PointLightComponent* GetPointLightComponents() NOEXCEPT;
 
 private:
 
-	//The number of point light entity components.
-	static size_t numberOfPointLightEntityComponents;
+	//The number of point light components.
+	static size_t numberOfPointLightComponents;
 
-	//The point light entity point light components.
-	static DynamicArray<PointLightComponent> pointLightEntityPointLightComponents;
+	//The point light components.
+	static DynamicArray<PointLightComponent> pointLightComponents;
 
 public:
 
@@ -167,25 +167,25 @@ public:
 	/*
 	*	Returns a new components index for spot light entities.
 	*/
-	static size_t GetNewSpotLightEntitiesEntityComponentsIndex() NOEXCEPT;
+	static size_t GetNewSpotLightComponentsIndex() NOEXCEPT;
 
 	/*
-	*	Returns the number of spot light entity components.
+	*	Returns the number of spot light components.
 	*/
-	static size_t GetNumberOfSpotLightEntityComponents() NOEXCEPT;
+	static size_t GetNumberOfSpotLightComponents() NOEXCEPT;
 
 	/*
-	*	Returns the spot light entity spot light components.
+	*	Returns the spot light components.
 	*/
-	RESTRICTED static SpotLightComponent* GetSpotLightEntitySpotLightComponents() NOEXCEPT;
+	RESTRICTED static SpotLightComponent* GetSpotLightComponents() NOEXCEPT;
 
 private:
 
-	//The number of spot light entity components.
-	static size_t numberOfSpotLightEntityComponents;
+	//The number of spot light components.
+	static size_t numberOfSpotLightComponents;
 
-	//The spot light entity spot light components.
-	static DynamicArray<SpotLightComponent> spotLightEntitySpotLightComponents;
+	//The spot light components.
+	static DynamicArray<SpotLightComponent> spotLightComponents;
 
 public:
 
@@ -196,32 +196,32 @@ public:
 	/*
 	*	Returns a new components index for terrain entities.
 	*/
-	static size_t GetNewTerrainEntityComponentsIndex() NOEXCEPT;
+	static size_t GetNewTerrainComponentsIndex() NOEXCEPT;
 
 	/*
-	*	Returns the number of terrain entity components.
+	*	Returns the number of terrain components.
 	*/
-	static size_t GetNumberOfTerrainEntityComponents() NOEXCEPT;
+	static size_t GetNumberOfTerrainComponents() NOEXCEPT;
 
 	/*
-	*	Returns the terrain entity terrain components.
+	*	Returns the terrain components.
 	*/
-	RESTRICTED static TerrainComponent* GetTerrainEntityTerrainComponents() NOEXCEPT;
+	RESTRICTED static TerrainComponent* GetTerrainComponents() NOEXCEPT;
 
 	/*
-	*	Returns the terrain entity terrain render components.
+	*	Returns the terrain render components.
 	*/
-	RESTRICTED static TerrainRenderComponent* GetTerrainEntityTerrainRenderComponents() NOEXCEPT;
+	RESTRICTED static TerrainRenderComponent* GetTerrainRenderComponents() NOEXCEPT;
 
 private:
 
-	//The number of terrain entity components.
-	static size_t numberOfTerrainEntityComponents;
+	//The number of terrain components.
+	static size_t numberOfTerrainComponents;
 
-	//The terrain entity terrain components.
-	static DynamicArray<TerrainComponent> terrainEntityTerrainComponents;
+	//The terrain components.
+	static DynamicArray<TerrainComponent> terrainComponents;
 
-	//The terrain entity terrain render components.
-	static DynamicArray<TerrainRenderComponent> terrainEntityTerrainRenderComponents;
+	//The terrain render components.
+	static DynamicArray<TerrainRenderComponent> terrainRenderComponents;
 
 };

@@ -16,7 +16,7 @@ DEFINE_ENTITY_CLASS(TerrainEntity);
 TerrainEntity::TerrainEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewTerrainEntityComponentsIndex();
+	componentsIndex = ComponentManager::GetNewTerrainComponentsIndex();
 
 	//Add this terrain entity to the universal container.
 	Instances.EmplaceSlow(this);
@@ -37,7 +37,7 @@ TerrainEntity::~TerrainEntity() NOEXCEPT
 const Vector3& TerrainEntity::GetPosition() NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetTerrainEntityTerrainComponents()[componentsIndex].terrainUniformData.terrainPosition;
+	return ComponentManager::GetTerrainComponents()[componentsIndex].terrainUniformData.terrainPosition;
 }
 
 /*
@@ -64,7 +64,7 @@ const Vector3& TerrainEntity::GetScale() NOEXCEPT
 void TerrainEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetTerrainEntityTerrainComponents()[componentsIndex].terrainUniformData.terrainPosition += moveVector;
+	ComponentManager::GetTerrainComponents()[componentsIndex].terrainUniformData.terrainPosition += moveVector;
 
 	//Move all children.
 	for (auto child : children)

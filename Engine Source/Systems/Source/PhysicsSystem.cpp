@@ -47,7 +47,7 @@ void PhysicsSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 float PhysicsSystem::GetTerrainHeightAtPosition(const Vector3 &position) const NOEXCEPT
 {
 	//For now, just use the first terrain height map there is.
-	const TerrainComponent &terrainComponent{ ComponentManager::GetTerrainEntityTerrainComponents()[0] };
+	const TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[0] };
 	const CPUTexture4 &heightMap{ terrainComponent.heightMap };
 	const float terrainSize{ terrainComponent.terrainUniformData.terrainSize };
 	const float terrainHeight{ terrainComponent.terrainUniformData.terrainHeight };

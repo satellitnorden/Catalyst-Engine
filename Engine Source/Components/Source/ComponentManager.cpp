@@ -2,245 +2,245 @@
 #include <ComponentManager.h>
 
 //Static variable definitions.
-size_t ComponentManager::numberOfCameraEntityComponents = 0;
-DynamicArray<CameraComponent> ComponentManager::cameraEntityCameraComponents;
+size_t ComponentManager::numberOfCameraComponents = 0;
+DynamicArray<CameraComponent> ComponentManager::cameraComponents;
 
-size_t ComponentManager::numberOfDirectionalLightEntityComponents = 0;
-DynamicArray<DirectionalLightComponent> ComponentManager::directionalLightEntityDirectionalLightComponents;
+size_t ComponentManager::numberOfDirectionalLightComponents = 0;
+DynamicArray<DirectionalLightComponent> ComponentManager::directionalLightComponents;
 
-size_t ComponentManager::numberOfPhysicalEntityComponents = 0;
-DynamicArray<FrustumCullingComponent> ComponentManager::physicalEntityFrustumCullingComponents;
-DynamicArray<GraphicsBufferComponent> ComponentManager::physicalEntityGraphicsBufferComponents;
-DynamicArray<RenderComponent> ComponentManager::physicalEntityRenderComponents;
-DynamicArray<TransformComponent> ComponentManager::physicalEntityTransformComponents;
+size_t ComponentManager::numberOfPhysicalComponents = 0;
+DynamicArray<FrustumCullingComponent> ComponentManager::physicalFrustumCullingComponents;
+DynamicArray<GraphicsBufferComponent> ComponentManager::physicalGraphicsBufferComponents;
+DynamicArray<RenderComponent> ComponentManager::physicalRenderComponents;
+DynamicArray<TransformComponent> ComponentManager::physicalTransformComponents;
 
-size_t ComponentManager::numberOfPointLightEntityComponents = 0;
-DynamicArray<PointLightComponent> ComponentManager::pointLightEntityPointLightComponents;
+size_t ComponentManager::numberOfPointLightComponents = 0;
+DynamicArray<PointLightComponent> ComponentManager::pointLightComponents;
 
-size_t ComponentManager::numberOfSpotLightEntityComponents = 0;
-DynamicArray<SpotLightComponent> ComponentManager::spotLightEntitySpotLightComponents;
+size_t ComponentManager::numberOfSpotLightComponents = 0;
+DynamicArray<SpotLightComponent> ComponentManager::spotLightComponents;
 
-size_t ComponentManager::numberOfTerrainEntityComponents = 0;
-DynamicArray<TerrainComponent> ComponentManager::terrainEntityTerrainComponents;
-DynamicArray<TerrainRenderComponent> ComponentManager::terrainEntityTerrainRenderComponents;
+size_t ComponentManager::numberOfTerrainComponents = 0;
+DynamicArray<TerrainComponent> ComponentManager::terrainComponents;
+DynamicArray<TerrainRenderComponent> ComponentManager::terrainRenderComponents;
 ;
 
 /*
 *	Returns a new components index for camera entities.
 */
-size_t ComponentManager::GetNewCameraEntityComponentsIndex() NOEXCEPT
+size_t ComponentManager::GetNewCameraComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	cameraEntityCameraComponents.EmplaceSlow();
+	cameraComponents.EmplaceSlow();
 
 	//Return the new index.
-	return numberOfCameraEntityComponents++;
+	return numberOfCameraComponents++;
 }
 
 /*
-*	Returns the number of camera entity components.
+*	Returns the number of camera components.
 */
-size_t ComponentManager::GetNumberOfCameraEntityComponents() NOEXCEPT
+size_t ComponentManager::GetNumberOfCameraComponents() NOEXCEPT
 {
 	//Return the number of camera entity components.
-	return numberOfCameraEntityComponents;
+	return numberOfCameraComponents;
 }
 
 /*
-*	Returns the camera entity camera components.
+*	Returns the camera components.
 */
-RESTRICTED CameraComponent* ComponentManager::GetCameraEntityCameraComponents() NOEXCEPT
+RESTRICTED CameraComponent* ComponentManager::GetCameraComponents() NOEXCEPT
 {
-	//Return the camera entity camera components.
-	return cameraEntityCameraComponents.Data();
+	//Return the camera components.
+	return cameraComponents.Data();
 }
 
 /*
 *	Returns a new components index for directional light entities.
 */
-size_t ComponentManager::GetNewDirectionalLightEntityComponentsIndex() NOEXCEPT
+size_t ComponentManager::GetNewDirectionalLightComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	directionalLightEntityDirectionalLightComponents.EmplaceSlow();
+	directionalLightComponents.EmplaceSlow();
 
 	//Return the new index.
-	return numberOfDirectionalLightEntityComponents++;
+	return numberOfDirectionalLightComponents++;
 }
 
 /*
-*	Returns the number of directional light entity components.
+*	Returns the number of directional light components.
 */
-size_t ComponentManager::GetNumberOfDirectionalLightEntityComponents() NOEXCEPT
+size_t ComponentManager::GetNumberOfDirectionalLightComponents() NOEXCEPT
 {
-	//Return the number of directional light entity components.
-	return numberOfDirectionalLightEntityComponents;
+	//Return the number of directional light components.
+	return numberOfDirectionalLightComponents;
 }
 
 /*
-*	Returns the directional light entity directional light components.
+*	Returns the directional light components.
 */
-RESTRICTED DirectionalLightComponent* ComponentManager::GetDirectionalLightEntityDirectionalLightComponents() NOEXCEPT
+RESTRICTED DirectionalLightComponent* ComponentManager::GetDirectionalLightComponents() NOEXCEPT
 {
-	//Return the directional light entity directional light components.
-	return directionalLightEntityDirectionalLightComponents.Data();
+	//Return the directional light components.
+	return directionalLightComponents.Data();
 }
 
 /*
 *	Returns a new components index for physical entities.
 */
-size_t ComponentManager::GetNewPhysicalEntityComponentsIndex() NOEXCEPT
+size_t ComponentManager::GetNewPhysicalComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	physicalEntityFrustumCullingComponents.EmplaceSlow();
-	physicalEntityGraphicsBufferComponents.EmplaceSlow();
-	physicalEntityRenderComponents.EmplaceSlow();
-	physicalEntityTransformComponents.EmplaceSlow();
+	physicalFrustumCullingComponents.EmplaceSlow();
+	physicalGraphicsBufferComponents.EmplaceSlow();
+	physicalRenderComponents.EmplaceSlow();
+	physicalTransformComponents.EmplaceSlow();
 
 	//Return the new index.
-	return numberOfPhysicalEntityComponents++;
+	return numberOfPhysicalComponents++;
 }
 
 /*
-*	Returns the number of physical entity components.
+*	Returns the number of physical components.
 */
-size_t ComponentManager::GetNumberOfPhysicalEntityComponents() NOEXCEPT
+size_t ComponentManager::GetNumberOfPhysicalComponents() NOEXCEPT
 {
-	//Return the number of physical entity components.
-	return numberOfPhysicalEntityComponents;
+	//Return the number of physical components.
+	return numberOfPhysicalComponents;
 }
 
 /*
-*	Returns the physical entity frustum culling components.
+*	Returns the physical frustum culling components.
 */
-RESTRICTED FrustumCullingComponent* ComponentManager::GetPhysicalEntityFrustumCullingComponents() NOEXCEPT
+RESTRICTED FrustumCullingComponent* ComponentManager::GetPhysicalFrustumCullingComponents() NOEXCEPT
 {
-	//Return the physical entity frustum culling components.
-	return physicalEntityFrustumCullingComponents.Data();
+	//Return the physical frustum culling components.
+	return physicalFrustumCullingComponents.Data();
 }
 
 /*
-*	Returns the physical entity graphics buffer components.
+*	Returns the physical graphics buffer components.
 */
-RESTRICTED GraphicsBufferComponent* ComponentManager::GetPhysicalEntityGraphicsBufferComponents() NOEXCEPT
+RESTRICTED GraphicsBufferComponent* ComponentManager::GetPhysicalGraphicsBufferComponents() NOEXCEPT
 {
-	//Return the physical entity graphics buffer components.
-	return physicalEntityGraphicsBufferComponents.Data();
+	//Return the physical graphics buffer components.
+	return physicalGraphicsBufferComponents.Data();
 }
 
 /*
-*	Returns the physical entity render components.
+*	Returns the physical render components.
 */
-RESTRICTED RenderComponent* ComponentManager::GetPhysicalEntityRenderComponents() NOEXCEPT
+RESTRICTED RenderComponent* ComponentManager::GetPhysicalRenderComponents() NOEXCEPT
 {
-	//Return the physical entity render components.
-	return physicalEntityRenderComponents.Data();
+	//Return the physical render components.
+	return physicalRenderComponents.Data();
 }
 
 /*
-*	Returns the physical entity frustum transform components.
+*	Returns the physical frustum transform components.
 */
-RESTRICTED TransformComponent* ComponentManager::GetPhysicalEntityTransformComponents() NOEXCEPT
+RESTRICTED TransformComponent* ComponentManager::GetPhysicalTransformComponents() NOEXCEPT
 {
-	//Return the physical entity frustum transform components.
-	return physicalEntityTransformComponents.Data();
+	//Return the physical frustum transform components.
+	return physicalTransformComponents.Data();
 }
 
 /*
 *	Returns a new components index for point light entities.
 */
-size_t ComponentManager::GetNewPointLightEntitiesEntityComponentsIndex() NOEXCEPT
+size_t ComponentManager::GetNewPointLightComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	pointLightEntityPointLightComponents.EmplaceSlow();
+	pointLightComponents.EmplaceSlow();
 
 	//Return the new index.
-	return numberOfPointLightEntityComponents++;
+	return numberOfPointLightComponents++;
 }
 
 /*
-*	Returns the number of point light entity components.
+*	Returns the number of point light components.
 */
-size_t ComponentManager::GetNumberOfPointLightEntityComponents() NOEXCEPT
+size_t ComponentManager::GetNumberOfPointLightComponents() NOEXCEPT
 {
-	//Return the number of point light entity components.
-	return numberOfPointLightEntityComponents;
+	//Return the number of point light components.
+	return numberOfPointLightComponents;
 }
 
 /*
-*	Returns the point light entity point light components.
+*	Returns the point light components.
 */
-RESTRICTED PointLightComponent* ComponentManager::GetPointLightEntityPointLightComponents() NOEXCEPT
+RESTRICTED PointLightComponent* ComponentManager::GetPointLightComponents() NOEXCEPT
 {
-	//Return the point light entity point light components.
-	return pointLightEntityPointLightComponents.Data();
+	//Return the point light components.
+	return pointLightComponents.Data();
 }
 
 /*
 *	Returns a new components index for spot light entities.
 */
-size_t ComponentManager::GetNewSpotLightEntitiesEntityComponentsIndex() NOEXCEPT
+size_t ComponentManager::GetNewSpotLightComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	spotLightEntitySpotLightComponents.EmplaceSlow();
+	spotLightComponents.EmplaceSlow();
 
 	//Return the new index.
-	return numberOfSpotLightEntityComponents++;
+	return numberOfSpotLightComponents++;
 }
 
 /*
-*	Returns the number of spot light entity components.
+*	Returns the number of spot light components.
 */
-size_t ComponentManager::GetNumberOfSpotLightEntityComponents() NOEXCEPT
+size_t ComponentManager::GetNumberOfSpotLightComponents() NOEXCEPT
 {
-	//Return the number of spot light entity components.
-	return numberOfSpotLightEntityComponents;
+	//Return the number of spot light components.
+	return numberOfSpotLightComponents;
 }
 
 /*
-*	Returns the spot light entity spot light components.
+*	Returns the spot light components.
 */
-RESTRICTED SpotLightComponent* ComponentManager::GetSpotLightEntitySpotLightComponents() NOEXCEPT
+RESTRICTED SpotLightComponent* ComponentManager::GetSpotLightComponents() NOEXCEPT
 {
-	//Return the spot light entity spot light components.
-	return spotLightEntitySpotLightComponents.Data();
+	//Return the spot light components.
+	return spotLightComponents.Data();
 }
 
 /*
 *	Returns a new components index for terrain entities.
 */
-size_t ComponentManager::GetNewTerrainEntityComponentsIndex() NOEXCEPT
+size_t ComponentManager::GetNewTerrainComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	terrainEntityTerrainComponents.EmplaceSlow();
-	terrainEntityTerrainRenderComponents.EmplaceSlow();
+	terrainComponents.EmplaceSlow();
+	terrainRenderComponents.EmplaceSlow();
 
 	//Return the new index.
-	return numberOfTerrainEntityComponents++;
+	return numberOfTerrainComponents++;
 }
 
 /*
-*	Returns the number of terrain entity components.
+*	Returns the number of terrain components.
 */
-size_t ComponentManager::GetNumberOfTerrainEntityComponents() NOEXCEPT
+size_t ComponentManager::GetNumberOfTerrainComponents() NOEXCEPT
 {
-	//Return the number of terrain entity components.
-	return numberOfTerrainEntityComponents;
+	//Return the number of terrain components.
+	return numberOfTerrainComponents;
 }
 
 /*
-*	Returns the terrain entity terrain components.
+*	Returns the terrain components.
 */
-RESTRICTED TerrainComponent* ComponentManager::GetTerrainEntityTerrainComponents() NOEXCEPT
+RESTRICTED TerrainComponent* ComponentManager::GetTerrainComponents() NOEXCEPT
 {
-	//Return the terrain entity terrain components.
-	return terrainEntityTerrainComponents.Data();
+	//Return the terrain components.
+	return terrainComponents.Data();
 }
 
 /*
-*	Returns the terrain entity terrain render components.
+*	Returns the terrain render components.
 */
-RESTRICTED TerrainRenderComponent* ComponentManager::GetTerrainEntityTerrainRenderComponents() NOEXCEPT
+RESTRICTED TerrainRenderComponent* ComponentManager::GetTerrainRenderComponents() NOEXCEPT
 {
-	//Return the terrain entity terrain render components.
-	return terrainEntityTerrainRenderComponents.Data();
+	//Return the terrain render components.
+	return terrainRenderComponents.Data();
 }

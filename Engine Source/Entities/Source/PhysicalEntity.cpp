@@ -16,7 +16,7 @@ DEFINE_ENTITY_CLASS(PhysicalEntity);
 PhysicalEntity::PhysicalEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewPhysicalEntityComponentsIndex();
+	componentsIndex = ComponentManager::GetNewPhysicalComponentsIndex();
 
 	//Add this physical entity to the universal container.
 	Instances.EmplaceSlow(this);
@@ -46,7 +46,7 @@ void PhysicalEntity::Initialize(const PhysicalModel &newModel) NOEXCEPT
 const Vector3& PhysicalEntity::GetPosition() NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].position;
+	return ComponentManager::GetPhysicalTransformComponents()[componentsIndex].position;
 }
 
 /*
@@ -55,7 +55,7 @@ const Vector3& PhysicalEntity::GetPosition() NOEXCEPT
 const Vector3& PhysicalEntity::GetRotation() NOEXCEPT
 {
 	//Return the rotation of this entity.
-	return ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].rotation;
+	return ComponentManager::GetPhysicalTransformComponents()[componentsIndex].rotation;
 }
 
 /*
@@ -64,7 +64,7 @@ const Vector3& PhysicalEntity::GetRotation() NOEXCEPT
 const Vector3& PhysicalEntity::GetScale() NOEXCEPT
 {
 	//Return the scale of this entity.
-	return ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].scale;
+	return ComponentManager::GetPhysicalTransformComponents()[componentsIndex].scale;
 }
 
 /*
@@ -73,7 +73,7 @@ const Vector3& PhysicalEntity::GetScale() NOEXCEPT
 void PhysicalEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].position += moveVector;
+	ComponentManager::GetPhysicalTransformComponents()[componentsIndex].position += moveVector;
 
 	//Move all children.
 	for (auto child : children)
@@ -88,7 +88,7 @@ void PhysicalEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void PhysicalEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate this entity.
-	ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].rotation += rotateVector;
+	ComponentManager::GetPhysicalTransformComponents()[componentsIndex].rotation += rotateVector;
 
 	//Rotate all children.
 	for (auto child : children)
@@ -103,7 +103,7 @@ void PhysicalEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 void PhysicalEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale this physical entity.
-	ComponentManager::GetPhysicalEntityTransformComponents()[componentsIndex].scale *= scaleVector;
+	ComponentManager::GetPhysicalTransformComponents()[componentsIndex].scale *= scaleVector;
 
 	//Scale all children.
 	for (auto child : children)

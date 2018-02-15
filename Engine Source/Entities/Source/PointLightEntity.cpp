@@ -16,7 +16,7 @@ DEFINE_ENTITY_CLASS(PointLightEntity);
 PointLightEntity::PointLightEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewPointLightEntitiesEntityComponentsIndex();
+	componentsIndex = ComponentManager::GetNewPointLightComponentsIndex();
 
 	//Add this point light entity to the universal container.
 	Instances.EmplaceSlow(this);
@@ -37,7 +37,7 @@ PointLightEntity::~PointLightEntity() NOEXCEPT
 const Vector3& PointLightEntity::GetPosition() NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].position;
+	return ComponentManager::GetPointLightComponents()[componentsIndex].position;
 }
 
 /*
@@ -64,7 +64,7 @@ const Vector3& PointLightEntity::GetScale() NOEXCEPT
 void PointLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].position += moveVector;
+	ComponentManager::GetPointLightComponents()[componentsIndex].position += moveVector;
 
 	//Move all children.
 	for (auto child : children)
@@ -103,7 +103,7 @@ void PointLightEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 void PointLightEntity::SetEnabled(const bool newEnabled) NOEXCEPT
 {
 	//Set whether or not this point light is enabled.
-	ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].enabled = newEnabled;
+	ComponentManager::GetPointLightComponents()[componentsIndex].enabled = newEnabled;
 }
 
 /*
@@ -112,7 +112,7 @@ void PointLightEntity::SetEnabled(const bool newEnabled) NOEXCEPT
 void PointLightEntity::SetAttenuationDistance(const float newAttenuationDistance) NOEXCEPT
 {
 	//Set the attenuation distance.
-	ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].attenuationDistance = newAttenuationDistance;
+	ComponentManager::GetPointLightComponents()[componentsIndex].attenuationDistance = newAttenuationDistance;
 }
 
 /*
@@ -121,7 +121,7 @@ void PointLightEntity::SetAttenuationDistance(const float newAttenuationDistance
 void PointLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 {
 	//Set the intensity.
-	ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].intensity = newIntensity;
+	ComponentManager::GetPointLightComponents()[componentsIndex].intensity = newIntensity;
 }
 
 /*
@@ -130,5 +130,5 @@ void PointLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 void PointLightEntity::SetColor(const Vector3 &newColor) NOEXCEPT
 {
 	//Set the color.
-	ComponentManager::GetPointLightEntityPointLightComponents()[componentsIndex].color = newColor;
+	ComponentManager::GetPointLightComponents()[componentsIndex].color = newColor;
 }
