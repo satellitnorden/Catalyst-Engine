@@ -3,9 +3,6 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Graphics.
-#include <Vertex.h>
-
 //Vulkan.
 #include <Vulkan2DTexture.h>
 #include <VulkanBuffer.h>
@@ -34,7 +31,6 @@
 #include <VulkanUniformBuffer.h>
 
 //Forward declarations.
-class TextureData;
 class Window;
 
 class VulkanInterface final
@@ -145,7 +141,7 @@ public:
 	/*
 	*	Creates and returns a 2D texture.
 	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const TextureData &textureData) NOEXCEPT;
+	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
 
 	/*
 	*	Creates and returns a buffer.

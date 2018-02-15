@@ -3,9 +3,6 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Graphics.
-#include <TextureData.h>
-
 //Vulkan.
 #include <VulkanCore.h>
 #include <VulkanCommandBuffer.h>
@@ -272,7 +269,7 @@ public:
 	/*
 	*	Creates a Vulkan sampler.
 	*/
-	static void CreateVulkanSampler(VkSampler &vulkanSampler, const TextureFilter magnificationFilter, const MipmapMode mipmapMode, const AddressMode addressMode, const float maxLod) NOEXCEPT
+	static void CreateVulkanSampler(VkSampler &vulkanSampler, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode, const float maxLod) NOEXCEPT
 	{
 		//Create the image view create info.
 		VkSamplerCreateInfo samplerCreateInfo;
@@ -280,13 +277,12 @@ public:
 		samplerCreateInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		samplerCreateInfo.pNext = nullptr;
 		samplerCreateInfo.flags = 0;
-		samplerCreateInfo.magFilter = GetVulkanTextureFilter(magnificationFilter);
+		samplerCreateInfo.magFilter = magnificationFilter;
 		samplerCreateInfo.minFilter = VK_FILTER_NEAREST;
-		samplerCreateInfo.mipmapMode = GetVulkanMipmapMode(mipmapMode);
-		const VkSamplerAddressMode vulkanAddressMode{ GetVulkanAddressMode(addressMode) };
-		samplerCreateInfo.addressModeU = vulkanAddressMode;
-		samplerCreateInfo.addressModeV = vulkanAddressMode;
-		samplerCreateInfo.addressModeW = vulkanAddressMode;
+		samplerCreateInfo.mipmapMode = mipmapMode;
+		samplerCreateInfo.addressModeU = addressMode;
+		samplerCreateInfo.addressModeV = addressMode;
+		samplerCreateInfo.addressModeW = addressMode;
 		samplerCreateInfo.mipLodBias = 0.0f;
 		samplerCreateInfo.anisotropyEnable = VK_TRUE;
 		samplerCreateInfo.maxAnisotropy = 16;
@@ -299,90 +295,6 @@ public:
 
 		//Create the sampler!
 		VULKAN_ERROR_CHECK(vkCreateSampler(VulkanInterface::Instance->GetLogicalDevice().Get(), &samplerCreateInfo, nullptr, &vulkanSampler));
-	}
-
-	/*
-	*	Given an address mode, return the corresponding Vulkan address mode.
-	*/
-	static VkSamplerAddressMode GetVulkanAddressMode(const AddressMode addressMode) NOEXCEPT
-	{
-		switch (addressMode)
-		{
-			case AddressMode::ClampToBorder: return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-			case AddressMode::ClampToEdge: return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-			case AddressMode::MirrorClampToEdge: return VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
-			case AddressMode::MirroredRepeat: return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
-			case AddressMode::Repeat: return VK_SAMPLER_ADDRESS_MODE_REPEAT;
-
-			default:
-			{
-#if !defined(CATALYST_FINAL)
-				PRINT_TO_CONSOLE("Unknown address mode."); BREAKPOINT;
-#endif
-				return VK_SAMPLER_ADDRESS_MODE_REPEAT;
-			}
-		}
-	}
-
-	/*
-	*	Given a format, return the corresponding Vulkan format.
-	*/
-	static VkFormat GetVulkanFormat(const TextureFormat format) NOEXCEPT
-	{
-		switch (format)
-		{
-			case TextureFormat::R8_Byte: return VK_FORMAT_R8_UNORM;
-			case TextureFormat::R8G8B8A8_Byte: return VK_FORMAT_R8G8B8A8_UNORM;
-			case TextureFormat::R32G32B32A32_Float: return VK_FORMAT_R32G32B32A32_SFLOAT;
-
-			default:
-			{
-#if !defined(CATALYST_FINAL)
-				PRINT_TO_CONSOLE("Unknown texture format."); BREAKPOINT;
-#endif
-				return VK_FORMAT_R8G8B8A8_UNORM;
-			}
-		}
-	}
-
-	/*
-	*	Given a mipmap mode, return the corresponding Vulkan mipmap mode.
-	*/
-	static VkSamplerMipmapMode GetVulkanMipmapMode(const MipmapMode mipmapMode) NOEXCEPT
-	{
-		switch (mipmapMode)
-		{
-			case MipmapMode::Linear: return VK_SAMPLER_MIPMAP_MODE_LINEAR;
-			case MipmapMode::Nearest: return VK_SAMPLER_MIPMAP_MODE_NEAREST;
-
-			default:
-			{
-#if !defined(CATALYST_FINAL)
-				PRINT_TO_CONSOLE("Unknown mipmap mode."); BREAKPOINT;
-#endif
-				return VK_SAMPLER_MIPMAP_MODE_NEAREST;
-			}
-		}
-	}
-
-	/*
-	*	Given a texture filter, return the corresponding Vulkan texture filter.
-	*/
-	static VkFilter GetVulkanTextureFilter(const TextureFilter textureFilter) NOEXCEPT
-	{
-		switch (textureFilter)
-		{
-			case TextureFilter::Linear: return VK_FILTER_LINEAR;
-			case TextureFilter::Nearest: return VK_FILTER_NEAREST;
-
-			default:
-			{
-#if !defined(CATALYST_FINAL)
-				PRINT_TO_CONSOLE("Unknown texture filter."); BREAKPOINT;
-#endif
-				return VK_FILTER_NEAREST;
-			}
-		}
 	}
 
 	/*

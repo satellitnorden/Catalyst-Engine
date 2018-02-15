@@ -121,6 +121,33 @@
     <Filter Include="Engine Source\Systems\Inline">
       <UniqueIdentifier>{c629e6a5-f067-4b77-ab7d-8c27fb807ef6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Rendering">
+      <UniqueIdentifier>{52fd7b30-6a5c-4158-8189-17b0c19d07f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Rendering\Translation Layer">
+      <UniqueIdentifier>{19ef4e7a-e8cb-4992-8fd9-9208ca1520bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Rendering\Translation Layer\Vulkan">
+      <UniqueIdentifier>{d2d22184-39fc-4a36-9f4a-29497cb98a12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Rendering\Translation Layer\Vulkan\Include">
+      <UniqueIdentifier>{e9ac753e-ae86-4a96-b087-d028f92fc7c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Rendering\Translation Layer\Vulkan\Source">
+      <UniqueIdentifier>{79876e8e-f439-407b-a634-bfc0b9e56b2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Rendering\API Layer">
+      <UniqueIdentifier>{3774dbaa-77cc-4fe9-b3c8-d40154820b16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Rendering\API Layer\Vulkan">
+      <UniqueIdentifier>{f093f89b-0f00-46b2-b7a8-6f128204a092}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Rendering\API Layer\Vulkan\Include">
+      <UniqueIdentifier>{0c7a5d6a-3d17-41af-8301-c441cb4dae2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Rendering\API Layer\Vulkan\Source">
+      <UniqueIdentifier>{e0843ed8-32b3-4bb1-9ba2-cbdc5596c1bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine Source\Engine Core\Source\Main.cpp">
@@ -293,6 +320,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Graphics\Source\TextureLoader.cpp">
       <Filter>Engine Source\Graphics\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Source\VulkanRenderingSystem.cpp">
+      <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -628,6 +658,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureDataContainer.h">
       <Filter>Engine Source\Graphics\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanRenderingSystem.h">
+      <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanTranslationUtilities.h">
+      <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

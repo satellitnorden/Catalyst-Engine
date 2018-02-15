@@ -29,15 +29,14 @@ Vulkan2DTexture::~Vulkan2DTexture() NOEXCEPT
 /*
 *	Initializes this Vulkan 2D texture.
 */
-void Vulkan2DTexture::Initialize(const TextureData &textureData) NOEXCEPT
+void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
 	//Calculate the image size.
 	VkDeviceSize imageSize{ 0 };
-	const size_t textureDataSize{ textureData.textureDataContainer.textureData.Size() };
 
-	for (size_t i = 0; i < textureDataSize; ++i)
+	for (uint32 i = 0; i < textureMipmapLevels; ++i)
 	{
-		imageSize += (textureData.textureDataContainer.textureWidth >> i) * (textureData.textureDataContainer.textureHeight >> i) * textureData.textureDataContainer.textureChannels * textureData.textureDataContainer.textureTexelSize;
+		imageSize += (textureWidth >> i) * (textureHeight >> i) * textureChannels * textureTexelSize;
 	}
 
 	//Set up the staging buffer.
@@ -54,40 +53,37 @@ void Vulkan2DTexture::Initialize(const TextureData &textureData) NOEXCEPT
 
 	size_t currentOffset{ 0 };
 
-	for (size_t i = 0; i < textureDataSize; ++i)
+	for (size_t i = 0; i < textureMipmapLevels; ++i)
 	{
-		const size_t mipSize{ (textureData.textureDataContainer.textureWidth >> i) * (textureData.textureDataContainer.textureHeight >> i) * textureData.textureDataContainer.textureChannels * static_cast<size_t>(textureData.textureDataContainer.textureTexelSize) };
-		MemoryUtilities::CopyMemory(static_cast<byte*>(data) + currentOffset, textureData.textureDataContainer.textureData[i], mipSize);
+		const size_t mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels * static_cast<size_t>(textureTexelSize) };
+		MemoryUtilities::CopyMemory(static_cast<byte*>(data) + currentOffset, textureData[i], mipSize);
 
 		currentOffset += mipSize;
 	}
 	
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 
-	//Deduce the format of the images.
-	VkFormat format{ VulkanUtilities::GetVulkanFormat(textureData.textureFormat) };
-
 	//Create the Vulkan image.
-	VulkanUtilities::CreateVulkanImage(0, format, textureData.textureDataContainer.textureWidth, textureData.textureDataContainer.textureHeight, static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), 1, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(0, format, textureWidth, textureHeight, textureMipmapLevels, 1, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, vulkanImage, vulkanDeviceMemory);
 
 	//Transition the Vulkan image to the correct layout for writing.
-	VulkanUtilities::TransitionImageToLayout(format, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), 1, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, vulkanImage);
+	VulkanUtilities::TransitionImageToLayout(format, 0, VK_ACCESS_TRANSFER_WRITE_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, textureMipmapLevels, 1, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, vulkanImage);
 
 	//Copy the buffer to the Vulkan image.
-	VulkanUtilities::CopyBufferToImage(stagingBuffer, vulkanImage, static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), 1, textureData.textureDataContainer.textureWidth, textureData.textureDataContainer.textureHeight);
+	VulkanUtilities::CopyBufferToImage(stagingBuffer, vulkanImage, textureMipmapLevels, 1, textureWidth, textureHeight);
 
 	//Transition the Vulkan image to the correct layout for reading.
-	VulkanUtilities::TransitionImageToLayout(format, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, vulkanImage);
+	VulkanUtilities::TransitionImageToLayout(format, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, textureMipmapLevels, 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, vulkanImage);
 
 	//Clean up the staging buffer.
 	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, nullptr);
 	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBuffer, nullptr);
 
 	//Create the image view.
-	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), 1, vulkanImageView);
+	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, textureMipmapLevels, 1, vulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(vulkanSampler, textureData.magnificationFilter, textureData.mipmapMode, textureData.addressMode, static_cast<float>(textureData.textureDataContainer.textureData.Size()));
+	VulkanUtilities::CreateVulkanSampler(vulkanSampler, magnificationFilter, mipmapMode, addressMode, static_cast<float>(textureMipmapLevels));
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();

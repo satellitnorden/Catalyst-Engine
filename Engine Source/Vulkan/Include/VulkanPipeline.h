@@ -5,8 +5,6 @@
 
 //Vulkan.
 #include <VulkanCore.h>
-
-//Vulkan.
 #include <VulkanDescriptorSet.h>
 #include <VulkanDescriptorSetLayout.h>
 #include <VulkanRenderPass.h>

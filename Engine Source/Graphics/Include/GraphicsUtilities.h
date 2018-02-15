@@ -3,6 +3,9 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Graphics.
+#include <Vertex.h>
+
 //Math.
 #include <GameMath.h>
 #include <Vector4.h>

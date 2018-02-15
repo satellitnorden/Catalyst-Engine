@@ -70,7 +70,7 @@ void VulkanCubeMapTexture::Initialize(const uint32 width, const uint32 height, c
 	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, 1, 6, vulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(vulkanSampler, TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::Repeat, 0.0f);
+	VulkanUtilities::CreateVulkanSampler(vulkanSampler, VK_FILTER_NEAREST, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT, 0.0f);
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();

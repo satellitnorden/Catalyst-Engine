@@ -50,12 +50,20 @@
 #define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance = new SingletonClass;
 
 /*
+*	Declares a system class. Must be done inside the class in the header file.
+*/
+#define DECLARE_SYSTEM(SystemClass) public: DECLARE_SINGLETON(SystemClass); SystemClass(const SystemClass &otherSystemClass) = delete; SystemClass(SystemClass &&otherSystemClass) = delete;
+
+/*
+*	defines a system class. Must be done in the source file.
+*/
+#define DEFINE_SYSTEM(SystemClass) DEFINE_SINGLETON(SystemClass);
+
+/*
 *	Prints a message to the console in non-final builds.
 */
 #if !defined(CATALYST_FINAL)
 	#define PRINT_TO_CONSOLE(message) std::cout << message << std::endl;
-#else
-	#define PRINT_TO_CONSOLE() #error "This should not be in final!"
 #endif
 
 /*

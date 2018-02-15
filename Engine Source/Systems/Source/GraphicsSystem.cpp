@@ -27,6 +27,9 @@
 #include <EngineSystem.h>
 #include <QuestSystem.h>
 
+//Vulkan.
+#include <VulkanTranslationUtilities.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(GraphicsSystem);
 
@@ -311,7 +314,7 @@ void GraphicsSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const
 RESTRICTED Vulkan2DTexture* GraphicsSystem::Create2DTexture(const TextureData &textureData) const NOEXCEPT
 {
 	//Create the Vulkan 2D texture.
-	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(textureData);
+	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), textureData.textureDataContainer.textureWidth, textureData.textureDataContainer.textureHeight, textureData.textureDataContainer.textureChannels, textureData.textureDataContainer.textureTexelSize, textureData.textureDataContainer.textureData.Data(), VulkanTranslationUtilities::GetVulkanFormat(textureData.textureFormat), VulkanTranslationUtilities::GetVulkanTextureFilter(textureData.magnificationFilter), VulkanTranslationUtilities::GetVulkanMipmapMode(textureData.mipmapMode), VulkanTranslationUtilities::GetVulkanAddressMode(textureData.addressMode));
 
 	//Return the texture.
 	return new2DTexture;
@@ -777,10 +780,10 @@ void GraphicsSystem::InitializeDescriptorSets() NOEXCEPT
 void GraphicsSystem::InitializeDefaultTextures() NOEXCEPT
 {
 	byte defaultMetallic[]{ 0 };
-	defaultTextures[DefaultTexture::Black] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultMetallic, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
+	defaultTextures[DefaultTexture::Black] = Create2DTexture(TextureData(TextureDataContainer(defaultMetallic, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
 
 	byte defaultRoughness[]{ 255 };
-	defaultTextures[DefaultTexture::White] = VulkanInterface::Instance->Create2DTexture(TextureData(TextureDataContainer(defaultRoughness, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
+	defaultTextures[DefaultTexture::White] = Create2DTexture(TextureData(TextureDataContainer(defaultRoughness, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte));
 }
 
 /*
