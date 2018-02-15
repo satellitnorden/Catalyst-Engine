@@ -115,7 +115,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		{
 			Vector4 normalMapValue{ normalMap.At(i, j) * 2.0f - 1.0f };
 			
-			layer1Weight.At(i, j) = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(normalMapValue.X, normalMapValue.Y, normalMapValue.Z), Vector3(0.0f, 1.0f, 0.0f)) - 0.1f, 0.0f, 1.0f));
+			layer1Weight.At(i, j) = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(normalMapValue.X, normalMapValue.Y, normalMapValue.Z), Vector3(0.0f, 1.0f, 0.0f)) - 0.25f, 0.0f, 1.0f));
 		}
 	}
 
@@ -168,7 +168,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(	heightMap, 128, TerrainUniformData(1.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.075f, Vector3(0.0f, 0.0f, 0.0f)),
+	terrain->Initialize(	heightMap, 128, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.075f, Vector3(0.0f, 0.0f, 0.0f)),
 							terrainHeightMapTexture, terrainNormalMapTexture,
 							layer1WeightTexture, layer1AlbedoTexture, layer1NormalMapTexture, layer1RoughnessTexture, nullptr, layer1AmbientOcclusionTexture, layer1DisplacementTexture,
 							layer2WeightTexture, layer2AlbedoTexture, layer2NormalMapTexture, layer2RoughnessTexture, nullptr, layer2AmbientOcclusionTexture, layer2DisplacementTexture,
