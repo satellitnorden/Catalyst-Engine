@@ -82,15 +82,6 @@
     <Filter Include="Game Source\Clairvoyant">
       <UniqueIdentifier>{21a7cd9c-c6b9-441d-88d7-44de6786b602}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine Source\Vulkan">
-      <UniqueIdentifier>{19d0a991-298d-4745-83fa-a2a954846b5b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine Source\Vulkan\Include">
-      <UniqueIdentifier>{f31f760f-8536-46a2-98c2-f084181c4448}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine Source\Vulkan\Source">
-      <UniqueIdentifier>{a40ef730-a890-462c-bad7-851eaff7a306}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine Source\Multithreading">
       <UniqueIdentifier>{6f861fff-160b-4472-8e54-32367fb935eb}</UniqueIdentifier>
     </Filter>
@@ -216,74 +207,11 @@
     <ClCompile Include="..\..\Engine Source\Entities\Source\PointLightEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCommandBuffer.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCommandPool.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDepthBuffer.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDescriptorPool.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDescriptorSet.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanDescriptorSetLayout.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanFramebuffer.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanInstance.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanInterface.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanLogicalDevice.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanPhysicalDevice.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanPipeline.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanQueue.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanRenderPass.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSemaphore.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanShaderModule.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSurface.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanSwapChain.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanUniformBuffer.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine Source\Entities\Source\SpotLightEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanAllocator.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine Source\Systems\Source\QuestSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanFence.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Multithreading\Source\DailyQuest.cpp">
       <Filter>Engine Source\Multithreading\Source</Filter>
@@ -291,20 +219,11 @@
     <ClCompile Include="..\..\Engine Source\Multithreading\Source\DailyGroupQuest.cpp">
       <Filter>Engine Source\Multithreading\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\Vulkan2DTexture.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine Source\Systems\Source\PhysicsSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Game Source\Include\EntitySpawner.cpp">
       <Filter>Game Source\Clairvoyant</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanRenderTarget.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanCubeMapTexture.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Components\Source\ComponentManager.cpp">
       <Filter>Engine Source\Components\Source</Filter>
@@ -315,14 +234,86 @@
     <ClCompile Include="..\..\Engine Source\Entities\Source\TerrainEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Vulkan\Source\VulkanBuffer.cpp">
-      <Filter>Engine Source\Vulkan\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine Source\Graphics\Source\TextureLoader.cpp">
       <Filter>Engine Source\Graphics\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Source\VulkanRenderingSystem.cpp">
       <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\Vulkan2DTexture.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanAllocator.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanBuffer.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanCommandBuffer.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanCommandPool.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanCubeMapTexture.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanDepthBuffer.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanDescriptorPool.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanDescriptorSet.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanDescriptorSetLayout.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanFence.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanFramebuffer.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanInstance.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanInterface.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanLogicalDevice.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanPhysicalDevice.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanPipeline.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanQueue.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanRenderPass.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanRenderTarget.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanSemaphore.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanShaderModule.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanSurface.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanSwapChain.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanUniformBuffer.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -419,77 +410,8 @@
     <ClInclude Include="..\..\Engine Source\Entities\Include\PointLightEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCommandBuffer.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCommandPool.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDepthBuffer.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDescriptorPool.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDescriptorSet.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanDescriptorSetLayout.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanFramebuffer.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanInstance.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanInterface.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanLogicalDevice.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanPhysicalDevice.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanPipeline.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanPipelineCreationParameters.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanQueue.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanRenderPass.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanSemaphore.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanShaderModule.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanSurface.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanSwapChain.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUniformBuffer.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanUtilities.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Entities\Include\SpotLightEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanAllocator.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanAllocation.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\AtomicQueue.h">
       <Filter>Engine Source\Multithreading\Include</Filter>
@@ -515,9 +437,6 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\StaticArray.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCore.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\Semaphore.h">
       <Filter>Engine Source\Multithreading\Include</Filter>
     </ClInclude>
@@ -532,9 +451,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\Optional.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanFence.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicString.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
@@ -569,9 +485,6 @@
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\ScopedLock.h">
       <Filter>Engine Source\Multithreading\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\Vulkan2DTexture.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Systems\Include\PhysicsSystem.h">
       <Filter>Engine Source\Systems\Include</Filter>
     </ClInclude>
@@ -586,12 +499,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Math\Include\PerlinNoiseGenerator.h">
       <Filter>Engine Source\Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanRenderTarget.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanCubeMapTexture.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PostProcessingUniformData.h">
       <Filter>Engine Source\Graphics\Include</Filter>
@@ -644,9 +551,6 @@
     <ClInclude Include="..\..\Engine Source\Components\Include\TerrainRenderComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Vulkan\Include\VulkanBuffer.h">
-      <Filter>Engine Source\Vulkan\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Graphics\Include\TerrainUniformData.h">
       <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
@@ -664,6 +568,93 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanTranslationUtilities.h">
       <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\Vulkan2DTexture.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanAllocation.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanAllocator.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanBuffer.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanCommandBuffer.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanCommandPool.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanCore.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanCubeMapTexture.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanDepthBuffer.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanDescriptorPool.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanDescriptorSet.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanDescriptorSetLayout.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanFence.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanFramebuffer.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanInstance.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanInterface.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanLogicalDevice.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanPhysicalDevice.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanPipeline.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanPipelineCreationParameters.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanQueue.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanRenderPass.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanRenderTarget.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanSemaphore.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanShaderModule.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanSurface.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanSwapChain.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanUniformBuffer.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanUtilities.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
