@@ -584,8 +584,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	terrainSceneBufferPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainSceneBufferTessellationEvaluationShaderModule]);
 	terrainSceneBufferPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainSceneBufferFragmentShaderModule]);
 	terrainSceneBufferPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
-	GraphicsUtilities::GetTerrainVertexInputAttributeDescriptions(terrainSceneBufferPipelineCreationParameters.vertexInputAttributeDescriptions);
-	GraphicsUtilities::GetTerrainVertexInputBindingDescription(terrainSceneBufferPipelineCreationParameters.vertexInputBindingDescription);
+	VulkanTranslationUtilities::GetTerrainVertexInputAttributeDescriptions(terrainSceneBufferPipelineCreationParameters.vertexInputAttributeDescriptions);
+	VulkanTranslationUtilities::GetTerrainVertexInputBindingDescription(terrainSceneBufferPipelineCreationParameters.vertexInputBindingDescription);
 	terrainSceneBufferPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 	pipelines[Pipeline::TerrainSceneBufferPipeline] = VulkanInterface::Instance->CreatePipeline(terrainSceneBufferPipelineCreationParameters);
@@ -622,8 +622,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	sceneBufferPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::SceneBufferVertexShaderModule]);
 	sceneBufferPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::SceneBufferFragmentShaderModule]);
 	sceneBufferPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-	GraphicsUtilities::GetPhysicalVertexInputAttributeDescriptions(sceneBufferPipelineCreationParameters.vertexInputAttributeDescriptions);
-	GraphicsUtilities::GetPhysicalVertexInputBindingDescription(sceneBufferPipelineCreationParameters.vertexInputBindingDescription);
+	VulkanTranslationUtilities::GetPhysicalVertexInputAttributeDescriptions(sceneBufferPipelineCreationParameters.vertexInputAttributeDescriptions);
+	VulkanTranslationUtilities::GetPhysicalVertexInputBindingDescription(sceneBufferPipelineCreationParameters.vertexInputBindingDescription);
 	sceneBufferPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 	pipelines[Pipeline::SceneBufferPipeline] = VulkanInterface::Instance->CreatePipeline(sceneBufferPipelineCreationParameters);
@@ -656,7 +656,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::ViewportVertexShaderModule]);
 	lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::LightingFragmentShaderModule]);
 	lightingPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-	GraphicsUtilities::GetDefaultVertexInputBindingDescription(lightingPipelineCreationParameters.vertexInputBindingDescription);
+	VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(lightingPipelineCreationParameters.vertexInputBindingDescription);
 	lightingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 	pipelines[Pipeline::LightingPipeline] = VulkanInterface::Instance->CreatePipeline(lightingPipelineCreationParameters);
@@ -686,7 +686,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::CubeMapVertexShaderModule]);
 	cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::CubeMapFragmentShaderModule]);
 	cubeMapPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-	GraphicsUtilities::GetDefaultVertexInputBindingDescription(cubeMapPipelineCreationParameters.vertexInputBindingDescription);
+	VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(cubeMapPipelineCreationParameters.vertexInputBindingDescription);
 	cubeMapPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 	pipelines[Pipeline::CubeMapPipeline] = VulkanInterface::Instance->CreatePipeline(cubeMapPipelineCreationParameters);
@@ -724,7 +724,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::ViewportVertexShaderModule]);
 	postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::PostProcessingFragmentShaderModule]);
 	postProcessingPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-	GraphicsUtilities::GetDefaultVertexInputBindingDescription(postProcessingPipelineCreationParameters.vertexInputBindingDescription);
+	VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(postProcessingPipelineCreationParameters.vertexInputBindingDescription);
 	postProcessingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 	pipelines[Pipeline::PostProcessingPipeline] = VulkanInterface::Instance->CreatePipeline(postProcessingPipelineCreationParameters);
