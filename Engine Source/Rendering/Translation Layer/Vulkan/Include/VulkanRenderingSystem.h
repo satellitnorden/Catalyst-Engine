@@ -15,6 +15,7 @@
 
 //Rendering.
 #include <RenderingCore.h>
+#include <VulkanDynamicUniformData.h>
 #include <Window.h>
 
 //Vulkan.
@@ -218,7 +219,7 @@ private:
 	Matrix4 projectionMatrix;
 
 	//The dynamic uniform data.
-	DynamicUniformData dynamicUniformData;
+	VulkanDynamicUniformData dynamicUniformData;
 
 	//The post processing uniform data.
 	PostProcessingUniformData postProcessingUniformData;

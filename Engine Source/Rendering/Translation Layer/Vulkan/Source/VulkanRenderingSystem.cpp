@@ -23,12 +23,12 @@
 #include <GameMath.h>
 #include <Matrix3.h>
 
+//Rendering.
+#include <VulkanTranslationUtilities.h>
+
 //Systems.
 #include <EngineSystem.h>
 #include <QuestSystem.h>
-
-//Vulkan.
-#include <VulkanTranslationUtilities.h>
 
 //System definition.
 DEFINE_SYSTEM(VulkanRenderingSystem);
@@ -468,7 +468,7 @@ void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
 void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 {
 	//Create the dynamic uniform data buffer.
-	uniformBuffers[UniformBuffer::DynamicUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(DynamicUniformData));
+	uniformBuffers[UniformBuffer::DynamicUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(VulkanDynamicUniformData));
 
 	//Create the post processing uniform data buffer.
 	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(PostProcessingUniformData));

@@ -377,9 +377,6 @@
     <ClInclude Include="..\..\Engine Source\Math\Include\MathematicalConstants.h">
       <Filter>Engine Source\Math\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\DynamicUniformData.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\ProjectSettings.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
@@ -667,6 +664,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\PhysicalModel.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanDynamicUniformData.h">
+      <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

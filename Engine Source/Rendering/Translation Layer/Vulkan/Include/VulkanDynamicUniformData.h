@@ -1,9 +1,5 @@
 #pragma once
 
-//Preprocessor defines.
-#define MaximumNumberOfPointLights 8
-#define MaximumNumberOfSpotLights 8
-
 //Engine core.
 #include <EngineCore.h>
 
@@ -11,10 +7,16 @@
 #include <Matrix4.h>
 #include <Vector4.h>
 
-class DynamicUniformData final
+class VulkanDynamicUniformData final
 {
 
 public:
+
+	//The maximum number of points lights.
+	static constexpr uint8 MaximumNumberOfPointLights{ 8 };
+
+	//The maximum number of spot lights.
+	static constexpr uint8 MaximumNumberOfSpotLights{ 8 };
 
 	//Camera data.
 	Vector4 cameraFieldOfViewCosine;

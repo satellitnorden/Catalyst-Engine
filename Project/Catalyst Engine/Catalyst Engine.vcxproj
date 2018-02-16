@@ -123,7 +123,6 @@
     <ClInclude Include="..\..\Engine Source\Entities\Include\TerrainEntity.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\CPUTexture4.h" />
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\DynamicUniformData.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\GraphicsUtilities.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\ModelLoader.h" />
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalMaterial.h" />
@@ -187,6 +186,7 @@
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\PhysicalModel.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\RenderingCore.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\Window.h" />
+    <ClInclude Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanDynamicUniformData.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanRenderingSystem.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanTranslationUtilities.h" />
     <ClInclude Include="..\..\Engine Source\Systems\Include\EngineSystem.h" />
