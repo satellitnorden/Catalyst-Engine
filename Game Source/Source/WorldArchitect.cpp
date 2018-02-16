@@ -67,11 +67,15 @@ void WorldArchitect::Initialize() NOEXCEPT
 	{
 		for (uint32 j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
 		{
-			float frequency = 2.5f;
+			float frequency = 5.0f;
 			float multiplier = 1.0f;
 			heightMap.At(i, j) = PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			frequency = 10.0f;
+			multiplier = 0.5f;
+			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+
+			frequency = 20.0f;
 			multiplier = 0.25f;
 			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
@@ -168,7 +172,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(	heightMap, 128, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.075f, Vector3(0.0f, 0.0f, 0.0f)),
+	terrain->Initialize(	heightMap, 256, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.075f, Vector3(0.0f, 0.0f, 0.0f)),
 							terrainHeightMapTexture, terrainNormalMapTexture,
 							layer1WeightTexture, layer1AlbedoTexture, layer1NormalMapTexture, layer1RoughnessTexture, nullptr, layer1AmbientOcclusionTexture, layer1DisplacementTexture,
 							layer2WeightTexture, layer2AlbedoTexture, layer2NormalMapTexture, layer2RoughnessTexture, nullptr, layer2AmbientOcclusionTexture, layer2DisplacementTexture,
