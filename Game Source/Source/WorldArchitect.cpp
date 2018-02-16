@@ -8,15 +8,15 @@
 #include <SpotLightEntity.h>
 #include <TerrainEntity.h>
 
-//Graphics.
+//Math.
+#include <GameMath.h>
+#include <PerlinNoiseGenerator.h>
+
+//Rendering.
 #include <CPUTexture4.h>
 #include <PhysicalModel.h>
 #include <TerrainUniformData.h>
 #include <TextureData.h>
-
-//Math.
-#include <GameMath.h>
-#include <PerlinNoiseGenerator.h>
 
 //Systems.
 #include <EntitySystem.h>

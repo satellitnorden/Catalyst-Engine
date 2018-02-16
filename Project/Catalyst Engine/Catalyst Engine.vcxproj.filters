@@ -49,15 +49,6 @@
     <Filter Include="Engine Source\Input\Source">
       <UniqueIdentifier>{f48d86e1-c052-4eae-b569-a9dd116104af}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine Source\Graphics">
-      <UniqueIdentifier>{8d58644d-7c39-4edf-b34f-7b9ed15b96b7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine Source\Graphics\Include">
-      <UniqueIdentifier>{c6b63428-90d2-4d57-bd58-4cbb452a8456}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine Source\Graphics\Source">
-      <UniqueIdentifier>{048af039-190e-4218-a404-d1bd9638c843}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine Source\Entities">
       <UniqueIdentifier>{266f8d82-5249-46ce-ba22-46dac00c3df2}</UniqueIdentifier>
     </Filter>
@@ -174,9 +165,6 @@
     <ClCompile Include="..\..\Engine Source\Math\Source\Vector4.cpp">
       <Filter>Engine Source\Math\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Graphics\Source\Vertex.cpp">
-      <Filter>Engine Source\Graphics\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine Source\Systems\Source\InputSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
@@ -197,9 +185,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Entities\Source\PhysicalEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Graphics\Source\PhysicalMaterial.cpp">
-      <Filter>Engine Source\Graphics\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Game Source\Source\WorldArchitect.cpp">
       <Filter>Game Source\Clairvoyant</Filter>
@@ -233,9 +218,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Entities\Source\TerrainEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Graphics\Source\TextureLoader.cpp">
-      <Filter>Engine Source\Graphics\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Source\VulkanRenderingSystem.cpp">
       <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Source</Filter>
@@ -324,6 +306,15 @@
     <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\PhysicalModel.cpp">
       <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\PhysicalMaterial.cpp">
+      <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\TextureLoader.cpp">
+      <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\Vertex.cpp">
+      <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\EngineCore.h">
@@ -334,9 +325,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Math\Include\GameMath.h">
       <Filter>Engine Source\Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\ShaderLoader.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Math\Include\Matrix3.h">
       <Filter>Engine Source\Math\Include</Filter>
@@ -352,9 +340,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Math\Include\Vector4.h">
       <Filter>Engine Source\Math\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\Vertex.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Systems\Include\InputSystem.h">
       <Filter>Engine Source\Systems\Include</Filter>
@@ -389,17 +374,8 @@
     <ClInclude Include="..\..\Engine Source\Systems\Include\EntitySystem.h">
       <Filter>Engine Source\Systems\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\ModelLoader.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureLoader.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Entities\Include\PhysicalEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalMaterial.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Game Source\Include\WorldArchitect.h">
       <Filter>Game Source\Clairvoyant</Filter>
@@ -418,9 +394,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Multithreading\Include\MultithreadedResource.h">
       <Filter>Engine Source\Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\GraphicsUtilities.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DynamicArray.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
@@ -497,9 +470,6 @@
     <ClInclude Include="..\..\Engine Source\Math\Include\PerlinNoiseGenerator.h">
       <Filter>Engine Source\Math\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\PostProcessingUniformData.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Components\Include\ComponentManager.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
@@ -530,9 +500,6 @@
     <ClInclude Include="..\..\Engine Source\Entities\Include\DirectionalLightEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\AxisAlignedBoundingBox.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Entities\Include\TerrainEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
@@ -547,18 +514,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Components\Include\TerrainRenderComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\TerrainUniformData.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\CPUTexture4.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureData.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\TextureDataContainer.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanRenderingSystem.h">
       <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Include</Filter>
@@ -667,6 +622,42 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanDynamicUniformData.h">
       <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\RenderingUtilities.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\AxisAlignedBoundingBox.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\CPUTexture4.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\ModelLoader.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\PhysicalMaterial.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\PostProcessingUniformData.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\ShaderLoader.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TerrainUniformData.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TextureData.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TextureDataContainer.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TextureLoader.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\Vertex.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

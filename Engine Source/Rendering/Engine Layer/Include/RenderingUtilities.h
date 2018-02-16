@@ -3,14 +3,14 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Graphics.
-#include <Vertex.h>
-
 //Math.
 #include <GameMath.h>
 #include <Vector4.h>
 
-namespace GraphicsUtilities
+//Rendering.
+#include <Vertex.h>
+
+namespace RenderingUtilities
 {
 	/*
 	*	Given a resolution, generate plane vertices and indices.
@@ -66,7 +66,7 @@ namespace GraphicsUtilities
 			lowestZ = GameMath::Minimum(lowestZ, corners[i].Z);
 		}
 
-		if	(((highestX > 1.0f && lowestX > 1.0f) || (highestX < -1.0f && lowestX < -1.0f))
+		if (((highestX > 1.0f && lowestX > 1.0f) || (highestX < -1.0f && lowestX < -1.0f))
 			||
 			((highestY > 1.0f && lowestY > 1.0f) || (highestY < -1.0f && lowestY < -1.0f))
 			||

@@ -4,11 +4,11 @@
 //Entities.
 #include <PhysicalEntity.h>
 
-//Graphics.
-#include <PhysicalModel.h>
-
 //Math.
 #include <GameMath.h>
+
+//Rendering.
+#include <PhysicalModel.h>
 
 //Systems.
 #include <EntitySystem.h>

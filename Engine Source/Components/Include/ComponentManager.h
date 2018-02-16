@@ -98,7 +98,7 @@ public:
 	RESTRICTED static FrustumCullingComponent* GetPhysicalFrustumCullingComponents() NOEXCEPT;
 
 	/*
-	*	Returns the physical  graphics buffer components.
+	*	Returns the physical graphics buffer components.
 	*/
 	RESTRICTED static GraphicsBufferComponent* GetPhysicalGraphicsBufferComponents() NOEXCEPT;
 

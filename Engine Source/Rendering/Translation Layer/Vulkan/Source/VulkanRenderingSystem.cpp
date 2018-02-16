@@ -11,24 +11,25 @@
 #include <SpotLightEntity.h>
 #include <TerrainEntity.h>
 
-//Graphics.
-#include <CPUTexture4.h>
-#include <GraphicsUtilities.h>
-#include <ModelLoader.h>
-#include <PhysicalModel.h>
-#include <ShaderLoader.h>
-#include <TextureData.h>
-
 //Math.
 #include <GameMath.h>
 #include <Matrix3.h>
 
 //Rendering.
+#include <CPUTexture4.h>
+#include <ModelLoader.h>
+#include <PhysicalModel.h>
+#include <RenderingUtilities.h>
+#include <ShaderLoader.h>
+#include <TextureData.h>
 #include <VulkanTranslationUtilities.h>
 
 //Systems.
 #include <EngineSystem.h>
 #include <QuestSystem.h>
+
+//Preprocessor defines
+#define VULKAN_SHADERS_PATH "../../Engine Source/Rendering/Translation Layer/Vulkan/Shaders/"
 
 //System definition.
 DEFINE_SYSTEM(VulkanRenderingSystem);
@@ -246,7 +247,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 	//Generate the plane vertices and indices.
 	DynamicArray<float> terrainVertices;
 	DynamicArray<uint32> terrainIndices;
-	GraphicsUtilities::GeneratePlane(terrainPlaneResolution, terrainVertices, terrainIndices);
+	RenderingUtilities::GeneratePlane(terrainPlaneResolution, terrainVertices, terrainIndices);
 
 	//Create the vertex and index buffer.
 	const void *RESTRICT terrainData[]{ terrainVertices.Data(), terrainIndices.Data() };
@@ -483,47 +484,47 @@ void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 {
 	//Initialize the cube map fragment shader module.
-	const auto cubeMapFragmentShaderByteCode = ShaderLoader::LoadShader("CubeMapFragmentShader.spv");
+	const auto cubeMapFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "CubeMapFragmentShader.spv");
 	shaderModules[ShaderModule::CubeMapFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(cubeMapFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the cube map vertex shader module.
-	const auto cubeMapVertexShaderByteCode = ShaderLoader::LoadShader("CubeMapVertexShader.spv");
+	const auto cubeMapVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "CubeMapVertexShader.spv");
 	shaderModules[ShaderModule::CubeMapVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(cubeMapVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
 	//Initialize the lighting fragment shader module.
-	const auto lightingFragmentShaderByteCode = ShaderLoader::LoadShader("LightingFragmentShader.spv");
+	const auto lightingFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "LightingFragmentShader.spv");
 	shaderModules[ShaderModule::LightingFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(lightingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the post processing fragment shader module.
-	const auto postProcessingFragmentShaderByteCode = ShaderLoader::LoadShader("PostProcessingFragmentShader.spv");
+	const auto postProcessingFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "PostProcessingFragmentShader.spv");
 	shaderModules[ShaderModule::PostProcessingFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(postProcessingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the scene buffer fragment shader module.
-	const auto sceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader("SceneBufferFragmentShader.spv");
+	const auto sceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "SceneBufferFragmentShader.spv");
 	shaderModules[ShaderModule::SceneBufferFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(sceneBufferFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the scene buffer vertex shader module.
-	const auto sceneBufferVertexShaderByteCode = ShaderLoader::LoadShader("SceneBufferVertexShader.spv");
+	const auto sceneBufferVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "SceneBufferVertexShader.spv");
 	shaderModules[ShaderModule::SceneBufferVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(sceneBufferVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
 	//Initialize the terrain scene buffer fragment shader module.
-	const auto terrainSceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader("TerrainSceneBufferFragmentShader.spv");
+	const auto terrainSceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferFragmentShader.spv");
 	shaderModules[ShaderModule::TerrainSceneBufferFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the terrain scene buffer tessellation control shader module.
-	const auto terrainSceneBufferTessellationControlShaderByteCode = ShaderLoader::LoadShader("TerrainSceneBufferTessellationControlShader.spv");
+	const auto terrainSceneBufferTessellationControlShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferTessellationControlShader.spv");
 	shaderModules[ShaderModule::TerrainSceneBufferTessellationControlShaderModule] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferTessellationControlShaderByteCode, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
 
 	//Initialize the terrain scene buffer tessellation evaluation shader module.
-	const auto terrainSceneBufferTessellationEvaluationShaderByteCode = ShaderLoader::LoadShader("TerrainSceneBufferTessellationEvaluationShader.spv");
+	const auto terrainSceneBufferTessellationEvaluationShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferTessellationEvaluationShader.spv");
 	shaderModules[ShaderModule::TerrainSceneBufferTessellationEvaluationShaderModule] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferTessellationEvaluationShaderByteCode, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 
 	//Initialize the terrain scene buffer vertex shader module.
-	const auto terrainSceneBufferVertexShaderByteCode = ShaderLoader::LoadShader("TerrainSceneBufferVertexShader.spv");
+	const auto terrainSceneBufferVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferVertexShader.spv");
 	shaderModules[ShaderModule::TerrainSceneBufferVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
 	//Initialize the lighting vertex shader module.
-	const auto viewportVertexShaderByteCode = ShaderLoader::LoadShader("ViewportVertexShader.spv");
+	const auto viewportVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "ViewportVertexShader.spv");
 	shaderModules[ShaderModule::ViewportVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(viewportVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 }
 
@@ -1157,6 +1158,9 @@ void VulkanRenderingSystem::UpdateViewFrustumCulling() NOEXCEPT
 			corners[i].Z /= corners[i].W;
 		}
 
-		frustumCullingComponent->isInViewFrustum = GraphicsUtilities::IsCubeWithinViewFrustum(corners);
+		frustumCullingComponent->isInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
 	}
 }
+
+//Preprocessor undefunes.
+#undef VULKAN_SHADERS_PATH

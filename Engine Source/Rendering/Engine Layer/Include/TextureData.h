@@ -3,7 +3,7 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Graphics.
+//Rendering.
 #include <TextureDataContainer.h>
 
 //Enumeration covering all address modes.

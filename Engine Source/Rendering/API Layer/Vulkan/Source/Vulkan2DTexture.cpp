@@ -1,9 +1,6 @@
 //Header file.
 #include <Vulkan2DTexture.h>
 
-//Graphics.
-#include <TextureData.h>
-
 //Vulkan.
 #include <VulkanInterface.h>
 #include <VulkanLogicalDevice.h>

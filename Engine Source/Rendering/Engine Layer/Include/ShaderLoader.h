@@ -3,9 +3,6 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Preprocessor defines.
-#define SHADERS_PATH "../../Engine Source/Graphics/Shaders/"
-
 namespace ShaderLoader
 {
 	
@@ -14,10 +11,7 @@ namespace ShaderLoader
 	*/
 	static DynamicArray<char> LoadShader(const char *RESTRICT shaderName) NOEXCEPT
 	{
-		DynamicString fullShaderName{ SHADERS_PATH };
-		fullShaderName += shaderName;
-
-		std::ifstream file(fullShaderName.CString(), std::ios::ate | std::ios::binary);
+		std::ifstream file(shaderName, std::ios::ate | std::ios::binary);
 
 #if !defined(CATALYST_FINAL)
 		if (!file.is_open())

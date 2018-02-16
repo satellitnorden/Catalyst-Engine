@@ -3,11 +3,11 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Graphics.
-#include <Vertex.h>
-
 //Math.
 #include <GameMath.h>
+
+//Rendering.
+#include <Vertex.h>
 
 //Third party libraries.
 #include <assimp/Importer.hpp>

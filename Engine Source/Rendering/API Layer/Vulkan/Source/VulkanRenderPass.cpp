@@ -1,9 +1,6 @@
 //Header file.
 #include <VulkanRenderPass.h>
 
-//Graphics.
-#include <Vertex.h>
-
 //Vulkan.
 #include <VulkanCommandPool.h>
 #include <VulkanDescriptorSet.h>
