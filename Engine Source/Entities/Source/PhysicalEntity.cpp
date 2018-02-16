@@ -5,7 +5,7 @@
 #include <ComponentManager.h>
 
 //Systems.
-#include <GraphicsSystem.h>
+#include <RenderingSystem.h>
 
 //Define the entity class.
 DEFINE_ENTITY_CLASS(PhysicalEntity);
@@ -37,7 +37,7 @@ PhysicalEntity::~PhysicalEntity() NOEXCEPT
 void PhysicalEntity::Initialize(const PhysicalModel &newModel) NOEXCEPT
 {
 	//Initialize this physical entity.
-	GraphicsSystem::Instance->InitializePhysicalEntity(*this, newModel);
+	RenderingSystem::Instance->InitializePhysicalEntity(*this, newModel);
 }
 
 /*

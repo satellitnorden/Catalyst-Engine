@@ -10,9 +10,9 @@
 //Enumeration covering all daily quests.
 enum class DailyQuests : uint8
 {
-	GraphicsSystemUpdateDynamicUniformData,
-	GraphicsSystemUpdatePhysicalEntitiesGraphicsBuffers,
-	GraphicsSystemUpdateViewFrustumCulling,
+	RenderingSystemUpdateDynamicUniformData,
+	RenderingSystemUpdatePhysicalEntitiesGraphicsBuffers,
+	RenderingSystemUpdateViewFrustumCulling,
 	InputSystemAsynchronousUpdate,
 	NumberOfDailyQuests
 };

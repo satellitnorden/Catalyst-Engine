@@ -20,7 +20,7 @@
 
 //Systems.
 #include <EntitySystem.h>
-#include <GraphicsSystem.h>
+#include <RenderingSystem.h>
 #include <PhysicsSystem.h>
 #include <QuestSystem.h>
 
@@ -55,8 +55,8 @@ void WorldArchitect::Initialize() NOEXCEPT
 	sun->SetIntensity(10.0f);
 
 	//Create the sky!
-	VulkanCubeMapTexture *RESTRICT sky = GraphicsSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
-	GraphicsSystem::Instance->SetActiveSkyBox(sky);
+	TextureCubeMapHandle sky = RenderingSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
+	RenderingSystem::Instance->SetActiveSkyBox(sky);
 
 	//Create the height map!
 	CPUTexture4 heightMap{ HEIGHT_MAP_RESOLUTION };
@@ -79,7 +79,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		}
 	}
 
-	Vulkan2DTexture *RESTRICT terrainHeightMapTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(heightMap), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
+	Texture2DHandle terrainHeightMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(heightMap), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
 	//Create the normal map!
 	CPUTexture4 normalMap{ HEIGHT_MAP_RESOLUTION };
@@ -104,7 +104,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		}
 	}
 
-	Vulkan2DTexture *RESTRICT terrainNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(normalMap), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
+	Texture2DHandle terrainNormalMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(normalMap), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
 	//Calculate the layer 1 weight.
 	CPUTexture4 layer1Weight{ HEIGHT_MAP_RESOLUTION };
@@ -145,26 +145,26 @@ void WorldArchitect::Initialize() NOEXCEPT
 		}
 	}
 
-	Vulkan2DTexture *RESTRICT layer1WeightTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(layer1Weight), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
-	Vulkan2DTexture *RESTRICT layer2WeightTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(layer2Weight), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
+	Texture2DHandle layer1WeightTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(layer1Weight), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
+	Texture2DHandle layer2WeightTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(layer2Weight), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
 	//Load the remaining terrain textures.
-	Vulkan2DTexture *RESTRICT layer1AlbedoTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3Albedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *RESTRICT layer1NormalMapTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3NormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *RESTRICT layer1RoughnessTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3Roughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *RESTRICT layer1AmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3AmbientOcclusion.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *RESTRICT layer1DisplacementTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3Displacement.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer1AlbedoTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3Albedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer1NormalMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3NormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer1RoughnessTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3Roughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer1AmbientOcclusionTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3AmbientOcclusion.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer1DisplacementTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3Displacement.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
-	Vulkan2DTexture *RESTRICT layer2AlbedoTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *RESTRICT layer2NormalMapTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *RESTRICT layer2RoughnessTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *RESTRICT layer2AmbientOcclusionTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *RESTRICT layer2DisplacementTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer2AlbedoTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer2NormalMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer2RoughnessTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer2AmbientOcclusionTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer2DisplacementTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
-	Vulkan2DTexture *RESTRICT layer3AlbedoTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1Albedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *RESTRICT layer3NormalMapTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1NormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *RESTRICT layer3RoughnessTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1Roughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *RESTRICT layer3DisplacementTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1Displacement.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer3AlbedoTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1Albedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer3NormalMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1NormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer3RoughnessTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1Roughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layer3DisplacementTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1Displacement.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };

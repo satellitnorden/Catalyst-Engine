@@ -139,19 +139,22 @@
     <Filter Include="Engine Source\Rendering\API Layer\Vulkan\Source">
       <UniqueIdentifier>{e0843ed8-32b3-4bb1-9ba2-cbdc5596c1bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Rendering\Engine Layer">
+      <UniqueIdentifier>{565d08ed-e339-4d9c-8064-417525064b07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Rendering\Engine Layer\Include">
+      <UniqueIdentifier>{bf5784a7-309f-4e4a-9a56-4590a9ebdf03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Rendering\Engine Layer\Source">
+      <UniqueIdentifier>{39570802-a832-467e-9995-fef16f6aca53}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine Source\Engine Core\Source\Main.cpp">
       <Filter>Engine Source\Engine Core\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Systems\Source\GraphicsSystem.cpp">
-      <Filter>Engine Source\Systems\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine Source\Systems\Source\EngineSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Graphics\Source\Window.cpp">
-      <Filter>Engine Source\Graphics\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Math\Source\GameMath.cpp">
       <Filter>Engine Source\Math\Source</Filter>
@@ -196,9 +199,6 @@
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Graphics\Source\PhysicalMaterial.cpp">
-      <Filter>Engine Source\Graphics\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Graphics\Source\PhysicalModel.cpp">
       <Filter>Engine Source\Graphics\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Game Source\Source\WorldArchitect.cpp">
@@ -315,19 +315,22 @@
     <ClCompile Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanUniformBuffer.cpp">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Systems\Source\RenderingSystem.cpp">
+      <Filter>Engine Source\Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\Window.cpp">
+      <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\PhysicalModel.cpp">
+      <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Engine Source\Systems\Include\GraphicsSystem.h">
-      <Filter>Engine Source\Systems\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\EngineCore.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Systems\Include\EngineSystem.h">
       <Filter>Engine Source\Systems\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\Window.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Math\Include\GameMath.h">
       <Filter>Engine Source\Math\Include</Filter>
@@ -399,9 +402,6 @@
       <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalMaterial.h">
-      <Filter>Engine Source\Graphics\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Graphics\Include\PhysicalModel.h">
       <Filter>Engine Source\Graphics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Game Source\Include\WorldArchitect.h">
@@ -655,6 +655,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanUtilities.h">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\RenderingCore.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Systems\Include\RenderingSystem.h">
+      <Filter>Engine Source\Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\Window.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\PhysicalModel.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

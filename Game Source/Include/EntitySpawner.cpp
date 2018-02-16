@@ -12,7 +12,7 @@
 
 //Systems.
 #include <EntitySystem.h>
-#include <GraphicsSystem.h>
+#include <RenderingSystem.h>
 
 /*
 *	Default constructor.

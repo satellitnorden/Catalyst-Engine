@@ -12,7 +12,7 @@
 //Systems.
 #include <EntitySystem.h>
 #include <InputSystem.h>
-#include <GraphicsSystem.h>
+#include <RenderingSystem.h>
 #include <PhysicsSystem.h>
 
 /*
@@ -37,7 +37,7 @@ ClairvoyantPlayer::~ClairvoyantPlayer() NOEXCEPT
 void ClairvoyantPlayer::Initialize() NOEXCEPT
 {
 	//Add a camera.
-	GraphicsSystem::Instance->SetActiveCamera(this);
+	RenderingSystem::Instance->SetActiveCamera(this);
 
 	//Add the flashlight.
 	flashlight = EntitySystem::Instance->CreateChildEntity<SpotLightEntity>(this);
@@ -110,7 +110,7 @@ void ClairvoyantPlayer::Update(const float deltaTime) NOEXCEPT
 		}
 
 		//Lerp post processing effects.
-		GraphicsSystem::Instance->SetPostProcessingChromaticAberrationAmount(GameMath::LinearlyInterpolate(0.0f, 0.01f, currentGamepadState.leftTriggerValue));
+		RenderingSystem::Instance->SetPostProcessingChromaticAberrationAmount(GameMath::LinearlyInterpolate(0.0f, 0.01f, currentGamepadState.leftTriggerValue));
 
 		if (currentGamepadState.aButtonState == GamepadButtonState::Pressed)
 		{

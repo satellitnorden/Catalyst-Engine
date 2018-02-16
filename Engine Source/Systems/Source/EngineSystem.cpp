@@ -5,7 +5,7 @@
 #define GAME_SYSTEM_CLASS_INCLUDE_PATH(CLASS_NAME) <CLASS_NAME.h>
 #include GAME_SYSTEM_CLASS_INCLUDE_PATH(GAME_SYSTEM_CLASS)
 #include <EntitySystem.h>
-#include <GraphicsSystem.h>
+#include <RenderingSystem.h>
 #include <InputSystem.h>
 #include <PhysicsSystem.h>
 #include <QuestSystem.h>
@@ -38,13 +38,13 @@ void EngineSystem::InitializeSystem() NOEXCEPT
 	currentTime = std::chrono::high_resolution_clock::now();
 
 	//Initialize all systems.
-	GraphicsSystem::Instance->InitializeSystem();
+	RenderingSystem::Instance->InitializeSystem();
 	QuestSystem::Instance->InitializeSystem();
 	GAME_SYSTEM_CLASS::Instance->InitializeSystem();
 
 	//Post-initialize all systems.
 	InputSystem::Instance->PostInitializeSystem();
-	GraphicsSystem::Instance->PostInitializeSystem();
+	RenderingSystem::Instance->PostInitializeSystem();
 }
 
 /*
@@ -67,7 +67,7 @@ bool EngineSystem::UpdateSystemSynchronous() NOEXCEPT
 	PhysicsSystem::Instance->UpdateSystemSynchronous(deltaTime);
 
 	//Update the graphics system.
-	GraphicsSystem::Instance->UpdateSystemSynchronous();
+	RenderingSystem::Instance->UpdateSystemSynchronous();
 
 	//Post-update the input system.
 	InputSystem::Instance->PostUpdateSystemSynchronous();
@@ -92,6 +92,6 @@ void EngineSystem::ReleaseSystem() NOEXCEPT
 	GAME_SYSTEM_CLASS::Instance->ReleaseSystem();
 	InputSystem::Instance->ReleaseSystem();
 	EntitySystem::Instance->ReleaseSystem();
-	GraphicsSystem::Instance->ReleaseSystem();
+	RenderingSystem::Instance->ReleaseSystem();
 	QuestSystem::Instance->ReleaseSystem();
 }

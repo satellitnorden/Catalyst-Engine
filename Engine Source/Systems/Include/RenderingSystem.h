@@ -1,0 +1,111 @@
+#pragma once
+
+//Engine core.
+#include <EngineCore.h>
+
+//Rendering.
+#include <RenderingCore.h>
+
+//Forward declarations.
+class CameraEntity;
+class CPUTexture4;
+class PhysicalEntity;
+class PhysicalModel;
+class TerrainEntity;
+class TerrainUniformData;
+class TextureData;
+
+class RenderingSystem final
+{
+
+	//System declaration.
+	DECLARE_SYSTEM(RenderingSystem);
+
+public:
+
+	/*
+	*	Default constructor.
+	*/
+	RenderingSystem() NOEXCEPT;
+
+	/*
+	*	Initializes the rendering system.
+	*/
+	void InitializeSystem() NOEXCEPT;
+
+	/*
+	*	Post-initializes the rendering system.
+	*/
+	void PostInitializeSystem() NOEXCEPT;
+
+	/*
+	*	Updates the rendering system synchronously.
+	*/
+	void UpdateSystemSynchronous() NOEXCEPT;
+
+	/*
+	*	Releases the rendering system.
+	*/
+	void ReleaseSystem() NOEXCEPT;
+
+	/*
+	*	Creates and returns physical model.
+	*/
+	const PhysicalModel CreatePhysicalModel(const char *RESTRICT modelPath, Texture2DHandle albedoTexture, Texture2DHandle normalMapTexture, Texture2DHandle roughnessTexture, Texture2DHandle metallicTexture, Texture2DHandle ambientOcclusionTexture) const NOEXCEPT;
+
+	/*
+	*	Initializes a physical entity.
+	*/
+	void InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const NOEXCEPT;
+
+	/*
+	*	Initializes a terrain entity.
+	*/
+	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const CPUTexture4 &heightMap, const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Texture2DHandle terrainHeightMapTexture, const Texture2DHandle terrainNormalMapTexture, const Texture2DHandle layer1WeightTexture, const Texture2DHandle layer1AlbedoTexture, const Texture2DHandle layer1NormalMapTexture, const Texture2DHandle layer1RoughnessTexture, const Texture2DHandle layer1MetallicTexture, const Texture2DHandle layer1AmbientOcclusionTexture, const Texture2DHandle layer1DisplacementTexture, const Texture2DHandle layer2WeightTexture = nullptr, const Texture2DHandle layer2AlbedoTexture = nullptr, const Texture2DHandle layer2NormalMapTexture = nullptr, const Texture2DHandle layer2RoughnessTexture = nullptr, const Texture2DHandle layer2MetallicTexture = nullptr, const Texture2DHandle layer2AmbientOcclusionTexture = nullptr, const Texture2DHandle layer2DisplacementTexture = nullptr, const Texture2DHandle layer3WeightTexture = nullptr, const Texture2DHandle layer3AlbedoTexture = nullptr, const Texture2DHandle layer3NormalMapTexture = nullptr, const Texture2DHandle layer3RoughnessTexture = nullptr, const Texture2DHandle layer3MetallicTexture = nullptr, const Texture2DHandle layer3AmbientOcclusionTexture = nullptr, const Texture2DHandle layer3DisplacementTexture = nullptr) const NOEXCEPT;
+
+	/*
+	*	Creates and returns a 2D texture given the texture data.
+	*/
+	Texture2DHandle Create2DTexture(const TextureData &textureData) const NOEXCEPT;
+
+	/*
+	*	Creates and returns a cube map texture.
+	*/
+	TextureCubeMapHandle CreateCubeMapTexture(const char *RESTRICT frontTexturePath, const char *RESTRICT backTexturePath, const char *RESTRICT upTexturePath, const char *RESTRICT downTexturePath, const char *RESTRICT rightTexturePath, const char *RESTRICT leftTexturePath) const NOEXCEPT;
+
+	/*
+	*	Creates and returns a uniform buffer.
+	*/
+	UniformBufferHandle CreateUniformBuffer(const size_t uniformBufferSize) const NOEXCEPT;
+
+	/*
+	*	Sets the active camera.
+	*/
+	void SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT;
+
+	/*
+	*	Sets the active sky box cube map texture.
+	*/
+	void SetActiveSkyBox(TextureCubeMapHandle newSkyBox) NOEXCEPT;
+
+	/*
+	*	Sets the post processing blur amount.
+	*/
+	void SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT;
+
+	/*
+	*	Sets the post processing chromatic aberration amount.
+	*/
+	void SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) NOEXCEPT;
+
+	/*
+	*	Sets the post processing saturation.
+	*/
+	void SetPostProcessingSaturation(const float newSaturation) NOEXCEPT;
+
+	/*
+	*	Sets the post processing sharpen amount.
+	*/
+	void SetPostProcessingSharpenAmount(const float newSharpenAmount) NOEXCEPT;
+
+};
