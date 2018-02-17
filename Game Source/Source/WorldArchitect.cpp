@@ -24,10 +24,12 @@
 #include <PhysicsSystem.h>
 #include <QuestSystem.h>
 
-//Preprocessor defines.
-#define HEIGHT_MAP_RESOLUTION 4'096
-#define TERRAIN_HEIGHT 2'500.0f
-#define TERRAIN_SIZE 10'000.0f //Generate 10 x 10 km blocks at a time.
+namespace
+{
+	static constexpr uint32 HEIGHT_MAP_RESOLUTION{ 4'096 };
+	static constexpr float TERRAIN_HEIGHT{ 2'000.0f };
+	static constexpr float TERRAIN_SIZE{ 10'000.0f };
+}
 
 /*
 *	Default constructor.
@@ -71,12 +73,20 @@ void WorldArchitect::Initialize() NOEXCEPT
 			float multiplier = 1.0f;
 			heightMap.At(i, j) = PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
-			frequency = 10.0f;
-			multiplier = 0.5f;
+			frequency *= 2.0f;
+			multiplier *= 0.5f;
 			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
-			frequency = 20.0f;
-			multiplier = 0.25f;
+			frequency *= 2.0f;
+			multiplier *= 0.5f;
+			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			
+			frequency *= 2.0f;
+			multiplier *= 0.5f;
+			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+
+			frequency *= 2.0f;
+			multiplier *= 0.5f;
 			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			heightMap.At(i, j) = GameMath::LinearlyInterpolate(heightMap.At(i, j).X, GameMath::GetSmoothInterpolationValue(heightMap.At(i, j).X), 0.25f);
@@ -132,19 +142,19 @@ void WorldArchitect::Initialize() NOEXCEPT
 		{
 			const float heightMapValue{ heightMap.At(i, j).X };
 
-			if (heightMapValue < 0.45f)
+			if (heightMapValue < 0.7f)
 			{
 				layer2Weight.At(i, j) = 1.0f;
 			}
 
-			else if (heightMapValue > 0.55f)
+			else if (heightMapValue > 0.8f)
 			{
 				layer2Weight.At(i, j) = 0.0f;
 			}
 
 			else
 			{
-				layer2Weight.At(i, j) = 1.0f - ((heightMapValue - 0.45f) * 10.0f);
+				layer2Weight.At(i, j) = 1.0f - ((heightMapValue - 0.7f) * 10.0f);
 			}
 		}
 	}
