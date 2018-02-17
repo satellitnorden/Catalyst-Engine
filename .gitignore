@@ -1,0 +1,9 @@
+#Ignore everything in these folders.
+Engine/Project/.vs/*
+Engine/Project/Catalyst Engine/x64/*
+Engine/Project/x64/*
+
+#But not these!
+!Engine/Project/x64/Debug/assimp.dll
+!Engine/Project/x64/Release/assimp.dll
+!Engine/Project/x64/Final/assimp.dll
