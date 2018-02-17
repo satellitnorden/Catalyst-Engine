@@ -1,6 +1,10 @@
 //Header file.
 #include <WorldArchitect.h>
 
+//Asset loading.
+#include <AssetLoader.h>
+#include <TerrainMaterialData.h>
+
 //Entities.
 #include <DirectionalLightEntity.h>
 #include <PhysicalEntity.h>
@@ -59,6 +63,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Create the sky!
 	TextureCubeMapHandle sky = RenderingSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
 	RenderingSystem::Instance->SetActiveSkyBox(sky);
+
+	//Load the terrain material data.
+	TerrainMaterialData terrainMaterialData;
+	AssetLoader::LoadTerrainMaterialData(GAME_TEXTURES_FOLDER "DefaultTerrainMaterial.ctm", terrainMaterialData);
 
 	//Create the height map!
 	CPUTexture4 heightMap{ HEIGHT_MAP_RESOLUTION };

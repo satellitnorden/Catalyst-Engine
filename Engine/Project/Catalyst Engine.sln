@@ -1,29 +1,50 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Catalyst Engine", "Catalyst Engine\Catalyst Engine.vcxproj", "{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}"
 EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Windows 64-Bit = Debug|Windows 64-Bit
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Final|Windows 64-Bit = Final|Windows 64-Bit
+		Final|x64 = Final|x64
+		Final|x86 = Final|x86
 		Release|Windows 64-Bit = Release|Windows 64-Bit
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|Windows 64-Bit.ActiveCfg = Debug|x64
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|Windows 64-Bit.Build.0 = Debug|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|x64.ActiveCfg = Debug|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|x64.Build.0 = Debug|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|x86.ActiveCfg = Debug|Win32
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Debug|x86.Build.0 = Debug|Win32
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Final|Windows 64-Bit.ActiveCfg = Final|x64
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Final|Windows 64-Bit.Build.0 = Final|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Final|x64.ActiveCfg = Final|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Final|x64.Build.0 = Final|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Final|x86.ActiveCfg = Final|Win32
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Final|x86.Build.0 = Final|Win32
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|Windows 64-Bit.ActiveCfg = Release|x64
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|Windows 64-Bit.Build.0 = Release|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|x64.ActiveCfg = Release|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|x64.Build.0 = Release|x64
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|x86.ActiveCfg = Release|Win32
+		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8E56239B-2E3C-4939-A39B-178D583064FE}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true
