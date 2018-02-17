@@ -89,9 +89,9 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanR
 /*
 *	Records a bind descriptor sets command.
 */
-void VulkanCommandBuffer::CommandBindDescriptorSets(const VulkanPipeline &vulkanPipeline, const VulkanDescriptorSet &vulkanDescriptorSet) NOEXCEPT
+void VulkanCommandBuffer::CommandBindDescriptorSets(const VulkanPipeline &vulkanPipeline, const DynamicArray<VulkanDescriptorSet> &vulkanDescriptorSets) NOEXCEPT
 {
-	vkCmdBindDescriptorSets(vulkanCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline.GetPipelineLayout(), 0, 1, &vulkanDescriptorSet.Get(), 0, nullptr);
+	vkCmdBindDescriptorSets(vulkanCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline.GetPipelineLayout(), 0, static_cast<uint32>(vulkanDescriptorSets.Size()), reinterpret_cast<const VkDescriptorSet *RESTRICT>(vulkanDescriptorSets.Data()), 0, nullptr);
 }
 
 /*
