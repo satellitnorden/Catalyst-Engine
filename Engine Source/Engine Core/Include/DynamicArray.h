@@ -47,21 +47,9 @@ public:
 	{
 		ReserveConstruct(otherDynamicArray.capacity);
 
-		MemoryUtilities::CopyMemory(array, otherDynamicArray.array, sizeof(ObjectType) * capacity);
+		MemoryUtilities::CopyMemory(array, otherDynamicArray.array, capacity);
 
 		size = capacity;
-	}
-
-	/*
-	*	Move constructor.
-	*/
-	DynamicArray(DynamicArray &&otherDynamicArray) NOEXCEPT
-	{
-		array = otherDynamicArray.array;
-		size = otherDynamicArray.size;
-		capacity = otherDynamicArray.capacity;
-
-		otherDynamicArray.array = nullptr;
 	}
 
 	/*
@@ -69,18 +57,14 @@ public:
 	*/
 	~DynamicArray() NOEXCEPT
 	{
-		//This dynamic array might have been moved from, thus we need to test the array pointer.
-		if (array)
+		//Call the destructor on all objects in the array.
+		for (size_t i = 0; i < size; ++i)
 		{
-			//Call the destructor on all objects in the array.
-			for (size_t i = 0; i < size; ++i)
-			{
-				array[i].~ObjectType();
-			}
-
-			//Free the memory used by the array.
-			MemoryUtilities::FreeMemory(static_cast<void *RESTRICT>(array));
+			array[i].~ObjectType();
 		}
+
+		//Free the memory used by the array.
+		MemoryUtilities::FreeMemory(static_cast<void *RESTRICT>(array));
 	}
 
 	/*
@@ -95,18 +79,6 @@ public:
 		{
 			array[i] = otherDynamicArray.array[i];
 		}
-	}
-
-	/*
-	*	Move assignment operator overload.
-	*/
-	void operator=(DynamicArray &&otherDynamicArray) NOEXCEPT
-	{
-		array = otherDynamicArray.array;
-		size = otherDynamicArray.size;
-		capacity = otherDynamicArray.capacity;
-
-		otherDynamicArray.array = nullptr;
 	}
 
 	/*

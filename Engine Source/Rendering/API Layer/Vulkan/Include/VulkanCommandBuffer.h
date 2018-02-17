@@ -52,7 +52,7 @@ public:
 	/*
 	*	Records a bind descriptor sets command.
 	*/
-	void CommandBindDescriptorSets(const VulkanPipeline &vulkanPipeline, const DynamicArray<VulkanDescriptorSet> &vulkanDescriptorSets) NOEXCEPT;
+	void CommandBindDescriptorSets(const VulkanPipeline &vulkanPipeline, const VulkanDescriptorSet &vulkanDescriptorSet) NOEXCEPT;
 
 	/*
 	*	Records a bind index buffer command.
