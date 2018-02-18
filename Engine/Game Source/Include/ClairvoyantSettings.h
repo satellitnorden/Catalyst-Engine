@@ -11,6 +11,11 @@
 #define GAME_SYSTEM_CLASS		ClairvoyantGameSystem
 
 /*
+*	The game materials folder.
+*/
+#define GAME_MATERIALS_FOLDER	"../../../Game/Clairvoyant/Assets/Final/Materials/"
+
+/*
 *	The game models folder.
 */
 #define GAME_MODELS_FOLDER		"../../Game Content/Clairvoyant/Models/"

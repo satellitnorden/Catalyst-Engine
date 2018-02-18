@@ -66,7 +66,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Load the terrain material data.
 	TerrainMaterial terrainMaterial;
-	AssetLoader::LoadTerrainMaterial(GAME_TEXTURES_FOLDER "DefaultTerrainMaterial.ctm", terrainMaterial);
+	AssetLoader::LoadTerrainMaterial(GAME_MATERIALS_FOLDER "DefaultTerrainMaterial.ctm", terrainMaterial);
 
 	//Create the terrain properties!
 	CPUTexture4 terrainProperties{ HEIGHT_MAP_RESOLUTION };
@@ -135,7 +135,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		{
 			Vector4 terrainPropertiesValue{ terrainProperties.At(i, j) * 2.0f - 1.0f };
 			
-			layerWeights.At(i, j).X = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)) - 0.25f, 0.0f, 1.0f));
+			layerWeights.At(i, j).X = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)) - 0.1f, 0.0f, 1.0f));
 		
 			const float heightValue{ terrainPropertiesValue.W };
 
@@ -163,7 +163,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(512, terrainProperties, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.075f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
+	terrain->Initialize(512, terrainProperties, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
 	/*
 	//Place some stones. (:
