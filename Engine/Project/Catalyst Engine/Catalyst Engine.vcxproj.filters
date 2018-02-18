@@ -677,6 +677,9 @@
     <ClInclude Include="..\..\Engine Source\Asset Loading\Include\TerrainMaterialData.h">
       <Filter>Engine Source\Asset Loading\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TerrainMaterial.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Engine Source\Systems\Inline\EntitySystem.inl">

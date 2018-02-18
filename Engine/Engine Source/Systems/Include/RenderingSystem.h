@@ -12,6 +12,8 @@ class CPUTexture4;
 class PhysicalEntity;
 class PhysicalModel;
 class TerrainEntity;
+class TerrainMaterial;
+class TerrainMaterialData;
 class TerrainUniformData;
 class TextureData;
 
@@ -49,6 +51,11 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
+	*	Creates a terrain material.
+	*/
+	void CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT;
+
+	/*
 	*	Creates and returns physical model.
 	*/
 	const PhysicalModel CreatePhysicalModel(const char *RESTRICT modelPath, Texture2DHandle albedoTexture, Texture2DHandle normalMapTexture, Texture2DHandle roughnessTexture, Texture2DHandle metallicTexture, Texture2DHandle ambientOcclusionTexture) const NOEXCEPT;
@@ -61,7 +68,7 @@ public:
 	/*
 	*	Initializes a terrain entity.
 	*/
-	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const CPUTexture4 &heightMap, const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Texture2DHandle terrainHeightMapTexture, const Texture2DHandle terrainNormalMapTexture, const Texture2DHandle layer1WeightTexture, const Texture2DHandle layer1AlbedoTexture, const Texture2DHandle layer1NormalMapTexture, const Texture2DHandle layer1RoughnessTexture, const Texture2DHandle layer1MetallicTexture, const Texture2DHandle layer1AmbientOcclusionTexture, const Texture2DHandle layer1DisplacementTexture, const Texture2DHandle layer2WeightTexture = nullptr, const Texture2DHandle layer2AlbedoTexture = nullptr, const Texture2DHandle layer2NormalMapTexture = nullptr, const Texture2DHandle layer2RoughnessTexture = nullptr, const Texture2DHandle layer2MetallicTexture = nullptr, const Texture2DHandle layer2AmbientOcclusionTexture = nullptr, const Texture2DHandle layer2DisplacementTexture = nullptr, const Texture2DHandle layer3WeightTexture = nullptr, const Texture2DHandle layer3AlbedoTexture = nullptr, const Texture2DHandle layer3NormalMapTexture = nullptr, const Texture2DHandle layer3RoughnessTexture = nullptr, const Texture2DHandle layer3MetallicTexture = nullptr, const Texture2DHandle layer3AmbientOcclusionTexture = nullptr, const Texture2DHandle layer3DisplacementTexture = nullptr) const NOEXCEPT;
+	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given the texture data.

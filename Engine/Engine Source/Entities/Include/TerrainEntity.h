@@ -11,6 +11,7 @@
 
 //Forward declarations.
 class CPUTexture4;
+class TerrainMaterial;
 class TerrainUniformData;
 
 class TerrainEntity : public Entity
@@ -64,6 +65,6 @@ public:
 	/*
 	*	Initializes this terrain entity.
 	*/
-	void Initialize(const CPUTexture4 &heightMap, const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Texture2DHandle terrainHeightMapTexture, const Texture2DHandle terrainNormalMapTexture, const Texture2DHandle layer1WeightTexture, const Texture2DHandle layer1AlbedoTexture, const Texture2DHandle layer1NormalMapTexture, const Texture2DHandle layer1RoughnessTexture, const Texture2DHandle layer1MetallicTexture, const Texture2DHandle layer1AmbientOcclusionTexture, const Texture2DHandle layer1DisplacementTexture, const Texture2DHandle layer2WeightTexture = nullptr, const Texture2DHandle layer2AlbedoTexture = nullptr, const Texture2DHandle layer2NormalMapTexture = nullptr, const Texture2DHandle layer2RoughnessTexture = nullptr, const Texture2DHandle layer2MetallicTexture = nullptr, const Texture2DHandle layer2AmbientOcclusionTexture = nullptr, const Texture2DHandle layer2DisplacementTexture = nullptr, const Texture2DHandle layer3WeightTexture = nullptr, const Texture2DHandle layer3AlbedoTexture = nullptr, const Texture2DHandle layer3NormalMapTexture = nullptr, const Texture2DHandle layer3RoughnessTexture = nullptr, const Texture2DHandle layer3MetallicTexture = nullptr, const Texture2DHandle layer3AmbientOcclusionTexture = nullptr, const Texture2DHandle layer3DisplacementTexture = nullptr) NOEXCEPT;
+	void Initialize(const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) NOEXCEPT;
 
 };

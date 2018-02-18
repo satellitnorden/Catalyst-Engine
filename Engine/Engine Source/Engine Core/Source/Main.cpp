@@ -5,6 +5,9 @@
 //Systems.
 #include <EngineSystem.h>
 
+//Preprocessor defines.
+#define EXIT_SUCCESS 0
+
 int main() NOEXCEPT
 {
 	//Initialize the engine system.
@@ -17,5 +20,5 @@ int main() NOEXCEPT
 	EngineSystem::Instance->ReleaseSystem();
 
 	//Return success!
-	return 0;
+	return EXIT_SUCCESS;
 }

@@ -1,6 +1,9 @@
 //Header file.
 #include <VulkanRenderingSystem.h>
 
+//Asset loading.
+#include <TerrainMaterialData.h>
+
 //Components.
 #include <ComponentManager.h>
 
@@ -21,6 +24,7 @@
 #include <PhysicalModel.h>
 #include <RenderingUtilities.h>
 #include <ShaderLoader.h>
+#include <TerrainMaterial.h>
 #include <TextureData.h>
 #include <VulkanTranslationUtilities.h>
 
@@ -162,6 +166,39 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
+*	Creates a terrain material.
+*/
+void VulkanRenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT
+{
+	//Load the first layer albedo.
+	terrainMaterial.firstLayerAlbedo = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4, sizeof(byte), terrainMaterialData.firstLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+
+	//Load the first layer normal map.
+	terrainMaterial.firstLayerNormalMap = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4, sizeof(byte), terrainMaterialData.firstLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+
+	//Load the first layer material properties.
+	terrainMaterial.firstLayerMaterialProperties = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4, sizeof(byte), terrainMaterialData.firstLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+
+	//Load the second layer albedo.
+	terrainMaterial.secondLayerAlbedo = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4, sizeof(byte), terrainMaterialData.secondLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+
+	//Load the second layer normal map.
+	terrainMaterial.secondLayerNormalMap = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4, sizeof(byte), terrainMaterialData.secondLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+
+	//Load the second layer material properties.
+	terrainMaterial.secondLayerMaterialProperties = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4, sizeof(byte), terrainMaterialData.secondLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+
+	//Load the third layer albedo.
+	terrainMaterial.thirdLayerAlbedo = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4, sizeof(byte), terrainMaterialData.thirdLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+
+	//Load the third layer normal map.
+	terrainMaterial.thirdLayerNormalMap = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4, sizeof(byte), terrainMaterialData.thirdLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+
+	//Load the third layer material properties.
+	terrainMaterial.thirdLayerMaterialProperties = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4, sizeof(byte), terrainMaterialData.thirdLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+}
+
+/*
 *	Creates and returns physical model.
 */
 const PhysicalModel VulkanRenderingSystem::CreatePhysicalModel(const char *RESTRICT modelPath, Texture2DHandle albedoTexture, Texture2DHandle normalMapTexture, Texture2DHandle roughnessTexture, Texture2DHandle metallicTexture, Texture2DHandle ambientOcclusionTexture) const NOEXCEPT
@@ -242,7 +279,7 @@ void VulkanRenderingSystem::InitializePhysicalEntity(PhysicalEntity &physicalEnt
 /*
 *	Initializes a terrain entity.
 */
-void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const CPUTexture4 &heightMap, const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Texture2DHandle terrainHeightMapTexture, const Texture2DHandle terrainNormalMapTexture, const Texture2DHandle layer1WeightTexture, const Texture2DHandle layer1AlbedoTexture, const Texture2DHandle layer1NormalMapTexture, const Texture2DHandle layer1RoughnessTexture, const Texture2DHandle layer1MetallicTexture, const Texture2DHandle layer1AmbientOcclusionTexture, const Texture2DHandle layer1DisplacementTexture, const Texture2DHandle layer2WeightTexture, const Texture2DHandle layer2AlbedoTexture, const Texture2DHandle layer2NormalMapTexture, const Texture2DHandle layer2RoughnessTexture, const Texture2DHandle layer2MetallicTexture, const Texture2DHandle layer2AmbientOcclusionTexture, const Texture2DHandle layer2DisplacementTexture, const Texture2DHandle layer3WeightTexture, const Texture2DHandle layer3AlbedoTexture, const Texture2DHandle layer3NormalMapTexture, const Texture2DHandle layer3RoughnessTexture, const Texture2DHandle layer3MetallicTexture, const Texture2DHandle layer3AmbientOcclusionTexture, const Texture2DHandle layer3DisplacementTexture) const NOEXCEPT
+void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
 {
 	//Generate the plane vertices and indices.
 	DynamicArray<float> terrainVertices;
@@ -261,38 +298,28 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 	terrainComponent.terrainUniformData = terrainUniformData;
 	terrainComponent.uniformBuffer = *VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));
 	terrainComponent.uniformBuffer.UploadData(&terrainComponent.terrainUniformData);
-	terrainComponent.heightMap = heightMap;
+	terrainComponent.terrainProperties = terrainProperties;
 
 	//Create the descriptor set.
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(terrainRenderComponent.descriptorSet, pipelines[Pipeline::TerrainSceneBufferPipeline]->GetDescriptorSetLayout());
 
-	DynamicArray<VkWriteDescriptorSet, 25> writeDescriptorSets;
+	DynamicArray<VkWriteDescriptorSet, 13> writeDescriptorSets;
+
+	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(terrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
 	writeDescriptorSets.EmplaceFast(uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 0));
 	writeDescriptorSets.EmplaceFast(terrainComponent.uniformBuffer.GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 1));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainHeightMapTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 2));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainNormalMapTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 3));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(layer1WeightTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 4));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(layer1AlbedoTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 5));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(layer1NormalMapTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 6));
-	writeDescriptorSets.EmplaceFast(layer1RoughnessTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer1RoughnessTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 7) : defaultTextures[DefaultTexture::White]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 7));
-	writeDescriptorSets.EmplaceFast(layer1MetallicTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer1MetallicTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 8) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 8));
-	writeDescriptorSets.EmplaceFast(layer1AmbientOcclusionTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer1AmbientOcclusionTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 9) : defaultTextures[DefaultTexture::White]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 9));
-	writeDescriptorSets.EmplaceFast(layer1DisplacementTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer1DisplacementTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 10) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 10));
-	writeDescriptorSets.EmplaceFast(layer2WeightTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer2WeightTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 11) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 11));
-	writeDescriptorSets.EmplaceFast(layer2AlbedoTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer2AlbedoTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 12) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 12));
-	writeDescriptorSets.EmplaceFast(layer2NormalMapTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer2NormalMapTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 13) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 13));
-	writeDescriptorSets.EmplaceFast(layer2RoughnessTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer2RoughnessTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 14) : defaultTextures[DefaultTexture::White]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 14));
-	writeDescriptorSets.EmplaceFast(layer2MetallicTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer2MetallicTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 15) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 15));
-	writeDescriptorSets.EmplaceFast(layer2AmbientOcclusionTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer2AmbientOcclusionTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 16) : defaultTextures[DefaultTexture::White]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 16));
-	writeDescriptorSets.EmplaceFast(layer2DisplacementTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer2DisplacementTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 17) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 17));
-	writeDescriptorSets.EmplaceFast(layer3WeightTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer3WeightTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 18) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 18));
-	writeDescriptorSets.EmplaceFast(layer3AlbedoTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer3AlbedoTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 19) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 19));
-	writeDescriptorSets.EmplaceFast(layer3NormalMapTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer3NormalMapTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 20) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 20));
-	writeDescriptorSets.EmplaceFast(layer3RoughnessTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer3RoughnessTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 21) : defaultTextures[DefaultTexture::White]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 21));
-	writeDescriptorSets.EmplaceFast(layer3MetallicTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer3MetallicTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 22) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 22));
-	writeDescriptorSets.EmplaceFast(layer3AmbientOcclusionTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer3AmbientOcclusionTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 23) : defaultTextures[DefaultTexture::White]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 23));
-	writeDescriptorSets.EmplaceFast(layer3DisplacementTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(layer3DisplacementTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 24) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 24));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainPropertiesTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 2));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(layerWeightsTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 3));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 4));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 5));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 6));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 7));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 8));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 9));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 10));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 11));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 12));
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
@@ -553,32 +580,20 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	terrainSceneBufferPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 	terrainSceneBufferPipelineCreationParameters.depthTestEnable = VK_TRUE;
 	terrainSceneBufferPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(25);
+	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(13);
 	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
 	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
 	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(7, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
 	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(8, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(9, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(10, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(11, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(12, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(13, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(14, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(15, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(16, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(17, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(18, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(19, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(20, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(21, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(22, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(23, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(24, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(9, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(10, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(11, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(12, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
 	terrainSceneBufferPipelineCreationParameters.shaderModules.Reserve(4);
 	terrainSceneBufferPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainSceneBufferVertexShaderModule]);
 	terrainSceneBufferPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainSceneBufferTessellationControlShaderModule]);

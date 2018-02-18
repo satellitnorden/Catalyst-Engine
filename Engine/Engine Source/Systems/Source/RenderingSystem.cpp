@@ -53,6 +53,15 @@ void RenderingSystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
+*	Creates a terrain material.
+*/
+void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT
+{
+	//Create the terrain material via the Vulkan rendering system.
+	VulkanRenderingSystem::Instance->CreateTerrainMaterial(terrainMaterialData, terrainMaterial);
+}
+
+/*
 *	Creates and returns physical model.
 */
 const PhysicalModel RenderingSystem::CreatePhysicalModel(const char *RESTRICT modelPath, Texture2DHandle albedoTexture, Texture2DHandle normalMapTexture, Texture2DHandle roughnessTexture, Texture2DHandle metallicTexture, Texture2DHandle ambientOcclusionTexture) const NOEXCEPT
@@ -73,10 +82,10 @@ void RenderingSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, c
 /*
 *	Initializes a terrain entity.
 */
-void RenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const CPUTexture4 &heightMap, const uint32 terrainPlaneResolution, const TerrainUniformData &terrainUniformData, const Texture2DHandle terrainHeightMapTexture, const Texture2DHandle terrainNormalMapTexture, const Texture2DHandle layer1WeightTexture, const Texture2DHandle layer1AlbedoTexture, const Texture2DHandle layer1NormalMapTexture, const Texture2DHandle layer1RoughnessTexture, const Texture2DHandle layer1MetallicTexture, const Texture2DHandle layer1AmbientOcclusionTexture, const Texture2DHandle layer1DisplacementTexture, const Texture2DHandle layer2WeightTexture, const Texture2DHandle layer2AlbedoTexture, const Texture2DHandle layer2NormalMapTexture, const Texture2DHandle layer2RoughnessTexture, const Texture2DHandle layer2MetallicTexture, const Texture2DHandle layer2AmbientOcclusionTexture, const Texture2DHandle layer2DisplacementTexture, const Texture2DHandle layer3WeightTexture, const Texture2DHandle layer3AlbedoTexture, const Texture2DHandle layer3NormalMapTexture, const Texture2DHandle layer3RoughnessTexture, const Texture2DHandle layer3MetallicTexture, const Texture2DHandle layer3AmbientOcclusionTexture, const Texture2DHandle layer3DisplacementTexture) const NOEXCEPT
+void RenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
 {
 	//Initialize the terrain entity via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->InitializeTerrainEntity(terrainEntity, heightMap, terrainPlaneResolution, terrainUniformData, terrainHeightMapTexture, terrainNormalMapTexture, layer1WeightTexture, layer1AlbedoTexture, layer1NormalMapTexture, layer1RoughnessTexture, layer1MetallicTexture, layer1AmbientOcclusionTexture, layer1DisplacementTexture, layer2WeightTexture, layer2AlbedoTexture, layer2NormalMapTexture, layer2RoughnessTexture, layer2MetallicTexture, layer2AmbientOcclusionTexture, layer2DisplacementTexture, layer3WeightTexture, layer3AlbedoTexture, layer3NormalMapTexture, layer3RoughnessTexture, layer3MetallicTexture, layer3AmbientOcclusionTexture, layer3DisplacementTexture);
+	VulkanRenderingSystem::Instance->InitializeTerrainEntity(terrainEntity,terrainPlaneResolution, terrainProperties, terrainUniformData, layerWeightsTexture, terrainMaterial);
 }
 
 /*

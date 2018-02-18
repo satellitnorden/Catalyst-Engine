@@ -3,7 +3,6 @@
 
 //Asset loading.
 #include <AssetLoader.h>
-#include <TerrainMaterialData.h>
 
 //Entities.
 #include <DirectionalLightEntity.h>
@@ -19,6 +18,7 @@
 //Rendering.
 #include <CPUTexture4.h>
 #include <PhysicalModel.h>
+#include <TerrainMaterial.h>
 #include <TerrainUniformData.h>
 #include <TextureData.h>
 
@@ -65,11 +65,11 @@ void WorldArchitect::Initialize() NOEXCEPT
 	RenderingSystem::Instance->SetActiveSkyBox(sky);
 
 	//Load the terrain material data.
-	TerrainMaterialData terrainMaterialData;
-	AssetLoader::LoadTerrainMaterialData(GAME_TEXTURES_FOLDER "DefaultTerrainMaterial.ctm", terrainMaterialData);
+	TerrainMaterial terrainMaterial;
+	AssetLoader::LoadTerrainMaterial(GAME_TEXTURES_FOLDER "DefaultTerrainMaterial.ctm", terrainMaterial);
 
-	//Create the height map!
-	CPUTexture4 heightMap{ HEIGHT_MAP_RESOLUTION };
+	//Create the terrain properties!
+	CPUTexture4 terrainProperties{ HEIGHT_MAP_RESOLUTION };
 
 	const float randomOffset{ GameMath::RandomFloatInRange(0.0f, 1.0f) };
 
@@ -79,122 +79,91 @@ void WorldArchitect::Initialize() NOEXCEPT
 		{
 			float frequency = 5.0f;
 			float multiplier = 1.0f;
-			heightMap.At(i, j) = PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W = PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 			
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			heightMap.At(i, j) += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
-			heightMap.At(i, j) = GameMath::LinearlyInterpolate(heightMap.At(i, j).X, GameMath::GetSmoothInterpolationValue(heightMap.At(i, j).X), 0.25f);
+			terrainProperties.At(i, j).W = GameMath::LinearlyInterpolate(terrainProperties.At(i, j).W, GameMath::GetSmoothInterpolationValue(terrainProperties.At(i, j).W), 0.25f);
 		}
 	}
 
-	Texture2DHandle terrainHeightMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(heightMap), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
-
-	//Create the normal map!
-	CPUTexture4 normalMap{ HEIGHT_MAP_RESOLUTION };
 	const float heightMapPositionoffset = TERRAIN_SIZE / HEIGHT_MAP_RESOLUTION;
 
 	for (uint32 i = 0; i < HEIGHT_MAP_RESOLUTION; ++i)
 	{
 		for (uint32 j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
 		{
-			const Vector3 left{ -heightMapPositionoffset, heightMap.At(i > 0 ? i - 1 : i, j).X * TERRAIN_HEIGHT, 0.0f };
-			const Vector3 right{ heightMapPositionoffset, heightMap.At(i < HEIGHT_MAP_RESOLUTION - 1 ? i + 1 : i, j).X * TERRAIN_HEIGHT, 0.0f };
-			const Vector3 up{ 0.0f, heightMap.At(i, j > 0 ? j - 1 : j).X * TERRAIN_HEIGHT, -heightMapPositionoffset };
-			const Vector3 down{ 0.0f, heightMap.At(i, j < HEIGHT_MAP_RESOLUTION - 1 ? j + 1 : j).X * TERRAIN_HEIGHT, heightMapPositionoffset };
-			const Vector3 center{ 0.0f, heightMap.At(i, j).X * TERRAIN_HEIGHT, 0.0f };
+			const Vector3 left{ -heightMapPositionoffset, terrainProperties.At(i > 0 ? i - 1 : i, j).W * TERRAIN_HEIGHT, 0.0f };
+			const Vector3 right{ heightMapPositionoffset, terrainProperties.At(i < HEIGHT_MAP_RESOLUTION - 1 ? i + 1 : i, j).W * TERRAIN_HEIGHT, 0.0f };
+			const Vector3 up{ 0.0f, terrainProperties.At(i, j > 0 ? j - 1 : j).W * TERRAIN_HEIGHT, -heightMapPositionoffset };
+			const Vector3 down{ 0.0f, terrainProperties.At(i, j < HEIGHT_MAP_RESOLUTION - 1 ? j + 1 : j).W * TERRAIN_HEIGHT, heightMapPositionoffset };
+			const Vector3 center{ 0.0f, terrainProperties.At(i, j).W * TERRAIN_HEIGHT, 0.0f };
 
 			const Vector3 normal1 = Vector3::CrossProduct(up - center, left - center);
 			const Vector3 normal2 = Vector3::CrossProduct(right - center, up - center);
 			const Vector3 normal3 = Vector3::CrossProduct(down - center, right - center);
 			const Vector3 normal4 = Vector3::CrossProduct(left - center, down - center);
 
-			normalMap.At(i, j) = (Vector3::Normalize(normal1 + normal2 + normal3 + normal4) + 1.0f) * 0.5f;
+			Vector3 finalNormal{ (Vector3::Normalize(normal1 + normal2 + normal3 + normal4) + 1.0f) * 0.5f };
+
+			terrainProperties.At(i, j).X = finalNormal.X;
+			terrainProperties.At(i, j).Y = finalNormal.Y;
+			terrainProperties.At(i, j).Z = finalNormal.Z;
 		}
 	}
 
-	Texture2DHandle terrainNormalMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(normalMap), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
-
-	//Calculate the layer 1 weight.
-	CPUTexture4 layer1Weight{ HEIGHT_MAP_RESOLUTION };
+	//Calculate the layer weights.
+	CPUTexture4 layerWeights{ HEIGHT_MAP_RESOLUTION };
 
 	for (uint32 i = 0; i < HEIGHT_MAP_RESOLUTION; ++i)
 	{
 		for (uint32 j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
 		{
-			Vector4 normalMapValue{ normalMap.At(i, j) * 2.0f - 1.0f };
+			Vector4 terrainPropertiesValue{ terrainProperties.At(i, j) * 2.0f - 1.0f };
 			
-			layer1Weight.At(i, j) = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(normalMapValue.X, normalMapValue.Y, normalMapValue.Z), Vector3(0.0f, 1.0f, 0.0f)) - 0.25f, 0.0f, 1.0f));
-		}
-	}
+			layerWeights.At(i, j).X = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)) - 0.25f, 0.0f, 1.0f));
+		
+			const float heightValue{ terrainPropertiesValue.W };
 
-	//Calculate the layer 1 weight.
-	CPUTexture4 layer2Weight{ HEIGHT_MAP_RESOLUTION };
-
-	for (uint32 i = 0; i < HEIGHT_MAP_RESOLUTION; ++i)
-	{
-		for (uint32 j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
-		{
-			const float heightMapValue{ heightMap.At(i, j).X };
-
-			if (heightMapValue < 0.7f)
+			if (heightValue < 0.7f)
 			{
-				layer2Weight.At(i, j) = 1.0f;
+				layerWeights.At(i, j).Y = 0.0f;
 			}
 
-			else if (heightMapValue > 0.8f)
+			else if (heightValue > 0.8f)
 			{
-				layer2Weight.At(i, j) = 0.0f;
+				layerWeights.At(i, j).Y = 1.0f;
 			}
 
 			else
 			{
-				layer2Weight.At(i, j) = 1.0f - ((heightMapValue - 0.7f) * 10.0f);
+				layerWeights.At(i, j).Y = (heightValue - 0.7f) * 10.0f;
 			}
+
+			layerWeights.At(i, j).Z = 0.0f;
+			layerWeights.At(i, j).W = 0.0f;
 		}
 	}
 
-	Texture2DHandle layer1WeightTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(layer1Weight), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
-	Texture2DHandle layer2WeightTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(layer2Weight), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
-
-	//Load the remaining terrain textures.
-	Texture2DHandle layer1AlbedoTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3Albedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle layer1NormalMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3NormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle layer1RoughnessTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3Roughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle layer1AmbientOcclusionTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3AmbientOcclusion.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle layer1DisplacementTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Stone3Displacement.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-
-	Texture2DHandle layer2AlbedoTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AlbedoMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle layer2NormalMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1NormalMapMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle layer2RoughnessTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1RoughnessMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle layer2AmbientOcclusionTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1AmbientOcclusionMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle layer2DisplacementTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer({ GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip0.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip1.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip2.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip3.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip4.png", GAME_TEXTURES_FOLDER "Terrain/Grass1DisplacementMip5.png" }), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-
-	Texture2DHandle layer3AlbedoTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1Albedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle layer3NormalMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1NormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle layer3RoughnessTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1Roughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle layer3DisplacementTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "Terrain/Snow1Displacement.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle layerWeightsTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(layerWeights), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(	heightMap, 512, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.075f, Vector3(0.0f, 0.0f, 0.0f)),
-							terrainHeightMapTexture, terrainNormalMapTexture,
-							layer1WeightTexture, layer1AlbedoTexture, layer1NormalMapTexture, layer1RoughnessTexture, nullptr, layer1AmbientOcclusionTexture, layer1DisplacementTexture,
-							layer2WeightTexture, layer2AlbedoTexture, layer2NormalMapTexture, layer2RoughnessTexture, nullptr, layer2AmbientOcclusionTexture, layer2DisplacementTexture,
-							nullptr, layer3AlbedoTexture, layer3NormalMapTexture, layer3RoughnessTexture, nullptr, nullptr, layer3DisplacementTexture);
+	terrain->Initialize(512, terrainProperties, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.075f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
 	/*
 	//Place some stones. (:

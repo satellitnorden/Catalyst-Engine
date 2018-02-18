@@ -4,7 +4,7 @@
 #include <EngineCore.h>
 
 //Forward declarations.
-#include <TerrainMaterialData.h>
+class TerrainMaterial;
 
 class AssetLoader final
 {
@@ -12,8 +12,8 @@ class AssetLoader final
 public:
 
 	/*
-	*	Given a file path, load terrain material data.
+	*	Given a file path, load a terrain material.
 	*/
-	static void LoadTerrainMaterialData(const char *RESTRICT filePath, TerrainMaterialData &terrainMaterialData) NOEXCEPT;
+	static void LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMaterial &terrainMaterial) NOEXCEPT;
 
 };

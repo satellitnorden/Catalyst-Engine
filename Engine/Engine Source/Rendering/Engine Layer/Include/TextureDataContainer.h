@@ -55,10 +55,10 @@ public:
 	/*
 	*	Constructor taking a CPUTexture4.
 	*/
-	TextureDataContainer(CPUTexture4 &texture) NOEXCEPT
+	TextureDataContainer(const CPUTexture4 &texture) NOEXCEPT
 	{
 		textureData.Reserve(1);
-		textureData.EmplaceFast(reinterpret_cast<void *RESTRICT>(texture.Data()));
+		textureData.EmplaceFast(reinterpret_cast<void *RESTRICT>(const_cast<CPUTexture4&>(texture).Data()));
 		textureWidth = textureHeight = static_cast<uint16>(texture.GetResolution());
 		textureChannels = 4;
 		textureTexelSize = sizeof(float);

@@ -48,12 +48,12 @@ float PhysicsSystem::GetTerrainHeightAtPosition(const Vector3 &position) const N
 {
 	//For now, just use the first terrain height map there is.
 	const TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[0] };
-	const CPUTexture4 &heightMap{ terrainComponent.heightMap };
+	const CPUTexture4 &terrainProperties{ terrainComponent.terrainProperties };
 	const float terrainSize{ terrainComponent.terrainUniformData.terrainSize };
 	const float terrainHeight{ terrainComponent.terrainUniformData.terrainHeight };
 
 	const float xIndex = (position.X + (terrainSize * 0.5f)) / terrainSize;
 	const float yIndex = (position.Z + (terrainSize * 0.5f)) / terrainSize;
 
-	return heightMap.At(xIndex, yIndex).X * terrainHeight;
+	return terrainProperties.At(xIndex, yIndex).W * terrainHeight;
 }

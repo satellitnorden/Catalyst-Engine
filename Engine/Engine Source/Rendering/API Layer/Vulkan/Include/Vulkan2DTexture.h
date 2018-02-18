@@ -30,9 +30,14 @@ public:
 	const VkImage& Get() const NOEXCEPT { return vulkanImage; }
 
 	/*
-	*	Initializes this texture.
+	*	Initializes this texture with void data.
 	*/
 	void Initialize(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
+
+	/*
+	*	Initializes this texture with byte data.
+	*/
+	void Initialize(const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const DynamicArray<DynamicArray<byte>> &textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
 
 	/*
 	*	Releases this texture.

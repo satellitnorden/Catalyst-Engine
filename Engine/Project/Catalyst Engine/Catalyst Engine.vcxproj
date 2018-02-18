@@ -183,6 +183,7 @@
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\RenderingCore.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\RenderingUtilities.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\ShaderLoader.h" />
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TerrainMaterial.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TerrainUniformData.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TextureData.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TextureDataContainer.h" />

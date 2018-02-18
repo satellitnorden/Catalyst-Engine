@@ -54,33 +54,31 @@ layout (std140, binding = 1) uniform TerrainUniformData
 };
 
 //In parameters.
-layout (location = 0) in float fragmentLayer1Weight;
-layout (location = 1) in float fragmentLayer2Weight;
-layout (location = 2) in vec2 fragmentHeightMapTextureCoordinate;
-layout (location = 3) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in vec2 fragmentHeightMapTextureCoordinate;
+layout (location = 1) in vec2 fragmentTextureCoordinate;
+layout (location = 2) in vec4 layerWeightsSampler;
 
 //Texture samplers.
-layout (binding = 3) uniform sampler2D terrainNormalTexture;
-layout (binding = 5) uniform sampler2D layer1AlbedoTexture;
-layout (binding = 6) uniform sampler2D layer1NormalMapTexture;
-layout (binding = 7) uniform sampler2D layer1RoughnessTexture;
-layout (binding = 8) uniform sampler2D layer1MetallicTexture;
-layout (binding = 9) uniform sampler2D layer1AmbientOcclusionTexture;
-layout (binding = 12) uniform sampler2D layer2AlbedoTexture;
-layout (binding = 13) uniform sampler2D layer2NormalMapTexture;
-layout (binding = 14) uniform sampler2D layer2RoughnessTexture;
-layout (binding = 15) uniform sampler2D layer2MetallicTexture;
-layout (binding = 16) uniform sampler2D layer2AmbientOcclusionTexture;
-layout (binding = 19) uniform sampler2D layer3AlbedoTexture;
-layout (binding = 20) uniform sampler2D layer3NormalMapTexture;
-layout (binding = 21) uniform sampler2D layer3RoughnessTexture;
-layout (binding = 22) uniform sampler2D layer3MetallicTexture;
-layout (binding = 23) uniform sampler2D layer3AmbientOcclusionTexture;
+layout (binding = 2) uniform sampler2D terrainPropertiesTexture;
+layout (binding = 4) uniform sampler2D layer1AlbedoTexture;
+layout (binding = 5) uniform sampler2D layer1NormalMapTexture;
+layout (binding = 6) uniform sampler2D layer1MaterialPropertiesTexture;
+layout (binding = 7) uniform sampler2D layer2AlbedoTexture;
+layout (binding = 8) uniform sampler2D layer2NormalMapTexture;
+layout (binding = 9) uniform sampler2D layer2MaterialPropertiesTexture;
+layout (binding = 10) uniform sampler2D layer3AlbedoTexture;
+layout (binding = 11) uniform sampler2D layer3NormalMapTexture;
+layout (binding = 12) uniform sampler2D layer3MaterialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
 layout (location = 1) out vec4 normalDirectionDepth;
 layout (location = 2) out vec4 roughnessMetallicAmbientOcclusion;
+
+//Globals.
+vec4 layer1MaterialPropertiesSampler;
+vec4 layer2MaterialPropertiesSampler;
+vec4 layer3MaterialPropertiesSampler;
 
 /*
 *	Returns the albedo.
@@ -91,9 +89,9 @@ vec4 GetAlbedo()
     vec4 layer2Albedo = texture(layer2AlbedoTexture, fragmentTextureCoordinate);
     vec4 layer3Albedo = texture(layer3AlbedoTexture, fragmentTextureCoordinate);
 
-    vec4 blend1 = mix(layer2Albedo, layer1Albedo, fragmentLayer1Weight);
+    vec4 blend1 = mix(layer1Albedo, layer2Albedo, layerWeightsSampler.x);
 
-    return mix(layer3Albedo, blend1, fragmentLayer2Weight);
+    return mix(blend1, layer3Albedo, layerWeightsSampler.y);
 }
 
 /*
@@ -105,9 +103,9 @@ vec3 GetNormalDirection()
     vec3 layer2NormalDirection = texture(layer2NormalMapTexture, fragmentTextureCoordinate).xyz;
     vec3 layer3NormalDirection = texture(layer3NormalMapTexture, fragmentTextureCoordinate).xyz;
 
-    vec3 blend1 = mix(layer2NormalDirection, layer1NormalDirection, fragmentLayer1Weight);
+    vec3 blend1 = mix(layer1NormalDirection, layer2NormalDirection, layerWeightsSampler.x);
 
-    return mix(layer3NormalDirection, blend1, fragmentLayer2Weight) * 2.0f - 1.0f;
+    return mix(blend1, layer3NormalDirection, layerWeightsSampler.y) * 2.0f - 1.0f;
 }
 
 /*
@@ -115,13 +113,13 @@ vec3 GetNormalDirection()
 */
 float GetRoughness()
 {
-	float layer1Roughness = texture(layer1RoughnessTexture, fragmentTextureCoordinate).r;
-    float layer2Roughness = texture(layer2RoughnessTexture, fragmentTextureCoordinate).r;
-    float layer3Roughness = texture(layer3RoughnessTexture, fragmentTextureCoordinate).r;
+	float layer1Roughness = layer1MaterialPropertiesSampler.r;
+    float layer2Roughness = layer2MaterialPropertiesSampler.r;
+    float layer3Roughness = layer3MaterialPropertiesSampler.r;
 
-    float blend1 = mix(layer2Roughness, layer1Roughness, fragmentLayer1Weight);
+    float blend1 = mix(layer1Roughness, layer2Roughness, layerWeightsSampler.x);
 
-    return mix(layer3Roughness, blend1, fragmentLayer2Weight);
+    return mix(blend1, layer3Roughness, layerWeightsSampler.y);
 }
 
 /*
@@ -129,13 +127,13 @@ float GetRoughness()
 */
 float GetMetallic()
 {
-	float layer1Metallic = texture(layer1MetallicTexture, fragmentTextureCoordinate).r;
-    float layer2Metallic = texture(layer2MetallicTexture, fragmentTextureCoordinate).r;
-    float layer3Metallic = texture(layer3MetallicTexture, fragmentTextureCoordinate).r;
+	float layer1Metallic = layer1MaterialPropertiesSampler.y;
+    float layer2Metallic = layer2MaterialPropertiesSampler.y;
+    float layer3Metallic = layer3MaterialPropertiesSampler.y;
 
-    float blend1 = mix(layer2Metallic, layer1Metallic, fragmentLayer1Weight);
+    float blend1 = mix(layer1Metallic, layer2Metallic, layerWeightsSampler.x);
 
-    return mix(layer3Metallic, blend1, fragmentLayer2Weight);
+    return mix(blend1, layer3Metallic, layerWeightsSampler.y);
 }
 
 /*
@@ -143,22 +141,27 @@ float GetMetallic()
 */
 float GetAmbientOcclusion()
 {
-	float layer1AmbientOcclusion = texture(layer1AmbientOcclusionTexture, fragmentTextureCoordinate).r;
-    float layer2AmbientOcclusion = texture(layer2AmbientOcclusionTexture, fragmentTextureCoordinate).r;
-    float layer3AmbientOcclusion = texture(layer3AmbientOcclusionTexture, fragmentTextureCoordinate).r;
+	float layer1AmbientOcclusion = layer1MaterialPropertiesSampler.z;
+    float layer2AmbientOcclusion = layer2MaterialPropertiesSampler.z;
+    float layer3AmbientOcclusion = layer3MaterialPropertiesSampler.z;
 
-    float blend1 = mix(layer2AmbientOcclusion, layer1AmbientOcclusion, fragmentLayer1Weight);
+    float blend1 = mix(layer1AmbientOcclusion, layer2AmbientOcclusion, layerWeightsSampler.x);
 
-    return mix(layer3AmbientOcclusion, blend1, fragmentLayer2Weight);
+    return mix(blend1, layer3AmbientOcclusion, layerWeightsSampler.y);
 }
 
 void main()
 {
+    //Sampler the material properties.
+    layer1MaterialPropertiesSampler = texture(layer1MaterialPropertiesTexture, fragmentTextureCoordinate);
+    layer2MaterialPropertiesSampler = texture(layer2MaterialPropertiesTexture, fragmentTextureCoordinate);
+    layer3MaterialPropertiesSampler = texture(layer3MaterialPropertiesTexture, fragmentTextureCoordinate);
+
 	//Set the albedo color.
 	albedoColor = GetAlbedo();
 
 	//Calculate the tangent space matrix.
-	vec3 normal = texture(terrainNormalTexture, fragmentHeightMapTextureCoordinate).xyz * 2.0f - 1.0f;
+	vec3 normal = texture(terrainPropertiesTexture, fragmentHeightMapTextureCoordinate).xyz * 2.0f - 1.0f;
 	vec3 tangent = cross(vec3(0.0f, 0.0f, 1.0f), normal);
 	vec3 bitangent = cross(tangent, normal);
 

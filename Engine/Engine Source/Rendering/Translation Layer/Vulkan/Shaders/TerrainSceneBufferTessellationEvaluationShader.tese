@@ -62,33 +62,30 @@ layout (location = 1) in vec2 tessellationEvaluationTextureCoordinate[];
 layout (location = 2) in vec3 tessellationEvaluationPosition[];
 
 //Texture samplers.
-layout (binding = 2) uniform sampler2D heightMapTexture;
-layout (binding = 4) uniform sampler2D layer1WeightTexture;
-layout (binding = 11) uniform sampler2D layer2WeightTexture;
-layout (binding = 10) uniform sampler2D layer1DisplacementTexture;
-layout (binding = 17) uniform sampler2D layer2DisplacementTexture;
-layout (binding = 24) uniform sampler2D layer3DisplacementTexture;
+layout (binding = 2) uniform sampler2D terrainPropertiesTexture;
+layout (binding = 3) uniform sampler2D layerWeightsTexture;
+layout (binding = 6) uniform sampler2D layer1MaterialPropertiesTexture;
+layout (binding = 9) uniform sampler2D layer2MaterialPropertiesTexture;
+layout (binding = 12) uniform sampler2D layer3MaterialPropertiesTexture;
 
 //Out parameters.
-layout (location = 0) out float fragmentLayer1Weight;
-layout (location = 1) out float fragmentLayer2Weight;
-layout (location = 2) out vec2 fragmentHeightMapTextureCoordinate;
-layout (location = 3) out vec2 fragmentTextureCoordinate;
+layout (location = 0) out vec2 fragmentHeightMapTextureCoordinate;
+layout (location = 1) out vec2 fragmentTextureCoordinate;
+layout (location = 2) out vec4 layerWeightsSampler;
 
 /*
 *   Returns the displacement value.
 */
 float GetDisplacement()
 {
-    fragmentLayer1Weight = texture(layer1WeightTexture, fragmentHeightMapTextureCoordinate).r;
-    fragmentLayer2Weight = texture(layer2WeightTexture, fragmentHeightMapTextureCoordinate).r;
-    float layer1Displacement = texture(layer1DisplacementTexture, fragmentTextureCoordinate).r;
-    float layer2Displacement = texture(layer2DisplacementTexture, fragmentTextureCoordinate).r;
-    float layer3Displacement = texture(layer3DisplacementTexture, fragmentTextureCoordinate).r;
+    layerWeightsSampler = texture(layerWeightsTexture, fragmentHeightMapTextureCoordinate);
+    float layer1Displacement = texture(layer1MaterialPropertiesTexture, fragmentTextureCoordinate).w;
+    float layer2Displacement = texture(layer2MaterialPropertiesTexture, fragmentTextureCoordinate).w;
+    float layer3Displacement = texture(layer3MaterialPropertiesTexture, fragmentTextureCoordinate).w;
 
-    float blend1 = mix(layer2Displacement, layer1Displacement, fragmentLayer1Weight);
+    float blend1 = mix(layer1Displacement, layer2Displacement, layerWeightsSampler.x);
 
-    return (mix(layer3Displacement, blend1, fragmentLayer2Weight) * terrainDisplacementHeight) - (terrainDisplacementHeight * 0.5f);
+    return (mix(blend1, layer3Displacement, layerWeightsSampler.y) * terrainDisplacementHeight) - (terrainDisplacementHeight * 0.5f);
 }
 
 void main()
@@ -98,7 +95,7 @@ void main()
 	fragmentTextureCoordinate = gl_TessCoord.x * tessellationEvaluationTextureCoordinate[0] + gl_TessCoord.y * tessellationEvaluationTextureCoordinate[1] + gl_TessCoord.z * tessellationEvaluationTextureCoordinate[2];
 	vec3 position = (gl_TessCoord.x * tessellationEvaluationPosition[0] + gl_TessCoord.y * tessellationEvaluationPosition[1] + gl_TessCoord.z * tessellationEvaluationPosition[2]);
 
-	float height = texture(heightMapTexture, fragmentHeightMapTextureCoordinate).r * terrainHeight;
+	float height = texture(terrainPropertiesTexture, fragmentHeightMapTextureCoordinate).w * terrainHeight;
 
 	position.y += height + GetDisplacement();
 

@@ -184,12 +184,25 @@ void VulkanInterface::Release() NOEXCEPT
 }
 
 /*
-*	Creates and returns a 2D texture.
+*	Creates and returns a 2D texture with void data.
 */
 RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
 	Vulkan2DTexture *RESTRICT new2DTexture = new Vulkan2DTexture;
 	new2DTexture->Initialize(textureMipmapLevels, textureWidth, textureHeight, textureChannels, textureTexelSize, textureData, format, magnificationFilter, mipmapMode, addressMode);
+
+	vulkan2DTextures.EmplaceSlow(new2DTexture);
+
+	return new2DTexture;
+}
+
+/*
+*	Creates and returns a 2D texture with byte data.
+*/
+RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const DynamicArray<DynamicArray<byte>> &textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
+{
+	Vulkan2DTexture *RESTRICT new2DTexture = new Vulkan2DTexture;
+	new2DTexture->Initialize(textureWidth, textureHeight, textureChannels, textureTexelSize, textureData, format, magnificationFilter, mipmapMode, addressMode);
 
 	vulkan2DTextures.EmplaceSlow(new2DTexture);
 

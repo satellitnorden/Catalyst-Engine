@@ -22,6 +22,6 @@ public:
 	VulkanUniformBuffer uniformBuffer;
 
 	//The height map.
-	CPUTexture4 heightMap;
+	CPUTexture4 terrainProperties;
 
 };
