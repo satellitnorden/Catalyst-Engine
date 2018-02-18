@@ -281,10 +281,10 @@ void VulkanRenderingSystem::InitializePhysicalEntity(PhysicalEntity &physicalEnt
 */
 void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
 {
-	//Generate the plane vertices and indices.
+	//Generate the terrain plane vertices and indices.
 	DynamicArray<float> terrainVertices;
 	DynamicArray<uint32> terrainIndices;
-	RenderingUtilities::GeneratePlane(terrainPlaneResolution, terrainVertices, terrainIndices);
+	RenderingUtilities::GenerateTerrainPlane(terrainProperties, terrainUniformData, terrainPlaneResolution, terrainVertices, terrainIndices);
 
 	//Create the vertex and index buffer.
 	const void *RESTRICT terrainData[]{ terrainVertices.Data(), terrainIndices.Data() };

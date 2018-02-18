@@ -69,9 +69,9 @@ layout (location = 2) out vec3 tessellationEvaluationPosition[];
 /*
 *   Returns the length of a vector squared, ignoring the Y component.
 */
-float LengthSquared2D(vec3 vector)
+float LengthSquared(vec3 vector)
 {
-    return vector.x * vector.x + vector.z * vector.z;
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 }
 
 /*
@@ -126,9 +126,9 @@ void main()
 
         vec3 middleOfTriangle = GetMiddlePoint(middlePoint1, middlePoint2, middlePoint3);
 
-        gl_TessLevelInner[0] = GetTesselationLevel(LengthSquared2D(cameraWorldPosition - middleOfTriangle));
-        gl_TessLevelOuter[0] = GetTesselationLevel(LengthSquared2D(cameraWorldPosition - middlePoint1));
-        gl_TessLevelOuter[1] = GetTesselationLevel(LengthSquared2D(cameraWorldPosition - middlePoint2));
-        gl_TessLevelOuter[2] = GetTesselationLevel(LengthSquared2D(cameraWorldPosition - middlePoint3));
+        gl_TessLevelInner[0] = GetTesselationLevel(LengthSquared(cameraWorldPosition - middleOfTriangle));
+        gl_TessLevelOuter[0] = GetTesselationLevel(LengthSquared(cameraWorldPosition - middlePoint1));
+        gl_TessLevelOuter[1] = GetTesselationLevel(LengthSquared(cameraWorldPosition - middlePoint2));
+        gl_TessLevelOuter[2] = GetTesselationLevel(LengthSquared(cameraWorldPosition - middlePoint3));
     }
 }

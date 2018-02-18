@@ -68,8 +68,6 @@ void main()
 	tessellationControlHeightMapTextureCoordinate = vertexTextureCoordinate;
 	tessellationControlTextureCoordinate = tessellationControlHeightMapTextureCoordinate * terrainTextureTilingFactor;
 
-	vec3 finalVertexPosition = vertexPosition * (terrainSize * 0.5f) + terrainPosition;
-
 	//Pass the unmodified vertex position to the tesselation control shader.
-	tessellationControlPosition = finalVertexPosition;
+	tessellationControlPosition = vertexPosition;
 }
