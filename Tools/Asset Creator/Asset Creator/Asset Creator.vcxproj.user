@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>TerrainMaterial DefaultTerrainMaterial 1 Grass1Albedo.png Grass1NormalMap.png Grass1Roughness.png None Grass1AmbientOcclusion.png Grass1Displacement.png Stone3Albedo.png Stone3NormalMap.png Stone3Roughness.png None Stone3AmbientOcclusion.png Stone3Displacement.png Snow2Albedo.png Snow2NormalMap.png Snow2Roughness.png None None Snow2Displacement.png</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>TerrainMaterial DefaultTerrainMaterial 5 Grass1Albedo.png Grass1NormalMap.png Grass1Roughness.png None Grass1AmbientOcclusion.png Grass1Displacement.png Sand1Albedo.png Sand1NormalMap.png Sand1Roughness.png None Sand1AmbientOcclusion.png Sand1Displacement.png Stone1Albedo.png Stone1NormalMap.png Stone1Roughness.png None Stone1AmbientOcclusion.png Stone1Displacement.png</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LocalDebuggerCommandArguments>TerrainMaterial DefaultTerrainMaterial 1 Grass1Albedo.png Grass1NormalMap.png Grass1Roughness.png None Grass1AmbientOcclusion.png Grass1Displacement.png Stone3Albedo.png Stone3NormalMap.png Stone3Roughness.png None Stone3AmbientOcclusion.png Stone3Displacement.png Snow2Albedo.png Snow2NormalMap.png Snow2Roughness.png None None Snow2Displacement.png</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>TerrainMaterial DefaultTerrainMaterial 5 Grass1Albedo.png Grass1NormalMap.png Grass1Roughness.png None Grass1AmbientOcclusion.png Grass1Displacement.png Sand1Albedo.png Sand1NormalMap.png Sand1Roughness.png None Sand1AmbientOcclusion.png Sand1Displacement.png Stone1Albedo.png Stone1NormalMap.png Stone1Roughness.png None Stone1AmbientOcclusion.png Stone1Displacement.png</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>TerrainMaterial DefaultTerrainMaterial 1 Grass1Albedo.png Grass1NormalMap.png Grass1Roughness.png None Grass1AmbientOcclusion.png Grass1Displacement.png Stone3Albedo.png Stone3NormalMap.png Stone3Roughness.png None Stone3AmbientOcclusion.png Stone3Displacement.png Snow2Albedo.png Snow2NormalMap.png Snow2Roughness.png None None Snow2Displacement.png</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>TerrainMaterial DefaultTerrainMaterial 5 Grass1Albedo.png Grass1NormalMap.png Grass1Roughness.png None Grass1AmbientOcclusion.png Grass1Displacement.png Sand1Albedo.png Sand1NormalMap.png Sand1Roughness.png None Sand1AmbientOcclusion.png Sand1Displacement.png Stone1Albedo.png Stone1NormalMap.png Stone1Roughness.png None Stone1AmbientOcclusion.png Stone1Displacement.png</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>TerrainMaterial DefaultTerrainMaterial 1 Grass1Albedo.png Grass1NormalMap.png Grass1Roughness.png None Grass1AmbientOcclusion.png Grass1Displacement.png Stone3Albedo.png Stone3NormalMap.png Stone3Roughness.png None Stone3AmbientOcclusion.png Stone3Displacement.png Snow2Albedo.png Snow2NormalMap.png Snow2Roughness.png None None Snow2Displacement.png</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>TerrainMaterial DefaultTerrainMaterial 5 Grass1Albedo.png Grass1NormalMap.png Grass1Roughness.png None Grass1AmbientOcclusion.png Grass1Displacement.png Sand1Albedo.png Sand1NormalMap.png Sand1Roughness.png None Sand1AmbientOcclusion.png Sand1Displacement.png Stone1Albedo.png Stone1NormalMap.png Stone1Roughness.png None Stone1AmbientOcclusion.png Stone1Displacement.png</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

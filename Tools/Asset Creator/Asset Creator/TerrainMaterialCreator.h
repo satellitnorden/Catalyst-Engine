@@ -3,6 +3,8 @@
 //Asset creator.
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include "stb_image_resize.h"
 #include "Utilities.h"
 
 //STL.
@@ -43,7 +45,22 @@ namespace TerrainMaterialCreator
 
 			for (unsigned int i = 0; i < numberOfMipmapLevels; ++i)
 			{
-				terrainMaterialFile.write(reinterpret_cast<char*>(data), textureSize >> i);
+				//If this is the base mipmap level, just copy the thing directly into memory.
+				if (i == 0)
+				{
+					terrainMaterialFile.write(reinterpret_cast<char*>(data), textureSize >> i);
+				}
+				
+				//Else, the image data should be resized.
+				else
+				{
+					unsigned char *downsampledData = static_cast<unsigned char*>(malloc(textureSize >> i));
+					stbir_resize_uint8(data, width, height, 0, downsampledData, width >> i, height >> i, 0, 4);
+
+					terrainMaterialFile.write(reinterpret_cast<char*>(downsampledData), textureSize >> i);
+
+					free(downsampledData);
+				}
 			}
 
 			//Free the layer albedo data.
@@ -55,7 +72,22 @@ namespace TerrainMaterialCreator
 			//Write the layer albedo to the file, to be read into byte's.
 			for (unsigned int i = 0; i < numberOfMipmapLevels; ++i)
 			{
-				terrainMaterialFile.write(reinterpret_cast<char*>(data), textureSize >> i);
+				//If this is the base mipmap level, just copy the thing directly into memory.
+				if (i == 0)
+				{
+					terrainMaterialFile.write(reinterpret_cast<char*>(data), textureSize >> i);
+				}
+
+				//Else, the image data should be resized.
+				else
+				{
+					unsigned char *downsampledData = static_cast<unsigned char*>(malloc(textureSize >> i));
+					stbir_resize_uint8(data, width, height, 0, downsampledData, width >> i, height >> i, 0, 4);
+
+					terrainMaterialFile.write(reinterpret_cast<char*>(downsampledData), textureSize >> i);
+
+					free(downsampledData);
+				}
 			}
 
 			//Free the layer normal map data.
@@ -77,12 +109,42 @@ namespace TerrainMaterialCreator
 
 			for (unsigned int i = 0; i < numberOfMipmapLevels; ++i)
 			{
-				for (unsigned int j = 0; j < (textureSize >> i); ++j)
+				//If this is the base mipmap level, treat it differently.
+				if (i == 0)
 				{
-					terrainMaterialFile.write(roughnessData ? reinterpret_cast<const char*>(&roughnessData[j]) : reinterpret_cast<const char*>(&defaultRoughness), sizeof(char));
-					terrainMaterialFile.write(metallicData ? reinterpret_cast<const char*>(&metallicData[j]) : reinterpret_cast<const char*>(&defaultMetallic), sizeof(char));
-					terrainMaterialFile.write(ambientOcclusionData ? reinterpret_cast<const char*>(&ambientOcclusionData[j]) : reinterpret_cast<const char*>(&defaultAmbientOcclusion), sizeof(char));
-					terrainMaterialFile.write(displacementData ? reinterpret_cast<const char*>(&displacementData[j]) : reinterpret_cast<const char*>(&defaultDisplacement), sizeof(char));
+					for (unsigned int j = 0; j < textureSize; ++j)
+					{
+						terrainMaterialFile.write(roughnessData ? reinterpret_cast<const char*>(&roughnessData[j]) : reinterpret_cast<const char*>(&defaultRoughness), sizeof(char));
+						terrainMaterialFile.write(metallicData ? reinterpret_cast<const char*>(&metallicData[j]) : reinterpret_cast<const char*>(&defaultMetallic), sizeof(char));
+						terrainMaterialFile.write(ambientOcclusionData ? reinterpret_cast<const char*>(&ambientOcclusionData[j]) : reinterpret_cast<const char*>(&defaultAmbientOcclusion), sizeof(char));
+						terrainMaterialFile.write(displacementData ? reinterpret_cast<const char*>(&displacementData[j]) : reinterpret_cast<const char*>(&defaultDisplacement), sizeof(char));
+					}
+				}	
+
+				else
+				{
+					unsigned char *downsampledRoughnessData = roughnessData ? static_cast<unsigned char*>(malloc(textureSize >> i)) : nullptr;
+					unsigned char *downsampledMetallicData = metallicData ? static_cast<unsigned char*>(malloc(textureSize >> i)) : nullptr;
+					unsigned char *downsampledAmbientOcclusionData = ambientOcclusionData ? static_cast<unsigned char*>(malloc(textureSize >> i)) : nullptr;
+					unsigned char *downsampledDisplacementData = displacementData ? static_cast<unsigned char*>(malloc(textureSize >> i)) : nullptr;
+
+					if (roughnessData) stbir_resize_uint8(roughnessData, width, height, 0, downsampledRoughnessData, width >> i, height >> i, 0, 1);
+					if (metallicData) stbir_resize_uint8(metallicData, width, height, 0, downsampledMetallicData, width >> i, height >> i, 0, 1);
+					if (ambientOcclusionData) stbir_resize_uint8(ambientOcclusionData, width, height, 0, downsampledAmbientOcclusionData, width >> i, height >> i, 0, 1);
+					if (displacementData) stbir_resize_uint8(displacementData, width, height, 0, downsampledDisplacementData, width >> i, height >> i, 0, 1);
+
+					for (unsigned int j = 0; j < textureSize >> i; ++j)
+					{
+						terrainMaterialFile.write(downsampledRoughnessData ? reinterpret_cast<const char*>(&downsampledRoughnessData[j]) : reinterpret_cast<const char*>(&defaultRoughness), sizeof(char));
+						terrainMaterialFile.write(downsampledMetallicData ? reinterpret_cast<const char*>(&downsampledMetallicData[j]) : reinterpret_cast<const char*>(&defaultMetallic), sizeof(char));
+						terrainMaterialFile.write(downsampledAmbientOcclusionData ? reinterpret_cast<const char*>(&downsampledAmbientOcclusionData[j]) : reinterpret_cast<const char*>(&defaultAmbientOcclusion), sizeof(char));
+						terrainMaterialFile.write(downsampledDisplacementData ? reinterpret_cast<const char*>(&downsampledDisplacementData[j]) : reinterpret_cast<const char*>(&defaultDisplacement), sizeof(char));
+					}
+
+					free(downsampledRoughnessData);
+					free(downsampledMetallicData);
+					free(downsampledAmbientOcclusionData);
+					free(downsampledDisplacementData);
 				}
 			}
 

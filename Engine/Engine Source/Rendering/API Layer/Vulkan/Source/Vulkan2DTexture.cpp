@@ -92,7 +92,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 /*
 *	Initializes this texture with byte data.
 */
-void Vulkan2DTexture::Initialize(const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const DynamicArray<DynamicArray<byte>> &textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
+void Vulkan2DTexture::Initialize(const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const DynamicArray<DynamicArray<byte>> &textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
 	//Calculate the mipmap levels.
 	const uint32 textureMipmapLevels{ static_cast<uint32>(textureData.Size()) };
@@ -102,7 +102,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureWidth, const uint32 texture
 
 	for (uint32 i = 0; i < textureMipmapLevels; ++i)
 	{
-		imageSize += (textureWidth >> i) * (textureHeight >> i) * textureChannels * textureTexelSize;
+		imageSize += (textureWidth >> i) * (textureHeight >> i) * textureChannels;
 	}
 
 	//Set up the staging buffer.
@@ -121,7 +121,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureWidth, const uint32 texture
 
 	for (size_t i = 0; i < textureMipmapLevels; ++i)
 	{
-		const size_t mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels * static_cast<size_t>(textureTexelSize) };
+		const size_t mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels };
 		MemoryUtilities::CopyMemory(static_cast<byte*>(data) + currentOffset, textureData[i].Data(), mipSize);
 
 		currentOffset += mipSize;

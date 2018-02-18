@@ -135,24 +135,24 @@ void WorldArchitect::Initialize() NOEXCEPT
 		{
 			Vector4 terrainPropertiesValue{ terrainProperties.At(i, j) * 2.0f - 1.0f };
 			
-			layerWeights.At(i, j).X = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)) - 0.1f, 0.0f, 1.0f));
-		
 			const float heightValue{ terrainPropertiesValue.W };
 
-			if (heightValue < 0.7f)
+			if (heightValue > -0.7f)
 			{
-				layerWeights.At(i, j).Y = 0.0f;
+				layerWeights.At(i, j).X = 0.0f;
 			}
 
-			else if (heightValue > 0.8f)
+			else if (heightValue < -0.8f)
 			{
-				layerWeights.At(i, j).Y = 1.0f;
+				layerWeights.At(i, j).X = 1.0f;
 			}
 
 			else
 			{
-				layerWeights.At(i, j).Y = (heightValue - 0.7f) * 10.0f;
+				layerWeights.At(i, j).X = 1.0f - (heightValue + 0.8f) * 10.0f;
 			}
+
+			layerWeights.At(i, j).Y = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)), 0.0f, 1.0f));
 
 			layerWeights.At(i, j).Z = 0.0f;
 			layerWeights.At(i, j).W = 0.0f;
