@@ -31,7 +31,7 @@
 namespace
 {
 	static constexpr uint32 HEIGHT_MAP_RESOLUTION{ 4'096 };
-	static constexpr float TERRAIN_HEIGHT{ 2'000.0f };
+	static constexpr float TERRAIN_HEIGHT{ 1'000.0f };
 	static constexpr float TERRAIN_SIZE{ 10'000.0f };
 }
 
@@ -158,7 +158,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 			layerWeights.At(i, j).Y = GameMath::GetSmoothInterpolationValue((PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * 0.75f;
 
 			//Determine the weight of the rock layer.
-			layerWeights.At(i, j).Z = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)), 0.0f, 1.0f));
+			layerWeights.At(i, j).Z = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)) + 0.1f, 0.0f, 1.0f));
 
 			//Determine the weight of the snow layer.
 			if (heightValue < 0.7f)
