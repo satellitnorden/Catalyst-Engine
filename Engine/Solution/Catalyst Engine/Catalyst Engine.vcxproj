@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Asset Loading\Include\AssetLoader.h" />
+    <ClInclude Include="..\..\Engine Source\Asset Loading\Include\AssetLoaderUtilities.h" />
     <ClInclude Include="..\..\Engine Source\Asset Loading\Include\TerrainMaterialData.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\CameraComponent.h" />
     <ClInclude Include="..\..\Engine Source\Components\Include\ComponentManager.h" />

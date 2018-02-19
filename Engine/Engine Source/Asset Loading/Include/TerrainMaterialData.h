@@ -56,4 +56,34 @@ public:
 	//The third layer properties data.
 	DynamicArray<DynamicArray<byte>> thirdLayerMaterialPropertiesData;
 
+	//The width of the fourth layer.
+	uint32 fourthLayerWidth;
+
+	//The height of the fourth layer.
+	uint32 fourthLayerHeight;
+
+	//The fourth layer albedo data.
+	DynamicArray<DynamicArray<byte>> fourthLayerAlbedoData;
+
+	//The fourth layer normal map data.
+	DynamicArray<DynamicArray<byte>> fourthLayerNormalMapData;
+
+	//The fourth layer properties data.
+	DynamicArray<DynamicArray<byte>> fourthLayerMaterialPropertiesData;
+
+	//The width of the fifth layer.
+	uint32 fifthLayerWidth;
+
+	//The height of the fifth layer.
+	uint32 fifthLayerHeight;
+
+	//The fifth layer albedo data.
+	DynamicArray<DynamicArray<byte>> fifthLayerAlbedoData;
+
+	//The fifth layer normal map data.
+	DynamicArray<DynamicArray<byte>> fifthLayerNormalMapData;
+
+	//The fifth layer properties data.
+	DynamicArray<DynamicArray<byte>> fifthLayerMaterialPropertiesData;
+
 };

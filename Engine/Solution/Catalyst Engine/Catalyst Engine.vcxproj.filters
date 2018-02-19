@@ -683,6 +683,9 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\BinaryFile.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Asset Loading\Include\AssetLoaderUtilities.h">
+      <Filter>Engine Source\Asset Loading\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Engine Source\Systems\Inline\EntitySystem.inl">

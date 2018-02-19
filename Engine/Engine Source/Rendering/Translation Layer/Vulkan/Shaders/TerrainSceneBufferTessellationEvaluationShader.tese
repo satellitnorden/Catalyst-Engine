@@ -67,6 +67,8 @@ layout (binding = 3) uniform sampler2D layerWeightsTexture;
 layout (binding = 6) uniform sampler2D layer1MaterialPropertiesTexture;
 layout (binding = 9) uniform sampler2D layer2MaterialPropertiesTexture;
 layout (binding = 12) uniform sampler2D layer3MaterialPropertiesTexture;
+layout (binding = 15) uniform sampler2D layer4MaterialPropertiesTexture;
+layout (binding = 18) uniform sampler2D layer5MaterialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec2 fragmentHeightMapTextureCoordinate;
@@ -82,10 +84,14 @@ float GetDisplacement()
     float layer1Displacement = texture(layer1MaterialPropertiesTexture, fragmentTextureCoordinate).w;
     float layer2Displacement = texture(layer2MaterialPropertiesTexture, fragmentTextureCoordinate).w;
     float layer3Displacement = texture(layer3MaterialPropertiesTexture, fragmentTextureCoordinate).w;
+    float layer4Displacement = texture(layer4MaterialPropertiesTexture, fragmentTextureCoordinate).w;
+    float layer5Displacement = texture(layer5MaterialPropertiesTexture, fragmentTextureCoordinate).w;
 
     float blend1 = mix(layer1Displacement, layer2Displacement, layerWeightsSampler.x);
+    float blend2 = mix(blend1, layer3Displacement, layerWeightsSampler.y);
+    float blend3 = mix(blend2, layer3Displacement, layerWeightsSampler.z);
 
-    return (mix(blend1, layer3Displacement, layerWeightsSampler.y) * terrainDisplacementHeight) - (terrainDisplacementHeight * 0.5f);
+    return (mix(blend3, layer5Displacement, layerWeightsSampler.w) * terrainDisplacementHeight) - (terrainDisplacementHeight * 0.5f);
 }
 
 void main()

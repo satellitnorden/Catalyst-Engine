@@ -9,7 +9,7 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include <stb_image_resize.h>
 
-#define NUMBER_OF_TERRAIN_LAYERS 3
+#define NUMBER_OF_TERRAIN_LAYERS 5
 
 namespace TerrainMaterialCreator
 {

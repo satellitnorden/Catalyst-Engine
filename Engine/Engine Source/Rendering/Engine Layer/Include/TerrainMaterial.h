@@ -38,4 +38,22 @@ public:
 	//The third layer material properties.
 	Texture2DHandle thirdLayerMaterialProperties;
 
+	//The fourth layer albedo texture.
+	Texture2DHandle fourthLayerAlbedo;
+
+	//The fourth layer normal map.
+	Texture2DHandle fourthLayerNormalMap;
+
+	//The fourth layer material properties.
+	Texture2DHandle fourthLayerMaterialProperties;
+
+	//The fifth layer albedo texture.
+	Texture2DHandle fifthLayerAlbedo;
+
+	//The fifth layer normal map.
+	Texture2DHandle fifthLayerNormalMap;
+
+	//The fifth layer material properties.
+	Texture2DHandle fifthLayerMaterialProperties;
+
 };

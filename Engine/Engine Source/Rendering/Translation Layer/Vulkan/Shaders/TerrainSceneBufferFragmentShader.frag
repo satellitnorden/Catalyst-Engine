@@ -69,6 +69,12 @@ layout (binding = 9) uniform sampler2D layer2MaterialPropertiesTexture;
 layout (binding = 10) uniform sampler2D layer3AlbedoTexture;
 layout (binding = 11) uniform sampler2D layer3NormalMapTexture;
 layout (binding = 12) uniform sampler2D layer3MaterialPropertiesTexture;
+layout (binding = 13) uniform sampler2D layer4AlbedoTexture;
+layout (binding = 14) uniform sampler2D layer4NormalMapTexture;
+layout (binding = 15) uniform sampler2D layer4MaterialPropertiesTexture;
+layout (binding = 16) uniform sampler2D layer5AlbedoTexture;
+layout (binding = 17) uniform sampler2D layer5NormalMapTexture;
+layout (binding = 18) uniform sampler2D layer5MaterialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
@@ -79,6 +85,8 @@ layout (location = 2) out vec4 roughnessMetallicAmbientOcclusion;
 vec4 layer1MaterialPropertiesSampler;
 vec4 layer2MaterialPropertiesSampler;
 vec4 layer3MaterialPropertiesSampler;
+vec4 layer4MaterialPropertiesSampler;
+vec4 layer5MaterialPropertiesSampler;
 
 /*
 *	Returns the albedo.
@@ -88,10 +96,14 @@ vec4 GetAlbedo()
     vec4 layer1Albedo = texture(layer1AlbedoTexture, fragmentTextureCoordinate);
     vec4 layer2Albedo = texture(layer2AlbedoTexture, fragmentTextureCoordinate);
     vec4 layer3Albedo = texture(layer3AlbedoTexture, fragmentTextureCoordinate);
+    vec4 layer4Albedo = texture(layer4AlbedoTexture, fragmentTextureCoordinate);
+    vec4 layer5Albedo = texture(layer5AlbedoTexture, fragmentTextureCoordinate);
 
     vec4 blend1 = mix(layer1Albedo, layer2Albedo, layerWeightsSampler.x);
+    vec4 blend2 = mix(blend1, layer3Albedo, layerWeightsSampler.y);
+    vec4 blend3 = mix(blend2, layer4Albedo, layerWeightsSampler.z);
 
-    return mix(blend1, layer3Albedo, layerWeightsSampler.y);
+    return mix(blend3, layer5Albedo, layerWeightsSampler.w);
 }
 
 /*
@@ -102,10 +114,14 @@ vec3 GetNormalDirection()
 	vec3 layer1NormalDirection = texture(layer1NormalMapTexture, fragmentTextureCoordinate).xyz;
     vec3 layer2NormalDirection = texture(layer2NormalMapTexture, fragmentTextureCoordinate).xyz;
     vec3 layer3NormalDirection = texture(layer3NormalMapTexture, fragmentTextureCoordinate).xyz;
+    vec3 layer4NormalDirection = texture(layer4NormalMapTexture, fragmentTextureCoordinate).xyz;
+    vec3 layer5NormalDirection = texture(layer5NormalMapTexture, fragmentTextureCoordinate).xyz;
 
     vec3 blend1 = mix(layer1NormalDirection, layer2NormalDirection, layerWeightsSampler.x);
+    vec3 blend2 = mix(blend1, layer3NormalDirection, layerWeightsSampler.y);
+    vec3 blend3 = mix(blend2, layer4NormalDirection, layerWeightsSampler.z);
 
-    return mix(blend1, layer3NormalDirection, layerWeightsSampler.y) * 2.0f - 1.0f;
+    return mix(blend3, layer5NormalDirection, layerWeightsSampler.w) * 2.0f - 1.0f;
 }
 
 /*
@@ -116,10 +132,14 @@ float GetRoughness()
 	float layer1Roughness = layer1MaterialPropertiesSampler.r;
     float layer2Roughness = layer2MaterialPropertiesSampler.r;
     float layer3Roughness = layer3MaterialPropertiesSampler.r;
+    float layer4Roughness = layer4MaterialPropertiesSampler.r;
+    float layer5Roughness = layer5MaterialPropertiesSampler.r;
 
     float blend1 = mix(layer1Roughness, layer2Roughness, layerWeightsSampler.x);
+    float blend2 = mix(blend1, layer3Roughness, layerWeightsSampler.x);
+    float blend3 = mix(blend2, layer4Roughness, layerWeightsSampler.x);
 
-    return mix(blend1, layer3Roughness, layerWeightsSampler.y);
+    return mix(blend3, layer5Roughness, layerWeightsSampler.y);
 }
 
 /*
@@ -130,10 +150,14 @@ float GetMetallic()
 	float layer1Metallic = layer1MaterialPropertiesSampler.y;
     float layer2Metallic = layer2MaterialPropertiesSampler.y;
     float layer3Metallic = layer3MaterialPropertiesSampler.y;
+    float layer4Metallic = layer4MaterialPropertiesSampler.y;
+    float layer5Metallic = layer5MaterialPropertiesSampler.y;
 
     float blend1 = mix(layer1Metallic, layer2Metallic, layerWeightsSampler.x);
+    float blend2 = mix(blend1, layer3Metallic, layerWeightsSampler.y);
+    float blend3 = mix(blend2, layer4Metallic, layerWeightsSampler.z);
 
-    return mix(blend1, layer3Metallic, layerWeightsSampler.y);
+    return mix(blend3, layer5Metallic, layerWeightsSampler.w);
 }
 
 /*
@@ -144,10 +168,14 @@ float GetAmbientOcclusion()
 	float layer1AmbientOcclusion = layer1MaterialPropertiesSampler.z;
     float layer2AmbientOcclusion = layer2MaterialPropertiesSampler.z;
     float layer3AmbientOcclusion = layer3MaterialPropertiesSampler.z;
+    float layer4AmbientOcclusion = layer4MaterialPropertiesSampler.z;
+    float layer5AmbientOcclusion = layer5MaterialPropertiesSampler.z;
 
     float blend1 = mix(layer1AmbientOcclusion, layer2AmbientOcclusion, layerWeightsSampler.x);
+    float blend2 = mix(blend1, layer3AmbientOcclusion, layerWeightsSampler.y);
+    float blend3 = mix(blend2, layer4AmbientOcclusion, layerWeightsSampler.z);
 
-    return mix(blend1, layer3AmbientOcclusion, layerWeightsSampler.y);
+    return mix(blend3, layer5AmbientOcclusion, layerWeightsSampler.w);
 }
 
 void main()
@@ -156,6 +184,8 @@ void main()
     layer1MaterialPropertiesSampler = texture(layer1MaterialPropertiesTexture, fragmentTextureCoordinate);
     layer2MaterialPropertiesSampler = texture(layer2MaterialPropertiesTexture, fragmentTextureCoordinate);
     layer3MaterialPropertiesSampler = texture(layer3MaterialPropertiesTexture, fragmentTextureCoordinate);
+    layer4MaterialPropertiesSampler = texture(layer4MaterialPropertiesTexture, fragmentTextureCoordinate);
+    layer5MaterialPropertiesSampler = texture(layer5MaterialPropertiesTexture, fragmentTextureCoordinate);
 
 	//Set the albedo color.
 	albedoColor = GetAlbedo();

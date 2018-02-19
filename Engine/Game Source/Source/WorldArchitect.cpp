@@ -133,29 +133,48 @@ void WorldArchitect::Initialize() NOEXCEPT
 	{
 		for (uint32 j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
 		{
+			//Determine the weight of the grass layer.
 			Vector4 terrainPropertiesValue{ terrainProperties.At(i, j) * 2.0f - 1.0f };
 			
 			const float heightValue{ terrainPropertiesValue.W };
 
-			if (heightValue > -0.7f)
-			{
-				layerWeights.At(i, j).X = 0.0f;
-			}
-
-			else if (heightValue < -0.8f)
+			if (heightValue > -0.8f)
 			{
 				layerWeights.At(i, j).X = 1.0f;
 			}
 
-			else
+			else if (heightValue < -0.9f)
 			{
-				layerWeights.At(i, j).X = 1.0f - (heightValue + 0.8f) * 10.0f;
+				layerWeights.At(i, j).X = 0.0f;
 			}
 
-			layerWeights.At(i, j).Y = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)), 0.0f, 1.0f));
+			else
+			{
+				layerWeights.At(i, j).X = (heightValue + 0.9f) * 10.0f;
+			}
 
-			layerWeights.At(i, j).Z = 0.0f;
-			layerWeights.At(i, j).W = 0.0f;
+			//Determine the weight of the dirt layer.
+			constexpr float dirtLayerFrequency{ 100.0f };
+			layerWeights.At(i, j).Y = GameMath::GetSmoothInterpolationValue((PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * 0.75f;
+
+			//Determine the weight of the rock layer.
+			layerWeights.At(i, j).Z = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)), 0.0f, 1.0f));
+
+			//Determine the weight of the snow layer.
+			if (heightValue < 0.7f)
+			{
+				layerWeights.At(i, j).W = 0.0f;
+			}
+
+			else if (heightValue > 0.8f)
+			{
+				layerWeights.At(i, j).W = 1.0f;
+			}
+
+			else
+			{
+				layerWeights.At(i, j).W = (heightValue - 0.7f) * 10.0f;
+			}
 		}
 	}
 
