@@ -317,7 +317,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_ENGINE;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
@@ -330,7 +330,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_ENGINE;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
@@ -345,7 +345,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_ENGINE;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
@@ -362,7 +362,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>CATALYST_FINAL;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_ENGINE;CATALYST_FINAL;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
@@ -379,7 +379,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_ENGINE;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
@@ -396,7 +396,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <PreprocessorDefinitions>CATALYST_FINAL;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CATALYST_ENGINE;CATALYST_FINAL;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>

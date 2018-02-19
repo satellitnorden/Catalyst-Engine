@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{FC34E69C-A552-4398-B55A-EA8A2AE8FDA1}</ProjectGuid>
+    <ProjectGuid>{85B102EE-049B-4B8E-A88D-C46C63DB1869}</ProjectGuid>
     <RootNamespace>AssetCreator</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -69,9 +69,36 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Tools Source\Asset Creator\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Asset Creator\Source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Tools Source\Asset Creator\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Asset Creator\Source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Tools Source\Asset Creator\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Asset Creator\Source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Tools Source\Asset Creator\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Asset Creator\Source;$(SourcePath)</SourcePath>
     <TargetName>AssetCreator</TargetName>
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -99,27 +126,13 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-    </ClCompile>
-    <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="..\..\Tools Source\Asset Creator\Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="stb_image_resize.h" />
-    <ClInclude Include="TerrainMaterialCreator.h" />
-    <ClInclude Include="Utilities.h" />
+    <ClInclude Include="..\..\Tools Source\Asset Creator\Include\stb_image.h" />
+    <ClInclude Include="..\..\Tools Source\Asset Creator\Include\stb_image_resize.h" />
+    <ClInclude Include="..\..\Tools Source\Asset Creator\Include\TerrainMaterialCreator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

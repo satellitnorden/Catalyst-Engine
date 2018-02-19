@@ -1,7 +1,8 @@
 #Ignore everything in these folders.
-Engine/Project/.vs/*
-Engine/Project/Catalyst Engine/x64/*
-Engine/Project/x64/*
+Engine/Solution/.vs/*
+Engine/Solution/Asset Creator/x64/*
+Engine/Solution/Catalyst Engine/x64/*
+Engine/Solution/x64/*
 Tools/Asset Creator/.vs/*
 Tools/Asset Creator/Asset Creator/x64/*
 Tools/Asset Creator/x64/*
@@ -10,6 +11,6 @@ Tools/Asset Creator/x64/*
 *.ctm
 
 #But not these!
-!Engine/Project/x64/Debug/assimp.dll
-!Engine/Project/x64/Release/assimp.dll
-!Engine/Project/x64/Final/assimp.dll
+!Engine/Solution/x64/Debug/assimp.dll
+!Engine/Solution/x64/Release/assimp.dll
+!Engine/Solution/x64/Final/assimp.dll

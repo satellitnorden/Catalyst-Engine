@@ -74,5 +74,7 @@ class UniquePointer;
 #include <StaticArray.h>
 #include <UniquePointer.h>
 
-//The project settings.
-#include <ProjectSettings.h>
+#if defined(CATALYST_ENGINE)
+	//The project settings.
+	#include <ProjectSettings.h>
+#endif

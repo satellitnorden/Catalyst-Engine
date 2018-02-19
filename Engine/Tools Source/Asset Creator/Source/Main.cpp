@@ -1,13 +1,15 @@
-//STL.
-#include <iostream>
+//Engine core.
+#include <EngineCore.h>
 
-//Asset creators.
-#include "TerrainMaterialCreator.h"
+//Asset creator.
+#include <TerrainMaterialCreator.h>
 
 //Preprocessor defines.
-#define EXIT_SUCCESS 0
+#if !defined(EXIT_SUCCESS)
+	#define EXIT_SUCCESS
+#endif
 
-int main(const int argumentCount, char *arguments[]) noexcept
+int main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 {
 	//First, determine what type of asset that is supposed to be created.
 	if (strcmp(arguments[1], "TerrainMaterial") == 0)

@@ -1,11 +1,13 @@
 #pragma once
 
+//Engine core.
+#include <EngineCore.h>
+
 //Asset creator.
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <stb_image.h>
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
-#include "stb_image_resize.h"
-#include "Utilities.h"
+#include <stb_image_resize.h>
 
 //STL.
 #include <fstream>
@@ -50,7 +52,7 @@ namespace TerrainMaterialCreator
 				{
 					terrainMaterialFile.write(reinterpret_cast<char*>(data), textureSize >> i);
 				}
-				
+
 				//Else, the image data should be resized.
 				else
 				{
@@ -119,7 +121,7 @@ namespace TerrainMaterialCreator
 						terrainMaterialFile.write(ambientOcclusionData ? reinterpret_cast<const char*>(&ambientOcclusionData[j]) : reinterpret_cast<const char*>(&defaultAmbientOcclusion), sizeof(char));
 						terrainMaterialFile.write(displacementData ? reinterpret_cast<const char*>(&displacementData[j]) : reinterpret_cast<const char*>(&defaultDisplacement), sizeof(char));
 					}
-				}	
+				}
 
 				else
 				{
