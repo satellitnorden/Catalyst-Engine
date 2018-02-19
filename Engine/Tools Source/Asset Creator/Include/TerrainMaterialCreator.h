@@ -9,28 +9,25 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include <stb_image_resize.h>
 
-//STL.
-#include <fstream>
-#include <string>
-
 #define NUMBER_OF_TERRAIN_LAYERS 3
 
 namespace TerrainMaterialCreator
 {
 
-	void CreateTerrainMaterial(const int argumentCount, char *arguments[]) noexcept
+	void CreateTerrainMaterial(const int32 argumentCount, char *RESTRICT arguments[]) noexcept
 	{
 		//What should the material be called?
-		std::string terrainMaterialName{ arguments[2] + std::string(".ctm") };
+		DynamicString terrainMaterialName{ arguments[2] };
+		terrainMaterialName += ".ctm";
 
 		//Open the file to be written to.
-		std::ofstream terrainMaterialFile{ terrainMaterialName.c_str(), std::ios::out | std::ios::binary };
+		BinaryFile<IOMode::Out> terrainMaterialFile{ terrainMaterialName.CString() };
 
 		//Determine how many mipmap levels that should be generated.
-		const unsigned int numberOfMipmapLevels{ static_cast<unsigned int>(*arguments[3] - '0') };
+		unsigned int numberOfMipmapLevels{ static_cast<unsigned int>(*arguments[3] - '0') };
 
 		//Write the number of mipmap levels to the file, to be read into a uint8.
-		terrainMaterialFile.write(reinterpret_cast<const char*>(&numberOfMipmapLevels), sizeof(char));
+		terrainMaterialFile.Write(&numberOfMipmapLevels, sizeof(char));
 
 		for (unsigned int i = 0; i < NUMBER_OF_TERRAIN_LAYERS; ++i)
 		{
@@ -39,8 +36,8 @@ namespace TerrainMaterialCreator
 			unsigned char *data{ stbi_load(arguments[4 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 			//Write the width and height of the layer into the file, to be read into uint32's.
-			terrainMaterialFile.write(reinterpret_cast<const char*>(&width), sizeof(int));
-			terrainMaterialFile.write(reinterpret_cast<const char*>(&height), sizeof(int));
+			terrainMaterialFile.Write(&width, sizeof(int));
+			terrainMaterialFile.Write(&height, sizeof(int));
 
 			//Write the layer albedo to the file, to be read into byte's.
 			unsigned long int textureSize{ static_cast<unsigned int>(width * height * 4) };
@@ -50,7 +47,7 @@ namespace TerrainMaterialCreator
 				//If this is the base mipmap level, just copy the thing directly into memory.
 				if (i == 0)
 				{
-					terrainMaterialFile.write(reinterpret_cast<char*>(data), textureSize >> i);
+					terrainMaterialFile.Write(data, textureSize >> i);
 				}
 
 				//Else, the image data should be resized.
@@ -59,7 +56,7 @@ namespace TerrainMaterialCreator
 					unsigned char *downsampledData = static_cast<unsigned char*>(malloc(textureSize >> i));
 					stbir_resize_uint8(data, width, height, 0, downsampledData, width >> i, height >> i, 0, 4);
 
-					terrainMaterialFile.write(reinterpret_cast<char*>(downsampledData), textureSize >> i);
+					terrainMaterialFile.Write(downsampledData, textureSize >> i);
 
 					free(downsampledData);
 				}
@@ -77,7 +74,7 @@ namespace TerrainMaterialCreator
 				//If this is the base mipmap level, just copy the thing directly into memory.
 				if (i == 0)
 				{
-					terrainMaterialFile.write(reinterpret_cast<char*>(data), textureSize >> i);
+					terrainMaterialFile.Write(data, textureSize >> i);
 				}
 
 				//Else, the image data should be resized.
@@ -86,7 +83,7 @@ namespace TerrainMaterialCreator
 					unsigned char *downsampledData = static_cast<unsigned char*>(malloc(textureSize >> i));
 					stbir_resize_uint8(data, width, height, 0, downsampledData, width >> i, height >> i, 0, 4);
 
-					terrainMaterialFile.write(reinterpret_cast<char*>(downsampledData), textureSize >> i);
+					terrainMaterialFile.Write(downsampledData, textureSize >> i);
 
 					free(downsampledData);
 				}
@@ -116,10 +113,10 @@ namespace TerrainMaterialCreator
 				{
 					for (unsigned int j = 0; j < textureSize; ++j)
 					{
-						terrainMaterialFile.write(roughnessData ? reinterpret_cast<const char*>(&roughnessData[j]) : reinterpret_cast<const char*>(&defaultRoughness), sizeof(char));
-						terrainMaterialFile.write(metallicData ? reinterpret_cast<const char*>(&metallicData[j]) : reinterpret_cast<const char*>(&defaultMetallic), sizeof(char));
-						terrainMaterialFile.write(ambientOcclusionData ? reinterpret_cast<const char*>(&ambientOcclusionData[j]) : reinterpret_cast<const char*>(&defaultAmbientOcclusion), sizeof(char));
-						terrainMaterialFile.write(displacementData ? reinterpret_cast<const char*>(&displacementData[j]) : reinterpret_cast<const char*>(&defaultDisplacement), sizeof(char));
+						terrainMaterialFile.Write(roughnessData ? &roughnessData[j] : &defaultRoughness, sizeof(char));
+						terrainMaterialFile.Write(metallicData ? &metallicData[j] : &defaultMetallic, sizeof(char));
+						terrainMaterialFile.Write(ambientOcclusionData ? &ambientOcclusionData[j] : &defaultAmbientOcclusion, sizeof(char));
+						terrainMaterialFile.Write(displacementData ? &displacementData[j] : &defaultDisplacement, sizeof(char));
 					}
 				}
 
@@ -137,10 +134,10 @@ namespace TerrainMaterialCreator
 
 					for (unsigned int j = 0; j < textureSize >> i; ++j)
 					{
-						terrainMaterialFile.write(downsampledRoughnessData ? reinterpret_cast<const char*>(&downsampledRoughnessData[j]) : reinterpret_cast<const char*>(&defaultRoughness), sizeof(char));
-						terrainMaterialFile.write(downsampledMetallicData ? reinterpret_cast<const char*>(&downsampledMetallicData[j]) : reinterpret_cast<const char*>(&defaultMetallic), sizeof(char));
-						terrainMaterialFile.write(downsampledAmbientOcclusionData ? reinterpret_cast<const char*>(&downsampledAmbientOcclusionData[j]) : reinterpret_cast<const char*>(&defaultAmbientOcclusion), sizeof(char));
-						terrainMaterialFile.write(downsampledDisplacementData ? reinterpret_cast<const char*>(&downsampledDisplacementData[j]) : reinterpret_cast<const char*>(&defaultDisplacement), sizeof(char));
+						terrainMaterialFile.Write(downsampledRoughnessData ? &downsampledRoughnessData[j] : &defaultRoughness, sizeof(char));
+						terrainMaterialFile.Write(downsampledMetallicData ? &downsampledMetallicData[j] : &defaultMetallic, sizeof(char));
+						terrainMaterialFile.Write(downsampledAmbientOcclusionData ? &downsampledAmbientOcclusionData[j] : &defaultAmbientOcclusion, sizeof(char));
+						terrainMaterialFile.Write(downsampledDisplacementData ? &downsampledDisplacementData[j] : &defaultDisplacement, sizeof(char));
 					}
 
 					free(downsampledRoughnessData);
@@ -158,7 +155,7 @@ namespace TerrainMaterialCreator
 		}
 
 		//Close the file
-		terrainMaterialFile.close();
+		terrainMaterialFile.Close();
 	}
 
 }

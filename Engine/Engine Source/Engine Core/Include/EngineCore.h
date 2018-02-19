@@ -41,6 +41,11 @@
 #include <MemoryUtilities.h>
 
 //Core types, forward declarations.
+enum class IOMode : uint8;
+
+template <IOMode IoMode>
+class BinaryFile;
+
 template <uint8 BitFieldSize>
 class BitField;
 
@@ -65,6 +70,7 @@ template <class ObjectType>
 class UniquePointer;
 
 //Core types, implementations.
+#include <BinaryFile.h>
 #include <Bitfield.h>
 #include <DynamicArray.h>
 #include <DynamicString.h>

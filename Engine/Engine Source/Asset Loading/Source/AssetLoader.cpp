@@ -10,9 +10,6 @@
 //Systems.
 #include <RenderingSystem.h>
 
-//STL.
-#include <fstream>
-
 /*
 *	Given a file path, load a terrain material.
 */
@@ -22,16 +19,16 @@ void AssetLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMate
 	TerrainMaterialData terrainMaterialData;
 
 	//Load the file.
-	std::ifstream file{ filePath, std::ios::in | std::ios::binary };
+	BinaryFile<IOMode::In> file{ filePath };
 
 	//Read the number of mipmap levels.
-	file.read(reinterpret_cast<char *RESTRICT>(&terrainMaterialData.mipmapLevels), sizeof(uint8));
+	file.Read(&terrainMaterialData.mipmapLevels, sizeof(uint8));
 
 	//Read the width of the first layer.
-	file.read(reinterpret_cast<char *RESTRICT>(&terrainMaterialData.firstLayerWidth), sizeof(uint32));
+	file.Read(&terrainMaterialData.firstLayerWidth, sizeof(uint32));
 
 	//Read the height of the first layer.
-	file.read(reinterpret_cast<char *RESTRICT>(&terrainMaterialData.firstLayerHeight), sizeof(uint32));
+	file.Read(&terrainMaterialData.firstLayerHeight, sizeof(uint32));
 
 	//Read the first layer albedo.
 	terrainMaterialData.firstLayerAlbedoData.Resize(terrainMaterialData.mipmapLevels);
@@ -42,7 +39,7 @@ void AssetLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMate
 	{
 		terrainMaterialData.firstLayerAlbedoData[i].Reserve(textureSize >> i);
 
-		file.read(reinterpret_cast<char *RESTRICT>(terrainMaterialData.firstLayerAlbedoData[i].Data()), textureSize >> i);
+		file.Read(terrainMaterialData.firstLayerAlbedoData[i].Data(), textureSize >> i);
 	}
 
 	//Read the first layer normal map.
@@ -52,7 +49,7 @@ void AssetLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMate
 	{
 		terrainMaterialData.firstLayerNormalMapData[i].Reserve(textureSize >> i);
 
-		file.read(reinterpret_cast<char *RESTRICT>(terrainMaterialData.firstLayerNormalMapData[i].Data()), textureSize >> i);
+		file.Read(terrainMaterialData.firstLayerNormalMapData[i].Data(), textureSize >> i);
 	}
 
 	//Read the first layer material properties.
@@ -62,14 +59,14 @@ void AssetLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMate
 	{
 		terrainMaterialData.firstLayerMaterialPropertiesData[i].Reserve(textureSize >> i);
 
-		file.read(reinterpret_cast<char *RESTRICT>(terrainMaterialData.firstLayerMaterialPropertiesData[i].Data()), textureSize >> i);
+		file.Read(terrainMaterialData.firstLayerMaterialPropertiesData[i].Data(), textureSize >> i);
 	}
 
 	//Read the width of the second layer.
-	file.read(reinterpret_cast<char *RESTRICT>(&terrainMaterialData.secondLayerWidth), sizeof(uint32));
+	file.Read(&terrainMaterialData.secondLayerWidth, sizeof(uint32));
 
 	//Read the height of the second layer.
-	file.read(reinterpret_cast<char *RESTRICT>(&terrainMaterialData.secondLayerHeight), sizeof(uint32));
+	file.Read(&terrainMaterialData.secondLayerHeight, sizeof(uint32));
 
 	//Read the second layer albedo.
 	terrainMaterialData.secondLayerAlbedoData.Resize(terrainMaterialData.mipmapLevels);
@@ -80,7 +77,7 @@ void AssetLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMate
 	{
 		terrainMaterialData.secondLayerAlbedoData[i].Reserve(textureSize >> i);
 
-		file.read(reinterpret_cast<char *RESTRICT>(terrainMaterialData.secondLayerAlbedoData[i].Data()), textureSize >> i);
+		file.Read(terrainMaterialData.secondLayerAlbedoData[i].Data(), textureSize >> i);
 	}
 
 	//Read the second layer normal map.
@@ -90,7 +87,7 @@ void AssetLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMate
 	{
 		terrainMaterialData.secondLayerNormalMapData[i].Reserve(textureSize >> i);
 
-		file.read(reinterpret_cast<char *RESTRICT>(terrainMaterialData.secondLayerNormalMapData[i].Data()), textureSize >> i);
+		file.Read(terrainMaterialData.secondLayerNormalMapData[i].Data(), textureSize >> i);
 	}
 
 	//Read the second layer material properties.
@@ -100,14 +97,14 @@ void AssetLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMate
 	{
 		terrainMaterialData.secondLayerMaterialPropertiesData[i].Reserve(textureSize >> i);
 
-		file.read(reinterpret_cast<char *RESTRICT>(terrainMaterialData.secondLayerMaterialPropertiesData[i].Data()), textureSize >> i);
+		file.Read(terrainMaterialData.secondLayerMaterialPropertiesData[i].Data(), textureSize >> i);
 	}
 
 	//Read the width of the third layer.
-	file.read(reinterpret_cast<char *RESTRICT>(&terrainMaterialData.thirdLayerWidth), sizeof(uint32));
+	file.Read(&terrainMaterialData.thirdLayerWidth, sizeof(uint32));
 
 	//Read the height of the third layer.
-	file.read(reinterpret_cast<char *RESTRICT>(&terrainMaterialData.thirdLayerHeight), sizeof(uint32));
+	file.Read(&terrainMaterialData.thirdLayerHeight, sizeof(uint32));
 
 	//Read the third layer albedo.
 	terrainMaterialData.thirdLayerAlbedoData.Resize(terrainMaterialData.mipmapLevels);
@@ -118,7 +115,7 @@ void AssetLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMate
 	{
 		terrainMaterialData.thirdLayerAlbedoData[i].Reserve(textureSize >> i);
 
-		file.read(reinterpret_cast<char *RESTRICT>(terrainMaterialData.thirdLayerAlbedoData[i].Data()), textureSize >> i);
+		file.Read(terrainMaterialData.thirdLayerAlbedoData[i].Data(), textureSize >> i);
 	}
 
 	//Read the third layer normal map.
@@ -128,7 +125,7 @@ void AssetLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMate
 	{
 		terrainMaterialData.thirdLayerNormalMapData[i].Reserve(textureSize >> i);
 
-		file.read(reinterpret_cast<char *RESTRICT>(terrainMaterialData.thirdLayerNormalMapData[i].Data()), textureSize >> i);
+		file.Read(terrainMaterialData.thirdLayerNormalMapData[i].Data(), textureSize >> i);
 	}
 
 	//Read the third layer material properties.
@@ -138,11 +135,11 @@ void AssetLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMate
 	{
 		terrainMaterialData.thirdLayerMaterialPropertiesData[i].Reserve(textureSize >> i);
 
-		file.read(reinterpret_cast<char *RESTRICT>(terrainMaterialData.thirdLayerMaterialPropertiesData[i].Data()), textureSize >> i);
+		file.Read(terrainMaterialData.thirdLayerMaterialPropertiesData[i].Data(), textureSize >> i);
 	}
 
 	//Close the file.
-	file.close();
+	file.Close();
 
 	//Create the terrain material via the rendering system.
 	RenderingSystem::Instance->CreateTerrainMaterial(terrainMaterialData, terrainMaterial);

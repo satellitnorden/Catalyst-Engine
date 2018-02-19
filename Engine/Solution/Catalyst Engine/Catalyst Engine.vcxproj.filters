@@ -680,6 +680,9 @@
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TerrainMaterial.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Engine Core\Include\BinaryFile.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Engine Source\Systems\Inline\EntitySystem.inl">
