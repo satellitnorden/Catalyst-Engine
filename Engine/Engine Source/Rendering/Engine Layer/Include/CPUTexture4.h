@@ -78,17 +78,21 @@ public:
 		const float xStartTexel{ (xPixelPosition - xFractional) * texelSize };
 		const float yStartTexel{ (yPixelPosition - yFractional) * texelSize };
 
-		const size_t xBottomLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(xStartTexel * static_cast<float>(resolution)), 0, resolution - 1) };
-		const size_t yBottomLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(yStartTexel * static_cast<float>(resolution)), 0, resolution - 1) };
+		//Apparently this is needed, to sample the correct texel. I do not know why. Need to investigate. This keeps the camera from clipping against the terrain though.
+		constexpr size_t xModifier{ static_cast<size_t>(-1) };
+		constexpr size_t yModifier{ static_cast<size_t>(-1) };
 
-		const size_t xBottomRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((xStartTexel + texelSize) * static_cast<float>(resolution)), 0, resolution - 1) };
-		const size_t yBottomRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(yStartTexel * static_cast<float>(resolution)), 0, resolution - 1) };
+		const size_t xBottomLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(xStartTexel * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const size_t yBottomLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(yStartTexel * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
-		const size_t xTopLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(xStartTexel * static_cast<float>(resolution)), 0, resolution - 1) };
-		const size_t yTopLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((yStartTexel + texelSize) * static_cast<float>(resolution)), 0, resolution - 1) };
+		const size_t xBottomRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((xStartTexel + texelSize) * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const size_t yBottomRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(yStartTexel * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
-		const size_t xTopRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((xStartTexel + texelSize) * static_cast<float>(resolution)), 0, resolution - 1) };
-		const size_t yTopRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((yStartTexel + texelSize) * static_cast<float>(resolution)), 0, resolution - 1) };
+		const size_t xTopLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(xStartTexel * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const size_t yTopLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((yStartTexel + texelSize) * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
+
+		const size_t xTopRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((xStartTexel + texelSize) * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const size_t yTopRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((yStartTexel + texelSize) * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
 		const Vector4 &bottomLeftValue{ data[xBottomLeftCoordinate + (yBottomLeftCoordinate * resolution)] };
 		const Vector4 &bottomRightValue{ data[xBottomRightCoordinate + (yBottomRightCoordinate * resolution)] };
