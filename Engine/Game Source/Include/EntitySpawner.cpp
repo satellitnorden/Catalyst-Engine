@@ -36,9 +36,9 @@ EntitySpawner::~EntitySpawner() NOEXCEPT
 void EntitySpawner::Update(const float deltaTime) NOEXCEPT
 {
 	/*
-	static Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneAlbedo.png", TextureCreationParameters());
-	static Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneNormalMap.png", TextureCreationParameters());
-	static Vulkan2DTexture *stoneRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_TEXTURES_FOLDER "StoneRoughness.png", TextureCreationParameters());
+	static Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(GAME_RAW_TEXTURES_FOLDER "StoneAlbedo.png", TextureCreationParameters());
+	static Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(GAME_RAW_TEXTURES_FOLDER "StoneNormalMap.png", TextureCreationParameters());
+	static Vulkan2DTexture *stoneRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(GAME_RAW_TEXTURES_FOLDER "StoneRoughness.png", TextureCreationParameters());
 
 	//Create the stone model.
 	static const PhysicalModel stoneModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Stone.obj", stoneAlbedoTexture, stoneNormalMapTexture, stoneRoughnessTexture, nullptr, nullptr);

@@ -61,7 +61,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	sun->SetIntensity(10.0f);
 
 	//Create the sky!
-	TextureCubeMapHandle sky = RenderingSystem::Instance->CreateCubeMapTexture(GAME_TEXTURES_FOLDER "SkyFront.png", GAME_TEXTURES_FOLDER "SkyBack.png", GAME_TEXTURES_FOLDER "SkyUp.png", GAME_TEXTURES_FOLDER "SkyDown.png", GAME_TEXTURES_FOLDER "SkyRight.png", GAME_TEXTURES_FOLDER "SkyLeft.png");
+	TextureCubeMapHandle sky = RenderingSystem::Instance->CreateCubeMapTexture(GAME_RAW_TEXTURES_FOLDER "SkyFront.png", GAME_RAW_TEXTURES_FOLDER "SkyBack.png", GAME_RAW_TEXTURES_FOLDER "SkyUp.png", GAME_RAW_TEXTURES_FOLDER "SkyDown.png", GAME_RAW_TEXTURES_FOLDER "SkyRight.png", GAME_RAW_TEXTURES_FOLDER "SkyLeft.png");
 	RenderingSystem::Instance->SetActiveSkyBox(sky);
 
 	//Load the terrain material data.
@@ -167,9 +167,9 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	/*
 	//Place some stones. (:
-	Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "StoneAlbedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "StoneNormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *stoneRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_TEXTURES_FOLDER "StoneRoughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneAlbedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneNormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Vulkan2DTexture *stoneRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneRoughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the stone model.
 	const PhysicalModel stoneModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Stone.obj", stoneAlbedoTexture, stoneNormalMapTexture, stoneRoughnessTexture, nullptr, nullptr);

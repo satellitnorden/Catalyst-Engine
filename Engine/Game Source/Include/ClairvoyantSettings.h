@@ -23,7 +23,7 @@
 /*
 *	The game textures folder.
 */
-#define GAME_TEXTURES_FOLDER	"../../Game Content/Clairvoyant/Textures/"
+#define GAME_RAW_TEXTURES_FOLDER	"../../../Game/Clairvoyant/Assets/Raw/Textures/"
 
 /*
 *	Enumeration covering all game daily quests.

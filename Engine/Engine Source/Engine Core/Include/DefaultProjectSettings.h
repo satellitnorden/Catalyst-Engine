@@ -18,7 +18,7 @@
 /*
 *	The game textures folder.
 */
-#define GAME_TEXTURES_FOLDER	"../../Default Textures/"
+#define GAME_RAW_TEXTURES_FOLDER	"../../Default Textures/"
 
 /*
 *	Enumeration covering all game daily quests.
