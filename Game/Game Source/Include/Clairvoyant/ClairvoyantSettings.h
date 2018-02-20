@@ -18,7 +18,7 @@
 /*
 *	The game materials folder.
 */
-#define GAME_MATERIALS_FOLDER		"../../../Game/Clairvoyant/Assets/Final/Materials/"
+#define GAME_MATERIALS_FOLDER		"../../../Game/Game Resources/Clairvoyant/Assets/Final/Materials/"
 
 /*
 *	The game models folder.
@@ -28,7 +28,7 @@
 /*
 *	The game textures folder.
 */
-#define GAME_RAW_TEXTURES_FOLDER	"../../../Game/Clairvoyant/Assets/Raw/Textures/"
+#define GAME_RAW_TEXTURES_FOLDER	"../../../Game/Game Resources/Clairvoyant/Assets/Raw/Textures/"
 
 /*
 *	Enumeration covering all game daily quests.

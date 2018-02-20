@@ -130,6 +130,7 @@
     <ClCompile Include="..\..\Tools Source\Asset Creator\Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Tools Source\Asset Creator\Include\ResourceCreatorCore.h" />
     <ClInclude Include="..\..\Tools Source\Asset Creator\Include\stb_image.h" />
     <ClInclude Include="..\..\Tools Source\Asset Creator\Include\stb_image_resize.h" />
     <ClInclude Include="..\..\Tools Source\Asset Creator\Include\TerrainMaterialCreator.h" />

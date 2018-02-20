@@ -23,5 +23,8 @@
     <ClInclude Include="..\..\Tools Source\Asset Creator\Include\stb_image_resize.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Tools Source\Asset Creator\Include\ResourceCreatorCore.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

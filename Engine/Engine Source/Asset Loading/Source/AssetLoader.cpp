@@ -22,6 +22,17 @@ void AssetLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMate
 	//Load the file.
 	BinaryFile<IOMode::In> file{ filePath };
 
+	//Read the resource type.
+	uint8 resourceType;
+	file.Read(&resourceType, sizeof(uint8));
+
+#if !defined(CATALYST_FINAL)
+	if (resourceType != 0)
+	{
+		BREAKPOINT;
+	}
+#endif
+
 	//Read the number of mipmap levels.
 	file.Read(&terrainMaterialData.mipmapLevels, sizeof(uint8));
 

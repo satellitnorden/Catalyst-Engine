@@ -3,6 +3,9 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Resource creator.
+#include <ResourceCreatorCore.h>
+
 //Asset creator.
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -22,6 +25,10 @@ namespace TerrainMaterialCreator
 
 		//Open the file to be written to.
 		BinaryFile<IOMode::Out> terrainMaterialFile{ terrainMaterialName.CString() };
+
+		//Write the resource type to the file.
+		const uint8 resourceType{ static_cast<uint8>(ResourceType::TerrainMaterial) };
+		terrainMaterialFile.Write(&resourceType, sizeof(uint8));
 
 		//Determine how many mipmap levels that should be generated.
 		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[3] - '0') };
