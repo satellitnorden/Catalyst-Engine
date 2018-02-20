@@ -46,7 +46,11 @@ layout (std140, binding = 0) uniform DynamicUniformData
 //Terrain uniform buffer.
 layout (std140, binding = 1) uniform TerrainUniformData
 {
-    float terrainDisplacementHeight;
+    float terrainFirstLayerDisplacementHeight;
+    float terrainSecondLayerDisplacementHeight;
+    float terrainThirdLayerDisplacementHeight;
+    float terrainFourthLayerDisplacementHeight;
+    float terrainFifthLayerDisplacementHeight;
     float terrainHeight;
     float terrainSize;
     float terrainTextureTilingFactor;
@@ -81,15 +85,22 @@ layout (location = 2) out vec4 layerWeightsSampler;
 float GetDisplacement()
 {
     layerWeightsSampler = texture(layerWeightsTexture, fragmentHeightMapTextureCoordinate);
+
+    float blend1 = mix(terrainFirstLayerDisplacementHeight, terrainSecondLayerDisplacementHeight, layerWeightsSampler.x);
+    float blend2 = mix(blend1, terrainThirdLayerDisplacementHeight, layerWeightsSampler.y);
+    float blend3 = mix(blend2, terrainFourthLayerDisplacementHeight, layerWeightsSampler.z);
+
+    float terrainDisplacementHeight = mix(blend3, terrainFifthLayerDisplacementHeight, layerWeightsSampler.w);
+
     float layer1Displacement = texture(layer1MaterialPropertiesTexture, fragmentTextureCoordinate).w;
     float layer2Displacement = texture(layer2MaterialPropertiesTexture, fragmentTextureCoordinate).w;
     float layer3Displacement = texture(layer3MaterialPropertiesTexture, fragmentTextureCoordinate).w;
     float layer4Displacement = texture(layer4MaterialPropertiesTexture, fragmentTextureCoordinate).w;
     float layer5Displacement = texture(layer5MaterialPropertiesTexture, fragmentTextureCoordinate).w;
 
-    float blend1 = mix(layer1Displacement, layer2Displacement, layerWeightsSampler.x);
-    float blend2 = mix(blend1, layer3Displacement, layerWeightsSampler.y);
-    float blend3 = mix(blend2, layer3Displacement, layerWeightsSampler.z);
+    blend1 = mix(layer1Displacement, layer2Displacement, layerWeightsSampler.x);
+    blend2 = mix(blend1, layer3Displacement, layerWeightsSampler.y);
+    blend3 = mix(blend2, layer3Displacement, layerWeightsSampler.z);
 
     return (mix(blend3, layer5Displacement, layerWeightsSampler.w) * terrainDisplacementHeight) - (terrainDisplacementHeight * 0.5f);
 }

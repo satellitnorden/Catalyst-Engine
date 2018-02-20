@@ -138,19 +138,19 @@ void WorldArchitect::Initialize() NOEXCEPT
 			
 			const float heightValue{ terrainPropertiesValue.W };
 
-			if (heightValue > -0.8f)
+			if (heightValue > -0.9f)
 			{
 				layerWeights.At(i, j).X = 1.0f;
 			}
 
-			else if (heightValue < -0.9f)
+			else if (heightValue < -1.0f)
 			{
 				layerWeights.At(i, j).X = 0.0f;
 			}
 
 			else
 			{
-				layerWeights.At(i, j).X = (heightValue + 0.9f) * 10.0f;
+				layerWeights.At(i, j).X = (heightValue + 1.0f) * 10.0f;
 			}
 
 			//Determine the weight of the dirt layer.
@@ -182,7 +182,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(512, terrainProperties, TerrainUniformData(2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
+	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 1.0f, 5.0f, 2.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
 	/*
 	//Place some stones. (:

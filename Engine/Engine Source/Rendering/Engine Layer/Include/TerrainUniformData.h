@@ -22,9 +22,13 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	TerrainUniformData(const float initialTerrainDisplacementHeight, const float initialTerrainHeight, const float initialTerrainSize, const float initialTerrainTextureTilingFactor, const Vector3 &initialTerrainPosition) NOEXCEPT
+	TerrainUniformData(const float initialTerrainFirstLayerDisplacementHeight, const float initialTerrainSecondLayerDisplacementHeight, const float initialTerrainThirdLayerDisplacementHeight, const float initialTerrainFourthLayerDisplacementHeight, const float initialTerrainFifthLayerDisplacementHeight, const float initialTerrainHeight, const float initialTerrainSize, const float initialTerrainTextureTilingFactor, const Vector3 &initialTerrainPosition) NOEXCEPT
 		:
-		terrainDisplacementHeight(initialTerrainDisplacementHeight),
+		terrainFirstLayerDisplacementHeight(initialTerrainFirstLayerDisplacementHeight),
+		terrainSecondLayerDisplacementHeight(initialTerrainSecondLayerDisplacementHeight),
+		terrainThirdLayerDisplacementHeight(initialTerrainThirdLayerDisplacementHeight),
+		terrainFourthLayerDisplacementHeight(initialTerrainFourthLayerDisplacementHeight),
+		terrainFifthLayerDisplacementHeight(initialTerrainFifthLayerDisplacementHeight),
 		terrainHeight(initialTerrainHeight),
 		terrainSize(initialTerrainSize),
 		terrainTextureTilingFactor(initialTerrainTextureTilingFactor),
@@ -33,8 +37,20 @@ public:
 
 	}
 
-	//The terrain displacement height.
-	float terrainDisplacementHeight;
+	//The terrain first layer displacement height.
+	float terrainFirstLayerDisplacementHeight;
+
+	//The terrain second layer displacement height.
+	float terrainSecondLayerDisplacementHeight;
+
+	//The terrain third layer displacement height.
+	float terrainThirdLayerDisplacementHeight;
+
+	//The terrain fourth layer displacement height.
+	float terrainFourthLayerDisplacementHeight;
+
+	//The terrain fifth layer displacement height.
+	float terrainFifthLayerDisplacementHeight;
 
 	//The terrain height.
 	float terrainHeight;
