@@ -24,25 +24,25 @@ namespace TerrainMaterialCreator
 		BinaryFile<IOMode::Out> terrainMaterialFile{ terrainMaterialName.CString() };
 
 		//Determine how many mipmap levels that should be generated.
-		unsigned int numberOfMipmapLevels{ static_cast<unsigned int>(*arguments[3] - '0') };
+		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[3] - '0') };
 
 		//Write the number of mipmap levels to the file, to be read into a uint8.
-		terrainMaterialFile.Write(&numberOfMipmapLevels, sizeof(char));
+		terrainMaterialFile.Write(&numberOfMipmapLevels, sizeof(uint8));
 
-		for (unsigned int i = 0; i < NUMBER_OF_TERRAIN_LAYERS; ++i)
+		for (uint8 i = 0; i < NUMBER_OF_TERRAIN_LAYERS; ++i)
 		{
 			//Load the layer albedo.
 			int width, height, numberOfChannels;
-			unsigned char *data{ stbi_load(arguments[4 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+			byte *data{ stbi_load(arguments[4 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 			//Write the width and height of the layer into the file, to be read into uint32's.
 			terrainMaterialFile.Write(&width, sizeof(int));
 			terrainMaterialFile.Write(&height, sizeof(int));
 
 			//Write the layer albedo to the file, to be read into byte's.
-			unsigned long int textureSize{ static_cast<unsigned int>(width * height * 4) };
+			uint64 textureSize{ static_cast<uint64>(width * height * 4) };
 
-			for (unsigned int i = 0; i < numberOfMipmapLevels; ++i)
+			for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
 			{
 				//If this is the base mipmap level, just copy the thing directly into memory.
 				if (i == 0)
@@ -69,7 +69,7 @@ namespace TerrainMaterialCreator
 			data = stbi_load(arguments[5 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 			//Write the layer albedo to the file, to be read into byte's.
-			for (unsigned int i = 0; i < numberOfMipmapLevels; ++i)
+			for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
 			{
 				//If this is the base mipmap level, just copy the thing directly into memory.
 				if (i == 0)
@@ -106,12 +106,12 @@ namespace TerrainMaterialCreator
 
 			textureSize = static_cast<unsigned int>(width * height);
 
-			for (unsigned int i = 0; i < numberOfMipmapLevels; ++i)
+			for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
 			{
 				//If this is the base mipmap level, treat it differently.
 				if (i == 0)
 				{
-					for (unsigned int j = 0; j < textureSize; ++j)
+					for (uint64 j = 0; j < textureSize; ++j)
 					{
 						terrainMaterialFile.Write(roughnessData ? &roughnessData[j] : &defaultRoughness, sizeof(char));
 						terrainMaterialFile.Write(metallicData ? &metallicData[j] : &defaultMetallic, sizeof(char));
@@ -132,7 +132,7 @@ namespace TerrainMaterialCreator
 					if (ambientOcclusionData) stbir_resize_uint8(ambientOcclusionData, width, height, 0, downsampledAmbientOcclusionData, width >> i, height >> i, 0, 1);
 					if (displacementData) stbir_resize_uint8(displacementData, width, height, 0, downsampledDisplacementData, width >> i, height >> i, 0, 1);
 
-					for (unsigned int j = 0; j < textureSize >> i; ++j)
+					for (uint64 j = 0; j < textureSize >> i; ++j)
 					{
 						terrainMaterialFile.Write(downsampledRoughnessData ? &downsampledRoughnessData[j] : &defaultRoughness, sizeof(char));
 						terrainMaterialFile.Write(downsampledMetallicData ? &downsampledMetallicData[j] : &defaultMetallic, sizeof(char));
