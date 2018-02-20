@@ -183,20 +183,11 @@
     <ClCompile Include="..\..\Engine Source\Entities\Source\CameraEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
-      <Filter>Game Source\Clairvoyant</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Game Source\Source\ClairvoyantPlayer.cpp">
-      <Filter>Game Source\Clairvoyant</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Engine Source\Systems\Source\EntitySystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Entities\Source\PhysicalEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Game Source\Source\WorldArchitect.cpp">
-      <Filter>Game Source\Clairvoyant</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Entities\Source\PointLightEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
@@ -215,9 +206,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Systems\Source\PhysicsSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Game Source\Include\EntitySpawner.cpp">
-      <Filter>Game Source\Clairvoyant</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Components\Source\ComponentManager.cpp">
       <Filter>Engine Source\Components\Source</Filter>
@@ -327,6 +315,15 @@
     <ClCompile Include="..\..\Engine Source\Asset Loading\Source\AssetLoader.cpp">
       <Filter>Engine Source\Asset Loading\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Game\Game Source\Source\Clairvoyant\ClairvoyantGameSystem.cpp">
+      <Filter>Game Source\Clairvoyant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Game\Game Source\Source\Clairvoyant\ClairvoyantPlayer.cpp">
+      <Filter>Game Source\Clairvoyant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Game\Game Source\Source\Clairvoyant\WorldArchitect.cpp">
+      <Filter>Game Source\Clairvoyant</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\EngineCore.h">
@@ -377,20 +374,11 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\ProjectSettings.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Game Source\Include\ClairvoyantGameSystem.h">
-      <Filter>Game Source\Clairvoyant</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Game Source\Include\ClairvoyantPlayer.h">
-      <Filter>Game Source\Clairvoyant</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Systems\Include\EntitySystem.h">
       <Filter>Engine Source\Systems\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Entities\Include\PhysicalEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Game Source\Include\WorldArchitect.h">
-      <Filter>Game Source\Clairvoyant</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Entities\Include\PointLightEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
@@ -476,9 +464,6 @@
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\Map.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Game Source\Include\EntitySpawner.h">
-      <Filter>Game Source\Clairvoyant</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Math\Include\PerlinNoiseGenerator.h">
       <Filter>Engine Source\Math\Include</Filter>
     </ClInclude>
@@ -517,9 +502,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Components\Include\TerrainComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Game Source\Include\ClairvoyantSettings.h">
-      <Filter>Game Source\Clairvoyant</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\DefaultProjectSettings.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
@@ -685,6 +667,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Asset Loading\Include\AssetLoaderUtilities.h">
       <Filter>Engine Source\Asset Loading\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Game\Game Source\Include\Clairvoyant\ClairvoyantGameSystem.h">
+      <Filter>Game Source\Clairvoyant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Game\Game Source\Include\Clairvoyant\ClairvoyantPlayer.h">
+      <Filter>Game Source\Clairvoyant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Game\Game Source\Include\Clairvoyant\ClairvoyantSettings.h">
+      <Filter>Game Source\Clairvoyant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Game\Game Source\Include\Clairvoyant\WorldArchitect.h">
+      <Filter>Game Source\Clairvoyant</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

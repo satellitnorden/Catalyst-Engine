@@ -1,8 +1,8 @@
 //Header file.
-#include <ClairvoyantGameSystem.h>
+#include <Clairvoyant/ClairvoyantGameSystem.h>
 
 //Clairvoyant.
-#include <ClairvoyantPlayer.h>
+#include <Clairvoyant/ClairvoyantPlayer.h>
 
 //Systems.
 #include <EntitySystem.h>
@@ -51,9 +51,6 @@ void ClairvoyantGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXC
 
 	//Update the player.
 	player->Update(deltaTime);
-
-	//Update the entity spawner.
-	entitySpawner.Update(deltaTime);
 }
 
 /*

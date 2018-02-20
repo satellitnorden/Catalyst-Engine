@@ -3,7 +3,7 @@
 
 //Systems.
 #define GAME_SYSTEM_CLASS_INCLUDE_PATH(CLASS_NAME) <CLASS_NAME.h>
-#include GAME_SYSTEM_CLASS_INCLUDE_PATH(GAME_SYSTEM_CLASS)
+#include GAME_SYSTEM_CLASS_INCLUDE_PATH(GAME_SYSTEM_INCLUDE_PATH)
 #include <EntitySystem.h>
 #include <RenderingSystem.h>
 #include <InputSystem.h>

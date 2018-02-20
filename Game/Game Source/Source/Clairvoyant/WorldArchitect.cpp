@@ -1,5 +1,5 @@
 //Header file.
-#include <WorldArchitect.h>
+#include <Clairvoyant/WorldArchitect.h>
 
 //Asset loading.
 #include <AssetLoader.h>

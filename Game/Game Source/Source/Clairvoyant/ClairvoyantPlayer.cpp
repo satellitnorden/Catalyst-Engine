@@ -1,5 +1,5 @@
 //Header file.
-#include <ClairvoyantPlayer.h>
+#include <Clairvoyant/ClairvoyantPlayer.h>
 
 //Entities.
 #include <CameraEntity.h>

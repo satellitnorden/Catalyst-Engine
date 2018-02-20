@@ -3,22 +3,27 @@
 /*
 *	The project name.
 */
-#define PROJECT_NAME			"Clairvoyant"
+#define PROJECT_NAME				"Clairvoyant"
 
 /*
 *	The game system class.
 */
-#define GAME_SYSTEM_CLASS		ClairvoyantGameSystem
+#define GAME_SYSTEM_CLASS			ClairvoyantGameSystem
+
+/*
+*	The game system include path.
+*/
+#define GAME_SYSTEM_INCLUDE_PATH	Clairvoyant/ClairvoyantGameSystem
 
 /*
 *	The game materials folder.
 */
-#define GAME_MATERIALS_FOLDER	"../../../Game/Clairvoyant/Assets/Final/Materials/"
+#define GAME_MATERIALS_FOLDER		"../../../Game/Clairvoyant/Assets/Final/Materials/"
 
 /*
 *	The game models folder.
 */
-#define GAME_MODELS_FOLDER		"../../Game Content/Clairvoyant/Models/"
+#define GAME_MODELS_FOLDER			"../../Game Content/Clairvoyant/Models/"
 
 /*
 *	The game textures folder.

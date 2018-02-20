@@ -4,7 +4,7 @@
 #define CLAIRVOYANT
 
 #if defined(CLAIRVOYANT)
-	#include <ClairvoyantSettings.h>
+	#include <Clairvoyant/ClairvoyantSettings.h>
 #else
 	#include <DefaultProjectSettings.h>
 #endif
