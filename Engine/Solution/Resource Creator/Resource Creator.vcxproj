@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{85B102EE-049B-4B8E-A88D-C46C63DB1869}</ProjectGuid>
-    <RootNamespace>AssetCreator</RootNamespace>
+    <ProjectGuid>{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}</ProjectGuid>
+    <RootNamespace>ResourceCreator</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -70,21 +70,24 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Tools Source\Asset Creator\Include;$(IncludePath)</IncludePath>
-    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Asset Creator\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Resources\Include;..\..\Tools Source\Resource Creator\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Resource Creator\Source;$(IncludePath)</SourcePath>
+    <TargetName>ResourceCreator</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Tools Source\Asset Creator\Include;$(IncludePath)</IncludePath>
-    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Asset Creator\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Resources\Include;..\..\Tools Source\Resource Creator\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Resource Creator\Source;$(IncludePath)</SourcePath>
+    <TargetName>ResourceCreator</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Tools Source\Asset Creator\Include;$(IncludePath)</IncludePath>
-    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Asset Creator\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Resources\Include;..\..\Tools Source\Resource Creator\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Resource Creator\Source;$(IncludePath)</SourcePath>
+    <TargetName>ResourceCreator</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Tools Source\Asset Creator\Include;$(IncludePath)</IncludePath>
-    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Asset Creator\Source;$(SourcePath)</SourcePath>
-    <TargetName>AssetCreator</TargetName>
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Resources\Include;..\..\Tools Source\Resource Creator\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Resource Creator\Source;$(IncludePath)</SourcePath>
+    <TargetName>ResourceCreator</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -127,13 +130,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Tools Source\Asset Creator\Source\Main.cpp" />
+    <ClInclude Include="..\..\Tools Source\Resource Creator\Include\stb_image.h" />
+    <ClInclude Include="..\..\Tools Source\Resource Creator\Include\stb_image_resize.h" />
+    <ClInclude Include="..\..\Tools Source\Resource Creator\Include\TerrainMaterialCreator.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Tools Source\Asset Creator\Include\ResourceCreatorCore.h" />
-    <ClInclude Include="..\..\Tools Source\Asset Creator\Include\stb_image.h" />
-    <ClInclude Include="..\..\Tools Source\Asset Creator\Include\stb_image_resize.h" />
-    <ClInclude Include="..\..\Tools Source\Asset Creator\Include\TerrainMaterialCreator.h" />
+    <ClCompile Include="..\..\Tools Source\Resource Creator\Source\Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

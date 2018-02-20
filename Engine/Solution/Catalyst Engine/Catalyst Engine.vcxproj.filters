@@ -139,14 +139,14 @@
     <Filter Include="Engine Source\Rendering\Engine Layer\Source">
       <UniqueIdentifier>{39570802-a832-467e-9995-fef16f6aca53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine Source\Asset Loading">
-      <UniqueIdentifier>{162f60ca-a69b-4268-844e-3d181479e12b}</UniqueIdentifier>
+    <Filter Include="Engine Source\Resources">
+      <UniqueIdentifier>{8b9844f8-9d9c-4806-8e74-f26225918ca5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine Source\Asset Loading\Include">
-      <UniqueIdentifier>{7d0c6ff5-0d49-4555-9e37-bd25f2eca0b7}</UniqueIdentifier>
+    <Filter Include="Engine Source\Resources\Include">
+      <UniqueIdentifier>{a285e49a-e88d-4aa1-aebb-22d97a85c42e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine Source\Asset Loading\Source">
-      <UniqueIdentifier>{8463cf46-eab7-406d-b064-478a52ac01b5}</UniqueIdentifier>
+    <Filter Include="Engine Source\Resources\Source">
+      <UniqueIdentifier>{a07f0165-4af7-487e-960e-30e48bd2b136}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -312,9 +312,6 @@
     <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\Vertex.cpp">
       <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Asset Loading\Source\AssetLoader.cpp">
-      <Filter>Engine Source\Asset Loading\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Game\Game Source\Source\Clairvoyant\ClairvoyantGameSystem.cpp">
       <Filter>Game Source\Clairvoyant</Filter>
     </ClCompile>
@@ -323,6 +320,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Game\Game Source\Source\Clairvoyant\WorldArchitect.cpp">
       <Filter>Game Source\Clairvoyant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Resources\Source\ResourceLoader.cpp">
+      <Filter>Engine Source\Resources\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -653,20 +653,11 @@
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\Vertex.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Asset Loading\Include\AssetLoader.h">
-      <Filter>Engine Source\Asset Loading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Asset Loading\Include\TerrainMaterialData.h">
-      <Filter>Engine Source\Asset Loading\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TerrainMaterial.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Engine Core\Include\BinaryFile.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Asset Loading\Include\AssetLoaderUtilities.h">
-      <Filter>Engine Source\Asset Loading\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Game\Game Source\Include\Clairvoyant\ClairvoyantGameSystem.h">
       <Filter>Game Source\Clairvoyant</Filter>
@@ -679,6 +670,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Game\Game Source\Include\Clairvoyant\WorldArchitect.h">
       <Filter>Game Source\Clairvoyant</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Resources\Include\ResourceLoader.h">
+      <Filter>Engine Source\Resources\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Resources\Include\ResourceLoaderUtilities.h">
+      <Filter>Engine Source\Resources\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Resources\Include\TerrainMaterialData.h">
+      <Filter>Engine Source\Resources\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Resources\Include\ResourcesCore.h">
+      <Filter>Engine Source\Resources\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

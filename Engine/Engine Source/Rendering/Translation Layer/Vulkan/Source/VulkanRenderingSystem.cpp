@@ -1,9 +1,6 @@
 //Header file.
 #include <VulkanRenderingSystem.h>
 
-//Asset loading.
-#include <TerrainMaterialData.h>
-
 //Components.
 #include <ComponentManager.h>
 
@@ -27,6 +24,9 @@
 #include <TerrainMaterial.h>
 #include <TextureData.h>
 #include <VulkanTranslationUtilities.h>
+
+//Resources.
+#include <TerrainMaterialData.h>
 
 //Systems.
 #include <EngineSystem.h>

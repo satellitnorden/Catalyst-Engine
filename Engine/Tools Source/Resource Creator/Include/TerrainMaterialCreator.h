@@ -3,10 +3,10 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Resource creator.
-#include <ResourceCreatorCore.h>
+//Resources.
+#include <ResourcesCore.h>
 
-//Asset creator.
+//Resource creator.
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #define STB_IMAGE_RESIZE_IMPLEMENTATION

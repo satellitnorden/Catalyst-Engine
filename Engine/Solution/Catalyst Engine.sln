@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{04411A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{CFDEEA66-7A8F-4976-9C1C-6BE025506FF4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Asset Creator", "Asset Creator\Asset Creator.vcxproj", "{85B102EE-049B-4B8E-A88D-C46C63DB1869}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Resource Creator", "Resource Creator\Resource Creator.vcxproj", "{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,31 +42,29 @@ Global
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|x64.Build.0 = Release|x64
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|x86.ActiveCfg = Release|Win32
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA}.Release|x86.Build.0 = Release|Win32
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Debug|Windows 64-Bit.ActiveCfg = Debug|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Debug|Windows 64-Bit.Build.0 = Debug|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Debug|x64.ActiveCfg = Debug|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Debug|x64.Build.0 = Debug|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Debug|x86.ActiveCfg = Debug|Win32
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Debug|x86.Build.0 = Debug|Win32
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Final|Windows 64-Bit.ActiveCfg = Release|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Final|Windows 64-Bit.Build.0 = Release|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Final|x64.ActiveCfg = Release|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Final|x64.Build.0 = Release|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Final|x86.ActiveCfg = Release|Win32
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Final|x86.Build.0 = Release|Win32
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Release|Windows 64-Bit.ActiveCfg = Release|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Release|Windows 64-Bit.Build.0 = Release|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Release|x64.ActiveCfg = Release|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Release|x64.Build.0 = Release|x64
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Release|x86.ActiveCfg = Release|Win32
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869}.Release|x86.Build.0 = Release|Win32
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Debug|Windows 64-Bit.ActiveCfg = Debug|Win32
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Debug|x64.ActiveCfg = Debug|x64
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Debug|x64.Build.0 = Debug|x64
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Debug|x86.ActiveCfg = Debug|Win32
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Debug|x86.Build.0 = Debug|Win32
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Final|Windows 64-Bit.ActiveCfg = Release|x64
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Final|Windows 64-Bit.Build.0 = Release|x64
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Final|x64.ActiveCfg = Release|x64
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Final|x64.Build.0 = Release|x64
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Final|x86.ActiveCfg = Release|Win32
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Final|x86.Build.0 = Release|Win32
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Release|Windows 64-Bit.ActiveCfg = Release|Win32
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Release|x64.ActiveCfg = Release|x64
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Release|x64.Build.0 = Release|x64
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Release|x86.ActiveCfg = Release|Win32
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B733E61A-902F-4AE2-B1DF-A89CECDC29CA} = {04411ABC-DE6B-4297-A930-B8EDE7360A0F}
-		{85B102EE-049B-4B8E-A88D-C46C63DB1869} = {CFDEEA66-7A8F-4976-9C1C-6BE025506FF4}
+		{D8F9BEAD-44B6-4877-A418-F110EC3C14F7} = {CFDEEA66-7A8F-4976-9C1C-6BE025506FF4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8E56239B-2E3C-4939-A39B-178D583064FE}

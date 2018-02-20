@@ -6,7 +6,7 @@
 //Forward declarations.
 class TerrainMaterial;
 
-class AssetLoader final
+class ResourceLoader final
 {
 
 public:

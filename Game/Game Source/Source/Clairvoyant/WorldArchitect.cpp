@@ -1,9 +1,6 @@
 //Header file.
 #include <Clairvoyant/WorldArchitect.h>
 
-//Asset loading.
-#include <AssetLoader.h>
-
 //Entities.
 #include <DirectionalLightEntity.h>
 #include <PhysicalEntity.h>
@@ -21,6 +18,9 @@
 #include <TerrainMaterial.h>
 #include <TerrainUniformData.h>
 #include <TextureData.h>
+
+//Resources.
+#include <ResourceLoader.h>
 
 //Systems.
 #include <EntitySystem.h>
@@ -66,7 +66,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Load the terrain material data.
 	TerrainMaterial terrainMaterial;
-	AssetLoader::LoadTerrainMaterial(GAME_MATERIALS_FOLDER "DefaultTerrainMaterial.ctm", terrainMaterial);
+	ResourceLoader::LoadTerrainMaterial(GAME_MATERIALS_FOLDER "DefaultTerrainMaterial.ctm", terrainMaterial);
 
 	//Create the terrain properties!
 	CPUTexture4 terrainProperties{ HEIGHT_MAP_RESOLUTION };

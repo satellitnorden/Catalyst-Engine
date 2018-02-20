@@ -1,7 +1,7 @@
 //Engine core.
 #include <EngineCore.h>
 
-//Asset creator.
+//Resource creator.
 #include <TerrainMaterialCreator.h>
 
 //Preprocessor defines.
@@ -11,7 +11,7 @@
 
 int main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 {
-	//First, determine what type of asset that is supposed to be created.
+	//First, determine what type of resource that is supposed to be created.
 	if (strcmp(arguments[1], "TerrainMaterial") == 0)
 	{
 		TerrainMaterialCreator::CreateTerrainMaterial(argumentCount, arguments);
