@@ -17,7 +17,7 @@
 namespace TerrainMaterialCreator
 {
 
-	void CreateTerrainMaterial(const int32 argumentCount, char *RESTRICT arguments[]) noexcept
+	void CreateTerrainMaterial(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 	{
 		//What should the material be called?
 		DynamicString terrainMaterialName{ arguments[2] };

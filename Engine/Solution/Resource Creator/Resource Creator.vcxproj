@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Resources\Include;..\..\Tools Source\Resource Creator\Include;$(IncludePath)</IncludePath>
-    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Tools Source\Resource Creator\Source;$(IncludePath)</SourcePath>
+    <IncludePath>..\..\Engine Source\Engine Core\Include;..\..\Engine Source\Resources\Include;..\..\Engine Source\Third Party Libraries\Include;..\..\Tools Source\Resource Creator\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\Engine Source\Engine Core\Source;..\..\Engine Source\Third Party Libraries\Source;..\..\Tools Source\Resource Creator\Source;$(IncludePath)</SourcePath>
     <TargetName>ResourceCreator</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Tools Source\Resource Creator\Include\PhysicalModelCreator.h" />
     <ClInclude Include="..\..\Tools Source\Resource Creator\Include\stb_image.h" />
     <ClInclude Include="..\..\Tools Source\Resource Creator\Include\stb_image_resize.h" />
     <ClInclude Include="..\..\Tools Source\Resource Creator\Include\TerrainMaterialCreator.h" />

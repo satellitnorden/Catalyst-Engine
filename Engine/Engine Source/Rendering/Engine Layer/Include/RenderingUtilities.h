@@ -8,7 +8,7 @@
 #include <Vector4.h>
 
 //Rendering.
-#include <Vertex.h>
+#include <PhysicalVertex.h>
 
 namespace RenderingUtilities
 {

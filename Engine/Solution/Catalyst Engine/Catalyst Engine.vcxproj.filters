@@ -309,9 +309,6 @@
     <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\TextureLoader.cpp">
       <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\Vertex.cpp">
-      <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Game\Game Source\Source\Clairvoyant\ClairvoyantGameSystem.cpp">
       <Filter>Game Source\Clairvoyant</Filter>
     </ClCompile>
@@ -323,6 +320,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine Source\Resources\Source\ResourceLoader.cpp">
       <Filter>Engine Source\Resources\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\PhysicalVertex.cpp">
+      <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -650,9 +650,6 @@
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TextureLoader.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\Vertex.h">
-      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TerrainMaterial.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
@@ -682,6 +679,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Engine Source\Resources\Include\ResourcesCore.h">
       <Filter>Engine Source\Resources\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\PhysicalVertex.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

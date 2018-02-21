@@ -18,6 +18,9 @@
     <ClInclude Include="..\..\Tools Source\Resource Creator\Include\TerrainMaterialCreator.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Tools Source\Resource Creator\Include\PhysicalModelCreator.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Tools Source\Resource Creator\Source\Main.cpp">

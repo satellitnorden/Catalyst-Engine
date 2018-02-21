@@ -7,7 +7,7 @@
 #include <GameMath.h>
 
 //Rendering.
-#include <Vertex.h>
+#include <PhysicalVertex.h>
 
 //Third party libraries.
 #include <assimp/Importer.hpp>
@@ -20,7 +20,7 @@ namespace ModelLoader
 	/*
 	*	Processes a single Assimp mesh.
 	*/
-	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
+	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, DynamicArray<PhysicalVertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		//Process the vertices.
 		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
@@ -47,7 +47,7 @@ namespace ModelLoader
 	/*
 	*	Processes a single Assimp node.
 	*/
-	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
+	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, DynamicArray<PhysicalVertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		//Process all meshes.
 		for (uint32 i = 0; i < node->mNumMeshes; ++i)
@@ -65,7 +65,7 @@ namespace ModelLoader
 	/*
 	*	Given a path, loads a model and outputs the vertices and indices in the supplied containers.
 	*/
-	static void LoadModel(const char *RESTRICT modelPath, DynamicArray<Vertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
+	static void LoadModel(const char *RESTRICT modelPath, DynamicArray<PhysicalVertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		vertices.Reserve(1'000'000);
 		indices.Reserve(1'000'000);

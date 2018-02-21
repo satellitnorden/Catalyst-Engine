@@ -75,7 +75,7 @@
     <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\PhysicalMaterial.cpp" />
     <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\PhysicalModel.cpp" />
     <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\TextureLoader.cpp" />
-    <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\Vertex.cpp" />
+    <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\PhysicalVertex.cpp" />
     <ClCompile Include="..\..\Engine Source\Rendering\Engine Layer\Source\Window.cpp" />
     <ClCompile Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Source\VulkanRenderingSystem.cpp" />
     <ClCompile Include="..\..\Engine Source\Resources\Source\ResourceLoader.cpp" />
@@ -190,7 +190,7 @@
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TextureData.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TextureDataContainer.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\TextureLoader.h" />
-    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\Vertex.h" />
+    <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\PhysicalVertex.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Engine Layer\Include\Window.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanDynamicUniformData.h" />
     <ClInclude Include="..\..\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanRenderingSystem.h" />

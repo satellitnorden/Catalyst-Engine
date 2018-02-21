@@ -222,7 +222,7 @@ void VulkanRenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &ter
 const PhysicalModel VulkanRenderingSystem::CreatePhysicalModel(const char *RESTRICT modelPath, Texture2DHandle albedoTexture, Texture2DHandle normalMapTexture, Texture2DHandle roughnessTexture, Texture2DHandle metallicTexture, Texture2DHandle ambientOcclusionTexture) const NOEXCEPT
 {
 	//Load the model.
-	DynamicArray<Vertex> vertices;
+	DynamicArray<PhysicalVertex> vertices;
 	DynamicArray<uint32> indices;
 	float extent{ 0.0f };
 
@@ -230,7 +230,7 @@ const PhysicalModel VulkanRenderingSystem::CreatePhysicalModel(const char *RESTR
 
 	//Create the vertex and index buffer.
 	const void *RESTRICT modelData[]{ vertices.Data(), indices.Data() };
-	const VkDeviceSize modelDataSizes[]{ sizeof(Vertex) * vertices.Size(), sizeof(uint32) * indices.Size() };
+	const VkDeviceSize modelDataSizes[]{ sizeof(PhysicalVertex) * vertices.Size(), sizeof(uint32) * indices.Size() };
 	VulkanBuffer *RESTRICT buffer = VulkanInterface::Instance->CreateBuffer(modelData, modelDataSizes, 2);
 
 	//Set up the physical model.
