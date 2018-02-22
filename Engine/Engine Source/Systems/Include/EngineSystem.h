@@ -29,7 +29,7 @@ public:
 	/*
 	*	Updates the engine system synchronously. Returns whether or not the game should terminate.
 	*/
-	bool UpdateSystemSynchronous() NOEXCEPT;
+	bool UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
 
 	/*
 	*	Releases the engine system.
@@ -50,11 +50,5 @@ private:
 
 	//Denotes whether or not the game should terminate.
 	std::atomic<bool> shouldTerminate{ false };
-
-	//The delta time.
-	float deltaTime{ 0.0f };
-
-	//The current time.
-	std::chrono::time_point<std::chrono::steady_clock> currentTime;
 
 };

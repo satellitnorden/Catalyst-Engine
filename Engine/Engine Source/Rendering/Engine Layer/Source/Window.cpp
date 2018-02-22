@@ -44,7 +44,7 @@ void Window::Initialize() NOEXCEPT
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	//Create the window!
-	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, PROJECT_NAME, nullptr, nullptr);
+	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Temporary Project Name", nullptr, nullptr);
 }
 
 /*

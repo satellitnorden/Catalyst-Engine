@@ -33,7 +33,7 @@
 #include <QuestSystem.h>
 
 //Preprocessor defines
-#define VULKAN_SHADERS_PATH "../../Engine Source/Rendering/Translation Layer/Vulkan/Shaders/"
+#define VULKAN_SHADERS_PATH "../../../../../Engine/Engine Source/Rendering/Translation Layer/Vulkan/Shaders/"
 
 //System definition.
 DEFINE_SYSTEM(VulkanRenderingSystem);

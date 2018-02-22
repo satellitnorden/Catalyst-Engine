@@ -1,16 +1,5 @@
-#Ignore everything in these folders.
-Engine/Solution/.vs/*
-Engine/Solution/Asset Creator/x64/*
-Engine/Solution/Catalyst Engine/x64/*
-Engine/Solution/x64/*
-Tools/Resource Creator/.vs/*
-Tools/Resource Creator/Resource Creator/x64/*
-Tools/Resource Creator/x64/*
+Game/Clairvoyant/Visual Studio Solution/Clairvoyant/.vs/*
+Game/Clairvoyant/Visual Studio Solution/Clairvoyant/x64/*
+Game/Clairvoyant/Visual Studio Solution/Clairvoyant/Clairvoyant/x64/*
 
-#Ignore created assets.
 *.ctm
-
-#But not these!
-!Engine/Solution/x64/Debug/assimp.dll
-!Engine/Solution/x64/Release/assimp.dll
-!Engine/Solution/x64/Final/assimp.dll

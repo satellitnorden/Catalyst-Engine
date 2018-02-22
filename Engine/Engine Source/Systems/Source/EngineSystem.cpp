@@ -2,8 +2,6 @@
 #include <EngineSystem.h>
 
 //Systems.
-#define GAME_SYSTEM_CLASS_INCLUDE_PATH(CLASS_NAME) <CLASS_NAME.h>
-#include GAME_SYSTEM_CLASS_INCLUDE_PATH(GAME_SYSTEM_INCLUDE_PATH)
 #include <EntitySystem.h>
 #include <RenderingSystem.h>
 #include <InputSystem.h>
@@ -34,13 +32,9 @@ EngineSystem::~EngineSystem() NOEXCEPT
 */
 void EngineSystem::InitializeSystem() NOEXCEPT
 {
-	//Initialize the current time.
-	currentTime = std::chrono::high_resolution_clock::now();
-
 	//Initialize all systems.
 	RenderingSystem::Instance->InitializeSystem();
 	QuestSystem::Instance->InitializeSystem();
-	GAME_SYSTEM_CLASS::Instance->InitializeSystem();
 
 	//Post-initialize all systems.
 	InputSystem::Instance->PostInitializeSystem();
@@ -50,13 +44,8 @@ void EngineSystem::InitializeSystem() NOEXCEPT
 /*
 *	Updates the engine system synchronously. Returns whether or not the game should terminate.
 */
-bool EngineSystem::UpdateSystemSynchronous() NOEXCEPT
+bool EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
-	//CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game loop",
-
-	//Update the game system.
-	GAME_SYSTEM_CLASS::Instance->UpdateSystemSynchronous(deltaTime);
-
 	//Pre-update the input system.
 	InputSystem::Instance->PreUpdateSystemSynchronous();
 
@@ -72,13 +61,6 @@ bool EngineSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Post-update the input system.
 	InputSystem::Instance->PostUpdateSystemSynchronous();
 
-	//Calculate a new delta time.
-	auto newTime = std::chrono::high_resolution_clock::now();
-	deltaTime = std::chrono::duration<float>(newTime - currentTime).count();
-	currentTime = newTime;
-
-	//);
-
 	//Return whether or not the game should terminate.
 	return shouldTerminate;
 }
@@ -89,7 +71,6 @@ bool EngineSystem::UpdateSystemSynchronous() NOEXCEPT
 void EngineSystem::ReleaseSystem() NOEXCEPT
 {
 	//Release all systems.
-	GAME_SYSTEM_CLASS::Instance->ReleaseSystem();
 	InputSystem::Instance->ReleaseSystem();
 	EntitySystem::Instance->ReleaseSystem();
 	RenderingSystem::Instance->ReleaseSystem();
