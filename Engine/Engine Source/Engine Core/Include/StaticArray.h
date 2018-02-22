@@ -15,18 +15,12 @@ public:
 	}
 
 	/*
-	*	Constructor taking an initializer list.
+	*	Constructor taking a variadic number of arguments.
 	*/
-	StaticArray(std::initializer_list<ObjectType> &&initializerList)
-	{
-		//Copy the contents of the initializer list over to the array.
-		MemoryUtilities::CopyMemory(array, initializerList.begin(), sizeof(ObjectType) * initializerList.size());
-	}
-
-	/*
-	*	Default destructor.
-	*/
-	~StaticArray() NOEXCEPT
+	template <class... Arguments>
+	constexpr StaticArray(Arguments&&... arguments)
+		:
+		array{ arguments... }
 	{
 
 	}

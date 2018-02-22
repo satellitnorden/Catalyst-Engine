@@ -547,7 +547,7 @@ void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 {
 	//Initialize the terrain descriptor set layout.
-	VkDescriptorSetLayoutBinding terrainDescriptorSetLayoutBindings[19]
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 19> terrainDescriptorSetLayoutBindings
 	{
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
@@ -570,10 +570,10 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(18, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
 	};
 
-	descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)].Initialize(19, terrainDescriptorSetLayoutBindings);
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)].Initialize(19, terrainDescriptorSetLayoutBindings.Data());
 
 	//Initialize the scene buffer descriptor set layout.
-	VkDescriptorSetLayoutBinding sceneBufferDescriptorSetLayoutBindings[7]
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 7> sceneBufferDescriptorSetLayoutBindings
 	{
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
@@ -584,10 +584,10 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 	};
 
-	descriptorSetLayouts[INDEX(DescriptorSetLayout::SceneBuffer)].Initialize(7, sceneBufferDescriptorSetLayoutBindings);
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::SceneBuffer)].Initialize(7, sceneBufferDescriptorSetLayoutBindings.Data());
 
 	//Initialize the lighting descriptor set layout.
-	VkDescriptorSetLayoutBinding lightingDescriptorSetLayoutBindings[7]
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 7> lightingDescriptorSetLayoutBindings
 	{
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
@@ -598,26 +598,26 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 	};
 
-	descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)].Initialize(7, lightingDescriptorSetLayoutBindings);
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)].Initialize(7, lightingDescriptorSetLayoutBindings.Data());
 
 	//Initialize the cube map descriptor set layout.
-	VkDescriptorSetLayoutBinding cubeMapDescriptorSetLayoutBindings[2]
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> cubeMapDescriptorSetLayoutBindings
 	{
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 	};
 
-	descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)].Initialize(2, cubeMapDescriptorSetLayoutBindings);
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)].Initialize(2, cubeMapDescriptorSetLayoutBindings.Data());
 
 	//Initialize the post processing descriptor set layout.
-	VkDescriptorSetLayoutBinding postProcessingDescriptorSetLayoutBindings[3]
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> postProcessingDescriptorSetLayoutBindings
 	{
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT),
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 	};
 
-	descriptorSetLayouts[INDEX(DescriptorSetLayout::PostProcessing)].Initialize(3, postProcessingDescriptorSetLayoutBindings);
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::PostProcessing)].Initialize(3, postProcessingDescriptorSetLayoutBindings.Data());
 }
 
 /*

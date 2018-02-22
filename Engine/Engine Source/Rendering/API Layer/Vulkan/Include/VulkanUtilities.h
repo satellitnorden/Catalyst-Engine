@@ -161,18 +161,9 @@ public:
 	/*
 	*	Creates a Vulkan descriptor set layout binding.
 	*/
-	static VkDescriptorSetLayoutBinding CreateDescriptorSetLayoutBinding(const uint32 binding, const VkDescriptorType descriptorType, const VkShaderStageFlags stageFlags) NOEXCEPT
+	static constexpr VkDescriptorSetLayoutBinding CreateDescriptorSetLayoutBinding(const uint32 binding, const VkDescriptorType descriptorType, const VkShaderStageFlags stageFlags) NOEXCEPT
 	{
-		//Create the descriptor set layout binding.
-		VkDescriptorSetLayoutBinding descriptorSetLayoutBinding;
-		
-		descriptorSetLayoutBinding.binding = binding;
-		descriptorSetLayoutBinding.descriptorType = descriptorType;
-		descriptorSetLayoutBinding.descriptorCount = 1;
-		descriptorSetLayoutBinding.stageFlags = stageFlags;
-		descriptorSetLayoutBinding.pImmutableSamplers = nullptr;
-
-		return descriptorSetLayoutBinding;
+		return VkDescriptorSetLayoutBinding{ binding, descriptorType, 1, stageFlags, nullptr };
 	}
 
 	/*

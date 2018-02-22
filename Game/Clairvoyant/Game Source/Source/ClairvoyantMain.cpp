@@ -45,11 +45,11 @@ int main() NOEXCEPT
 		//Calculate the delta time.
 		const float deltaTime{ GetDeltaTime() };
 
-		//Update the game system.
-		ClairvoyantGameSystem::Instance->UpdateSystemSynchronous(deltaTime);
-
 		//Update the engine system.
 		shouldTerminate = EngineSystem::Instance->UpdateSystemSynchronous(deltaTime);
+
+		//Update the game system.
+		ClairvoyantGameSystem::Instance->UpdateSystemSynchronous(deltaTime);
 	}
 
 	//Release the game system.
