@@ -54,11 +54,6 @@ public:
 	*/
 	const VulkanRenderPass& GetRenderPass() const NOEXCEPT { return vulkanRenderPass; }
 
-	/*
-	*	Returns the Vulkan Descriptor set.
-	*/
-	const VulkanDescriptorSetLayout& GetDescriptorSetLayout() const NOEXCEPT { return vulkanDescriptorSetLayout; }
-
 private:
 
 	//The underlying Vulkan pipeline.
@@ -69,9 +64,6 @@ private:
 
 	//The Vulkan render pass.
 	VulkanRenderPass vulkanRenderPass;
-
-	//The Vulkan descriptor set layout.
-	VulkanDescriptorSetLayout vulkanDescriptorSetLayout;
 
 	/*
 	*	Creates a vertex pipeline shader stage create info.
@@ -125,7 +117,7 @@ private:
 	/*
 	*	Creates a pipeline layout create info.
 	*/
-	void CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &pipelineLayoutCreateInfo, const VulkanDescriptorSetLayout &descriptorSetLayout) const NOEXCEPT;
+	void CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &pipelineLayoutCreateInfo, const uint32 descriptorSetLayoutCount, const VulkanDescriptorSetLayout *RESTRICT descriptorSetLayouts) const NOEXCEPT;
 
 	/*
 	*	Creates a graphics pipeline create info.

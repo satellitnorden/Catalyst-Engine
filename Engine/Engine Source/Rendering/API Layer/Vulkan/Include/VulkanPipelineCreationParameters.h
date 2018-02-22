@@ -7,33 +7,6 @@
 #include <VulkanCore.h>
 #include <VulkanShaderModule.h>
 
-class DescriptorLayoutBindingInformation final
-{
-
-public:
-
-	/*
-	*	Default constructor - prohibited, must be constructed with the proper arguments.
-	*/
-	DescriptorLayoutBindingInformation() NOEXCEPT = delete;
-
-	/*
-	*	Constructor taking all values as arguments.
-	*/
-	DescriptorLayoutBindingInformation(const uint32 newBinding, const VkDescriptorType newDescriptorType, const VkShaderStageFlags newShaderStage) NOEXCEPT
-		:
-		binding(newBinding),
-		descriptorType(newDescriptorType),
-		shaderStages(newShaderStage)
-	{
-
-	}
-
-	uint32 binding{ 0 };
-	VkDescriptorType descriptorType{ VK_DESCRIPTOR_TYPE_MAX_ENUM };
-	VkShaderStageFlags shaderStages{ VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM };
-};
-
 class VulkanPipelineCreationParameters final
 {
 
@@ -75,8 +48,11 @@ public:
 	//Defines whether or not to enable depth write.
 	VkBool32 depthWriteEnable;
 
-	//The descriptor layout binding informations.
-	DynamicArray<DescriptorLayoutBindingInformation> descriptorLayoutBindingInformations{};
+	//The descriptor set layout count.
+	uint32 descriptorSetLayoutCount;
+
+	//The descriptor set layouts count.
+	VulkanDescriptorSetLayout *RESTRICT descriptorSetLayouts;
 
 	//The shader modules.
 	DynamicArray<VulkanShaderModule *RESTRICT> shaderModules{};

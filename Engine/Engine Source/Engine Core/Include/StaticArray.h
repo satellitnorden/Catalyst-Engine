@@ -15,6 +15,15 @@ public:
 	}
 
 	/*
+	*	Constructor taking an initializer list.
+	*/
+	StaticArray(std::initializer_list<ObjectType> &&initializerList)
+	{
+		//Copy the contents of the initializer list over to the array.
+		MemoryUtilities::CopyMemory(array, initializerList.begin(), sizeof(ObjectType) * initializerList.size());
+	}
+
+	/*
 	*	Default destructor.
 	*/
 	~StaticArray() NOEXCEPT

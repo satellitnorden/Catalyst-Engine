@@ -29,7 +29,7 @@ public:
 	/*
 	*	Initializes this Vulkan descriptor set layout.
 	*/
-	void Initialize(const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) NOEXCEPT;
+	void Initialize(const uint32 descriptorSetLayoutBindingCount, const VkDescriptorSetLayoutBinding *RESTRICT descriptorSetLayoutBindings) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan descriptor set layout.
@@ -44,6 +44,6 @@ private:
 	/*
 	*	Creates a descriptor set layout create info.
 	*/
-	void CreateDescriptorSetLayoutCreateInfo(VkDescriptorSetLayoutCreateInfo &descriptorSetLayoutCreateInfo, const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) const NOEXCEPT;
+	void CreateDescriptorSetLayoutCreateInfo(VkDescriptorSetLayoutCreateInfo &descriptorSetLayoutCreateInfo, const uint32 descriptorSetLayoutBindingCount, const VkDescriptorSetLayoutBinding *RESTRICT descriptorSetLayoutBindings) const NOEXCEPT;
 
 };

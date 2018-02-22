@@ -161,6 +161,17 @@ private:
 		NumberOfDescriptorSet
 	};
 
+	//Enumeration covering all descriptor set layouts.
+	enum class DescriptorSetLayout : uint8
+	{
+		Terrain,
+		SceneBuffer,
+		Lighting,
+		CubeMap,
+		PostProcessing,
+		NumberOfDescriptorSetLayouts
+	};
+
 	//Enumeration covering all pipelines.
 	enum Pipeline : uint8
 	{
@@ -242,6 +253,9 @@ private:
 	//Container for all descriptor sets.
 	StaticArray<VulkanDescriptorSet, DescriptorSet::NumberOfDescriptorSet> descriptorSets;
 
+	//Container for all descriptor set layouts.
+	StaticArray<VulkanDescriptorSetLayout, INDEX(DescriptorSetLayout::NumberOfDescriptorSetLayouts)> descriptorSetLayouts;
+
 	//Container for all render targets.
 	StaticArray<VulkanRenderTarget *RESTRICT, RenderTarget::NumberOfRenderTargets> renderTargets;
 
@@ -283,6 +297,11 @@ private:
 	*	Initializes all uniform buffers.
 	*/
 	void InitializeUniformBuffers() NOEXCEPT;
+
+	/*
+	*	Initializes all descriptor set layouts.
+	*/
+	void InitializeDescriptorSetLayouts() NOEXCEPT;
 
 	/*
 	*	Initializes all shader modules.

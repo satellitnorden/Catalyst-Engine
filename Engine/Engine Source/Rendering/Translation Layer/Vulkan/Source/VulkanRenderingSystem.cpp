@@ -32,6 +32,9 @@
 #include <EngineSystem.h>
 #include <QuestSystem.h>
 
+//Vulkan.
+#include <VulkanUtilities.h>
+
 //Preprocessor defines
 #define VULKAN_SHADERS_PATH "../../../../../Engine/Engine Source/Rendering/Translation Layer/Vulkan/Shaders/"
 
@@ -74,6 +77,9 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	{
 		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(commandBuffer);
 	}
+
+	//Initialize all descriptor set layouts.
+	InitializeDescriptorSetLayouts();
 
 	//Initialize all shader modules.
 	InitializeShaderModules();
@@ -158,6 +164,12 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 */
 void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 {
+	//Release all descriptor set layouts.
+	for (uint32 i = 0; i < INDEX(DescriptorSetLayout::NumberOfDescriptorSetLayouts); ++i)
+	{
+		descriptorSetLayouts[i].Release();
+	}
+
 	//Release the main window.
 	mainWindow.Release();
 
@@ -266,7 +278,7 @@ void VulkanRenderingSystem::InitializePhysicalEntity(PhysicalEntity &physicalEnt
 	const Texture2DHandle ambientOcclusionTexture = material.GetAmbientOcclusionTexture();
 
 	//Allocate the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, pipelines[Pipeline::SceneBufferPipeline]->GetDescriptorSetLayout());
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::SceneBuffer)]);
 
 	//Update the write descriptor sets.
 	DynamicArray<VkWriteDescriptorSet, 7> writeDescriptorSets;
@@ -319,7 +331,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 	terrainComponent.terrainProperties = terrainProperties;
 
 	//Create the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(terrainRenderComponent.descriptorSet, pipelines[Pipeline::TerrainSceneBufferPipeline]->GetDescriptorSetLayout());
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(terrainRenderComponent.descriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)]);
 
 	DynamicArray<VkWriteDescriptorSet, 19> writeDescriptorSets;
 
@@ -427,7 +439,7 @@ void VulkanRenderingSystem::SetActiveSkyBox(TextureCubeMapHandle newSkyBox) NOEX
 	skyBoxTexture = static_cast<VulkanCubeMapTexture *RESTRICT>(newSkyBox);
 
 	//Allocate the sky box descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(skyBoxDescriptorSet, pipelines[Pipeline::CubeMapPipeline]->GetDescriptorSetLayout());
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(skyBoxDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)]);
 
 	//Update the write descriptor sets.
 	DynamicArray<VkWriteDescriptorSet, 2> writeDescriptorSets;
@@ -530,6 +542,85 @@ void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 }
 
 /*
+*	Initializes all descriptor set layouts.
+*/
+void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
+{
+	//Initialize the terrain descriptor set layout.
+	VkDescriptorSetLayoutBinding terrainDescriptorSetLayoutBindings[19]
+	{
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(7, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(8, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(9, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(10, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(11, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(12, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(13, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(14, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(15, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(16, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(17, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(18, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
+	};
+
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)].Initialize(19, terrainDescriptorSetLayoutBindings);
+
+	//Initialize the scene buffer descriptor set layout.
+	VkDescriptorSetLayoutBinding sceneBufferDescriptorSetLayoutBindings[7]
+	{
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+	};
+
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::SceneBuffer)].Initialize(7, sceneBufferDescriptorSetLayoutBindings);
+
+	//Initialize the lighting descriptor set layout.
+	VkDescriptorSetLayoutBinding lightingDescriptorSetLayoutBindings[7]
+	{
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+	};
+
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)].Initialize(7, lightingDescriptorSetLayoutBindings);
+
+	//Initialize the cube map descriptor set layout.
+	VkDescriptorSetLayoutBinding cubeMapDescriptorSetLayoutBindings[2]
+	{
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+	};
+
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)].Initialize(2, cubeMapDescriptorSetLayoutBindings);
+
+	//Initialize the post processing descriptor set layout.
+	VkDescriptorSetLayoutBinding postProcessingDescriptorSetLayoutBindings[3]
+	{
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+	};
+
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::PostProcessing)].Initialize(3, postProcessingDescriptorSetLayoutBindings);
+}
+
+/*
 *	Initializes all shader modules.
 */
 void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
@@ -604,26 +695,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	terrainSceneBufferPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 	terrainSceneBufferPipelineCreationParameters.depthTestEnable = VK_TRUE;
 	terrainSceneBufferPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(19);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(7, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(8, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(9, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(10, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(11, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(12, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(13, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(14, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(15, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(16, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(17, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	terrainSceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(18, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
+	terrainSceneBufferPipelineCreationParameters.descriptorSetLayoutCount = 1;
+	terrainSceneBufferPipelineCreationParameters.descriptorSetLayouts = &descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)];
 	terrainSceneBufferPipelineCreationParameters.shaderModules.Reserve(4);
 	terrainSceneBufferPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainSceneBufferVertexShaderModule]);
 	terrainSceneBufferPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainSceneBufferTessellationControlShaderModule]);
@@ -656,14 +729,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	sceneBufferPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 	sceneBufferPipelineCreationParameters.depthTestEnable = VK_TRUE;
 	sceneBufferPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-	sceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(7);
-	sceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	sceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	sceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	sceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	sceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	sceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	sceneBufferPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	sceneBufferPipelineCreationParameters.descriptorSetLayoutCount = 1;
+	sceneBufferPipelineCreationParameters.descriptorSetLayouts = &descriptorSetLayouts[INDEX(DescriptorSetLayout::SceneBuffer)];
 	sceneBufferPipelineCreationParameters.shaderModules.Reserve(2);
 	sceneBufferPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::SceneBufferVertexShaderModule]);
 	sceneBufferPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::SceneBufferFragmentShaderModule]);
@@ -690,14 +757,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	lightingPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 	lightingPipelineCreationParameters.depthTestEnable = VK_FALSE;
 	lightingPipelineCreationParameters.depthWriteEnable = VK_FALSE;
-	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(7);
-	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	lightingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	lightingPipelineCreationParameters.descriptorSetLayoutCount = 1;
+	lightingPipelineCreationParameters.descriptorSetLayouts = &descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)];
 	lightingPipelineCreationParameters.shaderModules.Reserve(2);
 	lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::ViewportVertexShaderModule]);
 	lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::LightingFragmentShaderModule]);
@@ -725,9 +786,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	cubeMapPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
 	cubeMapPipelineCreationParameters.depthTestEnable = VK_TRUE;
 	cubeMapPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(2);
-	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	cubeMapPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	cubeMapPipelineCreationParameters.descriptorSetLayoutCount = 1;
+	cubeMapPipelineCreationParameters.descriptorSetLayouts = &descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)];
 	cubeMapPipelineCreationParameters.shaderModules.Reserve(2);
 	cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::CubeMapVertexShaderModule]);
 	cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::CubeMapFragmentShaderModule]);
@@ -762,10 +822,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	postProcessingPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 	postProcessingPipelineCreationParameters.depthTestEnable = VK_FALSE;
 	postProcessingPipelineCreationParameters.depthWriteEnable = VK_FALSE;
-	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.Reserve(3);
-	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT);
-	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
-	postProcessingPipelineCreationParameters.descriptorLayoutBindingInformations.EmplaceFast(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+	postProcessingPipelineCreationParameters.descriptorSetLayoutCount = 1;
+	postProcessingPipelineCreationParameters.descriptorSetLayouts = &descriptorSetLayouts[INDEX(DescriptorSetLayout::PostProcessing)];
 	postProcessingPipelineCreationParameters.shaderModules.Reserve(2);
 	postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::ViewportVertexShaderModule]);
 	postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::PostProcessingFragmentShaderModule]);
@@ -783,7 +841,7 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 {
 	{
 		//Initialize the lighting descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], pipelines[Pipeline::LightingPipeline]->GetDescriptorSetLayout());
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)]);
 
 		//Update the write descriptor sets.
 		DynamicArray<VkWriteDescriptorSet, 5> writeDescriptorSets;
@@ -799,7 +857,7 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 
 	{
 		//Initialize the post processing descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[DescriptorSet::PostProcessingDescriptorSet], pipelines[Pipeline::PostProcessingPipeline]->GetDescriptorSetLayout());
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[DescriptorSet::PostProcessingDescriptorSet], descriptorSetLayouts[INDEX(DescriptorSetLayout::PostProcessing)]);
 
 		//Update the write descriptor sets.
 		DynamicArray<VkWriteDescriptorSet, 3> writeDescriptorSets;

@@ -82,18 +82,7 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 
 	//Create the pipeline layout create info.
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo;
-
-	DynamicArray<VkDescriptorSetLayoutBinding> descriptorSetLayoutsBindings;
-	descriptorSetLayoutsBindings.Reserve(vulkanPipelineCreationParameters.descriptorLayoutBindingInformations.Size());
-
-	for (auto &descriptorLayoutBindignInformation : vulkanPipelineCreationParameters.descriptorLayoutBindingInformations)
-	{
-		descriptorSetLayoutsBindings.EmplaceFast(VulkanUtilities::CreateDescriptorSetLayoutBinding(descriptorLayoutBindignInformation.binding, descriptorLayoutBindignInformation.descriptorType, descriptorLayoutBindignInformation.shaderStages));
-	}
-
-	vulkanDescriptorSetLayout.Initialize(descriptorSetLayoutsBindings);
-
-	CreatePipelineLayoutCreateInfo(pipelineLayoutCreateInfo, vulkanDescriptorSetLayout);
+	CreatePipelineLayoutCreateInfo(pipelineLayoutCreateInfo, vulkanPipelineCreationParameters.descriptorSetLayoutCount, vulkanPipelineCreationParameters.descriptorSetLayouts);
 
 	//Create the Vulkan pipeline layout!
 	VULKAN_ERROR_CHECK(vkCreatePipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &pipelineLayoutCreateInfo, nullptr, &vulkanPipelineLayout));
@@ -119,9 +108,6 @@ void VulkanPipeline::Release() NOEXCEPT
 
 	//Release the Vulkan render pass.
 	vulkanRenderPass.Release();
-
-	//Release the descriptor set layout.
-	vulkanDescriptorSetLayout.Release();
 
 	//Destroy the Vulkan pipeline layout.
 	vkDestroyPipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanPipelineLayout, nullptr);
@@ -300,13 +286,13 @@ void VulkanPipeline::CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlen
 /*
 *	Creates a pipeline layout create info.
 */
-void VulkanPipeline::CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &pipelineLayoutCreateInfo, const VulkanDescriptorSetLayout &descriptorSetLayout) const NOEXCEPT
+void VulkanPipeline::CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &pipelineLayoutCreateInfo, const uint32 descriptorSetLayoutCount, const VulkanDescriptorSetLayout *RESTRICT descriptorSetLayouts) const NOEXCEPT
 {
 	pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutCreateInfo.pNext = nullptr;
 	pipelineLayoutCreateInfo.flags = 0;
-	pipelineLayoutCreateInfo.setLayoutCount = 1;
-	pipelineLayoutCreateInfo.pSetLayouts = &descriptorSetLayout.Get();
+	pipelineLayoutCreateInfo.setLayoutCount = descriptorSetLayoutCount;
+	pipelineLayoutCreateInfo.pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout *RESTRICT>(descriptorSetLayouts);
 	pipelineLayoutCreateInfo.pushConstantRangeCount = 0;
 	pipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
 }

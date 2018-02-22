@@ -67,6 +67,11 @@
 #endif
 
 /*
+*	Casts a value to a uint32 so that it can be used as an index. Useful for enum classes.
+*/
+#define INDEX(value) static_cast<uint32>(value)
+
+/*
 *	Yields the current thread.
 */
 #define THREAD_YIELD() std::this_thread::yield();

@@ -23,11 +23,11 @@ VulkanDescriptorSetLayout::~VulkanDescriptorSetLayout() NOEXCEPT
 /*
 *	Initializes this Vulkan descriptor set layout.
 */
-void VulkanDescriptorSetLayout::Initialize(const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) NOEXCEPT
+void VulkanDescriptorSetLayout::Initialize(const uint32 descriptorSetLayoutBindingCount, const VkDescriptorSetLayoutBinding *RESTRICT descriptorSetLayoutBindings) NOEXCEPT
 {
 	//Create the descriptor set layout create info.
 	VkDescriptorSetLayoutCreateInfo descriptorSetLayoutCreateInfo;
-	CreateDescriptorSetLayoutCreateInfo(descriptorSetLayoutCreateInfo, descriptorSetLayoutBindings);
+	CreateDescriptorSetLayoutCreateInfo(descriptorSetLayoutCreateInfo, descriptorSetLayoutBindingCount, descriptorSetLayoutBindings);
 
 	//Create the descriptor set layout!
 	VULKAN_ERROR_CHECK(vkCreateDescriptorSetLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorSetLayoutCreateInfo, nullptr, &vulkanDescriptorSetLayout));
@@ -45,11 +45,11 @@ void VulkanDescriptorSetLayout::Release() NOEXCEPT
 /*
 *	Creates a descriptor set layout create info.
 */
-void VulkanDescriptorSetLayout::CreateDescriptorSetLayoutCreateInfo(VkDescriptorSetLayoutCreateInfo &descriptorSetLayoutCreateInfo, const DynamicArray<VkDescriptorSetLayoutBinding> &descriptorSetLayoutBindings) const NOEXCEPT
+void VulkanDescriptorSetLayout::CreateDescriptorSetLayoutCreateInfo(VkDescriptorSetLayoutCreateInfo &descriptorSetLayoutCreateInfo, const uint32 descriptorSetLayoutBindingCount, const VkDescriptorSetLayoutBinding *RESTRICT descriptorSetLayoutBindings) const NOEXCEPT
 {
 	descriptorSetLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	descriptorSetLayoutCreateInfo.pNext = nullptr;
 	descriptorSetLayoutCreateInfo.flags = 0;
-	descriptorSetLayoutCreateInfo.bindingCount = static_cast<uint32>(descriptorSetLayoutBindings.Size());
-	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBindings.Data();
+	descriptorSetLayoutCreateInfo.bindingCount = descriptorSetLayoutBindingCount;
+	descriptorSetLayoutCreateInfo.pBindings = descriptorSetLayoutBindings;
 }
