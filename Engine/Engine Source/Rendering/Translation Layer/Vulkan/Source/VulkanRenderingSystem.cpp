@@ -406,7 +406,7 @@ TextureCubeMapHandle VulkanRenderingSystem::CreateCubeMapTexture(const char *RES
 /*
 *	Creates a uniform buffer and returns the identifier for the uniform buffer.
 */
-UniformBufferHandle VulkanRenderingSystem::CreateUniformBuffer(const size_t uniformBufferSize) const NOEXCEPT
+UniformBufferHandle VulkanRenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT
 {
 	return VulkanInterface::Instance->CreateUniformBuffer(uniformBufferSize);
 }
@@ -818,11 +818,11 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	postProcessingPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 	const DynamicArray<VkImageView> &swapchainImageViews{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
-	const size_t swapchainImageViewsSize{ swapchainImageViews.Size() };
+	const uint64 swapchainImageViewsSize{ swapchainImageViews.Size() };
 
 	postProcessingPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
 
-	for (size_t i = 0; i < swapchainImageViewsSize; ++i)
+	for (uint64 i = 0; i < swapchainImageViewsSize; ++i)
 	{
 		postProcessingPipelineCreationParameters.colorAttachments[i].Reserve(1);
 		postProcessingPipelineCreationParameters.colorAttachments[i].EmplaceFast(swapchainImageViews[i]);
@@ -948,10 +948,10 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 	currentCommandBuffer->CommandBeginRenderPass(terrainSceneBufferPipeline.GetRenderPass(), 0, true, 4);
 
 	//Iterate over all terrain entity components and draw them all.
-	const size_t numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
+	const uint64 numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
 	const TerrainRenderComponent *RESTRICT terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents() };
 
-	for (size_t i = 0; i < numberOfTerrainEntityComponents; ++i, ++terrainRenderComponent)
+	for (uint64 i = 0; i < numberOfTerrainEntityComponents; ++i, ++terrainRenderComponent)
 	{
 		StaticArray<VulkanDescriptorSet, 2> terrainDescriptorSets
 		{
@@ -981,7 +981,7 @@ void VulkanRenderingSystem::RenderPhysicalEntities() NOEXCEPT
 	VulkanPipeline &sceneBufferPipeline{ *pipelines[Pipeline::SceneBufferPipeline] };
 
 	//Iterate over all physical entity components and draw them all.
-	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
+	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
 	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalFrustumCullingComponents() };
 	const RenderComponent *RESTRICT renderComponent{ ComponentManager::GetPhysicalRenderComponents() };
 
@@ -994,7 +994,7 @@ void VulkanRenderingSystem::RenderPhysicalEntities() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(sceneBufferPipeline);
 	currentCommandBuffer->CommandBeginRenderPass(sceneBufferPipeline.GetRenderPass(), 0, false, 0);
 
-	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
+	for (uint64 i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{
 		//Don't draw this physical entity if it isn't in the view frustum.
 		if (!frustumCullingComponent->isInViewFrustum)
@@ -1166,7 +1166,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	dynamicUniformData.cameraForwardVector = forwardVector;
 	dynamicUniformData.cameraWorldPosition = cameraWorldPosition;
 
-	const size_t numberOfDirectionalLightEntityComponents{ ComponentManager::GetNumberOfDirectionalLightComponents() };
+	const uint64 numberOfDirectionalLightEntityComponents{ ComponentManager::GetNumberOfDirectionalLightComponents() };
 
 	if (numberOfDirectionalLightEntityComponents > 0)
 	{
@@ -1189,14 +1189,14 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 		dynamicUniformData.directionalLightScreenSpacePosition = Vector3(0.0f, 0.0f, 0.0f);
 	}
 
-	size_t counter = 0;
+	uint64 counter = 0;
 
-	const size_t numberOfPointLightEntityComponents{ ComponentManager::GetNumberOfPointLightComponents() };
+	const uint64 numberOfPointLightEntityComponents{ ComponentManager::GetNumberOfPointLightComponents() };
 	const PointLightComponent *RESTRICT pointLightComponent{ ComponentManager::GetPointLightComponents() };
 
 	dynamicUniformData.numberOfPointLights = numberOfPointLightEntityComponents;
 
-	for (size_t i = 0; i < numberOfPointLightEntityComponents; ++i, ++pointLightComponent)
+	for (uint64 i = 0; i < numberOfPointLightEntityComponents; ++i, ++pointLightComponent)
 	{
 		if (!pointLightComponent->enabled)
 		{
@@ -1215,12 +1215,12 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 
 	counter = 0;
 
-	const size_t numberOfSpotLightEntityComponents{ ComponentManager::GetNumberOfSpotLightComponents() };
+	const uint64 numberOfSpotLightEntityComponents{ ComponentManager::GetNumberOfSpotLightComponents() };
 	const SpotLightComponent *RESTRICT spotLightComponent{ ComponentManager::GetSpotLightComponents() };
 
 	dynamicUniformData.numberOfSpotLights = numberOfSpotLightEntityComponents;
 
-	for (size_t i = 0; i < numberOfSpotLightEntityComponents; ++i, ++spotLightComponent)
+	for (uint64 i = 0; i < numberOfSpotLightEntityComponents; ++i, ++spotLightComponent)
 	{
 		if (!spotLightComponent->enabled)
 		{
@@ -1251,11 +1251,11 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 void VulkanRenderingSystem::UpdatePhysicalEntitiesGraphicsBuffers() NOEXCEPT
 {
 	//Iterate over all physical entity components and update the graphics buffers.
-	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
+	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
 	GraphicsBufferComponent *RESTRICT graphicsBufferComponent{ ComponentManager::GetPhysicalGraphicsBufferComponents() };
 	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetPhysicalTransformComponents() };
 
-	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++graphicsBufferComponent, ++transformComponent)
+	for (uint64 i = 0; i < numberOfPhysicalEntityComponents; ++i, ++graphicsBufferComponent, ++transformComponent)
 	{
 		//Calculate the model matrix.
 		Matrix4 modelMatrix{ transformComponent->position, transformComponent->rotation, transformComponent->scale };
@@ -1279,11 +1279,11 @@ void VulkanRenderingSystem::UpdateViewFrustumCulling() NOEXCEPT
 	Matrix4 viewMatrix{ projectionMatrix * cameraMatrix };
 
 	//Iterate over all physical entity components to check if they are in the view frustum.
-	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
+	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
 	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalFrustumCullingComponents() };
 	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetPhysicalTransformComponents() };
 
-	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++transformComponent)
+	for (uint64 i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++transformComponent)
 	{
 		//Make a local copy of the physical entity's position.
 		const Vector3 position = transformComponent->position;

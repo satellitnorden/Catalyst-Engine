@@ -86,11 +86,11 @@ public:
 	*/
 	TextureDataContainer(const DynamicArray<const char *RESTRICT> &texturePaths) NOEXCEPT
 	{
-		const size_t numberOfTextures{ texturePaths.Size() };
+		const uint64 numberOfTextures{ texturePaths.Size() };
 		textureData.Reserve(numberOfTextures);
 
 		//Load the texture.
-		for (size_t i = 0; i < numberOfTextures; ++i)
+		for (uint64 i = 0; i < numberOfTextures; ++i)
 		{
 			byte *RESTRICT data;
 			uint16 tempWidth, tempHeight;

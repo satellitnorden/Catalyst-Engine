@@ -63,7 +63,7 @@ void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkan
 	//Create the framebuffers.
 	framebuffers.Resize(vulkanPipelineCreationParameters.colorAttachments.Size());
 
-	for (size_t i = 0, size = vulkanPipelineCreationParameters.colorAttachments.Size(); i < size; ++i)
+	for (uint64 i = 0, size = vulkanPipelineCreationParameters.colorAttachments.Size(); i < size; ++i)
 	{
 		framebuffers[i].Initialize(*this, vulkanPipelineCreationParameters.depthBuffers.Empty() ? nullptr : vulkanPipelineCreationParameters.depthBuffers[i], vulkanPipelineCreationParameters.colorAttachments[i], vulkanPipelineCreationParameters.viewportExtent);
 	}

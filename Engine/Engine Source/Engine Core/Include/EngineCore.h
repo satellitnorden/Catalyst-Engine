@@ -49,7 +49,7 @@ class BinaryFile;
 template <uint8 BitFieldSize>
 class BitField;
 
-template <class ObjectType, size_t InitialCapacity>
+template <class ObjectType, uint64 InitialCapacity>
 class DynamicArray;
 
 class DynamicString;
@@ -63,7 +63,7 @@ class Optional;
 template <class FirstType, class SecondType>
 class Pair;
 
-template <class ObjectType, size_t ArraySize>
+template <class ObjectType, uint64 ArraySize>
 class StaticArray;
 
 template <class ObjectType>

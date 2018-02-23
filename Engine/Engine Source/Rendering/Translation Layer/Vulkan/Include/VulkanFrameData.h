@@ -43,7 +43,7 @@ public:
 		//Create the dynamic uniform data descriptor sets.
 		dynamicUniformDataDescriptorSets.Resize(frameDataCount);
 
-		for (uint32 i = 0, size = dynamicUniformDataDescriptorSets.Size(); i < size; ++i)
+		for (uint64 i = 0, size = dynamicUniformDataDescriptorSets.Size(); i < size; ++i)
 		{
 			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(dynamicUniformDataDescriptorSets[i], dynamicUniformDataDescriptorSetLayout);
 
@@ -53,7 +53,7 @@ public:
 				dynamicUniformDataBuffers[i]->GetWriteDescriptorSet(dynamicUniformDataDescriptorSets[i], 0)
 			};
 
-			vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), writeDescriptorSets.Size(), writeDescriptorSets.Data(), 0, nullptr);
+			vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 		}
 	}
 

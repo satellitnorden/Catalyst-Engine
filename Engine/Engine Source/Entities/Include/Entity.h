@@ -33,7 +33,7 @@ public:
 	/*
 	*	Returns the component index.
 	*/
-	size_t GetComponentsIndex() const NOEXCEPT { return componentsIndex; }
+	uint64 GetComponentsIndex() const NOEXCEPT { return componentsIndex; }
 
 	/*
 	*	Returns a pointer to the parent of this entity.
@@ -108,7 +108,7 @@ protected:
 	DynamicArray<Entity *RESTRICT> children;
 
 	//The components index for this entity.
-	size_t componentsIndex;
+	uint64 componentsIndex;
 
 private:
 

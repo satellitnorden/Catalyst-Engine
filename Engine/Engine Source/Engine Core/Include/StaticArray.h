@@ -1,6 +1,6 @@
 #pragma once
 
-template <class ObjectType, size_t ArraySize>
+template <class ObjectType, uint64 ArraySize>
 class StaticArray final
 {
 
@@ -28,7 +28,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	const ObjectType& operator[](const size_t index) const NOEXCEPT
+	const ObjectType& operator[](const uint64 index) const NOEXCEPT
 	{
 		return array[index];
 	}
@@ -36,7 +36,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	ObjectType& operator[](const size_t index) NOEXCEPT
+	ObjectType& operator[](const uint64 index) NOEXCEPT
 	{
 		return array[index];
 	}
@@ -92,7 +92,7 @@ public:
 	/*
 	*	Returns the size of this array.
 	*/
-	size_t Size() const NOEXCEPT
+	uint64 Size() const NOEXCEPT
 	{
 		return ArraySize;
 	}

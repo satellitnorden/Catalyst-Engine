@@ -1,6 +1,6 @@
 #pragma once
 
-template <class ObjectType, size_t InitialCapacity = 0>
+template <class ObjectType, uint64 InitialCapacity = 0>
 class DynamicArray final
 {
 
@@ -73,7 +73,7 @@ public:
 		if (array)
 		{
 			//Call the destructor on all objects in the array.
-			for (size_t i = 0; i < size; ++i)
+			for (uint64 i = 0; i < size; ++i)
 			{
 				array[i].~ObjectType();
 			}
@@ -91,7 +91,7 @@ public:
 		Reserve(otherDynamicArray.capacity);
 		size = capacity;
 
-		for (size_t i = 0; i < size; ++i)
+		for (uint64 i = 0; i < size; ++i)
 		{
 			array[i] = otherDynamicArray.array[i];
 		}
@@ -112,7 +112,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	const ObjectType& operator[](const size_t index) const NOEXCEPT
+	const ObjectType& operator[](const uint64 index) const NOEXCEPT
 	{
 		return array[index];
 	}
@@ -120,7 +120,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	ObjectType& operator[](const size_t index) NOEXCEPT
+	ObjectType& operator[](const uint64 index) NOEXCEPT
 	{
 		return array[index];
 	}
@@ -160,12 +160,12 @@ public:
 	/*
 	*	Returns the capacity of this dynamic array.
 	*/
-	size_t Capacity() const NOEXCEPT { return capacity; }
+	uint64 Capacity() const NOEXCEPT { return capacity; }
 
 	/*
 	*	Returns the size of this dynamic array.
 	*/
-	size_t Size() const NOEXCEPT { return size; }
+	uint64 Size() const NOEXCEPT { return size; }
 
 	/*
 	*	Returns whether or not this dynamic array is empty.
@@ -217,7 +217,7 @@ public:
 	*/
 	void ClearSlow() NOEXCEPT
 	{
-		for (size_t i = 0; i < size; ++i)
+		for (uint64 i = 0; i < size; ++i)
 		{
 			array[i].~ÕbjectType();
 		}
@@ -308,7 +308,7 @@ public:
 	/*
 	*	Reserves a new chunk of memory, changing the array's capacity.
 	*/
-	void Reserve(const size_t newCapacity) NOEXCEPT
+	void Reserve(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
 		ObjectType *RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
@@ -327,7 +327,7 @@ public:
 	/*
 	*	Resizes this dynamic array, filling it with default constructed objects.
 	*/
-	void Resize(const size_t newCapacity) NOEXCEPT
+	void Resize(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
 		ObjectType *RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
@@ -336,7 +336,7 @@ public:
 		MemoryUtilities::CopyMemory(newArray, array, sizeof(ObjectType) * (size < newCapacity ? size : newCapacity));
 
 		//Default construct the remaining objects.
-		for (size_t i = size; i < newCapacity; ++i)
+		for (uint64 i = size; i < newCapacity; ++i)
 		{
 			new (&newArray[i]) ObjectType;
 		}
@@ -356,15 +356,15 @@ private:
 	ObjectType *RESTRICT array;
 
 	//The current size of this dynamic array.
-	size_t size;
+	uint64 size;
 
 	//The current capacity of this dynamic array.
-	size_t capacity;
+	uint64 capacity;
 
 	/*
 	*	Reserves a new chunk of memory, changing the array's capacity, without copying over the old array.
 	*/
-	void ReserveConstruct(const size_t newCapacity) NOEXCEPT
+	void ReserveConstruct(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
 		array = static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity));

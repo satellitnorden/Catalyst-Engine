@@ -28,7 +28,7 @@ public:
 	/*
 	*	Constructor taking in the resolution of the texture.
 	*/
-	CPUTexture4(const size_t initialResolution) NOEXCEPT
+	CPUTexture4(const uint64 initialResolution) NOEXCEPT
 		:
 		resolution(initialResolution)
 	{
@@ -49,7 +49,7 @@ public:
 	/*
 	*	Returns the texture value at the specified indices, const.
 	*/
-	const Vector4& At(const size_t xIndex, const size_t yIndex) const NOEXCEPT
+	const Vector4& At(const uint64 xIndex, const uint64 yIndex) const NOEXCEPT
 	{
 		return data[xIndex + (yIndex * resolution)];
 	}
@@ -57,7 +57,7 @@ public:
 	/*
 	*	Returns the texture value at the specified indices, non-const.
 	*/
-	Vector4& At(const size_t xIndex, const size_t yIndex) NOEXCEPT
+	Vector4& At(const uint64 xIndex, const uint64 yIndex) NOEXCEPT
 	{
 		return data[xIndex + (yIndex * resolution)];
 	}
@@ -79,20 +79,20 @@ public:
 		const float yStartTexel{ (yPixelPosition - yFractional) * texelSize };
 
 		//Apparently this is needed, to sample the correct texel. I do not know why. Need to investigate. This keeps the camera from clipping against the terrain though.
-		constexpr size_t xModifier{ static_cast<size_t>(-1) };
-		constexpr size_t yModifier{ static_cast<size_t>(-1) };
+		constexpr uint64 xModifier{ static_cast<uint64>(-1) };
+		constexpr uint64 yModifier{ static_cast<uint64>(-1) };
 
-		const size_t xBottomLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(xStartTexel * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const size_t yBottomLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(yStartTexel * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xBottomLeftCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yBottomLeftCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
-		const size_t xBottomRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((xStartTexel + texelSize) * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const size_t yBottomRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(yStartTexel * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xBottomRightCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + texelSize) * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yBottomRightCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
-		const size_t xTopLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>(xStartTexel * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const size_t yTopLeftCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((yStartTexel + texelSize) * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xTopLeftCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yTopLeftCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + texelSize) * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
-		const size_t xTopRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((xStartTexel + texelSize) * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const size_t yTopRightCoordinate{ GameMath::Clamp<size_t>(static_cast<size_t>((yStartTexel + texelSize) * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xTopRightCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + texelSize) * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yTopRightCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + texelSize) * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
 		const Vector4 &bottomLeftValue{ data[xBottomLeftCoordinate + (yBottomLeftCoordinate * resolution)] };
 		const Vector4 &bottomRightValue{ data[xBottomRightCoordinate + (yBottomRightCoordinate * resolution)] };
@@ -108,7 +108,7 @@ public:
 	/*
 	*	Returns the resolution of the texture.
 	*/
-	size_t GetResolution() const NOEXCEPT { return resolution; }
+	uint64 GetResolution() const NOEXCEPT { return resolution; }
 
 private:
 
@@ -116,6 +116,6 @@ private:
 	DynamicArray<Vector4> data;
 
 	//The resolution of the texture.
-	size_t resolution;
+	uint64 resolution;
 
 };

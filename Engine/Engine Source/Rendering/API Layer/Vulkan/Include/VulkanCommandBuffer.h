@@ -47,7 +47,7 @@ public:
 	/*
 	*	Records a begin render pass command.
 	*/
-	void CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const size_t framebufferIndex, const bool clearDepth, const uint32 numberOfClearValues) NOEXCEPT;
+	void CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const bool clearDepth, const uint32 numberOfClearValues) NOEXCEPT;
 
 	/*
 	*	Records a bind descriptor sets command.

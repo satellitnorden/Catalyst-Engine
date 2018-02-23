@@ -32,7 +32,7 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 
 	bool useTessellationStage{ false };
 
-	for (size_t i = 0, size = vulkanPipelineCreationParameters.shaderModules.Size(); i < size; ++i)
+	for (uint64 i = 0, size = vulkanPipelineCreationParameters.shaderModules.Size(); i < size; ++i)
 	{
 		CreatePipelineShaderStageCreateInfo(pipelineShaderStageCreateInfos[i], vulkanPipelineCreationParameters.shaderModules[i]);
 

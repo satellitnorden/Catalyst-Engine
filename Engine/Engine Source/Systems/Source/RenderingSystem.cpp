@@ -109,7 +109,7 @@ TextureCubeMapHandle RenderingSystem::CreateCubeMapTexture(const char *RESTRICT 
 /*
 *	Creates and returns a uniform buffer.
 */
-UniformBufferHandle RenderingSystem::CreateUniformBuffer(const size_t uniformBufferSize) const NOEXCEPT
+UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT
 {
 	//Create the uniform buffer via the Vulkan rendering system.
 	return VulkanRenderingSystem::Instance->CreateUniformBuffer(uniformBufferSize);

@@ -5,7 +5,7 @@ namespace MemoryUtilities
 	/*
 	*	Allocates a chunk of memory.
 	*/
-	RESTRICTED static void* AllocateMemory(const size_t size) NOEXCEPT
+	RESTRICTED static void* AllocateMemory(const uint64 size) NOEXCEPT
 	{
 		return malloc(size);
 	}
@@ -13,7 +13,7 @@ namespace MemoryUtilities
 	/*
 	*	Reallocates a chunk of memory previously allocated with AllocateMemory().
 	*/
-	RESTRICTED static void* ReallocateMemory(void *const RESTRICT memory, const size_t size) NOEXCEPT
+	RESTRICTED static void* ReallocateMemory(void *const RESTRICT memory, const uint64 size) NOEXCEPT
 	{
 		return realloc(memory, size);
 	}
@@ -29,7 +29,7 @@ namespace MemoryUtilities
 	/*
 	*	Copies memory from the destination to the source.
 	*/
-	static void CopyMemory(void *const RESTRICT destination, const void *const RESTRICT source, const size_t size) NOEXCEPT
+	static void CopyMemory(void *const RESTRICT destination, const void *const RESTRICT source, const uint64 size) NOEXCEPT
 	{
 		memcpy(destination, source, size);
 	}

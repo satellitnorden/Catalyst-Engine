@@ -73,32 +73,32 @@ public:
 	/*
 	*	Returns the size of the objects contained in the container in bytes.
 	*/
-	size_t GetObjectSize() const NOEXCEPT { return objectSize; }
+	uint64 GetObjectSize() const NOEXCEPT { return objectSize; }
 
 	/*
 	*	Sets the size of the objects contained in the container in bytes.
 	*/
-	void SetObjectSize(const size_t newObjectSize) NOEXCEPT { objectSize = newObjectSize; }
+	void SetObjectSize(const uint64 newObjectSize) NOEXCEPT { objectSize = newObjectSize; }
 
 	/*
 	*	Returns the size of the container.
 	*/
-	size_t GetContainerSize() const NOEXCEPT { return containerSize; }
+	uint64 GetContainerSize() const NOEXCEPT { return containerSize; }
 
 	/*
 	*	Sets the size of the container.
 	*/
-	void SetContainerSize(const size_t newContainerSize) NOEXCEPT { containerSize = newContainerSize; }
+	void SetContainerSize(const uint64 newContainerSize) NOEXCEPT { containerSize = newContainerSize; }
 
 	/*
 	*	Returns the current container index.
 	*/
-	size_t GetCurrentContainerIndex() const NOEXCEPT { return currentContainerIndex; }
+	uint64 GetCurrentContainerIndex() const NOEXCEPT { return currentContainerIndex; }
 
 	/*
 	*	Sets the current container index.
 	*/
-	void SetCurrentContainerIndex(const size_t newCurrentContainerIndex) NOEXCEPT { currentContainerIndex = newCurrentContainerIndex; }
+	void SetCurrentContainerIndex(const uint64 newCurrentContainerIndex) NOEXCEPT { currentContainerIndex = newCurrentContainerIndex; }
 
 	/*
 	*	Returns the number of completions required for this daily group quest to be deemed complete.
@@ -140,13 +140,13 @@ private:
 	void *RESTRICT container;
 
 	//The size of the objects contained in the container in bytes.
-	size_t objectSize;
+	uint64 objectSize;
 
 	//The size of the container
-	size_t containerSize;
+	uint64 containerSize;
 
 	//Keeps track of the current container index.
-	std::atomic<size_t> currentContainerIndex;
+	std::atomic<uint64> currentContainerIndex;
 
 	//The number of completions required for this daily group quest to be deemed complete.
 	uint8 numberOfCompletionsRequired;

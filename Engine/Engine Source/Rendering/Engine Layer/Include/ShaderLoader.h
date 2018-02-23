@@ -18,7 +18,7 @@ namespace ShaderLoader
 			BREAKPOINT;
 #endif
 
-		size_t fileSize = (size_t)file.tellg();
+		uint64 fileSize = static_cast<uint64>(file.tellg());
 		DynamicArray<char> buffer;
 		buffer.Resize(fileSize);
 

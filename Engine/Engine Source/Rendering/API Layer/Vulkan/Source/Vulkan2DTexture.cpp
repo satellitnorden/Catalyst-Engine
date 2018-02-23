@@ -48,11 +48,11 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 
 	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, VK_WHOLE_SIZE, 0, &data));
 
-	size_t currentOffset{ 0 };
+	uint64 currentOffset{ 0 };
 
-	for (size_t i = 0; i < textureMipmapLevels; ++i)
+	for (uint64 i = 0; i < textureMipmapLevels; ++i)
 	{
-		const size_t mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels * static_cast<size_t>(textureTexelSize) };
+		const uint64 mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels * static_cast<uint64>(textureTexelSize) };
 		MemoryUtilities::CopyMemory(static_cast<byte*>(data) + currentOffset, textureData[i], mipSize);
 
 		currentOffset += mipSize;
@@ -117,11 +117,11 @@ void Vulkan2DTexture::Initialize(const uint32 textureWidth, const uint32 texture
 
 	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, VK_WHOLE_SIZE, 0, &data));
 
-	size_t currentOffset{ 0 };
+	uint64 currentOffset{ 0 };
 
-	for (size_t i = 0; i < textureMipmapLevels; ++i)
+	for (uint64 i = 0; i < textureMipmapLevels; ++i)
 	{
-		const size_t mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels };
+		const uint64 mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels };
 		MemoryUtilities::CopyMemory(static_cast<byte*>(data) + currentOffset, textureData[i].Data(), mipSize);
 
 		currentOffset += mipSize;

@@ -27,12 +27,12 @@ public:
 	/*
 	*	Returns a new components index for camera entities.
 	*/
-	static size_t GetNewCameraComponentsIndex() NOEXCEPT;
+	static uint64 GetNewCameraComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of camera components.
 	*/
-	static size_t GetNumberOfCameraComponents() NOEXCEPT;
+	static uint64 GetNumberOfCameraComponents() NOEXCEPT;
 
 	/*
 	*	Returns the camera components.
@@ -42,7 +42,7 @@ public:
 private:
 
 	//The number of camera components.
-	static size_t numberOfCameraComponents;
+	static uint64 numberOfCameraComponents;
 
 	//The camera ecomponents.
 	static DynamicArray<CameraComponent> cameraComponents;
@@ -56,12 +56,12 @@ public:
 	/*
 	*	Returns a new components index for directional light entities.
 	*/
-	static size_t GetNewDirectionalLightComponentsIndex() NOEXCEPT;
+	static uint64 GetNewDirectionalLightComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of directional light components.
 	*/
-	static size_t GetNumberOfDirectionalLightComponents() NOEXCEPT;
+	static uint64 GetNumberOfDirectionalLightComponents() NOEXCEPT;
 
 	/*
 	*	Returns the directional light components.
@@ -71,7 +71,7 @@ public:
 private:
 
 	//The number of directional light components.
-	static size_t numberOfDirectionalLightComponents;
+	static uint64 numberOfDirectionalLightComponents;
 
 	//The the directional light components.
 	static DynamicArray<DirectionalLightComponent> directionalLightComponents;
@@ -85,12 +85,12 @@ public:
 	/*
 	*	Returns a new components index for physical entities.
 	*/
-	static size_t GetNewPhysicalComponentsIndex() NOEXCEPT;
+	static uint64 GetNewPhysicalComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of physical components.
 	*/
-	static size_t GetNumberOfPhysicalComponents() NOEXCEPT;
+	static uint64 GetNumberOfPhysicalComponents() NOEXCEPT;
 
 	/*
 	*	Returns the physical frustum culling components.
@@ -115,7 +115,7 @@ public:
 private:
 
 	//The number of physical components.
-	static size_t numberOfPhysicalComponents;
+	static uint64 numberOfPhysicalComponents;
 
 	//The physical frustum culling components.
 	static DynamicArray<FrustumCullingComponent> physicalFrustumCullingComponents;
@@ -138,12 +138,12 @@ public:
 	/*
 	*	Returns a new components index for point light entities.
 	*/
-	static size_t GetNewPointLightComponentsIndex() NOEXCEPT;
+	static uint64 GetNewPointLightComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of point light components.
 	*/
-	static size_t GetNumberOfPointLightComponents() NOEXCEPT;
+	static uint64 GetNumberOfPointLightComponents() NOEXCEPT;
 
 	/*
 	*	Returns the point light components.
@@ -153,7 +153,7 @@ public:
 private:
 
 	//The number of point light components.
-	static size_t numberOfPointLightComponents;
+	static uint64 numberOfPointLightComponents;
 
 	//The point light components.
 	static DynamicArray<PointLightComponent> pointLightComponents;
@@ -167,12 +167,12 @@ public:
 	/*
 	*	Returns a new components index for spot light entities.
 	*/
-	static size_t GetNewSpotLightComponentsIndex() NOEXCEPT;
+	static uint64 GetNewSpotLightComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of spot light components.
 	*/
-	static size_t GetNumberOfSpotLightComponents() NOEXCEPT;
+	static uint64 GetNumberOfSpotLightComponents() NOEXCEPT;
 
 	/*
 	*	Returns the spot light components.
@@ -182,7 +182,7 @@ public:
 private:
 
 	//The number of spot light components.
-	static size_t numberOfSpotLightComponents;
+	static uint64 numberOfSpotLightComponents;
 
 	//The spot light components.
 	static DynamicArray<SpotLightComponent> spotLightComponents;
@@ -196,12 +196,12 @@ public:
 	/*
 	*	Returns a new components index for terrain entities.
 	*/
-	static size_t GetNewTerrainComponentsIndex() NOEXCEPT;
+	static uint64 GetNewTerrainComponentsIndex() NOEXCEPT;
 
 	/*
 	*	Returns the number of terrain components.
 	*/
-	static size_t GetNumberOfTerrainComponents() NOEXCEPT;
+	static uint64 GetNumberOfTerrainComponents() NOEXCEPT;
 
 	/*
 	*	Returns the terrain components.
@@ -216,7 +216,7 @@ public:
 private:
 
 	//The number of terrain components.
-	static size_t numberOfTerrainComponents;
+	static uint64 numberOfTerrainComponents;
 
 	//The terrain components.
 	static DynamicArray<TerrainComponent> terrainComponents;

@@ -34,7 +34,7 @@ public:
 	/*
 	*	Initializes this atomic queue.
 	*/
-	void Initialize(const size_t &newQueueSize) NOEXCEPT
+	void Initialize(const uint64 &newQueueSize) NOEXCEPT
 	{
 		//Allocate memory for the queue.
 		queue = static_cast<ValueType*>(MemoryUtilities::AllocateMemory(sizeof(ValueType) * newQueueSize));
@@ -59,9 +59,9 @@ public:
 	bool PopIfNotEmpty(ValueType &poppedValue) NOEXCEPT
 	{
 		ValueType temporaryValue;
-		size_t oldFirstIndex;
-		size_t oldLastIndex;
-		size_t newFirstIndex;
+		uint64 oldFirstIndex;
+		uint64 oldLastIndex;
+		uint64 newFirstIndex;
 
 		do
 		{
@@ -87,12 +87,12 @@ private:
 	ValueType *RESTRICT queue;
 
 	//The size of the queue.
-	size_t queueSize;
+	uint64 queueSize;
 
 	//The first index in the queue.
-	std::atomic<size_t> firstIndex{ 0 };
+	std::atomic<uint64> firstIndex{ 0 };
 
 	//The last index in the queue.
-	std::atomic<size_t> lastIndex{ 0 };
+	std::atomic<uint64> lastIndex{ 0 };
 
 };

@@ -83,7 +83,7 @@ public:
 	/*
 	*	Creates and returns a uniform buffer.
 	*/
-	UniformBufferHandle CreateUniformBuffer(const size_t uniformBufferSize) const NOEXCEPT;
+	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;
 
 	/*
 	*	Sets the active camera.

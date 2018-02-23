@@ -191,7 +191,7 @@ public:
 	/*
 	*	Creates and returns a uniform buffer.
 	*/
-	RESTRICTED VulkanUniformBuffer* CreateUniformBuffer(const size_t newUniformBufferSize) NOEXCEPT;
+	RESTRICTED VulkanUniformBuffer* CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT;
 
 private:
 

@@ -319,7 +319,7 @@ RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(const Dynamic
 /*
 *	Creates and returns a uniform buffer.
 */
-RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(const size_t newUniformBufferSize) NOEXCEPT
+RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT
 {
 	VulkanUniformBuffer *RESTRICT newUniformBuffer = new VulkanUniformBuffer;
 	newUniformBuffer->Initialize(newUniformBufferSize);

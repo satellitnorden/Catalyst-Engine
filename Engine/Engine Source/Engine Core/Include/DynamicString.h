@@ -102,8 +102,8 @@ public:
 	void operator+=(const char *const RESTRICT newString) NOEXCEPT
 	{
 		//Calculate the new length.
-		const size_t newStringLength = strlen(newString) + 1;
-		const size_t newLength = length + newStringLength - 1;
+		const uint64 newStringLength = strlen(newString) + 1;
+		const uint64 newLength = length + newStringLength - 1;
 
 		//Allocate sufficient memory to host the concatenated string.
 		string = static_cast<char *RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *RESTRICT>(string), newLength + 1));
@@ -134,7 +134,7 @@ public:
 	/*
 	*	Returns the length of the string.
 	*/
-	size_t Length() const NOEXCEPT
+	uint64 Length() const NOEXCEPT
 	{
 		return length;
 	}
@@ -145,6 +145,6 @@ private:
 	char *RESTRICT string;
 
 	//The length of the string.
-	size_t length;
+	uint64 length;
 
 };

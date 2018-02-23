@@ -32,7 +32,7 @@ bool DailyGroupQuest::CarryOut() NOEXCEPT
 	questCompletionState.store(DailyGroupQuestCompletionState::InProgress);
 
 	//Join in on the fun!
-	size_t myContainerIndex = currentContainerIndex.fetch_add(1);
+	uint64 myContainerIndex = currentContainerIndex.fetch_add(1);
 
 	while (myContainerIndex < containerSize)
 	{

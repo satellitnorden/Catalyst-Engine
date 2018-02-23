@@ -45,7 +45,7 @@ void VulkanCubeMapTexture::Initialize(const uint32 width, const uint32 height, c
 	//Copy the data into the staging buffer.
 	for (uint8 i = 0; i < 6; ++i)
 	{
-		MemoryUtilities::CopyMemory(static_cast<byte *RESTRICT>(data) + (layerSize * i), textureData[i], static_cast<size_t>(layerSize));
+		MemoryUtilities::CopyMemory(static_cast<byte *RESTRICT>(data) + (layerSize * i), textureData[i], static_cast<uint64>(layerSize));
 	}
 
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);

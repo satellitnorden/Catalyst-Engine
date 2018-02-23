@@ -2,25 +2,25 @@
 #include <ComponentManager.h>
 
 //Static variable definitions.
-size_t ComponentManager::numberOfCameraComponents = 0;
+uint64 ComponentManager::numberOfCameraComponents = 0;
 DynamicArray<CameraComponent> ComponentManager::cameraComponents;
 
-size_t ComponentManager::numberOfDirectionalLightComponents = 0;
+uint64 ComponentManager::numberOfDirectionalLightComponents = 0;
 DynamicArray<DirectionalLightComponent> ComponentManager::directionalLightComponents;
 
-size_t ComponentManager::numberOfPhysicalComponents = 0;
+uint64 ComponentManager::numberOfPhysicalComponents = 0;
 DynamicArray<FrustumCullingComponent> ComponentManager::physicalFrustumCullingComponents;
 DynamicArray<GraphicsBufferComponent> ComponentManager::physicalGraphicsBufferComponents;
 DynamicArray<RenderComponent> ComponentManager::physicalRenderComponents;
 DynamicArray<TransformComponent> ComponentManager::physicalTransformComponents;
 
-size_t ComponentManager::numberOfPointLightComponents = 0;
+uint64 ComponentManager::numberOfPointLightComponents = 0;
 DynamicArray<PointLightComponent> ComponentManager::pointLightComponents;
 
-size_t ComponentManager::numberOfSpotLightComponents = 0;
+uint64 ComponentManager::numberOfSpotLightComponents = 0;
 DynamicArray<SpotLightComponent> ComponentManager::spotLightComponents;
 
-size_t ComponentManager::numberOfTerrainComponents = 0;
+uint64 ComponentManager::numberOfTerrainComponents = 0;
 DynamicArray<TerrainComponent> ComponentManager::terrainComponents;
 DynamicArray<TerrainRenderComponent> ComponentManager::terrainRenderComponents;
 ;
@@ -28,7 +28,7 @@ DynamicArray<TerrainRenderComponent> ComponentManager::terrainRenderComponents;
 /*
 *	Returns a new components index for camera entities.
 */
-size_t ComponentManager::GetNewCameraComponentsIndex() NOEXCEPT
+uint64 ComponentManager::GetNewCameraComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	cameraComponents.EmplaceSlow();
@@ -40,7 +40,7 @@ size_t ComponentManager::GetNewCameraComponentsIndex() NOEXCEPT
 /*
 *	Returns the number of camera components.
 */
-size_t ComponentManager::GetNumberOfCameraComponents() NOEXCEPT
+uint64 ComponentManager::GetNumberOfCameraComponents() NOEXCEPT
 {
 	//Return the number of camera entity components.
 	return numberOfCameraComponents;
@@ -58,7 +58,7 @@ RESTRICTED CameraComponent* ComponentManager::GetCameraComponents() NOEXCEPT
 /*
 *	Returns a new components index for directional light entities.
 */
-size_t ComponentManager::GetNewDirectionalLightComponentsIndex() NOEXCEPT
+uint64 ComponentManager::GetNewDirectionalLightComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	directionalLightComponents.EmplaceSlow();
@@ -70,7 +70,7 @@ size_t ComponentManager::GetNewDirectionalLightComponentsIndex() NOEXCEPT
 /*
 *	Returns the number of directional light components.
 */
-size_t ComponentManager::GetNumberOfDirectionalLightComponents() NOEXCEPT
+uint64 ComponentManager::GetNumberOfDirectionalLightComponents() NOEXCEPT
 {
 	//Return the number of directional light components.
 	return numberOfDirectionalLightComponents;
@@ -88,7 +88,7 @@ RESTRICTED DirectionalLightComponent* ComponentManager::GetDirectionalLightCompo
 /*
 *	Returns a new components index for physical entities.
 */
-size_t ComponentManager::GetNewPhysicalComponentsIndex() NOEXCEPT
+uint64 ComponentManager::GetNewPhysicalComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	physicalFrustumCullingComponents.EmplaceSlow();
@@ -103,7 +103,7 @@ size_t ComponentManager::GetNewPhysicalComponentsIndex() NOEXCEPT
 /*
 *	Returns the number of physical components.
 */
-size_t ComponentManager::GetNumberOfPhysicalComponents() NOEXCEPT
+uint64 ComponentManager::GetNumberOfPhysicalComponents() NOEXCEPT
 {
 	//Return the number of physical components.
 	return numberOfPhysicalComponents;
@@ -148,7 +148,7 @@ RESTRICTED TransformComponent* ComponentManager::GetPhysicalTransformComponents(
 /*
 *	Returns a new components index for point light entities.
 */
-size_t ComponentManager::GetNewPointLightComponentsIndex() NOEXCEPT
+uint64 ComponentManager::GetNewPointLightComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	pointLightComponents.EmplaceSlow();
@@ -160,7 +160,7 @@ size_t ComponentManager::GetNewPointLightComponentsIndex() NOEXCEPT
 /*
 *	Returns the number of point light components.
 */
-size_t ComponentManager::GetNumberOfPointLightComponents() NOEXCEPT
+uint64 ComponentManager::GetNumberOfPointLightComponents() NOEXCEPT
 {
 	//Return the number of point light components.
 	return numberOfPointLightComponents;
@@ -178,7 +178,7 @@ RESTRICTED PointLightComponent* ComponentManager::GetPointLightComponents() NOEX
 /*
 *	Returns a new components index for spot light entities.
 */
-size_t ComponentManager::GetNewSpotLightComponentsIndex() NOEXCEPT
+uint64 ComponentManager::GetNewSpotLightComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	spotLightComponents.EmplaceSlow();
@@ -190,7 +190,7 @@ size_t ComponentManager::GetNewSpotLightComponentsIndex() NOEXCEPT
 /*
 *	Returns the number of spot light components.
 */
-size_t ComponentManager::GetNumberOfSpotLightComponents() NOEXCEPT
+uint64 ComponentManager::GetNumberOfSpotLightComponents() NOEXCEPT
 {
 	//Return the number of spot light components.
 	return numberOfSpotLightComponents;
@@ -208,7 +208,7 @@ RESTRICTED SpotLightComponent* ComponentManager::GetSpotLightComponents() NOEXCE
 /*
 *	Returns a new components index for terrain entities.
 */
-size_t ComponentManager::GetNewTerrainComponentsIndex() NOEXCEPT
+uint64 ComponentManager::GetNewTerrainComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	terrainComponents.EmplaceSlow();
@@ -221,7 +221,7 @@ size_t ComponentManager::GetNewTerrainComponentsIndex() NOEXCEPT
 /*
 *	Returns the number of terrain components.
 */
-size_t ComponentManager::GetNumberOfTerrainComponents() NOEXCEPT
+uint64 ComponentManager::GetNumberOfTerrainComponents() NOEXCEPT
 {
 	//Return the number of terrain components.
 	return numberOfTerrainComponents;
