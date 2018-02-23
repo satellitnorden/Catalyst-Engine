@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Resource Creator", "Resource Creator\Resource Creator.vcxproj", "{EAB25918-8CBE-4B30-B7CF-CDB5F27E62D1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Final|x64 = Final|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EAB25918-8CBE-4B30-B7CF-CDB5F27E62D1}.Debug|x64.ActiveCfg = Debug|x64
+		{EAB25918-8CBE-4B30-B7CF-CDB5F27E62D1}.Debug|x64.Build.0 = Debug|x64
+		{EAB25918-8CBE-4B30-B7CF-CDB5F27E62D1}.Final|x64.ActiveCfg = Final|x64
+		{EAB25918-8CBE-4B30-B7CF-CDB5F27E62D1}.Final|x64.Build.0 = Final|x64
+		{EAB25918-8CBE-4B30-B7CF-CDB5F27E62D1}.Release|x64.ActiveCfg = Release|x64
+		{EAB25918-8CBE-4B30-B7CF-CDB5F27E62D1}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {10A69D62-066E-44EC-AFFA-5EEC1CD40730}
+	EndGlobalSection
+EndGlobal
