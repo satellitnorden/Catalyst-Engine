@@ -15,6 +15,7 @@
 //Rendering.
 #include <RenderingCore.h>
 #include <VulkanDynamicUniformData.h>
+#include <VulkanFrameData.h>
 #include <Window.h>
 
 //Vulkan.
@@ -156,7 +157,6 @@ private:
 	//Enumeration covering all descriptor sets.
 	enum DescriptorSet : uint8
 	{
-		DynamicUniformDataDescriptorSet,
 		LightingDescriptorSet,
 		PostProcessingDescriptorSet,
 		NumberOfDescriptorSet
@@ -223,7 +223,6 @@ private:
 	//Enumeration covering all uniform buffers.
 	enum UniformBuffer : uint8
 	{
-		DynamicUniformDataBuffer,
 		PostProcessingUniformDataBuffer,
 		NumberOfUniformBuffers
 	};
@@ -273,11 +272,14 @@ private:
 	//Container for all uniform buffers.
 	StaticArray<VulkanUniformBuffer *RESTRICT, UniformBuffer::NumberOfUniformBuffers> uniformBuffers;
 
-	//Container for all swapchain command buffers.
-	DynamicArray<VulkanCommandBuffer> swapchainCommandBuffers;
+	//The Vulkan frame data.
+	VulkanFrameData frameData;
 
-	//The current swapchain command buffer.
-	size_t currentSwapchainCommandBuffer{ 0 };
+	//The current command buffer.
+	VulkanCommandBuffer *RESTRICT currentCommandBuffer;
+
+	//The current dynamic uniform data descriptor set.
+	VulkanDescriptorSet *RESTRICT currentDynamicUniformDataDescriptorSet;
 
 	//The sky box cude map texture.
 	VulkanCubeMapTexture *RESTRICT skyBoxTexture;

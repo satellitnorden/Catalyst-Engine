@@ -474,6 +474,9 @@
     <ClInclude Include="..\..\..\Game Source\Include\WorldArchitect.h">
       <Filter>Game Source\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanFrameData.h">
+      <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Components\Source\ComponentManager.cpp">

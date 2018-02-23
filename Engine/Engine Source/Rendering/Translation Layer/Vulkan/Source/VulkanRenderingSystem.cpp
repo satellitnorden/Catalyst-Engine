@@ -69,15 +69,6 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize all uniform buffers.
 	InitializeUniformBuffers();
 
-	//Resize the number of command buffers to be equal to the amount of swapchain images.
-	swapchainCommandBuffers.Resize(VulkanInterface::Instance->GetSwapchain().GetSwapChainImages().Size());
-
-	//Allocate all command buffers.
-	for (auto &commandBuffer : swapchainCommandBuffers)
-	{
-		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(commandBuffer);
-	}
-
 	//Initialize all descriptor set layouts.
 	InitializeDescriptorSetLayouts();
 
@@ -92,6 +83,9 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize all default textures.
 	InitializeDefaultTextures();
+
+	//Initialize the Vulkan frame data.
+	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetSwapChainImages().Size(), descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)]);
 }
 
 /*
@@ -529,9 +523,6 @@ void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 {
-	//Create the dynamic uniform data buffer.
-	uniformBuffers[UniformBuffer::DynamicUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(VulkanDynamicUniformData));
-
 	//Create the post processing uniform data buffer.
 	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(PostProcessingUniformData));
 
@@ -866,19 +857,6 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 {
 	{
-		//Initialize the dynamic uniform data descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[DescriptorSet::DynamicUniformDataDescriptorSet], descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)]);
-
-		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
-		{
-			uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::DynamicUniformDataDescriptorSet], 0)
-		};
-
-		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-	}
-
-	{
 		//Initialize the lighting descriptor set.
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)]);
 
@@ -935,17 +913,26 @@ void VulkanRenderingSystem::CalculateProjectionMatrix() NOEXCEPT
 */
 void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 {
-	//Wait for the graphics queue to finish.
-	VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
+	//Set the current frame.
+	frameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
+
+	//Set the current command buffer.
+	currentCommandBuffer = frameData.GetCurrentCommandBuffer();
+
+	//Set the current dynamic uniform data descriptor set.
+	currentDynamicUniformDataDescriptorSet = frameData.GetCurrentDynamicUniformDataDescriptorSet();
+
+	//Wait for the current fence to finish.
+	frameData.GetCurrentFence()->WaitFor();
+
+	//Reset the current fence.
+	frameData.GetCurrentFence()->Reset();
 
 	//Carry out the graphics system update dynamic uniform data daily quest.
 	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::RenderingSystemUpdateDynamicUniformData, this);
 
-	//Set the current command buffer.
-	currentSwapchainCommandBuffer = VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
-
 	//Set up the current command buffer.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+	currentCommandBuffer->Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 }
 
 /*
@@ -955,11 +942,10 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 {
 	//Cache the pipeline.
 	VulkanPipeline &terrainSceneBufferPipeline{ *pipelines[Pipeline::TerrainSceneBufferPipeline] };
-	VulkanCommandBuffer &commandBuffer{ swapchainCommandBuffers[currentSwapchainCommandBuffer] };
 
 	//Begin the pipeline and render pass.
-	commandBuffer.CommandBindPipeline(terrainSceneBufferPipeline);
-	commandBuffer.CommandBeginRenderPass(terrainSceneBufferPipeline.GetRenderPass(), 0, true, 4);
+	currentCommandBuffer->CommandBindPipeline(terrainSceneBufferPipeline);
+	currentCommandBuffer->CommandBeginRenderPass(terrainSceneBufferPipeline.GetRenderPass(), 0, true, 4);
 
 	//Iterate over all terrain entity components and draw them all.
 	const size_t numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
@@ -969,18 +955,18 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 	{
 		StaticArray<VulkanDescriptorSet, 2> terrainDescriptorSets
 		{
-			descriptorSets[DescriptorSet::DynamicUniformDataDescriptorSet],
+			*currentDynamicUniformDataDescriptorSet,
 			terrainRenderComponent->descriptorSet
 		};
 
-		commandBuffer.CommandBindDescriptorSets(terrainSceneBufferPipeline, 2, terrainDescriptorSets.Data());
-		commandBuffer.CommandBindVertexBuffers(terrainRenderComponent->vertexAndIndexBuffer);
-		commandBuffer.CommandBindIndexBuffer(terrainRenderComponent->vertexAndIndexBuffer, terrainRenderComponent->indexBufferOffset);
-		commandBuffer.CommandDrawIndexed(terrainRenderComponent->indexCount);
+		currentCommandBuffer->CommandBindDescriptorSets(terrainSceneBufferPipeline, 2, terrainDescriptorSets.Data());
+		currentCommandBuffer->CommandBindVertexBuffers(terrainRenderComponent->vertexAndIndexBuffer);
+		currentCommandBuffer->CommandBindIndexBuffer(terrainRenderComponent->vertexAndIndexBuffer, terrainRenderComponent->indexBufferOffset);
+		currentCommandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount);
 	}
 
 	//End the render pass.
-	commandBuffer.CommandEndRenderPass();
+	currentCommandBuffer->CommandEndRenderPass();
 }
 
 /*
@@ -993,7 +979,6 @@ void VulkanRenderingSystem::RenderPhysicalEntities() NOEXCEPT
 
 	//Cache the pipeline.
 	VulkanPipeline &sceneBufferPipeline{ *pipelines[Pipeline::SceneBufferPipeline] };
-	VulkanCommandBuffer &commandBuffer{ swapchainCommandBuffers[currentSwapchainCommandBuffer] };
 
 	//Iterate over all physical entity components and draw them all.
 	const size_t numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
@@ -1006,8 +991,8 @@ void VulkanRenderingSystem::RenderPhysicalEntities() NOEXCEPT
 	}
 
 	//Begin the pipeline and render pass.
-	commandBuffer.CommandBindPipeline(sceneBufferPipeline);
-	commandBuffer.CommandBeginRenderPass(sceneBufferPipeline.GetRenderPass(), 0, false, 0);
+	currentCommandBuffer->CommandBindPipeline(sceneBufferPipeline);
+	currentCommandBuffer->CommandBeginRenderPass(sceneBufferPipeline.GetRenderPass(), 0, false, 0);
 
 	for (size_t i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{
@@ -1017,18 +1002,18 @@ void VulkanRenderingSystem::RenderPhysicalEntities() NOEXCEPT
 
 		StaticArray<VulkanDescriptorSet, 2> physicalEntityDescriptorSets
 		{
-			descriptorSets[DescriptorSet::DynamicUniformDataDescriptorSet],
+			*currentDynamicUniformDataDescriptorSet,
 			renderComponent->descriptorSet
 		};
 
-		commandBuffer.CommandBindDescriptorSets(sceneBufferPipeline, 2, physicalEntityDescriptorSets.Data());
-		commandBuffer.CommandBindVertexBuffers(renderComponent->buffer);
-		commandBuffer.CommandBindIndexBuffer(renderComponent->buffer, renderComponent->indexOffset);
-		commandBuffer.CommandDrawIndexed(renderComponent->indexCount);
+		currentCommandBuffer->CommandBindDescriptorSets(sceneBufferPipeline, 2, physicalEntityDescriptorSets.Data());
+		currentCommandBuffer->CommandBindVertexBuffers(renderComponent->buffer);
+		currentCommandBuffer->CommandBindIndexBuffer(renderComponent->buffer, renderComponent->indexOffset);
+		currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount);
 	}
 
 	//End the render pass.
-	commandBuffer.CommandEndRenderPass();
+	currentCommandBuffer->CommandEndRenderPass();
 }
 
 /*
@@ -1037,25 +1022,25 @@ void VulkanRenderingSystem::RenderPhysicalEntities() NOEXCEPT
 void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 {
 	//Bind the lighting pipeline.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::LightingPipeline]);
+	currentCommandBuffer->CommandBindPipeline(*pipelines[Pipeline::LightingPipeline]);
 
 	//Bind the lighting render pass.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::LightingPipeline]->GetRenderPass(), 0, false, 1);
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[Pipeline::LightingPipeline]->GetRenderPass(), 0, false, 1);
 
 	//Bind the scene buffer descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> lightingDescriptorSets
 	{
-		descriptorSets[DescriptorSet::DynamicUniformDataDescriptorSet],
+		*currentDynamicUniformDataDescriptorSet,
 		descriptorSets[DescriptorSet::LightingDescriptorSet]
 	};
 
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::LightingPipeline], 2, lightingDescriptorSets.Data());
+	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[Pipeline::LightingPipeline], 2, lightingDescriptorSets.Data());
 
 	//Draw the viewport!
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandDraw(4);
+	currentCommandBuffer->CommandDraw(4);
 
 	//End the render pass.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandEndRenderPass();
+	currentCommandBuffer->CommandEndRenderPass();
 }
 
 /*
@@ -1064,25 +1049,25 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
 {
 	//Bind the cube map pipeline.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::CubeMapPipeline]);
+	currentCommandBuffer->CommandBindPipeline(*pipelines[Pipeline::CubeMapPipeline]);
 
 	//Bind the cube map render pass.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::CubeMapPipeline]->GetRenderPass(), 0, false, 0);
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[Pipeline::CubeMapPipeline]->GetRenderPass(), 0, false, 0);
 
 	//Bind the sky box descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> skyBoxDescriptorSets
 	{
-		descriptorSets[DescriptorSet::DynamicUniformDataDescriptorSet],
+		*currentDynamicUniformDataDescriptorSet,
 		skyBoxDescriptorSet
 	};
 
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::CubeMapPipeline], 2, skyBoxDescriptorSets.Data());
+	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[Pipeline::CubeMapPipeline], 2, skyBoxDescriptorSets.Data());
 
 	//Draw the sky box!
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandDraw(36);
+	currentCommandBuffer->CommandDraw(36);
 
 	//End the cube map render pass.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandEndRenderPass();
+	currentCommandBuffer->CommandEndRenderPass();
 }
 
 /*
@@ -1091,25 +1076,25 @@ void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
 void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 {
 	//Bind the post processing pipeline.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindPipeline(*pipelines[Pipeline::PostProcessingPipeline]);
+	currentCommandBuffer->CommandBindPipeline(*pipelines[Pipeline::PostProcessingPipeline]);
 
 	//Bind the post processing render pass.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBeginRenderPass(pipelines[Pipeline::PostProcessingPipeline]->GetRenderPass(), currentSwapchainCommandBuffer, false, 1);
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[Pipeline::PostProcessingPipeline]->GetRenderPass(), frameData.GetCurrentFrame(), false, 1);
 
 	//Bind the post processing descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> postProcessingDescriptorSets
 	{
-		descriptorSets[DescriptorSet::DynamicUniformDataDescriptorSet],
+		*currentDynamicUniformDataDescriptorSet,
 		descriptorSets[DescriptorSet::PostProcessingDescriptorSet]
 	};
 
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandBindDescriptorSets(*pipelines[Pipeline::PostProcessingPipeline], 2, postProcessingDescriptorSets.Data());
+	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[Pipeline::PostProcessingPipeline], 2, postProcessingDescriptorSets.Data());
 
 	//Draw the viewport!
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandDraw(4);
+	currentCommandBuffer->CommandDraw(4);
 
 	//End the post processing render pass.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].CommandEndRenderPass();
+	currentCommandBuffer->CommandEndRenderPass();
 }
 
 /*
@@ -1123,7 +1108,7 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 	static const DynamicArray<VkSemaphore> signalSemaphores{ semaphores[Semaphore::RenderFinished]->Get() };
 
 	//End the current command buffer.
-	swapchainCommandBuffers[currentSwapchainCommandBuffer].End();
+	currentCommandBuffer->End();
 
 	//Wait for the graphics system update dynamic uniform data daily quest to finish.
 	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::RenderingSystemUpdateDynamicUniformData);
@@ -1132,7 +1117,7 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::RenderingSystemUpdatePhysicalEntitiesGraphicsBuffers);
 
 	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue().Submit(swapchainCommandBuffers[currentSwapchainCommandBuffer], waitSemaphores, waitStages, signalSemaphores);
+	VulkanInterface::Instance->GetGraphicsQueue().Submit(*currentCommandBuffer, waitSemaphores, waitStages, signalSemaphores, frameData.GetCurrentFence()->Get());
 }
 
 /*
@@ -1257,7 +1242,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	}
 
 	//Upload the dynamic uniform data to the uniform buffer.
-	uniformBuffers[UniformBuffer::DynamicUniformDataBuffer]->UploadData(static_cast<void*>(&dynamicUniformData));
+	frameData.GetCurrentDynamicUniformDataBuffer()->UploadData(static_cast<void*>(&dynamicUniformData));
 }
 
 /*

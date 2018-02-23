@@ -215,6 +215,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\TextureLoader.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\Window.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanDynamicUniformData.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanFrameData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanRenderingSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanTranslationUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\ResourceLoader.h" />
