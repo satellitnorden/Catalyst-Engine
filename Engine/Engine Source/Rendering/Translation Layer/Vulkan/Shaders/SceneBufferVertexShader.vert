@@ -6,7 +6,7 @@
 #define MaximumNumberOfPointLights 8
 #define MaximumNumberOfSpotLights 8
 
-layout (std140, binding = 0) uniform DynamicUniformData
+layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 {
     //Camera data.
     float cameraFieldOfViewCosine;
@@ -90,7 +90,7 @@ vec3 cubeMapVertices[36] = vec3[]
 );
 
 //Model uniform buffer.
-layout (binding = 1) uniform ModelData
+layout (set = 1, binding = 1) uniform ModelData
 {
     mat4 modelMatrix;
 };

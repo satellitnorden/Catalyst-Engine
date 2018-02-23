@@ -6,7 +6,7 @@
 #define MaximumNumberOfPointLights 8
 #define MaximumNumberOfSpotLights 8
 
-layout (std140, binding = 0) uniform DynamicUniformData
+layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 {
     //Camera data.
     float cameraFieldOfViewCosine;
@@ -49,11 +49,11 @@ layout (location = 1) in mat3 fragmentTangentSpaceMatrix;
 layout (location = 4) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (binding = 2) uniform sampler2D albedoTexture;
-layout (binding = 3) uniform sampler2D normalMapTexture;
-layout (binding = 4) uniform sampler2D roughnessTexture;
-layout (binding = 5) uniform sampler2D metallicTexture;
-layout (binding = 6) uniform sampler2D ambientOcclusionTexture;
+layout (set = 1, binding = 2) uniform sampler2D albedoTexture;
+layout (set = 1, binding = 3) uniform sampler2D normalMapTexture;
+layout (set = 1, binding = 4) uniform sampler2D roughnessTexture;
+layout (set = 1, binding = 5) uniform sampler2D metallicTexture;
+layout (set = 1, binding = 6) uniform sampler2D ambientOcclusionTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;

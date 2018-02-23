@@ -33,7 +33,7 @@
 
 namespace
 {
-	static constexpr uint32 HEIGHT_MAP_RESOLUTION{ 4'096 };
+	static constexpr uint32 HEIGHT_MAP_RESOLUTION{ 1'024 };
 	static constexpr float TERRAIN_HEIGHT{ 1'000.0f };
 	static constexpr float TERRAIN_SIZE{ 10'000.0f };
 }

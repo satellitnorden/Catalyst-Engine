@@ -156,6 +156,7 @@ private:
 	//Enumeration covering all descriptor sets.
 	enum DescriptorSet : uint8
 	{
+		DynamicUniformDataDescriptorSet,
 		LightingDescriptorSet,
 		PostProcessingDescriptorSet,
 		NumberOfDescriptorSet
@@ -164,6 +165,7 @@ private:
 	//Enumeration covering all descriptor set layouts.
 	enum class DescriptorSetLayout : uint8
 	{
+		DynamicUniformData,
 		Terrain,
 		SceneBuffer,
 		Lighting,

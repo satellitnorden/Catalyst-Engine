@@ -6,7 +6,7 @@
 #define MaximumNumberOfPointLights 8
 #define MaximumNumberOfSpotLights 8
 
-layout (std140, binding = 0) uniform DynamicUniformData
+layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 {
     //Camera data.
     float cameraFieldOfViewCosine;
@@ -44,7 +44,7 @@ layout (std140, binding = 0) uniform DynamicUniformData
 };
 
 //Terrain uniform buffer.
-layout (std140, binding = 1) uniform TerrainUniformData
+layout (std140, set = 1, binding = 1) uniform TerrainUniformData
 {
     float terrainFirstLayerDisplacementHeight;
     float terrainSecondLayerDisplacementHeight;

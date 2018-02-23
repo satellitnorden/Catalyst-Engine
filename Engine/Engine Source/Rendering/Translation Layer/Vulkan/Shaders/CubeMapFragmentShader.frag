@@ -6,7 +6,7 @@
 #define MaximumNumberOfPointLights 8
 #define MaximumNumberOfSpotLights 8
 
-layout (std140, binding = 0) uniform DynamicUniformData
+layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 {
     //Camera data.
     float cameraFieldOfViewCosine;
@@ -47,7 +47,7 @@ layout (std140, binding = 0) uniform DynamicUniformData
 layout (location = 0) in vec3 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (binding = 1) uniform samplerCube cubeMapTexture;
+layout (set = 1, binding = 1) uniform samplerCube cubeMapTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;

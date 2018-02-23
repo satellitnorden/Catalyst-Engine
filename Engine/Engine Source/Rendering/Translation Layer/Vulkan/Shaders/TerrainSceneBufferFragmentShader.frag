@@ -6,7 +6,7 @@
 #define MaximumNumberOfPointLights 8
 #define MaximumNumberOfSpotLights 8
 
-layout (std140, binding = 0) uniform DynamicUniformData
+layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 {
     //Camera data.
     float cameraFieldOfViewCosine;
@@ -44,7 +44,7 @@ layout (std140, binding = 0) uniform DynamicUniformData
 };
 
 //Terrain uniform buffer.
-layout (std140, binding = 1) uniform TerrainUniformData
+layout (std140, set = 1, binding = 1) uniform TerrainUniformData
 {
     float terrainFirstLayerDisplacementHeight;
     float terrainSecondLayerDisplacementHeight;
@@ -63,22 +63,22 @@ layout (location = 1) in vec2 fragmentTextureCoordinate;
 layout (location = 2) in vec4 layerWeightsSampler;
 
 //Texture samplers.
-layout (binding = 2) uniform sampler2D terrainPropertiesTexture;
-layout (binding = 4) uniform sampler2D layer1AlbedoTexture;
-layout (binding = 5) uniform sampler2D layer1NormalMapTexture;
-layout (binding = 6) uniform sampler2D layer1MaterialPropertiesTexture;
-layout (binding = 7) uniform sampler2D layer2AlbedoTexture;
-layout (binding = 8) uniform sampler2D layer2NormalMapTexture;
-layout (binding = 9) uniform sampler2D layer2MaterialPropertiesTexture;
-layout (binding = 10) uniform sampler2D layer3AlbedoTexture;
-layout (binding = 11) uniform sampler2D layer3NormalMapTexture;
-layout (binding = 12) uniform sampler2D layer3MaterialPropertiesTexture;
-layout (binding = 13) uniform sampler2D layer4AlbedoTexture;
-layout (binding = 14) uniform sampler2D layer4NormalMapTexture;
-layout (binding = 15) uniform sampler2D layer4MaterialPropertiesTexture;
-layout (binding = 16) uniform sampler2D layer5AlbedoTexture;
-layout (binding = 17) uniform sampler2D layer5NormalMapTexture;
-layout (binding = 18) uniform sampler2D layer5MaterialPropertiesTexture;
+layout (set = 1, binding = 2) uniform sampler2D terrainPropertiesTexture;
+layout (set = 1, binding = 4) uniform sampler2D layer1AlbedoTexture;
+layout (set = 1, binding = 5) uniform sampler2D layer1NormalMapTexture;
+layout (set = 1, binding = 6) uniform sampler2D layer1MaterialPropertiesTexture;
+layout (set = 1, binding = 7) uniform sampler2D layer2AlbedoTexture;
+layout (set = 1, binding = 8) uniform sampler2D layer2NormalMapTexture;
+layout (set = 1, binding = 9) uniform sampler2D layer2MaterialPropertiesTexture;
+layout (set = 1, binding = 10) uniform sampler2D layer3AlbedoTexture;
+layout (set = 1, binding = 11) uniform sampler2D layer3NormalMapTexture;
+layout (set = 1, binding = 12) uniform sampler2D layer3MaterialPropertiesTexture;
+layout (set = 1, binding = 13) uniform sampler2D layer4AlbedoTexture;
+layout (set = 1, binding = 14) uniform sampler2D layer4NormalMapTexture;
+layout (set = 1, binding = 15) uniform sampler2D layer4MaterialPropertiesTexture;
+layout (set = 1, binding = 16) uniform sampler2D layer5AlbedoTexture;
+layout (set = 1, binding = 17) uniform sampler2D layer5NormalMapTexture;
+layout (set = 1, binding = 18) uniform sampler2D layer5MaterialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
