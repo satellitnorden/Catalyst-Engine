@@ -160,6 +160,22 @@ vec3 ApplySharpen(vec3 sceneTextureSampler)
     return mix(sceneTextureSampler, sharpenedSample, sharpenAmount);
 }
 
+/*
+*   Applies HDR .
+*/
+vec3 ApplyHDR(vec3 fragment)
+{
+    return fragment / (fragment + vec3(1.0f));
+}
+
+/*
+*   Applies gamma correction.
+*/
+vec3 ApplyGammaCorrection(vec3 fragment)
+{
+    return pow(fragment, vec3(1.0f / 2.2f));
+}
+
 void main()
 {
     //Sample the scene texture.
@@ -177,8 +193,11 @@ void main()
     //Apply sharpen.
     sceneTextureSampler = ApplySharpen(sceneTextureSampler);
 
+    //Apply HDR.
+    sceneTextureSampler = ApplyHDR(sceneTextureSampler);
+
     //Apply gamma correction.
-    sceneTextureSampler = pow(sceneTextureSampler, vec3(1.0f / 2.2f));
+    sceneTextureSampler = ApplyGammaCorrection(sceneTextureSampler);
 
     //Set the fragment color.
     fragmentColor = vec4(sceneTextureSampler, 1.0f);
