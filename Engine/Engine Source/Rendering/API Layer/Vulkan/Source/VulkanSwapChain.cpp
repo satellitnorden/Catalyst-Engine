@@ -1,6 +1,9 @@
 //Header file.
 #include <VulkanSwapChain.h>
 
+//Math.
+#include <GameMath.h>
+
 //Vulkan.
 #include <VulkanInterface.h>
 #include <VulkanLogicalDevice.h>
@@ -47,17 +50,15 @@ void VulkanSwapchain::Initialize() NOEXCEPT
 	VULKAN_ERROR_CHECK(VULKAN_CREATE_SWAPCHAIN(VulkanInterface::Instance->GetLogicalDevice().Get(), &swapChainCreateInfo, nullptr, &vulkanSwapChain));
 
 	//Query the swap chain images.
-	uint32 swapChainImagesCount = 0;
-	
-	VULKAN_ERROR_CHECK(VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &swapChainImagesCount, nullptr));
+	VULKAN_ERROR_CHECK(VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &numberOfSwapChainImages, nullptr));
 
-	swapChainImages.Resize(swapChainImagesCount);
-	VULKAN_ERROR_CHECK(VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &swapChainImagesCount, swapChainImages.Data()));
+	swapChainImages.Resize(numberOfSwapChainImages);
+	VULKAN_ERROR_CHECK(VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &numberOfSwapChainImages, swapChainImages.Data()));
 
 	//Create the image views.
-	swapChainImageViews.Resize(swapChainImagesCount);
+	swapChainImageViews.Resize(numberOfSwapChainImages);
 
-	for (uint32 i = 0; i < swapChainImagesCount; ++i)
+	for (uint32 i = 0; i < numberOfSwapChainImages; ++i)
 	{
 		VulkanUtilities::CreateVulkanImageView(swapChainImages[i], VK_IMAGE_VIEW_TYPE_2D, VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1, swapChainImageViews[i]);
 	}
@@ -143,7 +144,7 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VULKAN_SWAPCHAIN_CREATE_INFO_TYP
 	const auto &surfaceFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat();
 	const auto &presentMode = VulkanInterface::Instance->GetPhysicalDevice().GetPresentMode();
 
-	uint32 minimumImageCount = surfaceCapabilities.minImageCount + 1;
+	uint32 minimumImageCount = GameMath::Maximum<uint32>(3, surfaceCapabilities.minImageCount);
 
 	if (surfaceCapabilities.maxImageCount > 0 && minimumImageCount > surfaceCapabilities.maxImageCount)
 		minimumImageCount = surfaceCapabilities.maxImageCount;

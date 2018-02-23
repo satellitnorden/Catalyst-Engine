@@ -45,6 +45,11 @@ public:
 	void Release() NOEXCEPT;
 
 	/*
+	*	Returns the number of swapchain images.
+	*/
+	uint32 GetNumberOfSwapChainImages() const NOEXCEPT { return numberOfSwapChainImages; }
+
+	/*
 	*	Returns the swap chain images.
 	*/
 	const DynamicArray<VkImage>& GetSwapChainImages() const NOEXCEPT { return swapChainImages; }
@@ -83,6 +88,9 @@ private:
 
 	//The underlying Vulkan swap chain.
 	VULKAN_SWAPCHAIN_TYPE vulkanSwapChain;
+
+	//The number of swap chain images.
+	uint32 numberOfSwapChainImages;
 
 	//The swap chain images.
 	DynamicArray<VkImage> swapChainImages;

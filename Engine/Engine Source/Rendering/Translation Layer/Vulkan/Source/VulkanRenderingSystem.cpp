@@ -85,7 +85,7 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	InitializeDefaultTextures();
 
 	//Initialize the Vulkan frame data.
-	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetSwapChainImages().Size(), descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)]);
+	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)]);
 }
 
 /*
@@ -923,7 +923,7 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 	currentDynamicUniformDataDescriptorSet = frameData.GetCurrentDynamicUniformDataDescriptorSet();
 
 	//Wait for the current fence to finish.
-	frameData.GetCurrentFence()->WaitFor();
+	CATALYST_BENCHMARK_SECTION_AVERAGE(frameData.GetCurrentFence()->WaitFor());
 
 	//Reset the current fence.
 	frameData.GetCurrentFence()->Reset();
