@@ -78,56 +78,56 @@ private:
 
 public:
 
-	/*								*/
-	/*	Physical Entity Interface.	*/
-	/*								*/						
+	/*										*/
+	/*	Static Physical Entity Interface.	*/
+	/*										*/						
 
 	/*
-	*	Returns a new components index for physical entities.
+	*	Returns a new components index for static physical entities.
 	*/
-	static uint64 GetNewPhysicalComponentsIndex() NOEXCEPT;
+	static uint64 GetNewStaticPhysicalComponentsIndex() NOEXCEPT;
 
 	/*
-	*	Returns the number of physical components.
+	*	Returns the number of static physical components.
 	*/
-	static uint64 GetNumberOfPhysicalComponents() NOEXCEPT;
+	static uint64 GetNumberOfStaticPhysicalComponents() NOEXCEPT;
 
 	/*
-	*	Returns the physical frustum culling components.
+	*	Returns the static physical frustum culling components.
 	*/
-	RESTRICTED static FrustumCullingComponent* GetPhysicalFrustumCullingComponents() NOEXCEPT;
+	RESTRICTED static FrustumCullingComponent* GetStaticPhysicalFrustumCullingComponents() NOEXCEPT;
 
 	/*
-	*	Returns the physical graphics buffer components.
+	*	Returns the static physical graphics buffer components.
 	*/
-	RESTRICTED static GraphicsBufferComponent* GetPhysicalGraphicsBufferComponents() NOEXCEPT;
+	RESTRICTED static GraphicsBufferComponent* GetStaticPhysicalGraphicsBufferComponents() NOEXCEPT;
 
 	/*
-	*	Returns the physical render components.
+	*	Returns the static physical render components.
 	*/
-	RESTRICTED static RenderComponent* GetPhysicalRenderComponents() NOEXCEPT;
+	RESTRICTED static RenderComponent* GetStaticPhysicalRenderComponents() NOEXCEPT;
 
 	/*
-	*	Returns the physical transform components.
+	*	Returns the static physical transform components.
 	*/
-	RESTRICTED static TransformComponent* GetPhysicalTransformComponents() NOEXCEPT;
+	RESTRICTED static TransformComponent* GetStaticPhysicalTransformComponents() NOEXCEPT;
 
 private:
 
-	//The number of physical components.
-	static uint64 numberOfPhysicalComponents;
+	//The number of static physical components.
+	static uint64 numberOfStaticPhysicalComponents;
 
-	//The physical frustum culling components.
-	static DynamicArray<FrustumCullingComponent> physicalFrustumCullingComponents;
+	//The static physical frustum culling components.
+	static DynamicArray<FrustumCullingComponent> staticPhysicalFrustumCullingComponents;
 
-	//The physical graphics buffer components.
-	static DynamicArray<GraphicsBufferComponent> physicalGraphicsBufferComponents;
+	//The static physical graphics buffer components.
+	static DynamicArray<GraphicsBufferComponent> staticPhysicalGraphicsBufferComponents;
 
-	//The physical render components.
-	static DynamicArray<RenderComponent> physicalRenderComponents;
+	//The static physical render components.
+	static DynamicArray<RenderComponent> staticPhysicalRenderComponents;
 
-	//The physical transform components.
-	static DynamicArray<TransformComponent> physicalTransformComponents;
+	//The static physical transform components.
+	static DynamicArray<TransformComponent> staticPhysicalTransformComponents;
 
 public:
 

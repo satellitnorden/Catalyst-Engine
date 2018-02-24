@@ -10,28 +10,28 @@
 class PhysicalModel;
 class VulkanUniformBuffer;
 
-class PhysicalEntity : public Entity
+class StaticPhysicalEntity : public Entity
 {
 
 public:
 
 	//Declare the entity class.
-	DECLARE_ENTITY_CLASS(PhysicalEntity);
+	DECLARE_ENTITY_CLASS(StaticPhysicalEntity);
 
 	/*
 	*	Default constructor.
 	*/
-	PhysicalEntity() NOEXCEPT;
+	StaticPhysicalEntity() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	virtual ~PhysicalEntity() NOEXCEPT;
+	virtual ~StaticPhysicalEntity() NOEXCEPT;
 
 	/*
-	*	Initializes this physical entity.
+	*	Initializes this static physical entity.
 	*/
-	void Initialize(const PhysicalModel &newModel) NOEXCEPT;
+	void Initialize(const PhysicalModel &newModel, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) NOEXCEPT;
 
 	/*
 	*	Returns the position of this entity.

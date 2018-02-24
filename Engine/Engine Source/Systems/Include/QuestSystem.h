@@ -11,7 +11,6 @@
 enum class DailyQuests : uint8
 {
 	RenderingSystemUpdateDynamicUniformData,
-	RenderingSystemUpdatePhysicalEntitiesGraphicsBuffers,
 	RenderingSystemUpdateViewFrustumCulling,
 	InputSystemAsynchronousUpdate,
 	NumberOfDailyQuests

@@ -6,9 +6,9 @@
 
 //Entities.
 #include <DirectionalLightEntity.h>
-#include <PhysicalEntity.h>
 #include <PointLightEntity.h>
 #include <SpotLightEntity.h>
+#include <StaticPhysicalEntity.h>
 #include <TerrainEntity.h>
 
 //Math.
@@ -203,14 +203,15 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Create the stones.
 	for (uint64 i = 0; i < 1'000; ++i)
 	{
-		PhysicalEntity *stone = EntitySystem::Instance->CreateEntity<PhysicalEntity>();
-		stone->Initialize(stoneModel);
+		StaticPhysicalEntity *stone = EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>();
+
 		Vector3 position{ Vector3(GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
 		position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
-		stone->Move(position);
-		stone->Rotate(Vector3(0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f), 0.0f));
+		const Vector3 rotation{ 0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f), 0.0f };
 		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
-		stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
+		const Vector3 scale{ stoneScale, stoneScale, stoneScale };
+
+		stone->Initialize(stoneModel, position, rotation, scale);
 	}
 }
 

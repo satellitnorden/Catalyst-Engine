@@ -8,11 +8,11 @@ DynamicArray<CameraComponent> ComponentManager::cameraComponents;
 uint64 ComponentManager::numberOfDirectionalLightComponents = 0;
 DynamicArray<DirectionalLightComponent> ComponentManager::directionalLightComponents;
 
-uint64 ComponentManager::numberOfPhysicalComponents = 0;
-DynamicArray<FrustumCullingComponent> ComponentManager::physicalFrustumCullingComponents;
-DynamicArray<GraphicsBufferComponent> ComponentManager::physicalGraphicsBufferComponents;
-DynamicArray<RenderComponent> ComponentManager::physicalRenderComponents;
-DynamicArray<TransformComponent> ComponentManager::physicalTransformComponents;
+uint64 ComponentManager::numberOfStaticPhysicalComponents = 0;
+DynamicArray<FrustumCullingComponent> ComponentManager::staticPhysicalFrustumCullingComponents;
+DynamicArray<GraphicsBufferComponent> ComponentManager::staticPhysicalGraphicsBufferComponents;
+DynamicArray<RenderComponent> ComponentManager::staticPhysicalRenderComponents;
+DynamicArray<TransformComponent> ComponentManager::staticPhysicalTransformComponents;
 
 uint64 ComponentManager::numberOfPointLightComponents = 0;
 DynamicArray<PointLightComponent> ComponentManager::pointLightComponents;
@@ -86,63 +86,63 @@ RESTRICTED DirectionalLightComponent* ComponentManager::GetDirectionalLightCompo
 }
 
 /*
-*	Returns a new components index for physical entities.
+*	Returns a new components index for static physical entities.
 */
-uint64 ComponentManager::GetNewPhysicalComponentsIndex() NOEXCEPT
+uint64 ComponentManager::GetNewStaticPhysicalComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
-	physicalFrustumCullingComponents.EmplaceSlow();
-	physicalGraphicsBufferComponents.EmplaceSlow();
-	physicalRenderComponents.EmplaceSlow();
-	physicalTransformComponents.EmplaceSlow();
+	staticPhysicalFrustumCullingComponents.EmplaceSlow();
+	staticPhysicalGraphicsBufferComponents.EmplaceSlow();
+	staticPhysicalRenderComponents.EmplaceSlow();
+	staticPhysicalTransformComponents.EmplaceSlow();
 
 	//Return the new index.
-	return numberOfPhysicalComponents++;
+	return numberOfStaticPhysicalComponents++;
 }
 
 /*
-*	Returns the number of physical components.
+*	Returns the number of static physical components.
 */
-uint64 ComponentManager::GetNumberOfPhysicalComponents() NOEXCEPT
+uint64 ComponentManager::GetNumberOfStaticPhysicalComponents() NOEXCEPT
 {
 	//Return the number of physical components.
-	return numberOfPhysicalComponents;
+	return numberOfStaticPhysicalComponents;
 }
 
 /*
-*	Returns the physical frustum culling components.
+*	Returns the static physical frustum culling components.
 */
-RESTRICTED FrustumCullingComponent* ComponentManager::GetPhysicalFrustumCullingComponents() NOEXCEPT
+RESTRICTED FrustumCullingComponent* ComponentManager::GetStaticPhysicalFrustumCullingComponents() NOEXCEPT
 {
 	//Return the physical frustum culling components.
-	return physicalFrustumCullingComponents.Data();
+	return staticPhysicalFrustumCullingComponents.Data();
 }
 
 /*
-*	Returns the physical graphics buffer components.
+*	Returns the static physical graphics buffer components.
 */
-RESTRICTED GraphicsBufferComponent* ComponentManager::GetPhysicalGraphicsBufferComponents() NOEXCEPT
+RESTRICTED GraphicsBufferComponent* ComponentManager::GetStaticPhysicalGraphicsBufferComponents() NOEXCEPT
 {
 	//Return the physical graphics buffer components.
-	return physicalGraphicsBufferComponents.Data();
+	return staticPhysicalGraphicsBufferComponents.Data();
 }
 
 /*
-*	Returns the physical render components.
+*	Returns the static physical render components.
 */
-RESTRICTED RenderComponent* ComponentManager::GetPhysicalRenderComponents() NOEXCEPT
+RESTRICTED RenderComponent* ComponentManager::GetStaticPhysicalRenderComponents() NOEXCEPT
 {
 	//Return the physical render components.
-	return physicalRenderComponents.Data();
+	return staticPhysicalRenderComponents.Data();
 }
 
 /*
-*	Returns the physical frustum transform components.
+*	Returns the static physical frustum transform components.
 */
-RESTRICTED TransformComponent* ComponentManager::GetPhysicalTransformComponents() NOEXCEPT
+RESTRICTED TransformComponent* ComponentManager::GetStaticPhysicalTransformComponents() NOEXCEPT
 {
 	//Return the physical frustum transform components.
-	return physicalTransformComponents.Data();
+	return staticPhysicalTransformComponents.Data();
 }
 
 /*

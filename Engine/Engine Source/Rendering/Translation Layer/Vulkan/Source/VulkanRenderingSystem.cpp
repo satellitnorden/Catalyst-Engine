@@ -6,9 +6,9 @@
 
 //Entities.
 #include <CameraEntity.h>
-#include <PhysicalEntity.h>
 #include <PointLightEntity.h>
 #include <SpotLightEntity.h>
+#include <StaticPhysicalEntity.h>
 #include <TerrainEntity.h>
 
 //Math.
@@ -97,9 +97,6 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 	//Register the graphics system update dynamic uniform data daily quest.
 	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::RenderingSystemUpdateDynamicUniformData, [](void *RESTRICT arguments) { static_cast<VulkanRenderingSystem *RESTRICT>(arguments)->UpdateDynamicUniformData(); });
 
-	//Register the graphics system update physical entities graphics buffers daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::RenderingSystemUpdatePhysicalEntitiesGraphicsBuffers, [](void *RESTRICT arguments) { static_cast<VulkanRenderingSystem *RESTRICT>(arguments)->UpdatePhysicalEntitiesGraphicsBuffers(); });
-
 	//Register the graphics system update view frustum culling daily quest.
 	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::RenderingSystemUpdateViewFrustumCulling, [](void *RESTRICT arguments) { static_cast<VulkanRenderingSystem *RESTRICT>(arguments)->UpdateViewFrustumCulling(); });
 }
@@ -109,9 +106,6 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 */
 void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 {
-	//Carry out the graphics system update physical entities graphics buffers daily quest.
-	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::RenderingSystemUpdatePhysicalEntitiesGraphicsBuffers, this);
-
 	//Carry out the graphics system asynchronous update daily quest.
 	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::RenderingSystemUpdateViewFrustumCulling, this);
 
@@ -135,8 +129,8 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Render the terrain.
 	RenderTerrain();
 
-	//Render all physical entities.
-	RenderPhysicalEntities();
+	//Render all static physical entities.
+	RenderStaticPhysicalEntities();
 
 	//Render the lighting.
 	RenderLighting();
@@ -242,50 +236,6 @@ void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physica
 }
 
 /*
-*	Initializes a physical entity.
-*/
-void VulkanRenderingSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const NOEXCEPT
-{
-	//Cache relevant data.
-	VulkanDescriptorSet newDescriptorSet;
-	VulkanUniformBuffer newUniformBuffer{ *static_cast<VulkanUniformBuffer *RESTRICT>(CreateUniformBuffer(sizeof(Matrix4))) };
-	const PhysicalMaterial &material = model.GetMaterial();
-	const Texture2DHandle albedoTexture = material.GetAlbedoTexture();
-	const Texture2DHandle normalMapTexture = material.GetNormalMapTexture();
-	const Texture2DHandle roughnessTexture = material.GetRoughnessTexture();
-	const Texture2DHandle metallicTexture = material.GetMetallicTexture();
-	const Texture2DHandle ambientOcclusionTexture = material.GetAmbientOcclusionTexture();
-
-	//Allocate the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::SceneBuffer)]);
-
-	//Update the write descriptor sets.
-	StaticArray<VkWriteDescriptorSet, 6> writeDescriptorSets
-	{
-		newUniformBuffer.GetWriteDescriptorSet(newDescriptorSet, 1),
-		static_cast<const Vulkan2DTexture *RESTRICT>(albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
-		static_cast<const Vulkan2DTexture *RESTRICT>(normalMapTexture)->GetWriteDescriptorSet(newDescriptorSet, 3),
-		roughnessTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(roughnessTexture)->GetWriteDescriptorSet(newDescriptorSet, 4) : defaultTextures[DefaultTexture::White]->GetWriteDescriptorSet(newDescriptorSet, 4),
-		metallicTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(metallicTexture)->GetWriteDescriptorSet(newDescriptorSet, 5) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(newDescriptorSet, 5),
-		ambientOcclusionTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(ambientOcclusionTexture)->GetWriteDescriptorSet(newDescriptorSet, 6) : defaultTextures[DefaultTexture::White]->GetWriteDescriptorSet(newDescriptorSet, 6)
-	};
-
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-
-	//Fill the physical entity components with the relevant data.
-	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetPhysicalFrustumCullingComponents()[physicalEntity.GetComponentsIndex()] };
-	GraphicsBufferComponent &graphicsBufferComponent{ ComponentManager::GetPhysicalGraphicsBufferComponents()[physicalEntity.GetComponentsIndex()] };
-	RenderComponent &renderComponent{ ComponentManager::GetPhysicalRenderComponents()[physicalEntity.GetComponentsIndex()] };
-
-	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
-	graphicsBufferComponent.uniformBuffer = newUniformBuffer;
-	renderComponent.descriptorSet = newDescriptorSet;
-	renderComponent.buffer = *static_cast<VulkanBuffer *RESTRICT>(model.GetBuffer());
-	renderComponent.indexOffset = model.GetIndexOffset();
-	renderComponent.indexCount = model.GetIndexCount();
-}
-
-/*
 *	Initializes a terrain entity.
 */
 void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
@@ -340,6 +290,60 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 	terrainRenderComponent.vertexAndIndexBuffer = terrainVertexBuffer;
 	terrainRenderComponent.indexBufferOffset = static_cast<uint32>(sizeof(float) * terrainVertices.Size());
 	terrainRenderComponent.indexCount = static_cast<uint32>(terrainIndices.Size());
+}
+
+/*
+*	Initializes a static physical entity.
+*/
+void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity &physicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT
+{
+	//Cache relevant data.
+	VulkanDescriptorSet newDescriptorSet;
+	VulkanUniformBuffer newUniformBuffer{ *static_cast<VulkanUniformBuffer *RESTRICT>(CreateUniformBuffer(sizeof(Matrix4))) };
+	const PhysicalMaterial &material = model.GetMaterial();
+	const Texture2DHandle albedoTexture = material.GetAlbedoTexture();
+	const Texture2DHandle normalMapTexture = material.GetNormalMapTexture();
+	const Texture2DHandle roughnessTexture = material.GetRoughnessTexture();
+	const Texture2DHandle metallicTexture = material.GetMetallicTexture();
+	const Texture2DHandle ambientOcclusionTexture = material.GetAmbientOcclusionTexture();
+
+	//Allocate the descriptor set.
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::SceneBuffer)]);
+
+	//Update the write descriptor sets.
+	StaticArray<VkWriteDescriptorSet, 6> writeDescriptorSets
+	{
+		newUniformBuffer.GetWriteDescriptorSet(newDescriptorSet, 1),
+		static_cast<const Vulkan2DTexture *RESTRICT>(albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
+		static_cast<const Vulkan2DTexture *RESTRICT>(normalMapTexture)->GetWriteDescriptorSet(newDescriptorSet, 3),
+		roughnessTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(roughnessTexture)->GetWriteDescriptorSet(newDescriptorSet, 4) : defaultTextures[DefaultTexture::White]->GetWriteDescriptorSet(newDescriptorSet, 4),
+		metallicTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(metallicTexture)->GetWriteDescriptorSet(newDescriptorSet, 5) : defaultTextures[DefaultTexture::Black]->GetWriteDescriptorSet(newDescriptorSet, 5),
+		ambientOcclusionTexture ? static_cast<const Vulkan2DTexture *RESTRICT>(ambientOcclusionTexture)->GetWriteDescriptorSet(newDescriptorSet, 6) : defaultTextures[DefaultTexture::White]->GetWriteDescriptorSet(newDescriptorSet, 6)
+	};
+
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+
+	//Fill the static physical entity components with the relevant data.
+	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents()[physicalEntity.GetComponentsIndex()] };
+	GraphicsBufferComponent &graphicsBufferComponent{ ComponentManager::GetStaticPhysicalGraphicsBufferComponents()[physicalEntity.GetComponentsIndex()] };
+	RenderComponent &renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents()[physicalEntity.GetComponentsIndex()] };
+	TransformComponent &transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents()[physicalEntity.GetComponentsIndex()] };
+
+	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
+	graphicsBufferComponent.uniformBuffer = newUniformBuffer;
+	renderComponent.descriptorSet = newDescriptorSet;
+	renderComponent.buffer = *static_cast<VulkanBuffer *RESTRICT>(model.GetBuffer());
+	renderComponent.indexOffset = model.GetIndexOffset();
+	renderComponent.indexCount = model.GetIndexCount();
+	transformComponent.position = position;
+	transformComponent.rotation = rotation;
+	transformComponent.scale = scale;
+
+	//Upload the model matrix to the graphics buffer.
+	Matrix4 modelMatrix{ transformComponent.position, transformComponent.rotation, transformComponent.scale };
+
+	//Upload the model matrix.
+	graphicsBufferComponent.uniformBuffer.UploadData(&modelMatrix);
 }
 
 /*
@@ -955,20 +959,20 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 }
 
 /*
-*	Renders all physical entities.
+*	Renders all static physical entities.
 */
-void VulkanRenderingSystem::RenderPhysicalEntities() NOEXCEPT
+void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 {
-	//Wait for the physical entity update daily group quest to complete.
+	//Wait for the static physical entity update daily group quest to complete.
 	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::RenderingSystemUpdateViewFrustumCulling);
 
 	//Cache the pipeline.
 	VulkanPipeline &sceneBufferPipeline{ *pipelines[Pipeline::SceneBufferPipeline] };
 
-	//Iterate over all physical entity components and draw them all.
-	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
-	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalFrustumCullingComponents() };
-	const RenderComponent *RESTRICT renderComponent{ ComponentManager::GetPhysicalRenderComponents() };
+	//Iterate over all static physical entity components and draw them all.
+	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
+	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
+	const RenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents() };
 
 	if (numberOfPhysicalEntityComponents == 0)
 	{
@@ -981,17 +985,17 @@ void VulkanRenderingSystem::RenderPhysicalEntities() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{
-		//Don't draw this physical entity if it isn't in the view frustum.
+		//Don't draw this static physical entity if it isn't in the view frustum.
 		if (!frustumCullingComponent->isInViewFrustum)
 			continue;
 
-		StaticArray<VulkanDescriptorSet, 2> physicalEntityDescriptorSets
+		StaticArray<VulkanDescriptorSet, 2> staticPhysicalEntityDescriptorSets
 		{
 			*currentDynamicUniformDataDescriptorSet,
 			renderComponent->descriptorSet
 		};
 
-		currentCommandBuffer->CommandBindDescriptorSets(sceneBufferPipeline, 2, physicalEntityDescriptorSets.Data());
+		currentCommandBuffer->CommandBindDescriptorSets(sceneBufferPipeline, 2, staticPhysicalEntityDescriptorSets.Data());
 		currentCommandBuffer->CommandBindVertexBuffers(renderComponent->buffer);
 		currentCommandBuffer->CommandBindIndexBuffer(renderComponent->buffer, renderComponent->indexOffset);
 		currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount);
@@ -1097,9 +1101,6 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 
 	//Wait for the graphics system update dynamic uniform data daily quest to finish.
 	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::RenderingSystemUpdateDynamicUniformData);
-
-	//Wait for the graphics system update physical entities graphics buffers daily quest to finish.
-	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::RenderingSystemUpdatePhysicalEntitiesGraphicsBuffers);
 
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*currentCommandBuffer, waitSemaphores, waitStages, signalSemaphores, frameData.GetCurrentFence()->Get());
@@ -1231,26 +1232,6 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 }
 
 /*
-*	Updates the physical entities graphics buffers.
-*/
-void VulkanRenderingSystem::UpdatePhysicalEntitiesGraphicsBuffers() NOEXCEPT
-{
-	//Iterate over all physical entity components and update the graphics buffers.
-	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
-	GraphicsBufferComponent *RESTRICT graphicsBufferComponent{ ComponentManager::GetPhysicalGraphicsBufferComponents() };
-	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetPhysicalTransformComponents() };
-
-	for (uint64 i = 0; i < numberOfPhysicalEntityComponents; ++i, ++graphicsBufferComponent, ++transformComponent)
-	{
-		//Calculate the model matrix.
-		Matrix4 modelMatrix{ transformComponent->position, transformComponent->rotation, transformComponent->scale };
-
-		//Upload the model matrix.
-		graphicsBufferComponent->uniformBuffer.UploadData(&modelMatrix);
-	}
-}
-
-/*
 *	Updates the view frustum culling.
 */
 void VulkanRenderingSystem::UpdateViewFrustumCulling() NOEXCEPT
@@ -1263,14 +1244,14 @@ void VulkanRenderingSystem::UpdateViewFrustumCulling() NOEXCEPT
 	Matrix4 cameraMatrix = Matrix4::LookAt(cameraWorldPosition, cameraWorldPosition + forwardVector, upVector);
 	Matrix4 viewMatrix{ projectionMatrix * cameraMatrix };
 
-	//Iterate over all physical entity components to check if they are in the view frustum.
-	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfPhysicalComponents() };
-	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetPhysicalFrustumCullingComponents() };
-	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetPhysicalTransformComponents() };
+	//Iterate over all static physical entity components to check if they are in the view frustum.
+	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
+	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
+	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents() };
 
 	for (uint64 i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++transformComponent)
 	{
-		//Make a local copy of the physical entity's position.
+		//Make a local copy of the static physical entity's position.
 		const Vector3 position = transformComponent->position;
 		const Vector3 scale = transformComponent->scale;
 		const float biggestScale = GameMath::Maximum(scale.X, GameMath::Maximum(scale.Y, scale.Z));
@@ -1303,5 +1284,5 @@ void VulkanRenderingSystem::UpdateViewFrustumCulling() NOEXCEPT
 	}
 }
 
-//Preprocessor undefunes.
+//Preprocessor undefines.
 #undef VULKAN_SHADERS_PATH

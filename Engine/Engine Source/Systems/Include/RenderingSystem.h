@@ -9,14 +9,15 @@
 //Forward declarations.
 class CameraEntity;
 class CPUTexture4;
-class PhysicalEntity;
 class PhysicalModel;
 class PhysicalModelData;
+class StaticPhysicalEntity;
 class TerrainEntity;
 class TerrainMaterial;
 class TerrainMaterialData;
 class TerrainUniformData;
 class TextureData;
+class Vector3;
 
 class RenderingSystem final
 {
@@ -62,14 +63,14 @@ public:
 	void CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT;
 
 	/*
-	*	Initializes a physical entity.
-	*/
-	void InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const NOEXCEPT;
-
-	/*
 	*	Initializes a terrain entity.
 	*/
 	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT;
+
+	/*
+	*	Initializes a static physical entity.
+	*/
+	void InitializeStaticPhysicalEntity(StaticPhysicalEntity &staticPhysicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given the texture data.

@@ -24,9 +24,9 @@
 //Forward declarations.
 class CameraEntity;
 class CPUTexture4;
-class PhysicalEntity;
 class PhysicalModel;
 class PhysicalModelData;
+class StaticPhysicalEntity;
 class TerrainEntity;
 class TerrainMaterial;
 class TerrainMaterialData;
@@ -77,14 +77,14 @@ public:
 	void CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT;
 
 	/*
-	*	Initializes a physical entity.
-	*/
-	void InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const NOEXCEPT;
-
-	/*
 	*	Initializes a terrain entity.
 	*/
 	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT;
+
+	/*
+	*	Initializes a static physical entity.
+	*/
+	void InitializeStaticPhysicalEntity(StaticPhysicalEntity &physicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given the texture data.
@@ -344,9 +344,9 @@ private:
 	void RenderTerrain() NOEXCEPT;
 
 	/*
-	*	Renders all physical entities.
+	*	Renders all static physical entities.
 	*/
-	void RenderPhysicalEntities() NOEXCEPT;
+	void RenderStaticPhysicalEntities() NOEXCEPT;
 
 	/*
 	*	Renders lighting.
@@ -377,11 +377,6 @@ private:
 	*	Updates the dynamic uniform data.
 	*/
 	void UpdateDynamicUniformData() NOEXCEPT;
-
-	/*
-	*	Updates the physical entities graphics buffers.
-	*/
-	void UpdatePhysicalEntitiesGraphicsBuffers() NOEXCEPT;
 
 	/*
 	*	Updates the view frustum culling.

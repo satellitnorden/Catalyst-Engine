@@ -213,9 +213,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\Entity.h">
       <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\PhysicalEntity.h">
-      <Filter>Engine Source\Entities\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\PointLightEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
@@ -480,6 +477,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\PhysicalModelData.h">
       <Filter>Engine Source\Resources\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\StaticPhysicalEntity.h">
+      <Filter>Engine Source\Entities\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Components\Source\ComponentManager.cpp">
@@ -492,9 +492,6 @@
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\Entity.cpp">
-      <Filter>Engine Source\Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\PhysicalEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\PointLightEntity.cpp">
@@ -652,6 +649,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantMain.cpp">
       <Filter>Game Source\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\StaticPhysicalEntity.cpp">
+      <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

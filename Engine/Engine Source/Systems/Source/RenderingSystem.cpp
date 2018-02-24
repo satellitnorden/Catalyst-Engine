@@ -71,21 +71,21 @@ void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModel
 }
 
 /*
-*	Initializes a physical entity.
-*/
-void RenderingSystem::InitializePhysicalEntity(PhysicalEntity &physicalEntity, const PhysicalModel &model) const NOEXCEPT
-{
-	//Initialize the physical entity via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->InitializePhysicalEntity(physicalEntity, model);
-}
-
-/*
 *	Initializes a terrain entity.
 */
 void RenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
 {
 	//Initialize the terrain entity via the Vulkan rendering system.
 	VulkanRenderingSystem::Instance->InitializeTerrainEntity(terrainEntity,terrainPlaneResolution, terrainProperties, terrainUniformData, layerWeightsTexture, terrainMaterial);
+}
+
+/*
+*	Initializes a static physical entity.
+*/
+void RenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity &staticPhysicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT
+{
+	//Initialize the static physical entity via the Vulkan rendering system.
+	VulkanRenderingSystem::Instance->InitializeStaticPhysicalEntity(staticPhysicalEntity, model, position, rotation, scale);
 }
 
 /*

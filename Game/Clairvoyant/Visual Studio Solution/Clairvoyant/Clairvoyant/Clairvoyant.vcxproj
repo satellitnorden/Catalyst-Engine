@@ -144,7 +144,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\CameraEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\Entity.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\PhysicalEntity.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\StaticPhysicalEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\PointLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\SpotLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\TerrainEntity.h" />
@@ -239,7 +239,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\CameraEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\DirectionalLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\Entity.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\PhysicalEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\StaticPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\PointLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\SpotLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\TerrainEntity.cpp" />
