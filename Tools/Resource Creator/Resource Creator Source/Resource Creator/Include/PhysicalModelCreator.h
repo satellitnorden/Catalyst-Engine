@@ -44,7 +44,7 @@ public:
 		float extent{ 0.0f };
 
 		Assimp::Importer modelImporter;
-		const aiScene *modelScene = modelImporter.ReadFile(arguments[2], aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+		const aiScene *modelScene = modelImporter.ReadFile(arguments[3], aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
 		ProcessNode(modelScene->mRootNode, modelScene, vertices, indices, extent);
 
