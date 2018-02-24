@@ -477,6 +477,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanFrameData.h">
       <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\PhysicalModelData.h">
+      <Filter>Engine Source\Resources\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Components\Source\ComponentManager.cpp">

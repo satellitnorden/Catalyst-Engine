@@ -11,6 +11,11 @@
 #define GAME_MATERIALS_FOLDER		"../../../Game Resources/Final/Materials/"
 
 /*
+*	The game models folder.
+*/
+#define GAME_MODELS_FOLDER			"../../../Game Resources/Final/Models/"
+
+/*
 *	The game textures folder.
 */
 #define GAME_RAW_TEXTURES_FOLDER	"../../../Game Resources/Raw/Textures/"

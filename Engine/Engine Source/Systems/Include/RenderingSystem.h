@@ -11,6 +11,7 @@ class CameraEntity;
 class CPUTexture4;
 class PhysicalEntity;
 class PhysicalModel;
+class PhysicalModelData;
 class TerrainEntity;
 class TerrainMaterial;
 class TerrainMaterialData;
@@ -56,9 +57,9 @@ public:
 	void CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT;
 
 	/*
-	*	Creates and returns physical model.
+	*	Creates a physical model.
 	*/
-	const PhysicalModel CreatePhysicalModel(const char *RESTRICT modelPath, Texture2DHandle albedoTexture, Texture2DHandle normalMapTexture, Texture2DHandle roughnessTexture, Texture2DHandle metallicTexture, Texture2DHandle ambientOcclusionTexture) const NOEXCEPT;
+	void CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT;
 
 	/*
 	*	Initializes a physical entity.

@@ -36,7 +36,7 @@ public:
 
 		//Write the resource type to the file.
 		constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::PhysicalModel) };
-		file.Write(&resourceType, sizeof(uint8));
+		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Load the model.
 		DynamicArray<PhysicalVertex> vertices;

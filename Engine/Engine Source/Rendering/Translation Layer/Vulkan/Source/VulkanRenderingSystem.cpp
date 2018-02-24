@@ -26,6 +26,7 @@
 #include <VulkanTranslationUtilities.h>
 
 //Resources.
+#include <PhysicalModelData.h>
 #include <TerrainMaterialData.h>
 
 //Systems.
@@ -225,35 +226,19 @@ void VulkanRenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &ter
 /*
 *	Creates and returns physical model.
 */
-const PhysicalModel VulkanRenderingSystem::CreatePhysicalModel(const char *RESTRICT modelPath, Texture2DHandle albedoTexture, Texture2DHandle normalMapTexture, Texture2DHandle roughnessTexture, Texture2DHandle metallicTexture, Texture2DHandle ambientOcclusionTexture) const NOEXCEPT
+void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
 {
-	//Load the model.
-	DynamicArray<PhysicalVertex> vertices;
-	DynamicArray<uint32> indices;
-	float extent{ 0.0f };
-
-	ModelLoader::LoadModel(modelPath, vertices, indices, extent);
-
 	//Create the vertex and index buffer.
-	const void *RESTRICT modelData[]{ vertices.Data(), indices.Data() };
-	const VkDeviceSize modelDataSizes[]{ sizeof(PhysicalVertex) * vertices.Size(), sizeof(uint32) * indices.Size() };
-	VulkanBuffer *RESTRICT buffer = VulkanInterface::Instance->CreateBuffer(modelData, modelDataSizes, 2);
+	const void *RESTRICT modelData[]{ physicalModelData.vertices.Data(), physicalModelData.indices.Data() };
+	const VkDeviceSize modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData.vertices.Size(), sizeof(uint32) * physicalModelData.indices.Size() };
+	GraphicsBufferHandle buffer = VulkanInterface::Instance->CreateBuffer(modelData, modelDataSizes, 2);
 
 	//Set up the physical model.
-	PhysicalModel newPhysicalModel;
-
-	newPhysicalModel.GetAxisAlignedBoundingBox().minimum = Vector3(-extent, -extent, -extent);
-	newPhysicalModel.GetAxisAlignedBoundingBox().maximum = Vector3(extent, extent, extent);
-	newPhysicalModel.SetBuffer(buffer);
-	newPhysicalModel.SetIndexOffset(modelDataSizes[0]);
-	newPhysicalModel.GetMaterial().SetAlbedoTexture(albedoTexture);
-	newPhysicalModel.GetMaterial().SetNormalMapTexture(normalMapTexture);
-	newPhysicalModel.GetMaterial().SetRoughnessTexture(roughnessTexture ? roughnessTexture : defaultTextures[DefaultTexture::White]);
-	newPhysicalModel.GetMaterial().SetMetallicTexture(metallicTexture ? metallicTexture : defaultTextures[DefaultTexture::Black]);
-	newPhysicalModel.GetMaterial().SetAmbientOcclusionTexture(ambientOcclusionTexture ? ambientOcclusionTexture : defaultTextures[DefaultTexture::White]);
-	newPhysicalModel.SetIndexCount(static_cast<uint32>(indices.Size()));
-
-	return newPhysicalModel;
+	physicalModel.GetAxisAlignedBoundingBox().minimum = Vector3(-physicalModelData.extent, -physicalModelData.extent, -physicalModelData.extent);
+	physicalModel.GetAxisAlignedBoundingBox().maximum = Vector3(physicalModelData.extent, physicalModelData.extent, physicalModelData.extent);
+	physicalModel.SetBuffer(buffer);
+	physicalModel.SetIndexOffset(modelDataSizes[0]);
+	physicalModel.SetIndexCount(static_cast<uint32>(physicalModelData.indices.Size()));
 }
 
 /*
@@ -295,7 +280,7 @@ void VulkanRenderingSystem::InitializePhysicalEntity(PhysicalEntity &physicalEnt
 	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
 	graphicsBufferComponent.uniformBuffer = newUniformBuffer;
 	renderComponent.descriptorSet = newDescriptorSet;
-	renderComponent.buffer = *model.GetBuffer();
+	renderComponent.buffer = *static_cast<VulkanBuffer *RESTRICT>(model.GetBuffer());
 	renderComponent.indexOffset = model.GetIndexOffset();
 	renderComponent.indexCount = model.GetIndexCount();
 }

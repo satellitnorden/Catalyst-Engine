@@ -6,6 +6,7 @@
 /*
 *	Type aliases.
 */
+using GraphicsBufferHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;
 using TextureCubeMapHandle = void *RESTRICT;
 using UniformBufferHandle = void *RESTRICT;

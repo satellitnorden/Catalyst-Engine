@@ -27,7 +27,7 @@ namespace TerrainMaterialCreator
 
 		//Write the resource type to the file.
 		constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::TerrainMaterial) };
-		terrainMaterialFile.Write(&resourceType, sizeof(uint8));
+		terrainMaterialFile.Write(&resourceType, sizeof(ResourceType));
 
 		//Determine how many mipmap levels that should be generated.
 		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[3] - '0') };

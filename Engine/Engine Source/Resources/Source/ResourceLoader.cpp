@@ -5,6 +5,7 @@
 #include <TerrainMaterial.h>
 
 //Resources.
+#include <PhysicalModelData.h>
 #include <ResourceLoaderUtilities.h>
 #include <ResourcesCore.h>
 #include <TerrainMaterialData.h>
@@ -13,11 +14,59 @@
 #include <RenderingSystem.h>
 
 /*
+*	Given a file path, load a physical model.
+*/
+void ResourceLoader::LoadPhysicalModel(const char *RESTRICT filePath, PhysicalModel &physicalModel) NOEXCEPT
+{
+	//Store the physical model data in the physical model data structure.
+	PhysicalModelData physicalModelData;
+
+	//Load the file.
+	BinaryFile<IOMode::In> file{ filePath };
+
+	//Read the resource type.
+	ResourceType resourceType;
+	file.Read(&resourceType, sizeof(ResourceType));
+
+#if !defined(CATALYST_FINAL)
+	if (resourceType != ResourceType::PhysicalModel)
+	{
+		BREAKPOINT;
+	}
+#endif
+
+	//Read the extent of the physical model.
+	file.Read(&physicalModelData.extent, sizeof(float));
+
+	//Read the number of vertices.
+	uint64 numberOfVertices;
+	file.Read(&numberOfVertices, sizeof(uint64));
+
+	//Read the vertices.
+	physicalModelData.vertices.UpsizeFast(numberOfVertices);
+	file.Read(physicalModelData.vertices.Data(), sizeof(PhysicalVertex) * numberOfVertices);
+
+	//Read the number of indices.
+	uint64 numberOfIndices;
+	file.Read(&numberOfIndices, sizeof(uint64));
+
+	//Read the indices.
+	physicalModelData.indices.UpsizeFast(numberOfIndices);
+	file.Read(physicalModelData.indices.Data(), sizeof(uint32) * numberOfIndices);
+
+	//Close the file.
+	file.Close();
+
+	//Create the physical model via the rendering system.
+	RenderingSystem::Instance->CreatePhysicalModel(physicalModelData, physicalModel);
+}
+
+/*
 *	Given a file path, load a terrain material.
 */
 void ResourceLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMaterial &terrainMaterial) NOEXCEPT
 {
-	//Store the terrain material in the terrain material data structure.
+	//Store the terrain material data in the terrain material data structure.
 	TerrainMaterialData terrainMaterialData;
 
 	//Load the file.
@@ -25,7 +74,7 @@ void ResourceLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainM
 
 	//Read the resource type.
 	ResourceType resourceType;
-	file.Read(&resourceType, sizeof(uint8));
+	file.Read(&resourceType, sizeof(ResourceType));
 
 #if !defined(CATALYST_FINAL)
 	if (resourceType != ResourceType::TerrainMaterial)

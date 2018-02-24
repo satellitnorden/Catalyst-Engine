@@ -187,14 +187,18 @@ void WorldArchitect::Initialize() NOEXCEPT
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
 	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 1.0f, 5.0f, 2.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
-	/*
-	//Place some stones. (:
-	Vulkan2DTexture *stoneAlbedoTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneAlbedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *stoneNormalMapTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneNormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Vulkan2DTexture *stoneRoughnessTexture = GraphicsSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneRoughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-
 	//Create the stone model.
-	const PhysicalModel stoneModel = GraphicsSystem::Instance->CreatePhysicalModel(GAME_MODELS_FOLDER "Stone.obj", stoneAlbedoTexture, stoneNormalMapTexture, stoneRoughnessTexture, nullptr, nullptr);
+	PhysicalModel stoneModel;
+	ResourceLoader::LoadPhysicalModel(GAME_MODELS_FOLDER "Stone.cpm", stoneModel);
+
+	//Create the stone material.
+	Texture2DHandle stoneAlbedoTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneAlbedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle stoneNormalMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneNormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	Texture2DHandle stoneRoughnessTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneRoughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	stoneModel.GetMaterial().SetAlbedoTexture(stoneAlbedoTexture);
+	stoneModel.GetMaterial().SetNormalMapTexture(stoneNormalMapTexture);
+	stoneModel.GetMaterial().SetRoughnessTexture(stoneRoughnessTexture);
 
 	//Create the stones.
 	for (uint64 i = 0; i < 1'000; ++i)
@@ -208,7 +212,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
 		stone->Scale(Vector3(stoneScale, stoneScale, stoneScale));
 	}
-	*/
 }
 
 /*

@@ -62,12 +62,12 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 }
 
 /*
-*	Creates and returns physical model.
+*	Creates a physical model.
 */
-const PhysicalModel RenderingSystem::CreatePhysicalModel(const char *RESTRICT modelPath, Texture2DHandle albedoTexture, Texture2DHandle normalMapTexture, Texture2DHandle roughnessTexture, Texture2DHandle metallicTexture, Texture2DHandle ambientOcclusionTexture) const NOEXCEPT
+void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
 {
 	//Create the physical model via the Vulkan rendering system.
-	return VulkanRenderingSystem::Instance->CreatePhysicalModel(modelPath, albedoTexture, normalMapTexture, roughnessTexture, metallicTexture, ambientOcclusionTexture);
+	return VulkanRenderingSystem::Instance->CreatePhysicalModel(physicalModelData, physicalModel);
 }
 
 /*
