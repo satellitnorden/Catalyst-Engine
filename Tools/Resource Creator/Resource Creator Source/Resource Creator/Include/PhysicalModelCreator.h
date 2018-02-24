@@ -27,10 +27,9 @@ public:
 	*/
 	static void CreatePhysicalModel(const int32 argumentCount, char *RESTRICT arguments[]) noexcept
 	{
-		/*
 		//What should the material be called?
 		DynamicString fileName{ arguments[2] };
-		fileName += ".ctm";
+		fileName += ".cpm";
 
 		//Open the file to be written to.
 		BinaryFile<IOMode::Out> file{ fileName.CString() };
@@ -68,7 +67,6 @@ public:
 
 		//Close the file.
 		file.Close();
-		*/
 	}
 
 private:

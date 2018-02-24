@@ -115,6 +115,15 @@
     <Filter Include="Engine Source\Systems\Source">
       <UniqueIdentifier>{6c73f26b-3ec8-42af-b9b7-739304ed57f2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Creator Source">
+      <UniqueIdentifier>{a54cd557-8fee-4933-957a-de71acaa08ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Creator Source\Include">
+      <UniqueIdentifier>{c61dad20-5e44-48e1-9206-349ba37c52de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Creator Source\Source">
+      <UniqueIdentifier>{e4a84f32-1e25-467f-9afb-825e9ec22e1e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\CameraComponent.h">
@@ -456,6 +465,12 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanFrameData.h">
       <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\PhysicalModelCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\TerrainMaterialCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Components\Source\ComponentManager.cpp">
@@ -616,6 +631,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Systems\Source\RenderingSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Resource Creator Source\Resource Creator\Source\ResourceCreatorMain.cpp">
+      <Filter>Resource Creator Source\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
