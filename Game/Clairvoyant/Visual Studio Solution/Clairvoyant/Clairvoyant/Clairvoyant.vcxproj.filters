@@ -138,13 +138,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\FrustumCullingComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\GraphicsBufferComponent.h">
-      <Filter>Engine Source\Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\PointLightComponent.h">
-      <Filter>Engine Source\Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\RenderComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\SpotLightComponent.h">
@@ -479,6 +473,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\PhysicalMaterialData.h">
       <Filter>Engine Source\Resources\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\StaticPhysicalRenderComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

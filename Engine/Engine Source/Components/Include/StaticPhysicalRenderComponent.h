@@ -3,20 +3,26 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Math.
+#include <Matrix4.h>
+
 //Vulkan.
 #include <VulkanBuffer.h>
 #include <VulkanDescriptorSet.h>
 
-class RenderComponent final
+class StaticPhysicalRenderComponent final
 {
 
 public:
+
+	//The model matrix.
+	Matrix4 modelMatrix;
 
 	//The descriptor set.
 	VulkanDescriptorSet descriptorSet{ };
 
 	//The buffer.
-	VulkanBuffer buffer{ };
+	VulkanBuffer buffer{};
 
 	//The offset for the indices in the buffer.
 	uint64 indexOffset{ 0 };

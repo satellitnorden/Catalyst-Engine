@@ -7,10 +7,9 @@
 #include <CameraComponent.h>
 #include <DirectionalLightComponent.h>
 #include <FrustumCullingComponent.h>
-#include <GraphicsBufferComponent.h>
-#include <RenderComponent.h>
 #include <PointLightComponent.h>
 #include <SpotLightComponent.h>
+#include <StaticPhysicalRenderComponent.h>
 #include <TerrainComponent.h>
 #include <TerrainRenderComponent.h>
 #include <TransformComponent.h>
@@ -98,14 +97,9 @@ public:
 	RESTRICTED static FrustumCullingComponent* GetStaticPhysicalFrustumCullingComponents() NOEXCEPT;
 
 	/*
-	*	Returns the static physical graphics buffer components.
-	*/
-	RESTRICTED static GraphicsBufferComponent* GetStaticPhysicalGraphicsBufferComponents() NOEXCEPT;
-
-	/*
 	*	Returns the static physical render components.
 	*/
-	RESTRICTED static RenderComponent* GetStaticPhysicalRenderComponents() NOEXCEPT;
+	RESTRICTED static StaticPhysicalRenderComponent* GetStaticPhysicalRenderComponents() NOEXCEPT;
 
 	/*
 	*	Returns the static physical transform components.
@@ -120,11 +114,8 @@ private:
 	//The static physical frustum culling components.
 	static DynamicArray<FrustumCullingComponent> staticPhysicalFrustumCullingComponents;
 
-	//The static physical graphics buffer components.
-	static DynamicArray<GraphicsBufferComponent> staticPhysicalGraphicsBufferComponents;
-
 	//The static physical render components.
-	static DynamicArray<RenderComponent> staticPhysicalRenderComponents;
+	static DynamicArray<StaticPhysicalRenderComponent> staticPhysicalRenderComponents;
 
 	//The static physical transform components.
 	static DynamicArray<TransformComponent> staticPhysicalTransformComponents;

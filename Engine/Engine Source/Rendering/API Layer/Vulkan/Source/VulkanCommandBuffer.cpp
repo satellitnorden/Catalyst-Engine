@@ -143,6 +143,14 @@ void VulkanCommandBuffer::CommandEndRenderPass() NOEXCEPT
 }
 
 /*
+*	Records a push constants command.
+*/
+void VulkanCommandBuffer::CommandPushConstants(const VkPipelineLayout layout, const VkShaderStageFlags stageFlags, const uint32 offset, const uint32 size, const void *RESTRICT data) NOEXCEPT
+{
+	vkCmdPushConstants(vulkanCommandBuffer, layout, stageFlags, offset, size, data);
+}
+
+/*
 *	Ends this Vulkan command buffer.
 */
 void VulkanCommandBuffer::End() NOEXCEPT

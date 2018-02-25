@@ -117,7 +117,7 @@ private:
 	/*
 	*	Creates a pipeline layout create info.
 	*/
-	void CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &pipelineLayoutCreateInfo, const uint32 descriptorSetLayoutCount, const VulkanDescriptorSetLayout *RESTRICT descriptorSetLayouts) const NOEXCEPT;
+	void CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &pipelineLayoutCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
 
 	/*
 	*	Creates a graphics pipeline create info.

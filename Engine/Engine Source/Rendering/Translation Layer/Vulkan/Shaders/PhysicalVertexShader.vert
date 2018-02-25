@@ -90,7 +90,7 @@ vec3 cubeMapVertices[36] = vec3[]
 );
 
 //Model uniform buffer.
-layout (set = 1, binding = 1) uniform ModelData
+layout (push_constant) uniform ModelData
 {
     mat4 modelMatrix;
 };

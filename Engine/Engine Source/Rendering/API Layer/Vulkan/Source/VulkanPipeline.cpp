@@ -82,7 +82,7 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 
 	//Create the pipeline layout create info.
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo;
-	CreatePipelineLayoutCreateInfo(pipelineLayoutCreateInfo, vulkanPipelineCreationParameters.descriptorSetLayoutCount, vulkanPipelineCreationParameters.descriptorSetLayouts);
+	CreatePipelineLayoutCreateInfo(pipelineLayoutCreateInfo, vulkanPipelineCreationParameters);
 
 	//Create the Vulkan pipeline layout!
 	VULKAN_ERROR_CHECK(vkCreatePipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &pipelineLayoutCreateInfo, nullptr, &vulkanPipelineLayout));
@@ -286,15 +286,15 @@ void VulkanPipeline::CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlen
 /*
 *	Creates a pipeline layout create info.
 */
-void VulkanPipeline::CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &pipelineLayoutCreateInfo, const uint32 descriptorSetLayoutCount, const VulkanDescriptorSetLayout *RESTRICT descriptorSetLayouts) const NOEXCEPT
+void VulkanPipeline::CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &pipelineLayoutCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
 	pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutCreateInfo.pNext = nullptr;
 	pipelineLayoutCreateInfo.flags = 0;
-	pipelineLayoutCreateInfo.setLayoutCount = descriptorSetLayoutCount;
-	pipelineLayoutCreateInfo.pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout *RESTRICT>(descriptorSetLayouts);
-	pipelineLayoutCreateInfo.pushConstantRangeCount = 0;
-	pipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
+	pipelineLayoutCreateInfo.setLayoutCount = vulkanPipelineCreationParameters.descriptorSetLayoutCount;
+	pipelineLayoutCreateInfo.pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout *RESTRICT>(vulkanPipelineCreationParameters.descriptorSetLayouts);
+	pipelineLayoutCreateInfo.pushConstantRangeCount = vulkanPipelineCreationParameters.pushConstantRangeCount;
+	pipelineLayoutCreateInfo.pPushConstantRanges = vulkanPipelineCreationParameters.pushConstantRanges;
 }
 
 /*

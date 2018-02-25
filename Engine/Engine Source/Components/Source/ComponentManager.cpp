@@ -10,8 +10,7 @@ DynamicArray<DirectionalLightComponent> ComponentManager::directionalLightCompon
 
 uint64 ComponentManager::numberOfStaticPhysicalComponents = 0;
 DynamicArray<FrustumCullingComponent> ComponentManager::staticPhysicalFrustumCullingComponents;
-DynamicArray<GraphicsBufferComponent> ComponentManager::staticPhysicalGraphicsBufferComponents;
-DynamicArray<RenderComponent> ComponentManager::staticPhysicalRenderComponents;
+DynamicArray<StaticPhysicalRenderComponent> ComponentManager::staticPhysicalRenderComponents;
 DynamicArray<TransformComponent> ComponentManager::staticPhysicalTransformComponents;
 
 uint64 ComponentManager::numberOfPointLightComponents = 0;
@@ -92,7 +91,6 @@ uint64 ComponentManager::GetNewStaticPhysicalComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	staticPhysicalFrustumCullingComponents.EmplaceSlow();
-	staticPhysicalGraphicsBufferComponents.EmplaceSlow();
 	staticPhysicalRenderComponents.EmplaceSlow();
 	staticPhysicalTransformComponents.EmplaceSlow();
 
@@ -119,18 +117,9 @@ RESTRICTED FrustumCullingComponent* ComponentManager::GetStaticPhysicalFrustumCu
 }
 
 /*
-*	Returns the static physical graphics buffer components.
-*/
-RESTRICTED GraphicsBufferComponent* ComponentManager::GetStaticPhysicalGraphicsBufferComponents() NOEXCEPT
-{
-	//Return the physical graphics buffer components.
-	return staticPhysicalGraphicsBufferComponents.Data();
-}
-
-/*
 *	Returns the static physical render components.
 */
-RESTRICTED RenderComponent* ComponentManager::GetStaticPhysicalRenderComponents() NOEXCEPT
+RESTRICTED StaticPhysicalRenderComponent* ComponentManager::GetStaticPhysicalRenderComponents() NOEXCEPT
 {
 	//Return the physical render components.
 	return staticPhysicalRenderComponents.Data();

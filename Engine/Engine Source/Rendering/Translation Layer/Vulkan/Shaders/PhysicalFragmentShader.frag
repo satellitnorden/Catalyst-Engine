@@ -49,9 +49,9 @@ layout (location = 1) in mat3 fragmentTangentSpaceMatrix;
 layout (location = 4) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 2) uniform sampler2D albedoTexture;
-layout (set = 1, binding = 3) uniform sampler2D normalMapTexture;
-layout (set = 1, binding = 4) uniform sampler2D materialPropertiesTexture;
+layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
+layout (set = 1, binding = 2) uniform sampler2D normalMapTexture;
+layout (set = 1, binding = 3) uniform sampler2D materialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;

@@ -119,9 +119,8 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\ComponentManager.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\DirectionalLightComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\FrustumCullingComponent.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\GraphicsBufferComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\PointLightComponent.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\RenderComponent.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\StaticPhysicalRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\SpotLightComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\TerrainComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\TerrainRenderComponent.h" />

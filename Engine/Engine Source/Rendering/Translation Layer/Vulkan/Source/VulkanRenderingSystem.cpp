@@ -315,31 +315,28 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 {
 	//Cache relevant data.
 	VulkanDescriptorSet newDescriptorSet;
-	VulkanUniformBuffer newUniformBuffer{ *static_cast<VulkanUniformBuffer *RESTRICT>(CreateUniformBuffer(sizeof(Matrix4))) };
 	const PhysicalMaterial &material = model.GetMaterial();
 
 	//Allocate the descriptor set.
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::StaticPhysical)]);
 
 	//Update the write descriptor sets.
-	StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
+	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
 	{
-		newUniformBuffer.GetWriteDescriptorSet(newDescriptorSet, 1),
-		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
-		static_cast<const Vulkan2DTexture *RESTRICT>(material.normalMapTexture)->GetWriteDescriptorSet(newDescriptorSet, 3),
-		static_cast<const Vulkan2DTexture *RESTRICT>(material.materialPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 4)
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.normalMapTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.materialPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 3)
 	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
 	//Fill the static physical entity components with the relevant data.
 	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents()[staticPhysicalEntity.GetComponentsIndex()] };
-	GraphicsBufferComponent &graphicsBufferComponent{ ComponentManager::GetStaticPhysicalGraphicsBufferComponents()[staticPhysicalEntity.GetComponentsIndex()] };
-	RenderComponent &renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents()[staticPhysicalEntity.GetComponentsIndex()] };
+	StaticPhysicalRenderComponent &renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents()[staticPhysicalEntity.GetComponentsIndex()] };
 	TransformComponent &transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents()[staticPhysicalEntity.GetComponentsIndex()] };
 
 	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
-	graphicsBufferComponent.uniformBuffer = newUniformBuffer;
+	renderComponent.modelMatrix = Matrix4(position, rotation, scale);
 	renderComponent.descriptorSet = newDescriptorSet;
 	renderComponent.buffer = *static_cast<VulkanBuffer *RESTRICT>(model.GetBuffer());
 	renderComponent.indexOffset = model.GetIndexOffset();
@@ -347,12 +344,6 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 	transformComponent.position = position;
 	transformComponent.rotation = rotation;
 	transformComponent.scale = scale;
-
-	//Upload the model matrix to the graphics buffer.
-	Matrix4 modelMatrix{ transformComponent.position, transformComponent.rotation, transformComponent.scale };
-
-	//Upload the model matrix.
-	graphicsBufferComponent.uniformBuffer.UploadData(&modelMatrix);
 }
 
 /*
@@ -567,15 +558,14 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)].Initialize(18, terrainDescriptorSetLayoutBindings.Data());
 
 	//Initialize the scene buffer descriptor set layout.
-	constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> sceneBufferDescriptorSetLayoutBindings
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> staticPhysicalDescriptorSetLayoutBindings
 	{
-		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-		VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-		VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 	};
 
-	descriptorSetLayouts[INDEX(DescriptorSetLayout::StaticPhysical)].Initialize(4, sceneBufferDescriptorSetLayoutBindings.Data());
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::StaticPhysical)].Initialize(3, staticPhysicalDescriptorSetLayoutBindings.Data());
 
 	//Initialize the lighting descriptor set layout.
 	constexpr StaticArray<VkDescriptorSetLayoutBinding, 6> lightingDescriptorSetLayoutBindings
@@ -690,6 +680,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	};
 	terrainPipelineCreationParameters.descriptorSetLayoutCount = 2;
 	terrainPipelineCreationParameters.descriptorSetLayouts = terrainDescriptorSetLayouts.Data();
+	terrainPipelineCreationParameters.pushConstantRangeCount = 0;
+	terrainPipelineCreationParameters.pushConstantRanges = nullptr;
 	terrainPipelineCreationParameters.shaderModules.Reserve(4);
 	terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainVertexShaderModule]);
 	terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainTessellationControlShaderModule]);
@@ -729,6 +721,9 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	};
 	staticPhysicalPipelineCreationParameters.descriptorSetLayoutCount = 2;
 	staticPhysicalPipelineCreationParameters.descriptorSetLayouts = sceneBufferDescriptorSetLayouts.Data();
+	VkPushConstantRange staticPhysicalPushConstantRange{ VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4) };
+	staticPhysicalPipelineCreationParameters.pushConstantRangeCount = 1;
+	staticPhysicalPipelineCreationParameters.pushConstantRanges = &staticPhysicalPushConstantRange;
 	staticPhysicalPipelineCreationParameters.shaderModules.Reserve(2);
 	staticPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::PhysicalVertexShaderModule]);
 	staticPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::PhysicalFragmentShaderModule]);
@@ -762,6 +757,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	};
 	lightingPipelineCreationParameters.descriptorSetLayoutCount = 2;
 	lightingPipelineCreationParameters.descriptorSetLayouts = lightingDescriptorSetLayouts.Data();
+	lightingPipelineCreationParameters.pushConstantRangeCount = 0;
+	lightingPipelineCreationParameters.pushConstantRanges = nullptr;
 	lightingPipelineCreationParameters.shaderModules.Reserve(2);
 	lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::ViewportVertexShaderModule]);
 	lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::LightingFragmentShaderModule]);
@@ -796,6 +793,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	};
 	cubeMapPipelineCreationParameters.descriptorSetLayoutCount = 2;
 	cubeMapPipelineCreationParameters.descriptorSetLayouts = cubeMapDescriptorSetLayouts.Data();
+	cubeMapPipelineCreationParameters.pushConstantRangeCount = 0;
+	cubeMapPipelineCreationParameters.pushConstantRanges = nullptr;
 	cubeMapPipelineCreationParameters.shaderModules.Reserve(2);
 	cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::CubeMapVertexShaderModule]);
 	cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::CubeMapFragmentShaderModule]);
@@ -837,6 +836,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	};
 	postProcessingPipelineCreationParameters.descriptorSetLayoutCount = 2;
 	postProcessingPipelineCreationParameters.descriptorSetLayouts = postProcessingDescriptorSetLayouts.Data();
+	postProcessingPipelineCreationParameters.pushConstantRangeCount = 0;
+	postProcessingPipelineCreationParameters.pushConstantRanges = nullptr;
 	postProcessingPipelineCreationParameters.shaderModules.Reserve(2);
 	postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::ViewportVertexShaderModule]);
 	postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::PostProcessingFragmentShaderModule]);
@@ -974,21 +975,22 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::RenderingSystemUpdateViewFrustumCulling);
 
 	//Cache the pipeline.
-	VulkanPipeline &sceneBufferPipeline{ *pipelines[Pipeline::StaticPhysicalPipeline] };
+	VulkanPipeline &StaticPhysicalPipeline{ *pipelines[Pipeline::StaticPhysicalPipeline] };
 
 	//Iterate over all static physical entity components and draw them all.
 	const uint64 numberOfStaticPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
-	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
-	const RenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents() };
 
 	if (numberOfStaticPhysicalEntityComponents == 0)
 	{
 		return;
 	}
 
+	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
+	const StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents() };
+
 	//Begin the pipeline and render pass.
-	currentCommandBuffer->CommandBindPipeline(sceneBufferPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(sceneBufferPipeline.GetRenderPass(), 0, false, 0);
+	currentCommandBuffer->CommandBindPipeline(StaticPhysicalPipeline);
+	currentCommandBuffer->CommandBeginRenderPass(StaticPhysicalPipeline.GetRenderPass(), 0, false, 0);
 
 	for (uint64 i = 0; i < numberOfStaticPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{
@@ -1002,7 +1004,8 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 			renderComponent->descriptorSet
 		};
 
-		currentCommandBuffer->CommandBindDescriptorSets(sceneBufferPipeline, 2, staticPhysicalEntityDescriptorSets.Data());
+		currentCommandBuffer->CommandPushConstants(StaticPhysicalPipeline.GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
+		currentCommandBuffer->CommandBindDescriptorSets(StaticPhysicalPipeline, 2, staticPhysicalEntityDescriptorSets.Data());
 		currentCommandBuffer->CommandBindVertexBuffers(renderComponent->buffer);
 		currentCommandBuffer->CommandBindIndexBuffer(renderComponent->buffer, renderComponent->indexOffset);
 		currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount);
