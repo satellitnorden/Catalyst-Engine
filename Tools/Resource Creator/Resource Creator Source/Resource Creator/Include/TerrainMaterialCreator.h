@@ -38,12 +38,12 @@ namespace TerrainMaterialCreator
 		for (uint8 i = 0; i < NUMBER_OF_TERRAIN_LAYERS; ++i)
 		{
 			//Load the layer albedo.
-			int width, height, numberOfChannels;
+			int32 width, height, numberOfChannels;
 			byte *data{ stbi_load(arguments[4 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 			//Write the width and height of the layer into the file, to be read into uint32's.
-			terrainMaterialFile.Write(&width, sizeof(int));
-			terrainMaterialFile.Write(&height, sizeof(int));
+			terrainMaterialFile.Write(&width, sizeof(int32));
+			terrainMaterialFile.Write(&height, sizeof(int32));
 
 			//Write the layer albedo to the file, to be read into byte's.
 			uint64 textureSize{ static_cast<uint64>(width * height * 4) };

@@ -67,7 +67,16 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
 {
 	//Create the physical model via the Vulkan rendering system.
-	return VulkanRenderingSystem::Instance->CreatePhysicalModel(physicalModelData, physicalModel);
+	VulkanRenderingSystem::Instance->CreatePhysicalModel(physicalModelData, physicalModel);
+}
+
+/*
+*	Creates a physical material.
+*/
+void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT
+{
+	//Create the physical material via the Vulkan rendering system.
+	VulkanRenderingSystem::Instance->CreatePhysicalMaterial(physicalMaterialData, physicalMaterial);
 }
 
 /*

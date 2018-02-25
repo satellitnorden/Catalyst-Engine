@@ -189,16 +189,13 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the stone model.
 	PhysicalModel stoneModel;
-	ResourceLoader::LoadPhysicalModel(GAME_MODELS_FOLDER "Stone.cpm", stoneModel);
+	ResourceLoader::LoadPhysicalModel(GAME_MODELS_FOLDER "StoneModel.cpm", stoneModel);
 
 	//Create the stone material.
-	Texture2DHandle stoneAlbedoTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneAlbedo.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle stoneNormalMapTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneNormalMap.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-	Texture2DHandle stoneRoughnessTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(GAME_RAW_TEXTURES_FOLDER "StoneRoughness.png"), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	PhysicalMaterial stoneMaterial;
+	ResourceLoader::LoadPhysicalMaterial(GAME_MATERIALS_FOLDER "StoneMaterial.cpm", stoneMaterial);
 
-	stoneModel.GetMaterial().SetAlbedoTexture(stoneAlbedoTexture);
-	stoneModel.GetMaterial().SetNormalMapTexture(stoneNormalMapTexture);
-	stoneModel.GetMaterial().SetRoughnessTexture(stoneRoughnessTexture);
+	stoneModel.SetMaterial(stoneMaterial);
 
 	//Create the stones.
 	for (uint64 i = 0; i < 1'000; ++i)

@@ -2,6 +2,7 @@
 #include <EngineCore.h>
 
 //Resource creator.
+#include <PhysicalMaterialCreator.h>
 #include <PhysicalModelCreator.h>
 #include <TerrainMaterialCreator.h>
 
@@ -13,7 +14,12 @@
 int main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 {
 	//First, determine what type of resource that is supposed to be created.
-	if (strcmp(arguments[1], "PhysicalModel") == 0)
+	if (strcmp(arguments[1], "PhysicalMaterial") == 0)
+	{
+		PhysicalMaterialCreator::CreatePhysicalMaterial(argumentCount, arguments);
+	}
+
+	else if (strcmp(arguments[1], "PhysicalModel") == 0)
 	{
 		PhysicalModelCreator::CreatePhysicalModel(argumentCount, arguments);
 	}

@@ -34,14 +34,14 @@ public:
 	PhysicalModel& operator=(const PhysicalModel &otherPhysicalModel) NOEXCEPT;
 
 	/*
-	*	Returns the material, const version.
+	*	Returns the material.
 	*/
 	const PhysicalMaterial& GetMaterial() const NOEXCEPT { return material; }
 
 	/*
-	*	Returns the material, non-const version.
+	*	Sets the material
 	*/
-	PhysicalMaterial& GetMaterial() NOEXCEPT { return material; }
+	void SetMaterial(const PhysicalMaterial &newMaterial) NOEXCEPT { material = newMaterial; }
 
 	/*
 	*	Returns the axis aligned bounding box of this physical model, const.

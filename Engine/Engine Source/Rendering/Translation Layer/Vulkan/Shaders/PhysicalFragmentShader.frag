@@ -51,9 +51,7 @@ layout (location = 4) in vec2 fragmentTextureCoordinate;
 //Texture samplers.
 layout (set = 1, binding = 2) uniform sampler2D albedoTexture;
 layout (set = 1, binding = 3) uniform sampler2D normalMapTexture;
-layout (set = 1, binding = 4) uniform sampler2D roughnessTexture;
-layout (set = 1, binding = 5) uniform sampler2D metallicTexture;
-layout (set = 1, binding = 6) uniform sampler2D ambientOcclusionTexture;
+layout (set = 1, binding = 4) uniform sampler2D materialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
@@ -71,12 +69,15 @@ void main()
     normalDirection = normalize(normalDirection);
     normalDirectionDepth = vec4(normalDirection, gl_FragCoord.z);
 
+    //Sample the material properties.
+    vec4 materialPropertiesSampler = texture(materialPropertiesTexture, fragmentTextureCoordinate);
+
     //Set the roughness.
-    roughnessMetallicAmbientOcclusion.r = texture(roughnessTexture, fragmentTextureCoordinate).r;
+    roughnessMetallicAmbientOcclusion.r = materialPropertiesSampler.r;
 
     //Set the metallic.
-    roughnessMetallicAmbientOcclusion.g = texture(metallicTexture, fragmentTextureCoordinate).r;
+    roughnessMetallicAmbientOcclusion.g = materialPropertiesSampler.g;
 
     //Set the ambient occlusion.
-    roughnessMetallicAmbientOcclusion.b = texture(ambientOcclusionTexture, fragmentTextureCoordinate).r;
+    roughnessMetallicAmbientOcclusion.b = materialPropertiesSampler.b;
 }

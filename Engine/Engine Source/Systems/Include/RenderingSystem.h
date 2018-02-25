@@ -9,6 +9,8 @@
 //Forward declarations.
 class CameraEntity;
 class CPUTexture4;
+class PhysicalMaterial;
+class PhysicalMaterialData;
 class PhysicalModel;
 class PhysicalModelData;
 class StaticPhysicalEntity;
@@ -61,6 +63,11 @@ public:
 	*	Creates a physical model.
 	*/
 	void CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT;
+
+	/*
+	*	Creates a physical material.
+	*/
+	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT;
 
 	/*
 	*	Initializes a terrain entity.

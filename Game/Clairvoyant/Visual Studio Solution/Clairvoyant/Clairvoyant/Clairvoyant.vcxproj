@@ -218,6 +218,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanFrameData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanRenderingSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanTranslationUtilities.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\PhysicalMaterialData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\PhysicalModelData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\ResourceLoader.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\ResourceLoaderUtilities.h" />
@@ -276,7 +277,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanSurface.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanSwapChain.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanUniformBuffer.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Source\PhysicalMaterial.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Source\PhysicalModel.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Source\TextureLoader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Source\Window.cpp" />

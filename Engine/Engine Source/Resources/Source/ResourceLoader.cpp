@@ -5,6 +5,7 @@
 #include <TerrainMaterial.h>
 
 //Resources.
+#include <PhysicalMaterialData.h>
 #include <PhysicalModelData.h>
 #include <ResourceLoaderUtilities.h>
 #include <ResourcesCore.h>
@@ -12,6 +13,76 @@
 
 //Systems.
 #include <RenderingSystem.h>
+
+/*
+*	Given a file path, load a physical material.
+*/
+void ResourceLoader::LoadPhysicalMaterial(const char *RESTRICT filePath, PhysicalMaterial &physicalMaterial) NOEXCEPT
+{
+	//Store the physical material data in the physical material data structure.
+	PhysicalMaterialData physicalMaterialData;
+
+	//Load the file.
+	BinaryFile<IOMode::In> file{ filePath };
+
+	//Read the resource type.
+	ResourceType resourceType;
+	file.Read(&resourceType, sizeof(ResourceType));
+
+#if !defined(CATALYST_FINAL)
+	if (resourceType != ResourceType::PhysicalMaterial)
+	{
+		BREAKPOINT;
+	}
+#endif
+
+	//Read the number of mipmap levels.
+	file.Read(&physicalMaterialData.mipmapLevels, sizeof(uint8));
+
+	//Read the width.
+	file.Read(&physicalMaterialData.width, sizeof(uint32));
+
+	//Read the height.
+	file.Read(&physicalMaterialData.height, sizeof(uint32));
+
+	//Read the albedo.
+	physicalMaterialData.albedoData.Resize(physicalMaterialData.mipmapLevels);
+
+	const uint64 textureSize{ physicalMaterialData.width * physicalMaterialData.height * 4 };
+
+	for (uint8 i = 0; i < physicalMaterialData.mipmapLevels; ++i)
+	{
+		physicalMaterialData.albedoData[i].Reserve(textureSize >> i);
+
+		file.Read(physicalMaterialData.albedoData[i].Data(), textureSize >> i);
+	}
+
+	//Read the normal map.
+	physicalMaterialData.normalMapData.Resize(physicalMaterialData.mipmapLevels);
+
+	for (uint8 i = 0; i < physicalMaterialData.mipmapLevels; ++i)
+	{
+		physicalMaterialData.normalMapData[i].Reserve(textureSize >> i);
+
+		file.Read(physicalMaterialData.normalMapData[i].Data(), textureSize >> i);
+	}
+
+	//Read the material properties.
+	physicalMaterialData.materialPropertiesData.Resize(physicalMaterialData.mipmapLevels);
+
+	for (uint8 i = 0; i < physicalMaterialData.mipmapLevels; ++i)
+	{
+		physicalMaterialData.materialPropertiesData[i].Reserve(textureSize >> i);
+
+		file.Read(physicalMaterialData.materialPropertiesData[i].Data(), textureSize >> i);
+	}
+
+	//Close the file.
+	file.Close();
+
+	//Create the physical material via the rendering system.
+	RenderingSystem::Instance->CreatePhysicalMaterial(physicalMaterialData, physicalMaterial);
+}
 
 /*
 *	Given a file path, load a physical model.

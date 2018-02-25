@@ -153,9 +153,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\CameraEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\Entity.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\PhysicalEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\PointLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\SpotLightEntity.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\StaticPhysicalEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\TerrainEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Input\Include\GamepadState.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Input\Include\InputConstants.h" />
@@ -237,6 +237,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Systems\Include\PhysicsSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Systems\Include\QuestSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Systems\Include\RenderingSystem.h" />
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\PhysicalMaterialCreator.h" />
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\PhysicalModelCreator.h" />
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\TerrainMaterialCreator.h" />
   </ItemGroup>
@@ -245,9 +246,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\CameraEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\DirectionalLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\Entity.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\PhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\PointLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\SpotLightEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\StaticPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\TerrainEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Math\Source\GameMath.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Math\Source\Matrix3.cpp" />

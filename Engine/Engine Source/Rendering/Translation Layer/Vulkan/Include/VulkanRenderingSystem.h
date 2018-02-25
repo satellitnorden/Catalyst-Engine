@@ -24,6 +24,8 @@
 //Forward declarations.
 class CameraEntity;
 class CPUTexture4;
+class PhysicalMaterial;
+class PhysicalMaterialData;
 class PhysicalModel;
 class PhysicalModelData;
 class StaticPhysicalEntity;
@@ -77,6 +79,11 @@ public:
 	void CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT;
 
 	/*
+	*	Creates a physical material.
+	*/
+	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT;
+
+	/*
 	*	Initializes a terrain entity.
 	*/
 	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT;
@@ -84,7 +91,7 @@ public:
 	/*
 	*	Initializes a static physical entity.
 	*/
-	void InitializeStaticPhysicalEntity(StaticPhysicalEntity &physicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT;
+	void InitializeStaticPhysicalEntity(StaticPhysicalEntity &staticPhysicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given the texture data.
@@ -168,7 +175,7 @@ private:
 	{
 		DynamicUniformData,
 		Terrain,
-		SceneBuffer,
+		StaticPhysical,
 		Lighting,
 		CubeMap,
 		PostProcessing,
@@ -178,8 +185,8 @@ private:
 	//Enumeration covering all pipelines.
 	enum Pipeline : uint8
 	{
-		TerrainSceneBufferPipeline,
-		SceneBufferPipeline,
+		TerrainPipeline,
+		StaticPhysicalPipeline,
 		LightingPipeline,
 		CubeMapPipeline,
 		PostProcessingPipeline,
@@ -211,12 +218,12 @@ private:
 		CubeMapVertexShaderModule,
 		LightingFragmentShaderModule,
 		PostProcessingFragmentShaderModule,
-		SceneBufferFragmentShaderModule,
-		SceneBufferVertexShaderModule,
-		TerrainSceneBufferFragmentShaderModule,
-		TerrainSceneBufferTessellationControlShaderModule,
-		TerrainSceneBufferTessellationEvaluationShaderModule,
-		TerrainSceneBufferVertexShaderModule,
+		PhysicalFragmentShaderModule,
+		PhysicalVertexShaderModule,
+		TerrainFragmentShaderModule,
+		TerrainTessellationControlShaderModule,
+		TerrainTessellationEvaluationShaderModule,
+		TerrainVertexShaderModule,
 		ViewportVertexShaderModule,
 		NumberOfShaderModules
 	};
