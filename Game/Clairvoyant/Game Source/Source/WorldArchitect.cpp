@@ -101,7 +101,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 			multiplier *= 0.5f;
 			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
-			terrainProperties.At(i, j).W = GameMath::LinearlyInterpolate(terrainProperties.At(i, j).W, GameMath::GetSmoothInterpolationValue(terrainProperties.At(i, j).W), 0.25f);
+			//terrainProperties.At(i, j).W = GameMath::LinearlyInterpolate(terrainProperties.At(i, j).W, GameMath::GetSmoothInterpolationValue(terrainProperties.At(i, j).W), 0.25f);
 		}
 	}
 
@@ -158,26 +158,29 @@ void WorldArchitect::Initialize() NOEXCEPT
 			}
 
 			//Determine the weight of the dirt layer.
-			constexpr float dirtLayerFrequency{ 100.0f };
-			layerWeights.At(i, j).Y = GameMath::GetSmoothInterpolationValue((PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * 0.75f;
+			constexpr float dirtLayerFrequency{ 1.0f };
+			layerWeights.At(i, j).Y = (PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f;
+			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
+			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
+			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
 
 			//Determine the weight of the rock layer.
 			layerWeights.At(i, j).Z = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)) + 0.1f, 0.0f, 1.0f));
 
 			//Determine the weight of the snow layer.
-			if (heightValue < 0.7f)
+			if (heightValue < 0.45f)
 			{
 				layerWeights.At(i, j).W = 0.0f;
 			}
 
-			else if (heightValue > 0.8f)
+			else if (heightValue > 0.55f)
 			{
 				layerWeights.At(i, j).W = 1.0f;
 			}
 
 			else
 			{
-				layerWeights.At(i, j).W = (heightValue - 0.7f) * 10.0f;
+				layerWeights.At(i, j).W = (heightValue - 0.45f) * 10.0f;
 			}
 		}
 	}
@@ -186,8 +189,9 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 1.0f, 5.0f, 2.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
+	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 2.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
+	/*
 	//Create the stone model.
 	PhysicalModel stoneModel;
 	ResourceLoader::LoadPhysicalModel(GAME_MODELS_FOLDER "StoneModel.cpm", stoneModel);
@@ -211,6 +215,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 		stone->Initialize(stoneModel, position, rotation, scale);
 	}
+	*/
 }
 
 /*
