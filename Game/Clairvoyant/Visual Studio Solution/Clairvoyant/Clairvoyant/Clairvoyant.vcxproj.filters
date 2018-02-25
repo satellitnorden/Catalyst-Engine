@@ -378,9 +378,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\CPUTexture4.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\ModelLoader.h">
-      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\PhysicalMaterial.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>

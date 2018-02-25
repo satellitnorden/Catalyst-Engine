@@ -200,7 +200,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\API Layer\Vulkan\Include\VulkanUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\CPUTexture4.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\ModelLoader.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\PhysicalMaterial.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\PhysicalModel.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\PhysicalVertex.h" />

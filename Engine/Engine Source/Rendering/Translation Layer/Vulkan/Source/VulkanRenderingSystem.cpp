@@ -17,7 +17,6 @@
 
 //Rendering.
 #include <CPUTexture4.h>
-#include <ModelLoader.h>
 #include <PhysicalMaterial.h>
 #include <PhysicalModel.h>
 #include <RenderingUtilities.h>
