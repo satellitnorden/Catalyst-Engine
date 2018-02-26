@@ -240,6 +240,7 @@
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\PhysicalMaterialCreator.h" />
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\PhysicalModelCreator.h" />
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\TerrainMaterialCreator.h" />
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\WaterMaterialCreator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Components\Source\ComponentManager.cpp" />
@@ -283,7 +284,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanSurface.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanSwapChain.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanUniformBuffer.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Source\PhysicalMaterial.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Source\PhysicalModel.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Source\TextureLoader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Source\Window.cpp" />

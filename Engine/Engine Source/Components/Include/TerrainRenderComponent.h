@@ -3,6 +3,9 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Rendering.
+#include <RenderingCore.h>
+
 //Vulkan.
 #include <VulkanBuffer.h>
 #include <VulkanDescriptorSet.h>
@@ -13,10 +16,10 @@ class TerrainRenderComponent final
 public:
 
 	//The descriptor set.
-	VulkanDescriptorSet descriptorSet{ };
+	DescriptorSetHandle descriptorSet{ };
 
 	//The vertex buffer.
-	VulkanBuffer vertexAndIndexBuffer{ };
+	GraphicsBufferHandle vertexAndIndexBuffer{ };
 
 	//The index buffer offset.
 	uint32 indexBufferOffset{ 0 };

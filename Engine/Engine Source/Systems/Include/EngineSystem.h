@@ -46,9 +46,17 @@ public:
 	*/
 	void Terminate() NOEXCEPT { shouldTerminate = true; }
 
+	/*
+	*	Returns the total game time.
+	*/
+	float GetTotalGameTime() const NOEXCEPT { return totalGameTime; }
+
 private:
 
 	//Denotes whether or not the game should terminate.
 	std::atomic<bool> shouldTerminate{ false };
+
+	//Denotes the total game time.
+	float totalGameTime{ 0.0f };
 
 };

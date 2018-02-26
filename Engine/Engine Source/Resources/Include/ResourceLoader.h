@@ -7,6 +7,7 @@
 class PhysicalMaterial;
 class PhysicalModel;
 class TerrainMaterial;
+class WaterMaterial;
 
 class ResourceLoader final
 {
@@ -27,5 +28,10 @@ public:
 	*	Given a file path, load a terrain material.
 	*/
 	static void LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMaterial &terrainMaterial) NOEXCEPT;
+
+	/*
+	*	Given a file path, load a water material.
+	*/
+	static void LoadWaterMaterial(const char *RESTRICT filePath, WaterMaterial &waterMaterial) NOEXCEPT;
 
 };

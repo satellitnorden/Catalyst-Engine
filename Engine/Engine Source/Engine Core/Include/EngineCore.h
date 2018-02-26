@@ -60,6 +60,9 @@ class Map;
 template <class ObjectType>
 class Optional;
 
+template <uint64 Bytes>
+class Padding;
+
 template <class FirstType, class SecondType>
 class Pair;
 
@@ -76,6 +79,7 @@ class UniquePointer;
 #include <DynamicString.h>
 #include <Map.h>
 #include <Optional.h>
+#include <Padding.h>
 #include <Pair.h>
 #include <StaticArray.h>
 #include <UniquePointer.h>

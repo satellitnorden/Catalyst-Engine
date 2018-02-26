@@ -9,6 +9,8 @@
 
 //Rendering.
 #include <PhysicalVertex.h>
+#include <TerrainUniformData.h>
+#include <WaterUniformData.h>
 
 namespace RenderingUtilities
 {
@@ -30,6 +32,41 @@ namespace RenderingUtilities
 				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(i) / static_cast<float>(resolution))) * (terrainUniformData.terrainSize * 0.5f) + terrainUniformData.terrainPosition.X);
 				vertices.EmplaceFast(terrainProperties.At(xTextureCoordinate, yTextureCoordinate).W * terrainUniformData.terrainHeight);
 				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(j) / static_cast<float>(resolution))) * (terrainUniformData.terrainSize * 0.5f) + terrainUniformData.terrainPosition.Z);
+				vertices.EmplaceFast(xTextureCoordinate);
+				vertices.EmplaceFast(yTextureCoordinate);
+
+				if (i != resolution && j != resolution)
+				{
+					indices.EmplaceFast((i * (resolution + 1)) + j);
+					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j);
+					indices.EmplaceFast((i * (resolution + 1)) + j + 1);
+
+					indices.EmplaceFast((i * (resolution + 1)) + j + 1);
+					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j);
+					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j + 1);
+				}
+			}
+		}
+	}
+
+	/*
+	*	Given a resolution and the water uniform data, generate water vertices and indices.
+	*/
+	static void GenerateWaterPlane(const uint32 resolution, const WaterUniformData waterUniformData, DynamicArray<float> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
+	{
+		vertices.Reserve((resolution + 1) * (resolution + 1) * 5);
+		indices.Reserve(resolution * resolution * 6);
+
+		for (uint32 i = 0; i <= resolution; ++i)
+		{
+			for (uint32 j = 0; j <= resolution; ++j)
+			{
+				const float xTextureCoordinate{ static_cast<float>(i) / static_cast<float>(resolution) };
+				const float yTextureCoordinate{ static_cast<float>(j) / static_cast<float>(resolution) };
+
+				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(i) / static_cast<float>(resolution))) * (waterUniformData.waterSize * 0.5f) + waterUniformData.waterWorldPosition.X);
+				vertices.EmplaceFast(0.0f);
+				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(j) / static_cast<float>(resolution))) * (waterUniformData.waterSize * 0.5f) + waterUniformData.waterWorldPosition.Z);
 				vertices.EmplaceFast(xTextureCoordinate);
 				vertices.EmplaceFast(yTextureCoordinate);
 

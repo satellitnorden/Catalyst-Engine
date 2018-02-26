@@ -5,6 +5,7 @@
 
 //Rendering.
 #include <CPUTexture4.h>
+#include <RenderingCore.h>
 #include <TerrainUniformData.h>
 
 //Vulkan.
@@ -19,7 +20,7 @@ public:
 	TerrainUniformData terrainUniformData;
 
 	//The uniform buffer.
-	VulkanUniformBuffer uniformBuffer;
+	UniformBufferHandle uniformBuffer;
 
 	//The height map.
 	CPUTexture4 terrainProperties;

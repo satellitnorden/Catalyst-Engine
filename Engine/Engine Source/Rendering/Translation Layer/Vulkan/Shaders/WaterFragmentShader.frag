@@ -25,9 +25,6 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     vec3 directionalLightScreenSpacePosition;
     float padding2;
 
-    //General data.
-    float totalGameTime;
-
     //Point light data.
     int numberOfPointLights;
     float pointLightAttenuationDistances[MaximumNumberOfPointLights];
@@ -47,22 +44,16 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //In parameters.
-layout (location = 0) in vec3 fragmentTextureCoordinate;
+layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 1) uniform samplerCube cubeMapTexture;
+layout (set = 1, binding = 2) uniform sampler2D normalMapTexture;
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentColor;
+layout (location = 0) out vec4 albedoColor;
 
 void main()
 {
-    //Sample the cube map texture.
-    vec3 cubeMapTextureSampler = texture(cubeMapTexture, fragmentTextureCoordinate).rgb;
-
-    //Apply gamma correction.
-    cubeMapTextureSampler = pow(cubeMapTextureSampler, vec3(2.2f));
-
-    //Set the fragment color.
-    fragmentColor = vec4(cubeMapTextureSampler, 1.0f);
+    //Sample the albedo.
+    albedoColor = texture(normalMapTexture, fragmentTextureCoordinate);
 }

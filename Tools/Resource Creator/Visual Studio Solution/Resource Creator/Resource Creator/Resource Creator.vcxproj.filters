@@ -474,6 +474,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\StaticPhysicalEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\WaterMaterialCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Components\Source\ComponentManager.cpp">
@@ -595,9 +598,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\API Layer\Vulkan\Source\VulkanUniformBuffer.cpp">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Source\PhysicalMaterial.cpp">
-      <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Source\PhysicalModel.cpp">
       <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>

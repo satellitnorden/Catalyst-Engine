@@ -1,7 +1,7 @@
 #pragma once
 
 //Engine core.
-#include <TerrainUniformData.h>
+#include <EngineCore.h>
 
 //Math.
 #include <Vector3.h>

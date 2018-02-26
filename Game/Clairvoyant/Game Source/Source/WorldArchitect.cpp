@@ -10,6 +10,7 @@
 #include <SpotLightEntity.h>
 #include <StaticPhysicalEntity.h>
 #include <TerrainEntity.h>
+#include <WaterEntity.h>
 
 //Math.
 #include <GameMath.h>
@@ -21,6 +22,8 @@
 #include <TerrainMaterial.h>
 #include <TerrainUniformData.h>
 #include <TextureData.h>
+#include <WaterMaterial.h>
+#include <WaterUniformData.h>
 
 //Resources.
 #include <ResourceLoader.h>
@@ -65,12 +68,12 @@ void WorldArchitect::Initialize() NOEXCEPT
 	sun->SetIntensity(10.0f);
 
 	//Create the sky!
-	TextureCubeMapHandle sky = RenderingSystem::Instance->CreateCubeMapTexture(GAME_RAW_TEXTURES_FOLDER "SkyFront.png", GAME_RAW_TEXTURES_FOLDER "SkyBack.png", GAME_RAW_TEXTURES_FOLDER "SkyUp.png", GAME_RAW_TEXTURES_FOLDER "SkyDown.png", GAME_RAW_TEXTURES_FOLDER "SkyRight.png", GAME_RAW_TEXTURES_FOLDER "SkyLeft.png");
+	TextureCubeMapHandle sky = RenderingSystem::Instance->CreateCubeMapTexture(CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyFront.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyBack.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyUp.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyDown.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyRight.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyLeft.png");
 	RenderingSystem::Instance->SetActiveSkyBox(sky);
 
 	//Load the terrain material data.
 	TerrainMaterial terrainMaterial;
-	ResourceLoader::LoadTerrainMaterial(GAME_MATERIALS_FOLDER "DefaultTerrainMaterial.ctm", terrainMaterial);
+	ResourceLoader::LoadTerrainMaterial(CLAIRVOYANT_MATERIALS_FOLDER "DefaultTerrainMaterial.ctm", terrainMaterial);
 
 	//Create the terrain properties!
 	CPUTexture4 terrainProperties{ HEIGHT_MAP_RESOLUTION };
@@ -101,7 +104,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 			multiplier *= 0.5f;
 			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
-			//terrainProperties.At(i, j).W = GameMath::LinearlyInterpolate(terrainProperties.At(i, j).W, GameMath::GetSmoothInterpolationValue(terrainProperties.At(i, j).W), 0.25f);
+			terrainProperties.At(i, j).W = GameMath::LinearlyInterpolate(terrainProperties.At(i, j).W, GameMath::GetSmoothInterpolationValue(terrainProperties.At(i, j).W), 0.25f);
 		}
 	}
 
@@ -142,24 +145,26 @@ void WorldArchitect::Initialize() NOEXCEPT
 			
 			const float heightValue{ terrainPropertiesValue.W };
 
-			if (heightValue > -0.9f)
+			if (heightValue > (WATER_HEIGHT + 0.1f))
 			{
 				layerWeights.At(i, j).X = 1.0f;
 			}
 
-			else if (heightValue < -1.0f)
+			else if (heightValue < WATER_HEIGHT)
 			{
 				layerWeights.At(i, j).X = 0.0f;
 			}
 
 			else
 			{
-				layerWeights.At(i, j).X = (heightValue + 1.0f) * 10.0f;
+				layerWeights.At(i, j).X = (heightValue + -WATER_HEIGHT) * 10.0f;
 			}
 
 			//Determine the weight of the dirt layer.
 			constexpr float dirtLayerFrequency{ 1.0f };
 			layerWeights.At(i, j).Y = (PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f;
+			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
+			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
 			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
 			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
 			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
@@ -190,6 +195,14 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
 	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 2.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
+
+	//Load the water material.
+	WaterMaterial waterMaterial;
+	ResourceLoader::LoadWaterMaterial(CLAIRVOYANT_MATERIALS_FOLDER "DefaultWaterMaterial.cwm", waterMaterial);
+
+	//Create the water.
+	WaterEntity *RESTRICT water = EntitySystem::Instance->CreateEntity<WaterEntity>();
+	water->Initialize(512, waterMaterial, WaterUniformData(1.0f, TERRAIN_SIZE, Vector3(0.0f, TERRAIN_HEIGHT * WATER_HEIGHT, 0.0f)));
 
 	/*
 	//Create the stone model.

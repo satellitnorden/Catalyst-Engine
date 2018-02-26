@@ -125,6 +125,8 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\TerrainComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\TerrainRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\TransformComponent.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\WaterComponent.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\WaterRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\BinaryFile.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\BitField.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\CoreDefines.h" />
@@ -136,6 +138,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\Map.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\MemoryUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\Optional.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\Padding.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\Pair.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\SharedPointer.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\StaticArray.h" />
@@ -147,6 +150,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\PointLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\SpotLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\TerrainEntity.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Entities\Include\WaterEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Input\Include\GamepadState.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Input\Include\InputConstants.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Input\Include\InputUtilities.h" />
@@ -211,6 +215,8 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\TextureData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\TextureDataContainer.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\TextureLoader.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\WaterMaterial.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\WaterUniformData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Engine Layer\Include\Window.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanDynamicUniformData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Rendering\Translation Layer\Vulkan\Include\VulkanFrameData.h" />
@@ -222,6 +228,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\ResourceLoaderUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\ResourcesCore.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\TerrainMaterialData.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Resources\Include\WaterMaterialData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Systems\Include\EngineSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Systems\Include\EntitySystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Systems\Include\InputSystem.h" />
@@ -242,6 +249,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\PointLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\SpotLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\TerrainEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Entities\Source\WaterEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Math\Source\GameMath.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Math\Source\Matrix3.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Math\Source\Matrix4.cpp" />

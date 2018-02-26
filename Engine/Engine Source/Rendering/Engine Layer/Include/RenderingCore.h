@@ -3,9 +3,15 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Vulkan.
+//#include <VulkanDescriptorSet.h>
+
 /*
 *	Type aliases.
 */
+class VulkanDescriptorSet;
+
+using DescriptorSetHandle = VulkanDescriptorSet;
 using GraphicsBufferHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;
 using TextureCubeMapHandle = void *RESTRICT;

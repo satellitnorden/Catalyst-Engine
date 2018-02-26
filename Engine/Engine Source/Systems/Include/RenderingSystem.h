@@ -20,6 +20,10 @@ class TerrainMaterialData;
 class TerrainUniformData;
 class TextureData;
 class Vector3;
+class WaterEntity;
+class WaterMaterialData;
+class WaterMaterial;
+class WaterUniformData;
 
 class RenderingSystem final
 {
@@ -70,6 +74,11 @@ public:
 	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT;
 
 	/*
+	*	Creates a water material.
+	*/
+	void CreateWaterMaterial(const WaterMaterialData &waterMaterialData, WaterMaterial &waterMaterial) const NOEXCEPT;
+
+	/*
 	*	Initializes a terrain entity.
 	*/
 	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT;
@@ -78,6 +87,11 @@ public:
 	*	Initializes a static physical entity.
 	*/
 	void InitializeStaticPhysicalEntity(StaticPhysicalEntity &staticPhysicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT;
+
+	/*
+	*	Initializes a water entity.
+	*/
+	void InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const uint32 resolution, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given the texture data.

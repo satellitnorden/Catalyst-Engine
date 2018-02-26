@@ -46,23 +46,29 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
 };
 
-//In parameters.
-layout (location = 0) in vec3 fragmentTextureCoordinate;
+//Water uniform data.
+layout (std140, set = 1, binding = 1) uniform WaterUniformData
+{
+    float waterHeight;
+    float waterSize;
+    float waterPadding1;
+    float waterPadding2;
+    vec3 waterWorldPosition;
+};
 
-//Texture samplers.
-layout (set = 1, binding = 1) uniform samplerCube cubeMapTexture;
+//In parameters.
+layout (location = 0) in vec3 vertexPosition;
+layout (location = 1) in vec2 vertexTextureCoordinate;
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentColor;
+layout (location = 0) out vec2 tessellationControlTextureCoordinate;
+layout (location = 1) out vec3 tessellationControlPosition;
 
 void main()
-{
-    //Sample the cube map texture.
-    vec3 cubeMapTextureSampler = texture(cubeMapTexture, fragmentTextureCoordinate).rgb;
+{	
+	//Pass the texture coordinate to the tesselation control shader.
+	tessellationControlTextureCoordinate = vertexTextureCoordinate * (waterSize * 0.25f);
 
-    //Apply gamma correction.
-    cubeMapTextureSampler = pow(cubeMapTextureSampler, vec3(2.2f));
-
-    //Set the fragment color.
-    fragmentColor = vec4(cubeMapTextureSampler, 1.0f);
+	//Pass the unmodified vertex position to the tesselation control shader.
+	tessellationControlPosition = vertexPosition;
 }

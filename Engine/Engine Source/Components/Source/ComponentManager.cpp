@@ -22,7 +22,10 @@ DynamicArray<SpotLightComponent> ComponentManager::spotLightComponents;
 uint64 ComponentManager::numberOfTerrainComponents = 0;
 DynamicArray<TerrainComponent> ComponentManager::terrainComponents;
 DynamicArray<TerrainRenderComponent> ComponentManager::terrainRenderComponents;
-;
+
+uint64 ComponentManager::numberOfWaterComponents = 0;
+DynamicArray<WaterComponent> ComponentManager::waterComponents;
+DynamicArray<WaterRenderComponent> ComponentManager::waterRenderComponents;
 
 /*
 *	Returns a new components index for camera entities.
@@ -232,4 +235,44 @@ RESTRICTED TerrainRenderComponent* ComponentManager::GetTerrainRenderComponents(
 {
 	//Return the terrain render components.
 	return terrainRenderComponents.Data();
+}
+
+/*
+*	Returns a new components index for water entities.
+*/
+uint64 ComponentManager::GetNewWaterComponentsIndex() NOEXCEPT
+{
+	//Create the relevant components.
+	waterComponents.EmplaceSlow();
+	waterRenderComponents.EmplaceSlow();
+
+	//Return the new index.
+	return numberOfWaterComponents++;
+}
+
+/*
+*	Returns the number of water components.
+*/
+uint64 ComponentManager::GetNumberOfWaterComponents() NOEXCEPT
+{
+	//Return the number of water components.
+	return numberOfWaterComponents;
+}
+
+/*
+*	Returns the water components.
+*/
+RESTRICTED WaterComponent* ComponentManager::GetWaterComponents() NOEXCEPT
+{
+	//Return the water components.
+	return waterComponents.Data();
+}
+
+/*
+*	Returns the water render components.
+*/
+RESTRICTED WaterRenderComponent* ComponentManager::GetWaterRenderComponents() NOEXCEPT
+{
+	//Return the water render components.
+	return waterRenderComponents.Data();
 }

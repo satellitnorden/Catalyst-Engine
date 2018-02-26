@@ -46,6 +46,9 @@ void EngineSystem::InitializeSystem() NOEXCEPT
 */
 bool EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
+	//Update the total game time.
+	totalGameTime += deltaTime;
+
 	//Pre-update the input system.
 	InputSystem::Instance->PreUpdateSystemSynchronous();
 

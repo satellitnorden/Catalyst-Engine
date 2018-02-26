@@ -10,6 +10,7 @@
 #include <SpotLightEntity.h>
 #include <StaticPhysicalEntity.h>
 #include <TerrainEntity.h>
+#include <WaterEntity.h>
 
 //Math.
 #include <GameMath.h>
@@ -24,11 +25,13 @@
 #include <TerrainMaterial.h>
 #include <TextureData.h>
 #include <VulkanTranslationUtilities.h>
+#include <WaterMaterial.h>
 
 //Resources.
 #include <PhysicalMaterialData.h>
 #include <PhysicalModelData.h>
 #include <TerrainMaterialData.h>
+#include <WaterMaterialData.h>
 
 //Systems.
 #include <EngineSystem.h>
@@ -135,6 +138,9 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 
 	//Render the lighting.
 	RenderLighting();
+
+	//Render water.
+	RenderWater();
 
 	//Render the sky box.
 	RenderSkyBox();
@@ -252,6 +258,15 @@ void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physica
 }
 
 /*
+*	Creates a water material.
+*/
+void VulkanRenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterialData, WaterMaterial &waterMaterial) const NOEXCEPT
+{
+	//Load the normal map.
+	waterMaterial.normalMapTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(waterMaterialData.width, waterMaterialData.height, 4, waterMaterialData.normalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+}
+
+/*
 *	Initializes a terrain entity.
 */
 void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
@@ -264,15 +279,15 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 	//Create the vertex and index buffer.
 	const void *RESTRICT terrainData[]{ terrainVertices.Data(), terrainIndices.Data() };
 	const VkDeviceSize terrainDataSizes[]{ sizeof(float) * terrainVertices.Size(), sizeof(uint32) * terrainIndices.Size() };
-	const VulkanBuffer terrainVertexBuffer{ *VulkanInterface::Instance->CreateBuffer(terrainData, terrainDataSizes, 2) };
+	VulkanBuffer *RESTRICT terrainVertexBuffer{ VulkanInterface::Instance->CreateBuffer(terrainData, terrainDataSizes, 2) };
 
 	//Fill the terrain entity components with the relevant data.
 	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[terrainEntity.GetComponentsIndex()] };
 	TerrainRenderComponent &terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents()[terrainEntity.GetComponentsIndex()] };
 
 	terrainComponent.terrainUniformData = terrainUniformData;
-	terrainComponent.uniformBuffer = *VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));
-	terrainComponent.uniformBuffer.UploadData(&terrainComponent.terrainUniformData);
+	terrainComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));
+	static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->UploadData(&terrainComponent.terrainUniformData);
 	terrainComponent.terrainProperties = terrainProperties;
 
 	//Create the descriptor set.
@@ -282,7 +297,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 
 	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(terrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
-	writeDescriptorSets.EmplaceFast(terrainComponent.uniformBuffer.GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 1));
+	writeDescriptorSets.EmplaceFast(static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 1));
 	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainPropertiesTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 2));
 	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(layerWeightsTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 3));
 	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 4));
@@ -344,6 +359,44 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 	transformComponent.position = position;
 	transformComponent.rotation = rotation;
 	transformComponent.scale = scale;
+}
+
+/*
+*	Initializes a water entity.
+*/
+void VulkanRenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const uint32 resolution, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT
+{
+	//Generate the terrain plane vertices and indices.
+	DynamicArray<float> waterVertices;
+	DynamicArray<uint32> waterIndices;
+	RenderingUtilities::GenerateWaterPlane(resolution, waterUniformData, waterVertices, waterIndices);
+
+	//Create the vertex and index buffer.
+	const void *RESTRICT terrainData[]{ waterVertices.Data(), waterIndices.Data() };
+	const VkDeviceSize terrainDataSizes[]{ sizeof(float) * waterVertices.Size(), sizeof(uint32) * waterIndices.Size() };
+	VulkanBuffer *RESTRICT terrainVertexBuffer{ VulkanInterface::Instance->CreateBuffer(terrainData, terrainDataSizes, 2) };
+
+	//Fill the terrain entity components with the relevant data.
+	WaterComponent &waterComponent{ ComponentManager::GetWaterComponents()[waterEntity->GetComponentsIndex()] };
+	WaterRenderComponent &waterRenderComponent{ ComponentManager::GetWaterRenderComponents()[waterEntity->GetComponentsIndex()] };
+
+	waterComponent.waterUniformData = waterUniformData;
+	waterComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(WaterUniformData));
+	static_cast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->UploadData(&waterComponent.waterUniformData);
+
+	//Create the descriptor set.
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(waterRenderComponent.descriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)]);
+
+	DynamicArray<VkWriteDescriptorSet, 2> writeDescriptorSets;
+
+	writeDescriptorSets.EmplaceFast(static_cast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 1));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(waterMaterial.normalMapTexture)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 2));
+
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+
+	waterRenderComponent.vertexAndIndexBuffer = terrainVertexBuffer;
+	waterRenderComponent.indexBufferOffset = static_cast<uint32>(sizeof(float) * waterVertices.Size());
+	waterRenderComponent.indexCount = static_cast<uint32>(waterIndices.Size());
 }
 
 /*
@@ -580,6 +633,15 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 	descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)].Initialize(6, lightingDescriptorSetLayoutBindings.Data());
 
+	//Initialize the water descriptor set layout.
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> waterDescriptorSetLayoutBindings
+	{
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
+	};
+
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)].Initialize(2, waterDescriptorSetLayoutBindings.Data());
+
 	//Initialize the cube map descriptor set layout.
 	constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> cubeMapDescriptorSetLayoutBindings
 	{
@@ -605,47 +667,63 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 {
 	//Initialize the cube map fragment shader module.
 	const auto cubeMapFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "CubeMapFragmentShader.spv");
-	shaderModules[ShaderModule::CubeMapFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(cubeMapFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	shaderModules[INDEX(ShaderModule::CubeMapFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(cubeMapFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the cube map vertex shader module.
 	const auto cubeMapVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "CubeMapVertexShader.spv");
-	shaderModules[ShaderModule::CubeMapVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(cubeMapVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+	shaderModules[INDEX(ShaderModule::CubeMapVertexShader)] = VulkanInterface::Instance->CreateShaderModule(cubeMapVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
 	//Initialize the lighting fragment shader module.
 	const auto lightingFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "LightingFragmentShader.spv");
-	shaderModules[ShaderModule::LightingFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(lightingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	shaderModules[INDEX(ShaderModule::LightingFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(lightingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the post processing fragment shader module.
 	const auto postProcessingFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "PostProcessingFragmentShader.spv");
-	shaderModules[ShaderModule::PostProcessingFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(postProcessingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	shaderModules[INDEX(ShaderModule::PostProcessingFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(postProcessingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the physical fragment shader module.
 	const auto physicalFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "PhysicalFragmentShader.spv");
-	shaderModules[ShaderModule::PhysicalFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(physicalFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	shaderModules[INDEX(ShaderModule::PhysicalFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(physicalFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the physical vertex shader module.
 	const auto physicalVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "PhysicalVertexShader.spv");
-	shaderModules[ShaderModule::PhysicalVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(physicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+	shaderModules[INDEX(ShaderModule::PhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(physicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
 	//Initialize the terrain scene buffer fragment shader module.
 	const auto terrainSceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferFragmentShader.spv");
-	shaderModules[ShaderModule::TerrainFragmentShaderModule] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	shaderModules[INDEX(ShaderModule::TerrainFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the terrain scene buffer tessellation control shader module.
 	const auto terrainSceneBufferTessellationControlShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferTessellationControlShader.spv");
-	shaderModules[ShaderModule::TerrainTessellationControlShaderModule] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferTessellationControlShaderByteCode, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
+	shaderModules[INDEX(ShaderModule::TerrainTessellationControlShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferTessellationControlShaderByteCode, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
 
 	//Initialize the terrain scene buffer tessellation evaluation shader module.
 	const auto terrainSceneBufferTessellationEvaluationShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferTessellationEvaluationShader.spv");
-	shaderModules[ShaderModule::TerrainTessellationEvaluationShaderModule] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferTessellationEvaluationShaderByteCode, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+	shaderModules[INDEX(ShaderModule::TerrainTessellationEvaluationShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferTessellationEvaluationShaderByteCode, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 
 	//Initialize the terrain scene buffer vertex shader module.
 	const auto terrainSceneBufferVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferVertexShader.spv");
-	shaderModules[ShaderModule::TerrainVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+	shaderModules[INDEX(ShaderModule::TerrainVertexShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
-	//Initialize the lighting vertex shader module.
+	//Initialize the viewport vertex shader module.
 	const auto viewportVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "ViewportVertexShader.spv");
-	shaderModules[ShaderModule::ViewportVertexShaderModule] = VulkanInterface::Instance->CreateShaderModule(viewportVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+	shaderModules[INDEX(ShaderModule::ViewportVertexShader)] = VulkanInterface::Instance->CreateShaderModule(viewportVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+
+	//Initialize the water fragment shader module.
+	const auto waterFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "WaterFragmentShader.spv");
+	shaderModules[INDEX(ShaderModule::WaterFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(waterFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+	//Initialize the water tessellation control shader module.
+	const auto waterTessellationControlShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "WaterTessellationControlShader.spv");
+	shaderModules[INDEX(ShaderModule::WaterTessellationControlShader)] = VulkanInterface::Instance->CreateShaderModule(waterTessellationControlShaderByteCode, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
+
+	//Initialize the water tessellation evaluation shader module.
+	const auto waterTessellationEvaluationShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "WaterTessellationEvaluationShader.spv");
+	shaderModules[INDEX(ShaderModule::WaterTessellationEvaluationShader)] = VulkanInterface::Instance->CreateShaderModule(waterTessellationEvaluationShaderByteCode, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+
+	//Initialize the water vertex shader module.
+	const auto waterVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "WaterVertexShader.spv");
+	shaderModules[INDEX(ShaderModule::WaterVertexShader)] = VulkanInterface::Instance->CreateShaderModule(waterVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 }
 
 /*
@@ -683,16 +761,16 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	terrainPipelineCreationParameters.pushConstantRangeCount = 0;
 	terrainPipelineCreationParameters.pushConstantRanges = nullptr;
 	terrainPipelineCreationParameters.shaderModules.Reserve(4);
-	terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainVertexShaderModule]);
-	terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainTessellationControlShaderModule]);
-	terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainTessellationEvaluationShaderModule]);
-	terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::TerrainFragmentShaderModule]);
+	terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::TerrainVertexShader)]);
+	terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::TerrainTessellationControlShader)]);
+	terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::TerrainTessellationEvaluationShader)]);
+	terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::TerrainFragmentShader)]);
 	terrainPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
 	VulkanTranslationUtilities::GetTerrainVertexInputAttributeDescriptions(terrainPipelineCreationParameters.vertexInputAttributeDescriptions);
 	VulkanTranslationUtilities::GetTerrainVertexInputBindingDescription(terrainPipelineCreationParameters.vertexInputBindingDescription);
 	terrainPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-	pipelines[Pipeline::TerrainPipeline] = VulkanInterface::Instance->CreatePipeline(terrainPipelineCreationParameters);
+	pipelines[INDEX(Pipeline::Terrain)] = VulkanInterface::Instance->CreatePipeline(terrainPipelineCreationParameters);
 
 	//Create the scene buffer pipeline.
 	VulkanPipelineCreationParameters staticPhysicalPipelineCreationParameters;
@@ -725,14 +803,14 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	staticPhysicalPipelineCreationParameters.pushConstantRangeCount = 1;
 	staticPhysicalPipelineCreationParameters.pushConstantRanges = &staticPhysicalPushConstantRange;
 	staticPhysicalPipelineCreationParameters.shaderModules.Reserve(2);
-	staticPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::PhysicalVertexShaderModule]);
-	staticPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::PhysicalFragmentShaderModule]);
+	staticPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::PhysicalVertexShader)]);
+	staticPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::PhysicalFragmentShader)]);
 	staticPhysicalPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	VulkanTranslationUtilities::GetPhysicalVertexInputAttributeDescriptions(staticPhysicalPipelineCreationParameters.vertexInputAttributeDescriptions);
 	VulkanTranslationUtilities::GetPhysicalVertexInputBindingDescription(staticPhysicalPipelineCreationParameters.vertexInputBindingDescription);
 	staticPhysicalPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-	pipelines[Pipeline::StaticPhysicalPipeline] = VulkanInterface::Instance->CreatePipeline(staticPhysicalPipelineCreationParameters);
+	pipelines[INDEX(Pipeline::StaticPhysical)] = VulkanInterface::Instance->CreatePipeline(staticPhysicalPipelineCreationParameters);
 
 	//Create the physical pipeline.
 	VulkanPipelineCreationParameters lightingPipelineCreationParameters;
@@ -760,13 +838,52 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	lightingPipelineCreationParameters.pushConstantRangeCount = 0;
 	lightingPipelineCreationParameters.pushConstantRanges = nullptr;
 	lightingPipelineCreationParameters.shaderModules.Reserve(2);
-	lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::ViewportVertexShaderModule]);
-	lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::LightingFragmentShaderModule]);
+	lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::ViewportVertexShader)]);
+	lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::LightingFragmentShader)]);
 	lightingPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
 	VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(lightingPipelineCreationParameters.vertexInputBindingDescription);
 	lightingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-	pipelines[Pipeline::LightingPipeline] = VulkanInterface::Instance->CreatePipeline(lightingPipelineCreationParameters);
+	pipelines[INDEX(Pipeline::Lighting)] = VulkanInterface::Instance->CreatePipeline(lightingPipelineCreationParameters);
+
+	//Create the water pipeline.
+	VulkanPipelineCreationParameters waterPipelineCreationParameters;
+
+	waterPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
+	waterPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	waterPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+	waterPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	waterPipelineCreationParameters.colorAttachments.Resize(1);
+	waterPipelineCreationParameters.colorAttachments[0].Reserve(1);
+	waterPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[RenderTarget::SceneRenderTarget]->GetImageView());
+	waterPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	waterPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	waterPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+	waterPipelineCreationParameters.depthBuffers.Reserve(1);
+	waterPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
+	waterPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
+	waterPipelineCreationParameters.depthTestEnable = VK_TRUE;
+	waterPipelineCreationParameters.depthWriteEnable = VK_TRUE;
+	StaticArray<VulkanDescriptorSetLayout, 2> waterDescriptorSetLayouts
+	{
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)]
+	};
+	waterPipelineCreationParameters.descriptorSetLayoutCount = 2;
+	waterPipelineCreationParameters.descriptorSetLayouts = waterDescriptorSetLayouts.Data();
+	waterPipelineCreationParameters.pushConstantRangeCount = 0;
+	waterPipelineCreationParameters.pushConstantRanges = nullptr;
+	waterPipelineCreationParameters.shaderModules.Reserve(4);
+	waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterVertexShader)]);
+	waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterTessellationControlShader)]);
+	waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterTessellationEvaluationShader)]);
+	waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterFragmentShader)]);
+	waterPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
+	VulkanTranslationUtilities::GetTerrainVertexInputAttributeDescriptions(waterPipelineCreationParameters.vertexInputAttributeDescriptions);
+	VulkanTranslationUtilities::GetTerrainVertexInputBindingDescription(waterPipelineCreationParameters.vertexInputBindingDescription);
+	waterPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+
+	pipelines[INDEX(Pipeline::Water)] = VulkanInterface::Instance->CreatePipeline(waterPipelineCreationParameters);
 
 	//Create the cube map pipeline.
 	VulkanPipelineCreationParameters cubeMapPipelineCreationParameters;
@@ -796,13 +913,13 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	cubeMapPipelineCreationParameters.pushConstantRangeCount = 0;
 	cubeMapPipelineCreationParameters.pushConstantRanges = nullptr;
 	cubeMapPipelineCreationParameters.shaderModules.Reserve(2);
-	cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::CubeMapVertexShaderModule]);
-	cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::CubeMapFragmentShaderModule]);
+	cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::CubeMapVertexShader)]);
+	cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::CubeMapFragmentShader)]);
 	cubeMapPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(cubeMapPipelineCreationParameters.vertexInputBindingDescription);
 	cubeMapPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-	pipelines[Pipeline::CubeMapPipeline] = VulkanInterface::Instance->CreatePipeline(cubeMapPipelineCreationParameters);
+	pipelines[INDEX(Pipeline::CubeMap)] = VulkanInterface::Instance->CreatePipeline(cubeMapPipelineCreationParameters);
 
 	//Create the post processing pipeline.
 	VulkanPipelineCreationParameters postProcessingPipelineCreationParameters;
@@ -839,13 +956,13 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	postProcessingPipelineCreationParameters.pushConstantRangeCount = 0;
 	postProcessingPipelineCreationParameters.pushConstantRanges = nullptr;
 	postProcessingPipelineCreationParameters.shaderModules.Reserve(2);
-	postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::ViewportVertexShaderModule]);
-	postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[ShaderModule::PostProcessingFragmentShaderModule]);
+	postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::ViewportVertexShader)]);
+	postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::PostProcessingFragmentShader)]);
 	postProcessingPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
 	VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(postProcessingPipelineCreationParameters.vertexInputBindingDescription);
 	postProcessingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-	pipelines[Pipeline::PostProcessingPipeline] = VulkanInterface::Instance->CreatePipeline(postProcessingPipelineCreationParameters);
+	pipelines[INDEX(Pipeline::PostProcessing)] = VulkanInterface::Instance->CreatePipeline(postProcessingPipelineCreationParameters);
 }
 
 /*
@@ -938,7 +1055,7 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 {
 	//Cache the pipeline.
-	VulkanPipeline &terrainSceneBufferPipeline{ *pipelines[Pipeline::TerrainPipeline] };
+	VulkanPipeline &terrainSceneBufferPipeline{ *pipelines[INDEX(Pipeline::Terrain)] };
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(terrainSceneBufferPipeline);
@@ -957,8 +1074,8 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 		};
 
 		currentCommandBuffer->CommandBindDescriptorSets(terrainSceneBufferPipeline, 2, terrainDescriptorSets.Data());
-		currentCommandBuffer->CommandBindVertexBuffers(terrainRenderComponent->vertexAndIndexBuffer);
-		currentCommandBuffer->CommandBindIndexBuffer(terrainRenderComponent->vertexAndIndexBuffer, terrainRenderComponent->indexBufferOffset);
+		currentCommandBuffer->CommandBindVertexBuffers(*static_cast<const VulkanBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer));
+		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
 		currentCommandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount);
 	}
 
@@ -975,7 +1092,7 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::RenderingSystemUpdateViewFrustumCulling);
 
 	//Cache the pipeline.
-	VulkanPipeline &StaticPhysicalPipeline{ *pipelines[Pipeline::StaticPhysicalPipeline] };
+	VulkanPipeline &StaticPhysicalPipeline{ *pipelines[INDEX(Pipeline::StaticPhysical)] };
 
 	//Iterate over all static physical entity components and draw them all.
 	const uint64 numberOfStaticPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
@@ -1021,10 +1138,10 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 {
 	//Bind the lighting pipeline.
-	currentCommandBuffer->CommandBindPipeline(*pipelines[Pipeline::LightingPipeline]);
+	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Lighting)]);
 
 	//Bind the lighting render pass.
-	currentCommandBuffer->CommandBeginRenderPass(pipelines[Pipeline::LightingPipeline]->GetRenderPass(), 0, false, 1);
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass(), 0, false, 1);
 
 	//Bind the scene buffer descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> lightingDescriptorSets
@@ -1033,10 +1150,44 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 		descriptorSets[DescriptorSet::LightingDescriptorSet]
 	};
 
-	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[Pipeline::LightingPipeline], 2, lightingDescriptorSets.Data());
+	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Lighting)], 2, lightingDescriptorSets.Data());
 
 	//Draw the viewport!
 	currentCommandBuffer->CommandDraw(4);
+
+	//End the render pass.
+	currentCommandBuffer->CommandEndRenderPass();
+}
+
+/*
+*	Renders water.
+*/
+void VulkanRenderingSystem::RenderWater() NOEXCEPT
+{
+	//Cache the pipeline.
+	VulkanPipeline *RESTRICT waterPipeline{ pipelines[INDEX(Pipeline::Water)] };
+
+	//Begin the pipeline and render pass.
+	currentCommandBuffer->CommandBindPipeline(*waterPipeline);
+	currentCommandBuffer->CommandBeginRenderPass(waterPipeline->GetRenderPass(), 0, false, 0);
+
+	//Iterate over all water entity components and draw them all.
+	const uint64 numberOfWaterComponents{ ComponentManager::GetNumberOfWaterComponents() };
+	const WaterRenderComponent *RESTRICT waterRenderComponent{ ComponentManager::GetWaterRenderComponents() };
+
+	for (uint64 i = 0; i < numberOfWaterComponents; ++i, ++waterRenderComponent)
+	{
+		StaticArray<VulkanDescriptorSet, 2> waterDescriptorSets
+		{
+			*currentDynamicUniformDataDescriptorSet,
+			waterRenderComponent->descriptorSet
+		};
+
+		currentCommandBuffer->CommandBindDescriptorSets(*waterPipeline, 2, waterDescriptorSets.Data());
+		currentCommandBuffer->CommandBindVertexBuffers(*static_cast<const VulkanBuffer *RESTRICT>(waterRenderComponent->vertexAndIndexBuffer));
+		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanBuffer *RESTRICT>(waterRenderComponent->vertexAndIndexBuffer), waterRenderComponent->indexBufferOffset);
+		currentCommandBuffer->CommandDrawIndexed(waterRenderComponent->indexCount);
+	}
 
 	//End the render pass.
 	currentCommandBuffer->CommandEndRenderPass();
@@ -1048,10 +1199,10 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
 {
 	//Bind the cube map pipeline.
-	currentCommandBuffer->CommandBindPipeline(*pipelines[Pipeline::CubeMapPipeline]);
+	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::CubeMap)]);
 
 	//Bind the cube map render pass.
-	currentCommandBuffer->CommandBeginRenderPass(pipelines[Pipeline::CubeMapPipeline]->GetRenderPass(), 0, false, 0);
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass(), 0, false, 0);
 
 	//Bind the sky box descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> skyBoxDescriptorSets
@@ -1060,7 +1211,7 @@ void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
 		skyBoxDescriptorSet
 	};
 
-	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[Pipeline::CubeMapPipeline], 2, skyBoxDescriptorSets.Data());
+	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::CubeMap)], 2, skyBoxDescriptorSets.Data());
 
 	//Draw the sky box!
 	currentCommandBuffer->CommandDraw(36);
@@ -1075,10 +1226,10 @@ void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
 void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 {
 	//Bind the post processing pipeline.
-	currentCommandBuffer->CommandBindPipeline(*pipelines[Pipeline::PostProcessingPipeline]);
+	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::PostProcessing)]);
 
 	//Bind the post processing render pass.
-	currentCommandBuffer->CommandBeginRenderPass(pipelines[Pipeline::PostProcessingPipeline]->GetRenderPass(), frameData.GetCurrentFrame(), false, 1);
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), false, 1);
 
 	//Bind the post processing descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> postProcessingDescriptorSets
@@ -1087,7 +1238,7 @@ void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 		descriptorSets[DescriptorSet::PostProcessingDescriptorSet]
 	};
 
-	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[Pipeline::PostProcessingPipeline], 2, postProcessingDescriptorSets.Data());
+	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::PostProcessing)], 2, postProcessingDescriptorSets.Data());
 
 	//Draw the viewport!
 	currentCommandBuffer->CommandDraw(4);
@@ -1184,6 +1335,8 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 		dynamicUniformData.directionalLightColor = Vector3(0.0f, 0.0f, 0.0f);
 		dynamicUniformData.directionalLightScreenSpacePosition = Vector3(0.0f, 0.0f, 0.0f);
 	}
+
+	dynamicUniformData.totalGameTime = EngineSystem::Instance->GetTotalGameTime();
 
 	uint64 counter = 0;
 

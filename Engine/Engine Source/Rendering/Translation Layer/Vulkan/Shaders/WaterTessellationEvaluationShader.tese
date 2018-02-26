@@ -46,23 +46,42 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
 };
 
+//Water uniform data.
+layout (std140, set = 1, binding = 1) uniform WaterUniformData
+{
+    float waterHeight;
+    float waterSize;
+    float waterPadding1;
+    float waterPadding2;
+    vec3 waterWorldPosition;
+};
+
+//Layout specification.
+layout (triangles, equal_spacing, ccw) in;
+
 //In parameters.
-layout (location = 0) in vec3 fragmentTextureCoordinate;
+layout (location = 0) in vec2 tessellationEvaluationTextureCoordinate[];
+layout (location = 1) in vec3 tessellationEvaluationPosition[];
 
 //Texture samplers.
-layout (set = 1, binding = 1) uniform samplerCube cubeMapTexture;
+layout (set = 1, binding = 2) uniform sampler2D normalMapTexture;
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentColor;
+layout (location = 0) out vec2 fragmentTextureCoordinate;
 
 void main()
 {
-    //Sample the cube map texture.
-    vec3 cubeMapTextureSampler = texture(cubeMapTexture, fragmentTextureCoordinate).rgb;
+	//Pass the values along to the fragment shader.
+	fragmentTextureCoordinate = gl_TessCoord.x * tessellationEvaluationTextureCoordinate[0] + gl_TessCoord.y * tessellationEvaluationTextureCoordinate[1] + gl_TessCoord.z * tessellationEvaluationTextureCoordinate[2];
+	vec3 position = (gl_TessCoord.x * tessellationEvaluationPosition[0] + gl_TessCoord.y * tessellationEvaluationPosition[1] + gl_TessCoord.z * tessellationEvaluationPosition[2]);
 
-    //Apply gamma correction.
-    cubeMapTextureSampler = pow(cubeMapTextureSampler, vec3(2.2f));
+	//Construct the water normal.
+    vec4 normalMapSampler = texture(normalMapTexture, fragmentTextureCoordinate);
+    vec3 normal = normalMapSampler.xzy;
 
-    //Set the fragment color.
-    fragmentColor = vec4(cubeMapTextureSampler, 1.0f);
+    //Modify the height based on the time and normal.
+	position.y += dot(normal, vec3(0.0f, 1.0f, 0.0f)) * waterHeight * sin(position.x + position.z + totalGameTime);
+
+    //Set the final position.
+	gl_Position = viewMatrix * vec4(position, 1.0f);
 }

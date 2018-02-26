@@ -13,6 +13,8 @@
 #include <TerrainComponent.h>
 #include <TerrainRenderComponent.h>
 #include <TransformComponent.h>
+#include <WaterComponent.h>
+#include <WaterRenderComponent.h>
 
 class ComponentManager final
 {
@@ -214,5 +216,42 @@ private:
 
 	//The terrain render components.
 	static DynamicArray<TerrainRenderComponent> terrainRenderComponents;
+
+public:
+
+	/*							*/
+	/*	Water Entity Interface.	*/
+	/*							*/
+
+	/*
+	*	Returns a new components index for water entities.
+	*/
+	static uint64 GetNewWaterComponentsIndex() NOEXCEPT;
+
+	/*
+	*	Returns the number of water components.
+	*/
+	static uint64 GetNumberOfWaterComponents() NOEXCEPT;
+
+	/*
+	*	Returns the water components.
+	*/
+	RESTRICTED static WaterComponent* GetWaterComponents() NOEXCEPT;
+
+	/*
+	*	Returns the water render components.
+	*/
+	RESTRICTED static WaterRenderComponent* GetWaterRenderComponents() NOEXCEPT;
+
+private:
+
+	//The number of water components.
+	static uint64 numberOfWaterComponents;
+
+	//The water components.
+	static DynamicArray<WaterComponent> waterComponents;
+
+	//The water render components.
+	static DynamicArray<WaterRenderComponent> waterRenderComponents;
 
 };

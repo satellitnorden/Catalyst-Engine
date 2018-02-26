@@ -46,32 +46,16 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
 };
 
-//Terrain uniform buffer.
-layout (std140, set = 1, binding = 1) uniform TerrainUniformData
-{
-    float terrainFirstLayerDisplacementHeight;
-    float terrainSecondLayerDisplacementHeight;
-    float terrainThirdLayerDisplacementHeight;
-    float terrainFourthLayerDisplacementHeight;
-    float terrainFifthLayerDisplacementHeight;
-    float terrainHeight;
-    float terrainSize;
-    float terrainTextureTilingFactor;
-    vec3 terrainPosition;
-};
-
 //Layout specification.
 layout (vertices = 3) out;
 
 //In parameters.
-layout (location = 0) in vec2 tessellationControlHeightMapTextureCoordinate[];
-layout (location = 1) in vec2 tessellationControlTextureCoordinate[];
-layout (location = 2) in vec3 tessellationControlPosition[];
+layout (location = 0) in vec2 tessellationControlTextureCoordinate[];
+layout (location = 1) in vec3 tessellationControlPosition[];
 
 //Out parameters.
-layout (location = 0) out vec2 tessellationEvaluationHeightMapTextureCoordinate[];
-layout (location = 1) out vec2 tessellationEvaluationTextureCoordinate[];
-layout (location = 2) out vec3 tessellationEvaluationPosition[];
+layout (location = 0) out vec2 tessellationEvaluationTextureCoordinate[];
+layout (location = 1) out vec3 tessellationEvaluationPosition[];
 
 /*
 *   Returns the length of a vector squared, ignoring the Y component.
@@ -117,7 +101,6 @@ float GetTesselationLevel(float distanceToCameraSquared)
 void main()
 {   
     //Pass along the values to the tessellation evaluation shader.
-    tessellationEvaluationHeightMapTextureCoordinate[gl_InvocationID] = tessellationControlHeightMapTextureCoordinate[gl_InvocationID];
     tessellationEvaluationTextureCoordinate[gl_InvocationID] = tessellationControlTextureCoordinate[gl_InvocationID];
     tessellationEvaluationPosition[gl_InvocationID] = tessellationControlPosition[gl_InvocationID];
 

@@ -80,6 +80,15 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 }
 
 /*
+*	Creates a water material.
+*/
+void RenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterialData, WaterMaterial &waterMaterial) const NOEXCEPT
+{
+	//Create the water material via the Vulkan rendering system.
+	VulkanRenderingSystem::Instance->CreateWaterMaterial(waterMaterialData, waterMaterial);
+}
+
+/*
 *	Initializes a terrain entity.
 */
 void RenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
@@ -95,6 +104,15 @@ void RenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity &stati
 {
 	//Initialize the static physical entity via the Vulkan rendering system.
 	VulkanRenderingSystem::Instance->InitializeStaticPhysicalEntity(staticPhysicalEntity, model, position, rotation, scale);
+}
+
+/*
+*	Initializes a water entity.
+*/
+void RenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const uint32 resolution, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT
+{
+	//Initialize the water entity via the Vulkan rendering system.
+	VulkanRenderingSystem::Instance->InitializeWaterEntity(waterEntity, resolution, waterMaterial, waterUniformData);
 }
 
 /*

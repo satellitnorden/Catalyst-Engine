@@ -34,6 +34,10 @@ class TerrainMaterial;
 class TerrainMaterialData;
 class TerrainUniformData;
 class TextureData;
+class WaterEntity;
+class WaterMaterialData;
+class WaterMaterial;
+class WaterUniformData;
 
 class VulkanRenderingSystem final
 {
@@ -84,6 +88,11 @@ public:
 	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT;
 
 	/*
+	*	Creates a water material.
+	*/
+	void CreateWaterMaterial(const WaterMaterialData &waterMaterialData, WaterMaterial &waterMaterial) const NOEXCEPT;
+
+	/*
 	*	Initializes a terrain entity.
 	*/
 	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT;
@@ -92,6 +101,11 @@ public:
 	*	Initializes a static physical entity.
 	*/
 	void InitializeStaticPhysicalEntity(StaticPhysicalEntity &staticPhysicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT;
+
+	/*
+	*	Initializes a water entity.
+	*/
+	void InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const uint32 resolution, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given the texture data.
@@ -177,19 +191,21 @@ private:
 		Terrain,
 		StaticPhysical,
 		Lighting,
+		Water,
 		CubeMap,
 		PostProcessing,
 		NumberOfDescriptorSetLayouts
 	};
 
 	//Enumeration covering all pipelines.
-	enum Pipeline : uint8
+	enum class Pipeline : uint8
 	{
-		TerrainPipeline,
-		StaticPhysicalPipeline,
-		LightingPipeline,
-		CubeMapPipeline,
-		PostProcessingPipeline,
+		Terrain,
+		StaticPhysical,
+		Lighting,
+		Water,
+		CubeMap,
+		PostProcessing,
 		NumberOfPipelines
 	};
 
@@ -212,19 +228,23 @@ private:
 	};
 
 	//Enumeration covering all shader modules.
-	enum ShaderModule : uint8
+	enum class ShaderModule : uint8
 	{
-		CubeMapFragmentShaderModule,
-		CubeMapVertexShaderModule,
-		LightingFragmentShaderModule,
-		PostProcessingFragmentShaderModule,
-		PhysicalFragmentShaderModule,
-		PhysicalVertexShaderModule,
-		TerrainFragmentShaderModule,
-		TerrainTessellationControlShaderModule,
-		TerrainTessellationEvaluationShaderModule,
-		TerrainVertexShaderModule,
-		ViewportVertexShaderModule,
+		CubeMapFragmentShader,
+		CubeMapVertexShader,
+		LightingFragmentShader,
+		PostProcessingFragmentShader,
+		PhysicalFragmentShader,
+		PhysicalVertexShader,
+		TerrainFragmentShader,
+		TerrainTessellationControlShader,
+		TerrainTessellationEvaluationShader,
+		TerrainVertexShader,
+		ViewportVertexShader,
+		WaterFragmentShader,
+		WaterTessellationControlShader,
+		WaterTessellationEvaluationShader,
+		WaterVertexShader,
 		NumberOfShaderModules
 	};
 
@@ -269,13 +289,13 @@ private:
 	StaticArray<VulkanRenderTarget *RESTRICT, RenderTarget::NumberOfRenderTargets> renderTargets;
 
 	//Container for all pipelines.
-	StaticArray<VulkanPipeline *RESTRICT, Pipeline::NumberOfPipelines> pipelines;
+	StaticArray<VulkanPipeline *RESTRICT, INDEX(Pipeline::NumberOfPipelines)> pipelines;
 
 	//Container for all semaphores.
 	StaticArray<VulkanSemaphore *RESTRICT, Semaphore::NumberOfSemaphores> semaphores;
 
 	//Container for all shader modules.
-	StaticArray<VulkanShaderModule *RESTRICT, ShaderModule::NumberOfShaderModules> shaderModules;
+	StaticArray<VulkanShaderModule *RESTRICT, INDEX(ShaderModule::NumberOfShaderModules)> shaderModules;
 
 	//Container for all uniform buffers.
 	StaticArray<VulkanUniformBuffer *RESTRICT, UniformBuffer::NumberOfUniformBuffers> uniformBuffers;
@@ -359,6 +379,11 @@ private:
 	*	Renders lighting.
 	*/
 	void RenderLighting() NOEXCEPT;
+
+	/*
+	*	Renders water.
+	*/
+	void RenderWater() NOEXCEPT;
 
 	/*
 	*	Renders sky box.

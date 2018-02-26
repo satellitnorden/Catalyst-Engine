@@ -34,9 +34,12 @@ public:
 	Vector4 directionalLightColor;
 	Vector4 directionalLightScreenSpacePosition;
 
+	//General data.
+	float totalGameTime;
+
 	//Point light data.
 	uint64 numberOfPointLights;
-	uint64 padding2{ 0 };
+	uint32 padding2{ 0 };
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightAttenuationDistances;
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightIntensities;
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightColors;

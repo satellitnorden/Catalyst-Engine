@@ -9,5 +9,6 @@ enum class ResourceType : uint8
 	PhysicalMaterial,
 	PhysicalModel,
 	TerrainMaterial,
+	WaterMaterial,
 	NumberOfResourceTypes
 };

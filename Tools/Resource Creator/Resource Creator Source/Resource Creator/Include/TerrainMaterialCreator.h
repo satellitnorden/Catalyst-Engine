@@ -8,8 +8,11 @@
 
 //Resource creator.
 #include <stb_image.h>
-#define STB_IMAGE_RESIZE_IMPLEMENTATION
-#include <stb_image_resize.h>
+#if !defined(STB_IMAGE_RESIZE_IMPLEMENTATION)
+	#define STB_IMAGE_RESIZE_IMPLEMENTATION
+	#include <stb_image_resize.h>
+	#undef STB_IMAGE_RESIZE_IMPLEMENTATION
+#endif
 
 #define NUMBER_OF_TERRAIN_LAYERS 5
 

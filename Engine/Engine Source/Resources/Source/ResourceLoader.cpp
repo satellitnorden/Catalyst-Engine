@@ -10,6 +10,7 @@
 #include <ResourceLoaderUtilities.h>
 #include <ResourcesCore.h>
 #include <TerrainMaterialData.h>
+#include <WaterMaterialData.h>
 
 //Systems.
 #include <RenderingSystem.h>
@@ -177,4 +178,54 @@ void ResourceLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainM
 
 	//Create the terrain material via the rendering system.
 	RenderingSystem::Instance->CreateTerrainMaterial(terrainMaterialData, terrainMaterial);
+}
+
+/*
+*	Given a file path, load a water material.
+*/
+void ResourceLoader::LoadWaterMaterial(const char *RESTRICT filePath, WaterMaterial &waterMaterial) NOEXCEPT
+{
+	//Store the water material data in the water material data structure.
+	WaterMaterialData waterMaterialData;
+
+	//Load the file.
+	BinaryFile<IOMode::In> file{ filePath };
+
+	//Read the resource type.
+	ResourceType resourceType;
+	file.Read(&resourceType, sizeof(ResourceType));
+
+#if !defined(CATALYST_FINAL)
+	if (resourceType != ResourceType::WaterMaterial)
+	{
+		BREAKPOINT;
+	}
+#endif
+
+	//Read the number of mipmap levels.
+	file.Read(&waterMaterialData.mipmapLevels, sizeof(uint8));
+
+	//Read the width.
+	file.Read(&waterMaterialData.width, sizeof(uint32));
+
+	//Read the height.
+	file.Read(&waterMaterialData.height, sizeof(uint32));
+
+	//Read the normal map.
+	waterMaterialData.normalMapData.Resize(waterMaterialData.mipmapLevels);
+
+	const uint64 textureSize{ waterMaterialData.width * waterMaterialData.height * 4 };
+
+	for (uint8 i = 0; i < waterMaterialData.mipmapLevels; ++i)
+	{
+		waterMaterialData.normalMapData[i].Reserve(textureSize >> i);
+
+		file.Read(waterMaterialData.normalMapData[i].Data(), textureSize >> i);
+	}
+
+	//Close the file.
+	file.Close();
+
+	//Create the water material via the rendering system.
+	RenderingSystem::Instance->CreateWaterMaterial(waterMaterialData, waterMaterial);
 }

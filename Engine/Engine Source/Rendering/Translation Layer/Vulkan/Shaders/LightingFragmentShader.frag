@@ -25,6 +25,9 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     vec3 directionalLightScreenSpacePosition;
     float padding2;
 
+    //General data.
+    float totalGameTime;
+
     //Point light data.
     int numberOfPointLights;
     float pointLightAttenuationDistances[MaximumNumberOfPointLights];
