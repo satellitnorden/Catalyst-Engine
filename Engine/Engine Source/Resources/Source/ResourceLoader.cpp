@@ -2,7 +2,10 @@
 #include <ResourceLoader.h>
 
 //Rendering.
+#include <PhysicalMaterial.h>
+#include <PhysicalModel.h>
 #include <TerrainMaterial.h>
+#include <WaterMaterial.h>
 
 //Resources.
 #include <PhysicalMaterialData.h>
@@ -15,27 +18,80 @@
 //Systems.
 #include <RenderingSystem.h>
 
-/*
-*	Given a file path, load a physical material.
-*/
-void ResourceLoader::LoadPhysicalMaterial(const char *RESTRICT filePath, PhysicalMaterial &physicalMaterial) NOEXCEPT
-{
-	//Store the physical material data in the physical material data structure.
-	PhysicalMaterialData physicalMaterialData;
+//Static variable definitions.
+Map<ResourceID, PhysicalMaterial> ResourceLoader::physicalMaterials;
+Map<ResourceID, PhysicalModel> ResourceLoader::physicalModels;
+Map<ResourceID, TerrainMaterial> ResourceLoader::terrainMaterials;
+Map<ResourceID, WaterMaterial> ResourceLoader::waterMaterials;
 
+/*
+*	Given a file path, load a resource collection.
+*/
+void ResourceLoader::LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT
+{
 	//Load the file.
 	BinaryFile<IOMode::In> file{ filePath };
 
-	//Read the resource type.
-	ResourceType resourceType;
-	file.Read(&resourceType, sizeof(ResourceType));
+	//Read the number of resources.
+	uint64 numberOfResources;
+	file.Read(&numberOfResources, sizeof(uint64));
 
-#if !defined(CATALYST_FINAL)
-	if (resourceType != ResourceType::PhysicalMaterial)
+	//For each resource, load it.
+	for (uint64 i = 0; i < numberOfResources; ++i)
 	{
-		BREAKPOINT;
-	}
+		//Read the resource type.
+		ResourceType resourceType;
+		file.Read(&resourceType, sizeof(ResourceType));
+
+		switch (resourceType)
+		{
+#if !defined(CATALYST_FINAL)
+			default:
+			{
+				PRINT_TO_CONSOLE("Undefined resource type.");
+				
+				BREAKPOINT;
+			}
 #endif
+
+			case ResourceType::PhysicalMaterial:
+			{
+				LoadPhysicalMaterial(file);
+
+				break;
+			}
+
+			case ResourceType::PhysicalModel:
+			{
+				LoadPhysicalModel(file);
+
+				break;
+			}
+
+			case ResourceType::TerrainMaterial:
+			{
+				LoadTerrainMaterial(file);
+
+				break;
+			}
+
+			case ResourceType::WaterMaterial:
+			{
+				LoadWaterMaterial(file);
+
+				break;
+			}
+		}
+	}
+}
+
+/*
+*	Given a file, load a physical material.
+*/
+void ResourceLoader::LoadPhysicalMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the physical material data in the physical material data structure.
+	PhysicalMaterialData physicalMaterialData;
 
 	//Read the resource ID.
 	ResourceID resourceID;
@@ -82,34 +138,17 @@ void ResourceLoader::LoadPhysicalMaterial(const char *RESTRICT filePath, Physica
 		file.Read(physicalMaterialData.materialPropertiesData[i].Data(), textureSize >> i);
 	}
 
-	//Close the file.
-	file.Close();
-
 	//Create the physical material via the rendering system.
-	RenderingSystem::Instance->CreatePhysicalMaterial(physicalMaterialData, physicalMaterial);
+	RenderingSystem::Instance->CreatePhysicalMaterial(physicalMaterialData, physicalMaterials[resourceID]);
 }
 
 /*
-*	Given a file path, load a physical model.
+*	Given a file, load a physical model.
 */
-void ResourceLoader::LoadPhysicalModel(const char *RESTRICT filePath, PhysicalModel &physicalModel) NOEXCEPT
+void ResourceLoader::LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
 	//Store the physical model data in the physical model data structure.
 	PhysicalModelData physicalModelData;
-
-	//Load the file.
-	BinaryFile<IOMode::In> file{ filePath };
-
-	//Read the resource type.
-	ResourceType resourceType;
-	file.Read(&resourceType, sizeof(ResourceType));
-
-#if !defined(CATALYST_FINAL)
-	if (resourceType != ResourceType::PhysicalModel)
-	{
-		BREAKPOINT;
-	}
-#endif
 
 	//Read the resource ID.
 	ResourceID resourceID;
@@ -134,34 +173,17 @@ void ResourceLoader::LoadPhysicalModel(const char *RESTRICT filePath, PhysicalMo
 	physicalModelData.indices.UpsizeFast(numberOfIndices);
 	file.Read(physicalModelData.indices.Data(), sizeof(uint32) * numberOfIndices);
 
-	//Close the file.
-	file.Close();
-
 	//Create the physical model via the rendering system.
-	RenderingSystem::Instance->CreatePhysicalModel(physicalModelData, physicalModel);
+	RenderingSystem::Instance->CreatePhysicalModel(physicalModelData, physicalModels[resourceID]);
 }
 
 /*
-*	Given a file path, load a terrain material.
+*	Given a file, load a terrain material.
 */
-void ResourceLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMaterial &terrainMaterial) NOEXCEPT
+void ResourceLoader::LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
 	//Store the terrain material data in the terrain material data structure.
 	TerrainMaterialData terrainMaterialData;
-
-	//Load the file.
-	BinaryFile<IOMode::In> file{ filePath };
-
-	//Read the resource type.
-	ResourceType resourceType;
-	file.Read(&resourceType, sizeof(ResourceType));
-
-#if !defined(CATALYST_FINAL)
-	if (resourceType != ResourceType::TerrainMaterial)
-	{
-		BREAKPOINT;
-	}
-#endif
 
 	//Read the resource ID.
 	ResourceID resourceID;
@@ -185,34 +207,17 @@ void ResourceLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainM
 	//Load the fifth layer.
 	ResourceLoaderUtilities::LoadTerrainLayerData(file, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, terrainMaterialData.mipmapLevels, terrainMaterialData.fifthLayerAlbedoData, terrainMaterialData.fifthLayerNormalMapData, terrainMaterialData.fifthLayerMaterialPropertiesData);
 
-	//Close the file.
-	file.Close();
-
 	//Create the terrain material via the rendering system.
-	RenderingSystem::Instance->CreateTerrainMaterial(terrainMaterialData, terrainMaterial);
+	RenderingSystem::Instance->CreateTerrainMaterial(terrainMaterialData, terrainMaterials[resourceID]);
 }
 
 /*
-*	Given a file path, load a water material.
+*	Given a file, load a water material.
 */
-void ResourceLoader::LoadWaterMaterial(const char *RESTRICT filePath, WaterMaterial &waterMaterial) NOEXCEPT
+void ResourceLoader::LoadWaterMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
 	//Store the water material data in the water material data structure.
 	WaterMaterialData waterMaterialData;
-
-	//Load the file.
-	BinaryFile<IOMode::In> file{ filePath };
-
-	//Read the resource type.
-	ResourceType resourceType;
-	file.Read(&resourceType, sizeof(ResourceType));
-
-#if !defined(CATALYST_FINAL)
-	if (resourceType != ResourceType::WaterMaterial)
-	{
-		BREAKPOINT;
-	}
-#endif
 
 	//Read the resource ID.
 	ResourceID resourceID;
@@ -239,9 +244,6 @@ void ResourceLoader::LoadWaterMaterial(const char *RESTRICT filePath, WaterMater
 		file.Read(waterMaterialData.normalMapData[i].Data(), textureSize >> i);
 	}
 
-	//Close the file.
-	file.Close();
-
 	//Create the water material via the rendering system.
-	RenderingSystem::Instance->CreateWaterMaterial(waterMaterialData, waterMaterial);
+	RenderingSystem::Instance->CreateWaterMaterial(waterMaterialData, waterMaterials[resourceID]);
 }

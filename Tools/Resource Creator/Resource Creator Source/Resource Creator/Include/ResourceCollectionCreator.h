@@ -24,7 +24,7 @@ public:
 		BinaryFile<IOMode::Out> resourceCollectionFile{ fileName.CString() };
 
 		//Write the number of resources in the resource collection.
-		const uint64 numberOfResources{ static_cast<uint64>(argumentCount - 2) };
+		const uint64 numberOfResources{ static_cast<uint64>(argumentCount - 3) };
 		resourceCollectionFile.Write(&numberOfResources, sizeof(uint64));
 
 		//Slam all resources into the resource collection.

@@ -63,6 +63,9 @@ WorldArchitect::~WorldArchitect() NOEXCEPT
 */
 void WorldArchitect::Initialize() NOEXCEPT
 {
+	//Load the resource collection file.
+	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc");
+
 	//Create the sun!
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	sun->SetIntensity(10.0f);
@@ -72,8 +75,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	RenderingSystem::Instance->SetActiveSkyBox(sky);
 
 	//Load the terrain material data.
-	TerrainMaterial terrainMaterial;
-	ResourceLoader::LoadTerrainMaterial(CLAIRVOYANT_MATERIALS_FOLDER "DefaultTerrainMaterial.ctm", terrainMaterial);
+	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(2) };
 
 	//Create the terrain properties!
 	CPUTexture4 terrainProperties{ HEIGHT_MAP_RESOLUTION };
@@ -197,20 +199,17 @@ void WorldArchitect::Initialize() NOEXCEPT
 	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 2.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
 	//Load the water material.
-	WaterMaterial waterMaterial;
-	ResourceLoader::LoadWaterMaterial(CLAIRVOYANT_MATERIALS_FOLDER "DefaultWaterMaterial.cwm", waterMaterial);
+	WaterMaterial waterMaterial{ ResourceLoader::GetWaterMaterial(3) };
 
 	//Create the water.
 	WaterEntity *RESTRICT water = EntitySystem::Instance->CreateEntity<WaterEntity>();
 	water->Initialize(512, waterMaterial, WaterUniformData(1.0f, TERRAIN_SIZE, Vector3(0.0f, TERRAIN_HEIGHT * WATER_HEIGHT, 0.0f)));
 
 	//Create the stone model.
-	PhysicalModel stoneModel;
-	ResourceLoader::LoadPhysicalModel(CLAIRVOYANT_MODELS_FOLDER "StoneModel.cpm", stoneModel);
+	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(1) };
 
 	//Create the stone material.
-	PhysicalMaterial stoneMaterial;
-	ResourceLoader::LoadPhysicalMaterial(CLAIRVOYANT_MATERIALS_FOLDER "StoneMaterial.cpm", stoneMaterial);
+	PhysicalMaterial stoneMaterial{ ResourceLoader::GetPhysicalMaterial(0) };
 
 	stoneModel.SetMaterial(stoneMaterial);
 

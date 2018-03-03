@@ -18,28 +18,62 @@ class ResourceLoader final
 public:
 
 	/*
-	*	Given a file path, load a physical material.
+	*	Given a file path, load a resource collection.
 	*/
-	static void LoadPhysicalMaterial(const char *RESTRICT filePath, PhysicalMaterial &physicalMaterial) NOEXCEPT;
+	static void LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT;
 
 	/*
-	*	Given a file path, load a physical model.
+	*	Given a resource ID, return the corresponding physical material.
 	*/
-	static void LoadPhysicalModel(const char *RESTRICT filePath, PhysicalModel &physicalModel) NOEXCEPT;
+	static const PhysicalMaterial& GetPhysicalMaterial(const ResourceID resourceID) { return physicalMaterials[resourceID]; }
 
 	/*
-	*	Given a file path, load a terrain material.
+	*	Given a resource ID, return the corresponding physical model.
 	*/
-	static void LoadTerrainMaterial(const char *RESTRICT filePath, TerrainMaterial &terrainMaterial) NOEXCEPT;
+	static const PhysicalModel& GetPhysicalModel(const ResourceID resourceID) { return physicalModels[resourceID]; }
 
 	/*
-	*	Given a file path, load a water material.
+	*	Given a resource ID, return the corresponding terrain material.
 	*/
-	static void LoadWaterMaterial(const char *RESTRICT filePath, WaterMaterial &waterMaterial) NOEXCEPT;
+	static const TerrainMaterial& GetTerrainMaterial(const ResourceID resourceID) { return terrainMaterials[resourceID]; }
+
+	/*
+	*	Given a resource ID, return the corresponding water material.
+	*/
+	static const WaterMaterial& GetWaterMaterial(const ResourceID resourceID) { return waterMaterials[resourceID]; }
 
 private:
 
-	//All the physical materials.
-	Map<ResourceID, PhysicalMaterial> physicalMaterials;
+	//Container for all physical materials.
+	static Map<ResourceID, PhysicalMaterial> physicalMaterials;
+
+	//Container for all physical models.
+	static Map<ResourceID, PhysicalModel> physicalModels;
+
+	//Container for all terrain materials.
+	static Map<ResourceID, TerrainMaterial> terrainMaterials;
+
+	//Container for all water materials.
+	static Map<ResourceID, WaterMaterial> waterMaterials;
+
+	/*
+	*	Given a file, load a physical material.
+	*/
+	static void LoadPhysicalMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a physical model.
+	*/
+	static void LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a terrain material.
+	*/
+	static void LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a water material.
+	*/
+	static void LoadWaterMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 };

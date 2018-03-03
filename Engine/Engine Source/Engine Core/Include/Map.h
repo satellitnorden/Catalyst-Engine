@@ -23,13 +23,34 @@ public:
 	}
 
 	/*
+	*	Subsript operator overload, non-const.
+	*/
+	ObjectType& operator[](const KeyType key)
+	{
+		//First, see if the object exists in the map.
+		if (ObjectType *RESTRICT object{ Find(key) })
+		{
+			//If the object existed, just return it.
+			return *object;
+		}
+
+		//Else, create a new object and return it.
+		else
+		{
+			EmplaceSlow(key, ObjectType());
+
+			return *Find(key);
+		}
+	}
+
+	/*
 	*	Finds the object associated with specific key and returns a pointer to that object. Returns nullptr if it can't find the object, const.
 	*/
-	const ObjectType* RESTRICT Find(const KeyType &keyToFind) const NOEXCEPT
+	const ObjectType* RESTRICT Find(const KeyType key) const NOEXCEPT
 	{
 		for (auto &mapEntry : map)
 		{
-			if (mapEntry.GetFirstValue() == keyToFind)
+			if (mapEntry.GetFirstValue() == key)
 			{
 				return &mapEntry.GetSecondValue();
 			}
@@ -41,11 +62,11 @@ public:
 	/*
 	*	Finds the object associated with specific key and returns a pointer to that object. Returns nullptr if it can't find the object, non-const.
 	*/
-	ObjectType* RESTRICT Find(const KeyType &keyToFind) NOEXCEPT
+	ObjectType* RESTRICT Find(const KeyType key) NOEXCEPT
 	{
 		for (auto &mapEntry : map)
 		{
-			if (mapEntry.GetFirstValue() == keyToFind)
+			if (mapEntry.GetFirstValue() == key)
 			{
 				return &mapEntry.GetSecondValue();
 			}
@@ -57,7 +78,7 @@ public:
 	/*
 	*	Emplaces a new pair into the map.
 	*/
-	void EmplaceSlow(const KeyType &newKey, const ObjectType &newObject)
+	void EmplaceSlow(const KeyType newKey, const ObjectType &newObject)
 	{
 		map.EmplaceSlow(newKey, newObject);
 	}
