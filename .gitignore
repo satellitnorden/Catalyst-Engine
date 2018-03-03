@@ -7,5 +7,6 @@ Game/Clairvoyant/Visual Studio Solution/Clairvoyant/x64/*
 Game/Clairvoyant/Visual Studio Solution/Clairvoyant/Clairvoyant/x64/*
 
 *.cpm
+*.crc
 *.ctm
 *.cwm

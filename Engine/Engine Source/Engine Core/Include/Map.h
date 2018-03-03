@@ -25,7 +25,7 @@ public:
 	/*
 	*	Finds the object associated with specific key and returns a pointer to that object. Returns nullptr if it can't find the object, const.
 	*/
-	RESTRICTED const ObjectType* Find(const KeyType &keyToFind) const NOEXCEPT
+	const ObjectType* RESTRICT Find(const KeyType &keyToFind) const NOEXCEPT
 	{
 		for (auto &mapEntry : map)
 		{
@@ -41,7 +41,7 @@ public:
 	/*
 	*	Finds the object associated with specific key and returns a pointer to that object. Returns nullptr if it can't find the object, non-const.
 	*/
-	RESTRICTED ObjectType* Find(const KeyType &keyToFind) NOEXCEPT
+	ObjectType* RESTRICT Find(const KeyType &keyToFind) NOEXCEPT
 	{
 		for (auto &mapEntry : map)
 		{

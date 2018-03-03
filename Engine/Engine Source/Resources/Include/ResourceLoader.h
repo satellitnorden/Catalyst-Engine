@@ -3,6 +3,9 @@
 //Engine core.
 #include <EngineCore.h>
 
+//Resources.
+#include <ResourcesCore.h>
+
 //Forward declarations.
 class PhysicalMaterial;
 class PhysicalModel;
@@ -33,5 +36,10 @@ public:
 	*	Given a file path, load a water material.
 	*/
 	static void LoadWaterMaterial(const char *RESTRICT filePath, WaterMaterial &waterMaterial) NOEXCEPT;
+
+private:
+
+	//All the physical materials.
+	Map<ResourceID, PhysicalMaterial> physicalMaterials;
 
 };

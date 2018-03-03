@@ -38,9 +38,19 @@ public:
 	*/
 	BinaryFile(const char *RESTRICT filePath) NOEXCEPT
 		:
-		fileStream(filePath, std::ios::in | std::ios::binary)
+		fileStream(filePath, std::ios::in | std::ios::binary | std::ios::ate)
 	{
+		//Save the size.
+		size = static_cast<uint64>(fileStream.tellg());
+		fileStream.seekg(0);
+	}
 
+	/*
+	*	Returns the size of the binary file, in bytes.
+	*/
+	uint64 Size() const
+	{
+		return size;
 	}
 
 	/*
@@ -63,6 +73,9 @@ private:
 
 	//The underlying file stream.
 	std::ifstream fileStream;
+
+	//The size of the file stream.
+	uint64 size;
 
 };
 

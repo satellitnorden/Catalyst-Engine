@@ -4,6 +4,7 @@
 //Resource creator.
 #include <PhysicalMaterialCreator.h>
 #include <PhysicalModelCreator.h>
+#include <ResourceCollectionCreator.h>
 #include <TerrainMaterialCreator.h>
 #include <WaterMaterialCreator.h>
 
@@ -33,6 +34,11 @@ int main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 	else if (strcmp(arguments[1], "WaterMaterial") == 0)
 	{
 		WaterMaterialCreator::CreateWaterMaterial(argumentCount, arguments);
+	}
+
+	else if (strcmp(arguments[1], "ResourceCollection") == 0)
+	{
+		ResourceCollectionCreator::CreateResourceCollection(argumentCount, arguments);
 	}
 
 	return EXIT_SUCCESS;
