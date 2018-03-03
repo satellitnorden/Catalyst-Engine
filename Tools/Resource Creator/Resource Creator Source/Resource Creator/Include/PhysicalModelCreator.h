@@ -38,13 +38,17 @@ public:
 		constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::PhysicalModel) };
 		file.Write(&resourceType, sizeof(ResourceType));
 
+		//Write the resource ID to the file.
+		const uint64 resourceID{ std::strtoull(arguments[3], nullptr, 0) };
+		file.Write(&resourceID, sizeof(uint64));
+
 		//Load the model.
 		DynamicArray<PhysicalVertex> vertices;
 		DynamicArray<uint32> indices;
 		float extent{ 0.0f };
 
 		Assimp::Importer modelImporter;
-		const aiScene *modelScene = modelImporter.ReadFile(arguments[3], aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+		const aiScene *modelScene = modelImporter.ReadFile(arguments[4], aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
 		ProcessNode(modelScene->mRootNode, modelScene, vertices, indices, extent);
 

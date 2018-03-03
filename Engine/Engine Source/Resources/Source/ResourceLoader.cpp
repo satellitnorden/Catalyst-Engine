@@ -37,6 +37,10 @@ void ResourceLoader::LoadPhysicalMaterial(const char *RESTRICT filePath, Physica
 	}
 #endif
 
+	//Read the resource ID.
+	uint64 resourceID;
+	file.Read(&resourceID, sizeof(uint64));
+
 	//Read the number of mipmap levels.
 	file.Read(&physicalMaterialData.mipmapLevels, sizeof(uint8));
 
@@ -107,6 +111,10 @@ void ResourceLoader::LoadPhysicalModel(const char *RESTRICT filePath, PhysicalMo
 	}
 #endif
 
+	//Read the resource ID.
+	uint64 resourceID;
+	file.Read(&resourceID, sizeof(uint64));
+
 	//Read the extent of the physical model.
 	file.Read(&physicalModelData.extent, sizeof(float));
 
@@ -155,6 +163,10 @@ void ResourceLoader::LoadTerrainMaterial(const char *RESTRICT filePath, TerrainM
 	}
 #endif
 
+	//Read the resource ID.
+	uint64 resourceID;
+	file.Read(&resourceID, sizeof(uint64));
+
 	//Read the number of mipmap levels.
 	file.Read(&terrainMaterialData.mipmapLevels, sizeof(uint8));
 
@@ -201,6 +213,10 @@ void ResourceLoader::LoadWaterMaterial(const char *RESTRICT filePath, WaterMater
 		BREAKPOINT;
 	}
 #endif
+
+	//Read the resource ID.
+	uint64 resourceID;
+	file.Read(&resourceID, sizeof(uint64));
 
 	//Read the number of mipmap levels.
 	file.Read(&waterMaterialData.mipmapLevels, sizeof(uint8));

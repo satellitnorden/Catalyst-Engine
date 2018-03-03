@@ -31,15 +31,19 @@ public:
 		constexpr ResourceType resourceType{ ResourceType::PhysicalMaterial };
 		file.Write(&resourceType, sizeof(ResourceType));
 
+		//Write the resource ID to the file.
+		const uint64 resourceID{ std::strtoull(arguments[3], nullptr, 0) };
+		file.Write(&resourceID, sizeof(uint64));
+
 		//Determine how many mipmap levels that should be generated.
-		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[3] - '0') };
+		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[4] - '0') };
 
 		//Write the number of mipmap levels to the file.
 		file.Write(&numberOfMipmapLevels, sizeof(uint8));
 
 		//Load the albedo.
 		int32 width, height, numberOfChannels;
-		byte *RESTRICT data{ stbi_load(arguments[4], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+		byte *RESTRICT data{ stbi_load(arguments[5], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 		//Write the width and height of the albedo into the file, to be read into uint32's.
 		file.Write(&width, sizeof(int32));
@@ -72,7 +76,7 @@ public:
 		stbi_image_free(data);
 
 		//Load the normal map.
-		data = stbi_load(arguments[5], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+		data = stbi_load(arguments[6], &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 		//Write the layer albedo to the file, to be read into byte's.
 		for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
@@ -99,10 +103,10 @@ public:
 		stbi_image_free(data);
 
 		//Load the roughness, metallic, ambient occlusion and displacement data.
-		byte *RESTRICT roughnessData = stbi_load(arguments[6], &width, &height, &numberOfChannels, 0);
-		byte *RESTRICT metallicData = stbi_load(arguments[7], &width, &height, &numberOfChannels, 0);
-		byte *RESTRICT ambientOcclusionData = stbi_load(arguments[8], &width, &height, &numberOfChannels, 0);
-		byte *RESTRICT displacementData = stbi_load(arguments[9], &width, &height, &numberOfChannels, 0);
+		byte *RESTRICT roughnessData = stbi_load(arguments[7], &width, &height, &numberOfChannels, 0);
+		byte *RESTRICT metallicData = stbi_load(arguments[8], &width, &height, &numberOfChannels, 0);
+		byte *RESTRICT ambientOcclusionData = stbi_load(arguments[9], &width, &height, &numberOfChannels, 0);
+		byte *RESTRICT displacementData = stbi_load(arguments[10], &width, &height, &numberOfChannels, 0);
 
 		//Write the roughness, metallic, ambient occlusion and displacement data to the file.
 		constexpr byte defaultRoughness{ 255 };

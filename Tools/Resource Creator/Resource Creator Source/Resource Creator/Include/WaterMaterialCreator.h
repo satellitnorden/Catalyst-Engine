@@ -31,15 +31,19 @@ public:
 		constexpr ResourceType resourceType{ ResourceType::WaterMaterial };
 		file.Write(&resourceType, sizeof(ResourceType));
 
+		//Write the resource ID to the file.
+		const uint64 resourceID{ std::strtoull(arguments[3], nullptr, 0) };
+		file.Write(&resourceID, sizeof(uint64));
+
 		//Determine how many mipmap levels that should be generated.
-		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[3] - '0') };
+		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[4] - '0') };
 
 		//Write the number of mipmap levels to the file.
 		file.Write(&numberOfMipmapLevels, sizeof(uint8));
 
 		//Load the normal map.
 		int32 width, height, numberOfChannels;
-		byte *RESTRICT data{ stbi_load(arguments[4], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+		byte *RESTRICT data{ stbi_load(arguments[5], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 		//Write the width and height of the normal map into the file.
 		file.Write(&width, sizeof(int32));

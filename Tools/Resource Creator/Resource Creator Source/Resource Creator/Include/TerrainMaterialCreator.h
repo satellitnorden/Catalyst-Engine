@@ -31,9 +31,13 @@ namespace TerrainMaterialCreator
 		//Write the resource type to the file.
 		constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::TerrainMaterial) };
 		terrainMaterialFile.Write(&resourceType, sizeof(ResourceType));
+	
+		//Write the resource ID to the file.
+		const uint64 resourceID{ std::strtoull(arguments[3], nullptr, 0) };
+		terrainMaterialFile.Write(&resourceID, sizeof(uint64));
 
 		//Determine how many mipmap levels that should be generated.
-		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[3] - '0') };
+		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[4] - '0') };
 
 		//Write the number of mipmap levels to the file, to be read into a uint8.
 		terrainMaterialFile.Write(&numberOfMipmapLevels, sizeof(uint8));
@@ -42,7 +46,7 @@ namespace TerrainMaterialCreator
 		{
 			//Load the layer albedo.
 			int32 width, height, numberOfChannels;
-			byte *data{ stbi_load(arguments[4 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+			byte *data{ stbi_load(arguments[5 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 			//Write the width and height of the layer into the file, to be read into uint32's.
 			terrainMaterialFile.Write(&width, sizeof(int32));
@@ -75,7 +79,7 @@ namespace TerrainMaterialCreator
 			stbi_image_free(data);
 
 			//Load the layer normal map.
-			data = stbi_load(arguments[5 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+			data = stbi_load(arguments[6 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 			//Write the layer albedo to the file, to be read into byte's.
 			for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
@@ -102,10 +106,10 @@ namespace TerrainMaterialCreator
 			stbi_image_free(data);
 
 			//Load the roughness, metallic, ambient occlusion and displacement data.
-			unsigned char *roughnessData = stbi_load(arguments[6 + (6 * i)], &width, &height, &numberOfChannels, 0);
-			unsigned char *metallicData = stbi_load(arguments[7 + (6 * i)], &width, &height, &numberOfChannels, 0);
-			unsigned char *ambientOcclusionData = stbi_load(arguments[8 + (6 * i)], &width, &height, &numberOfChannels, 0);
-			unsigned char *displacementData = stbi_load(arguments[9 + (6 * i)], &width, &height, &numberOfChannels, 0);
+			unsigned char *roughnessData = stbi_load(arguments[7 + (6 * i)], &width, &height, &numberOfChannels, 0);
+			unsigned char *metallicData = stbi_load(arguments[8 + (6 * i)], &width, &height, &numberOfChannels, 0);
+			unsigned char *ambientOcclusionData = stbi_load(arguments[9 + (6 * i)], &width, &height, &numberOfChannels, 0);
+			unsigned char *displacementData = stbi_load(arguments[10 + (6 * i)], &width, &height, &numberOfChannels, 0);
 
 			//Write the roughness, metallic, ambient occlusion and displacement data to the file.
 			unsigned char defaultRoughness{ 255 };
