@@ -1037,7 +1037,7 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 	currentDynamicUniformDataDescriptorSet = frameData.GetCurrentDynamicUniformDataDescriptorSet();
 
 	//Wait for the current fence to finish.
-	CATALYST_BENCHMARK_SECTION_AVERAGE(frameData.GetCurrentFence()->WaitFor());
+	frameData.GetCurrentFence()->WaitFor();
 
 	//Reset the current fence.
 	frameData.GetCurrentFence()->Reset();

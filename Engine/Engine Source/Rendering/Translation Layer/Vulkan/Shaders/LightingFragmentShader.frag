@@ -50,6 +50,8 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 #define DIRECTIONAL_LIGHT_SCREEN_SHADE_SHADOWS_SAMPLES 250
 #define PI 3.141592f
 
+layout (early_fragment_tests) in;
+
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 

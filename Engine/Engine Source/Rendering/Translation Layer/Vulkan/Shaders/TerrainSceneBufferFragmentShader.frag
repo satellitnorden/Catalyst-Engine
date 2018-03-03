@@ -60,6 +60,8 @@ layout (std140, set = 1, binding = 1) uniform TerrainUniformData
     vec3 terrainPosition;
 };
 
+layout (early_fragment_tests) in;
+
 //In parameters.
 layout (location = 0) in vec2 fragmentHeightMapTextureCoordinate;
 layout (location = 1) in vec2 fragmentTextureCoordinate;

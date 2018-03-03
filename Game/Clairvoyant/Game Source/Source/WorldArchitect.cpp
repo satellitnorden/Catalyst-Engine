@@ -196,6 +196,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
 	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 2.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
+	/*
 	//Load the water material.
 	WaterMaterial waterMaterial;
 	ResourceLoader::LoadWaterMaterial(CLAIRVOYANT_MATERIALS_FOLDER "DefaultWaterMaterial.cwm", waterMaterial);
@@ -204,7 +205,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 	WaterEntity *RESTRICT water = EntitySystem::Instance->CreateEntity<WaterEntity>();
 	water->Initialize(512, waterMaterial, WaterUniformData(1.0f, TERRAIN_SIZE, Vector3(0.0f, TERRAIN_HEIGHT * WATER_HEIGHT, 0.0f)));
 
-	/*
 	//Create the stone model.
 	PhysicalModel stoneModel;
 	ResourceLoader::LoadPhysicalModel(GAME_MODELS_FOLDER "StoneModel.cpm", stoneModel);

@@ -42,6 +42,8 @@ int main() NOEXCEPT
 
 	while (!shouldTerminate)
 	{
+		CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game Loop",
+
 		//Calculate the delta time.
 		const float deltaTime{ GetDeltaTime() };
 
@@ -50,6 +52,8 @@ int main() NOEXCEPT
 
 		//Update the game system.
 		ClairvoyantGameSystem::Instance->UpdateSystemSynchronous(deltaTime);
+
+		);
 	}
 
 	//Release the game system.

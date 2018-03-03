@@ -46,6 +46,8 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
 };
 
+layout (early_fragment_tests) in;
+
 //In parameters.
 layout (location = 0) in vec3 fragmentWorldPosition;
 layout (location = 1) in mat3 fragmentTangentSpaceMatrix;
