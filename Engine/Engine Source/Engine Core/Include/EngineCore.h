@@ -84,3 +84,6 @@ class UniquePointer;
 #include <Pair.h>
 #include <StaticArray.h>
 #include <UniquePointer.h>
+
+//The Catalyst project information.
+#include <CatalystProjectInformation.h>

@@ -129,6 +129,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\WaterRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\BinaryFile.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\BitField.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\CatalystProjectInformation.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\CoreDefines.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\CoreMacros.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\CoreTypeAliases.h" />

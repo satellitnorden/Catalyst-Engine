@@ -24,7 +24,7 @@ public:
 	/*
 	*	Initializes the engine system.
 	*/
-	void InitializeSystem() NOEXCEPT;
+	void InitializeSystem(const CatalystProjectInformation &initialProjectInformation) NOEXCEPT;
 
 	/*
 	*	Updates the engine system synchronously. Returns whether or not the game should terminate.
@@ -35,6 +35,11 @@ public:
 	*	Releases the engine system.
 	*/
 	void ReleaseSystem() NOEXCEPT;
+
+	/*
+	*	Returns the project information.
+	*/
+	const CatalystProjectInformation& GetProjectInformation() const { return projectInformation; }
 
 	/*
 	*	Returns whether or not the game should terminate.
@@ -52,6 +57,9 @@ public:
 	float GetTotalGameTime() const NOEXCEPT { return totalGameTime; }
 
 private:
+
+	//The project information.
+	CatalystProjectInformation projectInformation;
 
 	//Denotes whether or not the game should terminate.
 	std::atomic<bool> shouldTerminate{ false };

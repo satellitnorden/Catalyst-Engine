@@ -30,8 +30,11 @@ EngineSystem::~EngineSystem() NOEXCEPT
 /*
 *	Initializes the engine system.
 */
-void EngineSystem::InitializeSystem() NOEXCEPT
+void EngineSystem::InitializeSystem(const CatalystProjectInformation &initialProjectInformation) NOEXCEPT
 {
+	//Set the project information.
+	projectInformation = initialProjectInformation;
+
 	//Initialize all systems.
 	RenderingSystem::Instance->InitializeSystem();
 	QuestSystem::Instance->InitializeSystem();

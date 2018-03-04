@@ -32,7 +32,7 @@ float GetDeltaTime() NOEXCEPT
 int main() NOEXCEPT
 {
 	//Initialize the engine system.
-	EngineSystem::Instance->InitializeSystem();
+	EngineSystem::Instance->InitializeSystem(CatalystProjectInformation("Clairvoyant"));
 
 	//Initialize the game system.
 	ClairvoyantGameSystem::Instance->InitializeSystem();

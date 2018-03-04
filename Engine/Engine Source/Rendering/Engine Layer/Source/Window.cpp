@@ -1,6 +1,9 @@
 //Header file.
 #include <Window.h>
 
+//Systems.
+#include <EngineSystem.h>
+
 //Third party libraries.
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -44,7 +47,7 @@ void Window::Initialize() NOEXCEPT
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	//Create the window!
-	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Temporary Project Name", nullptr, nullptr);
+	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, EngineSystem::Instance->GetProjectInformation().projectName.CString(), nullptr, nullptr);
 }
 
 /*
