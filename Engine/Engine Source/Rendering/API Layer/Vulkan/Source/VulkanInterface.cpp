@@ -85,10 +85,10 @@ void VulkanInterface::PostUpdate(const VulkanSemaphore *const RESTRICT renderFin
 void VulkanInterface::Release() NOEXCEPT
 {
 	//Wait for all queues to finish.
-	queues[static_cast<uint8>(Queue::Graphics)].WaitIdle();
+	queues[INDEX(Queue::Graphics)].WaitIdle();
 #if !RENDERDOC_DEBUGGING
-	queues[static_cast<uint8>(Queue::Present)].WaitIdle();
-	queues[static_cast<uint8>(Queue::Transfer)].WaitIdle();
+	queues[INDEX(Queue::Present)].WaitIdle();
+	queues[INDEX(Queue::Transfer)].WaitIdle();
 #endif
 
 	//Release all Vulkan 2D textures.

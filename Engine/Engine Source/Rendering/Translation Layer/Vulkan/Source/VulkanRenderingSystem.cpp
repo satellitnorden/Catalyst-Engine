@@ -1239,11 +1239,6 @@ void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 */
 void VulkanRenderingSystem::EndFrame() NOEXCEPT
 {
-	//Set up the proper parameters.
-	static const DynamicArray<VkSemaphore> waitSemaphores{ semaphores[INDEX(Semaphore::ImageAvailable)]->Get() };
-	static const VkPipelineStageFlags waitStages{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-	static const DynamicArray<VkSemaphore> signalSemaphores{ semaphores[INDEX(Semaphore::RenderFinished)]->Get() };
-
 	//End the current command buffer.
 	currentCommandBuffer->End();
 
@@ -1251,7 +1246,7 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::RenderingSystemUpdateDynamicUniformData);
 
 	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue().Submit(*currentCommandBuffer, waitSemaphores, waitStages, signalSemaphores, frameData.GetCurrentFence()->Get());
+	VulkanInterface::Instance->GetGraphicsQueue().Submit(*currentCommandBuffer, 1, semaphores[INDEX(Semaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, semaphores[INDEX(Semaphore::RenderFinished)], frameData.GetCurrentFence()->Get());
 }
 
 /*

@@ -42,7 +42,7 @@ public:
 		copyCommandBuffer.End();
 
 		//Submit the command buffer to the transfer queue.
-		VulkanInterface::Instance->GetTransferQueue().Submit(copyCommandBuffer);
+		VulkanInterface::Instance->GetTransferQueue().Submit(copyCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
 
 		//Wait idle for the transfer queue to finish.
 		VulkanInterface::Instance->GetTransferQueue().WaitIdle();
@@ -95,7 +95,7 @@ public:
 		transferCommandBuffer.End();
 
 		//Submit the command buffer.
-		VulkanInterface::Instance->GetTransferQueue().Submit(transferCommandBuffer);
+		VulkanInterface::Instance->GetTransferQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
 
 		//Wait for the transfer operation to finish.
 		VulkanInterface::Instance->GetTransferQueue().WaitIdle();
@@ -327,7 +327,7 @@ public:
 		transitionCommandBuffer.End();
 
 		//Submit the command buffer.
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(transitionCommandBuffer);
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(transitionCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
 
 		//Wait for the transition operation to finish.
 		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();

@@ -8,6 +8,7 @@
 
 //Forward declarations.
 class VulkanCommandBuffer;
+class VulkanSemaphore;
 
 class VulkanQueue final
 {
@@ -37,7 +38,7 @@ public:
 	/*
 	*	Submits a command buffer to this Vulkan queue.
 	*/
-	void Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &waitSemaphores = DynamicArray<VkSemaphore>(), const VkPipelineStageFlags &waitStages = 0, const DynamicArray<VkSemaphore> &signalSemaphores = DynamicArray<VkSemaphore>(), const VkFence fence = VK_NULL_HANDLE) const NOEXCEPT;
+	void Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const uint32 waitSemaphoreCount, const VulkanSemaphore *RESTRICT waitSemaphores, const VkPipelineStageFlags waitStages, const uint32 signalSemaphoreCount, const VulkanSemaphore *RESTRICT signalSemaphores, const VkFence fence) const NOEXCEPT;
 
 	/*
 	*	Waits idle for this Vulkan queue.
@@ -52,11 +53,6 @@ private:
 	/*
 	*	Creates a submit info for a single command buffer.
 	*/
-	void CreateSubmitInfo(VkSubmitInfo &submitInfo, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const VulkanCommandBuffer &vulkanCommandBuffer, const DynamicArray<VkSemaphore> &signalSemaphores) const NOEXCEPT;
-
-	/*
-	*	Creates a submit info for multiple command buffers.
-	*/
-	void CreateSubmitInfo(VkSubmitInfo &submitInfo, const DynamicArray<VkSemaphore> &waitSemaphores, const VkPipelineStageFlags &waitStages, const DynamicArray<VulkanCommandBuffer> &vulkanCommandBuffers, const DynamicArray<VkSemaphore> &signalSemaphores) const NOEXCEPT;
+	void CreateSubmitInfo(VkSubmitInfo &submitInfo, const uint32 waitSemaphoreCount, const VulkanSemaphore *RESTRICT waitSemaphores, const VkPipelineStageFlags &waitStages, const VulkanCommandBuffer &vulkanCommandBuffer, const uint32 signalSemaphoreCount, const VulkanSemaphore *RESTRICT signalSemaphores) const NOEXCEPT;
 
 };

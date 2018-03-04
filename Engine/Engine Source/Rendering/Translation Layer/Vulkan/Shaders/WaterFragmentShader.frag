@@ -71,7 +71,7 @@ vec3 CalculateReflection()
     vec3 viewDirection = fragmentWorldPosition - cameraWorldPosition;
     normalDirection = texture(normalMapTexture, fragmentTextureCoordinate + (vec2(totalGameTime, totalGameTime) * 0.025f)).xzy * 2.0f - 1.0f;
     vec3 compareVector = cameraWorldPosition.y >= 0.0f ? vec3(0.0f, 1.0f, 0.0f) : vec3(0.0f, -1.0f, 0.0f);
-    normalDirection = mix(normalDirection, compareVector, 0.95f);
+    normalDirection = mix(normalDirection, compareVector, 0.75f);
 
     vec3 reflectionDirection = reflect(viewDirection, normalDirection);
 
