@@ -39,7 +39,6 @@ public:
 
 	//Point light data.
 	uint64 numberOfPointLights;
-	uint32 padding2{ 0 };
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightAttenuationDistances;
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightIntensities;
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightColors;
