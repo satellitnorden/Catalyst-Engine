@@ -46,7 +46,7 @@ public:
 
 	//Spot light data.
 	uint64 numberOfSpotLights;
-	uint64 padding3{ 0 };
+	uint64 padding2{ 0 };
 	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightAttenuationDistances;
 	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightIntensities;
 	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightInnerCutoffAngles;
