@@ -27,6 +27,9 @@ public:
 	//The color attachments.
 	DynamicArray<DynamicArray<VkImageView>> colorAttachments{};
 
+	//The cull mode.
+	VkCullModeFlagBits cullMode;
+
 	//The final layout that depth attachments will be in when a render pass instance begins.
 	VkImageLayout depthAttachmentFinalLayout;
 

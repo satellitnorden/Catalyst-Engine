@@ -62,7 +62,7 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 
 	//Create the pipeline rasterization state create info.
 	VkPipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo;
-	CreatePipelineRasterizationStateCreateInfo(pipelineRasterizationStateCreateInfo);
+	CreatePipelineRasterizationStateCreateInfo(pipelineRasterizationStateCreateInfo, vulkanPipelineCreationParameters);
 
 	//Create the pipeline multisample state create info.
 	VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo;
@@ -191,7 +191,7 @@ void VulkanPipeline::CreatePipelineViewportStateCreateInfo(VkPipelineViewportSta
 /*
 *	Creates a pipeline rasterization state create info.
 */
-void VulkanPipeline::CreatePipelineRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo) const NOEXCEPT
+void VulkanPipeline::CreatePipelineRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
 	pipelineRasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	pipelineRasterizationStateCreateInfo.pNext = nullptr;
@@ -199,7 +199,7 @@ void VulkanPipeline::CreatePipelineRasterizationStateCreateInfo(VkPipelineRaster
 	pipelineRasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;
-	pipelineRasterizationStateCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;
+	pipelineRasterizationStateCreateInfo.cullMode = vulkanPipelineCreationParameters.cullMode;
 	pipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	pipelineRasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.depthBiasConstantFactor = 0.0f;

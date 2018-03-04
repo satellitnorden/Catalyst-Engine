@@ -109,10 +109,10 @@ void RenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity &stati
 /*
 *	Initializes a water entity.
 */
-void RenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const uint32 resolution, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT
+void RenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT
 {
 	//Initialize the water entity via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->InitializeWaterEntity(waterEntity, resolution, waterMaterial, waterUniformData);
+	VulkanRenderingSystem::Instance->InitializeWaterEntity(waterEntity, waterMaterial, waterUniformData);
 }
 
 /*

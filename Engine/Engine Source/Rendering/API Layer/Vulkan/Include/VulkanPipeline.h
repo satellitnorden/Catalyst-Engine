@@ -93,7 +93,7 @@ private:
 	/*
 	*	Creates a pipeline rasterization state create info.
 	*/
-	void CreatePipelineRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo) const NOEXCEPT;
+	void CreatePipelineRasterizationStateCreateInfo(VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
 
 	/*
 	*	Creates a pipeline multisample state create info.

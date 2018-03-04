@@ -63,6 +63,7 @@ layout (set = 1, binding = 4) uniform sampler2D roughnessMetallicAmbientOcclusio
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
+layout (location = 1) out vec4 waterFragmentColor;
 
 //Globals.
 float fragmentDepth;
@@ -358,4 +359,5 @@ void main()
 
     //Set the final fragment color.
     fragmentColor = vec4(finalFragment, 1.0f);
+    waterFragmentColor = vec4(finalFragment, 1.0f);
 }

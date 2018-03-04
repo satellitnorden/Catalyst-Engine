@@ -56,6 +56,7 @@ layout (set = 1, binding = 1) uniform samplerCube cubeMapTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
+layout (location = 1) out vec4 waterFragmentColor;
 
 void main()
 {
@@ -67,4 +68,5 @@ void main()
 
     //Set the fragment color.
     fragmentColor = vec4(cubeMapTextureSampler, 1.0f);
+    waterFragmentColor = vec4(cubeMapTextureSampler, 1.0f);
 }

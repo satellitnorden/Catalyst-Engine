@@ -364,18 +364,8 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 /*
 *	Initializes a water entity.
 */
-void VulkanRenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const uint32 resolution, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT
+void VulkanRenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT
 {
-	//Generate the terrain plane vertices and indices.
-	DynamicArray<float> waterVertices;
-	DynamicArray<uint32> waterIndices;
-	RenderingUtilities::GenerateWaterPlane(resolution, waterUniformData, waterVertices, waterIndices);
-
-	//Create the vertex and index buffer.
-	const void *RESTRICT terrainData[]{ waterVertices.Data(), waterIndices.Data() };
-	const VkDeviceSize terrainDataSizes[]{ sizeof(float) * waterVertices.Size(), sizeof(uint32) * waterIndices.Size() };
-	VulkanBuffer *RESTRICT terrainVertexBuffer{ VulkanInterface::Instance->CreateBuffer(terrainData, terrainDataSizes, 2) };
-
 	//Fill the terrain entity components with the relevant data.
 	WaterComponent &waterComponent{ ComponentManager::GetWaterComponents()[waterEntity->GetComponentsIndex()] };
 	WaterRenderComponent &waterRenderComponent{ ComponentManager::GetWaterRenderComponents()[waterEntity->GetComponentsIndex()] };
@@ -387,16 +377,15 @@ void VulkanRenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTR
 	//Create the descriptor set.
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(waterRenderComponent.descriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)]);
 
-	DynamicArray<VkWriteDescriptorSet, 2> writeDescriptorSets;
-
-	writeDescriptorSets.EmplaceFast(static_cast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 1));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(waterMaterial.normalMapTexture)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 2));
+	StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
+	{
+		static_cast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 1),
+		static_cast<const VulkanRenderTarget *RESTRICT>(renderTargets[INDEX(RenderTarget::WaterScene)])->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 2),
+		static_cast<const Vulkan2DTexture *RESTRICT>(waterMaterial.normalMapTexture)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 3),
+		skyBoxTexture->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 4)
+	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-
-	waterRenderComponent.vertexAndIndexBuffer = terrainVertexBuffer;
-	waterRenderComponent.indexBufferOffset = static_cast<uint32>(sizeof(float) * waterVertices.Size());
-	waterRenderComponent.indexCount = static_cast<uint32>(waterIndices.Size());
 }
 
 /*
@@ -544,10 +533,11 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 	depthBuffers[DepthBuffer::SceneBufferDepthBuffer] = VulkanInterface::Instance->CreateDepthBuffer(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Initialize all render targets.
-	renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
-	renderTargets[RenderTarget::SceneBufferNormalDirectionDepthRenderTarget] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
-	renderTargets[RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
-	renderTargets[RenderTarget::SceneRenderTarget] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	renderTargets[INDEX(RenderTarget::Scene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	renderTargets[INDEX(RenderTarget::WaterScene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 }
 
 /*
@@ -633,15 +623,6 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 	descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)].Initialize(6, lightingDescriptorSetLayoutBindings.Data());
 
-	//Initialize the water descriptor set layout.
-	constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> waterDescriptorSetLayoutBindings
-	{
-		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT),
-		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
-	};
-
-	descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)].Initialize(2, waterDescriptorSetLayoutBindings.Data());
-
 	//Initialize the cube map descriptor set layout.
 	constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> cubeMapDescriptorSetLayoutBindings
 	{
@@ -649,6 +630,17 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	};
 
 	descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)].Initialize(1, cubeMapDescriptorSetLayoutBindings.Data());
+
+	//Initialize the water descriptor set layout.
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> waterDescriptorSetLayoutBindings
+	{
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+	};
+
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)].Initialize(4, waterDescriptorSetLayoutBindings.Data());
 
 	//Initialize the post processing descriptor set layout.
 	constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> postProcessingDescriptorSetLayoutBindings
@@ -713,14 +705,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	const auto waterFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "WaterFragmentShader.spv");
 	shaderModules[INDEX(ShaderModule::WaterFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(waterFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
-	//Initialize the water tessellation control shader module.
-	const auto waterTessellationControlShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "WaterTessellationControlShader.spv");
-	shaderModules[INDEX(ShaderModule::WaterTessellationControlShader)] = VulkanInterface::Instance->CreateShaderModule(waterTessellationControlShaderByteCode, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
-
-	//Initialize the water tessellation evaluation shader module.
-	const auto waterTessellationEvaluationShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "WaterTessellationEvaluationShader.spv");
-	shaderModules[INDEX(ShaderModule::WaterTessellationEvaluationShader)] = VulkanInterface::Instance->CreateShaderModule(waterTessellationEvaluationShaderByteCode, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
-
 	//Initialize the water vertex shader module.
 	const auto waterVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "WaterVertexShader.spv");
 	shaderModules[INDEX(ShaderModule::WaterVertexShader)] = VulkanInterface::Instance->CreateShaderModule(waterVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
@@ -740,9 +724,10 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	terrainPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	terrainPipelineCreationParameters.colorAttachments.Resize(1);
 	terrainPipelineCreationParameters.colorAttachments[0].Reserve(3);
-	terrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget]->GetImageView());
-	terrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[RenderTarget::SceneBufferNormalDirectionDepthRenderTarget]->GetImageView());
-	terrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget]->GetImageView());
+	terrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetImageView());
+	terrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetImageView());
+	terrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetImageView());
+	terrainPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
 	terrainPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	terrainPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	terrainPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -781,9 +766,10 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	staticPhysicalPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	staticPhysicalPipelineCreationParameters.colorAttachments.Resize(1);
 	staticPhysicalPipelineCreationParameters.colorAttachments[0].Reserve(3);
-	staticPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget]->GetImageView());
-	staticPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[RenderTarget::SceneBufferNormalDirectionDepthRenderTarget]->GetImageView());
-	staticPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget]->GetImageView());
+	staticPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetImageView());
+	staticPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetImageView());
+	staticPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetImageView());
+	staticPhysicalPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
 	staticPhysicalPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	staticPhysicalPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	staticPhysicalPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -820,8 +806,10 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	lightingPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	lightingPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	lightingPipelineCreationParameters.colorAttachments.Resize(1);
-	lightingPipelineCreationParameters.colorAttachments[0].Reserve(1);
-	lightingPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[RenderTarget::SceneRenderTarget]->GetImageView());
+	lightingPipelineCreationParameters.colorAttachments[0].Reserve(2);
+	lightingPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
+	lightingPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::WaterScene)]->GetImageView());
+	lightingPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
 	lightingPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	lightingPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	lightingPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -846,45 +834,6 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 
 	pipelines[INDEX(Pipeline::Lighting)] = VulkanInterface::Instance->CreatePipeline(lightingPipelineCreationParameters);
 
-	//Create the water pipeline.
-	VulkanPipelineCreationParameters waterPipelineCreationParameters;
-
-	waterPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-	waterPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	waterPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-	waterPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	waterPipelineCreationParameters.colorAttachments.Resize(1);
-	waterPipelineCreationParameters.colorAttachments[0].Reserve(1);
-	waterPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[RenderTarget::SceneRenderTarget]->GetImageView());
-	waterPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	waterPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	waterPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-	waterPipelineCreationParameters.depthBuffers.Reserve(1);
-	waterPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
-	waterPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-	waterPipelineCreationParameters.depthTestEnable = VK_TRUE;
-	waterPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-	StaticArray<VulkanDescriptorSetLayout, 2> waterDescriptorSetLayouts
-	{
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)]
-	};
-	waterPipelineCreationParameters.descriptorSetLayoutCount = 2;
-	waterPipelineCreationParameters.descriptorSetLayouts = waterDescriptorSetLayouts.Data();
-	waterPipelineCreationParameters.pushConstantRangeCount = 0;
-	waterPipelineCreationParameters.pushConstantRanges = nullptr;
-	waterPipelineCreationParameters.shaderModules.Reserve(4);
-	waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterVertexShader)]);
-	waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterTessellationControlShader)]);
-	waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterTessellationEvaluationShader)]);
-	waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterFragmentShader)]);
-	waterPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
-	VulkanTranslationUtilities::GetTerrainVertexInputAttributeDescriptions(waterPipelineCreationParameters.vertexInputAttributeDescriptions);
-	VulkanTranslationUtilities::GetTerrainVertexInputBindingDescription(waterPipelineCreationParameters.vertexInputBindingDescription);
-	waterPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-	pipelines[INDEX(Pipeline::Water)] = VulkanInterface::Instance->CreatePipeline(waterPipelineCreationParameters);
-
 	//Create the cube map pipeline.
 	VulkanPipelineCreationParameters cubeMapPipelineCreationParameters;
 
@@ -893,8 +842,10 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	cubeMapPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	cubeMapPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	cubeMapPipelineCreationParameters.colorAttachments.Resize(1);
-	cubeMapPipelineCreationParameters.colorAttachments[0].Reserve(1);
-	cubeMapPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[RenderTarget::SceneRenderTarget]->GetImageView());
+	cubeMapPipelineCreationParameters.colorAttachments[0].Reserve(2);
+	cubeMapPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
+	cubeMapPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::WaterScene)]->GetImageView());
+	cubeMapPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
 	cubeMapPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	cubeMapPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	cubeMapPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -920,6 +871,44 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	cubeMapPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 	pipelines[INDEX(Pipeline::CubeMap)] = VulkanInterface::Instance->CreatePipeline(cubeMapPipelineCreationParameters);
+
+	//Create the water pipeline.
+	VulkanPipelineCreationParameters waterPipelineCreationParameters;
+
+	waterPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
+	waterPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	waterPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+	waterPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	waterPipelineCreationParameters.colorAttachments.Resize(1);
+	waterPipelineCreationParameters.colorAttachments[0].Reserve(1);
+	waterPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
+	waterPipelineCreationParameters.cullMode = VK_CULL_MODE_NONE;
+	waterPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	waterPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	waterPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+	waterPipelineCreationParameters.depthBuffers.Reserve(1);
+	waterPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
+	waterPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
+	waterPipelineCreationParameters.depthTestEnable = VK_TRUE;
+	waterPipelineCreationParameters.depthWriteEnable = VK_TRUE;
+	StaticArray<VulkanDescriptorSetLayout, 2> waterDescriptorSetLayouts
+	{
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)]
+	};
+	waterPipelineCreationParameters.descriptorSetLayoutCount = 2;
+	waterPipelineCreationParameters.descriptorSetLayouts = waterDescriptorSetLayouts.Data();
+	waterPipelineCreationParameters.pushConstantRangeCount = 0;
+	waterPipelineCreationParameters.pushConstantRanges = nullptr;
+	waterPipelineCreationParameters.shaderModules.Reserve(2);
+	waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterVertexShader)]);
+	waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterFragmentShader)]);
+	waterPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+	VulkanTranslationUtilities::GetTerrainVertexInputAttributeDescriptions(waterPipelineCreationParameters.vertexInputAttributeDescriptions);
+	VulkanTranslationUtilities::GetTerrainVertexInputBindingDescription(waterPipelineCreationParameters.vertexInputBindingDescription);
+	waterPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+
+	pipelines[INDEX(Pipeline::Water)] = VulkanInterface::Instance->CreatePipeline(waterPipelineCreationParameters);
 
 	//Create the post processing pipeline.
 	VulkanPipelineCreationParameters postProcessingPipelineCreationParameters;
@@ -977,10 +966,10 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 		//Update the write descriptor sets.
 		StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
 		{
-			renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 1),
-			renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 2),
-			renderTargets[RenderTarget::SceneBufferNormalDirectionDepthRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 3),
-			renderTargets[RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4)
+			renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 1),
+			renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 2),
+			renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 3),
+			renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -994,7 +983,7 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 		StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
 		{
 			uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::PostProcessingDescriptorSet], 1),
-			renderTargets[RenderTarget::SceneRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::PostProcessingDescriptorSet], 2)
+			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::PostProcessingDescriptorSet], 2)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -1184,9 +1173,7 @@ void VulkanRenderingSystem::RenderWater() NOEXCEPT
 		};
 
 		currentCommandBuffer->CommandBindDescriptorSets(*waterPipeline, 2, waterDescriptorSets.Data());
-		currentCommandBuffer->CommandBindVertexBuffers(*static_cast<const VulkanBuffer *RESTRICT>(waterRenderComponent->vertexAndIndexBuffer));
-		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanBuffer *RESTRICT>(waterRenderComponent->vertexAndIndexBuffer), waterRenderComponent->indexBufferOffset);
-		currentCommandBuffer->CommandDrawIndexed(waterRenderComponent->indexCount);
+		currentCommandBuffer->CommandDraw(4);
 	}
 
 	//End the render pass.
@@ -1276,9 +1263,9 @@ void VulkanRenderingSystem::ReinitializeDescriptorSets() NOEXCEPT
 	DynamicArray<VkWriteDescriptorSet, 4> writeDescriptorSets;
 
 	writeDescriptorSets.EmplaceFast(skyBoxTexture->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 1));
-	writeDescriptorSets.EmplaceFast(renderTargets[RenderTarget::SceneBufferAlbedoColorRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 2));
-	writeDescriptorSets.EmplaceFast(renderTargets[RenderTarget::SceneBufferNormalDirectionDepthRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 3));
-	writeDescriptorSets.EmplaceFast(renderTargets[RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4));
+	writeDescriptorSets.EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 2));
+	writeDescriptorSets.EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 3));
+	writeDescriptorSets.EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4));
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }

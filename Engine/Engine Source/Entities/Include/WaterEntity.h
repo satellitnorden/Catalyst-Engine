@@ -61,6 +61,6 @@ public:
 	/*
 	*	Initializes this water entity.
 	*/
-	void Initialize(const uint32 resolution, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) NOEXCEPT;
+	void Initialize(const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) NOEXCEPT;
 
 };

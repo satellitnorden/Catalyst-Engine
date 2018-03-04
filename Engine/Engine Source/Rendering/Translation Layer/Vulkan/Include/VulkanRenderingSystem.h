@@ -105,7 +105,7 @@ public:
 	/*
 	*	Initializes a water entity.
 	*/
-	void InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const uint32 resolution, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT;
+	void InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given the texture data.
@@ -203,19 +203,20 @@ private:
 		Terrain,
 		StaticPhysical,
 		Lighting,
-		Water,
 		CubeMap,
+		Water,
 		PostProcessing,
 		NumberOfPipelines
 	};
 
 	//Enumeration covering all render targets.
-	enum RenderTarget : uint8
+	enum class RenderTarget : uint8
 	{
-		SceneBufferAlbedoColorRenderTarget,
-		SceneBufferNormalDirectionDepthRenderTarget,
-		SceneBufferRoughnessMetallicAmbientOcclusionRenderTarget,
-		SceneRenderTarget,
+		SceneBufferAlbedoColor,
+		SceneBufferNormalDirectionDepth,
+		SceneBufferRoughnessMetallicAmbientOcclusion,
+		Scene,
+		WaterScene,
 		NumberOfRenderTargets
 	};
 
@@ -242,8 +243,6 @@ private:
 		TerrainVertexShader,
 		ViewportVertexShader,
 		WaterFragmentShader,
-		WaterTessellationControlShader,
-		WaterTessellationEvaluationShader,
 		WaterVertexShader,
 		NumberOfShaderModules
 	};
@@ -286,7 +285,7 @@ private:
 	StaticArray<VulkanDescriptorSetLayout, INDEX(DescriptorSetLayout::NumberOfDescriptorSetLayouts)> descriptorSetLayouts;
 
 	//Container for all render targets.
-	StaticArray<VulkanRenderTarget *RESTRICT, RenderTarget::NumberOfRenderTargets> renderTargets;
+	StaticArray<VulkanRenderTarget *RESTRICT, INDEX(RenderTarget::NumberOfRenderTargets)> renderTargets;
 
 	//Container for all pipelines.
 	StaticArray<VulkanPipeline *RESTRICT, INDEX(Pipeline::NumberOfPipelines)> pipelines;

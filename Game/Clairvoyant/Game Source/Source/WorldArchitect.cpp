@@ -63,9 +63,6 @@ WorldArchitect::~WorldArchitect() NOEXCEPT
 */
 void WorldArchitect::Initialize() NOEXCEPT
 {
-	//Load the resource collection file.
-	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc");
-
 	//Create the sun!
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	sun->SetIntensity(10.0f);
@@ -73,6 +70,9 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Create the sky!
 	TextureCubeMapHandle sky = RenderingSystem::Instance->CreateCubeMapTexture(CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyFront.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyBack.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyUp.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyDown.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyRight.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyLeft.png");
 	RenderingSystem::Instance->SetActiveSkyBox(sky);
+
+	//Load the resource collection file.
+	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc");
 
 	//Load the terrain material data.
 	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(2) };
@@ -203,8 +203,9 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the water.
 	WaterEntity *RESTRICT water = EntitySystem::Instance->CreateEntity<WaterEntity>();
-	water->Initialize(512, waterMaterial, WaterUniformData(1.0f, TERRAIN_SIZE, Vector3(0.0f, TERRAIN_HEIGHT * WATER_HEIGHT, 0.0f)));
+	water->Initialize(waterMaterial, WaterUniformData(TERRAIN_SIZE, 250.0f, Vector3(0.0f, 0.0f, 0.0f)));
 
+	/*
 	//Create the stone model.
 	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(1) };
 
@@ -226,6 +227,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 		stone->Initialize(stoneModel, position, rotation, scale);
 	}
+	*/
 }
 
 /*

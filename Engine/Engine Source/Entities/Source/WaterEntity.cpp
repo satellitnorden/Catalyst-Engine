@@ -97,8 +97,8 @@ void WaterEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 /*
 *	Initializes this water entity.
 */
-void WaterEntity::Initialize(const uint32 resolution, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) NOEXCEPT
+void WaterEntity::Initialize(const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) NOEXCEPT
 {
 	//Initialize this water entity via the rendering system.
-	RenderingSystem::Instance->InitializeWaterEntity(this, resolution, waterMaterial, waterUniformData);
+	RenderingSystem::Instance->InitializeWaterEntity(this, waterMaterial, waterUniformData);
 }

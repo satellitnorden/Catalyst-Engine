@@ -20,34 +20,22 @@ public:
 	}
 
 	/*
-	*	Copy constructor.
-	*/
-	WaterUniformData(const WaterUniformData &otherWaterUniformData) NOEXCEPT
-		:
-		waterHeight(otherWaterUniformData.waterHeight),
-		waterSize(otherWaterUniformData.waterSize),
-		waterWorldPosition(otherWaterUniformData.waterWorldPosition)
-	{
-
-	}
-
-	/*
 	*	Constructor taking all values as arguments.
 	*/
-	WaterUniformData(const float initialWaterHeight, const float initialWaterSize, const Vector3 &initialWaterWorldPosition) NOEXCEPT
+	WaterUniformData(const float initialWaterSize, const float initialWaterTextureScalingFactor, const Vector3 &initialWaterWorldPosition) NOEXCEPT
 		:
-		waterHeight(initialWaterHeight),
 		waterSize(initialWaterSize),
+		waterTextureScalingFactor(initialWaterTextureScalingFactor),
 		waterWorldPosition(initialWaterWorldPosition)
 	{
 
 	}
 
-	//The water height.
-	float waterHeight;
-
 	//The water size.
 	float waterSize;
+
+	//The water texture scaling factor.
+	float waterTextureScalingFactor;
 
 	//Padding.
 	Padding<8> padding;

@@ -49,26 +49,41 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //Water uniform data.
 layout (std140, set = 1, binding = 1) uniform WaterUniformData
 {
-    float waterHeight;
     float waterSize;
+    float waterTextureScalingFactor;
     float waterPadding1;
     float waterPadding2;
     vec3 waterWorldPosition;
 };
 
-//In parameters.
-layout (location = 0) in vec3 vertexPosition;
-layout (location = 1) in vec2 vertexTextureCoordinate;
+//The vertex positions.
+vec3 vertexPositions[4] = vec3[]
+(
+  vec3(-0.5f, 0.0f, -0.5f),
+  vec3(-0.5f, 0.0f, 0.5f),
+  vec3(0.5f, 0.0f, 0.5f),
+  vec3(0.5f, 0.0f, -0.5f)
+);
+
+//The texture coordinates.
+vec2 vertexTextureCoordinates[4] = vec2[]
+(
+    vec2(0.0f, 1.0f),
+    vec2(0.0f, 0.0f),
+    vec2(1.0f, 0.0f),
+    vec2(1.0f, 1.0f)
+);
 
 //Out parameters.
-layout (location = 0) out vec2 tessellationControlTextureCoordinate;
-layout (location = 1) out vec3 tessellationControlPosition;
+layout (location = 0) out vec2 fragmentTextureCoordinate;
+layout (location = 1) out vec3 fragmentWorldPosition;
 
 void main()
 {	
-	//Pass the texture coordinate to the tesselation control shader.
-	tessellationControlTextureCoordinate = vertexTextureCoordinate * (waterSize * 0.25f);
+	//Pass the texture coordinate to the fragment shader.
+	fragmentTextureCoordinate = vertexTextureCoordinates[gl_VertexIndex] * waterTextureScalingFactor;
 
 	//Pass the unmodified vertex position to the tesselation control shader.
-	tessellationControlPosition = vertexPosition;
+    fragmentWorldPosition = vertexPositions[gl_VertexIndex] * waterSize + waterWorldPosition;
+	gl_Position = viewMatrix * vec4(fragmentWorldPosition, 1.0f);
 }

@@ -91,7 +91,7 @@ public:
 	/*
 	*	Initializes a water entity.
 	*/
-	void InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const uint32 resolution, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT;
+	void InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given the texture data.
