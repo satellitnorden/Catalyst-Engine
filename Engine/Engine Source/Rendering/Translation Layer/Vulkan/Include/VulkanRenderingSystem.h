@@ -221,7 +221,7 @@ private:
 	};
 
 	//Enumeration covering all semaphores.
-	enum Semaphore : uint8
+	enum class Semaphore : uint8
 	{
 		ImageAvailable,
 		RenderFinished,
@@ -291,7 +291,7 @@ private:
 	StaticArray<VulkanPipeline *RESTRICT, INDEX(Pipeline::NumberOfPipelines)> pipelines;
 
 	//Container for all semaphores.
-	StaticArray<VulkanSemaphore *RESTRICT, Semaphore::NumberOfSemaphores> semaphores;
+	StaticArray<VulkanSemaphore *RESTRICT, INDEX(Semaphore::NumberOfSemaphores)> semaphores;
 
 	//Container for all shader modules.
 	StaticArray<VulkanShaderModule *RESTRICT, INDEX(ShaderModule::NumberOfShaderModules)> shaderModules;

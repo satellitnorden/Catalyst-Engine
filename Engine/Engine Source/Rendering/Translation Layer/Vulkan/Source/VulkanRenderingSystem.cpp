@@ -125,7 +125,7 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	}
 
 	//Pre-update the Vulkan interface.
-	VulkanInterface::Instance->PreUpdate(semaphores[Semaphore::ImageAvailable]);
+	VulkanInterface::Instance->PreUpdate(semaphores[INDEX(Semaphore::ImageAvailable)]);
 
 	//Begin the frame.
 	BeginFrame();
@@ -152,7 +152,7 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	EndFrame();
 
 	//Post-update the Vulkan interface.
-	VulkanInterface::Instance->PostUpdate(semaphores[Semaphore::RenderFinished]);
+	VulkanInterface::Instance->PostUpdate(semaphores[INDEX(Semaphore::RenderFinished)]);
 }
 
 /*
@@ -546,8 +546,8 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
 {
 	//Initialize all semaphores.
-	semaphores[Semaphore::ImageAvailable] = VulkanInterface::Instance->CreateSemaphore();
-	semaphores[Semaphore::RenderFinished] = VulkanInterface::Instance->CreateSemaphore();
+	semaphores[INDEX(Semaphore::ImageAvailable)] = VulkanInterface::Instance->CreateSemaphore();
+	semaphores[INDEX(Semaphore::RenderFinished)] = VulkanInterface::Instance->CreateSemaphore();
 }
 
 /*
@@ -1240,9 +1240,9 @@ void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 void VulkanRenderingSystem::EndFrame() NOEXCEPT
 {
 	//Set up the proper parameters.
-	static const DynamicArray<VkSemaphore> waitSemaphores{ semaphores[Semaphore::ImageAvailable]->Get() };
+	static const DynamicArray<VkSemaphore> waitSemaphores{ semaphores[INDEX(Semaphore::ImageAvailable)]->Get() };
 	static const VkPipelineStageFlags waitStages{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-	static const DynamicArray<VkSemaphore> signalSemaphores{ semaphores[Semaphore::RenderFinished]->Get() };
+	static const DynamicArray<VkSemaphore> signalSemaphores{ semaphores[INDEX(Semaphore::RenderFinished)]->Get() };
 
 	//End the current command buffer.
 	currentCommandBuffer->End();
