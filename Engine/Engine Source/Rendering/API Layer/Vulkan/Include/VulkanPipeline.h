@@ -73,7 +73,7 @@ private:
 	/*
 	*	Creates a pipeline vertex input state create info.
 	*/
-	void CreatePipelineVertexInputStateCreateInfo(VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkVertexInputBindingDescription &vertexInputBindingDescription, const DynamicArray<VkVertexInputAttributeDescription> &vertexInputAttributeDescriptions) const NOEXCEPT;
+	void CreatePipelineVertexInputStateCreateInfo(VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
 
 	/*
 	*	Creates a pipeline input assembly state create info.

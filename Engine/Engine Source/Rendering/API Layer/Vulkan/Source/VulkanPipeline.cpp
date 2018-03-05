@@ -44,7 +44,7 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 
 	//Create the pipeline vertex input state create info.
 	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
-	CreatePipelineVertexInputStateCreateInfo(pipelineVertexInputStateCreateInfo, vulkanPipelineCreationParameters.vertexInputBindingDescription, vulkanPipelineCreationParameters.vertexInputAttributeDescriptions);
+	CreatePipelineVertexInputStateCreateInfo(pipelineVertexInputStateCreateInfo, vulkanPipelineCreationParameters);
 
 	//Create the pipeline input assembly state create info.
 	VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo;
@@ -130,15 +130,15 @@ void VulkanPipeline::CreatePipelineShaderStageCreateInfo(VkPipelineShaderStageCr
 /*
 *	Creates a pipeline vertex input state create info.
 */
-void VulkanPipeline::CreatePipelineVertexInputStateCreateInfo(VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkVertexInputBindingDescription &vertexInputBindingDescription, const DynamicArray<VkVertexInputAttributeDescription> &vertexInputAttributeDescriptions) const NOEXCEPT
+void VulkanPipeline::CreatePipelineVertexInputStateCreateInfo(VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
 	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	pipelineVertexInputStateCreateInfo.pNext = nullptr;
 	pipelineVertexInputStateCreateInfo.flags = 0;
-	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = 1;
-	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = &vertexInputBindingDescription;
-	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32>(vertexInputAttributeDescriptions.Size());
-	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = vertexInputAttributeDescriptions.Data();
+	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = vulkanPipelineCreationParameters.vertexInputBindingDescriptionCount;
+	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = vulkanPipelineCreationParameters.vertexInputBindingDescriptions;
+	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = vulkanPipelineCreationParameters.vertexInputAttributeDescriptionCount;
+	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = vulkanPipelineCreationParameters.vertexInputAttributeDescriptions;
 }
 
 /*

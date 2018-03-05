@@ -108,10 +108,8 @@ namespace VulkanTranslationUtilities
 	/*
 	*	Returns the vertex input attribute descriptions for the physical entity scene buffer render pass.
 	*/
-	static void GetPhysicalVertexInputAttributeDescriptions(DynamicArray<VkVertexInputAttributeDescription> &vertexInputAttributeDescriptions) NOEXCEPT
+	static void GetPhysicalVertexInputAttributeDescriptions(StaticArray<VkVertexInputAttributeDescription, 4> &vertexInputAttributeDescriptions) NOEXCEPT
 	{
-		vertexInputAttributeDescriptions.Resize(4);
-
 		vertexInputAttributeDescriptions[0].location = 0;
 		vertexInputAttributeDescriptions[0].binding = 0;
 		vertexInputAttributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
@@ -146,10 +144,8 @@ namespace VulkanTranslationUtilities
 	/*
 	*	Returns the vertex input attribute descriptions for the terrain entity scene buffer render pass.
 	*/
-	static void GetTerrainVertexInputAttributeDescriptions(DynamicArray<VkVertexInputAttributeDescription> &vertexInputAttributeDescriptions) NOEXCEPT
+	static void GetTerrainVertexInputAttributeDescriptions(StaticArray<VkVertexInputAttributeDescription, 2> &vertexInputAttributeDescriptions) NOEXCEPT
 	{
-		vertexInputAttributeDescriptions.Resize(2);
-
 		vertexInputAttributeDescriptions[0].location = 0;
 		vertexInputAttributeDescriptions[0].binding = 0;
 		vertexInputAttributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
