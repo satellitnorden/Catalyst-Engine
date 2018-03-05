@@ -109,6 +109,13 @@ static void PrintResultAndBreak(const char *const RESTRICT function, const VkRes
 			break;
 		}
 
+		case VK_ERROR_OUT_OF_POOL_MEMORY_KHR:
+		{
+			PRINT_TO_CONSOLE("Result was VK_ERROR_OUT_OF_POOL_MEMORY_KHR.");
+
+			break;
+		}
+
 		case VK_SUCCESS:
 		{
 			PRINT_TO_CONSOLE("Result was VK_SUCCESS.");
