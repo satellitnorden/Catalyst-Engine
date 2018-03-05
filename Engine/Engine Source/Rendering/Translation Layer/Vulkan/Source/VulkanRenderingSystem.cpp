@@ -6,6 +6,7 @@
 
 //Entities.
 #include <CameraEntity.h>
+#include <InstancedPhysicalEntity.h>
 #include <PointLightEntity.h>
 #include <SpotLightEntity.h>
 #include <StaticPhysicalEntity.h>
@@ -359,6 +360,43 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 	transformComponent.position = position;
 	transformComponent.rotation = rotation;
 	transformComponent.scale = scale;
+}
+
+/*
+*	Initializes an instanced physical entity.
+*/
+void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT
+{
+	//Cache relevant data.
+	VulkanDescriptorSet newDescriptorSet;
+	const PhysicalMaterial &material = model.GetMaterial();
+
+	//Allocate the descriptor set.
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::StaticPhysical)]);
+
+	//Update the write descriptor sets.
+	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
+	{
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.normalMapTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.materialPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 3)
+	};
+
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+
+	//Create the transformations buffer.
+	const void *RESTRICT transformationsData[]{ transformations.Data() };
+	const VkDeviceSize transformationsDataSizes[]{ sizeof(Matrix4) * transformations.Size() };
+	VulkanBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateBuffer(transformationsData, transformationsDataSizes, 1);
+
+	//Fill the instanced physical entity components with the relevant data.
+	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents()[entity.GetComponentsIndex()] };
+
+	renderComponent.descriptorSet = newDescriptorSet;
+	renderComponent.modelBuffer = static_cast<VulkanBuffer *RESTRICT>(model.GetBuffer());
+	renderComponent.transformationsBuffer = transformationsBuffer;
+	renderComponent.indexOffset = model.GetIndexOffset();
+	renderComponent.indexCount = model.GetIndexCount();
 }
 
 /*

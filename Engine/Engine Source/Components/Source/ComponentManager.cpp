@@ -8,6 +8,9 @@ DynamicArray<CameraComponent> ComponentManager::cameraComponents;
 uint64 ComponentManager::numberOfDirectionalLightComponents = 0;
 DynamicArray<DirectionalLightComponent> ComponentManager::directionalLightComponents;
 
+uint64 ComponentManager::numberOfInstancedPhysicalComponents = 0;
+DynamicArray<InstancedPhysicalRenderComponent> ComponentManager::instancedPhysicalRenderComponents;
+
 uint64 ComponentManager::numberOfStaticPhysicalComponents = 0;
 DynamicArray<FrustumCullingComponent> ComponentManager::staticPhysicalFrustumCullingComponents;
 DynamicArray<StaticPhysicalRenderComponent> ComponentManager::staticPhysicalRenderComponents;
@@ -51,7 +54,7 @@ uint64 ComponentManager::GetNumberOfCameraComponents() NOEXCEPT
 /*
 *	Returns the camera components.
 */
-RESTRICTED CameraComponent* ComponentManager::GetCameraComponents() NOEXCEPT
+CameraComponent *RESTRICT ComponentManager::GetCameraComponents() NOEXCEPT
 {
 	//Return the camera components.
 	return cameraComponents.Data();
@@ -81,10 +84,40 @@ uint64 ComponentManager::GetNumberOfDirectionalLightComponents() NOEXCEPT
 /*
 *	Returns the directional light components.
 */
-RESTRICTED DirectionalLightComponent* ComponentManager::GetDirectionalLightComponents() NOEXCEPT
+DirectionalLightComponent *RESTRICT ComponentManager::GetDirectionalLightComponents() NOEXCEPT
 {
 	//Return the directional light components.
 	return directionalLightComponents.Data();
+}
+
+/*
+*	Returns a new components index for instanced physical entities.
+*/
+uint64 ComponentManager::GetNewInstancedPhysicalComponentsIndex() NOEXCEPT
+{
+	//Create the relevant components.
+	instancedPhysicalRenderComponents.EmplaceSlow();
+
+	//Return the new index.
+	return numberOfInstancedPhysicalComponents++;
+}
+
+/*
+*	Returns the number of instanced physical components.
+*/
+uint64 ComponentManager::GetNumberOfInstancedPhysicalComponents() NOEXCEPT
+{
+	//Return the number of instanced physical components.
+	return numberOfInstancedPhysicalComponents;
+}
+
+/*
+*	Returns the instanced physical render components.
+*/
+InstancedPhysicalRenderComponent *RESTRICT ComponentManager::GetInstancedPhysicalRenderComponents() NOEXCEPT
+{
+	//Return the instanced physical render components.
+	return instancedPhysicalRenderComponents.Data();
 }
 
 /*
@@ -113,7 +146,7 @@ uint64 ComponentManager::GetNumberOfStaticPhysicalComponents() NOEXCEPT
 /*
 *	Returns the static physical frustum culling components.
 */
-RESTRICTED FrustumCullingComponent* ComponentManager::GetStaticPhysicalFrustumCullingComponents() NOEXCEPT
+FrustumCullingComponent *RESTRICT ComponentManager::GetStaticPhysicalFrustumCullingComponents() NOEXCEPT
 {
 	//Return the physical frustum culling components.
 	return staticPhysicalFrustumCullingComponents.Data();
@@ -122,7 +155,7 @@ RESTRICTED FrustumCullingComponent* ComponentManager::GetStaticPhysicalFrustumCu
 /*
 *	Returns the static physical render components.
 */
-RESTRICTED StaticPhysicalRenderComponent* ComponentManager::GetStaticPhysicalRenderComponents() NOEXCEPT
+StaticPhysicalRenderComponent *RESTRICT ComponentManager::GetStaticPhysicalRenderComponents() NOEXCEPT
 {
 	//Return the physical render components.
 	return staticPhysicalRenderComponents.Data();
@@ -131,7 +164,7 @@ RESTRICTED StaticPhysicalRenderComponent* ComponentManager::GetStaticPhysicalRen
 /*
 *	Returns the static physical frustum transform components.
 */
-RESTRICTED TransformComponent* ComponentManager::GetStaticPhysicalTransformComponents() NOEXCEPT
+TransformComponent *RESTRICT ComponentManager::GetStaticPhysicalTransformComponents() NOEXCEPT
 {
 	//Return the physical frustum transform components.
 	return staticPhysicalTransformComponents.Data();
@@ -161,7 +194,7 @@ uint64 ComponentManager::GetNumberOfPointLightComponents() NOEXCEPT
 /*
 *	Returns the point light components.
 */
-RESTRICTED PointLightComponent* ComponentManager::GetPointLightComponents() NOEXCEPT
+PointLightComponent *RESTRICT ComponentManager::GetPointLightComponents() NOEXCEPT
 {
 	//Return the point light components.
 	return pointLightComponents.Data();
@@ -191,7 +224,7 @@ uint64 ComponentManager::GetNumberOfSpotLightComponents() NOEXCEPT
 /*
 *	Returns the spot light components.
 */
-RESTRICTED SpotLightComponent* ComponentManager::GetSpotLightComponents() NOEXCEPT
+SpotLightComponent *RESTRICT ComponentManager::GetSpotLightComponents() NOEXCEPT
 {
 	//Return the spot light components.
 	return spotLightComponents.Data();
@@ -222,7 +255,7 @@ uint64 ComponentManager::GetNumberOfTerrainComponents() NOEXCEPT
 /*
 *	Returns the terrain components.
 */
-RESTRICTED TerrainComponent* ComponentManager::GetTerrainComponents() NOEXCEPT
+TerrainComponent *RESTRICT ComponentManager::GetTerrainComponents() NOEXCEPT
 {
 	//Return the terrain components.
 	return terrainComponents.Data();
@@ -231,7 +264,7 @@ RESTRICTED TerrainComponent* ComponentManager::GetTerrainComponents() NOEXCEPT
 /*
 *	Returns the terrain render components.
 */
-RESTRICTED TerrainRenderComponent* ComponentManager::GetTerrainRenderComponents() NOEXCEPT
+TerrainRenderComponent *RESTRICT ComponentManager::GetTerrainRenderComponents() NOEXCEPT
 {
 	//Return the terrain render components.
 	return terrainRenderComponents.Data();
@@ -262,7 +295,7 @@ uint64 ComponentManager::GetNumberOfWaterComponents() NOEXCEPT
 /*
 *	Returns the water components.
 */
-RESTRICTED WaterComponent* ComponentManager::GetWaterComponents() NOEXCEPT
+WaterComponent *RESTRICT ComponentManager::GetWaterComponents() NOEXCEPT
 {
 	//Return the water components.
 	return waterComponents.Data();
@@ -271,7 +304,7 @@ RESTRICTED WaterComponent* ComponentManager::GetWaterComponents() NOEXCEPT
 /*
 *	Returns the water render components.
 */
-RESTRICTED WaterRenderComponent* ComponentManager::GetWaterRenderComponents() NOEXCEPT
+WaterRenderComponent *RESTRICT ComponentManager::GetWaterRenderComponents() NOEXCEPT
 {
 	//Return the water render components.
 	return waterRenderComponents.Data();

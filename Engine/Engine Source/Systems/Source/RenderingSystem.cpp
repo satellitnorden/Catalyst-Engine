@@ -107,6 +107,15 @@ void RenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity &stati
 }
 
 /*
+*	Initializes an instanced physical entity.
+*/
+void RenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT
+{
+	//Initialize the instanced physical entity via the current rendering system.
+	VulkanRenderingSystem::Instance->InitializeInstancedPhysicalEntity(entity, model, transformations);
+}
+
+/*
 *	Initializes a water entity.
 */
 void RenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT

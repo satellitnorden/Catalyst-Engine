@@ -24,6 +24,7 @@
 //Forward declarations.
 class CameraEntity;
 class CPUTexture4;
+class InstancedPhysicalEntity;
 class PhysicalMaterial;
 class PhysicalMaterialData;
 class PhysicalModel;
@@ -101,6 +102,11 @@ public:
 	*	Initializes a static physical entity.
 	*/
 	void InitializeStaticPhysicalEntity(StaticPhysicalEntity &staticPhysicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT;
+
+	/*
+	*	Initializes an instanced physical entity.
+	*/
+	void InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT;
 
 	/*
 	*	Initializes a water entity.

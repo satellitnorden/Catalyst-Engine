@@ -4,13 +4,11 @@
 #include <EngineCore.h>
 
 //Vulkan.
-//#include <VulkanDescriptorSet.h>
+#include <VulkanDescriptorSet.h>
 
 /*
 *	Type aliases.
 */
-class VulkanDescriptorSet;
-
 using DescriptorSetHandle = VulkanDescriptorSet;
 using GraphicsBufferHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;

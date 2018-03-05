@@ -7,6 +7,7 @@
 #include <CameraComponent.h>
 #include <DirectionalLightComponent.h>
 #include <FrustumCullingComponent.h>
+#include <InstancedPhysicalRenderComponent.h>
 #include <PointLightComponent.h>
 #include <SpotLightComponent.h>
 #include <StaticPhysicalRenderComponent.h>
@@ -38,14 +39,14 @@ public:
 	/*
 	*	Returns the camera components.
 	*/
-	RESTRICTED static CameraComponent* GetCameraComponents() NOEXCEPT;
+	static CameraComponent *RESTRICT GetCameraComponents() NOEXCEPT;
 
 private:
 
 	//The number of camera components.
 	static uint64 numberOfCameraComponents;
 
-	//The camera ecomponents.
+	//The camera components.
 	static DynamicArray<CameraComponent> cameraComponents;
 
 public:
@@ -67,7 +68,7 @@ public:
 	/*
 	*	Returns the directional light components.
 	*/
-	RESTRICTED static DirectionalLightComponent* GetDirectionalLightComponents() NOEXCEPT;
+	static DirectionalLightComponent *RESTRICT GetDirectionalLightComponents() NOEXCEPT;
 
 private:
 
@@ -76,6 +77,35 @@ private:
 
 	//The the directional light components.
 	static DynamicArray<DirectionalLightComponent> directionalLightComponents;
+
+public:
+
+	/*											*/
+	/*	Instanced Physical Entity Interface.	*/
+	/*											*/
+
+	/*
+	*	Returns a new components index for instanced physical entities.
+	*/
+	static uint64 GetNewInstancedPhysicalComponentsIndex() NOEXCEPT;
+
+	/*
+	*	Returns the number of instanced physical components.
+	*/
+	static uint64 GetNumberOfInstancedPhysicalComponents() NOEXCEPT;
+
+	/*
+	*	Returns the instanced physical render components.
+	*/
+	static InstancedPhysicalRenderComponent *RESTRICT GetInstancedPhysicalRenderComponents() NOEXCEPT;
+
+private:
+
+	//The number of instanced physical components.
+	static uint64 numberOfInstancedPhysicalComponents;
+
+	//The instanced physical render components.
+	static DynamicArray<InstancedPhysicalRenderComponent> instancedPhysicalRenderComponents;
 
 public:
 
@@ -96,17 +126,17 @@ public:
 	/*
 	*	Returns the static physical frustum culling components.
 	*/
-	RESTRICTED static FrustumCullingComponent* GetStaticPhysicalFrustumCullingComponents() NOEXCEPT;
+	static FrustumCullingComponent *RESTRICT GetStaticPhysicalFrustumCullingComponents() NOEXCEPT;
 
 	/*
 	*	Returns the static physical render components.
 	*/
-	RESTRICTED static StaticPhysicalRenderComponent* GetStaticPhysicalRenderComponents() NOEXCEPT;
+	static StaticPhysicalRenderComponent *RESTRICT GetStaticPhysicalRenderComponents() NOEXCEPT;
 
 	/*
 	*	Returns the static physical transform components.
 	*/
-	RESTRICTED static TransformComponent* GetStaticPhysicalTransformComponents() NOEXCEPT;
+	static TransformComponent *RESTRICT GetStaticPhysicalTransformComponents() NOEXCEPT;
 
 private:
 
@@ -141,7 +171,7 @@ public:
 	/*
 	*	Returns the point light components.
 	*/
-	RESTRICTED static PointLightComponent* GetPointLightComponents() NOEXCEPT;
+	static PointLightComponent *RESTRICT GetPointLightComponents() NOEXCEPT;
 
 private:
 
@@ -170,7 +200,7 @@ public:
 	/*
 	*	Returns the spot light components.
 	*/
-	RESTRICTED static SpotLightComponent* GetSpotLightComponents() NOEXCEPT;
+	static SpotLightComponent *RESTRICT GetSpotLightComponents() NOEXCEPT;
 
 private:
 
@@ -199,12 +229,12 @@ public:
 	/*
 	*	Returns the terrain components.
 	*/
-	RESTRICTED static TerrainComponent* GetTerrainComponents() NOEXCEPT;
+	static TerrainComponent *RESTRICT GetTerrainComponents() NOEXCEPT;
 
 	/*
 	*	Returns the terrain render components.
 	*/
-	RESTRICTED static TerrainRenderComponent* GetTerrainRenderComponents() NOEXCEPT;
+	static TerrainRenderComponent *RESTRICT GetTerrainRenderComponents() NOEXCEPT;
 
 private:
 
@@ -236,12 +266,12 @@ public:
 	/*
 	*	Returns the water components.
 	*/
-	RESTRICTED static WaterComponent* GetWaterComponents() NOEXCEPT;
+	static WaterComponent *RESTRICT GetWaterComponents() NOEXCEPT;
 
 	/*
 	*	Returns the water render components.
 	*/
-	RESTRICTED static WaterRenderComponent* GetWaterRenderComponents() NOEXCEPT;
+	static WaterRenderComponent *RESTRICT GetWaterRenderComponents() NOEXCEPT;
 
 private:
 
