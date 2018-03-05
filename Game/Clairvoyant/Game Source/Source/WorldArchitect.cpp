@@ -205,7 +205,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 	WaterEntity *RESTRICT water = EntitySystem::Instance->CreateEntity<WaterEntity>();
 	water->Initialize(waterMaterial, WaterUniformData(TERRAIN_SIZE, 250.0f, Vector3(0.0f, 0.0f, 0.0f)));
 
-	/*
 	//Create the stone model.
 	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(1) };
 
@@ -215,19 +214,31 @@ void WorldArchitect::Initialize() NOEXCEPT
 	stoneModel.SetMaterial(stoneMaterial);
 
 	//Create the stones.
-	for (uint64 i = 0; i < 1'000; ++i)
+	for (uint64 i = 0; i < 10'000; ++i)
 	{
-		StaticPhysicalEntity *stone = EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>();
-
 		Vector3 position{ Vector3(GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
+
+		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
+
+		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.99f)
+		{
+			continue;
+		}
+
 		position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
+
+		if (position.Y <= PhysicsSystem::Instance->GetWaterHeight())
+		{
+			continue;
+		}
+
 		const Vector3 rotation{ 0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f), 0.0f };
 		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
 		const Vector3 scale{ stoneScale, stoneScale, stoneScale };
 
+		StaticPhysicalEntity *stone = EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>();
 		stone->Initialize(stoneModel, position, rotation, scale);
 	}
-	*/
 }
 
 /*
