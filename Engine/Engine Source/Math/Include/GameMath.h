@@ -184,6 +184,14 @@ public:
 	}
 
 	/*
+	*	Given a number between 0.0f and 1.0f, representing a chance in percent, return whether or not it succeeded.
+	*/
+	static bool RandomChance(const float chance)
+	{
+		return chance > RandomFloatInRange(0.0f, 1.0f);
+	}
+
+	/*
 	*	Rounds a float to the nearest integral value, with halfway cases rounded away from zero.
 	*/
 	static float RoundToFloat(const float value) NOEXCEPT
