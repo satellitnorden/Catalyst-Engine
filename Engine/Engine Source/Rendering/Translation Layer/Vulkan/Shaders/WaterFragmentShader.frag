@@ -84,7 +84,7 @@ void main()
     vec3 reflection = CalculateReflection();
 
     //Calculate the transparency.
-    float transparency = 1.0f - clamp(dot(normalDirection, normalize(cameraWorldPosition - fragmentWorldPosition)), 0.0f, 1.0f);
+    float transparency = 1.0f - clamp(dot(normalDirection, normalize(cameraWorldPosition - fragmentWorldPosition)) + 0.25f, 0.0f, 1.0f);
 
     //Calculate the screen coordinate.
     vec2 screenCoordinate = vec2(gl_FragCoord.x / 1920.0f, gl_FragCoord.y / 1061.0f);
