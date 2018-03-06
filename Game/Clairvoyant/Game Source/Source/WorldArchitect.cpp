@@ -107,7 +107,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 			multiplier *= 0.5f;
 			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
-			terrainProperties.At(i, j).W = GameMath::LinearlyInterpolate(terrainProperties.At(i, j).W, GameMath::GetSmoothInterpolationValue(terrainProperties.At(i, j).W), 0.25f);
+			terrainProperties.At(i, j).W = GameMath::LinearlyInterpolate(terrainProperties.At(i, j).W, GameMath::SmoothStep<1>(terrainProperties.At(i, j).W), 0.25f);
 		}
 	}
 
@@ -166,14 +166,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 			//Determine the weight of the dirt layer.
 			constexpr float dirtLayerFrequency{ 1.0f };
 			layerWeights.At(i, j).Y = (PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f;
-			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
-			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
-			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
-			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
-			layerWeights.At(i, j).Y = GameMath::GetSmootherInterpolationValue(layerWeights.At(i, j).Y);
+			layerWeights.At(i, j).Y = GameMath::SmoothStep<5>(layerWeights.At(i, j).Y);
 
 			//Determine the weight of the rock layer.
-			layerWeights.At(i, j).Z = 1.0f - GameMath::GetSmootherInterpolationValue(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)) + 0.1f, 0.0f, 1.0f));
+			layerWeights.At(i, j).Z = 1.0f - GameMath::SmoothStep<2>(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)), 0.0f, 1.0f));
 
 			//Determine the weight of the snow layer.
 			if (heightValue < 0.45f)

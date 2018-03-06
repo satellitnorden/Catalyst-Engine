@@ -74,22 +74,6 @@ public:
 	}
 
 	/*
-	*	Given an interpolation value in the range 0.0f to 1.0f, returns a smooth interpolation value.
-	*/
-	constexpr static float GetSmoothInterpolationValue(const float linearInterpolationValue) NOEXCEPT
-	{
-		return linearInterpolationValue * linearInterpolationValue * (3.0f - 2.0f * linearInterpolationValue);
-	}
-
-	/*
-	*	Given an interpolation value in the range 0.0f to 1.0f, returns a smoother interpolation value.
-	*/
-	constexpr static float GetSmootherInterpolationValue(const float linearInterpolationValue) NOEXCEPT
-	{
-		return linearInterpolationValue * linearInterpolationValue * linearInterpolationValue * (linearInterpolationValue * (linearInterpolationValue * 6.0f - 15.0f) + 10.0f);
-	}
-
-	/*
 	*	Returns whether or not an integer is even or not.
 	*/
 	template <class IntegerType>
@@ -238,6 +222,22 @@ public:
 	static float SineRadians(float number) NOEXCEPT
 	{
 		return sin(number);
+	}
+
+	/*
+	*	Given a number and a number of derivaties, generate a smooth number.
+	*/
+	template <uint64 Derivatives>
+	static constexpr float SmoothStep(const float number)
+	{
+		float smoothedNumber = number;
+
+		for (uint64 i = 0; i < Derivatives; ++i)
+		{
+			smoothedNumber = smoothedNumber * smoothedNumber * (3.0f - 2.0f * smoothedNumber);
+		}
+
+		return smoothedNumber;
 	}
 
 	/*
