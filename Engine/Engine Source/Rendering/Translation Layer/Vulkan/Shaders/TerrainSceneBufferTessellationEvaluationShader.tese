@@ -117,7 +117,7 @@ void main()
 
 	float height = texture(terrainPropertiesTexture, fragmentHeightMapTextureCoordinate).w * terrainHeight;
 
-	position.y = height + GetDisplacement();
+	position.y = height + GetDisplacement() + terrainPosition.y;
 
 	gl_Position = viewMatrix * vec4(position, 1.0f);
 }

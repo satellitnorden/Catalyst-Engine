@@ -55,7 +55,7 @@ float PhysicsSystem::GetTerrainHeightAtPosition(const Vector3 &position) const N
 	const float xIndex = (position.X + (terrainSize * 0.5f)) / terrainSize;
 	const float yIndex = (position.Z + (terrainSize * 0.5f)) / terrainSize;
 
-	return terrainProperties.At(xIndex, yIndex).W * terrainHeight;
+	return terrainProperties.At(xIndex, yIndex).W * terrainHeight + terrainComponent.terrainUniformData.terrainPosition.Y;
 }
 
 /*
