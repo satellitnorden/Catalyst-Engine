@@ -37,7 +37,7 @@
 
 namespace
 {
-	static constexpr uint32 HEIGHT_MAP_RESOLUTION{ 1'024 };
+	static constexpr uint32 HEIGHT_MAP_RESOLUTION{ 2'048 };
 	static constexpr float TERRAIN_HEIGHT{ 1'000.0f };
 	static constexpr float TERRAIN_SIZE{ 10'000.0f };
 	static constexpr float WATER_HEIGHT{ -1.0f };
@@ -163,13 +163,15 @@ void WorldArchitect::Initialize() NOEXCEPT
 				layerWeights.At(i, j).X = (heightValue + -WATER_HEIGHT) * 10.0f;
 			}
 
+			layerWeights.At(i, j).X = GameMath::SmoothStep<1>(layerWeights.At(i, j).X);
+
 			//Determine the weight of the dirt layer.
 			constexpr float dirtLayerFrequency{ 1.0f };
 			layerWeights.At(i, j).Y = (PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f;
 			layerWeights.At(i, j).Y = GameMath::SmoothStep<5>(layerWeights.At(i, j).Y);
 
 			//Determine the weight of the rock layer.
-			layerWeights.At(i, j).Z = 1.0f - GameMath::SmoothStep<2>(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)), 0.0f, 1.0f));
+			layerWeights.At(i, j).Z = 1.0f - GameMath::SmoothStep<3>(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)), 0.0f, 1.0f));
 
 			//Determine the weight of the snow layer.
 			if (heightValue < 0.45f)
@@ -193,7 +195,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 2.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
+	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
 	//Load the water material.
 	WaterMaterial waterMaterial{ ResourceLoader::GetWaterMaterial(5) };
@@ -211,16 +213,16 @@ void WorldArchitect::Initialize() NOEXCEPT
 	stoneModel.SetMaterial(stoneMaterial);
 
 	DynamicArray<Matrix4> stoneTransformations;
-	stoneTransformations.Reserve(10'000);
+	stoneTransformations.Reserve(1'000);
 
 	//Create the stones.
-	for (uint64 i = 0; i < 10'000; ++i)
+	for (uint64 i = 0; i < 1'000; ++i)
 	{
 		Vector3 position{ Vector3(GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
 
 		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
 
-		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.975f)
+		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.9f)
 		{
 			continue;
 		}
@@ -251,16 +253,16 @@ void WorldArchitect::Initialize() NOEXCEPT
 	treeStompModel.SetMaterial(treeStompMaterial);
 
 	DynamicArray<Matrix4> treeStompTransformations;
-	treeStompTransformations.Reserve(10'000);
+	treeStompTransformations.Reserve(1'000);
 
 	//Create the tree stomps.
-	for (uint64 i = 0; i < 10'000; ++i)
+	for (uint64 i = 0; i < 1'000; ++i)
 	{
 		Vector3 position{ Vector3(GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
 
 		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
 
-		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.975f)
+		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.9f)
 		{
 			continue;
 		}
