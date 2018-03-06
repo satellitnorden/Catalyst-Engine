@@ -76,7 +76,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc");
 
 	//Load the terrain material data.
-	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(2) };
+	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(4) };
 
 	//Create the terrain properties!
 	CPUTexture4 terrainProperties{ HEIGHT_MAP_RESOLUTION };
@@ -200,14 +200,14 @@ void WorldArchitect::Initialize() NOEXCEPT
 	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 2.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
 	//Load the water material.
-	WaterMaterial waterMaterial{ ResourceLoader::GetWaterMaterial(3) };
+	WaterMaterial waterMaterial{ ResourceLoader::GetWaterMaterial(5) };
 
 	//Create the water.
 	WaterEntity *RESTRICT water = EntitySystem::Instance->CreateEntity<WaterEntity>();
 	water->Initialize(waterMaterial, WaterUniformData(TERRAIN_SIZE, 250.0f, Vector3(0.0f, 0.0f, 0.0f)));
 
 	//Create the stone model.
-	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(1) };
+	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(2) };
 
 	//Create the stone material.
 	PhysicalMaterial stoneMaterial{ ResourceLoader::GetPhysicalMaterial(0) };
@@ -215,16 +215,16 @@ void WorldArchitect::Initialize() NOEXCEPT
 	stoneModel.SetMaterial(stoneMaterial);
 
 	DynamicArray<Matrix4> stoneTransformations;
-	stoneTransformations.Reserve(1'000);
+	stoneTransformations.Reserve(10'000);
 
 	//Create the stones.
-	for (uint64 i = 0; i < 1'000; ++i)
+	for (uint64 i = 0; i < 10'000; ++i)
 	{
 		Vector3 position{ Vector3(GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
 
 		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
 
-		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.99f)
+		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.975f)
 		{
 			continue;
 		}
@@ -245,6 +245,46 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	InstancedPhysicalEntity *RESTRICT stones = EntitySystem::Instance->CreateEntity<InstancedPhysicalEntity>();
 	stones->Initialize(stoneModel, stoneTransformations);
+
+	//Create the tree stomp model.
+	PhysicalModel treeStompModel{ ResourceLoader::GetPhysicalModel(3) };
+
+	//Create the tree stomp material.
+	PhysicalMaterial treeStompMaterial{ ResourceLoader::GetPhysicalMaterial(1) };
+
+	treeStompModel.SetMaterial(treeStompMaterial);
+
+	DynamicArray<Matrix4> treeStompTransformations;
+	treeStompTransformations.Reserve(10'000);
+
+	//Create the tree stomps.
+	for (uint64 i = 0; i < 10'000; ++i)
+	{
+		Vector3 position{ Vector3(GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
+
+		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
+
+		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.975f)
+		{
+			continue;
+		}
+
+		position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
+
+		if (position.Y <= PhysicsSystem::Instance->GetWaterHeight())
+		{
+			continue;
+		}
+
+		const Vector3 rotation{ -90.0f, 0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f) };
+		const float uniformScale = GameMath::RandomFloatInRange(0.75f, 1.0f);
+		const Vector3 scale{ uniformScale, uniformScale, uniformScale };
+
+		treeStompTransformations.EmplaceFast(position, rotation, scale);
+	}
+
+	InstancedPhysicalEntity *RESTRICT treeStomps = EntitySystem::Instance->CreateEntity<InstancedPhysicalEntity>();
+	treeStomps->Initialize(treeStompModel, treeStompTransformations);
 }
 
 /*

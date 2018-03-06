@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>ResourceCollection Final/ClairvoyantResourceCollection Intermediate/Materials/StoneMaterial.cpm Intermediate/Models/StoneModel.cpm Intermediate/Materials/DefaultTerrainMaterial.ctm Intermediate/Materials/DefaultWaterMaterial.cwm</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>PhysicalModel TreeStompModel 3 TreeStomp.obj</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
