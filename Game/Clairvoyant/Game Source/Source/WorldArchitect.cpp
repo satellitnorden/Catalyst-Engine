@@ -6,14 +6,15 @@
 
 //Entities.
 #include <DirectionalLightEntity.h>
+#include <InstancedPhysicalEntity.h>
 #include <PointLightEntity.h>
 #include <SpotLightEntity.h>
-#include <StaticPhysicalEntity.h>
 #include <TerrainEntity.h>
 #include <WaterEntity.h>
 
 //Math.
 #include <GameMath.h>
+#include <Matrix4.h>
 #include <PerlinNoiseGenerator.h>
 
 //Rendering.
@@ -213,8 +214,11 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	stoneModel.SetMaterial(stoneMaterial);
 
+	DynamicArray<Matrix4> stoneTransformations;
+	stoneTransformations.Reserve(1'000);
+
 	//Create the stones.
-	for (uint64 i = 0; i < 10'000; ++i)
+	for (uint64 i = 0; i < 1'000; ++i)
 	{
 		Vector3 position{ Vector3(GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
 
@@ -236,9 +240,11 @@ void WorldArchitect::Initialize() NOEXCEPT
 		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
 		const Vector3 scale{ stoneScale, stoneScale, stoneScale };
 
-		StaticPhysicalEntity *stone = EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>();
-		stone->Initialize(stoneModel, position, rotation, scale);
+		stoneTransformations.EmplaceFast(position, rotation, scale);
 	}
+
+	InstancedPhysicalEntity *RESTRICT stones = EntitySystem::Instance->CreateEntity<InstancedPhysicalEntity>();
+	stones->Initialize(stoneModel, stoneTransformations);
 }
 
 /*

@@ -67,7 +67,7 @@ public:
 	/*
 	*	Records a bind vertex buffers command.
 	*/
-	void CommandBindVertexBuffers(const VulkanBuffer &vulkanVertexBuffer, const VkDeviceSize offset = 0) NOEXCEPT;
+	void CommandBindVertexBuffers(const uint32 vertexBufferCount, const VkBuffer *RESTRICT vertexBuffers, const uint64 *RESTRICT offsets) NOEXCEPT;
 
 	/*
 	*	Records a draw command.
@@ -77,7 +77,7 @@ public:
 	/*
 	*	Records a draw indexed command.
 	*/
-	void CommandDrawIndexed(const uint32 indexCount) NOEXCEPT;
+	void CommandDrawIndexed(const uint32 indexCount, const uint32 instanceCount) NOEXCEPT;
 
 	/*
 	*	Records an end render pass command.

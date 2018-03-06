@@ -195,7 +195,7 @@ private:
 	{
 		DynamicUniformData,
 		Terrain,
-		StaticPhysical,
+		Physical,
 		Lighting,
 		Water,
 		CubeMap,
@@ -208,6 +208,7 @@ private:
 	{
 		Terrain,
 		StaticPhysical,
+		InstancedPhysical,
 		Lighting,
 		CubeMap,
 		Water,
@@ -239,6 +240,7 @@ private:
 	{
 		CubeMapFragmentShader,
 		CubeMapVertexShader,
+		InstancedPhysicalVertexShader,
 		LightingFragmentShader,
 		PostProcessingFragmentShader,
 		PhysicalFragmentShader,
@@ -379,6 +381,11 @@ private:
 	*	Renders all static physical entities.
 	*/
 	void RenderStaticPhysicalEntities() NOEXCEPT;
+
+	/*
+	*	Renders all instanced physical entities.
+	*/
+	void RenderInstancedPhysicalEntities() NOEXCEPT;
 
 	/*
 	*	Renders lighting.

@@ -27,6 +27,6 @@ public:
 	uint32 indexCount;
 
 	//The number of instances.
-	uint32 numberOfInstances;
+	uint32 instanceCount;
 
 };

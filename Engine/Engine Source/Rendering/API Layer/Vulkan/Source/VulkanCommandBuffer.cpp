@@ -113,9 +113,9 @@ void VulkanCommandBuffer::CommandBindPipeline(const VulkanPipeline &vulkanPipeli
 /*
 *	Records a bind vertex buffers command.
 */
-void VulkanCommandBuffer::CommandBindVertexBuffers(const VulkanBuffer &vulkanVertexBuffer, const VkDeviceSize offset) NOEXCEPT
+void VulkanCommandBuffer::CommandBindVertexBuffers(const uint32 vertexBufferCount, const VkBuffer *RESTRICT vertexBuffers, const VkDeviceSize *RESTRICT offsets) NOEXCEPT
 {
-	vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, &vulkanVertexBuffer.Get(), &offset);
+	vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, vertexBufferCount, vertexBuffers, offsets);
 }
 
 /*
@@ -129,9 +129,9 @@ void VulkanCommandBuffer::CommandDraw(const uint32 vertexCount) NOEXCEPT
 /*
 *	Records a draw indexed command.
 */
-void VulkanCommandBuffer::CommandDrawIndexed(const uint32 indexCount) NOEXCEPT
+void VulkanCommandBuffer::CommandDrawIndexed(const uint32 indexCount, const uint32 instanceCount) NOEXCEPT
 {
-	vkCmdDrawIndexed(vulkanCommandBuffer, indexCount, 1, 0, 0, 0);
+	vkCmdDrawIndexed(vulkanCommandBuffer, indexCount, instanceCount, 0, 0, 0);
 }
 
 /*

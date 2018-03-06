@@ -137,6 +137,9 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Render all static physical entities.
 	RenderStaticPhysicalEntities();
 
+	//Render all instanced physical entities.
+	RenderInstancedPhysicalEntities();
+
 	//Render the lighting.
 	RenderLighting();
 
@@ -334,7 +337,7 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 	const PhysicalMaterial &material = model.GetMaterial();
 
 	//Allocate the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::StaticPhysical)]);
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)]);
 
 	//Update the write descriptor sets.
 	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
@@ -372,7 +375,7 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 	const PhysicalMaterial &material = model.GetMaterial();
 
 	//Allocate the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::StaticPhysical)]);
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)]);
 
 	//Update the write descriptor sets.
 	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
@@ -393,10 +396,11 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents()[entity.GetComponentsIndex()] };
 
 	renderComponent.descriptorSet = newDescriptorSet;
-	renderComponent.modelBuffer = static_cast<VulkanBuffer *RESTRICT>(model.GetBuffer());
+	renderComponent.modelBuffer = model.GetBuffer();
 	renderComponent.transformationsBuffer = transformationsBuffer;
 	renderComponent.indexOffset = model.GetIndexOffset();
 	renderComponent.indexCount = model.GetIndexCount();
+	renderComponent.instanceCount = static_cast<uint32>(transformations.Size());
 }
 
 /*
@@ -646,7 +650,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 	};
 
-	descriptorSetLayouts[INDEX(DescriptorSetLayout::StaticPhysical)].Initialize(3, staticPhysicalDescriptorSetLayoutBindings.Data());
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)].Initialize(3, staticPhysicalDescriptorSetLayoutBindings.Data());
 
 	//Initialize the lighting descriptor set layout.
 	constexpr StaticArray<VkDescriptorSetLayoutBinding, 6> lightingDescriptorSetLayoutBindings
@@ -702,6 +706,10 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	//Initialize the cube map vertex shader module.
 	const auto cubeMapVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "CubeMapVertexShader.spv");
 	shaderModules[INDEX(ShaderModule::CubeMapVertexShader)] = VulkanInterface::Instance->CreateShaderModule(cubeMapVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+
+	//Initialize the instanced physical vertex shader module.
+	const auto instancedPhysicalVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "InstancedPhysicalVertexShader.spv");
+	shaderModules[INDEX(ShaderModule::InstancedPhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(instancedPhysicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
 	//Initialize the lighting fragment shader module.
 	const auto lightingFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "LightingFragmentShader.spv");
@@ -801,7 +809,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 
 	pipelines[INDEX(Pipeline::Terrain)] = VulkanInterface::Instance->CreatePipeline(terrainPipelineCreationParameters);
 
-	//Create the scene buffer pipeline.
+	//Create the static physical pipeline.
 	VulkanPipelineCreationParameters staticPhysicalPipelineCreationParameters;
 
 	staticPhysicalPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
@@ -825,7 +833,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	StaticArray<VulkanDescriptorSetLayout, 2> sceneBufferDescriptorSetLayouts
 	{
 		descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::StaticPhysical)]
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)]
 	};
 	staticPhysicalPipelineCreationParameters.descriptorSetLayoutCount = 2;
 	staticPhysicalPipelineCreationParameters.descriptorSetLayouts = sceneBufferDescriptorSetLayouts.Data();
@@ -847,6 +855,52 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	staticPhysicalPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 	pipelines[INDEX(Pipeline::StaticPhysical)] = VulkanInterface::Instance->CreatePipeline(staticPhysicalPipelineCreationParameters);
+
+	//Create the instanced physical pipeline.
+	VulkanPipelineCreationParameters instancedPhysicalPipelineCreationParameters;
+
+	instancedPhysicalPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
+	instancedPhysicalPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	instancedPhysicalPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+	instancedPhysicalPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	instancedPhysicalPipelineCreationParameters.colorAttachments.Resize(1);
+	instancedPhysicalPipelineCreationParameters.colorAttachments[0].Reserve(3);
+	instancedPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetImageView());
+	instancedPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetImageView());
+	instancedPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetImageView());
+	instancedPhysicalPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
+	instancedPhysicalPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	instancedPhysicalPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	instancedPhysicalPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+	instancedPhysicalPipelineCreationParameters.depthBuffers.Reserve(1);
+	instancedPhysicalPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
+	instancedPhysicalPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
+	instancedPhysicalPipelineCreationParameters.depthTestEnable = VK_TRUE;
+	instancedPhysicalPipelineCreationParameters.depthWriteEnable = VK_TRUE;
+	StaticArray<VulkanDescriptorSetLayout, 2> instancedPhysicalDescriptorSetLayouts
+	{
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)]
+	};
+	instancedPhysicalPipelineCreationParameters.descriptorSetLayoutCount = 2;
+	instancedPhysicalPipelineCreationParameters.descriptorSetLayouts = instancedPhysicalDescriptorSetLayouts.Data();
+	instancedPhysicalPipelineCreationParameters.pushConstantRangeCount = 0;
+	instancedPhysicalPipelineCreationParameters.pushConstantRanges = nullptr;
+	instancedPhysicalPipelineCreationParameters.shaderModules.Reserve(2);
+	instancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::InstancedPhysicalVertexShader)]);
+	instancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::PhysicalFragmentShader)]);
+	instancedPhysicalPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	StaticArray<VkVertexInputAttributeDescription, 8> instancedPhysicalVertexInputAttributeDescriptions;
+	VulkanTranslationUtilities::GetInstancedPhysicalVertexInputAttributeDescriptions(instancedPhysicalVertexInputAttributeDescriptions);
+	instancedPhysicalPipelineCreationParameters.vertexInputAttributeDescriptionCount = 8;
+	instancedPhysicalPipelineCreationParameters.vertexInputAttributeDescriptions = instancedPhysicalVertexInputAttributeDescriptions.Data();
+	StaticArray<VkVertexInputBindingDescription, 2> instancedPhysicalVertexInputBindingDescriptions;
+	VulkanTranslationUtilities::GetInstancedPhysicalVertexInputBindingDescriptions(instancedPhysicalVertexInputBindingDescriptions);
+	instancedPhysicalPipelineCreationParameters.vertexInputBindingDescriptionCount = 2;
+	instancedPhysicalPipelineCreationParameters.vertexInputBindingDescriptions = instancedPhysicalVertexInputBindingDescriptions.Data();
+	instancedPhysicalPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+
+	pipelines[INDEX(Pipeline::InstancedPhysical)] = VulkanInterface::Instance->CreatePipeline(instancedPhysicalPipelineCreationParameters);
 
 	//Create the physical pipeline.
 	VulkanPipelineCreationParameters lightingPipelineCreationParameters;
@@ -1133,10 +1187,12 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 			terrainRenderComponent->descriptorSet
 		};
 
+		const VkDeviceSize offset{ 0 };
+
 		currentCommandBuffer->CommandBindDescriptorSets(terrainSceneBufferPipeline, 2, terrainDescriptorSets.Data());
-		currentCommandBuffer->CommandBindVertexBuffers(*static_cast<const VulkanBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer));
+		currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer)->Get(), &offset);
 		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
-		currentCommandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount);
+		currentCommandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
 	}
 
 	//End the render pass.
@@ -1181,11 +1237,66 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 			renderComponent->descriptorSet
 		};
 
+		const VkDeviceSize offset{ 0 };
+
 		currentCommandBuffer->CommandPushConstants(StaticPhysicalPipeline.GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
 		currentCommandBuffer->CommandBindDescriptorSets(StaticPhysicalPipeline, 2, staticPhysicalEntityDescriptorSets.Data());
-		currentCommandBuffer->CommandBindVertexBuffers(renderComponent->buffer);
+		currentCommandBuffer->CommandBindVertexBuffers(1, &renderComponent->buffer.Get(), &offset);
 		currentCommandBuffer->CommandBindIndexBuffer(renderComponent->buffer, renderComponent->indexOffset);
-		currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount);
+		currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, 1);
+	}
+
+	//End the render pass.
+	currentCommandBuffer->CommandEndRenderPass();
+}
+
+/*
+*	Renders all instanced physical entities.
+*/
+void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
+{
+	//Cache the pipeline.
+	VulkanPipeline &instancedPhysicalPipeline{ *pipelines[INDEX(Pipeline::InstancedPhysical)] };
+
+	//Iterate over all instanced physical entity components and draw them all.
+	const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };
+
+	//If there's none to draw - draw none!
+	if (numberOfInstancedPhysicalComponents == 0)
+	{
+		return;
+	}
+
+	const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
+
+	//Begin the pipeline and render pass.
+	currentCommandBuffer->CommandBindPipeline(instancedPhysicalPipeline);
+	currentCommandBuffer->CommandBeginRenderPass(instancedPhysicalPipeline.GetRenderPass(), 0, false, 0);
+
+	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
+	{
+		StaticArray<VulkanDescriptorSet, 2> instancedPhysicalDescriptorSets
+		{
+			*currentDynamicUniformDataDescriptorSet,
+			renderComponent->descriptorSet
+		};
+
+		StaticArray<VkBuffer, 2> instancedPhysicalBuffers
+		{
+			static_cast<const VulkanBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
+			static_cast<const VulkanBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
+		};
+
+		StaticArray<VkDeviceSize, 2> offsets
+		{
+			static_cast<VkDeviceSize>(0),
+			static_cast<VkDeviceSize>(0)
+		};
+
+		currentCommandBuffer->CommandBindDescriptorSets(instancedPhysicalPipeline, 2, instancedPhysicalDescriptorSets.Data());
+		currentCommandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
+		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
+		currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
 	}
 
 	//End the render pass.
