@@ -22,7 +22,7 @@ public:
 	{
 		//What should the material be called?
 		DynamicString fileName{ arguments[2] };
-		fileName += ".cpm";
+		fileName += ".cr";
 
 		//Open the file to be written to.
 		BinaryFile<IOMode::Out> file{ fileName.CString() };

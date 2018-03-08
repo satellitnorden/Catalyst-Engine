@@ -23,7 +23,7 @@ namespace TerrainMaterialCreator
 	{
 		//What should the material be called?
 		DynamicString terrainMaterialName{ arguments[2] };
-		terrainMaterialName += ".ctm";
+		terrainMaterialName += ".cr";
 
 		//Open the file to be written to.
 		BinaryFile<IOMode::Out> terrainMaterialFile{ terrainMaterialName.CString() };
