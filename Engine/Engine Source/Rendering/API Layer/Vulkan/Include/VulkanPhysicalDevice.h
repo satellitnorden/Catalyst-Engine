@@ -114,6 +114,11 @@ private:
 	bool IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT;
 
 	/*
+	*	Given a Vulkan physical device, return if it has the required features.
+	*/
+	bool HasRequiredFeatures(const VkPhysicalDevice vulkanPhysicalDevice) const NOEXCEPT;
+
+	/*
 	*	Given a Vulkan physical device, return if it has the required extensions.
 	*/
 	bool HasRequiredExtensions(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT;

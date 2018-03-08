@@ -147,6 +147,10 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 */
 bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT
 {
+	//Check if it has the required features.
+	if (!HasRequiredFeatures(vulkanPhysicalDevice))
+		return false;
+
 	//Check if it has the required extensions.
 	if (!HasRequiredExtensions(vulkanPhysicalDevice))
 		return false;
@@ -157,6 +161,19 @@ bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulk
 
 	//If the device has not failed on any of the previous checks, it is deemed suitable.
 	return true;
+}
+
+/*
+*	Given a Vulkan physical device, return if it has the required features.
+*/
+bool VulkanPhysicalDevice::HasRequiredFeatures(const VkPhysicalDevice vulkanPhysicalDevice) const NOEXCEPT
+{
+	//The physical device needs to have both anisotropy and tessellation shader enabled.
+	VkPhysicalDeviceFeatures features;
+	vkGetPhysicalDeviceFeatures(vulkanPhysicalDevice, &features);
+
+	return	features.samplerAnisotropy == VK_TRUE &&
+			features.tessellationShader == VK_TRUE;
 }
 
 /*
