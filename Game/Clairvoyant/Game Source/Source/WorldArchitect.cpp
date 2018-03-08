@@ -111,7 +111,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		}
 	}
 
-	const float heightMapPositionoffset = TERRAIN_SIZE / HEIGHT_MAP_RESOLUTION;
+	static constexpr float heightMapPositionoffset{ TERRAIN_SIZE / HEIGHT_MAP_RESOLUTION };
 
 	for (uint32 i = 0; i < HEIGHT_MAP_RESOLUTION; ++i)
 	{
@@ -123,10 +123,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 			const Vector3 down{ 0.0f, terrainProperties.At(i, j < HEIGHT_MAP_RESOLUTION - 1 ? j + 1 : j).W * TERRAIN_HEIGHT, heightMapPositionoffset };
 			const Vector3 center{ 0.0f, terrainProperties.At(i, j).W * TERRAIN_HEIGHT, 0.0f };
 
-			const Vector3 normal1 = Vector3::CrossProduct(up - center, left - center);
-			const Vector3 normal2 = Vector3::CrossProduct(right - center, up - center);
-			const Vector3 normal3 = Vector3::CrossProduct(down - center, right - center);
-			const Vector3 normal4 = Vector3::CrossProduct(left - center, down - center);
+			const Vector3 normal1{ Vector3::CrossProduct(up - center, left - center) };
+			const Vector3 normal2{ Vector3::CrossProduct(right - center, up - center) };
+			const Vector3 normal3{ Vector3::CrossProduct(down - center, right - center) };
+			const Vector3 normal4{ Vector3::CrossProduct(left - center, down - center) };
 
 			Vector3 finalNormal{ (Vector3::Normalize(normal1 + normal2 + normal3 + normal4) + 1.0f) * 0.5f };
 
