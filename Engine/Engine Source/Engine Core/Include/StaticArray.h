@@ -9,7 +9,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	StaticArray() NOEXCEPT
+	constexpr StaticArray() NOEXCEPT
 	{
 
 	}
@@ -28,7 +28,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	const ObjectType& operator[](const uint64 index) const NOEXCEPT
+	constexpr const ObjectType& operator[](const uint64 index) const NOEXCEPT
 	{
 		return array[index];
 	}
@@ -36,7 +36,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	ObjectType& operator[](const uint64 index) NOEXCEPT
+	constexpr ObjectType& operator[](const uint64 index) NOEXCEPT
 	{
 		return array[index];
 	}
@@ -44,7 +44,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	RESTRICTED const ObjectType* begin() const NOEXCEPT
+	constexpr const ObjectType *const RESTRICT begin() const NOEXCEPT
 	{
 		return array;
 	}
@@ -52,7 +52,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	RESTRICTED ObjectType* begin()  NOEXCEPT
+	constexpr ObjectType *RESTRICT begin()  NOEXCEPT
 	{
 		return array;
 	}
@@ -60,7 +60,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	RESTRICTED const ObjectType* end() const NOEXCEPT
+	constexpr const ObjectType *const RESTRICT end() const NOEXCEPT
 	{
 		return array + ArraySize;
 	}
@@ -68,7 +68,7 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	RESTRICTED ObjectType* end() NOEXCEPT
+	constexpr ObjectType *RESTRICT end() NOEXCEPT
 	{
 		return array + ArraySize;
 	}
@@ -76,7 +76,7 @@ public:
 	/*
 	*	Returns a pointer to the data of the array, const.
 	*/
-	RESTRICTED const ObjectType* const Data() const NOEXCEPT
+	constexpr const ObjectType *const RESTRICT Data() const NOEXCEPT
 	{
 		return array;
 	}
@@ -84,7 +84,7 @@ public:
 	/*
 	*	Returns a pointer to the data of the array, non-const.
 	*/
-	RESTRICTED ObjectType* Data() NOEXCEPT
+	constexpr ObjectType *RESTRICT Data() NOEXCEPT
 	{
 		return array;
 	}
@@ -92,7 +92,7 @@ public:
 	/*
 	*	Returns the size of this array.
 	*/
-	uint64 Size() const NOEXCEPT
+	constexpr uint64 Size() const NOEXCEPT
 	{
 		return ArraySize;
 	}

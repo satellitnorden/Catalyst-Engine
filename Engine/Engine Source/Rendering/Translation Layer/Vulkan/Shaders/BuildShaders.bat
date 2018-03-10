@@ -1,5 +1,7 @@
 glslangValidator.exe -V CubeMapFragmentShader.frag -o 				CubeMapFragmentShader.spv
 glslangValidator.exe -V CubeMapVertexShader.vert -o 				CubeMapVertexShader.spv
+glslangValidator.exe -V EnvironmentMaterialFragmentShader.frag -o 		EnvironmentMaterialFragmentShader.spv
+glslangValidator.exe -V EnvironmentMaterialVertexShader.vert -o 		EnvironmentMaterialVertexShader.spv
 glslangValidator.exe -V InstancedPhysicalVertexShader.vert -o 			InstancedPhysicalVertexShader.spv
 glslangValidator.exe -V LightingFragmentShader.frag -o 				LightingFragmentShader.spv
 glslangValidator.exe -V PhysicalFragmentShader.frag -o 				PhysicalFragmentShader.spv

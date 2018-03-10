@@ -160,13 +160,6 @@ public:
 
 private:
 
-	//Enumeration covering all command buffers.
-	enum CommandBuffer : uint8
-	{
-		SceneBufferCommandBuffer,
-		NumberOfCommandBuffers
-	};
-
 	//Enumeration covering all default textures.
 	enum DefaultTexture : uint8
 	{
@@ -193,6 +186,9 @@ private:
 	//Enumeration covering all descriptor set layouts.
 	enum class DescriptorSetLayout : uint8
 	{
+#if !defined(CATALYST_FINAL)
+		EnvironmentMaterial,
+#endif
 		DynamicUniformData,
 		Terrain,
 		Physical,
@@ -206,6 +202,9 @@ private:
 	//Enumeration covering all pipelines.
 	enum class Pipeline : uint8
 	{
+#if !defined(CATALYST_FINAL)
+		EnvironmentMaterial,
+#endif
 		Terrain,
 		StaticPhysical,
 		InstancedPhysical,
@@ -219,6 +218,9 @@ private:
 	//Enumeration covering all render targets.
 	enum class RenderTarget : uint8
 	{
+#if !defined(CATALYST_FINAL)
+		EnvironmentMaterialDiffuse,
+#endif
 		SceneBufferAlbedoColor,
 		SceneBufferNormalDirectionDepth,
 		SceneBufferRoughnessMetallicAmbientOcclusion,
@@ -240,6 +242,10 @@ private:
 	{
 		CubeMapFragmentShader,
 		CubeMapVertexShader,
+#if !defined(CATALYST_FINAL)
+		EnvironmentMaterialFragmentShader,
+		EnvironmentMaterialVertexShader,
+#endif
 		InstancedPhysicalVertexShader,
 		LightingFragmentShader,
 		PostProcessingFragmentShader,
@@ -276,9 +282,6 @@ private:
 
 	//The post processing uniform data.
 	PostProcessingUniformData postProcessingUniformData;
-
-	//Container for all command buffers.
-	StaticArray<VulkanCommandBuffer, CommandBuffer::NumberOfCommandBuffers> commandBuffers;
 
 	//Container for all default textures.
 	StaticArray<Vulkan2DTexture *RESTRICT, DefaultTexture::NumberOfDefaultTextures> defaultTextures;
