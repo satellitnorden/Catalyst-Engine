@@ -507,6 +507,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\InstancedPhysicalRenderComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\DeltaTimer.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Components\Source\ComponentManager.cpp">

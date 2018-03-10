@@ -134,6 +134,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\CoreDefines.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\CoreMacros.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\CoreTypeAliases.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\DeltaTimer.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\DynamicArray.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\DynamicString.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Engine Core\Include\EngineCore.h" />

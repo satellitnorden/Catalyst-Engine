@@ -76,6 +76,7 @@ class UniquePointer;
 //Core types, implementations.
 #include <BinaryFile.h>
 #include <Bitfield.h>
+#include <DeltaTimer.h>
 #include <DynamicArray.h>
 #include <DynamicString.h>
 #include <Map.h>
