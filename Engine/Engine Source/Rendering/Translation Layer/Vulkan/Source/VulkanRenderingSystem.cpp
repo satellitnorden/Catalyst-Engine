@@ -1246,7 +1246,7 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(terrainSceneBufferPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(terrainSceneBufferPipeline.GetRenderPass(), 0, true, 4);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<4>(terrainSceneBufferPipeline.GetRenderPass(), 0);
 
 	//Iterate over all terrain entity components and draw them all.
 	const uint64 numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
@@ -1296,7 +1296,7 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(StaticPhysicalPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(StaticPhysicalPipeline.GetRenderPass(), 0, false, 0);
+	currentCommandBuffer->CommandBeginRenderPass(StaticPhysicalPipeline.GetRenderPass(), 0);
 
 	for (uint64 i = 0; i < numberOfStaticPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{
@@ -1344,7 +1344,7 @@ void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(instancedPhysicalPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(instancedPhysicalPipeline.GetRenderPass(), 0, false, 0);
+	currentCommandBuffer->CommandBeginRenderPass(instancedPhysicalPipeline.GetRenderPass(), 0);
 
 	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
 	{
@@ -1385,7 +1385,7 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Lighting)]);
 
 	//Bind the lighting render pass.
-	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass(), 0, false, 1);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass(), 0);
 
 	//Bind the scene buffer descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> lightingDescriptorSets
@@ -1413,7 +1413,7 @@ void VulkanRenderingSystem::RenderWater() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(*waterPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(waterPipeline->GetRenderPass(), 0, false, 0);
+	currentCommandBuffer->CommandBeginRenderPass(waterPipeline->GetRenderPass(), 0);
 
 	//Iterate over all water entity components and draw them all.
 	const uint64 numberOfWaterComponents{ ComponentManager::GetNumberOfWaterComponents() };
@@ -1444,7 +1444,7 @@ void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::CubeMap)]);
 
 	//Bind the cube map render pass.
-	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass(), 0, false, 0);
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass(), 0);
 
 	//Bind the sky box descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> skyBoxDescriptorSets
@@ -1471,7 +1471,7 @@ void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::PostProcessing)]);
 
 	//Bind the post processing render pass.
-	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), false, 1);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame());
 
 	//Bind the post processing descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> postProcessingDescriptorSets

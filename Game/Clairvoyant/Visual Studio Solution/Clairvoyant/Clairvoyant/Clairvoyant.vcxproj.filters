@@ -124,6 +124,9 @@
     <Filter Include="Game Source\Source">
       <UniqueIdentifier>{8347cd03-7074-4d63-a05b-1a3ac1ad3f8b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Rendering\API Layer\Vulkan\Inline">
+      <UniqueIdentifier>{c09d8733-40e3-44ba-a614-8b883a146181}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\CameraComponent.h">
@@ -690,6 +693,9 @@
   <ItemGroup>
     <None Include="..\..\..\..\..\Engine\Engine Source\Systems\Inline\EntitySystem.inl">
       <Filter>Engine Source\Systems\Inline</Filter>
+    </None>
+    <None Include="..\..\..\..\..\Engine\Engine Source\Rendering\API Layer\Vulkan\Inline\VulkanCommandBuffer.inl">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Inline</Filter>
     </None>
   </ItemGroup>
 </Project>

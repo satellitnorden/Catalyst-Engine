@@ -49,29 +49,8 @@ void VulkanCommandBuffer::Begin(const VkCommandBufferUsageFlags commandBufferUsa
 /*
 *	Records a begin render pass command.
 */
-void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const bool clearDepth, const uint32 numberOfClearValues) NOEXCEPT
+void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex) NOEXCEPT
 {
-	DynamicArray<VkClearValue> clearValues;
-
-	for (uint32 i = 0; i < numberOfClearValues; ++i)
-	{
-		VkClearValue newClearValue;
-
-		if (clearDepth && i == 0)
-		{
-			newClearValue.color = { 0.0f, 0.0f, 0.0f, 0.0f };
-			newClearValue.depthStencil = { 1.0f, 0 };
-		}
-		
-		else
-		{
-			newClearValue.color = { 0.0f, 0.0f, 0.0f, 1.0f };
-			newClearValue.depthStencil = { 0.0f, 0 };
-		}
-
-		clearValues.EmplaceSlow(newClearValue);
-	}
-
 	VkRenderPassBeginInfo renderPassBeginInfo;
 
 	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -80,8 +59,8 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanR
 	renderPassBeginInfo.framebuffer = vulkanRenderPass.GetFrameBuffers()[framebufferIndex].Get();
 	renderPassBeginInfo.renderArea.offset = { 0, 0 };
 	renderPassBeginInfo.renderArea.extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-	renderPassBeginInfo.clearValueCount = static_cast<uint32>(clearValues.Size());
-	renderPassBeginInfo.pClearValues = clearValues.Data();
+	renderPassBeginInfo.clearValueCount = 0;
+	renderPassBeginInfo.pClearValues = nullptr;
 
 	vkCmdBeginRenderPass(vulkanCommandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
