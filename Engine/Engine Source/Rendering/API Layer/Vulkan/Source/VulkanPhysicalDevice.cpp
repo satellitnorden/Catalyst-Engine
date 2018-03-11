@@ -31,7 +31,7 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 
 	//Get all available physical devices.
 	DynamicArray<VkPhysicalDevice> availablePhysicalDevices;
-	availablePhysicalDevices.Resize(availablePhysicalDeviceCount);
+	availablePhysicalDevices.UpsizeFast(availablePhysicalDeviceCount);
 	VULKAN_ERROR_CHECK(vkEnumeratePhysicalDevices(VulkanInterface::Instance->GetInstance().Get(), &availablePhysicalDeviceCount, availablePhysicalDevices.Data()));
 
 	//Create and fill a list of suitable physical devices.
@@ -73,7 +73,7 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 	vkGetPhysicalDeviceQueueFamilyProperties(vulkanPhysicalDevice, &queueFamilyCount, nullptr);
 
 	DynamicArray<VkQueueFamilyProperties> queueFamilyProperties;
-	queueFamilyProperties.Resize(queueFamilyCount);
+	queueFamilyProperties.UpsizeFast(queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(vulkanPhysicalDevice, &queueFamilyCount, queueFamilyProperties.Data());
 
 	/*
@@ -190,7 +190,7 @@ bool VulkanPhysicalDevice::HasRequiredExtensions(const VkPhysicalDevice &vulkanP
 
 	//Get the available extensions.
 	DynamicArray<VkExtensionProperties> availableExtensions;
-	availableExtensions.Resize(extensionCount);
+	availableExtensions.UpsizeFast(extensionCount);
 	VULKAN_ERROR_CHECK(vkEnumerateDeviceExtensionProperties(vulkanPhysicalDevice, nullptr, &extensionCount, availableExtensions.Data()));
 
 	//Iterate over all available extensions and match them with the required extensions.
@@ -213,7 +213,7 @@ bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vul
 	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &formatsCount, nullptr));
 
 	DynamicArray<VULKAN_SURFACE_FORMAT_TYPE> formats;
-	formats.Resize(formatsCount);
+	formats.UpsizeFast(formatsCount);
 
 	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &formatsCount, formats.Data()));
 
@@ -222,7 +222,7 @@ bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vul
 	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &presentModesCount, nullptr));
 
 	DynamicArray<VULKAN_PRESENT_MODE_TYPE> presentModes;
-	presentModes.Resize(presentModesCount);
+	presentModes.UpsizeFast(presentModesCount);
 
 	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &presentModesCount, presentModes.Data()));
 
@@ -249,7 +249,7 @@ VULKAN_SURFACE_FORMAT_TYPE VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() c
 	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availableFormatsCount, nullptr));
 
 	DynamicArray<VULKAN_SURFACE_FORMAT_TYPE> availableFormats;
-	availableFormats.Resize(availableFormatsCount);
+	availableFormats.UpsizeFast(availableFormatsCount);
 
 	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availableFormatsCount, availableFormats.Data()));
 
@@ -280,7 +280,7 @@ VULKAN_PRESENT_MODE_TYPE VulkanPhysicalDevice::GetMostOptimalPresentMode() const
 	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, nullptr));
 
 	DynamicArray<VULKAN_PRESENT_MODE_TYPE> availablePresentModes;
-	availablePresentModes.Resize(availablePresentModesCount);
+	availablePresentModes.UpsizeFast(availablePresentModesCount);
 
 	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, availablePresentModes.Data()));
 

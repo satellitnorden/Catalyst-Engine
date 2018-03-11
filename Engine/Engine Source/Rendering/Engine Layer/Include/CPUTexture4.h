@@ -33,7 +33,7 @@ public:
 		resolution(initialResolution)
 	{
 		//Resize the underlying texture data to be able to hold all the data.
-		data.Resize(initialResolution * initialResolution);
+		data.UpsizeFast(initialResolution * initialResolution);
 	}
 
 	/*

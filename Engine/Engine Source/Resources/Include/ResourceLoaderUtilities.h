@@ -18,7 +18,7 @@ namespace ResourceLoaderUtilities
 		file.Read(&layerHeight, sizeof(uint32));
 
 		//Read the layer albedo.
-		layerAlbedoData.Resize(mipmapLevels);
+		layerAlbedoData.UpsizeSlow(mipmapLevels);
 
 		const uint64 textureSize{ layerWidth * layerHeight * 4 };
 
@@ -30,7 +30,7 @@ namespace ResourceLoaderUtilities
 		}
 
 		//Read the layer normal map.
-		layerNormalMapData.Resize(mipmapLevels);
+		layerNormalMapData.UpsizeSlow(mipmapLevels);
 
 		for (uint8 i = 0; i < mipmapLevels; ++i)
 		{
@@ -40,7 +40,7 @@ namespace ResourceLoaderUtilities
 		}
 
 		//Read the layer material properties.
-		layerMaterialPropertiesData.Resize(mipmapLevels);
+		layerMaterialPropertiesData.UpsizeSlow(mipmapLevels);
 
 		for (uint8 i = 0; i < mipmapLevels; ++i)
 		{

@@ -61,7 +61,7 @@ void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkan
 	VULKAN_ERROR_CHECK(vkCreateRenderPass(VulkanInterface::Instance->GetLogicalDevice().Get(), &renderPassCreateInfo, nullptr, &vulkanRenderPass));
 
 	//Create the framebuffers.
-	framebuffers.Resize(vulkanPipelineCreationParameters.colorAttachments.Size());
+	framebuffers.UpsizeFast(vulkanPipelineCreationParameters.colorAttachments.Size());
 
 	for (uint64 i = 0, size = vulkanPipelineCreationParameters.colorAttachments.Size(); i < size; ++i)
 	{

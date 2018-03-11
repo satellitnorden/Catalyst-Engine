@@ -52,11 +52,11 @@ void VulkanSwapchain::Initialize() NOEXCEPT
 	//Query the swap chain images.
 	VULKAN_ERROR_CHECK(VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &numberOfSwapChainImages, nullptr));
 
-	swapChainImages.Resize(numberOfSwapChainImages);
+	swapChainImages.UpsizeFast(numberOfSwapChainImages);
 	VULKAN_ERROR_CHECK(VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &numberOfSwapChainImages, swapChainImages.Data()));
 
 	//Create the image views.
-	swapChainImageViews.Resize(numberOfSwapChainImages);
+	swapChainImageViews.UpsizeFast(numberOfSwapChainImages);
 
 	for (uint32 i = 0; i < numberOfSwapChainImages; ++i)
 	{

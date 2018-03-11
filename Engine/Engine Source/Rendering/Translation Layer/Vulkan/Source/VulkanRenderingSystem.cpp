@@ -800,7 +800,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	environmentMaterialPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	environmentMaterialPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	environmentMaterialPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	environmentMaterialPipelineCreationParameters.colorAttachments.Resize(1);
+	environmentMaterialPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
 	environmentMaterialPipelineCreationParameters.colorAttachments[0].Reserve(1);
 	environmentMaterialPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuse)]->GetImageView());
 	environmentMaterialPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
@@ -841,7 +841,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	terrainPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	terrainPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	terrainPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	terrainPipelineCreationParameters.colorAttachments.Resize(1);
+	terrainPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
 	terrainPipelineCreationParameters.colorAttachments[0].Reserve(3);
 	terrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetImageView());
 	terrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetImageView());
@@ -889,7 +889,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	staticPhysicalPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	staticPhysicalPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	staticPhysicalPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	staticPhysicalPipelineCreationParameters.colorAttachments.Resize(1);
+	staticPhysicalPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
 	staticPhysicalPipelineCreationParameters.colorAttachments[0].Reserve(3);
 	staticPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetImageView());
 	staticPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetImageView());
@@ -936,7 +936,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	instancedPhysicalPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	instancedPhysicalPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	instancedPhysicalPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	instancedPhysicalPipelineCreationParameters.colorAttachments.Resize(1);
+	instancedPhysicalPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
 	instancedPhysicalPipelineCreationParameters.colorAttachments[0].Reserve(3);
 	instancedPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetImageView());
 	instancedPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetImageView());
@@ -982,7 +982,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	lightingPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	lightingPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	lightingPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	lightingPipelineCreationParameters.colorAttachments.Resize(1);
+	lightingPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
 	lightingPipelineCreationParameters.colorAttachments[0].Reserve(2);
 	lightingPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
 	lightingPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::WaterScene)]->GetImageView());
@@ -1023,7 +1023,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	cubeMapPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	cubeMapPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	cubeMapPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	cubeMapPipelineCreationParameters.colorAttachments.Resize(1);
+	cubeMapPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
 	cubeMapPipelineCreationParameters.colorAttachments[0].Reserve(2);
 	cubeMapPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
 	cubeMapPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::WaterScene)]->GetImageView());
@@ -1066,7 +1066,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	waterPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	waterPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	waterPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	waterPipelineCreationParameters.colorAttachments.Resize(1);
+	waterPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
 	waterPipelineCreationParameters.colorAttachments[0].Reserve(1);
 	waterPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
 	waterPipelineCreationParameters.cullMode = VK_CULL_MODE_NONE;
@@ -1114,7 +1114,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	const DynamicArray<VkImageView> &swapchainImageViews{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
 	const uint64 swapchainImageViewsSize{ swapchainImageViews.Size() };
 
-	postProcessingPipelineCreationParameters.colorAttachments.Resize(swapchainImageViewsSize);
+	postProcessingPipelineCreationParameters.colorAttachments.UpsizeSlow(swapchainImageViewsSize);
 
 	for (uint64 i = 0; i < swapchainImageViewsSize; ++i)
 	{

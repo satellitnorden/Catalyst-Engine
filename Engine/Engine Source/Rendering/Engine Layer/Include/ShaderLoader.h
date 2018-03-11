@@ -20,7 +20,7 @@ namespace ShaderLoader
 
 		uint64 fileSize = static_cast<uint64>(file.tellg());
 		DynamicArray<char> buffer;
-		buffer.Resize(fileSize);
+		buffer.UpsizeFast(fileSize);
 
 		file.seekg(0);
 		file.read(buffer.Data(), fileSize);

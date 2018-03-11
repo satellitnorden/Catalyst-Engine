@@ -17,7 +17,7 @@ public:
 	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout) NOEXCEPT
 	{
 		//Create the command buffers.
-		commandBuffers.Resize(frameDataCount);
+		commandBuffers.UpsizeFast(frameDataCount);
 
 		for (auto &commandBuffer : commandBuffers)
 		{
@@ -25,7 +25,7 @@ public:
 		}
 
 		//Create the fences.
-		fences.Resize(frameDataCount);
+		fences.UpsizeFast(frameDataCount);
 
 		for (auto &fence : fences)
 		{
@@ -33,7 +33,7 @@ public:
 		}
 
 		//Create the dynamic uniform data buffers.
-		dynamicUniformDataBuffers.Resize(frameDataCount);
+		dynamicUniformDataBuffers.UpsizeFast(frameDataCount);
 
 		for (auto &dynamicUniformDataBuffer : dynamicUniformDataBuffers)
 		{
@@ -41,7 +41,7 @@ public:
 		}
 
 		//Create the dynamic uniform data descriptor sets.
-		dynamicUniformDataDescriptorSets.Resize(frameDataCount);
+		dynamicUniformDataDescriptorSets.UpsizeFast(frameDataCount);
 
 		for (uint64 i = 0, size = dynamicUniformDataDescriptorSets.Size(); i < size; ++i)
 		{

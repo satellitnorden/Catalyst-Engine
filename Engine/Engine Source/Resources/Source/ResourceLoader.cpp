@@ -107,7 +107,7 @@ void ResourceLoader::LoadPhysicalMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(&physicalMaterialData.height, sizeof(uint32));
 
 	//Read the albedo.
-	physicalMaterialData.albedoData.Resize(physicalMaterialData.mipmapLevels);
+	physicalMaterialData.albedoData.UpsizeSlow(physicalMaterialData.mipmapLevels);
 
 	const uint64 textureSize{ physicalMaterialData.width * physicalMaterialData.height * 4 };
 
@@ -119,7 +119,7 @@ void ResourceLoader::LoadPhysicalMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	}
 
 	//Read the normal map.
-	physicalMaterialData.normalMapData.Resize(physicalMaterialData.mipmapLevels);
+	physicalMaterialData.normalMapData.UpsizeSlow(physicalMaterialData.mipmapLevels);
 
 	for (uint8 i = 0; i < physicalMaterialData.mipmapLevels; ++i)
 	{
@@ -129,7 +129,7 @@ void ResourceLoader::LoadPhysicalMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	}
 
 	//Read the material properties.
-	physicalMaterialData.materialPropertiesData.Resize(physicalMaterialData.mipmapLevels);
+	physicalMaterialData.materialPropertiesData.UpsizeSlow(physicalMaterialData.mipmapLevels);
 
 	for (uint8 i = 0; i < physicalMaterialData.mipmapLevels; ++i)
 	{
@@ -233,7 +233,7 @@ void ResourceLoader::LoadWaterMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	file.Read(&waterMaterialData.height, sizeof(uint32));
 
 	//Read the normal map.
-	waterMaterialData.normalMapData.Resize(waterMaterialData.mipmapLevels);
+	waterMaterialData.normalMapData.UpsizeSlow(waterMaterialData.mipmapLevels);
 
 	const uint64 textureSize{ waterMaterialData.width * waterMaterialData.height * 4 };
 

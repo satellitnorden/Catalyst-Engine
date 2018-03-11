@@ -325,32 +325,6 @@ public:
 	}
 
 	/*
-	*	Resizes this dynamic array, filling it with default constructed objects.
-	*/
-	void Resize(const uint64 newCapacity) NOEXCEPT
-	{
-		//Allocate the new array.
-		ObjectType *RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
-
-		//Move over all objects from the old array to the new array.
-		MemoryUtilities::CopyMemory(newArray, array, sizeof(ObjectType) * (size < newCapacity ? size : newCapacity));
-
-		//Default construct the remaining objects.
-		for (uint64 i = size; i < newCapacity; ++i)
-		{
-			new (&newArray[i]) ObjectType;
-		}
-
-		//Free the old array.
-		MemoryUtilities::FreeMemory(static_cast<void*>(array));
-
-		//Update the array and the capacity.
-		array = newArray;
-		capacity = newCapacity;
-		size = newCapacity;
-	}
-
-	/*
 	*	Upsizes this dynamic array, without calling the constructors of the new elements.
 	*/
 	void UpsizeFast(const uint64 newCapacity) NOEXCEPT
@@ -360,6 +334,32 @@ public:
 
 		//Move over all objects from the old array to the new array.
 		MemoryUtilities::CopyMemory(newArray, array, sizeof(ObjectType) * size);
+
+		//Free the old array.
+		MemoryUtilities::FreeMemory(static_cast<void *RESTRICT>(array));
+
+		//Update the array and the capacity.
+		array = newArray;
+		capacity = newCapacity;
+		size = newCapacity;
+	}
+
+	/*
+	*	Upsizes this dynamic array, calling the constructors of the new elements.
+	*/
+	void UpsizeSlow(const uint64 newCapacity) NOEXCEPT
+	{
+		//Allocate the new array.
+		ObjectType *RESTRICT newArray{ static_cast<ObjectType *RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
+
+		//Move over all objects from the old array to the new array.
+		MemoryUtilities::CopyMemory(newArray, array, sizeof(ObjectType) * size);
+
+		//Default construct the remaining objects.
+		for (uint64 i = size; i < newCapacity; ++i)
+		{
+			new (&newArray[i]) ObjectType;
+		}
 
 		//Free the old array.
 		MemoryUtilities::FreeMemory(static_cast<void *RESTRICT>(array));
