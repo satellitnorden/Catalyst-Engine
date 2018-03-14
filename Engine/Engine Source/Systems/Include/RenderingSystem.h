@@ -60,6 +60,13 @@ public:
 	*/
 	void ReleaseSystem() NOEXCEPT;
 
+#if !defined(CATALYST_FINAL)
+	/*
+	*	Constructs an environment material.
+	*/
+	void ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT;
+#endif
+
 	/*
 	*	Creates a terrain material.
 	*/

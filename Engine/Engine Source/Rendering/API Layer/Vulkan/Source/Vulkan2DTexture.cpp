@@ -31,7 +31,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 	//Calculate the image size.
 	VkDeviceSize imageSize{ 0 };
 
-	for (uint32 i = 0; i < textureMipmapLevels; ++i)
+	for (uint32 i{ 0 }; i < textureMipmapLevels; ++i)
 	{
 		imageSize += (textureWidth >> i) * (textureHeight >> i) * textureChannels * textureTexelSize;
 	}
@@ -48,11 +48,11 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 
 	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, VK_WHOLE_SIZE, 0, &data));
 
-	uint64 currentOffset{ 0 };
+	VkDeviceSize currentOffset{ 0 };
 
-	for (uint64 i = 0; i < textureMipmapLevels; ++i)
+	for (uint8 i{ 0 }; i < textureMipmapLevels; ++i)
 	{
-		const uint64 mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels * static_cast<uint64>(textureTexelSize) };
+		const VkDeviceSize mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels * static_cast<uint64>(textureTexelSize) };
 		MemoryUtilities::CopyMemory(static_cast<byte*>(data) + currentOffset, textureData[i], mipSize);
 
 		currentOffset += mipSize;

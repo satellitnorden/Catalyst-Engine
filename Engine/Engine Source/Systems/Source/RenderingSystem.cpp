@@ -52,6 +52,17 @@ void RenderingSystem::ReleaseSystem() NOEXCEPT
 	VulkanRenderingSystem::Instance->ReleaseSystem();
 }
 
+#if !defined(CATALYST_FINAL)
+/*
+*	Constructs an environment material.
+*/
+void RenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT
+{
+	//Construct the environment material via the Vulkan rendering system.
+	VulkanRenderingSystem::Instance->ConstructEnvironmentMaterial(data, textureWidth, textureHeight, textureChannels, diffuseData, diffuseIrradianceData);
+}
+#endif
+
 /*
 *	Creates a terrain material.
 */

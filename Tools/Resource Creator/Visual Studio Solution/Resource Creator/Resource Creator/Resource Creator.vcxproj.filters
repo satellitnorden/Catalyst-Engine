@@ -124,6 +124,9 @@
     <Filter Include="Resource Creator Source\Source">
       <UniqueIdentifier>{e4a84f32-1e25-467f-9afb-825e9ec22e1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Rendering\API Layer\Vulkan\Inline">
+      <UniqueIdentifier>{44d6483f-3c93-4344-a0f0-6d8f29acd288}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Components\Include\CameraComponent.h">
@@ -478,6 +481,9 @@
       <Filter>Resource Creator Source\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\ResourceCollectionCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\EnvironmentMaterialCreator.h">
       <Filter>Resource Creator Source\Include</Filter>
     </ClInclude>
   </ItemGroup>

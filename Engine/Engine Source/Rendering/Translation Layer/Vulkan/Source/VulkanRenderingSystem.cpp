@@ -151,11 +151,11 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Render the lighting.
 	RenderLighting();
 
-	//Render water.
-	RenderWater();
-
 	//Render the sky box.
 	RenderSkyBox();
+
+	//Render water.
+	RenderWater();
 
 	//Render the post processing.
 	RenderPostProcessing();
@@ -184,6 +184,23 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 	//Release the Vulkan interface.
 	VulkanInterface::Instance->Release();
 }
+
+#if !defined(CATALYST_FINAL)
+/*
+*	Constructs an environment material.
+*/
+void VulkanRenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT
+{
+	//Create a 2D texture of the data.
+	Vulkan2DTexture *const RESTRICT environmentTexture{ VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(1), textureWidth, textureHeight, textureChannels, sizeof(float), reinterpret_cast<void *const RESTRICT *RESTRICT>(&data), VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE) };
+
+	//Create the descriptor set.
+	VulkanDescriptorSet environmentDescriptorSet;
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(environmentDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::EnvironmentMaterial)]);
+
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &environmentTexture->GetWriteDescriptorSet(environmentDescriptorSet, 0), 0, nullptr);
+}
+#endif
 
 /*
 *	Creates a terrain material.
@@ -585,6 +602,7 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 	//Initialize all render targets.
 #if !defined(CATALYST_FINAL)
 	renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuse)] = VulkanInterface::Instance->CreateRenderTarget({ ENVIRONMENT_MATERIAL_RESOLUTION, ENVIRONMENT_MATERIAL_RESOLUTION });
+	renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuseIrradiance)] = VulkanInterface::Instance->CreateRenderTarget({ ENVIRONMENT_MATERIAL_RESOLUTION, ENVIRONMENT_MATERIAL_RESOLUTION });
 #endif
 	renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 	renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
