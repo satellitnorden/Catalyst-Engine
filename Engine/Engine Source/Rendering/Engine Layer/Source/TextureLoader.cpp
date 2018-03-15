@@ -13,9 +13,9 @@ void TextureLoader::LoadTexture(const char *RESTRICT texturePath, uint16 &width,
 	//Load the texture data.
 	int tempWidth, tempHeight, tempNumberOfChannels;
 	*data = stbi_load(texturePath, &tempWidth, &tempHeight, &tempNumberOfChannels, STBI_rgb_alpha);
-	width = static_cast<uint16>(tempWidth);
-	height = static_cast<uint16>(tempHeight);
-	numberOfChannels = static_cast<uint8>(tempNumberOfChannels);
+	width = StaticCast<uint16>(tempWidth);
+	height = StaticCast<uint16>(tempHeight);
+	numberOfChannels = StaticCast<uint8>(tempNumberOfChannels);
 }
 
 /*

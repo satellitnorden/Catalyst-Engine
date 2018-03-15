@@ -67,7 +67,7 @@ public:
 	*/
 	const Vector4 At(const float xIndex, const float yIndex) const NOEXCEPT
 	{
-		const float texelSize{ 1.0f / static_cast<float>(resolution) };
+		const float texelSize{ 1.0f / StaticCast<float>(resolution) };
 
 		const float xPixelPosition{ xIndex / texelSize + 0.5f };
 		const float yPixelPosition{ yIndex / texelSize + 0.5f };
@@ -79,20 +79,20 @@ public:
 		const float yStartTexel{ (yPixelPosition - yFractional) * texelSize };
 
 		//Apparently this is needed, to sample the correct texel. I do not know why. Need to investigate. This keeps the camera from clipping against the terrain though.
-		constexpr uint64 xModifier{ static_cast<uint64>(-1) };
-		constexpr uint64 yModifier{ static_cast<uint64>(-1) };
+		constexpr uint64 xModifier{ StaticCast<uint64>(-1) };
+		constexpr uint64 yModifier{ StaticCast<uint64>(-1) };
 
-		const uint64 xBottomLeftCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const uint64 yBottomLeftCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xBottomLeftCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>(xStartTexel * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yBottomLeftCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>(yStartTexel * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
-		const uint64 xBottomRightCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + texelSize) * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const uint64 yBottomRightCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xBottomRightCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>((xStartTexel + texelSize) * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yBottomRightCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>(yStartTexel * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
-		const uint64 xTopLeftCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const uint64 yTopLeftCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + texelSize) * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xTopLeftCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>(xStartTexel * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yTopLeftCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>((yStartTexel + texelSize) * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
-		const uint64 xTopRightCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + texelSize) * static_cast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const uint64 yTopRightCoordinate{ GameMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + texelSize) * static_cast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xTopRightCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>((xStartTexel + texelSize) * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yTopRightCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>((yStartTexel + texelSize) * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
 		const Vector4 &bottomLeftValue{ data[xBottomLeftCoordinate + (yBottomLeftCoordinate * resolution)] };
 		const Vector4 &bottomRightValue{ data[xBottomRightCoordinate + (yBottomRightCoordinate * resolution)] };

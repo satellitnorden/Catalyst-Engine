@@ -165,11 +165,11 @@ void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreat
 	deviceCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	deviceCreateInfo.pNext = nullptr;
 	deviceCreateInfo.flags = 0;
-	deviceCreateInfo.queueCreateInfoCount = static_cast<uint32>(deviceQueueCreateInfos.Size());
+	deviceCreateInfo.queueCreateInfoCount = StaticCast<uint32>(deviceQueueCreateInfos.Size());
 	deviceCreateInfo.pQueueCreateInfos = deviceQueueCreateInfos.Data();
 	deviceCreateInfo.enabledLayerCount = 0;
 	deviceCreateInfo.ppEnabledLayerNames = nullptr;
-	deviceCreateInfo.enabledExtensionCount = static_cast<uint32>(requiredExtensions.Size());
+	deviceCreateInfo.enabledExtensionCount = StaticCast<uint32>(requiredExtensions.Size());
 	deviceCreateInfo.ppEnabledExtensionNames = requiredExtensions.Data();
 	deviceCreateInfo.pEnabledFeatures = enabledFeatures;
 }

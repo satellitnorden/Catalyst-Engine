@@ -94,6 +94,6 @@ void VulkanDescriptorPool::CreateDescriptorPoolCreateInfo(VkDescriptorPoolCreate
 	descriptorPoolCreateInfo.pNext = nullptr;
 	descriptorPoolCreateInfo.flags = 0;
 	descriptorPoolCreateInfo.maxSets = VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS;
-	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32>(descriptorPoolSizes.Size());
+	descriptorPoolCreateInfo.poolSizeCount = StaticCast<uint32>(descriptorPoolSizes.Size());
 	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.Data();
 }

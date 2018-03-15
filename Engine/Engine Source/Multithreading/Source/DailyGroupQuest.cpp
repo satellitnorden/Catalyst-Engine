@@ -37,7 +37,7 @@ bool DailyGroupQuest::CarryOut() NOEXCEPT
 	while (myContainerIndex < containerSize)
 	{
 		//Get the element at your container index!
-		void *RESTRICT myElement = static_cast<void *RESTRICT>(static_cast<byte *RESTRICT>(container) + (objectSize * myContainerIndex));
+		void *RESTRICT myElement = StaticCast<void *RESTRICT>(StaticCast<byte *RESTRICT>(container) + (objectSize * myContainerIndex));
 
 		//Execute the function with my element!
 		function(arguments, myElement);

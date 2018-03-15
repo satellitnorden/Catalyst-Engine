@@ -82,14 +82,14 @@ public:
 
 			bufferImageCopies.EmplaceFast(bufferImageCopy);
 
-			currentOffset += (width >> i) * (height >> i) * 4 * sizeof(byte);
+			currentOffset += (width >> i) * (height >> i) * 4 * SizeOf(byte);
 		}
 
 		//Begin the ctransfer ommand buffer.
 		transferCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Record the copy command to the transfer command buffer.
-		vkCmdCopyBufferToImage(transferCommandBuffer.Get(), vulkanBuffer, vulkanImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32>(bufferImageCopies.Size()), bufferImageCopies.Data());
+		vkCmdCopyBufferToImage(transferCommandBuffer.Get(), vulkanBuffer, vulkanImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, StaticCast<uint32>(bufferImageCopies.Size()), bufferImageCopies.Data());
 
 		//End the transfer command buffer.
 		transferCommandBuffer.End();

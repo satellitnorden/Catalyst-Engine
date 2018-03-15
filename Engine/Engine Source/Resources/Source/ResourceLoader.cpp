@@ -34,14 +34,14 @@ void ResourceLoader::LoadResourceCollection(const char *RESTRICT filePath) NOEXC
 
 	//Read the number of resources.
 	uint64 numberOfResources;
-	file.Read(&numberOfResources, sizeof(uint64));
+	file.Read(&numberOfResources, SizeOf(uint64));
 
 	//For each resource, load it.
 	for (uint64 i = 0; i < numberOfResources; ++i)
 	{
 		//Read the resource type.
 		ResourceType resourceType;
-		file.Read(&resourceType, sizeof(ResourceType));
+		file.Read(&resourceType, SizeOf(ResourceType));
 
 		switch (resourceType)
 		{
@@ -95,16 +95,16 @@ void ResourceLoader::LoadPhysicalMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Read the resource ID.
 	ResourceID resourceID;
-	file.Read(&resourceID, sizeof(ResourceID));
+	file.Read(&resourceID, SizeOf(ResourceID));
 
 	//Read the number of mipmap levels.
-	file.Read(&physicalMaterialData.mipmapLevels, sizeof(uint8));
+	file.Read(&physicalMaterialData.mipmapLevels, SizeOf(uint8));
 
 	//Read the width.
-	file.Read(&physicalMaterialData.width, sizeof(uint32));
+	file.Read(&physicalMaterialData.width, SizeOf(uint32));
 
 	//Read the height.
-	file.Read(&physicalMaterialData.height, sizeof(uint32));
+	file.Read(&physicalMaterialData.height, SizeOf(uint32));
 
 	//Read the albedo.
 	physicalMaterialData.albedoData.UpsizeSlow(physicalMaterialData.mipmapLevels);
@@ -152,26 +152,26 @@ void ResourceLoader::LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Read the resource ID.
 	ResourceID resourceID;
-	file.Read(&resourceID, sizeof(ResourceID));
+	file.Read(&resourceID, SizeOf(ResourceID));
 
 	//Read the extent of the physical model.
-	file.Read(&physicalModelData.extent, sizeof(float));
+	file.Read(&physicalModelData.extent, SizeOf(float));
 
 	//Read the number of vertices.
 	uint64 numberOfVertices;
-	file.Read(&numberOfVertices, sizeof(uint64));
+	file.Read(&numberOfVertices, SizeOf(uint64));
 
 	//Read the vertices.
 	physicalModelData.vertices.UpsizeFast(numberOfVertices);
-	file.Read(physicalModelData.vertices.Data(), sizeof(PhysicalVertex) * numberOfVertices);
+	file.Read(physicalModelData.vertices.Data(), SizeOf(PhysicalVertex) * numberOfVertices);
 
 	//Read the number of indices.
 	uint64 numberOfIndices;
-	file.Read(&numberOfIndices, sizeof(uint64));
+	file.Read(&numberOfIndices, SizeOf(uint64));
 
 	//Read the indices.
 	physicalModelData.indices.UpsizeFast(numberOfIndices);
-	file.Read(physicalModelData.indices.Data(), sizeof(uint32) * numberOfIndices);
+	file.Read(physicalModelData.indices.Data(), SizeOf(uint32) * numberOfIndices);
 
 	//Create the physical model via the rendering system.
 	RenderingSystem::Instance->CreatePhysicalModel(physicalModelData, physicalModels[resourceID]);
@@ -187,10 +187,10 @@ void ResourceLoader::LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Read the resource ID.
 	ResourceID resourceID;
-	file.Read(&resourceID, sizeof(ResourceID));
+	file.Read(&resourceID, SizeOf(ResourceID));
 
 	//Read the number of mipmap levels.
-	file.Read(&terrainMaterialData.mipmapLevels, sizeof(uint8));
+	file.Read(&terrainMaterialData.mipmapLevels, SizeOf(uint8));
 
 	//Load the first layer.
 	ResourceLoaderUtilities::LoadTerrainLayerData(file, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, terrainMaterialData.mipmapLevels, terrainMaterialData.firstLayerAlbedoData, terrainMaterialData.firstLayerNormalMapData, terrainMaterialData.firstLayerMaterialPropertiesData);
@@ -221,16 +221,16 @@ void ResourceLoader::LoadWaterMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Read the resource ID.
 	ResourceID resourceID;
-	file.Read(&resourceID, sizeof(ResourceID));
+	file.Read(&resourceID, SizeOf(ResourceID));
 
 	//Read the number of mipmap levels.
-	file.Read(&waterMaterialData.mipmapLevels, sizeof(uint8));
+	file.Read(&waterMaterialData.mipmapLevels, SizeOf(uint8));
 
 	//Read the width.
-	file.Read(&waterMaterialData.width, sizeof(uint32));
+	file.Read(&waterMaterialData.width, SizeOf(uint32));
 
 	//Read the height.
-	file.Read(&waterMaterialData.height, sizeof(uint32));
+	file.Read(&waterMaterialData.height, SizeOf(uint32));
 
 	//Read the normal map.
 	waterMaterialData.normalMapData.UpsizeSlow(waterMaterialData.mipmapLevels);

@@ -70,7 +70,7 @@ public:
 	*/
 	static constexpr float Fractional(const float number) NOEXCEPT
 	{
-		return number - static_cast<float>(static_cast<int32>(number));
+		return number - StaticCast<float>(StaticCast<int32>(number));
 	}
 
 	/*
@@ -189,7 +189,7 @@ public:
 	template <class IntegerType>
 	constexpr static IntegerType RoundToInteger(const float value) NOEXCEPT
 	{
-		return static_cast<IntegerType>(round(value));
+		return StaticCast<IntegerType>(round(value));
 	}
 
 	/*
@@ -205,7 +205,7 @@ public:
 	*/
 	static constexpr float Signum(const float number) NOEXCEPT
 	{
-		return static_cast<float>((number > 0.0f) - (number < 0.0f));
+		return StaticCast<float>((number > 0.0f) - (number < 0.0f));
 	}
 
 	/*

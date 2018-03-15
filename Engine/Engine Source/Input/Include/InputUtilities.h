@@ -56,7 +56,7 @@ namespace InputUtilities
 	void UpdateKeyboardButton(const uint16 button, KeyboardButtonState &keyboardButtonState) NOEXCEPT
 	{
 		//The keyboard button is not pressed.
-		if (!static_cast<bool>(GetKeyState(button) & 0x8000))
+		if (!StaticCast<bool>(GetKeyState(button) & 0x8000))
 		{
 			if (keyboardButtonState == KeyboardButtonState::ReleasedHold)
 			{
@@ -124,14 +124,14 @@ namespace InputUtilities
 		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_X, currentGamepadState.xButtonState);
 		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_Y, currentGamepadState.yButtonState);
 
-		currentGamepadState.leftTriggerValue = static_cast<float>(xInputState.Gamepad.bLeftTrigger) / 255;
-		currentGamepadState.rightTriggerValue = static_cast<float>(xInputState.Gamepad.bRightTrigger) / 255;
+		currentGamepadState.leftTriggerValue = StaticCast<float>(xInputState.Gamepad.bLeftTrigger) / 255;
+		currentGamepadState.rightTriggerValue = StaticCast<float>(xInputState.Gamepad.bRightTrigger) / 255;
 
-		currentGamepadState.leftThumbstickXValue = static_cast<float>(xInputState.Gamepad.sThumbLX) / 32'768;
-		currentGamepadState.leftThumbstickYValue = static_cast<float>(xInputState.Gamepad.sThumbLY) / 32'768;
+		currentGamepadState.leftThumbstickXValue = StaticCast<float>(xInputState.Gamepad.sThumbLX) / 32'768;
+		currentGamepadState.leftThumbstickYValue = StaticCast<float>(xInputState.Gamepad.sThumbLY) / 32'768;
 
-		currentGamepadState.rightThumbstickXValue = static_cast<float>(xInputState.Gamepad.sThumbRX) / 32'768;
-		currentGamepadState.rightThumbstickYValue = static_cast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
+		currentGamepadState.rightThumbstickXValue = StaticCast<float>(xInputState.Gamepad.sThumbRX) / 32'768;
+		currentGamepadState.rightThumbstickYValue = StaticCast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
 
 		//Calculate if the thumbstick values are in the deadzone.If so, reset them.
 		if (GameMath::Absolute(currentGamepadState.leftThumbstickXValue) <= GAMEPAD_DEADZONE)

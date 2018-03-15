@@ -185,7 +185,7 @@ void VulkanSwapchain::CreatePresentInfo(VULKAN_PRESENT_INFO_TYPE &presentInfo, c
 	presentInfo.sType = VULKAN_STRUCTURE_TYPE_PRESENT_INFO;
 	presentInfo.pNext = nullptr;
 	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = reinterpret_cast<const VkSemaphore *RESTRICT>(renderFinishedSemaphore);
+	presentInfo.pWaitSemaphores = ReinterpretCast<const VkSemaphore *RESTRICT>(renderFinishedSemaphore);
 	presentInfo.swapchainCount = 1;
 	presentInfo.pSwapchains = &vulkanSwapChain;
 	presentInfo.pImageIndices = &currentImageIndex;

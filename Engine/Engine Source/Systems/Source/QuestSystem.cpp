@@ -64,7 +64,7 @@ void QuestSystem::ReleaseSystem() NOEXCEPT
 */
 void QuestSystem::RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFunction newFunction) NOEXCEPT
 {
-	dailyQuests[static_cast<uint8>(dailyQuest)].SetFunction(newFunction);
+	dailyQuests[INDEX(dailyQuest)].SetFunction(newFunction);
 }
 
 /*
@@ -73,12 +73,12 @@ void QuestSystem::RegisterDailyQuest(const DailyQuests dailyQuest, DailyQuestFun
 void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest, void *RESTRICT arguments) NOEXCEPT
 {
 	//Only carry out the daily quest if it is not available or in progress.
-	DailyQuestCompletionState questCompletionState = dailyQuests[static_cast<uint8>(dailyQuest)].GetQuestCompletionState();
+	DailyQuestCompletionState questCompletionState = dailyQuests[INDEX(dailyQuest)].GetQuestCompletionState();
 
 	if (questCompletionState == DailyQuestCompletionState::Unavailable || questCompletionState == DailyQuestCompletionState::Complete)
 	{
-		dailyQuests[static_cast<uint8>(dailyQuest)].SetArguments(arguments);
-		dailyQuests[static_cast<uint8>(dailyQuest)].SetQuestCompletionState(DailyQuestCompletionState::Available);
+		dailyQuests[INDEX(dailyQuest)].SetArguments(arguments);
+		dailyQuests[INDEX(dailyQuest)].SetQuestCompletionState(DailyQuestCompletionState::Available);
 	}
 }
 
@@ -87,7 +87,7 @@ void QuestSystem::CarryOutDailyQuest(const DailyQuests dailyQuest, void *RESTRIC
 */
 void QuestSystem::WaitForDailyQuest(const DailyQuests dailyQuest) const NOEXCEPT
 {
-	while (dailyQuests[static_cast<uint8>(dailyQuest)].GetQuestCompletionState() != DailyQuestCompletionState::Complete)
+	while (dailyQuests[StaticCast<uint8>(dailyQuest)].GetQuestCompletionState() != DailyQuestCompletionState::Complete)
 	{
 		std::this_thread::yield();
 	}
@@ -104,7 +104,7 @@ void QuestSystem::ExecuteAdventurer() NOEXCEPT
 		uint8 carriedOutQuests{ 0 };
 
 		//Carry out all daily quests.
-		for (uint8 i = 0; i < static_cast<uint8>(DailyQuests::NumberOfDailyQuests); ++i)
+		for (uint8 i = 0; i < StaticCast<uint8>(DailyQuests::NumberOfDailyQuests); ++i)
 		{
 			carriedOutQuests += dailyQuests[i].CarryOut() ? 1 : 0;
 		}

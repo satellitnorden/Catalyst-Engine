@@ -89,23 +89,23 @@ void WorldArchitect::Initialize() NOEXCEPT
 		{
 			float frequency = 5.0f;
 			float multiplier = 1.0f;
-			terrainProperties.At(i, j).W = PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W = PerlinNoiseGenerator::GenerateNoise(StaticCast<float>(i) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, StaticCast<float>(j) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(StaticCast<float>(i) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, StaticCast<float>(j) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(StaticCast<float>(i) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, StaticCast<float>(j) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 			
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(StaticCast<float>(i) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, StaticCast<float>(j) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(StaticCast<float>(i) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, StaticCast<float>(j) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			terrainProperties.At(i, j).W = GameMath::LinearlyInterpolate(terrainProperties.At(i, j).W, GameMath::SmoothStep<1>(terrainProperties.At(i, j).W), 0.25f);
 		}
@@ -167,7 +167,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 			//Determine the weight of the dirt layer.
 			constexpr float dirtLayerFrequency{ 1.0f };
-			layerWeights.At(i, j).Y = (PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f;
+			layerWeights.At(i, j).Y = (PerlinNoiseGenerator::GenerateNoise(StaticCast<float>(i) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, StaticCast<float>(j) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f;
 			layerWeights.At(i, j).Y = GameMath::SmoothStep<5>(layerWeights.At(i, j).Y);
 
 			//Determine the weight of the rock layer.

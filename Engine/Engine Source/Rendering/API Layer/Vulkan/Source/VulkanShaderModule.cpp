@@ -54,5 +54,5 @@ void VulkanShaderModule::CreateShaderModuleCreateInfo(VkShaderModuleCreateInfo &
 	shaderModuleCreateInfo.pNext = nullptr;
 	shaderModuleCreateInfo.flags = 0;
 	shaderModuleCreateInfo.codeSize = shaderByteCode.Size();
-	shaderModuleCreateInfo.pCode = reinterpret_cast<const uint32*>(shaderByteCode.Data());
+	shaderModuleCreateInfo.pCode = ReinterpretCast<const uint32*>(shaderByteCode.Data());
 }

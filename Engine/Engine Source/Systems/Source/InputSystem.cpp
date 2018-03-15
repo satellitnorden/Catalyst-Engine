@@ -32,7 +32,7 @@ InputSystem::~InputSystem() NOEXCEPT
 void InputSystem::PostInitializeSystem() NOEXCEPT
 {
 	//Register the input system asynchronous update daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, [](void *RESTRICT arguments) { static_cast<InputSystem *RESTRICT>(arguments)->UpdateSystemAsynchronous(); });
+	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, [](void *RESTRICT arguments) { StaticCast<InputSystem *RESTRICT>(arguments)->UpdateSystemAsynchronous(); });
 }
 
 /*

@@ -38,14 +38,14 @@ void VulkanInterface::Initialize(Window &window) NOEXCEPT
 	vulkanLogicalDevice.Initialize();
 
 	//Initialize the graphics queue.
-	queues[static_cast<uint8>(Queue::Graphics)].Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
+	queues[INDEX(Queue::Graphics)].Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
 
 #if !RENDERDOC_DEBUGGING
 	//Initialize the present queue.
-	queues[static_cast<uint8>(Queue::Present)].Initialize(vulkanPhysicalDevice.GetPresentQueueFamilyIndex());
+	queues[INDEX(Queue::Present)].Initialize(vulkanPhysicalDevice.GetPresentQueueFamilyIndex());
 
 	//Initialize the transfer queue.
-	queues[static_cast<uint8>(Queue::Transfer)].Initialize(vulkanPhysicalDevice.GetTransferQueueFamilyIndex());
+	queues[INDEX(Queue::Transfer)].Initialize(vulkanPhysicalDevice.GetTransferQueueFamilyIndex());
 #endif
 
 	//Initialize the graphics Vulkan command pool.

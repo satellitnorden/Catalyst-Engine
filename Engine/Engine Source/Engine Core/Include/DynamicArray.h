@@ -34,7 +34,7 @@ public:
 		ReserveConstruct(initializerList.size());
 
 		//Copy all elements of the initializer list to this dynamic array.
-		MemoryUtilities::CopyMemory(array, initializerList.begin(), sizeof(ObjectType) * capacity);
+		MemoryUtilities::CopyMemory(array, initializerList.begin(), SizeOf(ObjectType) * capacity);
 
 		//Set the size equal to the capacity.
 		size = capacity;
@@ -47,7 +47,7 @@ public:
 	{
 		ReserveConstruct(otherDynamicArray.capacity);
 
-		MemoryUtilities::CopyMemory(array, otherDynamicArray.array, sizeof(ObjectType) * capacity);
+		MemoryUtilities::CopyMemory(array, otherDynamicArray.array, SizeOf(ObjectType) * capacity);
 
 		size = capacity;
 	}
@@ -79,7 +79,7 @@ public:
 			}
 
 			//Free the memory used by the array.
-			MemoryUtilities::FreeMemory(static_cast<void *RESTRICT>(array));
+			MemoryUtilities::FreeMemory(StaticCast<void *RESTRICT>(array));
 		}
 	}
 
@@ -311,13 +311,13 @@ public:
 	void Reserve(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		ObjectType *RESTRICT newArray{ static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
+		ObjectType *RESTRICT newArray{ StaticCast<ObjectType*>(MemoryUtilities::AllocateMemory(SizeOf(ObjectType) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		MemoryUtilities::CopyMemory(newArray, array, sizeof(ObjectType) * size);
+		MemoryUtilities::CopyMemory(newArray, array, SizeOf(ObjectType) * size);
 
 		//Free the old array.
-		MemoryUtilities::FreeMemory(static_cast<void*>(array));
+		MemoryUtilities::FreeMemory(StaticCast<void*>(array));
 
 		//Update the array and the capacity.
 		array = newArray;
@@ -330,13 +330,13 @@ public:
 	void UpsizeFast(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		ObjectType *RESTRICT newArray{ static_cast<ObjectType *RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
+		ObjectType *RESTRICT newArray{ StaticCast<ObjectType *RESTRICT>(MemoryUtilities::AllocateMemory(SizeOf(ObjectType) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		MemoryUtilities::CopyMemory(newArray, array, sizeof(ObjectType) * size);
+		MemoryUtilities::CopyMemory(newArray, array, SizeOf(ObjectType) * size);
 
 		//Free the old array.
-		MemoryUtilities::FreeMemory(static_cast<void *RESTRICT>(array));
+		MemoryUtilities::FreeMemory(StaticCast<void *RESTRICT>(array));
 
 		//Update the array and the capacity.
 		array = newArray;
@@ -350,10 +350,10 @@ public:
 	void UpsizeSlow(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		ObjectType *RESTRICT newArray{ static_cast<ObjectType *RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity)) };
+		ObjectType *RESTRICT newArray{ StaticCast<ObjectType *RESTRICT>(MemoryUtilities::AllocateMemory(SizeOf(ObjectType) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
-		MemoryUtilities::CopyMemory(newArray, array, sizeof(ObjectType) * size);
+		MemoryUtilities::CopyMemory(newArray, array, SizeOf(ObjectType) * size);
 
 		//Default construct the remaining objects.
 		for (uint64 i = size; i < newCapacity; ++i)
@@ -362,7 +362,7 @@ public:
 		}
 
 		//Free the old array.
-		MemoryUtilities::FreeMemory(static_cast<void *RESTRICT>(array));
+		MemoryUtilities::FreeMemory(StaticCast<void *RESTRICT>(array));
 
 		//Update the array and the capacity.
 		array = newArray;
@@ -387,7 +387,7 @@ private:
 	void ReserveConstruct(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		array = static_cast<ObjectType*>(MemoryUtilities::AllocateMemory(sizeof(ObjectType) * newCapacity));
+		array = StaticCast<ObjectType*>(MemoryUtilities::AllocateMemory(SizeOf(ObjectType) * newCapacity));
 
 		//Update the capacity.
 		capacity = newCapacity;

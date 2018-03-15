@@ -51,13 +51,13 @@ public:
 		Y += randomOffset;
 		Z += randomOffset;
 
-		uint32 xInt = static_cast<uint32>(X) & 255;
-		uint32 yInt = static_cast<uint32>(Y) & 255;
-		uint32 zInt = static_cast<uint32>(Z) & 255;
+		uint32 xInt = StaticCast<uint32>(X) & 255;
+		uint32 yInt = StaticCast<uint32>(Y) & 255;
+		uint32 zInt = StaticCast<uint32>(Z) & 255;
 
-		float xFloat = X - static_cast<uint32>(X);
-		float yFloat = Y - static_cast<uint32>(Y);
-		float zFloat = Z - static_cast<uint32>(Z);
+		float xFloat = X - StaticCast<uint32>(X);
+		float yFloat = Y - StaticCast<uint32>(Y);
+		float zFloat = Z - StaticCast<uint32>(Z);
 
 		float u = Fade(xFloat);
 		float v = Fade(yFloat);

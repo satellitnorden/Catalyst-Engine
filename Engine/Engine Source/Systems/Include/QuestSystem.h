@@ -73,7 +73,7 @@ private:
 	DynamicArray<std::thread> adventurerThreads;
 
 	//Container for all daily quests.
-	StaticArray<DailyQuest, static_cast<uint8>(DailyQuests::NumberOfDailyQuests)> dailyQuests;
+	StaticArray<DailyQuest, INDEX(DailyQuests::NumberOfDailyQuests)> dailyQuests;
 
 	/*
 	*	Executes an adventurer.

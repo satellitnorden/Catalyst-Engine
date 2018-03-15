@@ -164,7 +164,7 @@ public:
 	KeyboardState() NOEXCEPT
 	{
 		//Set all keyboard button states to the default value.
-		for (uint8 i = 0; i < static_cast<uint8>(KeyboardButton::NumberOfKeyboardButtons); ++i)
+		for (uint8 i = 0; i < INDEX(KeyboardButton::NumberOfKeyboardButtons); ++i)
 		{
 			keyboardButtonStates[i] = KeyboardButtonState::Released;
 		}
@@ -183,7 +183,7 @@ public:
 	*/
 	const KeyboardButtonState& operator[](const KeyboardButton button) const NOEXCEPT
 	{
-		return keyboardButtonStates[static_cast<uint8>(button)];
+		return keyboardButtonStates[INDEX(button)];
 	}
 
 	/*
@@ -191,12 +191,12 @@ public:
 	*/
 	KeyboardButtonState& operator[](const KeyboardButton button) NOEXCEPT
 	{
-		return keyboardButtonStates[static_cast<uint8>(button)];
+		return keyboardButtonStates[INDEX(button)];
 	}
 
 private:
 
 	//The underlying keyboard button states.
-	StaticArray<KeyboardButtonState, static_cast<uint8>(KeyboardButton::NumberOfKeyboardButtons)> keyboardButtonStates{ };
+	StaticArray<KeyboardButtonState, INDEX(KeyboardButton::NumberOfKeyboardButtons)> keyboardButtonStates{ };
 
 };

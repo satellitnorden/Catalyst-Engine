@@ -71,7 +71,7 @@ void VulkanFramebuffer::CreateFramebufferCreateInfo(VkFramebufferCreateInfo &fra
 	framebufferCreateInfo.pNext = nullptr;
 	framebufferCreateInfo.flags = 0;
 	framebufferCreateInfo.renderPass = vulkanRenderPass.Get();
-	framebufferCreateInfo.attachmentCount = static_cast<uint32>(attachments.Size());
+	framebufferCreateInfo.attachmentCount = StaticCast<uint32>(attachments.Size());
 	framebufferCreateInfo.pAttachments = attachments.Data();
 	framebufferCreateInfo.width = extent.width;
 	framebufferCreateInfo.height = extent.height;

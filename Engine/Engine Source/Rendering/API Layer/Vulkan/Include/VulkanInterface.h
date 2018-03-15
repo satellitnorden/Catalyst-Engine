@@ -99,24 +99,24 @@ public:
 	/*
 	*	Returns the graphics queue.
 	*/
-	const VulkanQueue& GetGraphicsQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Graphics)]; }
+	const VulkanQueue& GetGraphicsQueue() const NOEXCEPT { return queues[INDEX(Queue::Graphics)]; }
 
 	/*
 	*	Returns the present queue.
 	*/
 #if RENDERDOC_DEBUGGING
-	const VulkanQueue& GetPresentQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Graphics)]; }
+	const VulkanQueue& GetPresentQueue() const NOEXCEPT { return queues[INDEX(Queue::Graphics)]; }
 #else
-	const VulkanQueue& GetPresentQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Present)]; }
+	const VulkanQueue& GetPresentQueue() const NOEXCEPT { return queues[INDEX(Queue::Present)]; }
 #endif
 
 	/*
 	*	Returns the transfer queue.
 	*/
 #if RENDERDOC_DEBUGGING
-	const VulkanQueue& GetTransferQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Graphics)]; }
+	const VulkanQueue& GetTransferQueue() const NOEXCEPT { return queues[INDEX(Queue::Graphics)]; }
 #else
-	const VulkanQueue& GetTransferQueue() const NOEXCEPT { return queues[static_cast<uint8>(Queue::Transfer)]; }
+	const VulkanQueue& GetTransferQueue() const NOEXCEPT { return queues[INDEX(Queue::Transfer)]; }
 #endif
 
 	/*
@@ -229,7 +229,7 @@ private:
 	VulkanDescriptorPool vulkanDescriptorPool;
 
 	//Container for all queues.
-	VulkanQueue queues[static_cast<uint8>(Queue::NumberOfQueues)];
+	VulkanQueue queues[INDEX(Queue::NumberOfQueues)];
 
 	//Container for all Vulkan 2D textures.
 	DynamicArray<Vulkan2DTexture *RESTRICT> vulkan2DTextures;

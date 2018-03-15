@@ -49,7 +49,7 @@ public:
 		textureWidth = initialWidth;
 		textureHeight = initialHeight;
 		textureChannels = initilNumberOfChannels;
-		textureTexelSize = sizeof(byte);
+		textureTexelSize = SizeOf(byte);
 	}
 
 	/*
@@ -58,10 +58,10 @@ public:
 	TextureDataContainer(const CPUTexture4 &texture) NOEXCEPT
 	{
 		textureData.Reserve(1);
-		textureData.EmplaceFast(reinterpret_cast<void *RESTRICT>(const_cast<CPUTexture4&>(texture).Data()));
-		textureWidth = textureHeight = static_cast<uint16>(texture.GetResolution());
+		textureData.EmplaceFast(ReinterpretCast<void *RESTRICT>(const_cast<CPUTexture4&>(texture).Data()));
+		textureWidth = textureHeight = StaticCast<uint16>(texture.GetResolution());
 		textureChannels = 4;
-		textureTexelSize = sizeof(float);
+		textureTexelSize = SizeOf(float);
 	}
 
 	/*
@@ -76,7 +76,7 @@ public:
 		textureData.Reserve(1);
 		textureData.EmplaceFast(data);
 		textureChannels = 4;
-		textureTexelSize = sizeof(byte);
+		textureTexelSize = SizeOf(byte);
 
 		releaseOnDestruction = true;
 	}
@@ -103,7 +103,7 @@ public:
 				textureWidth = tempWidth;
 				textureHeight = tempHeight;
 				textureChannels = 4;
-				textureTexelSize = sizeof(byte);
+				textureTexelSize = SizeOf(byte);
 			}
 
 			textureData.EmplaceFast(data);
@@ -121,7 +121,7 @@ public:
 		{
 			for (void *RESTRICT textureDataChunk : textureData)
 			{
-				TextureLoader::FreeTexture(static_cast<byte *RESTRICT>(textureDataChunk));
+				TextureLoader::FreeTexture(StaticCast<byte *RESTRICT>(textureDataChunk));
 			}
 		}
 	}

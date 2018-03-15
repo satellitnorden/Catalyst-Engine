@@ -25,7 +25,7 @@ public:
 		length = otherString.Length();
 
 		//Allocate sufficient memory for the underlying string.
-		string = static_cast<char *RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
+		string = StaticCast<char *RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
 
 		//Copy the contents of the other string.
 		MemoryUtilities::CopyMemory(string, otherString.string, length + 1);
@@ -53,10 +53,10 @@ public:
 		length = strlen(newString);
 
 		//Allocate sufficient memory to host the string.
-		string = static_cast<char *RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
+		string = StaticCast<char *RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
 
 		//Copy the string to the memory.
-		MemoryUtilities::CopyMemory(static_cast<void *RESTRICT>(string), static_cast<const void *const RESTRICT>(newString), length + 1);
+		MemoryUtilities::CopyMemory(StaticCast<void *RESTRICT>(string), StaticCast<const void *const RESTRICT>(newString), length + 1);
 	}
 
 	/*
@@ -77,7 +77,7 @@ public:
 		length = otherString.Length();
 
 		//Reallocate sufficient memory for the underlying string.
-		string = static_cast<char *RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *RESTRICT>(string), length + 1));
+		string = StaticCast<char *RESTRICT>(MemoryUtilities::ReallocateMemory(StaticCast<void *RESTRICT>(string), length + 1));
 
 		//Copy the contents of the other string.
 		MemoryUtilities::CopyMemory(string, otherString.string, length + 1);
@@ -106,7 +106,7 @@ public:
 		const uint64 newLength = length + newStringLength - 1;
 
 		//Allocate sufficient memory to host the concatenated string.
-		string = static_cast<char *RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *RESTRICT>(string), newLength + 1));
+		string = StaticCast<char *RESTRICT>(MemoryUtilities::ReallocateMemory(StaticCast<void *RESTRICT>(string), newLength + 1));
 
 		//Copy the new string.
 		MemoryUtilities::CopyMemory(string + length, newString, newStringLength);
