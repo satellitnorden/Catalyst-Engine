@@ -191,6 +191,20 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 */
 void VulkanRenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT
 {
+	//Calculate the projection matrix.
+	static Matrix4 projectionMatrix{ Matrix4::Perspective(GameMath::DegreesToRadians(90.0f), 1.0f, 0.1f, 10.0f) };
+
+	//Calculate the view matrices.
+	static StaticArray<Matrix4, 6> viewMatrices
+	{
+		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f,  0.0f,  0.0f), Vector3(0.0f, -1.0f,  0.0f)),
+		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(-1.0f,  0.0f,  0.0f), Vector3(0.0f, -1.0f,  0.0f)),
+		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f,  1.0f,  0.0f), Vector3(0.0f,  0.0f,  1.0f)),
+		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f,  0.0f), Vector3(0.0f,  0.0f, -1.0f)),
+		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f,  0.0f,  1.0f), Vector3(0.0f, -1.0f,  0.0f)),
+		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f,  0.0f, -1.0f), Vector3(0.0f, -1.0f,  0.0f))
+	};
+
 	//Create a 2D texture of the data.
 	Vulkan2DTexture *const RESTRICT environmentTexture{ VulkanInterface::Instance->Create2DTexture(StaticCast<uint32>(1), textureWidth, textureHeight, textureChannels, SizeOf(float), ReinterpretCast<void *const RESTRICT *RESTRICT>(&data), VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE) };
 
@@ -199,6 +213,40 @@ void VulkanRenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT d
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(environmentDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::EnvironmentMaterial)]);
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &environmentTexture->GetWriteDescriptorSet(environmentDescriptorSet, 0), 0, nullptr);
+
+	//Allocate a command buffer to carry out the draw command.
+	VulkanCommandBuffer environmentCommandBuffer;
+	VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(environmentCommandBuffer);
+
+	//Start the command buffer.
+	environmentCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
+	//Bind the pipeline.
+	environmentCommandBuffer.CommandBindPipeline(*pipelines[INDEX(Pipeline::EnvironmentMaterial)]);
+
+	//Begin the render pass.
+	environmentCommandBuffer.CommandBeginRenderPass(pipelines[INDEX(Pipeline::EnvironmentMaterial)]->GetRenderPass(), 0);
+
+	//Bind the descriptor set.
+	environmentCommandBuffer.CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::EnvironmentMaterial)], 1, &environmentDescriptorSet);
+
+	//Set the view matrix.
+	environmentCommandBuffer.CommandPushConstants(pipelines[INDEX(Pipeline::EnvironmentMaterial)]->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, SizeOf(Matrix4), &viewMatrices[0]);
+
+	//Draw!
+	environmentCommandBuffer.CommandDraw(4);
+
+	//End the render pass.
+	environmentCommandBuffer.CommandEndRenderPass();
+
+	//End the command buffer.
+	environmentCommandBuffer.End();
+
+	//Submit the command buffer.
+	VulkanInterface::Instance->GetGraphicsQueue().Submit(environmentCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+
+	//Wait for it to finish.
+	VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 }
 #endif
 

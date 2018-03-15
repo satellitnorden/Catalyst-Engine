@@ -54,6 +54,11 @@ public:
 	*/
 	VkWriteDescriptorSet GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT;
 
+	/*
+	*	Returns the data contained in the image.
+	*/
+	void GetImageData(DynamicArray<float> &imageData) NOEXCEPT;
+
 private:
 
 	//The Vulkan image.
@@ -73,6 +78,9 @@ private:
 
 	//The write descriptor set for this texture.
 	VkWriteDescriptorSet vulkanWriteDescriptorSet;
+
+	//The size of the image.
+	VkDeviceSize imageSize;
 
 	/*
 	*	Creates the descriptor image info.

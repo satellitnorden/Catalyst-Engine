@@ -85,11 +85,39 @@ public:
 			currentOffset += (width >> i) * (height >> i) * 4 * SizeOf(byte);
 		}
 
-		//Begin the ctransfer ommand buffer.
+		//Begin the transfer ommand buffer.
 		transferCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Record the copy command to the transfer command buffer.
 		vkCmdCopyBufferToImage(transferCommandBuffer.Get(), vulkanBuffer, vulkanImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, StaticCast<uint32>(bufferImageCopies.Size()), bufferImageCopies.Data());
+
+		//End the transfer command buffer.
+		transferCommandBuffer.End();
+
+		//Submit the command buffer.
+		VulkanInterface::Instance->GetTransferQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+
+		//Wait for the transfer operation to finish.
+		VulkanInterface::Instance->GetTransferQueue().WaitIdle();
+
+		//Free the transfer command buffer,
+		VulkanInterface::Instance->GetTransferCommandPool().FreeVulkanCommandBuffer(transferCommandBuffer);
+	}
+
+	/*
+	*	Copies a Vulkan image to a Vulkan buffer.
+
+	static void CopyImageToBuffer() NOEXCEPT
+	{
+		//Create the transfer command buffer.
+		VulkanCommandBuffer transferCommandBuffer;
+		VulkanInterface::Instance->GetTransferCommandPool().AllocateVulkanCommandBuffer(transferCommandBuffer);
+
+		//Begin the transfer ommand buffer.
+		transferCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
+		//Record the copy command to the transfer command buffer.
+		vkCmdCopyImageToBuffer(transferCommandBuffer.Get(), vulkanImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, vulkanBuffer, 1, &bufferImageCopy);
 
 		//End the transfer command buffer.
 		transferCommandBuffer.End();

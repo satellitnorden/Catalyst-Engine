@@ -11,7 +11,7 @@
 
 //Third party libraries.
 #include <stb_image.h>
-#include <stb_image_resize.h>
+//#include <stb_image_resize.h>
 
 class EnvironmentMaterialCreator final
 {
@@ -40,7 +40,8 @@ public:
 
 		//Load the albedo.
 		int32 width, height, numberOfChannels;
-		float *const RESTRICT data{ stbi_loadf(arguments[4], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+
+		float *const RESTRICT data{ stbi_loadf(arguments[4], &width, &height, &numberOfChannels, 0) };
 
 		//Construct the environment material.
 		DynamicArray<float> diffuseData;
