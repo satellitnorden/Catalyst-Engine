@@ -1,8 +1,8 @@
 //Engine core.
-#include <EngineCore.h>
+#include <Engine Core/EngineCore.h>
 
 //Systems.
-#include <EngineSystem.h>
+#include <Systems/EngineSystem.h>
 
 //Resource creator.
 #include <EnvironmentMaterialCreator.h>

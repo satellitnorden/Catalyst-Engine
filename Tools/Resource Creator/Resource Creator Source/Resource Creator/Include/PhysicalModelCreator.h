@@ -1,16 +1,16 @@
 #pragma once
 
 //Engine core.
-#include <EngineCore.h>
+#include <Engine Core/EngineCore.h>
 
 //Math.
-#include <GameMath.h>
+#include <Math/CatalystMath.h>
 
 //Rendering.
-#include <PhysicalVertex.h>
+#include <Rendering/Engine Layer/PhysicalVertex.h>
 
-//Resources.
-#include <ResourcesCore.h>
+//Resources
+#include <Resources/ResourcesCore.h>
 
 //Third party libraries.
 #include <assimp/Importer.hpp>
@@ -85,9 +85,9 @@ private:
 		{
 			vertices.EmplaceSlow(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
-			extent = GameMath::Maximum(extent, GameMath::Absolute(vertices.Back().position.X));
-			extent = GameMath::Maximum(extent, GameMath::Absolute(vertices.Back().position.Y));
-			extent = GameMath::Maximum(extent, GameMath::Absolute(vertices.Back().position.Z));
+			extent = CatalystMath::Maximum(extent, CatalystMath::Absolute(vertices.Back().position.X));
+			extent = CatalystMath::Maximum(extent, CatalystMath::Absolute(vertices.Back().position.Y));
+			extent = CatalystMath::Maximum(extent, CatalystMath::Absolute(vertices.Back().position.Z));
 		}
 
 		//Process the indices.

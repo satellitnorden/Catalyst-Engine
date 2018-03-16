@@ -106,9 +106,22 @@ public:
 
 	/*
 	*	Copies a Vulkan image to a Vulkan buffer.
-
-	static void CopyImageToBuffer() NOEXCEPT
+	*/
+	static void CopyImageToBuffer(const uint32 imageWidth, const uint32 imageHeight, const VkImage vulkanImage, const VkBuffer vulkanBuffer) NOEXCEPT
 	{
+		//Create the buffer image copy.
+		VkBufferImageCopy bufferImageCopy;
+
+		bufferImageCopy.bufferOffset = 0;
+		bufferImageCopy.bufferRowLength = 0;
+		bufferImageCopy.bufferImageHeight = 0;
+		bufferImageCopy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		bufferImageCopy.imageSubresource.baseArrayLayer = 0;
+		bufferImageCopy.imageSubresource.layerCount = 1;
+		bufferImageCopy.imageSubresource.mipLevel = 0;
+		bufferImageCopy.imageOffset = { 0, 0, 0 };
+		bufferImageCopy.imageExtent = { imageWidth, imageHeight, 1 };
+
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transferCommandBuffer;
 		VulkanInterface::Instance->GetTransferCommandPool().AllocateVulkanCommandBuffer(transferCommandBuffer);

@@ -9,7 +9,9 @@ layout (location = 0) in vec3 fragmentPosition;
 layout (binding = 0) uniform sampler2D equirectangularTexture;
 
 //Out parameters
-layout (location = 0) out vec4 fragmentColor;
+layout (location = 0) out vec4 albedoColor;
+layout (location = 1) out vec4 diffuseColor;
+layout (location = 2) out vec4 diffuseIrradianceColor;
 
 //Globals.
 vec2 inverseAtan = vec2(0.1591f, 0.3183f);
@@ -33,5 +35,7 @@ void main()
     vec2 textureCoordinate = CalculateSphericalTextureCoordinate(normalize(fragmentPosition));
 
     //The resulting color is just the color at the texture coordinates.
-    fragmentColor = texture(equirectangularTexture, textureCoordinate);
+    albedoColor = texture(equirectangularTexture, textureCoordinate);
+    diffuseColor = texture(equirectangularTexture, textureCoordinate);
+    diffuseIrradianceColor = texture(equirectangularTexture, textureCoordinate);
 }

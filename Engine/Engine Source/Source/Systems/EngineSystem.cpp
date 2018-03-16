@@ -76,6 +76,9 @@ bool EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 */
 void EngineSystem::ReleaseSystem() NOEXCEPT
 {
+	//Signal to other systems that the game should terminate.
+	shouldTerminate = true;
+
 	//Release all systems.
 	InputSystem::Instance->ReleaseSystem();
 	EntitySystem::Instance->ReleaseSystem();

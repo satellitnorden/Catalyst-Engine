@@ -78,7 +78,7 @@ public:
 	/*
 	*	Constructs an environment material.
 	*/
-	void ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT;
+	void ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &albedoData, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT;
 #endif
 
 	/*
@@ -227,6 +227,7 @@ private:
 	enum class RenderTarget : uint8
 	{
 #if !defined(CATALYST_FINAL)
+		EnvironmentMaterialAlbedo,
 		EnvironmentMaterialDiffuse,
 		EnvironmentMaterialDiffuseIrradiance,
 #endif

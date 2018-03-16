@@ -48,7 +48,7 @@
 namespace
 {
 #if !defined(CATALYST_FINAL)
-	static constexpr uint32 ENVIRONMENT_MATERIAL_RESOLUTION{ 4'096 };
+	static constexpr uint32 ENVIRONMENT_MATERIAL_RESOLUTION{ 1'024 };
 #endif
 }
 
@@ -189,8 +189,11 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 /*
 *	Constructs an environment material.
 */
-void VulkanRenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT
+void VulkanRenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &albedoData, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT
 {
+	//Calculate the size of each image.
+	static constexpr uint64 environmentImageSize{ ENVIRONMENT_MATERIAL_RESOLUTION  * ENVIRONMENT_MATERIAL_RESOLUTION * sizeof(float) * 4 };
+
 	//Calculate the projection matrix.
 	static Matrix4 projectionMatrix{ Matrix4::Perspective(CatalystMath::DegreesToRadians(90.0f), 1.0f, 0.1f, 10.0f) };
 
@@ -205,6 +208,11 @@ void VulkanRenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT d
 		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f,  0.0f, -1.0f), Vector3(0.0f, -1.0f,  0.0f))
 	};
 
+	//Reserve enought size for the data containers to hold the data.
+	albedoData.Reserve(environmentImageSize * 6);
+	diffuseData.Reserve(environmentImageSize * 6);
+	diffuseIrradianceData.Reserve(environmentImageSize * 6);
+
 	//Create a 2D texture of the data.
 	Vulkan2DTexture *const RESTRICT environmentTexture{ VulkanInterface::Instance->Create2DTexture(StaticCast<uint32>(1), textureWidth, textureHeight, textureChannels, SizeOf(float), ReinterpretCast<void *const RESTRICT *RESTRICT>(&data), VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE) };
 
@@ -214,39 +222,47 @@ void VulkanRenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT d
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &environmentTexture->GetWriteDescriptorSet(environmentDescriptorSet, 0), 0, nullptr);
 
-	//Allocate a command buffer to carry out the draw command.
-	VulkanCommandBuffer environmentCommandBuffer;
-	VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(environmentCommandBuffer);
+	for (uint8 i = 0; i < 6; ++i)
+	{
+		//Allocate a command buffer to carry out the draw command.
+		VulkanCommandBuffer environmentCommandBuffer;
+		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(environmentCommandBuffer);
 
-	//Start the command buffer.
-	environmentCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		//Start the command buffer.
+		environmentCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-	//Bind the pipeline.
-	environmentCommandBuffer.CommandBindPipeline(*pipelines[INDEX(Pipeline::EnvironmentMaterial)]);
+		//Bind the pipeline.
+		environmentCommandBuffer.CommandBindPipeline(*pipelines[INDEX(Pipeline::EnvironmentMaterial)]);
 
-	//Begin the render pass.
-	environmentCommandBuffer.CommandBeginRenderPass(pipelines[INDEX(Pipeline::EnvironmentMaterial)]->GetRenderPass(), 0);
+		//Begin the render pass.
+		environmentCommandBuffer.CommandBeginRenderPass(pipelines[INDEX(Pipeline::EnvironmentMaterial)]->GetRenderPass(), 0);
 
-	//Bind the descriptor set.
-	environmentCommandBuffer.CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::EnvironmentMaterial)], 1, &environmentDescriptorSet);
+		//Bind the descriptor set.
+		environmentCommandBuffer.CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::EnvironmentMaterial)], 1, &environmentDescriptorSet);
 
-	//Set the view matrix.
-	environmentCommandBuffer.CommandPushConstants(pipelines[INDEX(Pipeline::EnvironmentMaterial)]->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, SizeOf(Matrix4), &viewMatrices[0]);
+		//Set the view matrix.
+		environmentCommandBuffer.CommandPushConstants(pipelines[INDEX(Pipeline::EnvironmentMaterial)]->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, SizeOf(Matrix4), &viewMatrices[i]);
 
-	//Draw!
-	environmentCommandBuffer.CommandDraw(4);
+		//Draw!
+		environmentCommandBuffer.CommandDraw(4);
 
-	//End the render pass.
-	environmentCommandBuffer.CommandEndRenderPass();
+		//End the render pass.
+		environmentCommandBuffer.CommandEndRenderPass();
 
-	//End the command buffer.
-	environmentCommandBuffer.End();
+		//End the command buffer.
+		environmentCommandBuffer.End();
 
-	//Submit the command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue().Submit(environmentCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+		//Submit the command buffer.
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(environmentCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
 
-	//Wait for it to finish.
-	VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
+		//Wait for it to finish.
+		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
+
+		//Get the data.
+		renderTargets[INDEX(RenderTarget::EnvironmentMaterialAlbedo)]->GetImageData(albedoData.Data() + (environmentImageSize * i));
+		renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuse)]->GetImageData(diffuseData.Data() + (environmentImageSize * i));
+		renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuseIrradiance)]->GetImageData(diffuseIrradianceData.Data() + (environmentImageSize * i));
+	}
 }
 #endif
 
@@ -649,6 +665,7 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 
 	//Initialize all render targets.
 #if !defined(CATALYST_FINAL)
+	renderTargets[INDEX(RenderTarget::EnvironmentMaterialAlbedo)] = VulkanInterface::Instance->CreateRenderTarget({ ENVIRONMENT_MATERIAL_RESOLUTION, ENVIRONMENT_MATERIAL_RESOLUTION });
 	renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuse)] = VulkanInterface::Instance->CreateRenderTarget({ ENVIRONMENT_MATERIAL_RESOLUTION, ENVIRONMENT_MATERIAL_RESOLUTION });
 	renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuseIrradiance)] = VulkanInterface::Instance->CreateRenderTarget({ ENVIRONMENT_MATERIAL_RESOLUTION, ENVIRONMENT_MATERIAL_RESOLUTION });
 #endif
@@ -867,8 +884,10 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	environmentMaterialPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 	environmentMaterialPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 	environmentMaterialPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-	environmentMaterialPipelineCreationParameters.colorAttachments[0].Reserve(1);
+	environmentMaterialPipelineCreationParameters.colorAttachments[0].Reserve(3);
+	environmentMaterialPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::EnvironmentMaterialAlbedo)]->GetImageView());
 	environmentMaterialPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuse)]->GetImageView());
+	environmentMaterialPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuseIrradiance)]->GetImageView());
 	environmentMaterialPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
 	environmentMaterialPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	environmentMaterialPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;

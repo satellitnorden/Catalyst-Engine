@@ -1,10 +1,10 @@
 #pragma once
 
 //Engine core.
-#include <EngineCore.h>
+#include <Engine Core/EngineCore.h>
 
-//Resources.
-#include <ResourcesCore.h>
+//Resources
+#include <Resources/ResourcesCore.h>
 
 //Resource creator.
 #include <stb_image.h>

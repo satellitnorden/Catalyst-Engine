@@ -1,11 +1,11 @@
 //Engine core.
-#include <EngineCore.h>
+#include <Engine Core/EngineCore.h>
 
 //Clairvoyant.
 #include <ClairvoyantGameSystem.h>
 
 //Systems.
-#include <EngineSystem.h>
+#include <Systems/EngineSystem.h>
 
 //Preprocessor defines.
 #define EXIT_SUCCESS 0

@@ -1,13 +1,13 @@
 #pragma once
 
 //Engine core.
-#include <EngineCore.h>
+#include <Engine Core/EngineCore.h>
 
 //Resources
-#include <ResourcesCore.h>
+#include <Resources/ResourcesCore.h>
 
 //Systems.
-#include <RenderingSystem.h>
+#include <Systems/RenderingSystem.h>
 
 //Third party libraries.
 #include <stb_image.h>
@@ -44,10 +44,20 @@ public:
 		float *const RESTRICT data{ stbi_loadf(arguments[4], &width, &height, &numberOfChannels, 0) };
 
 		//Construct the environment material.
+		DynamicArray<float> albedoData;
 		DynamicArray<float> diffuseData;
 		DynamicArray<float> diffuseIrradianceData;
 
-		RenderingSystem::Instance->ConstructEnvironmentMaterial(data, width, height, numberOfChannels, diffuseData, diffuseIrradianceData);
+		RenderingSystem::Instance->ConstructEnvironmentMaterial(data, width, height, numberOfChannels, albedoData, diffuseData, diffuseIrradianceData);
+
+		//Write the size of the environment dat.a
+		const uint64 environmentDataSize{ albedoData.Capacity() };
+		file.Write(&environmentDataSize, SizeOf(uint64));
+
+		//Write the data.
+		file.Write(albedoData.Data(), albedoData.Capacity() * SizeOf(float));
+		file.Write(diffuseData.Data(), diffuseData.Capacity() * SizeOf(float));
+		file.Write(diffuseIrradianceData.Data(), diffuseIrradianceData.Capacity() * SizeOf(float));
 
 		//Free the texture data.
 		stbi_image_free(data);

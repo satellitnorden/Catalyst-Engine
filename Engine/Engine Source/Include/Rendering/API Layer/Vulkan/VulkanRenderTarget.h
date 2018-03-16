@@ -57,7 +57,7 @@ public:
 	/*
 	*	Returns the data contained in the image.
 	*/
-	void GetImageData(DynamicArray<float> &imageData) NOEXCEPT;
+	void GetImageData(void *const RESTRICT imageData) NOEXCEPT;
 
 private:
 
@@ -79,8 +79,8 @@ private:
 	//The write descriptor set for this texture.
 	VkWriteDescriptorSet vulkanWriteDescriptorSet;
 
-	//The size of the image.
-	VkDeviceSize imageSize;
+	//The extent of the image.
+	VkExtent2D imageExtent;
 
 	/*
 	*	Creates the descriptor image info.

@@ -56,10 +56,10 @@ void RenderingSystem::ReleaseSystem() NOEXCEPT
 /*
 *	Constructs an environment material.
 */
-void RenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT
+void RenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &albedoData, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT
 {
 	//Construct the environment material via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->ConstructEnvironmentMaterial(data, textureWidth, textureHeight, textureChannels, diffuseData, diffuseIrradianceData);
+	VulkanRenderingSystem::Instance->ConstructEnvironmentMaterial(data, textureWidth, textureHeight, textureChannels, albedoData, diffuseData, diffuseIrradianceData);
 }
 #endif
 
