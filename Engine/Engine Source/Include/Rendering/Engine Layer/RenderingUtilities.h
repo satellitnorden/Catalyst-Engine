@@ -4,7 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Math.
-#include <Math/GameMath.h>
+#include <Math/CatalystMath.h>
 #include <Math/Vector4.h>
 
 //Rendering.
@@ -98,12 +98,12 @@ namespace RenderingUtilities
 
 		for (uint8 i = 0; i < 8; ++i)
 		{
-			highestX = GameMath::Maximum(highestX, corners[i].X);
-			lowestX = GameMath::Minimum(lowestX, corners[i].X);
-			highestY = GameMath::Maximum(highestY, corners[i].Y);
-			lowestY = GameMath::Minimum(lowestY, corners[i].Y);
-			highestZ = GameMath::Maximum(highestZ, corners[i].Z);
-			lowestZ = GameMath::Minimum(lowestZ, corners[i].Z);
+			highestX = CatalystMath::Maximum(highestX, corners[i].X);
+			lowestX = CatalystMath::Minimum(lowestX, corners[i].X);
+			highestY = CatalystMath::Maximum(highestY, corners[i].Y);
+			lowestY = CatalystMath::Minimum(lowestY, corners[i].Y);
+			highestZ = CatalystMath::Maximum(highestZ, corners[i].Z);
+			lowestZ = CatalystMath::Minimum(lowestZ, corners[i].Z);
 		}
 
 		if (((highestX > 1.0f && lowestX > 1.0f) || (highestX < -1.0f && lowestX < -1.0f))

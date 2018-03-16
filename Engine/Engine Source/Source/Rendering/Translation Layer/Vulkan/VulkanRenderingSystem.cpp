@@ -14,7 +14,7 @@
 #include <Entities/WaterEntity.h>
 
 //Math.
-#include <Math/GameMath.h>
+#include <Math/CatalystMath.h>
 #include <Math/Matrix3.h>
 
 //Rendering.
@@ -192,7 +192,7 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 void VulkanRenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT
 {
 	//Calculate the projection matrix.
-	static Matrix4 projectionMatrix{ Matrix4::Perspective(GameMath::DegreesToRadians(90.0f), 1.0f, 0.1f, 10.0f) };
+	static Matrix4 projectionMatrix{ Matrix4::Perspective(CatalystMath::DegreesToRadians(90.0f), 1.0f, 0.1f, 10.0f) };
 
 	//Calculate the view matrices.
 	static StaticArray<Matrix4, 6> viewMatrices
@@ -1272,7 +1272,7 @@ void VulkanRenderingSystem::InitializeDefaultTextures() NOEXCEPT
 void VulkanRenderingSystem::CalculateProjectionMatrix() NOEXCEPT
 {
 	//Calculate the projection matrix.
-	projectionMatrix = Matrix4::Perspective(GameMath::DegreesToRadians(activeCamera->GetFieldOfView()), 1920.0f / 1080.0f, activeCamera->GetNearPlane(), activeCamera->GetFarPlane());
+	projectionMatrix = Matrix4::Perspective(CatalystMath::DegreesToRadians(activeCamera->GetFieldOfView()), 1920.0f / 1080.0f, activeCamera->GetNearPlane(), activeCamera->GetFarPlane());
 }
 
 /*
@@ -1608,7 +1608,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	Matrix4 inverseProjectionMatrix{ projectionMatrix };
 	inverseProjectionMatrix.Inverse();
 
-	dynamicUniformData.cameraFieldOfViewCosine = GameMath::CosineDegrees(activeCamera->GetFieldOfView()) - 0.2f;
+	dynamicUniformData.cameraFieldOfViewCosine = CatalystMath::CosineDegrees(activeCamera->GetFieldOfView()) - 0.2f;
 	dynamicUniformData.inverseCameraMatrix = inverseCameraMatrix;
 	dynamicUniformData.inverseProjectionMatrix = inverseProjectionMatrix;
 	dynamicUniformData.originViewMatrix = projectionMatrix * cameraOriginMatrix;
@@ -1683,8 +1683,8 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 
 		dynamicUniformData.spotLightAttenuationDistances[counter] = spotLightComponent->attenuationDistance;
 		dynamicUniformData.spotLightIntensities[counter] = spotLightComponent->intensity;
-		dynamicUniformData.spotLightInnerCutoffAngles[counter] = GameMath::CosineDegrees(spotLightComponent->innerCutoffAngle);
-		dynamicUniformData.spotLightOuterCutoffAngles[counter] = GameMath::CosineDegrees(spotLightComponent->outerCutoffAngle);
+		dynamicUniformData.spotLightInnerCutoffAngles[counter] = CatalystMath::CosineDegrees(spotLightComponent->innerCutoffAngle);
+		dynamicUniformData.spotLightOuterCutoffAngles[counter] = CatalystMath::CosineDegrees(spotLightComponent->outerCutoffAngle);
 		dynamicUniformData.spotLightColors[counter] = spotLightComponent->color;
 		dynamicUniformData.spotLightDirections[counter] = Vector3(0.0f, -1.0f, 0.0f).Rotated(spotLightComponent->rotation);
 		dynamicUniformData.spotLightDirections[counter].Y *= -1.0f;
@@ -1720,7 +1720,7 @@ void VulkanRenderingSystem::UpdateViewFrustumCulling() NOEXCEPT
 		//Make a local copy of the static physical entity's position.
 		const Vector3 position = transformComponent->position;
 		const Vector3 scale = transformComponent->scale;
-		const float biggestScale = GameMath::Maximum(scale.X, GameMath::Maximum(scale.Y, scale.Z));
+		const float biggestScale = CatalystMath::Maximum(scale.X, CatalystMath::Maximum(scale.Y, scale.Z));
 		const float scaledExtent = frustumCullingComponent->axisAlignedBoundingBox.maximum.X * biggestScale;
 
 		Vector4 corners[8];

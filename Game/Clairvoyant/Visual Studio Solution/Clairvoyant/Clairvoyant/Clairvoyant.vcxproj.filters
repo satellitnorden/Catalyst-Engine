@@ -273,9 +273,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Input\KeyboardState.h">
       <Filter>Engine Source\Input\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\GameMath.h">
-      <Filter>Engine Source\Math\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\MathematicalConstants.h">
       <Filter>Engine Source\Math\Include</Filter>
     </ClInclude>
@@ -513,6 +510,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\RenderingSystem.h">
       <Filter>Engine Source\Systems\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\CatalystMath.h">
+      <Filter>Engine Source\Math\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
@@ -556,9 +556,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\WaterEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\GameMath.cpp">
-      <Filter>Engine Source\Math\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Matrix3.cpp">
       <Filter>Engine Source\Math\Source</Filter>
@@ -688,6 +685,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\RenderingSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\CatalystMath.cpp">
+      <Filter>Engine Source\Math\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

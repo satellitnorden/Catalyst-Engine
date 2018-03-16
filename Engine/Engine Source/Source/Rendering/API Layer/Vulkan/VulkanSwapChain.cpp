@@ -2,7 +2,7 @@
 #include <Rendering/API Layer/Vulkan/VulkanSwapChain.h>
 
 //Math.
-#include <Math/GameMath.h>
+#include <Math/CatalystMath.h>
 
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
@@ -144,7 +144,7 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VULKAN_SWAPCHAIN_CREATE_INFO_TYP
 	const auto &surfaceFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat();
 	const auto &presentMode = VulkanInterface::Instance->GetPhysicalDevice().GetPresentMode();
 
-	uint32 minimumImageCount = GameMath::Maximum<uint32>(3, surfaceCapabilities.minImageCount);
+	uint32 minimumImageCount = CatalystMath::Maximum<uint32>(3, surfaceCapabilities.minImageCount);
 
 	if (surfaceCapabilities.maxImageCount > 0 && minimumImageCount > surfaceCapabilities.maxImageCount)
 		minimumImageCount = surfaceCapabilities.maxImageCount;

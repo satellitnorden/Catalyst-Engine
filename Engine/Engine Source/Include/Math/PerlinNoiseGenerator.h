@@ -4,7 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Math.
-#include <Math/GameMath.h>
+#include <Math/CatalystMath.h>
 
 class PerlinNoiseGenerator
 {
@@ -72,19 +72,19 @@ public:
 		uint32 bab = permutations[permutations[permutations[xInt + 1] + yInt] + zInt + 1];
 		uint32 bbb = permutations[permutations[permutations[xInt + 1] + yInt + 1] + zInt + 1];
 
-		float x1 = GameMath::LinearlyInterpolate(Gradient(aaa, xFloat, yFloat, zFloat), Gradient(baa, xFloat - 1.0f, yFloat, zFloat), u);
+		float x1 = CatalystMath::LinearlyInterpolate(Gradient(aaa, xFloat, yFloat, zFloat), Gradient(baa, xFloat - 1.0f, yFloat, zFloat), u);
 
-		float x2 = GameMath::LinearlyInterpolate(Gradient(aba, xFloat, yFloat - 1.0f, zFloat), Gradient(bba, xFloat - 1.0f, yFloat - 1.0f, zFloat), u);
+		float x2 = CatalystMath::LinearlyInterpolate(Gradient(aba, xFloat, yFloat - 1.0f, zFloat), Gradient(bba, xFloat - 1.0f, yFloat - 1.0f, zFloat), u);
 
-		float y1 = GameMath::LinearlyInterpolate(x1, x2, v);
+		float y1 = CatalystMath::LinearlyInterpolate(x1, x2, v);
 
-		x1 = GameMath::LinearlyInterpolate(Gradient(aab, xFloat, yFloat, zFloat - 1.0f), Gradient(bab, xFloat - 1.0f, yFloat, zFloat - 1.0f), u);
+		x1 = CatalystMath::LinearlyInterpolate(Gradient(aab, xFloat, yFloat, zFloat - 1.0f), Gradient(bab, xFloat - 1.0f, yFloat, zFloat - 1.0f), u);
 
-		x2 = GameMath::LinearlyInterpolate(Gradient(abb, xFloat, yFloat - 1.0f, zFloat - 1.0f), Gradient(bbb, xFloat - 1.0f, yFloat - 1.0f, zFloat - 1.0f), u);
+		x2 = CatalystMath::LinearlyInterpolate(Gradient(abb, xFloat, yFloat - 1.0f, zFloat - 1.0f), Gradient(bbb, xFloat - 1.0f, yFloat - 1.0f, zFloat - 1.0f), u);
 
-		float y2 = GameMath::LinearlyInterpolate(x1, x2, v);
+		float y2 = CatalystMath::LinearlyInterpolate(x1, x2, v);
 
-		return GameMath::LinearlyInterpolate(y1, y2, w);
+		return CatalystMath::LinearlyInterpolate(y1, y2, w);
 	}
 
 	/*

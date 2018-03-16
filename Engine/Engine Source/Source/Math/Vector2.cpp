@@ -2,7 +2,7 @@
 #include <Math/Vector2.h>
 
 //Math.
-#include <Math/GameMath.h>
+#include <Math/CatalystMath.h>
 
 /*
 *	Default constructor.
@@ -31,7 +31,7 @@ Vector2::Vector2(const float newX, const float newY) NOEXCEPT
 */
 float Vector2::Length() const NOEXCEPT
 {
-	return GameMath::SquareRoot((X * X) + (Y * Y));
+	return CatalystMath::SquareRoot((X * X) + (Y * Y));
 }
 
 /*
@@ -50,10 +50,10 @@ void Vector2::Normalize() NOEXCEPT
 */
 void Vector2::Rotate(const float degrees) NOEXCEPT
 {
-	const float theta = GameMath::DegreesToRadians(degrees);
+	const float theta = CatalystMath::DegreesToRadians(degrees);
 
-	const float cosine = GameMath::CosineRadians(theta);
-	const float sine = GameMath::SineDegrees(theta);
+	const float cosine = CatalystMath::CosineRadians(theta);
+	const float sine = CatalystMath::SineDegrees(theta);
 
 	const float newX = X * cosine - Y * sine;
 	const float newY = X * cosine - Y * sine;

@@ -7,7 +7,7 @@
 #include <Entities/SpotLightEntity.h>
 
 //Math.
-#include <Math/GameMath.h>
+#include <Math/CatalystMath.h>
 
 //Systems.
 #include <Systems/EntitySystem.h>
@@ -110,7 +110,7 @@ void ClairvoyantPlayer::Update(const float deltaTime) NOEXCEPT
 		}
 
 		//Lerp post processing effects.
-		RenderingSystem::Instance->SetPostProcessingChromaticAberrationAmount(GameMath::LinearlyInterpolate(0.0f, 0.01f, currentGamepadState.leftTriggerValue));
+		RenderingSystem::Instance->SetPostProcessingChromaticAberrationAmount(CatalystMath::LinearlyInterpolate(0.0f, 0.01f, currentGamepadState.leftTriggerValue));
 
 		if (currentGamepadState.aButtonState == GamepadButtonState::Pressed)
 		{

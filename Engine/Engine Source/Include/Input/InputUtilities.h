@@ -8,7 +8,7 @@
 #include <Input/KeyboardState.h>
 
 //Math.
-#include <Math/GameMath.h>
+#include <Math/CatalystMath.h>
 
 namespace InputUtilities
 {
@@ -134,16 +134,16 @@ namespace InputUtilities
 		currentGamepadState.rightThumbstickYValue = StaticCast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
 
 		//Calculate if the thumbstick values are in the deadzone.If so, reset them.
-		if (GameMath::Absolute(currentGamepadState.leftThumbstickXValue) <= GAMEPAD_DEADZONE)
+		if (CatalystMath::Absolute(currentGamepadState.leftThumbstickXValue) <= GAMEPAD_DEADZONE)
 			currentGamepadState.leftThumbstickXValue = 0.0f;
 
-		if (GameMath::Absolute(currentGamepadState.leftThumbstickYValue) <= GAMEPAD_DEADZONE)
+		if (CatalystMath::Absolute(currentGamepadState.leftThumbstickYValue) <= GAMEPAD_DEADZONE)
 			currentGamepadState.leftThumbstickYValue = 0.0f;
 
-		if (GameMath::Absolute(currentGamepadState.rightThumbstickXValue) <= GAMEPAD_DEADZONE)
+		if (CatalystMath::Absolute(currentGamepadState.rightThumbstickXValue) <= GAMEPAD_DEADZONE)
 			currentGamepadState.rightThumbstickXValue = 0.0f;
 
-		if (GameMath::Absolute(currentGamepadState.rightThumbstickYValue) <= GAMEPAD_DEADZONE)
+		if (CatalystMath::Absolute(currentGamepadState.rightThumbstickYValue) <= GAMEPAD_DEADZONE)
 			currentGamepadState.rightThumbstickYValue = 0.0f;
 
 		//Return that the query succeeded.

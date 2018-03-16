@@ -4,7 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Math.
-#include <Math/GameMath.h>
+#include <Math/CatalystMath.h>
 #include <Math/Vector4.h>
 
 /*
@@ -72,8 +72,8 @@ public:
 		const float xPixelPosition{ xIndex / texelSize + 0.5f };
 		const float yPixelPosition{ yIndex / texelSize + 0.5f };
 
-		const float xFractional{ GameMath::Fractional(xPixelPosition) };
-		const float yFractional{ GameMath::Fractional(yPixelPosition) };
+		const float xFractional{ CatalystMath::Fractional(xPixelPosition) };
+		const float yFractional{ CatalystMath::Fractional(yPixelPosition) };
 
 		const float xStartTexel{ (xPixelPosition - xFractional) * texelSize };
 		const float yStartTexel{ (yPixelPosition - yFractional) * texelSize };
@@ -82,27 +82,27 @@ public:
 		constexpr uint64 xModifier{ StaticCast<uint64>(-1) };
 		constexpr uint64 yModifier{ StaticCast<uint64>(-1) };
 
-		const uint64 xBottomLeftCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>(xStartTexel * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const uint64 yBottomLeftCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>(yStartTexel * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xBottomLeftCoordinate{ CatalystMath::Clamp<uint64>(StaticCast<uint64>(xStartTexel * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yBottomLeftCoordinate{ CatalystMath::Clamp<uint64>(StaticCast<uint64>(yStartTexel * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
-		const uint64 xBottomRightCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>((xStartTexel + texelSize) * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const uint64 yBottomRightCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>(yStartTexel * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xBottomRightCoordinate{ CatalystMath::Clamp<uint64>(StaticCast<uint64>((xStartTexel + texelSize) * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yBottomRightCoordinate{ CatalystMath::Clamp<uint64>(StaticCast<uint64>(yStartTexel * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
-		const uint64 xTopLeftCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>(xStartTexel * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const uint64 yTopLeftCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>((yStartTexel + texelSize) * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xTopLeftCoordinate{ CatalystMath::Clamp<uint64>(StaticCast<uint64>(xStartTexel * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yTopLeftCoordinate{ CatalystMath::Clamp<uint64>(StaticCast<uint64>((yStartTexel + texelSize) * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
-		const uint64 xTopRightCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>((xStartTexel + texelSize) * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
-		const uint64 yTopRightCoordinate{ GameMath::Clamp<uint64>(StaticCast<uint64>((yStartTexel + texelSize) * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
+		const uint64 xTopRightCoordinate{ CatalystMath::Clamp<uint64>(StaticCast<uint64>((xStartTexel + texelSize) * StaticCast<float>(resolution)) + xModifier, 0, resolution - 1) };
+		const uint64 yTopRightCoordinate{ CatalystMath::Clamp<uint64>(StaticCast<uint64>((yStartTexel + texelSize) * StaticCast<float>(resolution)) + yModifier, 0, resolution - 1) };
 
 		const Vector4 &bottomLeftValue{ data[xBottomLeftCoordinate + (yBottomLeftCoordinate * resolution)] };
 		const Vector4 &bottomRightValue{ data[xBottomRightCoordinate + (yBottomRightCoordinate * resolution)] };
 		const Vector4 &topLeftValue{ data[xTopLeftCoordinate + (yTopLeftCoordinate * resolution)] };
 		const Vector4 &topRightValue{ data[xTopRightCoordinate + (yTopRightCoordinate * resolution)] };
 
-		const Vector4 mixA{ GameMath::LinearlyInterpolate(bottomLeftValue, topLeftValue, yFractional) };
-		const Vector4 mixB{ GameMath::LinearlyInterpolate(bottomRightValue, topRightValue, yFractional) };
+		const Vector4 mixA{ CatalystMath::LinearlyInterpolate(bottomLeftValue, topLeftValue, yFractional) };
+		const Vector4 mixB{ CatalystMath::LinearlyInterpolate(bottomRightValue, topRightValue, yFractional) };
 
-		return GameMath::LinearlyInterpolate(mixA, mixB, xFractional);
+		return CatalystMath::LinearlyInterpolate(mixA, mixB, xFractional);
 	}
 
 	/*

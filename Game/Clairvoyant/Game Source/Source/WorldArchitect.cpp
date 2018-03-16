@@ -13,7 +13,7 @@
 #include <Entities/WaterEntity.h>
 
 //Math.
-#include <Math/GameMath.h>
+#include <Math/CatalystMath.h>
 #include <Math/Matrix4.h>
 #include <Math/PerlinNoiseGenerator.h>
 
@@ -81,7 +81,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Create the terrain properties!
 	CPUTexture4 terrainProperties{ HEIGHT_MAP_RESOLUTION };
 
-	const float randomOffset{ GameMath::RandomFloatInRange(0.0f, 1.0f) };
+	const float randomOffset{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
 
 	for (uint32 i = 0; i < HEIGHT_MAP_RESOLUTION; ++i)
 	{
@@ -107,7 +107,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 			multiplier *= 0.5f;
 			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(StaticCast<float>(i) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, StaticCast<float>(j) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
-			terrainProperties.At(i, j).W = GameMath::LinearlyInterpolate(terrainProperties.At(i, j).W, GameMath::SmoothStep<1>(terrainProperties.At(i, j).W), 0.25f);
+			terrainProperties.At(i, j).W = CatalystMath::LinearlyInterpolate(terrainProperties.At(i, j).W, CatalystMath::SmoothStep<1>(terrainProperties.At(i, j).W), 0.25f);
 		}
 	}
 
@@ -163,15 +163,15 @@ void WorldArchitect::Initialize() NOEXCEPT
 				layerWeights.At(i, j).X = (heightValue + -WATER_HEIGHT) * 10.0f;
 			}
 
-			layerWeights.At(i, j).X = GameMath::SmoothStep<1>(layerWeights.At(i, j).X);
+			layerWeights.At(i, j).X = CatalystMath::SmoothStep<1>(layerWeights.At(i, j).X);
 
 			//Determine the weight of the dirt layer.
 			constexpr float dirtLayerFrequency{ 1.0f };
 			layerWeights.At(i, j).Y = (PerlinNoiseGenerator::GenerateNoise(StaticCast<float>(i) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, StaticCast<float>(j) / StaticCast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f;
-			layerWeights.At(i, j).Y = GameMath::SmoothStep<5>(layerWeights.At(i, j).Y);
+			layerWeights.At(i, j).Y = CatalystMath::SmoothStep<5>(layerWeights.At(i, j).Y);
 
 			//Determine the weight of the rock layer.
-			layerWeights.At(i, j).Z = 1.0f - GameMath::SmoothStep<3>(GameMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)), 0.0f, 1.0f));
+			layerWeights.At(i, j).Z = 1.0f - CatalystMath::SmoothStep<3>(CatalystMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)), 0.0f, 1.0f));
 
 			//Determine the weight of the snow layer.
 			if (heightValue < 0.45f)
@@ -218,7 +218,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Create the stones.
 	for (uint64 i = 0; i < 1'000; ++i)
 	{
-		Vector3 position{ Vector3(GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
+		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
 
 		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
 
@@ -234,8 +234,8 @@ void WorldArchitect::Initialize() NOEXCEPT
 			continue;
 		}
 
-		const Vector3 rotation{ 0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f), 0.0f };
-		const float stoneScale = GameMath::RandomFloatInRange(0.1f, 0.5f);
+		const Vector3 rotation{ 0.0f, CatalystMath::RandomFloatInRange(0.0f, 360.0f), 0.0f };
+		const float stoneScale = CatalystMath::RandomFloatInRange(0.1f, 0.5f);
 		const Vector3 scale{ stoneScale, stoneScale, stoneScale };
 
 		stoneTransformations.EmplaceFast(position, rotation, scale);
@@ -258,7 +258,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Create the tree stomps.
 	for (uint64 i = 0; i < 1'000; ++i)
 	{
-		Vector3 position{ Vector3(GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, GameMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
+		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
 
 		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
 
@@ -274,8 +274,8 @@ void WorldArchitect::Initialize() NOEXCEPT
 			continue;
 		}
 
-		const Vector3 rotation{ -90.0f, 0.0f, GameMath::RandomFloatInRange(0.0f, 360.0f) };
-		const float uniformScale = GameMath::RandomFloatInRange(0.75f, 1.0f);
+		const Vector3 rotation{ -90.0f, 0.0f, CatalystMath::RandomFloatInRange(0.0f, 360.0f) };
+		const float uniformScale = CatalystMath::RandomFloatInRange(0.75f, 1.0f);
 		const Vector3 scale{ uniformScale, uniformScale, uniformScale };
 
 		treeStompTransformations.EmplaceFast(position, rotation, scale);
