@@ -5,7 +5,7 @@
 #include <ClairvoyantPlayer.h>
 
 //Systems.
-#include <EntitySystem.h>
+#include <Systems/EntitySystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(ClairvoyantGameSystem);

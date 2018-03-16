@@ -1,7 +1,7 @@
 #pragma once
 
 //Engine core.
-#include <EngineCore.h>
+#include <Engine Core/EngineCore.h>
 
 //Clairvoyant.
 #include <WorldArchitect.h>

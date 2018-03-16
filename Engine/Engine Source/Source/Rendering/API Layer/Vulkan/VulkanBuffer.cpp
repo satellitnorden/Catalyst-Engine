@@ -1,0 +1,86 @@
+//Header file.
+#include <Rendering/API Layer/Vulkan/VulkanBuffer.h>
+
+//Vulkan.
+#include <Rendering/API Layer/Vulkan/VulkanInterface.h>
+#include <Rendering/API Layer/Vulkan/VulkanUtilities.h>
+
+/*
+*	Default constructor.
+*/
+VulkanBuffer::VulkanBuffer() NOEXCEPT
+{
+
+}
+
+/*
+*	Default destructor.
+*/
+VulkanBuffer::~VulkanBuffer() NOEXCEPT
+{
+
+}
+
+/*
+*	Initializes this Vulkan buffer.
+*
+*	data - Pointer to an array of pointers to the data that should be copied into the buffer.
+*	dataSizes - Pointer to an array of offsets for the data that should be copied into the buffer.
+*	dataChunks - The number of data chunks that should be copied into the buffer.
+*/
+void VulkanBuffer::Initialize(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
+{
+	//Calculate the total size of the buffer.
+	VkDeviceSize bufferSize{ 0 };
+
+	for (uint32 i = 0; i < dataChunks; ++i)
+	{
+		bufferSize += dataSizes[i];
+	}
+
+	//Set up the staging buffer.
+	VkBuffer stagingBuffer;
+	VkDeviceMemory stagingDeviceMemory;
+
+	//Create the staging buffer.
+	VulkanUtilities::CreateVulkanBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingDeviceMemory);
+
+	//Copy the data into the staging buffer.
+	VkDeviceSize currentOffset{ 0 };
+
+	void *mappedMemory;
+	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, 0, VK_WHOLE_SIZE, 0, &mappedMemory));
+
+	for (uint32 i = 0; i < dataChunks; ++i)
+	{
+		MemoryUtilities::CopyMemory(StaticCast<void*>(StaticCast<byte*>(mappedMemory) + currentOffset), data[i], dataSizes[i]);
+
+		currentOffset = dataSizes[i];
+	}
+	
+	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory);
+
+	//Create the buffer.
+	VulkanUtilities::CreateVulkanBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vulkanBuffer, vulkanDeviceMemory);
+
+	//Copy the staging buffer data to the buffer.
+	VulkanUtilities::CopyBufferToBuffer(bufferSize, stagingBuffer, vulkanBuffer);
+
+	//Free the staging device memory.
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, nullptr);
+
+	//Destroy the staging buffer.
+	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBuffer, nullptr);
+}
+
+/*
+*	Releases this Vulkan vertex buffer.
+*/
+void VulkanBuffer::Release() NOEXCEPT
+{
+	//Free the Vulkan device memory.
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
+
+	//Destroy the Vulkan vertex buffer.
+	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, nullptr);
+}

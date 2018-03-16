@@ -1,10 +1,10 @@
 #pragma once
 
 //Engine core.
-#include <EngineCore.h>
+#include <Engine Core/EngineCore.h>
 
 //Entities.
-#include <CameraEntity.h>
+#include <Entities/CameraEntity.h>
 
 //Forward declarations.
 class SpotLightEntity;

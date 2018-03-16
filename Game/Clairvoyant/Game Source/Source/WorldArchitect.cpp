@@ -5,35 +5,35 @@
 #include <ClairvoyantSettings.h>
 
 //Entities.
-#include <DirectionalLightEntity.h>
-#include <InstancedPhysicalEntity.h>
-#include <PointLightEntity.h>
-#include <SpotLightEntity.h>
-#include <TerrainEntity.h>
-#include <WaterEntity.h>
+#include <Entities/DirectionalLightEntity.h>
+#include <Entities/InstancedPhysicalEntity.h>
+#include <Entities/PointLightEntity.h>
+#include <Entities/SpotLightEntity.h>
+#include <Entities/TerrainEntity.h>
+#include <Entities/WaterEntity.h>
 
 //Math.
-#include <GameMath.h>
-#include <Matrix4.h>
-#include <PerlinNoiseGenerator.h>
+#include <Math/GameMath.h>
+#include <Math/Matrix4.h>
+#include <Math/PerlinNoiseGenerator.h>
 
 //Rendering.
-#include <CPUTexture4.h>
-#include <PhysicalModel.h>
-#include <TerrainMaterial.h>
-#include <TerrainUniformData.h>
-#include <TextureData.h>
-#include <WaterMaterial.h>
-#include <WaterUniformData.h>
+#include <Rendering/Engine Layer/CPUTexture4.h>
+#include <Rendering/Engine Layer/PhysicalModel.h>
+#include <Rendering/Engine Layer/TerrainMaterial.h>
+#include <Rendering/Engine Layer/TerrainUniformData.h>
+#include <Rendering/Engine Layer/TextureData.h>
+#include <Rendering/Engine Layer/WaterMaterial.h>
+#include <Rendering/Engine Layer/WaterUniformData.h>
 
 //Resources.
-#include <ResourceLoader.h>
+#include <Resources/ResourceLoader.h>
 
 //Systems.
-#include <EntitySystem.h>
-#include <RenderingSystem.h>
-#include <PhysicsSystem.h>
-#include <QuestSystem.h>
+#include <Systems/EntitySystem.h>
+#include <Systems/RenderingSystem.h>
+#include <Systems/PhysicsSystem.h>
+#include <Systems/QuestSystem.h>
 
 namespace
 {

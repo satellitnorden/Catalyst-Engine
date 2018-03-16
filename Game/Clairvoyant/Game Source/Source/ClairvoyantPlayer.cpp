@@ -2,18 +2,18 @@
 #include <ClairvoyantPlayer.h>
 
 //Entities.
-#include <CameraEntity.h>
-#include <PointLightEntity.h>
-#include <SpotLightEntity.h>
+#include <Entities/CameraEntity.h>
+#include <Entities/PointLightEntity.h>
+#include <Entities/SpotLightEntity.h>
 
 //Math.
-#include <GameMath.h>
+#include <Math/GameMath.h>
 
 //Systems.
-#include <EntitySystem.h>
-#include <InputSystem.h>
-#include <RenderingSystem.h>
-#include <PhysicsSystem.h>
+#include <Systems/EntitySystem.h>
+#include <Systems/InputSystem.h>
+#include <Systems/RenderingSystem.h>
+#include <Systems/PhysicsSystem.h>
 
 /*
 *	Default constructor.
