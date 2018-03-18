@@ -1157,7 +1157,7 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 	//Reset the current fence.
 	frameData.GetCurrentFence()->Reset();
 
-	//Execute the update dynamic uniform data quest.
+	//Execute the update dynamic uniform data task.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
 		StaticCast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDynamicUniformData();
