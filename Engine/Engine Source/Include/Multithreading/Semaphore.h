@@ -3,6 +3,13 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Enumeration covering all semaphore creation flags.
+enum SemaphoreCreationFlags : uint8
+{
+	Unsignalled = 1 << 0,
+	Signalled = 1 << 1
+};
+
 class Semaphore final
 {
 
@@ -11,15 +18,9 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Semaphore() NOEXCEPT
-	{
-
-	}
-
-	/*
-	*	Constructor taking the signal count as an argument.
-	*/
-	Semaphore(const uint64 newSignalCount) NOEXCEPT
+	Semaphore(const SemaphoreCreationFlags creationFlags = SemaphoreCreationFlags::Unsignalled) NOEXCEPT
+		:
+		signalled(creationFlags & SemaphoreCreationFlags::Signalled)
 	{
 
 	}

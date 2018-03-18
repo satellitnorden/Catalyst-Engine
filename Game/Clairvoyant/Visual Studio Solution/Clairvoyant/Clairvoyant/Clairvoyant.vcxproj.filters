@@ -127,6 +127,9 @@
     <Filter Include="Engine Source\Sound">
       <UniqueIdentifier>{fd18099f-10a7-40ed-9e22-bb0270652d48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Sound\Include">
+      <UniqueIdentifier>{3505dde2-9409-493e-b14e-b14d64ec5762}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantGameSystem.h">
@@ -512,6 +515,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\Task.h">
       <Filter>Engine Source\Multithreading\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundCore.h">
+      <Filter>Engine Source\Sound\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

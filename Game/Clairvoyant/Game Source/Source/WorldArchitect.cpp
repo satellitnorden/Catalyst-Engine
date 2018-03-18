@@ -33,6 +33,7 @@
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/PhysicsSystem.h>
+#include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
 
 namespace
@@ -64,6 +65,9 @@ WorldArchitect::~WorldArchitect() NOEXCEPT
 */
 void WorldArchitect::Initialize() NOEXCEPT
 {
+	//Load the master sound bank.
+	SoundSystem::Instance->LoadBank(CLAIRVOYANT_RESOURCES_FOLDER "Master Bank.bank");
+
 	//Create the sun!
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	sun->SetIntensity(10.0f);
