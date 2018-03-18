@@ -6,6 +6,7 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/PhysicsSystem.h>
+#include <Systems/SoundSystem.h>
 #include <Systems/QuestSystem.h>
 
 //Singleton definition.
@@ -37,6 +38,7 @@ void EngineSystem::InitializeSystem(const CatalystProjectInformation &initialPro
 
 	//Initialize all systems.
 	RenderingSystem::Instance->InitializeSystem();
+	SoundSystem::Instance->InitializeSystem();
 	QuestSystem::Instance->InitializeSystem();
 
 	//Post-initialize all systems.
@@ -61,6 +63,9 @@ bool EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	//Update the physics system.
 	PhysicsSystem::Instance->UpdateSystemSynchronous(deltaTime);
 
+	//Update the sound system.
+	SoundSystem::Instance->UpdateSystemSynchronous();
+
 	//Update the graphics system.
 	RenderingSystem::Instance->UpdateSystemSynchronous();
 
@@ -83,5 +88,6 @@ void EngineSystem::ReleaseSystem() NOEXCEPT
 	InputSystem::Instance->ReleaseSystem();
 	EntitySystem::Instance->ReleaseSystem();
 	RenderingSystem::Instance->ReleaseSystem();
+	SoundSystem::Instance->ReleaseSystem();
 	QuestSystem::Instance->ReleaseSystem();
 }
