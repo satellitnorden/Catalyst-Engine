@@ -29,7 +29,7 @@ void VulkanRenderTarget::Initialize(const VkExtent2D extent) NOEXCEPT
 	imageExtent = extent;
 
 	//Create the Vulkan image.
-	VulkanUtilities::CreateVulkanImage(0, VK_FORMAT_R32G32B32A32_SFLOAT, extent.width, extent.height, 1, 1, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, vulkanImage, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(0, VK_FORMAT_R32G32B32A32_SFLOAT, extent.width, extent.height, 1, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vulkanImage, vulkanDeviceMemory);
 
 	//Transition the image to the correct layout.
 	VulkanUtilities::TransitionImageToLayout(VK_FORMAT_R32G32B32A32_SFLOAT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 1, 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, vulkanImage);
@@ -77,44 +77,6 @@ VkWriteDescriptorSet VulkanRenderTarget::GetWriteDescriptorSet(const VulkanDescr
 	vulkanWriteDescriptorSetCopy.pImageInfo = &vulkanDescriptorImageInfo;
 
 	return vulkanWriteDescriptorSetCopy;
-}
-
-/*
-*	Returns the data contained in the image.
-*/
-void VulkanRenderTarget::GetImageData(void *const RESTRICT imageData) NOEXCEPT
-{
-	//Calculate the image size.
-	const VkDeviceSize imageSize{ imageExtent.width * imageExtent.height * SizeOf(float) * 4 };
-
-	//Create an intermediate buffer to copy the data to.
-	VkBuffer intermediateBuffer;
-	VkDeviceMemory intermediateBufferDeviceMemory;
-
-	//Create the staging buffer.
-	VulkanUtilities::CreateVulkanBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, intermediateBuffer, intermediateBufferDeviceMemory);
-
-	//Transition the image to the correct layout.
-	VulkanUtilities::TransitionImageToLayout(VK_FORMAT_R32G32B32A32_SFLOAT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, 1, 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, vulkanImage);
-
-	//Copy the image to the buffer.
-	VulkanUtilities::CopyImageToBuffer(imageExtent.width, imageExtent.height, vulkanImage, intermediateBuffer);
-
-	//Transition the image back to the correct layout.
-	VulkanUtilities::TransitionImageToLayout(VK_FORMAT_R32G32B32A32_SFLOAT, VK_ACCESS_TRANSFER_WRITE_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 1, 1, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, vulkanImage);
-
-	//Map the intermediate buffer memory.
-	void *RESTRICT data{ nullptr };
-
-	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), intermediateBufferDeviceMemory, 0, VK_WHOLE_SIZE, 0, &data));
-
-	MemoryUtilities::CopyMemory(imageData, data, imageSize);
-
-	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), intermediateBufferDeviceMemory);
-
-	//Release the intermediate buffer.
-	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), intermediateBufferDeviceMemory, nullptr);
-	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), intermediateBuffer, nullptr);
 }
 
 /*

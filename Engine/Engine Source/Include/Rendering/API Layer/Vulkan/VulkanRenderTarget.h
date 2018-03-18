@@ -54,11 +54,6 @@ public:
 	*/
 	VkWriteDescriptorSet GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT;
 
-	/*
-	*	Returns the data contained in the image.
-	*/
-	void GetImageData(void *const RESTRICT imageData) NOEXCEPT;
-
 private:
 
 	//The Vulkan image.

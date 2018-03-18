@@ -124,7 +124,7 @@ public:
 
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transferCommandBuffer;
-		VulkanInterface::Instance->GetTransferCommandPool().AllocateVulkanCommandBuffer(transferCommandBuffer);
+		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(transferCommandBuffer);
 
 		//Begin the transfer ommand buffer.
 		transferCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -136,13 +136,55 @@ public:
 		transferCommandBuffer.End();
 
 		//Submit the command buffer.
-		VulkanInterface::Instance->GetTransferQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
 
 		//Wait for the transfer operation to finish.
-		VulkanInterface::Instance->GetTransferQueue().WaitIdle();
+		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
 		//Free the transfer command buffer,
-		VulkanInterface::Instance->GetTransferCommandPool().FreeVulkanCommandBuffer(transferCommandBuffer);
+		VulkanInterface::Instance->GetGraphicsCommandPool().FreeVulkanCommandBuffer(transferCommandBuffer);
+	}
+
+	/*
+	*	Copies a Vulkan image to a Vulkan image.
+	*/
+	static void CopyImageToImage(const uint32 imageWidth, const uint32 imageHeight, const VkImage sourceImage, const VkImage destinationImage) NOEXCEPT
+	{
+		//Create the image copy.
+		VkImageCopy imageCopy;
+		imageCopy.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		imageCopy.srcSubresource.baseArrayLayer = 0;
+		imageCopy.srcSubresource.layerCount = 1;
+		imageCopy.srcSubresource.mipLevel = 0;
+		imageCopy.srcOffset = { 0, 0, 0 };
+		imageCopy.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		imageCopy.dstSubresource.baseArrayLayer = 0;
+		imageCopy.dstSubresource.layerCount = 1;
+		imageCopy.dstSubresource.mipLevel = 0;
+		imageCopy.dstOffset = { 0, 0, 0 };
+		imageCopy.extent = { imageWidth, imageHeight, 1 };
+
+		//Create the transfer command buffer.
+		VulkanCommandBuffer transferCommandBuffer;
+		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(transferCommandBuffer);
+
+		//Begin the transfer ommand buffer.
+		transferCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
+		//Record the copy command to the transfer command buffer.
+		vkCmdCopyImage(transferCommandBuffer.Get(), sourceImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, destinationImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
+
+		//End the transfer command buffer.
+		transferCommandBuffer.End();
+
+		//Submit the command buffer.
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+
+		//Wait for the transfer operation to finish.
+		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
+
+		//Free the transfer command buffer,
+		VulkanInterface::Instance->GetGraphicsCommandPool().FreeVulkanCommandBuffer(transferCommandBuffer);
 	}
 
 	/*
@@ -210,7 +252,7 @@ public:
 	/*
 	*	Creates a Vulkan image.
 	*/
-	static void CreateVulkanImage(const VkImageCreateFlags flags, const VkFormat format, const uint32 width, const uint32 height, const uint32 mipLevels, const uint32 arrayLayers, const VkImageUsageFlags usage, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) NOEXCEPT
+	static void CreateVulkanImage(const VkImageCreateFlags flags, const VkFormat format, const uint32 width, const uint32 height, const uint32 mipLevels, const uint32 arrayLayers, const VkImageTiling tiling, const VkImageUsageFlags usage, const VkMemoryPropertyFlags memoryPropertyFlags, VkImage &vulkanImage, VkDeviceMemory &vulkanDeviceMemory) NOEXCEPT
 	{
 		//Create the image create info.
 		VkImageCreateInfo imageCreateInfo;
@@ -226,7 +268,7 @@ public:
 		imageCreateInfo.mipLevels = mipLevels;
 		imageCreateInfo.arrayLayers = arrayLayers;
 		imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-		imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		imageCreateInfo.tiling = tiling;
 		imageCreateInfo.usage = usage;
 		imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		imageCreateInfo.queueFamilyIndexCount = 0;
@@ -248,7 +290,7 @@ public:
 
 		for (uint32 i = 0; i < physicalDeviceMemoryProperties.memoryTypeCount; ++i)
 		{
-			if ((memoryRequirements.memoryTypeBits & (1 << i)) && ((physicalDeviceMemoryProperties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) == VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT))
+			if ((memoryRequirements.memoryTypeBits & (1 << i)) && ((physicalDeviceMemoryProperties.memoryTypes[i].propertyFlags & memoryPropertyFlags) == memoryPropertyFlags))
 			{
 				memoryTypeIndex = i;
 

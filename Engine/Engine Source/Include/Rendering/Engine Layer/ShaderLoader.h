@@ -9,9 +9,9 @@ namespace ShaderLoader
 	/*
 	*	Given a shader name, returns a vector of bytes.
 	*/
-	static DynamicArray<char> LoadShader(const char *RESTRICT shaderName) NOEXCEPT
+	static DynamicArray<char> LoadShader(const DynamicString &shaderName) NOEXCEPT
 	{
-		std::ifstream file(shaderName, std::ios::ate | std::ios::binary);
+		std::ifstream file(shaderName.CString(), std::ios::ate | std::ios::binary);
 
 #if !defined(CATALYST_FINAL)
 		if (!file.is_open())

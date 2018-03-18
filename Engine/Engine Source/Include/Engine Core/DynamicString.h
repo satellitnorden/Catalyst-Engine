@@ -97,6 +97,31 @@ public:
 	}
 
 	/*
+	*	Addition operator overload.
+	*/
+	DynamicString operator+(const char *const RESTRICT newString) const NOEXCEPT
+	{
+		//Construct the new dynamic string.
+		DynamicString newDynamicString;
+
+		//Determine how long the new dynamic string will be.
+		uint64 newStringLength{ strlen(newString) };
+		uint64 newLength{ this->length + newStringLength };
+
+		//Allocate sufficient memory to host the string.
+		newDynamicString.string = StaticCast<char *RESTRICT>(MemoryUtilities::AllocateMemory(newLength + 1));
+
+		//Copy the original string to the memory.
+		MemoryUtilities::CopyMemory(StaticCast<void *RESTRICT>(newDynamicString.string), StaticCast<const void *const RESTRICT>(this->string), this->length);
+
+		//Copy the new string to the memory.
+		MemoryUtilities::CopyMemory(StaticCast<void *RESTRICT>(newDynamicString.string + this->length), StaticCast<const void *const RESTRICT>(newString), newStringLength + 1);
+
+		//Return the newly constructed dynamic string.
+		return newDynamicString;
+	}
+
+	/*
 	*	Addition assignment operator overload.
 	*/
 	void operator+=(const char *const RESTRICT newString) NOEXCEPT

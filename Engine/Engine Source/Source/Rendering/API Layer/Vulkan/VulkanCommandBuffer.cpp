@@ -49,7 +49,7 @@ void VulkanCommandBuffer::Begin(const VkCommandBufferUsageFlags commandBufferUsa
 /*
 *	Records a begin render pass command.
 */
-void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex) NOEXCEPT
+void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea) NOEXCEPT
 {
 	VkRenderPassBeginInfo renderPassBeginInfo;
 
@@ -58,7 +58,7 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanR
 	renderPassBeginInfo.renderPass = vulkanRenderPass.Get();
 	renderPassBeginInfo.framebuffer = vulkanRenderPass.GetFrameBuffers()[framebufferIndex].Get();
 	renderPassBeginInfo.renderArea.offset = { 0, 0 };
-	renderPassBeginInfo.renderArea.extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+	renderPassBeginInfo.renderArea.extent = renderArea;
 	renderPassBeginInfo.clearValueCount = 0;
 	renderPassBeginInfo.pClearValues = nullptr;
 

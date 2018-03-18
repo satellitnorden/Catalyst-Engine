@@ -41,14 +41,11 @@
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanUtilities.h>
 
-//Preprocessor defines
-#define VULKAN_SHADERS_PATH "../../../../../Engine/Engine Source/Shaders/Vulkan/"
-
 //Constants.
 namespace
 {
 #if !defined(CATALYST_FINAL)
-	static constexpr uint32 ENVIRONMENT_MATERIAL_RESOLUTION{ 1'024 };
+	static constexpr uint32 ENVIRONMENT_MATERIAL_RESOLUTION{ 512 };
 #endif
 }
 
@@ -184,87 +181,6 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 	//Release the Vulkan interface.
 	VulkanInterface::Instance->Release();
 }
-
-#if !defined(CATALYST_FINAL)
-/*
-*	Constructs an environment material.
-*/
-void VulkanRenderingSystem::ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &albedoData, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT
-{
-	//Calculate the size of each image.
-	static constexpr uint64 environmentImageSize{ ENVIRONMENT_MATERIAL_RESOLUTION  * ENVIRONMENT_MATERIAL_RESOLUTION * sizeof(float) * 4 };
-
-	//Calculate the projection matrix.
-	static Matrix4 projectionMatrix{ Matrix4::Perspective(CatalystMath::DegreesToRadians(90.0f), 1.0f, 0.1f, 10.0f) };
-
-	//Calculate the view matrices.
-	static StaticArray<Matrix4, 6> viewMatrices
-	{
-		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f,  0.0f,  0.0f), Vector3(0.0f, -1.0f,  0.0f)),
-		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(-1.0f,  0.0f,  0.0f), Vector3(0.0f, -1.0f,  0.0f)),
-		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f,  1.0f,  0.0f), Vector3(0.0f,  0.0f,  1.0f)),
-		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, -1.0f,  0.0f), Vector3(0.0f,  0.0f, -1.0f)),
-		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f,  0.0f,  1.0f), Vector3(0.0f, -1.0f,  0.0f)),
-		projectionMatrix * Matrix4::LookAt(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f,  0.0f, -1.0f), Vector3(0.0f, -1.0f,  0.0f))
-	};
-
-	//Reserve enought size for the data containers to hold the data.
-	albedoData.Reserve(environmentImageSize * 6);
-	diffuseData.Reserve(environmentImageSize * 6);
-	diffuseIrradianceData.Reserve(environmentImageSize * 6);
-
-	//Create a 2D texture of the data.
-	Vulkan2DTexture *const RESTRICT environmentTexture{ VulkanInterface::Instance->Create2DTexture(StaticCast<uint32>(1), textureWidth, textureHeight, textureChannels, SizeOf(float), ReinterpretCast<void *const RESTRICT *RESTRICT>(&data), VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE) };
-
-	//Create the descriptor set.
-	VulkanDescriptorSet environmentDescriptorSet;
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(environmentDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::EnvironmentMaterial)]);
-
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &environmentTexture->GetWriteDescriptorSet(environmentDescriptorSet, 0), 0, nullptr);
-
-	for (uint8 i = 0; i < 6; ++i)
-	{
-		//Allocate a command buffer to carry out the draw command.
-		VulkanCommandBuffer environmentCommandBuffer;
-		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(environmentCommandBuffer);
-
-		//Start the command buffer.
-		environmentCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-
-		//Bind the pipeline.
-		environmentCommandBuffer.CommandBindPipeline(*pipelines[INDEX(Pipeline::EnvironmentMaterial)]);
-
-		//Begin the render pass.
-		environmentCommandBuffer.CommandBeginRenderPass(pipelines[INDEX(Pipeline::EnvironmentMaterial)]->GetRenderPass(), 0);
-
-		//Bind the descriptor set.
-		environmentCommandBuffer.CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::EnvironmentMaterial)], 1, &environmentDescriptorSet);
-
-		//Set the view matrix.
-		environmentCommandBuffer.CommandPushConstants(pipelines[INDEX(Pipeline::EnvironmentMaterial)]->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, SizeOf(Matrix4), &viewMatrices[i]);
-
-		//Draw!
-		environmentCommandBuffer.CommandDraw(4);
-
-		//End the render pass.
-		environmentCommandBuffer.CommandEndRenderPass();
-
-		//End the command buffer.
-		environmentCommandBuffer.End();
-
-		//Submit the command buffer.
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(environmentCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
-
-		//Wait for it to finish.
-		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
-
-		//Get the data.
-		renderTargets[INDEX(RenderTarget::EnvironmentMaterialAlbedo)]->GetImageData(albedoData.Data() + (environmentImageSize * i));
-		renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuse)]->GetImageData(diffuseData.Data() + (environmentImageSize * i));
-		renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuseIrradiance)]->GetImageData(diffuseIrradianceData.Data() + (environmentImageSize * i));
-	}
-}
-#endif
 
 /*
 *	Creates a terrain material.
@@ -664,11 +580,6 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 	depthBuffers[DepthBuffer::SceneBufferDepthBuffer] = VulkanInterface::Instance->CreateDepthBuffer(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Initialize all render targets.
-#if !defined(CATALYST_FINAL)
-	renderTargets[INDEX(RenderTarget::EnvironmentMaterialAlbedo)] = VulkanInterface::Instance->CreateRenderTarget({ ENVIRONMENT_MATERIAL_RESOLUTION, ENVIRONMENT_MATERIAL_RESOLUTION });
-	renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuse)] = VulkanInterface::Instance->CreateRenderTarget({ ENVIRONMENT_MATERIAL_RESOLUTION, ENVIRONMENT_MATERIAL_RESOLUTION });
-	renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuseIrradiance)] = VulkanInterface::Instance->CreateRenderTarget({ ENVIRONMENT_MATERIAL_RESOLUTION, ENVIRONMENT_MATERIAL_RESOLUTION });
-#endif
 	renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 	renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 	renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
@@ -703,16 +614,6 @@ void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 {
-#if !defined(CATALYST_FINAL)
-	//Initialize the dynamic uniform data descriptor set layout.
-	constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> environmentMaterialDescriptorSetLayoutBindings
-	{
-		VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-	};
-
-	descriptorSetLayouts[INDEX(DescriptorSetLayout::EnvironmentMaterial)].Initialize(StaticCast<uint32>(environmentMaterialDescriptorSetLayoutBindings.Size()), environmentMaterialDescriptorSetLayoutBindings.Data());
-#endif
-
 	//Initialize the dynamic uniform data descriptor set layout.
 	constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> dynamicUniformDataDescriptorSetLayoutBindings
 	{
@@ -804,69 +705,61 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 {
 	//Initialize the cube map fragment shader module.
-	const auto cubeMapFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "CubeMapFragmentShader.spv");
+	const DynamicString &shadersPath{ EngineSystem::Instance->GetProjectInformation().shadersPath };
+
+	const auto cubeMapFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "CubeMapFragmentShader.spv");
 	shaderModules[INDEX(ShaderModule::CubeMapFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(cubeMapFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the cube map vertex shader module.
-	const auto cubeMapVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "CubeMapVertexShader.spv");
+	const auto cubeMapVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "CubeMapVertexShader.spv");
 	shaderModules[INDEX(ShaderModule::CubeMapVertexShader)] = VulkanInterface::Instance->CreateShaderModule(cubeMapVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
-#if !defined(CATALYST_FINAL)
-	//Initialize the environment material fragment shader module.
-	const auto environmentMaterialFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "EnvironmentMaterialFragmentShader.spv");
-	shaderModules[INDEX(ShaderModule::EnvironmentMaterialFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(environmentMaterialFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
-
-	//Initialize the environment material vertex shader module.
-	const auto environmentMaterialVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "EnvironmentMaterialVertexShader.spv");
-	shaderModules[INDEX(ShaderModule::EnvironmentMaterialVertexShader)] = VulkanInterface::Instance->CreateShaderModule(environmentMaterialVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
-#endif
-
 	//Initialize the instanced physical vertex shader module.
-	const auto instancedPhysicalVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "InstancedPhysicalVertexShader.spv");
+	const auto instancedPhysicalVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "InstancedPhysicalVertexShader.spv");
 	shaderModules[INDEX(ShaderModule::InstancedPhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(instancedPhysicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
 	//Initialize the lighting fragment shader module.
-	const auto lightingFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "LightingFragmentShader.spv");
+	const auto lightingFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "LightingFragmentShader.spv");
 	shaderModules[INDEX(ShaderModule::LightingFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(lightingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the post processing fragment shader module.
-	const auto postProcessingFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "PostProcessingFragmentShader.spv");
+	const auto postProcessingFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "PostProcessingFragmentShader.spv");
 	shaderModules[INDEX(ShaderModule::PostProcessingFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(postProcessingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the physical fragment shader module.
-	const auto physicalFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "PhysicalFragmentShader.spv");
+	const auto physicalFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "PhysicalFragmentShader.spv");
 	shaderModules[INDEX(ShaderModule::PhysicalFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(physicalFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the physical vertex shader module.
-	const auto physicalVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "PhysicalVertexShader.spv");
+	const auto physicalVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "PhysicalVertexShader.spv");
 	shaderModules[INDEX(ShaderModule::PhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(physicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
 	//Initialize the terrain scene buffer fragment shader module.
-	const auto terrainSceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferFragmentShader.spv");
+	const auto terrainSceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "TerrainSceneBufferFragmentShader.spv");
 	shaderModules[INDEX(ShaderModule::TerrainFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the terrain scene buffer tessellation control shader module.
-	const auto terrainSceneBufferTessellationControlShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferTessellationControlShader.spv");
+	const auto terrainSceneBufferTessellationControlShaderByteCode = ShaderLoader::LoadShader(shadersPath + "TerrainSceneBufferTessellationControlShader.spv");
 	shaderModules[INDEX(ShaderModule::TerrainTessellationControlShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferTessellationControlShaderByteCode, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
 
 	//Initialize the terrain scene buffer tessellation evaluation shader module.
-	const auto terrainSceneBufferTessellationEvaluationShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferTessellationEvaluationShader.spv");
+	const auto terrainSceneBufferTessellationEvaluationShaderByteCode = ShaderLoader::LoadShader(shadersPath + "TerrainSceneBufferTessellationEvaluationShader.spv");
 	shaderModules[INDEX(ShaderModule::TerrainTessellationEvaluationShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferTessellationEvaluationShaderByteCode, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 
 	//Initialize the terrain scene buffer vertex shader module.
-	const auto terrainSceneBufferVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "TerrainSceneBufferVertexShader.spv");
+	const auto terrainSceneBufferVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "TerrainSceneBufferVertexShader.spv");
 	shaderModules[INDEX(ShaderModule::TerrainVertexShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
 	//Initialize the viewport vertex shader module.
-	const auto viewportVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "ViewportVertexShader.spv");
+	const auto viewportVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "ViewportVertexShader.spv");
 	shaderModules[INDEX(ShaderModule::ViewportVertexShader)] = VulkanInterface::Instance->CreateShaderModule(viewportVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 
 	//Initialize the water fragment shader module.
-	const auto waterFragmentShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "WaterFragmentShader.spv");
+	const auto waterFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "WaterFragmentShader.spv");
 	shaderModules[INDEX(ShaderModule::WaterFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(waterFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	//Initialize the water vertex shader module.
-	const auto waterVertexShaderByteCode = ShaderLoader::LoadShader(VULKAN_SHADERS_PATH "WaterVertexShader.spv");
+	const auto waterVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "WaterVertexShader.spv");
 	shaderModules[INDEX(ShaderModule::WaterVertexShader)] = VulkanInterface::Instance->CreateShaderModule(waterVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 }
 
@@ -875,50 +768,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 {
-#if !defined(CATALYST_FINAL)
-	//Create the environment material pipeline.
-	VulkanPipelineCreationParameters environmentMaterialPipelineCreationParameters;
-
-	environmentMaterialPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	environmentMaterialPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	environmentMaterialPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-	environmentMaterialPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	environmentMaterialPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-	environmentMaterialPipelineCreationParameters.colorAttachments[0].Reserve(3);
-	environmentMaterialPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::EnvironmentMaterialAlbedo)]->GetImageView());
-	environmentMaterialPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuse)]->GetImageView());
-	environmentMaterialPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::EnvironmentMaterialDiffuseIrradiance)]->GetImageView());
-	environmentMaterialPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
-	environmentMaterialPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	environmentMaterialPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	environmentMaterialPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	environmentMaterialPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-	environmentMaterialPipelineCreationParameters.depthTestEnable = VK_FALSE;
-	environmentMaterialPipelineCreationParameters.depthWriteEnable = VK_FALSE;
-	StaticArray<VulkanDescriptorSetLayout, 1> environmentMaterialDescriptorSetLayouts
-	{
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::EnvironmentMaterial)]
-	};
-	environmentMaterialPipelineCreationParameters.descriptorSetLayoutCount = StaticCast<uint32>(environmentMaterialDescriptorSetLayouts.Size());
-	environmentMaterialPipelineCreationParameters.descriptorSetLayouts = environmentMaterialDescriptorSetLayouts.Data();
-	VkPushConstantRange environmentMaterialPushConstantRange{ VK_SHADER_STAGE_VERTEX_BIT, 0, SizeOf(Matrix4) };
-	environmentMaterialPipelineCreationParameters.pushConstantRangeCount = 1;
-	environmentMaterialPipelineCreationParameters.pushConstantRanges = &environmentMaterialPushConstantRange;
-	environmentMaterialPipelineCreationParameters.shaderModules.Reserve(2);
-	environmentMaterialPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::EnvironmentMaterialVertexShader)]);
-	environmentMaterialPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::EnvironmentMaterialFragmentShader)]);
-	environmentMaterialPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-	environmentMaterialPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
-	environmentMaterialPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-	VkVertexInputBindingDescription environmentMaterialVertexInputBindingDescription;
-	VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(environmentMaterialVertexInputBindingDescription);
-	environmentMaterialPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
-	environmentMaterialPipelineCreationParameters.vertexInputBindingDescriptions = &environmentMaterialVertexInputBindingDescription;
-	environmentMaterialPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-	pipelines[INDEX(Pipeline::EnvironmentMaterial)] = VulkanInterface::Instance->CreatePipeline(environmentMaterialPipelineCreationParameters);
-#endif
-
 	//Create the terrain pipeline.
 	VulkanPipelineCreationParameters terrainPipelineCreationParameters;
 
@@ -1331,7 +1180,7 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(terrainSceneBufferPipeline);
-	currentCommandBuffer->CommandBeginRenderPassAndClear<4>(terrainSceneBufferPipeline.GetRenderPass(), 0);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<4>(terrainSceneBufferPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Iterate over all terrain entity components and draw them all.
 	const uint64 numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
@@ -1381,7 +1230,7 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(StaticPhysicalPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(StaticPhysicalPipeline.GetRenderPass(), 0);
+	currentCommandBuffer->CommandBeginRenderPass(StaticPhysicalPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	for (uint64 i = 0; i < numberOfStaticPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{
@@ -1429,7 +1278,7 @@ void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(instancedPhysicalPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(instancedPhysicalPipeline.GetRenderPass(), 0);
+	currentCommandBuffer->CommandBeginRenderPass(instancedPhysicalPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
 	{
@@ -1470,7 +1319,7 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Lighting)]);
 
 	//Bind the lighting render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass(), 0);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Bind the scene buffer descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> lightingDescriptorSets
@@ -1498,7 +1347,7 @@ void VulkanRenderingSystem::RenderWater() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(*waterPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(waterPipeline->GetRenderPass(), 0);
+	currentCommandBuffer->CommandBeginRenderPass(waterPipeline->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Iterate over all water entity components and draw them all.
 	const uint64 numberOfWaterComponents{ ComponentManager::GetNumberOfWaterComponents() };
@@ -1529,7 +1378,7 @@ void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::CubeMap)]);
 
 	//Bind the cube map render pass.
-	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass(), 0);
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Bind the sky box descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> skyBoxDescriptorSets
@@ -1556,7 +1405,7 @@ void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::PostProcessing)]);
 
 	//Bind the post processing render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame());
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Bind the post processing descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> postProcessingDescriptorSets

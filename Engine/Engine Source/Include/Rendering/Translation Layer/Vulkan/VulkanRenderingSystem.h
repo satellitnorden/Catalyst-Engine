@@ -3,8 +3,6 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
-//Graphics.
-
 
 //Math.
 #include <Math/Matrix4.h>
@@ -73,13 +71,6 @@ public:
 	*	Releases the Vulkan rendering system.
 	*/
 	void ReleaseSystem() NOEXCEPT;
-
-#if !defined(CATALYST_FINAL)
-	/*
-	*	Constructs an environment material.
-	*/
-	void ConstructEnvironmentMaterial(float *const RESTRICT data, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, DynamicArray<float> &albedoData, DynamicArray<float> &diffuseData, DynamicArray<float> &diffuseIrradianceData) NOEXCEPT;
-#endif
 
 	/*
 	*	Creates a terrain material.
@@ -194,9 +185,6 @@ private:
 	//Enumeration covering all descriptor set layouts.
 	enum class DescriptorSetLayout : uint8
 	{
-#if !defined(CATALYST_FINAL)
-		EnvironmentMaterial,
-#endif
 		DynamicUniformData,
 		Terrain,
 		Physical,
@@ -210,9 +198,6 @@ private:
 	//Enumeration covering all pipelines.
 	enum class Pipeline : uint8
 	{
-#if !defined(CATALYST_FINAL)
-		EnvironmentMaterial,
-#endif
 		Terrain,
 		StaticPhysical,
 		InstancedPhysical,
@@ -226,11 +211,6 @@ private:
 	//Enumeration covering all render targets.
 	enum class RenderTarget : uint8
 	{
-#if !defined(CATALYST_FINAL)
-		EnvironmentMaterialAlbedo,
-		EnvironmentMaterialDiffuse,
-		EnvironmentMaterialDiffuseIrradiance,
-#endif
 		SceneBufferAlbedoColor,
 		SceneBufferNormalDirectionDepth,
 		SceneBufferRoughnessMetallicAmbientOcclusion,
@@ -252,10 +232,6 @@ private:
 	{
 		CubeMapFragmentShader,
 		CubeMapVertexShader,
-#if !defined(CATALYST_FINAL)
-		EnvironmentMaterialFragmentShader,
-		EnvironmentMaterialVertexShader,
-#endif
 		InstancedPhysicalVertexShader,
 		LightingFragmentShader,
 		PostProcessingFragmentShader,

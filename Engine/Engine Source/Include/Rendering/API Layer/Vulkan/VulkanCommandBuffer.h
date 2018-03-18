@@ -47,13 +47,13 @@ public:
 	/*
 	*	Records a begin render pass command.
 	*/
-	void CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex) NOEXCEPT;
+	void CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea) NOEXCEPT;
 
 	/*
 	*	Records a begin render pass command and clears.
 	*/
 	template <uint32 NumberOfClearValues>
-	void CommandBeginRenderPassAndClear(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex) NOEXCEPT;
+	void CommandBeginRenderPassAndClear(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea) NOEXCEPT;
 
 	/*
 	*	Records a bind descriptor sets command.

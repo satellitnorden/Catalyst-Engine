@@ -11,6 +11,9 @@ public:
 	//The project name.
 	DynamicString projectName;
 
+	//The shaders path.
+	DynamicString shadersPath;
+
 	/*
 	*	Default constructor.
 	*/
@@ -22,9 +25,10 @@ public:
 	/*
 	*	Constructor taking all parameters as arguments.
 	*/
-	CatalystProjectInformation(DynamicString &&initialProjectName) NOEXCEPT
+	CatalystProjectInformation(const char *const RESTRICT initialProjectName, const char *const RESTRICT initialShadersPath) NOEXCEPT
 		:
-		projectName(initialProjectName)
+		projectName(initialProjectName),
+		shadersPath(initialShadersPath)
 	{
 
 	}

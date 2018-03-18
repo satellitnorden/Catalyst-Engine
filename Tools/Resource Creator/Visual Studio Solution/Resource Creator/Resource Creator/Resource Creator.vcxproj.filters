@@ -30,9 +30,6 @@
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\ResourceCollectionCreator.h">
       <Filter>Resource Creator Source\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\EnvironmentMaterialCreator.h">
-      <Filter>Resource Creator Source\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\CameraComponent.h">
       <Filter>Engine Source</Filter>
     </ClInclude>

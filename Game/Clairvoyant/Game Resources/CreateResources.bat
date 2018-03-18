@@ -1,4 +1,3 @@
-ResourceCreator.exe EnvironmentMaterial Intermediate/Materials/DefaultEnvironmentMaterial 0 Raw/Textures/EnvironmentTexture.hdr
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/StoneMaterial 0 5 Raw/Textures/StoneAlbedo.png Raw/Textures/StoneNormalMap.png Raw/Textures/StoneRoughness.png None Raw/Textures/StoneAmbientOcclusion.png Raw/Textures/StoneDisplacement.png
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/TreeStompMaterial 1 5 Raw/Textures/TreeStompAlbedo.jpg Raw/Textures/TreeStompNormalMap.jpg None None None None
 ResourceCreator.exe PhysicalModel Intermediate/Models/StoneModel 2 Raw/Models/Stone.obj
@@ -6,6 +5,6 @@ ResourceCreator.exe PhysicalModel Intermediate/Models/TreeStompModel 3 Raw/Model
 ResourceCreator.exe TerrainMaterial Intermediate/Materials/DefaultTerrainMaterial 4 7 Raw/Textures/Sand1Albedo.png Raw/Textures/Sand1NormalMap.png Raw/Textures/Sand1Roughness.png None Raw/Textures/Sand1AmbientOcclusion.png Raw/Textures/Sand1Displacement.png Raw/Textures/Grass1Albedo.png Raw/Textures/Grass1NormalMap.png Raw/Textures/Grass1Roughness.png None Raw/Textures/Grass1AmbientOcclusion.png Raw/Textures/Grass1Displacement.png Raw/Textures/Stone5Albedo.png Raw/Textures/Stone5NormalMap.png Raw/Textures/Stone5Roughness.png None Raw/Textures/Stone5AmbientOcclusion.png Raw/Textures/Stone5Displacement.png Raw/Textures/Stone1Albedo.png Raw/Textures/Stone1NormalMap.png Raw/Textures/Stone1Roughness.png None Raw/Textures/Stone1AmbientOcclusion.png Raw/Textures/Stone1Displacement.png Raw/Textures/Snow3Albedo.png Raw/Textures/Snow3NormalMap.png Raw/Textures/Snow3Roughness.png None Raw/Textures/Snow3AmbientOcclusion.png Raw/Textures/Snow3Displacement.png
 ResourceCreator.exe WaterMaterial Intermediate/Materials/DefaultWaterMaterial 5 5 Raw/Textures/WaterNormal.png
 
-ResourceCreator.exe ResourceCollection Final/ClairvoyantResourceCollection Intermediate/Materials/DefaultEnvironmentMaterial.cr Intermediate/Materials/StoneMaterial.cr Intermediate/Materials/TreeStompMaterial.cr Intermediate/Models/StoneModel.cr Intermediate/Models/TreeStompModel.cr Intermediate/Materials/DefaultTerrainMaterial.cr Intermediate/Materials/DefaultWaterMaterial.cr
+ResourceCreator.exe ResourceCollection Final/ClairvoyantResourceCollection Intermediate/Materials/StoneMaterial.cr Intermediate/Materials/TreeStompMaterial.cr Intermediate/Models/StoneModel.cr Intermediate/Models/TreeStompModel.cr Intermediate/Materials/DefaultTerrainMaterial.cr Intermediate/Materials/DefaultWaterMaterial.cr
 
 pause
