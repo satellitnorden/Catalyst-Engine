@@ -168,12 +168,11 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Vector3.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Vector4.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\AtomicQueue.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\DailyGroupQuest.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\DailyQuest.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\MultithreadedResource.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\ScopedLock.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\Semaphore.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\Spinlock.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\Task.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\Threadlock.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Physics\PhysicalConstants.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\Vulkan2DTexture.h" />
@@ -237,8 +236,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\InputSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\PhysicsSystem.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\QuestSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\RenderingSystem.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\SoundSystem.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\TaskSystem.h" />
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantGameSystem.h" />
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantPlayer.h" />
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSettings.h" />
@@ -261,8 +261,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Vector2.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Vector3.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Vector4.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Multithreading\DailyGroupQuest.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Multithreading\DailyQuest.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanAllocator.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanBuffer.cpp" />
@@ -297,8 +295,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\EntitySystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\InputSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\PhysicsSystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\QuestSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\RenderingSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\SoundSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\TaskSystem.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantMain.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantPlayer.cpp" />

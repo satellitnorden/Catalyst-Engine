@@ -26,15 +26,6 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 }
 
 /*
-*	Post-initializes the rendering system.
-*/
-void RenderingSystem::PostInitializeSystem() NOEXCEPT
-{
-	//Post-initialize the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->PostInitializeSystem();
-}
-
-/*
 *	Updates the rendering system synchronously.
 */
 void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT

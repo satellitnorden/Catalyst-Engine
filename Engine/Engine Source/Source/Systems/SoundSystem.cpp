@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/SoundSystem.h>
 
+//Define the system.
+DEFINE_SYSTEM(SoundSystem);
+
 /*
 *	Default constructor.
 */

@@ -33,7 +33,7 @@
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/PhysicsSystem.h>
-#include <Systems/QuestSystem.h>
+#include <Systems/TaskSystem.h>
 
 namespace
 {

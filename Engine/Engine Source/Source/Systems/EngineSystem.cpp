@@ -7,7 +7,7 @@
 #include <Systems/InputSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/SoundSystem.h>
-#include <Systems/QuestSystem.h>
+#include <Systems/TaskSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(EngineSystem);
@@ -39,11 +39,7 @@ void EngineSystem::InitializeSystem(const CatalystProjectInformation &initialPro
 	//Initialize all systems.
 	RenderingSystem::Instance->InitializeSystem();
 	SoundSystem::Instance->InitializeSystem();
-	QuestSystem::Instance->InitializeSystem();
-
-	//Post-initialize all systems.
-	InputSystem::Instance->PostInitializeSystem();
-	RenderingSystem::Instance->PostInitializeSystem();
+	TaskSystem::Instance->InitializeSystem();
 }
 
 /*
@@ -89,5 +85,5 @@ void EngineSystem::ReleaseSystem() NOEXCEPT
 	EntitySystem::Instance->ReleaseSystem();
 	RenderingSystem::Instance->ReleaseSystem();
 	SoundSystem::Instance->ReleaseSystem();
-	QuestSystem::Instance->ReleaseSystem();
+	TaskSystem::Instance->ReleaseSystem();
 }

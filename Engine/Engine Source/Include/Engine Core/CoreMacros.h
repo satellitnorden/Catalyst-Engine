@@ -72,6 +72,11 @@
 #define INDEX(value) StaticCast<uint32>(value)
 
 /*
+*	Puts the current thread to sleep.
+*/
+#define THREAD_SLEEP() std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+
+/*
 *	Yields the current thread.
 */
 #define THREAD_YIELD() std::this_thread::yield();

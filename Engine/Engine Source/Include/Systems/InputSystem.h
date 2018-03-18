@@ -4,6 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Multithreading.
+#include <Multithreading/Semaphore.h>
 #include <Multithreading/MultithreadedResource.h>
 
 //Input.
@@ -30,11 +31,6 @@ public:
 	~InputSystem() NOEXCEPT;
 
 	/*
-	*	Post-initializes the input system.
-	*/
-	void PostInitializeSystem() NOEXCEPT;
-
-	/*
 	*	Pre-updates the input system synchronously.
 	*/
 	void PreUpdateSystemSynchronous() NOEXCEPT;
@@ -57,17 +53,17 @@ public:
 	/*
 	*	Returns the current gamepad state.
 	*/
-	GamepadState GetCurrentGamepadState(uint8 index = 0) const NOEXCEPT { return currentGamepadState[index].GetSafe(); }
+	const GamepadState& GetCurrentGamepadState(uint8 index = 0) const NOEXCEPT { return currentGamepadStates[index]; }
 
 private:
 
+	//The update semaphore.
+	Semaphore inputUpdateSemaphore;
+
 	//The current gamepad states.
-	StaticArray<MultithreadedResource<GamepadState>, INPUT_MAXIMUM_GAMEPADS> currentGamepadState;
+	StaticArray<GamepadState, INPUT_MAXIMUM_GAMEPADS> currentGamepadStates;
 
 	//The current keyboard state.
-	MultithreadedResource<KeyboardState> currentKeyboardState;
-
-	//Defines whether or not to update buttons.
-	std::atomic<bool> updateButtons{ false };
+	KeyboardState currentKeyboardState;
 
 };

@@ -17,6 +17,9 @@
 #include <Math/CatalystMath.h>
 #include <Math/Matrix3.h>
 
+//Multithreading.
+#include <Multithreading/Task.h>
+
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture4.h>
 #include <Rendering/Engine Layer/PhysicalMaterial.h>
@@ -36,7 +39,7 @@
 
 //Systems.
 #include <Systems/EngineSystem.h>
-#include <Systems/QuestSystem.h>
+#include <Systems/TaskSystem.h>
 
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanUtilities.h>
@@ -100,24 +103,15 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 }
 
 /*
-*	Post-initializes the Vulkan rendering system.
-*/
-void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
-{
-	//Register the graphics system update dynamic uniform data daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::RenderingSystemUpdateDynamicUniformData, [](void *RESTRICT arguments) { StaticCast<VulkanRenderingSystem *RESTRICT>(arguments)->UpdateDynamicUniformData(); });
-
-	//Register the graphics system update view frustum culling daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::RenderingSystemUpdateViewFrustumCulling, [](void *RESTRICT arguments) { StaticCast<VulkanRenderingSystem *RESTRICT>(arguments)->UpdateViewFrustumCulling(); });
-}
-
-/*
 *	Updates the graphics system synchronously.
 */
 void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 {
-	//Carry out the graphics system asynchronous update daily quest.
-	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::RenderingSystemUpdateViewFrustumCulling, this);
+	//Execute the update view frustum culling task.
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		StaticCast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateViewFrustumCulling();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateViewFrustumCuling)]));
 
 	//Update the main window.
 	mainWindow.Update();
@@ -131,7 +125,7 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	}
 
 	//Pre-update the Vulkan interface.
-	VulkanInterface::Instance->PreUpdate(semaphores[INDEX(Semaphore::ImageAvailable)]);
+	VulkanInterface::Instance->PreUpdate(semaphores[INDEX(GraphicsSemaphore::ImageAvailable)]);
 
 	//Begin the frame.
 	BeginFrame();
@@ -161,7 +155,7 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	EndFrame();
 
 	//Post-update the Vulkan interface.
-	VulkanInterface::Instance->PostUpdate(semaphores[INDEX(Semaphore::RenderFinished)]);
+	VulkanInterface::Instance->PostUpdate(semaphores[INDEX(GraphicsSemaphore::RenderFinished)]);
 }
 
 /*
@@ -593,8 +587,8 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
 {
 	//Initialize all semaphores.
-	semaphores[INDEX(Semaphore::ImageAvailable)] = VulkanInterface::Instance->CreateSemaphore();
-	semaphores[INDEX(Semaphore::RenderFinished)] = VulkanInterface::Instance->CreateSemaphore();
+	semaphores[INDEX(GraphicsSemaphore::ImageAvailable)] = VulkanInterface::Instance->CreateSemaphore();
+	semaphores[INDEX(GraphicsSemaphore::RenderFinished)] = VulkanInterface::Instance->CreateSemaphore();
 }
 
 /*
@@ -1163,8 +1157,11 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 	//Reset the current fence.
 	frameData.GetCurrentFence()->Reset();
 
-	//Carry out the graphics system update dynamic uniform data daily quest.
-	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::RenderingSystemUpdateDynamicUniformData, this);
+	//Execute the update dynamic uniform data quest.
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		StaticCast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDynamicUniformData();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)]));
 
 	//Set up the current command buffer.
 	currentCommandBuffer->Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -1211,8 +1208,8 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 */
 void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 {
-	//Wait for the static physical entity update daily group quest to complete.
-	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::RenderingSystemUpdateViewFrustumCulling);
+	//Wait for the update view frustum culling  task to finish.
+	taskSemaphores[INDEX(TaskSemaphore::UpdateViewFrustumCuling)].WaitFor();
 
 	//Cache the pipeline.
 	VulkanPipeline &StaticPhysicalPipeline{ *pipelines[INDEX(Pipeline::StaticPhysical)] };
@@ -1431,11 +1428,11 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 	//End the current command buffer.
 	currentCommandBuffer->End();
 
-	//Wait for the graphics system update dynamic uniform data daily quest to finish.
-	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::RenderingSystemUpdateDynamicUniformData);
+	//Wait for the update dynamic uniform data task to finish.
+	taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)].WaitFor();
 
 	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue().Submit(*currentCommandBuffer, 1, semaphores[INDEX(Semaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, semaphores[INDEX(Semaphore::RenderFinished)], frameData.GetCurrentFence()->Get());
+	VulkanInterface::Instance->GetGraphicsQueue().Submit(*currentCommandBuffer, 1, semaphores[INDEX(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, semaphores[INDEX(GraphicsSemaphore::RenderFinished)], frameData.GetCurrentFence()->Get());
 }
 
 /*

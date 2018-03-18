@@ -4,8 +4,11 @@
 //Input.
 #include <Input/InputUtilities.h>
 
+//Multithreading.
+#include <Multithreading/Task.h>
+
 //Systems.
-#include <Systems/QuestSystem.h>
+#include <Systems/TaskSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(InputSystem);
@@ -27,21 +30,15 @@ InputSystem::~InputSystem() NOEXCEPT
 }
 
 /*
-*	Post-initializes the input system.
-*/
-void InputSystem::PostInitializeSystem() NOEXCEPT
-{
-	//Register the input system asynchronous update daily quest.
-	QuestSystem::Instance->RegisterDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, [](void *RESTRICT arguments) { StaticCast<InputSystem *RESTRICT>(arguments)->UpdateSystemAsynchronous(); });
-}
-
-/*
 *	Pre-updates the input system synchronously.
 */
 void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
-	//Carry out the input system asynchronous update daily quest.
-	QuestSystem::Instance->CarryOutDailyQuest(DailyQuests::InputSystemAsynchronousUpdate, this);
+	//Execute the update task.
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		StaticCast<InputSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
+	}, this, &inputUpdateSemaphore));
 }
 
 /*
@@ -49,8 +46,8 @@ void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
 */
 void InputSystem::PostUpdateSystemSynchronous() NOEXCEPT
 {
-	//Wait for the input system asynchronous update daily quest to finish.
-	QuestSystem::Instance->WaitForDailyQuest(DailyQuests::InputSystemAsynchronousUpdate);
+	//Wait for the update task to finish.
+	inputUpdateSemaphore.WaitFor();
 }
 
 /*
@@ -61,19 +58,11 @@ void InputSystem::UpdateSystemAsynchronous() NOEXCEPT
 	//Update gamepad states.
 	for (uint8 i = 0; i < INPUT_MAXIMUM_GAMEPADS; ++i)
 	{
-		GamepadState currentGamepadStateCopy{ currentGamepadState[i].GetSafe() };
-
-		InputUtilities::GetCurrentGamepadState(i, currentGamepadStateCopy);
-
-		currentGamepadState[i].Set(currentGamepadStateCopy);
+		InputUtilities::GetCurrentGamepadState(i, currentGamepadStates[i]);
 	}
 
 	//Update the keyboard.
-	KeyboardState currentKeyboardStateCopy{ currentKeyboardState.GetUnsafe() };
-
-	InputUtilities::GetCurrentKeyboardState(currentKeyboardStateCopy);
-
-	currentKeyboardState.Set(currentKeyboardStateCopy);
+	InputUtilities::GetCurrentKeyboardState(currentKeyboardState);
 }
 
 /*

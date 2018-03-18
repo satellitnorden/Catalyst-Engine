@@ -89,62 +89,62 @@ namespace InputUtilities
 	/*
 	*	Returns the current gamepad state.
 	*/
-	bool GetCurrentGamepadState(const uint8 index, GamepadState &currentGamepadState) NOEXCEPT
+	bool GetCurrentGamepadState(const uint8 index, GamepadState &currentGamepadStates) NOEXCEPT
 	{
 		XINPUT_STATE xInputState;
 
 		if (XInputGetState(index, &xInputState) != ERROR_SUCCESS)
 		{
-			currentGamepadState.isConnected = false;
+			currentGamepadStates.isConnected = false;
 
 			return false;
 		}
 			
 		else
 		{
-			currentGamepadState.isConnected = true;
+			currentGamepadStates.isConnected = true;
 		}
 
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_UP, currentGamepadState.dpadUpButtonState);
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_DOWN, currentGamepadState.dpadDownButtonState);
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_LEFT, currentGamepadState.dpadLeftButtonState);
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_RIGHT, currentGamepadState.dpadRightButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_UP, currentGamepadStates.dpadUpButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_DOWN, currentGamepadStates.dpadDownButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_LEFT, currentGamepadStates.dpadLeftButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_RIGHT, currentGamepadStates.dpadRightButtonState);
 
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_START, currentGamepadState.startButtonState);
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_BACK, currentGamepadState.backButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_START, currentGamepadStates.startButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_BACK, currentGamepadStates.backButtonState);
 
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_THUMB, currentGamepadState.leftThumbButtonState);
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_THUMB, currentGamepadState.rightThumbButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_THUMB, currentGamepadStates.leftThumbButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_THUMB, currentGamepadStates.rightThumbButtonState);
 
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_SHOULDER, currentGamepadState.leftShoulderButtonState);
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_SHOULDER, currentGamepadState.rightShoulderButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_SHOULDER, currentGamepadStates.leftShoulderButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_SHOULDER, currentGamepadStates.rightShoulderButtonState);
 
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_A, currentGamepadState.aButtonState);
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_B, currentGamepadState.bButtonState);
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_X, currentGamepadState.xButtonState);
-		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_Y, currentGamepadState.yButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_A, currentGamepadStates.aButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_B, currentGamepadStates.bButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_X, currentGamepadStates.xButtonState);
+		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_Y, currentGamepadStates.yButtonState);
 
-		currentGamepadState.leftTriggerValue = StaticCast<float>(xInputState.Gamepad.bLeftTrigger) / 255;
-		currentGamepadState.rightTriggerValue = StaticCast<float>(xInputState.Gamepad.bRightTrigger) / 255;
+		currentGamepadStates.leftTriggerValue = StaticCast<float>(xInputState.Gamepad.bLeftTrigger) / 255;
+		currentGamepadStates.rightTriggerValue = StaticCast<float>(xInputState.Gamepad.bRightTrigger) / 255;
 
-		currentGamepadState.leftThumbstickXValue = StaticCast<float>(xInputState.Gamepad.sThumbLX) / 32'768;
-		currentGamepadState.leftThumbstickYValue = StaticCast<float>(xInputState.Gamepad.sThumbLY) / 32'768;
+		currentGamepadStates.leftThumbstickXValue = StaticCast<float>(xInputState.Gamepad.sThumbLX) / 32'768;
+		currentGamepadStates.leftThumbstickYValue = StaticCast<float>(xInputState.Gamepad.sThumbLY) / 32'768;
 
-		currentGamepadState.rightThumbstickXValue = StaticCast<float>(xInputState.Gamepad.sThumbRX) / 32'768;
-		currentGamepadState.rightThumbstickYValue = StaticCast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
+		currentGamepadStates.rightThumbstickXValue = StaticCast<float>(xInputState.Gamepad.sThumbRX) / 32'768;
+		currentGamepadStates.rightThumbstickYValue = StaticCast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
 
 		//Calculate if the thumbstick values are in the deadzone.If so, reset them.
-		if (CatalystMath::Absolute(currentGamepadState.leftThumbstickXValue) <= GAMEPAD_DEADZONE)
-			currentGamepadState.leftThumbstickXValue = 0.0f;
+		if (CatalystMath::Absolute(currentGamepadStates.leftThumbstickXValue) <= GAMEPAD_DEADZONE)
+			currentGamepadStates.leftThumbstickXValue = 0.0f;
 
-		if (CatalystMath::Absolute(currentGamepadState.leftThumbstickYValue) <= GAMEPAD_DEADZONE)
-			currentGamepadState.leftThumbstickYValue = 0.0f;
+		if (CatalystMath::Absolute(currentGamepadStates.leftThumbstickYValue) <= GAMEPAD_DEADZONE)
+			currentGamepadStates.leftThumbstickYValue = 0.0f;
 
-		if (CatalystMath::Absolute(currentGamepadState.rightThumbstickXValue) <= GAMEPAD_DEADZONE)
-			currentGamepadState.rightThumbstickXValue = 0.0f;
+		if (CatalystMath::Absolute(currentGamepadStates.rightThumbstickXValue) <= GAMEPAD_DEADZONE)
+			currentGamepadStates.rightThumbstickXValue = 0.0f;
 
-		if (CatalystMath::Absolute(currentGamepadState.rightThumbstickYValue) <= GAMEPAD_DEADZONE)
-			currentGamepadState.rightThumbstickYValue = 0.0f;
+		if (CatalystMath::Absolute(currentGamepadStates.rightThumbstickYValue) <= GAMEPAD_DEADZONE)
+			currentGamepadStates.rightThumbstickYValue = 0.0f;
 
 		//Return that the query succeeded.
 		return true;

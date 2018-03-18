@@ -46,11 +46,6 @@ public:
 	void InitializeSystem() NOEXCEPT;
 
 	/*
-	*	Post-initializes the rendering system.
-	*/
-	void PostInitializeSystem() NOEXCEPT;
-
-	/*
 	*	Updates the rendering system synchronously.
 	*/
 	void UpdateSystemSynchronous() NOEXCEPT;

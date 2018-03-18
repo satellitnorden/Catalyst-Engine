@@ -20,41 +20,28 @@ public:
 	*	Constructor taking the signal count as an argument.
 	*/
 	Semaphore(const uint64 newSignalCount) NOEXCEPT
-		:
-		signalCount(newSignalCount)
 	{
 
-	}
-
-	/*
-	*	Initializes the signal count of this semaphore.
-	*/
-	void InitializeSignalCount(const uint64 newSignalCount) NOEXCEPT
-	{
-		signalCount = newSignalCount;
 	}
 
 	/*
 	*	Resets this semaphore.
 	*/
-	void Reset() NOEXCEPT { signalCounter.store(0); }
+	void Reset() NOEXCEPT { signalled.store(false); }
 
 	/*
 	*	Signals this semaphore.
 	*/
-	void Signal() NOEXCEPT { ++signalCounter; }
+	void Signal() NOEXCEPT { signalled.store(true); }
 
 	/*
 	*	Waits for this semaphore.
 	*/
-	void WaitFor() NOEXCEPT { while (signalCounter < signalCount) THREAD_YIELD(); }
+	void WaitFor() NOEXCEPT { while (!signalled) THREAD_YIELD(); }
 
 private:
 
-	//The signal counter.
-	std::atomic<uint64> signalCounter{ 0 };
-
-	//The signal count.
-	uint64 signalCount{ 0 };
+	//Defines whether or not this semaphore is signalled.
+	std::atomic<bool> signalled{ false };
 
 };

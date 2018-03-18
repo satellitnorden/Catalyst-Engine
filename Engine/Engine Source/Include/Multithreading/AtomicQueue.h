@@ -6,6 +6,7 @@
 /*
 *	Single producer - multiple consumers queue.
 *	WILL overwrite values once the circular buffer has reached the beginning again.
+*	This is to avoid reallocations when pushing/popping, so the atomic queue MUST be initialized with large enough storage to ensure that this never happens.
 */
 
 template <class ValueType>
@@ -54,11 +55,10 @@ public:
 	}
 
 	/*
-	*	Pops a value from the queue, if the queue is not empty. Returns if the pop was succesful.
+	*	Pops a value from the queue, if the queue is not empty. If the pop was succesful, a pointer to the popped value is returned, otherwise nullptr.
 	*/
-	bool PopIfNotEmpty(ValueType &poppedValue) NOEXCEPT
+	ValueType *const RESTRICT Pop() NOEXCEPT
 	{
-		ValueType temporaryValue;
 		uint64 oldFirstIndex;
 		uint64 oldLastIndex;
 		uint64 newFirstIndex;
@@ -69,16 +69,12 @@ public:
 			oldLastIndex = lastIndex.load();
 
 			if (oldFirstIndex == oldLastIndex)
-				return false;
-
-			temporaryValue = queue[oldFirstIndex];
+				return nullptr;
 
 			newFirstIndex = oldFirstIndex < (queueSize - 1) ? oldFirstIndex + 1 : 0;
 		} while (!firstIndex.compare_exchange_weak(oldFirstIndex, newFirstIndex));
 
-		poppedValue = temporaryValue;
-
-		return true;
+		return &queue[oldFirstIndex];
 	}
 
 private:

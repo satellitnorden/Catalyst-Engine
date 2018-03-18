@@ -9,6 +9,7 @@
 
 //Multithreading.
 #include <Multithreading/MultithreadedResource.h>
+#include <Multithreading/Semaphore.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/PostProcessingUniformData.h>
@@ -56,11 +57,6 @@ public:
 	*	Initializes the Vulkan rendering system.
 	*/
 	void InitializeSystem() NOEXCEPT;
-
-	/*
-	*	Post-initializes the Vulkan rendering system.
-	*/
-	void PostInitializeSystem() NOEXCEPT;
 
 	/*
 	*	Updates the rendering Vulkan system synchronously.
@@ -220,7 +216,7 @@ private:
 	};
 
 	//Enumeration covering all semaphores.
-	enum class Semaphore : uint8
+	enum class GraphicsSemaphore : uint8
 	{
 		ImageAvailable,
 		RenderFinished,
@@ -247,12 +243,23 @@ private:
 		NumberOfShaderModules
 	};
 
+	//Enumeration covering all task semaphores.
+	enum class TaskSemaphore : uint8
+	{
+		UpdateDynamicUniformData,
+		UpdateViewFrustumCuling,
+		NumberOfTaskSemaphores
+	};
+
 	//Enumeration covering all uniform buffers.
 	enum UniformBuffer : uint8
 	{
 		PostProcessingUniformDataBuffer,
 		NumberOfUniformBuffers
 	};
+
+	//Container for all task semaphores.
+	StaticArray<Semaphore, INDEX(TaskSemaphore::NumberOfTaskSemaphores)> taskSemaphores;
 
 	//The main window.
 	Window mainWindow;
@@ -288,7 +295,7 @@ private:
 	StaticArray<VulkanPipeline *RESTRICT, INDEX(Pipeline::NumberOfPipelines)> pipelines;
 
 	//Container for all semaphores.
-	StaticArray<VulkanSemaphore *RESTRICT, INDEX(Semaphore::NumberOfSemaphores)> semaphores;
+	StaticArray<VulkanSemaphore *RESTRICT, INDEX(GraphicsSemaphore::NumberOfSemaphores)> semaphores;
 
 	//Container for all shader modules.
 	StaticArray<VulkanShaderModule *RESTRICT, INDEX(ShaderModule::NumberOfShaderModules)> shaderModules;

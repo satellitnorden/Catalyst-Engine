@@ -52,10 +52,10 @@ void ClairvoyantPlayer::Initialize() NOEXCEPT
 */
 void ClairvoyantPlayer::Update(const float deltaTime) NOEXCEPT
 {
-	static const float cameraLookSpeed = 50.0f;
+	static constexpr float cameraLookSpeed{ 50.0f };
 
 	//Get the current gamepad state and use this to control the movement of the character.
-	const GamepadState &currentGamepadState = InputSystem::Instance->GetCurrentGamepadState();
+	const GamepadState &currentGamepadState{ InputSystem::Instance->GetCurrentGamepadState() };
 
 	if (currentGamepadState.isConnected)
 	{

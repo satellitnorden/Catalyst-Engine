@@ -49,9 +49,6 @@
     <Filter Include="Engine Source\Multithreading\Include">
       <UniqueIdentifier>{13f3cc52-957e-4689-9446-77e7ac63bcdf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine Source\Multithreading\Source">
-      <UniqueIdentifier>{f7836237-bc11-47cd-9880-a861baf5689e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine Source\Physics">
       <UniqueIdentifier>{9835b265-8c74-4786-a22c-89d84563998c}</UniqueIdentifier>
     </Filter>
@@ -126,6 +123,9 @@
     </Filter>
     <Filter Include="Engine Source\Rendering\API Layer\Vulkan\Inline">
       <UniqueIdentifier>{c09d8733-40e3-44ba-a614-8b883a146181}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Sound">
+      <UniqueIdentifier>{fd18099f-10a7-40ed-9e22-bb0270652d48}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -295,12 +295,6 @@
       <Filter>Engine Source\Math\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\AtomicQueue.h">
-      <Filter>Engine Source\Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\DailyGroupQuest.h">
-      <Filter>Engine Source\Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\DailyQuest.h">
       <Filter>Engine Source\Multithreading\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\MultithreadedResource.h">
@@ -504,14 +498,20 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\PhysicsSystem.h">
       <Filter>Engine Source\Systems\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\QuestSystem.h">
-      <Filter>Engine Source\Systems\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\RenderingSystem.h">
       <Filter>Engine Source\Systems\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\CatalystMath.h">
       <Filter>Engine Source\Math\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\SoundSystem.h">
+      <Filter>Engine Source\Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\TaskSystem.h">
+      <Filter>Engine Source\Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\Task.h">
+      <Filter>Engine Source\Multithreading\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -571,12 +571,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Vector4.cpp">
       <Filter>Engine Source\Math\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Multithreading\DailyGroupQuest.cpp">
-      <Filter>Engine Source\Multithreading\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Multithreading\DailyQuest.cpp">
-      <Filter>Engine Source\Multithreading\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\Vulkan2DTexture.cpp">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
@@ -680,14 +674,17 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\PhysicsSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\QuestSystem.cpp">
-      <Filter>Engine Source\Systems\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\RenderingSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\CatalystMath.cpp">
       <Filter>Engine Source\Math\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\SoundSystem.cpp">
+      <Filter>Engine Source\Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\TaskSystem.cpp">
+      <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
