@@ -219,7 +219,7 @@ public:
 	{
 		for (uint64 i = 0; i < size; ++i)
 		{
-			array[i].~ÕbjectType();
+			array[i].~ObjectType();
 		}
 
 		size = 0;

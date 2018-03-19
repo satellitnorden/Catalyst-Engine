@@ -233,6 +233,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\TerrainMaterialData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\WaterMaterialData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundCore.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundRequest.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EngineSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\InputSystem.h" />

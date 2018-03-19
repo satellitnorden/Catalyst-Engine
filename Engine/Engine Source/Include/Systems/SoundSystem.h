@@ -6,6 +6,9 @@
 //Multithreading.
 #include <Multithreading/Semaphore.h>
 
+//Sound.
+#include <Sound/SoundRequest.h>
+
 //Third party libraries.
 #include <Third Party Libraries/fmod_studio.hpp>
 
@@ -47,7 +50,15 @@ public:
 	*/
 	void LoadBank(const char *const RESTRICT filePath) NOEXCEPT;
 
+	/*
+	*	Plays an FMOD event.
+	*/
+	void PlayEvent(const char *const RESTRICT eventName) NOEXCEPT;
+
 private:
+
+	//Defines the number of different buffers to switch between.
+	static constexpr uint8 SOUND_SYSTEM_BUFFERS{ 2 };
 
 	//The update semaphore.
 	Semaphore updateSemaphore{ SemaphoreCreationFlags::Signalled };
@@ -57,6 +68,15 @@ private:
 
 	//Container for all banks that is loaded at runtime.
 	DynamicArray<FMOD::Studio::Bank *RESTRICT> banks;
+
+	//Defines the current synchronous sound system buffer.
+	uint8 currentSynchronousSoundSystemBuffer{ 0 };
+
+	//Defines the current asynchronous sound system buffer.
+	uint8 currentAsynchronousSoundSystemBuffer{ 0 };
+
+	//Container for all sound requests.
+	StaticArray<DynamicArray<SoundRequest>, SOUND_SYSTEM_BUFFERS> soundRequestBuffers;
 
 	/*
 	*	Updates the sound system asynchronously.

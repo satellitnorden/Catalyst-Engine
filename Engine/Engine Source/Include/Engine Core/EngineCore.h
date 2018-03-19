@@ -27,6 +27,7 @@
 	#undef CreateSemaphore
 	#undef max
 	#undef min
+	#undef PlaySound
 #endif
 
 //Core defines.

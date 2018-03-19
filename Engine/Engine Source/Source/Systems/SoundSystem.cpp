@@ -42,7 +42,7 @@ void SoundSystem::InitializeSystem() NOEXCEPT
 	constexpr uint32 studioInitFlags{ FMOD_STUDIO_INIT_LIVEUPDATE };
 	constexpr uint32 initFlags{ FMOD_INIT_PROFILE_ENABLE };
 #else
-	constexpr uint32 studioInitFlags{ FMOD_STUDIO_NORMAL };
+	constexpr uint32 studioInitFlags{ FMOD_STUDIO_INIT_NORMAL };
 	constexpr uint32 initFlags{ FMOD_INIT_NORMAL };
 #endif
 
@@ -56,6 +56,15 @@ void SoundSystem::UpdateSystemSynchronous() NOEXCEPT
 {
 	//Wait for the asynchronous update to finish.
 	updateSemaphore.WaitFor();
+
+	//Update the current asynchronous sound system buffer.
+	currentAsynchronousSoundSystemBuffer = currentSynchronousSoundSystemBuffer;
+
+	//Update the current synchronous sound system buffer.
+	currentSynchronousSoundSystemBuffer = currentSynchronousSoundSystemBuffer < SOUND_SYSTEM_BUFFERS ? currentSynchronousSoundSystemBuffer + 1 : 0;
+
+	//Clear the current synchronous sound request buffer.
+	soundRequestBuffers[currentSynchronousSoundSystemBuffer].ClearFast();
 
 	//Execute the asynchronous update task.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
@@ -89,6 +98,14 @@ void SoundSystem::LoadBank(const char *const RESTRICT filePath) NOEXCEPT
 	FMOD_ERROR_CHECK(studioSystem->loadBankFile(filePath, FMOD_STUDIO_LOAD_BANK_NORMAL, &newBank));
 
 	banks.EmplaceSlow(newBank);
+}
+
+/*
+*	Plays an FMOD event.
+*/
+void SoundSystem::PlayEvent(const char *const RESTRICT eventName) NOEXCEPT
+{
+
 }
 
 /*
