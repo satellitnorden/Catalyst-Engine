@@ -244,6 +244,7 @@
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantGameSystem.h" />
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantPlayer.h" />
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSettings.h" />
+    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSoundDirector.h" />
     <ClInclude Include="..\..\..\Game Source\Include\WorldArchitect.h" />
   </ItemGroup>
   <ItemGroup>
@@ -303,6 +304,7 @@
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantMain.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantPlayer.cpp" />
+    <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantSoundDirector.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\WorldArchitect.cpp" />
   </ItemGroup>
   <ItemGroup>

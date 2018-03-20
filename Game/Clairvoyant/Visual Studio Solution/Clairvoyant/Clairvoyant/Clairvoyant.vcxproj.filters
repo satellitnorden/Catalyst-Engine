@@ -519,6 +519,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundCore.h">
       <Filter>Engine Source\Sound\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSoundDirector.h">
+      <Filter>Game Source\Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundRequest.h">
       <Filter>Engine Source\Sound\Include</Filter>
     </ClInclude>
@@ -694,6 +697,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\TaskSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantSoundDirector.cpp">
+      <Filter>Game Source\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

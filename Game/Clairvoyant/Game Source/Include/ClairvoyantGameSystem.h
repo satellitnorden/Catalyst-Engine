@@ -4,6 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Clairvoyant.
+#include <ClairvoyantSoundDirector.h>
 #include <WorldArchitect.h>
 
 //Forward declarations.
@@ -45,9 +46,12 @@ public:
 private:
 
 	//The player.
-	ClairvoyantPlayer *player{ nullptr };
+	ClairvoyantPlayer *RESTRICT player;
+
+	//The sound director.
+	ClairvoyantSoundDirector soundDirector;
 
 	//The world architect.
-	WorldArchitect worldArchitect{ };
+	WorldArchitect worldArchitect;
 
 };

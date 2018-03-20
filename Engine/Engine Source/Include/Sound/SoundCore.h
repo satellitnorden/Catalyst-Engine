@@ -3,17 +3,32 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Third party libraries.
+#include <Third Party Libraries/fmod_studio.hpp>
+
+/*
+*	Type aliases.
+*/
+using EventDescription = FMOD::Studio::EventDescription;
+
 #if !defined(CATALYST_FINAL)
 /*
 *	Given an FMOD_RESULT, print the result.
 */
-void PrintFMODResultAndBreak(const FMOD_RESULT result) NOEXCEPT
+static void PrintFMODResultAndBreak(const FMOD_RESULT result) NOEXCEPT
 {
 	switch (result)
 	{
 		default:
 		{
 			PRINT_TO_CONSOLE("Undefined FMOD result");
+
+			break;
+		}
+
+		case FMOD_ERR_EVENT_NOTFOUND:
+		{
+			PRINT_TO_CONSOLE("FMOD result was FMOD_ERR_EVENT_NOTFOUND");
 
 			break;
 		}

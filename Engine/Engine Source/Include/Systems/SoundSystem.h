@@ -7,10 +7,8 @@
 #include <Multithreading/Semaphore.h>
 
 //Sound.
+#include <Sound/SoundCore.h>
 #include <Sound/SoundRequest.h>
-
-//Third party libraries.
-#include <Third Party Libraries/fmod_studio.hpp>
 
 class SoundSystem final
 {
@@ -51,14 +49,16 @@ public:
 	void LoadBank(const char *const RESTRICT filePath) NOEXCEPT;
 
 	/*
-	*	Plays an FMOD event.
+	*	Given an event name, returns the event description.
 	*/
-	void PlayEvent(const char *const RESTRICT eventName) NOEXCEPT;
+	const EventDescription *const RESTRICT GetEventDescription(const char *const RESTRICT eventName) NOEXCEPT;
+
+	/*
+	*	Submits a sound request.
+	*/
+	void SubmitSoundRequest(const SoundRequest &newSoundRequest) NOEXCEPT;
 
 private:
-
-	//Defines the number of different buffers to switch between.
-	static constexpr uint8 SOUND_SYSTEM_BUFFERS{ 2 };
 
 	//The update semaphore.
 	Semaphore updateSemaphore{ SemaphoreCreationFlags::Signalled };
@@ -76,7 +76,7 @@ private:
 	uint8 currentAsynchronousSoundSystemBuffer{ 0 };
 
 	//Container for all sound requests.
-	StaticArray<DynamicArray<SoundRequest>, SOUND_SYSTEM_BUFFERS> soundRequestBuffers;
+	StaticArray<DynamicArray<SoundRequest>, 2> soundRequestBuffers;
 
 	/*
 	*	Updates the sound system asynchronously.

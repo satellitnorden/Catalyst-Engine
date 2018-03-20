@@ -38,7 +38,7 @@ public:
 	/*
 	*	Waits for this semaphore.
 	*/
-	void WaitFor() NOEXCEPT { while (!signalled) THREAD_YIELD(); }
+	void WaitFor() const NOEXCEPT { while (!signalled) THREAD_YIELD(); }
 
 private:
 

@@ -61,7 +61,7 @@ void SoundSystem::UpdateSystemSynchronous() NOEXCEPT
 	currentAsynchronousSoundSystemBuffer = currentSynchronousSoundSystemBuffer;
 
 	//Update the current synchronous sound system buffer.
-	currentSynchronousSoundSystemBuffer = currentSynchronousSoundSystemBuffer < SOUND_SYSTEM_BUFFERS ? currentSynchronousSoundSystemBuffer + 1 : 0;
+	currentSynchronousSoundSystemBuffer ^= 0x00000001;
 
 	//Clear the current synchronous sound request buffer.
 	soundRequestBuffers[currentSynchronousSoundSystemBuffer].ClearFast();
@@ -97,15 +97,32 @@ void SoundSystem::LoadBank(const char *const RESTRICT filePath) NOEXCEPT
 	FMOD::Studio::Bank *RESTRICT newBank;
 	FMOD_ERROR_CHECK(studioSystem->loadBankFile(filePath, FMOD_STUDIO_LOAD_BANK_NORMAL, &newBank));
 
+	newBank->loadSampleData();
+
 	banks.EmplaceSlow(newBank);
 }
 
 /*
-*	Plays an FMOD event.
+*	Given an event name, returns the event description.
 */
-void SoundSystem::PlayEvent(const char *const RESTRICT eventName) NOEXCEPT
+const EventDescription *const RESTRICT SoundSystem::GetEventDescription(const char *const RESTRICT eventName) NOEXCEPT
 {
+	static DynamicString eventPrefix{ "event:/" };
+	DynamicString actualEventName{ eventPrefix + eventName };
 
+	FMOD::Studio::EventDescription *RESTRICT eventDescription;
+	FMOD_ERROR_CHECK(studioSystem->getEvent(actualEventName.CString(), &eventDescription));
+
+	return eventDescription;
+}
+
+/*
+*	Submits a sound request.
+*/
+void SoundSystem::SubmitSoundRequest(const SoundRequest &newSoundRequest) NOEXCEPT
+{
+	//Submit this sound request into the current sound system buffer.
+	soundRequestBuffers[currentSynchronousSoundSystemBuffer].EmplaceSlow(newSoundRequest);
 }
 
 /*
@@ -113,6 +130,15 @@ void SoundSystem::PlayEvent(const char *const RESTRICT eventName) NOEXCEPT
 */
 void SoundSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
+	//Go through all the sound requests and trigger them.
+	for (const SoundRequest &soundRequest : soundRequestBuffers[currentAsynchronousSoundSystemBuffer])
+	{
+		FMOD::Studio::EventInstance *RESTRICT eventInstance;
+ 		FMOD_ERROR_CHECK(soundRequest.eventDescription->createInstance(&eventInstance));
+
+		eventInstance->start();
+	}
+
 	//Update the FMOD Studio System.
 	studioSystem->update();
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="AudioFile" id="{c2a89303-0cf3-451f-9e26-b927e460506a}">
+        <property name="assetPath">
+            <value>Kick.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>32</value>
+        </property>
+        <property name="channelCount">
+            <value>2</value>
+        </property>
+        <property name="length">
+            <value>1</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{92dd0d27-5d64-450a-ba1e-034d2b7431a3}</destination>
+        </relationship>
+    </object>
+</objects>

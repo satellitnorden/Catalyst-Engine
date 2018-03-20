@@ -31,11 +31,11 @@ int main() NOEXCEPT
 		//Calculate the delta time.
 		const float deltaTime{ deltaTimer.Update() };
 
-		//Update the engine system.
-		shouldTerminate = EngineSystem::Instance->UpdateSystemSynchronous(deltaTime);
-
 		//Update the game system.
 		ClairvoyantGameSystem::Instance->UpdateSystemSynchronous(deltaTime);
+
+		//Update the engine system.
+		shouldTerminate = EngineSystem::Instance->UpdateSystemSynchronous(deltaTime);
 
 		//);
 	}
