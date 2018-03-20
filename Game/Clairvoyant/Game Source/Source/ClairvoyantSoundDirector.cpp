@@ -16,10 +16,6 @@ void ClairvoyantSoundDirector::Initialize() NOEXCEPT
 	//Load the sound banks.
 	SoundSystem::Instance->LoadBank(CLAIRVOYANT_RESOURCES_FOLDER "Master Bank.bank");
 	SoundSystem::Instance->LoadBank(CLAIRVOYANT_RESOURCES_FOLDER "Master Bank.strings.bank");
-
-	//Submit a sound request for the wind ambiance.
-	const EventDescription *const RESTRICT windEventDescription{ SoundSystem::Instance->GetEventDescription("Wind") };
-	SoundSystem::Instance->SubmitSoundRequest(SoundRequest(windEventDescription));
 }
 
 /*
@@ -27,6 +23,7 @@ void ClairvoyantSoundDirector::Initialize() NOEXCEPT
 */
 void ClairvoyantSoundDirector::Update() NOEXCEPT
 {
+	/*
 	//If the B button is pressed, play some sound.
 	GamepadState currentGamepadState{ InputSystem::Instance->GetCurrentGamepadState() };
 
@@ -35,6 +32,7 @@ void ClairvoyantSoundDirector::Update() NOEXCEPT
 		const EventDescription *const RESTRICT windEventDescription{ SoundSystem::Instance->GetEventDescription("Kick") };
 		SoundSystem::Instance->SubmitSoundRequest(SoundRequest(windEventDescription));
 	}
+	*/
 }
 
 /*

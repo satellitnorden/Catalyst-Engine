@@ -10,6 +10,7 @@
 *	Type aliases.
 */
 using EventDescription = FMOD::Studio::EventDescription;
+using EventInstance = FMOD::Studio::EventInstance;
 
 #if !defined(CATALYST_FINAL)
 /*

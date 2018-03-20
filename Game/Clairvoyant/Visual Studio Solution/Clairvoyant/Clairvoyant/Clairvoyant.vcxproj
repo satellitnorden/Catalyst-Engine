@@ -121,6 +121,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\FrustumCullingComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\InstancedPhysicalRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\PointLightComponent.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\Sound3DComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\SpotLightComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\StaticPhysicalRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\TerrainComponent.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Entity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\InstancedPhysicalEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\PointLightEntity.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Sound3DEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\SpotLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\StaticPhysicalEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\TerrainEntity.h" />
@@ -233,7 +235,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\TerrainMaterialData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\WaterMaterialData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundCore.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundRequest.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EngineSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\InputSystem.h" />
@@ -254,6 +255,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\Entity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\InstancedPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\PointLightEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\Sound3DEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\SpotLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\StaticPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\TerrainEntity.cpp" />

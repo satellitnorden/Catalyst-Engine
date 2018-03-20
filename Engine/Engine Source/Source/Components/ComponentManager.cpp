@@ -19,6 +19,9 @@ DynamicArray<TransformComponent> ComponentManager::staticPhysicalTransformCompon
 uint64 ComponentManager::numberOfPointLightComponents = 0;
 DynamicArray<PointLightComponent> ComponentManager::pointLightComponents;
 
+uint64 ComponentManager::numberOfSound3DComponents = 0;
+DynamicArray<Sound3DComponent> ComponentManager::sound3DComponents;
+
 uint64 ComponentManager::numberOfSpotLightComponents = 0;
 DynamicArray<SpotLightComponent> ComponentManager::spotLightComponents;
 
@@ -198,6 +201,36 @@ PointLightComponent *RESTRICT ComponentManager::GetPointLightComponents() NOEXCE
 {
 	//Return the point light components.
 	return pointLightComponents.Data();
+}
+
+/*
+*	Returns a new components index for sound 3D entities.
+*/
+uint64 ComponentManager::GetNewSound3DComponentsIndex() NOEXCEPT
+{
+	//Create the relevant components.
+	sound3DComponents.EmplaceSlow();
+
+	//Return the new index.
+	return numberOfSound3DComponents++;
+}
+
+/*
+*	Returns the number of sound 3D components.
+*/
+uint64 ComponentManager::GetNumberOfSound3DComponents() NOEXCEPT
+{
+	//Return the number of sound 3D components.
+	return numberOfSound3DComponents;
+}
+
+/*
+*	Returns the sound 3D components.
+*/
+Sound3DComponent *RESTRICT ComponentManager::GetSound3DComponents() NOEXCEPT
+{
+	//Return the sound 3D components.
+	return sound3DComponents.Data();
 }
 
 /*

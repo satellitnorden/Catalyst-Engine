@@ -1,6 +1,12 @@
 //Header file.
 #include <Systems/SoundSystem.h>
 
+//Components.
+#include <Components/ComponentManager.h>
+
+//Entities.
+#include <Entities/Sound3DEntity.h>
+
 //Multithreading.
 #include <Multithreading/Task.h>
 
@@ -57,14 +63,12 @@ void SoundSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Wait for the asynchronous update to finish.
 	updateSemaphore.WaitFor();
 
-	//Update the current asynchronous sound system buffer.
-	currentAsynchronousSoundSystemBuffer = currentSynchronousSoundSystemBuffer;
+	//Flip the sound system buffers.
+	currentAsynchronousSoundSystemBuffer ^= 1;
+	currentSynchronousSoundSystemBuffer ^= 1;
 
-	//Update the current synchronous sound system buffer.
-	currentSynchronousSoundSystemBuffer ^= 0x00000001;
-
-	//Clear the current synchronous sound request buffer.
-	soundRequestBuffers[currentSynchronousSoundSystemBuffer].ClearFast();
+	//Clear the current synchronous sound request buffers.
+	sound3DInitializationRequestBuffers[currentSynchronousSoundSystemBuffer].ClearFast();
 
 	//Execute the asynchronous update task.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
@@ -117,12 +121,12 @@ const EventDescription *const RESTRICT SoundSystem::GetEventDescription(const ch
 }
 
 /*
-*	Submits a sound request.
+*	Initializes a sound 3D entity.
 */
-void SoundSystem::SubmitSoundRequest(const SoundRequest &newSoundRequest) NOEXCEPT
+void SoundSystem::InitializeSound3DEntity(Sound3DEntity *const RESTRICT entity, const EventDescription *const RESTRICT eventDescription) NOEXCEPT
 {
-	//Submit this sound request into the current sound system buffer.
-	soundRequestBuffers[currentSynchronousSoundSystemBuffer].EmplaceSlow(newSoundRequest);
+	//Record a sound 3D initialization request into the current synchronous buffer.
+	sound3DInitializationRequestBuffers[currentSynchronousSoundSystemBuffer].EmplaceSlow(entity, eventDescription);
 }
 
 /*
@@ -130,15 +134,57 @@ void SoundSystem::SubmitSoundRequest(const SoundRequest &newSoundRequest) NOEXCE
 */
 void SoundSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
-	//Go through all the sound requests and trigger them.
-	for (const SoundRequest &soundRequest : soundRequestBuffers[currentAsynchronousSoundSystemBuffer])
-	{
-		FMOD::Studio::EventInstance *RESTRICT eventInstance;
- 		FMOD_ERROR_CHECK(soundRequest.eventDescription->createInstance(&eventInstance));
-
-		eventInstance->start();
-	}
+	//Update the sound 3D initialization requests.
+	UpdateSound3DInitializationRequests();
 
 	//Update the FMOD Studio System.
 	studioSystem->update();
+}
+
+/*
+*	Updates the active listener.
+*/
+void SoundSystem::UpdateActiveListener() const NOEXCEPT
+{
+
+}
+
+/*
+*	Updates the sound 3D initialization requests.
+*/
+void SoundSystem::UpdateSound3DInitializationRequests() NOEXCEPT
+{
+	//Go through all the sound 3D requests and initialize them.
+	for (const Sound3DInitializationRequest &sound3DInitializationRequest : sound3DInitializationRequestBuffers[currentAsynchronousSoundSystemBuffer])
+	{
+		//Get the sound 3D component.
+		Sound3DComponent &component{ ComponentManager::GetSound3DComponents()[sound3DInitializationRequest.entity->GetComponentsIndex()] };
+
+		//Create the event instance.
+		FMOD_ERROR_CHECK(sound3DInitializationRequest.eventDescription->createInstance(&component.eventInstance));
+
+		//Initialize the 3D attributes.
+		FMOD_3D_ATTRIBUTES attributes;
+
+		attributes.position.x = component.position.X;
+		attributes.position.y = component.position.Y;
+		attributes.position.z = component.position.Z;
+
+		attributes.velocity.x = 0.0f;
+		attributes.velocity.y = 0.0f;
+		attributes.velocity.z = 0.0f;
+
+		attributes.forward.x = 0.0f;
+		attributes.forward.y = 0.0f;
+		attributes.forward.z = -1.0f;
+
+		attributes.up.x = 0.0f;
+		attributes.up.y = 1.0f;
+		attributes.up.z = 0.0f;
+
+		component.eventInstance->set3DAttributes(&attributes);
+
+		//Start the event instance.
+		component.eventInstance->start();
+	}
 }
