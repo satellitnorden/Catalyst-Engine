@@ -27,17 +27,17 @@ public:
 	/*
 	*	Returns the position of this entity.
 	*/
-	const Vector3& GetPosition() NOEXCEPT final override;
+	const Vector3& GetPosition() const NOEXCEPT final override;
 
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	const Vector3& GetRotation() NOEXCEPT final override;
+	const Vector3& GetRotation() const NOEXCEPT final override;
 
 	/*
 	*	Returns the scale of this entity.
 	*/
-	const Vector3& GetScale() NOEXCEPT final override;
+	const Vector3& GetScale() const NOEXCEPT final override;
 
 	/*
 	*	Moves this entity.

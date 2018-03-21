@@ -43,7 +43,7 @@ void StaticPhysicalEntity::Initialize(const PhysicalModel &newModel, const Vecto
 /*
 *	Returns the position of this entity.
 */
-const Vector3& StaticPhysicalEntity::GetPosition() NOEXCEPT
+const Vector3& StaticPhysicalEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetStaticPhysicalTransformComponents()[componentsIndex].position;
@@ -52,7 +52,7 @@ const Vector3& StaticPhysicalEntity::GetPosition() NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& StaticPhysicalEntity::GetRotation() NOEXCEPT
+const Vector3& StaticPhysicalEntity::GetRotation() const NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return ComponentManager::GetStaticPhysicalTransformComponents()[componentsIndex].rotation;
@@ -61,7 +61,7 @@ const Vector3& StaticPhysicalEntity::GetRotation() NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& StaticPhysicalEntity::GetScale() NOEXCEPT
+const Vector3& StaticPhysicalEntity::GetScale() const NOEXCEPT
 {
 	//Return the scale of this entity.
 	return ComponentManager::GetStaticPhysicalTransformComponents()[componentsIndex].scale;

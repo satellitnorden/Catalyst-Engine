@@ -31,7 +31,7 @@ SpotLightEntity::~SpotLightEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-const Vector3& SpotLightEntity::GetPosition() NOEXCEPT
+const Vector3& SpotLightEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetSpotLightComponents()[componentsIndex].position;
@@ -40,7 +40,7 @@ const Vector3& SpotLightEntity::GetPosition() NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& SpotLightEntity::GetRotation() NOEXCEPT
+const Vector3& SpotLightEntity::GetRotation() const NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return ComponentManager::GetSpotLightComponents()[componentsIndex].rotation;
@@ -49,7 +49,7 @@ const Vector3& SpotLightEntity::GetRotation() NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& SpotLightEntity::GetScale() NOEXCEPT
+const Vector3& SpotLightEntity::GetScale() const NOEXCEPT
 {
 	//Spot light entities has no scale.
 	return Entity::defaultScale;

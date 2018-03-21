@@ -3,6 +3,9 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Math.
+#include <Math/Vector3.h>
+
 //Multithreading.
 #include <Multithreading/Semaphore.h>
 
@@ -10,6 +13,7 @@
 #include <Sound/SoundCore.h>
 
 //Forward declarations.
+class CameraEntity;
 class Entity;
 class Sound3DEntity;
 
@@ -47,6 +51,11 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
+	*	Sets the active listener.
+	*/
+	void SetActiveListener(const CameraEntity *const RESTRICT newActiveListener) NOEXCEPT;
+
+	/*
 	*	Loads an FMOD bank into memory.
 	*/
 	void LoadBank(const char *const RESTRICT filePath) NOEXCEPT;
@@ -62,6 +71,28 @@ public:
 	void InitializeSound3DEntity(Sound3DEntity *const RESTRICT entity, const EventDescription *const RESTRICT eventDescription) NOEXCEPT;
 
 private:
+
+	/*
+	*	Active listener data definition.
+	*/
+	class ActiveListenerData final
+	{
+
+	public:
+
+		//Pointer the the active listener entity.
+		const CameraEntity *RESTRICT activeListener{ nullptr };
+
+		//The active listener position.
+		Vector3 activeListenerPosition;
+
+		//The active listener forward vector.
+		Vector3 activeListenerForwardVector;
+
+		//The active listener up vector.
+		Vector3 activeListenerUpVector;
+
+	};
 
 	/*
 	*	Sound 3D initialization request definition.
@@ -99,8 +130,8 @@ private:
 	//Container for all banks that is loaded at runtime.
 	DynamicArray<FMOD::Studio::Bank *RESTRICT> banks;
 
-	//The active listener.
-	const Entity *RESTRICT activeListener;
+	//The active listener data.
+	ActiveListenerData activeListenerData;
 
 	//Defines the current synchronous sound system buffer.
 	uint8 currentSynchronousSoundSystemBuffer{ 0 };
@@ -112,14 +143,19 @@ private:
 	StaticArray<DynamicArray<Sound3DInitializationRequest>, 2> sound3DInitializationRequestBuffers;
 
 	/*
+	*	Updates the active listener synchronously.
+	*/
+	void UpdateActiveListenerSynchronous() NOEXCEPT;
+
+	/*
 	*	Updates the sound system asynchronously.
 	*/
 	void UpdateSystemAsynchronous() NOEXCEPT;
 
 	/*
-	*	Updates the active listener.
+	*	Updates the active listener asynchronously.
 	*/
-	void UpdateActiveListener() const NOEXCEPT;
+	void UpdateActiveListenerAsynchronous() const NOEXCEPT;
 
 	/*
 	*	Updates the sound 3D initialization requests.

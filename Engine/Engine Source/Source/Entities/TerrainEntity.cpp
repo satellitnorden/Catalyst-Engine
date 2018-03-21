@@ -34,7 +34,7 @@ TerrainEntity::~TerrainEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-const Vector3& TerrainEntity::GetPosition() NOEXCEPT
+const Vector3& TerrainEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetTerrainComponents()[componentsIndex].terrainUniformData.terrainPosition;
@@ -43,7 +43,7 @@ const Vector3& TerrainEntity::GetPosition() NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& TerrainEntity::GetRotation() NOEXCEPT
+const Vector3& TerrainEntity::GetRotation() const NOEXCEPT
 {
 	//Terrain entities has no rotation.
 	return Entity::defaultRotation;
@@ -52,7 +52,7 @@ const Vector3& TerrainEntity::GetRotation() NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& TerrainEntity::GetScale() NOEXCEPT
+const Vector3& TerrainEntity::GetScale() const NOEXCEPT
 {
 	//Terrain entities has no scale.
 	return Entity::defaultScale;

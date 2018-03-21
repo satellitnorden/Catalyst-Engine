@@ -34,7 +34,7 @@ WaterEntity::~WaterEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-const Vector3& WaterEntity::GetPosition() NOEXCEPT
+const Vector3& WaterEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetWaterComponents()[componentsIndex].waterUniformData.waterWorldPosition;
@@ -43,7 +43,7 @@ const Vector3& WaterEntity::GetPosition() NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& WaterEntity::GetRotation() NOEXCEPT
+const Vector3& WaterEntity::GetRotation() const NOEXCEPT
 {
 	//Water entities has no scale.
 	return Entity::defaultRotation;
@@ -52,7 +52,7 @@ const Vector3& WaterEntity::GetRotation() NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& WaterEntity::GetScale() NOEXCEPT
+const Vector3& WaterEntity::GetScale() const NOEXCEPT
 {
 	//Water entities has no scale.
 	return Entity::defaultScale;

@@ -5,6 +5,7 @@
 #include <Components/ComponentManager.h>
 
 //Entities.
+#include <Entities/CameraEntity.h>
 #include <Entities/Sound3DEntity.h>
 
 //Multithreading.
@@ -63,6 +64,9 @@ void SoundSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Wait for the asynchronous update to finish.
 	updateSemaphore.WaitFor();
 
+	//Update active listener synchronously.
+	UpdateActiveListenerSynchronous();
+
 	//Flip the sound system buffers.
 	currentAsynchronousSoundSystemBuffer ^= 1;
 	currentSynchronousSoundSystemBuffer ^= 1;
@@ -90,6 +94,15 @@ void SoundSystem::ReleaseSystem() NOEXCEPT
 
 	//Release the FMOD Studio System.
 	FMOD_ERROR_CHECK(studioSystem->release());
+}
+
+/*
+*	Sets the active listener.
+*/
+void SoundSystem::SetActiveListener(const CameraEntity *const RESTRICT newActiveListener) NOEXCEPT
+{
+	//Set the active listener.
+	activeListenerData.activeListener = newActiveListener;
 }
 
 /*
@@ -130,10 +143,31 @@ void SoundSystem::InitializeSound3DEntity(Sound3DEntity *const RESTRICT entity, 
 }
 
 /*
+*	Updates the active listener synchronously.
+*/
+void SoundSystem::UpdateActiveListenerSynchronous() NOEXCEPT
+{
+	if (activeListenerData.activeListener)
+	{
+		//Copy the active listener position.
+		activeListenerData.activeListenerPosition = activeListenerData.activeListener->GetPosition();
+
+		//Copy the active listener forward vector.
+		activeListenerData.activeListenerForwardVector = activeListenerData.activeListener->GetForwardVector();
+
+		//Copy the active listener up vector.
+		activeListenerData.activeListenerUpVector = activeListenerData.activeListener->GetUpVector();
+	}
+}
+
+/*
 *	Updates the sound system asynchronously.
 */
 void SoundSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
+	//Update the active listener asynchronously.
+	UpdateActiveListenerAsynchronous();
+
 	//Update the sound 3D initialization requests.
 	UpdateSound3DInitializationRequests();
 
@@ -142,11 +176,15 @@ void SoundSystem::UpdateSystemAsynchronous() NOEXCEPT
 }
 
 /*
-*	Updates the active listener.
+*	Updates the active listener asynchronously.
 */
-void SoundSystem::UpdateActiveListener() const NOEXCEPT
+void SoundSystem::UpdateActiveListenerAsynchronous() const NOEXCEPT
 {
+	//Set the 3D attributes of the active listener.
+	FMOD_3D_ATTRIBUTES attributes;
 
+
+	studioSystem->setListenerAttributes(0, &attributes);
 }
 
 /*

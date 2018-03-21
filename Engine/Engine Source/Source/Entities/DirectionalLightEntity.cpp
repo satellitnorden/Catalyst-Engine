@@ -34,7 +34,7 @@ DirectionalLightEntity::~DirectionalLightEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-const Vector3& DirectionalLightEntity::GetPosition() NOEXCEPT
+const Vector3& DirectionalLightEntity::GetPosition() const NOEXCEPT
 {
 	//Directional light entities has no scale.
 	return Entity::defaultPosition;
@@ -43,7 +43,7 @@ const Vector3& DirectionalLightEntity::GetPosition() NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& DirectionalLightEntity::GetRotation() NOEXCEPT
+const Vector3& DirectionalLightEntity::GetRotation() const NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return ComponentManager::GetDirectionalLightComponents()[componentsIndex].rotation;
@@ -52,7 +52,7 @@ const Vector3& DirectionalLightEntity::GetRotation() NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& DirectionalLightEntity::GetScale() NOEXCEPT
+const Vector3& DirectionalLightEntity::GetScale() const NOEXCEPT
 {
 	//Point light entities has no scale.
 	return Entity::defaultScale;

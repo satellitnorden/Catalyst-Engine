@@ -31,7 +31,7 @@ CameraEntity::~CameraEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-const Vector3& CameraEntity::GetPosition() NOEXCEPT
+const Vector3& CameraEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetCameraComponents()[componentsIndex].position;
@@ -40,7 +40,7 @@ const Vector3& CameraEntity::GetPosition() NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& CameraEntity::GetRotation() NOEXCEPT
+const Vector3& CameraEntity::GetRotation() const NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return ComponentManager::GetCameraComponents()[componentsIndex].rotation;
@@ -49,7 +49,7 @@ const Vector3& CameraEntity::GetRotation() NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& CameraEntity::GetScale() NOEXCEPT
+const Vector3& CameraEntity::GetScale() const NOEXCEPT
 {
 	//Camera entities has no scale.
 	return Entity::defaultScale;
@@ -100,7 +100,7 @@ void CameraEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 /*
 *	Returns the forward vector of this entity.
 */
-Vector3 CameraEntity::GetForwardVector() NOEXCEPT
+Vector3 CameraEntity::GetForwardVector() const NOEXCEPT
 {
 	//Return the forward vector of this entity.
 	return Vector3(0.0f, 0.0f, -1.0f).Rotated(GetRotation());
@@ -109,7 +109,7 @@ Vector3 CameraEntity::GetForwardVector() NOEXCEPT
 /*
 *	Returns the right vector of this entity.
 */
-Vector3 CameraEntity::GetRightVector() NOEXCEPT
+Vector3 CameraEntity::GetRightVector() const NOEXCEPT
 {
 	//Return the right vector of this entity.
 	return Vector3(1.0f, 0.0f, 0.0f).Rotated(GetRotation());
@@ -118,7 +118,7 @@ Vector3 CameraEntity::GetRightVector() NOEXCEPT
 /*
 *	Returns the up vector of this entity.
 */
-Vector3 CameraEntity::GetUpVector() NOEXCEPT
+Vector3 CameraEntity::GetUpVector() const NOEXCEPT
 {
 	//Return the up vector of this entity.
 	return Vector3(0.0f, 1.0f, 0.0f).Rotated(GetRotation());

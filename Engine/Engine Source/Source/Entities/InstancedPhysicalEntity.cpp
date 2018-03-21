@@ -34,7 +34,7 @@ InstancedPhysicalEntity::~InstancedPhysicalEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-const Vector3& InstancedPhysicalEntity::GetPosition() NOEXCEPT
+const Vector3& InstancedPhysicalEntity::GetPosition() const NOEXCEPT
 {
 	//Instanced physical entities has no position.
 	return Entity::defaultPosition;
@@ -43,7 +43,7 @@ const Vector3& InstancedPhysicalEntity::GetPosition() NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& InstancedPhysicalEntity::GetRotation() NOEXCEPT
+const Vector3& InstancedPhysicalEntity::GetRotation() const NOEXCEPT
 {
 	//Instanced physical entities has no rotation.
 	return Entity::defaultRotation;
@@ -52,7 +52,7 @@ const Vector3& InstancedPhysicalEntity::GetRotation() NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& InstancedPhysicalEntity::GetScale() NOEXCEPT
+const Vector3& InstancedPhysicalEntity::GetScale() const NOEXCEPT
 {
 	//Instanced physical entities has no scale.
 	return Entity::defaultScale;

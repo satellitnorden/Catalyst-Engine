@@ -30,17 +30,17 @@ public:
 	/*
 	*	Returns the position of this entity.
 	*/
-	const Vector3& GetPosition() NOEXCEPT final override;
+	const Vector3& GetPosition() const NOEXCEPT final override;
 
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	const Vector3& GetRotation() NOEXCEPT final override;
+	const Vector3& GetRotation() const NOEXCEPT final override;
 
 	/*
 	*	Returns the scale of this entity.
 	*/
-	const Vector3& GetScale() NOEXCEPT final override;
+	const Vector3& GetScale() const NOEXCEPT final override;
 
 	/*
 	*	Moves this entity.
@@ -60,17 +60,17 @@ public:
 	/*
 	*	Returns the forward vector of this entity.
 	*/
-	Vector3 GetForwardVector() NOEXCEPT;
+	Vector3 GetForwardVector() const NOEXCEPT;
 
 	/*
 	*	Returns the right vector of this entity.
 	*/
-	Vector3 GetRightVector() NOEXCEPT;
+	Vector3 GetRightVector() const NOEXCEPT;
 
 	/*
 	*	Returns the up vector of this entity.
 	*/
-	Vector3 GetUpVector() NOEXCEPT;
+	Vector3 GetUpVector() const NOEXCEPT;
 
 	/*
 	*	Returns the field of view for this camera entity.

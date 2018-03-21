@@ -14,6 +14,7 @@
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/PhysicsSystem.h>
+#include <Systems/SoundSystem.h>
 
 /*
 *	Default constructor.
@@ -36,8 +37,9 @@ ClairvoyantPlayer::~ClairvoyantPlayer() NOEXCEPT
 */
 void ClairvoyantPlayer::Initialize() NOEXCEPT
 {
-	//Add a camera.
+	//Set the player to be the active camera/listener.
 	RenderingSystem::Instance->SetActiveCamera(this);
+	SoundSystem::Instance->SetActiveListener(this);
 
 	//Add the flashlight.
 	flashlight = EntitySystem::Instance->CreateChildEntity<SpotLightEntity>(this);

@@ -34,7 +34,7 @@ Sound3DEntity::~Sound3DEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-const Vector3& Sound3DEntity::GetPosition() NOEXCEPT
+const Vector3& Sound3DEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
 	return ComponentManager::GetSound3DComponents()[componentsIndex].position;
@@ -43,7 +43,7 @@ const Vector3& Sound3DEntity::GetPosition() NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& Sound3DEntity::GetRotation() NOEXCEPT
+const Vector3& Sound3DEntity::GetRotation() const NOEXCEPT
 {
 	//Sound 3D entities has no rotation.
 	return Entity::defaultRotation;
@@ -52,7 +52,7 @@ const Vector3& Sound3DEntity::GetRotation() NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& Sound3DEntity::GetScale() NOEXCEPT
+const Vector3& Sound3DEntity::GetScale() const NOEXCEPT
 {
 	//Sound 3D entities has no scale.
 	return Entity::defaultScale;

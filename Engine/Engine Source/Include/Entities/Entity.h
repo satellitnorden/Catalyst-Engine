@@ -63,17 +63,17 @@ public:
 	/*
 	*	Returns the position of this entity.
 	*/
-	virtual const Vector3& GetPosition() NOEXCEPT = 0;
+	virtual const Vector3& GetPosition() const NOEXCEPT = 0;
 
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	virtual const Vector3& GetRotation() NOEXCEPT = 0;
+	virtual const Vector3& GetRotation() const NOEXCEPT = 0;
 
 	/*
 	*	Returns the scale of this entity.
 	*/
-	virtual const Vector3& GetScale() NOEXCEPT = 0;
+	virtual const Vector3& GetScale() const NOEXCEPT = 0;
 
 	/*
 	*	Moves this entity.
