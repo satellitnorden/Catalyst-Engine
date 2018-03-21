@@ -8,6 +8,7 @@
 #include <Entities/DirectionalLightEntity.h>
 #include <Entities/InstancedPhysicalEntity.h>
 #include <Entities/PointLightEntity.h>
+#include <Entities/Sound3DEntity.h>
 #include <Entities/SpotLightEntity.h>
 #include <Entities/TerrainEntity.h>
 #include <Entities/WaterEntity.h>
@@ -33,6 +34,7 @@
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/PhysicsSystem.h>
+#include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
 
 namespace
@@ -216,6 +218,8 @@ void WorldArchitect::Initialize() NOEXCEPT
 	stoneTransformations.Reserve(1'000);
 
 	//Create the stones.
+	const EventDescription *const RESTRICT windEventDescription{ SoundSystem::Instance->GetEventDescription("Wind") };
+
 	for (uint64 i = 0; i < 1'000; ++i)
 	{
 		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
@@ -239,6 +243,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 		const Vector3 scale{ stoneScale, stoneScale, stoneScale };
 
 		stoneTransformations.EmplaceFast(position, rotation, scale);
+
+		Sound3DEntity *const RESTRICT sound{ EntitySystem::Instance->CreateEntity<Sound3DEntity>() };
+		sound->Initialize(windEventDescription);
+		sound->Move(position);
 	}
 
 	InstancedPhysicalEntity *RESTRICT stones = EntitySystem::Instance->CreateEntity<InstancedPhysicalEntity>();

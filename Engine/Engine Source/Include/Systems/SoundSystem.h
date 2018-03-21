@@ -70,6 +70,11 @@ public:
 	*/
 	void InitializeSound3DEntity(Sound3DEntity *const RESTRICT entity, const EventDescription *const RESTRICT eventDescription) NOEXCEPT;
 
+	/*
+	*	Updates the position of a sound 3D entity.
+	*/
+	void UpdateSound3DEntityPosition(Sound3DEntity *const RESTRICT entity, const Vector3 &newPosition) NOEXCEPT;
+
 private:
 
 	/*
@@ -121,6 +126,33 @@ private:
 
 	};
 
+	/*
+	*	Sound 3D update position request definition.
+	*/
+	class Sound3DUpdatePositionRequest final
+	{
+
+	public:
+
+		//The entity that likes to be moved.
+		Sound3DEntity *const RESTRICT entity;
+
+		//The new position of the sound 3D entity.
+		Vector3 position;
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		Sound3DUpdatePositionRequest(Sound3DEntity *const RESTRICT initialEntity, const Vector3 &initialPosition) NOEXCEPT
+			:
+			entity(initialEntity),
+			position(initialPosition)
+		{
+
+		}
+
+	};
+
 	//The update semaphore.
 	Semaphore updateSemaphore{ SemaphoreCreationFlags::Signalled };
 
@@ -142,6 +174,9 @@ private:
 	//Container for all sound 3D initialization requests.
 	StaticArray<DynamicArray<Sound3DInitializationRequest>, 2> sound3DInitializationRequestBuffers;
 
+	//Container for all sound 3D update position requests.
+	StaticArray<DynamicArray<Sound3DUpdatePositionRequest>, 2> sound3DUpdatePositionRequestBuffers;
+
 	/*
 	*	Updates the active listener synchronously.
 	*/
@@ -161,5 +196,10 @@ private:
 	*	Updates the sound 3D initialization requests.
 	*/
 	void UpdateSound3DInitializationRequests() NOEXCEPT;
+
+	/*
+	*	Updates the sound 3D update position requests.
+	*/
+	void UpdateSound3DUpdatePositionRequests() NOEXCEPT;
 
 };

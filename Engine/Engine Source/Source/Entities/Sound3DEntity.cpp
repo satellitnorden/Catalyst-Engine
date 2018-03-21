@@ -66,6 +66,9 @@ void Sound3DEntity::Move(const Vector3 &moveVector) NOEXCEPT
 	//Move this entity.
 	ComponentManager::GetSound3DComponents()[componentsIndex].position += moveVector;
 
+	//Request the sound system to update the position of this sound 3D entity.
+	SoundSystem::Instance->UpdateSound3DEntityPosition(this, ComponentManager::GetSound3DComponents()[componentsIndex].position);
+
 	//Move all children.
 	for (auto child : children)
 	{

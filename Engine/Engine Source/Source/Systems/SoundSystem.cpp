@@ -53,7 +53,7 @@ void SoundSystem::InitializeSystem() NOEXCEPT
 	constexpr uint32 initFlags{ FMOD_INIT_NORMAL };
 #endif
 
-	FMOD_ERROR_CHECK(studioSystem->initialize(32, studioInitFlags, initFlags, nullptr));
+	FMOD_ERROR_CHECK(studioSystem->initialize(256, studioInitFlags, initFlags, nullptr));
 }
 
 /*
@@ -73,6 +73,7 @@ void SoundSystem::UpdateSystemSynchronous() NOEXCEPT
 
 	//Clear the current synchronous sound request buffers.
 	sound3DInitializationRequestBuffers[currentSynchronousSoundSystemBuffer].ClearFast();
+	sound3DUpdatePositionRequestBuffers[currentSynchronousSoundSystemBuffer].ClearFast();
 
 	//Execute the asynchronous update task.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
@@ -114,7 +115,7 @@ void SoundSystem::LoadBank(const char *const RESTRICT filePath) NOEXCEPT
 	FMOD::Studio::Bank *RESTRICT newBank;
 	FMOD_ERROR_CHECK(studioSystem->loadBankFile(filePath, FMOD_STUDIO_LOAD_BANK_NORMAL, &newBank));
 
-	newBank->loadSampleData();
+	FMOD_ERROR_CHECK(newBank->loadSampleData());
 
 	banks.EmplaceSlow(newBank);
 }
@@ -140,6 +141,15 @@ void SoundSystem::InitializeSound3DEntity(Sound3DEntity *const RESTRICT entity, 
 {
 	//Record a sound 3D initialization request into the current synchronous buffer.
 	sound3DInitializationRequestBuffers[currentSynchronousSoundSystemBuffer].EmplaceSlow(entity, eventDescription);
+}
+
+/*
+*	Updates the position of a sound 3D entity.
+*/
+void SoundSystem::UpdateSound3DEntityPosition(Sound3DEntity *const RESTRICT entity, const Vector3 &newPosition) NOEXCEPT
+{
+	//Record a sound 3D update poisition request into the current synchronous buffer.
+	sound3DUpdatePositionRequestBuffers[currentSynchronousSoundSystemBuffer].EmplaceSlow(entity, newPosition);
 }
 
 /*
@@ -171,8 +181,11 @@ void SoundSystem::UpdateSystemAsynchronous() NOEXCEPT
 	//Update the sound 3D initialization requests.
 	UpdateSound3DInitializationRequests();
 
+	//Update the sound 3D update position requests.
+	UpdateSound3DUpdatePositionRequests();
+
 	//Update the FMOD Studio System.
-	studioSystem->update();
+	FMOD_ERROR_CHECK(studioSystem->update());
 }
 
 /*
@@ -183,8 +196,23 @@ void SoundSystem::UpdateActiveListenerAsynchronous() const NOEXCEPT
 	//Set the 3D attributes of the active listener.
 	FMOD_3D_ATTRIBUTES attributes;
 
+	attributes.position.x = activeListenerData.activeListenerPosition.X;
+	attributes.position.y = activeListenerData.activeListenerPosition.Y;
+	attributes.position.z = -activeListenerData.activeListenerPosition.Z;
 
-	studioSystem->setListenerAttributes(0, &attributes);
+	attributes.velocity.x = 0.0f;
+	attributes.velocity.y = 0.0f;
+	attributes.velocity.z = 0.0f;
+
+	attributes.forward.x = activeListenerData.activeListenerForwardVector.X;
+	attributes.forward.y = activeListenerData.activeListenerForwardVector.Y;
+	attributes.forward.z = -activeListenerData.activeListenerForwardVector.Z;
+
+	attributes.up.x = activeListenerData.activeListenerUpVector.X;
+	attributes.up.y = activeListenerData.activeListenerUpVector.Y;
+	attributes.up.z = -activeListenerData.activeListenerUpVector.Z;
+
+	FMOD_ERROR_CHECK(studioSystem->setListenerAttributes(0, &attributes));
 }
 
 /*
@@ -192,7 +220,7 @@ void SoundSystem::UpdateActiveListenerAsynchronous() const NOEXCEPT
 */
 void SoundSystem::UpdateSound3DInitializationRequests() NOEXCEPT
 {
-	//Go through all the sound 3D requests and initialize them.
+	//Go through all the sound 3D initialization requests and process.
 	for (const Sound3DInitializationRequest &sound3DInitializationRequest : sound3DInitializationRequestBuffers[currentAsynchronousSoundSystemBuffer])
 	{
 		//Get the sound 3D component.
@@ -201,12 +229,27 @@ void SoundSystem::UpdateSound3DInitializationRequests() NOEXCEPT
 		//Create the event instance.
 		FMOD_ERROR_CHECK(sound3DInitializationRequest.eventDescription->createInstance(&component.eventInstance));
 
-		//Initialize the 3D attributes.
+		//Start the event instance.
+		FMOD_ERROR_CHECK(component.eventInstance->start());
+	}
+}
+
+/*
+*	Updates the sound 3D update position requests.
+*/
+void SoundSystem::UpdateSound3DUpdatePositionRequests() NOEXCEPT
+{
+	//Go through all the sound 3D update position requests and process them.
+	for (const Sound3DUpdatePositionRequest &sound3DUpdatePositionRequest : sound3DUpdatePositionRequestBuffers[currentAsynchronousSoundSystemBuffer])
+	{
+		//Update the position of the sound 3D entity.
+		Sound3DComponent &component{ ComponentManager::GetSound3DComponents()[sound3DUpdatePositionRequest.entity->GetComponentsIndex()] };
+
 		FMOD_3D_ATTRIBUTES attributes;
 
-		attributes.position.x = component.position.X;
-		attributes.position.y = component.position.Y;
-		attributes.position.z = component.position.Z;
+		attributes.position.x = sound3DUpdatePositionRequest.position.X;
+		attributes.position.y = sound3DUpdatePositionRequest.position.Y;
+		attributes.position.z = -sound3DUpdatePositionRequest.position.Z;
 
 		attributes.velocity.x = 0.0f;
 		attributes.velocity.y = 0.0f;
@@ -220,9 +263,7 @@ void SoundSystem::UpdateSound3DInitializationRequests() NOEXCEPT
 		attributes.up.y = 1.0f;
 		attributes.up.z = 0.0f;
 
-		component.eventInstance->set3DAttributes(&attributes);
-
-		//Start the event instance.
-		component.eventInstance->start();
+		FMOD_ERROR_CHECK(component.eventInstance->set3DAttributes(&attributes));
+		FMOD_ERROR_CHECK(component.eventInstance->start());
 	}
 }

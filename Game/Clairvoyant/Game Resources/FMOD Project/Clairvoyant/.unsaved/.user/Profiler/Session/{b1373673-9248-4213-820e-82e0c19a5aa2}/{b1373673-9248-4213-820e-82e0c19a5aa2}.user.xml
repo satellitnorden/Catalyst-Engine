@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="ProfilerSession" id="{b1373673-9248-4213-820e-82e0c19a5aa2}">
+        <relationship name="selectables">
+            <destination>{94a4f3b5-116d-4a1c-8a31-4b57d7b359d9}</destination>
+        </relationship>
+        <relationship name="uiLastParameterSelection">
+            <destination>{ee4bb710-294e-435c-ab7e-15cce4aafb35}</destination>
+        </relationship>
+    </object>
+    <object class="MasterTrack" id="{7925ed9e-7c28-4e96-a1ec-bc8baf74ab11}"/>
+    <object class="EventAutomatableProperties" id="{e9092606-9f19-4e60-a7fd-cfc65fb5cdab}"/>
+    <object class="MarkerTrack" id="{3635dfef-09fa-43ab-b4de-2d1fcdc6548a}"/>
+    <object class="Timeline" id="{ee4bb710-294e-435c-ab7e-15cce4aafb35}">
+        <property name="uiLastRulerScaleRatio">
+            <value>0.024834437086092714</value>
+        </property>
+        <property name="uiLastHorizontalScrollBarValue">
+            <value>2691</value>
+        </property>
+    </object>
+    <object class="ProfilerTrack" id="{94a4f3b5-116d-4a1c-8a31-4b57d7b359d9}"/>
+    <object class="ProfilerTrack" id="{a0a1dfb7-b9b5-4c9a-b567-28400515a376}"/>
+    <object class="EventMixerMaster" id="{8fefd37c-5d40-45ea-9b2e-81fd1bfe1563}"/>
+    <object class="ProfilerRecordingMarker" id="{fac816c2-dad9-4939-ba42-d82908b382f5}"/>
+    <object class="ProfilerGraph" id="{07f6840d-ea48-4974-a9a0-b8b0c84f8c37}"/>
+    <object class="ProfilerGraph" id="{a25d6ebf-c973-4719-9f8c-8fae8830905f}"/>
+    <object class="ProfilerGraph" id="{8c48c4ff-a675-44d7-a549-d649fdf83169}"/>
+    <object class="ProfilerGraph" id="{9e847912-d957-440d-8a5f-924f8ceef156}"/>
+    <object class="ProfilerGraph" id="{9297f6fa-3139-4519-8517-8f42424551da}"/>
+    <object class="ProfilerGraph" id="{a18f8951-494b-403f-bfe1-627865aa8091}"/>
+    <object class="MixerBusEffectChain" id="{27717d44-1fab-4776-8fcd-dbaf1abf0a05}"/>
+    <object class="MixerBusPanner" id="{9faae99a-476d-4696-add7-423a5b1d12f4}"/>
+    <object class="MixerBusFader" id="{20691a56-41ab-42d1-be8b-2e8e306bd6b1}"/>
+</objects>

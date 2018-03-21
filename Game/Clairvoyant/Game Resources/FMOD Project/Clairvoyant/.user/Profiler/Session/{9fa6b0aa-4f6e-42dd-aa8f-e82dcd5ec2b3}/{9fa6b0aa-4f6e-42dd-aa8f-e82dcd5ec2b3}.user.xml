@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="ProfilerSession" id="{9fa6b0aa-4f6e-42dd-aa8f-e82dcd5ec2b3}">
+        <relationship name="uiLastParameterSelection">
+            <destination>{bd0de8a1-6ca9-42fe-aa14-e909a3e569e7}</destination>
+        </relationship>
+    </object>
+    <object class="MasterTrack" id="{2157a9d9-05aa-4f79-be3f-4c917eedc352}"/>
+    <object class="EventAutomatableProperties" id="{b5ffa4f4-610e-472c-a7b8-2c08878df91d}"/>
+    <object class="MarkerTrack" id="{f95237c0-150b-43e1-9624-07019baa3bb7}"/>
+    <object class="Timeline" id="{bd0de8a1-6ca9-42fe-aa14-e909a3e569e7}">
+        <property name="uiLastRulerScaleRatio">
+            <value>0.024834437086092714</value>
+        </property>
+        <property name="uiLastHorizontalScrollBarValue">
+            <value>4012</value>
+        </property>
+    </object>
+    <object class="ProfilerTrack" id="{a95a7554-e3d7-44be-b93a-950f020feee2}"/>
+    <object class="ProfilerTrack" id="{3c7373ee-f704-48ba-9bd7-d7fed9d70da1}"/>
+    <object class="EventMixerMaster" id="{ff00d818-780f-4911-ba16-46f3227a8c87}"/>
+    <object class="ProfilerRecordingMarker" id="{dd71046b-f23b-4ace-8204-81101a1a64b7}"/>
+    <object class="ProfilerRecordingMarker" id="{c5de5769-7968-45a4-b21c-75b37ccaaa78}"/>
+    <object class="ProfilerGraph" id="{1f452fe1-184c-4946-b766-a689cb38d80a}"/>
+    <object class="ProfilerGraph" id="{67dd6e1b-c17e-40dc-bd83-7f2b2e657775}"/>
+    <object class="ProfilerGraph" id="{03480b63-0ac9-4f47-9f70-5577685ddbae}"/>
+    <object class="ProfilerGraph" id="{e4f64478-5053-4844-b587-318bb9d4dbc9}"/>
+    <object class="ProfilerGraph" id="{d4b1f9ab-f7c4-435d-b902-cff4b293a1e4}"/>
+    <object class="ProfilerGraph" id="{8926286d-f319-4294-a1b7-dcfb1277fe84}"/>
+    <object class="MixerBusEffectChain" id="{cff0acde-5728-40b7-8666-71f70e54cb57}"/>
+    <object class="MixerBusPanner" id="{ba1dbb47-7f2f-451d-b72f-9496d9701e8f}"/>
+    <object class="MixerBusFader" id="{00dd32c4-1c0a-4db5-b0e5-05abc0fd222d}"/>
+</objects>
