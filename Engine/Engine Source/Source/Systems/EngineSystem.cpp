@@ -60,7 +60,7 @@ bool EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	PhysicsSystem::Instance->UpdateSystemSynchronous(deltaTime);
 
 	//Update the sound system.
-	SoundSystem::Instance->UpdateSystemSynchronous();
+	SoundSystem::Instance->UpdateSystemSynchronous(deltaTime);
 
 	//Update the graphics system.
 	RenderingSystem::Instance->UpdateSystemSynchronous();

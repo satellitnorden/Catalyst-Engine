@@ -59,13 +59,13 @@ void SoundSystem::InitializeSystem() NOEXCEPT
 /*
 *	Updates the sound system synschronously.
 */
-void SoundSystem::UpdateSystemSynchronous() NOEXCEPT
+void SoundSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
 	//Wait for the asynchronous update to finish.
 	updateSemaphore.WaitFor();
 
 	//Update active listener synchronously.
-	UpdateActiveListenerSynchronous();
+	UpdateActiveListenerSynchronous(deltaTime);
 
 	//Flip the sound system buffers.
 	currentAsynchronousSoundSystemBuffer ^= 1;
@@ -155,12 +155,18 @@ void SoundSystem::UpdateSound3DEntityPosition(Sound3DEntity *const RESTRICT enti
 /*
 *	Updates the active listener synchronously.
 */
-void SoundSystem::UpdateActiveListenerSynchronous() NOEXCEPT
+void SoundSystem::UpdateActiveListenerSynchronous(const float deltaTime) NOEXCEPT
 {
 	if (activeListenerData.activeListener)
 	{
+		//Store the old active listener position.
+		const Vector3 oldActiveListenerPosition{ activeListenerData.activeListenerPosition };
+
 		//Copy the active listener position.
 		activeListenerData.activeListenerPosition = activeListenerData.activeListener->GetPosition();
+
+		//Calculate the active listener velocity.
+		activeListenerData.activeListenerVelocity = (oldActiveListenerPosition - activeListenerData.activeListenerPosition) * deltaTime;
 
 		//Copy the active listener forward vector.
 		activeListenerData.activeListenerForwardVector = activeListenerData.activeListener->GetForwardVector();
@@ -200,9 +206,9 @@ void SoundSystem::UpdateActiveListenerAsynchronous() const NOEXCEPT
 	attributes.position.y = activeListenerData.activeListenerPosition.Y;
 	attributes.position.z = -activeListenerData.activeListenerPosition.Z;
 
-	attributes.velocity.x = 0.0f;
-	attributes.velocity.y = 0.0f;
-	attributes.velocity.z = 0.0f;
+	attributes.velocity.x = activeListenerData.activeListenerVelocity.X;
+	attributes.velocity.y = activeListenerData.activeListenerVelocity.Y;
+	attributes.velocity.z = -activeListenerData.activeListenerVelocity.Z;
 
 	attributes.forward.x = activeListenerData.activeListenerForwardVector.X;
 	attributes.forward.y = activeListenerData.activeListenerForwardVector.Y;

@@ -43,7 +43,7 @@ public:
 	/*
 	*	Updates the sound system synschronously.
 	*/
-	void UpdateSystemSynchronous() NOEXCEPT;
+	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
 
 	/*
 	*	Releases the sound system.
@@ -90,6 +90,9 @@ private:
 
 		//The active listener position.
 		Vector3 activeListenerPosition;
+
+		//The active listener velocity.
+		Vector3 activeListenerVelocity;
 
 		//The active listener forward vector.
 		Vector3 activeListenerForwardVector;
@@ -180,7 +183,7 @@ private:
 	/*
 	*	Updates the active listener synchronously.
 	*/
-	void UpdateActiveListenerSynchronous() NOEXCEPT;
+	void UpdateActiveListenerSynchronous(const float deltaTime) NOEXCEPT;
 
 	/*
 	*	Updates the sound system asynchronously.
