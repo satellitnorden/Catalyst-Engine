@@ -60,6 +60,6 @@ public:
 	/*
 	*	Initializes this sound 3D entity.
 	*/
-	void Initialize(const EventDescription *const RESTRICT eventDescription) NOEXCEPT;
+	void Initialize(const FMOD::Studio::EventDescription *const RESTRICT eventDescription) NOEXCEPT;
 
 };

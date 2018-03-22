@@ -14,7 +14,7 @@
 
 //Forward declarations.
 class CameraEntity;
-class Entity;
+class Sound2DEntity;
 class Sound3DEntity;
 
 class SoundSystem final
@@ -63,12 +63,17 @@ public:
 	/*
 	*	Given an event name, returns the event description.
 	*/
-	const EventDescription *const RESTRICT GetEventDescription(const char *const RESTRICT eventName) NOEXCEPT;
+	const FMOD::Studio::EventDescription *const RESTRICT GetEventDescription(const char *const RESTRICT eventName) NOEXCEPT;
+
+	/*
+	*	Initializes a sound 2D entity.
+	*/
+	void InitializeSound2DEntity(Sound2DEntity *const RESTRICT entity, const FMOD::Studio::EventDescription *const RESTRICT eventDescription) NOEXCEPT;
 
 	/*
 	*	Initializes a sound 3D entity.
 	*/
-	void InitializeSound3DEntity(Sound3DEntity *const RESTRICT entity, const EventDescription *const RESTRICT eventDescription) NOEXCEPT;
+	void InitializeSound3DEntity(Sound3DEntity *const RESTRICT entity, const FMOD::Studio::EventDescription *const RESTRICT eventDescription) NOEXCEPT;
 
 	/*
 	*	Updates the position of a sound 3D entity.
@@ -103,6 +108,33 @@ private:
 	};
 
 	/*
+	*	Sound 2D initialization request definition.
+	*/
+	class Sound2DInitializationRequest final
+	{
+
+	public:
+
+		//The entity that likes to be initialized.
+		Sound2DEntity * const RESTRICT entity;
+
+		//The event description.
+		const FMOD::Studio::EventDescription *const RESTRICT eventDescription;
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		Sound2DInitializationRequest(Sound2DEntity *const RESTRICT initialEntity, const FMOD::Studio::EventDescription *const RESTRICT initialEventDescription) NOEXCEPT
+			:
+			entity(initialEntity),
+			eventDescription(initialEventDescription)
+		{
+
+		}
+
+	};
+
+	/*
 	*	Sound 3D initialization request definition.
 	*/
 	class Sound3DInitializationRequest final
@@ -114,12 +146,12 @@ private:
 		Sound3DEntity *const RESTRICT entity;
 
 		//The event description.
-		const EventDescription *const RESTRICT eventDescription;
+		const FMOD::Studio::EventDescription *const RESTRICT eventDescription;
 
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		Sound3DInitializationRequest(Sound3DEntity *const RESTRICT initialEntity, const EventDescription *const RESTRICT initialEventDescription) NOEXCEPT
+		Sound3DInitializationRequest(Sound3DEntity *const RESTRICT initialEntity, const FMOD::Studio::EventDescription *const RESTRICT initialEventDescription) NOEXCEPT
 			:
 			entity(initialEntity),
 			eventDescription(initialEventDescription)
@@ -174,6 +206,9 @@ private:
 	//Defines the current asynchronous sound system buffer.
 	uint8 currentAsynchronousSoundSystemBuffer{ 1 };
 
+	//Container for all sound 2D initialization requests.
+	StaticArray<DynamicArray<Sound2DInitializationRequest>, 2> sound2DInitializationRequestBuffers;
+
 	//Container for all sound 3D initialization requests.
 	StaticArray<DynamicArray<Sound3DInitializationRequest>, 2> sound3DInitializationRequestBuffers;
 
@@ -194,6 +229,11 @@ private:
 	*	Updates the active listener asynchronously.
 	*/
 	void UpdateActiveListenerAsynchronous() const NOEXCEPT;
+
+	/*
+	*	Updates the sound 2D initialization requests.
+	*/
+	void UpdateSound2DInitializationRequests() NOEXCEPT;
 
 	/*
 	*	Updates the sound 3D initialization requests.

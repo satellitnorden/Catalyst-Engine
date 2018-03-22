@@ -6,6 +6,7 @@
 
 //Entities.
 #include <Entities/CameraEntity.h>
+#include <Entities/Sound2DEntity.h>
 #include <Entities/Sound3DEntity.h>
 
 //Multithreading.
@@ -15,6 +16,7 @@
 #include <Sound/SoundCore.h>
 
 //Systems.
+#include <Systems/EngineSystem.h>
 #include <Systems/TaskSystem.h>
 
 //Define the system.
@@ -53,7 +55,7 @@ void SoundSystem::InitializeSystem() NOEXCEPT
 	constexpr uint32 initFlags{ FMOD_INIT_NORMAL };
 #endif
 
-	FMOD_ERROR_CHECK(studioSystem->initialize(256, studioInitFlags, initFlags, nullptr));
+	FMOD_ERROR_CHECK(studioSystem->initialize(EngineSystem::Instance->GetProjectInformation().soundInformation.maximumNumberOfChannels, studioInitFlags, initFlags, nullptr));
 }
 
 /*
@@ -72,6 +74,7 @@ void SoundSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	currentSynchronousSoundSystemBuffer ^= 1;
 
 	//Clear the current synchronous sound request buffers.
+	sound2DInitializationRequestBuffers[currentSynchronousSoundSystemBuffer].ClearFast();
 	sound3DInitializationRequestBuffers[currentSynchronousSoundSystemBuffer].ClearFast();
 	sound3DUpdatePositionRequestBuffers[currentSynchronousSoundSystemBuffer].ClearFast();
 
@@ -123,7 +126,7 @@ void SoundSystem::LoadBank(const char *const RESTRICT filePath) NOEXCEPT
 /*
 *	Given an event name, returns the event description.
 */
-const EventDescription *const RESTRICT SoundSystem::GetEventDescription(const char *const RESTRICT eventName) NOEXCEPT
+const FMOD::Studio::EventDescription *const RESTRICT SoundSystem::GetEventDescription(const char *const RESTRICT eventName) NOEXCEPT
 {
 	static DynamicString eventPrefix{ "event:/" };
 	DynamicString actualEventName{ eventPrefix + eventName };
@@ -135,9 +138,18 @@ const EventDescription *const RESTRICT SoundSystem::GetEventDescription(const ch
 }
 
 /*
+*	Initializes a sound 2D entity.
+*/
+void SoundSystem::InitializeSound2DEntity(Sound2DEntity *const RESTRICT entity, const FMOD::Studio::EventDescription *const RESTRICT eventDescription) NOEXCEPT
+{
+	//Record a sound 2D initialization request into the current synchronous buffer.
+	sound2DInitializationRequestBuffers[currentSynchronousSoundSystemBuffer].EmplaceSlow(entity, eventDescription);
+}
+
+/*
 *	Initializes a sound 3D entity.
 */
-void SoundSystem::InitializeSound3DEntity(Sound3DEntity *const RESTRICT entity, const EventDescription *const RESTRICT eventDescription) NOEXCEPT
+void SoundSystem::InitializeSound3DEntity(Sound3DEntity *const RESTRICT entity, const FMOD::Studio::EventDescription *const RESTRICT eventDescription) NOEXCEPT
 {
 	//Record a sound 3D initialization request into the current synchronous buffer.
 	sound3DInitializationRequestBuffers[currentSynchronousSoundSystemBuffer].EmplaceSlow(entity, eventDescription);
@@ -222,11 +234,30 @@ void SoundSystem::UpdateActiveListenerAsynchronous() const NOEXCEPT
 }
 
 /*
+*	Updates the sound 2D initialization requests.
+*/
+void SoundSystem::UpdateSound2DInitializationRequests() NOEXCEPT
+{
+	//Go through all the sound 2D initialization requests and process.
+	for (const Sound2DInitializationRequest &sound2DInitializationRequest : sound2DInitializationRequestBuffers[currentAsynchronousSoundSystemBuffer])
+	{
+		//Get the sound 3D component.
+		Sound2DComponent &component{ ComponentManager::GetSound2DComponents()[sound2DInitializationRequest.entity->GetComponentsIndex()] };
+
+		//Create the event instance.
+		FMOD_ERROR_CHECK(sound2DInitializationRequest.eventDescription->createInstance(&component.eventInstance));
+
+		//Start the event instance.
+		FMOD_ERROR_CHECK(component.eventInstance->start());
+	}
+}
+
+/*
 *	Updates the sound 3D initialization requests.
 */
 void SoundSystem::UpdateSound3DInitializationRequests() NOEXCEPT
 {
-	//Go through all the sound 3D initialization requests and process.
+	//Go through all the sound 3D initialization requests and process them.
 	for (const Sound3DInitializationRequest &sound3DInitializationRequest : sound3DInitializationRequestBuffers[currentAsynchronousSoundSystemBuffer])
 	{
 		//Get the sound 3D component.

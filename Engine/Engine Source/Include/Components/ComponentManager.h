@@ -9,6 +9,7 @@
 #include <Components/FrustumCullingComponent.h>
 #include <Components/InstancedPhysicalRenderComponent.h>
 #include <Components/PointLightComponent.h>
+#include <Components/Sound2DComponent.h>
 #include <Components/Sound3DComponent.h>
 #include <Components/SpotLightComponent.h>
 #include <Components/StaticPhysicalRenderComponent.h>
@@ -181,6 +182,35 @@ private:
 
 	//The point light components.
 	static DynamicArray<PointLightComponent> pointLightComponents;
+
+public:
+
+	/*								*/
+	/*	Sound 2D Entity Interface.	*/
+	/*								*/
+
+	/*
+	*	Returns a new components index for sound 2D entities.
+	*/
+	static uint64 GetNewSound2DComponentsIndex() NOEXCEPT;
+
+	/*
+	*	Returns the number of sound 2D components.
+	*/
+	static uint64 GetNumberOfSound2DComponents() NOEXCEPT;
+
+	/*
+	*	Returns the sound 2D components.
+	*/
+	static Sound2DComponent *RESTRICT GetSound2DComponents() NOEXCEPT;
+
+private:
+
+	//The number of sound 2D components.
+	static uint64 numberOfSound2DComponents;
+
+	//The sound 2D components.
+	static DynamicArray<Sound2DComponent> sound2DComponents;
 
 public:
 

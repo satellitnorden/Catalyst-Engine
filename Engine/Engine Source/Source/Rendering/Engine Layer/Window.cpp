@@ -46,7 +46,7 @@ void Window::Initialize() NOEXCEPT
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	//Create the window!
-	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, EngineSystem::Instance->GetProjectInformation().projectName.CString(), nullptr, nullptr);
+	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, EngineSystem::Instance->GetProjectInformation().generalInformation.projectName.CString(), nullptr, nullptr);
 }
 
 /*

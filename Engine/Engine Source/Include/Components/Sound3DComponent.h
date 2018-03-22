@@ -15,7 +15,7 @@ class Sound3DComponent final
 public:
 
 	//The event instance.
-	EventInstance *RESTRICT eventInstance;
+	FMOD::Studio::EventInstance *RESTRICT eventInstance;
 
 	//The position.
 	Vector3 position;

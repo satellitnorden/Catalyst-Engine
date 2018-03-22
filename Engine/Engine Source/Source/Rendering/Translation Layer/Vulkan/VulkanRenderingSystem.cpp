@@ -699,7 +699,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 {
 	//Initialize the cube map fragment shader module.
-	const DynamicString &shadersPath{ EngineSystem::Instance->GetProjectInformation().shadersPath };
+	const DynamicString &shadersPath{ EngineSystem::Instance->GetProjectInformation().renderingInformation.shadersPath };
 
 	const auto cubeMapFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "CubeMapFragmentShader.spv");
 	shaderModules[INDEX(ShaderModule::CubeMapFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(cubeMapFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);

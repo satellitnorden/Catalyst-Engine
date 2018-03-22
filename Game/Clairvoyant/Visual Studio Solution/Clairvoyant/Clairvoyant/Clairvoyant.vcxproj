@@ -121,6 +121,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\FrustumCullingComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\InstancedPhysicalRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\PointLightComponent.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\Sound2DComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\Sound3DComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\SpotLightComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\StaticPhysicalRenderComponent.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Entity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\InstancedPhysicalEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\PointLightEntity.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Sound2DEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Sound3DEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\SpotLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\StaticPhysicalEntity.h" />
@@ -255,6 +257,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\Entity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\InstancedPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\PointLightEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\Sound2DEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\Sound3DEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\SpotLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\StaticPhysicalEntity.cpp" />

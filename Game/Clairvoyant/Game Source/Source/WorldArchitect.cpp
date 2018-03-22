@@ -218,7 +218,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	stoneTransformations.Reserve(1'000);
 
 	//Create the stones.
-	const EventDescription *const RESTRICT windEventDescription{ SoundSystem::Instance->GetEventDescription("Wind") };
+	const FMOD::Studio::EventDescription *const RESTRICT windEventDescription{ SoundSystem::Instance->GetEventDescription("Wind") };
 
 	for (uint64 i = 0; i < 1'000; ++i)
 	{

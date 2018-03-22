@@ -103,7 +103,7 @@ void Sound3DEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 /*
 *	Initializes this sound 3D entity.
 */
-void Sound3DEntity::Initialize(const EventDescription *const RESTRICT eventDescription) NOEXCEPT
+void Sound3DEntity::Initialize(const FMOD::Studio::EventDescription *const RESTRICT eventDescription) NOEXCEPT
 {
 	//Initialize this sound 3D entity via the Sound System.
 	SoundSystem::Instance->InitializeSound3DEntity(this, eventDescription);

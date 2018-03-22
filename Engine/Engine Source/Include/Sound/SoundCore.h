@@ -6,12 +6,6 @@
 //Third party libraries.
 #include <Third Party Libraries/fmod_studio.hpp>
 
-/*
-*	Type aliases.
-*/
-using EventDescription = FMOD::Studio::EventDescription;
-using EventInstance = FMOD::Studio::EventInstance;
-
 #if !defined(CATALYST_FINAL)
 /*
 *	Given an FMOD_RESULT, print the result.

@@ -16,7 +16,9 @@ int main() NOEXCEPT
 	DeltaTimer deltaTimer;
 
 	//Initialize the engine system.
-	EngineSystem::Instance->InitializeSystem(CatalystProjectInformation("Clairvoyant", "../../../../../Engine/Engine Source/Shaders/Vulkan/"));
+	EngineSystem::Instance->InitializeSystem(CatalystProjectInformation(	CatalystProjectGeneralInformation("Clairvoyant"),
+																			CatalystProjectRenderingInformation("../../../../../Engine/Engine Source/Shaders/Vulkan/"),
+																			CatalystProjectSoundInformation(256)));
 
 	//Initialize the game system.
 	ClairvoyantGameSystem::Instance->InitializeSystem();
