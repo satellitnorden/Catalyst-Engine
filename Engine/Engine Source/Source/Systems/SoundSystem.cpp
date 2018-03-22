@@ -196,6 +196,9 @@ void SoundSystem::UpdateSystemAsynchronous() NOEXCEPT
 	//Update the active listener asynchronously.
 	UpdateActiveListenerAsynchronous();
 
+	//Update the sound 2D initialization requests.
+	UpdateSound2DInitializationRequests();
+
 	//Update the sound 3D initialization requests.
 	UpdateSound3DInitializationRequests();
 
