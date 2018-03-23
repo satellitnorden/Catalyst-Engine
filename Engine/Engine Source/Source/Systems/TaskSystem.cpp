@@ -42,7 +42,7 @@ void TaskSystem::InitializeSystem() NOEXCEPT
 	numberOfTaskExecutors = numberOfHardwareThreads;
 
 	//Initialize the task queue.
-	taskQueue.Initialize(numberOfTaskExecutors);
+	taskQueue.Initialize(numberOfTaskExecutors + 256);
 
 	//Kick off all task executor threads.
 	taskExecutorThreads.Reserve(numberOfTaskExecutors);

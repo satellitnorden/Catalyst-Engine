@@ -4,7 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 /*
-*	Single producer - multiple consumers queue.
+*	Multiple producer - multiple consumers queue.
 *	WILL overwrite values once the circular buffer has reached the beginning again.
 *	This is to avoid reallocations when pushing/popping, so the atomic queue MUST be initialized with large enough storage to ensure that this never happens.
 */
@@ -49,9 +49,22 @@ public:
 	*/
 	void Push(ValueType newValue) NOEXCEPT
 	{
-		queue[lastIndex] = newValue;
+		uint64 oldWriteIndex;
+		uint64 newWriteIndex;
 
-		lastIndex = lastIndex < (queueSize - 1) ? lastIndex + 1 : 0;
+		do
+		{
+			oldWriteIndex = writeIndex.load();
+
+			newWriteIndex = oldWriteIndex < (queueSize - 1) ? oldWriteIndex + 1 : 0;
+		} while (!writeIndex.compare_exchange_weak(oldWriteIndex, newWriteIndex));
+
+		queue[oldWriteIndex] = newValue;
+
+		uint64 expectedLastIndex{ newWriteIndex > 0 ? newWriteIndex - 1 : queueSize - 1 };
+		uint64 newLastIndex{ expectedLastIndex < (queueSize - 1) ? expectedLastIndex + 1 : 0 };
+
+		while (!lastIndex.compare_exchange_weak(expectedLastIndex, newLastIndex));
 	}
 
 	/*
@@ -87,6 +100,9 @@ private:
 
 	//The first index in the queue.
 	std::atomic<uint64> firstIndex{ 0 };
+
+	//The current write index.
+	std::atomic<uint64> writeIndex{ 0 };
 
 	//The last index in the queue.
 	std::atomic<uint64> lastIndex{ 0 };
