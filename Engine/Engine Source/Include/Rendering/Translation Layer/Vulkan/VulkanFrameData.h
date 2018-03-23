@@ -37,7 +37,7 @@ public:
 
 		for (auto &dynamicUniformDataBuffer : dynamicUniformDataBuffers)
 		{
-			dynamicUniformDataBuffer = VulkanInterface::Instance->CreateUniformBuffer(SizeOf(VulkanDynamicUniformData));
+			dynamicUniformDataBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(VulkanDynamicUniformData));
 		}
 
 		//Create the dynamic uniform data descriptor sets.
@@ -53,7 +53,7 @@ public:
 				dynamicUniformDataBuffers[i]->GetWriteDescriptorSet(dynamicUniformDataDescriptorSets[i], 0)
 			};
 
-			vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), StaticCast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+			vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 		}
 	}
 

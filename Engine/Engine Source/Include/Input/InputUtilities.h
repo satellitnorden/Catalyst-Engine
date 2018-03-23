@@ -56,7 +56,7 @@ namespace InputUtilities
 	void UpdateKeyboardButton(const uint16 button, KeyboardButtonState &keyboardButtonState) NOEXCEPT
 	{
 		//The keyboard button is not pressed.
-		if (!StaticCast<bool>(GetKeyState(button) & 0x8000))
+		if (!static_cast<bool>(GetKeyState(button) & 0x8000))
 		{
 			if (keyboardButtonState == KeyboardButtonState::ReleasedHold)
 			{
@@ -124,14 +124,14 @@ namespace InputUtilities
 		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_X, currentGamepadStates.xButtonState);
 		UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_Y, currentGamepadStates.yButtonState);
 
-		currentGamepadStates.leftTriggerValue = StaticCast<float>(xInputState.Gamepad.bLeftTrigger) / 255;
-		currentGamepadStates.rightTriggerValue = StaticCast<float>(xInputState.Gamepad.bRightTrigger) / 255;
+		currentGamepadStates.leftTriggerValue = static_cast<float>(xInputState.Gamepad.bLeftTrigger) / 255;
+		currentGamepadStates.rightTriggerValue = static_cast<float>(xInputState.Gamepad.bRightTrigger) / 255;
 
-		currentGamepadStates.leftThumbstickXValue = StaticCast<float>(xInputState.Gamepad.sThumbLX) / 32'768;
-		currentGamepadStates.leftThumbstickYValue = StaticCast<float>(xInputState.Gamepad.sThumbLY) / 32'768;
+		currentGamepadStates.leftThumbstickXValue = static_cast<float>(xInputState.Gamepad.sThumbLX) / 32'768;
+		currentGamepadStates.leftThumbstickYValue = static_cast<float>(xInputState.Gamepad.sThumbLY) / 32'768;
 
-		currentGamepadStates.rightThumbstickXValue = StaticCast<float>(xInputState.Gamepad.sThumbRX) / 32'768;
-		currentGamepadStates.rightThumbstickYValue = StaticCast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
+		currentGamepadStates.rightThumbstickXValue = static_cast<float>(xInputState.Gamepad.sThumbRX) / 32'768;
+		currentGamepadStates.rightThumbstickYValue = static_cast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
 
 		//Calculate if the thumbstick values are in the deadzone.If so, reset them.
 		if (CatalystMath::Absolute(currentGamepadStates.leftThumbstickXValue) <= GAMEPAD_DEADZONE)

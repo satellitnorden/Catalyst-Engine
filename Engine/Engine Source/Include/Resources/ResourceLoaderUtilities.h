@@ -12,10 +12,10 @@ namespace ResourceLoaderUtilities
 	void LoadTerrainLayerData(BinaryFile<IOMode::In> &file, uint32 &layerWidth, uint32 &layerHeight, const uint8 mipmapLevels, DynamicArray<DynamicArray<byte>> &layerAlbedoData, DynamicArray<DynamicArray<byte>> &layerNormalMapData, DynamicArray<DynamicArray<byte>> &layerMaterialPropertiesData) NOEXCEPT
 	{
 		//Read the width of the layer.
-		file.Read(&layerWidth, SizeOf(uint32));
+		file.Read(&layerWidth, sizeof(uint32));
 
 		//Read the height of the layer.
-		file.Read(&layerHeight, SizeOf(uint32));
+		file.Read(&layerHeight, sizeof(uint32));
 
 		//Read the layer albedo.
 		layerAlbedoData.UpsizeSlow(mipmapLevels);

@@ -31,6 +31,38 @@ public:
 
 };
 
+class CatalystProjectMultithreadingInformation final
+{
+
+public:
+
+	/*
+	*	Denotes the maximum number of tasks that the game can fire off simultaneously at any given time.
+	*	There is no checking if this number is exceeded, the game can appear to work fine even if this is exceeded.
+	*	Possible problems that can arise if this is not set up properly is deadlocks, tasks not executing as expected and even crashes.
+	*/
+	uint32 numberOfGameTasks;
+
+	/*
+	*	Default constructor.
+	*/
+	CatalystProjectMultithreadingInformation() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Constructor taking all values as arguments.
+	*/
+	CatalystProjectMultithreadingInformation(const uint32 initialNumberOfGameTasks) NOEXCEPT
+		:
+	numberOfGameTasks(initialNumberOfGameTasks)
+	{
+
+	}
+
+};
+
 class CatalystProjectRenderingInformation final
 {
 
@@ -95,6 +127,9 @@ public:
 	//The project general information.
 	CatalystProjectGeneralInformation generalInformation;
 
+	//The project multithreading information.
+	CatalystProjectMultithreadingInformation multithreadingInformation;
+
 	//The project rendering information.
 	CatalystProjectRenderingInformation renderingInformation;
 
@@ -112,9 +147,10 @@ public:
 	/*
 	*	Constructor taking all parameters as arguments.
 	*/
-	CatalystProjectInformation(const CatalystProjectGeneralInformation &initialGeneralInformation, const CatalystProjectRenderingInformation &initialRenderingInformation, const CatalystProjectSoundInformation &initialSoundInformation) NOEXCEPT
+	CatalystProjectInformation(const CatalystProjectGeneralInformation &initialGeneralInformation, const CatalystProjectMultithreadingInformation &initialMultithreadingInformation, const CatalystProjectRenderingInformation &initialRenderingInformation, const CatalystProjectSoundInformation &initialSoundInformation) NOEXCEPT
 		:
 		generalInformation(initialGeneralInformation),
+		multithreadingInformation(initialMultithreadingInformation),
 		renderingInformation(initialRenderingInformation),
 		soundInformation(initialSoundInformation)
 	{

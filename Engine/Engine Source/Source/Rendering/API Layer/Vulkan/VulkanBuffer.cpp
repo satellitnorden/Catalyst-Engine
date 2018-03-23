@@ -53,7 +53,7 @@ void VulkanBuffer::Initialize(const void *RESTRICT data[], const VkDeviceSize *d
 
 	for (uint32 i = 0; i < dataChunks; ++i)
 	{
-		MemoryUtilities::CopyMemory(StaticCast<void*>(StaticCast<byte*>(mappedMemory) + currentOffset), data[i], dataSizes[i]);
+		MemoryUtilities::CopyMemory(static_cast<void*>(static_cast<byte*>(mappedMemory) + currentOffset), data[i], dataSizes[i]);
 
 		currentOffset = dataSizes[i];
 	}

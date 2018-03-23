@@ -49,7 +49,7 @@ public:
 		function(arguments);
 
 		//Signal the semaphore.
-		if (semaphore) semaphore->Signal();
+		semaphore->Signal();
 	}
 
 	//The function that this task will exeucte.

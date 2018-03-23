@@ -75,5 +75,5 @@ void Window::Release() NOEXCEPT
 */
 bool Window::ShouldClose() const NOEXCEPT
 {
-	return StaticCast<bool>(glfwWindowShouldClose(window));
+	return static_cast<bool>(glfwWindowShouldClose(window));
 }

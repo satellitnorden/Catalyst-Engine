@@ -67,9 +67,9 @@
 #endif
 
 /*
-*	Casts a value to a uint32 so that it can be used as an index. Useful for enum classes.
+*	Casts a value to a uint64 so that it can be used as an index. Useful for enum classes.
 */
-#define INDEX(value) StaticCast<uint32>(value)
+#define INDEX(value) static_cast<uint64>(value)
 
 /*
 *	Puts the current thread to sleep.

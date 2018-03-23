@@ -10,6 +10,13 @@
 //Singleton definition.
 DEFINE_SINGLETON(TaskSystem);
 
+//Task system constants.
+namespace TaskSystemConstants
+{
+	//Denotes the maximum number of tasks that the engine system will itself fire off at any given time.
+	static constexpr uint32 NUMBER_OF_ENGINE_TASKS{ 32 };
+}
+
 /*
 *	Default constructor.
 */
@@ -42,7 +49,7 @@ void TaskSystem::InitializeSystem() NOEXCEPT
 	numberOfTaskExecutors = numberOfHardwareThreads;
 
 	//Initialize the task queue.
-	taskQueue.Initialize(numberOfTaskExecutors + 256);
+	taskQueue.Initialize(numberOfTaskExecutors + TaskSystemConstants::NUMBER_OF_ENGINE_TASKS + EngineSystem::Instance->GetProjectInformation().multithreadingInformation.numberOfGameTasks);
 
 	//Kick off all task executor threads.
 	taskExecutorThreads.Reserve(numberOfTaskExecutors);
@@ -71,7 +78,7 @@ void TaskSystem::ReleaseSystem() NOEXCEPT
 void TaskSystem::ExecuteTask(Task &&newTask) NOEXCEPT
 {
 	//Reset the semaphore.
-	if (newTask.semaphore) newTask.semaphore->Reset();
+	newTask.semaphore->Reset();
 
 	//If there are as many concurrently executing tasks as there are task executors, just to the task on the calling thread and be done with it.
 	const uint32 currentConcurrentlyExecutingTasks{ concurrentlyExecutingTasks.load() };
@@ -80,7 +87,7 @@ void TaskSystem::ExecuteTask(Task &&newTask) NOEXCEPT
 	{
 		newTask.function(newTask.arguments);
 
-		if (newTask.semaphore) newTask.semaphore->Signal();
+		newTask.semaphore->Signal();
 	}
 
 	//Else, put the task into the task queue.

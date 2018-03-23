@@ -138,7 +138,7 @@ void VulkanRenderPass::CreateDepthAttachmentReference(VkAttachmentReference &att
 */
 void VulkanRenderPass::CreateColorAttachmentReference(DynamicArray<VkAttachmentReference> &attachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
-	uint32 counter{ vulkanPipelineCreationParameters.depthBuffers.Empty() ? StaticCast<uint32>(0) : StaticCast<uint32>(1) };
+	uint32 counter{ vulkanPipelineCreationParameters.depthBuffers.Empty() ? static_cast<uint32>(0) : static_cast<uint32>(1) };
 	for (VkImageView colorAttachment : vulkanPipelineCreationParameters.colorAttachments[0])
 	{
 		VkAttachmentReference newAttachmentReference;
@@ -158,7 +158,7 @@ void VulkanRenderPass::CreateSubpassDescription(VkSubpassDescription &subpassDes
 	subpassDescription.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpassDescription.inputAttachmentCount = 0;
 	subpassDescription.pInputAttachments = nullptr;
-	subpassDescription.colorAttachmentCount = StaticCast<uint32>(colorAttachmentReferences.Size());
+	subpassDescription.colorAttachmentCount = static_cast<uint32>(colorAttachmentReferences.Size());
 	subpassDescription.pColorAttachments = colorAttachmentReferences.Data();
 	subpassDescription.pResolveAttachments = nullptr;
 	subpassDescription.pDepthStencilAttachment = vulkanPipelineCreationParameters.depthBuffers.Empty() ? nullptr : &depthAttachmentReference;
@@ -188,7 +188,7 @@ void VulkanRenderPass::CreateRenderPassCreateInfo(VkRenderPassCreateInfo &render
 	renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassCreateInfo.pNext = nullptr;
 	renderPassCreateInfo.flags = 0;
-	renderPassCreateInfo.attachmentCount = StaticCast<uint32>(attachmentDescriptions.Size());
+	renderPassCreateInfo.attachmentCount = static_cast<uint32>(attachmentDescriptions.Size());
 	renderPassCreateInfo.pAttachments = attachmentDescriptions.Data();
 	renderPassCreateInfo.subpassCount = 1;
 	renderPassCreateInfo.pSubpasses = &subpassDescription;

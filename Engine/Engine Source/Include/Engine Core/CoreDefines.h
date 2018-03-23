@@ -35,12 +35,7 @@
 #define UNLIKELY(expression) expression
 
 /*
-*	Syntactic sugar for reinterpret_cast.
-*/
-#define ReinterpretCast reinterpret_cast
-
-/*
-*	Indicates to the compiler that within the scope of the given pointer, it does not alias with other pointers in the same scope.
+*	Indicates to the compiler that within the scope of the given pointer, it does not alias with other pointers of the same type in the same scope.
 */
 #define RESTRICT __restrict
 
@@ -48,16 +43,6 @@
 *	Indicates to the compiler that the pointer returned by a given function does not alias with other pointers in the same scope.
 */
 #define RESTRICTED __declspec(restrict)
-
-/*
-*	Syntactic sugar for sizeof.
-*/
-#define SizeOf sizeof
-
-/*
-*	Syntactic sugar for static_cast.
-*/
-#define StaticCast static_cast
 
 /*
 *	Type maximums/minimums.

@@ -110,7 +110,7 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Execute the update view frustum culling task.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		StaticCast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateViewFrustumCulling();
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateViewFrustumCulling();
 	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateViewFrustumCuling)]));
 
 	//Update the main window.
@@ -182,49 +182,49 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 void VulkanRenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT
 {
 	//Load the first layer albedo.
-	terrainMaterial.firstLayerAlbedo = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4, terrainMaterialData.firstLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.firstLayerAlbedo = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4, terrainMaterialData.firstLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the first layer normal map.
-	terrainMaterial.firstLayerNormalMap = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4, terrainMaterialData.firstLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.firstLayerNormalMap = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4, terrainMaterialData.firstLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the first layer material properties.
-	terrainMaterial.firstLayerMaterialProperties = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4, terrainMaterialData.firstLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.firstLayerMaterialProperties = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4, terrainMaterialData.firstLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the second layer albedo.
-	terrainMaterial.secondLayerAlbedo = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4, terrainMaterialData.secondLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.secondLayerAlbedo = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4, terrainMaterialData.secondLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the second layer normal map.
-	terrainMaterial.secondLayerNormalMap = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4, terrainMaterialData.secondLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.secondLayerNormalMap = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4, terrainMaterialData.secondLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the second layer material properties.
-	terrainMaterial.secondLayerMaterialProperties = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4, terrainMaterialData.secondLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.secondLayerMaterialProperties = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4, terrainMaterialData.secondLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the third layer albedo.
-	terrainMaterial.thirdLayerAlbedo = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4, terrainMaterialData.thirdLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.thirdLayerAlbedo = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4, terrainMaterialData.thirdLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the third layer normal map.
-	terrainMaterial.thirdLayerNormalMap = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4, terrainMaterialData.thirdLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.thirdLayerNormalMap = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4, terrainMaterialData.thirdLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the third layer material properties.
-	terrainMaterial.thirdLayerMaterialProperties = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4, terrainMaterialData.thirdLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.thirdLayerMaterialProperties = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4, terrainMaterialData.thirdLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the fourth layer albedo.
-	terrainMaterial.fourthLayerAlbedo = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4, terrainMaterialData.fourthLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.fourthLayerAlbedo = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4, terrainMaterialData.fourthLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the fourth layer normal map.
-	terrainMaterial.fourthLayerNormalMap = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4, terrainMaterialData.fourthLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.fourthLayerNormalMap = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4, terrainMaterialData.fourthLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the fourth layer material properties.
-	terrainMaterial.fourthLayerMaterialProperties = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4, terrainMaterialData.fourthLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.fourthLayerMaterialProperties = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4, terrainMaterialData.fourthLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the fifth layer albedo.
-	terrainMaterial.fifthLayerAlbedo = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4, terrainMaterialData.fifthLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.fifthLayerAlbedo = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4, terrainMaterialData.fifthLayerAlbedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the fifth layer normal map.
-	terrainMaterial.fifthLayerNormalMap = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4, terrainMaterialData.fifthLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.fifthLayerNormalMap = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4, terrainMaterialData.fifthLayerNormalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the fifth layer material properties.
-	terrainMaterial.fifthLayerMaterialProperties = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4, terrainMaterialData.fifthLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	terrainMaterial.fifthLayerMaterialProperties = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4, terrainMaterialData.fifthLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 }
 
 /*
@@ -233,13 +233,13 @@ void VulkanRenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &ter
 void VulkanRenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT
 {
 	//Load the albedo.
-	physicalMaterial.albedoTexture = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(physicalMaterialData.width, physicalMaterialData.height, 4, physicalMaterialData.albedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	physicalMaterial.albedoTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(physicalMaterialData.width, physicalMaterialData.height, 4, physicalMaterialData.albedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the normal map.
-	physicalMaterial.normalMapTexture = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(physicalMaterialData.width, physicalMaterialData.height, 4, physicalMaterialData.normalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	physicalMaterial.normalMapTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(physicalMaterialData.width, physicalMaterialData.height, 4, physicalMaterialData.normalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 
 	//Load the material properties.
-	physicalMaterial.materialPropertiesTexture = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(physicalMaterialData.width, physicalMaterialData.height, 4, physicalMaterialData.materialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	physicalMaterial.materialPropertiesTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(physicalMaterialData.width, physicalMaterialData.height, 4, physicalMaterialData.materialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 }
 
 /*
@@ -249,7 +249,7 @@ void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physica
 {
 	//Create the vertex and index buffer.
 	const void *RESTRICT modelData[]{ physicalModelData.vertices.Data(), physicalModelData.indices.Data() };
-	const VkDeviceSize modelDataSizes[]{ SizeOf(PhysicalVertex) * physicalModelData.vertices.Size(), SizeOf(uint32) * physicalModelData.indices.Size() };
+	const VkDeviceSize modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData.vertices.Size(), sizeof(uint32) * physicalModelData.indices.Size() };
 	GraphicsBufferHandle buffer = VulkanInterface::Instance->CreateBuffer(modelData, modelDataSizes, 2);
 
 	//Set up the physical model.
@@ -257,7 +257,7 @@ void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physica
 	physicalModel.GetAxisAlignedBoundingBox().maximum = Vector3(physicalModelData.extent, physicalModelData.extent, physicalModelData.extent);
 	physicalModel.SetBuffer(buffer);
 	physicalModel.SetIndexOffset(modelDataSizes[0]);
-	physicalModel.SetIndexCount(StaticCast<uint32>(physicalModelData.indices.Size()));
+	physicalModel.SetIndexCount(static_cast<uint32>(physicalModelData.indices.Size()));
 }
 
 /*
@@ -266,7 +266,7 @@ void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physica
 void VulkanRenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterialData, WaterMaterial &waterMaterial) const NOEXCEPT
 {
 	//Load the normal map.
-	waterMaterial.normalMapTexture = StaticCast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(waterMaterialData.width, waterMaterialData.height, 4, waterMaterialData.normalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	waterMaterial.normalMapTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(waterMaterialData.width, waterMaterialData.height, 4, waterMaterialData.normalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 }
 
 /*
@@ -281,7 +281,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 
 	//Create the vertex and index buffer.
 	const void *RESTRICT terrainData[]{ terrainVertices.Data(), terrainIndices.Data() };
-	const VkDeviceSize terrainDataSizes[]{ SizeOf(float) * terrainVertices.Size(), SizeOf(uint32) * terrainIndices.Size() };
+	const VkDeviceSize terrainDataSizes[]{ sizeof(float) * terrainVertices.Size(), sizeof(uint32) * terrainIndices.Size() };
 	VulkanBuffer *RESTRICT terrainVertexBuffer{ VulkanInterface::Instance->CreateBuffer(terrainData, terrainDataSizes, 2) };
 
 	//Fill the terrain entity components with the relevant data.
@@ -289,8 +289,8 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 	TerrainRenderComponent &terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents()[terrainEntity.GetComponentsIndex()] };
 
 	terrainComponent.terrainUniformData = terrainUniformData;
-	terrainComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(SizeOf(TerrainUniformData));
-	StaticCast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->UploadData(&terrainComponent.terrainUniformData);
+	terrainComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));
+	static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->UploadData(&terrainComponent.terrainUniformData);
 	terrainComponent.terrainProperties = terrainProperties;
 
 	//Create the descriptor set.
@@ -300,30 +300,30 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 
 	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(terrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
-	writeDescriptorSets.EmplaceFast(StaticCast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 1));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainPropertiesTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 2));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(layerWeightsTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 3));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 4));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 5));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 6));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 7));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 8));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 9));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 10));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 11));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 12));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 13));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 14));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 15));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 16));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 17));
-	writeDescriptorSets.EmplaceFast(StaticCast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 18));
+	writeDescriptorSets.EmplaceFast(static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 1));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainPropertiesTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 2));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(layerWeightsTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 3));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 4));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 5));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 6));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 7));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 8));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 9));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 10));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 11));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 12));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 13));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 14));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 15));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 16));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 17));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 18));
 
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), StaticCast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
 	terrainRenderComponent.vertexAndIndexBuffer = terrainVertexBuffer;
-	terrainRenderComponent.indexBufferOffset = StaticCast<uint32>(SizeOf(float) * terrainVertices.Size());
-	terrainRenderComponent.indexCount = StaticCast<uint32>(terrainIndices.Size());
+	terrainRenderComponent.indexBufferOffset = static_cast<uint32>(sizeof(float) * terrainVertices.Size());
+	terrainRenderComponent.indexCount = static_cast<uint32>(terrainIndices.Size());
 }
 
 /*
@@ -341,12 +341,12 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 	//Update the write descriptor sets.
 	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
 	{
-		StaticCast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1),
-		StaticCast<const Vulkan2DTexture *RESTRICT>(material.normalMapTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
-		StaticCast<const Vulkan2DTexture *RESTRICT>(material.materialPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 3)
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.normalMapTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.materialPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 3)
 	};
 
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), StaticCast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
 	//Fill the static physical entity components with the relevant data.
 	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents()[staticPhysicalEntity.GetComponentsIndex()] };
@@ -356,7 +356,7 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
 	renderComponent.modelMatrix = Matrix4(position, rotation, scale);
 	renderComponent.descriptorSet = newDescriptorSet;
-	renderComponent.buffer = *StaticCast<VulkanBuffer *RESTRICT>(model.GetBuffer());
+	renderComponent.buffer = *static_cast<VulkanBuffer *RESTRICT>(model.GetBuffer());
 	renderComponent.indexOffset = model.GetIndexOffset();
 	renderComponent.indexCount = model.GetIndexCount();
 	transformComponent.position = position;
@@ -379,16 +379,16 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 	//Update the write descriptor sets.
 	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
 	{
-		StaticCast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1),
-		StaticCast<const Vulkan2DTexture *RESTRICT>(material.normalMapTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
-		StaticCast<const Vulkan2DTexture *RESTRICT>(material.materialPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 3)
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.normalMapTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.materialPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 3)
 	};
 
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), StaticCast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
 	//Create the transformations buffer.
 	const void *RESTRICT transformationsData[]{ transformations.Data() };
-	const VkDeviceSize transformationsDataSizes[]{ SizeOf(Matrix4) * transformations.Size() };
+	const VkDeviceSize transformationsDataSizes[]{ sizeof(Matrix4) * transformations.Size() };
 	VulkanBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateBuffer(transformationsData, transformationsDataSizes, 1);
 
 	//Fill the instanced physical entity components with the relevant data.
@@ -399,7 +399,7 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 	renderComponent.transformationsBuffer = transformationsBuffer;
 	renderComponent.indexOffset = model.GetIndexOffset();
 	renderComponent.indexCount = model.GetIndexCount();
-	renderComponent.instanceCount = StaticCast<uint32>(transformations.Size());
+	renderComponent.instanceCount = static_cast<uint32>(transformations.Size());
 }
 
 /*
@@ -412,21 +412,21 @@ void VulkanRenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTR
 	WaterRenderComponent &waterRenderComponent{ ComponentManager::GetWaterRenderComponents()[waterEntity->GetComponentsIndex()] };
 
 	waterComponent.waterUniformData = waterUniformData;
-	waterComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(SizeOf(WaterUniformData));
-	StaticCast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->UploadData(&waterComponent.waterUniformData);
+	waterComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(WaterUniformData));
+	static_cast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->UploadData(&waterComponent.waterUniformData);
 
 	//Create the descriptor set.
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(waterRenderComponent.descriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)]);
 
 	StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
 	{
-		StaticCast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 1),
-		StaticCast<const VulkanRenderTarget *RESTRICT>(renderTargets[INDEX(RenderTarget::WaterScene)])->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 2),
-		StaticCast<const Vulkan2DTexture *RESTRICT>(waterMaterial.normalMapTexture)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 3),
+		static_cast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 1),
+		static_cast<const VulkanRenderTarget *RESTRICT>(renderTargets[INDEX(RenderTarget::WaterScene)])->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 2),
+		static_cast<const Vulkan2DTexture *RESTRICT>(waterMaterial.normalMapTexture)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 3),
 		skyBoxTexture->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 4)
 	};
 
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), StaticCast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }
 
 /*
@@ -435,10 +435,10 @@ void VulkanRenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTR
 Texture2DHandle VulkanRenderingSystem::Create2DTexture(const TextureData &textureData) const NOEXCEPT
 {
 	//Create the Vulkan 2D texture.
-	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(StaticCast<uint32>(textureData.textureDataContainer.textureData.Size()), textureData.textureDataContainer.textureWidth, textureData.textureDataContainer.textureHeight, textureData.textureDataContainer.textureChannels, textureData.textureDataContainer.textureTexelSize, textureData.textureDataContainer.textureData.Data(), VulkanTranslationUtilities::GetVulkanFormat(textureData.textureFormat), VulkanTranslationUtilities::GetVulkanTextureFilter(textureData.magnificationFilter), VulkanTranslationUtilities::GetVulkanMipmapMode(textureData.mipmapMode), VulkanTranslationUtilities::GetVulkanAddressMode(textureData.addressMode));
+	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(textureData.textureDataContainer.textureData.Size()), textureData.textureDataContainer.textureWidth, textureData.textureDataContainer.textureHeight, textureData.textureDataContainer.textureChannels, textureData.textureDataContainer.textureTexelSize, textureData.textureDataContainer.textureData.Data(), VulkanTranslationUtilities::GetVulkanFormat(textureData.textureFormat), VulkanTranslationUtilities::GetVulkanTextureFilter(textureData.magnificationFilter), VulkanTranslationUtilities::GetVulkanMipmapMode(textureData.mipmapMode), VulkanTranslationUtilities::GetVulkanAddressMode(textureData.addressMode));
 
 	//Return the texture.
-	return StaticCast<Texture2DHandle>(new2DTexture);
+	return static_cast<Texture2DHandle>(new2DTexture);
 }
 
 /*
@@ -461,7 +461,7 @@ TextureCubeMapHandle VulkanRenderingSystem::CreateCubeMapTexture(const char *RES
 	TextureLoader::LoadTexture(leftTexturePath, width, height, numberOfChannels, &textureData[5]);
 
 	//Create the Vulkan 2D texture.
-	VulkanCubeMapTexture *RESTRICT newCubeMapTexture = VulkanInterface::Instance->CreateCubeMapTexture(StaticCast<uint32>(width), StaticCast<uint32>(height), ReinterpretCast<const byte *RESTRICT *RESTRICT>(&textureData));
+	VulkanCubeMapTexture *RESTRICT newCubeMapTexture = VulkanInterface::Instance->CreateCubeMapTexture(static_cast<uint32>(width), static_cast<uint32>(height), reinterpret_cast<const byte *RESTRICT *RESTRICT>(&textureData));
 
 	//Free the texture.
 	TextureLoader::FreeTexture(textureData[0]);
@@ -472,7 +472,7 @@ TextureCubeMapHandle VulkanRenderingSystem::CreateCubeMapTexture(const char *RES
 	TextureLoader::FreeTexture(textureData[5]);
 
 	//Return the texture.
-	return StaticCast<TextureCubeMapHandle>(newCubeMapTexture);
+	return static_cast<TextureCubeMapHandle>(newCubeMapTexture);
 }
 
 /*
@@ -501,7 +501,7 @@ void VulkanRenderingSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCame
 void VulkanRenderingSystem::SetActiveSkyBox(TextureCubeMapHandle newSkyBox) NOEXCEPT
 {
 	//Update the sky box texture.
-	skyBoxTexture = StaticCast<VulkanCubeMapTexture *RESTRICT>(newSkyBox);
+	skyBoxTexture = static_cast<VulkanCubeMapTexture *RESTRICT>(newSkyBox);
 
 	//Allocate the sky box descriptor set.
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(skyBoxDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)]);
@@ -511,7 +511,7 @@ void VulkanRenderingSystem::SetActiveSkyBox(TextureCubeMapHandle newSkyBox) NOEX
 
 	writeDescriptorSets.EmplaceFast(skyBoxTexture->GetWriteDescriptorSet(skyBoxDescriptorSet, 1));
 
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), StaticCast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
 	//Reinitialize the descriptor sets.
 	ReinitializeDescriptorSets();
@@ -597,7 +597,7 @@ void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
 void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 {
 	//Create the post processing uniform data buffer.
-	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(SizeOf(PostProcessingUniformData));
+	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(PostProcessingUniformData));
 
 	//Upload the initial data to the post processing uniform data buffer.
 	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&postProcessingUniformData);
@@ -838,7 +838,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	};
 	staticPhysicalPipelineCreationParameters.descriptorSetLayoutCount = 2;
 	staticPhysicalPipelineCreationParameters.descriptorSetLayouts = sceneBufferDescriptorSetLayouts.Data();
-	VkPushConstantRange staticPhysicalPushConstantRange{ VK_SHADER_STAGE_VERTEX_BIT, 0, SizeOf(Matrix4) };
+	VkPushConstantRange staticPhysicalPushConstantRange{ VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4) };
 	staticPhysicalPipelineCreationParameters.pushConstantRangeCount = 1;
 	staticPhysicalPipelineCreationParameters.pushConstantRanges = &staticPhysicalPushConstantRange;
 	staticPhysicalPipelineCreationParameters.shaderModules.Reserve(2);
@@ -1098,7 +1098,7 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 			renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4)
 		};
 
-		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), StaticCast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 	}
 
 	{
@@ -1112,7 +1112,7 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::PostProcessingDescriptorSet], 2)
 		};
 
-		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), StaticCast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 	}
 }
 
@@ -1122,10 +1122,10 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 void VulkanRenderingSystem::InitializeDefaultTextures() NOEXCEPT
 {
 	byte defaultMetallic[]{ 0 };
-	defaultTextures[DefaultTexture::Black] = StaticCast<Vulkan2DTexture *RESTRICT>(Create2DTexture(TextureData(TextureDataContainer(defaultMetallic, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte)));
+	defaultTextures[DefaultTexture::Black] = static_cast<Vulkan2DTexture *RESTRICT>(Create2DTexture(TextureData(TextureDataContainer(defaultMetallic, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte)));
 
 	byte defaultRoughness[]{ 255 };
-	defaultTextures[DefaultTexture::White] = StaticCast<Vulkan2DTexture *RESTRICT>(Create2DTexture(TextureData(TextureDataContainer(defaultRoughness, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte)));
+	defaultTextures[DefaultTexture::White] = static_cast<Vulkan2DTexture *RESTRICT>(Create2DTexture(TextureData(TextureDataContainer(defaultRoughness, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte)));
 }
 
 /*
@@ -1160,7 +1160,7 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 	//Execute the update dynamic uniform data task.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		StaticCast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDynamicUniformData();
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDynamicUniformData();
 	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)]));
 
 	//Set up the current command buffer.
@@ -1194,8 +1194,8 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 		const VkDeviceSize offset{ 0 };
 
 		currentCommandBuffer->CommandBindDescriptorSets(terrainSceneBufferPipeline, 2, terrainDescriptorSets.Data());
-		currentCommandBuffer->CommandBindVertexBuffers(1, &StaticCast<const VulkanBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer)->Get(), &offset);
-		currentCommandBuffer->CommandBindIndexBuffer(*StaticCast<const VulkanBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
+		currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer)->Get(), &offset);
+		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
 		currentCommandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
 	}
 
@@ -1243,7 +1243,7 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 
 		const VkDeviceSize offset{ 0 };
 
-		currentCommandBuffer->CommandPushConstants(StaticPhysicalPipeline.GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, SizeOf(Matrix4), &renderComponent->modelMatrix);
+		currentCommandBuffer->CommandPushConstants(StaticPhysicalPipeline.GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
 		currentCommandBuffer->CommandBindDescriptorSets(StaticPhysicalPipeline, 2, staticPhysicalEntityDescriptorSets.Data());
 		currentCommandBuffer->CommandBindVertexBuffers(1, &renderComponent->buffer.Get(), &offset);
 		currentCommandBuffer->CommandBindIndexBuffer(renderComponent->buffer, renderComponent->indexOffset);
@@ -1287,19 +1287,19 @@ void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
 
 		StaticArray<VkBuffer, 2> instancedPhysicalBuffers
 		{
-			StaticCast<const VulkanBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
-			StaticCast<const VulkanBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
+			static_cast<const VulkanBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
+			static_cast<const VulkanBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
 		};
 
 		StaticArray<VkDeviceSize, 2> offsets
 		{
-			StaticCast<VkDeviceSize>(0),
-			StaticCast<VkDeviceSize>(0)
+			static_cast<VkDeviceSize>(0),
+			static_cast<VkDeviceSize>(0)
 		};
 
 		currentCommandBuffer->CommandBindDescriptorSets(instancedPhysicalPipeline, 2, instancedPhysicalDescriptorSets.Data());
 		currentCommandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
-		currentCommandBuffer->CommandBindIndexBuffer(*StaticCast<const VulkanBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
+		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
 		currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
 	}
 
@@ -1448,7 +1448,7 @@ void VulkanRenderingSystem::ReinitializeDescriptorSets() NOEXCEPT
 	writeDescriptorSets.EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 3));
 	writeDescriptorSets.EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4));
 
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), StaticCast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }
 
 /*
@@ -1559,7 +1559,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	}
 
 	//Upload the dynamic uniform data to the uniform buffer.
-	frameData.GetCurrentDynamicUniformDataBuffer()->UploadData(StaticCast<void*>(&dynamicUniformData));
+	frameData.GetCurrentDynamicUniformDataBuffer()->UploadData(static_cast<void*>(&dynamicUniformData));
 }
 
 /*

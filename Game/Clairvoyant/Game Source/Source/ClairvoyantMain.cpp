@@ -17,6 +17,7 @@ int main() NOEXCEPT
 
 	//Initialize the engine system.
 	EngineSystem::Instance->InitializeSystem(CatalystProjectInformation(	CatalystProjectGeneralInformation("Clairvoyant"),
+																			CatalystProjectMultithreadingInformation(8),
 																			CatalystProjectRenderingInformation("../../../../../Engine/Engine Source/Shaders/Vulkan/"),
 																			CatalystProjectSoundInformation(256)));
 
@@ -28,8 +29,6 @@ int main() NOEXCEPT
 
 	while (!shouldTerminate)
 	{
-		//CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game Loop",
-
 		//Calculate the delta time.
 		const float deltaTime{ deltaTimer.Update() };
 
@@ -38,8 +37,6 @@ int main() NOEXCEPT
 
 		//Update the engine system.
 		shouldTerminate = EngineSystem::Instance->UpdateSystemSynchronous(deltaTime);
-
-		//);
 	}
 
 	//Release the game system.

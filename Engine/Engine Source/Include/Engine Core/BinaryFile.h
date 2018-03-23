@@ -41,7 +41,7 @@ public:
 		fileStream(filePath, std::ios::in | std::ios::binary | std::ios::ate)
 	{
 		//Save the size.
-		size = StaticCast<uint64>(fileStream.tellg());
+		size = static_cast<uint64>(fileStream.tellg());
 		fileStream.seekg(0);
 	}
 
@@ -58,7 +58,7 @@ public:
 	*/
 	void Read(void *RESTRICT output, const uint64 size) NOEXCEPT
 	{
-		fileStream.read(StaticCast<char *RESTRICT>(output), size);
+		fileStream.read(static_cast<char *RESTRICT>(output), size);
 	}
 
 	/*
@@ -108,7 +108,7 @@ public:
 	*/
 	void Write(const void *RESTRICT input, const uint64 size) NOEXCEPT
 	{
-		fileStream.write(StaticCast<const char *RESTRICT>(input), size);
+		fileStream.write(static_cast<const char *RESTRICT>(input), size);
 	}
 
 	/*

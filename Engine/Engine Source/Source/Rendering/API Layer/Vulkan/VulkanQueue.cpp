@@ -59,10 +59,10 @@ void VulkanQueue::CreateSubmitInfo(VkSubmitInfo &submitInfo, const uint32 waitSe
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.pNext = nullptr;
 	submitInfo.waitSemaphoreCount = waitSemaphoreCount;
-	submitInfo.pWaitSemaphores = ReinterpretCast<const VkSemaphore *RESTRICT>(waitSemaphores);
+	submitInfo.pWaitSemaphores = reinterpret_cast<const VkSemaphore *RESTRICT>(waitSemaphores);
 	submitInfo.pWaitDstStageMask = &waitStages;
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &vulkanCommandBuffer.Get();
 	submitInfo.signalSemaphoreCount = signalSemaphoreCount;
-	submitInfo.pSignalSemaphores = ReinterpretCast<const VkSemaphore *RESTRICT>(signalSemaphores);
+	submitInfo.pSignalSemaphores = reinterpret_cast<const VkSemaphore *RESTRICT>(signalSemaphores);
 }

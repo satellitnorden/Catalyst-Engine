@@ -81,7 +81,7 @@ void SoundSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	//Execute the asynchronous update task.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		StaticCast<SoundSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
+		static_cast<SoundSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
 	}, this, &updateSemaphore));
 }
 

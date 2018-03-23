@@ -82,7 +82,7 @@ void ClairvoyantGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXC
 	//Update the player.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		ClairvoyantUpdateContext *const RESTRICT updateContext = StaticCast<ClairvoyantUpdateContext *const RESTRICT>(arguments);
+		ClairvoyantUpdateContext *const RESTRICT updateContext = static_cast<ClairvoyantUpdateContext *const RESTRICT>(arguments);
 
 		updateContext->gameSystem->player->Update(updateContext->deltaTime);
 	}, &clairvoyantUpdateContext, &clairvoyantUpdateSemaphores[INDEX(ClairvoyantUpdateSemaphores::Player)]));
@@ -90,7 +90,7 @@ void ClairvoyantGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXC
 	//Update the sound director.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		ClairvoyantUpdateContext *const RESTRICT updateContext = StaticCast<ClairvoyantUpdateContext *const RESTRICT>(arguments);
+		ClairvoyantUpdateContext *const RESTRICT updateContext = static_cast<ClairvoyantUpdateContext *const RESTRICT>(arguments);
 
 		updateContext->gameSystem->soundDirector.Update();
 	}, &clairvoyantUpdateContext, &clairvoyantUpdateSemaphores[INDEX(ClairvoyantUpdateSemaphores::SoundDirector)]));
@@ -98,7 +98,7 @@ void ClairvoyantGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXC
 	//Update the world architect.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		ClairvoyantUpdateContext *const RESTRICT updateContext = StaticCast<ClairvoyantUpdateContext *const RESTRICT>(arguments);
+		ClairvoyantUpdateContext *const RESTRICT updateContext = static_cast<ClairvoyantUpdateContext *const RESTRICT>(arguments);
 
 		updateContext->gameSystem->worldArchitect.Update(updateContext->deltaTime);
 	}, &clairvoyantUpdateContext, &clairvoyantUpdateSemaphores[INDEX(ClairvoyantUpdateSemaphores::WorldArchitect)]));

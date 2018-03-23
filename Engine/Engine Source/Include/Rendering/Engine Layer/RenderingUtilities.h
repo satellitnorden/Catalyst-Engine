@@ -26,12 +26,12 @@ namespace RenderingUtilities
 		{
 			for (uint32 j = 0; j <= resolution; ++j)
 			{
-				const float xTextureCoordinate{ StaticCast<float>(i) / StaticCast<float>(resolution) };
-				const float yTextureCoordinate{ StaticCast<float>(j) / StaticCast<float>(resolution) };
+				const float xTextureCoordinate{ static_cast<float>(i) / static_cast<float>(resolution) };
+				const float yTextureCoordinate{ static_cast<float>(j) / static_cast<float>(resolution) };
 
-				vertices.EmplaceFast((-1.0f + (2.0f * StaticCast<float>(i) / StaticCast<float>(resolution))) * (terrainUniformData.terrainSize * 0.5f) + terrainUniformData.terrainPosition.X);
+				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(i) / static_cast<float>(resolution))) * (terrainUniformData.terrainSize * 0.5f) + terrainUniformData.terrainPosition.X);
 				vertices.EmplaceFast(terrainProperties.At(xTextureCoordinate, yTextureCoordinate).W * terrainUniformData.terrainHeight);
-				vertices.EmplaceFast((-1.0f + (2.0f * StaticCast<float>(j) / StaticCast<float>(resolution))) * (terrainUniformData.terrainSize * 0.5f) + terrainUniformData.terrainPosition.Z);
+				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(j) / static_cast<float>(resolution))) * (terrainUniformData.terrainSize * 0.5f) + terrainUniformData.terrainPosition.Z);
 				vertices.EmplaceFast(xTextureCoordinate);
 				vertices.EmplaceFast(yTextureCoordinate);
 
@@ -61,12 +61,12 @@ namespace RenderingUtilities
 		{
 			for (uint32 j = 0; j <= resolution; ++j)
 			{
-				const float xTextureCoordinate{ StaticCast<float>(i) / StaticCast<float>(resolution) };
-				const float yTextureCoordinate{ StaticCast<float>(j) / StaticCast<float>(resolution) };
+				const float xTextureCoordinate{ static_cast<float>(i) / static_cast<float>(resolution) };
+				const float yTextureCoordinate{ static_cast<float>(j) / static_cast<float>(resolution) };
 
-				vertices.EmplaceFast((-1.0f + (2.0f * StaticCast<float>(i) / StaticCast<float>(resolution))) * (waterUniformData.waterSize * 0.5f) + waterUniformData.waterWorldPosition.X);
+				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(i) / static_cast<float>(resolution))) * (waterUniformData.waterSize * 0.5f) + waterUniformData.waterWorldPosition.X);
 				vertices.EmplaceFast(0.0f);
-				vertices.EmplaceFast((-1.0f + (2.0f * StaticCast<float>(j) / StaticCast<float>(resolution))) * (waterUniformData.waterSize * 0.5f) + waterUniformData.waterWorldPosition.Z);
+				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(j) / static_cast<float>(resolution))) * (waterUniformData.waterSize * 0.5f) + waterUniformData.waterWorldPosition.Z);
 				vertices.EmplaceFast(xTextureCoordinate);
 				vertices.EmplaceFast(yTextureCoordinate);
 

@@ -70,7 +70,7 @@ public:
 	*/
 	static constexpr float Fractional(const float number) NOEXCEPT
 	{
-		return number - StaticCast<float>(StaticCast<int32>(number));
+		return number - static_cast<float>(static_cast<int32>(number));
 	}
 
 	/*
@@ -205,7 +205,7 @@ public:
 	*/
 	static constexpr float Signum(const float number) NOEXCEPT
 	{
-		return StaticCast<float>((number > 0.0f) - (number < 0.0f));
+		return static_cast<float>((number > 0.0f) - (number < 0.0f));
 	}
 
 	/*

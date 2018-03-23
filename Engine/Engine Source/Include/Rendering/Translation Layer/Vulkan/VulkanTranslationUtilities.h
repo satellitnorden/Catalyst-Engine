@@ -138,17 +138,17 @@ namespace VulkanTranslationUtilities
 		vertexInputAttributeDescriptions[5].location = 5;
 		vertexInputAttributeDescriptions[5].binding = 1;
 		vertexInputAttributeDescriptions[5].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-		vertexInputAttributeDescriptions[5].offset = SizeOf(Vector4);
+		vertexInputAttributeDescriptions[5].offset = sizeof(Vector4);
 
 		vertexInputAttributeDescriptions[6].location = 6;
 		vertexInputAttributeDescriptions[6].binding = 1;
 		vertexInputAttributeDescriptions[6].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-		vertexInputAttributeDescriptions[6].offset = SizeOf(Vector4) * 2;
+		vertexInputAttributeDescriptions[6].offset = sizeof(Vector4) * 2;
 
 		vertexInputAttributeDescriptions[7].location = 7;
 		vertexInputAttributeDescriptions[7].binding = 1;
 		vertexInputAttributeDescriptions[7].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-		vertexInputAttributeDescriptions[7].offset = SizeOf(Vector4) * 3;
+		vertexInputAttributeDescriptions[7].offset = sizeof(Vector4) * 3;
 	}
 
 	/*
@@ -157,11 +157,11 @@ namespace VulkanTranslationUtilities
 	static void GetInstancedPhysicalVertexInputBindingDescriptions(StaticArray<VkVertexInputBindingDescription, 2> &vertexInputBindingDescriptions) NOEXCEPT
 	{
 		vertexInputBindingDescriptions[0].binding = 0;
-		vertexInputBindingDescriptions[0].stride = SizeOf(PhysicalVertex);
+		vertexInputBindingDescriptions[0].stride = sizeof(PhysicalVertex);
 		vertexInputBindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
 		vertexInputBindingDescriptions[1].binding = 1;
-		vertexInputBindingDescriptions[1].stride = SizeOf(Matrix4);
+		vertexInputBindingDescriptions[1].stride = sizeof(Matrix4);
 		vertexInputBindingDescriptions[1].inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
 	}
 
@@ -197,7 +197,7 @@ namespace VulkanTranslationUtilities
 	static void GetPhysicalVertexInputBindingDescription(VkVertexInputBindingDescription &vertexInputBindingDescription) NOEXCEPT
 	{
 		vertexInputBindingDescription.binding = 0;
-		vertexInputBindingDescription.stride = SizeOf(PhysicalVertex);
+		vertexInputBindingDescription.stride = sizeof(PhysicalVertex);
 		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 	}
 
@@ -214,7 +214,7 @@ namespace VulkanTranslationUtilities
 		vertexInputAttributeDescriptions[1].location = 1;
 		vertexInputAttributeDescriptions[1].binding = 0;
 		vertexInputAttributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
-		vertexInputAttributeDescriptions[1].offset = SizeOf(float) * 3;
+		vertexInputAttributeDescriptions[1].offset = sizeof(float) * 3;
 	}
 
 	/*
@@ -223,7 +223,7 @@ namespace VulkanTranslationUtilities
 	static void GetTerrainVertexInputBindingDescription(VkVertexInputBindingDescription &vertexInputBindingDescription) NOEXCEPT
 	{
 		vertexInputBindingDescription.binding = 0;
-		vertexInputBindingDescription.stride = SizeOf(float) * 5;
+		vertexInputBindingDescription.stride = sizeof(float) * 5;
 		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 	}
 }

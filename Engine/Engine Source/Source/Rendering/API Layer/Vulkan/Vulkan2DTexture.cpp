@@ -52,8 +52,8 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 
 	for (uint8 i{ 0 }; i < textureMipmapLevels; ++i)
 	{
-		const VkDeviceSize mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels * StaticCast<uint64>(textureTexelSize) };
-		MemoryUtilities::CopyMemory(StaticCast<byte*>(data) + currentOffset, textureData[i], mipSize);
+		const VkDeviceSize mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels * static_cast<uint64>(textureTexelSize) };
+		MemoryUtilities::CopyMemory(static_cast<byte*>(data) + currentOffset, textureData[i], mipSize);
 
 		currentOffset += mipSize;
 	}
@@ -80,7 +80,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, textureMipmapLevels, 1, vulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(vulkanSampler, magnificationFilter, mipmapMode, addressMode, StaticCast<float>(textureMipmapLevels));
+	VulkanUtilities::CreateVulkanSampler(vulkanSampler, magnificationFilter, mipmapMode, addressMode, static_cast<float>(textureMipmapLevels));
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();
@@ -95,7 +95,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 void Vulkan2DTexture::Initialize(const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const DynamicArray<DynamicArray<byte>> &textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
 	//Calculate the mipmap levels.
-	const uint32 textureMipmapLevels{ StaticCast<uint32>(textureData.Size()) };
+	const uint32 textureMipmapLevels{ static_cast<uint32>(textureData.Size()) };
 
 	//Calculate the image size.
 	VkDeviceSize imageSize{ 0 };
@@ -122,7 +122,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureWidth, const uint32 texture
 	for (uint64 i = 0; i < textureMipmapLevels; ++i)
 	{
 		const uint64 mipSize{ (textureWidth >> i) * (textureHeight >> i) * textureChannels };
-		MemoryUtilities::CopyMemory(StaticCast<byte*>(data) + currentOffset, textureData[i].Data(), mipSize);
+		MemoryUtilities::CopyMemory(static_cast<byte*>(data) + currentOffset, textureData[i].Data(), mipSize);
 
 		currentOffset += mipSize;
 	}
@@ -149,7 +149,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureWidth, const uint32 texture
 	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, textureMipmapLevels, 1, vulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(vulkanSampler, magnificationFilter, mipmapMode, addressMode, StaticCast<float>(textureMipmapLevels));
+	VulkanUtilities::CreateVulkanSampler(vulkanSampler, magnificationFilter, mipmapMode, addressMode, static_cast<float>(textureMipmapLevels));
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();

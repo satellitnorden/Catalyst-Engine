@@ -171,8 +171,8 @@ void VulkanPipeline::CreatePipelineViewportStateCreateInfo(VkPipelineViewportSta
 {
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = StaticCast<float>(vulkanPipelineCreationParameters.viewportExtent.width);
-	viewport.height = StaticCast<float>(vulkanPipelineCreationParameters.viewportExtent.height);
+	viewport.width = static_cast<float>(vulkanPipelineCreationParameters.viewportExtent.width);
+	viewport.height = static_cast<float>(vulkanPipelineCreationParameters.viewportExtent.height);
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
@@ -275,7 +275,7 @@ void VulkanPipeline::CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlen
 	pipelineColorBlendStateCreateInfo.flags = 0;
 	pipelineColorBlendStateCreateInfo.logicOpEnable = VK_FALSE;
 	pipelineColorBlendStateCreateInfo.logicOp = VK_LOGIC_OP_COPY;
-	pipelineColorBlendStateCreateInfo.attachmentCount = StaticCast<uint32>(pipelineColorBlendAttachmentStates.Size());
+	pipelineColorBlendStateCreateInfo.attachmentCount = static_cast<uint32>(pipelineColorBlendAttachmentStates.Size());
 	pipelineColorBlendStateCreateInfo.pAttachments = pipelineColorBlendAttachmentStates.Data();
 	pipelineColorBlendStateCreateInfo.blendConstants[0] = 0.0f;
 	pipelineColorBlendStateCreateInfo.blendConstants[1] = 0.0f;
@@ -292,7 +292,7 @@ void VulkanPipeline::CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &
 	pipelineLayoutCreateInfo.pNext = nullptr;
 	pipelineLayoutCreateInfo.flags = 0;
 	pipelineLayoutCreateInfo.setLayoutCount = vulkanPipelineCreationParameters.descriptorSetLayoutCount;
-	pipelineLayoutCreateInfo.pSetLayouts = ReinterpretCast<const VkDescriptorSetLayout *RESTRICT>(vulkanPipelineCreationParameters.descriptorSetLayouts);
+	pipelineLayoutCreateInfo.pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout *RESTRICT>(vulkanPipelineCreationParameters.descriptorSetLayouts);
 	pipelineLayoutCreateInfo.pushConstantRangeCount = vulkanPipelineCreationParameters.pushConstantRangeCount;
 	pipelineLayoutCreateInfo.pPushConstantRanges = vulkanPipelineCreationParameters.pushConstantRanges;
 }
@@ -305,7 +305,7 @@ void VulkanPipeline::CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateIn
 	graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	graphicsPipelineCreateInfo.pNext = nullptr;
 	graphicsPipelineCreateInfo.flags = 0;
-	graphicsPipelineCreateInfo.stageCount = StaticCast<uint32>(pipelineShaderStageCreateInfos.Size());
+	graphicsPipelineCreateInfo.stageCount = static_cast<uint32>(pipelineShaderStageCreateInfos.Size());
 	graphicsPipelineCreateInfo.pStages = pipelineShaderStageCreateInfos.Data();
 	graphicsPipelineCreateInfo.pVertexInputState = &pipelineVertexInputStateCreateInfo;
 	graphicsPipelineCreateInfo.pInputAssemblyState = &pipelineInputAssemblyStateCreateInfo;

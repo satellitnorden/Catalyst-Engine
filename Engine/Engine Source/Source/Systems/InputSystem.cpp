@@ -37,7 +37,7 @@ void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
 	//Execute the update task.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		StaticCast<InputSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
+		static_cast<InputSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
 	}, this, &inputUpdateSemaphore));
 }
 

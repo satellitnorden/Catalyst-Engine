@@ -38,7 +38,7 @@ public:
 	void Initialize(const uint64 &newQueueSize) NOEXCEPT
 	{
 		//Allocate memory for the queue.
-		queue = StaticCast<ValueType*>(MemoryUtilities::AllocateMemory(SizeOf(ValueType) * newQueueSize));
+		queue = static_cast<ValueType*>(MemoryUtilities::AllocateMemory(sizeof(ValueType) * newQueueSize));
 
 		//Set the queue size.
 		queueSize = newQueueSize;
