@@ -73,8 +73,21 @@ void TaskSystem::ExecuteTask(Task &&newTask) NOEXCEPT
 	//Reset the semaphore.
 	if (newTask.semaphore) newTask.semaphore->Reset();
 
-	//Put the task into the task queue.
-	taskQueue.Push(newTask);
+	//If there are as many concurrently executing tasks as there are task executors, just to the task on the calling thread and be done with it.
+	const uint32 currentConcurrentlyExecutingTasks{ concurrentlyExecutingTasks.load() };
+
+	if (currentConcurrentlyExecutingTasks == numberOfTaskExecutors)
+	{
+		newTask.function(newTask.arguments);
+
+		if (newTask.semaphore) newTask.semaphore->Signal();
+	}
+
+	//Else, put the task into the task queue.
+	else
+	{
+		taskQueue.Push(newTask);
+	}
 }
 
 /*
@@ -87,7 +100,9 @@ void TaskSystem::ExecuteTaskExecutor() NOEXCEPT
 		//Try to pop a task from the task queue, and execute it if it succeeds.
 		if (Task *const RESTRICT newTask{ taskQueue.Pop() })
 		{
+			++concurrentlyExecutingTasks;
 			newTask->Execute();
+			--concurrentlyExecutingTasks;
 		}
 
 		//Else, sleep for a bit.

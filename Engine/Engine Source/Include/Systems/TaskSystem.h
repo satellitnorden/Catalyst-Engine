@@ -58,6 +58,9 @@ private:
 	//Container for all task executor threads.
 	DynamicArray<std::thread> taskExecutorThreads;
 
+	//The number of concurrently executing tasks.
+	std::atomic<uint32> concurrentlyExecutingTasks;
+
 	/*
 	*	Executes a task executor.
 	*/
