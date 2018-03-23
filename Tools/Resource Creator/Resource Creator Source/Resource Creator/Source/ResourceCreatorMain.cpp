@@ -1,10 +1,8 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
-//Systems.
-#include <Systems/EngineSystem.h>
-
 //Resource creator.
+#include <EnvironmentMaterialCreator.h>
 #include <PhysicalMaterialCreator.h>
 #include <PhysicalModelCreator.h>
 #include <ResourceCollectionCreator.h>
@@ -18,17 +16,13 @@
 
 int main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 {
-	//Initialize the engine system.
-	EngineSystem::Instance->InitializeSystem(CatalystProjectInformation("Resource Creator",
-#if defined(RESOURCE_CREATOR_DEBUG)
-		"../../../../../Engine/Engine Source/Shaders/Vulkan/"
-#else
-		"../../../Engine/Engine Source/Shaders/Vulkan/"
-#endif
-																								));
-
 	//First, determine what type of resource that is supposed to be created.
-	if (strcmp(arguments[1], "PhysicalMaterial") == 0)
+	if (strcmp(arguments[1], "EnvironmentMaterial") == 0)
+	{
+		EnvironmentMaterialCreator::CreateEnvironmentMaterial(argumentCount, arguments);
+	}
+
+	else if (strcmp(arguments[1], "PhysicalMaterial") == 0)
 	{
 		PhysicalMaterialCreator::CreatePhysicalMaterial(argumentCount, arguments);
 	}
@@ -52,9 +46,6 @@ int main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 	{
 		ResourceCollectionCreator::CreateResourceCollection(argumentCount, arguments);
 	}
-
-	//Release the engine system.
-	EngineSystem::Instance->ReleaseSystem();
 
 	return EXIT_SUCCESS;
 }

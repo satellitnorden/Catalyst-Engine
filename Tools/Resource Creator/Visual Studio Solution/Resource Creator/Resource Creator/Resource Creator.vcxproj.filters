@@ -48,6 +48,12 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\PointLightComponent.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\Sound2DComponent.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\Sound3DComponent.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\SpotLightComponent.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
@@ -138,6 +144,12 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\PointLightEntity.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Sound2DEntity.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Sound3DEntity.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\SpotLightEntity.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
@@ -189,12 +201,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\AtomicQueue.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\DailyGroupQuest.h">
-      <Filter>Engine Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\DailyQuest.h">
-      <Filter>Engine Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\MultithreadedResource.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
@@ -205,6 +211,9 @@
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\Spinlock.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\Task.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Multithreading\Threadlock.h">
@@ -384,6 +393,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\WaterMaterialData.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundCore.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EngineSystem.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
@@ -396,10 +408,46 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\PhysicsSystem.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\QuestSystem.h">
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\RenderingSystem.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\RenderingSystem.h">
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\SoundSystem.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\TaskSystem.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod.hpp">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_codec.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_common.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_dsp.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_dsp_effects.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_errors.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_output.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_studio.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_studio.hpp">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_studio_common.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\GLFW\glfw3.h">
@@ -450,6 +498,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Tools\MicroBenchmarker.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\EnvironmentMaterialCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Resource Creator Source\Resource Creator\Source\ResourceCreatorMain.cpp">
@@ -471,6 +522,12 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\PointLightEntity.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\Sound2DEntity.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\Sound3DEntity.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\SpotLightEntity.cpp">
@@ -501,12 +558,6 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Vector4.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Multithreading\DailyGroupQuest.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Multithreading\DailyQuest.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\Vulkan2DTexture.cpp">
@@ -611,10 +662,13 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\PhysicsSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\QuestSystem.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\RenderingSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\RenderingSystem.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\SoundSystem.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\TaskSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
   </ItemGroup>

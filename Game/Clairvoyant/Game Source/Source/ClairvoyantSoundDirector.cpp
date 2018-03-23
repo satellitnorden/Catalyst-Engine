@@ -27,6 +27,7 @@ void ClairvoyantSoundDirector::Initialize() NOEXCEPT
 */
 void ClairvoyantSoundDirector::Update() NOEXCEPT
 {
+	/*
 	//If the B button is pressed, play some sound.
 	GamepadState currentGamepadState{ InputSystem::Instance->GetCurrentGamepadState() };
 
@@ -37,6 +38,7 @@ void ClairvoyantSoundDirector::Update() NOEXCEPT
 		Sound2DEntity *const RESTRICT sound{ EntitySystem::Instance->CreateEntity<Sound2DEntity>() };
 		sound->Initialize(windEventDescription);
 	}
+	*/
 }
 
 /*
