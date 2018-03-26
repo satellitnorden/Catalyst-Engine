@@ -5,31 +5,9 @@
 #include <Math/CatalystMath.h>
 
 /*
-*	Default constructor.
-*/
-Vector2::Vector2() NOEXCEPT
-	:
-	X(0.0f),
-	Y(0.0f)
-{
-
-}
-
-/*
-*	Constructor taking X and Y as arguments.
-*/
-Vector2::Vector2(const float newX, const float newY) NOEXCEPT
-	:
-	X(newX),
-	Y(newY)
-{
-
-}
-
-/*
 *	Returns the length of the vector.
 */
-float Vector2::Length() const NOEXCEPT
+constexpr float Vector2::Length() const NOEXCEPT
 {
 	return CatalystMath::SquareRoot((X * X) + (Y * Y));
 }
@@ -37,7 +15,7 @@ float Vector2::Length() const NOEXCEPT
 /*
 *	Normalize the vector to a unit vector.
 */
-void Vector2::Normalize() NOEXCEPT
+constexpr void Vector2::Normalize() NOEXCEPT
 {
 	const float length = Length();
 

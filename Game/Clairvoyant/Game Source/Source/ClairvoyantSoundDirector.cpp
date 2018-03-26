@@ -19,7 +19,6 @@ void ClairvoyantSoundDirector::Initialize() NOEXCEPT
 {
 	//Load the sound banks.
 	SoundSystem::Instance->LoadBank(CLAIRVOYANT_RESOURCES_FOLDER "Master Bank.bank");
-	SoundSystem::Instance->LoadBank(CLAIRVOYANT_RESOURCES_FOLDER "Master Bank.strings.bank");
 }
 
 /*

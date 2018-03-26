@@ -2,12 +2,14 @@
 #include <Resources/ResourceLoader.h>
 
 //Rendering.
+#include <Rendering/Engine Layer/EnvironmentMaterial.h>
 #include <Rendering/Engine Layer/PhysicalMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/WaterMaterial.h>
 
 //Resources.
+#include <Resources/EnvironmentMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/PhysicalModelData.h>
 #include <Resources/ResourceLoaderUtilities.h>
@@ -19,6 +21,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Static variable definitions.
+Map<ResourceID, EnvironmentMaterial> ResourceLoader::environmentMaterials;
 Map<ResourceID, PhysicalMaterial> ResourceLoader::physicalMaterials;
 Map<ResourceID, PhysicalModel> ResourceLoader::physicalModels;
 Map<ResourceID, TerrainMaterial> ResourceLoader::terrainMaterials;
@@ -54,6 +57,13 @@ void ResourceLoader::LoadResourceCollection(const char *RESTRICT filePath) NOEXC
 			}
 #endif
 
+			case ResourceType::EnvironmentMaterial:
+			{
+				LoadEnvironmentMaterial(file);
+
+				break;
+			}
+
 			case ResourceType::PhysicalMaterial:
 			{
 				LoadPhysicalMaterial(file);
@@ -83,6 +93,29 @@ void ResourceLoader::LoadResourceCollection(const char *RESTRICT filePath) NOEXC
 			}
 		}
 	}
+}
+
+/*
+*	Given a file, load an environment material.
+*/
+void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the environment material data in the environment material data structure.
+	EnvironmentMaterialData environmentMaterialData;
+
+	//Read the resource ID.
+	ResourceID resourceID;
+	file.Read(&resourceID, sizeof(ResourceID));
+
+	//Read the resolution of the environment material.
+	uint64 resolution;
+	file.Read(&resolution, sizeof(uint64));
+
+	//Upsize the albedo data accordingly.
+	environmentMaterialData.albedoData.UpsizeFast(resolution * resolution * 6);
+
+	//Create the physical material via the rendering system.
+	//RenderingSystem::Instance->CreatePhysicalMaterial(physicalMaterialData, physicalMaterials[resourceID]);
 }
 
 /*

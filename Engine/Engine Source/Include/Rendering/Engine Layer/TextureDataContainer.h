@@ -59,7 +59,8 @@ public:
 	{
 		textureData.Reserve(1);
 		textureData.EmplaceFast(reinterpret_cast<void *RESTRICT>(const_cast<CPUTexture4&>(texture).Data()));
-		textureWidth = textureHeight = static_cast<uint16>(texture.GetResolution());
+		textureWidth = static_cast<uint16>(texture.GetWidth());
+		textureHeight = static_cast<uint16>(texture.GetHeight());
 		textureChannels = 4;
 		textureTexelSize = sizeof(float);
 	}

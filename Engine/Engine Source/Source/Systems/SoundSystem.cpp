@@ -23,6 +23,18 @@
 DEFINE_SYSTEM(SoundSystem);
 
 /*
+*	Given a string of an FMOD GUID, parse it and return it into a FMOD_GUID struct.
+*/
+FMOD_GUID SoundSystem::ParseGUID(const char *const RESTRICT string) NOEXCEPT
+{
+	//Parse the GUID via FMOD.
+	FMOD_GUID newGuid;
+	FMOD_ERROR_CHECK(FMOD::Studio::parseID(string, &newGuid));
+
+	return newGuid;
+}
+
+/*
 *	Default constructor.
 */
 SoundSystem::SoundSystem() NOEXCEPT
@@ -126,13 +138,10 @@ void SoundSystem::LoadBank(const char *const RESTRICT filePath) NOEXCEPT
 /*
 *	Given an event name, returns the event description.
 */
-const FMOD::Studio::EventDescription *const RESTRICT SoundSystem::GetEventDescription(const char *const RESTRICT eventName) NOEXCEPT
+const FMOD::Studio::EventDescription *const RESTRICT SoundSystem::GetEventDescription(const FMOD_GUID *const RESTRICT eventGuid) NOEXCEPT
 {
-	static DynamicString eventPrefix{ "event:/" };
-	DynamicString actualEventName{ eventPrefix + eventName };
-
 	FMOD::Studio::EventDescription *RESTRICT eventDescription;
-	FMOD_ERROR_CHECK(studioSystem->getEvent(actualEventName.CString(), &eventDescription));
+	FMOD_ERROR_CHECK(studioSystem->getEventByID(eventGuid, &eventDescription));
 
 	return eventDescription;
 }

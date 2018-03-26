@@ -7,6 +7,7 @@
 #include <Resources/ResourcesCore.h>
 
 //Forward declarations.
+class EnvironmentMaterial;
 class PhysicalMaterial;
 class PhysicalModel;
 class TerrainMaterial;
@@ -44,6 +45,9 @@ public:
 
 private:
 
+	//Container for all environment materials.
+	static Map<ResourceID, EnvironmentMaterial> environmentMaterials;
+
 	//Container for all physical materials.
 	static Map<ResourceID, PhysicalMaterial> physicalMaterials;
 
@@ -55,6 +59,11 @@ private:
 
 	//Container for all water materials.
 	static Map<ResourceID, WaterMaterial> waterMaterials;
+
+	/*
+	*	Given a file, load an environment material.
+	*/
+	static void LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a physical material.

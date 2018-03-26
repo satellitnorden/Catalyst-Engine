@@ -3,6 +3,7 @@
 
 //Clairvoyant.
 #include <ClairvoyantSettings.h>
+#include <ClairvoyantSoundGUIDs.h>
 
 //Entities.
 #include <Entities/DirectionalLightEntity.h>
@@ -39,7 +40,11 @@
 
 namespace
 {
+#if defined(CATALYST_DEBUG)
 	static constexpr uint32 HEIGHT_MAP_RESOLUTION{ 1'024 };
+#else
+	static constexpr uint32 HEIGHT_MAP_RESOLUTION{ 4'096 };
+#endif
 	static constexpr float TERRAIN_HEIGHT{ 1'000.0f };
 	static constexpr float TERRAIN_SIZE{ 10'000.0f };
 	static constexpr float WATER_HEIGHT{ -1.0f };
@@ -197,7 +202,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
+	terrain->Initialize(256, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
 	//Load the water material.
 	WaterMaterial waterMaterial{ ResourceLoader::GetWaterMaterial(5) };
@@ -218,7 +223,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	stoneTransformations.Reserve(1'000);
 
 	//Create the stones.
-	const FMOD::Studio::EventDescription *const RESTRICT windEventDescription{ SoundSystem::Instance->GetEventDescription("Wind") };
+	const FMOD::Studio::EventDescription *const RESTRICT windEventDescription{ SoundSystem::Instance->GetEventDescription(&ClairvoyantSoundGUIDs::WIND) };
 
 	for (uint64 i = 0; i < 1'000; ++i)
 	{

@@ -26,6 +26,11 @@ public:
 	DECLARE_SYSTEM(SoundSystem);
 
 	/*
+	*	Given a string of an FMOD GUID, parse it and return it into a FMOD_GUID struct.
+	*/
+	static FMOD_GUID ParseGUID(const char *const RESTRICT string) NOEXCEPT;
+
+	/*
 	*	Default constructor.
 	*/
 	SoundSystem() NOEXCEPT;
@@ -61,9 +66,9 @@ public:
 	void LoadBank(const char *const RESTRICT filePath) NOEXCEPT;
 
 	/*
-	*	Given an event name, returns the event description.
+	*	Given an event GUID, returns the event description.
 	*/
-	const FMOD::Studio::EventDescription *const RESTRICT GetEventDescription(const char *const RESTRICT eventName) NOEXCEPT;
+	const FMOD::Studio::EventDescription *const RESTRICT GetEventDescription(const FMOD_GUID *const RESTRICT eventGuid) NOEXCEPT;
 
 	/*
 	*	Initializes a sound 2D entity.
