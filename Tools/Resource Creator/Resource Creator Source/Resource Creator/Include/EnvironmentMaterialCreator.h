@@ -55,16 +55,16 @@ public:
 		CPUTexture4 hdrTexture{ static_cast<uint64>(width), static_cast<uint64>(height) };
 
 		//Copy the data into the cpu texture.
-		MemoryUtilities::CopyMemory(hdrTexture.Data(), data, width * height);
+		MemoryUtilities::CopyMemory(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
 
 		//Get the resolution of the output texture(s).
-		const uint64 outputResolution{ std::strtoull(arguments[5], nullptr, 0) };
+		const uint32 outputResolution{ std::strtoul(arguments[5], nullptr, 0) };
 
 		//Write the output resolution to the file.
-		file.Write(&outputResolution, sizeof(uint64));
+		file.Write(&outputResolution, sizeof(uint32));
 
-		//Create the albedo output textures.
-		StaticArray<CPUTexture4, 6> albedoOutputTextures
+		//Create the diffuse output textures.
+		StaticArray<CPUTexture4, 6> diffuseOutputTextures
 		{
 			CPUTexture4(outputResolution),
 			CPUTexture4(outputResolution),
@@ -84,7 +84,7 @@ public:
 					textureCoordinate *= EnvironmentMaterialCreatorConstants::INVERSE_ATAN;
 					textureCoordinate += 0.5f;
 
-					albedoOutputTextures[i].At(j, k) = hdrTexture.At(textureCoordinate);
+					diffuseOutputTextures[i].At(j, k) = hdrTexture.At(textureCoordinate);
 				}
 			}
 		}
@@ -92,7 +92,7 @@ public:
 		//Write the albedo to the file.
 		for (uint8 i = 0; i < 6; ++i)
 		{
-			file.Write(albedoOutputTextures[i].Data(), outputResolution * outputResolution);
+			file.Write(diffuseOutputTextures[i].Data(), outputResolution * outputResolution * 4 * sizeof(float));
 		}
 
 		//Close the file.

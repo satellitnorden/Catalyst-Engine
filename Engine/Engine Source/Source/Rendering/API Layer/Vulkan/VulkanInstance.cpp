@@ -90,7 +90,7 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 	createInstanceInfo.pApplicationInfo = &applicationInfo;
 
 #if VULKAN_DEBUGGING
-	createInstanceInfo.enabledLayerCount = StaticCast<uint32>(validationLayers.Size());
+	createInstanceInfo.enabledLayerCount = static_cast<uint32>(validationLayers.Size());
 	createInstanceInfo.ppEnabledLayerNames = validationLayers.Data();
 #else
 	createInstanceInfo.enabledLayerCount = 0;

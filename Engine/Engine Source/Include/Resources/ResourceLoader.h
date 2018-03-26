@@ -24,6 +24,11 @@ public:
 	static void LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT;
 
 	/*
+	*	Given a resource ID, return the corresponding environment material.
+	*/
+	static const EnvironmentMaterial& GetEnvironmentMaterial(const ResourceID resourceID) { return environmentMaterials[resourceID]; }
+
+	/*
 	*	Given a resource ID, return the corresponding physical material.
 	*/
 	static const PhysicalMaterial& GetPhysicalMaterial(const ResourceID resourceID) { return physicalMaterials[resourceID]; }

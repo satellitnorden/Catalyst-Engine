@@ -11,5 +11,7 @@ class EnvironmentMaterial final
 
 public:
 
+	//The diffuse texture.
+	TextureCubeMapHandle diffuseTexture;
 
 };

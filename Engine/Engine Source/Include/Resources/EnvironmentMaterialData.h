@@ -8,7 +8,10 @@ class EnvironmentMaterialData final
 
 public:
 
-	//The albedo data.
-	DynamicArray<float> albedoData;
+	//The resolution of the environment material.
+	uint32 resolution;
+
+	//The diffuse data.
+	DynamicArray<float> diffuseData;
 
 };

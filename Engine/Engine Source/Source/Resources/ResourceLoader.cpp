@@ -108,14 +108,19 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 	file.Read(&resourceID, sizeof(ResourceID));
 
 	//Read the resolution of the environment material.
-	uint64 resolution;
-	file.Read(&resolution, sizeof(uint64));
+	file.Read(&environmentMaterialData.resolution, sizeof(uint32));
 
-	//Upsize the albedo data accordingly.
-	environmentMaterialData.albedoData.UpsizeFast(resolution * resolution * 6);
+	//Calculate the data size.
+	const uint64 dataSize{ environmentMaterialData.resolution * environmentMaterialData.resolution * 4 * sizeof(float) * 6 };
 
-	//Create the physical material via the rendering system.
-	//RenderingSystem::Instance->CreatePhysicalMaterial(physicalMaterialData, physicalMaterials[resourceID]);
+	//Upsize the diffuse data accordingly.
+	environmentMaterialData.diffuseData.UpsizeFast(dataSize);
+
+	//Read the diffuse data.
+	file.Read(environmentMaterialData.diffuseData.Data(), dataSize);
+
+	//Create the environment material via the rendering system.
+	RenderingSystem::Instance->CreateEnvironmentMaterial(environmentMaterialData, environmentMaterials[resourceID]);
 }
 
 /*

@@ -22,6 +22,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture4.h>
+#include <Rendering/Engine Layer/EnvironmentMaterial.h>
 #include <Rendering/Engine Layer/PhysicalMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/RenderingUtilities.h>
@@ -32,6 +33,7 @@
 #include <Rendering/Translation Layer/Vulkan/VulkanTranslationUtilities.h>
 
 //Resources.
+#include <Resources/EnvironmentMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/PhysicalModelData.h>
 #include <Resources/TerrainMaterialData.h>
@@ -43,14 +45,6 @@
 
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanUtilities.h>
-
-//Constants.
-namespace
-{
-#if !defined(CATALYST_FINAL)
-	static constexpr uint32 ENVIRONMENT_MATERIAL_RESOLUTION{ 512 };
-#endif
-}
 
 //System definition.
 DEFINE_SYSTEM(VulkanRenderingSystem);
@@ -174,6 +168,15 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 
 	//Release the Vulkan interface.
 	VulkanInterface::Instance->Release();
+}
+
+/*
+*	Creates an environment material.
+*/
+void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT
+{
+	//Create the diffuse texture.
+	environmentMaterial.diffuseTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData.diffuseData.Data(), environmentMaterialData.resolution, environmentMaterialData.resolution));
 }
 
 /*

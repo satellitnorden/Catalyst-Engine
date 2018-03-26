@@ -21,6 +21,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture4.h>
+#include <Rendering/Engine Layer/EnvironmentMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/TerrainUniformData.h>
@@ -81,6 +82,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Load the resource collection file.
 	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc");
+	//RenderingSystem::Instance->SetActiveSkyBox(ResourceLoader::GetEnvironmentMaterial(0).diffuseTexture);
 
 	//Load the terrain material data.
 	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(4) };

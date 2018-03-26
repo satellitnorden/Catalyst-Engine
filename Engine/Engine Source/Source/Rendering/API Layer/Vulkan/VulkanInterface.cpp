@@ -236,6 +236,19 @@ RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const uin
 }
 
 /*
+*	Creates and returns a cube map texture.
+*/
+RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT
+{
+	VulkanCubeMapTexture *RESTRICT newCubeMapTexture = new VulkanCubeMapTexture;
+	newCubeMapTexture->Initialize(data, width, height);
+
+	vulkanCubeMapTextures.EmplaceSlow(newCubeMapTexture);
+
+	return newCubeMapTexture;
+}
+
+/*
 *	Creates and returns a depth buffer.
 */
 RESTRICTED VulkanDepthBuffer* VulkanInterface::CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT

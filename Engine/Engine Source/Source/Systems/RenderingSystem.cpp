@@ -44,6 +44,15 @@ void RenderingSystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
+*	Creates an environment material.
+*/
+void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT
+{
+	//Create the environment material via the Vulkan rendering system.
+	VulkanRenderingSystem::Instance->CreateEnvironmentMaterial(environmentMaterialData, environmentMaterial);
+}
+
+/*
 *	Creates a terrain material.
 */
 void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT

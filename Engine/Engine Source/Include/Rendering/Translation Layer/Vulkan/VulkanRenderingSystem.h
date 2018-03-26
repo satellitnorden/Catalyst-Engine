@@ -24,6 +24,8 @@
 //Forward declarations.
 class CameraEntity;
 class CPUTexture4;
+class EnvironmentMaterial;
+class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
 class PhysicalMaterial;
 class PhysicalMaterialData;
@@ -67,6 +69,11 @@ public:
 	*	Releases the Vulkan rendering system.
 	*/
 	void ReleaseSystem() NOEXCEPT;
+
+	/*
+	*	Creates an environment material.
+	*/
+	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;
 
 	/*
 	*	Creates a terrain material.

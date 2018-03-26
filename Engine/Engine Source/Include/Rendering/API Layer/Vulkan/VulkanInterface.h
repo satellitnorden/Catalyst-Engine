@@ -159,6 +159,11 @@ public:
 	RESTRICTED VulkanCubeMapTexture* CreateCubeMapTexture(const uint32 width, const uint32 height, const byte *RESTRICT *RESTRICT textureData) NOEXCEPT;
 
 	/*
+	*	Creates and returns a cube map texture.
+	*/
+	RESTRICTED VulkanCubeMapTexture* CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT;
+
+	/*
 	*	Creates and returns a depth buffer.
 	*/
 	RESTRICTED VulkanDepthBuffer* CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT;
