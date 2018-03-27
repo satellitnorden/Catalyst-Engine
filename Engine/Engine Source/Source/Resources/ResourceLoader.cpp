@@ -114,7 +114,7 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 	const uint64 dataSize{ environmentMaterialData.resolution * environmentMaterialData.resolution * 4 * sizeof(float) * 6 };
 
 	//Upsize the diffuse data accordingly.
-	environmentMaterialData.diffuseData.UpsizeFast(dataSize);
+	environmentMaterialData.diffuseData.UpsizeFast(environmentMaterialData.resolution * environmentMaterialData.resolution * 4 * 6);
 
 	//Read the diffuse data.
 	file.Read(environmentMaterialData.diffuseData.Data(), dataSize);

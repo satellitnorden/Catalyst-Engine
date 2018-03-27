@@ -5,6 +5,7 @@
 
 //Math.
 #include <Math/Vector2.h>
+#include <Math/Vector3.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture4.h>
@@ -76,20 +77,28 @@ public:
 
 		for (uint8 i = 0; i < 6; ++i)
 		{
-			for (uint64 j = 0; j < outputResolution; ++j)
+			for (uint32 j = 0; j < outputResolution; ++j)
 			{
-				for (uint64 k = 0; k < outputResolution; ++k)
+				for (uint32 k = 0; k < outputResolution; ++k)
 				{
-					Vector2 textureCoordinate{ static_cast<float>(j) / static_cast<float>(outputResolution), static_cast<float>(k) / static_cast<float>(outputResolution) };
+					/*
+					Vector3 position{ CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, static_cast<float>(j) / static_cast<float>(outputResolution)), CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, static_cast<float>(k) / static_cast<float>(outputResolution)), -1.0f };
+					position.Normalize();
+
+					Vector2 textureCoordinate{ CatalystMath::ArctangentRadians(position.Z, position.X), CatalystMath::ArcsineRadians(position.Y) };
 					textureCoordinate *= EnvironmentMaterialCreatorConstants::INVERSE_ATAN;
 					textureCoordinate += 0.5f;
 
 					diffuseOutputTextures[i].At(j, k) = hdrTexture.At(textureCoordinate);
+					*/
+
+					//diffuseOutputTextures[i].At(j, k) = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+					diffuseOutputTextures[i].At(j, k) = hdrTexture.At(Vector2(static_cast<float>(j) / static_cast<float>(outputResolution), 1.0f - static_cast<float>(k) / static_cast<float>(outputResolution)));
 				}
 			}
 		}
 		
-		//Write the albedo to the file.
+		//Write the diffuse to the file.
 		for (uint8 i = 0; i < 6; ++i)
 		{
 			file.Write(diffuseOutputTextures[i].Data(), outputResolution * outputResolution * 4 * sizeof(float));

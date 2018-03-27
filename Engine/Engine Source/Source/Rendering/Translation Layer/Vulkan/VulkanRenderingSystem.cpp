@@ -510,9 +510,10 @@ void VulkanRenderingSystem::SetActiveSkyBox(TextureCubeMapHandle newSkyBox) NOEX
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(skyBoxDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)]);
 
 	//Update the write descriptor sets.
-	DynamicArray<VkWriteDescriptorSet, 1> writeDescriptorSets;
-
-	writeDescriptorSets.EmplaceFast(skyBoxTexture->GetWriteDescriptorSet(skyBoxDescriptorSet, 1));
+	StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
+	{
+		skyBoxTexture->GetWriteDescriptorSet(skyBoxDescriptorSet, 1)
+	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 

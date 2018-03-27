@@ -177,7 +177,7 @@ public:
 	*/
 	RESTRICTED const ObjectType* Data() const NOEXCEPT
 	{
-		return LIKELY(array) ? array : nullptr;
+		return array;
 	}
 
 	/*
@@ -185,7 +185,7 @@ public:
 	*/
 	RESTRICTED ObjectType* Data() NOEXCEPT
 	{
-		return LIKELY(array) ? array : nullptr;
+		return array;
 	}
 
 	/*

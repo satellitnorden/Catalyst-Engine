@@ -25,6 +25,54 @@ public:
 	}
 
 	/*
+	*	Given a number, denoted in degrees, returns the arcsine of the number.
+	*/
+	static float ArcsineDegrees(const float number) NOEXCEPT
+	{
+		return ArcsineRadians(DegreesToRadians(number));
+	}
+
+	/*
+	*	Given a number, denoted in radians, returns the arcsine of the number.
+	*/
+	static float ArcsineRadians(const float number) NOEXCEPT
+	{
+		return asinf(number);
+	}
+
+	/*
+	*	Given a number, denoted in degrees, returns the arctangent of the number.
+	*/
+	static float ArctangentDegrees(const float number) NOEXCEPT
+	{
+		return ArctangentRadians(DegreesToRadians(number));
+	}
+
+	/*
+	*	Given a number, denoted in radians, returns the arctangent of the number.
+	*/
+	static float ArctangentRadians(const float number) NOEXCEPT
+	{
+		return atanf(number);
+	}
+
+	/*
+	*	Given two numbers, denoted in degrees, returns the arctangent of the number.
+	*/
+	static float ArctangentDegrees(const float number1, const float number2) NOEXCEPT
+	{
+		return ArctangentRadians(DegreesToRadians(number1), DegreesToRadians(number2));
+	}
+
+	/*
+	*	Given two numbers, denoted in radians, returns the arctangent of the number.
+	*/
+	static float ArctangentRadians(const float number1, const float number2) NOEXCEPT
+	{
+		return atan2f(number1, number2);
+	}
+
+	/*
 	*	Clamps a value between a lower and an upper limit and returns the clamped value.
 	*/
 	template <class NumberType>
