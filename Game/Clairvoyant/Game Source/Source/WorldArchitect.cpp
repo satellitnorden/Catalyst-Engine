@@ -39,7 +39,7 @@
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
 
-namespace
+namespace WorldAchitectConstants
 {
 #if defined(CATALYST_DEBUG)
 	static constexpr uint32 HEIGHT_MAP_RESOLUTION{ 1'024 };
@@ -76,10 +76,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	sun->SetIntensity(10.0f);
 
-	//Create the sky!
-	TextureCubeMapHandle sky = RenderingSystem::Instance->CreateCubeMapTexture(CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyFront.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyBack.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyUp.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyDown.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyRight.png", CLAIRVOYANT_RAW_TEXTURES_FOLDER "SkyLeft.png");
-	RenderingSystem::Instance->SetActiveSkyBox(sky);
-
 	//Load the resource collection file.
 	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc");
 	RenderingSystem::Instance->SetActiveSkyBox(ResourceLoader::GetEnvironmentMaterial(0).diffuseTexture);
@@ -88,49 +84,49 @@ void WorldArchitect::Initialize() NOEXCEPT
 	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(4) };
 
 	//Create the terrain properties!
-	CPUTexture4 terrainProperties{ HEIGHT_MAP_RESOLUTION };
+	CPUTexture4 terrainProperties{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
 
 	const float randomOffset{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
 
-	for (uint32 i = 0; i < HEIGHT_MAP_RESOLUTION; ++i)
+	for (uint32 i = 0; i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++i)
 	{
-		for (uint32 j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
+		for (uint32 j = 0; j < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++j)
 		{
 			float frequency = 5.0f;
 			float multiplier = 1.0f;
-			terrainProperties.At(i, j).W = PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W = PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 			
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			frequency *= 2.0f;
 			multiplier *= 0.5f;
-			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
+			terrainProperties.At(i, j).W += PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * frequency, static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * frequency, 0.0f, randomOffset) * multiplier;
 
 			terrainProperties.At(i, j).W = CatalystMath::LinearlyInterpolate(terrainProperties.At(i, j).W, CatalystMath::SmoothStep<1>(terrainProperties.At(i, j).W), 0.25f);
 		}
 	}
 
-	static constexpr float heightMapPositionoffset{ TERRAIN_SIZE / HEIGHT_MAP_RESOLUTION };
+	static constexpr float heightMapPositionoffset{ WorldAchitectConstants::TERRAIN_SIZE / WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
 
-	for (uint32 i = 0; i < HEIGHT_MAP_RESOLUTION; ++i)
+	for (uint32 i = 0; i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++i)
 	{
-		for (uint32 j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
+		for (uint32 j = 0; j < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++j)
 		{
-			const Vector3 left{ -heightMapPositionoffset, terrainProperties.At(i > 0 ? i - 1 : i, j).W * TERRAIN_HEIGHT, 0.0f };
-			const Vector3 right{ heightMapPositionoffset, terrainProperties.At(i < HEIGHT_MAP_RESOLUTION - 1 ? i + 1 : i, j).W * TERRAIN_HEIGHT, 0.0f };
-			const Vector3 up{ 0.0f, terrainProperties.At(i, j > 0 ? j - 1 : j).W * TERRAIN_HEIGHT, -heightMapPositionoffset };
-			const Vector3 down{ 0.0f, terrainProperties.At(i, j < HEIGHT_MAP_RESOLUTION - 1 ? j + 1 : j).W * TERRAIN_HEIGHT, heightMapPositionoffset };
-			const Vector3 center{ 0.0f, terrainProperties.At(i, j).W * TERRAIN_HEIGHT, 0.0f };
+			const Vector3 left{ -heightMapPositionoffset, terrainProperties.At(i > 0 ? i - 1 : i, j).W * WorldAchitectConstants::TERRAIN_HEIGHT, 0.0f };
+			const Vector3 right{ heightMapPositionoffset, terrainProperties.At(i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION - 1 ? i + 1 : i, j).W * WorldAchitectConstants::TERRAIN_HEIGHT, 0.0f };
+			const Vector3 up{ 0.0f, terrainProperties.At(i, j > 0 ? j - 1 : j).W * WorldAchitectConstants::TERRAIN_HEIGHT, -heightMapPositionoffset };
+			const Vector3 down{ 0.0f, terrainProperties.At(i, j < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION - 1 ? j + 1 : j).W * WorldAchitectConstants::TERRAIN_HEIGHT, heightMapPositionoffset };
+			const Vector3 center{ 0.0f, terrainProperties.At(i, j).W * WorldAchitectConstants::TERRAIN_HEIGHT, 0.0f };
 
 			const Vector3 normal1{ Vector3::CrossProduct(up - center, left - center) };
 			const Vector3 normal2{ Vector3::CrossProduct(right - center, up - center) };
@@ -146,37 +142,37 @@ void WorldArchitect::Initialize() NOEXCEPT
 	}
 
 	//Calculate the layer weights.
-	CPUTexture4 layerWeights{ HEIGHT_MAP_RESOLUTION };
+	CPUTexture4 layerWeights{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
 
-	for (uint32 i = 0; i < HEIGHT_MAP_RESOLUTION; ++i)
+	for (uint32 i = 0; i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++i)
 	{
-		for (uint32 j = 0; j < HEIGHT_MAP_RESOLUTION; ++j)
+		for (uint32 j = 0; j < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++j)
 		{
 			//Determine the weight of the grass layer.
 			Vector4 terrainPropertiesValue{ terrainProperties.At(i, j) * 2.0f - 1.0f };
 			
 			const float heightValue{ terrainPropertiesValue.W };
 
-			if (heightValue > (WATER_HEIGHT + 0.1f))
+			if (heightValue > (WorldAchitectConstants::WATER_HEIGHT + 0.1f))
 			{
 				layerWeights.At(i, j).X = 1.0f;
 			}
 
-			else if (heightValue < WATER_HEIGHT)
+			else if (heightValue < WorldAchitectConstants::WATER_HEIGHT)
 			{
 				layerWeights.At(i, j).X = 0.0f;
 			}
 
 			else
 			{
-				layerWeights.At(i, j).X = (heightValue + -WATER_HEIGHT) * 10.0f;
+				layerWeights.At(i, j).X = (heightValue + -WorldAchitectConstants::WATER_HEIGHT) * 10.0f;
 			}
 
 			layerWeights.At(i, j).X = CatalystMath::SmoothStep<1>(layerWeights.At(i, j).X);
 
 			//Determine the weight of the dirt layer.
 			constexpr float dirtLayerFrequency{ 1.0f };
-			layerWeights.At(i, j).Y = (PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, static_cast<float>(j) / static_cast<float>(HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f;
+			layerWeights.At(i, j).Y = (PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f;
 			layerWeights.At(i, j).Y = CatalystMath::SmoothStep<5>(layerWeights.At(i, j).Y);
 
 			//Determine the weight of the rock layer.
@@ -204,14 +200,14 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
+	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, WorldAchitectConstants::TERRAIN_HEIGHT, WorldAchitectConstants::TERRAIN_SIZE, WorldAchitectConstants::TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
 	//Load the water material.
 	WaterMaterial waterMaterial{ ResourceLoader::GetWaterMaterial(5) };
 
 	//Create the water.
 	WaterEntity *RESTRICT water = EntitySystem::Instance->CreateEntity<WaterEntity>();
-	water->Initialize(waterMaterial, WaterUniformData(TERRAIN_SIZE, 250.0f, Vector3(0.0f, 0.0f, 0.0f)));
+	water->Initialize(waterMaterial, WaterUniformData(WorldAchitectConstants::TERRAIN_SIZE, 250.0f, Vector3(0.0f, 0.0f, 0.0f)));
 
 	//Create the stone model.
 	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(2) };
@@ -229,7 +225,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	for (uint64 i = 0; i < 1'000; ++i)
 	{
-		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
+		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f)) };
 
 		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
 
@@ -273,7 +269,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Create the tree stomps.
 	for (uint64 i = 0; i < 1'000; ++i)
 	{
-		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-TERRAIN_SIZE * 0.5f, TERRAIN_SIZE * 0.5f)) };
+		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f)) };
 
 		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
 

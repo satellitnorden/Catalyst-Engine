@@ -5,7 +5,6 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture4.h>
-#include <Rendering/Engine Layer/TextureLoader.h>
 
 class TextureDataContainer final
 {
@@ -34,9 +33,6 @@ public:
 		textureHeight = otherContainer.textureHeight;
 		textureChannels = otherContainer.textureChannels;
 		textureTexelSize = otherContainer.textureTexelSize;
-		releaseOnDestruction = otherContainer.releaseOnDestruction;
-
-		otherContainer.releaseOnDestruction = false;
 	}
 
 	/*
@@ -65,68 +61,6 @@ public:
 		textureTexelSize = sizeof(float);
 	}
 
-	/*
-	*	Constructor taking a texture path.
-	*/
-	TextureDataContainer(const char *const RESTRICT texturePath) NOEXCEPT
-	{
-		//Load the texture.
-		byte *RESTRICT data;
-		TextureLoader::LoadTexture(texturePath, textureWidth, textureHeight, textureChannels, &data);
-
-		textureData.Reserve(1);
-		textureData.EmplaceFast(data);
-		textureChannels = 4;
-		textureTexelSize = sizeof(byte);
-
-		releaseOnDestruction = true;
-	}
-
-	/*
-	*	Array taking an array of texture paths, for mip generation.
-	*/
-	TextureDataContainer(const DynamicArray<const char *RESTRICT> &texturePaths) NOEXCEPT
-	{
-		const uint64 numberOfTextures{ texturePaths.Size() };
-		textureData.Reserve(numberOfTextures);
-
-		//Load the texture.
-		for (uint64 i = 0; i < numberOfTextures; ++i)
-		{
-			byte *RESTRICT data;
-			uint16 tempWidth, tempHeight;
-			uint8 tempNumberOfChannels;
-			TextureLoader::LoadTexture(texturePaths[i], tempWidth, tempHeight, tempNumberOfChannels, &data);
-
-			//Only store the width/height for the base mip, it is assumed that following mip layers are half it's size.
-			if (i == 0)
-			{
-				textureWidth = tempWidth;
-				textureHeight = tempHeight;
-				textureChannels = 4;
-				textureTexelSize = sizeof(byte);
-			}
-
-			textureData.EmplaceFast(data);
-		}
-		
-		releaseOnDestruction = true;
-	}
-
-	/*
-	*	Default destructor.
-	*/
-	~TextureDataContainer() NOEXCEPT
-	{
-		if (releaseOnDestruction)
-		{
-			for (void *RESTRICT textureDataChunk : textureData)
-			{
-				TextureLoader::FreeTexture(static_cast<byte *RESTRICT>(textureDataChunk));
-			}
-		}
-	}
-
 	//Pointer to the underlying texture data.
 	DynamicArray<void *RESTRICT> textureData;
 
@@ -141,8 +75,5 @@ public:
 
 	//The size of each texel, denoted in bytes.
 	uint8 textureTexelSize;
-
-	//Defines whether or not texture data should be released on destruction.
-	bool releaseOnDestruction{ false };
 
 };

@@ -32,11 +32,6 @@ public:
 	/*
 	*	Initializes this texture.
 	*/
-	void Initialize(const uint32 width, const uint32 height, const byte *RESTRICT *RESTRICT textureData) NOEXCEPT;
-
-	/*
-	*	Initializes this texture.
-	*/
 	void Initialize(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT;
 
 	/*

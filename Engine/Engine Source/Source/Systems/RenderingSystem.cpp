@@ -134,15 +134,6 @@ Texture2DHandle RenderingSystem::Create2DTexture(const TextureData &textureData)
 }
 
 /*
-*	Creates and returns a cube map texture.
-*/
-TextureCubeMapHandle RenderingSystem::CreateCubeMapTexture(const char *RESTRICT frontTexturePath, const char *RESTRICT backTexturePath, const char *RESTRICT upTexturePath, const char *RESTRICT downTexturePath, const char *RESTRICT rightTexturePath, const char *RESTRICT leftTexturePath) const NOEXCEPT
-{
-	//Create the cube map via the Vulkan rendering system.
-	return VulkanRenderingSystem::Instance->CreateCubeMapTexture(frontTexturePath, backTexturePath, upTexturePath, downTexturePath, rightTexturePath, leftTexturePath);
-}
-
-/*
 *	Creates and returns a uniform buffer.
 */
 UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT

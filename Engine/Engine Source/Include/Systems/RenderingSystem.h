@@ -108,11 +108,6 @@ public:
 	Texture2DHandle Create2DTexture(const TextureData &textureData) const NOEXCEPT;
 
 	/*
-	*	Creates and returns a cube map texture.
-	*/
-	TextureCubeMapHandle CreateCubeMapTexture(const char *RESTRICT frontTexturePath, const char *RESTRICT backTexturePath, const char *RESTRICT upTexturePath, const char *RESTRICT downTexturePath, const char *RESTRICT rightTexturePath, const char *RESTRICT leftTexturePath) const NOEXCEPT;
-
-	/*
 	*	Creates and returns a uniform buffer.
 	*/
 	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;

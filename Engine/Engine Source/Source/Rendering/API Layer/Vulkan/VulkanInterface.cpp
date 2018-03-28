@@ -225,19 +225,6 @@ RESTRICTED VulkanBuffer* VulkanInterface::CreateBuffer(const void *RESTRICT data
 /*
 *	Creates and returns a cube map texture.
 */
-RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const uint32 width, const uint32 height, const byte *RESTRICT *RESTRICT textureData) NOEXCEPT
-{
-	VulkanCubeMapTexture *RESTRICT newCubeMapTexture = new VulkanCubeMapTexture;
-	newCubeMapTexture->Initialize(width, height, textureData);
-
-	vulkanCubeMapTextures.EmplaceSlow(newCubeMapTexture);
-
-	return newCubeMapTexture;
-}
-
-/*
-*	Creates and returns a cube map texture.
-*/
 RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT
 {
 	VulkanCubeMapTexture *RESTRICT newCubeMapTexture = new VulkanCubeMapTexture;

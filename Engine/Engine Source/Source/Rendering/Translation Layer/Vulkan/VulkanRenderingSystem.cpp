@@ -445,40 +445,6 @@ Texture2DHandle VulkanRenderingSystem::Create2DTexture(const TextureData &textur
 }
 
 /*
-*	Creates and returns a cube map texture.
-*/
-TextureCubeMapHandle VulkanRenderingSystem::CreateCubeMapTexture(const char *RESTRICT frontTexturePath, const char *RESTRICT backTexturePath, const char *RESTRICT upTexturePath, const char *RESTRICT downTexturePath, const char *RESTRICT rightTexturePath, const char *RESTRICT leftTexturePath) const NOEXCEPT
-{
-	//Load all textures.
-	byte *RESTRICT textureData[6];
-
-	uint16 width = 0;
-	uint16 height = 0;
-	uint8 numberOfChannels = 0;
-
-	TextureLoader::LoadTexture(frontTexturePath, width, height, numberOfChannels, &textureData[0]);
-	TextureLoader::LoadTexture(backTexturePath, width, height, numberOfChannels, &textureData[1]);
-	TextureLoader::LoadTexture(upTexturePath, width, height, numberOfChannels, &textureData[2]);
-	TextureLoader::LoadTexture(downTexturePath, width, height, numberOfChannels, &textureData[3]);
-	TextureLoader::LoadTexture(rightTexturePath, width, height, numberOfChannels, &textureData[4]);
-	TextureLoader::LoadTexture(leftTexturePath, width, height, numberOfChannels, &textureData[5]);
-
-	//Create the Vulkan 2D texture.
-	VulkanCubeMapTexture *RESTRICT newCubeMapTexture = VulkanInterface::Instance->CreateCubeMapTexture(static_cast<uint32>(width), static_cast<uint32>(height), reinterpret_cast<const byte *RESTRICT *RESTRICT>(&textureData));
-
-	//Free the texture.
-	TextureLoader::FreeTexture(textureData[0]);
-	TextureLoader::FreeTexture(textureData[1]);
-	TextureLoader::FreeTexture(textureData[2]);
-	TextureLoader::FreeTexture(textureData[3]);
-	TextureLoader::FreeTexture(textureData[4]);
-	TextureLoader::FreeTexture(textureData[5]);
-
-	//Return the texture.
-	return static_cast<TextureCubeMapHandle>(newCubeMapTexture);
-}
-
-/*
 *	Creates a uniform buffer and returns the identifier for the uniform buffer.
 */
 UniformBufferHandle VulkanRenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT

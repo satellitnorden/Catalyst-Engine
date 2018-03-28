@@ -444,9 +444,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\TextureDataContainer.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\TextureLoader.h">
-      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\WaterMaterial.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
@@ -678,9 +675,6 @@
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\PhysicalModel.cpp">
-      <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\TextureLoader.cpp">
       <Filter>Engine Source\Rendering\Engine Layer\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Window.cpp">
