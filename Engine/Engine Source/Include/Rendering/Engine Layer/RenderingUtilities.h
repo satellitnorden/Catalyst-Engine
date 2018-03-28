@@ -32,8 +32,8 @@ namespace RenderingUtilities
 				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(i) / static_cast<float>(resolution))) * (terrainUniformData.terrainSize * 0.5f) + terrainUniformData.terrainPosition.X);
 				vertices.EmplaceFast(terrainProperties.At(xTextureCoordinate, yTextureCoordinate).W * terrainUniformData.terrainHeight);
 				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(j) / static_cast<float>(resolution))) * (terrainUniformData.terrainSize * 0.5f) + terrainUniformData.terrainPosition.Z);
-				vertices.EmplaceFast(yTextureCoordinate);
 				vertices.EmplaceFast(xTextureCoordinate);
+				vertices.EmplaceFast(yTextureCoordinate);
 
 				if (i != resolution && j != resolution)
 				{

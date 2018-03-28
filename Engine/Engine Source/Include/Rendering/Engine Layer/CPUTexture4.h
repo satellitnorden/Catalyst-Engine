@@ -66,7 +66,7 @@ public:
 	*/
 	const Vector4& At(const uint64 xIndex, const uint64 yIndex) const NOEXCEPT
 	{
-		return data[(xIndex * height) + yIndex];
+		return data[(yIndex * width) + xIndex];
 	}
 
 	/*
@@ -74,7 +74,7 @@ public:
 	*/
 	Vector4& At(const uint64 xIndex, const uint64 yIndex) NOEXCEPT
 	{
-		return data[(xIndex * height) + yIndex];
+		return data[(yIndex * width) + xIndex];
 	}
 
 	/*
@@ -118,10 +118,10 @@ public:
 		const uint64 xTopRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(width)) + xModifier, 0, width - 1) };
 		const uint64 yTopRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(height)) + yModifier, 0, height - 1) };
 
-		const Vector4 &bottomLeftValue{ data[(xBottomLeftCoordinate * height) + yBottomLeftCoordinate] };
-		const Vector4 &bottomRightValue{ data[(xBottomRightCoordinate * height) + yBottomRightCoordinate] };
-		const Vector4 &topLeftValue{ data[(xTopLeftCoordinate * height) + yTopLeftCoordinate ] };
-		const Vector4 &topRightValue{ data[(xTopRightCoordinate * height) + yTopRightCoordinate] };
+		const Vector4 &bottomLeftValue{ data[(yBottomLeftCoordinate * width) + xBottomLeftCoordinate] };
+		const Vector4 &bottomRightValue{ data[(yBottomRightCoordinate * width) + xBottomRightCoordinate] };
+		const Vector4 &topLeftValue{ data[(yTopLeftCoordinate * width) + xTopLeftCoordinate ] };
+		const Vector4 &topRightValue{ data[(yTopRightCoordinate * width) + xTopRightCoordinate] };
 
 		const Vector4 mixA{ CatalystMath::LinearlyInterpolate(bottomLeftValue, topLeftValue, yFractional) };
 		const Vector4 mixB{ CatalystMath::LinearlyInterpolate(bottomRightValue, topRightValue, yFractional) };

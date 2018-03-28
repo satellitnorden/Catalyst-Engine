@@ -81,8 +81,7 @@ public:
 			{
 				for (uint32 k = 0; k < outputResolution; ++k)
 				{
-					/*
-					Vector3 position{ CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, static_cast<float>(j) / static_cast<float>(outputResolution)), CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, static_cast<float>(k) / static_cast<float>(outputResolution)), -1.0f };
+					Vector3 position{ GetPositionVector(i, static_cast<float>(j) / static_cast<float>(outputResolution), static_cast<float>(k) / static_cast<float>(outputResolution)) };
 					position.Normalize();
 
 					Vector2 textureCoordinate{ CatalystMath::ArctangentRadians(position.Z, position.X), CatalystMath::ArcsineRadians(position.Y) };
@@ -90,10 +89,6 @@ public:
 					textureCoordinate += 0.5f;
 
 					diffuseOutputTextures[i].At(j, k) = hdrTexture.At(textureCoordinate);
-					*/
-
-					//diffuseOutputTextures[i].At(j, k) = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-					diffuseOutputTextures[i].At(j, k) = hdrTexture.At(Vector2(static_cast<float>(j) / static_cast<float>(outputResolution), 1.0f - static_cast<float>(k) / static_cast<float>(outputResolution)));
 				}
 			}
 		}
@@ -106,6 +101,25 @@ public:
 
 		//Close the file.
 		file.Close();
+	}
+
+private:
+
+	/*
+	*	Given an index and two weights, return the corresponding position vector.
+	*/
+	static Vector3 GetPositionVector(const uint8 index, const float xWeight, const float yWeight) NOEXCEPT
+	{
+		switch (index)
+		{
+			default: return Vector3();
+			case 0: return Vector3(-1.0f, CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight));
+			case 1: return Vector3(1.0f, CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystMath::LinearlyInterpolate(1.0f, -1.0f, xWeight));
+			case 2: return Vector3(CatalystMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), -1.0f, CatalystMath::LinearlyInterpolate(1.0f, -1.0f, yWeight)); //Up.
+			case 3: return Vector3(CatalystMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), 1.0f, CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight)); //Down.
+			case 4: return Vector3(CatalystMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), -1.0f);
+			case 5: return Vector3(CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight), CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), 1.0f);
+		}
 	}
 
 };

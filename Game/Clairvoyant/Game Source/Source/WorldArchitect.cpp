@@ -82,7 +82,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Load the resource collection file.
 	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc");
-	//RenderingSystem::Instance->SetActiveSkyBox(ResourceLoader::GetEnvironmentMaterial(0).diffuseTexture);
+	RenderingSystem::Instance->SetActiveSkyBox(ResourceLoader::GetEnvironmentMaterial(0).diffuseTexture);
 
 	//Load the terrain material data.
 	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(4) };
@@ -204,7 +204,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(256, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
+	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, TERRAIN_HEIGHT, TERRAIN_SIZE, TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
 	//Load the water material.
 	WaterMaterial waterMaterial{ ResourceLoader::GetWaterMaterial(5) };
