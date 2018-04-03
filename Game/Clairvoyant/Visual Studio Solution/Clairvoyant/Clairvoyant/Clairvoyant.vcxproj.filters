@@ -130,6 +130,30 @@
     <Filter Include="Engine Source\Sound\Include">
       <UniqueIdentifier>{3505dde2-9409-493e-b14e-b14d64ec5762}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Engine Core\Containers">
+      <UniqueIdentifier>{5eafd3ef-58e1-4282-b76b-534c99405447}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Engine Core\Containers\Include">
+      <UniqueIdentifier>{3145d445-7df4-46fa-b203-ae150ae4af6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Engine Core\Utilities">
+      <UniqueIdentifier>{9e546c69-ddbf-4a61-936a-851c986ad714}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Engine Core\Utilities\Include">
+      <UniqueIdentifier>{128a7b90-227d-4a74-a2aa-e681ba1bcc10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Engine Core\Algorithms">
+      <UniqueIdentifier>{ab9d3749-35b3-42bc-b27b-b88faac131e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Engine Core\Algorithms\Include">
+      <UniqueIdentifier>{59edbda7-72eb-4539-8870-f4bd27e0d3e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Engine Core\Tools">
+      <UniqueIdentifier>{ebe4cb0b-4b6b-470d-a952-60009c20a34c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Engine Core\Tools\Include">
+      <UniqueIdentifier>{f09ea1b8-fdf0-46cc-9d62-bc4baa9c85e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantGameSystem.h">
@@ -204,19 +228,10 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\DeltaTimer.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\DynamicArray.h">
-      <Filter>Engine Source\Engine Core\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\DynamicString.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\EngineCore.h">
-      <Filter>Engine Source\Engine Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Map.h">
-      <Filter>Engine Source\Engine Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\MemoryUtilities.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Optional.h">
@@ -229,9 +244,6 @@
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\SharedPointer.h">
-      <Filter>Engine Source\Engine Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\StaticArray.h">
       <Filter>Engine Source\Engine Core\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\UniquePointer.h">
@@ -539,6 +551,30 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\EnvironmentMaterial.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\HashString.h">
+      <Filter>Engine Source\Engine Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Containers\DynamicArray.h">
+      <Filter>Engine Source\Engine Core\Containers\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Containers\Map.h">
+      <Filter>Engine Source\Engine Core\Containers\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Containers\StaticArray.h">
+      <Filter>Engine Source\Engine Core\Containers\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Utilities\CompileTimeUtilities.h">
+      <Filter>Engine Source\Engine Core\Utilities\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Utilities\MemoryUtilities.h">
+      <Filter>Engine Source\Engine Core\Utilities\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Algorithms\HashAlgorithms.h">
+      <Filter>Engine Source\Engine Core\Algorithms\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Tools\HashTools.h">
+      <Filter>Engine Source\Engine Core\Tools\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

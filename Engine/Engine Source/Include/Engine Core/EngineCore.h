@@ -39,8 +39,12 @@
 //Core type aliases.
 #include <Engine Core/CoreTypeAliases.h>
 
+//Algorithms.
+//#include <Engine Core/Algorithms/HashAlgorithms.h>
+
 //Utilities.
-#include <Engine Core/MemoryUtilities.h>
+#include <Engine Core/Utilities/CompileTimeUtilities.h>
+#include <Engine Core/Utilities/MemoryUtilities.h>
 
 //Core types, forward declarations.
 enum class IOMode : uint8;
@@ -78,13 +82,13 @@ class UniquePointer;
 #include <Engine Core/BinaryFile.h>
 #include <Engine Core/Bitfield.h>
 #include <Engine Core/DeltaTimer.h>
-#include <Engine Core/DynamicArray.h>
+#include <Engine Core/Containers/DynamicArray.h>
 #include <Engine Core/DynamicString.h>
-#include <Engine Core/Map.h>
+#include <Engine Core/Containers/Map.h>
 #include <Engine Core/Optional.h>
 #include <Engine Core/Padding.h>
 #include <Engine Core/Pair.h>
-#include <Engine Core/StaticArray.h>
+#include <Engine Core/Containers/StaticArray.h>
 #include <Engine Core/UniquePointer.h>
 
 //The Catalyst project information.

@@ -176,8 +176,8 @@ public:
 	/*
 	*	Returns the modulo of two integers.
 	*/
-	template <class IntegerType>
-	constexpr static IntegerType Modulo(const IntegerType input, const IntegerType ceiling) NOEXCEPT
+	template <class FirstIntegerType, class SecondIntegerType>
+	constexpr static FirstIntegerType Modulo(const FirstIntegerType input, const SecondIntegerType ceiling) NOEXCEPT
 	{
 		return UNLIKELY(input >= ceiling) ? input % ceiling : input;
 	}
@@ -211,6 +211,17 @@ public:
 	static float RandomFloatInRange(const float minimum, const float maximum) NOEXCEPT
 	{
 		std::uniform_real_distribution<float> distribution(minimum, maximum);
+
+		return distribution(randomEngine);
+	}
+
+	/*
+	*	Given a range, returns an integer value in that range.
+	*/
+	template <class IntegerType>
+	static IntegerType RandomIntegerInRange(const IntegerType minimum, const IntegerType maximum) NOEXCEPT
+	{
+		std::uniform_int_distribution<IntegerType> distribution(minimum, maximum);
 
 		return distribution(randomEngine);
 	}

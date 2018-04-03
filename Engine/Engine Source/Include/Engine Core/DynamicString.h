@@ -145,13 +145,21 @@ public:
 	*/
 	bool operator<(const DynamicString &otherString) const NOEXCEPT
 	{
-		return false;
+		return strcmp(this->string, otherString.string) < 0;
 	}
 
 	/*
-	*	Returns the underlying C string.
+	*	Returns the underlying C string, const.
 	*/
 	RESTRICTED const char *const CString() const NOEXCEPT
+	{
+		return string;
+	}
+
+	/*
+	*	Returns the underlying C string, non-const.
+	*/
+	RESTRICTED char *const CString() NOEXCEPT
 	{
 		return string;
 	}
