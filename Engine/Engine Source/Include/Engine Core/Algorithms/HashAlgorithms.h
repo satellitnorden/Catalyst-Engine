@@ -13,7 +13,7 @@ namespace HashAlgorithms
 	static constexpr uint64 CatalystHash(const char *const RESTRICT data, const uint64 length) NOEXCEPT
 	{
 		//Defines the table of randomly pregenerated 64-bit values that is used in the mixing step.
-		constexpr uint64 randomTable[256]
+		constexpr uint64 randomTable[UINT8_MAXIMUM]
 		{
 			17560930965631933617,
 			9878389245448494471,
@@ -269,13 +269,13 @@ namespace HashAlgorithms
 			240062035296455618,
 			4719602276927472541,
 			5211034984813859333,
-			8501398579569192760,
+			8501398579569192760
 		};
 
 		//Set up the hash's initial value.
 		uint64 hash{ 0 };
 
-		//For each byte, mutate the hash.
+		//For each input byte, mutate the hash.
 		for (uint64 i = 0; i < length; ++i)
 		{
 			const byte input{ static_cast<byte>(data[i]) };
