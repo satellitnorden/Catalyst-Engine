@@ -13,6 +13,3 @@ enum class ResourceType : uint8
 	WaterMaterial,
 	NumberOfResourceTypes
 };
-
-//Type aliases.
-using ResourceID = uint64;

@@ -139,24 +139,28 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\TransformComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\WaterComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\WaterRenderComponent.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Algorithms\HashAlgorithms.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\BinaryFile.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\BitField.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\CatalystProjectInformation.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Containers\DynamicArray.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Containers\Map.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Containers\StaticArray.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\CoreDefines.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\CoreMacros.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\CoreTypeAliases.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\DeltaTimer.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\DynamicArray.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\DynamicString.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\EngineCore.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Map.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\MemoryUtilities.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\HashString.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Optional.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Padding.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Pair.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\SharedPointer.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\StaticArray.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Tools\HashTools.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\UniquePointer.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Utilities\CompileTimeUtilities.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Utilities\MemoryUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\CameraEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Entity.h" />
@@ -219,6 +223,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\CPUTexture4.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\EnvironmentMaterial.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\PhysicalMaterial.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\PhysicalModel.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\PhysicalVertex.h" />
@@ -230,7 +235,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\TerrainUniformData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\TextureData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\TextureDataContainer.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\TextureLoader.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\WaterMaterial.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\WaterUniformData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Window.h" />
@@ -238,6 +242,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Translation Layer\Vulkan\VulkanFrameData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Translation Layer\Vulkan\VulkanRenderingSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Translation Layer\Vulkan\VulkanTranslationUtilities.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\EnvironmentMaterialData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\PhysicalMaterialData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\PhysicalModelData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\ResourceLoader.h" />
@@ -332,7 +337,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanSwapChain.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanUniformBuffer.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\PhysicalModel.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\TextureLoader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Window.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Translation Layer\Vulkan\VulkanRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Resources\ResourceLoader.cpp" />
@@ -344,6 +348,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\TaskSystem.cpp" />
     <ClCompile Include="..\..\..\Resource Creator Source\Resource Creator\Source\ResourceCreatorMain.cpp" />
+    <ClCompile Include="..\..\..\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanCommandBuffer.inl" />

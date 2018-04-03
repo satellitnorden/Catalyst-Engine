@@ -5,6 +5,9 @@
 #include <ClairvoyantSettings.h>
 #include <ClairvoyantSoundGUIDs.h>
 
+//Engine core.
+#include <Engine Core/HashString.h>
+
 //Entities.
 #include <Entities/DirectionalLightEntity.h>
 #include <Entities/InstancedPhysicalEntity.h>
@@ -49,6 +52,16 @@ namespace WorldAchitectConstants
 	static constexpr float TERRAIN_HEIGHT{ 1'000.0f };
 	static constexpr float TERRAIN_SIZE{ 10'000.0f };
 	static constexpr float WATER_HEIGHT{ -1.0f };
+
+	//Resource ID's.
+	static constexpr HashString DEFAULT_ENVIRONMENT_MATERIAL{ "DefaultEnvironmentMaterial" };
+	static constexpr HashString STONE_MATERIAL{ "StoneMaterial" };
+	static constexpr HashString TREE_STOMP_MATERIAL{ "TreeStompMaterial" };
+	static constexpr HashString STONE_MODEL{ "StoneModel" };
+	static constexpr HashString TREE_STOMP_MODEL{ "TreeStompModel" };
+	static constexpr HashString DEFAULT_TERRAIN_MATERIAL{ "DefaultTerrainMaterial" };
+	static constexpr HashString DEFAULT_WATER_MATERIAL{ "DefaultWaterMaterial" };
+
 }
 
 /*
@@ -78,10 +91,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Load the resource collection file.
 	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc");
-	RenderingSystem::Instance->SetActiveSkyBox(ResourceLoader::GetEnvironmentMaterial(0).diffuseTexture);
+	RenderingSystem::Instance->SetActiveSkyBox(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::DEFAULT_ENVIRONMENT_MATERIAL).diffuseTexture);
 
 	//Load the terrain material data.
-	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(4) };
+	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(WorldAchitectConstants::DEFAULT_TERRAIN_MATERIAL) };
 
 	//Create the terrain properties!
 	CPUTexture4 terrainProperties{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
@@ -203,17 +216,17 @@ void WorldArchitect::Initialize() NOEXCEPT
 	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, WorldAchitectConstants::TERRAIN_HEIGHT, WorldAchitectConstants::TERRAIN_SIZE, WorldAchitectConstants::TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
 	//Load the water material.
-	WaterMaterial waterMaterial{ ResourceLoader::GetWaterMaterial(5) };
+	WaterMaterial waterMaterial{ ResourceLoader::GetWaterMaterial(WorldAchitectConstants::DEFAULT_WATER_MATERIAL) };
 
 	//Create the water.
 	WaterEntity *RESTRICT water = EntitySystem::Instance->CreateEntity<WaterEntity>();
 	water->Initialize(waterMaterial, WaterUniformData(WorldAchitectConstants::TERRAIN_SIZE, 250.0f, Vector3(0.0f, 0.0f, 0.0f)));
 
 	//Create the stone model.
-	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(2) };
+	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_MODEL) };
 
 	//Create the stone material.
-	PhysicalMaterial stoneMaterial{ ResourceLoader::GetPhysicalMaterial(0) };
+	PhysicalMaterial stoneMaterial{ ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_MATERIAL) };
 
 	stoneModel.SetMaterial(stoneMaterial);
 
@@ -256,10 +269,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 	stones->Initialize(stoneModel, stoneTransformations);
 
 	//Create the tree stomp model.
-	PhysicalModel treeStompModel{ ResourceLoader::GetPhysicalModel(3) };
+	PhysicalModel treeStompModel{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::TREE_STOMP_MODEL) };
 
 	//Create the tree stomp material.
-	PhysicalMaterial treeStompMaterial{ ResourceLoader::GetPhysicalMaterial(1) };
+	PhysicalMaterial treeStompMaterial{ ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::TREE_STOMP_MATERIAL) };
 
 	treeStompModel.SetMaterial(treeStompMaterial);
 

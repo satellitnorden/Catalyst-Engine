@@ -2,6 +2,7 @@
 
 //Engine core.
 #include <Engine Core/EngineCore.h>
+#include <Engine Core/HashString.h>
 
 //Math.
 #include <Math/CatalystMath.h>
@@ -39,8 +40,8 @@ public:
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
-		const uint64 resourceID{ std::strtoull(arguments[3], nullptr, 0) };
-		file.Write(&resourceID, sizeof(uint64));
+		const HashString resourceID{ arguments[3] };
+		file.Write(&resourceID, sizeof(HashString));
 
 		//Load the model.
 		DynamicArray<PhysicalVertex> vertices;

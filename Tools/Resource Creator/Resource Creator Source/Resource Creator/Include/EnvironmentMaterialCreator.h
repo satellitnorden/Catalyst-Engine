@@ -2,6 +2,7 @@
 
 //Engine core.
 #include <Engine Core/EngineCore.h>
+#include <Engine Core/HashString.h>
 
 //Math.
 #include <Math/Vector2.h>
@@ -45,8 +46,8 @@ public:
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
-		const ResourceID resourceID{ std::strtoull(arguments[3], nullptr, 0) };
-		file.Write(&resourceID, sizeof(ResourceID));
+		const HashString resourceID{ arguments[3] };
+		file.Write(&resourceID, sizeof(HashString));
 
 		//Load the texture.
 		int32 width, height, numberOfChannels;

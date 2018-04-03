@@ -30,6 +30,9 @@
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\ResourceCollectionCreator.h">
       <Filter>Resource Creator Source\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\EnvironmentMaterialCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\CameraComponent.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
@@ -75,6 +78,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\WaterRenderComponent.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Algorithms\HashAlgorithms.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\BinaryFile.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
@@ -82,6 +88,15 @@
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\CatalystProjectInformation.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Containers\DynamicArray.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Containers\Map.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Containers\StaticArray.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\CoreDefines.h">
@@ -96,19 +111,13 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\DeltaTimer.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\DynamicArray.h">
-      <Filter>Engine Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\DynamicString.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\EngineCore.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Map.h">
-      <Filter>Engine Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\MemoryUtilities.h">
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\HashString.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Optional.h">
@@ -123,10 +132,16 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\SharedPointer.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\StaticArray.h">
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Tools\HashTools.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\UniquePointer.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Utilities\CompileTimeUtilities.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Utilities\MemoryUtilities.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\CameraEntity.h">
@@ -315,6 +330,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\CPUTexture4.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\EnvironmentMaterial.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\PhysicalMaterial.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
@@ -348,9 +366,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\TextureDataContainer.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\TextureLoader.h">
-      <Filter>Engine Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\WaterMaterial.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
@@ -370,6 +385,9 @@
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Translation Layer\Vulkan\VulkanTranslationUtilities.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\EnvironmentMaterialData.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\PhysicalMaterialData.h">
@@ -497,9 +515,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Tools\MicroBenchmarker.h">
       <Filter>Engine Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\EnvironmentMaterialCreator.h">
-      <Filter>Resource Creator Source\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -638,9 +653,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\PhysicalModel.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\TextureLoader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Window.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -670,6 +682,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\TaskSystem.cpp">
       <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp">
+      <Filter>Resource Creator Source\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

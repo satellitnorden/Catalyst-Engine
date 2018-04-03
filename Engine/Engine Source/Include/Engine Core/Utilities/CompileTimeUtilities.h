@@ -14,4 +14,5 @@ namespace CompileTimeUtilities
 
 		return length;
 	}
+
 }

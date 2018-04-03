@@ -23,14 +23,19 @@ class HashString final
 public:
 
 	/*
-	*	Default constructor - prohibited, must be constructed with the proper arguments.
+	*	Default constructor.
 	*/
-	constexpr HashString() NOEXCEPT = delete;
+	constexpr HashString() NOEXCEPT
+		:
+		hash(0)
+	{
+
+	}
 
 	/*
 	*	Constructor taking a string.
 	*/
-	constexpr HashString(const char *RESTRICT string) NOEXCEPT
+	constexpr HashString(const char *const RESTRICT string) NOEXCEPT
 		:
 #if defined(HASHING_ALGORITHM_CATALYST)
 		hash(HashAlgorithms::CatalystHash(string, CompileTimeUtilities::StringLength(string)))
@@ -51,6 +56,14 @@ public:
 		hash(initialHash)
 	{
 
+	}
+
+	/*
+	*	Equal operator overload.
+	*/
+	constexpr bool operator==(const HashString otherHashString) const NOEXCEPT
+	{
+		return this->hash == otherHashString.hash;
 	}
 
 	/*

@@ -1,5 +1,8 @@
 #pragma once
 
+//Engine core.
+#include <Engine Core/EngineCore.h>
+
 namespace HashAlgorithms
 {
 
@@ -7,10 +10,10 @@ namespace HashAlgorithms
 	*	Given arbitrary data and a length of the data, specified in bytes, returns a 64-bit hashed value.
 	*	Uses the Catalyst Engine's own hashing algorithm.
 	*/
-	static constexpr uint64 CatalystHash(const void *const RESTRICT data, const uint64 length) NOEXCEPT
+	static constexpr uint64 CatalystHash(const char *const RESTRICT data, const uint64 length) NOEXCEPT
 	{
 		//Defines the table of randomly pregenerated 64-bit values that is used in the mixing step.
-		static constexpr uint64 randomTable[256]
+		constexpr uint64 randomTable[256]
 		{
 			17560930965631933617,
 			9878389245448494471,
@@ -269,40 +272,37 @@ namespace HashAlgorithms
 			8501398579569192760,
 		};
 
-		//Treat the data as a stream of bytes.
-		const byte *const RESTRICT byteData{ reinterpret_cast<const byte *const RESTRICT>(data) };
-
 		//Set up the hash's initial value.
 		uint64 hash{ 0 };
 
 		//For each byte, mutate the hash.
 		for (uint64 i = 0; i < length; ++i)
 		{
-			const byte byte{ byteData[i] };
+			const byte input{ static_cast<byte>(data[i]) };
 
 			//Fill the hash bits up with data at the "beginning" and then shift those bits towards the "end",
 			//filling up the "beginning" with different bits based on the input byte.
-			hash += byte;
+			hash += input;
 			hash = hash << 3;
-			hash += byte ^ UINT8_MAXIMUM;
+			hash += input ^ UINT8_MAXIMUM;
 			hash = hash << 5;
-			hash += hash / byte;
+			hash += hash / input;
 			hash = hash << 7;
-			hash += hash * byte;
+			hash += hash * input;
 
 			//Shift the bits of the input byte a random number of steps to the left
 			//in the range of 0-64 and flip the bits of the hash at those positions.
-			hash ^= (static_cast<uint64>(byte) << (byte / 5));
-			hash ^= (static_cast<uint64>(byte) << ((byte ^ UINT8_MAXIMUM) / 6));
-			hash ^= (static_cast<uint64>(byte ^ UINT8_MAXIMUM) << (byte / 7));
-			hash ^= (static_cast<uint64>(byte ^ UINT8_MAXIMUM) << ((byte ^ UINT8_MAXIMUM) / 8));
+			hash ^= (static_cast<uint64>(input) << (input / 5));
+			hash ^= (static_cast<uint64>(input) << ((input ^ UINT8_MAXIMUM) / 6));
+			hash ^= (static_cast<uint64>(input ^ UINT8_MAXIMUM) << (input / 7));
+			hash ^= (static_cast<uint64>(input ^ UINT8_MAXIMUM) << ((input ^ UINT8_MAXIMUM) / 8));
 
 			//Use the input byte, as well as the current hash forced into a 0-256 range,
 			//as an index into the table of randomly pregenerated 64-bit values,
 			//and use that value to flip certain bits of the hash.
-			hash ^= randomTable[byte];
+			hash ^= randomTable[input];
 			hash ^= randomTable[hash % UINT8_MAXIMUM];
-			hash ^= randomTable[byte ^ UINT8_MAXIMUM];
+			hash ^= randomTable[input ^ UINT8_MAXIMUM];
 			hash ^= randomTable[hash % UINT8_MAXIMUM];
 		}
 

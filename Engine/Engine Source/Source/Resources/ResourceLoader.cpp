@@ -21,11 +21,11 @@
 #include <Systems/RenderingSystem.h>
 
 //Static variable definitions.
-Map<ResourceID, EnvironmentMaterial> ResourceLoader::environmentMaterials;
-Map<ResourceID, PhysicalMaterial> ResourceLoader::physicalMaterials;
-Map<ResourceID, PhysicalModel> ResourceLoader::physicalModels;
-Map<ResourceID, TerrainMaterial> ResourceLoader::terrainMaterials;
-Map<ResourceID, WaterMaterial> ResourceLoader::waterMaterials;
+Map<HashString, EnvironmentMaterial> ResourceLoader::environmentMaterials;
+Map<HashString, PhysicalMaterial> ResourceLoader::physicalMaterials;
+Map<HashString, PhysicalModel> ResourceLoader::physicalModels;
+Map<HashString, TerrainMaterial> ResourceLoader::terrainMaterials;
+Map<HashString, WaterMaterial> ResourceLoader::waterMaterials;
 
 /*
 *	Given a file path, load a resource collection.
@@ -104,8 +104,8 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 	EnvironmentMaterialData environmentMaterialData;
 
 	//Read the resource ID.
-	ResourceID resourceID;
-	file.Read(&resourceID, sizeof(ResourceID));
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
 
 	//Read the resolution of the environment material.
 	file.Read(&environmentMaterialData.resolution, sizeof(uint32));
@@ -132,8 +132,8 @@ void ResourceLoader::LoadPhysicalMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	PhysicalMaterialData physicalMaterialData;
 
 	//Read the resource ID.
-	ResourceID resourceID;
-	file.Read(&resourceID, sizeof(ResourceID));
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
 
 	//Read the number of mipmap levels.
 	file.Read(&physicalMaterialData.mipmapLevels, sizeof(uint8));
@@ -189,8 +189,8 @@ void ResourceLoader::LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	PhysicalModelData physicalModelData;
 
 	//Read the resource ID.
-	ResourceID resourceID;
-	file.Read(&resourceID, sizeof(ResourceID));
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
 
 	//Read the extent of the physical model.
 	file.Read(&physicalModelData.extent, sizeof(float));
@@ -224,8 +224,8 @@ void ResourceLoader::LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	TerrainMaterialData terrainMaterialData;
 
 	//Read the resource ID.
-	ResourceID resourceID;
-	file.Read(&resourceID, sizeof(ResourceID));
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
 
 	//Read the number of mipmap levels.
 	file.Read(&terrainMaterialData.mipmapLevels, sizeof(uint8));
@@ -258,8 +258,8 @@ void ResourceLoader::LoadWaterMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	WaterMaterialData waterMaterialData;
 
 	//Read the resource ID.
-	ResourceID resourceID;
-	file.Read(&resourceID, sizeof(ResourceID));
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
 
 	//Read the number of mipmap levels.
 	file.Read(&waterMaterialData.mipmapLevels, sizeof(uint8));

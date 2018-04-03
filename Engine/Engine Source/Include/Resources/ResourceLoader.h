@@ -2,6 +2,7 @@
 
 //Engine core.
 #include <Engine Core/EngineCore.h>
+#include <Engine Core/HashString.h>
 
 //Resources.
 #include <Resources/ResourcesCore.h>
@@ -26,44 +27,44 @@ public:
 	/*
 	*	Given a resource ID, return the corresponding environment material.
 	*/
-	static const EnvironmentMaterial& GetEnvironmentMaterial(const ResourceID resourceID) { return environmentMaterials[resourceID]; }
+	static const EnvironmentMaterial& GetEnvironmentMaterial(const HashString resourceID) { return environmentMaterials[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding physical material.
 	*/
-	static const PhysicalMaterial& GetPhysicalMaterial(const ResourceID resourceID) { return physicalMaterials[resourceID]; }
+	static const PhysicalMaterial& GetPhysicalMaterial(const HashString resourceID) { return physicalMaterials[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding physical model.
 	*/
-	static const PhysicalModel& GetPhysicalModel(const ResourceID resourceID) { return physicalModels[resourceID]; }
+	static const PhysicalModel& GetPhysicalModel(const HashString resourceID) { return physicalModels[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding terrain material.
 	*/
-	static const TerrainMaterial& GetTerrainMaterial(const ResourceID resourceID) { return terrainMaterials[resourceID]; }
+	static const TerrainMaterial& GetTerrainMaterial(const HashString resourceID) { return terrainMaterials[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding water material.
 	*/
-	static const WaterMaterial& GetWaterMaterial(const ResourceID resourceID) { return waterMaterials[resourceID]; }
+	static const WaterMaterial& GetWaterMaterial(const HashString resourceID) { return waterMaterials[resourceID]; }
 
 private:
 
 	//Container for all environment materials.
-	static Map<ResourceID, EnvironmentMaterial> environmentMaterials;
+	static Map<HashString, EnvironmentMaterial> environmentMaterials;
 
 	//Container for all physical materials.
-	static Map<ResourceID, PhysicalMaterial> physicalMaterials;
+	static Map<HashString, PhysicalMaterial> physicalMaterials;
 
 	//Container for all physical models.
-	static Map<ResourceID, PhysicalModel> physicalModels;
+	static Map<HashString, PhysicalModel> physicalModels;
 
 	//Container for all terrain materials.
-	static Map<ResourceID, TerrainMaterial> terrainMaterials;
+	static Map<HashString, TerrainMaterial> terrainMaterials;
 
 	//Container for all water materials.
-	static Map<ResourceID, WaterMaterial> waterMaterials;
+	static Map<HashString, WaterMaterial> waterMaterials;
 
 	/*
 	*	Given a file, load an environment material.

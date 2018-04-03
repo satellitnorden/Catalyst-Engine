@@ -2,6 +2,12 @@
 
 #pragma once
 
+//Engine Core.
+#include <Engine Core/HashString.h>
+
+//Math.
+#include <Math/CatalystMath.h>
+
 class HashTools final
 {
 
