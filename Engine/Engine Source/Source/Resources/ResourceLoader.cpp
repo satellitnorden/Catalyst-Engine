@@ -1,6 +1,9 @@
 //Header file.
 #include <Resources/ResourceLoader.h>
 
+//Multithreading.
+#include <Multithreading/Task.h>
+
 //Rendering.
 #include <Rendering/Engine Layer/EnvironmentMaterial.h>
 #include <Rendering/Engine Layer/PhysicalMaterial.h>
@@ -24,6 +27,7 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/SoundSystem.h>
+#include <Systems/TaskSystem.h>
 
 //Static variable definitions.
 Map<HashString, EnvironmentMaterial> ResourceLoader::environmentMaterials;
@@ -36,7 +40,19 @@ Map<HashString, WaterMaterial> ResourceLoader::waterMaterials;
 /*
 *	Given a file path, load a resource collection.
 */
-void ResourceLoader::LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT
+void ResourceLoader::LoadResourceCollection(char *RESTRICT filePath, Semaphore *const RESTRICT semaphore) NOEXCEPT
+{
+	//Launch the task.
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		ResourceLoader::LoadResourceCollectionInternal(static_cast<const char *const RESTRICT>(arguments));
+	}, filePath, semaphore));
+}
+
+/*
+*	Loads a resource collection, internal implementation.
+*/
+void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePath) NOEXCEPT
 {
 	//Load the file.
 	BinaryFile<IOMode::In> file{ filePath };
@@ -58,7 +74,7 @@ void ResourceLoader::LoadResourceCollection(const char *RESTRICT filePath) NOEXC
 			default:
 			{
 				PRINT_TO_CONSOLE("Undefined resource type.");
-				
+
 				BREAKPOINT;
 			}
 #endif

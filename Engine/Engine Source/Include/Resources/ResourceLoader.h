@@ -11,6 +11,7 @@
 class EnvironmentMaterial;
 class PhysicalMaterial;
 class PhysicalModel;
+class Semaphore;
 class SoundBank;
 class TerrainMaterial;
 class WaterMaterial;
@@ -22,8 +23,9 @@ public:
 
 	/*
 	*	Given a file path, load a resource collection.
+	*	The loading is done asynchronously, so the semaphore passed in will be signalled as soon as it is done.
 	*/
-	static void LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT;
+	static void LoadResourceCollection(char *RESTRICT filePath, Semaphore *const RESTRICT semaphore) NOEXCEPT;
 
 	/*
 	*	Given a resource ID, return the corresponding environment material.
@@ -69,6 +71,11 @@ private:
 
 	//Container for all water materials.
 	static Map<HashString, WaterMaterial> waterMaterials;
+
+	/*
+	*	Loads a resource collection, internal implementation.
+	*/
+	static void LoadResourceCollectionInternal(const char *RESTRICT filePath) NOEXCEPT;
 
 	/*
 	*	Given a file, load an environment material.

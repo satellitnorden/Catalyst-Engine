@@ -85,16 +85,13 @@ WorldArchitect::~WorldArchitect() NOEXCEPT
 */
 void WorldArchitect::Initialize() NOEXCEPT
 {
+	//Load the resource collection file.
+	Semaphore resourceSemaphore;
+	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc", &resourceSemaphore);
+
 	//Create the sun!
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	sun->SetIntensity(10.0f);
-
-	//Load the resource collection file.
-	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc");
-	RenderingSystem::Instance->SetActiveSkyBox(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::DEFAULT_ENVIRONMENT_MATERIAL).diffuseTexture);
-
-	//Load the terrain material data.
-	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(WorldAchitectConstants::DEFAULT_TERRAIN_MATERIAL) };
 
 	//Create the terrain properties!
 	CPUTexture4 terrainProperties{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
@@ -208,6 +205,15 @@ void WorldArchitect::Initialize() NOEXCEPT
 			}
 		}
 	}
+
+	//Wait for the resources to finish loading.
+	resourceSemaphore.WaitFor();
+
+	//Set the active skybox.
+	RenderingSystem::Instance->SetActiveSkyBox(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::DEFAULT_ENVIRONMENT_MATERIAL).diffuseTexture);
+
+	//Get the terrain material data.
+	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(WorldAchitectConstants::DEFAULT_TERRAIN_MATERIAL) };
 
 	Texture2DHandle layerWeightsTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(layerWeights), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
