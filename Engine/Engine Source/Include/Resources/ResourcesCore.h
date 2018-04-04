@@ -9,6 +9,7 @@ enum class ResourceType : uint8
 	EnvironmentMaterial,
 	PhysicalMaterial,
 	PhysicalModel,
+	SoundBank,
 	TerrainMaterial,
 	WaterMaterial,
 	NumberOfResourceTypes

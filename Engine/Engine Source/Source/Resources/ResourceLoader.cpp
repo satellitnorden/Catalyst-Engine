@@ -14,16 +14,22 @@
 #include <Resources/PhysicalModelData.h>
 #include <Resources/ResourceLoaderUtilities.h>
 #include <Resources/ResourcesCore.h>
+#include <Resources/SoundBankData.h>
 #include <Resources/TerrainMaterialData.h>
 #include <Resources/WaterMaterialData.h>
 
+//Sound.
+#include <Sound/SoundBank.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/SoundSystem.h>
 
 //Static variable definitions.
 Map<HashString, EnvironmentMaterial> ResourceLoader::environmentMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::physicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::physicalModels;
+Map<HashString, SoundBank> ResourceLoader::soundBanks;
 Map<HashString, TerrainMaterial> ResourceLoader::terrainMaterials;
 Map<HashString, WaterMaterial> ResourceLoader::waterMaterials;
 
@@ -74,6 +80,13 @@ void ResourceLoader::LoadResourceCollection(const char *RESTRICT filePath) NOEXC
 			case ResourceType::PhysicalModel:
 			{
 				LoadPhysicalModel(file);
+
+				break;
+			}
+
+			case ResourceType::SoundBank:
+			{
+				LoadSoundBank(file);
 
 				break;
 			}
@@ -213,6 +226,31 @@ void ResourceLoader::LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the physical model via the rendering system.
 	RenderingSystem::Instance->CreatePhysicalModel(physicalModelData, physicalModels[resourceID]);
+}
+
+/*
+*	Given a file, load a sound bank.
+*/
+void ResourceLoader::LoadSoundBank(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the sound bank data in the sound bank data structure.
+	SoundBankData soundBankData;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the sound bank size.
+	file.Read(&soundBankData.size, sizeof(uint64));
+
+	//Resize the sound bank data accordingly.
+	soundBankData.data.UpsizeFast(soundBankData.size);
+
+	//Read the sound bank data.
+	file.Read(soundBankData.data.Data(), soundBankData.size);
+
+	//Load the sound bank via the sound system.
+	SoundSystem::Instance->LoadSoundBank(soundBankData, soundBanks[resourceID]);
 }
 
 /*

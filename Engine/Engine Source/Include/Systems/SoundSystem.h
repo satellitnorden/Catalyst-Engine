@@ -16,6 +16,8 @@
 class CameraEntity;
 class Sound2DEntity;
 class Sound3DEntity;
+class SoundBank;
+class SoundBankData;
 
 class SoundSystem final
 {
@@ -61,9 +63,9 @@ public:
 	void SetActiveListener(const CameraEntity *const RESTRICT newActiveListener) NOEXCEPT;
 
 	/*
-	*	Loads an FMOD bank into memory.
+	*	Loads a sound bank into memory.
 	*/
-	void LoadBank(const char *const RESTRICT filePath) NOEXCEPT;
+	void LoadSoundBank(const SoundBankData &soundBankData, SoundBank &soundBank) NOEXCEPT;
 
 	/*
 	*	Given an event GUID, returns the event description.

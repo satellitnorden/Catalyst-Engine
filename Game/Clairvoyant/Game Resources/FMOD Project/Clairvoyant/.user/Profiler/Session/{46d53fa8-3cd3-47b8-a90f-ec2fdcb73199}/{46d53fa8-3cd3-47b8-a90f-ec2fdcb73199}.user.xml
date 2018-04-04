@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="ProfilerSession" id="{46d53fa8-3cd3-47b8-a90f-ec2fdcb73199}">
+        <relationship name="uiLastParameterSelection">
+            <destination>{b952b323-7413-4647-b211-407a8b8e27d7}</destination>
+        </relationship>
+    </object>
+    <object class="MasterTrack" id="{6e60477e-662e-45f7-9b91-3275bb4d0d57}"/>
+    <object class="EventAutomatableProperties" id="{844025da-08c1-4d44-97e4-476a95658fa5}"/>
+    <object class="MarkerTrack" id="{0662e0f8-c2c8-4c66-9778-3422bf81b26e}"/>
+    <object class="Timeline" id="{b952b323-7413-4647-b211-407a8b8e27d7}">
+        <property name="uiLastRulerScaleRatio">
+            <value>0.024834437086092714</value>
+        </property>
+    </object>
+    <object class="ProfilerTrack" id="{071fe47e-6c5e-4e89-a2bb-55bc4a72b073}"/>
+    <object class="ProfilerTrack" id="{36dcc2c4-8c1f-4b35-a411-33f8eeaa561c}"/>
+    <object class="EventMixerMaster" id="{7b552c4a-8b2a-487b-adb0-58eb54867579}"/>
+    <object class="ProfilerRecordingMarker" id="{01f13fe9-e579-4bec-83e9-f6f091542bf9}"/>
+    <object class="ProfilerGraph" id="{3350032f-7e17-42e8-82c3-04b2028291f8}"/>
+    <object class="ProfilerGraph" id="{45bcbd82-1e1d-483d-bce2-a89c08e226e9}"/>
+    <object class="ProfilerGraph" id="{2fbd4104-4eaf-460a-bcee-d31860704253}"/>
+    <object class="ProfilerGraph" id="{32ca6c8d-3dd8-4d3d-8fbc-743859fdff46}"/>
+    <object class="ProfilerGraph" id="{d45875d5-75dd-4b79-8863-3402056adcd4}"/>
+    <object class="ProfilerGraph" id="{0772502c-e199-4b7e-8952-e0ee18a33f72}"/>
+    <object class="MixerBusEffectChain" id="{8bd24fd6-33b9-4b36-b747-93d37685196f}"/>
+    <object class="MixerBusPanner" id="{c80300d9-d0f0-4426-849b-91258311baf4}"/>
+    <object class="MixerBusFader" id="{c561e870-555b-40bc-88c2-276c3828b8c2}"/>
+</objects>

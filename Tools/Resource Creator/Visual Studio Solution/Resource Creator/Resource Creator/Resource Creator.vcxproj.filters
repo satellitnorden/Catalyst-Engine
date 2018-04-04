@@ -516,6 +516,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Tools\MicroBenchmarker.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\SoundBankCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Resource Creator Source\Resource Creator\Source\ResourceCreatorMain.cpp">

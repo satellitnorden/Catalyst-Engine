@@ -12,7 +12,11 @@
 //Multithreading.
 #include <Multithreading/Task.h>
 
+//Resources.
+#include <Resources/SoundBankData.h>
+
 //Sound.
+#include <Sound/SoundBank.h>
 #include <Sound/SoundCore.h>
 
 //Systems.
@@ -122,17 +126,12 @@ void SoundSystem::SetActiveListener(const CameraEntity *const RESTRICT newActive
 }
 
 /*
-*	Loads an FMOD bank into memory.
+*	Loads a sound bank into memory.
 */
-void SoundSystem::LoadBank(const char *const RESTRICT filePath) NOEXCEPT
+void SoundSystem::LoadSoundBank(const SoundBankData &soundBankData, SoundBank &soundBank) NOEXCEPT
 {
-	//Load the bank into memory.
-	FMOD::Studio::Bank *RESTRICT newBank;
-	FMOD_ERROR_CHECK(studioSystem->loadBankFile(filePath, FMOD_STUDIO_LOAD_BANK_NORMAL, &newBank));
-
-	FMOD_ERROR_CHECK(newBank->loadSampleData());
-
-	banks.EmplaceSlow(newBank);
+	//Load the FMOD bank.
+	FMOD_ERROR_CHECK(studioSystem->loadBankMemory(reinterpret_cast<const char *RESTRICT>(soundBankData.data.Data()), static_cast<int>(soundBankData.size), FMOD_STUDIO_LOAD_MEMORY, 0, &soundBank.bank));
 }
 
 /*

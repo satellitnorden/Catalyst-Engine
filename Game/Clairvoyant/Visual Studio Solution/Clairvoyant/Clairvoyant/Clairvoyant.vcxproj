@@ -239,8 +239,10 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\ResourceLoader.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\ResourceLoaderUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\ResourcesCore.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\SoundBankData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\TerrainMaterialData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\WaterMaterialData.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundBank.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EngineSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.h" />

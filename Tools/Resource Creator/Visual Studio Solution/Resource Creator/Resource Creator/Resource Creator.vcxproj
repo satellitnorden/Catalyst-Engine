@@ -289,6 +289,7 @@
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\PhysicalMaterialCreator.h" />
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\PhysicalModelCreator.h" />
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\ResourceCollectionCreator.h" />
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\SoundBankCreator.h" />
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\TerrainMaterialCreator.h" />
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\WaterMaterialCreator.h" />
   </ItemGroup>

@@ -576,6 +576,12 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Tools\HashTools.h">
       <Filter>Engine Source\Engine Core\Tools\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\SoundBankData.h">
+      <Filter>Engine Source\Resources\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundBank.h">
+      <Filter>Engine Source\Sound\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">

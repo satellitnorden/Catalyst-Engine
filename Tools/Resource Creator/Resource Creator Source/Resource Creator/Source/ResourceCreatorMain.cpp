@@ -6,6 +6,7 @@
 #include <PhysicalMaterialCreator.h>
 #include <PhysicalModelCreator.h>
 #include <ResourceCollectionCreator.h>
+#include <SoundBankCreator.h>
 #include <TerrainMaterialCreator.h>
 #include <WaterMaterialCreator.h>
 
@@ -30,6 +31,11 @@ int main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 	else if (strcmp(arguments[1], "PhysicalModel") == 0)
 	{
 		PhysicalModelCreator::CreatePhysicalModel(argumentCount, arguments);
+	}
+
+	else if (strcmp(arguments[1], "SoundBank") == 0)
+	{
+		SoundBankCreator::CreateSoundBank(argumentCount, arguments);
 	}
 
 	else if (strcmp(arguments[1], "TerrainMaterial") == 0)
