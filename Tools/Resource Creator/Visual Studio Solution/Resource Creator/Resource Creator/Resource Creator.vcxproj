@@ -306,7 +306,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\StaticPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\TerrainEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\WaterEntity.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\CatalystMath.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Vector2.cpp" />
@@ -352,6 +351,7 @@
     <ClCompile Include="..\..\..\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Vector3.inl" />
     <None Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanCommandBuffer.inl" />
     <None Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.inl" />
   </ItemGroup>

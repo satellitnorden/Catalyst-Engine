@@ -560,9 +560,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\WaterEntity.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\CatalystMath.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Matrix3.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -695,6 +692,9 @@
       <Filter>Engine Source</Filter>
     </None>
     <None Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.inl">
+      <Filter>Engine Source</Filter>
+    </None>
+    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Vector3.inl">
       <Filter>Engine Source</Filter>
     </None>
   </ItemGroup>

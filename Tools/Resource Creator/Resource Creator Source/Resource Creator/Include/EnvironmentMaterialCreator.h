@@ -5,6 +5,7 @@
 #include <Engine Core/HashString.h>
 
 //Math.
+#include <Math/CatalystMath.h>
 #include <Math/Vector2.h>
 #include <Math/Vector3.h>
 
@@ -65,8 +66,8 @@ public:
 		//Write the output resolution to the file.
 		file.Write(&outputResolution, sizeof(uint32));
 
-		//Create the diffuse output textures.
-		StaticArray<CPUTexture4, 6> diffuseOutputTextures
+		//Create the output textures.
+		StaticArray<CPUTexture4, 6> outputTextures
 		{
 			CPUTexture4(outputResolution),
 			CPUTexture4(outputResolution),
@@ -76,6 +77,7 @@ public:
 			CPUTexture4(outputResolution)
 		};
 
+		//Calculate the diffuse.
 		for (uint8 i = 0; i < 6; ++i)
 		{
 			for (uint32 j = 0; j < outputResolution; ++j)
@@ -89,7 +91,7 @@ public:
 					textureCoordinate *= EnvironmentMaterialCreatorConstants::INVERSE_ATAN;
 					textureCoordinate += 0.5f;
 
-					diffuseOutputTextures[i].At(j, k) = hdrTexture.At(textureCoordinate);
+					outputTextures[i].At(j, k) = hdrTexture.At(textureCoordinate);
 				}
 			}
 		}
@@ -97,7 +99,54 @@ public:
 		//Write the diffuse to the file.
 		for (uint8 i = 0; i < 6; ++i)
 		{
-			file.Write(diffuseOutputTextures[i].Data(), outputResolution * outputResolution * 4 * sizeof(float));
+			file.Write(outputTextures[i].Data(), outputResolution * outputResolution * 4 * sizeof(float));
+		}
+
+		//Calculate the diffuse irradiance.
+		for (uint8 i = 0; i < 6; ++i)
+		{
+			for (uint32 j = 0; j < outputResolution; ++j)
+			{
+				for (uint32 k = 0; k < outputResolution; ++k)
+				{
+					Vector3 finalIrradiance{ 0.0f, 0.0f, 0.0f };
+					Vector3 position{ GetPositionVector(i, static_cast<float>(j) / static_cast<float>(outputResolution), static_cast<float>(k) / static_cast<float>(outputResolution)) };
+					Vector3 normalDirection{ position };
+
+					Vector3 rightVector{ Vector3::CrossProduct(Vector3(0.0f, 1.0f, 0.0f), normalDirection) };
+					Vector3 upVector{ Vector3::CrossProduct(normalDirection, rightVector) };
+
+					float sampleDelta{ 0.025f };
+					float numberOfSamples{ 0.0f };
+
+					for (float phi = 0.0f; phi < (2.0f * CatalystMathConstants::PI); phi += sampleDelta)
+					{
+						for (float theta = 0.0f; theta < (0.5f * CatalystMathConstants::PI); theta += sampleDelta)
+						{
+							Vector3 tangentSample{ Vector3(CatalystMath::SineRadians(theta) * CatalystMath::CosineRadians(phi), CatalystMath::SineRadians(theta) * CatalystMath::SineRadians(phi), CatalystMath::CosineRadians(theta)) };
+							Vector3 sampleVector{ tangentSample.X * rightVector + tangentSample.Y * upVector + tangentSample.Z * normalDirection };
+
+							Vector2 textureCoordinate{ CatalystMath::ArctangentRadians(sampleVector.Z, sampleVector.X), CatalystMath::ArcsineRadians(sampleVector.Y) };
+							textureCoordinate *= EnvironmentMaterialCreatorConstants::INVERSE_ATAN;
+							textureCoordinate += 0.5f;
+
+							Vector4 sampledValue{ hdrTexture.At(textureCoordinate) };
+
+							finalIrradiance += Vector3(sampledValue.X, sampledValue.Y, sampledValue.Z) * CatalystMath::CosineRadians(theta) * CatalystMath::SineRadians(theta);
+
+							numberOfSamples += 1.0f;
+						}
+					}
+
+					outputTextures[i].At(j, k) = CatalystMathConstants::PI * finalIrradiance * (1.0f / numberOfSamples);
+				}
+			}
+		}
+
+		//Write the diffuse irradiance to the file.
+		for (uint8 i = 0; i < 6; ++i)
+		{
+			file.Write(outputTextures[i].Data(), outputResolution * outputResolution * 4 * sizeof(float));
 		}
 
 		//Close the file.

@@ -295,3 +295,6 @@ public:
 	Vector3 Rotated(const Vector3& rotationVector) const NOEXCEPT;
 
 };
+
+//Inline functions.
+#include <Math/Vector3.inl>
