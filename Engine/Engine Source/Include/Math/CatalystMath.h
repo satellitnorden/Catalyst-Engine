@@ -4,11 +4,16 @@
 #include <Engine Core/EngineCore.h>
 
 //Math.
-#include <Math/MathematicalConstants.h>
 #include <Math/Vector4.h>
 
-//Preprocessor defines.
-#define GAME_MATH_SINE_PRECISION 0.1f
+//Catalyst Math constants.
+namespace CatalystMathConstants
+{
+	constexpr float SINE_PRECISION{ 0.1f };
+	constexpr float DEGREES_TO_RADIANS{ 0.017'453f };
+	constexpr float PI{ 3.141'592f };
+	constexpr float RADIANS_TO_DEGREES{ 57.295'779f };
+}
 
 class CatalystMath final
 {
@@ -102,7 +107,7 @@ public:
 	*/
 	constexpr static float DegreesToRadians(const float number) NOEXCEPT
 	{
-		return number * DEGREES_TO_RADIANS;
+		return number * CatalystMathConstants::DEGREES_TO_RADIANS;
 	}
 
 	/*
@@ -202,7 +207,7 @@ public:
 	*/
 	constexpr static float RadiansToDegrees(const float number) NOEXCEPT
 	{
-		return number * RADIANS_TO_DEGREES;
+		return number * CatalystMathConstants::RADIANS_TO_DEGREES;
 	}
 
 	/*
