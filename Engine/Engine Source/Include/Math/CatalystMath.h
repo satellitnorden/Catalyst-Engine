@@ -210,6 +210,8 @@ public:
 	*/
 	static float RandomFloatInRange(const float minimum, const float maximum) NOEXCEPT
 	{
+		static thread_local std::mt19937 randomEngine;
+
 		std::uniform_real_distribution<float> distribution(minimum, maximum);
 
 		return distribution(randomEngine);
@@ -221,6 +223,8 @@ public:
 	template <class IntegerType>
 	static IntegerType RandomIntegerInRange(const IntegerType minimum, const IntegerType maximum) NOEXCEPT
 	{
+		static thread_local std::mt19937 randomEngine;
+
 		std::uniform_int_distribution<IntegerType> distribution(minimum, maximum);
 
 		return distribution(randomEngine);
@@ -329,13 +333,5 @@ public:
 	{
 		return tan(number);
 	}
-
-private:
-
-	//The random device used to generate random numbers.
-	static std::random_device randomDevice;
-
-	//The random engine used to generate random numbers.
-	static std::mt19937 randomEngine;
 
 };

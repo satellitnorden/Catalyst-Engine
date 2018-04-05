@@ -743,9 +743,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\RenderingSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\CatalystMath.cpp">
-      <Filter>Engine Source\Math\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\SoundSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
