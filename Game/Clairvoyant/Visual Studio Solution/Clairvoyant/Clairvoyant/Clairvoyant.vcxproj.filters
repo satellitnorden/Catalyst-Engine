@@ -154,6 +154,9 @@
     <Filter Include="Engine Source\Engine Core\Tools\Include">
       <UniqueIdentifier>{f09ea1b8-fdf0-46cc-9d62-bc4baa9c85e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Math\Inline">
+      <UniqueIdentifier>{087c9215-0d4f-4979-a05e-4e10afb30009}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantGameSystem.h">
@@ -765,6 +768,9 @@
     </None>
     <None Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.inl">
       <Filter>Engine Source\Systems\Inline</Filter>
+    </None>
+    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Vector3.inl">
+      <Filter>Engine Source\Math\Inline</Filter>
     </None>
   </ItemGroup>
 </Project>
