@@ -975,7 +975,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	waterPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
 	waterPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 	waterPipelineCreationParameters.depthTestEnable = VK_TRUE;
-	waterPipelineCreationParameters.depthWriteEnable = VK_TRUE;
+	waterPipelineCreationParameters.depthWriteEnable = VK_FALSE;
 	StaticArray<VulkanDescriptorSetLayout, 2> waterDescriptorSetLayouts
 	{
 		descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
