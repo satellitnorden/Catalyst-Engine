@@ -9,11 +9,18 @@
 #include <Math/Vector2.h>
 #include <Math/Vector3.h>
 
+//Multithreading.
+#include <Multithreading/Semaphore.h>
+#include <Multithreading/Task.h>
+
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture4.h>
 
 //Resources
 #include <Resources/ResourcesCore.h>
+
+//Systems.
+#include <Systems/TaskSystem.h>
 
 //Third party libraries.
 #include <stb_image.h>
@@ -66,8 +73,8 @@ public:
 		//Write the output resolution to the file.
 		file.Write(&outputResolution, sizeof(uint32));
 
-		//Create the output textures.
-		StaticArray<CPUTexture4, 6> outputTextures
+		//Create the diffuse output textures.
+		StaticArray<CPUTexture4, 6> diffuseOutputTextures
 		{
 			CPUTexture4(outputResolution),
 			CPUTexture4(outputResolution),
@@ -77,31 +84,87 @@ public:
 			CPUTexture4(outputResolution)
 		};
 
+		StaticArray<LayerCreationParameters, 6> diffuseLayerCreationParameters
+		{
+			LayerCreationParameters(0, outputResolution, diffuseOutputTextures[0], hdrTexture),
+			LayerCreationParameters(1, outputResolution, diffuseOutputTextures[1], hdrTexture),
+			LayerCreationParameters(2, outputResolution, diffuseOutputTextures[2], hdrTexture),
+			LayerCreationParameters(3, outputResolution, diffuseOutputTextures[3], hdrTexture),
+			LayerCreationParameters(4, outputResolution, diffuseOutputTextures[4], hdrTexture),
+			LayerCreationParameters(5, outputResolution, diffuseOutputTextures[5], hdrTexture),
+		};
+
 		//Calculate the diffuse.
+		StaticArray<Semaphore, 6> diffuseSemaphores;
+
 		for (uint8 i = 0; i < 6; ++i)
 		{
-			for (uint32 j = 0; j < outputResolution; ++j)
+			TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 			{
-				for (uint32 k = 0; k < outputResolution; ++k)
-				{
-					Vector3 position{ GetPositionVector(i, static_cast<float>(j) / static_cast<float>(outputResolution), static_cast<float>(k) / static_cast<float>(outputResolution)) };
-					position.Normalize();
+				const LayerCreationParameters &parameters{ *static_cast<LayerCreationParameters *const RESTRICT>(arguments) };
 
-					Vector2 textureCoordinate{ CatalystMath::ArctangentRadians(position.Z, position.X), CatalystMath::ArcsineRadians(position.Y) };
-					textureCoordinate *= EnvironmentMaterialCreatorConstants::INVERSE_ATAN;
-					textureCoordinate += 0.5f;
+				CreateDiffuseLayer(parameters);
+			}, &diffuseLayerCreationParameters[i], &diffuseSemaphores[i]));
+		}
 
-					outputTextures[i].At(j, k) = hdrTexture.At(textureCoordinate);
-				}
-			}
+		//Create the diffuse irradiance output textures.
+		StaticArray<CPUTexture4, 6> diffuseIrradianceOutputTextures
+		{
+			CPUTexture4(outputResolution),
+			CPUTexture4(outputResolution),
+			CPUTexture4(outputResolution),
+			CPUTexture4(outputResolution),
+			CPUTexture4(outputResolution),
+			CPUTexture4(outputResolution)
+		};
+
+		StaticArray<LayerCreationParameters, 6> diffuseIrradianceLayerCreationParameters
+		{
+			LayerCreationParameters(0, outputResolution, diffuseIrradianceOutputTextures[0], hdrTexture),
+			LayerCreationParameters(1, outputResolution, diffuseIrradianceOutputTextures[1], hdrTexture),
+			LayerCreationParameters(2, outputResolution, diffuseIrradianceOutputTextures[2], hdrTexture),
+			LayerCreationParameters(3, outputResolution, diffuseIrradianceOutputTextures[3], hdrTexture),
+			LayerCreationParameters(4, outputResolution, diffuseIrradianceOutputTextures[4], hdrTexture),
+			LayerCreationParameters(5, outputResolution, diffuseIrradianceOutputTextures[5], hdrTexture),
+		};
+
+		//Calculate the diffuse.
+		StaticArray<Semaphore, 6> diffuseIrradianceSemaphores;
+
+		for (uint8 i = 0; i < 6; ++i)
+		{
+			TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+			{
+				const LayerCreationParameters &parameters{ *static_cast<LayerCreationParameters *const RESTRICT>(arguments) };
+
+				CreateDiffuseIrradianceLayer(parameters);
+			}, &diffuseIrradianceLayerCreationParameters[i], &diffuseIrradianceSemaphores[i]));
 		}
 		
+		//Wait for all tasks to finish.
+		for (uint8 i = 0; i < 6; ++i)
+		{
+			diffuseSemaphores[i].WaitFor();
+		}
+
+		for (uint8 i = 0; i < 6; ++i)
+		{
+			diffuseIrradianceSemaphores[i].WaitFor();
+		}
+
 		//Write the diffuse to the file.
 		for (uint8 i = 0; i < 6; ++i)
 		{
-			file.Write(outputTextures[i].Data(), outputResolution * outputResolution * 4 * sizeof(float));
+			file.Write(diffuseOutputTextures[i].Data(), outputResolution * outputResolution * 4 * sizeof(float));
 		}
 
+		//Write the diffuse irradiance to the file.
+		for (uint8 i = 0; i < 6; ++i)
+		{
+			file.Write(diffuseIrradianceOutputTextures[i].Data(), outputResolution * outputResolution * 4 * sizeof(float));
+		}
+
+		/*
 		//Calculate the diffuse irradiance.
 		for (uint8 i = 0; i < 6; ++i)
 		{
@@ -148,12 +211,38 @@ public:
 		{
 			file.Write(outputTextures[i].Data(), outputResolution * outputResolution * 4 * sizeof(float));
 		}
+		*/
 
 		//Close the file.
 		file.Close();
 	}
 
 private:
+
+	/*
+	*	Definition for the layer creation parameters.
+	*/
+	class LayerCreationParameters final
+	{
+
+	public:
+
+		LayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, CPUTexture4 &initialOutputTexture, const CPUTexture4 &initialHdrTexture) NOEXCEPT
+			:
+			index(initialIndex),
+			outputResolution(initialOutputResolution),
+			outputTexture(initialOutputTexture),
+			hdrTexture(initialHdrTexture)
+		{
+
+		}
+
+		const uint8 index;
+		const uint32 outputResolution;
+		CPUTexture4 &outputTexture;
+		const CPUTexture4 &hdrTexture;
+
+	};
 
 	/*
 	*	Given an index and two weights, return the corresponding position vector.
@@ -169,6 +258,83 @@ private:
 			case 3: return Vector3(CatalystMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), 1.0f, CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight)); //Down.
 			case 4: return Vector3(CatalystMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), -1.0f);
 			case 5: return Vector3(CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight), CatalystMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), 1.0f);
+		}
+	}
+
+	/*
+	*	Creates one layer of the diffuse textures.
+	*/
+	static void CreateDiffuseLayer(const LayerCreationParameters &parameters) NOEXCEPT
+	{
+		for (uint32 j = 0; j < parameters.outputResolution; ++j)
+		{
+			for (uint32 k = 0; k < parameters.outputResolution; ++k)
+			{
+				Vector3 position{ GetPositionVector(parameters.index, static_cast<float>(j) / static_cast<float>(parameters.outputResolution), static_cast<float>(k) / static_cast<float>(parameters.outputResolution)) };
+				position.Normalize();
+
+				Vector2 textureCoordinate{ CatalystMath::ArctangentRadians(position.Z, position.X), CatalystMath::ArcsineRadians(position.Y) };
+				textureCoordinate *= EnvironmentMaterialCreatorConstants::INVERSE_ATAN;
+				textureCoordinate += 0.5f;
+
+				parameters.outputTexture.At(j, k) = parameters.hdrTexture.At(textureCoordinate);
+			}
+		}
+	}
+
+	/*
+	*	Creates one layer of the diffuse irradiance textures.
+	*/
+	static void CreateDiffuseIrradianceLayer(const LayerCreationParameters &parameters) NOEXCEPT
+	{
+		for (uint32 j = 0; j < parameters.outputResolution; ++j)
+		{
+			for (uint32 k = 0; k < parameters.outputResolution; ++k)
+			{
+				Vector3 finalIrradiance{ 0.0f, 0.0f, 0.0f };
+				Vector3 direction{ GetPositionVector(parameters.index, static_cast<float>(j) / static_cast<float>(parameters.outputResolution), static_cast<float>(k) / static_cast<float>(parameters.outputResolution)) };
+
+				direction.Normalize();
+
+				Vector3 rightVector{ Vector3::CrossProduct(Vector3(0.0f, 1.0f, 0.0f), direction) };
+
+				rightVector.Normalize();
+
+				Vector3 upVector{ Vector3::CrossProduct(direction, rightVector) };
+
+				upVector.Normalize();
+
+				float sampleDelta{ 0.025f };
+				float numberOfSamples{ 0.0f };
+
+				for (float phi = 0.0f; phi < (2.0f * CatalystMathConstants::PI); phi += sampleDelta)
+				{
+					for (float theta = 0.0f; theta < (0.5f * CatalystMathConstants::PI); theta += sampleDelta)
+					{
+						Vector3 tangentSample{ Vector3(CatalystMath::SineRadians(theta) * CatalystMath::CosineRadians(phi), CatalystMath::SineRadians(theta) * CatalystMath::SineRadians(phi), CatalystMath::CosineRadians(theta)) };
+						Vector3 sampleVector{ tangentSample.X * rightVector + tangentSample.Y * upVector + tangentSample.Z * direction };
+
+						//sampleVector.Normalize();
+
+						Vector2 textureCoordinate{ CatalystMath::ArctangentRadians(sampleVector.Z, sampleVector.X), CatalystMath::ArcsineRadians(sampleVector.Y) };
+						textureCoordinate *= EnvironmentMaterialCreatorConstants::INVERSE_ATAN;
+						textureCoordinate += 0.5f;
+
+						Vector4 sampledValue{ parameters.hdrTexture.At(textureCoordinate) };
+
+						finalIrradiance += Vector3(sampledValue.X, sampledValue.Y, sampledValue.Z) * CatalystMath::CosineRadians(theta) * CatalystMath::SineRadians(theta);
+
+						numberOfSamples += 1.0f;
+					}
+				}
+
+				parameters.outputTexture.At(j, k) = CatalystMathConstants::PI * finalIrradiance * (1.0f / numberOfSamples);
+
+				if (parameters.outputTexture.At(j, k).Length() < 0.0001f)
+				{
+					BREAKPOINT;
+				}
+			}
 		}
 	}
 

@@ -30,7 +30,7 @@ public:
 	/*
 	*	Initializes the task system.
 	*/
-	void InitializeSystem() NOEXCEPT;
+	void InitializeSystem(const CatalystProjectMultithreadingInformation &multithreadingInformation) NOEXCEPT;
 
 	/*
 	*	Releases the task system.

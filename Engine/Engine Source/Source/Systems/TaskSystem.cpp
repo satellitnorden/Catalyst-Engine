@@ -2,7 +2,7 @@
 #include <Systems/TaskSystem.h>
 
 //Multithreading.
-#include <Multithreading\Task.h>
+#include <Multithreading/Task.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -36,7 +36,7 @@ TaskSystem::~TaskSystem() NOEXCEPT
 /*
 *	Initializes the task system.
 */
-void TaskSystem::InitializeSystem() NOEXCEPT
+void TaskSystem::InitializeSystem(const CatalystProjectMultithreadingInformation &multithreadingInformation) NOEXCEPT
 {
 	//Find out how many hardware threads there is.
 	uint32 numberOfHardwareThreads = std::thread::hardware_concurrency();
@@ -49,7 +49,7 @@ void TaskSystem::InitializeSystem() NOEXCEPT
 	numberOfTaskExecutors = numberOfHardwareThreads;
 
 	//Initialize the task queue.
-	taskQueue.Initialize(numberOfTaskExecutors + TaskSystemConstants::NUMBER_OF_ENGINE_TASKS + EngineSystem::Instance->GetProjectInformation().multithreadingInformation.numberOfGameTasks);
+	taskQueue.Initialize(numberOfTaskExecutors + TaskSystemConstants::NUMBER_OF_ENGINE_TASKS + multithreadingInformation.numberOfGameTasks);
 
 	//Kick off all task executor threads.
 	taskExecutorThreads.Reserve(numberOfTaskExecutors);

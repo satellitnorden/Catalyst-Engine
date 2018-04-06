@@ -2,6 +2,7 @@
 #include <Math/Vector4.h>
 
 //Math.
+#include <Math/CatalystMath.h>
 #include <Math/Vector3.h>
 
 /*
@@ -54,4 +55,12 @@ Vector4::Vector4(const float newX, const float newY, const float newZ, const flo
 	W(newW)
 {
 
+}
+
+/*
+*	Returns the length of the vector.
+*/
+float Vector4::Length() const NOEXCEPT
+{
+	return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z * Z) + (W * W));
 }

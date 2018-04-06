@@ -142,11 +142,13 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 	//Calculate the data size.
 	const uint64 dataSize{ environmentMaterialData.resolution * environmentMaterialData.resolution * 4 * sizeof(float) * 6 };
 
-	//Upsize the diffuse data accordingly.
+	//Upsize thedata accordingly.
 	environmentMaterialData.diffuseData.UpsizeFast(environmentMaterialData.resolution * environmentMaterialData.resolution * 4 * 6);
+	environmentMaterialData.diffuseIrradianceData.UpsizeFast(environmentMaterialData.resolution * environmentMaterialData.resolution * 4 * 6);
 
 	//Read the diffuse data.
 	file.Read(environmentMaterialData.diffuseData.Data(), dataSize);
+	file.Read(environmentMaterialData.diffuseIrradianceData.Data(), dataSize);
 
 	//Create the environment material via the rendering system.
 	RenderingSystem::Instance->CreateEnvironmentMaterial(environmentMaterialData, environmentMaterials[resourceID]);

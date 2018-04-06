@@ -88,4 +88,14 @@ public:
 		return Vector4(X - vector.X, Y - vector.Y, Z - vector.Z, W - vector.W);
 	}
 
+	/*
+	*	Returns the length of the vector.
+	*/
+	float Length() const NOEXCEPT;
+
+	/*
+	*	Returns if all the components of the vector is zero.
+	*/
+	bool IsZero() const NOEXCEPT { return X == 0.0f && Y == 0.0f && Z == 0.0f && W == 0.0f; }
+
 };

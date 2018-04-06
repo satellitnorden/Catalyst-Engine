@@ -14,4 +14,7 @@ public:
 	//The diffuse data.
 	DynamicArray<float> diffuseData;
 
+	//The diffuse irradiance data.
+	DynamicArray<float> diffuseIrradianceData;
+
 };

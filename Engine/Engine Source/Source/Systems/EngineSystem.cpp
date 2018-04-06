@@ -39,7 +39,7 @@ void EngineSystem::InitializeSystem(const CatalystProjectInformation &initialPro
 	//Initialize all systems.
 	RenderingSystem::Instance->InitializeSystem();
 	SoundSystem::Instance->InitializeSystem();
-	TaskSystem::Instance->InitializeSystem();
+	TaskSystem::Instance->InitializeSystem(projectInformation.multithreadingInformation);
 }
 
 /*

@@ -14,4 +14,7 @@ public:
 	//The diffuse texture.
 	TextureCubeMapHandle diffuseTexture;
 
+	//The diffuse irradiance texture.
+	TextureCubeMapHandle diffuseIrradianceTexture;
+
 };

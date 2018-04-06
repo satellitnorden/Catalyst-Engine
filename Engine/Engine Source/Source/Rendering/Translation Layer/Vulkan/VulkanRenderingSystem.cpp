@@ -177,6 +177,9 @@ void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialD
 {
 	//Create the diffuse texture.
 	environmentMaterial.diffuseTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData.diffuseData.Data(), environmentMaterialData.resolution, environmentMaterialData.resolution));
+
+	//Create the diffuse irradiance texture.
+	environmentMaterial.diffuseIrradianceTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData.diffuseIrradianceData.Data(), environmentMaterialData.resolution, environmentMaterialData.resolution));
 }
 
 /*

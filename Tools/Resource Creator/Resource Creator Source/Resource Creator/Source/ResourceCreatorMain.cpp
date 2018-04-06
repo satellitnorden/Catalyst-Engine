@@ -1,6 +1,10 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Systems.
+#include <Systems/EngineSystem.h>
+#include <Systems/TaskSystem.h>
+
 //Resource creator.
 #include <EnvironmentMaterialCreator.h>
 #include <PhysicalMaterialCreator.h>
@@ -17,6 +21,9 @@
 
 int main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 {
+	//The task system is going to be needed, so individually initialize that.
+	TaskSystem::Instance->InitializeSystem(CatalystProjectMultithreadingInformation(32));
+
 	//First, determine what type of resource that is supposed to be created.
 	if (strcmp(arguments[1], "EnvironmentMaterial") == 0)
 	{
@@ -52,6 +59,10 @@ int main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 	{
 		ResourceCollectionCreator::CreateResourceCollection(argumentCount, arguments);
 	}
+
+	//Release the task system.
+	EngineSystem::Instance->Terminate();
+	TaskSystem::Instance->ReleaseSystem();
 
 	return EXIT_SUCCESS;
 }

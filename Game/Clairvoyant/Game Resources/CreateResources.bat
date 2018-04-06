@@ -1,4 +1,4 @@
-ResourceCreator.exe EnvironmentMaterial Intermediate/Materials/DefaultEnvironmentMaterial DefaultEnvironmentMaterial Raw/Textures/MalibuEnvironment.hdr 2048
+ResourceCreator.exe EnvironmentMaterial Intermediate/Materials/DefaultEnvironmentMaterial DefaultEnvironmentMaterial Raw/Textures/MalibuEnvironment.hdr 64
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/StoneMaterial StoneMaterial 5 Raw/Textures/StoneAlbedo.png Raw/Textures/StoneNormalMap.png Raw/Textures/StoneRoughness.png None Raw/Textures/StoneAmbientOcclusion.png Raw/Textures/StoneDisplacement.png
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/TreeStompMaterial TreeStompMaterial 5 Raw/Textures/TreeStompAlbedo.jpg Raw/Textures/TreeStompNormalMap.jpg None None None None
 ResourceCreator.exe PhysicalModel Intermediate/Models/StoneModel StoneModel Raw/Models/Stone.obj
