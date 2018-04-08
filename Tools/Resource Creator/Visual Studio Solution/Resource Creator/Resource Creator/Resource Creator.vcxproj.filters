@@ -33,6 +33,9 @@
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\EnvironmentMaterialCreator.h">
       <Filter>Resource Creator Source\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\SoundBankCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\CameraComponent.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
@@ -192,9 +195,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\CatalystMath.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\MathematicalConstants.h">
-      <Filter>Engine Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Matrix3.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
@@ -327,7 +327,10 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\AxisAlignedBoundingBox.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\CPUTexture4.h">
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\CPUTexture2D.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\CPUTextureCube.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\EnvironmentMaterial.h">
@@ -405,10 +408,16 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\ResourcesCore.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\SoundBankData.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\TerrainMaterialData.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\WaterMaterialData.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundBank.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundCore.h">
@@ -516,12 +525,12 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Tools\MicroBenchmarker.h">
       <Filter>Engine Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\SoundBankCreator.h">
-      <Filter>Resource Creator Source\Include</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Resource Creator Source\Resource Creator\Source\ResourceCreatorMain.cpp">
+      <Filter>Resource Creator Source\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp">
       <Filter>Resource Creator Source\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp">
@@ -683,18 +692,15 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\TaskSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp">
-      <Filter>Resource Creator Source\Source</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Vector3.inl">
+      <Filter>Engine Source</Filter>
+    </None>
     <None Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanCommandBuffer.inl">
       <Filter>Engine Source</Filter>
     </None>
     <None Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.inl">
-      <Filter>Engine Source</Filter>
-    </None>
-    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Vector3.inl">
       <Filter>Engine Source</Filter>
     </None>
   </ItemGroup>

@@ -177,7 +177,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Input\InputUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Input\KeyboardState.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\CatalystMath.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\MathematicalConstants.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Matrix3.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Matrix4.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\PerlinNoiseGenerator.h" />
@@ -222,7 +221,8 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanUniformBuffer.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\AxisAlignedBoundingBox.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\CPUTexture4.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\CPUTexture2D.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\CPUTextureCube.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\EnvironmentMaterial.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\PhysicalMaterial.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\PhysicalModel.h" />
@@ -248,8 +248,10 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\ResourceLoader.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\ResourceLoaderUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\ResourcesCore.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\SoundBankData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\TerrainMaterialData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\WaterMaterialData.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundBank.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EngineSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.h" />

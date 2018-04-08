@@ -14,7 +14,8 @@
 #include <Multithreading/Task.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CPUTexture4.h>
+#include <Rendering/Engine Layer/CPUTexture2D.h>
+#include <Rendering/Engine Layer/CPUTextureCube.h>
 
 //Resources
 #include <Resources/ResourcesCore.h>
@@ -62,7 +63,7 @@ public:
 		float *const RESTRICT data{ stbi_loadf(arguments[4], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 		//Wrap the data into a cpu texture for easier manipulation.
-		CPUTexture4 hdrTexture{ static_cast<uint64>(width), static_cast<uint64>(height) };
+		CPUTexture2D hdrTexture{ static_cast<uint64>(width), static_cast<uint64>(height) };
 
 		//Copy the data into the cpu texture.
 		MemoryUtilities::CopyMemory(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
@@ -74,24 +75,24 @@ public:
 		const uint32 diffuseIrradianceOutputResolution{ std::strtoul(arguments[6], nullptr, 0) };
 
 		//Create the diffuse output textures.
-		StaticArray<CPUTexture4, 6> diffuseOutputTextures
+		StaticArray<CPUTexture2D, 6> diffuseOutputTextures
 		{
-			CPUTexture4(diffuseOutputResolution),
-			CPUTexture4(diffuseOutputResolution),
-			CPUTexture4(diffuseOutputResolution),
-			CPUTexture4(diffuseOutputResolution),
-			CPUTexture4(diffuseOutputResolution),
-			CPUTexture4(diffuseOutputResolution)
+			CPUTexture2D(diffuseOutputResolution),
+			CPUTexture2D(diffuseOutputResolution),
+			CPUTexture2D(diffuseOutputResolution),
+			CPUTexture2D(diffuseOutputResolution),
+			CPUTexture2D(diffuseOutputResolution),
+			CPUTexture2D(diffuseOutputResolution)
 		};
 
-		StaticArray<LayerCreationParameters, 6> diffuseLayerCreationParameters
+		StaticArray<DiffuseLayerCreationParameters, 6> diffuseLayerCreationParameters
 		{
-			LayerCreationParameters(0, diffuseOutputResolution, diffuseOutputTextures[0], hdrTexture),
-			LayerCreationParameters(1, diffuseOutputResolution, diffuseOutputTextures[1], hdrTexture),
-			LayerCreationParameters(2, diffuseOutputResolution, diffuseOutputTextures[2], hdrTexture),
-			LayerCreationParameters(3, diffuseOutputResolution, diffuseOutputTextures[3], hdrTexture),
-			LayerCreationParameters(4, diffuseOutputResolution, diffuseOutputTextures[4], hdrTexture),
-			LayerCreationParameters(5, diffuseOutputResolution, diffuseOutputTextures[5], hdrTexture),
+			DiffuseLayerCreationParameters(0, diffuseOutputResolution, diffuseOutputTextures[0], hdrTexture),
+			DiffuseLayerCreationParameters(1, diffuseOutputResolution, diffuseOutputTextures[1], hdrTexture),
+			DiffuseLayerCreationParameters(2, diffuseOutputResolution, diffuseOutputTextures[2], hdrTexture),
+			DiffuseLayerCreationParameters(3, diffuseOutputResolution, diffuseOutputTextures[3], hdrTexture),
+			DiffuseLayerCreationParameters(4, diffuseOutputResolution, diffuseOutputTextures[4], hdrTexture),
+			DiffuseLayerCreationParameters(5, diffuseOutputResolution, diffuseOutputTextures[5], hdrTexture),
 		};
 
 		//Calculate the diffuse.
@@ -101,31 +102,40 @@ public:
 		{
 			TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 			{
-				const LayerCreationParameters &parameters{ *static_cast<LayerCreationParameters *const RESTRICT>(arguments) };
+				const DiffuseLayerCreationParameters &parameters{ *static_cast<DiffuseLayerCreationParameters *const RESTRICT>(arguments) };
 
 				CreateDiffuseLayer(parameters);
 			}, &diffuseLayerCreationParameters[i], &diffuseSemaphores[i]));
 		}
+		
+		//Wait for the diffuse tasks to finish.
+		for (uint8 i = 0; i < 6; ++i)
+		{
+			diffuseSemaphores[i].WaitFor();
+		}
+
+		//Create the diffuse texture.
+		CPUTextureCube diffuseTexture{ diffuseOutputTextures };
 
 		//Create the diffuse irradiance output textures.
-		StaticArray<CPUTexture4, 6> diffuseIrradianceOutputTextures
+		StaticArray<CPUTexture2D, 6> diffuseIrradianceOutputTextures
 		{
-			CPUTexture4(diffuseIrradianceOutputResolution),
-			CPUTexture4(diffuseIrradianceOutputResolution),
-			CPUTexture4(diffuseIrradianceOutputResolution),
-			CPUTexture4(diffuseIrradianceOutputResolution),
-			CPUTexture4(diffuseIrradianceOutputResolution),
-			CPUTexture4(diffuseIrradianceOutputResolution)
+			CPUTexture2D(diffuseIrradianceOutputResolution),
+			CPUTexture2D(diffuseIrradianceOutputResolution),
+			CPUTexture2D(diffuseIrradianceOutputResolution),
+			CPUTexture2D(diffuseIrradianceOutputResolution),
+			CPUTexture2D(diffuseIrradianceOutputResolution),
+			CPUTexture2D(diffuseIrradianceOutputResolution)
 		};
 
-		StaticArray<LayerCreationParameters, 6> diffuseIrradianceLayerCreationParameters
+		StaticArray<IrradianceLayerCreationParameters, 6> diffuseIrradianceLayerCreationParameters
 		{
-			LayerCreationParameters(0, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[0], hdrTexture),
-			LayerCreationParameters(1, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[1], hdrTexture),
-			LayerCreationParameters(2, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[2], hdrTexture),
-			LayerCreationParameters(3, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[3], hdrTexture),
-			LayerCreationParameters(4, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[4], hdrTexture),
-			LayerCreationParameters(5, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[5], hdrTexture),
+			IrradianceLayerCreationParameters(0, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[0], diffuseTexture),
+			IrradianceLayerCreationParameters(1, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[1], diffuseTexture),
+			IrradianceLayerCreationParameters(2, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[2], diffuseTexture),
+			IrradianceLayerCreationParameters(3, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[3], diffuseTexture),
+			IrradianceLayerCreationParameters(4, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[4], diffuseTexture),
+			IrradianceLayerCreationParameters(5, diffuseIrradianceOutputResolution, diffuseIrradianceOutputTextures[5], diffuseTexture),
 		};
 
 		//Calculate the diffuse.
@@ -135,18 +145,13 @@ public:
 		{
 			TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 			{
-				const LayerCreationParameters &parameters{ *static_cast<LayerCreationParameters *const RESTRICT>(arguments) };
+				const IrradianceLayerCreationParameters &parameters{ *static_cast<IrradianceLayerCreationParameters *const RESTRICT>(arguments) };
 
 				CreateDiffuseIrradianceLayer(parameters);
 			}, &diffuseIrradianceLayerCreationParameters[i], &diffuseIrradianceSemaphores[i]));
 		}
-		
-		//Wait for all tasks to finish.
-		for (uint8 i = 0; i < 6; ++i)
-		{
-			diffuseSemaphores[i].WaitFor();
-		}
 
+		//Wait for the irradiance tasks to finish.
 		for (uint8 i = 0; i < 6; ++i)
 		{
 			diffuseIrradianceSemaphores[i].WaitFor();
@@ -177,14 +182,14 @@ public:
 private:
 
 	/*
-	*	Definition for the layer creation parameters.
+	*	Definition for the diffuse layer creation parameters.
 	*/
-	class LayerCreationParameters final
+	class DiffuseLayerCreationParameters final
 	{
 
 	public:
 
-		LayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, CPUTexture4 &initialOutputTexture, const CPUTexture4 &initialHdrTexture) NOEXCEPT
+		DiffuseLayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, CPUTexture2D &initialOutputTexture, const CPUTexture2D &initialHdrTexture) NOEXCEPT
 			:
 			index(initialIndex),
 			outputResolution(initialOutputResolution),
@@ -196,8 +201,33 @@ private:
 
 		const uint8 index;
 		const uint32 outputResolution;
-		CPUTexture4 &outputTexture;
-		const CPUTexture4 &hdrTexture;
+		CPUTexture2D &outputTexture;
+		const CPUTexture2D &hdrTexture;
+
+	};
+
+	/*
+	*	Definition for the irradiance layer creation parameters.
+	*/
+	class IrradianceLayerCreationParameters final
+	{
+
+	public:
+
+		IrradianceLayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, CPUTexture2D &initialOutputTexture, const CPUTextureCube &initialDiffuseTexture) NOEXCEPT
+			:
+			index(initialIndex),
+			outputResolution(initialOutputResolution),
+			outputTexture(initialOutputTexture),
+			diffuseTexture(initialDiffuseTexture)
+		{
+
+		}
+
+		const uint8 index;
+		const uint32 outputResolution;
+		CPUTexture2D &outputTexture;
+		const CPUTextureCube &diffuseTexture;
 
 	};
 
@@ -221,7 +251,7 @@ private:
 	/*
 	*	Creates one layer of the diffuse textures.
 	*/
-	static void CreateDiffuseLayer(const LayerCreationParameters &parameters) NOEXCEPT
+	static void CreateDiffuseLayer(const DiffuseLayerCreationParameters &parameters) NOEXCEPT
 	{
 		for (uint32 j = 0; j < parameters.outputResolution; ++j)
 		{
@@ -242,22 +272,22 @@ private:
 	/*
 	*	Creates one layer of the diffuse irradiance textures.
 	*/
-	static void CreateDiffuseIrradianceLayer(const LayerCreationParameters &parameters) NOEXCEPT
+	static void CreateDiffuseIrradianceLayer(const IrradianceLayerCreationParameters &parameters) NOEXCEPT
 	{
 		for (uint32 j = 0; j < parameters.outputResolution; ++j)
 		{
 			for (uint32 k = 0; k < parameters.outputResolution; ++k)
 			{
-				Vector3 finalIrradiance{ 0.0f, 0.0f, 0.0f };
 				Vector3 direction{ GetPositionVector(parameters.index, static_cast<float>(j) / static_cast<float>(parameters.outputResolution), static_cast<float>(k) / static_cast<float>(parameters.outputResolution)) };
-
-				direction.Normalize();
+				direction *= -1.0f;
 
 				Vector3 rightVector{ Vector3::CrossProduct(Vector3(0.0f, 1.0f, 0.0f), direction) };
 				Vector3 upVector{ Vector3::CrossProduct(direction, rightVector) };
 
 				float sampleDelta{ 0.025f };
 				float numberOfSamples{ 0.0f };
+
+				Vector3 finalIrradiance{ 0.0f, 0.0f, 0.0f };
 
 				for (float phi = 0.0f; phi < (2.0f * CatalystMathConstants::PI); phi += sampleDelta)
 				{
@@ -266,11 +296,7 @@ private:
 						Vector3 tangentSample{ Vector3(CatalystMath::SineRadians(theta) * CatalystMath::CosineRadians(phi), CatalystMath::SineRadians(theta) * CatalystMath::SineRadians(phi), CatalystMath::CosineRadians(theta)) };
 						Vector3 sampleVector{ tangentSample.X * rightVector + tangentSample.Y * upVector + tangentSample.Z * direction };
 
-						Vector2 textureCoordinate{ CatalystMath::ArctangentRadians(sampleVector.Z, sampleVector.X), CatalystMath::ArcsineRadians(sampleVector.Y) };
-						textureCoordinate *= EnvironmentMaterialCreatorConstants::INVERSE_ATAN;
-						textureCoordinate += 0.5f;
-
-						Vector4 sampledValue{ parameters.hdrTexture.At(textureCoordinate) };
+						Vector4 sampledValue{ parameters.diffuseTexture.At(sampleVector) };
 
 						finalIrradiance += Vector3(sampledValue.X, sampledValue.Y, sampledValue.Z) * CatalystMath::CosineRadians(theta) * CatalystMath::SineRadians(theta);
 

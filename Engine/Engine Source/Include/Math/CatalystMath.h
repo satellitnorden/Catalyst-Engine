@@ -4,6 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Math.
+#include <Math/Vector3.h>
 #include <Math/Vector4.h>
 
 //Catalyst Math constants.
@@ -21,12 +22,19 @@ class CatalystMath final
 public:
 
 	/*
-	*	Returns the absolute value of the one passed in.
+	*	Returns the absolute value of the floating point number passed in.
 	*/
 	constexpr static float Absolute(const float value) NOEXCEPT
 	{
 		return value >= 0.0f ? value : value * -1.0f;
+	}
 
+	/*
+	*	Returns the absolute value of the Vector3 passed in.
+	*/
+	constexpr static Vector3 Absolute(const Vector3 &vector) NOEXCEPT
+	{
+		return Vector3(Absolute(vector.X), Absolute(vector.Y), Absolute(vector.Z));
 	}
 
 	/*
