@@ -23,7 +23,7 @@
 #include <Math/PerlinNoiseGenerator.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CPUTexture4.h>
+#include <Rendering/Engine Layer/CPUTexture2D.h>
 #include <Rendering/Engine Layer/EnvironmentMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
@@ -94,7 +94,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	sun->SetIntensity(10.0f);
 
 	//Create the terrain properties!
-	CPUTexture4 terrainProperties{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
+	CPUTexture2D terrainProperties{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
 
 	const float randomOffset{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
 
@@ -152,7 +152,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	}
 
 	//Calculate the layer weights.
-	CPUTexture4 layerWeights{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
+	CPUTexture2D layerWeights{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
 
 	for (uint32 i = 0; i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++i)
 	{

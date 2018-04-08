@@ -48,7 +48,7 @@ float PhysicsSystem::GetTerrainHeightAtPosition(const Vector3 &position) const N
 {
 	//For now, just use the first terrain properties there is.
 	const TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[0] };
-	const CPUTexture4 &terrainProperties{ terrainComponent.terrainProperties };
+	const CPUTexture2D &terrainProperties{ terrainComponent.terrainProperties };
 	const float terrainSize{ terrainComponent.terrainUniformData.terrainSize };
 	const float terrainHeight{ terrainComponent.terrainUniformData.terrainHeight };
 
@@ -65,7 +65,7 @@ Vector3 PhysicsSystem::GetTerrainNormalAtPosition(const Vector3 &position) const
 {
 	//For now, just use the first terrain properties there is.
 	const TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[0] };
-	const CPUTexture4 &terrainProperties{ terrainComponent.terrainProperties };
+	const CPUTexture2D &terrainProperties{ terrainComponent.terrainProperties };
 	const float terrainSize{ terrainComponent.terrainUniformData.terrainSize };
 	const float terrainHeight{ terrainComponent.terrainUniformData.terrainHeight };
 

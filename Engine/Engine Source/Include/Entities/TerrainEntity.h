@@ -10,7 +10,7 @@
 #include <Rendering/Engine Layer/RenderingCore.h>
 
 //Forward declarations.
-class CPUTexture4;
+class CPUTexture2D;
 class TerrainMaterial;
 class TerrainUniformData;
 
@@ -65,6 +65,6 @@ public:
 	/*
 	*	Initializes this terrain entity.
 	*/
-	void Initialize(const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) NOEXCEPT;
+	void Initialize(const uint32 terrainPlaneResolution, const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) NOEXCEPT;
 
 };

@@ -24,7 +24,7 @@
 
 //Forward declarations.
 class CameraEntity;
-class CPUTexture4;
+class CPUTexture2D;
 class EnvironmentMaterial;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
@@ -99,7 +99,7 @@ public:
 	/*
 	*	Initializes a terrain entity.
 	*/
-	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT;
+	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT;
 
 	/*
 	*	Initializes a static physical entity.

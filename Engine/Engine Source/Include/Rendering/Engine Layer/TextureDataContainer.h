@@ -4,7 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CPUTexture4.h>
+#include <Rendering/Engine Layer/CPUTexture2D.h>
 
 class TextureDataContainer final
 {
@@ -49,12 +49,12 @@ public:
 	}
 
 	/*
-	*	Constructor taking a CPUTexture4.
+	*	Constructor taking a CPUTexture2D.
 	*/
-	TextureDataContainer(const CPUTexture4 &texture) NOEXCEPT
+	TextureDataContainer(const CPUTexture2D &texture) NOEXCEPT
 	{
 		textureData.Reserve(1);
-		textureData.EmplaceFast(reinterpret_cast<void *RESTRICT>(const_cast<CPUTexture4&>(texture).Data()));
+		textureData.EmplaceFast(reinterpret_cast<void *RESTRICT>(const_cast<CPUTexture2D&>(texture).Data()));
 		textureWidth = static_cast<uint16>(texture.GetWidth());
 		textureHeight = static_cast<uint16>(texture.GetHeight());
 		textureChannels = 4;

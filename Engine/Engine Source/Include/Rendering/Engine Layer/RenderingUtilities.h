@@ -17,7 +17,7 @@ namespace RenderingUtilities
 	/*
 	*	Given terrain properties, terrain uniform data and a resolution, generate terrain plane vertices and indices.
 	*/
-	static void GenerateTerrainPlane(const CPUTexture4 &terrainProperties, const TerrainUniformData &terrainUniformData, const uint32 resolution, DynamicArray<float> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
+	static void GenerateTerrainPlane(const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const uint32 resolution, DynamicArray<float> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
 	{
 		vertices.Reserve((resolution + 1) * (resolution + 1) * 5);
 		indices.Reserve(resolution * resolution * 6);

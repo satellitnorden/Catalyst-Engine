@@ -9,9 +9,9 @@
 #include <Math/Vector4.h>
 
 /*
-*	Class representing a texture with 4 channels that can be constructed on the CPU.
+*	Class representing a 2D texture with 4 channels that can be constructed on the CPU.
 */
-class CPUTexture4 final
+class CPUTexture2D final
 {
 
 public:
@@ -19,7 +19,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	CPUTexture4() NOEXCEPT
+	CPUTexture2D() NOEXCEPT
 		:
 		width(0),
 		height(0)
@@ -30,7 +30,7 @@ public:
 	/*
 	*	Constructor taking in the resolution of the texture. Assumes that width and height does not differ.
 	*/
-	CPUTexture4(const uint64 initialResolution) NOEXCEPT
+	CPUTexture2D(const uint64 initialResolution) NOEXCEPT
 		:
 		width(initialResolution),
 		height(initialResolution)
@@ -42,7 +42,7 @@ public:
 	/*
 	*	Constructor taking in the resolution of the texture. Takes both the width and the height
 	*/
-	CPUTexture4(const uint64 initialWidth, const uint64 initialHeight) NOEXCEPT
+	CPUTexture2D(const uint64 initialWidth, const uint64 initialHeight) NOEXCEPT
 		:
 		width(initialWidth),
 		height(initialHeight)

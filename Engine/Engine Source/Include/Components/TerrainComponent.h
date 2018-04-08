@@ -4,7 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CPUTexture4.h>
+#include <Rendering/Engine Layer/CPUTexture2D.h>
 #include <Rendering/Engine Layer/RenderingCore.h>
 #include <Rendering/Engine Layer/TerrainUniformData.h>
 
@@ -23,6 +23,6 @@ public:
 	UniformBufferHandle uniformBuffer;
 
 	//The height map.
-	CPUTexture4 terrainProperties;
+	CPUTexture2D terrainProperties;
 
 };
