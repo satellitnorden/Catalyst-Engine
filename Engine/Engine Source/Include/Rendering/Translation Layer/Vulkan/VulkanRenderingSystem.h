@@ -12,6 +12,7 @@
 #include <Multithreading/Semaphore.h>
 
 //Rendering.
+#include <Rendering/Engine Layer/EnvironmentMaterial.h>
 #include <Rendering/Engine Layer/PostProcessingUniformData.h>
 #include <Rendering/Engine Layer/RenderingCore.h>
 #include <Rendering/Engine Layer/Window.h>
@@ -131,9 +132,9 @@ public:
 	void SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT;
 
 	/*
-	*	Sets the active sky box cube map texture.
+	*	Sets the environment material.
 	*/
-	void SetActiveSkyBox(TextureCubeMapHandle newSkyBox) NOEXCEPT;
+	void SetEnvironmentMaterial(const EnvironmentMaterial &newEnvioronmentMaterial) NOEXCEPT;
 
 	/*
 	*	Sets the post processing blur amount.
@@ -314,8 +315,8 @@ private:
 	//The current dynamic uniform data descriptor set.
 	VulkanDescriptorSet *RESTRICT currentDynamicUniformDataDescriptorSet;
 
-	//The sky box cude map texture.
-	VulkanCubeMapTexture *RESTRICT skyBoxTexture;
+	//The environment material.
+	EnvironmentMaterial environmentMaterial;
 
 	//The sky box descriptor set.
 	VulkanDescriptorSet skyBoxDescriptorSet;

@@ -209,8 +209,8 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Wait for the resources to finish loading.
 	resourceSemaphore.WaitFor();
 
-	//Set the active skybox.
-	RenderingSystem::Instance->SetActiveSkyBox(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::DEFAULT_ENVIRONMENT_MATERIAL).diffuseIrradianceTexture);
+	//Set the environment material.
+	RenderingSystem::Instance->SetEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::DEFAULT_ENVIRONMENT_MATERIAL));
 
 	//Get the terrain material data.
 	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(WorldAchitectConstants::DEFAULT_TERRAIN_MATERIAL) };

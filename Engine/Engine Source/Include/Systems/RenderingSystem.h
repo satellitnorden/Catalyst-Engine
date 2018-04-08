@@ -118,9 +118,9 @@ public:
 	void SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT;
 
 	/*
-	*	Sets the active sky box cube map texture.
+	*	Sets the environment material.
 	*/
-	void SetActiveSkyBox(TextureCubeMapHandle newSkyBox) NOEXCEPT;
+	void SetEnvironmentMaterial(const EnvironmentMaterial &newEnvioronmentMaterial) NOEXCEPT;
 
 	/*
 	*	Sets the post processing blur amount.

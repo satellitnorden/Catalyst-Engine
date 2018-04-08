@@ -56,10 +56,11 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 1) uniform samplerCube skyBoxTexture;
-layout (set = 1, binding = 2) uniform sampler2D albedoTexture;
-layout (set = 1, binding = 3) uniform sampler2D normalDirectionDepthTexture;
-layout (set = 1, binding = 4) uniform sampler2D roughnessMetallicAmbientOcclusionTexture;
+layout (set = 1, binding = 1) uniform samplerCube diffuseIrradianceTexture;
+layout (set = 1, binding = 2) uniform samplerCube specularIrradianceTexture;
+layout (set = 1, binding = 3) uniform sampler2D albedoTexture;
+layout (set = 1, binding = 4) uniform sampler2D normalDirectionDepthTexture;
+layout (set = 1, binding = 5) uniform sampler2D roughnessMetallicAmbientOcclusionTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
@@ -129,15 +130,15 @@ vec3 CalculateFresnel(float lightViewAngle)
 */
 vec3 CalculateAmbient()
 {
-    vec3 specularComponent = vec3(0.0f);
+    vec3 specularComponent = CalculateFresnelRoughness(viewAngle);
     vec3 diffuseComponent = 1.0f - specularComponent;
     diffuseComponent *= 1.0f - metallic;
 
-    vec3 irradiance = texture(skyBoxTexture, normalDirection).rgb;
+    vec3 irradiance = texture(diffuseIrradianceTexture, normalDirection).rgb;
     vec3 diffuse = irradiance * albedoColor;
 
     vec3 reclectionDirection = reflect(-viewDirection, normalDirection);
-    vec3 specularIrradiance = texture(skyBoxTexture, normalDirection).rgb;
+    vec3 specularIrradiance = texture(specularIrradianceTexture, normalDirection).rgb;
     vec3 specular = mix(specularIrradiance, irradiance, roughness);
 
     return (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion;

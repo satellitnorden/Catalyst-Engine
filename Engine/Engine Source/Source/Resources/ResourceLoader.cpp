@@ -136,19 +136,29 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 	HashString resourceID;
 	file.Read(&resourceID, sizeof(HashString));
 
-	//Read the resolution of the environment material.
-	file.Read(&environmentMaterialData.resolution, sizeof(uint32));
+	//Read the resolution of the diffuse data.
+	file.Read(&environmentMaterialData.diffuseResolution, sizeof(uint32));
 
-	//Calculate the data size.
-	const uint64 dataSize{ environmentMaterialData.resolution * environmentMaterialData.resolution * 4 * sizeof(float) * 6 };
+	//Calculate the diffuse data size.
+	const uint64 diffuseDataSize{ environmentMaterialData.diffuseResolution * environmentMaterialData.diffuseResolution * 4 * sizeof(float) * 6 };
 
-	//Upsize thedata accordingly.
-	environmentMaterialData.diffuseData.UpsizeFast(environmentMaterialData.resolution * environmentMaterialData.resolution * 4 * 6);
-	environmentMaterialData.diffuseIrradianceData.UpsizeFast(environmentMaterialData.resolution * environmentMaterialData.resolution * 4 * 6);
+	//Upsize the diffuse data accordingly.
+	environmentMaterialData.diffuseData.UpsizeFast(environmentMaterialData.diffuseResolution * environmentMaterialData.diffuseResolution * 4 * 6);
 
 	//Read the diffuse data.
-	file.Read(environmentMaterialData.diffuseData.Data(), dataSize);
-	file.Read(environmentMaterialData.diffuseIrradianceData.Data(), dataSize);
+	file.Read(environmentMaterialData.diffuseData.Data(), diffuseDataSize);
+
+	//Read the resolution of the diffuse irradiance data.
+	file.Read(&environmentMaterialData.diffuseIrradianceResolution, sizeof(uint32));
+
+	//Calculate the diffuse irradiance data size.
+	const uint64 diffuseIrradianceDataSize{ environmentMaterialData.diffuseIrradianceResolution * environmentMaterialData.diffuseIrradianceResolution * 4 * sizeof(float) * 6 };
+
+	//Upsize the diffuse irradiance data accordingly.
+	environmentMaterialData.diffuseIrradianceData.UpsizeFast(environmentMaterialData.diffuseIrradianceResolution * environmentMaterialData.diffuseIrradianceResolution * 4 * 6);
+
+	//Read the diffuse iraddiance data.
+	file.Read(environmentMaterialData.diffuseIrradianceData.Data(), diffuseIrradianceDataSize);
 
 	//Create the environment material via the rendering system.
 	RenderingSystem::Instance->CreateEnvironmentMaterial(environmentMaterialData, environmentMaterials[resourceID]);

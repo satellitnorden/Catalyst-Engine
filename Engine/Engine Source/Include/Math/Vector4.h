@@ -94,6 +94,11 @@ public:
 	float Length() const NOEXCEPT;
 
 	/*
+	*	Returns the length of the X, Y and Z components of the vector.
+	*/
+	float LengthXYZ() const NOEXCEPT;
+
+	/*
 	*	Returns if all the components of the vector is zero.
 	*/
 	bool IsZero() const NOEXCEPT { return X == 0.0f && Y == 0.0f && Z == 0.0f && W == 0.0f; }

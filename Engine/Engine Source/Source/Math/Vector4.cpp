@@ -64,3 +64,11 @@ float Vector4::Length() const NOEXCEPT
 {
 	return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z * Z) + (W * W));
 }
+
+/*
+*	Returns the length of the X, Y and Z components of the vector.
+*/
+float Vector4::LengthXYZ() const NOEXCEPT
+{
+	return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z * Z));
+}

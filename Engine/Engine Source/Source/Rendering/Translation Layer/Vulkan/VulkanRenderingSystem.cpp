@@ -22,7 +22,6 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture4.h>
-#include <Rendering/Engine Layer/EnvironmentMaterial.h>
 #include <Rendering/Engine Layer/PhysicalMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/RenderingUtilities.h>
@@ -176,10 +175,10 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT
 {
 	//Create the diffuse texture.
-	environmentMaterial.diffuseTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData.diffuseData.Data(), environmentMaterialData.resolution, environmentMaterialData.resolution));
+	environmentMaterial.diffuseTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData.diffuseData.Data(), environmentMaterialData.diffuseResolution, environmentMaterialData.diffuseResolution));
 
 	//Create the diffuse irradiance texture.
-	environmentMaterial.diffuseIrradianceTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData.diffuseIrradianceData.Data(), environmentMaterialData.resolution, environmentMaterialData.resolution));
+	environmentMaterial.diffuseIrradianceTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData.diffuseIrradianceData.Data(), environmentMaterialData.diffuseIrradianceResolution, environmentMaterialData.diffuseIrradianceResolution));
 }
 
 /*
@@ -429,7 +428,7 @@ void VulkanRenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTR
 		static_cast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 1),
 		static_cast<const VulkanRenderTarget *RESTRICT>(renderTargets[INDEX(RenderTarget::WaterScene)])->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 2),
 		static_cast<const Vulkan2DTexture *RESTRICT>(waterMaterial.normalMapTexture)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 3),
-		skyBoxTexture->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 4)
+		static_cast<const VulkanCubeMapTexture *const RESTRICT>(environmentMaterial.diffuseTexture)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 4)
 	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -468,12 +467,12 @@ void VulkanRenderingSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCame
 }
 
 /*
-*	Sets the active sky box cube map texture.
+*	Sets the environment material.
 */
-void VulkanRenderingSystem::SetActiveSkyBox(TextureCubeMapHandle newSkyBox) NOEXCEPT
+void VulkanRenderingSystem::SetEnvironmentMaterial(const EnvironmentMaterial &newEnvioronmentMaterial) NOEXCEPT
 {
-	//Update the sky box texture.
-	skyBoxTexture = static_cast<VulkanCubeMapTexture *RESTRICT>(newSkyBox);
+	//Update the environment material.
+	environmentMaterial = newEnvioronmentMaterial;
 
 	//Allocate the sky box descriptor set.
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(skyBoxDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)]);
@@ -481,7 +480,7 @@ void VulkanRenderingSystem::SetActiveSkyBox(TextureCubeMapHandle newSkyBox) NOEX
 	//Update the write descriptor sets.
 	StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
 	{
-		skyBoxTexture->GetWriteDescriptorSet(skyBoxDescriptorSet, 1)
+		static_cast<const VulkanCubeMapTexture *const RESTRICT>(environmentMaterial.diffuseTexture)->GetWriteDescriptorSet(skyBoxDescriptorSet, 1)
 	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -1414,12 +1413,14 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 void VulkanRenderingSystem::ReinitializeDescriptorSets() NOEXCEPT
 {
 	//Update the write descriptor sets.
-	DynamicArray<VkWriteDescriptorSet, 4> writeDescriptorSets;
-
-	writeDescriptorSets.EmplaceFast(skyBoxTexture->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 1));
-	writeDescriptorSets.EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 2));
-	writeDescriptorSets.EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 3));
-	writeDescriptorSets.EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4));
+	StaticArray<VkWriteDescriptorSet, 5> writeDescriptorSets
+	{
+		static_cast<const VulkanCubeMapTexture *const RESTRICT>(environmentMaterial.diffuseIrradianceTexture)->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 1),
+		static_cast<const VulkanCubeMapTexture *const RESTRICT>(environmentMaterial.diffuseTexture)->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 2),
+		renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 3),
+		renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4),
+		renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 5)
+	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }

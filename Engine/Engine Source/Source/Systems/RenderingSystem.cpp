@@ -152,12 +152,12 @@ void RenderingSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NO
 }
 
 /*
-*	Sets the active sky box cube map texture.
+*	Sets the environment material.
 */
-void RenderingSystem::SetActiveSkyBox(TextureCubeMapHandle newSkyBox) NOEXCEPT
+void RenderingSystem::SetEnvironmentMaterial(const EnvironmentMaterial &newEnvioronmentMaterial) NOEXCEPT
 {
-	//Set the active sky box cube map texture via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->SetActiveSkyBox(newSkyBox);
+	//Set the environment material via the Vulkan rendering system.
+	VulkanRenderingSystem::Instance->SetEnvironmentMaterial(newEnvioronmentMaterial);
 }
 
 /*
