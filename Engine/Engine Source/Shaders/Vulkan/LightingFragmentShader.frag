@@ -147,7 +147,7 @@ vec3 CalculateAmbient()
 /*
 *   Calculates a light.
 */
-vec3 CalculateLight(vec3 lightDirection, vec3 radiance, float intensity)
+vec3 CalculateLight(vec3 lightDirection, vec3 radiance)
 {
     vec3 halfwayDirection = normalize(viewDirection + lightDirection);
     float lightViewAngle = clamp(dot(halfwayDirection, viewDirection), 0.0f, 1.0f);
@@ -165,7 +165,7 @@ vec3 CalculateLight(vec3 lightDirection, vec3 radiance, float intensity)
     vec3 specularComponent = nominator / denominator;
 
     //Return the combined components.
-    return (diffuseComponent * albedoColor / PI + specularComponent) * radiance * lightAngle * intensity;
+    return (diffuseComponent * albedoColor / PI + specularComponent) * radiance * lightAngle;
 }
 
 /*
@@ -256,9 +256,9 @@ vec3 CalculateDirectionalLight()
 {
     //Calculate the directional light.
     vec3 lightDirection = -directionalLightDirection;
-    vec3 radiance = directionalLightColor;
+    vec3 radiance = directionalLightColor * directionalLightIntensity;
 
-    return CalculateLight(lightDirection, radiance, directionalLightIntensity) * CalculateDirectionalLightScreenSpaceShadowMultiplier();
+    return CalculateLight(lightDirection, radiance);
 }
 
 /*
@@ -273,9 +273,9 @@ vec3 CalculatePointLight(int index)
     float attenuation = clamp(1.0f - distanceToLightSource / pointLightAttenuationDistances[index], 0.0f, 1.0f);
     attenuation *= attenuation;
 
-    vec3 radiance = pointLightColors[index] * attenuation;
+    vec3 radiance = pointLightColors[index] * pointLightIntensities[index] * attenuation;
 
-    return CalculateLight(lightDirection, radiance, pointLightIntensities[index]);
+    return CalculateLight(lightDirection, radiance);
 }
 
 /*
@@ -291,17 +291,13 @@ vec3 CalculateSpotLight(int index)
     float attenuation = clamp(1.0f - distanceToLightSource / spotLightAttenuationDistances[index], 0.0f, 1.0f);
     attenuation *= attenuation;
 
-    vec3 radiance = spotLightColors[index] * attenuation;
-
-    vec3 calculatedLight = CalculateLight(lightDirection, radiance, spotLightIntensities[index]);
-
     //Calculate the inner/outer cone fade out.
     float epsilon = spotLightInnerCutoffAngles[index] - spotLightOuterCutoffAngles[index];
     float intensity = angle > spotLightInnerCutoffAngles[index] ? 1.0f : clamp((angle - spotLightOuterCutoffAngles[index]) / epsilon, 0.0f, 1.0f); 
 
-    calculatedLight *= intensity;
+    vec3 radiance = spotLightColors[index] * intensity * attenuation;
 
-    return calculatedLight;
+    return CalculateLight(lightDirection, radiance);
 }
 
 void main()
@@ -344,7 +340,7 @@ void main()
     vec3 finalFragment = CalculateAmbient();
 
     //Calculate the directional light.
-    finalFragment += CalculateDirectionalLight();
+    //finalFragment += CalculateDirectionalLight();
 
     //Calculate all point lights.
     for (int i = 0; i < numberOfPointLights; ++i)
