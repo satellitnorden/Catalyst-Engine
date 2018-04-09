@@ -2,6 +2,10 @@ Tools/Resource Creator/Visual Studio Solution/Resource Creator/.vs/*
 Tools/Resource Creator/Visual Studio Solution/Resource Creator/x64/*
 Tools/Resource Creator/Visual Studio Solution/Resource Creator/Resource Creator/x64/*
 
+Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/.vs/*
+Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/x64/*
+Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/Microbenchmarker/x64/*
+
 Game/Clairvoyant/Visual Studio Solution/Clairvoyant/.vs/*
 Game/Clairvoyant/Visual Studio Solution/Clairvoyant/x64/*
 Game/Clairvoyant/Visual Studio Solution/Clairvoyant/Clairvoyant/x64/*

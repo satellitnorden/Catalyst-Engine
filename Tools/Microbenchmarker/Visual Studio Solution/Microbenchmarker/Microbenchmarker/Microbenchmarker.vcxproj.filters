@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Engine Source">
+      <UniqueIdentifier>{b5061928-9314-4301-bb86-1e1a55f87867}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Microbenchmarker Source">
+      <UniqueIdentifier>{28f0b950-2ffb-406f-904e-9f997503b24d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\EngineCore.h">
+      <Filter>Engine Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Microbenchmarker Source\Include\Microbenchmarker.h">
+      <Filter>Microbenchmarker Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Microbenchmarker Source\Source\MicrobenchmarkerMain.cpp">
+      <Filter>Microbenchmarker Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
