@@ -295,7 +295,7 @@ vec3 CalculateSpotLight(int index)
     float epsilon = spotLightInnerCutoffAngles[index] - spotLightOuterCutoffAngles[index];
     float intensity = angle > spotLightInnerCutoffAngles[index] ? 1.0f : clamp((angle - spotLightOuterCutoffAngles[index]) / epsilon, 0.0f, 1.0f); 
 
-    vec3 radiance = spotLightColors[index] * intensity * attenuation;
+    vec3 radiance = spotLightColors[index] * spotLightIntensities[index] * intensity * attenuation;
 
     return CalculateLight(lightDirection, radiance);
 }
@@ -340,16 +340,16 @@ void main()
     vec3 finalFragment = CalculateAmbient();
 
     //Calculate the directional light.
-    //finalFragment += CalculateDirectionalLight();
+    finalFragment += CalculateDirectionalLight();
 
     //Calculate all point lights.
-    for (int i = 0; i < min(8, numberOfPointLights); ++i)
+    for (int i = 0; i < numberOfPointLights; ++i)
     {
         finalFragment += CalculatePointLight(i);
     }
 
     //Calculate all spot lights.
-    for (int i = 0; i < min(8, numberOfSpotLights); ++i)
+    for (int i = 0; i < numberOfSpotLights; ++i)
     {
         finalFragment += CalculateSpotLight(i);
     }
