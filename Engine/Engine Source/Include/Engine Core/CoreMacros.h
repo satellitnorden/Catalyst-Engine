@@ -32,7 +32,7 @@
 		function;																																				\
 		durations.EmplaceSlow(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - timeBeforeFunction).count());	\
 		averageDuration += durations.Back();																													\
-		float duration = StaticCast<float>(averageDuration / durations.Size()) / 1'000.0f;																		\
+		float duration = static_cast<float>(averageDuration / durations.Size()) / 1'000.0f;																		\
 		PRINT_TO_CONSOLE(message << " - " << duration << " milliseconds.");																						\
 	}
 #else
