@@ -9,41 +9,41 @@
 layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 {
     //Camera data.
-    float cameraFieldOfViewCosine;
-    mat4 inverseCameraMatrix;
-    mat4 inverseProjectionMatrix;
-    mat4 originViewMatrix;
-    mat4 viewMatrix;
-    vec3 cameraForwardVector;
-    vec3 cameraWorldPosition;
-    float padding1;
+    layout (offset = 0) float cameraFieldOfViewCosine; //Offset; 0 - Size; 16
+    layout (offset = 16) mat4 inverseCameraMatrix; //Offset; 16 - Size; 64
+    layout (offset = 80) mat4 inverseProjectionMatrix; //Offset; 80 - Size; 64
+    layout (offset = 144) mat4 originViewMatrix; //Offset; 144 - Size; 64
+    layout (offset = 208) mat4 viewMatrix; //Offset; 208 - Size; 64
+    layout (offset = 272) vec3 cameraForwardVector; //Offset; 272 - Size; 16
+    layout (offset = 288) vec3 cameraWorldPosition; //Offset; 288 - Size; 16
 
     //Directional light data.
-    float directionalLightIntensity;
-    vec3 directionalLightDirection;
-    vec3 directionalLightColor;
-    vec3 directionalLightScreenSpacePosition;
-    float padding2;
+    layout (offset = 304) float directionalLightIntensity; //Offset; 304 - Size; 16
+    layout (offset = 320) vec3 directionalLightDirection; //Offset; 320 - Size; 16
+    layout (offset = 336) vec3 directionalLightColor; //Offset; 336 - Size; 16
+    layout (offset = 352) vec3 directionalLightScreenSpacePosition; //Offset; 352 - Size; 16
 
     //General data.
-    float totalGameTime;
+    layout (offset = 368) float totalGameTime; //Offset; 368 - Size; 4
 
     //Point light data.
-    int numberOfPointLights;
-    float pointLightAttenuationDistances[MaximumNumberOfPointLights];
-    float pointLightIntensities[MaximumNumberOfPointLights];
-    vec3 pointLightColors[MaximumNumberOfPointLights];
-    vec3 pointLightWorldPositions[MaximumNumberOfPointLights];
+    layout (offset = 372) int numberOfPointLights; //Offset; 372 - Size; 12
+    layout (offset = 384) float pointLightAttenuationDistances[MaximumNumberOfPointLights]; //Offset; 384 - Size; 128
+    layout (offset = 512) float pointLightIntensities[MaximumNumberOfPointLights]; //Offset; 512 - Size; 128
+    layout (offset = 640) vec3 pointLightColors[MaximumNumberOfPointLights]; //Offset; 640 - Size; 128
+    layout (offset = 768) vec3 pointLightWorldPositions[MaximumNumberOfPointLights]; //Offset; 768 - Size; 128
 
     //Spot light data.
-    int numberOfSpotLights;
-    float spotLightAttenuationDistances[MaximumNumberOfSpotLights];
-    float spotLightIntensities[MaximumNumberOfSpotLights];
-    float spotLightInnerCutoffAngles[MaximumNumberOfSpotLights];
-    float spotLightOuterCutoffAngles[MaximumNumberOfSpotLights];
-    vec3 spotLightColors[MaximumNumberOfSpotLights];
-    vec3 spotLightDirections[MaximumNumberOfSpotLights];
-    vec3 spotLightWorldPositions[MaximumNumberOfSpotLights];
+    layout (offset = 896) int numberOfSpotLights; //Offset; 896 - Size; 16
+    layout (offset = 912) float spotLightAttenuationDistances[MaximumNumberOfSpotLights]; //Offset; 912 - Size; 128
+    layout (offset = 1040) float spotLightIntensities[MaximumNumberOfSpotLights]; //Offset; 1040 - Size; 128
+    layout (offset = 1168) float spotLightInnerCutoffAngles[MaximumNumberOfSpotLights]; //Offset; 1168 - Size; 128
+    layout (offset = 1296) float spotLightOuterCutoffAngles[MaximumNumberOfSpotLights]; //Offset; 1296 - Size; 128
+    layout (offset = 1424) vec3 spotLightColors[MaximumNumberOfSpotLights]; //Offset; 1424 - Size; 128
+    layout (offset = 1552) vec3 spotLightDirections[MaximumNumberOfSpotLights]; //Offset; 1552 - Size; 128
+    layout (offset = 1680) vec3 spotLightWorldPositions[MaximumNumberOfSpotLights]; //Offset; 1680 - Size; 128
+
+    //Total size; 1808
 };
 
 //Terrain uniform buffer.

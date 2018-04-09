@@ -28,8 +28,7 @@ public:
 	Vector4 cameraWorldPosition;
 
 	//Directional light data.
-	float directionalLightIntensity;
-	uint64 padding1{ 0 };
+	Vector4 directionalLightIntensity;
 	Vector4 directionalLightDirection;
 	Vector4 directionalLightColor;
 	Vector4 directionalLightScreenSpacePosition;
@@ -38,15 +37,17 @@ public:
 	float totalGameTime;
 
 	//Point light data.
-	uint64 numberOfPointLights;
+	int32 numberOfPointLights;
+	uint64 padding1{ 0 };
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightAttenuationDistances;
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightIntensities;
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightColors;
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightWorldPositions;
 
 	//Spot light data.
-	uint64 numberOfSpotLights;
-	uint64 padding2{ 0 };
+	int32 numberOfSpotLights;
+	uint32 padding2{ 0 };
+	uint64 padding3{ 0 };
 	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightAttenuationDistances;
 	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightIntensities;
 	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightInnerCutoffAngles;
@@ -56,3 +57,35 @@ public:
 	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightWorldPositions;
 
 };
+
+static_assert(sizeof(VulkanDynamicUniformData) == 1808, "X");
+
+static_assert(offsetof(VulkanDynamicUniformData, cameraFieldOfViewCosine) == 0, "X");
+static_assert(offsetof(VulkanDynamicUniformData, inverseCameraMatrix) == 16, "X");
+static_assert(offsetof(VulkanDynamicUniformData, inverseProjectionMatrix) == 80, "X");
+static_assert(offsetof(VulkanDynamicUniformData, originViewMatrix) == 144, "X");
+static_assert(offsetof(VulkanDynamicUniformData, viewMatrix) == 208, "X");
+static_assert(offsetof(VulkanDynamicUniformData, cameraForwardVector) == 272, "X");
+static_assert(offsetof(VulkanDynamicUniformData, cameraWorldPosition) == 288, "X");
+
+static_assert(offsetof(VulkanDynamicUniformData, directionalLightIntensity) == 304, "X");
+static_assert(offsetof(VulkanDynamicUniformData, directionalLightDirection) == 320, "X");
+static_assert(offsetof(VulkanDynamicUniformData, directionalLightColor) == 336, "X");
+static_assert(offsetof(VulkanDynamicUniformData, directionalLightScreenSpacePosition) == 352, "X");
+
+static_assert(offsetof(VulkanDynamicUniformData, totalGameTime) == 368, "X");
+
+static_assert(offsetof(VulkanDynamicUniformData, numberOfPointLights) == 372, "X");
+static_assert(offsetof(VulkanDynamicUniformData, pointLightAttenuationDistances) == 384, "X");
+static_assert(offsetof(VulkanDynamicUniformData, pointLightIntensities) == 512, "X");
+static_assert(offsetof(VulkanDynamicUniformData, pointLightColors) == 640, "X");
+static_assert(offsetof(VulkanDynamicUniformData, pointLightWorldPositions) == 768, "X");
+
+static_assert(offsetof(VulkanDynamicUniformData, numberOfSpotLights) == 896, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightAttenuationDistances) == 912, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightIntensities) == 1040, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightInnerCutoffAngles) == 1168, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightOuterCutoffAngles) == 1296, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightColors) == 1424, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightDirections) == 1552, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightWorldPositions) == 1680, "X");
