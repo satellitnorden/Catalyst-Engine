@@ -219,7 +219,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(512, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, WorldAchitectConstants::TERRAIN_HEIGHT, WorldAchitectConstants::TERRAIN_SIZE, WorldAchitectConstants::TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
+	terrain->Initialize(256, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, WorldAchitectConstants::TERRAIN_HEIGHT, WorldAchitectConstants::TERRAIN_SIZE, WorldAchitectConstants::TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
 	//Load the water material.
 	WaterMaterial waterMaterial{ ResourceLoader::GetWaterMaterial(WorldAchitectConstants::DEFAULT_WATER_MATERIAL) };
@@ -228,6 +228,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	WaterEntity *RESTRICT water = EntitySystem::Instance->CreateEntity<WaterEntity>();
 	water->Initialize(waterMaterial, WaterUniformData(WorldAchitectConstants::TERRAIN_SIZE, 250.0f, Vector3(0.0f, 0.0f, 0.0f)));
 
+	/*
 	//Create the stone model.
 	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_MODEL) };
 
@@ -313,6 +314,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	InstancedPhysicalEntity *RESTRICT treeStomps = EntitySystem::Instance->CreateEntity<InstancedPhysicalEntity>();
 	treeStomps->Initialize(treeStompModel, treeStompTransformations);
+	*/
 }
 
 /*
