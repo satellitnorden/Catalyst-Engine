@@ -61,7 +61,6 @@ namespace WorldAchitectConstants
 	static constexpr HashString TREE_STOMP_MODEL{ "TreeStompModel" };
 	static constexpr HashString DEFAULT_TERRAIN_MATERIAL{ "DefaultTerrainMaterial" };
 	static constexpr HashString DEFAULT_WATER_MATERIAL{ "DefaultWaterMaterial" };
-
 }
 
 /*
