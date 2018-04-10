@@ -48,12 +48,21 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 
 //In parameters.
 layout (location = 0) in vec3 vertexPosition;
+layout (location = 1) in vec2 vertexScale;
+layout (location = 2) in float vertexCosineRotation;
+layout (location = 3) in float vertexSineRotation;
 
 //Out parameters.
 layout (location = 0) out vec3 geometryPosition;
+layout (location = 1) out vec2 geometryScale;
+layout (location = 2) out float geometryCosineRotation;
+layout (location = 3) out float geometrySineRotation;
 
 void main()
 {
-    //Just pass the vertex position to the geometry shader.
+    //Just pass the vertex attributes along to the geometry shader.
 	geometryPosition = vertexPosition;
+    geometryScale = vertexScale;
+    geometryCosineRotation = vertexCosineRotation;
+    geometrySineRotation = vertexSineRotation;
 } 

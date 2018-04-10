@@ -25,6 +25,7 @@ class TerrainUniformData;
 class TextureData;
 class Vector3;
 class VegetationEntity;
+class VegetationTransformation;
 class WaterEntity;
 class WaterMaterialData;
 class WaterMaterial;
@@ -101,7 +102,7 @@ public:
 	/*
 	*	Initializes a vegetation entity.
 	*/
-	void InitializeVegetationEntity(const VegetationEntity &entity, const DynamicArray<Vector3> &positions) const NOEXCEPT;
+	void InitializeVegetationEntity(const VegetationEntity &entity, const DynamicArray<VegetationTransformation> &transformations) const NOEXCEPT;
 
 	/*
 	*	Initializes a water entity.

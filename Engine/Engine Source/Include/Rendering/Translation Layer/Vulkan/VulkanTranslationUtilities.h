@@ -5,6 +5,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/TextureData.h>
+#include <Rendering/Engine Layer/VegetationTransformation.h>
 
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanCore.h>
@@ -230,12 +231,27 @@ namespace VulkanTranslationUtilities
 	/*
 	*	Returns the vertex input attribute descriptions for the vegetation pipeline.
 	*/
-	static void GetVegetationVertexInputAttributeDescriptions(StaticArray<VkVertexInputAttributeDescription, 1> &vertexInputAttributeDescriptions) NOEXCEPT
+	static void GetVegetationVertexInputAttributeDescriptions(StaticArray<VkVertexInputAttributeDescription, 4> &vertexInputAttributeDescriptions) NOEXCEPT
 	{
 		vertexInputAttributeDescriptions[0].location = 0;
 		vertexInputAttributeDescriptions[0].binding = 0;
 		vertexInputAttributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 		vertexInputAttributeDescriptions[0].offset = 0;
+
+		vertexInputAttributeDescriptions[1].location = 1;
+		vertexInputAttributeDescriptions[1].binding = 0;
+		vertexInputAttributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
+		vertexInputAttributeDescriptions[1].offset = sizeof(Vector3);
+
+		vertexInputAttributeDescriptions[2].location = 2;
+		vertexInputAttributeDescriptions[2].binding = 0;
+		vertexInputAttributeDescriptions[2].format = VK_FORMAT_R32_SFLOAT;
+		vertexInputAttributeDescriptions[2].offset = sizeof(Vector3) + sizeof(Vector2);
+
+		vertexInputAttributeDescriptions[3].location = 3;
+		vertexInputAttributeDescriptions[3].binding = 0;
+		vertexInputAttributeDescriptions[3].format = VK_FORMAT_R32_SFLOAT;
+		vertexInputAttributeDescriptions[3].offset = sizeof(Vector3) + sizeof(Vector2) + sizeof(float);
 	}
 
 	/*
@@ -244,7 +260,7 @@ namespace VulkanTranslationUtilities
 	static void GetVegetationVertexInputBindingDescription(VkVertexInputBindingDescription &vertexInputBindingDescription) NOEXCEPT
 	{
 		vertexInputBindingDescription.binding = 0;
-		vertexInputBindingDescription.stride = sizeof(Vector3);
+		vertexInputBindingDescription.stride = sizeof(VegetationTransformation);
 		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
 	}
 }

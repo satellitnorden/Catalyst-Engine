@@ -414,18 +414,18 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 /*
 *	Initializes a vegetation entity.
 */
-void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const DynamicArray<Vector3> &positions) const NOEXCEPT
+void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const DynamicArray<VegetationTransformation> &transformations) const NOEXCEPT
 {
 	//Create the positions buffer.
-	const void *RESTRICT positionsData[]{ positions.Data() };
-	const VkDeviceSize positionsDataSizes[]{ sizeof(Vector3) * positions.Size() };
-	VulkanBuffer *RESTRICT positionsBuffer = VulkanInterface::Instance->CreateBuffer(positionsData, positionsDataSizes, 1);
+	const void *RESTRICT transformationsData[]{ transformations.Data() };
+	const VkDeviceSize transformationsDataSizes[]{ sizeof(VegetationTransformation) * transformations.Size() };
+	VulkanBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateBuffer(transformationsData, transformationsDataSizes, 1);
 
 	//Fill the vegetation entity component with the relevant data.
 	VegetationComponent &component{ ComponentManager::GetVegetationComponents()[entity.GetComponentsIndex()] };
 
-	component.transformationsBuffer = positionsBuffer;
-	component.instanceCount = static_cast<uint32>(positions.Size());
+	component.transformationsBuffer = transformationsBuffer;
+	component.instanceCount = static_cast<uint32>(transformations.Size());
 }
 
 /*
@@ -945,7 +945,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		vegetationPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::VegetationGeometryShader)]);
 		vegetationPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::VegetationFragmentShader)]);
 		vegetationPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-		StaticArray<VkVertexInputAttributeDescription, 1> vegetationVertexInputAttributeDescriptions;
+		StaticArray<VkVertexInputAttributeDescription, 4> vegetationVertexInputAttributeDescriptions;
 		VulkanTranslationUtilities::GetVegetationVertexInputAttributeDescriptions(vegetationVertexInputAttributeDescriptions);
 		vegetationPipelineCreationParameters.vertexInputAttributeDescriptionCount = static_cast<uint32>(vegetationVertexInputAttributeDescriptions.Size());
 		vegetationPipelineCreationParameters.vertexInputAttributeDescriptions = vegetationVertexInputAttributeDescriptions.Data();

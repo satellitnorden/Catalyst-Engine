@@ -61,28 +61,60 @@ layout (triangle_strip, max_vertices = 4) out;
 
 //In parameters.
 layout (location = 0) in vec3 vertexPosition[];
+layout (location = 1) in vec2 vertexScale[];
+layout (location = 2) in float vertexCosineRotation[];
+layout (location = 3) in float vertexSineRotation[];
 
 //Out parameters.
 layout (location = 0) out vec3 geometryPosition;
 
+/*
+*	Returns the squared length of a vector.
+*/
+float SquaredLength(vec3 vector)
+{
+	return (vector.x * vector.x) + (vector.y * vector.y) * (vector.z * vector.z);
+}
+
+/*
+*	Given an index, constructs one vertex of the quad.
+*/
+void ConstructVertex(int index)
+{
+	//Start with the base vertex.
+	vec3 vertex = quadVertices[index];
+
+	//Apply the scale.
+	vec2 vertexScale = vertexScale[0];
+	vertex *= vec3(vertexScale.x, vertexScale.y, 1.0f);
+
+	//Apply the rotation.
+	float tempX = vertex.x * vertexCosineRotation[0] + vertex.z * vertexSineRotation[0];
+	vertex.z = -vertex.x * vertexSineRotation[0] + vertex.z * vertexCosineRotation[0];
+	vertex.x = tempX;
+
+	//Apply the position.
+	vertex += vertexPosition[0];
+
+	//Calculate the final screen space position.
+	gl_Position = viewMatrix * vec4(vertex, 1.0f);
+
+	EmitVertex();
+}
+
 void main()
 {
-    //Construct the quad.
-    gl_Position = viewMatrix * vec4(vertexPosition[0] + quadVertices[0], 1.0f);
+	//Determine the length to the camera.
+	float distanceToCamera = SquaredLength(vertexPosition[0] - cameraWorldPosition);
 
-    EmitVertex();
+	if (distanceToCamera < 10000.0f)
+	{
+		//Construct the quad.
+	    ConstructVertex(0);
+	    ConstructVertex(1);
+	    ConstructVertex(2);
+	    ConstructVertex(3);
 
-    gl_Position = viewMatrix * vec4(vertexPosition[0] + quadVertices[1], 1.0f);
-
-    EmitVertex();
-
-    gl_Position = viewMatrix * vec4(vertexPosition[0] + quadVertices[2], 1.0f);
-
-    EmitVertex();
-
-    gl_Position = viewMatrix * vec4(vertexPosition[0] + quadVertices[3], 1.0f);
-
-    EmitVertex();
-
-    EndPrimitive();
+	    EndPrimitive();
+	}
 }

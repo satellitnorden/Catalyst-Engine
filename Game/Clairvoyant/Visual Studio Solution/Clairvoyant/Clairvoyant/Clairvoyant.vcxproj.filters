@@ -594,6 +594,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\VegetationComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\VegetationTransformation.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">

@@ -118,10 +118,10 @@ void RenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhysicalE
 /*
 *	Initializes a vegetation entity.
 */
-void RenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const DynamicArray<Vector3> &positions) const NOEXCEPT
+void RenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const DynamicArray<VegetationTransformation> &transformations) const NOEXCEPT
 {
 	//Initialize the vegetation entity via the current rendering system.
-	VulkanRenderingSystem::Instance->InitializeVegetationEntity(entity, positions);
+	VulkanRenderingSystem::Instance->InitializeVegetationEntity(entity, transformations);
 }
 
 /*

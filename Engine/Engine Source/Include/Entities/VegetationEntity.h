@@ -6,6 +6,9 @@
 //Entity.
 #include <Entities/Entity.h>
 
+//Rendering
+#include <Rendering/Engine Layer/VegetationTransformation.h>
+
 class VegetationEntity : public Entity
 {
 
@@ -57,6 +60,6 @@ public:
 	/*
 	*	Initializes this vegetation entity.
 	*/
-	void Initialize(const DynamicArray<Vector3> &positions) NOEXCEPT;
+	void Initialize(const DynamicArray<VegetationTransformation> &transformations) NOEXCEPT;
 
 };
