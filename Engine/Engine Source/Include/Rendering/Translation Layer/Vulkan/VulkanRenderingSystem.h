@@ -38,6 +38,7 @@ class TerrainMaterial;
 class TerrainMaterialData;
 class TerrainUniformData;
 class TextureData;
+class VegetationEntity;
 class WaterEntity;
 class WaterMaterialData;
 class WaterMaterial;
@@ -110,6 +111,11 @@ public:
 	*	Initializes an instanced physical entity.
 	*/
 	void InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT;
+
+	/*
+	*	Initializes a vegetation entity.
+	*/
+	void InitializeVegetationEntity(const VegetationEntity &entity, const DynamicArray<Vector3> &positions) const NOEXCEPT;
 
 	/*
 	*	Initializes a water entity.
@@ -187,6 +193,7 @@ private:
 		DynamicUniformData,
 		Terrain,
 		Physical,
+		Vegetation,
 		Lighting,
 		Water,
 		CubeMap,
@@ -200,6 +207,7 @@ private:
 		Terrain,
 		StaticPhysical,
 		InstancedPhysical,
+		Vegetation,
 		Lighting,
 		CubeMap,
 		Water,
@@ -240,6 +248,9 @@ private:
 		TerrainTessellationControlShader,
 		TerrainTessellationEvaluationShader,
 		TerrainVertexShader,
+		VegetationFragmentShader,
+		VegetationGeometryShader,
+		VegetationVertexShader,
 		ViewportVertexShader,
 		WaterFragmentShader,
 		WaterVertexShader,
@@ -385,6 +396,11 @@ private:
 	*	Renders all instanced physical entities.
 	*/
 	void RenderInstancedPhysicalEntities() NOEXCEPT;
+
+	/*
+	*	Renders all vegetation entities.
+	*/
+	void RenderVegetationEntities() NOEXCEPT;
 
 	/*
 	*	Renders lighting.

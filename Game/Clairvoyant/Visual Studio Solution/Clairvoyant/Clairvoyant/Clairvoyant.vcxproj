@@ -128,6 +128,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\TerrainComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\TerrainRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\TransformComponent.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\VegetationComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\WaterComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\WaterRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Algorithms\HashAlgorithms.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\SpotLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\StaticPhysicalEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\TerrainEntity.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\VegetationEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\WaterEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Input\InputConstants.h" />
@@ -271,6 +273,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\SpotLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\StaticPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\TerrainEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\VegetationEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\WaterEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Matrix4.cpp" />

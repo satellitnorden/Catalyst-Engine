@@ -24,6 +24,7 @@ class TerrainMaterialData;
 class TerrainUniformData;
 class TextureData;
 class Vector3;
+class VegetationEntity;
 class WaterEntity;
 class WaterMaterialData;
 class WaterMaterial;
@@ -96,6 +97,11 @@ public:
 	*	Initializes an instanced physical entity.
 	*/
 	void InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT;
+
+	/*
+	*	Initializes a vegetation entity.
+	*/
+	void InitializeVegetationEntity(const VegetationEntity &entity, const DynamicArray<Vector3> &positions) const NOEXCEPT;
 
 	/*
 	*	Initializes a water entity.

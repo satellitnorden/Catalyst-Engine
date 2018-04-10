@@ -78,7 +78,7 @@ public:
 	/*
 	*	Records a draw command.
 	*/
-	void CommandDraw(const uint32 vertexCount) NOEXCEPT;
+	void CommandDraw(const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT;
 
 	/*
 	*	Records a draw indexed command.

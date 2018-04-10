@@ -100,9 +100,9 @@ void VulkanCommandBuffer::CommandBindVertexBuffers(const uint32 vertexBufferCoun
 /*
 *	Records a draw command.
 */
-void VulkanCommandBuffer::CommandDraw(const uint32 vertexCount) NOEXCEPT
+void VulkanCommandBuffer::CommandDraw(const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT
 {
-	vkCmdDraw(vulkanCommandBuffer, vertexCount, 1, 0, 0);
+	vkCmdDraw(vulkanCommandBuffer, vertexCount, instanceCount, 0, 0);
 }
 
 /*

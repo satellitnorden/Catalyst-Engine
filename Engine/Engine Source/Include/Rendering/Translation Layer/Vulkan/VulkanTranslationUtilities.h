@@ -226,4 +226,25 @@ namespace VulkanTranslationUtilities
 		vertexInputBindingDescription.stride = sizeof(float) * 5;
 		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 	}
+
+	/*
+	*	Returns the vertex input attribute descriptions for the vegetation pipeline.
+	*/
+	static void GetVegetationVertexInputAttributeDescriptions(StaticArray<VkVertexInputAttributeDescription, 1> &vertexInputAttributeDescriptions) NOEXCEPT
+	{
+		vertexInputAttributeDescriptions[0].location = 0;
+		vertexInputAttributeDescriptions[0].binding = 0;
+		vertexInputAttributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+		vertexInputAttributeDescriptions[0].offset = 0;
+	}
+
+	/*
+	*	Returns the vertex input binding description for the vegetation pipeline.
+	*/
+	static void GetVegetationVertexInputBindingDescription(VkVertexInputBindingDescription &vertexInputBindingDescription) NOEXCEPT
+	{
+		vertexInputBindingDescription.binding = 0;
+		vertexInputBindingDescription.stride = sizeof(Vector3);
+		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
+	}
 }

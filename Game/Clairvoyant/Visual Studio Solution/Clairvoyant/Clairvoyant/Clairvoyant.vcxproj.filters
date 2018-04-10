@@ -588,6 +588,12 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\CPUTextureCube.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\VegetationEntity.h">
+      <Filter>Engine Source\Entities\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\VegetationComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
@@ -762,6 +768,9 @@
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\Sound2DEntity.cpp">
+      <Filter>Engine Source\Entities\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\VegetationEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
   </ItemGroup>

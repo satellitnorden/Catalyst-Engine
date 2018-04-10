@@ -16,6 +16,7 @@
 #include <Components/TerrainComponent.h>
 #include <Components/TerrainRenderComponent.h>
 #include <Components/TransformComponent.h>
+#include <Components/VegetationComponent.h>
 #include <Components/WaterComponent.h>
 #include <Components/WaterRenderComponent.h>
 
@@ -306,6 +307,36 @@ private:
 
 	//The terrain render components.
 	static DynamicArray<TerrainRenderComponent> terrainRenderComponents;
+
+public:
+
+	/*									*/
+	/*	Vegetation Entity Interface.	*/
+	/*									*/
+
+	/*
+	*	Returns a new components index for vegetation entities.
+	*/
+	static uint64 GetNewVegetationComponentsIndex() NOEXCEPT;
+
+	/*
+	*	Returns the number of vegetation components.
+	*/
+	static uint64 GetNumberOfVegetationComponents() NOEXCEPT;
+
+	/*
+	*	Returns the vegetation components.
+	*/
+	static VegetationComponent *RESTRICT GetVegetationComponents() NOEXCEPT;
+
+
+private:
+
+	//The number of vegetation components.
+	static uint64 numberOfVegetationComponents;
+
+	//The vegetation components.
+	static DynamicArray<VegetationComponent> vegetationComponents;
 
 public:
 

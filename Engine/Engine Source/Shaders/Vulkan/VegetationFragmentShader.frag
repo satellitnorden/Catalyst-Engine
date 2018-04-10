@@ -46,29 +46,28 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1808
 };
 
-//In parameters.
-layout (location = 0) in vec3 vertexPosition;
-layout (location = 1) in vec3 vertexNormal;
-layout (location = 2) in vec3 vertexTangent;
-layout (location = 3) in vec2 vertexTextureCoordinate;
-layout (location = 4) in mat4 modelMatrix;
+//Layout specification.
+layout (early_fragment_tests) in;
 
 //Out parameters.
-layout (location = 0) out vec3 fragmentWorldPosition;
-layout (location = 1) out mat3 fragmentTangentSpaceMatrix;
-layout (location = 4) out vec2 fragmentTextureCoordinate;
+layout (location = 0) out vec4 albedoColor;
+layout (location = 1) out vec4 normalDirectionDepth;
+layout (location = 2) out vec4 roughnessMetallicAmbientOcclusion;
 
 void main()
 {
-  fragmentWorldPosition = vec3(modelMatrix * vec4(vertexPosition, 1.0));
-    
-  vec3 tangent = normalize(vec3(modelMatrix * vec4(vertexTangent, 0.0f)));
-  vec3 bitangent = normalize(vec3(modelMatrix * vec4(cross(vertexNormal, vertexTangent), 0.0f)));
-  vec3 normal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0.0f)));
+    //Set the albedo color.
+    albedoColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 
-  fragmentTangentSpaceMatrix = mat3(tangent, bitangent, normal);
+    //Write the normal direction/depth.
+    normalDirectionDepth = vec4(vec3(0.0f, 0.0f, -1.0f), gl_FragCoord.z);
 
-  fragmentTextureCoordinate = vertexTextureCoordinate;
+    //Write the roughness.
+    roughnessMetallicAmbientOcclusion.r = 1.0f;
 
-  gl_Position = viewMatrix * modelMatrix * vec4(vertexPosition, 1.0);
+    //Set the metallic.
+    roughnessMetallicAmbientOcclusion.g = 0.0f;
+
+    //Set the ambient occlusion.
+    roughnessMetallicAmbientOcclusion.b = 1.0f;
 }

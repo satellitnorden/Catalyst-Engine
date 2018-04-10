@@ -32,6 +32,9 @@ uint64 ComponentManager::numberOfTerrainComponents = 0;
 DynamicArray<TerrainComponent> ComponentManager::terrainComponents;
 DynamicArray<TerrainRenderComponent> ComponentManager::terrainRenderComponents;
 
+uint64 ComponentManager::numberOfVegetationComponents = 0;
+DynamicArray<VegetationComponent> ComponentManager::vegetationComponents;
+
 uint64 ComponentManager::numberOfWaterComponents = 0;
 DynamicArray<WaterComponent> ComponentManager::waterComponents;
 DynamicArray<WaterRenderComponent> ComponentManager::waterRenderComponents;
@@ -334,6 +337,36 @@ TerrainRenderComponent *RESTRICT ComponentManager::GetTerrainRenderComponents() 
 {
 	//Return the terrain render components.
 	return terrainRenderComponents.Data();
+}
+
+/*
+*	Returns a new components index for vegetation entities.
+*/
+uint64 ComponentManager::GetNewVegetationComponentsIndex() NOEXCEPT
+{
+	//Create the relevant components.
+	vegetationComponents.EmplaceSlow();
+
+	//Return the new index.
+	return numberOfVegetationComponents++;
+}
+
+/*
+*	Returns the number of vegetation components.
+*/
+uint64 ComponentManager::GetNumberOfVegetationComponents() NOEXCEPT
+{
+	//Return the number of vegetation components.
+	return numberOfVegetationComponents;
+}
+
+/*
+*	Returns the vegetation components.
+*/
+VegetationComponent *RESTRICT ComponentManager::GetVegetationComponents() NOEXCEPT
+{
+	//Return the vegetation components.
+	return vegetationComponents.Data();
 }
 
 /*
