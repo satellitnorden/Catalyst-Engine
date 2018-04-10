@@ -4,13 +4,6 @@
 //Multithreading.
 #include <Multithreading/Task.h>
 
-//Rendering.
-#include <Rendering/Engine Layer/EnvironmentMaterial.h>
-#include <Rendering/Engine Layer/PhysicalMaterial.h>
-#include <Rendering/Engine Layer/PhysicalModel.h>
-#include <Rendering/Engine Layer/TerrainMaterial.h>
-#include <Rendering/Engine Layer/WaterMaterial.h>
-
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
@@ -19,10 +12,8 @@
 #include <Resources/ResourcesCore.h>
 #include <Resources/SoundBankData.h>
 #include <Resources/TerrainMaterialData.h>
+#include <Resources/VegetationMaterialData.h>
 #include <Resources/WaterMaterialData.h>
-
-//Sound.
-#include <Sound/SoundBank.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -35,6 +26,7 @@ Map<HashString, PhysicalMaterial> ResourceLoader::physicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::physicalModels;
 Map<HashString, SoundBank> ResourceLoader::soundBanks;
 Map<HashString, TerrainMaterial> ResourceLoader::terrainMaterials;
+Map<HashString, VegetationMaterial> ResourceLoader::vegetationMaterials;
 Map<HashString, WaterMaterial> ResourceLoader::waterMaterials;
 
 /*
@@ -110,6 +102,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			case ResourceType::TerrainMaterial:
 			{
 				LoadTerrainMaterial(file);
+
+				break;
+			}
+
+			case ResourceType::VegetationMaterial:
+			{
+				LoadVegetationMaterial(file);
 
 				break;
 			}
@@ -313,6 +312,37 @@ void ResourceLoader::LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the terrain material via the rendering system.
 	RenderingSystem::Instance->CreateTerrainMaterial(terrainMaterialData, terrainMaterials[resourceID]);
+}
+
+/*
+*	Given a file, load a vegetation material.
+*/
+void ResourceLoader::LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the vegetation material data in the vegetation material data structure.
+	VegetationMaterialData vegetationMaterialData;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the width.
+	file.Read(&vegetationMaterialData.width, sizeof(uint32));
+
+	//Read the height.
+	file.Read(&vegetationMaterialData.height, sizeof(uint32));
+
+	//Read the albedo.
+	vegetationMaterialData.albedoData.UpsizeSlow(1);
+
+	const uint64 textureSize{ vegetationMaterialData.width * vegetationMaterialData.height * 4 };
+
+	vegetationMaterialData.albedoData[0].Reserve(textureSize);
+
+	file.Read(vegetationMaterialData.albedoData[0].Data(), textureSize);
+
+	//Create the vegetation material via the rendering system.
+	RenderingSystem::Instance->CreateVegetationMaterial(vegetationMaterialData, vegetationMaterials[resourceID]);
 }
 
 /*

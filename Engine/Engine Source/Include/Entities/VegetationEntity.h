@@ -9,6 +9,9 @@
 //Rendering
 #include <Rendering/Engine Layer/VegetationTransformation.h>
 
+//Forward declarations.
+class VegetationMaterial;
+
 class VegetationEntity : public Entity
 {
 
@@ -60,6 +63,6 @@ public:
 	/*
 	*	Initializes this vegetation entity.
 	*/
-	void Initialize(const DynamicArray<VegetationTransformation> &transformations) NOEXCEPT;
+	void Initialize(const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations) NOEXCEPT;
 
 };

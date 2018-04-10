@@ -11,6 +11,9 @@ class VegetationComponent final
 
 public:
 
+	//The descriptor set.
+	DescriptorSetHandle descriptorSet;
+
 	//The transformations buffer.
 	GraphicsBufferHandle transformationsBuffer;
 

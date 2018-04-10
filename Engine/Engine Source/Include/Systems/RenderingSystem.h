@@ -25,6 +25,8 @@ class TerrainUniformData;
 class TextureData;
 class Vector3;
 class VegetationEntity;
+class VegetationMaterial;
+class VegetationMaterialData;
 class VegetationTransformation;
 class WaterEntity;
 class WaterMaterialData;
@@ -80,6 +82,11 @@ public:
 	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT;
 
 	/*
+	*	Creates a vegetation material.
+	*/
+	void CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT;
+
+	/*
 	*	Creates a water material.
 	*/
 	void CreateWaterMaterial(const WaterMaterialData &waterMaterialData, WaterMaterial &waterMaterial) const NOEXCEPT;
@@ -102,7 +109,7 @@ public:
 	/*
 	*	Initializes a vegetation entity.
 	*/
-	void InitializeVegetationEntity(const VegetationEntity &entity, const DynamicArray<VegetationTransformation> &transformations) const NOEXCEPT;
+	void InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations) const NOEXCEPT;
 
 	/*
 	*	Initializes a water entity.

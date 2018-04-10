@@ -12,6 +12,7 @@
 #include <ResourceCollectionCreator.h>
 #include <SoundBankCreator.h>
 #include <TerrainMaterialCreator.h>
+#include <VegetationMaterialCreator.h>
 #include <WaterMaterialCreator.h>
 
 //Preprocessor defines.
@@ -48,6 +49,11 @@ int main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 	else if (strcmp(arguments[1], "TerrainMaterial") == 0)
 	{
 		TerrainMaterialCreator::CreateTerrainMaterial(argumentCount, arguments);
+	}
+
+	else if (strcmp(arguments[1], "VegetationMaterial") == 0)
+	{
+		VegetationMaterialCreator::CreateVegetationMaterial(argumentCount, arguments);
 	}
 
 	else if (strcmp(arguments[1], "WaterMaterial") == 0)

@@ -4,17 +4,22 @@
 #include <Engine Core/EngineCore.h>
 #include <Engine Core/HashString.h>
 
+//Rendering.
+#include <Rendering/Engine Layer/EnvironmentMaterial.h>
+#include <Rendering/Engine Layer/PhysicalMaterial.h>
+#include <Rendering/Engine Layer/PhysicalModel.h>
+#include <Rendering/Engine Layer/TerrainMaterial.h>
+#include <Rendering/Engine Layer/VegetationMaterial.h>
+#include <Rendering/Engine Layer/WaterMaterial.h>
+
 //Resources.
 #include <Resources/ResourcesCore.h>
 
+//Sound.
+#include <Sound/SoundBank.h>
+
 //Forward declarations.
-class EnvironmentMaterial;
-class PhysicalMaterial;
-class PhysicalModel;
 class Semaphore;
-class SoundBank;
-class TerrainMaterial;
-class WaterMaterial;
 
 class ResourceLoader final
 {
@@ -48,6 +53,11 @@ public:
 	static const TerrainMaterial& GetTerrainMaterial(const HashString resourceID) { return terrainMaterials[resourceID]; }
 
 	/*
+	*	Given a resource ID, return the corresponding vegetation material.
+	*/
+	static const VegetationMaterial& GetVegetationMaterial(const HashString resourceID) { return vegetationMaterials[resourceID]; }
+
+	/*
 	*	Given a resource ID, return the corresponding water material.
 	*/
 	static const WaterMaterial& GetWaterMaterial(const HashString resourceID) { return waterMaterials[resourceID]; }
@@ -68,6 +78,9 @@ private:
 
 	//Container for all terrain materials.
 	static Map<HashString, TerrainMaterial> terrainMaterials;
+
+	//Container for all vegetation materials.
+	static Map<HashString, VegetationMaterial> vegetationMaterials;
 
 	//Container for all water materials.
 	static Map<HashString, WaterMaterial> waterMaterials;
@@ -101,6 +114,11 @@ private:
 	*	Given a file, load a terrain material.
 	*/
 	static void LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a vegetation material.
+	*/
+	static void LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a water material.

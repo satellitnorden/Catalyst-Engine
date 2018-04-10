@@ -15,6 +15,7 @@
 #include <Entities/Sound3DEntity.h>
 #include <Entities/SpotLightEntity.h>
 #include <Entities/TerrainEntity.h>
+#include <Entities/VegetationEntity.h>
 #include <Entities/WaterEntity.h>
 
 //Math.
@@ -60,6 +61,7 @@ namespace WorldAchitectConstants
 	static constexpr HashString STONE_MODEL{ "StoneModel" };
 	static constexpr HashString TREE_STOMP_MODEL{ "TreeStompModel" };
 	static constexpr HashString DEFAULT_TERRAIN_MATERIAL{ "DefaultTerrainMaterial" };
+	static constexpr HashString DEFAULT_VEGETATION_MATERIAL{ "DefaultVegetationMaterial" };
 	static constexpr HashString DEFAULT_WATER_MATERIAL{ "DefaultWaterMaterial" };
 }
 
@@ -314,6 +316,39 @@ void WorldArchitect::Initialize() NOEXCEPT
 	InstancedPhysicalEntity *RESTRICT treeStomps = EntitySystem::Instance->CreateEntity<InstancedPhysicalEntity>();
 	treeStomps->Initialize(treeStompModel, treeStompTransformations);
 	*/
+
+	//Create some grass.
+	constexpr uint64 vegetationDensity{ 100'000'000 };
+
+	DynamicArray<VegetationTransformation> vegetationTransformations;
+	vegetationTransformations.Reserve(vegetationDensity);
+
+	//Create the tree stomps.
+	for (uint64 i = 0; i < vegetationDensity; ++i)
+	{
+		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f)) };
+
+		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
+
+		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.85f)
+		{
+			continue;
+		}
+
+		position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
+
+		if (position.Y <= PhysicsSystem::Instance->GetWaterHeight())
+		{
+			continue;
+		}
+
+		position.Y -= 0.2f;
+
+		vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(1.0f, 2.0f), CatalystMath::RandomFloatInRange(1.0f, 2.0f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
+	}
+	
+	VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
+	vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations);
 }
 
 /*

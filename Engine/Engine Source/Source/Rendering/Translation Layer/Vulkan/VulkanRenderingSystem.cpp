@@ -29,6 +29,7 @@
 #include <Rendering/Engine Layer/ShaderLoader.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/TextureData.h>
+#include <Rendering/Engine Layer/VegetationMaterial.h>
 #include <Rendering/Engine Layer/WaterMaterial.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanTranslationUtilities.h>
 
@@ -37,6 +38,7 @@
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/PhysicalModelData.h>
 #include <Resources/TerrainMaterialData.h>
+#include <Resources/VegetationMaterialData.h>
 #include <Resources/WaterMaterialData.h>
 
 //Systems.
@@ -252,6 +254,15 @@ void VulkanRenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &p
 }
 
 /*
+*	Creates a vegetation material.
+*/
+void VulkanRenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT
+{
+	//Load the albedo.
+	vegetationMaterial.albedoTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(vegetationMaterialData.width, vegetationMaterialData.height, 4, vegetationMaterialData.albedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+}
+
+/*
 *	Creates and returns physical model.
 */
 void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
@@ -414,9 +425,23 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 /*
 *	Initializes a vegetation entity.
 */
-void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const DynamicArray<VegetationTransformation> &transformations) const NOEXCEPT
+void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations) const NOEXCEPT
 {
-	//Create the positions buffer.
+	//Cache relevant data.
+	VulkanDescriptorSet newDescriptorSet;
+
+	//Allocate the descriptor set.
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Vegetation)]);
+
+	//Update the write descriptor sets.
+	StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
+	{
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1)
+	};
+
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+
+	//Create the transformations buffer.
 	const void *RESTRICT transformationsData[]{ transformations.Data() };
 	const VkDeviceSize transformationsDataSizes[]{ sizeof(VegetationTransformation) * transformations.Size() };
 	VulkanBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateBuffer(transformationsData, transformationsDataSizes, 1);
@@ -424,6 +449,7 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 	//Fill the vegetation entity component with the relevant data.
 	VegetationComponent &component{ ComponentManager::GetVegetationComponents()[entity.GetComponentsIndex()] };
 
+	component.descriptorSet = newDescriptorSet;
 	component.transformationsBuffer = transformationsBuffer;
 	component.instanceCount = static_cast<uint32>(transformations.Size());
 }
@@ -643,6 +669,14 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	};
 
 	descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)].Initialize(3, staticPhysicalDescriptorSetLayoutBindings.Data());
+
+	//Initialize the scene buffer descriptor set layout.
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> vegetationDescriptorSetLayoutBindings
+	{
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+	};
+
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::Vegetation)].Initialize(1, vegetationDescriptorSetLayoutBindings.Data());
 
 	//Initialize the lighting descriptor set layout.
 	constexpr StaticArray<VkDescriptorSetLayoutBinding, 6> lightingDescriptorSetLayoutBindings
@@ -932,9 +966,10 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		vegetationPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		vegetationPipelineCreationParameters.depthTestEnable = VK_TRUE;
 		vegetationPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-		StaticArray<VulkanDescriptorSetLayout, 1> vegetationDescriptorSetLayouts
+		StaticArray<VulkanDescriptorSetLayout, 2> vegetationDescriptorSetLayouts
 		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)]
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::Vegetation)]
 		};
 		vegetationPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(vegetationDescriptorSetLayouts.Size());
 		vegetationPipelineCreationParameters.descriptorSetLayouts = vegetationDescriptorSetLayouts.Data();
@@ -1387,9 +1422,15 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{
+		StaticArray<VulkanDescriptorSet, 2> vegetationDescriptorSets
+		{
+			*currentDynamicUniformDataDescriptorSet,
+			component->descriptorSet
+		};
+
 		constexpr VkDeviceSize offset{ 0 };
 
-		currentCommandBuffer->CommandBindDescriptorSets(vegetationPipeline, 1, currentDynamicUniformDataDescriptorSet);
+		currentCommandBuffer->CommandBindDescriptorSets(vegetationPipeline, static_cast<uint32>(vegetationDescriptorSets.Size()), vegetationDescriptorSets.Data());
 		currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanBuffer *RESTRICT>(component->transformationsBuffer)->Get(), &offset);
 		currentCommandBuffer->CommandDraw(1, component->instanceCount);
 	}

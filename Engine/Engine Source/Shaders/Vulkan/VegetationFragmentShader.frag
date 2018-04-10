@@ -46,8 +46,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1808
 };
 
-//Layout specification.
-layout (early_fragment_tests) in;
+//In parameters.
+layout (location = 0) in vec2 fragmentTextureCoordinate;
+layout (location = 1) in vec3 fragmentNormal;
+
+//Texture samplers.
+layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
@@ -56,18 +60,30 @@ layout (location = 2) out vec4 roughnessMetallicAmbientOcclusion;
 
 void main()
 {
-    //Set the albedo color.
-    albedoColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    //Sample the albedo texture.
+    vec4 albedoTextureSampler = texture(albedoTexture, fragmentTextureCoordinate);
 
-    //Write the normal direction/depth.
-    normalDirectionDepth = vec4(vec3(0.0f, 0.0f, -1.0f), gl_FragCoord.z);
+    //Discard this fragment if the the alpha is zero.
+    if (albedoTextureSampler.a < 0.99f)
+    {
+        discard;
+    }
 
-    //Write the roughness.
-    roughnessMetallicAmbientOcclusion.r = 1.0f;
+    else
+    {
+        //Set the albedo color.
+        albedoColor = albedoTextureSampler;
 
-    //Set the metallic.
-    roughnessMetallicAmbientOcclusion.g = 0.0f;
+        //Write the normal direction/depth.
+        normalDirectionDepth = vec4(gl_FrontFacing ? fragmentNormal : -fragmentNormal, gl_FragCoord.z);
 
-    //Set the ambient occlusion.
-    roughnessMetallicAmbientOcclusion.b = 1.0f;
+        //Write the roughness.
+        roughnessMetallicAmbientOcclusion.r = 1.0f;
+
+        //Set the metallic.
+        roughnessMetallicAmbientOcclusion.g = 0.0f;
+
+        //Set the ambient occlusion.
+        roughnessMetallicAmbientOcclusion.b = 1.0f;
+    }
 }

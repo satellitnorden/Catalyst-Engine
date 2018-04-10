@@ -80,6 +80,15 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 }
 
 /*
+*	Creates a vegetation material.
+*/
+void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT
+{
+	//Create the vegetation model via the current rendering system.
+	VulkanRenderingSystem::Instance->CreateVegetationMaterial(vegetationMaterialData, vegetationMaterial);
+}
+
+/*
 *	Creates a water material.
 */
 void RenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterialData, WaterMaterial &waterMaterial) const NOEXCEPT
@@ -118,10 +127,10 @@ void RenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhysicalE
 /*
 *	Initializes a vegetation entity.
 */
-void RenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const DynamicArray<VegetationTransformation> &transformations) const NOEXCEPT
+void RenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations) const NOEXCEPT
 {
 	//Initialize the vegetation entity via the current rendering system.
-	VulkanRenderingSystem::Instance->InitializeVegetationEntity(entity, transformations);
+	VulkanRenderingSystem::Instance->InitializeVegetationEntity(entity, material, transformations);
 }
 
 /*
