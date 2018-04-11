@@ -172,7 +172,8 @@ bool VulkanPhysicalDevice::HasRequiredFeatures(const VkPhysicalDevice vulkanPhys
 	VkPhysicalDeviceFeatures features;
 	vkGetPhysicalDeviceFeatures(vulkanPhysicalDevice, &features);
 
-	return	features.samplerAnisotropy == VK_TRUE &&
+	return	features.geometryShader == VK_TRUE &&
+			features.samplerAnisotropy == VK_TRUE &&
 			features.tessellationShader == VK_TRUE;
 }
 

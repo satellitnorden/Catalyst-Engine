@@ -318,7 +318,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	*/
 
 	//Create some grass.
-	constexpr uint64 vegetationDensity{ 100'000'000 };
+	constexpr uint64 vegetationDensity{ 10'000'000 };
 
 	DynamicArray<VegetationTransformation> vegetationTransformations;
 	vegetationTransformations.Reserve(vegetationDensity);
@@ -330,7 +330,14 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
 
-		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.85f)
+		const float dotProduct{ Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) };
+
+		if (dotProduct < 0.8f)
+		{
+			continue;
+		}
+
+		else if (!CatalystMath::RandomChance((dotProduct - 0.8f) * 5.0f))
 		{
 			continue;
 		}

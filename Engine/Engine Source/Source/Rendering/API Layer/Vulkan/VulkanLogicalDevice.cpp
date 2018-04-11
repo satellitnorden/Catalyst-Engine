@@ -103,7 +103,7 @@ void VulkanLogicalDevice::CreatePhysicalDeviceFeatures(VkPhysicalDeviceFeatures 
 	physicalDeviceFeatures.fullDrawIndexUint32 = VK_FALSE;
 	physicalDeviceFeatures.imageCubeArray = VK_FALSE;
 	physicalDeviceFeatures.independentBlend = VK_FALSE;
-	physicalDeviceFeatures.geometryShader = VK_FALSE;
+	physicalDeviceFeatures.geometryShader = VK_TRUE;
 	physicalDeviceFeatures.tessellationShader = VK_TRUE;
 	physicalDeviceFeatures.sampleRateShading = VK_FALSE;
 	physicalDeviceFeatures.dualSrcBlend = VK_FALSE;
