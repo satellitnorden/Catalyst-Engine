@@ -48,23 +48,40 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
-layout (location = 1) in vec3 fragmentNormal;
+layout (location = 1) in float fragmentCosineRotation;
+layout (location = 2) in float fragmentSineRotation;
 
 //Texture samplers.
-layout (set = 1, binding = 2) uniform sampler2D albedoTexture;
+layout (set = 1, binding = 2) uniform sampler2D maskTexture;
+layout (set = 1, binding = 3) uniform sampler2D albedoTexture;
+layout (set = 1, binding = 4) uniform sampler2D normalMapTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
 layout (location = 1) out vec4 normalDirectionDepth;
 layout (location = 2) out vec4 roughnessMetallicAmbientOcclusion;
 
+/*
+*   Calculates the normal.
+*/
+vec3 CalculateNormal()
+{
+    vec3 normal = texture(normalMapTexture, fragmentTextureCoordinate).xyz;
+
+    float tempX = normal.x * fragmentCosineRotation + normal.z * fragmentSineRotation;
+    normal.z = -normal.x * fragmentSineRotation + normal.z * fragmentCosineRotation;
+    normal.x = tempX;
+
+    return normal;
+}
+
 void main()
 {
-    //Sample the albedo texture.
-    vec4 albedoTextureSampler = texture(albedoTexture, fragmentTextureCoordinate);
+    //Sample the mask texture.
+    vec4 maskTextureSampler = texture(maskTexture, fragmentTextureCoordinate);
 
     //Discard this fragment if the the alpha is zero.
-    if (albedoTextureSampler.a < 0.99f)
+    if (maskTextureSampler.a < 0.1f)
     {
         discard;
     }
@@ -72,18 +89,19 @@ void main()
     else
     {
         //Set the albedo color.
-        albedoColor = albedoTextureSampler;
+        albedoColor = texture(albedoTexture, fragmentTextureCoordinate);
 
         //Write the normal direction/depth.
-        normalDirectionDepth = vec4(gl_FrontFacing ? fragmentNormal : -fragmentNormal, gl_FragCoord.z);
+        vec3 normal = CalculateNormal();
+        normalDirectionDepth = vec4(gl_FrontFacing ? -normal : normal, gl_FragCoord.z);
 
         //Write the roughness.
         roughnessMetallicAmbientOcclusion.r = 1.0f;
 
-        //Set the metallic.
-        roughnessMetallicAmbientOcclusion.g = 0.0f;
-
         //Set the ambient occlusion.
         roughnessMetallicAmbientOcclusion.b = 1.0f;
+
+        //Write the thinness.
+        roughnessMetallicAmbientOcclusion.a = 0.1f;
     }
 }

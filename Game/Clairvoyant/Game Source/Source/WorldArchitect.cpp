@@ -318,14 +318,14 @@ void WorldArchitect::Initialize() NOEXCEPT
 	*/
 
 	//Create some grass.
-	constexpr uint64 vegetationDensity{ 20'000'000 };
+	constexpr uint64 vegetationDensity{ 10'000'000 };
 	constexpr StaticArray<float, 5> cutoffDistances
 	{
-		500.0f,
-		400.0f,
-		300.0f,
-		200.0f,
-		100.0f
+		512.0f,
+		256.0f,
+		128.0f,
+		64.0f,
+		32.0f
 	};
 
 	for (uint64 i = 0; i < cutoffDistances.Size(); ++i)
@@ -359,9 +359,9 @@ void WorldArchitect::Initialize() NOEXCEPT
 				continue;
 			}
 
-			position.Y -= 0.2f;
+			position.Y -= 0.1f;
 
-			vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(1.0f, 2.0f), CatalystMath::RandomFloatInRange(1.0f, 2.0f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
+			vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(1.0f, 1.9f), CatalystMath::RandomFloatInRange(1.0f, 1.9f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
 		}
 
 		VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };

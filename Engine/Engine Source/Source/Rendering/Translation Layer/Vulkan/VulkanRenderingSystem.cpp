@@ -259,7 +259,13 @@ void VulkanRenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &p
 void VulkanRenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT
 {
 	//Load the albedo.
-	vegetationMaterial.albedoTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(vegetationMaterialData.width, vegetationMaterialData.height, 4, vegetationMaterialData.albedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	vegetationMaterial.maskTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(vegetationMaterialData.width, vegetationMaterialData.height, 4, vegetationMaterialData.maskData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE));
+
+	//Load the albedo.
+	vegetationMaterial.albedoTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(vegetationMaterialData.width, vegetationMaterialData.height, 4, vegetationMaterialData.albedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE));
+
+	//Load the albedo.
+	vegetationMaterial.normalMapTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(vegetationMaterialData.width, vegetationMaterialData.height, 4, vegetationMaterialData.normalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE));
 }
 
 /*
@@ -438,10 +444,12 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Vegetation)]);
 
 	//Update the write descriptor sets.
-	StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
+	StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
 	{
 		propertiesBuffer->GetWriteDescriptorSet(newDescriptorSet, 1),
-		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 2)
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.maskTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 3),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.normalMapTexture)->GetWriteDescriptorSet(newDescriptorSet, 4)
 	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -666,7 +674,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)].Initialize(18, terrainDescriptorSetLayoutBindings.Data());
 
 	//Initialize the scene buffer descriptor set layout.
-	constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> staticPhysicalDescriptorSetLayoutBindings
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> staticPhysicalDescriptorSetLayoutBindings
 	{
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
@@ -676,10 +684,12 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)].Initialize(3, staticPhysicalDescriptorSetLayoutBindings.Data());
 
 	//Initialize the scene buffer descriptor set layout.
-	constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> vegetationDescriptorSetLayoutBindings
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> vegetationDescriptorSetLayoutBindings
 	{
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_GEOMETRY_BIT),
-		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 	};
 
 	descriptorSetLayouts[INDEX(DescriptorSetLayout::Vegetation)].Initialize(static_cast<uint32>(vegetationDescriptorSetLayoutBindings.Size()), vegetationDescriptorSetLayoutBindings.Data());

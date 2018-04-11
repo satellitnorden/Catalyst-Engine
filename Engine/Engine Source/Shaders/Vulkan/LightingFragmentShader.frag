@@ -67,10 +67,11 @@ layout (location = 0) out vec4 fragmentColor;
 layout (location = 1) out vec4 waterFragmentColor;
 
 //Globals.
-float fragmentDepth;
-float roughness;
-float metallic;
 float ambientOcclusion;
+float fragmentDepth;
+float metallic;
+float roughness;
+float thinness;
 float viewAngle;
 vec3 viewDirection;
 vec3 surfaceColor;
@@ -151,7 +152,7 @@ vec3 CalculateLight(vec3 lightDirection, vec3 radiance)
 {
     vec3 halfwayDirection = normalize(viewDirection + lightDirection);
     float lightViewAngle = clamp(dot(halfwayDirection, viewDirection), 0.0f, 1.0f);
-    float lightAngle = max(dot(normalDirection, lightDirection), 0.0f);
+    float lightAngle = mix(max(dot(normalDirection, lightDirection), 0.0f), 1.0f, thinness);
 
     float distribution = CalculateDistribution(halfwayDirection);
     float geometry = CalculateGeometry(lightAngle);
@@ -330,6 +331,9 @@ void main()
 
     //Set the ambient occlusion.
     ambientOcclusion = roughnessMetallicAmbientOcclusionSampler.b;
+
+    //Set the thinness.
+    thinness = roughnessMetallicAmbientOcclusionSampler.a;
 
     //Calculate globals.
     viewDirection = normalize(cameraWorldPosition - fragmentWorldPosition);

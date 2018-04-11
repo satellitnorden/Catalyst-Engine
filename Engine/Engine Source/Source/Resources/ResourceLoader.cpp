@@ -326,20 +326,49 @@ void ResourceLoader::LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCE
 	HashString resourceID;
 	file.Read(&resourceID, sizeof(HashString));
 
+	//Read the mask mipmap levels.
+	file.Read(&vegetationMaterialData.maskMipmapLevels, sizeof(uint8));
+
+	//Read the remaining mipmap levels.
+	file.Read(&vegetationMaterialData.remainingMipmapLevels, sizeof(uint8));
+
 	//Read the width.
 	file.Read(&vegetationMaterialData.width, sizeof(uint32));
 
 	//Read the height.
 	file.Read(&vegetationMaterialData.height, sizeof(uint32));
 
-	//Read the albedo.
-	vegetationMaterialData.albedoData.UpsizeSlow(1);
+	//Read the mask data.
+	vegetationMaterialData.maskData.UpsizeSlow(vegetationMaterialData.maskMipmapLevels);
 
 	const uint64 textureSize{ vegetationMaterialData.width * vegetationMaterialData.height * 4 };
 
-	vegetationMaterialData.albedoData[0].Reserve(textureSize);
+	for (uint8 i = 0; i < vegetationMaterialData.maskMipmapLevels; ++i)
+	{
+		vegetationMaterialData.maskData[i].Reserve(textureSize >> i);
 
-	file.Read(vegetationMaterialData.albedoData[0].Data(), textureSize);
+		file.Read(vegetationMaterialData.maskData[i].Data(), textureSize >> i);
+	}
+
+	//Read the albedo.
+	vegetationMaterialData.albedoData.UpsizeSlow(vegetationMaterialData.remainingMipmapLevels);
+
+	for (uint8 i = 0; i < vegetationMaterialData.remainingMipmapLevels; ++i)
+	{
+		vegetationMaterialData.albedoData[i].Reserve(textureSize >> i);
+
+		file.Read(vegetationMaterialData.albedoData[i].Data(), textureSize >> i);
+	}
+
+	//Read the normal map.
+	vegetationMaterialData.normalMapData.UpsizeSlow(vegetationMaterialData.remainingMipmapLevels);
+
+	for (uint8 i = 0; i < vegetationMaterialData.remainingMipmapLevels; ++i)
+	{
+		vegetationMaterialData.normalMapData[i].Reserve(textureSize >> i);
+
+		file.Read(vegetationMaterialData.normalMapData[i].Data(), textureSize >> i);
+	}
 
 	//Create the vegetation material via the rendering system.
 	RenderingSystem::Instance->CreateVegetationMaterial(vegetationMaterialData, vegetationMaterials[resourceID]);

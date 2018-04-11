@@ -82,10 +82,8 @@ layout (location = 3) in float vertexSineRotation[];
 
 //Out parameters.
 layout (location = 0) out vec2 fragmentTextureCoordinate;
-layout (location = 1) out vec3 fragmentNormal;
-
-//Globals.
-vec3 quadNormal;
+layout (location = 1) out float fragmentCosineRotation;
+layout (location = 2) out float fragmentSineRotation;
 
 /*
 *	Returns the squared length of a vector.
@@ -104,22 +102,22 @@ float RandomFloat(vec2 seed)
 }
 
 /*
-*	Returns the wind modulator for a given position with a given height.
+*	Returns the wind modulator for a given position.
 */
-vec3 GetWindModulator(vec3 position, float height)
+vec3 GetWindModulator(vec3 position)
 {
 	const float windStrength = 2.5f;
 	const vec3 windDirection = vec3(-0.1f, 0.0f, -0.1f);
 
 	float windCosineModulator = (cos(totalGameTime * windStrength * (1.0f + RandomFloat(vec2(position.x, position.y)))) * 0.5f + 0.5f) * 0.5f + 0.8f;
 	float windSinusModulator = (sin((position.x * windDirection.x) + (position.z * windDirection.z) + totalGameTime * windStrength) * 0.5f + 1.25f) * windCosineModulator;
-	return windDirection * windStrength * windSinusModulator * height;
+	return windDirection * windStrength * windSinusModulator;
 }
 
 /*
-*	Given an index, constructs one vertex of the quad.
+*	Given an index, constructs one bottom vertex of the quad.
 */
-void ConstructVertex(int index)
+void ConstructBottomVertex(int index)
 {
 	//Start with the base vertex.
 	vec3 vertex = quadVertices[index];
@@ -137,33 +135,50 @@ void ConstructVertex(int index)
 	//Apply the position.
 	vertex += vertexPosition[0];
 
-	//Apply the wind modulator.
-	vec3 windModulator = GetWindModulator(vertex, vertexHeight);
-	vertex += windModulator;
-
 	//Calculate the final screen space position.
 	gl_Position = viewMatrix * vec4(vertex, 1.0f);
 
-	//Set the fragment texture coordinate.
+	//Set the fragment properties.
 	fragmentTextureCoordinate = quadTextureCoordinates[index];
-
-	//Set the fragment normal.
-	fragmentNormal = quadNormal;
+	fragmentCosineRotation = vertexCosineRotation[0];
+	fragmentSineRotation = vertexSineRotation[0];
 
 	EmitVertex();
 }
 
 /*
-*	Calculates the normal of this vegetation quad.
+*	Given an index, constructs one top vertex of the quad.
 */
-void CalculateNormal()
+void ConstructTopVertex(int index)
 {
-	quadNormal = vec3(0.0f, 0.0f, -1.0f);
+	//Start with the base vertex.
+	vec3 vertex = quadVertices[index];
+
+	//Apply the scale.
+	vec2 vertexScale = vertexScale[0];
+	vertex *= vec3(vertexScale.x, vertexScale.y, 1.0f);
 
 	//Apply the rotation.
-	float tempX = quadNormal.x * vertexCosineRotation[0] + quadNormal.z * vertexSineRotation[0];
-	quadNormal.z = -quadNormal.x * vertexSineRotation[0] + quadNormal.z * vertexCosineRotation[0];
-	quadNormal.x = tempX;
+	float tempX = vertex.x * vertexCosineRotation[0] + vertex.z * vertexSineRotation[0];
+	vertex.z = -vertex.x * vertexSineRotation[0] + vertex.z * vertexCosineRotation[0];
+	vertex.x = tempX;
+
+	//Apply the position.
+	vertex += vertexPosition[0];
+
+	//Apply the wind modulator.
+	vec3 windModulator = GetWindModulator(vertex);
+	vertex += windModulator;
+
+	//Calculate the final screen space position.
+	gl_Position = viewMatrix * vec4(vertex, 1.0f);
+
+	//Set the fragment properties.
+	fragmentTextureCoordinate = quadTextureCoordinates[index];
+	fragmentCosineRotation = vertexCosineRotation[0];
+	fragmentSineRotation = vertexSineRotation[0];
+
+	EmitVertex();
 }
 
 void main()
@@ -174,12 +189,10 @@ void main()
 	if (distanceToCamera < cutoffDistance)
 	{
 		//Construct the quad.
-		CalculateNormal();
-
-	   	ConstructVertex(0);
-	   	ConstructVertex(1);
-	   	ConstructVertex(2);
-	   	ConstructVertex(3);
+	   	ConstructBottomVertex(0);
+	   	ConstructTopVertex(1);
+	   	ConstructBottomVertex(2);
+	   	ConstructTopVertex(3);
 
 	   	EndPrimitive();
 	}
