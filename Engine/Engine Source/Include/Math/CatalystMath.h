@@ -223,7 +223,8 @@ public:
 	*/
 	static float RandomFloatInRange(const float minimum, const float maximum) NOEXCEPT
 	{
-		static thread_local std::mt19937 randomEngine;
+		static thread_local std::random_device randomDevice;
+		static thread_local std::mt19937 randomEngine{ randomDevice() };
 
 		std::uniform_real_distribution<float> distribution(minimum, maximum);
 
@@ -236,7 +237,8 @@ public:
 	template <class IntegerType>
 	static IntegerType RandomIntegerInRange(const IntegerType minimum, const IntegerType maximum) NOEXCEPT
 	{
-		static thread_local std::mt19937 randomEngine;
+		static thread_local std::random_device randomDevice;
+		static thread_local std::mt19937 randomEngine{ randomDevice() };
 
 		std::uniform_int_distribution<IntegerType> distribution(minimum, maximum);
 
