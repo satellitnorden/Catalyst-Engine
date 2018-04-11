@@ -318,44 +318,55 @@ void WorldArchitect::Initialize() NOEXCEPT
 	*/
 
 	//Create some grass.
-	constexpr uint64 vegetationDensity{ 10'000'000 };
-
-	DynamicArray<VegetationTransformation> vegetationTransformations;
-	vegetationTransformations.Reserve(vegetationDensity);
-
-	//Create the tree stomps.
-	for (uint64 i = 0; i < vegetationDensity; ++i)
+	constexpr uint64 vegetationDensity{ 20'000'000 };
+	constexpr StaticArray<float, 5> cutoffDistances
 	{
-		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f)) };
+		500.0f,
+		400.0f,
+		300.0f,
+		200.0f,
+		100.0f
+	};
 
-		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
+	for (uint64 i = 0; i < cutoffDistances.Size(); ++i)
+	{
+		DynamicArray<VegetationTransformation> vegetationTransformations;
+		vegetationTransformations.Reserve(vegetationDensity);
 
-		const float dotProduct{ Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) };
-
-		if (dotProduct < 0.8f)
+		//Create the tree stomps.
+		for (uint64 i = 0; i < vegetationDensity; ++i)
 		{
-			continue;
+			Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f)) };
+
+			const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
+
+			const float dotProduct{ Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) };
+
+			if (dotProduct < 0.8f)
+			{
+				continue;
+			}
+
+			else if (!CatalystMath::RandomChance((dotProduct - 0.8f) * 5.0f))
+			{
+				continue;
+			}
+
+			position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
+
+			if (position.Y <= PhysicsSystem::Instance->GetWaterHeight())
+			{
+				continue;
+			}
+
+			position.Y -= 0.2f;
+
+			vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(1.0f, 2.0f), CatalystMath::RandomFloatInRange(1.0f, 2.0f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
 		}
 
-		else if (!CatalystMath::RandomChance((dotProduct - 0.8f) * 5.0f))
-		{
-			continue;
-		}
-
-		position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
-
-		if (position.Y <= PhysicsSystem::Instance->GetWaterHeight())
-		{
-			continue;
-		}
-
-		position.Y -= 0.2f;
-
-		vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(1.0f, 2.0f), CatalystMath::RandomFloatInRange(1.0f, 2.0f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
+		VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
+		vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations, VegetationProperties(cutoffDistances[i]));
 	}
-	
-	VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
-	vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations);
 }
 
 /*

@@ -97,8 +97,8 @@ void VegetationEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 /*
 *	Initializes this vegetation entity.
 */
-void VegetationEntity::Initialize(const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations) NOEXCEPT
+void VegetationEntity::Initialize(const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) NOEXCEPT
 {
 	//Initialize this vegetation entity via the rendering system.
-	RenderingSystem::Instance->InitializeVegetationEntity(*this, material, transformations);
+	RenderingSystem::Instance->InitializeVegetationEntity(*this, material, transformations, properties);
 }

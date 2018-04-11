@@ -55,7 +55,7 @@ void VulkanUniformBuffer::Release() NOEXCEPT
 /*
 *	Sets the data in the uniform buffer.
 */
-void VulkanUniformBuffer::UploadData(void *RESTRICT newData) const NOEXCEPT
+void VulkanUniformBuffer::UploadData(const void *RESTRICT newData) const NOEXCEPT
 {
 	void *mappedMemory;
 

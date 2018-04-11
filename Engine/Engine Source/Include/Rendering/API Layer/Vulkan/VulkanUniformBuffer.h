@@ -45,7 +45,7 @@ public:
 	/*
 	*	Uploads new data to the uniform buffer.
 	*/
-	void UploadData(void *RESTRICT newData) const NOEXCEPT;
+	void UploadData(const void *RESTRICT newData) const NOEXCEPT;
 
 	/*
 	*	Returns the write descriptor set for this uniform buffer.

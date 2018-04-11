@@ -46,6 +46,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1808
 };
 
+//The vegetation properties
+layout (std140, set = 1, binding = 1) uniform VegetationProperties
+{
+    float cutoffDistance;
+};
+
 //The quad vertices.
 vec3 quadVertices[4] = vec3[]
 (
@@ -86,7 +92,7 @@ vec3 quadNormal;
 */
 float SquaredLength(vec3 vector)
 {
-	return (vector.x * vector.x) + (vector.y * vector.y) * (vector.z * vector.z);
+	return (vector.x * vector.x) + (vector.y * vector.y) + (vector.z * vector.z);
 }
 
 /*
@@ -163,9 +169,9 @@ void CalculateNormal()
 void main()
 {
 	//Determine the length to the camera.
-	//float distanceToCamera = SquaredLength(vertexPosition[0] - cameraWorldPosition);
+	float distanceToCamera = SquaredLength(vertexPosition[0] - cameraWorldPosition);
 
-	//if (distanceToCamera < 10000.0f)
+	if (distanceToCamera < cutoffDistance)
 	{
 		//Construct the quad.
 		CalculateNormal();

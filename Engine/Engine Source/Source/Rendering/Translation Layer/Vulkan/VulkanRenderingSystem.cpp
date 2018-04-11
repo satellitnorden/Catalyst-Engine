@@ -425,18 +425,23 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 /*
 *	Initializes a vegetation entity.
 */
-void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations) const NOEXCEPT
+void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) const NOEXCEPT
 {
-	//Cache relevant data.
+	//Create the vegetation properties uniform buffer.
+	VulkanUniformBuffer *const RESTRICT propertiesBuffer{ VulkanInterface::Instance->CreateUniformBuffer(sizeof(VegetationProperties)) };
+	propertiesBuffer->UploadData(&properties);
+
+	//Create the descriptor set.
 	VulkanDescriptorSet newDescriptorSet;
 
 	//Allocate the descriptor set.
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Vegetation)]);
 
 	//Update the write descriptor sets.
-	StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
+	StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
 	{
-		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1)
+		propertiesBuffer->GetWriteDescriptorSet(newDescriptorSet, 1),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 2)
 	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -671,12 +676,13 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)].Initialize(3, staticPhysicalDescriptorSetLayoutBindings.Data());
 
 	//Initialize the scene buffer descriptor set layout.
-	constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> vegetationDescriptorSetLayoutBindings
+	constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> vegetationDescriptorSetLayoutBindings
 	{
-		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_GEOMETRY_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 	};
 
-	descriptorSetLayouts[INDEX(DescriptorSetLayout::Vegetation)].Initialize(1, vegetationDescriptorSetLayoutBindings.Data());
+	descriptorSetLayouts[INDEX(DescriptorSetLayout::Vegetation)].Initialize(static_cast<uint32>(vegetationDescriptorSetLayoutBindings.Size()), vegetationDescriptorSetLayoutBindings.Data());
 
 	//Initialize the lighting descriptor set layout.
 	constexpr StaticArray<VkDescriptorSetLayoutBinding, 6> lightingDescriptorSetLayoutBindings
