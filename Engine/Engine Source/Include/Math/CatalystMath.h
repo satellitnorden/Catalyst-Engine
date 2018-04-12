@@ -226,7 +226,7 @@ public:
 		static thread_local std::random_device randomDevice;
 		static thread_local std::mt19937 randomEngine{ randomDevice() };
 
-		std::uniform_real_distribution<float> distribution(minimum, maximum);
+		std::uniform_real_distribution<float> distribution{ minimum, maximum };
 
 		return distribution(randomEngine);
 	}
@@ -240,7 +240,7 @@ public:
 		static thread_local std::random_device randomDevice;
 		static thread_local std::mt19937 randomEngine{ randomDevice() };
 
-		std::uniform_int_distribution<IntegerType> distribution(minimum, maximum);
+		std::uniform_int_distribution<IntegerType> distribution{ minimum, maximum };
 
 		return distribution(randomEngine);
 	}
