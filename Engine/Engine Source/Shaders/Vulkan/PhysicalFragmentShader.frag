@@ -85,4 +85,7 @@ void main()
 
     //Set the ambient occlusion.
     roughnessMetallicAmbientOcclusion.b = materialPropertiesSampler.b;
+
+    //Write the thinness.
+    roughnessMetallicAmbientOcclusion.a = 0.0f;
 }

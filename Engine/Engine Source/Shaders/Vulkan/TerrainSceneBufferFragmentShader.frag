@@ -220,4 +220,7 @@ void main()
 
     //Set the ambient occlusion.
     roughnessMetallicAmbientOcclusion.b = GetAmbientOcclusion();
+
+    //Write the thinness.
+    roughnessMetallicAmbientOcclusion.a = 0.0f;
 }
