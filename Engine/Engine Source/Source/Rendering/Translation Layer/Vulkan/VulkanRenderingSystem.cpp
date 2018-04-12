@@ -686,7 +686,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	//Initialize the scene buffer descriptor set layout.
 	constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> vegetationDescriptorSetLayoutBindings
 	{
-		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_GEOMETRY_BIT),
+		VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT),
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 		VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
@@ -1418,9 +1418,6 @@ void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
 */
 void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 {
-	//Cache the pipeline.
-	VulkanPipeline &vegetationPipeline{ *pipelines[INDEX(Pipeline::Vegetation)] };
-
 	//Iterate over all vegetation entity components and draw them all.
 	const uint64 numberOfVegetationComponents{ ComponentManager::GetNumberOfVegetationComponents() };
 
@@ -1431,6 +1428,9 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 	}
 
 	const VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationComponents() };
+
+	//Cache the pipeline.
+	VulkanPipeline &vegetationPipeline{ *pipelines[INDEX(Pipeline::Vegetation)] };
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(vegetationPipeline);
