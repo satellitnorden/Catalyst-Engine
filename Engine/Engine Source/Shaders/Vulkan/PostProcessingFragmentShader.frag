@@ -43,7 +43,11 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 1552) vec3 spotLightDirections[MaximumNumberOfSpotLights]; //Offset; 1552 - Size; 128
     layout (offset = 1680) vec3 spotLightWorldPositions[MaximumNumberOfSpotLights]; //Offset; 1680 - Size; 128
 
-    //Total size; 1808
+    //Physics data.
+    layout (offset = 1808) float windStrength; //Offset; 1808 - Size; 16
+    layout (offset = 1824) vec3 windDirection; //Offset; 1824 - Size; 16
+
+    //Total size; 1840
 };
 
 //Post processing data.

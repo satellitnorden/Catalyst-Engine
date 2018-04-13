@@ -3,6 +3,9 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Math.
+#include <Math/Vector3.h>
+
 //Forward declarations.
 class PhysicsComponent;
 class Vector3;
@@ -31,6 +34,16 @@ public:
 	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
 
 	/*
+	*	Returns the wind strength.
+	*/
+	float GetWindStrength() const NOEXCEPT { return windStrength; }
+
+	/*
+	*	Returns the wind direction.
+	*/
+	const Vector3& GetWindDirection() const NOEXCEPT { return windDirection; }
+
+	/*
 	*	Returns the water height.
 	*/
 	constexpr float GetWaterHeight() const NOEXCEPT { return 0.0f; }
@@ -44,5 +57,13 @@ public:
 	*	Given a world position, returns the normal of the terrain at that point.
 	*/
 	Vector3 GetTerrainNormalAtPosition(const Vector3 &position) const NOEXCEPT;
+
+private:
+
+	//The wind strength.
+	float windStrength{ 0.75f };
+
+	//The wind direction.
+	Vector3 windDirection{ -1.0f, 0.0f, -1.0f };
 
 };

@@ -43,6 +43,7 @@
 
 //Systems.
 #include <Systems/EngineSystem.h>
+#include <Systems/PhysicsSystem.h>
 #include <Systems/TaskSystem.h>
 
 //Vulkan.
@@ -1707,6 +1708,10 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 
 		++counter;
 	}
+
+	//Update the physics data.
+	dynamicUniformData.windStrength = PhysicsSystem::Instance->GetWindStrength();
+	dynamicUniformData.windDirection = PhysicsSystem::Instance->GetWindDirection();
 
 	//Upload the dynamic uniform data to the uniform buffer.
 	frameData.GetCurrentDynamicUniformDataBuffer()->UploadData(static_cast<void*>(&dynamicUniformData));

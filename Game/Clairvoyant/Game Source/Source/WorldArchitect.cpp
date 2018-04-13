@@ -318,7 +318,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	*/
 
 	//Create some grass.
-	constexpr uint64 vegetationDensity{ 10'000'000 };
+	constexpr uint64 vegetationDensity{ 2'500'000 };
 	constexpr StaticArray<float, 5> cutoffDistances
 	{
 		512.0f,

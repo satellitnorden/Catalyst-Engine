@@ -43,7 +43,11 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 1552) vec3 spotLightDirections[MaximumNumberOfSpotLights]; //Offset; 1552 - Size; 128
     layout (offset = 1680) vec3 spotLightWorldPositions[MaximumNumberOfSpotLights]; //Offset; 1680 - Size; 128
 
-    //Total size; 1808
+    //Physics data.
+    layout (offset = 1808) float windStrength; //Offset; 1808 - Size; 16
+    layout (offset = 1824) vec3 windDirection; //Offset; 1824 - Size; 16
+
+    //Total size; 1840
 };
 
 //The vegetation properties
@@ -106,9 +110,6 @@ float RandomFloat(vec2 seed)
 */
 vec3 GetWindModulator(vec3 position)
 {
-	const float windStrength = 2.5f;
-	const vec3 windDirection = vec3(-0.1f, 0.0f, -0.1f);
-
 	float windCosineModulator = (cos(totalGameTime * windStrength * (1.0f + RandomFloat(vec2(position.x, position.y)))) * 0.5f + 0.5f) * 0.5f + 0.8f;
 	float windSinusModulator = (sin((position.x * windDirection.x) + (position.z * windDirection.z) + totalGameTime * windStrength) * 0.5f + 1.25f) * windCosineModulator;
 	return windDirection * windStrength * windSinusModulator;

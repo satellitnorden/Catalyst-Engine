@@ -56,9 +56,13 @@ public:
 	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightDirections;
 	StaticArray<Vector4, MaximumNumberOfSpotLights> spotLightWorldPositions;
 
+	//Physics data.
+	Vector4 windStrength;
+	Vector4 windDirection;
+
 };
 
-static_assert(sizeof(VulkanDynamicUniformData) == 1808, "X");
+static_assert(sizeof(VulkanDynamicUniformData) == 1840, "X");
 
 static_assert(offsetof(VulkanDynamicUniformData, cameraFieldOfViewCosine) == 0, "X");
 static_assert(offsetof(VulkanDynamicUniformData, inverseCameraMatrix) == 16, "X");
@@ -89,3 +93,6 @@ static_assert(offsetof(VulkanDynamicUniformData, spotLightOuterCutoffAngles) == 
 static_assert(offsetof(VulkanDynamicUniformData, spotLightColors) == 1424, "X");
 static_assert(offsetof(VulkanDynamicUniformData, spotLightDirections) == 1552, "X");
 static_assert(offsetof(VulkanDynamicUniformData, spotLightWorldPositions) == 1680, "X");
+
+static_assert(offsetof(VulkanDynamicUniformData, windStrength) == 1808, "X");
+static_assert(offsetof(VulkanDynamicUniformData, windDirection) == 1824, "X");
