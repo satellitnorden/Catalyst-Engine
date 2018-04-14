@@ -6,10 +6,6 @@
 //Rendering.
 #include <Rendering/Engine Layer/RenderingCore.h>
 
-//Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanBuffer.h>
-#include <Rendering/API Layer/Vulkan/VulkanDescriptorSet.h>
-
 class TerrainRenderComponent final
 {
 

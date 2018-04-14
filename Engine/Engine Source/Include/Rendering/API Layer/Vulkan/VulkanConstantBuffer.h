@@ -6,7 +6,7 @@
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanCore.h>
 
-class VulkanBuffer final
+class VulkanConstantBuffer final
 {
 
 public:
@@ -14,12 +14,12 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanBuffer() NOEXCEPT;
+	VulkanConstantBuffer() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~VulkanBuffer() NOEXCEPT;
+	~VulkanConstantBuffer() NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan buffer.

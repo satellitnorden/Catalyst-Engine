@@ -342,9 +342,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanAllocator.h">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanBuffer.h">
-      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanCommandBuffer.h">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
     </ClInclude>
@@ -624,6 +621,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\ParticleSystemComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanConstantBuffer.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
@@ -687,9 +687,6 @@
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanAllocator.cpp">
-      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanBuffer.cpp">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanCommandBuffer.cpp">
@@ -805,6 +802,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\ParticleSystemEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanConstantBuffer.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

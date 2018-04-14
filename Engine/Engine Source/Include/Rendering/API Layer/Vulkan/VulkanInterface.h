@@ -5,9 +5,9 @@
 
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/Vulkan2DTexture.h>
-#include <Rendering/API Layer/Vulkan/VulkanBuffer.h>
 #include <Rendering/API Layer/Vulkan/VulkanCommandBuffer.h>
 #include <Rendering/API Layer/Vulkan/VulkanCommandPool.h>
+#include <Rendering/API Layer/Vulkan/VulkanConstantBuffer.h>
 #include <Rendering/API Layer/Vulkan/VulkanCore.h>
 #include <Rendering/API Layer/Vulkan/VulkanCubeMapTexture.h>
 #include <Rendering/API Layer/Vulkan/VulkanDepthBuffer.h>
@@ -149,9 +149,9 @@ public:
 	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const DynamicArray<DynamicArray<byte>> &textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
 
 	/*
-	*	Creates and returns a buffer.
+	*	Creates and returns a constant buffer.
 	*/
-	RESTRICTED VulkanBuffer* CreateBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
+	RESTRICTED VulkanConstantBuffer* CreateConstantBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
 
 	/*
 	*	Creates and returns a cube map texture.
@@ -234,8 +234,8 @@ private:
 	//Container for all Vulkan 2D textures.
 	DynamicArray<Vulkan2DTexture *RESTRICT> vulkan2DTextures;
 
-	//Container for all Vulkan buffers.
-	DynamicArray<VulkanBuffer *RESTRICT> vulkanBuffers;
+	//Container for all Vulkan constant buffers.
+	DynamicArray<VulkanConstantBuffer *RESTRICT> vulkanConstantBuffers;
 
 	//Container for all Vulkan cube map textures.
 	DynamicArray<VulkanCubeMapTexture *RESTRICT> vulkanCubeMapTextures;

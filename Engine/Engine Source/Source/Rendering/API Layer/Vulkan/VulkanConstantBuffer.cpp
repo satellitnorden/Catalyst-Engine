@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/API Layer/Vulkan/VulkanBuffer.h>
+#include <Rendering/API Layer/Vulkan/VulkanConstantBuffer.h>
 
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
@@ -8,7 +8,7 @@
 /*
 *	Default constructor.
 */
-VulkanBuffer::VulkanBuffer() NOEXCEPT
+VulkanConstantBuffer::VulkanConstantBuffer() NOEXCEPT
 {
 
 }
@@ -16,7 +16,7 @@ VulkanBuffer::VulkanBuffer() NOEXCEPT
 /*
 *	Default destructor.
 */
-VulkanBuffer::~VulkanBuffer() NOEXCEPT
+VulkanConstantBuffer::~VulkanConstantBuffer() NOEXCEPT
 {
 
 }
@@ -28,7 +28,7 @@ VulkanBuffer::~VulkanBuffer() NOEXCEPT
 *	dataSizes - Pointer to an array of offsets for the data that should be copied into the buffer.
 *	dataChunks - The number of data chunks that should be copied into the buffer.
 */
-void VulkanBuffer::Initialize(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
+void VulkanConstantBuffer::Initialize(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
 {
 	//Calculate the total size of the buffer.
 	VkDeviceSize bufferSize{ 0 };
@@ -76,7 +76,7 @@ void VulkanBuffer::Initialize(const void *RESTRICT data[], const VkDeviceSize *d
 /*
 *	Releases this Vulkan vertex buffer.
 */
-void VulkanBuffer::Release() NOEXCEPT
+void VulkanConstantBuffer::Release() NOEXCEPT
 {
 	//Free the Vulkan device memory.
 	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);

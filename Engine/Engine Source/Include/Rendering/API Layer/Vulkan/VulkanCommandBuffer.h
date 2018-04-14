@@ -7,8 +7,8 @@
 #include <Rendering/API Layer/Vulkan/VulkanCore.h>
 
 //Forward declarations.
-class VulkanBuffer;
 class VulkanCommandPool;
+class VulkanConstantBuffer;
 class VulkanDescriptorSet;
 class VulkanLogicalDevice;
 class VulkanPipeline;
@@ -63,7 +63,7 @@ public:
 	/*
 	*	Records a bind index buffer command.
 	*/
-	void CommandBindIndexBuffer(const VulkanBuffer &vulkanIndexBuffer, const VkDeviceSize offset = 0) NOEXCEPT;
+	void CommandBindIndexBuffer(const VulkanConstantBuffer &vulkanIndexBuffer, const VkDeviceSize offset = 0) NOEXCEPT;
 
 	/*
 	*	Records a bind pipeline command.

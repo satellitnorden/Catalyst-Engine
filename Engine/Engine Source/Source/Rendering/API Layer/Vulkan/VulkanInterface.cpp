@@ -99,10 +99,10 @@ void VulkanInterface::Release() NOEXCEPT
 	}
 
 	//Release all Vulkan bufferrs.
-	for (VulkanBuffer * RESTRICT vulkanBuffer : vulkanBuffers)
+	for (VulkanConstantBuffer * RESTRICT vulkanConstantBuffer : vulkanConstantBuffers)
 	{
-		vulkanBuffer->Release();
-		delete vulkanBuffer;
+		vulkanConstantBuffer->Release();
+		delete vulkanConstantBuffer;
 	}
 
 	//Release all Vulkan cube map textures.
@@ -210,14 +210,14 @@ RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 textur
 }
 
 /*
-*	Creates and returns a buffer.
+*	Creates and returns a constant buffer.
 */
-RESTRICTED VulkanBuffer* VulkanInterface::CreateBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
+RESTRICTED VulkanConstantBuffer* VulkanInterface::CreateConstantBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
 {
-	VulkanBuffer *RESTRICT newBuffer = new VulkanBuffer;
+	VulkanConstantBuffer *RESTRICT newBuffer = new VulkanConstantBuffer;
 	newBuffer->Initialize(data, dataSizes, dataChunks);
 
-	vulkanBuffers.EmplaceSlow(newBuffer);
+	vulkanConstantBuffers.EmplaceSlow(newBuffer);
 
 	return newBuffer;
 }

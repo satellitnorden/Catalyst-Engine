@@ -288,7 +288,7 @@ void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physica
 	//Create the vertex and index buffer.
 	const void *RESTRICT modelData[]{ physicalModelData.vertices.Data(), physicalModelData.indices.Data() };
 	const VkDeviceSize modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData.vertices.Size(), sizeof(uint32) * physicalModelData.indices.Size() };
-	GraphicsBufferHandle buffer = VulkanInterface::Instance->CreateBuffer(modelData, modelDataSizes, 2);
+	GraphicsBufferHandle buffer = VulkanInterface::Instance->CreateConstantBuffer(modelData, modelDataSizes, 2);
 
 	//Set up the physical model.
 	physicalModel.GetAxisAlignedBoundingBox().minimum = Vector3(-physicalModelData.extent, -physicalModelData.extent, -physicalModelData.extent);
@@ -320,7 +320,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 	//Create the vertex and index buffer.
 	const void *RESTRICT terrainData[]{ terrainVertices.Data(), terrainIndices.Data() };
 	const VkDeviceSize terrainDataSizes[]{ sizeof(float) * terrainVertices.Size(), sizeof(uint32) * terrainIndices.Size() };
-	VulkanBuffer *RESTRICT terrainVertexBuffer{ VulkanInterface::Instance->CreateBuffer(terrainData, terrainDataSizes, 2) };
+	VulkanConstantBuffer *RESTRICT terrainVertexBuffer{ VulkanInterface::Instance->CreateConstantBuffer(terrainData, terrainDataSizes, 2) };
 
 	//Fill the terrain entity components with the relevant data.
 	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[terrainEntity.GetComponentsIndex()] };
@@ -394,7 +394,7 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
 	renderComponent.modelMatrix = Matrix4(position, rotation, scale);
 	renderComponent.descriptorSet = newDescriptorSet;
-	renderComponent.buffer = *static_cast<VulkanBuffer *RESTRICT>(model.GetBuffer());
+	renderComponent.buffer = *static_cast<VulkanConstantBuffer *RESTRICT>(model.GetBuffer());
 	renderComponent.indexOffset = model.GetIndexOffset();
 	renderComponent.indexCount = model.GetIndexCount();
 	transformComponent.position = position;
@@ -427,7 +427,7 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 	//Create the transformations buffer.
 	const void *RESTRICT transformationsData[]{ transformations.Data() };
 	const VkDeviceSize transformationsDataSizes[]{ sizeof(Matrix4) * transformations.Size() };
-	VulkanBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateBuffer(transformationsData, transformationsDataSizes, 1);
+	VulkanConstantBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateConstantBuffer(transformationsData, transformationsDataSizes, 1);
 
 	//Fill the instanced physical entity components with the relevant data.
 	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents()[entity.GetComponentsIndex()] };
@@ -469,7 +469,7 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 	//Create the transformations buffer.
 	const void *RESTRICT transformationsData[]{ transformations.Data() };
 	const VkDeviceSize transformationsDataSizes[]{ sizeof(VegetationTransformation) * transformations.Size() };
-	VulkanBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateBuffer(transformationsData, transformationsDataSizes, 1);
+	VulkanConstantBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateConstantBuffer(transformationsData, transformationsDataSizes, 1);
 
 	//Fill the vegetation entity component with the relevant data.
 	VegetationComponent &component{ ComponentManager::GetVegetationComponents()[entity.GetComponentsIndex()] };
@@ -1312,8 +1312,8 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 		const VkDeviceSize offset{ 0 };
 
 		currentCommandBuffer->CommandBindDescriptorSets(terrainSceneBufferPipeline, 2, terrainDescriptorSets.Data());
-		currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer)->Get(), &offset);
-		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
+		currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer)->Get(), &offset);
+		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
 		currentCommandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
 	}
 
@@ -1405,8 +1405,8 @@ void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
 
 		StaticArray<VkBuffer, 2> instancedPhysicalBuffers
 		{
-			static_cast<const VulkanBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
-			static_cast<const VulkanBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
+			static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
+			static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
 		};
 
 		StaticArray<VkDeviceSize, 2> offsets
@@ -1417,7 +1417,7 @@ void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
 
 		currentCommandBuffer->CommandBindDescriptorSets(instancedPhysicalPipeline, 2, instancedPhysicalDescriptorSets.Data());
 		currentCommandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
-		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
+		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
 		currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
 	}
 
@@ -1459,7 +1459,7 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 		constexpr VkDeviceSize offset{ 0 };
 
 		currentCommandBuffer->CommandBindDescriptorSets(vegetationPipeline, static_cast<uint32>(vegetationDescriptorSets.Size()), vegetationDescriptorSets.Data());
-		currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanBuffer *RESTRICT>(component->transformationsBuffer)->Get(), &offset);
+		currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(component->transformationsBuffer)->Get(), &offset);
 		currentCommandBuffer->CommandDraw(1, component->instanceCount);
 	}
 

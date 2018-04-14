@@ -7,7 +7,7 @@
 #include <Math/Matrix4.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanBuffer.h>
+#include <Rendering/API Layer/Vulkan/VulkanConstantBuffer.h>
 #include <Rendering/API Layer/Vulkan/VulkanDescriptorSet.h>
 
 class StaticPhysicalRenderComponent final
@@ -22,7 +22,7 @@ public:
 	VulkanDescriptorSet descriptorSet{ };
 
 	//The buffer.
-	VulkanBuffer buffer{};
+	VulkanConstantBuffer buffer{ };
 
 	//The offset for the indices in the buffer.
 	uint64 indexOffset{ 0 };
