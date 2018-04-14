@@ -7,6 +7,7 @@
 enum class ResourceType : uint8
 {
 	EnvironmentMaterial,
+	ParticleMaterial,
 	PhysicalMaterial,
 	PhysicalModel,
 	SoundBank,

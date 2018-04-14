@@ -528,6 +528,9 @@
     <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\VegetationMaterialCreator.h">
       <Filter>Resource Creator Source\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Resource Creator Source\Resource Creator\Include\ParticleMaterialCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Resource Creator Source\Resource Creator\Source\ResourceCreatorMain.cpp">

@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/EnvironmentMaterial.h>
+#include <Rendering/Engine Layer/ParticleMaterial.h>
 #include <Rendering/Engine Layer/PhysicalMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
@@ -38,6 +39,11 @@ public:
 	static const EnvironmentMaterial& GetEnvironmentMaterial(const HashString resourceID) { return environmentMaterials[resourceID]; }
 
 	/*
+	*	Given a resource ID, return the corresponding particle material.
+	*/
+	static const ParticleMaterial& GetParticleMaterial(const HashString resourceID) { return particleMaterials[resourceID]; }
+
+	/*
 	*	Given a resource ID, return the corresponding physical material.
 	*/
 	static const PhysicalMaterial& GetPhysicalMaterial(const HashString resourceID) { return physicalMaterials[resourceID]; }
@@ -67,6 +73,9 @@ private:
 	//Container for all environment materials.
 	static Map<HashString, EnvironmentMaterial> environmentMaterials;
 
+	//Container for all particle materials.
+	static Map<HashString, ParticleMaterial> particleMaterials;
+
 	//Container for all physical materials.
 	static Map<HashString, PhysicalMaterial> physicalMaterials;
 
@@ -94,6 +103,11 @@ private:
 	*	Given a file, load an environment material.
 	*/
 	static void LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a particle material.
+	*/
+	static void LoadParticleMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a physical material.

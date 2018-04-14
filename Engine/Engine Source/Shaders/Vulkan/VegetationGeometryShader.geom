@@ -112,7 +112,7 @@ vec3 GetWindModulator(vec3 position)
 {
 	float windCosineModulator = (cos(totalGameTime * windStrength * (1.0f + RandomFloat(vec2(position.x, position.y)))) * 0.5f + 0.5f) * 0.5f + 0.8f;
 	float windSinusModulator = (sin((position.x * windDirection.x) + (position.z * windDirection.z) + totalGameTime * windStrength) * 0.5f + 1.25f) * windCosineModulator;
-	return windDirection * windStrength * windSinusModulator;
+	return windDirection * (windStrength * 0.01f) * windSinusModulator;
 }
 
 /*

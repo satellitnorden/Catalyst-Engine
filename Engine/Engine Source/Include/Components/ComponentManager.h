@@ -8,6 +8,8 @@
 #include <Components/DirectionalLightComponent.h>
 #include <Components/FrustumCullingComponent.h>
 #include <Components/InstancedPhysicalRenderComponent.h>
+#include <Components/ParticleSystemComponent.h>
+#include <Components/ParticleSystemRenderComponent.h>
 #include <Components/PointLightComponent.h>
 #include <Components/Sound2DComponent.h>
 #include <Components/Sound3DComponent.h>
@@ -154,6 +156,43 @@ private:
 
 	//The static physical transform components.
 	static DynamicArray<TransformComponent> staticPhysicalTransformComponents;
+
+public:
+
+	/*										*/
+	/*	Particle System Entity Interface.	*/
+	/*										*/
+
+	/*
+	*	Returns a new components index for particle system entities.
+	*/
+	static uint64 GetNewParticleSystemComponentsIndex() NOEXCEPT;
+
+	/*
+	*	Returns the number of particle system components.
+	*/
+	static uint64 GetNumberOfParticleSystemComponents() NOEXCEPT;
+
+	/*
+	*	Returns the particle system components.
+	*/
+	static ParticleSystemComponent *RESTRICT GetParticleSystemComponents() NOEXCEPT;
+
+	/*
+	*	Returns the particle system render components.
+	*/
+	static ParticleSystemRenderComponent *RESTRICT GetParticleSystemRenderComponents() NOEXCEPT;
+
+private:
+
+	//The number of particle system components.
+	static uint64 numberOfParticleSystemComponents;
+
+	//The particle system components.
+	static DynamicArray<ParticleSystemComponent> particleSystemComponents;
+	
+	//The particle system render components.
+	static DynamicArray<ParticleSystemRenderComponent> particleSystemRenderComponents;
 
 public:
 

@@ -7,10 +7,14 @@
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
 #include <Rendering/API Layer/Vulkan/VulkanLogicalDevice.h>
 
-//Preprocessor defines.
-#define VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS 16'384
-#define VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS 8'192
-#define VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS 32'768
+//Vulkan descriptor pool constants.
+namespace VulkanDescriptorPoolConstants
+{
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS{ 16'384 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS{ 8'192 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS{ 32'768 };
+}
+
 
 /*
 *	Default constructor.
@@ -73,14 +77,14 @@ void VulkanDescriptorPool::CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPo
 	VkDescriptorPoolSize combinedImageSamplerDescriptorPoolSize;
 
 	combinedImageSamplerDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	combinedImageSamplerDescriptorPoolSize.descriptorCount = VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS;
+	combinedImageSamplerDescriptorPoolSize.descriptorCount = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS;
 
 	descriptorPoolSizes.EmplaceFast(combinedImageSamplerDescriptorPoolSize);
 
 	VkDescriptorPoolSize uniformBufferDescriptorPoolSize;
 
 	uniformBufferDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	uniformBufferDescriptorPoolSize.descriptorCount = VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS;
+	uniformBufferDescriptorPoolSize.descriptorCount = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS;
 
 	descriptorPoolSizes.EmplaceFast(uniformBufferDescriptorPoolSize);
 }
@@ -93,7 +97,7 @@ void VulkanDescriptorPool::CreateDescriptorPoolCreateInfo(VkDescriptorPoolCreate
 	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	descriptorPoolCreateInfo.pNext = nullptr;
 	descriptorPoolCreateInfo.flags = 0;
-	descriptorPoolCreateInfo.maxSets = VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS;
+	descriptorPoolCreateInfo.maxSets = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS;
 	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32>(descriptorPoolSizes.Size());
 	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.Data();
 }

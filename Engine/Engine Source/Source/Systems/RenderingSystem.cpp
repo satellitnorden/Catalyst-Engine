@@ -8,6 +8,11 @@
 //System definition.
 DEFINE_SYSTEM(RenderingSystem);
 
+//Define the current rendering system.
+#if defined(CATALYST_WINDOWS)
+	#define CURRENT_RENDERING_SYSTEM VulkanRenderingSystem
+#endif
+
 /*
 *	Default constructor.
 */
@@ -21,8 +26,8 @@ RenderingSystem::RenderingSystem() NOEXCEPT
 */
 void RenderingSystem::InitializeSystem() NOEXCEPT
 {
-	//Initialize the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->InitializeSystem();
+	//Initialize the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->InitializeSystem();
 }
 
 /*
@@ -30,8 +35,8 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 */
 void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 {
-	//Update the Vulkan rendering system synchronously.
-	VulkanRenderingSystem::Instance->UpdateSystemSynchronous();
+	//Update the current rendering system synchronously.
+	CURRENT_RENDERING_SYSTEM::Instance->UpdateSystemSynchronous();
 }
 
 /*
@@ -39,8 +44,8 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 */
 void RenderingSystem::ReleaseSystem() NOEXCEPT
 {
-	//Release the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->ReleaseSystem();
+	//Release the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->ReleaseSystem();
 }
 
 /*
@@ -48,8 +53,8 @@ void RenderingSystem::ReleaseSystem() NOEXCEPT
 */
 void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT
 {
-	//Create the environment material via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->CreateEnvironmentMaterial(environmentMaterialData, environmentMaterial);
+	//Create the environment material via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->CreateEnvironmentMaterial(environmentMaterialData, environmentMaterial);
 }
 
 /*
@@ -57,8 +62,8 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &e
 */
 void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT
 {
-	//Create the terrain material via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->CreateTerrainMaterial(terrainMaterialData, terrainMaterial);
+	//Create the terrain material via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->CreateTerrainMaterial(terrainMaterialData, terrainMaterial);
 }
 
 /*
@@ -66,8 +71,17 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 */
 void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
 {
-	//Create the physical model via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->CreatePhysicalModel(physicalModelData, physicalModel);
+	//Create the physical model via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->CreatePhysicalModel(physicalModelData, physicalModel);
+}
+
+/*
+*	Creates a particle material.
+*/
+void RenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT
+{
+	//Create the particle material via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->CreateParticleMaterial(particleMaterialData, particleMaterial);
 }
 
 /*
@@ -75,8 +89,8 @@ void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModel
 */
 void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT
 {
-	//Create the physical material via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->CreatePhysicalMaterial(physicalMaterialData, physicalMaterial);
+	//Create the physical material via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->CreatePhysicalMaterial(physicalMaterialData, physicalMaterial);
 }
 
 /*
@@ -85,7 +99,7 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT
 {
 	//Create the vegetation model via the current rendering system.
-	VulkanRenderingSystem::Instance->CreateVegetationMaterial(vegetationMaterialData, vegetationMaterial);
+	CURRENT_RENDERING_SYSTEM::Instance->CreateVegetationMaterial(vegetationMaterialData, vegetationMaterial);
 }
 
 /*
@@ -93,8 +107,8 @@ void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &veg
 */
 void RenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterialData, WaterMaterial &waterMaterial) const NOEXCEPT
 {
-	//Create the water material via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->CreateWaterMaterial(waterMaterialData, waterMaterial);
+	//Create the water material via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->CreateWaterMaterial(waterMaterialData, waterMaterial);
 }
 
 /*
@@ -102,8 +116,8 @@ void RenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterial
 */
 void RenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
 {
-	//Initialize the terrain entity via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->InitializeTerrainEntity(terrainEntity, terrainPlaneResolution, terrainProperties, terrainUniformData, layerWeightsTexture, terrainMaterial);
+	//Initialize the terrain entity via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->InitializeTerrainEntity(terrainEntity, terrainPlaneResolution, terrainProperties, terrainUniformData, layerWeightsTexture, terrainMaterial);
 }
 
 /*
@@ -111,8 +125,8 @@ void RenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, cons
 */
 void RenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity &staticPhysicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT
 {
-	//Initialize the static physical entity via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->InitializeStaticPhysicalEntity(staticPhysicalEntity, model, position, rotation, scale);
+	//Initialize the static physical entity via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->InitializeStaticPhysicalEntity(staticPhysicalEntity, model, position, rotation, scale);
 }
 
 /*
@@ -121,7 +135,7 @@ void RenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity &stati
 void RenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT
 {
 	//Initialize the instanced physical entity via the current rendering system.
-	VulkanRenderingSystem::Instance->InitializeInstancedPhysicalEntity(entity, model, transformations);
+	CURRENT_RENDERING_SYSTEM::Instance->InitializeInstancedPhysicalEntity(entity, model, transformations);
 }
 
 /*
@@ -130,7 +144,7 @@ void RenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhysicalE
 void RenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) const NOEXCEPT
 {
 	//Initialize the vegetation entity via the current rendering system.
-	VulkanRenderingSystem::Instance->InitializeVegetationEntity(entity, material, transformations, properties);
+	CURRENT_RENDERING_SYSTEM::Instance->InitializeVegetationEntity(entity, material, transformations, properties);
 }
 
 /*
@@ -138,8 +152,8 @@ void RenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity,
 */
 void RenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT
 {
-	//Initialize the water entity via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->InitializeWaterEntity(waterEntity, waterMaterial, waterUniformData);
+	//Initialize the water entity via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->InitializeWaterEntity(waterEntity, waterMaterial, waterUniformData);
 }
 
 /*
@@ -147,8 +161,8 @@ void RenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT wa
 */
 Texture2DHandle RenderingSystem::Create2DTexture(const TextureData &textureData) const NOEXCEPT
 {
-	//Create the 2D texture via the Vulkan rendering system.
-	return VulkanRenderingSystem::Instance->Create2DTexture(textureData);
+	//Create the 2D texture via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->Create2DTexture(textureData);
 }
 
 /*
@@ -156,8 +170,8 @@ Texture2DHandle RenderingSystem::Create2DTexture(const TextureData &textureData)
 */
 UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT
 {
-	//Create the uniform buffer via the Vulkan rendering system.
-	return VulkanRenderingSystem::Instance->CreateUniformBuffer(uniformBufferSize);
+	//Create the uniform buffer via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->CreateUniformBuffer(uniformBufferSize);
 }
 
 /*
@@ -165,8 +179,8 @@ UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBuf
 */
 void RenderingSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT
 {
-	//Set the active camera via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->SetActiveCamera(newActiveCamera);
+	//Set the active camera via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->SetActiveCamera(newActiveCamera);
 }
 
 /*
@@ -174,8 +188,8 @@ void RenderingSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NO
 */
 void RenderingSystem::SetEnvironmentMaterial(const EnvironmentMaterial &newEnvioronmentMaterial) NOEXCEPT
 {
-	//Set the environment material via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->SetEnvironmentMaterial(newEnvioronmentMaterial);
+	//Set the environment material via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->SetEnvironmentMaterial(newEnvioronmentMaterial);
 }
 
 /*
@@ -183,8 +197,8 @@ void RenderingSystem::SetEnvironmentMaterial(const EnvironmentMaterial &newEnvio
 */
 void RenderingSystem::SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT
 {
-	//Set the post processing blur amount via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->SetPostProcessingBlurAmount(newBlurAmount);
+	//Set the post processing blur amount via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->SetPostProcessingBlurAmount(newBlurAmount);
 }
 
 /*
@@ -192,8 +206,8 @@ void RenderingSystem::SetPostProcessingBlurAmount(const float newBlurAmount) NOE
 */
 void RenderingSystem::SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) NOEXCEPT
 {
-	//Set the post processing chromatic aberration amount via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->SetPostProcessingChromaticAberrationAmount(newChromaticAberrationAmount);
+	//Set the post processing chromatic aberration amount via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->SetPostProcessingChromaticAberrationAmount(newChromaticAberrationAmount);
 }
 
 /*
@@ -201,8 +215,8 @@ void RenderingSystem::SetPostProcessingChromaticAberrationAmount(const float new
 */
 void RenderingSystem::SetPostProcessingSaturation(const float newSaturation) NOEXCEPT
 {
-	//Set the post processing saturation via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->SetPostProcessingSaturation(newSaturation);
+	//Set the post processing saturation via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->SetPostProcessingSaturation(newSaturation);
 }
 
 /*
@@ -210,6 +224,9 @@ void RenderingSystem::SetPostProcessingSaturation(const float newSaturation) NOE
 */
 void RenderingSystem::SetPostProcessingSharpenAmount(const float newSharpenAmount) NOEXCEPT
 {
-	//Set the post processing sharpen amount via the Vulkan rendering system.
-	VulkanRenderingSystem::Instance->SetPostProcessingSharpenAmount(newSharpenAmount);
+	//Set the post processing sharpen amount via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->SetPostProcessingSharpenAmount(newSharpenAmount);
 }
+
+//Undefine defines to keep them from leaking into other scopes.
+#undef CURRENT_RENDERING_SYSTEM

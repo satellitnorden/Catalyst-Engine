@@ -23,6 +23,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture2D.h>
+#include <Rendering/Engine Layer/ParticleMaterial.h>
 #include <Rendering/Engine Layer/PhysicalMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/RenderingUtilities.h>
@@ -35,6 +36,7 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
+#include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/PhysicalModelData.h>
 #include <Resources/TerrainMaterialData.h>
@@ -237,6 +239,15 @@ void VulkanRenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &ter
 
 	//Load the fifth layer material properties.
 	terrainMaterial.fifthLayerMaterialProperties = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4, terrainMaterialData.fifthLayerMaterialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+}
+
+/*
+*	Creates a particle material.
+*/
+void VulkanRenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT
+{
+	//Load the albedo.
+	particleMaterial.albedoTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(particleMaterialData.width, particleMaterialData.height, 4, particleMaterialData.albedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 }
 
 /*

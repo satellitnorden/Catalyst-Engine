@@ -7,6 +7,7 @@
 
 //Resource creator.
 #include <EnvironmentMaterialCreator.h>
+#include <ParticleMaterialCreator.h>
 #include <PhysicalMaterialCreator.h>
 #include <PhysicalModelCreator.h>
 #include <ResourceCollectionCreator.h>
@@ -29,6 +30,11 @@ int main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 	if (strcmp(arguments[1], "EnvironmentMaterial") == 0)
 	{
 		EnvironmentMaterialCreator::CreateEnvironmentMaterial(argumentCount, arguments);
+	}
+
+	else if (strcmp(arguments[1], "ParticleMaterial") == 0)
+	{
+		ParticleMaterialCreator::CreateParticleMaterial(argumentCount, arguments);
 	}
 
 	else if (strcmp(arguments[1], "PhysicalMaterial") == 0)

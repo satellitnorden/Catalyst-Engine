@@ -16,6 +16,10 @@ DynamicArray<FrustumCullingComponent> ComponentManager::staticPhysicalFrustumCul
 DynamicArray<StaticPhysicalRenderComponent> ComponentManager::staticPhysicalRenderComponents;
 DynamicArray<TransformComponent> ComponentManager::staticPhysicalTransformComponents;
 
+uint64 ComponentManager::numberOfParticleSystemComponents = 0;
+DynamicArray<ParticleSystemComponent> ComponentManager::particleSystemComponents;
+DynamicArray<ParticleSystemRenderComponent> ComponentManager::particleSystemRenderComponents;
+
 uint64 ComponentManager::numberOfPointLightComponents = 0;
 DynamicArray<PointLightComponent> ComponentManager::pointLightComponents;
 
@@ -178,6 +182,47 @@ TransformComponent *RESTRICT ComponentManager::GetStaticPhysicalTransformCompone
 	//Return the physical frustum transform components.
 	return staticPhysicalTransformComponents.Data();
 }
+
+/*
+*	Returns a new components index for particle system entities.
+*/
+uint64 ComponentManager::GetNewParticleSystemComponentsIndex() NOEXCEPT
+{
+	//Create the relevant components.
+	particleSystemComponents.EmplaceSlow();
+	particleSystemRenderComponents.EmplaceSlow();
+
+	//Return the new index.
+	return numberOfParticleSystemComponents++;
+}
+
+/*
+*	Returns the number of particle system components.
+*/
+uint64 ComponentManager::GetNumberOfParticleSystemComponents() NOEXCEPT
+{
+	//Return the number of particle system components.
+	return numberOfParticleSystemComponents;
+}
+
+/*
+*	Returns the particle system components.
+*/
+ParticleSystemComponent *RESTRICT ComponentManager::GetParticleSystemComponents() NOEXCEPT
+{
+	//Return the particle system components.
+	return particleSystemComponents.Data();
+}
+
+/*
+*	Returns the particle system render components.
+*/
+ParticleSystemRenderComponent *RESTRICT ComponentManager::GetParticleSystemRenderComponents() NOEXCEPT
+{
+	//Return the particle system render components.
+	return particleSystemRenderComponents.Data();
+}
+
 
 /*
 *	Returns a new components index for point light entities.

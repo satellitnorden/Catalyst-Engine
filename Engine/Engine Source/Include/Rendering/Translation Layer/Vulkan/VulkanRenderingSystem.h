@@ -28,6 +28,8 @@ class CPUTexture2D;
 class EnvironmentMaterial;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
+class ParticleMaterial;
+class ParticleMaterialData;
 class PhysicalMaterial;
 class PhysicalMaterialData;
 class PhysicalModel;
@@ -90,6 +92,11 @@ public:
 	*	Creates and returns physical model.
 	*/
 	void CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT;
+
+	/*
+	*	Creates a particle material.
+	*/
+	void CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT;
 
 	/*
 	*	Creates a physical material.

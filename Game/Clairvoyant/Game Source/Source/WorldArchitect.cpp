@@ -361,7 +361,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 			position.Y -= 0.1f;
 
-			vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(1.0f, 1.9f), CatalystMath::RandomFloatInRange(1.0f, 1.9f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
+			vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(1.0f, 2.0f), CatalystMath::RandomFloatInRange(1.0f, 1.8f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
 		}
 
 		VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };

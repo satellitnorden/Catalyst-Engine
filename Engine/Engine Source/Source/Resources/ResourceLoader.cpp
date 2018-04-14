@@ -6,6 +6,7 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
+#include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/PhysicalModelData.h>
 #include <Resources/ResourceLoaderUtilities.h>
@@ -22,6 +23,7 @@
 
 //Static variable definitions.
 Map<HashString, EnvironmentMaterial> ResourceLoader::environmentMaterials;
+Map<HashString, ParticleMaterial> ResourceLoader::particleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::physicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::physicalModels;
 Map<HashString, SoundBank> ResourceLoader::soundBanks;
@@ -74,6 +76,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			case ResourceType::EnvironmentMaterial:
 			{
 				LoadEnvironmentMaterial(file);
+
+				break;
+			}
+
+			case ResourceType::ParticleMaterial:
+			{
+				LoadParticleMaterial(file);
 
 				break;
 			}
@@ -161,6 +170,43 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 
 	//Create the environment material via the rendering system.
 	RenderingSystem::Instance->CreateEnvironmentMaterial(environmentMaterialData, environmentMaterials[resourceID]);
+}
+
+/*
+*	Given a file, load a particle material.
+*/
+void ResourceLoader::LoadParticleMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the particle material data in the particle material data structure.
+	ParticleMaterialData particleMaterialData;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the number of mipmap levels.
+	file.Read(&particleMaterialData.mipmapLevels, sizeof(uint8));
+
+	//Read the width.
+	file.Read(&particleMaterialData.width, sizeof(uint32));
+
+	//Read the height.
+	file.Read(&particleMaterialData.height, sizeof(uint32));
+
+	//Read the albedo.
+	particleMaterialData.albedoData.UpsizeSlow(particleMaterialData.mipmapLevels);
+
+	const uint64 textureSize{ particleMaterialData.width * particleMaterialData.height * 4 };
+
+	for (uint8 i = 0; i < particleMaterialData.mipmapLevels; ++i)
+	{
+		particleMaterialData.albedoData[i].Reserve(textureSize >> i);
+
+		file.Read(particleMaterialData.albedoData[i].Data(), textureSize >> i);
+	}
+
+	//Create the particle material via the rendering system.
+	RenderingSystem::Instance->CreateParticleMaterial(particleMaterialData, particleMaterials[resourceID]);
 }
 
 /*
