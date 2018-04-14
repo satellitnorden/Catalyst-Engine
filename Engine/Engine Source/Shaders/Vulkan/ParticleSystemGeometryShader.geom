@@ -57,8 +57,8 @@ layout (triangle_strip, max_vertices = 4) out;
 //Preprocessor defines.
 #define MaximumNumberOfParticles 16384
 
-//The shader buffer storage.
-layout (std140, set = 1, binding = 1) buffer ParticleSystemData
+//The particle system storage data.
+layout (std140, set = 1, binding = 1) buffer ParticleSystemStorageData
 { 
 	float spawnTimer;
 	int nextParticleToSpawn;
@@ -69,24 +69,24 @@ layout (std140, set = 1, binding = 1) buffer ParticleSystemData
 	vec3 particleVelocities[MaximumNumberOfParticles];
 };
 
-//In parameters
-in int geometryParticleID[];
-
-//Uniforms.
-uniform float randomSeed;
-uniform float spawnFrequency;
-uniform vec2 particleSystemInitialMaximumScale;
-uniform vec2 particleSystemInitialMinimumScale;
-uniform vec3 particleSystemInitialMaximumPosition;
-uniform vec3 particleSystemInitialMinimumPosition;
-uniform vec3 particleSystemInitialMaximumVelocity;
-uniform vec3 particleSystemInitialMinimumVelocity;
-uniform vec3 particleSystemWorldPosition;
+//The particle system uniform data.
+layout (std140, set = 1, binding = 2) buffer ParticleSystemUniformData
+{ 
+	float randomSeed;
+	float spawnFrequency;
+	vec2 particleSystemInitialMaximumScale;
+	vec2 particleSystemInitialMinimumScale;
+	vec3 particleSystemInitialMaximumPosition;
+	vec3 particleSystemInitialMinimumPosition;
+	vec3 particleSystemInitialMaximumVelocity;
+	vec3 particleSystemInitialMinimumVelocity;
+	vec3 particleSystemWorldPosition;
+};
 
 //Out parameters.
-out vec2 fragmentTextureCoordinate;
-out vec3 fragmentNormal;
-out vec3 fragmentWorldPosition;
+layout (location = 0) out vec2 fragmentTextureCoordinate;
+layout (location = 1) out vec3 fragmentNormal;
+layout (location = 2) out vec3 fragmentWorldPosition;
 
 /*
 *	Given a seed, generate a random float in the 0.0f to 1.0f range.
