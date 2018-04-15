@@ -60,7 +60,7 @@ DEFINE_SYSTEM(VulkanRenderingSystem);
 namespace VulkanRenderingSystemConstants
 {
 	constexpr uint32 MAXIMUM_NUMBER_OF_PARTICLES{ 16'384 };
-	constexpr VkDeviceSize PARTICLE_SYSTEM_STORAGE_BUFFER_SIZE{ 1'048'592 };
+	constexpr VkDeviceSize PARTICLE_SYSTEM_STORAGE_BUFFER_SIZE{ 1'310'736 };
 }
 
 /*
@@ -1271,7 +1271,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		waterPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
 		waterPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		waterPipelineCreationParameters.depthTestEnable = VK_TRUE;
-		waterPipelineCreationParameters.depthWriteEnable = VK_FALSE;
+		waterPipelineCreationParameters.depthWriteEnable = VK_TRUE;
 		StaticArray<VulkanDescriptorSetLayout, 2> waterDescriptorSetLayouts
 		{
 			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
@@ -1310,7 +1310,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		particleSystemPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
 		particleSystemPipelineCreationParameters.colorAttachments[0].Reserve(1);
 		particleSystemPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
-		particleSystemPipelineCreationParameters.cullMode = VK_CULL_MODE_NONE;
+		particleSystemPipelineCreationParameters.cullMode = VK_CULL_MODE_FRONT_BIT;
 		particleSystemPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		particleSystemPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		particleSystemPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;

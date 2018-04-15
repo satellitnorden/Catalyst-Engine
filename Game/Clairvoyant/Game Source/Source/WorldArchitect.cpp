@@ -65,6 +65,8 @@ namespace WorldAchitectConstants
 	static constexpr HashString DEFAULT_VEGETATION_MATERIAL{ "DefaultVegetationMaterial" };
 	static constexpr HashString DEFAULT_WATER_MATERIAL{ "DefaultWaterMaterial" };
 	static constexpr HashString FOG_1_MATERIAL{ "Fog1Material" };
+	static constexpr HashString CLOUD_1_MATERIAL{ "Cloud1Material" };
+	static constexpr HashString ENERGY_PARTICLE_MATERIAL{ "EnergyParticleMaterial" };
 }
 
 /*
@@ -231,6 +233,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	WaterEntity *RESTRICT water = EntitySystem::Instance->CreateEntity<WaterEntity>();
 	water->Initialize(waterMaterial, WaterUniformData(WorldAchitectConstants::TERRAIN_SIZE, 250.0f, Vector3(0.0f, 0.0f, 0.0f)));
 
+	/*
 	//Create the stone model.
 	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_MODEL) };
 
@@ -276,6 +279,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	InstancedPhysicalEntity *RESTRICT stones = EntitySystem::Instance->CreateEntity<InstancedPhysicalEntity>();
 	stones->Initialize(stoneModel, stoneTransformations);
+	*/
 
 	/*
 	//Create the tree stomp model.
@@ -320,7 +324,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	*/
 
 	//Create some grass.
-	constexpr uint64 vegetationDensity{ 2'500'000 };
+	constexpr uint64 vegetationDensity{ 1'000'000 };
 	constexpr StaticArray<float, 5> cutoffDistances
 	{
 		512.0f,
@@ -377,7 +381,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	//Spawn some fog. (:
 	ParticleSystemEntity *const RESTRICT fogParticles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
-	fogParticles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::FOG_1_MATERIAL), ParticleSystemProperties(0.0f, Vector2(100.0f, 100.0f), Vector2(200.0f, 200.0f), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, 0.0f, -WorldAchitectConstants::TERRAIN_SIZE * 0.5f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 0.5f, 250.0f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), PhysicsSystem::Instance->GetWindDirection() * 1.0f, PhysicsSystem::Instance->GetWindDirection() * 2.5f, Vector3(0.0f, 0.0f, 0.0f)));
+	fogParticles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::FOG_1_MATERIAL), ParticleSystemProperties(2.5f, 30.0f, 0.0f, Vector2(100.0f, 100.0f), Vector2(500.0f, 500.0f), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, 0.0f, -WorldAchitectConstants::TERRAIN_SIZE * 0.5f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 0.5f, 250.0f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), PhysicsSystem::Instance->GetWindDirection() * 1.0f, PhysicsSystem::Instance->GetWindDirection() * 2.5f, Vector3(0.0f, 0.0f, 0.0f)));
 }
 
 /*

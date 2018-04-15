@@ -12,6 +12,12 @@ class ParticleSystemProperties final
 
 public:
 
+	//The fade time, for fade-ins/fade-outs.
+	float fadeTime;
+
+	//The lifetime of the particles.
+	float lifetime;
+
 	//The spawn frequency.
 	float spawnFrequency;
 
@@ -47,7 +53,9 @@ public:
 	/*
 	*	Constructor taking all properties as arguments.
 	*/
-	ParticleSystemProperties(	const float initialSpawnFrequency,
+	ParticleSystemProperties(	const float initialFadeTime,
+								const float initialLifetime,
+								const float initialSpawnFrequency,
 								const Vector2 &initialMinimumScale,
 								const Vector2 &initialMaximumScale,
 								const Vector3 &initialMinimumPosition,
@@ -56,6 +64,8 @@ public:
 								const Vector3 &initialMaximumVelocity,
 								const Vector3 &initialWorldPosition) NOEXCEPT
 		:
+		fadeTime(initialFadeTime),
+		lifetime(initialLifetime),
 		spawnFrequency(initialSpawnFrequency),
 		minimumScale(initialMinimumScale),
 		maximumScale(initialMaximumScale),

@@ -1,4 +1,6 @@
 ResourceCreator.exe EnvironmentMaterial Intermediate/Materials/DefaultEnvironmentMaterial DefaultEnvironmentMaterial Raw/Textures/MalibuEnvironment.hdr 2048 32
+ResourceCreator.exe ParticleMaterial Intermediate/Materials/Cloud1Material Cloud1Material 5 Raw/Textures/Particles/Cloud1.png
+ResourceCreator.exe ParticleMaterial Intermediate/Materials/EnergyParticleMaterial EnergyParticleMaterial 5 Raw/Textures/Particles/Energy.png
 ResourceCreator.exe ParticleMaterial Intermediate/Materials/Fog1Material Fog1Material 5 Raw/Textures/Particles/Fog1.png
 ResourceCreator.exe ParticleMaterial Intermediate/Materials/ParticleMaterial ParticleMaterial 5 Raw/Textures/Particles/Particle.png
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/StoneMaterial StoneMaterial 5 Raw/Textures/StoneAlbedo.png Raw/Textures/StoneNormalMap.png Raw/Textures/StoneRoughness.png None Raw/Textures/StoneAmbientOcclusion.png Raw/Textures/StoneDisplacement.png
@@ -10,6 +12,6 @@ ResourceCreator.exe TerrainMaterial Intermediate/Materials/DefaultTerrainMateria
 ResourceCreator.exe VegetationMaterial Intermediate/Materials/DefaultVegetationMaterial DefaultVegetationMaterial 1 7 Raw/Textures/Vegetation/Mask.png Raw/Textures/Vegetation/Albedo.png Raw/Textures/Vegetation/NormalMap.png
 ResourceCreator.exe WaterMaterial Intermediate/Materials/DefaultWaterMaterial DefaultWaterMaterial 5 Raw/Textures/WaterNormal.png
 
-ResourceCreator.exe ResourceCollection Final/ClairvoyantResourceCollection Intermediate/Materials/DefaultEnvironmentMaterial.cr Intermediate/Materials/Fog1Material.cr Intermediate/Materials/ParticleMaterial.cr Intermediate/Materials/StoneMaterial.cr Intermediate/Materials/TreeStompMaterial.cr Intermediate/Models/StoneModel.cr Intermediate/Models/TreeStompModel.cr Intermediate/SoundBanks/MasterSoundBank.cr Intermediate/Materials/DefaultTerrainMaterial.cr Intermediate/Materials/DefaultVegetationMaterial.cr Intermediate/Materials/DefaultWaterMaterial.cr
+ResourceCreator.exe ResourceCollection Final/ClairvoyantResourceCollection Intermediate/Materials/DefaultEnvironmentMaterial.cr Intermediate/Materials/Cloud1Material.cr Intermediate/Materials/EnergyParticleMaterial.cr Intermediate/Materials/Fog1Material.cr Intermediate/Materials/ParticleMaterial.cr Intermediate/Materials/StoneMaterial.cr Intermediate/Materials/TreeStompMaterial.cr Intermediate/Models/StoneModel.cr Intermediate/Models/TreeStompModel.cr Intermediate/SoundBanks/MasterSoundBank.cr Intermediate/Materials/DefaultTerrainMaterial.cr Intermediate/Materials/DefaultVegetationMaterial.cr Intermediate/Materials/DefaultWaterMaterial.cr
 
 pause

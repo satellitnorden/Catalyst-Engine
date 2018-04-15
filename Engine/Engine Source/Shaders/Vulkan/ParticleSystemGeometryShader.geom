@@ -68,21 +68,24 @@ layout (triangle_strip, max_vertices = 4) out;
 //The particle system storage data.
 layout (std140, set = 1, binding = 1) buffer ParticleSystemStorageData
 { 
-	layout (offset = 0) float spawnTimer;
-	layout (offset = 4) int nextParticleToSpawn;
+	layout (offset = 0) float spawnTimer; //Size: 4
+	layout (offset = 4) int nextParticleToSpawn; //Size: 4
 
-	layout (offset = 16) bool isSpawned[MaximumNumberOfParticles];
-	layout (offset = 262160) vec2 particleScales[MaximumNumberOfParticles];
-	layout (offset = 524304) vec3 particlePositions[MaximumNumberOfParticles];
-	layout (offset = 786448) vec3 particleVelocities[MaximumNumberOfParticles];
+	layout (offset = 16) bool isSpawned[MaximumNumberOfParticles]; //Size: 262 144
+	layout (offset = 262160) float lifetimes[MaximumNumberOfParticles]; //Size: 262 144
+	layout (offset = 524304) vec2 particleScales[MaximumNumberOfParticles]; //Size: 262 144
+	layout (offset = 786448) vec3 particlePositions[MaximumNumberOfParticles]; //Size: 262 144
+	layout (offset = 1048592) vec3 particleVelocities[MaximumNumberOfParticles]; //Size: 262 144
 
-	//Total size; 1048592
+	//Total size; 1310736
 };
 
 //The particle system uniform data.
 layout (std140, set = 1, binding = 2) uniform ParticleSystemUniformData
 { 
-	layout (offset = 0) float spawnFrequency;
+	layout (offset = 0) float fadeTime;
+	layout (offset = 4) float lifetime;
+	layout (offset = 8) float spawnFrequency;
 	layout (offset = 16) vec2 particleSystemInitialMinimumScale;
 	layout (offset = 24) vec2 particleSystemInitialMaximumScale;
 	layout (offset = 32) vec3 particleSystemInitialMinimumPosition;
@@ -98,9 +101,10 @@ layout (std140, set = 1, binding = 2) uniform ParticleSystemUniformData
 layout (location = 0) in int vertexIndex[];
 
 //Out parameters.
-layout (location = 0) out vec2 fragmentTextureCoordinate;
-layout (location = 1) out vec3 fragmentNormal;
-layout (location = 2) out vec3 fragmentWorldPosition;
+layout (location = 0) out float fragmentFadeFactor;
+layout (location = 1) out vec2 fragmentTextureCoordinate;
+layout (location = 2) out vec3 fragmentNormal;
+layout (location = 3) out vec3 fragmentWorldPosition;
 
 /*
 *	Given a seed, generate a random float in the 0.0f to 1.0f range.
@@ -115,7 +119,7 @@ float RandomFloat(float seed)
 */
 vec2 GenerateRandomScale()
 {
-	float randomBlendFactor = RandomFloat(particleSystemRandomSeed * 0.1f);
+	float randomBlendFactor = RandomFloat(particleSystemRandomSeed * 0.2f);
 
 	float randomX = mix(particleSystemInitialMinimumScale.x, particleSystemInitialMaximumScale.x, randomBlendFactor);
 	float randomY = mix(particleSystemInitialMinimumScale.y, particleSystemInitialMaximumScale.y, randomBlendFactor);
@@ -128,9 +132,9 @@ vec2 GenerateRandomScale()
 */
 vec3 GenerateRandomPosition()
 {
-	float randomX = mix(particleSystemInitialMinimumPosition.x, particleSystemInitialMaximumPosition.x, RandomFloat(particleSystemRandomSeed * 0.2f));
-	float randomY = mix(particleSystemInitialMinimumPosition.y, particleSystemInitialMaximumPosition.y, RandomFloat(particleSystemRandomSeed * 0.3f));
-	float randomZ = mix(particleSystemInitialMinimumPosition.z, particleSystemInitialMaximumPosition.z, RandomFloat(particleSystemRandomSeed * 0.4f));
+	float randomX = mix(particleSystemInitialMinimumPosition.x, particleSystemInitialMaximumPosition.x, RandomFloat(particleSystemRandomSeed * 0.3f));
+	float randomY = mix(particleSystemInitialMinimumPosition.y, particleSystemInitialMaximumPosition.y, RandomFloat(particleSystemRandomSeed * 0.4f));
+	float randomZ = mix(particleSystemInitialMinimumPosition.z, particleSystemInitialMaximumPosition.z, RandomFloat(particleSystemRandomSeed * 0.5f));
 
 	return vec3(randomX, randomY, randomZ) + particleSystemWorldPosition;
 }
@@ -140,11 +144,20 @@ vec3 GenerateRandomPosition()
 */
 vec3 GenerateRandomVelocity()
 {
-	float randomX = mix(particleSystemInitialMinimumVelocity.x, particleSystemInitialMaximumVelocity.x, RandomFloat(particleSystemRandomSeed * 0.5f));
-	float randomY = mix(particleSystemInitialMinimumVelocity.y, particleSystemInitialMaximumVelocity.y, RandomFloat(particleSystemRandomSeed * 0.6f));
-	float randomZ = mix(particleSystemInitialMinimumVelocity.z, particleSystemInitialMaximumVelocity.z, RandomFloat(particleSystemRandomSeed * 0.7f));
+	float randomX = mix(particleSystemInitialMinimumVelocity.x, particleSystemInitialMaximumVelocity.x, RandomFloat(particleSystemRandomSeed * 0.6f));
+	float randomY = mix(particleSystemInitialMinimumVelocity.y, particleSystemInitialMaximumVelocity.y, RandomFloat(particleSystemRandomSeed * 0.7f));
+	float randomZ = mix(particleSystemInitialMinimumVelocity.z, particleSystemInitialMaximumVelocity.z, RandomFloat(particleSystemRandomSeed * 0.8f));
 
 	return vec3(randomX, randomY, randomZ);
+}
+
+/*
+*	Calculates the fade factor for one particle.
+*/
+float CalculateFadeFactor(int index)
+{
+	float currentLifetime = lifetimes[index];
+	return currentLifetime < fadeTime ? currentLifetime / fadeTime : currentLifetime > (lifetime - fadeTime) ? abs(lifetime - currentLifetime) / fadeTime : 1.0f;
 }
 
 void main()
@@ -162,6 +175,7 @@ void main()
 			spawnTimer -= spawnFrequency;
 
 			isSpawned[particleIndex] = true;
+			lifetimes[particleIndex] = 0.0f;
 
 			particleScales[particleIndex] = GenerateRandomScale();
 			particlePositions[particleIndex] = GenerateRandomPosition();
@@ -174,6 +188,20 @@ void main()
 	//Handle spawned particles.
 	if (isSpawned[particleIndex] == true)
 	{
+		//Update the lifetime of this particle.
+		lifetimes[particleIndex] += deltaTime;
+
+		//If this particle has outlive it's lifetime, unspawn it.
+		if (lifetimes[particleIndex] >= lifetime)
+		{
+			isSpawned[particleIndex] = false;
+
+			return;
+		}
+
+		//Calculate the fade factor.
+		float fadeFactor = CalculateFadeFactor(particleIndex);
+
 		//Modify the position of the particle.
 		particlePositions[particleIndex] += particleVelocities[particleIndex] * deltaTime;
 
@@ -190,6 +218,7 @@ void main()
 		vec3 normal = normalize(forwardVector);
 
 		//Construct all the vertices.
+		fragmentFadeFactor = fadeFactor;
 		fragmentTextureCoordinate = vec2(0.0f, 0.0f);
 		fragmentNormal = normal;
 		fragmentWorldPosition = vec3((-rightVector * scale.x) + (-upVector * scale.y) + position);
@@ -198,6 +227,7 @@ void main()
 
 		EmitVertex();
 
+		fragmentFadeFactor = fadeFactor;
 		fragmentTextureCoordinate = vec2(0.0f, 1.0f);
 		fragmentNormal = normal;
 		fragmentWorldPosition = vec3((-rightVector * scale.x) + (upVector * scale.y) + position);
@@ -206,6 +236,7 @@ void main()
 
 		EmitVertex();
 
+		fragmentFadeFactor = fadeFactor;
 		fragmentTextureCoordinate = vec2(1.0f, 0.0f);
 		fragmentNormal = normal;
 		fragmentWorldPosition = vec3((rightVector * scale.x) + (-upVector * scale.y) + position);
@@ -214,6 +245,7 @@ void main()
 
 		EmitVertex();
 
+		fragmentFadeFactor = fadeFactor;
 		fragmentTextureCoordinate = vec2(1.0f, 1.0f);
 		fragmentNormal = normal;
 		fragmentWorldPosition = vec3((rightVector * scale.x) + (upVector * scale.y) + position);

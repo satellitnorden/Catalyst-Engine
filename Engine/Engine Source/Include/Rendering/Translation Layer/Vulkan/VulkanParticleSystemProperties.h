@@ -11,11 +11,17 @@ class VulkanParticleSystemProperties final
 
 public:
 
+	//The fade time.
+	float fadeTime;
+
+	//The lifetime of the particles.
+	float lifetime;
+
 	//The spawn frequency.
 	float spawnFrequency;
 
 	//Some padding.
-	Padding<12> padding1;
+	Padding<4> padding1;
 
 	//The minimum scale.
 	Vector2 minimumScale;
@@ -58,6 +64,8 @@ public:
 	*/
 	VulkanParticleSystemProperties(const ParticleSystemProperties &otherProperties) NOEXCEPT
 		:
+		fadeTime(otherProperties.fadeTime),
+		lifetime(otherProperties.lifetime),
 		spawnFrequency(otherProperties.spawnFrequency),
 		minimumScale(otherProperties.minimumScale),
 		maximumScale(otherProperties.maximumScale),
@@ -72,7 +80,9 @@ public:
 
 };
 
-static_assert(offsetof(VulkanParticleSystemProperties, spawnFrequency) == 0, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, fadeTime) == 0, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, lifetime) == 4, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, spawnFrequency) == 8, "Member of VulkanParticleSystemProperties is not layout correctly.");
 static_assert(offsetof(VulkanParticleSystemProperties, minimumScale) == 16, "Member of VulkanParticleSystemProperties is not layout correctly.");
 static_assert(offsetof(VulkanParticleSystemProperties, maximumScale) == 24, "Member of VulkanParticleSystemProperties is not layout correctly.");
 static_assert(offsetof(VulkanParticleSystemProperties, minimumPosition) == 32, "Member of VulkanParticleSystemProperties is not layout correctly.");

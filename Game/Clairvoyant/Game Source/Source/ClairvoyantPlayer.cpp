@@ -63,7 +63,7 @@ void ClairvoyantPlayer::Initialize() NOEXCEPT
 
 	//Add a particle system following the player.
 	ParticleSystemEntity *const RESTRICT particles{ EntitySystem::Instance->CreateChildEntity<ParticleSystemEntity>(this) };
-	particles->Initialize(ResourceLoader::GetParticleMaterial(ClairvoyantPlayerConstants::PARTICLE_MATERIAL), ParticleSystemProperties(0.0f, Vector2(0.1f, 0.1f), Vector2(0.2f, 0.2f), Vector3(-100.0f, -100.0f, -100.0f), Vector3(100.0f, 100.0f, 100.0f), Vector3(-1.0f, -1.0f, -1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f)));
+	particles->Initialize(ResourceLoader::GetParticleMaterial(ClairvoyantPlayerConstants::PARTICLE_MATERIAL), ParticleSystemProperties(5.0f, 60.0f, 0.0f, Vector2(0.05f, 0.05f), Vector2(0.2f, 0.2f), Vector3(-100.0f, -100.0f, -100.0f), Vector3(100.0f, 100.0f, 100.0f), Vector3(-1.0f, -1.0f, -1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f)));
 }
 
 /*
