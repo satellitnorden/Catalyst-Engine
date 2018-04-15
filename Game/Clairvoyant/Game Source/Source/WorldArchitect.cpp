@@ -11,6 +11,7 @@
 //Entities.
 #include <Entities/DirectionalLightEntity.h>
 #include <Entities/InstancedPhysicalEntity.h>
+#include <Entities/ParticleSystemEntity.h>
 #include <Entities/PointLightEntity.h>
 #include <Entities/Sound3DEntity.h>
 #include <Entities/SpotLightEntity.h>
@@ -63,6 +64,7 @@ namespace WorldAchitectConstants
 	static constexpr HashString DEFAULT_TERRAIN_MATERIAL{ "DefaultTerrainMaterial" };
 	static constexpr HashString DEFAULT_VEGETATION_MATERIAL{ "DefaultVegetationMaterial" };
 	static constexpr HashString DEFAULT_WATER_MATERIAL{ "DefaultWaterMaterial" };
+	static constexpr HashString FOG_1_MATERIAL{ "Fog1Material" };
 }
 
 /*
@@ -333,7 +335,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		DynamicArray<VegetationTransformation> vegetationTransformations;
 		vegetationTransformations.Reserve(vegetationDensity);
 
-		//Create the tree stomps.
+		//Create the vegetation.
 		for (uint64 i = 0; i < vegetationDensity; ++i)
 		{
 			Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f)) };
@@ -359,6 +361,11 @@ void WorldArchitect::Initialize() NOEXCEPT
 				continue;
 			}
 
+			if (position.Y > 725.0f)
+			{
+				continue;
+			}
+
 			position.Y -= 0.1f;
 
 			vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(1.0f, 2.0f), CatalystMath::RandomFloatInRange(1.0f, 1.8f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
@@ -367,6 +374,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 		VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
 		vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations, VegetationProperties(cutoffDistances[i]));
 	}
+
+	//Spawn some fog. (:
+	ParticleSystemEntity *const RESTRICT fogParticles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
+	fogParticles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::FOG_1_MATERIAL), ParticleSystemProperties(0.0f, Vector2(100.0f, 100.0f), Vector2(200.0f, 200.0f), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, 0.0f, -WorldAchitectConstants::TERRAIN_SIZE * 0.5f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 0.5f, 250.0f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), PhysicsSystem::Instance->GetWindDirection() * 1.0f, PhysicsSystem::Instance->GetWindDirection() * 2.5f, Vector3(0.0f, 0.0f, 0.0f)));
 }
 
 /*

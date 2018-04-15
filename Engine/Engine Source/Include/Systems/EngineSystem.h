@@ -52,6 +52,11 @@ public:
 	void Terminate() NOEXCEPT { shouldTerminate = true; }
 
 	/*
+	*	Returns the delta time.
+	*/
+	float GetDeltaTime() const NOEXCEPT { return deltaTime; }
+
+	/*
 	*	Returns the total game time.
 	*/
 	float GetTotalGameTime() const NOEXCEPT { return totalGameTime; }
@@ -63,6 +68,9 @@ private:
 
 	//Denotes whether or not the game should terminate.
 	std::atomic<bool> shouldTerminate{ false };
+
+	//Denotes the delta time.
+	float deltaTime{ 0.0f };
 
 	//Denotes the total game time.
 	float totalGameTime{ 0.0f };

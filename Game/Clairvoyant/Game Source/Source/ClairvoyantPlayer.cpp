@@ -1,13 +1,20 @@
 //Header file.
 #include <ClairvoyantPlayer.h>
 
+//Engine core.
+#include <Engine Core/HashString.h>
+
 //Entities.
 #include <Entities/CameraEntity.h>
+#include <Entities/ParticleSystemEntity.h>
 #include <Entities/PointLightEntity.h>
 #include <Entities/SpotLightEntity.h>
 
 //Math.
 #include <Math/CatalystMath.h>
+
+//Resources.
+#include <Resources/ResourceLoader.h>
 
 //Systems.
 #include <Systems/EntitySystem.h>
@@ -15,6 +22,12 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/SoundSystem.h>
+
+//Clairvoyant player constants.
+namespace ClairvoyantPlayerConstants
+{
+	constexpr HashString PARTICLE_MATERIAL{ "ParticleMaterial" };
+}
 
 /*
 *	Default constructor.
@@ -47,6 +60,10 @@ void ClairvoyantPlayer::Initialize() NOEXCEPT
 	flashlight->SetAttenuationDistance(100.0f);
 	flashlight->SetIntensity(25.0f);
 	flashlight->Rotate(Vector3(-90.0f, 180.0f, 0.0f));
+
+	//Add a particle system following the player.
+	ParticleSystemEntity *const RESTRICT particles{ EntitySystem::Instance->CreateChildEntity<ParticleSystemEntity>(this) };
+	particles->Initialize(ResourceLoader::GetParticleMaterial(ClairvoyantPlayerConstants::PARTICLE_MATERIAL), ParticleSystemProperties(0.0f, Vector2(0.1f, 0.1f), Vector2(0.2f, 0.2f), Vector3(-100.0f, -100.0f, -100.0f), Vector3(100.0f, 100.0f, 100.0f), Vector3(-1.0f, -1.0f, -1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f)));
 }
 
 /*

@@ -24,10 +24,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 352) vec3 directionalLightScreenSpacePosition; //Offset; 352 - Size; 16
 
     //General data.
-    layout (offset = 368) float totalGameTime; //Offset; 368 - Size; 4
+    layout (offset = 368) float deltaTime; //Offset; 368 - Size; 4
+    layout (offset = 372) float randomSeed; //Offset; 372 - Size; 4
+    layout (offset = 376) float totalGameTime; //Offset; 376 - Size; 4
 
     //Point light data.
-    layout (offset = 372) int numberOfPointLights; //Offset; 372 - Size; 12
+    layout (offset = 380) int numberOfPointLights; //Offset; 380 - Size; 4
     layout (offset = 384) float pointLightAttenuationDistances[MaximumNumberOfPointLights]; //Offset; 384 - Size; 128
     layout (offset = 512) float pointLightIntensities[MaximumNumberOfPointLights]; //Offset; 512 - Size; 128
     layout (offset = 640) vec3 pointLightColors[MaximumNumberOfPointLights]; //Offset; 640 - Size; 128
@@ -50,15 +52,101 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1840
 };
 
-//Out parameters.
-layout (location = 0) out vec4 albedoColor;
-layout (location = 1) out vec4 normalDirectionDepth;
-layout (location = 2) out vec4 roughnessMetallicAmbientOcclusion;
+//In parameters.
+layout (location = 0) in vec2 fragmentTextureCoordinate;
+layout (location = 1) in vec3 fragmentNormal;
+layout (location = 2) in vec3 fragmentWorldPosition;
 
+//Texture samplers.
+//Out parameters.
+layout (set = 1, binding = 3) uniform sampler2D albedoTexture;
+
+//Out parameters.
+layout (location = 0) out vec4 fragment;
+
+/*
+*   Calculates the directional light.
+*/
+vec3 CalculateDirectionalLight()
+{
+    //Return the directional light color.
+    return directionalLightColor * directionalLightIntensity;
+}
+
+/*
+*   Calculates a single point light.
+*/
+vec3 CalculatePointLight(int index)
+{
+    //Start off with just the color of the point light.
+    vec3 pointLightColor = pointLightColors[index];
+
+    //Calculate the attenuation.
+    float distanceToLightSource = length(fragmentWorldPosition - pointLightWorldPositions[index]);
+    float attenuation = clamp(1.0f - distanceToLightSource / pointLightAttenuationDistances[index], 0.0f, 1.0f);
+    attenuation *= attenuation;
+
+    pointLightColor *= attenuation;
+
+    //Return the spotlight color.
+    return pointLightColor * pointLightIntensities[index];
+}
+
+/*
+*   Calculates a single spot light.
+*/
+vec3 CalculateSpotLight(int index)
+{
+    //Start off with just the color of the spot light.
+    vec3 spotLightColor = spotLightColors[index];
+
+    //Get the angle between the normal and the light direction.
+    vec3 lightDirection = normalize(fragmentWorldPosition - spotLightWorldPositions[index]);
+    float lightAngle = dot(lightDirection, spotLightDirections[index]);
+
+    //Calculate the attenuation.
+    float distanceToLightSource = length(fragmentWorldPosition - spotLightWorldPositions[index]);
+    float attenuation = clamp(1.0f - distanceToLightSource / spotLightAttenuationDistances[index], 0.0f, 1.0f);
+    attenuation *= attenuation;
+
+    spotLightColor *= attenuation;
+
+    //Calculate the inner/outer cone fade out.
+    float epsilon = spotLightInnerCutoffAngles[index] - spotLightOuterCutoffAngles[index];
+    float intensity = lightAngle > spotLightInnerCutoffAngles[index] ? 1.0f : clamp((lightAngle - spotLightOuterCutoffAngles[index]) / epsilon, 0.0f, 1.0f); 
+
+    spotLightColor *= intensity;
+
+    //Return the spotlight color.
+    return spotLightColor * spotLightIntensities[index];
+}
 
 void main()
 {
-    albedoColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-    normalDirectionDepth = vec4(0.0f, 0.0f, 1.0f, gl_FragCoord.z);
-    roughnessMetallicAmbientOcclusion = vec4(1.0f, 0.0f, 1.0f, 0.0f);
+    //Sample the albedo texture.
+    vec4 albedoTextureSampler = pow(texture(albedoTexture, fragmentTextureCoordinate), vec4(2.2f));
+
+    //Start off the final fragment with just some ambient lighting.
+    vec3 finalFragment = albedoTextureSampler.rgb * 0.025f;
+
+    //Calculate the directional light.
+    finalFragment += CalculateDirectionalLight();
+
+    //Calculate all point lights.
+    for (int i = 0; i < numberOfPointLights; ++i)
+    {
+        finalFragment += CalculatePointLight(i);
+    }
+
+    //Calculate all spot lights.
+    for (int i = 0; i < numberOfSpotLights; ++i)
+    {
+        finalFragment += CalculateSpotLight(i);
+    }
+
+    //Calculate the blend factor.
+    float blendFactor = albedoTextureSampler.a;
+
+    //Write the fragment.
+    fragment = vec4(finalFragment, blendFactor);
 }

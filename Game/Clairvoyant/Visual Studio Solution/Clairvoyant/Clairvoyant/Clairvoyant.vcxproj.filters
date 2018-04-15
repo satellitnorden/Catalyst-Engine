@@ -624,6 +624,12 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanConstantBuffer.h">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanStorageBuffer.h">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Translation Layer\Vulkan\VulkanParticleSystemProperties.h">
+      <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
@@ -804,6 +810,9 @@
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanConstantBuffer.cpp">
+      <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanStorageBuffer.cpp">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
     </ClCompile>
   </ItemGroup>

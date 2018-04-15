@@ -113,7 +113,7 @@ private:
 	/*
 	*	Creates a pipeline color state create info.
 	*/
-	void CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates) const NOEXCEPT;
+	void CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameter) const NOEXCEPT;
 	/*
 	*	Creates a pipeline layout create info.
 	*/

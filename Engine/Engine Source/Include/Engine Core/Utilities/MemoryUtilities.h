@@ -34,4 +34,12 @@ namespace MemoryUtilities
 		memcpy(destination, source, size);
 	}
 
+	/*
+	*	Sets a chunk of memory to the specified value.
+	*/
+	static void SetMemory(void *const RESTRICT destination, const byte value, const uint64 size) NOEXCEPT
+	{
+		memset(destination, value, size);
+	}
+
 }

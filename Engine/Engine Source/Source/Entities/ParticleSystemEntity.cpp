@@ -4,6 +4,9 @@
 //Components.
 #include <Components/ComponentManager.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 //Define the entity class.
 DEFINE_ENTITY_CLASS(ParticleSystemEntity);
 
@@ -60,6 +63,9 @@ const Vector3& ParticleSystemEntity::GetScale() const NOEXCEPT
 */
 void ParticleSystemEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
+	//Move this particle system entity.
+	ComponentManager::GetParticleSystemComponents()[componentsIndex].properties.worldPosition += moveVector;
+
 	//Move all children.
 	for (auto child : children)
 	{
@@ -89,4 +95,13 @@ void ParticleSystemEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 	{
 		child->Scale(scaleVector);
 	}
+}
+
+/*
+*	Initializes this particle system entity.
+*/
+void ParticleSystemEntity::Initialize(const ParticleMaterial &material, const ParticleSystemProperties &properties) NOEXCEPT
+{
+	//Initialize this particle system entity via the rendering system.
+	RenderingSystem::Instance->InitializeParticleSystemEntity(*this, material, properties);
 }

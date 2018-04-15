@@ -15,6 +15,9 @@ public:
 	//The attachment load operator.
 	VkAttachmentLoadOp attachmentLoadOperator;
 
+	//Whether or not to enable blend.
+	bool blendEnable;
+
 	//The final layout that color attachments will be in when a render pass instance begins.
 	VkImageLayout colorAttachmentFinalLayout;
 

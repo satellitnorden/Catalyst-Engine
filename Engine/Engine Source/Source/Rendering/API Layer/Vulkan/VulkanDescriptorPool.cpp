@@ -72,7 +72,7 @@ void VulkanDescriptorPool::AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescr
 */
 void VulkanDescriptorPool::CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPoolSize> &descriptorPoolSizes) const NOEXCEPT
 {
-	descriptorPoolSizes.Reserve(2);
+	descriptorPoolSizes.Reserve(3);
 
 	VkDescriptorPoolSize combinedImageSamplerDescriptorPoolSize;
 
@@ -87,6 +87,13 @@ void VulkanDescriptorPool::CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPo
 	uniformBufferDescriptorPoolSize.descriptorCount = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS;
 
 	descriptorPoolSizes.EmplaceFast(uniformBufferDescriptorPoolSize);
+
+	VkDescriptorPoolSize storageBufferDescriptorPoolSize;
+
+	storageBufferDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	storageBufferDescriptorPoolSize.descriptorCount = 2;
+
+	descriptorPoolSizes.EmplaceFast(storageBufferDescriptorPoolSize);
 }
 
 /*

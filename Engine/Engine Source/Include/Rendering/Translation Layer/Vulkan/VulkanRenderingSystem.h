@@ -30,6 +30,8 @@ class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
 class ParticleMaterial;
 class ParticleMaterialData;
+class ParticleSystemEntity;
+class ParticleSystemProperties;
 class PhysicalMaterial;
 class PhysicalMaterialData;
 class PhysicalModel;
@@ -134,6 +136,11 @@ public:
 	void InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) const NOEXCEPT;
 
 	/*
+	*	Initializes a particle system entity.
+	*/
+	void InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT;
+
+	/*
 	*	Initializes a water entity.
 	*/
 	void InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT;
@@ -211,8 +218,9 @@ private:
 		Physical,
 		Vegetation,
 		Lighting,
-		Water,
 		CubeMap,
+		Water,
+		ParticleSystem,
 		PostProcessing,
 		NumberOfDescriptorSetLayouts
 	};
@@ -227,6 +235,7 @@ private:
 		Lighting,
 		CubeMap,
 		Water,
+		ParticleSystem,
 		PostProcessing,
 		NumberOfPipelines
 	};
@@ -257,6 +266,9 @@ private:
 		CubeMapVertexShader,
 		InstancedPhysicalVertexShader,
 		LightingFragmentShader,
+		ParticleSystemFragmentShader,
+		ParticleSystemGeometryShader,
+		ParticleSystemVertexShader,
 		PostProcessingFragmentShader,
 		PhysicalFragmentShader,
 		PhysicalVertexShader,
@@ -277,6 +289,7 @@ private:
 	enum class TaskSemaphore : uint8
 	{
 		UpdateDynamicUniformData,
+		UpdateParticleSystemProperties,
 		UpdateViewFrustumCuling,
 		NumberOfTaskSemaphores
 	};
@@ -424,14 +437,19 @@ private:
 	void RenderLighting() NOEXCEPT;
 
 	/*
+	*	Renders sky box.
+	*/
+	void RenderSkyBox() NOEXCEPT;
+
+	/*
 	*	Renders water.
 	*/
 	void RenderWater() NOEXCEPT;
 
 	/*
-	*	Renders sky box.
+	*	Renders all particle system entities.
 	*/
-	void RenderSkyBox() NOEXCEPT;
+	void RenderParticleSystemEntities() NOEXCEPT;
 
 	/*
 	*	Renders the post processing.
@@ -452,6 +470,11 @@ private:
 	*	Updates the dynamic uniform data.
 	*/
 	void UpdateDynamicUniformData() NOEXCEPT;
+
+	/*
+	*	Updates the properties of particle systems.
+	*/
+	void UpdateParticleSystemProperties() const NOEXCEPT;
 
 	/*
 	*	Updates the view frustum culling.

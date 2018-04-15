@@ -92,70 +92,77 @@ void VulkanInterface::Release() NOEXCEPT
 #endif
 
 	//Release all Vulkan 2D textures.
-	for (Vulkan2DTexture * RESTRICT vulkan2DTexture : vulkan2DTextures)
+	for (Vulkan2DTexture *const RESTRICT vulkan2DTexture : vulkan2DTextures)
 	{
 		vulkan2DTexture->Release();
 		delete vulkan2DTexture;
 	}
 
 	//Release all Vulkan bufferrs.
-	for (VulkanConstantBuffer * RESTRICT vulkanConstantBuffer : vulkanConstantBuffers)
+	for (VulkanConstantBuffer *const RESTRICT vulkanConstantBuffer : vulkanConstantBuffers)
 	{
 		vulkanConstantBuffer->Release();
 		delete vulkanConstantBuffer;
 	}
 
 	//Release all Vulkan cube map textures.
-	for (VulkanCubeMapTexture * RESTRICT vulkanCubeMapTexture : vulkanCubeMapTextures)
+	for (VulkanCubeMapTexture *const RESTRICT vulkanCubeMapTexture : vulkanCubeMapTextures)
 	{
 		vulkanCubeMapTexture->Release();
 		delete vulkanCubeMapTexture;
 	}
 
 	//Release all Vulkan depth buffers.
-	for (VulkanDepthBuffer * RESTRICT vulkanDepthBuffer : vulkanDepthBuffers)
+	for (VulkanDepthBuffer *const RESTRICT vulkanDepthBuffer : vulkanDepthBuffers)
 	{
 		vulkanDepthBuffer->Release();
 		delete vulkanDepthBuffer;
 	}
 
 	//Release all Vulkan fences.
-	for (VulkanFence * RESTRICT vulkanFence : vulkanFences)
+	for (VulkanFence *const RESTRICT vulkanFence : vulkanFences)
 	{
 		vulkanFence->Release();
 		delete vulkanFence;
 	}
 
 	//Release all Vulkan render targets.
-	for (VulkanRenderTarget * RESTRICT vulkanRenderTarget : vulkanRenderTargets)
+	for (VulkanRenderTarget *const RESTRICT vulkanRenderTarget : vulkanRenderTargets)
 	{
 		vulkanRenderTarget->Release();
 		delete vulkanRenderTarget;
 	}
 
 	//Release all Vulkan pipelines.
-	for (VulkanPipeline * RESTRICT vulkanPipeline : vulkanPipelines)
+	for (VulkanPipeline *const RESTRICT vulkanPipeline : vulkanPipelines)
 	{
 		vulkanPipeline->Release();
 		delete vulkanPipeline;
 	}
 
 	//Release all Vulkan semaphores.
-	for (VulkanSemaphore * RESTRICT vulkanSemaphore : vulkanSemaphores)
+	for (VulkanSemaphore *const RESTRICT vulkanSemaphore : vulkanSemaphores)
 	{
 		vulkanSemaphore->Release();
 		delete vulkanSemaphore;
 	}
 
 	//Release all Vulkan shader modules.
-	for (VulkanShaderModule * RESTRICT vulkanShaderModule : vulkanShaderModules)
+	for (VulkanShaderModule *const RESTRICT vulkanShaderModule : vulkanShaderModules)
 	{
 		vulkanShaderModule->Release();
 		delete vulkanShaderModule;
 	}
 
+	//Release all Vulkan storage buffers.
+	for (VulkanStorageBuffer *const RESTRICT vulkanStorageBuffer : vulkanStorageBuffers)
+	{
+		vulkanStorageBuffer->Release();
+		delete vulkanStorageBuffer;
+	}
+
 	//Release all Vulkan uniform buffers.
-	for (VulkanUniformBuffer * RESTRICT vulkanUniformBuffer : vulkanUniformBuffers)
+	for (VulkanUniformBuffer *const RESTRICT vulkanUniformBuffer : vulkanUniformBuffers)
 	{
 		vulkanUniformBuffer->Release();
 		delete vulkanUniformBuffer;
@@ -314,6 +321,19 @@ RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(const Dynamic
 	vulkanShaderModules.EmplaceSlow(newShaderModule);
 
 	return newShaderModule;
+}
+
+/*
+*	Creates and returns a storage buffer.
+*/
+RESTRICTED VulkanStorageBuffer* VulkanInterface::CreateStorageBuffer(const VkDeviceSize initialStorageBufferSize) NOEXCEPT
+{
+	VulkanStorageBuffer *RESTRICT newStorageBuffer = new VulkanStorageBuffer;
+	newStorageBuffer->Initialize(initialStorageBufferSize);
+
+	vulkanStorageBuffers.EmplaceSlow(newStorageBuffer);
+
+	return newStorageBuffer;
 }
 
 /*

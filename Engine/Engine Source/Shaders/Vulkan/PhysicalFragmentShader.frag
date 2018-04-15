@@ -24,10 +24,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 352) vec3 directionalLightScreenSpacePosition; //Offset; 352 - Size; 16
 
     //General data.
-    layout (offset = 368) float totalGameTime; //Offset; 368 - Size; 4
+    layout (offset = 368) float deltaTime; //Offset; 368 - Size; 4
+    layout (offset = 372) float randomSeed; //Offset; 372 - Size; 4
+    layout (offset = 376) float totalGameTime; //Offset; 376 - Size; 4
 
     //Point light data.
-    layout (offset = 372) int numberOfPointLights; //Offset; 372 - Size; 12
+    layout (offset = 380) int numberOfPointLights; //Offset; 380 - Size; 4
     layout (offset = 384) float pointLightAttenuationDistances[MaximumNumberOfPointLights]; //Offset; 384 - Size; 128
     layout (offset = 512) float pointLightIntensities[MaximumNumberOfPointLights]; //Offset; 512 - Size; 128
     layout (offset = 640) vec3 pointLightColors[MaximumNumberOfPointLights]; //Offset; 640 - Size; 128

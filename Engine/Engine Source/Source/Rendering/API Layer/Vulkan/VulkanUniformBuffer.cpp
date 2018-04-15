@@ -2,7 +2,6 @@
 #include <Rendering/API Layer/Vulkan/VulkanUniformBuffer.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanDescriptorPool.h>
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
 #include <Rendering/API Layer/Vulkan/VulkanUtilities.h>
 

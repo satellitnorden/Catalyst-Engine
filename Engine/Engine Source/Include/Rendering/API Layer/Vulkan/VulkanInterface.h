@@ -26,6 +26,7 @@
 #include <Rendering/API Layer/Vulkan/VulkanRenderTarget.h>
 #include <Rendering/API Layer/Vulkan/VulkanSemaphore.h>
 #include <Rendering/API Layer/Vulkan/VulkanShaderModule.h>
+#include <Rendering/API Layer/Vulkan/VulkanStorageBuffer.h>
 #include <Rendering/API Layer/Vulkan/VulkanSurface.h>
 #include <Rendering/API Layer/Vulkan/VulkanSwapChain.h>
 #include <Rendering/API Layer/Vulkan/VulkanUniformBuffer.h>
@@ -189,6 +190,11 @@ public:
 	RESTRICTED VulkanShaderModule* CreateShaderModule(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits stage) NOEXCEPT;
 
 	/*
+	*	Creates and returns a storage buffer.
+	*/
+	RESTRICTED VulkanStorageBuffer* CreateStorageBuffer(const VkDeviceSize initialStorageBufferSize) NOEXCEPT;
+
+	/*
 	*	Creates and returns a uniform buffer.
 	*/
 	RESTRICTED VulkanUniformBuffer* CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT;
@@ -257,6 +263,9 @@ private:
 
 	//Container for all Vulkan shader modules.
 	DynamicArray<VulkanShaderModule *RESTRICT> vulkanShaderModules;
+
+	//Container for all Vulkan storage buffers.
+	DynamicArray<VulkanStorageBuffer *RESTRICT> vulkanStorageBuffers;
 
 	//Container for all Vulkan uniform buffers.
 	DynamicArray<VulkanUniformBuffer *RESTRICT> vulkanUniformBuffers;

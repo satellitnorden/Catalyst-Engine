@@ -34,11 +34,12 @@ public:
 	Vector4 directionalLightScreenSpacePosition;
 
 	//General data.
+	float deltaTime;
+	float randomSeed;
 	float totalGameTime;
 
 	//Point light data.
 	int32 numberOfPointLights;
-	uint64 padding1{ 0 };
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightAttenuationDistances;
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightIntensities;
 	StaticArray<Vector4, MaximumNumberOfPointLights> pointLightColors;
@@ -77,9 +78,11 @@ static_assert(offsetof(VulkanDynamicUniformData, directionalLightDirection) == 3
 static_assert(offsetof(VulkanDynamicUniformData, directionalLightColor) == 336, "X");
 static_assert(offsetof(VulkanDynamicUniformData, directionalLightScreenSpacePosition) == 352, "X");
 
-static_assert(offsetof(VulkanDynamicUniformData, totalGameTime) == 368, "X");
+static_assert(offsetof(VulkanDynamicUniformData, deltaTime) == 368, "X");
+static_assert(offsetof(VulkanDynamicUniformData, randomSeed) == 372, "X");
+static_assert(offsetof(VulkanDynamicUniformData, totalGameTime) == 376, "X");
 
-static_assert(offsetof(VulkanDynamicUniformData, numberOfPointLights) == 372, "X");
+static_assert(offsetof(VulkanDynamicUniformData, numberOfPointLights) == 380, "X");
 static_assert(offsetof(VulkanDynamicUniformData, pointLightAttenuationDistances) == 384, "X");
 static_assert(offsetof(VulkanDynamicUniformData, pointLightIntensities) == 512, "X");
 static_assert(offsetof(VulkanDynamicUniformData, pointLightColors) == 640, "X");

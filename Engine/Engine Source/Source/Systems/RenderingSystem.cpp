@@ -148,6 +148,15 @@ void RenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity,
 }
 
 /*
+*	Initializes a particle system entity.
+*/
+void RenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT
+{
+	//Initialize the particle system entity via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->InitializeParticleSystemEntity(entity, material, properties);
+}
+
+/*
 *	Initializes a water entity.
 */
 void RenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT

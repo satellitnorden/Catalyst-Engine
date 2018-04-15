@@ -78,7 +78,7 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 
 	//Create the pipeline color blend state create info.
 	VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo;
-	CreatePipelineColorBlendStateCreateInfo(pipelineColorBlendStateCreateInfo, pipelineColorBlendAttachmentStates);
+	CreatePipelineColorBlendStateCreateInfo(pipelineColorBlendStateCreateInfo, pipelineColorBlendAttachmentStates, vulkanPipelineCreationParameters);
 
 	//Create the pipeline layout create info.
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo;
@@ -252,11 +252,11 @@ void VulkanPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPip
 	{
 		VkPipelineColorBlendAttachmentState newPipelineColorBlendAttachmentState;
 
-		newPipelineColorBlendAttachmentState.blendEnable = VK_FALSE;
-		newPipelineColorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-		newPipelineColorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
+		newPipelineColorBlendAttachmentState.blendEnable = vulkanPipelineCreationParameters.blendEnable ? VK_TRUE : VK_FALSE;
+		newPipelineColorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		newPipelineColorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 		newPipelineColorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
-		newPipelineColorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		newPipelineColorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
 		newPipelineColorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 		newPipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
 		newPipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
@@ -268,7 +268,7 @@ void VulkanPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPip
 /*
 *	Creates a pipeline color state create info.
 */
-void VulkanPipeline::CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates) const NOEXCEPT
+void VulkanPipeline::CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameter) const NOEXCEPT
 {
 	pipelineColorBlendStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	pipelineColorBlendStateCreateInfo.pNext = nullptr;

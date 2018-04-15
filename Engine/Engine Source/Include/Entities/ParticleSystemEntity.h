@@ -6,6 +6,10 @@
 //Entity.
 #include <Entities/Entity.h>
 
+//Rendering.
+#include <Rendering/Engine Layer/ParticleMaterial.h>
+#include <Rendering/Engine Layer/ParticleSystemProperties.h>
+
 class ParticleSystemEntity : public Entity
 {
 
@@ -53,5 +57,10 @@ public:
 	*	Scales this entity.
 	*/
 	void Scale(const Vector3 &scaleVector) NOEXCEPT final override;
+
+	/*
+	*	Initializes this particle system entity.
+	*/
+	void Initialize(const ParticleMaterial &material, const ParticleSystemProperties &properties) NOEXCEPT;
 
 };

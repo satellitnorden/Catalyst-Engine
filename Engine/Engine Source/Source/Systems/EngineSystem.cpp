@@ -45,8 +45,11 @@ void EngineSystem::InitializeSystem(const CatalystProjectInformation &initialPro
 /*
 *	Updates the engine system synchronously. Returns whether or not the game should terminate.
 */
-bool EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
+bool EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 {
+	//Update the delta time.
+	deltaTime = newDeltaTime;
+
 	//Update the total game time.
 	totalGameTime += deltaTime;
 
@@ -59,11 +62,11 @@ bool EngineSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	//Update the physics system.
 	PhysicsSystem::Instance->UpdateSystemSynchronous(deltaTime);
 
-	//Update the sound system.
-	SoundSystem::Instance->UpdateSystemSynchronous(deltaTime);
-
 	//Update the graphics system.
 	RenderingSystem::Instance->UpdateSystemSynchronous();
+
+	//Update the sound system.
+	SoundSystem::Instance->UpdateSystemSynchronous(deltaTime);
 
 	//Post-update the input system.
 	InputSystem::Instance->PostUpdateSystemSynchronous();

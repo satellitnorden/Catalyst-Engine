@@ -15,6 +15,8 @@ class InstancedPhysicalEntity;
 class Matrix4;
 class ParticleMaterial;
 class ParticleMaterialData;
+class ParticleSystemEntity;
+class ParticleSystemProperties;
 class PhysicalMaterial;
 class PhysicalMaterialData;
 class PhysicalModel;
@@ -118,6 +120,11 @@ public:
 	*	Initializes a vegetation entity.
 	*/
 	void InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) const NOEXCEPT;
+
+	/*
+	*	Initializes a particle system entity.
+	*/
+	void InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT;
 
 	/*
 	*	Initializes a water entity.

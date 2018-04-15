@@ -24,10 +24,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 352) vec3 directionalLightScreenSpacePosition; //Offset; 352 - Size; 16
 
     //General data.
-    layout (offset = 368) float totalGameTime; //Offset; 368 - Size; 4
+    layout (offset = 368) float deltaTime; //Offset; 368 - Size; 4
+    layout (offset = 372) float randomSeed; //Offset; 372 - Size; 4
+    layout (offset = 376) float totalGameTime; //Offset; 376 - Size; 4
 
     //Point light data.
-    layout (offset = 372) int numberOfPointLights; //Offset; 372 - Size; 12
+    layout (offset = 380) int numberOfPointLights; //Offset; 380 - Size; 4
     layout (offset = 384) float pointLightAttenuationDistances[MaximumNumberOfPointLights]; //Offset; 384 - Size; 128
     layout (offset = 512) float pointLightIntensities[MaximumNumberOfPointLights]; //Offset; 512 - Size; 128
     layout (offset = 640) vec3 pointLightColors[MaximumNumberOfPointLights]; //Offset; 640 - Size; 128
@@ -50,6 +52,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1840
 };
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    float particleSystemRandomSeed;
+};
+
 //Layout specification.
 layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
@@ -60,28 +68,34 @@ layout (triangle_strip, max_vertices = 4) out;
 //The particle system storage data.
 layout (std140, set = 1, binding = 1) buffer ParticleSystemStorageData
 { 
-	float spawnTimer;
-	int nextParticleToSpawn;
+	layout (offset = 0) float spawnTimer;
+	layout (offset = 4) int nextParticleToSpawn;
 
-	bool isSpawned[MaximumNumberOfParticles];
-	vec2 particleScales[MaximumNumberOfParticles];
-	vec3 particlePositions[MaximumNumberOfParticles];
-	vec3 particleVelocities[MaximumNumberOfParticles];
+	layout (offset = 16) bool isSpawned[MaximumNumberOfParticles];
+	layout (offset = 262160) vec2 particleScales[MaximumNumberOfParticles];
+	layout (offset = 524304) vec3 particlePositions[MaximumNumberOfParticles];
+	layout (offset = 786448) vec3 particleVelocities[MaximumNumberOfParticles];
+
+	//Total size; 1048592
 };
 
 //The particle system uniform data.
-layout (std140, set = 1, binding = 2) buffer ParticleSystemUniformData
+layout (std140, set = 1, binding = 2) uniform ParticleSystemUniformData
 { 
-	float randomSeed;
-	float spawnFrequency;
-	vec2 particleSystemInitialMaximumScale;
-	vec2 particleSystemInitialMinimumScale;
-	vec3 particleSystemInitialMaximumPosition;
-	vec3 particleSystemInitialMinimumPosition;
-	vec3 particleSystemInitialMaximumVelocity;
-	vec3 particleSystemInitialMinimumVelocity;
-	vec3 particleSystemWorldPosition;
+	layout (offset = 0) float spawnFrequency;
+	layout (offset = 16) vec2 particleSystemInitialMinimumScale;
+	layout (offset = 24) vec2 particleSystemInitialMaximumScale;
+	layout (offset = 32) vec3 particleSystemInitialMinimumPosition;
+	layout (offset = 48) vec3 particleSystemInitialMaximumPosition;
+	layout (offset = 64) vec3 particleSystemInitialMinimumVelocity;
+	layout (offset = 80) vec3 particleSystemInitialMaximumVelocity;
+	layout (offset = 96) vec3 particleSystemWorldPosition;
+
+	//Total size; 112
 };
+
+//In parameters.
+layout (location = 0) in int vertexIndex[];
 
 //Out parameters.
 layout (location = 0) out vec2 fragmentTextureCoordinate;
@@ -93,7 +107,7 @@ layout (location = 2) out vec3 fragmentWorldPosition;
 */
 float RandomFloat(float seed)
 {
-	return fract(sin(seed) * 100000.0f);
+	return fract(sin(seed * 100.0f) * 100000.0f);
 }
 
 /*
@@ -101,8 +115,10 @@ float RandomFloat(float seed)
 */
 vec2 GenerateRandomScale()
 {
-	float randomX = mix(particleSystemInitialMinimumScale.x, particleSystemInitialMaximumScale.x, RandomFloat(randomSeed * 0.1f));
-	float randomY = mix(particleSystemInitialMinimumScale.y, particleSystemInitialMaximumScale.y, RandomFloat(randomSeed * 0.2f));
+	float randomBlendFactor = RandomFloat(particleSystemRandomSeed * 0.1f);
+
+	float randomX = mix(particleSystemInitialMinimumScale.x, particleSystemInitialMaximumScale.x, randomBlendFactor);
+	float randomY = mix(particleSystemInitialMinimumScale.y, particleSystemInitialMaximumScale.y, randomBlendFactor);
 
 	return vec2(randomX, randomY);
 }
@@ -112,9 +128,9 @@ vec2 GenerateRandomScale()
 */
 vec3 GenerateRandomPosition()
 {
-	float randomX = mix(particleSystemInitialMinimumPosition.x, particleSystemInitialMaximumPosition.x, RandomFloat(randomSeed * 0.3f));
-	float randomY = mix(particleSystemInitialMinimumPosition.y, particleSystemInitialMaximumPosition.y, RandomFloat(randomSeed * 0.4f));
-	float randomZ = mix(particleSystemInitialMinimumPosition.z, particleSystemInitialMaximumPosition.z, RandomFloat(randomSeed * 0.5f));
+	float randomX = mix(particleSystemInitialMinimumPosition.x, particleSystemInitialMaximumPosition.x, RandomFloat(particleSystemRandomSeed * 0.2f));
+	float randomY = mix(particleSystemInitialMinimumPosition.y, particleSystemInitialMaximumPosition.y, RandomFloat(particleSystemRandomSeed * 0.3f));
+	float randomZ = mix(particleSystemInitialMinimumPosition.z, particleSystemInitialMaximumPosition.z, RandomFloat(particleSystemRandomSeed * 0.4f));
 
 	return vec3(randomX, randomY, randomZ) + particleSystemWorldPosition;
 }
@@ -124,17 +140,19 @@ vec3 GenerateRandomPosition()
 */
 vec3 GenerateRandomVelocity()
 {
-	float randomX = mix(particleSystemInitialMinimumVelocity.x, particleSystemInitialMaximumVelocity.x, RandomFloat(randomSeed * 0.6f));
-	float randomY = mix(particleSystemInitialMinimumVelocity.y, particleSystemInitialMaximumVelocity.y, RandomFloat(randomSeed * 0.7f));
-	float randomZ = mix(particleSystemInitialMinimumVelocity.z, particleSystemInitialMaximumVelocity.z, RandomFloat(randomSeed * 0.8f));
+	float randomX = mix(particleSystemInitialMinimumVelocity.x, particleSystemInitialMaximumVelocity.x, RandomFloat(particleSystemRandomSeed * 0.5f));
+	float randomY = mix(particleSystemInitialMinimumVelocity.y, particleSystemInitialMaximumVelocity.y, RandomFloat(particleSystemRandomSeed * 0.6f));
+	float randomZ = mix(particleSystemInitialMinimumVelocity.z, particleSystemInitialMaximumVelocity.z, RandomFloat(particleSystemRandomSeed * 0.7f));
 
 	return vec3(randomX, randomY, randomZ);
 }
 
 void main()
 {
+	int particleIndex = vertexIndex[0];
+
 	//Handle unspawned particles.
-	if (gl_PrimitiveIDIn == nextParticleToSpawn)
+	if (particleIndex == nextParticleToSpawn)
 	{
 		//If this particle is the next particle to spawn, then it is responsible for increasing the spawn timer.
 		spawnTimer += deltaTime;
@@ -143,25 +161,25 @@ void main()
 		{
 			spawnTimer -= spawnFrequency;
 
-			isSpawned[gl_PrimitiveIDIn] = true;
+			isSpawned[particleIndex] = true;
 
-			particleScales[gl_PrimitiveIDIn] = GenerateRandomScale();
-			particlePositions[gl_PrimitiveIDIn] = GenerateRandomPosition();
-			particleVelocities[gl_PrimitiveIDIn] = GenerateRandomVelocity();
+			particleScales[particleIndex] = GenerateRandomScale();
+			particlePositions[particleIndex] = GenerateRandomPosition();
+			particleVelocities[particleIndex] = GenerateRandomVelocity();
 
 			nextParticleToSpawn = nextParticleToSpawn <= MaximumNumberOfParticles - 1 ? nextParticleToSpawn + 1 : 0;
 		}
 	}
 
 	//Handle spawned particles.
-	if (isSpawned[gl_PrimitiveIDIn] == true)
+	if (isSpawned[particleIndex] == true)
 	{
 		//Modify the position of the particle.
-		particlePositions[gl_PrimitiveIDIn] += particleVelocities[gl_PrimitiveIDIn] * deltaTime;
+		particlePositions[particleIndex] += particleVelocities[particleIndex] * deltaTime;
 
 		//Cache the properties for this specific particle.
-		vec2 scale = particleScales[gl_PrimitiveIDIn];
-		vec3 position = particlePositions[gl_PrimitiveIDIn];
+		vec2 scale = particleScales[particleIndex];
+		vec3 position = particlePositions[particleIndex];
 
 		//Calculate the forward, right and up vector.
 		vec3 forwardVector = normalize(cameraWorldPosition - position);

@@ -36,6 +36,9 @@ ClairvoyantGameSystem::~ClairvoyantGameSystem() NOEXCEPT
 */
 void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 {
+	//Initialize the world architect.
+	worldArchitect.Initialize();
+
 	//Create the player.
 	player = EntitySystem::Instance->CreateEntity<ClairvoyantPlayer>();
 
@@ -44,9 +47,6 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize the sound director.
 	soundDirector.Initialize();
-
-	//Initialize the world architect.
-	worldArchitect.Initialize();
 }
 
 /*
