@@ -1,5 +1,8 @@
 #pragma once
 
+//Disable warning C4307 - "integral constant overflow"
+#pragma warning(disable : 4307) 
+
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
