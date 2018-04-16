@@ -14,6 +14,105 @@
 
 namespace RenderingUtilities
 {
+
+	/*
+	*	Calculates the vegetation grid. Outputs a new container for the sorted transformations.
+	*/
+	static void CalculateVegetationGrid(const float squaredCutoffDistance, const DynamicArray<VegetationTransformation> &transformations, VegetationComponent *const RESTRICT renderComponent, VegetationCullingComponent *const RESTRICT cullingComponent, DynamicArray<VegetationTransformation> &sortedTransformations) NOEXCEPT
+	{
+		//Set the squared cutoff distance.
+		cullingComponent->squaredCutoffDistance = squaredCutoffDistance * 3.0f;
+
+		//Calculate the bounding box of all transformations.
+		Vector2 gridMinimum{ FLOAT_MAXIMUM, FLOAT_MAXIMUM };
+		Vector2 gridMaximum{ -FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
+
+		for (const VegetationTransformation &transformation : transformations)
+		{
+			gridMinimum.X = CatalystMath::Minimum<float>(gridMinimum.X, transformation.position.X);
+			gridMinimum.Y = CatalystMath::Minimum<float>(gridMinimum.Y, transformation.position.Z);
+			gridMaximum.X = CatalystMath::Maximum<float>(gridMaximum.X, transformation.position.X);
+			gridMaximum.Y = CatalystMath::Maximum<float>(gridMaximum.Y, transformation.position.Z);
+		}
+
+		//Now that the bounding box extent is known, calculate the number of rows/columns for the grid.
+		const float xExtent{ gridMaximum.X - gridMinimum.X };
+		const float yExtent{ gridMaximum.Y - gridMinimum.Y };
+
+		const float halfXExtent{ xExtent * 0.5f };
+		const float halfYExtent{ yExtent * 0.5f };
+
+		const float cutoffDistance{ CatalystMath::SquareRoot(squaredCutoffDistance) };
+
+		const uint64 rows{ CatalystMath::Round<uint64>(xExtent / cutoffDistance) };
+		const uint64 columns{ CatalystMath::Round<uint64>(yExtent / cutoffDistance) };
+
+		//Resize all containers accordingly.
+		const uint64 containerSize{ rows * columns };
+		renderComponent->shouldDrawGridCell.UpsizeFast(containerSize);
+		renderComponent->instanceCounts.UpsizeFast(containerSize);
+		renderComponent->transformationOffsets.UpsizeFast(containerSize);
+		cullingComponent->gridCellCenterLocations.UpsizeFast(containerSize);
+
+		//Calculate all cell center positions.
+		const float rowSize{ xExtent / static_cast<float>(rows) };
+		const float columnSize{ yExtent / static_cast<float>(columns) };
+
+		const float halfRowSize{ rowSize * 0.5f };
+		const float halfColumnSize{ columnSize * 0.5f };
+
+		for (uint64 i = 0; i < rows; ++i)
+		{
+			for (uint64 j = 0; j < columns; ++j)
+			{
+				cullingComponent->gridCellCenterLocations[(i * columns) + j] = Vector2(	gridMinimum.X + halfRowSize + (rowSize * i),
+																					gridMinimum.Y + halfRowSize + (columnSize * j));
+			}
+		}
+
+		//Fill the new, sorted transformations array.
+		DynamicArray<DynamicArray<DynamicArray<VegetationTransformation>>> temporaryTransformations;
+
+		temporaryTransformations.UpsizeSlow(rows);
+
+		const uint64 approximatedTransformationsPerGridCell{ transformations.Size() / containerSize };
+
+		for (DynamicArray<DynamicArray<VegetationTransformation>> & temporaryTransformation : temporaryTransformations)
+		{
+			temporaryTransformation.UpsizeSlow(columns);
+		}
+
+		for (const VegetationTransformation &transformation : transformations)
+		{
+			uint64 rowIndex{ CatalystMath::Floor<uint64>(((transformation.position.X + halfXExtent) / xExtent) * static_cast<float>(rows)) };
+			uint64 columnIndex{ CatalystMath::Floor<uint64>(((transformation.position.Z + halfYExtent) / yExtent) * static_cast<float>(columns)) };
+
+			rowIndex = CatalystMath::Minimum<uint64>(rowIndex, rows - 1);
+			columnIndex = CatalystMath::Minimum<uint64>(columnIndex, columns - 1);
+
+			temporaryTransformations[rowIndex][columnIndex].EmplaceSlow(transformation);
+		}
+
+		sortedTransformations.UpsizeFast(transformations.Size());
+
+		uint64 offset{ 0 };
+
+		for (uint64 i = 0; i < rows; ++i)
+		{
+			for (uint64 j = 0; j < columns; ++j)
+			{
+				renderComponent->instanceCounts[(i * columns) + j] = static_cast<uint32>(temporaryTransformations[i][j].Size());
+				renderComponent->transformationOffsets[(i * columns) + j] = offset;
+
+				const uint64 dataSize{ sizeof(VegetationTransformation) * temporaryTransformations[i][j].Size() };
+
+				MemoryUtilities::CopyMemory(reinterpret_cast<byte *const RESTRICT>(sortedTransformations.Data()) + offset, temporaryTransformations[i][j].Data(), dataSize);
+
+				offset += dataSize;
+			}
+		}
+	}
+
 	/*
 	*	Given terrain properties, terrain uniform data and a resolution, generate terrain plane vertices and indices.
 	*/

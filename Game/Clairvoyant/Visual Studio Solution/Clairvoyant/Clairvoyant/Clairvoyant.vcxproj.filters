@@ -630,6 +630,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Translation Layer\Vulkan\VulkanParticleSystemProperties.h">
       <Filter>Engine Source\Rendering\Translation Layer\Vulkan\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\VegetationCullingComponent.h">
+      <Filter>Engine Source\Components\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">

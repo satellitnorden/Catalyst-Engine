@@ -24,6 +24,10 @@
 #include <Math/Matrix4.h>
 #include <Math/PerlinNoiseGenerator.h>
 
+//Multithreading.
+#include <Multithreading/Semaphore.h>
+#include <Multithreading/Task.h>
+
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture2D.h>
 #include <Rendering/Engine Layer/EnvironmentMaterial.h>
@@ -54,6 +58,7 @@ namespace WorldAchitectConstants
 	static constexpr float TERRAIN_HEIGHT{ 1'000.0f };
 	static constexpr float TERRAIN_SIZE{ 10'000.0f };
 	static constexpr float WATER_HEIGHT{ -1.0f };
+	static constexpr uint64 VEGETATION_DENSITY{ 50'000'000 };
 
 	//Resource ID's.
 	static constexpr HashString DEFAULT_ENVIRONMENT_MATERIAL{ "DefaultEnvironmentMaterial" };
@@ -324,59 +329,74 @@ void WorldArchitect::Initialize() NOEXCEPT
 	*/
 
 	//Create some grass.
-	constexpr uint64 vegetationDensity{ 1'000'000 };
-	constexpr StaticArray<float, 5> cutoffDistances
+	constexpr uint8 numberOfVegetationLayers{ 8 };
+
+	StaticArray<float, numberOfVegetationLayers> cutoffDistances
 	{
 		512.0f,
 		256.0f,
 		128.0f,
+		128.0f,
 		64.0f,
+		64.0f,
+		32.0f,
 		32.0f
 	};
 
-	for (uint64 i = 0; i < cutoffDistances.Size(); ++i)
+	StaticArray<Semaphore, numberOfVegetationLayers> vegetationSemaphores;
+
+	for (uint64 i = 0; i < numberOfVegetationLayers; ++i)
 	{
-		DynamicArray<VegetationTransformation> vegetationTransformations;
-		vegetationTransformations.Reserve(vegetationDensity);
-
-		//Create the vegetation.
-		for (uint64 i = 0; i < vegetationDensity; ++i)
+		TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 		{
-			Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f)) };
+			DynamicArray<VegetationTransformation> vegetationTransformations;
+			vegetationTransformations.Reserve(WorldAchitectConstants::VEGETATION_DENSITY);
 
-			const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
-
-			const float dotProduct{ Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) };
-
-			if (dotProduct < 0.8f)
+			//Create the vegetation.
+			for (uint64 i = 0; i < WorldAchitectConstants::VEGETATION_DENSITY; ++i)
 			{
-				continue;
+				Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f)) };
+
+				const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
+
+				const float dotProduct{ Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) };
+
+				if (dotProduct < 0.8f)
+				{
+					continue;
+				}
+
+				else if (!CatalystMath::RandomChance((dotProduct - 0.8f) * 5.0f))
+				{
+					continue;
+				}
+
+				position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
+
+				if (position.Y <= PhysicsSystem::Instance->GetWaterHeight())
+				{
+					continue;
+				}
+
+				if (position.Y > 725.0f)
+				{
+					continue;
+				}
+
+				position.Y -= 0.1f;
+
+				vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(1.0f, 2.0f), CatalystMath::RandomFloatInRange(1.0f, 1.8f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
 			}
 
-			else if (!CatalystMath::RandomChance((dotProduct - 0.8f) * 5.0f))
-			{
-				continue;
-			}
+			VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
+			vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations, VegetationProperties(*reinterpret_cast<float *const RESTRICT>(arguments)));
 
-			position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
+		}, &cutoffDistances[i], &vegetationSemaphores[i]));
+	}
 
-			if (position.Y <= PhysicsSystem::Instance->GetWaterHeight())
-			{
-				continue;
-			}
-
-			if (position.Y > 725.0f)
-			{
-				continue;
-			}
-
-			position.Y -= 0.1f;
-
-			vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(1.0f, 2.0f), CatalystMath::RandomFloatInRange(1.0f, 1.8f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
-		}
-
-		VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
-		vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations, VegetationProperties(cutoffDistances[i]));
+	for (Semaphore &vegetationSemaphore : vegetationSemaphores)
+	{
+		vegetationSemaphore.WaitFor();
 	}
 
 	//Spawn some fog. (:

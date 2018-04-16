@@ -17,7 +17,13 @@ public:
 	//The transformations buffer.
 	GraphicsBufferHandle transformationsBuffer;
 
+	//Whether or not to draw a particular grid cell.
+	DynamicArray<bool> shouldDrawGridCell;
+
+	//The offsets into the transformations buffer.
+	DynamicArray<uint64> transformationOffsets;
+
 	//The number of instances.
-	uint32 instanceCount;
+	DynamicArray<uint32> instanceCounts;
 
 };

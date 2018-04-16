@@ -108,6 +108,6 @@ void main()
         roughnessMetallicAmbientOcclusion.b = 1.0f;
 
         //Write the thinness.
-        roughnessMetallicAmbientOcclusion.a = 0.1f;
+        roughnessMetallicAmbientOcclusion.a = 0.0f;
     }
 }

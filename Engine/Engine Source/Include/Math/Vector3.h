@@ -33,6 +33,30 @@ public:
 	static float LengthSquared(const Vector3 &vector) NOEXCEPT;
 
 	/*
+	*	Given a vector, return it's length squared only taking into account the X and Y axis.
+	*/
+	constexpr static float LengthSquaredXY(const Vector3 &vector) NOEXCEPT
+	{
+		return vector.X * vector.X + vector.Y * vector.Y;
+	}
+
+	/*
+	*	Given a vector, return it's length squared only taking into account the X and Y axis.
+	*/
+	constexpr static float LengthSquaredXZ(const Vector3 &vector) NOEXCEPT
+	{
+		return vector.X * vector.X + vector.Z * vector.Z;
+	}
+
+	/*
+	*	Given a vector, return it's length squared only taking into account the X and Y axis.
+	*/
+	constexpr static float LengthSquaredYZ(const Vector3 &vector) NOEXCEPT
+	{
+		return vector.Y * vector.Y + vector.Z * vector.Z;
+	}
+
+	/*
 	*	Given a vector, return it's unit vector counterpart.
 	*/
 	static Vector3 Normalize(const Vector3 &vector) NOEXCEPT;

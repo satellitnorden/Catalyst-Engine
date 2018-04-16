@@ -123,6 +123,11 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateVegetationCulling();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateVegetationCulling)]));
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
 		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateViewFrustumCulling();
 	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateViewFrustumCuling)]));
 
@@ -462,6 +467,14 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 */
 void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) const NOEXCEPT
 {
+	//Get the components.
+	VegetationComponent &renderComponent{ ComponentManager::GetVegetationComponents()[entity.GetComponentsIndex()] };
+	VegetationCullingComponent &cullingComponent{ ComponentManager::GetVegetationCullingComponents()[entity.GetComponentsIndex()] };
+
+	//Calculate the vegetation grid.
+	DynamicArray<VegetationTransformation> sortedTransformations;
+	RenderingUtilities::CalculateVegetationGrid(properties.cutoffDistance, transformations, &renderComponent, &cullingComponent, sortedTransformations);
+
 	//Create the vegetation properties uniform buffer.
 	VulkanUniformBuffer *const RESTRICT propertiesBuffer{ VulkanInterface::Instance->CreateUniformBuffer(sizeof(VegetationProperties)) };
 	propertiesBuffer->UploadData(&properties);
@@ -484,16 +497,13 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
 	//Create the transformations buffer.
-	const void *RESTRICT transformationsData[]{ transformations.Data() };
-	const VkDeviceSize transformationsDataSizes[]{ sizeof(VegetationTransformation) * transformations.Size() };
+	const void *RESTRICT transformationsData[]{ sortedTransformations.Data() };
+	const VkDeviceSize transformationsDataSizes[]{ sizeof(VegetationTransformation) * sortedTransformations.Size() };
 	VulkanConstantBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateConstantBuffer(transformationsData, transformationsDataSizes, 1);
 
-	//Fill the vegetation entity component with the relevant data.
-	VegetationComponent &component{ ComponentManager::GetVegetationComponents()[entity.GetComponentsIndex()] };
-
-	component.descriptorSet = newDescriptorSet;
-	component.transformationsBuffer = transformationsBuffer;
-	component.instanceCount = static_cast<uint32>(transformations.Size());
+	//Fill the components with the relevant data.
+	renderComponent.descriptorSet = newDescriptorSet;
+	renderComponent.transformationsBuffer = transformationsBuffer;
 }
 
 /*
@@ -1646,6 +1656,9 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(vegetationPipeline);
 	currentCommandBuffer->CommandBeginRenderPass(vegetationPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
+	//Wait for the vegetation culling task to finish.
+	taskSemaphores[INDEX(TaskSemaphore::UpdateVegetationCulling)].WaitFor();
+
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{
 		StaticArray<VulkanDescriptorSet, 2> vegetationDescriptorSets
@@ -1654,11 +1667,16 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 			component->descriptorSet
 		};
 
-		constexpr VkDeviceSize offset{ 0 };
-
 		currentCommandBuffer->CommandBindDescriptorSets(vegetationPipeline, static_cast<uint32>(vegetationDescriptorSets.Size()), vegetationDescriptorSets.Data());
-		currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(component->transformationsBuffer)->Get(), &offset);
-		currentCommandBuffer->CommandDraw(1, component->instanceCount);
+
+		for (uint64 i = 0, size = component->shouldDrawGridCell.Size(); i < size; ++i)
+		{
+			if (component->shouldDrawGridCell[i])
+			{
+				currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(component->transformationsBuffer)->Get(), &component->transformationOffsets[i]);
+				currentCommandBuffer->CommandDraw(1, component->instanceCounts[i]);
+			}
+		}
 	}
 
 	//End the render pass.
@@ -1992,6 +2010,34 @@ void VulkanRenderingSystem::UpdateParticleSystemProperties() const NOEXCEPT
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
 		static_cast<VulkanUniformBuffer *const RESTRICT>(component->propertiesUniformBuffer)->UploadData(&VulkanParticleSystemProperties(component->properties));
+	}
+}
+
+/*
+*	Updates the vegetation culling.
+*/
+void VulkanRenderingSystem::UpdateVegetationCulling() const NOEXCEPT
+{
+	//Go through all vegetation components and update their culling
+	const uint64 numberOfVegetationComponents{ ComponentManager::GetNumberOfVegetationComponents() };
+
+	//If there are none, just return.
+	if (numberOfVegetationComponents == 0)
+	{
+		return;
+	}
+
+	VegetationComponent *RESTRICT renderComponent{ ComponentManager::GetVegetationComponents() };
+	const VegetationCullingComponent *RESTRICT cullingComponent{ ComponentManager::GetVegetationCullingComponents() };
+
+	const Vector3 &cameraWorldPosition{ activeCamera->GetPosition() };
+
+	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++renderComponent, ++cullingComponent)
+	{
+		for (uint64 i = 0, size = renderComponent->shouldDrawGridCell.Size(); i < size; ++i)
+		{
+			renderComponent->shouldDrawGridCell[i] = Vector3::LengthSquaredXZ(cameraWorldPosition - Vector3(cullingComponent->gridCellCenterLocations[i].X, 0.0f, cullingComponent->gridCellCenterLocations[i].Y)) < cullingComponent->squaredCutoffDistance;
+		}
 	}
 }
 

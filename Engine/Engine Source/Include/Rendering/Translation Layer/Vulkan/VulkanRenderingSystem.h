@@ -290,6 +290,7 @@ private:
 	{
 		UpdateDynamicUniformData,
 		UpdateParticleSystemProperties,
+		UpdateVegetationCulling,
 		UpdateViewFrustumCuling,
 		NumberOfTaskSemaphores
 	};
@@ -475,6 +476,11 @@ private:
 	*	Updates the properties of particle systems.
 	*/
 	void UpdateParticleSystemProperties() const NOEXCEPT;
+
+	/*
+	*	Updates the vegetation culling.
+	*/
+	void UpdateVegetationCulling() const NOEXCEPT;
 
 	/*
 	*	Updates the view frustum culling.

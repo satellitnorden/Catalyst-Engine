@@ -86,6 +86,15 @@ public:
 	}
 
 	/*
+	*	Rounds a number up to the nearest integer.
+	*/
+	template <class IntegerType>
+	static constexpr IntegerType Ceiling(const float number) NOEXCEPT
+	{
+		return static_cast<IntegerType>(number + 1.0f);
+	}
+
+	/*
 	*	Clamps a value between a lower and an upper limit and returns the clamped value.
 	*/
 	template <class NumberType>
@@ -124,6 +133,15 @@ public:
 	static constexpr uint64 Factorial(const uint8 number) NOEXCEPT
 	{
 		return number != 0 ? number * Factorial(number - 1) : 1;
+	}
+
+	/*
+	*	Rounds a number down to the nearest integer.
+	*/
+	template <class IntegerType>
+	static constexpr IntegerType Floor(const float number) NOEXCEPT
+	{
+		return static_cast<IntegerType>(number);
 	}
 
 	/*
@@ -256,18 +274,10 @@ public:
 	/*
 	*	Rounds a float to the nearest integral value, with halfway cases rounded away from zero.
 	*/
-	static float RoundToFloat(const float value) NOEXCEPT
-	{
-		return round(value);
-	}
-
-	/*
-	*	Rounds a float to the nearest integral value, with halfway cases rounded away from zero.
-	*/
 	template <class IntegerType>
-	constexpr static IntegerType RoundToInteger(const float value) NOEXCEPT
+	constexpr static IntegerType Round(const float value) NOEXCEPT
 	{
-		return StaticCast<IntegerType>(round(value));
+		return static_cast<IntegerType>(value + 0.5f);
 	}
 
 	/*

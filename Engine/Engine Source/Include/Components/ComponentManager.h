@@ -19,6 +19,7 @@
 #include <Components/TerrainRenderComponent.h>
 #include <Components/TransformComponent.h>
 #include <Components/VegetationComponent.h>
+#include <Components/VegetationCullingComponent.h>
 #include <Components/WaterComponent.h>
 #include <Components/WaterRenderComponent.h>
 
@@ -49,7 +50,7 @@ public:
 private:
 
 	//The number of camera components.
-	static uint64 numberOfCameraComponents;
+	static std::atomic<uint64> numberOfCameraComponents;
 
 	//The camera components.
 	static DynamicArray<CameraComponent> cameraComponents;
@@ -78,7 +79,7 @@ public:
 private:
 
 	//The number of directional light components.
-	static uint64 numberOfDirectionalLightComponents;
+	static std::atomic<uint64> numberOfDirectionalLightComponents;
 
 	//The the directional light components.
 	static DynamicArray<DirectionalLightComponent> directionalLightComponents;
@@ -107,7 +108,7 @@ public:
 private:
 
 	//The number of instanced physical components.
-	static uint64 numberOfInstancedPhysicalComponents;
+	static std::atomic<uint64> numberOfInstancedPhysicalComponents;
 
 	//The instanced physical render components.
 	static DynamicArray<InstancedPhysicalRenderComponent> instancedPhysicalRenderComponents;
@@ -146,7 +147,7 @@ public:
 private:
 
 	//The number of static physical components.
-	static uint64 numberOfStaticPhysicalComponents;
+	static std::atomic<uint64> numberOfStaticPhysicalComponents;
 
 	//The static physical frustum culling components.
 	static DynamicArray<FrustumCullingComponent> staticPhysicalFrustumCullingComponents;
@@ -186,7 +187,7 @@ public:
 private:
 
 	//The number of particle system components.
-	static uint64 numberOfParticleSystemComponents;
+	static std::atomic<uint64> numberOfParticleSystemComponents;
 
 	//The particle system components.
 	static DynamicArray<ParticleSystemComponent> particleSystemComponents;
@@ -218,7 +219,7 @@ public:
 private:
 
 	//The number of point light components.
-	static uint64 numberOfPointLightComponents;
+	static std::atomic<uint64> numberOfPointLightComponents;
 
 	//The point light components.
 	static DynamicArray<PointLightComponent> pointLightComponents;
@@ -247,7 +248,7 @@ public:
 private:
 
 	//The number of sound 2D components.
-	static uint64 numberOfSound2DComponents;
+	static std::atomic<uint64> numberOfSound2DComponents;
 
 	//The sound 2D components.
 	static DynamicArray<Sound2DComponent> sound2DComponents;
@@ -276,7 +277,7 @@ public:
 private:
 
 	//The number of sound 3D components.
-	static uint64 numberOfSound3DComponents;
+	static std::atomic<uint64> numberOfSound3DComponents;
 
 	//The sound 3D components.
 	static DynamicArray<Sound3DComponent> sound3DComponents;
@@ -305,7 +306,7 @@ public:
 private:
 
 	//The number of spot light components.
-	static uint64 numberOfSpotLightComponents;
+	static std::atomic<uint64> numberOfSpotLightComponents;
 
 	//The spot light components.
 	static DynamicArray<SpotLightComponent> spotLightComponents;
@@ -339,7 +340,7 @@ public:
 private:
 
 	//The number of terrain components.
-	static uint64 numberOfTerrainComponents;
+	static std::atomic<uint64> numberOfTerrainComponents;
 
 	//The terrain components.
 	static DynamicArray<TerrainComponent> terrainComponents;
@@ -368,14 +369,21 @@ public:
 	*/
 	static VegetationComponent *RESTRICT GetVegetationComponents() NOEXCEPT;
 
+	/*
+	*	Returns the vegetation culling components.
+	*/
+	static VegetationCullingComponent *RESTRICT GetVegetationCullingComponents() NOEXCEPT;
 
 private:
 
 	//The number of vegetation components.
-	static uint64 numberOfVegetationComponents;
+	static std::atomic<uint64> numberOfVegetationComponents;
 
 	//The vegetation components.
 	static DynamicArray<VegetationComponent> vegetationComponents;
+
+	//The vegetation culling components.
+	static DynamicArray<VegetationCullingComponent> vegetationCullingComponents;
 
 public:
 
@@ -406,7 +414,7 @@ public:
 private:
 
 	//The number of water components.
-	static uint64 numberOfWaterComponents;
+	static std::atomic<uint64> numberOfWaterComponents;
 
 	//The water components.
 	static DynamicArray<WaterComponent> waterComponents;

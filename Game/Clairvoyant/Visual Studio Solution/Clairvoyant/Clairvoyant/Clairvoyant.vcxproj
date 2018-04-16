@@ -131,6 +131,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\TerrainRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\TransformComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\VegetationComponent.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\VegetationCullingComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\WaterComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\WaterRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Algorithms\HashAlgorithms.h" />

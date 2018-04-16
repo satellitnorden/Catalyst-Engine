@@ -2,44 +2,45 @@
 #include <Components/ComponentManager.h>
 
 //Static variable definitions.
-uint64 ComponentManager::numberOfCameraComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfCameraComponents = 0;
 DynamicArray<CameraComponent> ComponentManager::cameraComponents;
 
-uint64 ComponentManager::numberOfDirectionalLightComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfDirectionalLightComponents = 0;
 DynamicArray<DirectionalLightComponent> ComponentManager::directionalLightComponents;
 
-uint64 ComponentManager::numberOfInstancedPhysicalComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfInstancedPhysicalComponents = 0;
 DynamicArray<InstancedPhysicalRenderComponent> ComponentManager::instancedPhysicalRenderComponents;
 
-uint64 ComponentManager::numberOfStaticPhysicalComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfStaticPhysicalComponents = 0;
 DynamicArray<FrustumCullingComponent> ComponentManager::staticPhysicalFrustumCullingComponents;
 DynamicArray<StaticPhysicalRenderComponent> ComponentManager::staticPhysicalRenderComponents;
 DynamicArray<TransformComponent> ComponentManager::staticPhysicalTransformComponents;
 
-uint64 ComponentManager::numberOfParticleSystemComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfParticleSystemComponents = 0;
 DynamicArray<ParticleSystemComponent> ComponentManager::particleSystemComponents;
 DynamicArray<ParticleSystemRenderComponent> ComponentManager::particleSystemRenderComponents;
 
-uint64 ComponentManager::numberOfPointLightComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfPointLightComponents = 0;
 DynamicArray<PointLightComponent> ComponentManager::pointLightComponents;
 
-uint64 ComponentManager::numberOfSound2DComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfSound2DComponents = 0;
 DynamicArray<Sound2DComponent> ComponentManager::sound2DComponents;
 
-uint64 ComponentManager::numberOfSound3DComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfSound3DComponents = 0;
 DynamicArray<Sound3DComponent> ComponentManager::sound3DComponents;
 
-uint64 ComponentManager::numberOfSpotLightComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfSpotLightComponents = 0;
 DynamicArray<SpotLightComponent> ComponentManager::spotLightComponents;
 
-uint64 ComponentManager::numberOfTerrainComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfTerrainComponents = 0;
 DynamicArray<TerrainComponent> ComponentManager::terrainComponents;
 DynamicArray<TerrainRenderComponent> ComponentManager::terrainRenderComponents;
 
-uint64 ComponentManager::numberOfVegetationComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfVegetationComponents = 0;
 DynamicArray<VegetationComponent> ComponentManager::vegetationComponents;
+DynamicArray<VegetationCullingComponent> ComponentManager::vegetationCullingComponents;
 
-uint64 ComponentManager::numberOfWaterComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfWaterComponents = 0;
 DynamicArray<WaterComponent> ComponentManager::waterComponents;
 DynamicArray<WaterRenderComponent> ComponentManager::waterRenderComponents;
 
@@ -391,6 +392,7 @@ uint64 ComponentManager::GetNewVegetationComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	vegetationComponents.EmplaceSlow();
+	vegetationCullingComponents.EmplaceSlow();
 
 	//Return the new index.
 	return numberOfVegetationComponents++;
@@ -412,6 +414,15 @@ VegetationComponent *RESTRICT ComponentManager::GetVegetationComponents() NOEXCE
 {
 	//Return the vegetation components.
 	return vegetationComponents.Data();
+}
+
+/*
+*	Returns the vegetation culling components.
+*/
+VegetationCullingComponent *RESTRICT ComponentManager::GetVegetationCullingComponents() NOEXCEPT
+{
+	//Return the vegetation components.
+	return vegetationCullingComponents.Data();
 }
 
 /*
