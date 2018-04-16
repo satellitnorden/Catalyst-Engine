@@ -181,7 +181,7 @@ void main()
 			particlePositions[particleIndex] = GenerateRandomPosition();
 			particleVelocities[particleIndex] = GenerateRandomVelocity();
 
-			nextParticleToSpawn = nextParticleToSpawn <= MaximumNumberOfParticles - 1 ? nextParticleToSpawn + 1 : 0;
+			nextParticleToSpawn = nextParticleToSpawn < MaximumNumberOfParticles - 1 ? nextParticleToSpawn + 1 : 0;
 		}
 	}
 
