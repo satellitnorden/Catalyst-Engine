@@ -15,6 +15,6 @@ public:
 	DynamicArray<Vector2> gridCellCenterLocations;
 
 	//The squared cutoff distance to compare with.
-	float squaredCutoffDistance;
+	float cutoffDistance;
 
 };

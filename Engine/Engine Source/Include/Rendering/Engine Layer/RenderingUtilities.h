@@ -18,10 +18,10 @@ namespace RenderingUtilities
 	/*
 	*	Calculates the vegetation grid. Outputs a new container for the sorted transformations.
 	*/
-	static void CalculateVegetationGrid(const float squaredCutoffDistance, const DynamicArray<VegetationTransformation> &transformations, VegetationComponent *const RESTRICT renderComponent, VegetationCullingComponent *const RESTRICT cullingComponent, DynamicArray<VegetationTransformation> &sortedTransformations) NOEXCEPT
+	static void CalculateVegetationGrid(const float cutoffDistance, const DynamicArray<VegetationTransformation> &transformations, VegetationComponent *const RESTRICT renderComponent, VegetationCullingComponent *const RESTRICT cullingComponent, DynamicArray<VegetationTransformation> &sortedTransformations) NOEXCEPT
 	{
 		//Set the squared cutoff distance.
-		cullingComponent->squaredCutoffDistance = squaredCutoffDistance * 3.0f;
+		cullingComponent->cutoffDistance = cutoffDistance * 2.0f;
 
 		//Calculate the bounding box of all transformations.
 		Vector2 gridMinimum{ FLOAT_MAXIMUM, FLOAT_MAXIMUM };
@@ -41,8 +41,6 @@ namespace RenderingUtilities
 
 		const float halfXExtent{ xExtent * 0.5f };
 		const float halfYExtent{ yExtent * 0.5f };
-
-		const float cutoffDistance{ CatalystMath::SquareRoot(squaredCutoffDistance) };
 
 		const uint64 rows{ CatalystMath::Round<uint64>(xExtent / cutoffDistance) };
 		const uint64 columns{ CatalystMath::Round<uint64>(yExtent / cutoffDistance) };
@@ -66,7 +64,7 @@ namespace RenderingUtilities
 			for (uint64 j = 0; j < columns; ++j)
 			{
 				cullingComponent->gridCellCenterLocations[(i * columns) + j] = Vector2(	gridMinimum.X + halfRowSize + (rowSize * i),
-																					gridMinimum.Y + halfRowSize + (columnSize * j));
+																						gridMinimum.Y + halfRowSize + (columnSize * j));
 			}
 		}
 
@@ -82,10 +80,13 @@ namespace RenderingUtilities
 			temporaryTransformation.UpsizeSlow(columns);
 		}
 
+		const float inverseXExtent{ 1.0f / xExtent };
+		const float inverseYExtent{ 1.0f / yExtent };
+
 		for (const VegetationTransformation &transformation : transformations)
 		{
-			uint64 rowIndex{ CatalystMath::Floor<uint64>(((transformation.position.X + halfXExtent) / xExtent) * static_cast<float>(rows)) };
-			uint64 columnIndex{ CatalystMath::Floor<uint64>(((transformation.position.Z + halfYExtent) / yExtent) * static_cast<float>(columns)) };
+			uint64 rowIndex{ CatalystMath::Floor<uint64>(((transformation.position.X + halfXExtent) * inverseXExtent) * static_cast<float>(rows)) };
+			uint64 columnIndex{ CatalystMath::Floor<uint64>(((transformation.position.Z + halfYExtent) * inverseYExtent) * static_cast<float>(columns)) };
 
 			rowIndex = CatalystMath::Minimum<uint64>(rowIndex, rows - 1);
 			columnIndex = CatalystMath::Minimum<uint64>(columnIndex, columns - 1);

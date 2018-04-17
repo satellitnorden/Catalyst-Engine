@@ -475,9 +475,13 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 	DynamicArray<VegetationTransformation> sortedTransformations;
 	RenderingUtilities::CalculateVegetationGrid(properties.cutoffDistance, transformations, &renderComponent, &cullingComponent, sortedTransformations);
 
+	//The cutoff distance is used as a squared value in the shadres, so square it.
+	VegetationProperties shaderProperties{ properties };
+	shaderProperties.cutoffDistance *= shaderProperties.cutoffDistance;
+
 	//Create the vegetation properties uniform buffer.
 	VulkanUniformBuffer *const RESTRICT propertiesBuffer{ VulkanInterface::Instance->CreateUniformBuffer(sizeof(VegetationProperties)) };
-	propertiesBuffer->UploadData(&properties);
+	propertiesBuffer->UploadData(&shaderProperties);
 
 	//Create the descriptor set.
 	VulkanDescriptorSet newDescriptorSet;
@@ -2036,7 +2040,8 @@ void VulkanRenderingSystem::UpdateVegetationCulling() const NOEXCEPT
 	{
 		for (uint64 i = 0, size = renderComponent->shouldDrawGridCell.Size(); i < size; ++i)
 		{
-			renderComponent->shouldDrawGridCell[i] = Vector3::LengthSquaredXZ(cameraWorldPosition - Vector3(cullingComponent->gridCellCenterLocations[i].X, 0.0f, cullingComponent->gridCellCenterLocations[i].Y)) < cullingComponent->squaredCutoffDistance;
+			renderComponent->shouldDrawGridCell[i] =	CatalystMath::Absolute(cameraWorldPosition.X - cullingComponent->gridCellCenterLocations[i].X) <= cullingComponent->cutoffDistance &&
+														CatalystMath::Absolute(cameraWorldPosition.Z - cullingComponent->gridCellCenterLocations[i].Y) <= cullingComponent->cutoffDistance;
 		}
 	}
 }

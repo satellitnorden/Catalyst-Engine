@@ -16,7 +16,7 @@ public:
 	*/
 	VegetationProperties(const float initialCutoffDistance) NOEXCEPT
 		:
-		cutoffDistance(initialCutoffDistance * initialCutoffDistance)
+		cutoffDistance(initialCutoffDistance)
 	{
 
 	}
