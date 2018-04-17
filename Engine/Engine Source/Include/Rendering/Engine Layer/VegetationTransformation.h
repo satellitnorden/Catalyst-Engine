@@ -4,7 +4,6 @@
 #include <Engine Core/EngineCore.h>
 
 //Math.
-#include <Math/CatalystMath.h>
 #include <Math/Vector2.h>
 #include <Math/Vector3.h>
 
@@ -19,11 +18,8 @@ public:
 	//The scale.
 	Vector2 scale;
 
-	//The cosine rotation.
-	float cosineRotation;
-
-	//The sine rotation.
-	float sineRotation;
+	//The rotation.
+	float rotation;
 
 	/*
 	*	Constructor taking all values as arguments.
@@ -32,8 +28,7 @@ public:
 		:
 		position(initialPosition),
 		scale(initialScale),
-		cosineRotation(CatalystMath::CosineDegrees(initialRotation)),
-		sineRotation(CatalystMath::SineDegrees(initialRotation))
+		rotation(initialRotation)
 	{
 
 	}

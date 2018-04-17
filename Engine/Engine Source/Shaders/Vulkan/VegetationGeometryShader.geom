@@ -83,13 +83,16 @@ layout (triangle_strip, max_vertices = 4) out;
 //In parameters.
 layout (location = 0) in vec3 vertexPosition[];
 layout (location = 1) in vec2 vertexScale[];
-layout (location = 2) in float vertexCosineRotation[];
-layout (location = 3) in float vertexSineRotation[];
+layout (location = 2) in float vertexRotation[];
 
 //Out parameters.
 layout (location = 0) out vec2 fragmentTextureCoordinate;
 layout (location = 1) out float fragmentCosineRotation;
 layout (location = 2) out float fragmentSineRotation;
+
+//Globals.
+float cosineRotation;
+float sineRotation;
 
 /*
 *	Returns the squared length of a vector.
@@ -118,6 +121,15 @@ vec3 GetWindModulator(vec3 position)
 }
 
 /*
+*	Calculates the rotation.
+*/
+void CalculateRotation()
+{
+	cosineRotation = cos(vertexRotation[0]);
+	sineRotation = sin(vertexRotation[0]);
+}
+
+/*
 *	Given an index, constructs one bottom vertex of the quad.
 */
 void ConstructBottomVertex(int index)
@@ -131,8 +143,8 @@ void ConstructBottomVertex(int index)
 	vertex *= vec3(vertexScale.x, vertexScale.y, 1.0f);
 
 	//Apply the rotation.
-	float tempX = vertex.x * vertexCosineRotation[0] + vertex.z * vertexSineRotation[0];
-	vertex.z = -vertex.x * vertexSineRotation[0] + vertex.z * vertexCosineRotation[0];
+	float tempX = vertex.x * cosineRotation + vertex.z * sineRotation;
+	vertex.z = -vertex.x * sineRotation + vertex.z * cosineRotation;
 	vertex.x = tempX;
 
 	//Apply the position.
@@ -143,8 +155,8 @@ void ConstructBottomVertex(int index)
 
 	//Set the fragment properties.
 	fragmentTextureCoordinate = quadTextureCoordinates[index];
-	fragmentCosineRotation = vertexCosineRotation[0];
-	fragmentSineRotation = vertexSineRotation[0];
+	fragmentCosineRotation = cosineRotation;
+	fragmentSineRotation = sineRotation;
 
 	EmitVertex();
 }
@@ -162,8 +174,8 @@ void ConstructTopVertex(int index)
 	vertex *= vec3(vertexScale.x, vertexScale.y, 1.0f);
 
 	//Apply the rotation.
-	float tempX = vertex.x * vertexCosineRotation[0] + vertex.z * vertexSineRotation[0];
-	vertex.z = -vertex.x * vertexSineRotation[0] + vertex.z * vertexCosineRotation[0];
+	float tempX = vertex.x * cosineRotation + vertex.z * sineRotation;
+	vertex.z = -vertex.x * sineRotation + vertex.z * cosineRotation;
 	vertex.x = tempX;
 
 	//Apply the position.
@@ -178,8 +190,8 @@ void ConstructTopVertex(int index)
 
 	//Set the fragment properties.
 	fragmentTextureCoordinate = quadTextureCoordinates[index];
-	fragmentCosineRotation = vertexCosineRotation[0];
-	fragmentSineRotation = vertexSineRotation[0];
+	fragmentCosineRotation = cosineRotation;
+	fragmentSineRotation = sineRotation;
 
 	EmitVertex();
 }
@@ -192,6 +204,7 @@ void main()
 	if (distanceToCamera < cutoffDistance)
 	{
 		//Construct the quad.
+		CalculateRotation();
 	   	ConstructBottomVertex(0);
 	   	ConstructTopVertex(1);
 	   	ConstructBottomVertex(2);

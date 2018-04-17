@@ -247,11 +247,6 @@ namespace VulkanTranslationUtilities
 		vertexInputAttributeDescriptions[2].binding = 0;
 		vertexInputAttributeDescriptions[2].format = VK_FORMAT_R32_SFLOAT;
 		vertexInputAttributeDescriptions[2].offset = sizeof(Vector3) + sizeof(Vector2);
-
-		vertexInputAttributeDescriptions[3].location = 3;
-		vertexInputAttributeDescriptions[3].binding = 0;
-		vertexInputAttributeDescriptions[3].format = VK_FORMAT_R32_SFLOAT;
-		vertexInputAttributeDescriptions[3].offset = sizeof(Vector3) + sizeof(Vector2) + sizeof(float);
 	}
 
 	/*
