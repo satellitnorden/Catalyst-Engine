@@ -196,13 +196,13 @@ void ResourceLoader::LoadParticleMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	//Read the albedo.
 	particleMaterialData.albedoData.UpsizeSlow(particleMaterialData.mipmapLevels);
 
-	const uint64 textureSize{ particleMaterialData.width * particleMaterialData.height * 4 };
-
 	for (uint8 i = 0; i < particleMaterialData.mipmapLevels; ++i)
 	{
-		particleMaterialData.albedoData[i].Reserve(textureSize >> i);
+		const uint64 textureSize{ (particleMaterialData.width >> i) * (particleMaterialData.height >> i) * 4 };
 
-		file.Read(particleMaterialData.albedoData[i].Data(), textureSize >> i);
+		particleMaterialData.albedoData[i].Reserve(textureSize);
+
+		file.Read(particleMaterialData.albedoData[i].Data(), textureSize);
 	}
 
 	//Create the particle material via the rendering system.
@@ -233,13 +233,13 @@ void ResourceLoader::LoadPhysicalMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	//Read the albedo.
 	physicalMaterialData.albedoData.UpsizeSlow(physicalMaterialData.mipmapLevels);
 
-	const uint64 textureSize{ physicalMaterialData.width * physicalMaterialData.height * 4 };
-
 	for (uint8 i = 0; i < physicalMaterialData.mipmapLevels; ++i)
 	{
-		physicalMaterialData.albedoData[i].Reserve(textureSize >> i);
+		const uint64 textureSize{ (physicalMaterialData.width >> i) * (physicalMaterialData.height >> i) * 4 };
 
-		file.Read(physicalMaterialData.albedoData[i].Data(), textureSize >> i);
+		physicalMaterialData.albedoData[i].Reserve(textureSize);
+
+		file.Read(physicalMaterialData.albedoData[i].Data(), textureSize);
 	}
 
 	//Read the normal map.
@@ -247,9 +247,11 @@ void ResourceLoader::LoadPhysicalMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	for (uint8 i = 0; i < physicalMaterialData.mipmapLevels; ++i)
 	{
-		physicalMaterialData.normalMapData[i].Reserve(textureSize >> i);
+		const uint64 textureSize{ (physicalMaterialData.width >> i) * (physicalMaterialData.height >> i) * 4 };
 
-		file.Read(physicalMaterialData.normalMapData[i].Data(), textureSize >> i);
+		physicalMaterialData.normalMapData[i].Reserve(textureSize);
+
+		file.Read(physicalMaterialData.normalMapData[i].Data(), textureSize);
 	}
 
 	//Read the material properties.
@@ -257,9 +259,11 @@ void ResourceLoader::LoadPhysicalMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	for (uint8 i = 0; i < physicalMaterialData.mipmapLevels; ++i)
 	{
-		physicalMaterialData.materialPropertiesData[i].Reserve(textureSize >> i);
+		const uint64 textureSize{ (physicalMaterialData.width >> i) * (physicalMaterialData.height >> i) * 4 };
 
-		file.Read(physicalMaterialData.materialPropertiesData[i].Data(), textureSize >> i);
+		physicalMaterialData.materialPropertiesData[i].Reserve(textureSize);
+
+		file.Read(physicalMaterialData.materialPropertiesData[i].Data(), textureSize);
 	}
 
 	//Create the physical material via the rendering system.
@@ -387,13 +391,13 @@ void ResourceLoader::LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCE
 	//Read the mask data.
 	vegetationMaterialData.maskData.UpsizeSlow(vegetationMaterialData.maskMipmapLevels);
 
-	const uint64 textureSize{ vegetationMaterialData.width * vegetationMaterialData.height * 4 };
-
 	for (uint8 i = 0; i < vegetationMaterialData.maskMipmapLevels; ++i)
 	{
-		vegetationMaterialData.maskData[i].Reserve(textureSize >> i);
+		const uint64 textureSize{ (vegetationMaterialData.width >> i) * (vegetationMaterialData.height >> i) * 4 };
 
-		file.Read(vegetationMaterialData.maskData[i].Data(), textureSize >> i);
+		vegetationMaterialData.maskData[i].Reserve(textureSize);
+
+		file.Read(vegetationMaterialData.maskData[i].Data(), textureSize);
 	}
 
 	//Read the albedo.
@@ -401,9 +405,11 @@ void ResourceLoader::LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCE
 
 	for (uint8 i = 0; i < vegetationMaterialData.remainingMipmapLevels; ++i)
 	{
-		vegetationMaterialData.albedoData[i].Reserve(textureSize >> i);
+		const uint64 textureSize{ (vegetationMaterialData.width >> i) * (vegetationMaterialData.height >> i) * 4 };
 
-		file.Read(vegetationMaterialData.albedoData[i].Data(), textureSize >> i);
+		vegetationMaterialData.albedoData[i].Reserve(textureSize);
+
+		file.Read(vegetationMaterialData.albedoData[i].Data(), textureSize);
 	}
 
 	//Read the normal map.
@@ -411,9 +417,23 @@ void ResourceLoader::LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCE
 
 	for (uint8 i = 0; i < vegetationMaterialData.remainingMipmapLevels; ++i)
 	{
-		vegetationMaterialData.normalMapData[i].Reserve(textureSize >> i);
+		const uint64 textureSize{ (vegetationMaterialData.width >> i) * (vegetationMaterialData.height >> i) * 4 };
 
-		file.Read(vegetationMaterialData.normalMapData[i].Data(), textureSize >> i);
+		vegetationMaterialData.normalMapData[i].Reserve(textureSize);
+
+		file.Read(vegetationMaterialData.normalMapData[i].Data(), textureSize);
+	}
+
+	//Read the properties.
+	vegetationMaterialData.propertiesData.UpsizeSlow(vegetationMaterialData.remainingMipmapLevels);
+
+	for (uint8 i = 0; i < vegetationMaterialData.remainingMipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (vegetationMaterialData.width >> i) * (vegetationMaterialData.height >> i) * 4 };
+
+		vegetationMaterialData.propertiesData[i].Reserve(textureSize);
+
+		file.Read(vegetationMaterialData.propertiesData[i].Data(), textureSize);
 	}
 
 	//Create the vegetation material via the rendering system.
@@ -444,13 +464,13 @@ void ResourceLoader::LoadWaterMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	//Read the normal map.
 	waterMaterialData.normalMapData.UpsizeSlow(waterMaterialData.mipmapLevels);
 
-	const uint64 textureSize{ waterMaterialData.width * waterMaterialData.height * 4 };
-
 	for (uint8 i = 0; i < waterMaterialData.mipmapLevels; ++i)
 	{
-		waterMaterialData.normalMapData[i].Reserve(textureSize >> i);
+		const uint64 textureSize{ (waterMaterialData.width >> i) * (waterMaterialData.height >> i) * 4 };
 
-		file.Read(waterMaterialData.normalMapData[i].Data(), textureSize >> i);
+		waterMaterialData.normalMapData[i].Reserve(textureSize);
+
+		file.Read(waterMaterialData.normalMapData[i].Data(), textureSize);
 	}
 
 	//Create the water material via the rendering system.

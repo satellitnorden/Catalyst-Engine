@@ -46,15 +46,18 @@ public:
 		int32 width, height, numberOfChannels;
 		byte *RESTRICT data{ stbi_load(arguments[5], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
-		//Write the width and height of the normal map into the file.
-		file.Write(&width, sizeof(int32));
-		file.Write(&height, sizeof(int32));
+		const uint32 uWidth{ static_cast<uint32>(width) };
+		const uint32 uHeight{ static_cast<uint32>(height) };
+
+		//Write the width and height of the albedo into the file, to be read into uint32's.
+		file.Write(&uWidth, sizeof(uint32));
+		file.Write(&uHeight, sizeof(uint32));
 
 		//Write the normal map to the file.
-		uint64 textureSize{ static_cast<uint64>(width * height * 4) };
-
 		for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
 		{
+			const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
+
 			//If this is the base mipmap level, just copy the thing directly into memory.
 			if (i == 0)
 			{
@@ -64,10 +67,10 @@ public:
 			//Else, the image data should be resized.
 			else
 			{
-				byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize >> i));
-				stbir_resize_uint8(data, width, height, 0, downsampledData, width >> i, height >> i, 0, 4);
+				byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize));
+				stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
 
-				file.Write(downsampledData, textureSize >> i);
+				file.Write(downsampledData, textureSize);
 
 				MemoryUtilities::FreeMemory(downsampledData);
 			}

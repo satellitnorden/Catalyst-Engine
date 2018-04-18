@@ -231,7 +231,7 @@ namespace VulkanTranslationUtilities
 	/*
 	*	Returns the vertex input attribute descriptions for the vegetation pipeline.
 	*/
-	static void GetVegetationVertexInputAttributeDescriptions(StaticArray<VkVertexInputAttributeDescription, 4> &vertexInputAttributeDescriptions) NOEXCEPT
+	static void GetVegetationVertexInputAttributeDescriptions(StaticArray<VkVertexInputAttributeDescription, 3> &vertexInputAttributeDescriptions) NOEXCEPT
 	{
 		vertexInputAttributeDescriptions[0].location = 0;
 		vertexInputAttributeDescriptions[0].binding = 0;

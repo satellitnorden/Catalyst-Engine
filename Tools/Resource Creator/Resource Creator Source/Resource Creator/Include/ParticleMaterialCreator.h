@@ -64,10 +64,12 @@ public:
 			//Else, the image data should be resized.
 			else
 			{
-				byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize >> i));
+				textureSize = (width >> i) * (height >> i) * 4;
+
+				byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize));
 				stbir_resize_uint8(data, width, height, 0, downsampledData, width >> i, height >> i, 0, 4);
 
-				file.Write(downsampledData, textureSize >> i);
+				file.Write(downsampledData, textureSize);
 
 				MemoryUtilities::FreeMemory(downsampledData);
 			}

@@ -20,13 +20,13 @@ namespace ResourceLoaderUtilities
 		//Read the layer albedo.
 		layerAlbedoData.UpsizeSlow(mipmapLevels);
 
-		const uint64 textureSize{ layerWidth * layerHeight * 4 };
-
 		for (uint8 i = 0; i < mipmapLevels; ++i)
 		{
-			layerAlbedoData[i].Reserve(textureSize >> i);
+			const uint64 textureSize{ (layerWidth >> i) * (layerHeight >> i) * 4 };
 
-			file.Read(layerAlbedoData[i].Data(), textureSize >> i);
+			layerAlbedoData[i].Reserve(textureSize);
+
+			file.Read(layerAlbedoData[i].Data(), textureSize);
 		}
 
 		//Read the layer normal map.
@@ -34,9 +34,11 @@ namespace ResourceLoaderUtilities
 
 		for (uint8 i = 0; i < mipmapLevels; ++i)
 		{
-			layerNormalMapData[i].Reserve(textureSize >> i);
+			const uint64 textureSize{ (layerWidth >> i) * (layerHeight >> i) * 4 };
 
-			file.Read(layerNormalMapData[i].Data(), textureSize >> i);
+			layerNormalMapData[i].Reserve(textureSize);
+
+			file.Read(layerNormalMapData[i].Data(), textureSize);
 		}
 
 		//Read the layer material properties.
@@ -44,9 +46,11 @@ namespace ResourceLoaderUtilities
 
 		for (uint8 i = 0; i < mipmapLevels; ++i)
 		{
-			layerMaterialPropertiesData[i].Reserve(textureSize >> i);
+			const uint64 textureSize{ (layerWidth >> i) * (layerHeight >> i) * 4 };
 
-			file.Read(layerMaterialPropertiesData[i].Data(), textureSize >> i);
+			layerMaterialPropertiesData[i].Reserve(textureSize);
+
+			file.Read(layerMaterialPropertiesData[i].Data(), textureSize);
 		}
 	}
 }

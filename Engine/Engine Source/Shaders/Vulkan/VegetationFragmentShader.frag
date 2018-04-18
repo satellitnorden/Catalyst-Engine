@@ -61,11 +61,12 @@ layout (location = 2) in float fragmentSineRotation;
 layout (set = 1, binding = 2) uniform sampler2D maskTexture;
 layout (set = 1, binding = 3) uniform sampler2D albedoTexture;
 layout (set = 1, binding = 4) uniform sampler2D normalMapTexture;
+layout (set = 1, binding = 5) uniform sampler2D materialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
 layout (location = 1) out vec4 normalDirectionDepth;
-layout (location = 2) out vec4 roughnessMetallicAmbientOcclusion;
+layout (location = 2) out vec4 materialProperties;
 
 /*
 *   Calculates the normal.
@@ -101,13 +102,7 @@ void main()
         vec3 normal = CalculateNormal();
         normalDirectionDepth = vec4(gl_FrontFacing ? -normal : normal, gl_FragCoord.z);
 
-        //Write the roughness.
-        roughnessMetallicAmbientOcclusion.r = 1.0f;
-
-        //Set the ambient occlusion.
-        roughnessMetallicAmbientOcclusion.b = 1.0f;
-
-        //Write the thinness.
-        roughnessMetallicAmbientOcclusion.a = 0.1f;
+        //Write the properties.
+        materialProperties = texture(materialPropertiesTexture, fragmentTextureCoordinate);
     }
 }

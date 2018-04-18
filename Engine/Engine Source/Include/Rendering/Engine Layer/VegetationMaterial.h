@@ -20,4 +20,7 @@ public:
 	//The normal map texture.
 	Texture2DHandle normalMapTexture;
 
+	//The properties texture.
+	Texture2DHandle propertiesTexture;
+
 };

@@ -29,4 +29,7 @@ public:
 	//The normal map data.
 	DynamicArray<DynamicArray<byte>> normalMapData;
 
+	//The properties data.
+	DynamicArray<DynamicArray<byte>> propertiesData;
+
 };

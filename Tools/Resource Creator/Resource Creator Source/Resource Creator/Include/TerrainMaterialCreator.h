@@ -45,30 +45,33 @@ namespace TerrainMaterialCreator
 			int32 width, height, numberOfChannels;
 			byte *data{ stbi_load(arguments[5 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
-			//Write the width and height of the layer into the file, to be read into uint32's.
-			terrainMaterialFile.Write(&width, sizeof(int32));
-			terrainMaterialFile.Write(&height, sizeof(int32));
+			const uint32 uWidth{ static_cast<uint32>(width) };
+			const uint32 uHeight{ static_cast<uint32>(height) };
+
+			//Write the width and height of the albedo into the file, to be read into uint32's.
+			terrainMaterialFile.Write(&uWidth, sizeof(uint32));
+			terrainMaterialFile.Write(&uHeight, sizeof(uint32));
 
 			//Write the layer albedo to the file, to be read into byte's.
-			uint64 textureSize{ static_cast<uint64>(width * height * 4) };
-
 			for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
 			{
+				const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
+
 				//If this is the base mipmap level, just copy the thing directly into memory.
 				if (i == 0)
 				{
-					terrainMaterialFile.Write(data, textureSize >> i);
+					terrainMaterialFile.Write(data, textureSize);
 				}
 
 				//Else, the image data should be resized.
 				else
 				{
-					unsigned char *downsampledData = static_cast<unsigned char*>(malloc(textureSize >> i));
-					stbir_resize_uint8(data, width, height, 0, downsampledData, width >> i, height >> i, 0, 4);
+					byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize));
+					stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
 
-					terrainMaterialFile.Write(downsampledData, textureSize >> i);
+					terrainMaterialFile.Write(downsampledData, textureSize);
 
-					free(downsampledData);
+					MemoryUtilities::FreeMemory(downsampledData);
 				}
 			}
 
@@ -81,21 +84,23 @@ namespace TerrainMaterialCreator
 			//Write the layer albedo to the file, to be read into byte's.
 			for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
 			{
+				const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
+
 				//If this is the base mipmap level, just copy the thing directly into memory.
 				if (i == 0)
 				{
-					terrainMaterialFile.Write(data, textureSize >> i);
+					terrainMaterialFile.Write(data, textureSize);
 				}
 
 				//Else, the image data should be resized.
 				else
 				{
-					unsigned char *downsampledData = static_cast<unsigned char*>(malloc(textureSize >> i));
-					stbir_resize_uint8(data, width, height, 0, downsampledData, width >> i, height >> i, 0, 4);
+					byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize));
+					stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
 
-					terrainMaterialFile.Write(downsampledData, textureSize >> i);
+					terrainMaterialFile.Write(downsampledData, textureSize);
 
-					free(downsampledData);
+					MemoryUtilities::FreeMemory(downsampledData);
 				}
 			}
 
@@ -103,10 +108,10 @@ namespace TerrainMaterialCreator
 			stbi_image_free(data);
 
 			//Load the roughness, metallic, ambient occlusion and displacement data.
-			unsigned char *roughnessData = stbi_load(arguments[7 + (6 * i)], &width, &height, &numberOfChannels, 0);
-			unsigned char *metallicData = stbi_load(arguments[8 + (6 * i)], &width, &height, &numberOfChannels, 0);
-			unsigned char *ambientOcclusionData = stbi_load(arguments[9 + (6 * i)], &width, &height, &numberOfChannels, 0);
-			unsigned char *displacementData = stbi_load(arguments[10 + (6 * i)], &width, &height, &numberOfChannels, 0);
+			unsigned char *roughnessData = stbi_load(arguments[7 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+			unsigned char *metallicData = stbi_load(arguments[8 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+			unsigned char *ambientOcclusionData = stbi_load(arguments[9 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+			unsigned char *displacementData = stbi_load(arguments[10 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 			//Write the roughness, metallic, ambient occlusion and displacement data to the file.
 			unsigned char defaultRoughness{ 255 };
@@ -114,46 +119,46 @@ namespace TerrainMaterialCreator
 			unsigned char defaultAmbientOcclusion{ 255 };
 			unsigned char defaultDisplacement{ 0 };
 
-			textureSize = static_cast<unsigned int>(width * height);
-
 			for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
 			{
+				const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) };
+
 				//If this is the base mipmap level, treat it differently.
 				if (i == 0)
 				{
 					for (uint64 j = 0; j < textureSize; ++j)
 					{
-						terrainMaterialFile.Write(roughnessData ? &roughnessData[j] : &defaultRoughness, sizeof(char));
-						terrainMaterialFile.Write(metallicData ? &metallicData[j] : &defaultMetallic, sizeof(char));
-						terrainMaterialFile.Write(ambientOcclusionData ? &ambientOcclusionData[j] : &defaultAmbientOcclusion, sizeof(char));
-						terrainMaterialFile.Write(displacementData ? &displacementData[j] : &defaultDisplacement, sizeof(char));
+						terrainMaterialFile.Write(roughnessData ? &roughnessData[j * 4] : &defaultRoughness, sizeof(char));
+						terrainMaterialFile.Write(metallicData ? &metallicData[j * 4] : &defaultMetallic, sizeof(char));
+						terrainMaterialFile.Write(ambientOcclusionData ? &ambientOcclusionData[j * 4] : &defaultAmbientOcclusion, sizeof(char));
+						terrainMaterialFile.Write(displacementData ? &displacementData[j * 4] : &defaultDisplacement, sizeof(char));
 					}
 				}
 
 				else
 				{
-					unsigned char *downsampledRoughnessData = roughnessData ? static_cast<unsigned char*>(malloc(textureSize >> i)) : nullptr;
-					unsigned char *downsampledMetallicData = metallicData ? static_cast<unsigned char*>(malloc(textureSize >> i)) : nullptr;
-					unsigned char *downsampledAmbientOcclusionData = ambientOcclusionData ? static_cast<unsigned char*>(malloc(textureSize >> i)) : nullptr;
-					unsigned char *downsampledDisplacementData = displacementData ? static_cast<unsigned char*>(malloc(textureSize >> i)) : nullptr;
+					byte *RESTRICT downsampledRoughnessData = roughnessData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
+					byte *RESTRICT downsampledMetallicData = metallicData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
+					byte *RESTRICT downsampledAmbientOcclusionData = ambientOcclusionData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
+					byte *RESTRICT downsampledDisplacementData = displacementData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
 
-					if (roughnessData) stbir_resize_uint8(roughnessData, width, height, 0, downsampledRoughnessData, width >> i, height >> i, 0, 1);
-					if (metallicData) stbir_resize_uint8(metallicData, width, height, 0, downsampledMetallicData, width >> i, height >> i, 0, 1);
-					if (ambientOcclusionData) stbir_resize_uint8(ambientOcclusionData, width, height, 0, downsampledAmbientOcclusionData, width >> i, height >> i, 0, 1);
-					if (displacementData) stbir_resize_uint8(displacementData, width, height, 0, downsampledDisplacementData, width >> i, height >> i, 0, 1);
+					if (roughnessData) stbir_resize_uint8(roughnessData, width, height, 0, downsampledRoughnessData, uWidth >> i, uHeight >> i, 0, 4);
+					if (metallicData) stbir_resize_uint8(metallicData, width, height, 0, downsampledMetallicData, uWidth >> i, uHeight >> i, 0, 4);
+					if (ambientOcclusionData) stbir_resize_uint8(ambientOcclusionData, width, height, 0, downsampledAmbientOcclusionData, uWidth >> i, uHeight >> i, 0, 4);
+					if (displacementData) stbir_resize_uint8(displacementData, width, height, 0, downsampledDisplacementData, uWidth >> i, uHeight >> i, 0, 4);
 
-					for (uint64 j = 0; j < textureSize >> i; ++j)
+					for (uint64 j = 0; j < textureSize; ++j)
 					{
-						terrainMaterialFile.Write(downsampledRoughnessData ? &downsampledRoughnessData[j] : &defaultRoughness, sizeof(char));
-						terrainMaterialFile.Write(downsampledMetallicData ? &downsampledMetallicData[j] : &defaultMetallic, sizeof(char));
-						terrainMaterialFile.Write(downsampledAmbientOcclusionData ? &downsampledAmbientOcclusionData[j] : &defaultAmbientOcclusion, sizeof(char));
-						terrainMaterialFile.Write(downsampledDisplacementData ? &downsampledDisplacementData[j] : &defaultDisplacement, sizeof(char));
+						terrainMaterialFile.Write(downsampledRoughnessData ? &downsampledRoughnessData[j * 4] : &defaultRoughness, sizeof(byte));
+						terrainMaterialFile.Write(downsampledMetallicData ? &downsampledMetallicData[j * 4] : &defaultMetallic, sizeof(byte));
+						terrainMaterialFile.Write(downsampledAmbientOcclusionData ? &downsampledAmbientOcclusionData[j * 4] : &defaultAmbientOcclusion, sizeof(byte));
+						terrainMaterialFile.Write(downsampledDisplacementData ? &downsampledDisplacementData[j * 4] : &defaultDisplacement, sizeof(byte));
 					}
 
-					free(downsampledRoughnessData);
-					free(downsampledMetallicData);
-					free(downsampledAmbientOcclusionData);
-					free(downsampledDisplacementData);
+					MemoryUtilities::FreeMemory(downsampledRoughnessData);
+					MemoryUtilities::FreeMemory(downsampledMetallicData);
+					MemoryUtilities::FreeMemory(downsampledAmbientOcclusionData);
+					MemoryUtilities::FreeMemory(downsampledDisplacementData);
 				}
 			}
 

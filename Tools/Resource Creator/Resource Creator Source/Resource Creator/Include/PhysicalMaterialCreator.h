@@ -46,15 +46,18 @@ public:
 		int32 width, height, numberOfChannels;
 		byte *RESTRICT data{ stbi_load(arguments[5], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
+		const uint32 uWidth{ static_cast<uint32>(width) };
+		const uint32 uHeight{ static_cast<uint32>(height) };
+
 		//Write the width and height of the albedo into the file, to be read into uint32's.
-		file.Write(&width, sizeof(int32));
-		file.Write(&height, sizeof(int32));
+		file.Write(&uWidth, sizeof(uint32));
+		file.Write(&uHeight, sizeof(uint32));
 
 		//Write the albedo to the file.
-		uint64 textureSize{ static_cast<uint64>(width * height * 4) };
-
 		for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
 		{
+			const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
+
 			//If this is the base mipmap level, just copy the thing directly into memory.
 			if (i == 0)
 			{
@@ -64,10 +67,10 @@ public:
 			//Else, the image data should be resized.
 			else
 			{
-				byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize >> i));
-				stbir_resize_uint8(data, width, height, 0, downsampledData, width >> i, height >> i, 0, 4);
+				byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize));
+				stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
 
-				file.Write(downsampledData, textureSize >> i);
+				file.Write(downsampledData, textureSize);
 
 				MemoryUtilities::FreeMemory(downsampledData);
 			}
@@ -82,6 +85,8 @@ public:
 		//Write the layer albedo to the file, to be read into byte's.
 		for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
 		{
+			const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
+
 			//If this is the base mipmap level, just copy the thing directly into memory.
 			if (i == 0)
 			{
@@ -91,10 +96,10 @@ public:
 			//Else, the image data should be resized.
 			else
 			{
-				byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize >> i));
-				stbir_resize_uint8(data, width, height, 0, downsampledData, width >> i, height >> i, 0, 4);
+				byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize));
+				stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
 
-				file.Write(downsampledData, textureSize >> i);
+				file.Write(downsampledData, textureSize);
 
 				MemoryUtilities::FreeMemory(downsampledData);
 			}
@@ -104,10 +109,10 @@ public:
 		stbi_image_free(data);
 
 		//Load the roughness, metallic, ambient occlusion and displacement data.
-		byte *RESTRICT roughnessData = stbi_load(arguments[7], &width, &height, &numberOfChannels, 0);
-		byte *RESTRICT metallicData = stbi_load(arguments[8], &width, &height, &numberOfChannels, 0);
-		byte *RESTRICT ambientOcclusionData = stbi_load(arguments[9], &width, &height, &numberOfChannels, 0);
-		byte *RESTRICT displacementData = stbi_load(arguments[10], &width, &height, &numberOfChannels, 0);
+		byte *RESTRICT roughnessData = stbi_load(arguments[7], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+		byte *RESTRICT metallicData = stbi_load(arguments[8], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+		byte *RESTRICT ambientOcclusionData = stbi_load(arguments[9], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+		byte *RESTRICT displacementData = stbi_load(arguments[10], &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 		//Write the roughness, metallic, ambient occlusion and displacement data to the file.
 		constexpr byte defaultRoughness{ 255 };
@@ -115,40 +120,40 @@ public:
 		constexpr byte defaultAmbientOcclusion{ 255 };
 		constexpr byte defaultDisplacement{ 0 };
 
-		textureSize = static_cast<uint64>(width * height);
-
 		for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
 		{
+			const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) };
+
 			//If this is the base mipmap level, treat it differently.
 			if (i == 0)
 			{
 				for (uint64 j = 0; j < textureSize; ++j)
 				{
-					file.Write(roughnessData ? &roughnessData[j] : &defaultRoughness, sizeof(byte));
-					file.Write(metallicData ? &metallicData[j] : &defaultMetallic, sizeof(byte));
-					file.Write(ambientOcclusionData ? &ambientOcclusionData[j] : &defaultAmbientOcclusion, sizeof(byte));
-					file.Write(displacementData ? &displacementData[j] : &defaultDisplacement, sizeof(byte));
+					file.Write(roughnessData ? &roughnessData[j * 4] : &defaultRoughness, sizeof(byte));
+					file.Write(metallicData ? &metallicData[j * 4] : &defaultMetallic, sizeof(byte));
+					file.Write(ambientOcclusionData ? &ambientOcclusionData[j * 4] : &defaultAmbientOcclusion, sizeof(byte));
+					file.Write(displacementData ? &displacementData[j * 4] : &defaultDisplacement, sizeof(byte));
 				}
 			}
 
 			else
 			{
-				byte *RESTRICT downsampledRoughnessData = roughnessData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize >> i)) : nullptr;
-				byte *RESTRICT downsampledMetallicData = metallicData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize >> i)) : nullptr;
-				byte *RESTRICT downsampledAmbientOcclusionData = ambientOcclusionData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize >> i)) : nullptr;
-				byte *RESTRICT downsampledDisplacementData = displacementData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize >> i)) : nullptr;
+				byte *RESTRICT downsampledRoughnessData = roughnessData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
+				byte *RESTRICT downsampledMetallicData = metallicData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
+				byte *RESTRICT downsampledAmbientOcclusionData = ambientOcclusionData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
+				byte *RESTRICT downsampledDisplacementData = displacementData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
 
-				if (roughnessData) stbir_resize_uint8(roughnessData, width, height, 0, downsampledRoughnessData, width >> i, height >> i, 0, 1);
-				if (metallicData) stbir_resize_uint8(metallicData, width, height, 0, downsampledMetallicData, width >> i, height >> i, 0, 1);
-				if (ambientOcclusionData) stbir_resize_uint8(ambientOcclusionData, width, height, 0, downsampledAmbientOcclusionData, width >> i, height >> i, 0, 1);
-				if (displacementData) stbir_resize_uint8(displacementData, width, height, 0, downsampledDisplacementData, width >> i, height >> i, 0, 1);
+				if (roughnessData) stbir_resize_uint8(roughnessData, width, height, 0, downsampledRoughnessData, uWidth >> i, uHeight >> i, 0, 4);
+				if (metallicData) stbir_resize_uint8(metallicData, width, height, 0, downsampledMetallicData, uWidth >> i, uHeight >> i, 0, 4);
+				if (ambientOcclusionData) stbir_resize_uint8(ambientOcclusionData, width, height, 0, downsampledAmbientOcclusionData, uWidth >> i, uHeight >> i, 0, 4);
+				if (displacementData) stbir_resize_uint8(displacementData, width, height, 0, downsampledDisplacementData, uWidth >> i, uHeight >> i, 0, 4);
 
-				for (uint64 j = 0; j < textureSize >> i; ++j)
+				for (uint64 j = 0; j < textureSize; ++j)
 				{
-					file.Write(downsampledRoughnessData ? &downsampledRoughnessData[j] : &defaultRoughness, sizeof(byte));
-					file.Write(downsampledMetallicData ? &downsampledMetallicData[j] : &defaultMetallic, sizeof(byte));
-					file.Write(downsampledAmbientOcclusionData ? &downsampledAmbientOcclusionData[j] : &defaultAmbientOcclusion, sizeof(byte));
-					file.Write(downsampledDisplacementData ? &downsampledDisplacementData[j] : &defaultDisplacement, sizeof(byte));
+					file.Write(downsampledRoughnessData ? &downsampledRoughnessData[j * 4] : &defaultRoughness, sizeof(byte));
+					file.Write(downsampledMetallicData ? &downsampledMetallicData[j * 4] : &defaultMetallic, sizeof(byte));
+					file.Write(downsampledAmbientOcclusionData ? &downsampledAmbientOcclusionData[j * 4] : &defaultAmbientOcclusion, sizeof(byte));
+					file.Write(downsampledDisplacementData ? &downsampledDisplacementData[j * 4] : &defaultDisplacement, sizeof(byte));
 				}
 
 				MemoryUtilities::FreeMemory(downsampledRoughnessData);

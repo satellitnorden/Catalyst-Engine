@@ -156,6 +156,8 @@ vec3 CalculateAmbient()
 */
 vec3 CalculateLight(vec3 lightDirection, vec3 radiance)
 {
+	radiance = mix(radiance, albedoColor, thinness);
+
     vec3 halfwayDirection = normalize(viewDirection + lightDirection);
     float lightViewAngle = clamp(dot(halfwayDirection, viewDirection), 0.0f, 1.0f);
     float lightAngle = mix(max(dot(normalDirection, lightDirection), 0.0f), 1.0f, thinness);
