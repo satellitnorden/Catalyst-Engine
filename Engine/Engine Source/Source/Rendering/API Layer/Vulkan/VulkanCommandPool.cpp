@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/API Layer/Vulkan/VulkanCommandPool.h>
 
+//Multithreading.
+#include <Multithreading/ScopedLock.h>
+
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanCommandBuffer.h>
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
@@ -49,6 +52,9 @@ void VulkanCommandPool::Release() NOEXCEPT
 */
 void VulkanCommandPool::AllocateVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT
 {
+	//Lock the command pool.
+	ScopedLock<Spinlock>{ lock };
+
 	//Initialize the Vulkan command buffer.
 	vulkanCommandBuffer.Initialize(*this);
 }
@@ -58,6 +64,9 @@ void VulkanCommandPool::AllocateVulkanCommandBuffer(VulkanCommandBuffer &vulkanC
 */
 void VulkanCommandPool::FreeVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT
 {
+	//Lock the command pool.
+	ScopedLock<Spinlock>{ lock };
+
 	//Free the Vulkan command buffer.
 	vkFreeCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanCommandPool, 1, &vulkanCommandBuffer.Get());
 }
