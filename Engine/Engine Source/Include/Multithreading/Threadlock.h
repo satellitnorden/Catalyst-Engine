@@ -29,8 +29,7 @@ public:
 	*/
 	void Lock() NOEXCEPT
 	{
-		static bool expected = false;
-		while (!lock.compare_exchange_weak(expected, true))
+		while (!lock.compare_exchange_weak(MultiThreadingUtilities::expectedFalse, true))
 		{
 			THREAD_YIELD();
 		}

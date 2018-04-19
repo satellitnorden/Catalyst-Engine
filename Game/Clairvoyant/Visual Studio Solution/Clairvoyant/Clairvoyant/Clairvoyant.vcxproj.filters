@@ -633,6 +633,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\VegetationCullingComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Utilities\MultithreadingUtilities.h">
+      <Filter>Engine Source\Engine Core\Utilities\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
