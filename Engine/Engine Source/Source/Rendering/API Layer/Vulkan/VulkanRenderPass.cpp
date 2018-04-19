@@ -65,7 +65,7 @@ void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkan
 
 	for (uint64 i = 0, size = vulkanPipelineCreationParameters.colorAttachments.Size(); i < size; ++i)
 	{
-		framebuffers[i].Initialize(*this, vulkanPipelineCreationParameters.depthBuffers.Empty() ? nullptr : vulkanPipelineCreationParameters.depthBuffers[i], vulkanPipelineCreationParameters.colorAttachments[i], vulkanPipelineCreationParameters.viewportExtent);
+		framebuffers[i].Initialize(*this, vulkanPipelineCreationParameters.depthBuffer, vulkanPipelineCreationParameters.colorAttachments[i], vulkanPipelineCreationParameters.viewportExtent);
 	}
 }
 
@@ -89,7 +89,7 @@ void VulkanRenderPass::Release() NOEXCEPT
 */
 void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDescription> &attachmentDescriptions, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
-	if (!vulkanPipelineCreationParameters.depthBuffers.Empty())
+	if (vulkanPipelineCreationParameters.depthBuffer)
 	{
 		VkAttachmentDescription depthAttachmentDescription;
 
@@ -138,7 +138,8 @@ void VulkanRenderPass::CreateDepthAttachmentReference(VkAttachmentReference &att
 */
 void VulkanRenderPass::CreateColorAttachmentReference(DynamicArray<VkAttachmentReference> &attachmentReferences, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
-	uint32 counter{ vulkanPipelineCreationParameters.depthBuffers.Empty() ? static_cast<uint32>(0) : static_cast<uint32>(1) };
+	uint32 counter{ vulkanPipelineCreationParameters.depthBuffer ? static_cast<uint32>(1) : static_cast<uint32>(0) };
+
 	for (VkImageView colorAttachment : vulkanPipelineCreationParameters.colorAttachments[0])
 	{
 		VkAttachmentReference newAttachmentReference;
@@ -161,7 +162,7 @@ void VulkanRenderPass::CreateSubpassDescription(VkSubpassDescription &subpassDes
 	subpassDescription.colorAttachmentCount = static_cast<uint32>(colorAttachmentReferences.Size());
 	subpassDescription.pColorAttachments = colorAttachmentReferences.Data();
 	subpassDescription.pResolveAttachments = nullptr;
-	subpassDescription.pDepthStencilAttachment = vulkanPipelineCreationParameters.depthBuffers.Empty() ? nullptr : &depthAttachmentReference;
+	subpassDescription.pDepthStencilAttachment = vulkanPipelineCreationParameters.depthBuffer ? &depthAttachmentReference : nullptr;
 	subpassDescription.preserveAttachmentCount = 0;
 	subpassDescription.pPreserveAttachments = nullptr;
 }

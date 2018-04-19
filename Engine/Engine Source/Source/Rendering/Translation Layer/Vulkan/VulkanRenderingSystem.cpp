@@ -684,7 +684,7 @@ void VulkanRenderingSystem::SetPostProcessingSharpenAmount(const float newSharpe
 void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 {
 	//Initialize all depth buffers.
-	depthBuffers[DepthBuffer::SceneBufferDepthBuffer] = VulkanInterface::Instance->CreateDepthBuffer(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	depthBuffers[INDEX(DepthBuffer::SceneBuffer)] = VulkanInterface::Instance->CreateDepthBuffer(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Initialize all render targets.
 	renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
@@ -998,8 +998,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		terrainPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		terrainPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		terrainPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		terrainPipelineCreationParameters.depthBuffers.Reserve(1);
-		terrainPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
+		terrainPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
 		terrainPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		terrainPipelineCreationParameters.depthTestEnable = VK_TRUE;
 		terrainPipelineCreationParameters.depthWriteEnable = VK_TRUE;
@@ -1049,8 +1048,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		staticPhysicalPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		staticPhysicalPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		staticPhysicalPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		staticPhysicalPipelineCreationParameters.depthBuffers.Reserve(1);
-		staticPhysicalPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
+		staticPhysicalPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
 		staticPhysicalPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		staticPhysicalPipelineCreationParameters.depthTestEnable = VK_TRUE;
 		staticPhysicalPipelineCreationParameters.depthWriteEnable = VK_TRUE;
@@ -1099,8 +1097,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		instancedPhysicalPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		instancedPhysicalPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		instancedPhysicalPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		instancedPhysicalPipelineCreationParameters.depthBuffers.Reserve(1);
-		instancedPhysicalPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
+		instancedPhysicalPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
 		instancedPhysicalPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		instancedPhysicalPipelineCreationParameters.depthTestEnable = VK_TRUE;
 		instancedPhysicalPipelineCreationParameters.depthWriteEnable = VK_TRUE;
@@ -1148,8 +1145,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		vegetationPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		vegetationPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		vegetationPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		vegetationPipelineCreationParameters.depthBuffers.Reserve(1);
-		vegetationPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
+		vegetationPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
 		vegetationPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		vegetationPipelineCreationParameters.depthTestEnable = VK_TRUE;
 		vegetationPipelineCreationParameters.depthWriteEnable = VK_TRUE;
@@ -1241,8 +1237,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		cubeMapPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		cubeMapPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		cubeMapPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		cubeMapPipelineCreationParameters.depthBuffers.Reserve(1);
-		cubeMapPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
+		cubeMapPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
 		cubeMapPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
 		cubeMapPipelineCreationParameters.depthTestEnable = VK_TRUE;
 		cubeMapPipelineCreationParameters.depthWriteEnable = VK_TRUE;
@@ -1286,8 +1281,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		waterPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		waterPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		waterPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		waterPipelineCreationParameters.depthBuffers.Reserve(1);
-		waterPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
+		waterPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
 		waterPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		waterPipelineCreationParameters.depthTestEnable = VK_TRUE;
 		waterPipelineCreationParameters.depthWriteEnable = VK_TRUE;
@@ -1333,8 +1327,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		particleSystemPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		particleSystemPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		particleSystemPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		particleSystemPipelineCreationParameters.depthBuffers.Reserve(1);
-		particleSystemPipelineCreationParameters.depthBuffers.EmplaceFast(depthBuffers[DepthBuffer::SceneBufferDepthBuffer]);
+		particleSystemPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
 		particleSystemPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		particleSystemPipelineCreationParameters.depthTestEnable = VK_TRUE;
 		particleSystemPipelineCreationParameters.depthWriteEnable = VK_FALSE;
@@ -1387,6 +1380,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		postProcessingPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		postProcessingPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		postProcessingPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		postProcessingPipelineCreationParameters.depthBuffer = nullptr;
 		postProcessingPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		postProcessingPipelineCreationParameters.depthTestEnable = VK_FALSE;
 		postProcessingPipelineCreationParameters.depthWriteEnable = VK_FALSE;

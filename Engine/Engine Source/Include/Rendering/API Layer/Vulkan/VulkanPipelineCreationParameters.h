@@ -28,7 +28,7 @@ public:
 	VkImageLayout colorAttachmentInitialLayout;
 
 	//The color attachments.
-	DynamicArray<DynamicArray<VkImageView>> colorAttachments{};
+	DynamicArray<DynamicArray<VkImageView>> colorAttachments{ };
 
 	//The cull mode.
 	VkCullModeFlagBits cullMode;
@@ -42,8 +42,8 @@ public:
 	//The store op for the depth attachment.
 	VkAttachmentStoreOp depthAttachmentStoreOp;
 
-	//The depth buffers.
-	DynamicArray<const VulkanDepthBuffer *RESTRICT> depthBuffers{};
+	//The depth buffer.
+	VulkanDepthBuffer *RESTRICT depthBuffer;
 
 	//The depth compare operator.
 	VkCompareOp depthCompareOp;

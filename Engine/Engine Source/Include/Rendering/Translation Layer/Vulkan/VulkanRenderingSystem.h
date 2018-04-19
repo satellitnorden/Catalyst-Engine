@@ -196,9 +196,10 @@ private:
 	};
 
 	//Enumeration covering all depth buffers.
-	enum DepthBuffer : uint8
+	enum class DepthBuffer : uint8
 	{
-		SceneBufferDepthBuffer,
+		DirectionalLight,
+		SceneBuffer,
 		NumberOfDepthBuffers
 	};
 
@@ -324,7 +325,7 @@ private:
 	StaticArray<Vulkan2DTexture *RESTRICT, DefaultTexture::NumberOfDefaultTextures> defaultTextures;
 
 	//Container for all depth buffers.
-	StaticArray<VulkanDepthBuffer *RESTRICT, DepthBuffer::NumberOfDepthBuffers> depthBuffers;
+	StaticArray<VulkanDepthBuffer *RESTRICT, INDEX(DepthBuffer::NumberOfDepthBuffers)> depthBuffers;
 
 	//Container for all descriptor sets.
 	StaticArray<VulkanDescriptorSet, DescriptorSet::NumberOfDescriptorSet> descriptorSets;
