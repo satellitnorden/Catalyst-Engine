@@ -3,9 +3,6 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
-//Multithreading.
-#include <Multithreading/Spinlock.h>
-
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanCore.h>
 
@@ -56,9 +53,6 @@ private:
 
 	//The underlying Vulkan command pool.
 	VkCommandPool vulkanCommandPool;
-
-	//The lock to keep this pool from being accessed by multiple threads.
-	mutable Spinlock lock;
 
 	/*
 	*	Creates a command pool create info.
