@@ -10,7 +10,7 @@
 *	Turns RenderDoc debugging on/off.
 */
 #if !defined(CATALYST_FINAL)
-	#define RENDERDOC_DEBUGGING true
+	#define RENDERDOC_DEBUGGING false
 #else
 	#define RENDERDOC_DEBUGGING false
 #endif
@@ -19,7 +19,7 @@
 *	Turns Vulkan debugging on/off.
 */
 #if !defined(CATALYST_FINAL)
-	#define VULKAN_DEBUGGING false
+	#define VULKAN_DEBUGGING true
 #else
 	#define VULKAN_DEBUGGING false
 #endif
