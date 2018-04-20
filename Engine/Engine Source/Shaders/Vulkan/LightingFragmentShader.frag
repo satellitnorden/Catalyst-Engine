@@ -265,7 +265,7 @@ vec3 CalculateDirectionalLight()
 {
     //Calculate the directional light.
     vec3 lightDirection = -directionalLightDirection;
-    vec3 radiance = directionalLightColor * directionalLightIntensity;
+    vec3 radiance = mix(directionalLightColor, albedoColor, thinness) * directionalLightIntensity;
 
     return CalculateLight(lightDirection, radiance);
 }
@@ -282,7 +282,7 @@ vec3 CalculatePointLight(int index)
     float attenuation = clamp(1.0f - distanceToLightSource / pointLightAttenuationDistances[index], 0.0f, 1.0f);
     attenuation *= attenuation;
 
-    vec3 radiance = pointLightColors[index] * pointLightIntensities[index] * attenuation;
+    vec3 radiance = mix(pointLightColors[index], albedoColor, thinness) * pointLightIntensities[index] * attenuation;
 
     return CalculateLight(lightDirection, radiance);
 }
@@ -304,7 +304,7 @@ vec3 CalculateSpotLight(int index)
     float epsilon = spotLightInnerCutoffAngles[index] - spotLightOuterCutoffAngles[index];
     float intensity = angle > spotLightInnerCutoffAngles[index] ? 1.0f : clamp((angle - spotLightOuterCutoffAngles[index]) / epsilon, 0.0f, 1.0f); 
 
-    vec3 radiance = spotLightColors[index] * spotLightIntensities[index] * intensity * attenuation;
+    vec3 radiance = mix(spotLightColors[index], albedoColor, thinness) * spotLightIntensities[index] * intensity * attenuation;
 
     return CalculateLight(lightDirection, radiance);
 }
