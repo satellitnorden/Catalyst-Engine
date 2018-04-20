@@ -1,6 +1,8 @@
-ResourceCreator.exe EnvironmentMaterial Intermediate/Materials/DefaultEnvironmentMaterial DefaultEnvironmentMaterial Raw/Textures/MalibuEnvironment.hdr 2048 32
+ResourceCreator.exe EnvironmentMaterial Intermediate/Materials/DayEnvironmentMaterial DayEnvironmentMaterial Raw/Textures/Environments/Day.png 1024 16
+ResourceCreator.exe EnvironmentMaterial Intermediate/Materials/NightEnvironmentMaterial NightEnvironmentMaterial Raw/Textures/Environments/Night.png 1024 16
 ResourceCreator.exe ParticleMaterial Intermediate/Materials/Cloud1Material Cloud1Material 5 Raw/Textures/Particles/Cloud1.png
-ResourceCreator.exe ParticleMaterial Intermediate/Materials/EnergyParticleMaterial EnergyParticleMaterial 5 Raw/Textures/Particles/Energy.png
+ResourceCreator.exe ParticleMaterial Intermediate/Materials/Cloud2Material Cloud2Material 5 Raw/Textures/Particles/Cloud2.png
+ResourceCreator.exe ParticleMaterial Intermediate/Materials/Cloud3Material Cloud3Material 5 Raw/Textures/Particles/Cloud3.png
 ResourceCreator.exe ParticleMaterial Intermediate/Materials/Fog1Material Fog1Material 5 Raw/Textures/Particles/Fog1.png
 ResourceCreator.exe ParticleMaterial Intermediate/Materials/ParticleMaterial ParticleMaterial 4 Raw/Textures/Particles/Particle.png
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/StoneMaterial StoneMaterial 5 Raw/Textures/StoneAlbedo.png Raw/Textures/StoneNormalMap.png Raw/Textures/StoneRoughness.png None Raw/Textures/StoneAmbientOcclusion.png Raw/Textures/StoneDisplacement.png
@@ -12,6 +14,6 @@ ResourceCreator.exe TerrainMaterial Intermediate/Materials/DefaultTerrainMateria
 ResourceCreator.exe VegetationMaterial Intermediate/Materials/DefaultVegetationMaterial DefaultVegetationMaterial 1 10 Raw/Textures/Vegetation/Mask.png Raw/Textures/Vegetation/Albedo.png Raw/Textures/Vegetation/NormalMap.png Raw/Textures/Vegetation/Roughness.png Raw/Textures/Vegetation/AmbientOcclusion.png Raw/Textures/Vegetation/Thinness.png
 ResourceCreator.exe WaterMaterial Intermediate/Materials/DefaultWaterMaterial DefaultWaterMaterial 5 Raw/Textures/WaterNormal.png
 
-ResourceCreator.exe ResourceCollection Final/ClairvoyantResourceCollection Intermediate/Materials/DefaultEnvironmentMaterial.cr Intermediate/Materials/Cloud1Material.cr Intermediate/Materials/EnergyParticleMaterial.cr Intermediate/Materials/Fog1Material.cr Intermediate/Materials/ParticleMaterial.cr Intermediate/Materials/StoneMaterial.cr Intermediate/Materials/TreeStompMaterial.cr Intermediate/Models/StoneModel.cr Intermediate/Models/TreeStompModel.cr Intermediate/SoundBanks/MasterSoundBank.cr Intermediate/Materials/DefaultTerrainMaterial.cr Intermediate/Materials/DefaultVegetationMaterial.cr Intermediate/Materials/DefaultWaterMaterial.cr
+ResourceCreator.exe ResourceCollection Final/ClairvoyantResourceCollection Intermediate/Materials/DayEnvironmentMaterial.cr Intermediate/Materials/NightEnvironmentMaterial.cr Intermediate/Materials/Cloud1Material.cr Intermediate/Materials/Cloud2Material.cr Intermediate/Materials/Cloud3Material.cr Intermediate/Materials/Fog1Material.cr Intermediate/Materials/ParticleMaterial.cr Intermediate/Materials/StoneMaterial.cr Intermediate/Materials/TreeStompMaterial.cr Intermediate/Models/StoneModel.cr Intermediate/Models/TreeStompModel.cr Intermediate/SoundBanks/MasterSoundBank.cr Intermediate/Materials/DefaultTerrainMaterial.cr Intermediate/Materials/DefaultVegetationMaterial.cr Intermediate/Materials/DefaultWaterMaterial.cr
 
 pause

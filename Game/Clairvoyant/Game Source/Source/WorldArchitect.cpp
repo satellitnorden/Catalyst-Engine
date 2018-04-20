@@ -61,7 +61,8 @@ namespace WorldAchitectConstants
 	static constexpr uint64 VEGETATION_DENSITY{ 10'000'000 };
 
 	//Resource ID's.
-	static constexpr HashString DEFAULT_ENVIRONMENT_MATERIAL{ "DefaultEnvironmentMaterial" };
+	static constexpr HashString DAY_ENVIRONMENT_MATERIAL{ "DayEnvironmentMaterial" };
+	static constexpr HashString NIGHT_ENVIRONMENT_MATERIAL{ "NightEnvironmentMaterial" };
 	static constexpr HashString STONE_MATERIAL{ "StoneMaterial" };
 	static constexpr HashString TREE_STOMP_MATERIAL{ "TreeStompMaterial" };
 	static constexpr HashString STONE_MODEL{ "StoneModel" };
@@ -71,7 +72,8 @@ namespace WorldAchitectConstants
 	static constexpr HashString DEFAULT_WATER_MATERIAL{ "DefaultWaterMaterial" };
 	static constexpr HashString FOG_1_MATERIAL{ "Fog1Material" };
 	static constexpr HashString CLOUD_1_MATERIAL{ "Cloud1Material" };
-	static constexpr HashString ENERGY_PARTICLE_MATERIAL{ "EnergyParticleMaterial" };
+	static constexpr HashString CLOUD_2_MATERIAL{ "Cloud2Material" };
+	static constexpr HashString CLOUD_3_MATERIAL{ "Cloud3Material" };
 }
 
 /*
@@ -220,7 +222,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	resourceSemaphore.WaitFor();
 
 	//Set the environment material.
-	RenderingSystem::Instance->SetEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::DEFAULT_ENVIRONMENT_MATERIAL));
+	RenderingSystem::Instance->SetEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::DAY_ENVIRONMENT_MATERIAL));
 
 	//Get the terrain material data.
 	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(WorldAchitectConstants::DEFAULT_TERRAIN_MATERIAL) };
@@ -400,6 +402,19 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Spawn some fog. (:
 	ParticleSystemEntity *const RESTRICT fogParticles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
 	fogParticles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::FOG_1_MATERIAL), ParticleSystemProperties(2.5f, 30.0f, 0.0f, Vector2(100.0f, 100.0f), Vector2(500.0f, 500.0f), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, 0.0f, -WorldAchitectConstants::TERRAIN_SIZE * 0.5f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 0.5f, 250.0f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), PhysicsSystem::Instance->GetWindDirection() * 1.0f, PhysicsSystem::Instance->GetWindDirection() * 2.5f, Vector3(0.0f, 0.0f, 0.0f)));
+
+	//Spawn some clouds. (:
+	constexpr float cloudMinimumScale{ 2'500.0f };
+	constexpr float cloudMaximumScale{ 7'500.0f };
+
+	ParticleSystemEntity *const RESTRICT cloud1Particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
+	cloud1Particles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::CLOUD_1_MATERIAL), ParticleSystemProperties(10.0f, 120.0f, 10.0f, Vector2(cloudMinimumScale, cloudMinimumScale), Vector2(cloudMaximumScale, cloudMaximumScale), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 2'000.0f, -WorldAchitectConstants::TERRAIN_SIZE * 2.0f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 20'000.0f, WorldAchitectConstants::TERRAIN_SIZE * 2.0f), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength(), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength() * 10.0f, Vector3(0.0f, 0.0f, 0.0f)));
+
+	ParticleSystemEntity *const RESTRICT cloud2Particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
+	cloud2Particles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::CLOUD_2_MATERIAL), ParticleSystemProperties(10.0f, 120.0f, 10.0f, Vector2(cloudMinimumScale, cloudMinimumScale), Vector2(cloudMaximumScale, cloudMaximumScale), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 2'000.0f, -WorldAchitectConstants::TERRAIN_SIZE * 2.0f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 20'000.0f, WorldAchitectConstants::TERRAIN_SIZE * 2.0f), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength(), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength() * 10.0f, Vector3(0.0f, 0.0f, 0.0f)));
+
+	ParticleSystemEntity *const RESTRICT cloud3Particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
+	cloud3Particles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::CLOUD_3_MATERIAL), ParticleSystemProperties(10.0f, 120.0f, 10.0f, Vector2(cloudMinimumScale, cloudMinimumScale), Vector2(cloudMaximumScale, cloudMaximumScale), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 2'000.0f, -WorldAchitectConstants::TERRAIN_SIZE * 2.0f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 20'000.0f, WorldAchitectConstants::TERRAIN_SIZE * 2.0f), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength(), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength() * 10.0f, Vector3(0.0f, 0.0f, 0.0f)));
 }
 
 /*
