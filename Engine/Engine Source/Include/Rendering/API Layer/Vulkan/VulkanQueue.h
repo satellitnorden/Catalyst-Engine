@@ -3,6 +3,9 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Multithreading.
+#include <Multithreading/Spinlock.h>
+
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanCore.h>
 
@@ -49,6 +52,9 @@ private:
 
 	//The underlying Vulkan queue.
 	VkQueue vulkanQueue;
+
+	//The lock for the queue.
+	mutable Spinlock lock;
 
 	/*
 	*	Creates a submit info for a single command buffer.

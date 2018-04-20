@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/API Layer/Vulkan/VulkanQueue.h>
 
+//Multithreading.
+#include <Multithreading/ScopedLock.h>
+
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
 
@@ -38,6 +41,9 @@ void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const u
 	VkSubmitInfo submitInfo;
 	CreateSubmitInfo(submitInfo, waitSemaphoreCount, waitSemaphores, waitStages, vulkanCommandBuffer, signalSemaphoreCount, signalSemaphores);
 
+	//Lock the queue.
+	ScopedLock<Spinlock>{ lock };
+
 	//Submit the command buffer!
 	VULKAN_ERROR_CHECK(vkQueueSubmit(vulkanQueue, 1, &submitInfo, fence));
 }
@@ -47,6 +53,9 @@ void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const u
 */
 void VulkanQueue::WaitIdle() const NOEXCEPT
 {
+	//Lock the queue.
+	ScopedLock<Spinlock>{ lock };
+
 	//Wait idle for this Vulkan queue.
 	VULKAN_ERROR_CHECK(vkQueueWaitIdle(vulkanQueue));
 }

@@ -123,15 +123,15 @@ public:
 	/*
 	*	Returns the graphics command pool.
 	*/
-	const VulkanCommandPool& GetGraphicsCommandPool() const NOEXCEPT { return graphicsVulkanCommandPool; }
+	const VulkanCommandPool& GetGraphicsCommandPool() NOEXCEPT;
 
 	/*
 	*	Returns the transfer command pool.
 	*/
 #if RENDERDOC_DEBUGGING
-	const VulkanCommandPool& GetTransferCommandPool() const NOEXCEPT { return graphicsVulkanCommandPool; }
+	const VulkanCommandPool& GetTransferCommandPool() const NOEXCEPT { return GetGraphicsCommandPool(); }
 #else
-	const VulkanCommandPool& GetTransferCommandPool() const NOEXCEPT { return transferVulkanCommandPool; }
+	const VulkanCommandPool& GetTransferCommandPool() NOEXCEPT;
 #endif
 
 	/*
@@ -225,9 +225,6 @@ private:
 	//The Vulkan swap chain.
 	VulkanSwapchain vulkanSwapchain;
 
-	//The graphics Vulkan command pool.
-	VulkanCommandPool graphicsVulkanCommandPool;
-
 	//The transfer Vulkan command pool.
 	VulkanCommandPool transferVulkanCommandPool;
 
@@ -239,6 +236,9 @@ private:
 
 	//Container for all Vulkan 2D textures.
 	DynamicArray<Vulkan2DTexture *RESTRICT> vulkan2DTextures;
+
+	//Container for all Vulkan command pools.
+	DynamicArray<VulkanCommandPool> vulkanCommandPools;
 
 	//Container for all Vulkan constant buffers.
 	DynamicArray<VulkanConstantBuffer *RESTRICT> vulkanConstantBuffers;
@@ -269,5 +269,10 @@ private:
 
 	//Container for all Vulkan uniform buffers.
 	DynamicArray<VulkanUniformBuffer *RESTRICT> vulkanUniformBuffers;
+
+	/*
+	*	Returns a new command pool.
+	*/
+	VulkanCommandPool GetNewCommandPool(const uint32 queueFamilyIndex) NOEXCEPT;
 
 };

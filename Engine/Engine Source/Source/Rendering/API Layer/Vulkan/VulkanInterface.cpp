@@ -52,9 +52,6 @@ void VulkanInterface::Initialize(Window &window) NOEXCEPT
 	queues[INDEX(Queue::Transfer)].Initialize(vulkanPhysicalDevice.GetTransferQueueFamilyIndex());
 #endif
 
-	//Initialize the graphics Vulkan command pool.
-	graphicsVulkanCommandPool.Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
-
 	//Initialize the transfer Vulkan command pool.
 	transferVulkanCommandPool.Initialize(vulkanPhysicalDevice.GetTransferQueueFamilyIndex());
 
@@ -100,6 +97,12 @@ void VulkanInterface::Release() NOEXCEPT
 	{
 		vulkan2DTexture->Release();
 		delete vulkan2DTexture;
+	}
+
+	//Release all Vulkan command pool.
+	for (VulkanCommandPool &vulkanCommandPool : vulkanCommandPools)
+	{
+		vulkanCommandPool.Release();
 	}
 
 	//Release all Vulkan bufferrs.
@@ -175,9 +178,6 @@ void VulkanInterface::Release() NOEXCEPT
 	//Release the Vulkan descriptor pool.
 	vulkanDescriptorPool.Release();
 
-	//Release the graphics Vulkan command pool.
-	graphicsVulkanCommandPool.Release();
-
 	//Release the transfer Vulkan command pool.
 	transferVulkanCommandPool.Release();
 
@@ -192,6 +192,23 @@ void VulkanInterface::Release() NOEXCEPT
 
 	//Release the Vulkan instance.
 	vulkanInstance.Release();
+}
+
+/*
+*	Returns the graphics command pool.
+*/
+const VulkanCommandPool& VulkanInterface::GetGraphicsCommandPool() NOEXCEPT
+{
+	static thread_local VulkanCommandPool graphicsCommandPool{ GetNewCommandPool(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex()) };
+
+	return graphicsCommandPool;
+}
+
+const VulkanCommandPool& VulkanInterface::GetTransferCommandPool() NOEXCEPT
+{
+	static thread_local VulkanCommandPool transferCommandPool{ GetNewCommandPool(vulkanPhysicalDevice.GetTransferQueueFamilyIndex()) };
+
+	return transferCommandPool;
 }
 
 /*
@@ -387,4 +404,20 @@ RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(const uint6
 	vulkanUniformBuffers.EmplaceSlow(newUniformBuffer);
 
 	return newUniformBuffer;
+}
+
+/*
+*	Returns a new command pool.
+*/
+VulkanCommandPool VulkanInterface::GetNewCommandPool(const uint32 queueFamilyIndex) NOEXCEPT
+{
+	static Spinlock lock;
+	ScopedLock<Spinlock>{ lock };
+
+	VulkanCommandPool newCommandPool;
+	newCommandPool.Initialize(queueFamilyIndex);
+
+	vulkanCommandPools.EmplaceSlow(newCommandPool);
+
+	return newCommandPool;
 }
