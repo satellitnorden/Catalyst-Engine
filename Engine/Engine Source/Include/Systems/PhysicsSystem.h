@@ -19,16 +19,6 @@ public:
 	DECLARE_SINGLETON(PhysicsSystem);
 
 	/*
-	*	Default constructor.
-	*/
-	PhysicsSystem() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~PhysicsSystem() NOEXCEPT;
-
-	/*
 	*	Updates the physics system synchronously.
 	*/
 	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;

@@ -15,16 +15,6 @@ public:
 	DECLARE_SINGLETON(EntitySystem);
 
 	/*
-	*	Default constructor.
-	*/
-	EntitySystem() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~EntitySystem() NOEXCEPT;
-
-	/*
 	*	Updates the entity system synchronously.
 	*/
 	void UpdateSystemSynchronous() NOEXCEPT;

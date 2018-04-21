@@ -12,6 +12,9 @@
 //Clairvoyant.
 #include <ClairvoyantSettings.h>
 
+//Singleton definition.
+DEFINE_SINGLETON(ClairvoyantSoundDirector);
+
 /*
 *	Initializes the Clairvoyant sound director.
 */

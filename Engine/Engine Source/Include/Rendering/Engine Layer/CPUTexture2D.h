@@ -123,10 +123,10 @@ public:
 		const Vector4 &topLeftValue{ data[(yTopLeftCoordinate * width) + xTopLeftCoordinate ] };
 		const Vector4 &topRightValue{ data[(yTopRightCoordinate * width) + xTopRightCoordinate] };
 
-		const Vector4 mixA{ CatalystMath::LinearlyInterpolate(bottomLeftValue, topLeftValue, yFractional) };
-		const Vector4 mixB{ CatalystMath::LinearlyInterpolate(bottomRightValue, topRightValue, yFractional) };
+		const Vector4 mixA{ Vector4::LinearlyInterpolate(bottomLeftValue, topLeftValue, yFractional) };
+		const Vector4 mixB{ Vector4::LinearlyInterpolate(bottomRightValue, topRightValue, yFractional) };
 
-		return CatalystMath::LinearlyInterpolate(mixA, mixB, xFractional);
+		return Vector4::LinearlyInterpolate(mixA, mixB, xFractional);
 	}
 
 	/*

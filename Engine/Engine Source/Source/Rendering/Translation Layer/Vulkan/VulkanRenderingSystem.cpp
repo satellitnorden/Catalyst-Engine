@@ -53,22 +53,14 @@
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanUtilities.h>
 
-//System definition.
-DEFINE_SYSTEM(VulkanRenderingSystem);
+//Singleton definition.
+DEFINE_SINGLETON(VulkanRenderingSystem);
 
 //Vulkan rendering system constants.
 namespace VulkanRenderingSystemConstants
 {
 	constexpr uint32 MAXIMUM_NUMBER_OF_PARTICLES{ 16'384 };
 	constexpr VkDeviceSize PARTICLE_SYSTEM_STORAGE_BUFFER_SIZE{ 1'310'736 };
-}
-
-/*
-*	Default constructor.
-*/
-VulkanRenderingSystem::VulkanRenderingSystem() NOEXCEPT
-{
-
 }
 
 /*

@@ -19,16 +19,6 @@ public:
 	DECLARE_SINGLETON(ClairvoyantGameSystem);
 
 	/*
-	*	Default constructor.
-	*/
-	ClairvoyantGameSystem() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~ClairvoyantGameSystem() NOEXCEPT;
-
-	/*
 	*	Initializes the game system.
 	*/
 	void InitializeSystem() NOEXCEPT;
@@ -47,11 +37,5 @@ private:
 
 	//The player.
 	ClairvoyantPlayer *RESTRICT player;
-
-	//The sound director.
-	ClairvoyantSoundDirector soundDirector;
-
-	//The world architect.
-	WorldArchitect worldArchitect;
 
 };

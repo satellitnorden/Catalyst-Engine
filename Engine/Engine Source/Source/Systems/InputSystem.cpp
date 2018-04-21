@@ -14,22 +14,6 @@
 DEFINE_SINGLETON(InputSystem);
 
 /*
-*	Default constructor.
-*/
-InputSystem::InputSystem() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-InputSystem::~InputSystem() NOEXCEPT
-{
-
-}
-
-/*
 *	Pre-updates the input system synchronously.
 */
 void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT

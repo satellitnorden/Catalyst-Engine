@@ -15,16 +15,6 @@ class ClairvoyantPlayer final : public CameraEntity
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	ClairvoyantPlayer() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~ClairvoyantPlayer() NOEXCEPT;
-
-	/*
 	*	Initializes the player.
 	*/
 	void Initialize() NOEXCEPT;

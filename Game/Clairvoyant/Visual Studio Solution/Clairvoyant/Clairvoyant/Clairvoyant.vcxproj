@@ -273,6 +273,7 @@
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSettings.h" />
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSoundDirector.h" />
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSoundGUIDs.h" />
+    <ClInclude Include="..\..\..\Game Source\Include\TimeSystem.h" />
     <ClInclude Include="..\..\..\Game Source\Include\WorldArchitect.h" />
   </ItemGroup>
   <ItemGroup>
@@ -294,7 +295,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Vector2.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Vector3.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Vector4.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanAllocator.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanCommandBuffer.cpp" />
@@ -336,6 +336,7 @@
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantMain.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantPlayer.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantSoundDirector.cpp" />
+    <ClCompile Include="..\..\..\Game Source\Source\TimeSystem.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\WorldArchitect.cpp" />
   </ItemGroup>
   <ItemGroup>

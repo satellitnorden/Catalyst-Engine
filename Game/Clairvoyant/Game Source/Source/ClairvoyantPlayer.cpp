@@ -30,22 +30,6 @@ namespace ClairvoyantPlayerConstants
 }
 
 /*
-*	Default constructor.
-*/
-ClairvoyantPlayer::ClairvoyantPlayer() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-ClairvoyantPlayer::~ClairvoyantPlayer() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes the player.
 */
 void ClairvoyantPlayer::Initialize() NOEXCEPT

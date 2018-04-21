@@ -55,15 +55,10 @@ class WaterUniformData;
 class VulkanRenderingSystem final
 {
 
-	//System declaration.
-	DECLARE_SYSTEM(VulkanRenderingSystem);
-
 public:
 
-	/*
-	*	Default constructor.
-	*/
-	VulkanRenderingSystem() NOEXCEPT;
+	//Singletone declaration.
+	DECLARE_SINGLETON(VulkanRenderingSystem);
 
 	/*
 	*	Initializes the Vulkan rendering system.

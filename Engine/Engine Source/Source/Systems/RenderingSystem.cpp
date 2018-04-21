@@ -5,21 +5,13 @@
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
 
-//System definition.
-DEFINE_SYSTEM(RenderingSystem);
+//Singleton definition.
+DEFINE_SINGLETON(RenderingSystem);
 
 //Define the current rendering system.
 #if defined(CATALYST_WINDOWS)
 	#define CURRENT_RENDERING_SYSTEM VulkanRenderingSystem
 #endif
-
-/*
-*	Default constructor.
-*/
-RenderingSystem::RenderingSystem() NOEXCEPT
-{
-
-}
 
 /*
 *	Initializes the rendering system.

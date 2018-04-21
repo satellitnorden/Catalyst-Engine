@@ -41,15 +41,10 @@ class WaterUniformData;
 class RenderingSystem final
 {
 
-	//System declaration.
-	DECLARE_SYSTEM(RenderingSystem);
-
 public:
 
-	/*
-	*	Default constructor.
-	*/
-	RenderingSystem() NOEXCEPT;
+	//System declaration.
+	DECLARE_SINGLETON(RenderingSystem);
 
 	/*
 	*	Initializes the rendering system.

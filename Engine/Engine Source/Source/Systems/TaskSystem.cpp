@@ -18,22 +18,6 @@ namespace TaskSystemConstants
 }
 
 /*
-*	Default constructor.
-*/
-TaskSystem::TaskSystem() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-TaskSystem::~TaskSystem() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes the task system.
 */
 void TaskSystem::InitializeSystem(const CatalystProjectMultithreadingInformation &multithreadingInformation) NOEXCEPT

@@ -8,6 +8,9 @@ class ClairvoyantSoundDirector final
 
 public:
 
+	//Singleton declaration.
+	DECLARE_SINGLETON(ClairvoyantSoundDirector);
+
 	/*
 	*	Initializes the Clairvoyant sound director.
 	*/

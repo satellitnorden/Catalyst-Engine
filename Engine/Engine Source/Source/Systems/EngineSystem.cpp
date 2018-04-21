@@ -13,22 +13,6 @@
 DEFINE_SINGLETON(EngineSystem);
 
 /*
-*	Default constructor.
-*/
-EngineSystem::EngineSystem() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-EngineSystem::~EngineSystem() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes the engine system.
 */
 void EngineSystem::InitializeSystem(const CatalystProjectInformation &initialProjectInformation) NOEXCEPT

@@ -9,22 +9,6 @@
 DEFINE_SINGLETON(VulkanInterface);
 
 /*
-*	Default constructor.
-*/
-VulkanInterface::VulkanInterface() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanInterface::~VulkanInterface() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan interface.
 */
 void VulkanInterface::Initialize(Window &window) NOEXCEPT

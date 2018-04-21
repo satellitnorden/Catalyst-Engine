@@ -43,16 +43,6 @@ public:
 	DECLARE_SINGLETON(VulkanInterface);
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanInterface() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanInterface() NOEXCEPT;
-
-	/*
 	*	Initializes this Vulkan interface.
 	*/
 	void Initialize(Window &window) NOEXCEPT;

@@ -48,6 +48,10 @@
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
 
+//Singleton definition.
+DEFINE_SINGLETON(WorldArchitect);
+
+//World architects constants.
 namespace WorldAchitectConstants
 {
 #if defined(CATALYST_DEBUG)
@@ -77,22 +81,6 @@ namespace WorldAchitectConstants
 }
 
 /*
-*	Default constructor.
-*/
-WorldArchitect::WorldArchitect() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-WorldArchitect::~WorldArchitect() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes the world architect.
 */
 void WorldArchitect::Initialize() NOEXCEPT
@@ -100,10 +88,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Load the resource collection file.
 	Semaphore resourceSemaphore;
 	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc", &resourceSemaphore);
-
-	//Create the sun!
-	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
-	sun->SetIntensity(10.0f);
 
 	//Create the terrain properties!
 	CPUTexture2D terrainProperties{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
@@ -422,6 +406,5 @@ void WorldArchitect::Initialize() NOEXCEPT
 */
 void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 {
-	//Constantly rotate the sun.
-	sun->Rotate(Vector3(-10.0f * deltaTime, 0.0f, 0.0f));
+
 }

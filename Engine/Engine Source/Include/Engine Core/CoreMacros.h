@@ -42,22 +42,12 @@
 /*
 *	Declares a singleton class. Must be done inside the class in the header file.
 */
-#define DECLARE_SINGLETON(SingletonClass) static UniquePointer<SingletonClass> Instance;
+#define DECLARE_SINGLETON(SingletonClass) public: static UniquePointer<SingletonClass> Instance; SingletonClass() NOEXCEPT = default; SingletonClass(const SingletonClass &otherSingleton) = delete; SingletonClass(SingletonClass &&otherSingleton) = delete;
 
 /*
 *	Defines a singleton class. Must be done in the source file.
 */
 #define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance = new SingletonClass;
-
-/*
-*	Declares a system class. Must be done inside the class in the header file.
-*/
-#define DECLARE_SYSTEM(SystemClass) public: DECLARE_SINGLETON(SystemClass); SystemClass(const SystemClass &otherSystemClass) = delete; SystemClass(SystemClass &&otherSystemClass) = delete;
-
-/*
-*	defines a system class. Must be done in the source file.
-*/
-#define DEFINE_SYSTEM(SystemClass) DEFINE_SINGLETON(SystemClass);
 
 /*
 *	Prints a message to the console in non-final builds.

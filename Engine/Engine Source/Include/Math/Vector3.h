@@ -3,6 +3,9 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Math.
+#include <Math/CatalystMath.h>
+
 class Vector3 final
 {
 
@@ -16,6 +19,14 @@ public:
 
 	//The Z component.
 	float Z;
+
+	/*
+	*	Returns the absolute value of the Vector3 passed in.
+	*/
+	constexpr static Vector3 Absolute(const Vector3 &vector) NOEXCEPT
+	{
+		return Vector3(CatalystMath::Absolute(vector.X), CatalystMath::Absolute(vector.Y), CatalystMath::Absolute(vector.Z));
+	}
 
 	/*
 	*	Returns the dot product of two vectors.

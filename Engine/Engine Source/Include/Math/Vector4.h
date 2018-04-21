@@ -3,6 +3,9 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Math.
+#include <Math/Vector3.h>
+
 //Forward declarations.
 class Vector3;
 
@@ -24,29 +27,70 @@ public:
 	float W;
 
 	/*
+	*	Linearly interpolate between two Vector4 values.
+	*/
+	constexpr static Vector4 LinearlyInterpolate(const Vector4 &valueA, const Vector4 &valueB, const float alpha) NOEXCEPT
+	{
+		return (valueA * (1.0f - alpha)) + (valueB * alpha);
+	}
+
+	/*
 	*	Default constructor.
 	*/
-	Vector4() NOEXCEPT;
+	constexpr Vector4() NOEXCEPT
+		:
+		X(0.0f),
+		Y(0.0f),
+		Z(0.0f),
+		W(0.0f)
+	{
+
+	}
 
 	/*
 	*	Constructor taking a single float as argument.
 	*/
-	Vector4(const float newValue) NOEXCEPT;
+	constexpr Vector4(const float newValue) NOEXCEPT
+		:
+		X(newValue),
+		Y(newValue),
+		Z(newValue),
+		W(newValue)
+	{
+
+	}
 
 	/*
 	*	Constructor taking the X, Y, Z and W components as arguments.
 	*/
-	Vector4(const float newX, const float newY, const float newZ, const float newW) NOEXCEPT;
+	constexpr Vector4(const float newX, const float newY, const float newZ, const float newW) NOEXCEPT
+
+		:
+		X(newX),
+		Y(newY),
+		Z(newZ),
+		W(newW)
+	{
+
+	}
 
 	/*
 	*	Constructor taking a Vector3 as argument.
 	*/
-	Vector4(const Vector3 &otherVector) NOEXCEPT;
+	constexpr Vector4(const Vector3 &otherVector) NOEXCEPT
+		:
+		X(otherVector.X),
+		Y(otherVector.Y),
+		Z(otherVector.Z),
+		W(1.0f)
+	{
+
+	}
 
 	/*
 	*	Vector4 by scalar multiplication overload.
 	*/
-	Vector4 operator*(const float scalar) const NOEXCEPT
+	constexpr Vector4 operator*(const float scalar) const NOEXCEPT
 	{
 		return Vector4(X * scalar, Y * scalar, Z * scalar, W * scalar);
 	}
@@ -54,7 +98,7 @@ public:
 	/*
 	*	Vector4 by Vector4 addition overload.
 	*/
-	Vector4 operator+(const Vector4 &vector) const NOEXCEPT
+	constexpr Vector4 operator+(const Vector4 &vector) const NOEXCEPT
 	{
 		return Vector4(X + vector.X, Y + vector.Y, Z + vector.Z, W + vector.W);
 	}
@@ -62,7 +106,7 @@ public:
 	/*
 	*	Vector4 by Vector4 addition assignment overload.
 	*/
-	const Vector4& operator+=(const Vector4 &otherVector) NOEXCEPT
+	constexpr const Vector4& operator+=(const Vector4 &otherVector) NOEXCEPT
 	{
 		X += otherVector.X;
 		Y += otherVector.Y;
@@ -75,7 +119,7 @@ public:
 	/*
 	*	Vector4 by Vector4 multiplication overload.
 	*/
-	Vector4 operator*(const Vector4 &vector) const NOEXCEPT
+	constexpr Vector4 operator*(const Vector4 &vector) const NOEXCEPT
 	{
 		return Vector4(X * vector.X, Y * vector.Y, Z * vector.Z, W * vector.W);
 	}
@@ -83,7 +127,7 @@ public:
 	/*
 	*	Vector4 by Vector4 subtraction overload.
 	*/
-	Vector4 operator-(const Vector4 &vector) const NOEXCEPT
+	constexpr Vector4 operator-(const Vector4 &vector) const NOEXCEPT
 	{
 		return Vector4(X - vector.X, Y - vector.Y, Z - vector.Z, W - vector.W);
 	}
@@ -91,16 +135,22 @@ public:
 	/*
 	*	Returns the length of the vector.
 	*/
-	float Length() const NOEXCEPT;
+	constexpr float Length() const NOEXCEPT
+	{
+		return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z * Z) + (W * W));
+	}
 
 	/*
 	*	Returns the length of the X, Y and Z components of the vector.
 	*/
-	float LengthXYZ() const NOEXCEPT;
+	constexpr float LengthXYZ() const NOEXCEPT
+	{
+		return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z * Z));
+	}
 
 	/*
 	*	Returns if all the components of the vector is zero.
 	*/
-	bool IsZero() const NOEXCEPT { return X == 0.0f && Y == 0.0f && Z == 0.0f && W == 0.0f; }
+	constexpr bool IsZero() const NOEXCEPT { return X == 0.0f && Y == 0.0f && Z == 0.0f && W == 0.0f; }
 
 };

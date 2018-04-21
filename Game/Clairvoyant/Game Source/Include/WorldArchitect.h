@@ -11,15 +11,8 @@ class WorldArchitect final
 
 public:
 
-	/*
-	*	Default constructor.
-	*/
-	WorldArchitect() NOEXCEPT;
-
-	/*
-	*	Default destructor.	
-	*/
-	~WorldArchitect() NOEXCEPT;
+	//Singleton declaration.
+	DECLARE_SINGLETON(WorldArchitect);
 
 	/*
 	*	Initializes the world architect.
@@ -30,10 +23,5 @@ public:
 	*	Updates the world architects.
 	*/
 	void Update(const float deltaTime) NOEXCEPT;
-
-private:
-
-	//The sun.
-	DirectionalLightEntity *RESTRICT sun;
 
 };

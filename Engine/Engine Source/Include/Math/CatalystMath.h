@@ -3,10 +3,6 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
-//Math.
-#include <Math/Vector3.h>
-#include <Math/Vector4.h>
-
 //Catalyst Math constants.
 namespace CatalystMathConstants
 {
@@ -27,14 +23,6 @@ public:
 	constexpr static float Absolute(const float value) NOEXCEPT
 	{
 		return value >= 0.0f ? value : value * -1.0f;
-	}
-
-	/*
-	*	Returns the absolute value of the Vector3 passed in.
-	*/
-	constexpr static Vector3 Absolute(const Vector3 &vector) NOEXCEPT
-	{
-		return Vector3(Absolute(vector.X), Absolute(vector.Y), Absolute(vector.Z));
 	}
 
 	/*
@@ -174,14 +162,6 @@ public:
 	*	Linearly interpolate between two float values.
 	*/
 	constexpr static float LinearlyInterpolate(const float valueA, const float valueB, const float alpha) NOEXCEPT
-	{
-		return (valueA * (1.0f - alpha)) + (valueB * alpha);
-	}
-
-	/*
-	*	Linearly interpolate between two Vector4 values.
-	*/
-	static Vector4 LinearlyInterpolate(const Vector4 &valueA, const Vector4 &valueB, const float alpha) NOEXCEPT
 	{
 		return (valueA * (1.0f - alpha)) + (valueB * alpha);
 	}

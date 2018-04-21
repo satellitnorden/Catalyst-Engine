@@ -23,8 +23,8 @@
 #include <Systems/EngineSystem.h>
 #include <Systems/TaskSystem.h>
 
-//Define the system.
-DEFINE_SYSTEM(SoundSystem);
+//Define the singleton.
+DEFINE_SINGLETON(SoundSystem);
 
 /*
 *	Given a string of an FMOD GUID, parse it and return it into a FMOD_GUID struct.
@@ -36,22 +36,6 @@ FMOD_GUID SoundSystem::ParseGUID(const char *const RESTRICT string) NOEXCEPT
 	FMOD_ERROR_CHECK(FMOD::Studio::parseID(string, &newGuid));
 
 	return newGuid;
-}
-
-/*
-*	Default constructor.
-*/
-SoundSystem::SoundSystem() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-SoundSystem::~SoundSystem() NOEXCEPT
-{
-
 }
 
 /*

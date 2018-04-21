@@ -24,23 +24,13 @@ class SoundSystem final
 
 public:
 
-	//Declare the system.
-	DECLARE_SYSTEM(SoundSystem);
+	//Declare the singleton.
+	DECLARE_SINGLETON(SoundSystem);
 
 	/*
 	*	Given a string of an FMOD GUID, parse it and return it into a FMOD_GUID struct.
 	*/
 	static FMOD_GUID ParseGUID(const char *const RESTRICT string) NOEXCEPT;
-
-	/*
-	*	Default constructor.
-	*/
-	SoundSystem() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~SoundSystem() NOEXCEPT;
 
 	/*
 	*	Initializes the sound system.

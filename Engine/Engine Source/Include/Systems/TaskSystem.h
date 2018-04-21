@@ -18,16 +18,6 @@ public:
 	DECLARE_SINGLETON(TaskSystem);
 
 	/*
-	*	Default constructor.
-	*/
-	TaskSystem() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~TaskSystem() NOEXCEPT;
-
-	/*
 	*	Initializes the task system.
 	*/
 	void InitializeSystem(const CatalystProjectMultithreadingInformation &multithreadingInformation) NOEXCEPT;
