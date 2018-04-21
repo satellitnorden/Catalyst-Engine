@@ -90,7 +90,7 @@ void main()
     vec4 maskTextureSampler = texture(maskTexture, fragmentTextureCoordinate);
 
     //Discard this fragment if the the alpha is zero.
-    if (maskTextureSampler.a < 0.1f)
+    if (maskTextureSampler.a < 0.01f)
     {
         discard;
     }
