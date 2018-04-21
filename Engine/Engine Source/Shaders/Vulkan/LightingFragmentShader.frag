@@ -23,9 +23,11 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 336) vec3 directionalLightColor; //Offset; 336 - Size; 16
     layout (offset = 352) vec3 directionalLightScreenSpacePosition; //Offset; 352 - Size; 16
 
+    //Environment data.
+    layout (offset = 368) float environmentBlend; //Offset; 368 - Size; 4
+
     //General data.
-    layout (offset = 368) float deltaTime; //Offset; 368 - Size; 4
-    layout (offset = 372) float randomSeed; //Offset; 372 - Size; 4
+    layout (offset = 372) float deltaTime; //Offset; 368 - Size; 4
     layout (offset = 376) float totalGameTime; //Offset; 376 - Size; 4
 
     //Point light data.
@@ -62,11 +64,13 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 1) uniform samplerCube diffuseIrradianceTexture;
-layout (set = 1, binding = 2) uniform samplerCube specularIrradianceTexture;
-layout (set = 1, binding = 3) uniform sampler2D albedoTexture;
-layout (set = 1, binding = 4) uniform sampler2D normalDirectionDepthTexture;
-layout (set = 1, binding = 5) uniform sampler2D roughnessMetallicAmbientOcclusionTexture;
+layout (set = 1, binding = 0) uniform samplerCube nightDiffuseTexture;
+layout (set = 1, binding = 1) uniform samplerCube nightDiffuseIrradianceTexture;
+layout (set = 1, binding = 2) uniform samplerCube dayDiffuseTexture;
+layout (set = 1, binding = 3) uniform samplerCube dayDiffuseIrradianceTexture;
+layout (set = 2, binding = 0) uniform sampler2D albedoTexture;
+layout (set = 2, binding = 1) uniform sampler2D normalDirectionDepthTexture;
+layout (set = 2, binding = 2) uniform sampler2D roughnessMetallicAmbientOcclusionTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
@@ -141,11 +145,11 @@ vec3 CalculateAmbient()
     vec3 diffuseComponent = 1.0f - specularComponent;
     diffuseComponent *= 1.0f - metallic;
 
-    vec3 irradiance = texture(diffuseIrradianceTexture, normalDirection).rgb;
+    vec3 irradiance = mix(texture(nightDiffuseIrradianceTexture, normalDirection).rgb, texture(dayDiffuseIrradianceTexture, normalDirection).rgb, environmentBlend);
     vec3 diffuse = irradiance * albedoColor;
 
     vec3 reclectionDirection = reflect(-viewDirection, normalDirection);
-    vec3 specularIrradiance = texture(specularIrradianceTexture, normalDirection).rgb;
+    vec3 specularIrradiance = mix(texture(nightDiffuseTexture, normalDirection).rgb, texture(dayDiffuseTexture, normalDirection).rgb, environmentBlend);
     vec3 specular = mix(specularIrradiance, irradiance, roughness);
 
     return (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion;
@@ -156,8 +160,6 @@ vec3 CalculateAmbient()
 */
 vec3 CalculateLight(vec3 lightDirection, vec3 radiance)
 {
-	radiance = mix(radiance, albedoColor, thinness);
-
     vec3 halfwayDirection = normalize(viewDirection + lightDirection);
     float lightViewAngle = clamp(dot(halfwayDirection, viewDirection), 0.0f, 1.0f);
     float lightAngle = mix(max(dot(normalDirection, lightDirection), 0.0f), 1.0f, thinness);

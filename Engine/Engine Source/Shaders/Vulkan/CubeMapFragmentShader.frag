@@ -23,9 +23,11 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 336) vec3 directionalLightColor; //Offset; 336 - Size; 16
     layout (offset = 352) vec3 directionalLightScreenSpacePosition; //Offset; 352 - Size; 16
 
+    //Environment data.
+    layout (offset = 368) float environmentBlend; //Offset; 368 - Size; 4
+
     //General data.
-    layout (offset = 368) float deltaTime; //Offset; 368 - Size; 4
-    layout (offset = 372) float randomSeed; //Offset; 372 - Size; 4
+    layout (offset = 372) float deltaTime; //Offset; 368 - Size; 4
     layout (offset = 376) float totalGameTime; //Offset; 376 - Size; 4
 
     //Point light data.
@@ -58,7 +60,8 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec3 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 1) uniform samplerCube cubeMapTexture;
+layout (set = 1, binding = 0) uniform samplerCube nightTexture;
+layout (set = 1, binding = 2) uniform samplerCube dayTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
@@ -67,7 +70,7 @@ layout (location = 1) out vec4 waterFragmentColor;
 void main()
 {
     //Sample the cube map texture.
-    vec3 cubeMapTextureSampler = texture(cubeMapTexture, fragmentTextureCoordinate).rgb;
+    vec3 cubeMapTextureSampler = mix(texture(nightTexture, fragmentTextureCoordinate).rgb, texture(dayTexture, fragmentTextureCoordinate).rgb, environmentBlend);
 
     //Apply gamma correction.
     cubeMapTextureSampler = pow(cubeMapTextureSampler, vec3(2.2f));

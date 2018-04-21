@@ -23,9 +23,11 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 336) vec3 directionalLightColor; //Offset; 336 - Size; 16
     layout (offset = 352) vec3 directionalLightScreenSpacePosition; //Offset; 352 - Size; 16
 
+    //Environment data.
+    layout (offset = 368) float environmentBlend; //Offset; 368 - Size; 4
+
     //General data.
-    layout (offset = 368) float deltaTime; //Offset; 368 - Size; 4
-    layout (offset = 372) float randomSeed; //Offset; 372 - Size; 4
+    layout (offset = 372) float deltaTime; //Offset; 368 - Size; 4
     layout (offset = 376) float totalGameTime; //Offset; 376 - Size; 4
 
     //Point light data.
@@ -59,9 +61,10 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 layout (location = 1) in vec3 fragmentWorldPosition;
 
 //Texture samplers.
-layout (set = 1, binding = 2) uniform sampler2D sceneTexture;
-layout (set = 1, binding = 3) uniform sampler2D normalMapTexture;
-layout (set = 1, binding = 4) uniform samplerCube skyTexture;
+layout (set = 1, binding = 0) uniform samplerCube nightTexture;
+layout (set = 1, binding = 2) uniform samplerCube dayTexture;
+layout (set = 2, binding = 2) uniform sampler2D sceneTexture;
+layout (set = 2, binding = 3) uniform sampler2D normalMapTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
@@ -81,7 +84,7 @@ vec3 CalculateReflection()
 
     vec3 reflectionDirection = reflect(viewDirection, normalDirection);
 
-    return texture(skyTexture, reflectionDirection).rgb;
+    return mix(texture(nightTexture, reflectionDirection).rgb, texture(dayTexture, reflectionDirection).rgb, environmentBlend);
 }
 
 void main()

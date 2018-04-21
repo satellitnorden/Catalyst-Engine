@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes the Vulkan frame data.
 	*/
-	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout) NOEXCEPT
+	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout, const VulkanDescriptorSetLayout environmentDescriptorSetLayout) NOEXCEPT
 	{
 		//Create the command buffers.
 		commandBuffers.UpsizeFast(frameDataCount);
@@ -54,6 +54,14 @@ public:
 			};
 
 			vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+		}
+
+		//Create the environment descriptor sets.
+		environmentDescriptorSets.UpsizeFast(frameDataCount);
+
+		for (uint64 i = 0, size = environmentDescriptorSets.Size(); i < size; ++i)
+		{
+			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(environmentDescriptorSets[i], environmentDescriptorSetLayout);
 		}
 	}
 
@@ -109,6 +117,15 @@ public:
 		return &dynamicUniformDataDescriptorSets[currentFrame];
 	}
 
+	/*
+	*	Returns the current environment descriptor set.
+	*/
+	VulkanDescriptorSet *RESTRICT GetCurrentEnvironmentDescriptorSet() NOEXCEPT
+	{
+		//Return the current environment descriptor set.
+		return &environmentDescriptorSets[currentFrame];
+	}
+
 private:
 
 	//Keeps track of the current frame.
@@ -125,5 +142,8 @@ private:
 
 	//The dynamic uniform data descriptor sets.
 	DynamicArray<VulkanDescriptorSet> dynamicUniformDataDescriptorSets;
+
+	//The environment descriptor sets.
+	DynamicArray<VulkanDescriptorSet> environmentDescriptorSets;
 
 };

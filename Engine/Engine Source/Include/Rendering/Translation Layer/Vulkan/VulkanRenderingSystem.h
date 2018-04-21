@@ -156,11 +156,6 @@ public:
 	void SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT;
 
 	/*
-	*	Sets the environment material.
-	*/
-	void SetEnvironmentMaterial(const EnvironmentMaterial &newEnvioronmentMaterial) NOEXCEPT;
-
-	/*
 	*	Sets the post processing blur amount.
 	*/
 	void SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT;
@@ -199,22 +194,23 @@ private:
 	};
 
 	//Enumeration covering all descriptor sets.
-	enum DescriptorSet : uint8
+	enum class DescriptorSet : uint8
 	{
-		LightingDescriptorSet,
-		PostProcessingDescriptorSet,
-		NumberOfDescriptorSet
+		Environment,
+		Lighting,
+		PostProcessing,
+		NumberOfDescriptorSets
 	};
 
 	//Enumeration covering all descriptor set layouts.
 	enum class DescriptorSetLayout : uint8
 	{
 		DynamicUniformData,
+		Environment,
 		Terrain,
 		Physical,
 		Vegetation,
 		Lighting,
-		CubeMap,
 		Water,
 		ParticleSystem,
 		PostProcessing,
@@ -285,6 +281,7 @@ private:
 	enum class TaskSemaphore : uint8
 	{
 		UpdateDynamicUniformData,
+		UpdateDescriptorSets,
 		UpdateParticleSystemProperties,
 		UpdateVegetationCulling,
 		UpdateViewFrustumCuling,
@@ -323,7 +320,7 @@ private:
 	StaticArray<VulkanDepthBuffer *RESTRICT, INDEX(DepthBuffer::NumberOfDepthBuffers)> depthBuffers;
 
 	//Container for all descriptor sets.
-	StaticArray<VulkanDescriptorSet, DescriptorSet::NumberOfDescriptorSet> descriptorSets;
+	StaticArray<VulkanDescriptorSet, INDEX(DescriptorSet::NumberOfDescriptorSets)> descriptorSets;
 
 	//Container for all descriptor set layouts.
 	StaticArray<VulkanDescriptorSetLayout, INDEX(DescriptorSetLayout::NumberOfDescriptorSetLayouts)> descriptorSetLayouts;
@@ -352,11 +349,8 @@ private:
 	//The current dynamic uniform data descriptor set.
 	VulkanDescriptorSet *RESTRICT currentDynamicUniformDataDescriptorSet;
 
-	//The environment material.
-	EnvironmentMaterial environmentMaterial;
-
-	//The sky box descriptor set.
-	VulkanDescriptorSet skyBoxDescriptorSet;
+	//The current environment descriptor set.
+	VulkanDescriptorSet *RESTRICT currentEnvironmentDataDescriptorSet;
 
 	/*
 	*	Initializes all render targets.
@@ -459,9 +453,9 @@ private:
 	void EndFrame() NOEXCEPT;
 
 	/*
-	*	Re-initializes all descriptor sets.
+	*	Updates the descriptor sets.
 	*/
-	void ReinitializeDescriptorSets() NOEXCEPT;
+	void UpdateDescriptorSets() NOEXCEPT;
 
 	/*
 	*	Updates the dynamic uniform data.

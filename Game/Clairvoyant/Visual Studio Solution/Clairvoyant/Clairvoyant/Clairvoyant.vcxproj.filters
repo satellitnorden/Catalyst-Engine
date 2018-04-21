@@ -639,6 +639,9 @@
     <ClInclude Include="..\..\..\Game Source\Include\TimeSystem.h">
       <Filter>Game Source\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EnvironmentSystem.h">
+      <Filter>Engine Source\Systems\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
@@ -823,6 +826,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Game Source\Source\TimeSystem.cpp">
       <Filter>Game Source\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\EnvironmentSystem.cpp">
+      <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

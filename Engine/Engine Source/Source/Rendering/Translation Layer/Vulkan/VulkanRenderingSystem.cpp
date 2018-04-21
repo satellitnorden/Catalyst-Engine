@@ -47,6 +47,7 @@
 
 //Systems.
 #include <Systems/EngineSystem.h>
+#include <Systems/EnvironmentSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/TaskSystem.h>
 
@@ -99,7 +100,7 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	InitializeDefaultTextures();
 
 	//Initialize the Vulkan frame data.
-	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)]);
+	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)]);
 }
 
 /*
@@ -556,12 +557,11 @@ void VulkanRenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTR
 	//Create the descriptor set.
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(waterRenderComponent.descriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)]);
 
-	StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
+	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
 	{
 		static_cast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 1),
 		static_cast<const VulkanRenderTarget *RESTRICT>(renderTargets[INDEX(RenderTarget::WaterScene)])->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 2),
-		static_cast<const Vulkan2DTexture *RESTRICT>(waterMaterial.normalMapTexture)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 3),
-		static_cast<const VulkanCubeMapTexture *const RESTRICT>(environmentMaterial.diffuseTexture)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 4)
+		static_cast<const Vulkan2DTexture *RESTRICT>(waterMaterial.normalMapTexture)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 3)
 	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -597,29 +597,6 @@ void VulkanRenderingSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCame
 
 	//Calculate the projection matrix.
 	CalculateProjectionMatrix();
-}
-
-/*
-*	Sets the environment material.
-*/
-void VulkanRenderingSystem::SetEnvironmentMaterial(const EnvironmentMaterial &newEnvioronmentMaterial) NOEXCEPT
-{
-	//Update the environment material.
-	environmentMaterial = newEnvioronmentMaterial;
-
-	//Allocate the sky box descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(skyBoxDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)]);
-
-	//Update the write descriptor sets.
-	StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
-	{
-		static_cast<const VulkanCubeMapTexture *const RESTRICT>(environmentMaterial.diffuseTexture)->GetWriteDescriptorSet(skyBoxDescriptorSet, 1)
-	};
-
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-
-	//Reinitialize the descriptor sets.
-	ReinitializeDescriptorSets();
 }
 
 /*
@@ -724,6 +701,19 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	}
 
 	{
+		//Initialize the environment descriptor set layout.
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> environmentDescriptorSetLayoutBindings
+		{
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+		};
+
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)].Initialize(static_cast<uint32>(environmentDescriptorSetLayoutBindings.Size()), environmentDescriptorSetLayoutBindings.Data());
+	}
+
+	{
 		//Initialize the terrain descriptor set layout.
 		constexpr StaticArray<VkDescriptorSetLayoutBinding, 18> terrainDescriptorSetLayoutBindings
 		{
@@ -778,40 +768,26 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 	{
 		//Initialize the lighting descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 6> lightingDescriptorSetLayoutBindings
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> lightingDescriptorSetLayoutBindings
 		{
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)].Initialize(6, lightingDescriptorSetLayoutBindings.Data());
-	}
-
-	{
-		//Initialize the cube map descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> cubeMapDescriptorSetLayoutBindings
-		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-		};
-
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)].Initialize(1, cubeMapDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)].Initialize(static_cast<uint32>(lightingDescriptorSetLayoutBindings.Size()), lightingDescriptorSetLayoutBindings.Data());
 	}
 
 	{
 		//Initialize the water descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> waterDescriptorSetLayoutBindings
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> waterDescriptorSetLayoutBindings
 		{
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT),
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)].Initialize(4, waterDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)].Initialize(static_cast<uint32>(waterDescriptorSetLayoutBindings.Size()), waterDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -1188,12 +1164,13 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		lightingPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		lightingPipelineCreationParameters.depthTestEnable = VK_FALSE;
 		lightingPipelineCreationParameters.depthWriteEnable = VK_FALSE;
-		StaticArray<VulkanDescriptorSetLayout, 2> lightingDescriptorSetLayouts
+		StaticArray<VulkanDescriptorSetLayout, 3> lightingDescriptorSetLayouts
 		{
 			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)],
 			descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)]
 		};
-		lightingPipelineCreationParameters.descriptorSetLayoutCount = 2;
+		lightingPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(lightingDescriptorSetLayouts.Size());
 		lightingPipelineCreationParameters.descriptorSetLayouts = lightingDescriptorSetLayouts.Data();
 		lightingPipelineCreationParameters.pushConstantRangeCount = 0;
 		lightingPipelineCreationParameters.pushConstantRanges = nullptr;
@@ -1236,9 +1213,9 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		StaticArray<VulkanDescriptorSetLayout, 2> cubeMapDescriptorSetLayouts
 		{
 			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::CubeMap)]
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)]
 		};
-		cubeMapPipelineCreationParameters.descriptorSetLayoutCount = 2;
+		cubeMapPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(cubeMapDescriptorSetLayouts.Size());
 		cubeMapPipelineCreationParameters.descriptorSetLayouts = cubeMapDescriptorSetLayouts.Data();
 		cubeMapPipelineCreationParameters.pushConstantRangeCount = 0;
 		cubeMapPipelineCreationParameters.pushConstantRanges = nullptr;
@@ -1277,12 +1254,13 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		waterPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		waterPipelineCreationParameters.depthTestEnable = VK_TRUE;
 		waterPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-		StaticArray<VulkanDescriptorSetLayout, 2> waterDescriptorSetLayouts
+		StaticArray<VulkanDescriptorSetLayout, 3> waterDescriptorSetLayouts
 		{
 			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)],
 			descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)]
 		};
-		waterPipelineCreationParameters.descriptorSetLayoutCount = 2;
+		waterPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(waterDescriptorSetLayouts.Size());
 		waterPipelineCreationParameters.descriptorSetLayouts = waterDescriptorSetLayouts.Data();
 		waterPipelineCreationParameters.pushConstantRangeCount = 0;
 		waterPipelineCreationParameters.pushConstantRanges = nullptr;
@@ -1408,15 +1386,14 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 {
 	{
 		//Initialize the lighting descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)]);
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)]);
 
 		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
+		StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
 		{
-			renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 1),
-			renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 2),
-			renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 3),
-			renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4)
+			renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 0),
+			renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 1),
+			renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 2)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -1424,13 +1401,13 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 
 	{
 		//Initialize the post processing descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[DescriptorSet::PostProcessingDescriptorSet], descriptorSetLayouts[INDEX(DescriptorSetLayout::PostProcessing)]);
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::PostProcessing)], descriptorSetLayouts[INDEX(DescriptorSetLayout::PostProcessing)]);
 
 		//Update the write descriptor sets.
 		StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
 		{
-			uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::PostProcessingDescriptorSet], 1),
-			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::PostProcessingDescriptorSet], 2)
+			uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::PostProcessing)], 1),
+			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::PostProcessing)], 2)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -1472,17 +1449,25 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 	//Set the current dynamic uniform data descriptor set.
 	currentDynamicUniformDataDescriptorSet = frameData.GetCurrentDynamicUniformDataDescriptorSet();
 
+	//Set the current environment descriptor set.
+	currentEnvironmentDataDescriptorSet = frameData.GetCurrentEnvironmentDescriptorSet();
+
 	//Wait for the current fence to finish.
 	frameData.GetCurrentFence()->WaitFor();
 
 	//Reset the current fence.
 	frameData.GetCurrentFence()->Reset();
 
-	//Execute the update dynamic uniform data task.
+	//Execute the asynchronous tasks.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
 		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDynamicUniformData();
 	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)]));
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDescriptorSets();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)]));
 
 	//Set up the current command buffer.
 	currentCommandBuffer->Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -1690,13 +1675,14 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Bind the scene buffer descriptor set.
-	StaticArray<VulkanDescriptorSet, 2> lightingDescriptorSets
+	StaticArray<VulkanDescriptorSet, 3> lightingDescriptorSets
 	{
 		*currentDynamicUniformDataDescriptorSet,
-		descriptorSets[DescriptorSet::LightingDescriptorSet]
+		*currentEnvironmentDataDescriptorSet,
+		descriptorSets[INDEX(DescriptorSet::Lighting)]
 	};
 
-	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Lighting)], 2, lightingDescriptorSets.Data());
+	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Lighting)], static_cast<uint32>(lightingDescriptorSets.Size()), lightingDescriptorSets.Data());
 
 	//Draw the viewport!
 	currentCommandBuffer->CommandDraw(4, 1);
@@ -1720,10 +1706,10 @@ void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
 	StaticArray<VulkanDescriptorSet, 2> skyBoxDescriptorSets
 	{
 		*currentDynamicUniformDataDescriptorSet,
-		skyBoxDescriptorSet
+		*currentEnvironmentDataDescriptorSet
 	};
 
-	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::CubeMap)], 2, skyBoxDescriptorSets.Data());
+	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::CubeMap)], static_cast<uint32>(skyBoxDescriptorSets.Size()), skyBoxDescriptorSets.Data());
 
 	//Draw the sky box!
 	currentCommandBuffer->CommandDraw(36, 1);
@@ -1750,13 +1736,14 @@ void VulkanRenderingSystem::RenderWater() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfWaterComponents; ++i, ++waterRenderComponent)
 	{
-		StaticArray<VulkanDescriptorSet, 2> waterDescriptorSets
+		StaticArray<VulkanDescriptorSet, 3> waterDescriptorSets
 		{
 			*currentDynamicUniformDataDescriptorSet,
+			*currentEnvironmentDataDescriptorSet,
 			waterRenderComponent->descriptorSet
 		};
 
-		currentCommandBuffer->CommandBindDescriptorSets(*waterPipeline, 2, waterDescriptorSets.Data());
+		currentCommandBuffer->CommandBindDescriptorSets(*waterPipeline, static_cast<uint32>(waterDescriptorSets.Size()), waterDescriptorSets.Data());
 		currentCommandBuffer->CommandDraw(4, 1);
 	}
 
@@ -1824,7 +1811,7 @@ void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 	StaticArray<VulkanDescriptorSet, 2> postProcessingDescriptorSets
 	{
 		*currentDynamicUniformDataDescriptorSet,
-		descriptorSets[DescriptorSet::PostProcessingDescriptorSet]
+		descriptorSets[INDEX(DescriptorSet::PostProcessing)]
 	};
 
 	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::PostProcessing)], 2, postProcessingDescriptorSets.Data());
@@ -1846,27 +1833,31 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 
 	//Wait for the update dynamic uniform data task to finish.
 	taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)].WaitFor();
+	taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)].WaitFor();
 
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*currentCommandBuffer, 1, semaphores[INDEX(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, semaphores[INDEX(GraphicsSemaphore::RenderFinished)], frameData.GetCurrentFence()->Get());
 }
 
 /*
-*	Re-initializes all descriptor sets.
+*	Updates the descriptor sets.
 */
-void VulkanRenderingSystem::ReinitializeDescriptorSets() NOEXCEPT
+void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 {
-	//Update the write descriptor sets.
-	StaticArray<VkWriteDescriptorSet, 5> writeDescriptorSets
 	{
-		static_cast<const VulkanCubeMapTexture *const RESTRICT>(environmentMaterial.diffuseIrradianceTexture)->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 1),
-		static_cast<const VulkanCubeMapTexture *const RESTRICT>(environmentMaterial.diffuseTexture)->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 2),
-		renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 3),
-		renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 4),
-		renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[DescriptorSet::LightingDescriptorSet], 5)
-	};
+		//Update the environment descriptor set.
+		VulkanDescriptorSet &environmentDescriptorSet{ *currentEnvironmentDataDescriptorSet };
 
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+		StaticArray<VkWriteDescriptorSet, 4> environmentWriteDescriptorSets
+		{
+			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetNightEnvironmentMaterial().diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 0),
+			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetNightEnvironmentMaterial().diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 1),
+			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetDayEnvironmentMaterial().diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 2),
+			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetDayEnvironmentMaterial().diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 3)
+		};
+
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(environmentWriteDescriptorSets.Size()), environmentWriteDescriptorSets.Data(), 0, nullptr);
+	}
 }
 
 /*
@@ -1922,8 +1913,9 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 		dynamicUniformData.directionalLightScreenSpacePosition = Vector3(0.0f, 0.0f, 0.0f);
 	}
 
+	dynamicUniformData.environmentBlend = EnvironmentSystem::Instance->GetEnvironmentBlend();
+
 	dynamicUniformData.deltaTime = EngineSystem::Instance->GetDeltaTime();
-	dynamicUniformData.randomSeed = CatalystMath::RandomFloatInRange(0.0f, 1.0f);
 	dynamicUniformData.totalGameTime = EngineSystem::Instance->GetTotalGameTime();
 
 	uint64 counter = 0;

@@ -142,11 +142,6 @@ public:
 	void SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT;
 
 	/*
-	*	Sets the environment material.
-	*/
-	void SetEnvironmentMaterial(const EnvironmentMaterial &newEnvioronmentMaterial) NOEXCEPT;
-
-	/*
 	*	Sets the post processing blur amount.
 	*/
 	void SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT;

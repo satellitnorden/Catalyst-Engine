@@ -9,6 +9,7 @@
 
 //Systems.
 #include <Systems/EntitySystem.h>
+#include <Systems/EnvironmentSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(TimeSystem);
@@ -64,7 +65,7 @@ void TimeSystem::Update(const float deltaTime) NOEXCEPT
 		dayAlpha = 1.0f - ((currentTime - 12.0f) * TimeSystemConstants::INVERSE_MIDDAY);
 	}
 
-	dayAlpha = CatalystMath::SmoothStep<1>(dayAlpha);
+	dayAlpha = CatalystMath::SmoothStep<4>(dayAlpha);
 
 	//Continously rotate the sun.
 	float sunAlpha;
@@ -87,10 +88,13 @@ void TimeSystem::Update(const float deltaTime) NOEXCEPT
 		}	
 	}
 
-	sunAlpha = CatalystMath::SmoothStep<1>(sunAlpha);
+	sunAlpha = CatalystMath::SmoothStep<4>(sunAlpha);
 
 	sun->Rotate(Vector3(15.0f * timeIncrease, 0.0f, 0.0f));
 
 	//Smoothly interpolate the intensity of the sun.
 	sun->SetIntensity(CatalystMath::LinearlyInterpolate(TimeSystemConstants::SUN_MINIMUM_INTENSITY, TimeSystemConstants::SUN_MAXIMUM_INTENSITY, sunAlpha));
+
+	//Set the environment blend.
+	EnvironmentSystem::Instance->SetEnvironmentBlend(dayAlpha);
 }

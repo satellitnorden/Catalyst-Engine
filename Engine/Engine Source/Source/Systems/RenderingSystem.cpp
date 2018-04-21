@@ -185,15 +185,6 @@ void RenderingSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NO
 }
 
 /*
-*	Sets the environment material.
-*/
-void RenderingSystem::SetEnvironmentMaterial(const EnvironmentMaterial &newEnvioronmentMaterial) NOEXCEPT
-{
-	//Set the environment material via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->SetEnvironmentMaterial(newEnvioronmentMaterial);
-}
-
-/*
 *	Sets the post processing blur amount.
 */
 void RenderingSystem::SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT

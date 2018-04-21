@@ -23,9 +23,11 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 336) vec3 directionalLightColor; //Offset; 336 - Size; 16
     layout (offset = 352) vec3 directionalLightScreenSpacePosition; //Offset; 352 - Size; 16
 
+    //Environment data.
+    layout (offset = 368) float environmentBlend; //Offset; 368 - Size; 4
+
     //General data.
-    layout (offset = 368) float deltaTime; //Offset; 368 - Size; 4
-    layout (offset = 372) float randomSeed; //Offset; 372 - Size; 4
+    layout (offset = 372) float deltaTime; //Offset; 368 - Size; 4
     layout (offset = 376) float totalGameTime; //Offset; 376 - Size; 4
 
     //Point light data.

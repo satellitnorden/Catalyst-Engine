@@ -33,9 +33,11 @@ public:
 	Vector4 directionalLightColor;
 	Vector4 directionalLightScreenSpacePosition;
 
+	//Environment data.
+	float environmentBlend;
+
 	//General data.
 	float deltaTime;
-	float randomSeed;
 	float totalGameTime;
 
 	//Point light data.
@@ -78,8 +80,9 @@ static_assert(offsetof(VulkanDynamicUniformData, directionalLightDirection) == 3
 static_assert(offsetof(VulkanDynamicUniformData, directionalLightColor) == 336, "X");
 static_assert(offsetof(VulkanDynamicUniformData, directionalLightScreenSpacePosition) == 352, "X");
 
-static_assert(offsetof(VulkanDynamicUniformData, deltaTime) == 368, "X");
-static_assert(offsetof(VulkanDynamicUniformData, randomSeed) == 372, "X");
+static_assert(offsetof(VulkanDynamicUniformData, environmentBlend) == 368, "X");
+
+static_assert(offsetof(VulkanDynamicUniformData, deltaTime) == 372, "X");
 static_assert(offsetof(VulkanDynamicUniformData, totalGameTime) == 376, "X");
 
 static_assert(offsetof(VulkanDynamicUniformData, numberOfPointLights) == 380, "X");
