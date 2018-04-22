@@ -229,17 +229,18 @@ float CalculateDirectionalLightScreenSpaceShadowMultiplier()
 */
 float CalculateDirectionalLightShadowMultiplier()
 {
-    return 1.0f;
-
     /*
-    //Calculate if this fragment's world position is in shadow of the directional light.
-    vec4 directionalLightShadowMapCoordinate = directionalLightViewMatrix * vec4(fragmentWorldPosition, 1.0f);
-    directionalLightShadowMapCoordinate = directionalLightShadowMapCoordinate * 0.5f + 0.5f;
-
-    return directionalLightShadowMapCoordinate.z > 1.0f || (directionalLightShadowMapCoordinate.z - 0.05f) < texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy).r ? 1.0f : 0.0f;
+    return 1.0f;
     */
 
+    //Calculate if this fragment's world position is in shadow of the directional light.
+    vec4 directionalLightShadowMapCoordinate = directionalLightViewMatrix * vec4(fragmentWorldPosition, 1.0f);
+    directionalLightShadowMapCoordinate.xy = directionalLightShadowMapCoordinate.xy * 0.5f + 0.5f;
+
     /*
+    return directionalLightShadowMapCoordinate.z > 1.0f || directionalLightShadowMapCoordinate.z < texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy).r ? 1.0f : 0.0f;
+    */
+
     float texelStep = 1.0f / 2048.0f;
 
     int numberOfShadowTexels = 3;
@@ -255,7 +256,7 @@ float CalculateDirectionalLightShadowMultiplier()
         {
             float nonShadowDepth = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy + vec2(xCoordinate, yCoordinate)).r;
 
-            accumulatedShadowValue += (directionalLightShadowMapCoordinate.z - 0.25f) < nonShadowDepth || directionalLightShadowMapCoordinate.z > 1.0f ? 1.0f : 0.0f;
+            accumulatedShadowValue += directionalLightShadowMapCoordinate.z < nonShadowDepth || directionalLightShadowMapCoordinate.z > 1.0f ? 1.0f : 0.0f;
 
             yCoordinate += texelStep;
         }
@@ -265,7 +266,6 @@ float CalculateDirectionalLightShadowMultiplier()
     }
 
     return accumulatedShadowValue / (numberOfShadowTexels * numberOfShadowTexels);
-    */
 }
 
 /*

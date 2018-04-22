@@ -45,11 +45,10 @@ Matrix4 Matrix4::Ortographic(const float left, const float right, const float bo
 
 	result.matrix[0].X = 2.0f / (right - left);
 	result.matrix[1].Y = 2.0f / (top - bottom);
+	result.matrix[2].Z = -1.0f / (farPlane - nearPlane);
 	result.matrix[3].X = -(right + left) / (right - left);
 	result.matrix[3].Y = -(top + bottom) / (top - bottom);
-
-	result.matrix[2].Z = -2.0f / (farPlane - nearPlane);
-	result.matrix[3].Z = -(farPlane + nearPlane) / (farPlane - nearPlane);
+	result.matrix[3].Z = -nearPlane / (farPlane - nearPlane);
 
 	result.matrix[1].Y *= -1.0f;
 
