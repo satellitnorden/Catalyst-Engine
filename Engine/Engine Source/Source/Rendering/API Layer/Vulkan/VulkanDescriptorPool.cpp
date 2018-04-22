@@ -11,8 +11,10 @@
 namespace VulkanDescriptorPoolConstants
 {
 	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS{ 16'384 };
-	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS{ 8'192 };
 	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS{ 32'768 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_STORAGE_BUFFERS{ 8 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS{ 8'192 };
+	
 }
 
 
@@ -91,7 +93,7 @@ void VulkanDescriptorPool::CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPo
 	VkDescriptorPoolSize storageBufferDescriptorPoolSize;
 
 	storageBufferDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	storageBufferDescriptorPoolSize.descriptorCount = 2;
+	storageBufferDescriptorPoolSize.descriptorCount = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_STORAGE_BUFFERS;
 
 	descriptorPoolSizes.EmplaceFast(storageBufferDescriptorPoolSize);
 }

@@ -3,17 +3,45 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Components.
+#include <Components/ComponentManager.h>
+
 //Math.
 #include <Math/CatalystMath.h>
 #include <Math/Vector4.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/PhysicalVertex.h>
+#include <Rendering/Engine Layer/RenderingCore.h>
 #include <Rendering/Engine Layer/TerrainUniformData.h>
 #include <Rendering/Engine Layer/WaterUniformData.h>
 
 namespace RenderingUtilities
 {
+
+	/*
+	*	Calculates the directional light view matrix.
+	*/
+	static Matrix4 CalculateDirectionalLightViewMatrix() NOEXCEPT
+	{
+		static Matrix4 directionalLightProjectionMatrix{ Matrix4::Ortographic(-RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, -RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, 0.0f, RenderingConstants::SHADOW_VIEW_DISTANCE) };
+
+		const CameraComponent *const RESTRICT cameraComponent{ ComponentManager::GetCameraComponents() };
+		const DirectionalLightComponent *const RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightComponents() };
+
+		const Vector3 cameraPosition{ cameraComponent->position };
+		const Vector3 directionalLightForwardVector{ Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->rotation) };
+		const Vector3 directionalLightUpVector{ Vector3(0.0f, 1.0f, 0.0f).Rotated(directionalLightComponent->rotation) };
+		const Vector3 directionalLightPosition{ cameraPosition + (directionalLightForwardVector * -1.0f) * (RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f) };
+
+		const Matrix4 directionalLightDirection{ Matrix4::LookAt(directionalLightPosition, directionalLightPosition + directionalLightForwardVector, directionalLightUpVector) };
+	
+		const Matrix4 directionalLightViewMatrix{ directionalLightProjectionMatrix * directionalLightDirection };
+
+		const Vector4 test{ directionalLightViewMatrix * Vector4(cameraPosition , 1.0f) };
+
+		return directionalLightProjectionMatrix * directionalLightDirection;
+	}
 
 	/*
 	*	Calculates the vegetation grid. Outputs a new container for the sorted transformations.

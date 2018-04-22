@@ -10,7 +10,7 @@ void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VulkanRenderPass 
 
 	for (uint32 i = 0; i < NumberOfClearValues; ++i)
 	{
-		clearValues[i].color = { 0.0f, 0.0f, 0.0f, 1.0f };
+		clearValues[i].color = { 1.0f, 1.0f, 1.0f, 1.0f };
 		clearValues[i].depthStencil = { 1.0f, 0 };
 	}
 

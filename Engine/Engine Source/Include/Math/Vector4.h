@@ -87,6 +87,19 @@ public:
 
 	}
 
+		/*
+		*	Constructor taking a Vector3 and a scalar as argument.
+		*/
+		constexpr Vector4(const Vector3 &otherVector, const float scalar) NOEXCEPT
+			:
+			X(otherVector.X),
+			Y(otherVector.Y),
+			Z(otherVector.Z),
+			W(scalar)
+		{
+
+		}
+
 	/*
 	*	Vector4 by scalar multiplication overload.
 	*/

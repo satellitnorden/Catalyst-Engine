@@ -29,6 +29,7 @@ public:
 
 	//Directional light data.
 	Vector4 directionalLightIntensity;
+	Matrix4 directionalLightViewMatrix;
 	Vector4 directionalLightDirection;
 	Vector4 directionalLightColor;
 	Vector4 directionalLightScreenSpacePosition;
@@ -65,7 +66,7 @@ public:
 
 };
 
-static_assert(sizeof(VulkanDynamicUniformData) == 1840, "X");
+static_assert(sizeof(VulkanDynamicUniformData) == 1904, "X");
 
 static_assert(offsetof(VulkanDynamicUniformData, cameraFieldOfViewCosine) == 0, "X");
 static_assert(offsetof(VulkanDynamicUniformData, inverseCameraMatrix) == 16, "X");
@@ -76,29 +77,30 @@ static_assert(offsetof(VulkanDynamicUniformData, cameraForwardVector) == 272, "X
 static_assert(offsetof(VulkanDynamicUniformData, cameraWorldPosition) == 288, "X");
 
 static_assert(offsetof(VulkanDynamicUniformData, directionalLightIntensity) == 304, "X");
-static_assert(offsetof(VulkanDynamicUniformData, directionalLightDirection) == 320, "X");
-static_assert(offsetof(VulkanDynamicUniformData, directionalLightColor) == 336, "X");
-static_assert(offsetof(VulkanDynamicUniformData, directionalLightScreenSpacePosition) == 352, "X");
+static_assert(offsetof(VulkanDynamicUniformData, directionalLightViewMatrix) == 320, "X");
+static_assert(offsetof(VulkanDynamicUniformData, directionalLightDirection) == 384, "X");
+static_assert(offsetof(VulkanDynamicUniformData, directionalLightColor) == 400, "X");
+static_assert(offsetof(VulkanDynamicUniformData, directionalLightScreenSpacePosition) == 416, "X");
 
-static_assert(offsetof(VulkanDynamicUniformData, environmentBlend) == 368, "X");
+static_assert(offsetof(VulkanDynamicUniformData, environmentBlend) == 432, "X");
 
-static_assert(offsetof(VulkanDynamicUniformData, deltaTime) == 372, "X");
-static_assert(offsetof(VulkanDynamicUniformData, totalGameTime) == 376, "X");
+static_assert(offsetof(VulkanDynamicUniformData, deltaTime) == 436, "X");
+static_assert(offsetof(VulkanDynamicUniformData, totalGameTime) == 440, "X");
 
-static_assert(offsetof(VulkanDynamicUniformData, numberOfPointLights) == 380, "X");
-static_assert(offsetof(VulkanDynamicUniformData, pointLightAttenuationDistances) == 384, "X");
-static_assert(offsetof(VulkanDynamicUniformData, pointLightIntensities) == 512, "X");
-static_assert(offsetof(VulkanDynamicUniformData, pointLightColors) == 640, "X");
-static_assert(offsetof(VulkanDynamicUniformData, pointLightWorldPositions) == 768, "X");
+static_assert(offsetof(VulkanDynamicUniformData, numberOfPointLights) == 444, "X");
+static_assert(offsetof(VulkanDynamicUniformData, pointLightAttenuationDistances) == 448, "X");
+static_assert(offsetof(VulkanDynamicUniformData, pointLightIntensities) == 576, "X");
+static_assert(offsetof(VulkanDynamicUniformData, pointLightColors) == 704, "X");
+static_assert(offsetof(VulkanDynamicUniformData, pointLightWorldPositions) == 832, "X");
 
-static_assert(offsetof(VulkanDynamicUniformData, numberOfSpotLights) == 896, "X");
-static_assert(offsetof(VulkanDynamicUniformData, spotLightAttenuationDistances) == 912, "X");
-static_assert(offsetof(VulkanDynamicUniformData, spotLightIntensities) == 1040, "X");
-static_assert(offsetof(VulkanDynamicUniformData, spotLightInnerCutoffAngles) == 1168, "X");
-static_assert(offsetof(VulkanDynamicUniformData, spotLightOuterCutoffAngles) == 1296, "X");
-static_assert(offsetof(VulkanDynamicUniformData, spotLightColors) == 1424, "X");
-static_assert(offsetof(VulkanDynamicUniformData, spotLightDirections) == 1552, "X");
-static_assert(offsetof(VulkanDynamicUniformData, spotLightWorldPositions) == 1680, "X");
+static_assert(offsetof(VulkanDynamicUniformData, numberOfSpotLights) == 960, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightAttenuationDistances) == 976, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightIntensities) == 1104, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightInnerCutoffAngles) == 1232, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightOuterCutoffAngles) == 1360, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightColors) == 1488, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightDirections) == 1616, "X");
+static_assert(offsetof(VulkanDynamicUniformData, spotLightWorldPositions) == 1744, "X");
 
-static_assert(offsetof(VulkanDynamicUniformData, windStrength) == 1808, "X");
-static_assert(offsetof(VulkanDynamicUniformData, windDirection) == 1824, "X");
+static_assert(offsetof(VulkanDynamicUniformData, windStrength) == 1872, "X");
+static_assert(offsetof(VulkanDynamicUniformData, windDirection) == 1888, "X");

@@ -6,6 +6,13 @@
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanDescriptorSet.h>
 
+//Rendering constants.
+namespace RenderingConstants
+{
+	constexpr uint32 SHADOW_MAP_RESOLUTION{ 2'048 };
+	constexpr float SHADOW_VIEW_DISTANCE{ 250.0f };
+}
+
 /*
 *	Type aliases.
 */

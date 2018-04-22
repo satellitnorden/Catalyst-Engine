@@ -119,7 +119,7 @@ public:
 	*	Returns the transfer command pool.
 	*/
 #if RENDERDOC_DEBUGGING
-	const VulkanCommandPool& GetTransferCommandPool() const NOEXCEPT { return GetGraphicsCommandPool(); }
+	const VulkanCommandPool& GetTransferCommandPool() NOEXCEPT { return GetGraphicsCommandPool(); }
 #else
 	const VulkanCommandPool& GetTransferCommandPool() NOEXCEPT;
 #endif
@@ -167,7 +167,7 @@ public:
 	/*
 	*	Creates and returns a render target.
 	*/
-	RESTRICTED VulkanRenderTarget* CreateRenderTarget(const VkExtent2D extent) NOEXCEPT;
+	RESTRICTED VulkanRenderTarget* CreateRenderTarget(const VkExtent2D extent, const VkSamplerAddressMode addressMode) NOEXCEPT;
 
 	/*
 	*	Creates and returns a semaphore.

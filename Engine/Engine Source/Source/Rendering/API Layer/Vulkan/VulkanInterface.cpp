@@ -188,12 +188,14 @@ const VulkanCommandPool& VulkanInterface::GetGraphicsCommandPool() NOEXCEPT
 	return graphicsCommandPool;
 }
 
+#if !RENDERDOC_DEBUGGING
 const VulkanCommandPool& VulkanInterface::GetTransferCommandPool() NOEXCEPT
 {
 	static thread_local VulkanCommandPool transferCommandPool{ GetNewCommandPool(vulkanPhysicalDevice.GetTransferQueueFamilyIndex()) };
 
 	return transferCommandPool;
 }
+#endif
 
 /*
 *	Creates and returns a 2D texture with void data.
@@ -311,14 +313,14 @@ RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const VulkanPipelineC
 /*
 *	Creates and returns a render target.
 */
-RESTRICTED VulkanRenderTarget* VulkanInterface::CreateRenderTarget(const VkExtent2D extent) NOEXCEPT
+RESTRICTED VulkanRenderTarget* VulkanInterface::CreateRenderTarget(const VkExtent2D extent, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
 	static Spinlock lock;
 	ScopedLock<Spinlock>{ lock };
 
 	VulkanRenderTarget *RESTRICT newRenderTarget = new VulkanRenderTarget;
 
-	newRenderTarget->Initialize(extent);
+	newRenderTarget->Initialize(extent, addressMode);
 
 	vulkanRenderTargets.EmplaceSlow(newRenderTarget);
 

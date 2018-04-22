@@ -19,39 +19,40 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 
     //Directional light data.
     layout (offset = 304) float directionalLightIntensity; //Offset; 304 - Size; 16
-    layout (offset = 320) vec3 directionalLightDirection; //Offset; 320 - Size; 16
-    layout (offset = 336) vec3 directionalLightColor; //Offset; 336 - Size; 16
-    layout (offset = 352) vec3 directionalLightScreenSpacePosition; //Offset; 352 - Size; 16
+    layout (offset = 320) mat4 directionalLightViewMatrix; //Offset; 320 - Size; 64
+    layout (offset = 384) vec3 directionalLightDirection; //Offset; 384 - Size; 16
+    layout (offset = 400) vec3 directionalLightColor; //Offset; 400 - Size; 16
+    layout (offset = 416) vec3 directionalLightScreenSpacePosition; //Offset; 416 - Size; 16
 
     //Environment data.
-    layout (offset = 368) float environmentBlend; //Offset; 368 - Size; 4
+    layout (offset = 432) float environmentBlend; //Offset; 432 - Size; 4
 
     //General data.
-    layout (offset = 372) float deltaTime; //Offset; 368 - Size; 4
-    layout (offset = 376) float totalGameTime; //Offset; 376 - Size; 4
+    layout (offset = 436) float deltaTime; //Offset; 436 - Size; 4
+    layout (offset = 440) float totalGameTime; //Offset; 440 - Size; 4
 
     //Point light data.
-    layout (offset = 380) int numberOfPointLights; //Offset; 380 - Size; 4
-    layout (offset = 384) float pointLightAttenuationDistances[MaximumNumberOfPointLights]; //Offset; 384 - Size; 128
-    layout (offset = 512) float pointLightIntensities[MaximumNumberOfPointLights]; //Offset; 512 - Size; 128
-    layout (offset = 640) vec3 pointLightColors[MaximumNumberOfPointLights]; //Offset; 640 - Size; 128
-    layout (offset = 768) vec3 pointLightWorldPositions[MaximumNumberOfPointLights]; //Offset; 768 - Size; 128
+    layout (offset = 444) int numberOfPointLights; //Offset; 444 - Size; 4
+    layout (offset = 448) float pointLightAttenuationDistances[MaximumNumberOfPointLights]; //Offset; 448 - Size; 128
+    layout (offset = 576) float pointLightIntensities[MaximumNumberOfPointLights]; //Offset; 576 - Size; 128
+    layout (offset = 704) vec3 pointLightColors[MaximumNumberOfPointLights]; //Offset; 704 - Size; 128
+    layout (offset = 832) vec3 pointLightWorldPositions[MaximumNumberOfPointLights]; //Offset; 832 - Size; 128
 
     //Spot light data.
-    layout (offset = 896) int numberOfSpotLights; //Offset; 896 - Size; 16
-    layout (offset = 912) float spotLightAttenuationDistances[MaximumNumberOfSpotLights]; //Offset; 912 - Size; 128
-    layout (offset = 1040) float spotLightIntensities[MaximumNumberOfSpotLights]; //Offset; 1040 - Size; 128
-    layout (offset = 1168) float spotLightInnerCutoffAngles[MaximumNumberOfSpotLights]; //Offset; 1168 - Size; 128
-    layout (offset = 1296) float spotLightOuterCutoffAngles[MaximumNumberOfSpotLights]; //Offset; 1296 - Size; 128
-    layout (offset = 1424) vec3 spotLightColors[MaximumNumberOfSpotLights]; //Offset; 1424 - Size; 128
-    layout (offset = 1552) vec3 spotLightDirections[MaximumNumberOfSpotLights]; //Offset; 1552 - Size; 128
-    layout (offset = 1680) vec3 spotLightWorldPositions[MaximumNumberOfSpotLights]; //Offset; 1680 - Size; 128
+    layout (offset = 960) int numberOfSpotLights; //Offset; 960 - Size; 16
+    layout (offset = 976) float spotLightAttenuationDistances[MaximumNumberOfSpotLights]; //Offset; 976 - Size; 128
+    layout (offset = 1104) float spotLightIntensities[MaximumNumberOfSpotLights]; //Offset; 1104 - Size; 128
+    layout (offset = 1232) float spotLightInnerCutoffAngles[MaximumNumberOfSpotLights]; //Offset; 1232 - Size; 128
+    layout (offset = 1360) float spotLightOuterCutoffAngles[MaximumNumberOfSpotLights]; //Offset; 1360 - Size; 128
+    layout (offset = 1488) vec3 spotLightColors[MaximumNumberOfSpotLights]; //Offset; 1488 - Size; 128
+    layout (offset = 1616) vec3 spotLightDirections[MaximumNumberOfSpotLights]; //Offset; 1616 - Size; 128
+    layout (offset = 1744) vec3 spotLightWorldPositions[MaximumNumberOfSpotLights]; //Offset; 1744 - Size; 128
 
     //Physics data.
-    layout (offset = 1808) float windStrength; //Offset; 1808 - Size; 16
-    layout (offset = 1824) vec3 windDirection; //Offset; 1824 - Size; 16
+    layout (offset = 1872) float windStrength; //Offset; 1872 - Size; 16
+    layout (offset = 1888) vec3 windDirection; //Offset; 1824 - Size; 16
 
-    //Total size; 1840
+    //Total size; 1904
 };
 
 //Terrain uniform buffer.

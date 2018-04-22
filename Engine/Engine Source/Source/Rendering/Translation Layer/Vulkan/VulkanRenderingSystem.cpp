@@ -141,6 +141,9 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Begin the frame.
 	BeginFrame();
 
+	//Render the directional shadows.
+	RenderDirectionalShadows();
+
 	//Render the terrain.
 	RenderTerrain();
 
@@ -653,14 +656,16 @@ void VulkanRenderingSystem::SetPostProcessingSharpenAmount(const float newSharpe
 void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 {
 	//Initialize all depth buffers.
+	depthBuffers[INDEX(DepthBuffer::DirectionalLight)] = VulkanInterface::Instance->CreateDepthBuffer(VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
 	depthBuffers[INDEX(DepthBuffer::SceneBuffer)] = VulkanInterface::Instance->CreateDepthBuffer(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Initialize all render targets.
-	renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
-	renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
-	renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
-	renderTargets[INDEX(RenderTarget::Scene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
-	renderTargets[INDEX(RenderTarget::WaterScene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	renderTargets[INDEX(RenderTarget::DirectionalShadowMap)] = VulkanInterface::Instance->CreateRenderTarget(VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::Scene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::WaterScene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 }
 
 /*
@@ -768,11 +773,12 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 	{
 		//Initialize the lighting descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> lightingDescriptorSetLayoutBindings
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> lightingDescriptorSetLayoutBindings
 		{
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
 		descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)].Initialize(static_cast<uint32>(lightingDescriptorSetLayoutBindings.Size()), lightingDescriptorSetLayoutBindings.Data());
@@ -835,6 +841,18 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize directional shadowInstanced physical vertex shader module.
+		const DynamicArray<char> directionalShadowInstancedPhysicalVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "DirectionalShadowInstancedPhysicalVertexShader.spv");
+		shaderModules[INDEX(ShaderModule::DirectionalShadowInstancedPhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(directionalShadowInstancedPhysicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
+		//Initialize directional shadow terrain tesselation evaluation shader module.
+		const DynamicArray<char> directionalShadowTerrainTessellationEvaluationShaderByteCode = ShaderLoader::LoadShader(shadersPath + "DirectionalShadowTerrainTessellationEvaluationShader.spv");
+		shaderModules[INDEX(ShaderModule::DirectionalShadowTerrainTessellationEvaluationShader)] = VulkanInterface::Instance->CreateShaderModule(directionalShadowTerrainTessellationEvaluationShaderByteCode, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+	}
+
+	{
 		//Initialize the instanced physical vertex shader module.
 		const DynamicArray<char> instancedPhysicalVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "InstancedPhysicalVertexShader.spv");
 		shaderModules[INDEX(ShaderModule::InstancedPhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(instancedPhysicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
@@ -882,6 +900,12 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		shaderModules[INDEX(ShaderModule::PhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(physicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 	}
 	
+	{
+		//Initialize the shadow map fragment shader module.
+		const DynamicArray<char> shadowMapFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "ShadowMapFragmentShader.spv");
+		shaderModules[INDEX(ShaderModule::ShadowMapFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(shadowMapFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
 	{
 		//Initialize the terrain scene buffer fragment shader module.
 		const DynamicArray<char> terrainSceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "TerrainSceneBufferFragmentShader.spv");
@@ -948,6 +972,100 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 {
+	{
+		//Create the terrain shadow pipeline.
+		VulkanPipelineCreationParameters directionalShadowTerrainPipelineCreationParameters;
+
+		directionalShadowTerrainPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		directionalShadowTerrainPipelineCreationParameters.blendEnable = false;
+		directionalShadowTerrainPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		directionalShadowTerrainPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+		directionalShadowTerrainPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		directionalShadowTerrainPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
+		directionalShadowTerrainPipelineCreationParameters.colorAttachments[0].Reserve(1);
+		directionalShadowTerrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetImageView());
+		directionalShadowTerrainPipelineCreationParameters.cullMode = VK_CULL_MODE_FRONT_BIT;
+		directionalShadowTerrainPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		directionalShadowTerrainPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		directionalShadowTerrainPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+		directionalShadowTerrainPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::DirectionalLight)];
+		directionalShadowTerrainPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
+		directionalShadowTerrainPipelineCreationParameters.depthTestEnable = VK_TRUE;
+		directionalShadowTerrainPipelineCreationParameters.depthWriteEnable = VK_TRUE;
+		StaticArray<VulkanDescriptorSetLayout, 2> terrainShadowDescriptorSetLayouts
+		{
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)]
+		};
+		directionalShadowTerrainPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(terrainShadowDescriptorSetLayouts.Size());
+		directionalShadowTerrainPipelineCreationParameters.descriptorSetLayouts = terrainShadowDescriptorSetLayouts.Data();
+		directionalShadowTerrainPipelineCreationParameters.pushConstantRangeCount = 0;
+		directionalShadowTerrainPipelineCreationParameters.pushConstantRanges = nullptr;
+		directionalShadowTerrainPipelineCreationParameters.shaderModules.Reserve(4);
+		directionalShadowTerrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::TerrainVertexShader)]);
+		directionalShadowTerrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::TerrainTessellationControlShader)]);
+		directionalShadowTerrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::DirectionalShadowTerrainTessellationEvaluationShader)]);
+		directionalShadowTerrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::ShadowMapFragmentShader)]);
+		directionalShadowTerrainPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
+		StaticArray<VkVertexInputAttributeDescription, 2> terrainShadowVertexInputAttributeDescriptions;
+		VulkanTranslationUtilities::GetTerrainVertexInputAttributeDescriptions(terrainShadowVertexInputAttributeDescriptions);
+		directionalShadowTerrainPipelineCreationParameters.vertexInputAttributeDescriptionCount = static_cast<uint32>(terrainShadowVertexInputAttributeDescriptions.Size());
+		directionalShadowTerrainPipelineCreationParameters.vertexInputAttributeDescriptions = terrainShadowVertexInputAttributeDescriptions.Data();
+		VkVertexInputBindingDescription terrainShadowVertexInputBindingDescription;
+		VulkanTranslationUtilities::GetTerrainVertexInputBindingDescription(terrainShadowVertexInputBindingDescription);
+		directionalShadowTerrainPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
+		directionalShadowTerrainPipelineCreationParameters.vertexInputBindingDescriptions = &terrainShadowVertexInputBindingDescription;
+		directionalShadowTerrainPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
+
+		pipelines[INDEX(Pipeline::DirectionalShadowTerrain)] = VulkanInterface::Instance->CreatePipeline(directionalShadowTerrainPipelineCreationParameters);
+	}
+
+	{
+		//Create the directional shadow instanced physical pipeline.
+		VulkanPipelineCreationParameters directionalShadowInstancedPhysicalPipelineCreationParameters;
+
+		directionalShadowInstancedPhysicalPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.blendEnable = false;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
+		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachments[0].Reserve(1);
+		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetImageView());
+		directionalShadowInstancedPhysicalPipelineCreationParameters.cullMode = VK_CULL_MODE_FRONT_BIT;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::DirectionalLight)];
+		directionalShadowInstancedPhysicalPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.depthTestEnable = VK_TRUE;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.depthWriteEnable = VK_TRUE;
+		StaticArray<VulkanDescriptorSetLayout, 2> directionalShadowInstancedDescriptorSetLayouts
+		{
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)]
+		};
+		directionalShadowInstancedPhysicalPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(directionalShadowInstancedDescriptorSetLayouts.Size());
+		directionalShadowInstancedPhysicalPipelineCreationParameters.descriptorSetLayouts = directionalShadowInstancedDescriptorSetLayouts.Data();
+		directionalShadowInstancedPhysicalPipelineCreationParameters.pushConstantRangeCount = 0;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.pushConstantRanges = nullptr;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.Reserve(2);
+		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::DirectionalShadowInstancedPhysicalVertexShader)]);
+		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::ShadowMapFragmentShader)]);
+		directionalShadowInstancedPhysicalPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		StaticArray<VkVertexInputAttributeDescription, 8> directionalShadowInstancedPhysicalVertexInputAttributeDescriptions;
+		VulkanTranslationUtilities::GetInstancedPhysicalVertexInputAttributeDescriptions(directionalShadowInstancedPhysicalVertexInputAttributeDescriptions);
+		directionalShadowInstancedPhysicalPipelineCreationParameters.vertexInputAttributeDescriptionCount = static_cast<uint32>(directionalShadowInstancedPhysicalVertexInputAttributeDescriptions.Size());
+		directionalShadowInstancedPhysicalPipelineCreationParameters.vertexInputAttributeDescriptions = directionalShadowInstancedPhysicalVertexInputAttributeDescriptions.Data();
+		StaticArray<VkVertexInputBindingDescription, 2> directionalShadowInstancedPhysicalVertexInputBindingDescriptions;
+		VulkanTranslationUtilities::GetInstancedPhysicalVertexInputBindingDescriptions(directionalShadowInstancedPhysicalVertexInputBindingDescriptions);
+		directionalShadowInstancedPhysicalPipelineCreationParameters.vertexInputBindingDescriptionCount = static_cast<uint32>(directionalShadowInstancedPhysicalVertexInputBindingDescriptions.Size());
+		directionalShadowInstancedPhysicalPipelineCreationParameters.vertexInputBindingDescriptions = directionalShadowInstancedPhysicalVertexInputBindingDescriptions.Data();
+		directionalShadowInstancedPhysicalPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
+
+		pipelines[INDEX(Pipeline::DirectionalShadowInstancedPhysical)] = VulkanInterface::Instance->CreatePipeline(directionalShadowInstancedPhysicalPipelineCreationParameters);
+	}
+
 	{
 		//Create the terrain pipeline.
 		VulkanPipelineCreationParameters terrainPipelineCreationParameters;
@@ -1389,11 +1507,12 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)]);
 
 		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
+		StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
 		{
 			renderTargets[INDEX(RenderTarget::SceneBufferAlbedoColor)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 0),
 			renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 1),
-			renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 2)
+			renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 2),
+			renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 3)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -1471,6 +1590,95 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 
 	//Set up the current command buffer.
 	currentCommandBuffer->Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+}
+
+/*
+*	Renders directional shadows.
+*/
+void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
+{
+	//Render terrain shadows.
+	{
+		//Cache the pipeline.
+		VulkanPipeline &directionalShadowTerrainPipeline{ *pipelines[INDEX(Pipeline::DirectionalShadowTerrain)] };
+
+		//Begin the pipeline and render pass.
+		currentCommandBuffer->CommandBindPipeline(directionalShadowTerrainPipeline);
+		currentCommandBuffer->CommandBeginRenderPassAndClear<2>(directionalShadowTerrainPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
+
+		//Iterate over all terrain entity components and draw them all.
+		const uint64 numberOfTerrainComponents{ ComponentManager::GetNumberOfTerrainComponents() };
+		const TerrainRenderComponent *RESTRICT renderComponent{ ComponentManager::GetTerrainRenderComponents() };
+
+		for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++renderComponent)
+		{
+			StaticArray<VulkanDescriptorSet, 2> terrainDescriptorSets
+			{
+				*currentDynamicUniformDataDescriptorSet,
+				renderComponent->descriptorSet
+			};
+
+			const VkDeviceSize offset{ 0 };
+
+			currentCommandBuffer->CommandBindDescriptorSets(directionalShadowTerrainPipeline, static_cast<uint32>(terrainDescriptorSets.Size()), terrainDescriptorSets.Data());
+			currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->vertexAndIndexBuffer)->Get(), &offset);
+			currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->vertexAndIndexBuffer), renderComponent->indexBufferOffset);
+			currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, 1);
+		}
+
+		//End the render pass.
+		currentCommandBuffer->CommandEndRenderPass();
+	}
+	
+	//Render instanced physical shadows.
+	{
+		//Cache the pipeline.
+		VulkanPipeline &directionalShadowInstancedPhysicalPipeline{ *pipelines[INDEX(Pipeline::DirectionalShadowInstancedPhysical)] };
+
+		//Iterate over all instanced physical entity components and draw them all.
+		const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };
+
+		//If there's none to draw - draw none!
+		if (numberOfInstancedPhysicalComponents == 0)
+		{
+			return;
+		}
+
+		const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
+
+		//Begin the pipeline and render pass.
+		currentCommandBuffer->CommandBindPipeline(directionalShadowInstancedPhysicalPipeline);
+		currentCommandBuffer->CommandBeginRenderPass(directionalShadowInstancedPhysicalPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
+
+		for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
+		{
+			StaticArray<VulkanDescriptorSet, 2> instancedPhysicalDescriptorSets
+			{
+				*currentDynamicUniformDataDescriptorSet,
+				renderComponent->descriptorSet
+			};
+
+			StaticArray<VkBuffer, 2> instancedPhysicalBuffers
+			{
+				static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
+				static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
+			};
+
+			StaticArray<VkDeviceSize, 2> offsets
+			{
+				static_cast<VkDeviceSize>(0),
+				static_cast<VkDeviceSize>(0)
+			};
+
+			currentCommandBuffer->CommandBindDescriptorSets(directionalShadowInstancedPhysicalPipeline, 2, instancedPhysicalDescriptorSets.Data());
+			currentCommandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
+			currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
+			currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
+		}
+
+		//End the render pass.
+		currentCommandBuffer->CommandEndRenderPass();
+	}
 }
 
 /*
@@ -1897,6 +2105,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 		const DirectionalLightComponent *RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightComponents() };
 
 		dynamicUniformData.directionalLightIntensity = directionalLightComponent->intensity;
+		dynamicUniformData.directionalLightViewMatrix = RenderingUtilities::CalculateDirectionalLightViewMatrix();
 		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->rotation);
 		dynamicUniformData.directionalLightColor = directionalLightComponent->color;
 		dynamicUniformData.directionalLightScreenSpacePosition = viewMatrix * Vector4(-dynamicUniformData.directionalLightDirection.X * 100.0f + cameraWorldPosition.X, -dynamicUniformData.directionalLightDirection.Y * 100.0f + cameraWorldPosition.Y, -dynamicUniformData.directionalLightDirection.Z * 100.0f + cameraWorldPosition.Z, 1.0f);
@@ -1908,6 +2117,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	else
 	{
 		dynamicUniformData.directionalLightIntensity = 0.0f;
+		dynamicUniformData.directionalLightViewMatrix = Matrix4();
 		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, 0.0f);
 		dynamicUniformData.directionalLightColor = Vector3(0.0f, 0.0f, 0.0f);
 		dynamicUniformData.directionalLightScreenSpacePosition = Vector3(0.0f, 0.0f, 0.0f);

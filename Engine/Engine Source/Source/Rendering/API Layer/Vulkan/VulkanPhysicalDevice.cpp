@@ -174,7 +174,8 @@ bool VulkanPhysicalDevice::HasRequiredFeatures(const VkPhysicalDevice vulkanPhys
 
 	return	features.geometryShader == VK_TRUE &&
 			features.samplerAnisotropy == VK_TRUE &&
-			features.tessellationShader == VK_TRUE;
+			features.tessellationShader == VK_TRUE &&
+			features.vertexPipelineStoresAndAtomics == VK_TRUE;
 }
 
 /*

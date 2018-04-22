@@ -220,6 +220,8 @@ private:
 	//Enumeration covering all pipelines.
 	enum class Pipeline : uint8
 	{
+		DirectionalShadowTerrain,
+		DirectionalShadowInstancedPhysical,
 		Terrain,
 		StaticPhysical,
 		InstancedPhysical,
@@ -235,6 +237,7 @@ private:
 	//Enumeration covering all render targets.
 	enum class RenderTarget : uint8
 	{
+		DirectionalShadowMap,
 		SceneBufferAlbedoColor,
 		SceneBufferNormalDirectionDepth,
 		SceneBufferRoughnessMetallicAmbientOcclusion,
@@ -256,6 +259,8 @@ private:
 	{
 		CubeMapFragmentShader,
 		CubeMapVertexShader,
+		DirectionalShadowInstancedPhysicalVertexShader,
+		DirectionalShadowTerrainTessellationEvaluationShader,
 		InstancedPhysicalVertexShader,
 		LightingFragmentShader,
 		ParticleSystemFragmentShader,
@@ -264,6 +269,7 @@ private:
 		PostProcessingFragmentShader,
 		PhysicalFragmentShader,
 		PhysicalVertexShader,
+		ShadowMapFragmentShader,
 		TerrainFragmentShader,
 		TerrainTessellationControlShader,
 		TerrainTessellationEvaluationShader,
@@ -401,6 +407,11 @@ private:
 	*	Begins the frame.
 	*/
 	void BeginFrame() NOEXCEPT;
+
+	/*
+	*	Renders directional shadows.
+	*/
+	void RenderDirectionalShadows() NOEXCEPT;
 
 	/*
 	*	Renders the terrain.

@@ -27,7 +27,7 @@ public:
 	/*
 	*	Initializes this Vulkan render target.
 	*/
-	void Initialize(const VkExtent2D extent) NOEXCEPT;
+	void Initialize(const VkExtent2D extent, const VkSamplerAddressMode addressMode) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan render target.

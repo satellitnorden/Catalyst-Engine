@@ -51,6 +51,8 @@ Matrix4 Matrix4::Ortographic(const float left, const float right, const float bo
 	result.matrix[2].Z = -2.0f / (farPlane - nearPlane);
 	result.matrix[3].Z = -(farPlane + nearPlane) / (farPlane - nearPlane);
 
+	result.matrix[1].Y *= -1.0f;
+
 	return result;
 }
 
