@@ -186,43 +186,21 @@ vec3 CalculateLight(vec3 lightDirection, vec3 radiance)
 */
 float CalculateDirectionalLightShadowMultiplier()
 {
-    /*
-    return 1.0f;
-    */
-
     //Calculate if this fragment's world position is in shadow of the directional light.
     vec4 directionalLightShadowMapCoordinate = directionalLightViewMatrix * vec4(fragmentWorldPosition, 1.0f);
     directionalLightShadowMapCoordinate.xy = directionalLightShadowMapCoordinate.xy * 0.5f + 0.5f;
 
-    /*
-    return directionalLightShadowMapCoordinate.z > 1.0f || directionalLightShadowMapCoordinate.z < texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy).r ? 1.0f : 0.0f;
-    */
+    vec4 directionalDepthSampler = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy);
+    float directionalDepth = directionalDepthSampler.r;
+    float directionalDepthSquared = directionalDepthSampler.g;
+    float compare = directionalLightShadowMapCoordinate.z;
+    float p = step(compare, directionalDepth);
+    float variance = max(directionalDepthSquared - (directionalDepth * directionalDepth), 0.00002f);
 
-    float texelStep = 1.0f / 2048.0f;
+    float d = compare - directionalDepth;
+    float pMax = variance / (variance + d * d);
 
-    int numberOfShadowTexels = 3;
-
-    float xCoordinate = -texelStep * numberOfShadowTexels;
-    float yCoordinate = -texelStep * numberOfShadowTexels;
-
-    float accumulatedShadowValue = 0.0f;
-
-    for (int i = 0; i < numberOfShadowTexels; ++i)
-    {
-        for (int j = 0; j < numberOfShadowTexels; ++j)
-        {
-            float nonShadowDepth = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy + vec2(xCoordinate, yCoordinate)).r;
-
-            accumulatedShadowValue += directionalLightShadowMapCoordinate.z < nonShadowDepth || directionalLightShadowMapCoordinate.z > 1.0f ? 1.0f : 0.0f;
-
-            yCoordinate += texelStep;
-        }
-
-        xCoordinate += texelStep;
-        yCoordinate = -texelStep * numberOfShadowTexels;
-    }
-
-    return accumulatedShadowValue / (numberOfShadowTexels * numberOfShadowTexels);
+    return compare > 1.0f ? 1.0f : min(max(p, pMax), 1.0f);
 }
 
 /*
