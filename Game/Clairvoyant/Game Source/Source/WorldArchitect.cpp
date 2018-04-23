@@ -179,12 +179,11 @@ void WorldArchitect::Initialize() NOEXCEPT
 			layerWeights.At(i, j).X = CatalystMath::SmoothStep<1>(layerWeights.At(i, j).X);
 
 			//Determine the weight of the dirt layer.
-			constexpr float dirtLayerFrequency{ 1.0f };
-			layerWeights.At(i, j).Y = (PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) * dirtLayerFrequency, 0.0f, randomOffset) + 1.0f) * 0.5f;
+			layerWeights.At(i, j).Y = (PerlinNoiseGenerator::GenerateNoise(static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION), static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION), 0.0f, randomOffset) + 1.0f) * 0.5f;
 			layerWeights.At(i, j).Y = CatalystMath::SmoothStep<5>(layerWeights.At(i, j).Y);
 
 			//Determine the weight of the rock layer.
-			layerWeights.At(i, j).Z = 1.0f - CatalystMath::SmoothStep<3>(CatalystMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)), 0.0f, 1.0f));
+			layerWeights.At(i, j).Z = 1.0f - CatalystMath::SmoothStep<5>(CatalystMath::Clamp(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)), 0.0f, 1.0f));
 
 			//Determine the weight of the snow layer.
 			if (heightValue < 0.45f)
