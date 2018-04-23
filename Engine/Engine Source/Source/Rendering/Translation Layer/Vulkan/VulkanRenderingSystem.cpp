@@ -62,6 +62,8 @@ namespace VulkanRenderingSystemConstants
 {
 	constexpr uint32 MAXIMUM_NUMBER_OF_PARTICLES{ 16'384 };
 	constexpr VkDeviceSize PARTICLE_SYSTEM_STORAGE_BUFFER_SIZE{ 1'310'736 };
+	constexpr float TERRAIN_SHADOW_BIAS{ -0.02f };
+	constexpr float INSTANCED_PHYSICAL_SHADOW_BIAS{ 0.0f };
 }
 
 /*
@@ -999,8 +1001,9 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		};
 		directionalShadowTerrainPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(terrainShadowDescriptorSetLayouts.Size());
 		directionalShadowTerrainPipelineCreationParameters.descriptorSetLayouts = terrainShadowDescriptorSetLayouts.Data();
-		directionalShadowTerrainPipelineCreationParameters.pushConstantRangeCount = 0;
-		directionalShadowTerrainPipelineCreationParameters.pushConstantRanges = nullptr;
+		VkPushConstantRange pushConstantRange{ VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(float) };
+		directionalShadowTerrainPipelineCreationParameters.pushConstantRangeCount = 1;
+		directionalShadowTerrainPipelineCreationParameters.pushConstantRanges = &pushConstantRange;
 		directionalShadowTerrainPipelineCreationParameters.shaderModules.Reserve(4);
 		directionalShadowTerrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::TerrainVertexShader)]);
 		directionalShadowTerrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::TerrainTessellationControlShader)]);
@@ -1047,8 +1050,9 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		};
 		directionalShadowInstancedPhysicalPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(directionalShadowInstancedDescriptorSetLayouts.Size());
 		directionalShadowInstancedPhysicalPipelineCreationParameters.descriptorSetLayouts = directionalShadowInstancedDescriptorSetLayouts.Data();
-		directionalShadowInstancedPhysicalPipelineCreationParameters.pushConstantRangeCount = 0;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.pushConstantRanges = nullptr;
+		VkPushConstantRange pushConstantRange{ VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(float) };
+		directionalShadowInstancedPhysicalPipelineCreationParameters.pushConstantRangeCount = 1;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.pushConstantRanges = &pushConstantRange;
 		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.Reserve(2);
 		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::DirectionalShadowInstancedPhysicalVertexShader)]);
 		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::ShadowMapFragmentShader)]);
@@ -1620,6 +1624,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 			const VkDeviceSize offset{ 0 };
 
+			currentCommandBuffer->CommandPushConstants(directionalShadowTerrainPipeline.GetPipelineLayout(), VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(float), &VulkanRenderingSystemConstants::TERRAIN_SHADOW_BIAS);
 			currentCommandBuffer->CommandBindDescriptorSets(directionalShadowTerrainPipeline, static_cast<uint32>(terrainDescriptorSets.Size()), terrainDescriptorSets.Data());
 			currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->vertexAndIndexBuffer)->Get(), &offset);
 			currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->vertexAndIndexBuffer), renderComponent->indexBufferOffset);
@@ -1670,6 +1675,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 				static_cast<VkDeviceSize>(0)
 			};
 
+			currentCommandBuffer->CommandPushConstants(directionalShadowInstancedPhysicalPipeline.GetPipelineLayout(), VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(float), &VulkanRenderingSystemConstants::INSTANCED_PHYSICAL_SHADOW_BIAS);
 			currentCommandBuffer->CommandBindDescriptorSets(directionalShadowInstancedPhysicalPipeline, 2, instancedPhysicalDescriptorSets.Data());
 			currentCommandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
 			currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);

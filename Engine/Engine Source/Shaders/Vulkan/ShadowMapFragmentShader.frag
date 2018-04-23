@@ -55,11 +55,18 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Shadow data.
+layout (push_constant) uniform ShadowData
+{
+    float shadowBias;
+};
+
+
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
 void main()
 {
     //Just write the depth.
-    fragment = vec4(gl_FragCoord.z);
+    fragment = vec4(gl_FragCoord.z + shadowBias);
 }

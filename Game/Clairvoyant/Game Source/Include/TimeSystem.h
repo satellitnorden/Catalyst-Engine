@@ -30,7 +30,7 @@ private:
 	float currentTime{ 0.0f };
 
 	//The current time multiplier.
-	float currentTimeMultiplier{ 500.0f };
+	float currentTimeMultiplier{ 1'000.0f };
 
 	//The sun.
 	DirectionalLightEntity *RESTRICT sun;

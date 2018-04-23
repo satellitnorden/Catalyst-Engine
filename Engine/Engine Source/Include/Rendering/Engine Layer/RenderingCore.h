@@ -10,7 +10,7 @@
 namespace RenderingConstants
 {
 	constexpr uint32 SHADOW_MAP_RESOLUTION{ 2'048 };
-	constexpr float SHADOW_VIEW_DISTANCE{ 250.0f };
+	constexpr float SHADOW_VIEW_DISTANCE{ 1'000.0f };
 }
 
 /*
