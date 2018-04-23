@@ -62,7 +62,7 @@ namespace VulkanRenderingSystemConstants
 {
 	constexpr uint32 MAXIMUM_NUMBER_OF_PARTICLES{ 16'384 };
 	constexpr VkDeviceSize PARTICLE_SYSTEM_STORAGE_BUFFER_SIZE{ 1'310'736 };
-	constexpr float TERRAIN_SHADOW_BIAS{ -0.02f };
+	constexpr float TERRAIN_SHADOW_BIAS{ 0.01f };
 	constexpr float INSTANCED_PHYSICAL_SHADOW_BIAS{ 0.0f };
 }
 
@@ -986,7 +986,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		directionalShadowTerrainPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
 		directionalShadowTerrainPipelineCreationParameters.colorAttachments[0].Reserve(1);
 		directionalShadowTerrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetImageView());
-		directionalShadowTerrainPipelineCreationParameters.cullMode = VK_CULL_MODE_FRONT_BIT;
+		directionalShadowTerrainPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
 		directionalShadowTerrainPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		directionalShadowTerrainPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		directionalShadowTerrainPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;

@@ -63,7 +63,7 @@ namespace WorldAchitectConstants
 	static constexpr float TERRAIN_HEIGHT{ 1'000.0f };
 	static constexpr float TERRAIN_SIZE{ 10'000.0f };
 	static constexpr float WATER_HEIGHT{ -1.0f };
-	static constexpr uint64 VEGETATION_DENSITY{ 50'000'000 };
+	static constexpr uint64 VEGETATION_DENSITY{ 25'000'000 };
 
 	//Resource ID's.
 	static constexpr HashString DAY_ENVIRONMENT_MATERIAL{ "DayEnvironmentMaterial" };

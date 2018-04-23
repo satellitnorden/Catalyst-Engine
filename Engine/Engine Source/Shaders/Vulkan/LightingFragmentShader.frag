@@ -83,6 +83,7 @@ float ambientOcclusion;
 float fragmentDepth;
 float metallic;
 float roughness;
+float screenSpaceAmbientOcclusion;
 float thinness;
 float viewAngle;
 vec3 viewDirection;
@@ -92,6 +93,32 @@ vec3 fragmentWorldPosition;
 vec3 albedoColor;
 vec3 normalDirection;
 
+/*
+*   Calculates the fresnel, with roughness in mind.
+*/
+vec3 CalculateFresnelRoughness(float lightViewAngle)
+{
+    return surfaceColor + (max(vec3(1.0f - roughness), surfaceColor) - surfaceColor) * pow(max(1.0f - lightViewAngle, 0.0f), 5.0f);
+}
+
+/*
+*   Calculates the ambient component of this fragment.
+*/
+vec3 CalculateAmbient()
+{
+    vec3 specularComponent = CalculateFresnelRoughness(viewAngle);
+    vec3 diffuseComponent = 1.0f - specularComponent;
+    diffuseComponent *= 1.0f - metallic;
+
+    vec3 irradiance = mix(texture(nightDiffuseIrradianceTexture, normalDirection).rgb, texture(dayDiffuseIrradianceTexture, normalDirection).rgb, environmentBlend);
+    vec3 diffuse = irradiance * albedoColor;
+
+    vec3 reclectionDirection = reflect(-viewDirection, normalDirection);
+    vec3 specularIrradiance = mix(texture(nightDiffuseTexture, normalDirection).rgb, texture(dayDiffuseTexture, normalDirection).rgb, environmentBlend);
+    vec3 specular = mix(specularIrradiance, irradiance, roughness);
+
+    return (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion * screenSpaceAmbientOcclusion;
+}
 
 /*
 *   Calculates the distribution.
@@ -123,38 +150,11 @@ float CalculateGeometry(float lightAngle)
 }
 
 /*
-*   Calculates the fresnel, with roughness in mind.
-*/
-vec3 CalculateFresnelRoughness(float lightViewAngle)
-{
-    return surfaceColor + (max(vec3(1.0f - roughness), surfaceColor) - surfaceColor) * pow(max(1.0f - lightViewAngle, 0.0f), 5.0f);
-}
-
-/*
 *   Calculates the fresnel.
 */
 vec3 CalculateFresnel(float lightViewAngle)
 {
     return surfaceColor + (1.0f - surfaceColor) * pow(max(1.0f - lightViewAngle, 0.0f), 5.0f);
-}
-
-/*
-*   Calculates the ambient component of this fragment.
-*/
-vec3 CalculateAmbient()
-{
-    vec3 specularComponent = CalculateFresnelRoughness(viewAngle);
-    vec3 diffuseComponent = 1.0f - specularComponent;
-    diffuseComponent *= 1.0f - metallic;
-
-    vec3 irradiance = mix(texture(nightDiffuseIrradianceTexture, normalDirection).rgb, texture(dayDiffuseIrradianceTexture, normalDirection).rgb, environmentBlend);
-    vec3 diffuse = irradiance * albedoColor;
-
-    vec3 reclectionDirection = reflect(-viewDirection, normalDirection);
-    vec3 specularIrradiance = mix(texture(nightDiffuseTexture, normalDirection).rgb, texture(dayDiffuseTexture, normalDirection).rgb, environmentBlend);
-    vec3 specular = mix(specularIrradiance, irradiance, roughness);
-
-    return (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion;
 }
 
 /*
@@ -179,49 +179,6 @@ vec3 CalculateLight(vec3 lightDirection, vec3 radiance)
 
     //Return the combined components.
     return (diffuseComponent * albedoColor / PI + specularComponent) * radiance * lightAngle;
-}
-
-/*
-*   Returns the directional light screen space shadow multiplier.
-*/
-float CalculateDirectionalLightScreenSpaceShadowMultiplier()
-{
-    return 1.0f;
-
-    vec3 rayDirection = directionalLightScreenSpacePosition - vec3((fragmentScreenSpacePosition.xy) + 1.0f / 2.0f, fragmentScreenSpacePosition.z);
-    vec3 rayStep = rayDirection / DIRECTIONAL_LIGHT_SCREEN_SHADE_SHADOWS_SAMPLES;
-    vec3 currentScreenSpacePosition = fragmentScreenSpacePosition;
-    currentScreenSpacePosition.xy = (currentScreenSpacePosition.xy) + 1.0f / 2.0f;
-
-    for (int i = 0; i < DIRECTIONAL_LIGHT_SCREEN_SHADE_SHADOWS_SAMPLES; ++i)
-    {
-        //Calculate the texture coordinates.
-        vec2 sampleTextureCoordinates = vec2(currentScreenSpacePosition.xy);
-
-        //Don't sample outside of the screen quad. ):
-        if (sampleTextureCoordinates.x < 0.0f || sampleTextureCoordinates.x > 1.0f || sampleTextureCoordinates.y < 0.0f || sampleTextureCoordinates.y > 1.0f)
-        {
-            return 1.0f;
-        }
-
-        //Sample the depth at this point.
-        float sampleDepth = texture(normalDirectionDepthTexture, sampleTextureCoordinates).a;
-
-        //If the sampled depth is lower than the depth of the current screen space position, an occlusion has been found.
-        if (sampleDepth < currentScreenSpacePosition.z)
-        {
-            return 0.0f;
-        }
-
-        //Else advance the current screen space position.
-        else
-        {
-            currentScreenSpacePosition += rayStep;
-        }
-    }
-
-    //No occlusion was found.
-    return 1.0f;   
 }
 
 /*
@@ -281,6 +238,63 @@ vec3 CalculateDirectionalLight()
 }
 
 /*
+*   Returns the directional light screen space shadow multiplier.
+*/
+float CalculateDirectionalLightScreenSpaceShadowMultiplier()
+{
+    return 1.0f;
+
+    vec3 rayDirection = directionalLightScreenSpacePosition - vec3((fragmentScreenSpacePosition.xy) + 1.0f / 2.0f, fragmentScreenSpacePosition.z);
+    vec3 rayStep = rayDirection / DIRECTIONAL_LIGHT_SCREEN_SHADE_SHADOWS_SAMPLES;
+    vec3 currentScreenSpacePosition = fragmentScreenSpacePosition;
+    currentScreenSpacePosition.xy = (currentScreenSpacePosition.xy) + 1.0f / 2.0f;
+
+    for (int i = 0; i < DIRECTIONAL_LIGHT_SCREEN_SHADE_SHADOWS_SAMPLES; ++i)
+    {
+        //Calculate the texture coordinates.
+        vec2 sampleTextureCoordinates = vec2(currentScreenSpacePosition.xy);
+
+        //Don't sample outside of the screen quad. ):
+        if (sampleTextureCoordinates.x < 0.0f || sampleTextureCoordinates.x > 1.0f || sampleTextureCoordinates.y < 0.0f || sampleTextureCoordinates.y > 1.0f)
+        {
+            return 1.0f;
+        }
+
+        //Sample the depth at this point.
+        float sampleDepth = texture(normalDirectionDepthTexture, sampleTextureCoordinates).a;
+
+        //If the sampled depth is lower than the depth of the current screen space position, an occlusion has been found.
+        if (sampleDepth < currentScreenSpacePosition.z)
+        {
+            return 0.0f;
+        }
+
+        //Else advance the current screen space position.
+        else
+        {
+            currentScreenSpacePosition += rayStep;
+        }
+    }
+
+    //No occlusion was found.
+    return 1.0f;   
+}
+
+/*
+*   Calculates the fragment world position.
+*/
+vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
+{
+    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
+    fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, depth);
+    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
+    viewSpacePosition /= viewSpacePosition.w;
+    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
+
+    return worldSpacePosition.xyz;
+}
+
+/*
 *   Calculates a single point light.
 */
 vec3 CalculatePointLight(int index)
@@ -295,6 +309,14 @@ vec3 CalculatePointLight(int index)
     vec3 radiance = mix(pointLightColors[index], albedoColor, thinness) * pointLightIntensities[index] * attenuation;
 
     return CalculateLight(lightDirection, radiance);
+}
+
+/*
+*   Calculates the screen space ambient occlusion.
+*/
+void CalculateScreenSpaceAmbientOcclusion()
+{
+    screenSpaceAmbientOcclusion = 1.0f;
 }
 
 /*
@@ -333,13 +355,7 @@ void main()
     fragmentDepth = normalDirectionDepthSampler.a;
 
     //Calculate the world position of this fragment.
-    vec2 nearPlaneCoordinate = fragmentTextureCoordinate * 2.0f - 1.0f;
-    fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, fragmentDepth);
-    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
-    viewSpacePosition /= viewSpacePosition.w;
-    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
-
-    fragmentWorldPosition = worldSpacePosition.xyz;
+    fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, fragmentDepth);
 
     //Set the roughness.
     roughness = roughnessMetallicAmbientOcclusionSampler.r;
@@ -357,6 +373,9 @@ void main()
     viewDirection = normalize(cameraWorldPosition - fragmentWorldPosition);
     viewAngle = max(dot(normalDirection, viewDirection), 0.0f);
     surfaceColor = mix(vec3(0.04f), albedoColor, metallic);
+
+    //Calculate the screen space ambient occlusion.
+    CalculateScreenSpaceAmbientOcclusion();
 
     //Start off with just the ambient lighting.
     vec3 finalFragment = CalculateAmbient();
