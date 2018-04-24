@@ -1704,52 +1704,50 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 	
 	//Render instanced physical shadows.
 	{
-		//Cache the pipeline.
-		VulkanPipeline &directionalShadowInstancedPhysicalPipeline{ *pipelines[INDEX(Pipeline::DirectionalShadowInstancedPhysical)] };
-
 		//Iterate over all instanced physical entity components and draw them all.
 		const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };
 
 		//If there's none to draw - draw none!
-		if (numberOfInstancedPhysicalComponents == 0)
+		if (numberOfInstancedPhysicalComponents > 0)
 		{
-			return;
+			//Cache the pipeline.
+			VulkanPipeline &directionalShadowInstancedPhysicalPipeline{ *pipelines[INDEX(Pipeline::DirectionalShadowInstancedPhysical)] };
+
+			const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
+
+			//Begin the pipeline and render pass.
+			currentCommandBuffer->CommandBindPipeline(directionalShadowInstancedPhysicalPipeline);
+			currentCommandBuffer->CommandBeginRenderPass(directionalShadowInstancedPhysicalPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
+
+			for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
+			{
+				StaticArray<VulkanDescriptorSet, 2> instancedPhysicalDescriptorSets
+				{
+					*currentDynamicUniformDataDescriptorSet,
+					renderComponent->descriptorSet
+				};
+
+				StaticArray<VkBuffer, 2> instancedPhysicalBuffers
+				{
+					static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
+					static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
+				};
+
+				StaticArray<VkDeviceSize, 2> offsets
+				{
+					static_cast<VkDeviceSize>(0),
+					static_cast<VkDeviceSize>(0)
+				};
+
+				currentCommandBuffer->CommandBindDescriptorSets(directionalShadowInstancedPhysicalPipeline, 2, instancedPhysicalDescriptorSets.Data());
+				currentCommandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
+				currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
+				currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
+			}
+
+			//End the render pass.
+			currentCommandBuffer->CommandEndRenderPass();
 		}
-
-		const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
-
-		//Begin the pipeline and render pass.
-		currentCommandBuffer->CommandBindPipeline(directionalShadowInstancedPhysicalPipeline);
-		currentCommandBuffer->CommandBeginRenderPass(directionalShadowInstancedPhysicalPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
-
-		for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
-		{
-			StaticArray<VulkanDescriptorSet, 2> instancedPhysicalDescriptorSets
-			{
-				*currentDynamicUniformDataDescriptorSet,
-				renderComponent->descriptorSet
-			};
-
-			StaticArray<VkBuffer, 2> instancedPhysicalBuffers
-			{
-				static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
-				static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
-			};
-
-			StaticArray<VkDeviceSize, 2> offsets
-			{
-				static_cast<VkDeviceSize>(0),
-				static_cast<VkDeviceSize>(0)
-			};
-
-			currentCommandBuffer->CommandBindDescriptorSets(directionalShadowInstancedPhysicalPipeline, 2, instancedPhysicalDescriptorSets.Data());
-			currentCommandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
-			currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
-			currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
-		}
-
-		//End the render pass.
-		currentCommandBuffer->CommandEndRenderPass();
 	}
 
 	//Blur the directional shadow map.
