@@ -197,6 +197,7 @@ private:
 	enum class DescriptorSet : uint8
 	{
 		Environment,
+		ShadowMapBlur,
 		Lighting,
 		PostProcessing,
 		NumberOfDescriptorSets
@@ -206,6 +207,7 @@ private:
 	enum class DescriptorSetLayout : uint8
 	{
 		DynamicUniformData,
+		ShadowMapBlur,
 		Environment,
 		Terrain,
 		Physical,
@@ -222,6 +224,7 @@ private:
 	{
 		DirectionalShadowTerrain,
 		DirectionalShadowInstancedPhysical,
+		ShadowMapBlur,
 		Terrain,
 		StaticPhysical,
 		InstancedPhysical,
@@ -237,7 +240,8 @@ private:
 	//Enumeration covering all render targets.
 	enum class RenderTarget : uint8
 	{
-		DirectionalShadowMap,
+		DirectionalPreBlurShadowMap,
+		DirectionalPostBlurShadowMap,
 		SceneBufferAlbedoColor,
 		SceneBufferNormalDirectionDepth,
 		SceneBufferRoughnessMetallicAmbientOcclusion,
@@ -269,6 +273,7 @@ private:
 		PostProcessingFragmentShader,
 		PhysicalFragmentShader,
 		PhysicalVertexShader,
+		ShadowMapBlurFragmentShader,
 		ShadowMapFragmentShader,
 		TerrainFragmentShader,
 		TerrainTessellationControlShader,

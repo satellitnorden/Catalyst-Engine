@@ -55,16 +55,67 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//In parameters.
+layout (location = 0) in vec2 fragmentTextureCoordinate;
+
+//Texture samplers.
+layout (set = 1, binding = 0) uniform sampler2D shadowMapTexture;
+
 //Out parameters.
-layout (location = 0) out vec4 fragment;
+layout (location = 0) out vec4 fragmentColor;
+
+//The sample offset.
+float sampleOffset = 1.0f / 2048.0f;
+
+//The sample offsets.
+vec2 sampleOffsets[9] = vec2[]
+(
+    vec2(-sampleOffset, -sampleOffset),     vec2(0.0f, -sampleOffset),  vec2(sampleOffset, -sampleOffset),
+    vec2(-sampleOffset, 0.0f),              vec2(0.0f, 0.0f),           vec2(sampleOffset, 0.0f),
+    vec2(-sampleOffset, sampleOffset),      vec2(0.0f, sampleOffset),   vec2(sampleOffset, sampleOffset)
+);
+
+//All the texture samples.
+vec4 textureSamples[9] = vec4[]
+(
+    texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[0]),
+    texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[1]),
+    texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[2]),
+    texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[3]),
+    texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[4]),
+    texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[5]),
+    texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[6]),
+    texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[7]),
+    texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[8])
+);
+
+//The blur kernel.
+float blurKernel[9] = float[]
+(
+    0.0625f,    0.125f,     0.0625f,
+    0.125f,     0.25f,      0.125f,
+    0.0625f,    0.125f,     0.0625f
+);
+
+/*
+*   Calculates blur.
+*/
+vec4 CalculateBlur()
+{
+    //Calculate the blurred sample.
+    vec4 blurredSample = vec4(0.0f);
+
+    for (int i = 0; i < 9; ++i)
+    {
+        blurredSample += textureSamples[i] * blurKernel[i];
+    }
+
+    //Return the calculated color.
+    return blurredSample;
+}
 
 void main()
 {
-    float depth = gl_FragCoord.z;
-    float dx = dFdx(depth);
-    float dy = dFdy(depth);
-    float moment2 = depth * depth + 0.25f * (dx * dx + dy * dy);
-
-    //Just write the depth.
-    fragment = vec4(depth, moment2, 0.0f, 0.0f);
+    //Set the fragment color.
+    fragmentColor = CalculateBlur();
 }

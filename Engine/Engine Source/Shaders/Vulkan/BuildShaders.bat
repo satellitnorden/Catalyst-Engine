@@ -10,6 +10,7 @@ glslangValidator.exe -V ParticleSystemVertexShader.vert -o 				ParticleSystemVer
 glslangValidator.exe -V PhysicalFragmentShader.frag -o 					PhysicalFragmentShader.spv
 glslangValidator.exe -V PhysicalVertexShader.vert -o 					PhysicalVertexShader.spv
 glslangValidator.exe -V PostProcessingFragmentShader.frag -o 				PostProcessingFragmentShader.spv
+glslangValidator.exe -V ShadowMapBlurFragmentShader.frag -o 				ShadowMapBlurFragmentShader.spv
 glslangValidator.exe -V ShadowMapFragmentShader.frag -o 				ShadowMapFragmentShader.spv
 glslangValidator.exe -V TerrainSceneBufferFragmentShader.frag -o 			TerrainSceneBufferFragmentShader.spv
 glslangValidator.exe -V TerrainSceneBufferTessellationControlShader.tesc -o 		TerrainSceneBufferTessellationControlShader.spv
