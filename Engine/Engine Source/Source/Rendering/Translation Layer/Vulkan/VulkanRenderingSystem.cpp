@@ -1032,7 +1032,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
 		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachments[0].Reserve(1);
 		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetImageView());
-		directionalShadowInstancedPhysicalPipelineCreationParameters.cullMode = VK_CULL_MODE_FRONT_BIT;
+		directionalShadowInstancedPhysicalPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
 		directionalShadowInstancedPhysicalPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		directionalShadowInstancedPhysicalPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		directionalShadowInstancedPhysicalPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
