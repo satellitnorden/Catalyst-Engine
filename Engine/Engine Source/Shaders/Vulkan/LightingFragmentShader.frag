@@ -182,6 +182,14 @@ vec3 CalculateLight(vec3 lightDirection, vec3 radiance)
 }
 
 /*
+*   Linear step.
+*/
+float LinearStep(float low, float high, float value)
+{
+    return clamp((value - low) / (high - low), 0.0f, 1.0f);
+}
+
+/*
 *   Calculates the directional light shadow multiplier.
 */
 float CalculateDirectionalLightShadowMultiplier()
@@ -198,7 +206,7 @@ float CalculateDirectionalLightShadowMultiplier()
     float variance = max(directionalDepthSquared - (directionalDepth * directionalDepth), 0.00002f);
 
     float d = compare - directionalDepth;
-    float pMax = variance / (variance + d * d);
+    float pMax = LinearStep(0.2f, 1.0f, variance / (variance + d * d));
 
     return compare > 1.0f ? 1.0f : min(max(p, pMax), 1.0f);
 }
