@@ -65,7 +65,7 @@ layout (set = 1, binding = 0) uniform sampler2D shadowMapTexture;
 layout (location = 0) out vec4 fragmentColor;
 
 //The sample offset.
-float sampleOffset = 1.0f / 2048.0f;
+float sampleOffset = 0.00075f;
 
 //The sample offsets.
 vec2 sampleOffsets[9] = vec2[]
