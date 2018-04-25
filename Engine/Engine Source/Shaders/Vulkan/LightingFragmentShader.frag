@@ -205,10 +205,53 @@ float CalculateDirectionalLightShadowMultiplier()
     float p = step(compare, directionalDepth);
     float variance = max(directionalDepthSquared - (directionalDepth * directionalDepth), 0.00002f);
 
-    float d = compare - directionalDepth;
-    float pMax = LinearStep(0.2f, 1.0f, variance / (variance + d * d));
+    float d = LinearStep(0.2f, 1.0f, compare - directionalDepth);
+    float pMax = variance / (variance + d * d);
 
     return compare > 1.0f ? 1.0f : min(max(p, pMax), 1.0f);
+}
+
+/*
+*   Returns the length of a vector squared, ignoring the Y component.
+*/
+float LengthSquared(vec3 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+}
+
+/*
+*   Returns the directional light screen space shadow multiplier.
+*/
+float CalculateDirectionalLightScreenSpaceShadowMultiplier()
+{
+    const float rayStep = 0.1f;
+    const int numberOfRaySteps = 10;
+
+    /*
+    if (LengthSquared(fragmentWorldPosition - cameraWorldPosition) > 10000.0f)
+    {
+        return 1.0f;
+    }
+    */
+
+    vec3 rayDirection = -directionalLightDirection;
+
+    float accumulatedShadow = 0.0f;
+    vec3 currentPosition = fragmentWorldPosition;
+
+    for (int i = 0; i < numberOfRaySteps; ++i)
+    {
+        currentPosition += rayDirection * rayStep;
+
+        vec4 currentPositionProjection = viewMatrix * vec4(currentPosition, 1.0f);
+        currentPositionProjection.xyz /= currentPositionProjection.w;
+
+        vec2 currentPositionCoordinates = currentPositionProjection.xy * 0.5f + 0.5f;
+
+        accumulatedShadow += texture(normalDirectionDepthTexture, currentPositionCoordinates).a < currentPositionProjection.z ? 0.0f : 1.0f;
+    }
+
+    return accumulatedShadow / numberOfRaySteps;
 }
 
 /*
@@ -221,49 +264,6 @@ vec3 CalculateDirectionalLight()
     vec3 radiance = mix(directionalLightColor, albedoColor, thinness) * directionalLightIntensity;
 
     return CalculateLight(lightDirection, radiance) * CalculateDirectionalLightShadowMultiplier();
-}
-
-/*
-*   Returns the directional light screen space shadow multiplier.
-*/
-float CalculateDirectionalLightScreenSpaceShadowMultiplier()
-{
-    return 1.0f;
-
-    vec3 rayDirection = directionalLightScreenSpacePosition - vec3((fragmentScreenSpacePosition.xy) + 1.0f / 2.0f, fragmentScreenSpacePosition.z);
-    vec3 rayStep = rayDirection / DIRECTIONAL_LIGHT_SCREEN_SHADE_SHADOWS_SAMPLES;
-    vec3 currentScreenSpacePosition = fragmentScreenSpacePosition;
-    currentScreenSpacePosition.xy = (currentScreenSpacePosition.xy) + 1.0f / 2.0f;
-
-    for (int i = 0; i < DIRECTIONAL_LIGHT_SCREEN_SHADE_SHADOWS_SAMPLES; ++i)
-    {
-        //Calculate the texture coordinates.
-        vec2 sampleTextureCoordinates = vec2(currentScreenSpacePosition.xy);
-
-        //Don't sample outside of the screen quad. ):
-        if (sampleTextureCoordinates.x < 0.0f || sampleTextureCoordinates.x > 1.0f || sampleTextureCoordinates.y < 0.0f || sampleTextureCoordinates.y > 1.0f)
-        {
-            return 1.0f;
-        }
-
-        //Sample the depth at this point.
-        float sampleDepth = texture(normalDirectionDepthTexture, sampleTextureCoordinates).a;
-
-        //If the sampled depth is lower than the depth of the current screen space position, an occlusion has been found.
-        if (sampleDepth < currentScreenSpacePosition.z)
-        {
-            return 0.0f;
-        }
-
-        //Else advance the current screen space position.
-        else
-        {
-            currentScreenSpacePosition += rayStep;
-        }
-    }
-
-    //No occlusion was found.
-    return 1.0f;   
 }
 
 /*
