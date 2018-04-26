@@ -199,6 +199,7 @@ private:
 		Environment,
 		ShadowMapBlur,
 		Lighting,
+		Ocean,
 		PostProcessing,
 		NumberOfDescriptorSets
 	};
@@ -213,6 +214,7 @@ private:
 		Physical,
 		Vegetation,
 		Lighting,
+		Ocean,
 		Water,
 		ParticleSystem,
 		PostProcessing,
@@ -231,6 +233,7 @@ private:
 		Vegetation,
 		Lighting,
 		CubeMap,
+		Ocean,
 		Water,
 		ParticleSystem,
 		PostProcessing,
@@ -267,6 +270,7 @@ private:
 		DirectionalShadowTerrainTessellationEvaluationShader,
 		InstancedPhysicalVertexShader,
 		LightingFragmentShader,
+		OceanFragmentShader,
 		ParticleSystemFragmentShader,
 		ParticleSystemGeometryShader,
 		ParticleSystemVertexShader,
@@ -447,6 +451,11 @@ private:
 	*	Renders sky box.
 	*/
 	void RenderSkyBox() NOEXCEPT;
+
+	/*
+	*	Renders the ocean.
+	*/
+	void RenderOcean() NOEXCEPT;
 
 	/*
 	*	Renders water.

@@ -162,8 +162,8 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Render the sky box.
 	RenderSkyBox();
 
-	//Render water.
-	RenderWater();
+	//Render the ocena.
+	RenderOcean();
 
 	//Render all particle system entities.
 	RenderParticleSystemEntities();
@@ -796,6 +796,17 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	}
 
 	{
+		//Initialize the ocean descriptor set layout.
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> oceanDescriptorSetLayoutBindings
+		{
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+		};
+
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::Ocean)].Initialize(static_cast<uint32>(oceanDescriptorSetLayoutBindings.Size()), oceanDescriptorSetLayoutBindings.Data());
+	}
+
+	{
 		//Initialize the water descriptor set layout.
 		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> waterDescriptorSetLayoutBindings
 		{
@@ -873,6 +884,12 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		//Initialize the lighting fragment shader module.
 		const DynamicArray<char> lightingFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "LightingFragmentShader.spv");
 		shaderModules[INDEX(ShaderModule::LightingFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(lightingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize the ocean fragment shader module.
+		const DynamicArray<char> oceanFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "OceanFragmentShader.spv");
+		shaderModules[INDEX(ShaderModule::OceanFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(oceanFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
@@ -1412,6 +1429,50 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	}
 
 	{
+		//Create the ocean pipeline.
+		VulkanPipelineCreationParameters oceanPipelineCreationParameters;
+
+		oceanPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
+		oceanPipelineCreationParameters.blendEnable = false;
+		oceanPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		oceanPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+		oceanPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		oceanPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
+		oceanPipelineCreationParameters.colorAttachments[0].Reserve(1);
+		oceanPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
+		oceanPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
+		oceanPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		oceanPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		oceanPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		oceanPipelineCreationParameters.depthBuffer = nullptr;
+		oceanPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
+		oceanPipelineCreationParameters.depthTestEnable = VK_FALSE;
+		oceanPipelineCreationParameters.depthWriteEnable = VK_FALSE;
+		StaticArray<VulkanDescriptorSetLayout, 2> oceanDescriptorSetLayouts
+		{
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::Ocean)]
+		};
+		oceanPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(oceanDescriptorSetLayouts.Size());
+		oceanPipelineCreationParameters.descriptorSetLayouts = oceanDescriptorSetLayouts.Data();
+		oceanPipelineCreationParameters.pushConstantRangeCount = 0;
+		oceanPipelineCreationParameters.pushConstantRanges = nullptr;
+		oceanPipelineCreationParameters.shaderModules.Reserve(2);
+		oceanPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::ViewportVertexShader)]);
+		oceanPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::OceanFragmentShader)]);
+		oceanPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+		oceanPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
+		oceanPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
+		VkVertexInputBindingDescription oceanInputBindingDescription;
+		VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(oceanInputBindingDescription);
+		oceanPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
+		oceanPipelineCreationParameters.vertexInputBindingDescriptions = &oceanInputBindingDescription;
+		oceanPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+
+		pipelines[INDEX(Pipeline::Ocean)] = VulkanInterface::Instance->CreatePipeline(oceanPipelineCreationParameters);
+	}
+
+	{
 		//Create the water pipeline.
 		VulkanPipelineCreationParameters waterPipelineCreationParameters;
 
@@ -1509,6 +1570,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		VulkanPipelineCreationParameters postProcessingPipelineCreationParameters;
 
 		postProcessingPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		postProcessingPipelineCreationParameters.blendEnable = false;
 		postProcessingPipelineCreationParameters.colorAttachmentFinalLayout = VULKAN_IMAGE_LAYOUT_PRESENT_SRC;
 		postProcessingPipelineCreationParameters.colorAttachmentFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
 		postProcessingPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -1585,6 +1647,20 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 			renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 1),
 			renderTargets[INDEX(RenderTarget::SceneBufferRoughnessMetallicAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 2),
 			renderTargets[INDEX(RenderTarget::DirectionalPostBlurShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 3)
+		};
+
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	}
+
+	{
+		//Initialize the ocean descriptor set.
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::Ocean)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Ocean)]);
+
+		//Update the write descriptor sets.
+		StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
+		{
+			renderTargets[INDEX(RenderTarget::WaterScene)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Ocean)], 0),
+			renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Ocean)], 1)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -2017,6 +2093,33 @@ void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
 	currentCommandBuffer->CommandDraw(36, 1);
 
 	//End the cube map render pass.
+	currentCommandBuffer->CommandEndRenderPass();
+}
+
+/*
+*	Renders the ocean.
+*/
+void VulkanRenderingSystem::RenderOcean() NOEXCEPT
+{
+	//Bind the ocean pipeline.
+	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Ocean)]);
+
+	//Bind the ocean render pass.
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+
+	//Bind the ocean descriptor set.
+	StaticArray<VulkanDescriptorSet, 2> oceanDescriptorSets
+	{
+		*currentDynamicUniformDataDescriptorSet,
+		descriptorSets[INDEX(DescriptorSet::Ocean)]
+	};
+
+	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Ocean)], static_cast<uint32>(oceanDescriptorSets.Size()), oceanDescriptorSets.Data());
+
+	//Draw the viewport!
+	currentCommandBuffer->CommandDraw(4, 1);
+
+	//End the ocean render pass.
 	currentCommandBuffer->CommandEndRenderPass();
 }
 
