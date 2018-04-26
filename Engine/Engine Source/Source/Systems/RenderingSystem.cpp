@@ -97,10 +97,10 @@ void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &veg
 /*
 *	Creates a water material.
 */
-void RenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterialData, WaterMaterial &waterMaterial) const NOEXCEPT
+void RenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT
 {
 	//Create the water material via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreateWaterMaterial(waterMaterialData, waterMaterial);
+	CURRENT_RENDERING_SYSTEM::Instance->CreateWaterMaterial(waterMaterialData, oceanMaterial);
 }
 
 /*
@@ -146,15 +146,6 @@ void RenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity 
 {
 	//Initialize the particle system entity via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->InitializeParticleSystemEntity(entity, material, properties);
-}
-
-/*
-*	Initializes a water entity.
-*/
-void RenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT
-{
-	//Initialize the water entity via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->InitializeWaterEntity(waterEntity, waterMaterial, waterUniformData);
 }
 
 /*

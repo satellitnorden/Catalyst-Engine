@@ -23,13 +23,13 @@
 
 //Static variable definitions.
 Map<HashString, EnvironmentMaterial> ResourceLoader::environmentMaterials;
+Map<HashString, OceanMaterial> ResourceLoader::oceanMaterials;
 Map<HashString, ParticleMaterial> ResourceLoader::particleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::physicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::physicalModels;
 Map<HashString, SoundBank> ResourceLoader::soundBanks;
 Map<HashString, TerrainMaterial> ResourceLoader::terrainMaterials;
 Map<HashString, VegetationMaterial> ResourceLoader::vegetationMaterials;
-Map<HashString, WaterMaterial> ResourceLoader::waterMaterials;
 
 /*
 *	Given a file path, load a resource collection.
@@ -122,9 +122,9 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 				break;
 			}
 
-			case ResourceType::WaterMaterial:
+			case ResourceType::OceanMaterial:
 			{
-				LoadWaterMaterial(file);
+				LoadOceanMaterial(file);
 
 				break;
 			}
@@ -170,6 +170,43 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 
 	//Create the environment material via the rendering system.
 	RenderingSystem::Instance->CreateEnvironmentMaterial(environmentMaterialData, environmentMaterials[resourceID]);
+}
+
+/*
+*	Given a file, load an ocean material.
+*/
+void ResourceLoader::LoadOceanMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the water material data in the water material data structure.
+	WaterMaterialData waterMaterialData;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the number of mipmap levels.
+	file.Read(&waterMaterialData.mipmapLevels, sizeof(uint8));
+
+	//Read the width.
+	file.Read(&waterMaterialData.width, sizeof(uint32));
+
+	//Read the height.
+	file.Read(&waterMaterialData.height, sizeof(uint32));
+
+	//Read the normal map.
+	waterMaterialData.normalMapData.UpsizeSlow(waterMaterialData.mipmapLevels);
+
+	for (uint8 i = 0; i < waterMaterialData.mipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (waterMaterialData.width >> i) * (waterMaterialData.height >> i) * 4 };
+
+		waterMaterialData.normalMapData[i].Reserve(textureSize);
+
+		file.Read(waterMaterialData.normalMapData[i].Data(), textureSize);
+	}
+
+	//Create the water material via the rendering system.
+	RenderingSystem::Instance->CreateWaterMaterial(waterMaterialData, oceanMaterials[resourceID]);
 }
 
 /*
@@ -438,41 +475,4 @@ void ResourceLoader::LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCE
 
 	//Create the vegetation material via the rendering system.
 	RenderingSystem::Instance->CreateVegetationMaterial(vegetationMaterialData, vegetationMaterials[resourceID]);
-}
-
-/*
-*	Given a file, load a water material.
-*/
-void ResourceLoader::LoadWaterMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
-{
-	//Store the water material data in the water material data structure.
-	WaterMaterialData waterMaterialData;
-
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
-
-	//Read the number of mipmap levels.
-	file.Read(&waterMaterialData.mipmapLevels, sizeof(uint8));
-
-	//Read the width.
-	file.Read(&waterMaterialData.width, sizeof(uint32));
-
-	//Read the height.
-	file.Read(&waterMaterialData.height, sizeof(uint32));
-
-	//Read the normal map.
-	waterMaterialData.normalMapData.UpsizeSlow(waterMaterialData.mipmapLevels);
-
-	for (uint8 i = 0; i < waterMaterialData.mipmapLevels; ++i)
-	{
-		const uint64 textureSize{ (waterMaterialData.width >> i) * (waterMaterialData.height >> i) * 4 };
-
-		waterMaterialData.normalMapData[i].Reserve(textureSize);
-
-		file.Read(waterMaterialData.normalMapData[i].Data(), textureSize);
-	}
-
-	//Create the water material via the rendering system.
-	RenderingSystem::Instance->CreateWaterMaterial(waterMaterialData, waterMaterials[resourceID]);
 }

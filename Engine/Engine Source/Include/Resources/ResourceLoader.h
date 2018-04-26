@@ -11,7 +11,7 @@
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/VegetationMaterial.h>
-#include <Rendering/Engine Layer/WaterMaterial.h>
+#include <Rendering/Engine Layer/OceanMaterial.h>
 
 //Resources.
 #include <Resources/ResourcesCore.h>
@@ -39,6 +39,11 @@ public:
 	static const EnvironmentMaterial& GetEnvironmentMaterial(const HashString resourceID) { return environmentMaterials[resourceID]; }
 
 	/*
+	*	Given a resource ID, return the corresponding ocean material.
+	*/
+	static const OceanMaterial& GetOceanMaterial(const HashString resourceID) { return oceanMaterials[resourceID]; }
+
+	/*
 	*	Given a resource ID, return the corresponding particle material.
 	*/
 	static const ParticleMaterial& GetParticleMaterial(const HashString resourceID) { return particleMaterials[resourceID]; }
@@ -63,15 +68,13 @@ public:
 	*/
 	static const VegetationMaterial& GetVegetationMaterial(const HashString resourceID) { return vegetationMaterials[resourceID]; }
 
-	/*
-	*	Given a resource ID, return the corresponding water material.
-	*/
-	static const WaterMaterial& GetWaterMaterial(const HashString resourceID) { return waterMaterials[resourceID]; }
-
 private:
 
 	//Container for all environment materials.
 	static Map<HashString, EnvironmentMaterial> environmentMaterials;
+
+	//Container for all ocean materials.
+	static Map<HashString, OceanMaterial> oceanMaterials;
 
 	//Container for all particle materials.
 	static Map<HashString, ParticleMaterial> particleMaterials;
@@ -91,9 +94,6 @@ private:
 	//Container for all vegetation materials.
 	static Map<HashString, VegetationMaterial> vegetationMaterials;
 
-	//Container for all water materials.
-	static Map<HashString, WaterMaterial> waterMaterials;
-
 	/*
 	*	Loads a resource collection, internal implementation.
 	*/
@@ -103,6 +103,11 @@ private:
 	*	Given a file, load an environment material.
 	*/
 	static void LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load an ocean material.
+	*/
+	static void LoadOceanMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a particle material.
@@ -133,10 +138,5 @@ private:
 	*	Given a file, load a vegetation material.
 	*/
 	static void LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
-
-	/*
-	*	Given a file, load a water material.
-	*/
-	static void LoadWaterMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 };

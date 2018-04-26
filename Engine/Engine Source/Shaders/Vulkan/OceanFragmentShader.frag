@@ -61,12 +61,34 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
-layout (set = 1, binding = 1) uniform sampler2D sceneNormalDepthTexture;
-layout (set = 1, binding = 2) uniform sampler2D oceanNormalTexture;
+layout (set = 1, binding = 0) uniform samplerCube nightTexture;
+layout (set = 1, binding = 2) uniform samplerCube dayTexture;
+layout (set = 2, binding = 0) uniform sampler2D sceneTexture;
+layout (set = 2, binding = 1) uniform sampler2D sceneNormalDepthTexture;
+layout (set = 2, binding = 2) uniform sampler2D oceanNormalTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
+
+//Globals.
+vec3 intersectionPoint;
+vec3 normalDirection;
+vec3 sceneWorldPosition;
+
+/*
+*   Calculates the reflection.
+*/
+vec3 CalculateReflection()
+{
+    vec3 viewDirection = sceneWorldPosition - cameraWorldPosition;
+    normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * 0.025f) + (vec2(totalGameTime, totalGameTime) * 0.025f)).xzy * 2.0f - 1.0f;
+    vec3 compareVector = cameraWorldPosition.y >= 0.0f ? vec3(0.0f, 1.0f, 0.0f) : vec3(0.0f, -1.0f, 0.0f);
+    normalDirection = mix(normalDirection, compareVector, 0.75f);
+
+    vec3 reflectionDirection = reflect(viewDirection, normalDirection);
+
+    return mix(texture(nightTexture, reflectionDirection).rgb, texture(dayTexture, reflectionDirection).rgb, environmentBlend);
+}
 
 /*
 *   Calculates the world position.
@@ -84,12 +106,33 @@ vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
 
 void main()
 {
-    //Sample the depth of the scene at this point.
+	 //Sample the depth of the scene at this point.
     float sceneDepth = texture(sceneNormalDepthTexture, fragmentTextureCoordinate).a;
 
     //Calculate the scene world position.
-    vec3 sceneWorldPosition = CalculateWorldPosition(fragmentTextureCoordinate, sceneDepth);
+    sceneWorldPosition = CalculateWorldPosition(fragmentTextureCoordinate, sceneDepth);
+
+    //Calculate the intersection point.
+    vec3 lineDirection = normalize(cameraWorldPosition - sceneWorldPosition);
+    intersectionPoint = (dot(-sceneWorldPosition, vec3(0.0f, 1.0f, 0.0f)) / dot (lineDirection, vec3(0.0f, 1.0f, 0.0f))) * lineDirection + sceneWorldPosition;
+
+	//Calculate the reflection.
+    vec3 reflection = CalculateReflection();
+
+    //Calculate the foam weight.
+    //float distanceToBottom = length(sceneWorldPosition - intersectionPoint);
+    //float foamWeight = 1.0f - min(distanceToBottom / 25.0f, 1.0f);
+
+    //Sample the scene texture.
+    vec2 sceneTextureCoordinate = sceneWorldPosition.y > 0.0f ? fragmentTextureCoordinate : fragmentTextureCoordinate + normalDirection.xz;
+    vec4 sceneTextureSampler = texture(sceneTexture, sceneTextureCoordinate);
+
+    //Calculate the transparency.
+    float transparency = 1.0f - clamp(dot(normalDirection, normalize(cameraWorldPosition - sceneWorldPosition)), 0.0f, 1.0f);
+
+    //Calculate the final ocean color.
+    vec3 finalOceanColor = sceneWorldPosition.y > 0.0f ? sceneTextureSampler.rgb : mix(sceneTextureSampler.rgb, reflection, transparency);
 
     //Write the fragment
-    fragment = sceneWorldPosition.y > 0.0f ? texture(sceneTexture, fragmentTextureCoordinate) : vec4(0.0f, 0.0f, 1.0f, 1.0f);
+    fragment = vec4(finalOceanColor, 1.0f);
 }

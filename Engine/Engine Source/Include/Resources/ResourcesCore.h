@@ -13,6 +13,6 @@ enum class ResourceType : uint8
 	SoundBank,
 	TerrainMaterial,
 	VegetationMaterial,
-	WaterMaterial,
+	OceanMaterial,
 	NumberOfResourceTypes
 };

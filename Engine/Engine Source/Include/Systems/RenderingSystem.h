@@ -13,6 +13,7 @@ class EnvironmentMaterial;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
 class Matrix4;
+class OceanMaterial;
 class ParticleMaterial;
 class ParticleMaterialData;
 class ParticleSystemEntity;
@@ -33,9 +34,7 @@ class VegetationMaterial;
 class VegetationMaterialData;
 class VegetationProperties;
 class VegetationTransformation;
-class WaterEntity;
 class WaterMaterialData;
-class WaterMaterial;
 class WaterUniformData;
 
 class RenderingSystem final
@@ -94,7 +93,7 @@ public:
 	/*
 	*	Creates a water material.
 	*/
-	void CreateWaterMaterial(const WaterMaterialData &waterMaterialData, WaterMaterial &waterMaterial) const NOEXCEPT;
+	void CreateWaterMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT;
 
 	/*
 	*	Initializes a terrain entity.
@@ -120,11 +119,6 @@ public:
 	*	Initializes a particle system entity.
 	*/
 	void InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT;
-
-	/*
-	*	Initializes a water entity.
-	*/
-	void InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given the texture data.

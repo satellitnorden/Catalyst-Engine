@@ -13,7 +13,6 @@
 #include <Entities/StaticPhysicalEntity.h>
 #include <Entities/TerrainEntity.h>
 #include <Entities/VegetationEntity.h>
-#include <Entities/WaterEntity.h>
 
 //Math.
 #include <Math/CatalystMath.h>
@@ -24,6 +23,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture2D.h>
+#include <Rendering/Engine Layer/OceanMaterial.h>
 #include <Rendering/Engine Layer/ParticleMaterial.h>
 #include <Rendering/Engine Layer/PhysicalMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
@@ -32,7 +32,6 @@
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/TextureData.h>
 #include <Rendering/Engine Layer/VegetationMaterial.h>
-#include <Rendering/Engine Layer/WaterMaterial.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanParticleSystemProperties.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanTranslationUtilities.h>
 
@@ -162,11 +161,11 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Render the sky box.
 	RenderSkyBox();
 
-	//Render the ocena.
-	RenderOcean();
-
 	//Render all particle system entities.
 	RenderParticleSystemEntities();
+
+	//Render the ocean.
+	RenderOcean();
 
 	//Render the post processing.
 	RenderPostProcessing();
@@ -322,10 +321,10 @@ void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physica
 /*
 *	Creates a water material.
 */
-void VulkanRenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterialData, WaterMaterial &waterMaterial) const NOEXCEPT
+void VulkanRenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT
 {
 	//Load the normal map.
-	waterMaterial.normalMapTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(waterMaterialData.width, waterMaterialData.height, 4, waterMaterialData.normalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
+	oceanMaterial.normalMapTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(waterMaterialData.width, waterMaterialData.height, 4, waterMaterialData.normalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 }
 
 /*
@@ -542,32 +541,6 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 	component.properties = properties;
 	component.propertiesUniformBuffer = uniformBuffer;
 	renderComponent.descriptorSet = descriptorSet;
-}
-
-/*
-*	Initializes a water entity.
-*/
-void VulkanRenderingSystem::InitializeWaterEntity(const WaterEntity *const RESTRICT waterEntity, const WaterMaterial &waterMaterial, const WaterUniformData &waterUniformData) const NOEXCEPT
-{
-	//Fill the terrain entity components with the relevant data.
-	WaterComponent &waterComponent{ ComponentManager::GetWaterComponents()[waterEntity->GetComponentsIndex()] };
-	WaterRenderComponent &waterRenderComponent{ ComponentManager::GetWaterRenderComponents()[waterEntity->GetComponentsIndex()] };
-
-	waterComponent.waterUniformData = waterUniformData;
-	waterComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(WaterUniformData));
-	static_cast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->UploadData(&waterComponent.waterUniformData);
-
-	//Create the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(waterRenderComponent.descriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)]);
-
-	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
-	{
-		static_cast<const VulkanUniformBuffer *RESTRICT>(waterComponent.uniformBuffer)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 1),
-		static_cast<const VulkanRenderTarget *RESTRICT>(renderTargets[INDEX(RenderTarget::WaterScene)])->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 2),
-		static_cast<const Vulkan2DTexture *RESTRICT>(waterMaterial.normalMapTexture)->GetWriteDescriptorSet(waterRenderComponent.descriptorSet, 3)
-	};
-
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }
 
 /*
@@ -797,25 +770,14 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 	{
 		//Initialize the ocean descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> oceanDescriptorSetLayoutBindings
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> oceanDescriptorSetLayoutBindings
 		{
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
 		descriptorSetLayouts[INDEX(DescriptorSetLayout::Ocean)].Initialize(static_cast<uint32>(oceanDescriptorSetLayoutBindings.Size()), oceanDescriptorSetLayoutBindings.Data());
-	}
-
-	{
-		//Initialize the water descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> waterDescriptorSetLayoutBindings
-		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-		};
-
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)].Initialize(static_cast<uint32>(waterDescriptorSetLayoutBindings.Size()), waterDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -986,18 +948,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		//Initialize the viewport vertex shader module.
 		const DynamicArray<char> viewportVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "ViewportVertexShader.spv");
 		shaderModules[INDEX(ShaderModule::ViewportVertexShader)] = VulkanInterface::Instance->CreateShaderModule(viewportVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
-	}
-	
-	{
-		//Initialize the water fragment shader module.
-		const DynamicArray<char> waterFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "WaterFragmentShader.spv");
-		shaderModules[INDEX(ShaderModule::WaterFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(waterFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-	
-	{
-		//Initialize the water vertex shader module.
-		const DynamicArray<char> waterVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "WaterVertexShader.spv");
-		shaderModules[INDEX(ShaderModule::WaterVertexShader)] = VulkanInterface::Instance->CreateShaderModule(waterVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
 	}
 }
 
@@ -1448,9 +1398,10 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		oceanPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
 		oceanPipelineCreationParameters.depthTestEnable = VK_FALSE;
 		oceanPipelineCreationParameters.depthWriteEnable = VK_FALSE;
-		StaticArray<VulkanDescriptorSetLayout, 2> oceanDescriptorSetLayouts
+		StaticArray<VulkanDescriptorSetLayout, 3> oceanDescriptorSetLayouts
 		{
 			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
+			descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)],
 			descriptorSetLayouts[INDEX(DescriptorSetLayout::Ocean)]
 		};
 		oceanPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(oceanDescriptorSetLayouts.Size());
@@ -1473,53 +1424,6 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	}
 
 	{
-		//Create the water pipeline.
-		VulkanPipelineCreationParameters waterPipelineCreationParameters;
-
-		waterPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-		waterPipelineCreationParameters.blendEnable = false;
-		waterPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		waterPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		waterPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		waterPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		waterPipelineCreationParameters.colorAttachments[0].Reserve(1);
-		waterPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
-		waterPipelineCreationParameters.cullMode = VK_CULL_MODE_NONE;
-		waterPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		waterPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		waterPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		waterPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
-		waterPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-		waterPipelineCreationParameters.depthTestEnable = VK_TRUE;
-		waterPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-		StaticArray<VulkanDescriptorSetLayout, 3> waterDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Water)]
-		};
-		waterPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(waterDescriptorSetLayouts.Size());
-		waterPipelineCreationParameters.descriptorSetLayouts = waterDescriptorSetLayouts.Data();
-		waterPipelineCreationParameters.pushConstantRangeCount = 0;
-		waterPipelineCreationParameters.pushConstantRanges = nullptr;
-		waterPipelineCreationParameters.shaderModules.Reserve(2);
-		waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterVertexShader)]);
-		waterPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(ShaderModule::WaterFragmentShader)]);
-		waterPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-		StaticArray<VkVertexInputAttributeDescription, 2> waterVertexInputAttributeDescriptions;
-		VulkanTranslationUtilities::GetTerrainVertexInputAttributeDescriptions(waterVertexInputAttributeDescriptions);
-		waterPipelineCreationParameters.vertexInputAttributeDescriptionCount = 2;
-		waterPipelineCreationParameters.vertexInputAttributeDescriptions = waterVertexInputAttributeDescriptions.Data();
-		VkVertexInputBindingDescription waterVertexInputBindingDescription;
-		VulkanTranslationUtilities::GetTerrainVertexInputBindingDescription(waterVertexInputBindingDescription);
-		waterPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
-		waterPipelineCreationParameters.vertexInputBindingDescriptions = &waterVertexInputBindingDescription;
-		waterPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-		pipelines[INDEX(Pipeline::Water)] = VulkanInterface::Instance->CreatePipeline(waterPipelineCreationParameters);
-	}
-
-	{
 		//Create the particle system pipeline.
 		VulkanPipelineCreationParameters particleSystemPipelineCreationParameters;
 
@@ -1529,8 +1433,9 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		particleSystemPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 		particleSystemPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		particleSystemPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		particleSystemPipelineCreationParameters.colorAttachments[0].Reserve(1);
+		particleSystemPipelineCreationParameters.colorAttachments[0].Reserve(2);
 		particleSystemPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
+		particleSystemPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::WaterScene)]->GetImageView());
 		particleSystemPipelineCreationParameters.cullMode = VK_CULL_MODE_FRONT_BIT;
 		particleSystemPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		particleSystemPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -2097,66 +2002,6 @@ void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
 }
 
 /*
-*	Renders the ocean.
-*/
-void VulkanRenderingSystem::RenderOcean() NOEXCEPT
-{
-	//Bind the ocean pipeline.
-	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Ocean)]);
-
-	//Bind the ocean render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
-
-	//Bind the ocean descriptor set.
-	StaticArray<VulkanDescriptorSet, 2> oceanDescriptorSets
-	{
-		*currentDynamicUniformDataDescriptorSet,
-		descriptorSets[INDEX(DescriptorSet::Ocean)]
-	};
-
-	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Ocean)], static_cast<uint32>(oceanDescriptorSets.Size()), oceanDescriptorSets.Data());
-
-	//Draw the viewport!
-	currentCommandBuffer->CommandDraw(4, 1);
-
-	//End the ocean render pass.
-	currentCommandBuffer->CommandEndRenderPass();
-}
-
-/*
-*	Renders water.
-*/
-void VulkanRenderingSystem::RenderWater() NOEXCEPT
-{
-	//Cache the pipeline.
-	VulkanPipeline *RESTRICT waterPipeline{ pipelines[INDEX(Pipeline::Water)] };
-
-	//Begin the pipeline and render pass.
-	currentCommandBuffer->CommandBindPipeline(*waterPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(waterPipeline->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
-
-	//Iterate over all water entity components and draw them all.
-	const uint64 numberOfWaterComponents{ ComponentManager::GetNumberOfWaterComponents() };
-	const WaterRenderComponent *RESTRICT waterRenderComponent{ ComponentManager::GetWaterRenderComponents() };
-
-	for (uint64 i = 0; i < numberOfWaterComponents; ++i, ++waterRenderComponent)
-	{
-		StaticArray<VulkanDescriptorSet, 3> waterDescriptorSets
-		{
-			*currentDynamicUniformDataDescriptorSet,
-			*currentEnvironmentDataDescriptorSet,
-			waterRenderComponent->descriptorSet
-		};
-
-		currentCommandBuffer->CommandBindDescriptorSets(*waterPipeline, static_cast<uint32>(waterDescriptorSets.Size()), waterDescriptorSets.Data());
-		currentCommandBuffer->CommandDraw(4, 1);
-	}
-
-	//End the render pass.
-	currentCommandBuffer->CommandEndRenderPass();
-}
-
-/*
 *	Renders all particle system entities.
 */
 void VulkanRenderingSystem::RenderParticleSystemEntities() NOEXCEPT
@@ -2198,6 +2043,34 @@ void VulkanRenderingSystem::RenderParticleSystemEntities() NOEXCEPT
 	}
 
 	//End the render pass.
+	currentCommandBuffer->CommandEndRenderPass();
+}
+
+/*
+*	Renders the ocean.
+*/
+void VulkanRenderingSystem::RenderOcean() NOEXCEPT
+{
+	//Bind the ocean pipeline.
+	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Ocean)]);
+
+	//Bind the ocean render pass.
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+
+	//Bind the ocean descriptor set.
+	StaticArray<VulkanDescriptorSet, 3> oceanDescriptorSets
+	{
+		*currentDynamicUniformDataDescriptorSet,
+		*currentEnvironmentDataDescriptorSet,
+		descriptorSets[INDEX(DescriptorSet::Ocean)]
+	};
+
+	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Ocean)], static_cast<uint32>(oceanDescriptorSets.Size()), oceanDescriptorSets.Data());
+
+	//Draw the viewport!
+	currentCommandBuffer->CommandDraw(4, 1);
+
+	//End the ocean render pass.
 	currentCommandBuffer->CommandEndRenderPass();
 }
 
@@ -2262,6 +2135,13 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(environmentWriteDescriptorSets.Size()), environmentWriteDescriptorSets.Data(), 0, nullptr);
+	}
+
+	{
+		//Update the ocean descriptor set.
+		VkWriteDescriptorSet oceanWriteDescriptorSet{ static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetOceanMaterial().normalMapTexture)->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Ocean)], 2) };
+
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &oceanWriteDescriptorSet, 0, nullptr);
 	}
 }
 

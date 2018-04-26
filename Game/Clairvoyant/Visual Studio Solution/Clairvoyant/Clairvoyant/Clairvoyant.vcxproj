@@ -169,7 +169,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\StaticPhysicalEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\TerrainEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\VegetationEntity.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\WaterEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Input\InputConstants.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Input\InputUtilities.h" />
@@ -224,6 +223,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\CPUTexture2D.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\CPUTextureCube.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\EnvironmentMaterial.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\OceanMaterial.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\ParticleMaterial.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\ParticleSystemProperties.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\PhysicalMaterial.h" />
@@ -240,7 +240,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\VegetationMaterial.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\VegetationProperties.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\VegetationTransformation.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\WaterMaterial.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\WaterUniformData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Window.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Translation Layer\Vulkan\VulkanDynamicUniformData.h" />
@@ -291,7 +290,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\StaticPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\TerrainEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\VegetationEntity.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\WaterEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Vector2.cpp" />

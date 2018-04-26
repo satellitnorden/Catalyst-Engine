@@ -276,9 +276,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\TerrainEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\WaterEntity.h">
-      <Filter>Engine Source\Entities\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Input\GamepadState.h">
       <Filter>Engine Source\Input\Include</Filter>
     </ClInclude>
@@ -451,9 +448,6 @@
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\TextureDataContainer.h">
-      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\WaterMaterial.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\WaterUniformData.h">
@@ -642,6 +636,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EnvironmentSystem.h">
       <Filter>Engine Source\Systems\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\OceanMaterial.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
@@ -681,9 +678,6 @@
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\TerrainEntity.cpp">
-      <Filter>Engine Source\Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\WaterEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Matrix3.cpp">

@@ -5,6 +5,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/EnvironmentMaterial.h>
+#include <Rendering/Engine Layer/OceanMaterial.h>
 
 class EnvironmentSystem final
 {
@@ -44,6 +45,16 @@ public:
 	*/
 	void SetDayEnvironmentMaterial(const EnvironmentMaterial& newDayEnvironmentMaterial) NOEXCEPT { dayEnvironmentMaterial = newDayEnvironmentMaterial; }
 
+	/*
+	*	Returns the ocean material.
+	*/
+	const OceanMaterial& GetOceanMaterial() NOEXCEPT { return oceanMaterial; }
+
+	/*
+	*	Sets the ocean material.
+	*/
+	void SetOceanMaterial(const OceanMaterial &newOceanMaterial) NOEXCEPT { oceanMaterial = newOceanMaterial; }
+
 private:
 
 	//The current environment blend.
@@ -54,5 +65,8 @@ private:
 
 	//The day night environment material.
 	EnvironmentMaterial dayEnvironmentMaterial;
+
+	//The ocean material.
+	OceanMaterial oceanMaterial;
 
 };

@@ -17,7 +17,6 @@
 #include <Entities/SpotLightEntity.h>
 #include <Entities/TerrainEntity.h>
 #include <Entities/VegetationEntity.h>
-#include <Entities/WaterEntity.h>
 
 //Math.
 #include <Math/CatalystMath.h>
@@ -31,11 +30,11 @@
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture2D.h>
 #include <Rendering/Engine Layer/EnvironmentMaterial.h>
+#include <Rendering/Engine Layer/OceanMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/TerrainUniformData.h>
 #include <Rendering/Engine Layer/TextureData.h>
-#include <Rendering/Engine Layer/WaterMaterial.h>
 #include <Rendering/Engine Layer/WaterUniformData.h>
 
 //Resources.
@@ -219,12 +218,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
 	terrain->Initialize(256, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, WorldAchitectConstants::TERRAIN_HEIGHT, WorldAchitectConstants::TERRAIN_SIZE, WorldAchitectConstants::TERRAIN_SIZE * 0.05f, Vector3(0.0f, 0.0f, 0.0f)), layerWeightsTexture, terrainMaterial);
 
-	//Load the water material.
-	WaterMaterial waterMaterial{ ResourceLoader::GetWaterMaterial(WorldAchitectConstants::DEFAULT_WATER_MATERIAL) };
+	//Load the ocean material.
+	OceanMaterial oceanMaterial{ ResourceLoader::GetOceanMaterial(WorldAchitectConstants::DEFAULT_WATER_MATERIAL) };
 
-	//Create the water.
-	WaterEntity *RESTRICT water = EntitySystem::Instance->CreateEntity<WaterEntity>();
-	water->Initialize(waterMaterial, WaterUniformData(WorldAchitectConstants::TERRAIN_SIZE, 250.0f, Vector3(0.0f, 0.0f, 0.0f)));
+	EnvironmentSystem::Instance->SetOceanMaterial(oceanMaterial);
 
 	//Create the stone model.
 	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_MODEL) };
