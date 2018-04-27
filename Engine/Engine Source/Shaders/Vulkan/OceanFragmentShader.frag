@@ -55,6 +55,11 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Preprocessor defines.
+#define MAXIMUM_WAVE_HEIGHT 1.0f
+#define NUMBER_OF_ITERATIONS 5
+
+//Layout specification.
 layout (early_fragment_tests) in;
 
 //In parameters.
@@ -104,6 +109,7 @@ vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
     return worldSpacePosition.xyz;
 }
 
+/*
 void main()
 {
 	 //Sample the depth of the scene at this point.
@@ -135,4 +141,70 @@ void main()
 
     //Write the fragment
     fragment = vec4(finalOceanColor, 1.0f);
+}
+*/
+
+/*
+*	Calculates the tangent frame.
+*/
+mat3 CalculateTangentFrame(vec3 normal, vec3 view, vec2 textureCoordinate)
+{
+	vec3 dp1 = dFdx(view);
+	vec3 dp2 = dFdy(view);
+
+	vec2 duv1 = dFdx(textureCoordinate);
+	vec2 duv2 = dFdy(textureCoordinate);
+
+	mat3 m = mat3(dp1, dp2, cross(dp1, dp2));
+	mat2x3 inverseM = mat2x3(cross(m[1], m[2]), cross(m[2], m[0]));
+	vec3 tangent = inverseM * vec2(duv1.x, duv2.x);
+	vec3 binormal = inverseM * vec2(duv1.y, duv2.y);
+
+	return mat3(normalize(tangent), normalize(binormal), normal);
+}
+
+void main()
+{
+	//Calculate the scene world position.
+    float sceneDepth = texture(sceneNormalDepthTexture, fragmentTextureCoordinate).a;
+    sceneWorldPosition = CalculateWorldPosition(fragmentTextureCoordinate, sceneDepth);
+
+    //If the scene world position is above the water level + the maximum wave height, do nothing.
+    if (sceneWorldPosition.y > MAXIMUM_WAVE_HEIGHT)
+    {
+    	//Write the fragment.
+		fragment = texture(sceneTexture, fragmentTextureCoordinate);
+    }
+
+    //Else, calculate the ocean color.
+	else
+	{
+		//Calculate the view direction.
+		vec3 viewDirection = normalize(sceneWorldPosition - cameraWorldPosition);
+
+    	//Store the current water level.
+    	float waterLevel = 0.0f;
+    	vec3 intersectionPoint;
+
+    	for (int i = 0; i < NUMBER_OF_ITERATIONS; ++i)
+    	{
+    		//Find the intersection point.
+    		intersectionPoint = (dot(vec3(0.0f, waterLevel, 0.0f) - sceneWorldPosition, vec3(0.0f, 1.0f, 0.0f)) / dot(viewDirection, vec3(0.0f, 1.0f, 0.0f))) * viewDirection + sceneWorldPosition;
+
+    		//Sample the height at the intersection point.
+    		float height = max(dot(texture(oceanNormalTexture, intersectionPoint.xz * 0.025f).xzy, vec3(0.0f, 1.0f, 0.0f)), 0.0f) * MAXIMUM_WAVE_HEIGHT;
+
+    		//Update the water level.
+    		waterLevel += height;
+    	}
+
+    	//Calculate the accumulated water.
+    	float accumulatedWater = length(sceneWorldPosition - intersectionPoint);
+
+    	//Calculate the depth of the water.
+    	float waterDepth = intersectionPoint.y - sceneWorldPosition.y;
+
+		//Write the fragment.
+		fragment = texture(sceneTexture, intersectionPoint.xz * 0.025f);
+	}
 }
