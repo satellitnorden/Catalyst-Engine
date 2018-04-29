@@ -31,22 +31,31 @@ public:
 	/*
 	*	Returns the dot product of two vectors.
 	*/
-	static float DotProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT;
+	static constexpr float DotProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
+	{
+		return firstVector.X * secondVector.X + firstVector.Y * secondVector.Y + firstVector.Z * secondVector.Z;
+	}
 
 	/*
 	*	Returns the cross product of two vectors.
 	*/
-	static Vector3 CrossProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT;
+	static constexpr Vector3 CrossProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
+	{
+		return Vector3{ firstVector.Y * secondVector.Z - firstVector.Z * secondVector.Y, firstVector.Z * secondVector.X - firstVector.X * secondVector.Z, firstVector.X * secondVector.Y - firstVector.Y * secondVector.X };
+	}
 
 	/*
 	*	Given a vector, return it's length squared.
 	*/
-	static float LengthSquared(const Vector3 &vector) NOEXCEPT;
+	static constexpr float LengthSquared(const Vector3 &vector) NOEXCEPT
+	{
+		return vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z;
+	}
 
 	/*
 	*	Given a vector, return it's length squared only taking into account the X and Y axis.
 	*/
-	constexpr static float LengthSquaredXY(const Vector3 &vector) NOEXCEPT
+	static constexpr float LengthSquaredXY(const Vector3 &vector) NOEXCEPT
 	{
 		return vector.X * vector.X + vector.Y * vector.Y;
 	}
@@ -54,7 +63,7 @@ public:
 	/*
 	*	Given a vector, return it's length squared only taking into account the X and Y axis.
 	*/
-	constexpr static float LengthSquaredXZ(const Vector3 &vector) NOEXCEPT
+	static constexpr float LengthSquaredXZ(const Vector3 &vector) NOEXCEPT
 	{
 		return vector.X * vector.X + vector.Z * vector.Z;
 	}
@@ -62,7 +71,7 @@ public:
 	/*
 	*	Given a vector, return it's length squared only taking into account the X and Y axis.
 	*/
-	constexpr static float LengthSquaredYZ(const Vector3 &vector) NOEXCEPT
+	static constexpr float LengthSquaredYZ(const Vector3 &vector) NOEXCEPT
 	{
 		return vector.Y * vector.Y + vector.Z * vector.Z;
 	}
@@ -70,7 +79,10 @@ public:
 	/*
 	*	Given a vector, return it's unit vector counterpart.
 	*/
-	static Vector3 Normalize(const Vector3 &vector) NOEXCEPT;
+	static constexpr Vector3 Normalize(const Vector3 &vector) NOEXCEPT
+	{
+		return vector.Normalized();
+	}
 
 	/*
 	*	Default constructor.
@@ -123,7 +135,7 @@ public:
 	/*
 	*	Assignment operator overload.
 	*/
-	void operator=(const Vector3 &otherVector) NOEXCEPT
+	constexpr void operator=(const Vector3 &otherVector) NOEXCEPT
 	{
 		X = otherVector.X;
 		Y = otherVector.Y;
@@ -131,81 +143,9 @@ public:
 	}
 
 	/*
-	*	Vector3 by Vector3 addition operator overload.
-	*/
-	Vector3 operator+(const Vector3 &otherVector) const NOEXCEPT
-	{
-		return Vector3{ X + otherVector.X, Y + otherVector.Y, Z + otherVector.Z };
-	}
-
-	/*
-	*	Vector3 by Vector3 addition assignment operator overload.
-	*/
-	void operator+=(const Vector3 &otherVector) NOEXCEPT
-	{
-		X += otherVector.X;
-		Y += otherVector.Y;
-		Z += otherVector.Z;
-	}
-
-	/*
-	*	Vector3 by Vector3 subtraction operator overload.
-	*/
-	Vector3 operator-(const Vector3 &otherVector) const NOEXCEPT
-	{
-		return Vector3{ X - otherVector.X, Y - otherVector.Y, Z - otherVector.Z };
-	}
-
-	/*
-	*	Vector3 by Vector3 subtraction assignment operator overload.
-	*/
-	void operator-=(const Vector3 &otherVector) NOEXCEPT
-	{
-		X -= otherVector.X;
-		Y -= otherVector.Y;
-		Z -= otherVector.Z;
-	}
-
-	/*
-	*	Vector3 by Vector3 multiplication operator overload.
-	*/
-	Vector3 operator*(const Vector3 &otherVector) const NOEXCEPT
-	{
-		return Vector3{ X * otherVector.X, Y * otherVector.Y, Z * otherVector.Z };
-	}
-
-	/*
-	*	Vector3 by Vector3 multiplication assignment operator overload.
-	*/
-	void operator*=(const Vector3 &otherVector) NOEXCEPT
-	{
-		X *= otherVector.X;
-		Y *= otherVector.Y;
-		Z *= otherVector.Z;
-	}
-
-	/*
-	*	Vector3 by Vector3 division operator overload.
-	*/
-	Vector3 operator/(const Vector3 &otherVector) const NOEXCEPT
-	{
-		return Vector3{ X / otherVector.X, Y / otherVector.Y, Z / otherVector.Z };
-	}
-
-	/*
-	*	Vector3 by Vector3 division assignment operator overload.
-	*/
-	void operator/=(const Vector3 &otherVector) NOEXCEPT
-	{
-		X /= otherVector.X;
-		Y /= otherVector.Y;
-		Z /= otherVector.Z;
-	}
-
-	/*
 	*	Vector3 by scalar addition operator overload.
 	*/
-	Vector3 operator+(const float scalar) const NOEXCEPT
+	constexpr Vector3 operator+(const float scalar) const NOEXCEPT
 	{
 		return Vector3{ X + scalar, Y + scalar, Z + scalar };
 	}
@@ -213,7 +153,7 @@ public:
 	/*
 	*	Vector3 by scalar addition assignment operator overload.
 	*/
-	void operator+=(const float scalar) NOEXCEPT
+	constexpr void operator+=(const float scalar) NOEXCEPT
 	{
 		X += scalar;
 		Y += scalar;
@@ -223,7 +163,7 @@ public:
 	/*
 	*	Vector3 by scalar subtraction operator overload.
 	*/
-	Vector3 operator-(const float scalar) const NOEXCEPT
+	constexpr Vector3 operator-(const float scalar) const NOEXCEPT
 	{
 		return Vector3{ X - scalar, Y - scalar, Z - scalar };
 	}
@@ -231,7 +171,7 @@ public:
 	/*
 	*	Vector3 by scalar subtraction assignment operator overload.
 	*/
-	void operator-=(const float scalar) NOEXCEPT
+	constexpr void operator-=(const float scalar) NOEXCEPT
 	{
 		X -= scalar;
 		Y -= scalar;
@@ -241,7 +181,7 @@ public:
 	/*
 	*	Vector3 by scalar multiplication operator overload.
 	*/
-	Vector3 operator*(const float scalar) const NOEXCEPT
+	constexpr Vector3 operator*(const float scalar) const NOEXCEPT
 	{
 		return Vector3{ X * scalar, Y * scalar, Z * scalar };
 	}
@@ -249,7 +189,7 @@ public:
 	/*
 	*	Vector3 by scalar multiplication assignment operator overload.
 	*/
-	void operator*=(const float scalar) NOEXCEPT
+	constexpr void operator*=(const float scalar) NOEXCEPT
 	{
 		X *= scalar;
 		Y *= scalar;
@@ -259,7 +199,7 @@ public:
 	/*
 	*	Vector3 by scalar division operator overload.
 	*/
-	Vector3 operator/(const float scalar) const NOEXCEPT
+	constexpr Vector3 operator/(const float scalar) const NOEXCEPT
 	{
 		return Vector3{ X / scalar, Y / scalar, Z / scalar };
 	}
@@ -267,67 +207,174 @@ public:
 	/*
 	*	Vector3 by scalar division assignment operator overload.
 	*/
-	void operator/=(const float scalar) NOEXCEPT
+	constexpr void operator/=(const float scalar) NOEXCEPT
 	{
-		X /= scalar;
-		Y /= scalar;
-		Z /= scalar;
+		const float inverseScalar{ 1.0f / scalar };
+
+		X *= inverseScalar;
+		Y *= inverseScalar;
+		Z *= inverseScalar;
+	}
+
+	/*
+	*	Vector3 by Vector3 addition operator overload.
+	*/
+	constexpr Vector3 operator+(const Vector3 &otherVector) const NOEXCEPT
+	{
+		return Vector3{ this->X + otherVector.X, this->Y + otherVector.Y, this->Z + otherVector.Z };
+	}
+
+	/*
+	*	Vector3 by Vector3 addition assignment operator overload.
+	*/
+	constexpr void operator+=(const Vector3 &otherVector) NOEXCEPT
+	{
+		this->X += otherVector.X;
+		this->Y += otherVector.Y;
+		this->Z += otherVector.Z;
+	}
+
+	/*
+	*	Vector3 by Vector3 subtraction operator overload.
+	*/
+	constexpr Vector3 operator-(const Vector3 &otherVector) const NOEXCEPT
+	{
+		return Vector3{ this->X - otherVector.X, this->Y - otherVector.Y, this->Z - otherVector.Z };
+	}
+
+	/*
+	*	Vector3 by Vector3 subtraction assignment operator overload.
+	*/
+	constexpr void operator-=(const Vector3 &otherVector) NOEXCEPT
+	{
+		this->X -= otherVector.X;
+		this->Y -= otherVector.Y;
+		this->Z -= otherVector.Z;
+	}
+
+	/*
+	*	Vector3 by Vector3 multiplication operator overload.
+	*/
+	constexpr Vector3 operator*(const Vector3 &otherVector) const NOEXCEPT
+	{
+		return Vector3{ this->X * otherVector.X, this->Y * otherVector.Y, this->Z * otherVector.Z };
+	}
+
+	/*
+	*	Vector3 by Vector3 multiplication assignment operator overload.
+	*/
+	constexpr void operator*=(const Vector3 &otherVector) NOEXCEPT
+	{
+		this->X *= otherVector.X;
+		this->Y *= otherVector.Y;
+		this->Z *= otherVector.Z;
+	}
+
+	/*
+	*	Vector3 by Vector3 division operator overload.
+	*/
+	constexpr Vector3 operator/(const Vector3 &otherVector) const NOEXCEPT
+	{
+		return Vector3{ this->X / otherVector.X, this->Y / otherVector.Y, this->Z / otherVector.Z };
+	}
+
+	/*
+	*	Vector3 by Vector3 division assignment operator overload.
+	*/
+	constexpr void operator/=(const Vector3 &otherVector) NOEXCEPT
+	{
+		this->X /= otherVector.X;
+		this->Y /= otherVector.Y;
+		this->Z /= otherVector.Z;
 	}
 
 	/*
 	*	Returns a pointer to this vector's data, const.
 	*/
-	RESTRICTED const float* const Data() const NOEXCEPT { return &X; }
+	RESTRICTED constexpr const float* const Data() const NOEXCEPT { return &X; }
 
 	/*
 	*	Returns a pointer to this vector's data, non-const.
 	*/
-	RESTRICTED float* Data() NOEXCEPT { return &X; }
-
-	/*
-	*	Returns the length of the vector.
-	*/
-	float Length() const NOEXCEPT;
-
-	/*
-	*	Returns the length of the vector squared.
-	*/
-	float LengthSquared() const  NOEXCEPT { return (X * X) + (Y * Y) + (Z * Z); }
-
-	/*
-	*	Returns the distance between this and another vector.
-	*/
-	float DistanceTo(const Vector3 &otherVector) const  NOEXCEPT { return (*this - otherVector).Length(); }
-
-	/*
-	*	Returns the distance squared between this and another vector.
-	*/
-	float DistanceToSquared(const Vector3 &otherVector) const  NOEXCEPT { return (*this - otherVector).LengthSquared(); }
+	RESTRICTED constexpr float* Data() NOEXCEPT { return &X; }
 
 	/*
 	*	Returns true if the vector is a unit vector, false otherwise.
 	*/
-	bool IsUnitVector() const  NOEXCEPT { return LengthSquared() == 1.0f; }
+	constexpr bool IsUnitVector() const  NOEXCEPT { return LengthSquared() == 1.0f; }
+
+	/*
+	*	Returns the length of the vector.
+	*/
+	constexpr float Length() const NOEXCEPT
+	{
+		return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z *Z));
+	}
+
+	/*
+	*	Returns the length of the vector squared.
+	*/
+	constexpr float LengthSquared() const  NOEXCEPT { return (X * X) + (Y * Y) + (Z * Z); }
 
 	/*
 	*	Normalize the vector to a unit vector.
 	*/
-	void Normalize() NOEXCEPT;
+	constexpr void Normalize() NOEXCEPT
+	{
+		const float length{ Length() };
+		const float inverseLength{ 1.0f / length };
+
+		X *= inverseLength;
+		Y *= inverseLength;
+		Z *= inverseLength;
+	}
+
+	/*
+	*	Returns a normalized version of this vector.
+	*/
+	constexpr Vector3 Normalized() const NOEXCEPT
+	{
+		Vector3 copy{ *this };
+		copy.Normalize();
+
+		return copy;
+	}
 
 	/*
 	*	Given a rotation vector, rotate this vector.
 	*/
-	void Rotate(const Vector3& rotationVector) NOEXCEPT;
+	void Rotate(const Vector3& rotationVector) NOEXCEPT
+	{
+		const float xRadians = CatalystMath::DegreesToRadians(rotationVector.X);
+		const float yRadians = CatalystMath::DegreesToRadians(rotationVector.Y);
+		const float zRadians = CatalystMath::DegreesToRadians(rotationVector.Z);
 
-	/*
-	*	Given a rotation vector, rotate this vector.
-	*/
-	void NewRotate(const Vector3& rotationVector) NOEXCEPT;
+		//Rotate the roll.
+		float tempY = Y * CatalystMath::CosineRadians(xRadians) - Z * CatalystMath::SineRadians(xRadians);
+		Z = Y * CatalystMath::SineRadians(xRadians) + Z * CatalystMath::CosineRadians(xRadians);
+		Y = tempY;
+
+		//Rotate the pitch
+		float tempX1 = X * CatalystMath::CosineRadians(yRadians) + Z * CatalystMath::SineRadians(yRadians);
+		Z = -X * CatalystMath::SineRadians(yRadians) + Z * CatalystMath::CosineRadians(yRadians);
+		X = tempX1;
+
+		//Rotate the yaw.
+		float tempX2 = X * CatalystMath::CosineRadians(zRadians) - Y * CatalystMath::SineRadians(zRadians);
+		Y = X * CatalystMath::SineRadians(zRadians) + Y * CatalystMath::CosineRadians(zRadians);
+		X = tempX2;
+	}
 
 	/*
 	*	Returns a rotate copy of this vector.
 	*/
-	Vector3 Rotated(const Vector3& rotationVector) const NOEXCEPT;
+	Vector3 Rotated(const Vector3& rotationVector) const NOEXCEPT
+	{
+		Vector3 copy{ *this };
+		copy.Rotate(rotationVector);
+
+		return copy;
+	}
 
 };
 
