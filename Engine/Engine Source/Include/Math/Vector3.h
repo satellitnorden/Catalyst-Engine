@@ -345,23 +345,32 @@ public:
 	*/
 	void Rotate(const Vector3& rotationVector) NOEXCEPT
 	{
-		const float xRadians = CatalystMath::DegreesToRadians(rotationVector.X);
-		const float yRadians = CatalystMath::DegreesToRadians(rotationVector.Y);
-		const float zRadians = CatalystMath::DegreesToRadians(rotationVector.Z);
+		const float xRadians{ CatalystMath::DegreesToRadians(rotationVector.X) };
+		const float yRadians{ CatalystMath::DegreesToRadians(rotationVector.Y) };
+		const float zRadians{ CatalystMath::DegreesToRadians(rotationVector.Z) };
+
+		const float xCosine{ CatalystMath::CosineRadians(xRadians) };
+		const float xSine{ CatalystMath::SineRadians(xRadians) };
+
+		const float yCosine{ CatalystMath::CosineRadians(yRadians) };
+		const float ySine{ CatalystMath::SineRadians(yRadians) };
+
+		const float zCosine{ CatalystMath::CosineRadians(zRadians) };
+		const float zSine{ CatalystMath::SineRadians(zRadians) };
 
 		//Rotate the roll.
-		float tempY = Y * CatalystMath::CosineRadians(xRadians) - Z * CatalystMath::SineRadians(xRadians);
-		Z = Y * CatalystMath::SineRadians(xRadians) + Z * CatalystMath::CosineRadians(xRadians);
+		float tempY = Y * xCosine - Z * xSine;
+		Z = Y * xSine + Z * xCosine;
 		Y = tempY;
 
 		//Rotate the pitch
-		float tempX1 = X * CatalystMath::CosineRadians(yRadians) + Z * CatalystMath::SineRadians(yRadians);
-		Z = -X * CatalystMath::SineRadians(yRadians) + Z * CatalystMath::CosineRadians(yRadians);
+		float tempX1 = X * yCosine + Z * ySine;
+		Z = -X * ySine + Z * yCosine;
 		X = tempX1;
 
 		//Rotate the yaw.
-		float tempX2 = X * CatalystMath::CosineRadians(zRadians) - Y * CatalystMath::SineRadians(zRadians);
-		Y = X * CatalystMath::SineRadians(zRadians) + Y * CatalystMath::CosineRadians(zRadians);
+		float tempX2 = X * zCosine - Y * zSine;
+		Y = X * zSine + Y * zCosine;
 		X = tempX2;
 	}
 
