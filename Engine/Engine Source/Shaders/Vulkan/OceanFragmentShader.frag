@@ -57,7 +57,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 
 //Preprocessor defines.
 #define MAXIMUM_WAVE_HEIGHT 1.0f
-#define NUMBER_OF_ITERATIONS 5
+#define NUMBER_OF_ITERATIONS 3
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -163,6 +163,14 @@ mat3 CalculateTangentFrame(vec3 normal, vec3 view, vec2 textureCoordinate)
 	return mat3(normalize(tangent), normalize(binormal), normal);
 }
 
+/*
+*	Given a position in world space, calculate it's texture coordinate for lookup in height/normal maps.
+*/
+vec2 CalculateTextureCoordinate(vec3 position)
+{
+	return position.xz * 0.025f;
+}
+
 void main()
 {
 	//Calculate the scene world position.
@@ -204,7 +212,23 @@ void main()
     	//Calculate the depth of the water.
     	float waterDepth = intersectionPoint.y - sceneWorldPosition.y;
 
+    	//Calculate the normal vector.
+    	vec2 normalTextureCoordinate = CalculateTextureCoordinate(intersectionPoint);
+
+    	float W = max(dot(texture(oceanNormalTexture, normalTextureCoordinate).xzy, vec3(0.0f, 1.0f, 0.0f)), 0.0f) * MAXIMUM_WAVE_HEIGHT;
+    	float E = max(dot(texture(oceanNormalTexture, normalTextureCoordinate + vec2(0.0f, 0.0009f)).xzy, vec3(0.0f, 1.0f, 0.0f)), 0.0f) * MAXIMUM_WAVE_HEIGHT;
+    	float S = max(dot(texture(oceanNormalTexture, normalTextureCoordinate + vec2(0.0009f, 0.0009f)).xzy, vec3(0.0f, 1.0f, 0.0f)), 0.0f) * MAXIMUM_WAVE_HEIGHT;
+    	float N = max(dot(texture(oceanNormalTexture, normalTextureCoordinate + vec2(0.0009f, 0.0f)).xzy, vec3(0.0f, 1.0f, 0.0f)), 0.0f) * MAXIMUM_WAVE_HEIGHT;
+
+    	vec3 normal = vec3(W - E, 2.0f * waterDepth, S - N);
+
+    	mat3 tangentSpaceMatrix = CalculateTangentFrame(normal, viewDirection, normalTextureCoordinate);
+
+    	normal = normalize(tangeSpaceMatrix * (2.0f * texture(oceanNormalTexture, normalTextureCoordinate).xyz - 1.0f));
+
 		//Write the fragment.
-		fragment = texture(sceneTexture, intersectionPoint.xz * 0.025f);
+		//fragment = texture(sceneTexture, intersectionPoint.xz * 0.025f);
+
+		fragment = vec4(normal, 1.0f);
 	}
 }
