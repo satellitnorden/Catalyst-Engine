@@ -686,9 +686,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Matrix4.cpp">
       <Filter>Engine Source\Math\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Math\Vector2.cpp">
-      <Filter>Engine Source\Math\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\Vulkan2DTexture.cpp">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
     </ClCompile>
