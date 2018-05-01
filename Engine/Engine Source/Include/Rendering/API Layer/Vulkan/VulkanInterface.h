@@ -14,6 +14,7 @@
 #include <Rendering/API Layer/Vulkan/VulkanDescriptorPool.h>
 #include <Rendering/API Layer/Vulkan/VulkanDescriptorSet.h>
 #include <Rendering/API Layer/Vulkan/VulkanDescriptorSetLayout.h>
+#include <Rendering/API Layer/Vulkan/VulkanEvent.h>
 #include <Rendering/API Layer/Vulkan/VulkanFence.h>
 #include <Rendering/API Layer/Vulkan/VulkanFrameBuffer.h>
 #include <Rendering/API Layer/Vulkan/VulkanInstance.h>
@@ -155,6 +156,11 @@ public:
 	RESTRICTED VulkanDepthBuffer* CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT;
 
 	/*
+	*	Creates and returns an event.
+	*/
+	RESTRICTED VulkanEvent* CreateEvent() NOEXCEPT;
+
+	/*
 	*	Creates and returns a fence.
 	*/
 	RESTRICTED VulkanFence* CreateFence(const VkFenceCreateFlags flags = 0) NOEXCEPT;
@@ -238,6 +244,9 @@ private:
 
 	//Container for all Vulkan depth buffers.
 	DynamicArray<VulkanDepthBuffer *RESTRICT> vulkanDepthBuffers;
+
+	//Container for all Vulkan events.
+	DynamicArray<VulkanEvent *RESTRICT> vulkanEvents;
 
 	//Container for all Vulkan fences.
 	DynamicArray<VulkanFence *RESTRICT> vulkanFences;

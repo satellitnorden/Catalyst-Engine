@@ -130,6 +130,30 @@ void VulkanCommandBuffer::CommandPushConstants(const VkPipelineLayout layout, co
 }
 
 /*
+*	Records a reset event command.
+*/
+void VulkanCommandBuffer::CommandResetEvent(const VkEvent event, const VkPipelineStageFlags stageMask) NOEXCEPT
+{
+	vkCmdResetEvent(vulkanCommandBuffer, event, stageMask);
+}
+
+/*
+*	Records a set event command.
+*/
+void VulkanCommandBuffer::CommandSetEvent(const VkEvent event, const VkPipelineStageFlags stageMask) NOEXCEPT
+{
+	vkCmdSetEvent(vulkanCommandBuffer, event, stageMask);
+}
+
+/*
+*	Records a wait events command.
+*/
+void VulkanCommandBuffer::CommandWaitEvents(const uint32 eventCount, const VkEvent *const RESTRICT events, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask) NOEXCEPT
+{
+	vkCmdWaitEvents(vulkanCommandBuffer, eventCount, events, sourceStageMask, destinationStageMask, 0, nullptr, 0, nullptr, 0, nullptr);
+}
+
+/*
 *	Ends this Vulkan command buffer.
 */
 void VulkanCommandBuffer::End() NOEXCEPT

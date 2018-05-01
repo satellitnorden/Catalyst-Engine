@@ -96,6 +96,21 @@ public:
 	void CommandPushConstants(const VkPipelineLayout layout, const VkShaderStageFlags stageFlags, const uint32 offset, const uint32 size, const void *RESTRICT data) NOEXCEPT;
 
 	/*
+	*	Records a reset event command.
+	*/
+	void CommandResetEvent(const VkEvent event, const VkPipelineStageFlags stageMask) NOEXCEPT;
+
+	/*
+	*	Records a set event command.
+	*/
+	void CommandSetEvent(const VkEvent event, const VkPipelineStageFlags stageMask) NOEXCEPT;
+
+	/*
+	*	Records a wait events command.
+	*/
+	void CommandWaitEvents(const uint32 eventCount, const VkEvent *const RESTRICT events, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask) NOEXCEPT;
+
+	/*
 	*	Ends this Vulkan command buffer.
 	*/
 	void End() NOEXCEPT;
