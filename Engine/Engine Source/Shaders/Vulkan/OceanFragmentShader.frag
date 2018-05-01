@@ -109,7 +109,6 @@ vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
     return worldSpacePosition.xyz;
 }
 
-/*
 void main()
 {
 	 //Sample the depth of the scene at this point.
@@ -142,7 +141,6 @@ void main()
     //Write the fragment
     fragment = vec4(finalOceanColor, 1.0f);
 }
-*/
 
 /*
 *	Calculates the tangent frame.
@@ -171,6 +169,7 @@ vec2 CalculateTextureCoordinate(vec3 position)
 	return position.xz * 0.025f;
 }
 
+/*
 void main()
 {
 	//Calculate the scene world position.
@@ -232,3 +231,4 @@ void main()
 		fragment = vec4(normal, 1.0f);
 	}
 }
+*/
