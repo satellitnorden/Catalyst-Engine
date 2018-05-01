@@ -23,66 +23,42 @@ public:
 	/*
 	*	Returns the absolute value of the Vector3 passed in.
 	*/
-	constexpr static Vector3 Absolute(const Vector3 &vector) NOEXCEPT
-	{
-		return Vector3(CatalystMath::Absolute(vector.X), CatalystMath::Absolute(vector.Y), CatalystMath::Absolute(vector.Z));
-	}
+	constexpr static Vector3 Absolute(const Vector3 &vector) NOEXCEPT { return Vector3(CatalystMath::Absolute(vector.X), CatalystMath::Absolute(vector.Y), CatalystMath::Absolute(vector.Z)); }
 
 	/*
 	*	Returns the dot product of two vectors.
 	*/
-	static constexpr float DotProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
-	{
-		return firstVector.X * secondVector.X + firstVector.Y * secondVector.Y + firstVector.Z * secondVector.Z;
-	}
+	static constexpr float DotProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT { return firstVector.X * secondVector.X + firstVector.Y * secondVector.Y + firstVector.Z * secondVector.Z; }
 
 	/*
 	*	Returns the cross product of two vectors.
 	*/
-	static constexpr Vector3 CrossProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
-	{
-		return Vector3{ firstVector.Y * secondVector.Z - firstVector.Z * secondVector.Y, firstVector.Z * secondVector.X - firstVector.X * secondVector.Z, firstVector.X * secondVector.Y - firstVector.Y * secondVector.X };
-	}
+	static constexpr Vector3 CrossProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT { return Vector3{ firstVector.Y * secondVector.Z - firstVector.Z * secondVector.Y, firstVector.Z * secondVector.X - firstVector.X * secondVector.Z, firstVector.X * secondVector.Y - firstVector.Y * secondVector.X }; }
 
 	/*
 	*	Given a vector, return it's length squared.
 	*/
-	static constexpr float LengthSquared(const Vector3 &vector) NOEXCEPT
-	{
-		return vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z;
-	}
+	static constexpr float LengthSquared(const Vector3 &vector) NOEXCEPT { return vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z; }
 
 	/*
 	*	Given a vector, return it's length squared only taking into account the X and Y axis.
 	*/
-	static constexpr float LengthSquaredXY(const Vector3 &vector) NOEXCEPT
-	{
-		return vector.X * vector.X + vector.Y * vector.Y;
-	}
+	static constexpr float LengthSquaredXY(const Vector3 &vector) NOEXCEPT { return vector.X * vector.X + vector.Y * vector.Y; }
 
 	/*
 	*	Given a vector, return it's length squared only taking into account the X and Y axis.
 	*/
-	static constexpr float LengthSquaredXZ(const Vector3 &vector) NOEXCEPT
-	{
-		return vector.X * vector.X + vector.Z * vector.Z;
-	}
+	static constexpr float LengthSquaredXZ(const Vector3 &vector) NOEXCEPT { return vector.X * vector.X + vector.Z * vector.Z; }
 
 	/*
 	*	Given a vector, return it's length squared only taking into account the X and Y axis.
 	*/
-	static constexpr float LengthSquaredYZ(const Vector3 &vector) NOEXCEPT
-	{
-		return vector.Y * vector.Y + vector.Z * vector.Z;
-	}
+	static constexpr float LengthSquaredYZ(const Vector3 &vector) NOEXCEPT { return vector.Y * vector.Y + vector.Z * vector.Z; }
 
 	/*
 	*	Given a vector, return it's unit vector counterpart.
 	*/
-	static constexpr Vector3 Normalize(const Vector3 &vector) NOEXCEPT
-	{
-		return vector.Normalized();
-	}
+	static constexpr Vector3 Normalize(const Vector3 &vector) NOEXCEPT { return vector.Normalized(); }
 
 	/*
 	*	Default constructor.
@@ -145,10 +121,7 @@ public:
 	/*
 	*	Vector3 by scalar addition operator overload.
 	*/
-	constexpr Vector3 operator+(const float scalar) const NOEXCEPT
-	{
-		return Vector3{ X + scalar, Y + scalar, Z + scalar };
-	}
+	constexpr Vector3 operator+(const float scalar) const NOEXCEPT { return Vector3{ X + scalar, Y + scalar, Z + scalar }; }
 
 	/*
 	*	Vector3 by scalar addition assignment operator overload.
@@ -163,10 +136,7 @@ public:
 	/*
 	*	Vector3 by scalar subtraction operator overload.
 	*/
-	constexpr Vector3 operator-(const float scalar) const NOEXCEPT
-	{
-		return Vector3{ X - scalar, Y - scalar, Z - scalar };
-	}
+	constexpr Vector3 operator-(const float scalar) const NOEXCEPT { return Vector3{ X - scalar, Y - scalar, Z - scalar }; }
 
 	/*
 	*	Vector3 by scalar subtraction assignment operator overload.
@@ -181,10 +151,7 @@ public:
 	/*
 	*	Vector3 by scalar multiplication operator overload.
 	*/
-	constexpr Vector3 operator*(const float scalar) const NOEXCEPT
-	{
-		return Vector3{ X * scalar, Y * scalar, Z * scalar };
-	}
+	constexpr Vector3 operator*(const float scalar) const NOEXCEPT { return Vector3{ X * scalar, Y * scalar, Z * scalar }; }
 
 	/*
 	*	Vector3 by scalar multiplication assignment operator overload.
@@ -201,7 +168,9 @@ public:
 	*/
 	constexpr Vector3 operator/(const float scalar) const NOEXCEPT
 	{
-		return Vector3{ X / scalar, Y / scalar, Z / scalar };
+		const float inverseScalar{ 1.0f / scalar };
+
+		return Vector3{ X * inverseScalar, Y * inverseScalar, Z * inverseScalar };
 	}
 
 	/*
@@ -219,10 +188,7 @@ public:
 	/*
 	*	Vector3 by Vector3 addition operator overload.
 	*/
-	constexpr Vector3 operator+(const Vector3 &otherVector) const NOEXCEPT
-	{
-		return Vector3{ this->X + otherVector.X, this->Y + otherVector.Y, this->Z + otherVector.Z };
-	}
+	constexpr Vector3 operator+(const Vector3 &otherVector) const NOEXCEPT { return Vector3{ this->X + otherVector.X, this->Y + otherVector.Y, this->Z + otherVector.Z }; }
 
 	/*
 	*	Vector3 by Vector3 addition assignment operator overload.
@@ -237,10 +203,7 @@ public:
 	/*
 	*	Vector3 by Vector3 subtraction operator overload.
 	*/
-	constexpr Vector3 operator-(const Vector3 &otherVector) const NOEXCEPT
-	{
-		return Vector3{ this->X - otherVector.X, this->Y - otherVector.Y, this->Z - otherVector.Z };
-	}
+	constexpr Vector3 operator-(const Vector3 &otherVector) const NOEXCEPT { return Vector3{ this->X - otherVector.X, this->Y - otherVector.Y, this->Z - otherVector.Z }; }
 
 	/*
 	*	Vector3 by Vector3 subtraction assignment operator overload.
@@ -255,10 +218,7 @@ public:
 	/*
 	*	Vector3 by Vector3 multiplication operator overload.
 	*/
-	constexpr Vector3 operator*(const Vector3 &otherVector) const NOEXCEPT
-	{
-		return Vector3{ this->X * otherVector.X, this->Y * otherVector.Y, this->Z * otherVector.Z };
-	}
+	constexpr Vector3 operator*(const Vector3 &otherVector) const NOEXCEPT { return Vector3{ this->X * otherVector.X, this->Y * otherVector.Y, this->Z * otherVector.Z }; }
 
 	/*
 	*	Vector3 by Vector3 multiplication assignment operator overload.
@@ -273,10 +233,7 @@ public:
 	/*
 	*	Vector3 by Vector3 division operator overload.
 	*/
-	constexpr Vector3 operator/(const Vector3 &otherVector) const NOEXCEPT
-	{
-		return Vector3{ this->X / otherVector.X, this->Y / otherVector.Y, this->Z / otherVector.Z };
-	}
+	constexpr Vector3 operator/(const Vector3 &otherVector) const NOEXCEPT { return Vector3{ this->X / otherVector.X, this->Y / otherVector.Y, this->Z / otherVector.Z }; }
 
 	/*
 	*	Vector3 by Vector3 division assignment operator overload.
@@ -306,10 +263,7 @@ public:
 	/*
 	*	Returns the length of the vector.
 	*/
-	constexpr float Length() const NOEXCEPT
-	{
-		return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z *Z));
-	}
+	constexpr float Length() const NOEXCEPT { return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z *Z)); }
 
 	/*
 	*	Returns the length of the vector squared.
