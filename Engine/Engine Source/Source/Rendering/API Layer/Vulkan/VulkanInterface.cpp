@@ -110,6 +110,13 @@ void VulkanInterface::Release() NOEXCEPT
 		delete vulkanDepthBuffer;
 	}
 
+	//Release all Vulkan events.
+	for (VulkanEvent *const RESTRICT vulkanEvent : vulkanEvents)
+	{
+		vulkanEvent->Release();
+		delete vulkanEvent;
+	}
+
 	//Release all Vulkan fences.
 	for (VulkanFence *const RESTRICT vulkanFence : vulkanFences)
 	{

@@ -194,7 +194,6 @@ private:
 		Environment,
 		ShadowMapBlur,
 		Lighting,
-		Ocean,
 		PostProcessing,
 		NumberOfDescriptorSets
 	};

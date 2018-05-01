@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes the Vulkan frame data.
 	*/
-	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout, const VulkanDescriptorSetLayout environmentDescriptorSetLayout) NOEXCEPT
+	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout, const VulkanDescriptorSetLayout environmentDescriptorSetLayout, const VulkanDescriptorSetLayout oceanDescriptorSetLayout) NOEXCEPT
 	{
 		//Create the command buffers.
 		commandBuffers.UpsizeFast(frameDataCount);
@@ -62,6 +62,22 @@ public:
 		for (uint64 i = 0, size = environmentDescriptorSets.Size(); i < size; ++i)
 		{
 			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(environmentDescriptorSets[i], environmentDescriptorSetLayout);
+		}
+
+		//Create the ocean descriptor sets.
+		oceanDescriptorSets.UpsizeFast(frameDataCount);
+
+		for (uint64 i = 0, size = oceanDescriptorSets.Size(); i < size; ++i)
+		{
+			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(oceanDescriptorSets[i], oceanDescriptorSetLayout);
+		}
+
+		//Create the directional shadow events.
+		directionalShadowEvents.UpsizeFast(frameDataCount);
+
+		for (auto &directionalShadowEvent : directionalShadowEvents)
+		{
+			directionalShadowEvent = VulkanInterface::Instance->CreateEvent();
 		}
 	}
 
@@ -126,6 +142,16 @@ public:
 		return &environmentDescriptorSets[currentFrame];
 	}
 
+	/*
+	*	Returns the current ocean descriptor set.
+	*/
+	VulkanDescriptorSet *RESTRICT GetCurrentOceanDescriptorSet() NOEXCEPT { return &oceanDescriptorSets[currentFrame]; }
+
+	/*
+	*	Returns the current directional shadow event.
+	*/
+	VulkanEvent *RESTRICT GetCurrentDirectionalShadowEvent() NOEXCEPT { return directionalShadowEvents[currentFrame]; }
+
 private:
 
 	//Keeps track of the current frame.
@@ -145,5 +171,11 @@ private:
 
 	//The environment descriptor sets.
 	DynamicArray<VulkanDescriptorSet> environmentDescriptorSets;
+
+	//The ocean descriptor sets.
+	DynamicArray<VulkanDescriptorSet> oceanDescriptorSets;
+
+	//The directional shadow events.
+	DynamicArray<VulkanEvent *RESTRICT> directionalShadowEvents;
 
 };

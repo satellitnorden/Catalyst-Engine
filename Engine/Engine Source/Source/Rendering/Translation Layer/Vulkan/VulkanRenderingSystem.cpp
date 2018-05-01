@@ -99,7 +99,7 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	InitializeDefaultTextures();
 
 	//Initialize the Vulkan frame data.
-	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)]);
+	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Ocean)]);
 }
 
 /*
@@ -1558,20 +1558,6 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 	}
 
 	{
-		//Initialize the ocean descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::Ocean)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Ocean)]);
-
-		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
-		{
-			renderTargets[INDEX(RenderTarget::WaterScene)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Ocean)], 0),
-			renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Ocean)], 1)
-		};
-
-		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-	}
-
-	{
 		//Initialize the post processing descriptor set.
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::PostProcessing)], descriptorSetLayouts[INDEX(DescriptorSetLayout::PostProcessing)]);
 
@@ -1629,6 +1615,9 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 
 	//Reset the current fence.
 	frameData.GetCurrentFence()->Reset();
+
+	//Reset the directional shadow event.
+	frameData.GetCurrentDirectionalShadowEvent()->Reset();
 
 	//Execute the asynchronous tasks.
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
@@ -1754,6 +1743,9 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 		//End the shadow map blur render pass.
 		currentCommandBuffer->CommandEndRenderPass();
 	}
+
+	//Signal the directional shadow event.
+	currentCommandBuffer->CommandSetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 }
 
 /*
@@ -2062,7 +2054,7 @@ void VulkanRenderingSystem::RenderOcean() NOEXCEPT
 	{
 		*currentDynamicUniformDataDescriptorSet,
 		*currentEnvironmentDataDescriptorSet,
-		descriptorSets[INDEX(DescriptorSet::Ocean)]
+		*frameData.GetCurrentOceanDescriptorSet()
 	};
 
 	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Ocean)], static_cast<uint32>(oceanDescriptorSets.Size()), oceanDescriptorSets.Data());
@@ -2139,9 +2131,16 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 
 	{
 		//Update the ocean descriptor set.
-		VkWriteDescriptorSet oceanWriteDescriptorSet{ static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetOceanMaterial().normalMapTexture)->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Ocean)], 2) };
+		VulkanDescriptorSet &oceanDescriptorSet{ *frameData.GetCurrentOceanDescriptorSet() };
 
-		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &oceanWriteDescriptorSet, 0, nullptr);
+		StaticArray<VkWriteDescriptorSet, 3> oceanWriteDescriptorSets
+		{
+			renderTargets[INDEX(RenderTarget::WaterScene)]->GetWriteDescriptorSet(oceanDescriptorSet, 0),
+			renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(oceanDescriptorSet, 1),
+			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetOceanMaterial().normalMapTexture)->GetWriteDescriptorSet(oceanDescriptorSet, 2)
+		};
+		
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(oceanWriteDescriptorSets.Size()), oceanWriteDescriptorSets.Data(), 0, nullptr);
 	}
 }
 
