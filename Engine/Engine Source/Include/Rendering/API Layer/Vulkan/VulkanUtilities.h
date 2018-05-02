@@ -29,7 +29,7 @@ public:
 		commandPool->AllocatePrimaryCommandBuffer(copyCommandBuffer);
 
 		//Begin the command buffer.
-		copyCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		copyCommandBuffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Create the buffer copy.
 		VkBufferCopy bufferCopy;
@@ -92,7 +92,7 @@ public:
 		}
 
 		//Begin the transfer ommand buffer.
-		transferCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		transferCommandBuffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Record the copy command to the transfer command buffer.
 		vkCmdCopyBufferToImage(transferCommandBuffer.Get(), vulkanBuffer, vulkanImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32>(bufferImageCopies.Size()), bufferImageCopies.Data());
@@ -136,7 +136,7 @@ public:
 		commandPool->AllocatePrimaryCommandBuffer(transferCommandBuffer);
 
 		//Begin the transfer ommand buffer.
-		transferCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		transferCommandBuffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Record the copy command to the transfer command buffer.
 		vkCmdCopyImageToBuffer(transferCommandBuffer.Get(), vulkanImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, vulkanBuffer, 1, &bufferImageCopy);
@@ -181,7 +181,7 @@ public:
 		commandPool->AllocatePrimaryCommandBuffer(transferCommandBuffer);
 
 		//Begin the transfer ommand buffer.
-		transferCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		transferCommandBuffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Record the copy command to the transfer command buffer.
 		vkCmdCopyImage(transferCommandBuffer.Get(), sourceImage, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, destinationImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
@@ -416,7 +416,7 @@ public:
 		imageMemoryBarrier.subresourceRange.layerCount = layerCount;
 
 		//Begin the transition command buffer.
-		transitionCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		transitionCommandBuffer.BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 		//Record the pipeline barrier command.
 		vkCmdPipelineBarrier(transitionCommandBuffer.Get(), sourceStageMask, destinationStageMask, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);

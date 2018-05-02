@@ -35,6 +35,11 @@ public:
 	void AllocatePrimaryCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT;
 
 	/*
+	*	Allocates and returns a secondary command buffer.
+	*/
+	void AllocateSecondaryCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT;
+
+	/*
 	*	Frees a command buffer.
 	*/
 	void FreeCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT;

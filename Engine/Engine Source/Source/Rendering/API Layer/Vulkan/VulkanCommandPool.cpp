@@ -34,7 +34,16 @@ void VulkanCommandPool::Release() NOEXCEPT
 void VulkanCommandPool::AllocatePrimaryCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT
 {
 	//Initialize the primary command buffer.
-	vulkanCommandBuffer.Initialize(*this);
+	vulkanCommandBuffer.Initialize(*this, VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+}
+
+/*
+*	Allocates and returns a secondary command buffer.
+*/
+void VulkanCommandPool::AllocateSecondaryCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT
+{
+	//Initialize the secondary command buffer.
+	vulkanCommandBuffer.Initialize(*this, VK_COMMAND_BUFFER_LEVEL_SECONDARY);
 }
 
 /*

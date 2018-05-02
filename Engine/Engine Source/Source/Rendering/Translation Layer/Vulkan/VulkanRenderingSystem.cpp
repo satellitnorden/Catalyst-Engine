@@ -1622,14 +1622,11 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 	//Reset the current fence.
 	frameData.GetCurrentFence()->Reset();
 
-	//Reset the directional shadow event.
-	frameData.GetCurrentDirectionalShadowEvent()->Reset();
-
 	//Execute the frame-dependant asynchronous tasks.
 	ExecuteFrameDependantAsynchronousTasks();
 
 	//Set up the current command buffer.
-	currentCommandBuffer->Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+	currentCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 }
 
 /*
@@ -1875,6 +1872,9 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 
 	//End the render pass.
 	currentCommandBuffer->CommandEndRenderPass();
+
+	//Reset the directional shadow event.
+	currentCommandBuffer->CommandResetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 }
 
 /*
@@ -2012,7 +2012,8 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 	//End the current command buffer.
 	currentCommandBuffer->End();
 
-	//Wait for the update dynamic uniform data task to finish.
+	//Wait for the frame-dependant asynchonous tasks to finish.
+	taskSemaphores[INDEX(TaskSemaphore::RenderDirectionalShadows)].WaitFor();
 	taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)].WaitFor();
 
 	//Submit current command buffer.
@@ -2132,7 +2133,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentDirectionalShadowCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+	commandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	//Render terrain shadows.
 	{

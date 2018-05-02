@@ -5,42 +5,43 @@
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
 
 /*
-*	Default constructor.
-*/
-VulkanCommandBuffer::VulkanCommandBuffer() NOEXCEPT
-{
-	
-}
-
-/*
-*	Default destructor.
-*/
-VulkanCommandBuffer::~VulkanCommandBuffer() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan command buffer.
 */
-void VulkanCommandBuffer::Initialize(const VulkanCommandPool &vulkanCommandPool) NOEXCEPT
+void VulkanCommandBuffer::Initialize(const VulkanCommandPool &vulkanCommandPool, const VkCommandBufferLevel level) NOEXCEPT
 {
 	//Create the command buffer allocate info.
 	VkCommandBufferAllocateInfo commandBufferAllocateInfo;
-	CreateCommandBufferAllocateInfo(commandBufferAllocateInfo, vulkanCommandPool);
+	CreateCommandBufferAllocateInfo(commandBufferAllocateInfo, vulkanCommandPool, level);
 
 	//Allocate the command buffer!
 	VULKAN_ERROR_CHECK(vkAllocateCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandBufferAllocateInfo, &vulkanCommandBuffer));
 }
 
 /*
-*	Begins this Vulkan command buffer.
+*	Begins this Vulkan command buffer as a primary command buffer.
 */
-void VulkanCommandBuffer::Begin(const VkCommandBufferUsageFlags commandBufferUsageFlags) NOEXCEPT
+void VulkanCommandBuffer::BeginPrimary(const VkCommandBufferUsageFlags commandBufferUsageFlags) NOEXCEPT
 {
 	//Create the command buffer begin info.
 	VkCommandBufferBeginInfo commandBufferBeginInfo;
-	CreateCommandBufferBeginInfo(commandBufferBeginInfo, commandBufferUsageFlags);
+	CreatePrimaryCommandBufferBeginInfo(commandBufferBeginInfo, commandBufferUsageFlags);
+
+	//Begin the command buffer!
+	VULKAN_ERROR_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer, &commandBufferBeginInfo));
+}
+
+/*
+*	Begins this Vulkan command buffer as a secondary command buffer.
+*/
+void VulkanCommandBuffer::BeginSecondary(const VkCommandBufferUsageFlags commandBufferUsageFlags, const VkRenderPass renderPass, const VkFramebuffer framebuffer) NOEXCEPT
+{
+	//Create the command buffer inheritance info.
+	VkCommandBufferInheritanceInfo commandBufferInheritanceInfo;
+	CreateCommandBufferInheritanceInfo(commandBufferInheritanceInfo, renderPass, framebuffer);
+
+	//Create the command buffer begin info.
+	VkCommandBufferBeginInfo commandBufferBeginInfo;
+	CreateSecondaryCommandBufferBeginInfo(commandBufferBeginInfo, commandBufferUsageFlags, &commandBufferInheritanceInfo);
 
 	//Begin the command buffer!
 	VULKAN_ERROR_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer, &commandBufferBeginInfo));
@@ -173,22 +174,48 @@ void VulkanCommandBuffer::Reset() NOEXCEPT
 /*
 *	Creates a command buffer allocate info.
 */
-void VulkanCommandBuffer::CreateCommandBufferAllocateInfo(VkCommandBufferAllocateInfo &commandBufferAllocateInfo, const VulkanCommandPool &vulkanCommandPool) const NOEXCEPT
+void VulkanCommandBuffer::CreateCommandBufferAllocateInfo(VkCommandBufferAllocateInfo &commandBufferAllocateInfo, const VulkanCommandPool &vulkanCommandPool, const VkCommandBufferLevel level) const NOEXCEPT
 {
 	commandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	commandBufferAllocateInfo.pNext = nullptr;
 	commandBufferAllocateInfo.commandPool = vulkanCommandPool.Get();
-	commandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	commandBufferAllocateInfo.level = level;
 	commandBufferAllocateInfo.commandBufferCount = 1;
 }
 
 /*
-*	Creates a command buffer begin info.
+*	Creates a primary command buffer begin info.
 */
-void VulkanCommandBuffer::CreateCommandBufferBeginInfo(VkCommandBufferBeginInfo &commandBufferBeginInfo, const VkCommandBufferUsageFlags commandBufferUsageFlags) const NOEXCEPT
+void VulkanCommandBuffer::CreatePrimaryCommandBufferBeginInfo(VkCommandBufferBeginInfo &commandBufferBeginInfo, const VkCommandBufferUsageFlags commandBufferUsageFlags) const NOEXCEPT
 {
 	commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	commandBufferBeginInfo.pNext = nullptr;
 	commandBufferBeginInfo.flags = commandBufferUsageFlags;
 	commandBufferBeginInfo.pInheritanceInfo = nullptr;
+}
+
+/*
+*	Creates a command buffer inheritance info.
+*/
+void VulkanCommandBuffer::CreateCommandBufferInheritanceInfo(VkCommandBufferInheritanceInfo &commandBufferInheritanceInfo, const VkRenderPass renderPass, const VkFramebuffer framebuffer) const NOEXCEPT
+{
+	commandBufferInheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
+	commandBufferInheritanceInfo.pNext = nullptr;
+	commandBufferInheritanceInfo.renderPass = renderPass;
+	commandBufferInheritanceInfo.subpass = 0;
+	commandBufferInheritanceInfo.framebuffer = framebuffer;
+	commandBufferInheritanceInfo.occlusionQueryEnable = VK_FALSE;
+	commandBufferInheritanceInfo.queryFlags = 0;
+	commandBufferInheritanceInfo.pipelineStatistics = VK_NULL_HANDLE;
+}
+
+/*
+*	Creates a secondary command buffer begin info.
+*/
+void VulkanCommandBuffer::CreateSecondaryCommandBufferBeginInfo(VkCommandBufferBeginInfo &commandBufferBeginInfo, const VkCommandBufferUsageFlags commandBufferUsageFlags, const VkCommandBufferInheritanceInfo *const RESTRICT inheritanceInfo) const NOEXCEPT
+{
+	commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	commandBufferBeginInfo.pNext = nullptr;
+	commandBufferBeginInfo.flags = commandBufferUsageFlags;
+	commandBufferBeginInfo.pInheritanceInfo = inheritanceInfo;
 }

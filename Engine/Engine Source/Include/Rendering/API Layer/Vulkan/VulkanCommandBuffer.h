@@ -20,16 +20,6 @@ class VulkanCommandBuffer final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanCommandBuffer() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanCommandBuffer() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan command buffer.
 	*/
 	const VkCommandBuffer& Get() const NOEXCEPT { return vulkanCommandBuffer; }
@@ -37,12 +27,17 @@ public:
 	/*
 	*	Initializes this Vulkan command buffer.
 	*/
-	void Initialize(const VulkanCommandPool &vulkanCommandPool) NOEXCEPT;
+	void Initialize(const VulkanCommandPool &vulkanCommandPool, const VkCommandBufferLevel level) NOEXCEPT;
 
 	/*
-	*	Begins this Vulkan command buffer.
+	*	Begins this Vulkan command buffer as a primary command buffer.
 	*/
-	void Begin(const VkCommandBufferUsageFlags commandBufferUsageFlags) NOEXCEPT;
+	void BeginPrimary(const VkCommandBufferUsageFlags commandBufferUsageFlags) NOEXCEPT;
+
+	/*
+	*	Begins this Vulkan command buffer as a secondary command buffer.
+	*/
+	void BeginSecondary(const VkCommandBufferUsageFlags commandBufferUsageFlags, const VkRenderPass renderPass, const VkFramebuffer framebuffer) NOEXCEPT;
 
 	/*
 	*	Records a begin render pass command.
@@ -128,12 +123,22 @@ private:
 	/*
 	*	Creates a command buffer allocate info.
 	*/
-	void CreateCommandBufferAllocateInfo(VkCommandBufferAllocateInfo &commandBufferAllocateInfo, const VulkanCommandPool &vulkanCommandPool) const NOEXCEPT;
+	void CreateCommandBufferAllocateInfo(VkCommandBufferAllocateInfo &commandBufferAllocateInfo, const VulkanCommandPool &vulkanCommandPool, const VkCommandBufferLevel level) const NOEXCEPT;
 
 	/*
-	*	Creates a command buffer begin info.
+	*	Creates a primary command buffer begin info.
 	*/
-	void CreateCommandBufferBeginInfo(VkCommandBufferBeginInfo &commandBufferBeginInfo, const VkCommandBufferUsageFlags commandBufferUsageFlags) const NOEXCEPT;
+	void CreatePrimaryCommandBufferBeginInfo(VkCommandBufferBeginInfo &commandBufferBeginInfo, const VkCommandBufferUsageFlags commandBufferUsageFlags) const NOEXCEPT;
+
+	/*
+	*	Creates a command buffer inheritance info.
+	*/
+	void CreateCommandBufferInheritanceInfo(VkCommandBufferInheritanceInfo &commandBufferInheritanceInfo, const VkRenderPass renderPass, const VkFramebuffer framebuffer) const NOEXCEPT;
+
+	/*
+	*	Creates a secondary command buffer begin info.
+	*/
+	void CreateSecondaryCommandBufferBeginInfo(VkCommandBufferBeginInfo &commandBufferBeginInfo, const VkCommandBufferUsageFlags commandBufferUsageFlags, const VkCommandBufferInheritanceInfo *const RESTRICT inheritanceInfo) const NOEXCEPT;
 
 };
 
