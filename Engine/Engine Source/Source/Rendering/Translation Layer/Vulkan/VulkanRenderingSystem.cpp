@@ -1625,10 +1625,8 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDynamicUniformData();
 	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)]));
 
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDescriptorSets();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)]));
+	//Update the descriptor sets.
+	UpdateDescriptorSets();
 
 	//Set up the current command buffer.
 	currentCommandBuffer->Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -2103,7 +2101,7 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 
 	//Wait for the update dynamic uniform data task to finish.
 	taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)].WaitFor();
-	taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)].WaitFor();
+	//taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)].WaitFor();
 
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*currentCommandBuffer, 1, semaphores[INDEX(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, semaphores[INDEX(GraphicsSemaphore::RenderFinished)], frameData.GetCurrentFence()->Get());
