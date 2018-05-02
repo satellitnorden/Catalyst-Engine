@@ -285,6 +285,7 @@ private:
 	//Enumeration covering all task semaphores.
 	enum class TaskSemaphore : uint8
 	{
+		RenderDirectionalShadows,
 		UpdateDynamicUniformData,
 		UpdateDescriptorSets,
 		UpdateParticleSystemProperties,
@@ -403,14 +404,19 @@ private:
 	void CalculateProjectionMatrix() NOEXCEPT;
 
 	/*
+	*	Execute asynchronous tasks.
+	*/
+	void ExecuteAsynchronousTasks() NOEXCEPT;
+
+	/*
 	*	Begins the frame.
 	*/
 	void BeginFrame() NOEXCEPT;
 
 	/*
-	*	Renders directional shadows.
+	*	Executes frame-dependant asynchronous tasks.
 	*/
-	void RenderDirectionalShadows() NOEXCEPT;
+	void ExecuteFrameDependantAsynchronousTasks() NOEXCEPT;
 
 	/*
 	*	Renders the terrain.
@@ -462,15 +468,9 @@ private:
 	*/
 	void EndFrame() NOEXCEPT;
 
-	/*
-	*	Updates the descriptor sets.
-	*/
-	void UpdateDescriptorSets() NOEXCEPT;
-
-	/*
-	*	Updates the dynamic uniform data.
-	*/
-	void UpdateDynamicUniformData() NOEXCEPT;
+	/****************************/
+	/*	Asynchronous functions. */
+	/****************************/
 
 	/*
 	*	Updates the properties of particle systems.
@@ -486,5 +486,20 @@ private:
 	*	Updates the view frustum culling.
 	*/
 	void UpdateViewFrustumCulling() NOEXCEPT;
+
+	/*
+	*	Renders directional shadows.
+	*/
+	void RenderDirectionalShadows() NOEXCEPT;
+
+	/*
+	*	Updates the descriptor sets.
+	*/
+	void UpdateDescriptorSets() NOEXCEPT;
+
+	/*
+	*	Updates the dynamic uniform data.
+	*/
+	void UpdateDynamicUniformData() NOEXCEPT;
 
 };

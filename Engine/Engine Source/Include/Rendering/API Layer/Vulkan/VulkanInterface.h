@@ -141,6 +141,11 @@ public:
 	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const DynamicArray<DynamicArray<byte>> &textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
 
 	/*
+	*	Creates and returns a graphics command pool.
+	*/
+	RESTRICTED VulkanCommandPool* CreateGraphicsCommandPool() NOEXCEPT;
+
+	/*
 	*	Creates and returns a constant buffer.
 	*/
 	RESTRICTED VulkanConstantBuffer* CreateConstantBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
@@ -234,7 +239,13 @@ private:
 	DynamicArray<Vulkan2DTexture *RESTRICT> vulkan2DTextures;
 
 	//Container for all Vulkan command pools.
-	DynamicArray<VulkanCommandPool> vulkanCommandPools;
+	DynamicArray<VulkanCommandPool> vulkanCommandPoolsTemp;
+
+	//The lock for all Vulkan command pools.
+	Spinlock vulkanCommandPoolsLock;
+
+	//Container for all Vulkan command pools.
+	DynamicArray<VulkanCommandPool *RESTRICT> vulkanCommandPools;
 
 	//Container for all Vulkan constant buffers.
 	DynamicArray<VulkanConstantBuffer *RESTRICT> vulkanConstantBuffers;

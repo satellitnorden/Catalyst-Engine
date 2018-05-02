@@ -24,6 +24,17 @@ public:
 			VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(commandBuffer);
 		}
 
+		//Create the directional shadow command pool.
+		directionalShadowCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool();
+
+		//Create the directional shadow command buffers.
+		directionalShadowCommandBuffers.UpsizeFast(frameDataCount);
+
+		for (auto &directionalShadowCommandBuffer : directionalShadowCommandBuffers)
+		{
+			directionalShadowCommandPool->AllocateVulkanCommandBuffer(directionalShadowCommandBuffer);
+		}
+
 		//Create the fences.
 		fences.UpsizeFast(frameDataCount);
 
@@ -107,6 +118,11 @@ public:
 	}
 
 	/*
+	*	Returns the current directional shadow command buffer.
+	*/
+	VulkanCommandBuffer *RESTRICT GetCurrentDirectionalShadowCommandBuffer() NOEXCEPT { return &directionalShadowCommandBuffers[currentFrame]; }
+
+	/*
 	*	Returns the current fence.
 	*/
 	VulkanFence *RESTRICT GetCurrentFence() NOEXCEPT
@@ -159,6 +175,12 @@ private:
 
 	//The command buffers.
 	DynamicArray<VulkanCommandBuffer> commandBuffers;
+
+	//The directional shadow command pool.
+	VulkanCommandPool *RESTRICT directionalShadowCommandPool;
+
+	//The directional shadow command buffers.
+	DynamicArray<VulkanCommandBuffer> directionalShadowCommandBuffers;
 
 	//The fences.
 	DynamicArray<VulkanFence *RESTRICT> fences;

@@ -108,20 +108,7 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 {
 	//Execute the asynchronous tasks.
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateParticleSystemProperties();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateVegetationCulling();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateVegetationCulling)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateViewFrustumCulling();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateViewFrustumCuling)]));
+	ExecuteAsynchronousTasks();
 
 	//Update the main window.
 	mainWindow.Update();
@@ -139,9 +126,6 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 
 	//Begin the frame.
 	BeginFrame();
-
-	//Render the directional shadows.
-	RenderDirectionalShadows();
 
 	//Render the terrain.
 	RenderTerrain();
@@ -1594,6 +1578,28 @@ void VulkanRenderingSystem::CalculateProjectionMatrix() NOEXCEPT
 }
 
 /*
+*	Execute asynchronous tasks.
+*/
+void VulkanRenderingSystem::ExecuteAsynchronousTasks() NOEXCEPT
+{
+	//Execute the asynchronous tasks.
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateParticleSystemProperties();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)]));
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateVegetationCulling();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateVegetationCulling)]));
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateViewFrustumCulling();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateViewFrustumCuling)]));
+}
+
+/*
 *	Begins the frame.
 */
 void VulkanRenderingSystem::BeginFrame() NOEXCEPT
@@ -1619,7 +1625,23 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 	//Reset the directional shadow event.
 	frameData.GetCurrentDirectionalShadowEvent()->Reset();
 
-	//Execute the asynchronous tasks.
+	//Execute the frame-dependant asynchronous tasks.
+	ExecuteFrameDependantAsynchronousTasks();
+
+	//Set up the current command buffer.
+	currentCommandBuffer->Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+}
+
+/*
+*	Executes frame-dependant asynchronous tasks.
+*/
+void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
+{
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->RenderDirectionalShadows();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::RenderDirectionalShadows)]));
+
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
 		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDynamicUniformData();
@@ -1629,123 +1651,6 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 	{
 		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDescriptorSets();
 	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)]));
-
-	//Set up the current command buffer.
-	currentCommandBuffer->Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-}
-
-/*
-*	Renders directional shadows.
-*/
-void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
-{
-	//Render terrain shadows.
-	{
-		//Cache the pipeline.
-		VulkanPipeline &directionalShadowTerrainPipeline{ *pipelines[INDEX(Pipeline::DirectionalShadowTerrain)] };
-
-		//Begin the pipeline and render pass.
-		currentCommandBuffer->CommandBindPipeline(directionalShadowTerrainPipeline);
-		currentCommandBuffer->CommandBeginRenderPassAndClear<2>(directionalShadowTerrainPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
-
-		//Iterate over all terrain entity components and draw them all.
-		const uint64 numberOfTerrainComponents{ ComponentManager::GetNumberOfTerrainComponents() };
-		const TerrainRenderComponent *RESTRICT renderComponent{ ComponentManager::GetTerrainRenderComponents() };
-
-		for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++renderComponent)
-		{
-			StaticArray<VulkanDescriptorSet, 2> terrainDescriptorSets
-			{
-				*currentDynamicUniformDataDescriptorSet,
-				renderComponent->descriptorSet
-			};
-
-			const VkDeviceSize offset{ 0 };
-
-			currentCommandBuffer->CommandBindDescriptorSets(directionalShadowTerrainPipeline, static_cast<uint32>(terrainDescriptorSets.Size()), terrainDescriptorSets.Data());
-			currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->vertexAndIndexBuffer)->Get(), &offset);
-			currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->vertexAndIndexBuffer), renderComponent->indexBufferOffset);
-			currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, 1);
-		}
-
-		//End the render pass.
-		currentCommandBuffer->CommandEndRenderPass();
-	}
-	
-	//Render instanced physical shadows.
-	{
-		//Iterate over all instanced physical entity components and draw them all.
-		const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };
-
-		//If there's none to draw - draw none!
-		if (numberOfInstancedPhysicalComponents > 0)
-		{
-			//Cache the pipeline.
-			VulkanPipeline &directionalShadowInstancedPhysicalPipeline{ *pipelines[INDEX(Pipeline::DirectionalShadowInstancedPhysical)] };
-
-			const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
-
-			//Begin the pipeline and render pass.
-			currentCommandBuffer->CommandBindPipeline(directionalShadowInstancedPhysicalPipeline);
-			currentCommandBuffer->CommandBeginRenderPass(directionalShadowInstancedPhysicalPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
-
-			for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
-			{
-				StaticArray<VulkanDescriptorSet, 2> instancedPhysicalDescriptorSets
-				{
-					*currentDynamicUniformDataDescriptorSet,
-					renderComponent->descriptorSet
-				};
-
-				StaticArray<VkBuffer, 2> instancedPhysicalBuffers
-				{
-					static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
-					static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
-				};
-
-				StaticArray<VkDeviceSize, 2> offsets
-				{
-					static_cast<VkDeviceSize>(0),
-					static_cast<VkDeviceSize>(0)
-				};
-
-				currentCommandBuffer->CommandBindDescriptorSets(directionalShadowInstancedPhysicalPipeline, 2, instancedPhysicalDescriptorSets.Data());
-				currentCommandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
-				currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
-				currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
-			}
-
-			//End the render pass.
-			currentCommandBuffer->CommandEndRenderPass();
-		}
-	}
-
-	//Blur the directional shadow map.
-	{
-		//Bind the shadow map blur pipeline.
-		currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::ShadowMapBlur)]);
-
-		//Bind the shadow map blur render pass.
-		currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::ShadowMapBlur)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
-
-		//Bind the shadow map blur descriptor set.
-		StaticArray<VulkanDescriptorSet, 2> shadowMapBlurDescriptorSets
-		{
-			*currentDynamicUniformDataDescriptorSet,
-			descriptorSets[INDEX(DescriptorSet::ShadowMapBlur)]
-		};
-
-		currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::ShadowMapBlur)], static_cast<uint32>(shadowMapBlurDescriptorSets.Size()), shadowMapBlurDescriptorSets.Data());
-
-		//Draw the viewport!
-		currentCommandBuffer->CommandDraw(4, 1);
-
-		//End the shadow map blur render pass.
-		currentCommandBuffer->CommandEndRenderPass();
-	}
-
-	//Signal the directional shadow event.
-	currentCommandBuffer->CommandSetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 }
 
 /*
@@ -1962,6 +1867,9 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 
 	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Lighting)], static_cast<uint32>(lightingDescriptorSets.Size()), lightingDescriptorSets.Data());
 
+	//Wait for the directional shadows to finish.
+	currentCommandBuffer->CommandWaitEvents(1, &frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+
 	//Draw the viewport!
 	currentCommandBuffer->CommandDraw(4, 1);
 
@@ -2112,6 +2020,236 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 }
 
 /*
+*	Updates the properties of particle systems.
+*/
+void VulkanRenderingSystem::UpdateParticleSystemProperties() const NOEXCEPT
+{
+	//Go through every particle system component and re-upload the properties, since they might change.
+	const uint64 numberOfParticleSystemComponents{ ComponentManager::GetNumberOfParticleSystemComponents() };
+
+	//If there are none, just return.
+	if (numberOfParticleSystemComponents == 0)
+	{
+		return;
+	}
+
+	const ParticleSystemComponent *RESTRICT component{ ComponentManager::GetParticleSystemComponents() };
+
+	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
+	{
+		static_cast<VulkanUniformBuffer *const RESTRICT>(component->propertiesUniformBuffer)->UploadData(&VulkanParticleSystemProperties(component->properties));
+	}
+}
+
+/*
+*	Updates the vegetation culling.
+*/
+void VulkanRenderingSystem::UpdateVegetationCulling() const NOEXCEPT
+{
+	//Go through all vegetation components and update their culling
+	const uint64 numberOfVegetationComponents{ ComponentManager::GetNumberOfVegetationComponents() };
+
+	//If there are none, just return.
+	if (numberOfVegetationComponents == 0)
+	{
+		return;
+	}
+
+	VegetationComponent *RESTRICT renderComponent{ ComponentManager::GetVegetationComponents() };
+	const VegetationCullingComponent *RESTRICT cullingComponent{ ComponentManager::GetVegetationCullingComponents() };
+
+	const Vector3 &cameraWorldPosition{ activeCamera->GetPosition() };
+
+	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++renderComponent, ++cullingComponent)
+	{
+		for (uint64 i = 0, size = renderComponent->shouldDrawGridCell.Size(); i < size; ++i)
+		{
+			renderComponent->shouldDrawGridCell[i] =	CatalystMath::Absolute(cameraWorldPosition.X - cullingComponent->gridCellCenterLocations[i].X) <= cullingComponent->cutoffDistance &&
+														CatalystMath::Absolute(cameraWorldPosition.Z - cullingComponent->gridCellCenterLocations[i].Y) <= cullingComponent->cutoffDistance;
+		}
+	}
+}
+
+/*
+*	Updates the view frustum culling.
+*/
+void VulkanRenderingSystem::UpdateViewFrustumCulling() NOEXCEPT
+{
+	//Calulate the view matrix.
+	Vector3 cameraWorldPosition = activeCamera->GetPosition();
+	Vector3 forwardVector = activeCamera->GetForwardVector();
+	Vector3 upVector = activeCamera->GetUpVector();
+
+	Matrix4 cameraMatrix = Matrix4::LookAt(cameraWorldPosition, cameraWorldPosition + forwardVector, upVector);
+	Matrix4 viewMatrix{ projectionMatrix * cameraMatrix };
+
+	//Iterate over all static physical entity components to check if they are in the view frustum.
+	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
+	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
+	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents() };
+
+	for (uint64 i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++transformComponent)
+	{
+		//Make a local copy of the static physical entity's position.
+		const Vector3 position = transformComponent->position;
+		const Vector3 scale = transformComponent->scale;
+		const float biggestScale = CatalystMath::Maximum(scale.X, CatalystMath::Maximum(scale.Y, scale.Z));
+		const float scaledExtent = frustumCullingComponent->axisAlignedBoundingBox.maximum.X * biggestScale;
+
+		Vector4 corners[8];
+
+		corners[0] = Vector4(-scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
+		corners[1] = Vector4(-scaledExtent, scaledExtent, -scaledExtent, 1.0f);
+		corners[2] = Vector4(scaledExtent, scaledExtent, -scaledExtent, 1.0f);
+		corners[3] = Vector4(scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
+
+		corners[4] = Vector4(-scaledExtent, -scaledExtent, scaledExtent, 1.0f);
+		corners[5] = Vector4(-scaledExtent, scaledExtent, scaledExtent, 1.0f);
+		corners[6] = Vector4(scaledExtent, scaledExtent, scaledExtent, 1.0f);
+		corners[7] = Vector4(scaledExtent, -scaledExtent, scaledExtent, 1.0f);
+
+		for (uint8 i = 0; i < 8; ++i)
+		{
+			corners[i] += Vector4(position.X, position.Y, position.Z, 0.0f);
+
+			corners[i] = viewMatrix * corners[i];
+
+			corners[i].X /= corners[i].W;
+			corners[i].Y /= corners[i].W;
+			corners[i].Z /= corners[i].W;
+		}
+
+		frustumCullingComponent->isInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
+	}
+}
+
+/*
+*	Renders directional shadows.
+*/
+void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
+{
+	//Cache the current directional shadow command buffer.
+	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentDirectionalShadowCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
+	//Render terrain shadows.
+	{
+		//Cache the pipeline.
+		VulkanPipeline &directionalShadowTerrainPipeline{ *pipelines[INDEX(Pipeline::DirectionalShadowTerrain)] };
+
+		//Begin the pipeline and render pass.
+		commandBuffer->CommandBindPipeline(directionalShadowTerrainPipeline);
+		commandBuffer->CommandBeginRenderPassAndClear<2>(directionalShadowTerrainPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
+
+		//Iterate over all terrain entity components and draw them all.
+		const uint64 numberOfTerrainComponents{ ComponentManager::GetNumberOfTerrainComponents() };
+		const TerrainRenderComponent *RESTRICT renderComponent{ ComponentManager::GetTerrainRenderComponents() };
+
+		for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++renderComponent)
+		{
+			StaticArray<VulkanDescriptorSet, 2> terrainDescriptorSets
+			{
+				*currentDynamicUniformDataDescriptorSet,
+				renderComponent->descriptorSet
+			};
+
+			const VkDeviceSize offset{ 0 };
+
+			commandBuffer->CommandBindDescriptorSets(directionalShadowTerrainPipeline, static_cast<uint32>(terrainDescriptorSets.Size()), terrainDescriptorSets.Data());
+			commandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->vertexAndIndexBuffer)->Get(), &offset);
+			commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->vertexAndIndexBuffer), renderComponent->indexBufferOffset);
+			commandBuffer->CommandDrawIndexed(renderComponent->indexCount, 1);
+		}
+
+		//End the render pass.
+		commandBuffer->CommandEndRenderPass();
+	}
+
+	//Render instanced physical shadows.
+	{
+		//Iterate over all instanced physical entity components and draw them all.
+		const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };
+
+		//If there's none to draw - draw none!
+		if (numberOfInstancedPhysicalComponents > 0)
+		{
+			//Cache the pipeline.
+			VulkanPipeline &directionalShadowInstancedPhysicalPipeline{ *pipelines[INDEX(Pipeline::DirectionalShadowInstancedPhysical)] };
+
+			const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
+
+			//Begin the pipeline and render pass.
+			commandBuffer->CommandBindPipeline(directionalShadowInstancedPhysicalPipeline);
+			commandBuffer->CommandBeginRenderPass(directionalShadowInstancedPhysicalPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
+
+			for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
+			{
+				StaticArray<VulkanDescriptorSet, 2> instancedPhysicalDescriptorSets
+				{
+					*currentDynamicUniformDataDescriptorSet,
+					renderComponent->descriptorSet
+				};
+
+				StaticArray<VkBuffer, 2> instancedPhysicalBuffers
+				{
+					static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
+					static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
+				};
+
+				StaticArray<VkDeviceSize, 2> offsets
+				{
+					static_cast<VkDeviceSize>(0),
+					static_cast<VkDeviceSize>(0)
+				};
+
+				commandBuffer->CommandBindDescriptorSets(directionalShadowInstancedPhysicalPipeline, 2, instancedPhysicalDescriptorSets.Data());
+				commandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
+				commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
+				commandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
+			}
+
+			//End the render pass.
+			commandBuffer->CommandEndRenderPass();
+		}
+	}
+
+	//Blur the directional shadow map.
+	{
+		//Bind the shadow map blur pipeline.
+		commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::ShadowMapBlur)]);
+
+		//Bind the shadow map blur render pass.
+		commandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::ShadowMapBlur)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
+
+		//Bind the shadow map blur descriptor set.
+		StaticArray<VulkanDescriptorSet, 2> shadowMapBlurDescriptorSets
+		{
+			*currentDynamicUniformDataDescriptorSet,
+			descriptorSets[INDEX(DescriptorSet::ShadowMapBlur)]
+		};
+
+		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::ShadowMapBlur)], static_cast<uint32>(shadowMapBlurDescriptorSets.Size()), shadowMapBlurDescriptorSets.Data());
+
+		//Draw the viewport!
+		commandBuffer->CommandDraw(4, 1);
+
+		//End the shadow map blur render pass.
+		commandBuffer->CommandEndRenderPass();
+	}
+
+	//Signal the directional shadow event.
+	commandBuffer->CommandSetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+
+	//End the command buffer.
+	commandBuffer->End();
+
+	//Submit the directional shadow command buffer.
+	VulkanInterface::Instance->GetGraphicsQueue().Submit(*commandBuffer, 0, nullptr, 0, 0, nullptr, nullptr);
+}
+
+/*
 *	Updates the descriptor sets.
 */
 void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
@@ -2141,7 +2279,7 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 			renderTargets[INDEX(RenderTarget::SceneBufferNormalDirectionDepth)]->GetWriteDescriptorSet(oceanDescriptorSet, 1),
 			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetOceanMaterial().normalMapTexture)->GetWriteDescriptorSet(oceanDescriptorSet, 2)
 		};
-		
+
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(oceanWriteDescriptorSets.Size()), oceanWriteDescriptorSets.Data(), 0, nullptr);
 	}
 }
@@ -2264,108 +2402,4 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 
 	//Upload the dynamic uniform data to the uniform buffer.
 	frameData.GetCurrentDynamicUniformDataBuffer()->UploadData(static_cast<void*>(&dynamicUniformData));
-}
-
-/*
-*	Updates the properties of particle systems.
-*/
-void VulkanRenderingSystem::UpdateParticleSystemProperties() const NOEXCEPT
-{
-	//Go through every particle system component and re-upload the properties, since they might change.
-	const uint64 numberOfParticleSystemComponents{ ComponentManager::GetNumberOfParticleSystemComponents() };
-
-	//If there are none, just return.
-	if (numberOfParticleSystemComponents == 0)
-	{
-		return;
-	}
-
-	const ParticleSystemComponent *RESTRICT component{ ComponentManager::GetParticleSystemComponents() };
-
-	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
-	{
-		static_cast<VulkanUniformBuffer *const RESTRICT>(component->propertiesUniformBuffer)->UploadData(&VulkanParticleSystemProperties(component->properties));
-	}
-}
-
-/*
-*	Updates the vegetation culling.
-*/
-void VulkanRenderingSystem::UpdateVegetationCulling() const NOEXCEPT
-{
-	//Go through all vegetation components and update their culling
-	const uint64 numberOfVegetationComponents{ ComponentManager::GetNumberOfVegetationComponents() };
-
-	//If there are none, just return.
-	if (numberOfVegetationComponents == 0)
-	{
-		return;
-	}
-
-	VegetationComponent *RESTRICT renderComponent{ ComponentManager::GetVegetationComponents() };
-	const VegetationCullingComponent *RESTRICT cullingComponent{ ComponentManager::GetVegetationCullingComponents() };
-
-	const Vector3 &cameraWorldPosition{ activeCamera->GetPosition() };
-
-	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++renderComponent, ++cullingComponent)
-	{
-		for (uint64 i = 0, size = renderComponent->shouldDrawGridCell.Size(); i < size; ++i)
-		{
-			renderComponent->shouldDrawGridCell[i] =	CatalystMath::Absolute(cameraWorldPosition.X - cullingComponent->gridCellCenterLocations[i].X) <= cullingComponent->cutoffDistance &&
-														CatalystMath::Absolute(cameraWorldPosition.Z - cullingComponent->gridCellCenterLocations[i].Y) <= cullingComponent->cutoffDistance;
-		}
-	}
-}
-
-/*
-*	Updates the view frustum culling.
-*/
-void VulkanRenderingSystem::UpdateViewFrustumCulling() NOEXCEPT
-{
-	//Calulate the view matrix.
-	Vector3 cameraWorldPosition = activeCamera->GetPosition();
-	Vector3 forwardVector = activeCamera->GetForwardVector();
-	Vector3 upVector = activeCamera->GetUpVector();
-
-	Matrix4 cameraMatrix = Matrix4::LookAt(cameraWorldPosition, cameraWorldPosition + forwardVector, upVector);
-	Matrix4 viewMatrix{ projectionMatrix * cameraMatrix };
-
-	//Iterate over all static physical entity components to check if they are in the view frustum.
-	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
-	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
-	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents() };
-
-	for (uint64 i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++transformComponent)
-	{
-		//Make a local copy of the static physical entity's position.
-		const Vector3 position = transformComponent->position;
-		const Vector3 scale = transformComponent->scale;
-		const float biggestScale = CatalystMath::Maximum(scale.X, CatalystMath::Maximum(scale.Y, scale.Z));
-		const float scaledExtent = frustumCullingComponent->axisAlignedBoundingBox.maximum.X * biggestScale;
-
-		Vector4 corners[8];
-
-		corners[0] = Vector4(-scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
-		corners[1] = Vector4(-scaledExtent, scaledExtent, -scaledExtent, 1.0f);
-		corners[2] = Vector4(scaledExtent, scaledExtent, -scaledExtent, 1.0f);
-		corners[3] = Vector4(scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
-
-		corners[4] = Vector4(-scaledExtent, -scaledExtent, scaledExtent, 1.0f);
-		corners[5] = Vector4(-scaledExtent, scaledExtent, scaledExtent, 1.0f);
-		corners[6] = Vector4(scaledExtent, scaledExtent, scaledExtent, 1.0f);
-		corners[7] = Vector4(scaledExtent, -scaledExtent, scaledExtent, 1.0f);
-
-		for (uint8 i = 0; i < 8; ++i)
-		{
-			corners[i] += Vector4(position.X, position.Y, position.Z, 0.0f);
-
-			corners[i] = viewMatrix * corners[i];
-
-			corners[i].X /= corners[i].W;
-			corners[i].Y /= corners[i].W;
-			corners[i].Z /= corners[i].W;
-		}
-
-		frustumCullingComponent->isInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
-	}
 }

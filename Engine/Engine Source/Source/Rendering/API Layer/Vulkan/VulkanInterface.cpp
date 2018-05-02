@@ -84,9 +84,16 @@ void VulkanInterface::Release() NOEXCEPT
 	}
 
 	//Release all Vulkan command pool.
-	for (VulkanCommandPool &vulkanCommandPool : vulkanCommandPools)
+	for (VulkanCommandPool &vulkanCommandPool : vulkanCommandPoolsTemp)
 	{
 		vulkanCommandPool.Release();
+	}
+
+	//Release all Vulkan command pools.
+	for (VulkanCommandPool *const RESTRICT vulkanCommandPool : vulkanCommandPools)
+	{
+		vulkanCommandPool->Release();
+		delete vulkanCommandPool;
 	}
 
 	//Release all Vulkan bufferrs.
@@ -218,6 +225,21 @@ RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 textur
 	vulkan2DTextures.EmplaceSlow(new2DTexture);
 
 	return new2DTexture;
+}
+
+/*
+*	Creates and returns a graphics command pool.
+*/
+RESTRICTED VulkanCommandPool* VulkanInterface::CreateGraphicsCommandPool() NOEXCEPT
+{
+	VulkanCommandPool *const RESTRICT newCommandPool = new VulkanCommandPool;
+	newCommandPool->Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
+
+	vulkanCommandPoolsLock.Lock();
+	vulkanCommandPools.EmplaceSlow(newCommandPool);
+	vulkanCommandPoolsLock.Unlock();
+
+	return newCommandPool;
 }
 
 /*
@@ -426,7 +448,7 @@ VulkanCommandPool VulkanInterface::GetNewCommandPool(const uint32 queueFamilyInd
 	VulkanCommandPool newCommandPool;
 	newCommandPool.Initialize(queueFamilyIndex);
 
-	vulkanCommandPools.EmplaceSlow(newCommandPool);
+	vulkanCommandPoolsTemp.EmplaceSlow(newCommandPool);
 
 	return newCommandPool;
 }
