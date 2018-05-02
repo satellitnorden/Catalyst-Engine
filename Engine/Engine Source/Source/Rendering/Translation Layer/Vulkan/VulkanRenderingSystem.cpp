@@ -127,8 +127,8 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Begin the frame.
 	BeginFrame();
 
-	//Render the terrain.
-	RenderTerrain();
+	//Concatenate all secondary command buffers into the previous one.
+	ConcatenateCommandBuffers();
 
 	//Render all static physical entities.
 	RenderStaticPhysicalEntities();
@@ -1641,6 +1641,11 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->RenderTerrain();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::RenderTerrain)]));
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
 		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDynamicUniformData();
 	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)]));
 
@@ -1651,53 +1656,20 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 }
 
 /*
-*	Renders the terrain.
+*	Concatenates all secondary command buffers into the previous one.
 */
-void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
+void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 {
-	//Cache the current terrain command buffer.
-	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentTerrainCommandBuffer() };
+	//Begin the terrain render pass.
+	currentCommandBuffer->CommandBeginRenderPassAndClear<4>(pipelines[INDEX(Pipeline::Terrain)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Cache the pipeline.
-	VulkanPipeline &terrainSceneBufferPipeline{ *pipelines[INDEX(Pipeline::Terrain)] };
+	//Wait for the render terrain task to finish.
+	taskSemaphores[INDEX(TaskSemaphore::RenderTerrain)].WaitFor();
 
-	//Begin the pipeline and render pass.
-	//currentCommandBuffer->CommandBindPipeline(terrainSceneBufferPipeline);
-	currentCommandBuffer->CommandBeginRenderPassAndClear<4>(terrainSceneBufferPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	//Record the execute command for the terrain.
+	currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentTerrainCommandBuffer()->Get());
 
-	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::Terrain)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::Terrain)]->GetRenderPass().GetFrameBuffers()[0].Get());
-
-	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(terrainSceneBufferPipeline);
-
-	//Iterate over all terrain entity components and draw them all.
-	const uint64 numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
-	const TerrainRenderComponent *RESTRICT terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents() };
-
-	for (uint64 i = 0; i < numberOfTerrainEntityComponents; ++i, ++terrainRenderComponent)
-	{
-		StaticArray<VulkanDescriptorSet, 2> terrainDescriptorSets
-		{
-			*currentDynamicUniformDataDescriptorSet,
-			terrainRenderComponent->descriptorSet
-		};
-
-		const VkDeviceSize offset{ 0 };
-
-		commandBuffer->CommandBindDescriptorSets(terrainSceneBufferPipeline, 2, terrainDescriptorSets.Data());
-		commandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer)->Get(), &offset);
-		commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
-		commandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
-	}
-
-	//End the command buffer.
-	commandBuffer->End();
-
-	//Record the secondary command buffer into the primary.
-	currentCommandBuffer->CommandExecuteCommands(commandBuffer->Get());
-
-	//End the render pass.
+	//End the terrain render pass.
 	currentCommandBuffer->CommandEndRenderPass();
 }
 
@@ -2263,6 +2235,44 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 	//Submit the directional shadow command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*commandBuffer, 0, nullptr, 0, 0, nullptr, nullptr);
+}
+
+/*
+*	Renders the terrain.
+*/
+void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
+{
+	//Cache the current terrain command buffer.
+	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentTerrainCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::Terrain)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::Terrain)]->GetRenderPass().GetFrameBuffers()[0].Get());
+
+	//Bind the pipeline.
+	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Terrain)]);
+
+	//Iterate over all terrain entity components and draw them all.
+	const uint64 numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
+	const TerrainRenderComponent *RESTRICT terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents() };
+
+	for (uint64 i = 0; i < numberOfTerrainEntityComponents; ++i, ++terrainRenderComponent)
+	{
+		StaticArray<VulkanDescriptorSet, 2> terrainDescriptorSets
+		{
+			*currentDynamicUniformDataDescriptorSet,
+			terrainRenderComponent->descriptorSet
+		};
+
+		const VkDeviceSize offset{ 0 };
+
+		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Terrain)], 2, terrainDescriptorSets.Data());
+		commandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer)->Get(), &offset);
+		commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
+		commandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
+	}
+
+	//End the command buffer.
+	commandBuffer->End();
 }
 
 /*

@@ -286,6 +286,7 @@ private:
 	enum class TaskSemaphore : uint8
 	{
 		RenderDirectionalShadows,
+		RenderTerrain,
 		UpdateDynamicUniformData,
 		UpdateDescriptorSets,
 		UpdateParticleSystemProperties,
@@ -419,9 +420,9 @@ private:
 	void ExecuteFrameDependantAsynchronousTasks() NOEXCEPT;
 
 	/*
-	*	Renders the terrain.
+	*	Concatenates all secondary command buffers into the previous one.
 	*/
-	void RenderTerrain() NOEXCEPT;
+	void ConcatenateCommandBuffers() NOEXCEPT;
 
 	/*
 	*	Renders all static physical entities.
@@ -491,6 +492,11 @@ private:
 	*	Renders directional shadows.
 	*/
 	void RenderDirectionalShadows() NOEXCEPT;
+
+	/*
+	*	Renders the terrain.
+	*/
+	void RenderTerrain() NOEXCEPT;
 
 	/*
 	*	Updates the descriptor sets.
