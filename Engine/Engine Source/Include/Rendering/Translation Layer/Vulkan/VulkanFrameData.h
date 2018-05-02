@@ -22,7 +22,7 @@ public:
 		//Create the primary command buffers.
 		primaryCommandBuffers.UpsizeFast(frameDataCount);
 
-		for (auto &primaryCommandBuffer : primaryCommandBuffers)
+		for (VulkanCommandBuffer &primaryCommandBuffer : primaryCommandBuffers)
 		{
 			primaryCommandPool->AllocatePrimaryCommandBuffer(primaryCommandBuffer);
 		}
@@ -33,7 +33,7 @@ public:
 		//Create the directional shadow command buffers.
 		directionalShadowCommandBuffers.UpsizeFast(frameDataCount);
 
-		for (auto &directionalShadowCommandBuffer : directionalShadowCommandBuffers)
+		for (VulkanCommandBuffer &directionalShadowCommandBuffer : directionalShadowCommandBuffers)
 		{
 			directionalShadowCommandPool->AllocatePrimaryCommandBuffer(directionalShadowCommandBuffer);
 		}
@@ -41,7 +41,7 @@ public:
 		//Create the fences.
 		fences.UpsizeFast(frameDataCount);
 
-		for (auto &fence : fences)
+		for (VulkanFence *RESTRICT &fence : fences)
 		{
 			fence = VulkanInterface::Instance->CreateFence(VK_FENCE_CREATE_SIGNALED_BIT);
 		}
@@ -49,7 +49,7 @@ public:
 		//Create the dynamic uniform data buffers.
 		dynamicUniformDataBuffers.UpsizeFast(frameDataCount);
 
-		for (auto &dynamicUniformDataBuffer : dynamicUniformDataBuffers)
+		for (VulkanUniformBuffer *RESTRICT &dynamicUniformDataBuffer : dynamicUniformDataBuffers)
 		{
 			dynamicUniformDataBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(VulkanDynamicUniformData));
 		}
@@ -89,7 +89,7 @@ public:
 		//Create the directional shadow events.
 		directionalShadowEvents.UpsizeFast(frameDataCount);
 
-		for (auto &directionalShadowEvent : directionalShadowEvents)
+		for (VulkanEvent *RESTRICT &directionalShadowEvent : directionalShadowEvents)
 		{
 			directionalShadowEvent = VulkanInterface::Instance->CreateEvent();
 		}
