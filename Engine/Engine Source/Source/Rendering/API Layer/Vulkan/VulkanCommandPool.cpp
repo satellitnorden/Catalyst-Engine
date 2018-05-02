@@ -7,29 +7,13 @@
 #include <Rendering/API Layer/Vulkan/VulkanLogicalDevice.h>
 
 /*
-*	Default constructor.
-*/
-VulkanCommandPool::VulkanCommandPool() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanCommandPool::~VulkanCommandPool() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan command pool.
 */
-void VulkanCommandPool::Initialize(const uint32 queueFamilyIndex) NOEXCEPT
+void VulkanCommandPool::Initialize(const VkCommandPoolCreateFlags flags, const uint32 queueFamilyIndex) NOEXCEPT
 {
 	//Create the command pool create info.
 	VkCommandPoolCreateInfo commandPoolCreateInfo;
-	CreateCommandPoolCreateInfo(commandPoolCreateInfo, queueFamilyIndex);
+	CreateCommandPoolCreateInfo(commandPoolCreateInfo, flags, queueFamilyIndex);
 
 	//Create the command pool!
 	VULKAN_ERROR_CHECK(vkCreateCommandPool(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandPoolCreateInfo, nullptr, &vulkanCommandPool));
@@ -45,30 +29,30 @@ void VulkanCommandPool::Release() NOEXCEPT
 }
 
 /*
-*	Allocates and returns a Vulkan command buffer.
+*	Allocates and returns a primary command buffer.
 */
-void VulkanCommandPool::AllocateVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT
+void VulkanCommandPool::AllocatePrimaryCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT
 {
-	//Initialize the Vulkan command buffer.
+	//Initialize the primary command buffer.
 	vulkanCommandBuffer.Initialize(*this);
 }
 
 /*
-*	Frees a Vulkan command buffer.
+*	Frees a command buffer.
 */
-void VulkanCommandPool::FreeVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT
+void VulkanCommandPool::FreeCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT
 {
-	//Free the Vulkan command buffer.
+	//Free the command buffer.
 	vkFreeCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanCommandPool, 1, &vulkanCommandBuffer.Get());
 }
 
 /*
 *	Creates a command pool create info.
 */
-void VulkanCommandPool::CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &commandPoolCreateInfo, const uint32 queueFamilyIndex) const NOEXCEPT
+void VulkanCommandPool::CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &commandPoolCreateInfo, const VkCommandPoolCreateFlags flags, const uint32 queueFamilyIndex) const NOEXCEPT
 {
 	commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	commandPoolCreateInfo.pNext = nullptr;
-	commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	commandPoolCreateInfo.flags = flags;
 	commandPoolCreateInfo.queueFamilyIndex = queueFamilyIndex;
 }

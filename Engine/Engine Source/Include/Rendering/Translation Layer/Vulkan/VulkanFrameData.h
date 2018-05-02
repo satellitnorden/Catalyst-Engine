@@ -17,25 +17,25 @@ public:
 	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout, const VulkanDescriptorSetLayout environmentDescriptorSetLayout, const VulkanDescriptorSetLayout oceanDescriptorSetLayout) NOEXCEPT
 	{
 		//Create the primary command pool.
-		primaryCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool();
+		primaryCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
 		//Create the primary command buffers.
 		primaryCommandBuffers.UpsizeFast(frameDataCount);
 
 		for (auto &primaryCommandBuffer : primaryCommandBuffers)
 		{
-			primaryCommandPool->AllocateVulkanCommandBuffer(primaryCommandBuffer);
+			primaryCommandPool->AllocatePrimaryCommandBuffer(primaryCommandBuffer);
 		}
 
 		//Create the directional shadow command pool.
-		directionalShadowCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool();
+		directionalShadowCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
 		//Create the directional shadow command buffers.
 		directionalShadowCommandBuffers.UpsizeFast(frameDataCount);
 
 		for (auto &directionalShadowCommandBuffer : directionalShadowCommandBuffers)
 		{
-			directionalShadowCommandPool->AllocateVulkanCommandBuffer(directionalShadowCommandBuffer);
+			directionalShadowCommandPool->AllocatePrimaryCommandBuffer(directionalShadowCommandBuffer);
 		}
 
 		//Create the fences.

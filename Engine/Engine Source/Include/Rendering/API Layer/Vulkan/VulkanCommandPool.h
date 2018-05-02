@@ -15,16 +15,6 @@ class VulkanCommandPool final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanCommandPool() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanCommandPool() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan command pool.
 	*/
 	const VkCommandPool& Get() const NOEXCEPT { return vulkanCommandPool; }
@@ -32,7 +22,7 @@ public:
 	/*
 	*	Initializes this Vulkan command pool.
 	*/
-	void Initialize(const uint32 queueFamilyIndex) NOEXCEPT;
+	void Initialize(const VkCommandPoolCreateFlags flags, const uint32 queueFamilyIndex) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan command pool.
@@ -40,14 +30,14 @@ public:
 	void Release() NOEXCEPT;
 
 	/*
-	*	Allocates and returns a Vulkan command buffer.
+	*	Allocates and returns a primary command buffer.
 	*/
-	void AllocateVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT;
+	void AllocatePrimaryCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT;
 
 	/*
-	*	Frees a Vulkan command buffer.
+	*	Frees a command buffer.
 	*/
-	void FreeVulkanCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT;
+	void FreeCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT;
 
 private:
 
@@ -57,6 +47,6 @@ private:
 	/*
 	*	Creates a command pool create info.
 	*/
-	void CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &commandPoolCreateInfo, const uint32 queueFamilyIndex) const NOEXCEPT;
+	void CreateCommandPoolCreateInfo(VkCommandPoolCreateInfo &commandPoolCreateInfo, const VkCommandPoolCreateFlags flags, const uint32 queueFamilyIndex) const NOEXCEPT;
 
 };

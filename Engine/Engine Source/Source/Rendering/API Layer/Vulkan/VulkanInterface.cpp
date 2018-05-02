@@ -33,9 +33,6 @@ void VulkanInterface::Initialize(Window &window) NOEXCEPT
 	queues[INDEX(Queue::Present)].Initialize(vulkanPhysicalDevice.GetPresentQueueFamilyIndex());
 #endif
 
-	//Initialize the transfer Vulkan command pool.
-	transferVulkanCommandPool.Initialize(vulkanPhysicalDevice.GetTransferQueueFamilyIndex());
-
 	//Initialize the Vulkan swap chain.
 	vulkanSwapchain.Initialize();
 
@@ -166,9 +163,6 @@ void VulkanInterface::Release() NOEXCEPT
 	//Release the Vulkan descriptor pool.
 	vulkanDescriptorPool.Release();
 
-	//Release the transfer Vulkan command pool.
-	transferVulkanCommandPool.Release();
-
 	//Release the Vulkan swap chain.
 	vulkanSwapchain.Release();
 
@@ -201,10 +195,10 @@ RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 textur
 /*
 *	Creates and returns a graphics command pool.
 */
-RESTRICTED VulkanCommandPool* VulkanInterface::CreateGraphicsCommandPool() NOEXCEPT
+RESTRICTED VulkanCommandPool* VulkanInterface::CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
 	VulkanCommandPool *const RESTRICT newCommandPool = new VulkanCommandPool;
-	newCommandPool->Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
+	newCommandPool->Initialize(flags, vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
 
 	vulkanCommandPoolsLock.Lock();
 	vulkanCommandPools.EmplaceSlow(newCommandPool);

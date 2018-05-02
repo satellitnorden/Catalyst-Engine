@@ -5,22 +5,6 @@
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
 
 /*
-*	Default constructor.
-*/
-VulkanPhysicalDevice::VulkanPhysicalDevice() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanPhysicalDevice::~VulkanPhysicalDevice() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan physical device.
 */
 void VulkanPhysicalDevice::Initialize() NOEXCEPT

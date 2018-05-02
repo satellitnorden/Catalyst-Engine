@@ -120,7 +120,7 @@ public:
 	/*
 	*	Creates and returns a graphics command pool.
 	*/
-	RESTRICTED VulkanCommandPool* CreateGraphicsCommandPool() NOEXCEPT;
+	RESTRICTED VulkanCommandPool* CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
 
 	/*
 	*	Creates and returns a constant buffer.
@@ -206,9 +206,6 @@ private:
 
 	//The Vulkan swap chain.
 	VulkanSwapchain vulkanSwapchain;
-
-	//The transfer Vulkan command pool.
-	VulkanCommandPool transferVulkanCommandPool;
 
 	//The Vulkan descriptor pool.
 	VulkanDescriptorPool vulkanDescriptorPool;

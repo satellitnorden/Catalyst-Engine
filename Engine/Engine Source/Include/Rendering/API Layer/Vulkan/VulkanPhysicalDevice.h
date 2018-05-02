@@ -12,16 +12,6 @@ class VulkanPhysicalDevice final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanPhysicalDevice() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanPhysicalDevice() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan physical device object.
 	*/
 	const VkPhysicalDevice& Get() const NOEXCEPT { return vulkanPhysicalDevice; }
@@ -70,11 +60,6 @@ public:
 	*	Returns the present queue family index.
 	*/
 	uint32 GetPresentQueueFamilyIndex() const NOEXCEPT { return presentQueueFamilyIndex; }
-
-	/*
-	*	Returns the transfer queue family index.
-	*/
-	uint32 GetTransferQueueFamilyIndex() const NOEXCEPT { return transferQueueFamilyIndex; }
 
 private:
 
