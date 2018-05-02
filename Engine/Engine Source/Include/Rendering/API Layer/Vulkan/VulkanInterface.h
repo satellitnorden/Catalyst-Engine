@@ -103,29 +103,6 @@ public:
 #endif
 
 	/*
-	*	Returns the transfer queue.
-	*/
-#if RENDERDOC_DEBUGGING
-	const VulkanQueue& GetTransferQueue() const NOEXCEPT { return queues[INDEX(Queue::Graphics)]; }
-#else
-	const VulkanQueue& GetTransferQueue() const NOEXCEPT { return queues[INDEX(Queue::Transfer)]; }
-#endif
-
-	/*
-	*	Returns the graphics command pool.
-	*/
-	const VulkanCommandPool& GetGraphicsCommandPool() NOEXCEPT;
-
-	/*
-	*	Returns the transfer command pool.
-	*/
-#if RENDERDOC_DEBUGGING
-	const VulkanCommandPool& GetTransferCommandPool() NOEXCEPT { return GetGraphicsCommandPool(); }
-#else
-	const VulkanCommandPool& GetTransferCommandPool() NOEXCEPT;
-#endif
-
-	/*
 	*	Returns the descriptor pool.
 	*/
 	const VulkanDescriptorPool& GetDescriptorPool() const NOEXCEPT { return vulkanDescriptorPool; }
@@ -200,6 +177,11 @@ public:
 	*/
 	RESTRICTED VulkanUniformBuffer* CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT;
 
+	/*
+	*	Destroys a Vulkan command pool.
+	*/
+	void DestroyCommandPool(VulkanCommandPool *const RESTRICT commandPool) NOEXCEPT;
+
 private:
 
 	//Enumeration covering all queues.
@@ -207,7 +189,6 @@ private:
 	{
 		Graphics,
 		Present,
-		Transfer,
 		NumberOfQueues
 	};
 
@@ -237,9 +218,6 @@ private:
 
 	//Container for all Vulkan 2D textures.
 	DynamicArray<Vulkan2DTexture *RESTRICT> vulkan2DTextures;
-
-	//Container for all Vulkan command pools.
-	DynamicArray<VulkanCommandPool> vulkanCommandPoolsTemp;
 
 	//The lock for all Vulkan command pools.
 	Spinlock vulkanCommandPoolsLock;

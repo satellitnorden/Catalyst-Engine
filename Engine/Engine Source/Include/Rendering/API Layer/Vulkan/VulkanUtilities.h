@@ -21,9 +21,12 @@ public:
 	*/
 	static void CopyBufferToBuffer(const VkDeviceSize &size, const VkBuffer &sourceBuffer, VkBuffer &destinationBuffer) NOEXCEPT
 	{
+		//Create the command pool.
+		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool() };
+
 		//Create a command buffer for the copy operation.
 		VulkanCommandBuffer copyCommandBuffer;
-		VulkanInterface::Instance->GetTransferCommandPool().AllocateVulkanCommandBuffer(copyCommandBuffer);
+		commandPool->AllocateVulkanCommandBuffer(copyCommandBuffer);
 
 		//Begin the command buffer.
 		copyCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -42,13 +45,13 @@ public:
 		copyCommandBuffer.End();
 
 		//Submit the command buffer to the transfer queue.
-		VulkanInterface::Instance->GetTransferQueue().Submit(copyCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(copyCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
 
 		//Wait idle for the transfer queue to finish.
-		VulkanInterface::Instance->GetTransferQueue().WaitIdle();
+		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
 		//Free the copy command buffer.
-		VulkanInterface::Instance->GetTransferCommandPool().FreeVulkanCommandBuffer(copyCommandBuffer);
+		commandPool->FreeVulkanCommandBuffer(copyCommandBuffer);
 	}
 
 	/*
@@ -56,9 +59,12 @@ public:
 	*/
 	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 mipLevels, const uint32 layerCount, const uint32 width, const uint32 height) NOEXCEPT
 	{
+		//Create the command pool.
+		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool() };
+
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transferCommandBuffer;
-		VulkanInterface::Instance->GetTransferCommandPool().AllocateVulkanCommandBuffer(transferCommandBuffer);
+		commandPool->AllocateVulkanCommandBuffer(transferCommandBuffer);
 
 		//Create the buffer image copy.
 		DynamicArray<VkBufferImageCopy> bufferImageCopies;
@@ -95,13 +101,13 @@ public:
 		transferCommandBuffer.End();
 
 		//Submit the command buffer.
-		VulkanInterface::Instance->GetTransferQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
 
 		//Wait for the transfer operation to finish.
-		VulkanInterface::Instance->GetTransferQueue().WaitIdle();
+		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
 		//Free the transfer command buffer,
-		VulkanInterface::Instance->GetTransferCommandPool().FreeVulkanCommandBuffer(transferCommandBuffer);
+		commandPool->FreeVulkanCommandBuffer(transferCommandBuffer);
 	}
 
 	/*
@@ -109,6 +115,9 @@ public:
 	*/
 	static void CopyImageToBuffer(const uint32 imageWidth, const uint32 imageHeight, const VkImage vulkanImage, const VkBuffer vulkanBuffer) NOEXCEPT
 	{
+		//Create the command pool.
+		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool() };
+
 		//Create the buffer image copy.
 		VkBufferImageCopy bufferImageCopy;
 
@@ -124,7 +133,7 @@ public:
 
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transferCommandBuffer;
-		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(transferCommandBuffer);
+		commandPool->AllocateVulkanCommandBuffer(transferCommandBuffer);
 
 		//Begin the transfer ommand buffer.
 		transferCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -142,7 +151,7 @@ public:
 		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
 		//Free the transfer command buffer,
-		VulkanInterface::Instance->GetGraphicsCommandPool().FreeVulkanCommandBuffer(transferCommandBuffer);
+		commandPool->FreeVulkanCommandBuffer(transferCommandBuffer);
 	}
 
 	/*
@@ -150,6 +159,9 @@ public:
 	*/
 	static void CopyImageToImage(const uint32 imageWidth, const uint32 imageHeight, const VkImage sourceImage, const VkImage destinationImage) NOEXCEPT
 	{
+		//Create the command pool.
+		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool() };
+
 		//Create the image copy.
 		VkImageCopy imageCopy;
 		imageCopy.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -166,7 +178,7 @@ public:
 
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transferCommandBuffer;
-		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(transferCommandBuffer);
+		commandPool->AllocateVulkanCommandBuffer(transferCommandBuffer);
 
 		//Begin the transfer ommand buffer.
 		transferCommandBuffer.Begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -184,7 +196,7 @@ public:
 		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
 		//Free the transfer command buffer,
-		VulkanInterface::Instance->GetGraphicsCommandPool().FreeVulkanCommandBuffer(transferCommandBuffer);
+		commandPool->FreeVulkanCommandBuffer(transferCommandBuffer);
 	}
 
 	/*
@@ -376,9 +388,12 @@ public:
 	*/
 	static void TransitionImageToLayout(const VkFormat format, const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageAspectFlags aspectMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, const uint32 mipLevels, const uint32 layerCount, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, VkImage &vulkanImage) NOEXCEPT
 	{
+		//Create the command pool.
+		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool() };
+
 		//Create the transition command buffer.
 		VulkanCommandBuffer transitionCommandBuffer;
-		VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(transitionCommandBuffer);
+		commandPool->AllocateVulkanCommandBuffer(transitionCommandBuffer);
 
 		//Create the image memory barrier.
 		VkImageMemoryBarrier imageMemoryBarrier;
@@ -416,7 +431,7 @@ public:
 		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
 
 		//Free the transition command buffer.
-		VulkanInterface::Instance->GetGraphicsCommandPool().FreeVulkanCommandBuffer(transitionCommandBuffer);
+		commandPool->FreeVulkanCommandBuffer(transitionCommandBuffer);
 	}
 
 };

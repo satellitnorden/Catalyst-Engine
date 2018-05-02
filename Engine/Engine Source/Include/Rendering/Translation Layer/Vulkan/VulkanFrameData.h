@@ -16,12 +16,15 @@ public:
 	*/
 	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout, const VulkanDescriptorSetLayout environmentDescriptorSetLayout, const VulkanDescriptorSetLayout oceanDescriptorSetLayout) NOEXCEPT
 	{
-		//Create the command buffers.
-		commandBuffers.UpsizeFast(frameDataCount);
+		//Create the primary command pool.
+		primaryCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool();
 
-		for (auto &commandBuffer : commandBuffers)
+		//Create the primary command buffers.
+		primaryCommandBuffers.UpsizeFast(frameDataCount);
+
+		for (auto &primaryCommandBuffer : primaryCommandBuffers)
 		{
-			VulkanInterface::Instance->GetGraphicsCommandPool().AllocateVulkanCommandBuffer(commandBuffer);
+			primaryCommandPool->AllocateVulkanCommandBuffer(primaryCommandBuffer);
 		}
 
 		//Create the directional shadow command pool.
@@ -109,12 +112,12 @@ public:
 	}
 
 	/*
-	*	Returns the current command buffer.
+	*	Returns the current primary command buffer.
 	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentCommandBuffer() NOEXCEPT
+	VulkanCommandBuffer *RESTRICT GetCurrentPrimaryCommandBuffer() NOEXCEPT
 	{
-		//Return the current command buffer.
-		return &commandBuffers[currentFrame];
+		//Return the current primary command buffer.
+		return &primaryCommandBuffers[currentFrame];
 	}
 
 	/*
@@ -173,8 +176,11 @@ private:
 	//Keeps track of the current frame.
 	uint32 currentFrame;
 
-	//The command buffers.
-	DynamicArray<VulkanCommandBuffer> commandBuffers;
+	//The primary command pool.
+	VulkanCommandPool *RESTRICT primaryCommandPool;
+
+	//The primary command buffers.
+	DynamicArray<VulkanCommandBuffer> primaryCommandBuffers;
 
 	//The directional shadow command pool.
 	VulkanCommandPool *RESTRICT directionalShadowCommandPool;

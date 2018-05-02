@@ -31,9 +31,6 @@ void VulkanInterface::Initialize(Window &window) NOEXCEPT
 #if !RENDERDOC_DEBUGGING
 	//Initialize the present queue.
 	queues[INDEX(Queue::Present)].Initialize(vulkanPhysicalDevice.GetPresentQueueFamilyIndex());
-
-	//Initialize the transfer queue.
-	queues[INDEX(Queue::Transfer)].Initialize(vulkanPhysicalDevice.GetTransferQueueFamilyIndex());
 #endif
 
 	//Initialize the transfer Vulkan command pool.
@@ -73,7 +70,6 @@ void VulkanInterface::Release() NOEXCEPT
 	queues[INDEX(Queue::Graphics)].WaitIdle();
 #if !RENDERDOC_DEBUGGING
 	queues[INDEX(Queue::Present)].WaitIdle();
-	queues[INDEX(Queue::Transfer)].WaitIdle();
 #endif
 
 	//Release all Vulkan 2D textures.
@@ -81,12 +77,6 @@ void VulkanInterface::Release() NOEXCEPT
 	{
 		vulkan2DTexture->Release();
 		delete vulkan2DTexture;
-	}
-
-	//Release all Vulkan command pool.
-	for (VulkanCommandPool &vulkanCommandPool : vulkanCommandPoolsTemp)
-	{
-		vulkanCommandPool.Release();
 	}
 
 	//Release all Vulkan command pools.
@@ -191,25 +181,6 @@ void VulkanInterface::Release() NOEXCEPT
 	//Release the Vulkan instance.
 	vulkanInstance.Release();
 }
-
-/*
-*	Returns the graphics command pool.
-*/
-const VulkanCommandPool& VulkanInterface::GetGraphicsCommandPool() NOEXCEPT
-{
-	static thread_local VulkanCommandPool graphicsCommandPool{ GetNewCommandPool(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex()) };
-
-	return graphicsCommandPool;
-}
-
-#if !RENDERDOC_DEBUGGING
-const VulkanCommandPool& VulkanInterface::GetTransferCommandPool() NOEXCEPT
-{
-	static thread_local VulkanCommandPool transferCommandPool{ GetNewCommandPool(vulkanPhysicalDevice.GetTransferQueueFamilyIndex()) };
-
-	return transferCommandPool;
-}
-#endif
 
 /*
 *	Creates and returns a 2D texture with void data.
@@ -438,17 +409,15 @@ RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(const uint6
 }
 
 /*
-*	Returns a new command pool.
+*	Destroys a Vulkan command pool.
 */
-VulkanCommandPool VulkanInterface::GetNewCommandPool(const uint32 queueFamilyIndex) NOEXCEPT
+void VulkanInterface::DestroyCommandPool(VulkanCommandPool *const RESTRICT commandPool) NOEXCEPT
 {
-	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	//Release the command pool.
+	commandPool->Release();
 
-	VulkanCommandPool newCommandPool;
-	newCommandPool.Initialize(queueFamilyIndex);
-
-	vulkanCommandPoolsTemp.EmplaceSlow(newCommandPool);
-
-	return newCommandPool;
+	//Erase the command pool from the command pools list.
+	vulkanCommandPoolsLock.Lock();
+	vulkanCommandPools.Erase(commandPool);
+	vulkanCommandPoolsLock.Unlock();
 }

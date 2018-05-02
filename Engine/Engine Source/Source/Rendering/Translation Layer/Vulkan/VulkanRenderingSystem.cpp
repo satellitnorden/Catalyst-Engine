@@ -1608,7 +1608,7 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 	frameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
 
 	//Set the current command buffer.
-	currentCommandBuffer = frameData.GetCurrentCommandBuffer();
+	currentCommandBuffer = frameData.GetCurrentPrimaryCommandBuffer();
 
 	//Set the current dynamic uniform data descriptor set.
 	currentDynamicUniformDataDescriptorSet = frameData.GetCurrentDynamicUniformDataDescriptorSet();
