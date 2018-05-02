@@ -50,7 +50,7 @@ void VulkanCommandBuffer::BeginSecondary(const VkCommandBufferUsageFlags command
 /*
 *	Records a begin render pass command.
 */
-void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea) NOEXCEPT
+void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea, const VkSubpassContents contents) NOEXCEPT
 {
 	VkRenderPassBeginInfo renderPassBeginInfo;
 
@@ -63,7 +63,7 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanR
 	renderPassBeginInfo.clearValueCount = 0;
 	renderPassBeginInfo.pClearValues = nullptr;
 
-	vkCmdBeginRenderPass(vulkanCommandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(vulkanCommandBuffer, &renderPassBeginInfo, contents);
 }
 
 /*
@@ -120,6 +120,14 @@ void VulkanCommandBuffer::CommandDrawIndexed(const uint32 indexCount, const uint
 void VulkanCommandBuffer::CommandEndRenderPass() NOEXCEPT
 {
 	vkCmdEndRenderPass(vulkanCommandBuffer);
+}
+
+/*
+*	Records an execute commands command.
+*/
+void VulkanCommandBuffer::CommandExecuteCommands(const VkCommandBuffer commandBuffer) NOEXCEPT
+{
+	vkCmdExecuteCommands(vulkanCommandBuffer, 1, &commandBuffer);
 }
 
 /*

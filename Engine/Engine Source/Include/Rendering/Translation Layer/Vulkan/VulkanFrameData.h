@@ -38,6 +38,17 @@ public:
 			directionalShadowCommandPool->AllocatePrimaryCommandBuffer(directionalShadowCommandBuffer);
 		}
 
+		//Create the terrain command pool.
+		terrainCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+		//Create the terrain command buffers.
+		terrainCommandBuffers.UpsizeFast(frameDataCount);
+
+		for (VulkanCommandBuffer &terrainCommandBuffer : terrainCommandBuffers)
+		{
+			terrainCommandPool->AllocateSecondaryCommandBuffer(terrainCommandBuffer);
+		}
+
 		//Create the fences.
 		fences.UpsizeFast(frameDataCount);
 
@@ -114,16 +125,17 @@ public:
 	/*
 	*	Returns the current primary command buffer.
 	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentPrimaryCommandBuffer() NOEXCEPT
-	{
-		//Return the current primary command buffer.
-		return &primaryCommandBuffers[currentFrame];
-	}
+	VulkanCommandBuffer *RESTRICT GetCurrentPrimaryCommandBuffer() NOEXCEPT { return &primaryCommandBuffers[currentFrame]; }
 
 	/*
 	*	Returns the current directional shadow command buffer.
 	*/
 	VulkanCommandBuffer *RESTRICT GetCurrentDirectionalShadowCommandBuffer() NOEXCEPT { return &directionalShadowCommandBuffers[currentFrame]; }
+
+	/*
+	*	Returns the current terrain command buffer.
+	*/
+	VulkanCommandBuffer *RESTRICT GetCurrentTerrainCommandBuffer() NOEXCEPT { return &terrainCommandBuffers[currentFrame]; }
 
 	/*
 	*	Returns the current fence.
@@ -187,6 +199,12 @@ private:
 
 	//The directional shadow command buffers.
 	DynamicArray<VulkanCommandBuffer> directionalShadowCommandBuffers;
+
+	//The terrain command pool.
+	VulkanCommandPool *RESTRICT terrainCommandPool;
+
+	//The terrain command buffers.
+	DynamicArray<VulkanCommandBuffer> terrainCommandBuffers;
 
 	//The fences.
 	DynamicArray<VulkanFence *RESTRICT> fences;

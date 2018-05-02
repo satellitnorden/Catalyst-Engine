@@ -42,13 +42,13 @@ public:
 	/*
 	*	Records a begin render pass command.
 	*/
-	void CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea) NOEXCEPT;
+	void CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea, const VkSubpassContents contents) NOEXCEPT;
 
 	/*
 	*	Records a begin render pass command and clears.
 	*/
 	template <uint32 NumberOfClearValues>
-	void CommandBeginRenderPassAndClear(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea) NOEXCEPT;
+	void CommandBeginRenderPassAndClear(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea, const VkSubpassContents contents) NOEXCEPT;
 
 	/*
 	*	Records a bind descriptor sets command.
@@ -84,6 +84,11 @@ public:
 	*	Records an end render pass command.
 	*/
 	void CommandEndRenderPass() NOEXCEPT;
+
+	/*
+	*	Records an execute commands command.
+	*/
+	void CommandExecuteCommands(const VkCommandBuffer commandBuffer) NOEXCEPT;
 
 	/*
 	*	Records a push constants command.

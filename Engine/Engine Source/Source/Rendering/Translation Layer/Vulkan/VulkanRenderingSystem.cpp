@@ -1655,12 +1655,21 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 */
 void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 {
+	//Cache the current terrain command buffer.
+	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentTerrainCommandBuffer() };
+
 	//Cache the pipeline.
 	VulkanPipeline &terrainSceneBufferPipeline{ *pipelines[INDEX(Pipeline::Terrain)] };
 
 	//Begin the pipeline and render pass.
-	currentCommandBuffer->CommandBindPipeline(terrainSceneBufferPipeline);
-	currentCommandBuffer->CommandBeginRenderPassAndClear<4>(terrainSceneBufferPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	//currentCommandBuffer->CommandBindPipeline(terrainSceneBufferPipeline);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<4>(terrainSceneBufferPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+
+	//Begin the command buffer.
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::Terrain)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::Terrain)]->GetRenderPass().GetFrameBuffers()[0].Get());
+
+	//Bind the pipeline.
+	commandBuffer->CommandBindPipeline(terrainSceneBufferPipeline);
 
 	//Iterate over all terrain entity components and draw them all.
 	const uint64 numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
@@ -1676,11 +1685,17 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 
 		const VkDeviceSize offset{ 0 };
 
-		currentCommandBuffer->CommandBindDescriptorSets(terrainSceneBufferPipeline, 2, terrainDescriptorSets.Data());
-		currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer)->Get(), &offset);
-		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
-		currentCommandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
+		commandBuffer->CommandBindDescriptorSets(terrainSceneBufferPipeline, 2, terrainDescriptorSets.Data());
+		commandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer)->Get(), &offset);
+		commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
+		commandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
 	}
+
+	//End the command buffer.
+	commandBuffer->End();
+
+	//Record the secondary command buffer into the primary.
+	currentCommandBuffer->CommandExecuteCommands(commandBuffer->Get());
 
 	//End the render pass.
 	currentCommandBuffer->CommandEndRenderPass();
@@ -1710,7 +1725,7 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(StaticPhysicalPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(StaticPhysicalPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	currentCommandBuffer->CommandBeginRenderPass(StaticPhysicalPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
 
 	for (uint64 i = 0; i < numberOfStaticPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{
@@ -1758,7 +1773,7 @@ void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(instancedPhysicalPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(instancedPhysicalPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	currentCommandBuffer->CommandBeginRenderPass(instancedPhysicalPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
 
 	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
 	{
@@ -1811,7 +1826,7 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(vegetationPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(vegetationPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	currentCommandBuffer->CommandBeginRenderPass(vegetationPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
 
 	//Wait for the vegetation culling task to finish.
 	taskSemaphores[INDEX(TaskSemaphore::UpdateVegetationCulling)].WaitFor();
@@ -1852,7 +1867,7 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Lighting)]);
 
 	//Bind the lighting render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
 
 	//Bind the scene buffer descriptor set.
 	StaticArray<VulkanDescriptorSet, 3> lightingDescriptorSets
@@ -1886,7 +1901,7 @@ void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::CubeMap)]);
 
 	//Bind the cube map render pass.
-	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
 
 	//Bind the sky box descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> skyBoxDescriptorSets
@@ -1929,7 +1944,7 @@ void VulkanRenderingSystem::RenderParticleSystemEntities() NOEXCEPT
 
 	//Begin the pipeline and render pass.
 	currentCommandBuffer->CommandBindPipeline(particleSystemPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(particleSystemPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	currentCommandBuffer->CommandBeginRenderPass(particleSystemPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
 
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
@@ -1958,7 +1973,7 @@ void VulkanRenderingSystem::RenderOcean() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Ocean)]);
 
 	//Bind the ocean render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
 
 	//Bind the ocean descriptor set.
 	StaticArray<VulkanDescriptorSet, 3> oceanDescriptorSets
@@ -1986,7 +2001,7 @@ void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::PostProcessing)]);
 
 	//Bind the post processing render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
 
 	//Bind the post processing descriptor set.
 	StaticArray<VulkanDescriptorSet, 2> postProcessingDescriptorSets
@@ -2142,7 +2157,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 		//Begin the pipeline and render pass.
 		commandBuffer->CommandBindPipeline(directionalShadowTerrainPipeline);
-		commandBuffer->CommandBeginRenderPassAndClear<2>(directionalShadowTerrainPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
+		commandBuffer->CommandBeginRenderPassAndClear<2>(directionalShadowTerrainPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_INLINE);
 
 		//Iterate over all terrain entity components and draw them all.
 		const uint64 numberOfTerrainComponents{ ComponentManager::GetNumberOfTerrainComponents() };
@@ -2183,7 +2198,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 			//Begin the pipeline and render pass.
 			commandBuffer->CommandBindPipeline(directionalShadowInstancedPhysicalPipeline);
-			commandBuffer->CommandBeginRenderPass(directionalShadowInstancedPhysicalPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
+			commandBuffer->CommandBeginRenderPass(directionalShadowInstancedPhysicalPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_INLINE);
 
 			for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
 			{
@@ -2222,7 +2237,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 		commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::ShadowMapBlur)]);
 
 		//Bind the shadow map blur render pass.
-		commandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::ShadowMapBlur)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION });
+		commandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::ShadowMapBlur)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_INLINE);
 
 		//Bind the shadow map blur descriptor set.
 		StaticArray<VulkanDescriptorSet, 2> shadowMapBlurDescriptorSets

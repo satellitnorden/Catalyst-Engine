@@ -4,7 +4,7 @@
 *	Records a begin render pass command and clears.
 */
 template <uint32 NumberOfClearValues>
-void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea) NOEXCEPT
+void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea, const VkSubpassContents contents) NOEXCEPT
 {
 	StaticArray<VkClearValue, NumberOfClearValues> clearValues;
 
@@ -25,5 +25,5 @@ void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VulkanRenderPass 
 	renderPassBeginInfo.clearValueCount = NumberOfClearValues;
 	renderPassBeginInfo.pClearValues = clearValues.Data();
 
-	vkCmdBeginRenderPass(vulkanCommandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(vulkanCommandBuffer, &renderPassBeginInfo, contents);
 }
