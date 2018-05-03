@@ -127,17 +127,11 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Begin the frame.
 	BeginFrame();
 
+	//Execute the frame-dependant asynchronous tasks.
+	ExecuteFrameDependantAsynchronousTasks();
+
 	//Concatenate all secondary command buffers into the previous one.
 	ConcatenateCommandBuffers();
-
-	//Render all static physical entities.
-	RenderStaticPhysicalEntities();
-
-	//Render all instanced physical entities.
-	RenderInstancedPhysicalEntities();
-
-	//Render all vegetation entities.
-	RenderVegetationEntities();
 
 	//Render the lighting.
 	RenderLighting();
@@ -1621,12 +1615,6 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 
 	//Reset the current fence.
 	frameData.GetCurrentFence()->Reset();
-
-	//Execute the frame-dependant asynchronous tasks.
-	ExecuteFrameDependantAsynchronousTasks();
-
-	//Set up the current command buffer.
-	currentCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 }
 
 /*
@@ -1646,6 +1634,21 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->RenderStaticPhysicalEntities();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::RenderStaticPhysicalEntities)]));
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->RenderInstancedPhysicalEntities();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::RenderInstancedPhysicalEntities)]));
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->RenderVegetationEntities();
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::RenderVegetationEntities)]));
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
 		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDynamicUniformData();
 	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)]));
 
@@ -1660,6 +1663,9 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 */
 void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 {
+	//Begin up the primary command buffer.
+	currentCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
 	//Begin the terrain render pass.
 	currentCommandBuffer->CommandBeginRenderPassAndClear<4>(pipelines[INDEX(Pipeline::Terrain)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
@@ -1671,160 +1677,51 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 	//End the terrain render pass.
 	currentCommandBuffer->CommandEndRenderPass();
-}
 
-/*
-*	Renders all static physical entities.
-*/
-void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
-{
-	//Wait for the update view frustum culling  task to finish.
-	taskSemaphores[INDEX(TaskSemaphore::UpdateViewFrustumCuling)].WaitFor();
-
-	//Cache the pipeline.
-	VulkanPipeline &StaticPhysicalPipeline{ *pipelines[INDEX(Pipeline::StaticPhysical)] };
-
-	//Iterate over all static physical entity components and draw them all.
-	const uint64 numberOfStaticPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
-
-	if (numberOfStaticPhysicalEntityComponents == 0)
+	if (ComponentManager::GetNumberOfStaticPhysicalComponents() > 0)
 	{
-		return;
+		//Begin the static physical entities render pass.
+		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::StaticPhysical)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+
+		//Wait for the render static physical entities task to finish.
+		taskSemaphores[INDEX(TaskSemaphore::RenderStaticPhysicalEntities)].WaitFor();
+
+		//Record the execute command for the static physical entities.
+		currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentStaticPhysicalEntitiesCommandBuffer()->Get());
+
+		//End the static physical entities render pass.
+		currentCommandBuffer->CommandEndRenderPass();
 	}
 
-	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
-	const StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents() };
-
-	//Begin the pipeline and render pass.
-	currentCommandBuffer->CommandBindPipeline(StaticPhysicalPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(StaticPhysicalPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
-
-	for (uint64 i = 0; i < numberOfStaticPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
+	if (ComponentManager::GetNumberOfInstancedPhysicalComponents() > 0)
 	{
-		//Don't draw this static physical entity if it isn't in the view frustum.
-		if (!frustumCullingComponent->isInViewFrustum)
-			continue;
+		//Begin the instanced physical entities render pass.
+		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::InstancedPhysical)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	
+		//Wait for the render instanced physical entities task to finish.
+		taskSemaphores[INDEX(TaskSemaphore::RenderInstancedPhysicalEntities)].WaitFor();
 
-		StaticArray<VulkanDescriptorSet, 2> staticPhysicalEntityDescriptorSets
-		{
-			*currentDynamicUniformDataDescriptorSet,
-			renderComponent->descriptorSet
-		};
+		//Record the execute command for the instanced physical entities.
+		currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentInstancedPhysicalEntitiesCommandBuffer()->Get());
 
-		const VkDeviceSize offset{ 0 };
-
-		currentCommandBuffer->CommandPushConstants(StaticPhysicalPipeline.GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
-		currentCommandBuffer->CommandBindDescriptorSets(StaticPhysicalPipeline, 2, staticPhysicalEntityDescriptorSets.Data());
-		currentCommandBuffer->CommandBindVertexBuffers(1, &renderComponent->buffer.Get(), &offset);
-		currentCommandBuffer->CommandBindIndexBuffer(renderComponent->buffer, renderComponent->indexOffset);
-		currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, 1);
+		//End the instanced physical entities render pass.
+		currentCommandBuffer->CommandEndRenderPass();
 	}
 
-	//End the render pass.
-	currentCommandBuffer->CommandEndRenderPass();
-}
-
-/*
-*	Renders all instanced physical entities.
-*/
-void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
-{
-	//Cache the pipeline.
-	VulkanPipeline &instancedPhysicalPipeline{ *pipelines[INDEX(Pipeline::InstancedPhysical)] };
-
-	//Iterate over all instanced physical entity components and draw them all.
-	const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };
-
-	//If there's none to draw - draw none!
-	if (numberOfInstancedPhysicalComponents == 0)
+	if (ComponentManager::GetNumberOfVegetationComponents() > 0)
 	{
-		return;
+		//Begin the vegetation entities render pass.
+		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::Vegetation)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+
+		//Wait for the render vegetation entities task to finish.
+		taskSemaphores[INDEX(TaskSemaphore::RenderVegetationEntities)].WaitFor();
+
+		//Record the execute command for the vegetation entities.
+		currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentVegetationEntitiesCommandBuffer()->Get());
+
+		//End the vegetation entities render pass.
+		currentCommandBuffer->CommandEndRenderPass();
 	}
-
-	const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
-
-	//Begin the pipeline and render pass.
-	currentCommandBuffer->CommandBindPipeline(instancedPhysicalPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(instancedPhysicalPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
-
-	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
-	{
-		StaticArray<VulkanDescriptorSet, 2> instancedPhysicalDescriptorSets
-		{
-			*currentDynamicUniformDataDescriptorSet,
-			renderComponent->descriptorSet
-		};
-
-		StaticArray<VkBuffer, 2> instancedPhysicalBuffers
-		{
-			static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
-			static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
-		};
-
-		StaticArray<VkDeviceSize, 2> offsets
-		{
-			static_cast<VkDeviceSize>(0),
-			static_cast<VkDeviceSize>(0)
-		};
-
-		currentCommandBuffer->CommandBindDescriptorSets(instancedPhysicalPipeline, 2, instancedPhysicalDescriptorSets.Data());
-		currentCommandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
-		currentCommandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
-		currentCommandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
-	}
-
-	//End the render pass.
-	currentCommandBuffer->CommandEndRenderPass();
-}
-
-/*
-*	Renders all vegetation entities.
-*/
-void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
-{
-	//Iterate over all vegetation entity components and draw them all.
-	const uint64 numberOfVegetationComponents{ ComponentManager::GetNumberOfVegetationComponents() };
-
-	//If there's none to draw - draw none!
-	if (numberOfVegetationComponents == 0)
-	{
-		return;
-	}
-
-	const VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationComponents() };
-
-	//Cache the pipeline.
-	VulkanPipeline &vegetationPipeline{ *pipelines[INDEX(Pipeline::Vegetation)] };
-
-	//Begin the pipeline and render pass.
-	currentCommandBuffer->CommandBindPipeline(vegetationPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(vegetationPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
-
-	//Wait for the vegetation culling task to finish.
-	taskSemaphores[INDEX(TaskSemaphore::UpdateVegetationCulling)].WaitFor();
-
-	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
-	{
-		StaticArray<VulkanDescriptorSet, 2> vegetationDescriptorSets
-		{
-			*currentDynamicUniformDataDescriptorSet,
-			component->descriptorSet
-		};
-
-		currentCommandBuffer->CommandBindDescriptorSets(vegetationPipeline, static_cast<uint32>(vegetationDescriptorSets.Size()), vegetationDescriptorSets.Data());
-
-		for (uint64 i = 0, size = component->shouldDrawGridCell.Size(); i < size; ++i)
-		{
-			if (component->shouldDrawGridCell[i])
-			{
-				currentCommandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(component->transformationsBuffer)->Get(), &component->transformationOffsets[i]);
-				currentCommandBuffer->CommandDraw(1, component->instanceCounts[i]);
-			}
-		}
-	}
-
-	//End the render pass.
-	currentCommandBuffer->CommandEndRenderPass();
 }
 
 /*
@@ -2269,6 +2166,169 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 		commandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer)->Get(), &offset);
 		commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
 		commandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
+	}
+
+	//End the command buffer.
+	commandBuffer->End();
+}
+
+/*
+*	Renders all static physical entities.
+*/
+void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
+{
+	//Wait for the update view frustum culling  task to finish.
+	taskSemaphores[INDEX(TaskSemaphore::UpdateViewFrustumCuling)].WaitFor();
+
+
+	//Iterate over all static physical entity components and draw them all.
+	const uint64 numberOfStaticPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
+
+	if (numberOfStaticPhysicalEntityComponents == 0)
+	{
+		return;
+	}
+
+	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
+	const StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents() };
+
+	//Cache the command buffer.
+	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentStaticPhysicalEntitiesCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::StaticPhysical)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::StaticPhysical)]->GetRenderPass().GetFrameBuffers()[0].Get());
+
+	//Begin the pipeline and render pass.
+	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::StaticPhysical)]);
+
+	for (uint64 i = 0; i < numberOfStaticPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
+	{
+		//Don't draw this static physical entity if it isn't in the view frustum.
+		if (!frustumCullingComponent->isInViewFrustum)
+		{
+			continue;
+		}
+
+		StaticArray<VulkanDescriptorSet, 2> staticPhysicalEntityDescriptorSets
+		{
+			*currentDynamicUniformDataDescriptorSet,
+			renderComponent->descriptorSet
+		};
+
+		const VkDeviceSize offset{ 0 };
+
+		commandBuffer->CommandPushConstants(pipelines[INDEX(Pipeline::StaticPhysical)]->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
+		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::StaticPhysical)], 2, staticPhysicalEntityDescriptorSets.Data());
+		commandBuffer->CommandBindVertexBuffers(1, &renderComponent->buffer.Get(), &offset);
+		commandBuffer->CommandBindIndexBuffer(renderComponent->buffer, renderComponent->indexOffset);
+		commandBuffer->CommandDrawIndexed(renderComponent->indexCount, 1);
+	}
+
+	//End the command buffer.
+	commandBuffer->End();
+}
+
+/*
+*	Renders all instanced physical entities.
+*/
+void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
+{
+	//Iterate over all instanced physical entity components and draw them all.
+	const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };
+
+	//If there's none to draw - draw none!
+	if (numberOfInstancedPhysicalComponents == 0)
+	{
+		return;
+	}
+
+	const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
+
+	//Cache the command buffer.
+	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentInstancedPhysicalEntitiesCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::InstancedPhysical)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::InstancedPhysical)]->GetRenderPass().GetFrameBuffers()[0].Get());
+
+	//Bind the pipeline
+	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::InstancedPhysical)]);
+	
+	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
+	{
+		StaticArray<VulkanDescriptorSet, 2> instancedPhysicalDescriptorSets
+		{
+			*currentDynamicUniformDataDescriptorSet,
+			renderComponent->descriptorSet
+		};
+
+		StaticArray<VkBuffer, 2> instancedPhysicalBuffers
+		{
+			static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer)->Get(),
+			static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->transformationsBuffer)->Get()
+		};
+
+		StaticArray<VkDeviceSize, 2> offsets
+		{
+			static_cast<VkDeviceSize>(0),
+			static_cast<VkDeviceSize>(0)
+		};
+
+		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::InstancedPhysical)], 2, instancedPhysicalDescriptorSets.Data());
+		commandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
+		commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
+		commandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
+	}
+
+	//End the command buffer.
+	commandBuffer->End();
+}
+
+/*
+*	Renders all vegetation entities.
+*/
+void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
+{
+	//Iterate over all vegetation entity components and draw them all.
+	const uint64 numberOfVegetationComponents{ ComponentManager::GetNumberOfVegetationComponents() };
+
+	//If there's none to draw - draw none!
+	if (numberOfVegetationComponents == 0)
+	{
+		return;
+	}
+
+	const VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationComponents() };
+
+	//Cache the command buffer.
+	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentVegetationEntitiesCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::Vegetation)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::Vegetation)]->GetRenderPass().GetFrameBuffers()[0].Get());
+
+	//Bind the pipeline
+	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Vegetation)]);
+
+	//Wait for the vegetation culling task to finish.
+	taskSemaphores[INDEX(TaskSemaphore::UpdateVegetationCulling)].WaitFor();
+
+	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
+	{
+		StaticArray<VulkanDescriptorSet, 2> vegetationDescriptorSets
+		{
+			*currentDynamicUniformDataDescriptorSet,
+			component->descriptorSet
+		};
+
+		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Vegetation)], static_cast<uint32>(vegetationDescriptorSets.Size()), vegetationDescriptorSets.Data());
+
+		for (uint64 i = 0, size = component->shouldDrawGridCell.Size(); i < size; ++i)
+		{
+			if (component->shouldDrawGridCell[i])
+			{
+				commandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(component->transformationsBuffer)->Get(), &component->transformationOffsets[i]);
+				commandBuffer->CommandDraw(1, component->instanceCounts[i]);
+			}
+		}
 	}
 
 	//End the command buffer.

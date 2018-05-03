@@ -47,7 +47,7 @@ bool EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	PhysicsSystem::Instance->UpdateSystemSynchronous(deltaTime);
 
 	//Update the graphics system.
-	RenderingSystem::Instance->UpdateSystemSynchronous();
+	CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Rendering System Update", RenderingSystem::Instance->UpdateSystemSynchronous());
 
 	//Update the sound system.
 	SoundSystem::Instance->UpdateSystemSynchronous(deltaTime);

@@ -49,6 +49,39 @@ public:
 			terrainCommandPool->AllocateSecondaryCommandBuffer(terrainCommandBuffer);
 		}
 
+		//Create the static physical entities command pool.
+		staticPhysicalEntitiesCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+		//Create the static physical entities command buffers.
+		staticPhysicalEntitiesCommandBuffers.UpsizeFast(frameDataCount);
+
+		for (VulkanCommandBuffer &staticPhysicalEntitiesCommandBuffer : staticPhysicalEntitiesCommandBuffers)
+		{
+			staticPhysicalEntitiesCommandPool->AllocateSecondaryCommandBuffer(staticPhysicalEntitiesCommandBuffer);
+		}
+
+		//Create the instanced physical entities command pool.
+		instancedPhysicalEntitiesCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+		//Create the instanced physical entities command buffers.
+		instancedPhysicalEntitiesCommandBuffers.UpsizeFast(frameDataCount);
+
+		for (VulkanCommandBuffer &instancedPhysicalEntitiesCommandBuffer : instancedPhysicalEntitiesCommandBuffers)
+		{
+			instancedPhysicalEntitiesCommandPool->AllocateSecondaryCommandBuffer(instancedPhysicalEntitiesCommandBuffer);
+		}
+
+		//Create the vegetation entities command pool.
+		vegetationEntitiesCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+		//Create the vegetation entities command buffers.
+		vegetationEntitiesCommandBuffers.UpsizeFast(frameDataCount);
+
+		for (VulkanCommandBuffer &vegetationEntitiesCommandBuffer : vegetationEntitiesCommandBuffers)
+		{
+			vegetationEntitiesCommandPool->AllocateSecondaryCommandBuffer(vegetationEntitiesCommandBuffer);
+		}
+
 		//Create the fences.
 		fences.UpsizeFast(frameDataCount);
 
@@ -138,6 +171,21 @@ public:
 	VulkanCommandBuffer *RESTRICT GetCurrentTerrainCommandBuffer() NOEXCEPT { return &terrainCommandBuffers[currentFrame]; }
 
 	/*
+	*	Returns the current static physical entities command buffer.
+	*/
+	VulkanCommandBuffer *RESTRICT GetCurrentStaticPhysicalEntitiesCommandBuffer() NOEXCEPT { return &staticPhysicalEntitiesCommandBuffers[currentFrame]; }
+
+	/*
+	*	Returns the current instanced physical entities command buffer.
+	*/
+	VulkanCommandBuffer *RESTRICT GetCurrentInstancedPhysicalEntitiesCommandBuffer() NOEXCEPT { return &instancedPhysicalEntitiesCommandBuffers[currentFrame]; }
+
+	/*
+	*	Returns the current vegetation entities command buffer.
+	*/
+	VulkanCommandBuffer *RESTRICT GetCurrentVegetationEntitiesCommandBuffer() NOEXCEPT { return &vegetationEntitiesCommandBuffers[currentFrame]; }
+
+	/*
 	*	Returns the current fence.
 	*/
 	VulkanFence *RESTRICT GetCurrentFence() NOEXCEPT
@@ -205,6 +253,24 @@ private:
 
 	//The terrain command buffers.
 	DynamicArray<VulkanCommandBuffer> terrainCommandBuffers;
+
+	//The static physical entities command pool.
+	VulkanCommandPool *RESTRICT staticPhysicalEntitiesCommandPool;
+
+	//The static physical entitiees command buffers.
+	DynamicArray<VulkanCommandBuffer> staticPhysicalEntitiesCommandBuffers;
+
+	//The instanced physical entities command pool.
+	VulkanCommandPool *RESTRICT instancedPhysicalEntitiesCommandPool;
+
+	//The instanced physical entitiees command buffers.
+	DynamicArray<VulkanCommandBuffer> instancedPhysicalEntitiesCommandBuffers;
+
+	//The vegetation entities command pool.
+	VulkanCommandPool *RESTRICT vegetationEntitiesCommandPool;
+
+	//The vegetation entitiees command buffers.
+	DynamicArray<VulkanCommandBuffer> vegetationEntitiesCommandBuffers;
 
 	//The fences.
 	DynamicArray<VulkanFence *RESTRICT> fences;

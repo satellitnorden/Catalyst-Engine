@@ -287,6 +287,9 @@ private:
 	{
 		RenderDirectionalShadows,
 		RenderTerrain,
+		RenderStaticPhysicalEntities,
+		RenderInstancedPhysicalEntities,
+		RenderVegetationEntities,
 		UpdateDynamicUniformData,
 		UpdateDescriptorSets,
 		UpdateParticleSystemProperties,
@@ -425,21 +428,6 @@ private:
 	void ConcatenateCommandBuffers() NOEXCEPT;
 
 	/*
-	*	Renders all static physical entities.
-	*/
-	void RenderStaticPhysicalEntities() NOEXCEPT;
-
-	/*
-	*	Renders all instanced physical entities.
-	*/
-	void RenderInstancedPhysicalEntities() NOEXCEPT;
-
-	/*
-	*	Renders all vegetation entities.
-	*/
-	void RenderVegetationEntities() NOEXCEPT;
-
-	/*
 	*	Renders lighting.
 	*/
 	void RenderLighting() NOEXCEPT;
@@ -497,6 +485,21 @@ private:
 	*	Renders the terrain.
 	*/
 	void RenderTerrain() NOEXCEPT;
+
+	/*
+	*	Renders all static physical entities.
+	*/
+	void RenderStaticPhysicalEntities() NOEXCEPT;
+
+	/*
+	*	Renders all instanced physical entities.
+	*/
+	void RenderInstancedPhysicalEntities() NOEXCEPT;
+
+	/*
+	*	Renders all vegetation entities.
+	*/
+	void RenderVegetationEntities() NOEXCEPT;
 
 	/*
 	*	Updates the descriptor sets.
