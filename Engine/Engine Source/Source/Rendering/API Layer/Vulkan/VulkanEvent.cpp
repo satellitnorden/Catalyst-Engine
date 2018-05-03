@@ -51,5 +51,5 @@ void VulkanEvent::CreateEventCreateInfo(VkEventCreateInfo &eventCreateInfo) cons
 {
 	eventCreateInfo.sType = VK_STRUCTURE_TYPE_EVENT_CREATE_INFO;
 	eventCreateInfo.pNext = nullptr;
-	eventCreateInfo.flags;
+	eventCreateInfo.flags = 0;
 }
