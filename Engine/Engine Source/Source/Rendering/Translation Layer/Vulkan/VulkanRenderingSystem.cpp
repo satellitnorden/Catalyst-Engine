@@ -2321,12 +2321,12 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 
 		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Vegetation)], static_cast<uint32>(vegetationDescriptorSets.Size()), vegetationDescriptorSets.Data());
 
-		for (uint64 i = 0, size = component->shouldDrawGridCell.Size(); i < size; ++i)
+		for (uint64 j = 0, size = component->shouldDrawGridCell.Size(); j < size; ++j)
 		{
-			if (component->shouldDrawGridCell[i])
+			if (component->shouldDrawGridCell[j])
 			{
-				commandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(component->transformationsBuffer)->Get(), &component->transformationOffsets[i]);
-				commandBuffer->CommandDraw(1, component->instanceCounts[i]);
+				commandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(component->transformationsBuffer)->Get(), &component->transformationOffsets[j]);
+				commandBuffer->CommandDraw(1, component->instanceCounts[j]);
 			}
 		}
 	}
