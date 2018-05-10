@@ -290,6 +290,11 @@ private:
 		RenderStaticPhysicalEntities,
 		RenderInstancedPhysicalEntities,
 		RenderVegetationEntities,
+		RenderLighting,
+		RenderSkybox,
+		RenderParticleSystemEntities,
+		RenderOcean,
+		RenderPostProcessing,
 		UpdateDynamicUniformData,
 		UpdateDescriptorSets,
 		UpdateParticleSystemProperties,
@@ -428,31 +433,6 @@ private:
 	void ConcatenateCommandBuffers() NOEXCEPT;
 
 	/*
-	*	Renders lighting.
-	*/
-	void RenderLighting() NOEXCEPT;
-
-	/*
-	*	Renders sky box.
-	*/
-	void RenderSkyBox() NOEXCEPT;
-
-	/*
-	*	Renders all particle system entities.
-	*/
-	void RenderParticleSystemEntities() NOEXCEPT;
-
-	/*
-	*	Renders the ocean.
-	*/
-	void RenderOcean() NOEXCEPT;
-
-	/*
-	*	Renders the post processing.
-	*/
-	void RenderPostProcessing() NOEXCEPT;
-
-	/*
 	*	Ends the frame.
 	*/
 	void EndFrame() NOEXCEPT;
@@ -500,6 +480,31 @@ private:
 	*	Renders all vegetation entities.
 	*/
 	void RenderVegetationEntities() NOEXCEPT;
+
+	/*
+	*	Renders lighting.
+	*/
+	void RenderLighting() NOEXCEPT;
+
+	/*
+	*	Renders skybox.
+	*/
+	void RenderSkybox() NOEXCEPT;
+
+	/*
+	*	Renders all particle system entities.
+	*/
+	void RenderParticleSystemEntities() NOEXCEPT;
+
+	/*
+	*	Renders the ocean.
+	*/
+	void RenderOcean() NOEXCEPT;
+
+	/*
+	*	Renders the post processing.
+	*/
+	void RenderPostProcessing() NOEXCEPT;
 
 	/*
 	*	Updates the descriptor sets.

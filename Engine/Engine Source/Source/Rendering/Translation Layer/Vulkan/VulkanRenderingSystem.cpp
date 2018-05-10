@@ -127,26 +127,14 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Begin the frame.
 	BeginFrame();
 
+	//Update the dynamic uniform data.
+	UpdateDynamicUniformData();
+
 	//Execute the frame-dependant asynchronous tasks.
 	ExecuteFrameDependantAsynchronousTasks();
 
 	//Concatenate all secondary command buffers into the previous one.
 	ConcatenateCommandBuffers();
-
-	//Render the lighting.
-	RenderLighting();
-
-	//Render the sky box.
-	RenderSkyBox();
-
-	//Render all particle system entities.
-	RenderParticleSystemEntities();
-
-	//Render the ocean.
-	RenderOcean();
-
-	//Render the post processing.
-	RenderPostProcessing();
 
 	//End the frame.
 	EndFrame();
@@ -1624,38 +1612,65 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 {
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->RenderDirectionalShadows();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::RenderDirectionalShadows)]));
+		VulkanRenderingSystem::Instance->RenderDirectionalShadows();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderDirectionalShadows)]));
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->RenderTerrain();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::RenderTerrain)]));
+		VulkanRenderingSystem::Instance->RenderTerrain();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderTerrain)]));
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->RenderStaticPhysicalEntities();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::RenderStaticPhysicalEntities)]));
+		VulkanRenderingSystem::Instance->RenderStaticPhysicalEntities();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderStaticPhysicalEntities)]));
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->RenderInstancedPhysicalEntities();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::RenderInstancedPhysicalEntities)]));
+		VulkanRenderingSystem::Instance->RenderInstancedPhysicalEntities();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderInstancedPhysicalEntities)]));
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->RenderVegetationEntities();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::RenderVegetationEntities)]));
+		VulkanRenderingSystem::Instance->RenderVegetationEntities();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderVegetationEntities)]));
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDynamicUniformData();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)]));
+		VulkanRenderingSystem::Instance->RenderLighting();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderLighting)]));
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateDescriptorSets();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)]));
+		VulkanRenderingSystem::Instance->RenderSkybox();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderSkybox)]));
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		VulkanRenderingSystem::Instance->RenderParticleSystemEntities();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderParticleSystemEntities)]));
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		VulkanRenderingSystem::Instance->RenderOcean();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderOcean)]));
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		VulkanRenderingSystem::Instance->RenderPostProcessing();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderPostProcessing)]));
+
+	/*
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		VulkanRenderingSystem::Instance->UpdateDynamicUniformData();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)]));
+	*/
+
+	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	{
+		VulkanRenderingSystem::Instance->UpdateDescriptorSets();
+	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)]));
 }
 
 /*
@@ -1722,167 +1737,69 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		//End the vegetation entities render pass.
 		currentCommandBuffer->CommandEndRenderPass();
 	}
-}
 
-/*
-*	Renders lighting.
-*/
-void VulkanRenderingSystem::RenderLighting() NOEXCEPT
-{
-	//Wait for the update of the descriptor sets to finish.
-	taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)].WaitFor();
+	//Begin the lighting render pass.
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Bind the lighting pipeline.
-	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Lighting)]);
+	//Wait for the render lighting task to finish.
+	taskSemaphores[INDEX(TaskSemaphore::RenderLighting)].WaitFor();
 
-	//Bind the lighting render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
+	//Record the execute command for the lighting.
+	currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentLightingCommandBuffer()->Get());
 
-	//Bind the scene buffer descriptor set.
-	StaticArray<VulkanDescriptorSet, 3> lightingDescriptorSets
-	{
-		*currentDynamicUniformDataDescriptorSet,
-		*currentEnvironmentDataDescriptorSet,
-		descriptorSets[INDEX(DescriptorSet::Lighting)]
-	};
-
-	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Lighting)], static_cast<uint32>(lightingDescriptorSets.Size()), lightingDescriptorSets.Data());
-
-	//Wait for the directional shadows to finish.
-	currentCommandBuffer->CommandWaitEvents(1, &frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-
-	//Draw the viewport!
-	currentCommandBuffer->CommandDraw(4, 1);
-
-	//End the render pass.
+	//End the lighting render pass.
 	currentCommandBuffer->CommandEndRenderPass();
 
 	//Reset the directional shadow event.
 	currentCommandBuffer->CommandResetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-}
 
-/*
-*	Renders sky box.
-*/
-void VulkanRenderingSystem::RenderSkyBox() NOEXCEPT
-{
-	//Bind the cube map pipeline.
-	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::CubeMap)]);
+	//Begin the skybox render pass.
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Bind the cube map render pass.
-	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
+	//Wait for the render skybox task to finish.
+	taskSemaphores[INDEX(TaskSemaphore::RenderSkybox)].WaitFor();
 
-	//Bind the sky box descriptor set.
-	StaticArray<VulkanDescriptorSet, 2> skyBoxDescriptorSets
-	{
-		*currentDynamicUniformDataDescriptorSet,
-		*currentEnvironmentDataDescriptorSet
-	};
+	//Record the execute command for the skybox.
+	currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentSkyboxCommandBuffer()->Get());
 
-	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::CubeMap)], static_cast<uint32>(skyBoxDescriptorSets.Size()), skyBoxDescriptorSets.Data());
-
-	//Draw the sky box!
-	currentCommandBuffer->CommandDraw(36, 1);
-
-	//End the cube map render pass.
+	//End the skybox render pass.
 	currentCommandBuffer->CommandEndRenderPass();
-}
 
-/*
-*	Renders all particle system entities.
-*/
-void VulkanRenderingSystem::RenderParticleSystemEntities() NOEXCEPT
-{
-	//Iterate over all particle system entity components and draw them all.
-	const uint64 numberOfParticleSystemComponents{ ComponentManager::GetNumberOfParticleSystemComponents() };
-
-	//If there's none to draw - draw none!
-	if (numberOfParticleSystemComponents == 0)
+	if (ComponentManager::GetNumberOfParticleSystemComponents() > 0)
 	{
-		return;
+		//Begin the particle system entities render pass.
+		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(Pipeline::ParticleSystem)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+
+		//Wait for the render particle system entities task to finish.
+		taskSemaphores[INDEX(TaskSemaphore::RenderParticleSystemEntities)].WaitFor();
+
+		//Record the execute command for the particle system entities.
+		currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentParticleSystemEntitiesCommandBuffer()->Get());
+
+		//End the static particle system render pass.
+		currentCommandBuffer->CommandEndRenderPass();
 	}
-
-	//Wait for the update particle system properties task to finish.
-	taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)].WaitFor();
-
-	//Iterate over all components.
-	const ParticleSystemRenderComponent *RESTRICT component{ ComponentManager::GetParticleSystemRenderComponents() };
-
-	//Cache the pipeline.
-	VulkanPipeline &particleSystemPipeline{ *pipelines[INDEX(Pipeline::ParticleSystem)] };
-
-	//Begin the pipeline and render pass.
-	currentCommandBuffer->CommandBindPipeline(particleSystemPipeline);
-	currentCommandBuffer->CommandBeginRenderPass(particleSystemPipeline.GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
-
-	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
-	{
-		StaticArray<VulkanDescriptorSet, 2> particleSystemDescriptorSets
-		{
-			*currentDynamicUniformDataDescriptorSet,
-			component->descriptorSet
-		};
-
-		const float randomSeed{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
-		currentCommandBuffer->CommandPushConstants(particleSystemPipeline.GetPipelineLayout(), VK_SHADER_STAGE_GEOMETRY_BIT, 0, sizeof(float), &randomSeed);
-		currentCommandBuffer->CommandBindDescriptorSets(particleSystemPipeline, static_cast<uint32>(particleSystemDescriptorSets.Size()), particleSystemDescriptorSets.Data());
-		currentCommandBuffer->CommandDraw(VulkanRenderingSystemConstants::MAXIMUM_NUMBER_OF_PARTICLES, 1);
-	}
-
-	//End the render pass.
-	currentCommandBuffer->CommandEndRenderPass();
-}
-
-/*
-*	Renders the ocean.
-*/
-void VulkanRenderingSystem::RenderOcean() NOEXCEPT
-{
-	//Bind the ocean pipeline.
-	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Ocean)]);
 
 	//Bind the ocean render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Bind the ocean descriptor set.
-	StaticArray<VulkanDescriptorSet, 3> oceanDescriptorSets
-	{
-		*currentDynamicUniformDataDescriptorSet,
-		*currentEnvironmentDataDescriptorSet,
-		*frameData.GetCurrentOceanDescriptorSet()
-	};
+	//Wait for the render ocean task to finish.
+	taskSemaphores[INDEX(TaskSemaphore::RenderOcean)].WaitFor();
 
-	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Ocean)], static_cast<uint32>(oceanDescriptorSets.Size()), oceanDescriptorSets.Data());
+	//Record the execute command for the ocean.
+	currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentOceanCommandBuffer()->Get());
 
-	//Draw the viewport!
-	currentCommandBuffer->CommandDraw(4, 1);
-
-	//End the ocean render pass.
+	//End the static particle system render pass.
 	currentCommandBuffer->CommandEndRenderPass();
-}
-
-/*
-*	Renders the post processing.
-*/
-void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
-{
-	//Bind the post processing pipeline.
-	currentCommandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::PostProcessing)]);
 
 	//Bind the post processing render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_INLINE);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Bind the post processing descriptor set.
-	StaticArray<VulkanDescriptorSet, 2> postProcessingDescriptorSets
-	{
-		*currentDynamicUniformDataDescriptorSet,
-		descriptorSets[INDEX(DescriptorSet::PostProcessing)]
-	};
+	//Wait for the render post processing task to finish.
+	taskSemaphores[INDEX(TaskSemaphore::RenderPostProcessing)].WaitFor();
 
-	currentCommandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::PostProcessing)], 2, postProcessingDescriptorSets.Data());
-
-	//Draw the viewport!
-	currentCommandBuffer->CommandDraw(4, 1);
+	//Record the execute command for the post processing.
+	currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentPostProcessingCommandBuffer()->Get());
 
 	//End the post processing render pass.
 	currentCommandBuffer->CommandEndRenderPass();
@@ -1898,7 +1815,7 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 
 	//Wait for the frame-dependant asynchonous tasks to finish.
 	taskSemaphores[INDEX(TaskSemaphore::RenderDirectionalShadows)].WaitFor();
-	taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)].WaitFor();
+	//taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)].WaitFor();
 
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*currentCommandBuffer, 1, semaphores[INDEX(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, semaphores[INDEX(GraphicsSemaphore::RenderFinished)], frameData.GetCurrentFence()->Get());
@@ -2330,6 +2247,181 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 			}
 		}
 	}
+
+	//End the command buffer.
+	commandBuffer->End();
+}
+
+/*
+*	Renders lighting.
+*/
+void VulkanRenderingSystem::RenderLighting() NOEXCEPT
+{
+	//Wait for the update of the descriptor sets to finish.
+	taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)].WaitFor();
+
+	//Cache the command buffer.
+	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentLightingCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass().GetFrameBuffers()[0].Get());
+
+	//Bind the pipeline.
+	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Lighting)]);
+
+	//Bind the descriptor sets.
+	StaticArray<VulkanDescriptorSet, 3> lightingDescriptorSets
+	{
+		*currentDynamicUniformDataDescriptorSet,
+		*currentEnvironmentDataDescriptorSet,
+		descriptorSets[INDEX(DescriptorSet::Lighting)]
+	};
+
+	commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Lighting)], static_cast<uint32>(lightingDescriptorSets.Size()), lightingDescriptorSets.Data());
+
+	//Wait for the directional shadows to finish.
+	commandBuffer->CommandWaitEvents(1, &frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+
+	//Draw the viewport!
+	commandBuffer->CommandDraw(4, 1);
+
+	//End the command buffer.
+	commandBuffer->End();
+}
+
+/*
+*	Renders skybox.
+*/
+void VulkanRenderingSystem::RenderSkybox() NOEXCEPT
+{
+	//Cache the command buffer.
+	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentSkyboxCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass().GetFrameBuffers()[0].Get());
+
+	//Bind the pipeline.
+	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::CubeMap)]);
+
+	//Bind the skybox descriptor set.
+	StaticArray<VulkanDescriptorSet, 2> skyboxDescriptorSets
+	{
+		*currentDynamicUniformDataDescriptorSet,
+		*currentEnvironmentDataDescriptorSet
+	};
+
+	commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::CubeMap)], static_cast<uint32>(skyboxDescriptorSets.Size()), skyboxDescriptorSets.Data());
+
+	//Draw the skybox!
+	commandBuffer->CommandDraw(36, 1);
+
+	//End the command buffer.
+	commandBuffer->End();
+}
+
+/*
+*	Renders all particle system entities.
+*/
+void VulkanRenderingSystem::RenderParticleSystemEntities() NOEXCEPT
+{
+	//Iterate over all particle system entity components and draw them all.
+	const uint64 numberOfParticleSystemComponents{ ComponentManager::GetNumberOfParticleSystemComponents() };
+
+	//If there's none to draw - draw none!
+	if (numberOfParticleSystemComponents == 0)
+	{
+		return;
+	}
+
+	//Wait for the update particle system properties task to finish.
+	taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)].WaitFor();
+
+	//Iterate over all components.
+	const ParticleSystemRenderComponent *RESTRICT component{ ComponentManager::GetParticleSystemRenderComponents() };
+
+	//Cache the command buffer.
+	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentParticleSystemEntitiesCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::ParticleSystem)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::ParticleSystem)]->GetRenderPass().GetFrameBuffers()[0].Get());
+
+	//Bind the pipeline.
+	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::ParticleSystem)]);
+
+	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
+	{
+		StaticArray<VulkanDescriptorSet, 2> particleSystemDescriptorSets
+		{
+			*currentDynamicUniformDataDescriptorSet,
+			component->descriptorSet
+		};
+
+		const float randomSeed{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
+		commandBuffer->CommandPushConstants(pipelines[INDEX(Pipeline::ParticleSystem)]->GetPipelineLayout(), VK_SHADER_STAGE_GEOMETRY_BIT, 0, sizeof(float), &randomSeed);
+		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::ParticleSystem)], static_cast<uint32>(particleSystemDescriptorSets.Size()), particleSystemDescriptorSets.Data());
+		commandBuffer->CommandDraw(VulkanRenderingSystemConstants::MAXIMUM_NUMBER_OF_PARTICLES, 1);
+	}
+
+	//End the command buffer.
+	commandBuffer->End();
+}
+
+/*
+*	Renders the ocean.
+*/
+void VulkanRenderingSystem::RenderOcean() NOEXCEPT
+{
+	//Cache the command buffer.
+	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentOceanCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::Ocean)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::Ocean)]->GetRenderPass().GetFrameBuffers()[0].Get());
+
+	//Bind the pipeline.
+	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Ocean)]);
+
+	//Bind the ocean descriptor sets.
+	StaticArray<VulkanDescriptorSet, 3> oceanDescriptorSets
+	{
+		*currentDynamicUniformDataDescriptorSet,
+		*currentEnvironmentDataDescriptorSet,
+		*frameData.GetCurrentOceanDescriptorSet()
+	};
+
+	commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Ocean)], static_cast<uint32>(oceanDescriptorSets.Size()), oceanDescriptorSets.Data());
+
+	//Draw the viewport!
+	commandBuffer->CommandDraw(4, 1);
+
+	//End the command buffer.
+	commandBuffer->End();
+}
+
+/*
+*	Renders the post processing.
+*/
+void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
+{
+	//Cache the command buffer.
+	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentPostProcessingCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass().GetFrameBuffers()[frameData.GetCurrentFrame()].Get());
+
+	//Bind the pipeline.
+	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::PostProcessing)]);
+
+	//Bind the post processing descriptor sets.
+	StaticArray<VulkanDescriptorSet, 2> postProcessingDescriptorSets
+	{
+		*currentDynamicUniformDataDescriptorSet,
+		descriptorSets[INDEX(DescriptorSet::PostProcessing)]
+	};
+
+	commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::PostProcessing)], 2, postProcessingDescriptorSets.Data());
+
+	//Draw the viewport!
+	commandBuffer->CommandDraw(4, 1);
 
 	//End the command buffer.
 	commandBuffer->End();

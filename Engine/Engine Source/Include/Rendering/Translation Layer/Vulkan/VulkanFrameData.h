@@ -82,6 +82,61 @@ public:
 			vegetationEntitiesCommandPool->AllocateSecondaryCommandBuffer(vegetationEntitiesCommandBuffer);
 		}
 
+		//Create the lighting command pool.
+		lightingCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+		//Create the lighting command buffers.
+		lightingCommandBuffers.UpsizeFast(frameDataCount);
+
+		for (VulkanCommandBuffer &lightingCommandBuffer : lightingCommandBuffers)
+		{
+			lightingCommandPool->AllocateSecondaryCommandBuffer(lightingCommandBuffer);
+		}
+
+		//Create the skybox command pool.
+		skyboxCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+		//Create the skybox command buffers.
+		skyboxCommandBuffers.UpsizeFast(frameDataCount);
+
+		for (VulkanCommandBuffer &skyboxCommandBuffer : skyboxCommandBuffers)
+		{
+			skyboxCommandPool->AllocateSecondaryCommandBuffer(skyboxCommandBuffer);
+		}
+
+		//Create the particle system entities command pool.
+		particleSystemEntitiesCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+		//Create the particle system entities command buffers.
+		particleSystemEntitiesCommandBuffers.UpsizeFast(frameDataCount);
+
+		for (VulkanCommandBuffer &particleSystemEntitiesCommandBuffer : particleSystemEntitiesCommandBuffers)
+		{
+			particleSystemEntitiesCommandPool->AllocateSecondaryCommandBuffer(particleSystemEntitiesCommandBuffer);
+		}
+
+		//Create the ocean command pool.
+		oceanCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+		//Create the ocean command buffers.
+		oceanCommandBuffers.UpsizeFast(frameDataCount);
+
+		for (VulkanCommandBuffer &oceanCommandBuffer : oceanCommandBuffers)
+		{
+			oceanCommandPool->AllocateSecondaryCommandBuffer(oceanCommandBuffer);
+		}
+
+		//Create the post processing command pool.
+		postProcessingCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+		//Create the post processing command buffers.
+		postProcessingCommandBuffers.UpsizeFast(frameDataCount);
+
+		for (VulkanCommandBuffer &postProcessingCommandBuffer : postProcessingCommandBuffers)
+		{
+			postProcessingCommandPool->AllocateSecondaryCommandBuffer(postProcessingCommandBuffer);
+		}
+
 		//Create the fences.
 		fences.UpsizeFast(frameDataCount);
 
@@ -186,6 +241,31 @@ public:
 	VulkanCommandBuffer *RESTRICT GetCurrentVegetationEntitiesCommandBuffer() NOEXCEPT { return &vegetationEntitiesCommandBuffers[currentFrame]; }
 
 	/*
+	*	Returns the current lighting command buffer.
+	*/
+	VulkanCommandBuffer *RESTRICT GetCurrentLightingCommandBuffer() NOEXCEPT { return &lightingCommandBuffers[currentFrame]; }
+
+	/*
+	*	Returns the current skybox command buffer.
+	*/
+	VulkanCommandBuffer *RESTRICT GetCurrentSkyboxCommandBuffer() NOEXCEPT { return &skyboxCommandBuffers[currentFrame]; }
+
+	/*
+	*	Returns the current particle system entities command buffer.
+	*/
+	VulkanCommandBuffer *RESTRICT GetCurrentParticleSystemEntitiesCommandBuffer() NOEXCEPT { return &particleSystemEntitiesCommandBuffers[currentFrame]; }
+
+	/*
+	*	Returns the current ocean command buffer.
+	*/
+	VulkanCommandBuffer *RESTRICT GetCurrentOceanCommandBuffer() NOEXCEPT { return &oceanCommandBuffers[currentFrame]; }
+
+	/*
+	*	Returns the current post processing command buffer.
+	*/
+	VulkanCommandBuffer *RESTRICT GetCurrentPostProcessingCommandBuffer() NOEXCEPT { return &postProcessingCommandBuffers[currentFrame]; }
+
+	/*
 	*	Returns the current fence.
 	*/
 	VulkanFence *RESTRICT GetCurrentFence() NOEXCEPT
@@ -271,6 +351,36 @@ private:
 
 	//The vegetation entitiees command buffers.
 	DynamicArray<VulkanCommandBuffer> vegetationEntitiesCommandBuffers;
+
+	//The lighting command pool.
+	VulkanCommandPool *RESTRICT lightingCommandPool;
+
+	//The lighting command buffers.
+	DynamicArray<VulkanCommandBuffer> lightingCommandBuffers;
+
+	//The skybox command pool.
+	VulkanCommandPool *RESTRICT skyboxCommandPool;
+
+	//The skybox command buffers.
+	DynamicArray<VulkanCommandBuffer> skyboxCommandBuffers;
+
+	//The particle system entities command pool.
+	VulkanCommandPool *RESTRICT particleSystemEntitiesCommandPool;
+
+	//The particle system entities command buffers.
+	DynamicArray<VulkanCommandBuffer> particleSystemEntitiesCommandBuffers;
+
+	//The ocean command pool.
+	VulkanCommandPool *RESTRICT oceanCommandPool;
+
+	//The ocean command buffers.
+	DynamicArray<VulkanCommandBuffer> oceanCommandBuffers;
+
+	//The post processing command pool.
+	VulkanCommandPool *RESTRICT postProcessingCommandPool;
+
+	//The post processing command buffers.
+	DynamicArray<VulkanCommandBuffer> postProcessingCommandBuffers;
 
 	//The fences.
 	DynamicArray<VulkanFence *RESTRICT> fences;
