@@ -222,7 +222,7 @@ public:
 	static float RandomFloatInRange(const float minimum, const float maximum) NOEXCEPT
 	{
 		static thread_local std::random_device randomDevice;
-		static thread_local std::mt19937 randomEngine{ 0 };
+		static thread_local std::mt19937 randomEngine{ randomDevice() };
 
 		std::uniform_real_distribution<float> distribution{ minimum, maximum };
 

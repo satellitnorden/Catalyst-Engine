@@ -55,30 +55,30 @@ DEFINE_SINGLETON(WorldArchitect);
 namespace WorldAchitectConstants
 {
 #if defined(CATALYST_DEBUG)
-	static constexpr uint32 HEIGHT_MAP_RESOLUTION{ 1'024 };
+	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 1'024 };
 #else
-	static constexpr uint32 HEIGHT_MAP_RESOLUTION{ 4'096 };
+	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 4'096 };
 #endif
-	static constexpr float TERRAIN_HEIGHT{ 1'000.0f };
-	static constexpr float TERRAIN_SIZE{ 10'000.0f };
-	static constexpr float WATER_HEIGHT{ -1.0f };
-	static constexpr uint64 VEGETATION_DENSITY{ 25'000'000 };
+	constexpr float TERRAIN_HEIGHT{ 1'000.0f };
+	constexpr float TERRAIN_SIZE{ 10'000.0f };
+	constexpr float WATER_HEIGHT{ -1.0f };
+	constexpr uint64 VEGETATION_DENSITY{ 25'000'000 };
 
 	//Resource ID's.
-	static constexpr HashString DAY_ENVIRONMENT_MATERIAL{ "DayEnvironmentMaterial" };
-	static constexpr HashString NIGHT_ENVIRONMENT_MATERIAL{ "NightEnvironmentMaterial" };
-	static constexpr HashString STONE_MATERIAL{ "StoneMaterial" };
-	static constexpr HashString TREE_STOMP_MATERIAL{ "TreeStompMaterial" };
-	static constexpr HashString STONE_MODEL{ "StoneModel" };
-	static constexpr HashString TREE_STOMP_MODEL{ "TreeStompModel" };
-	static constexpr HashString DEFAULT_TERRAIN_MATERIAL{ "DefaultTerrainMaterial" };
-	static constexpr HashString DEFAULT_VEGETATION_MATERIAL{ "DefaultVegetationMaterial" };
-	static constexpr HashString DEFAULT_WATER_MATERIAL{ "DefaultWaterMaterial" };
-	static constexpr HashString FOG_1_MATERIAL{ "Fog1Material" };
-	static constexpr HashString CLOUD_1_MATERIAL{ "Cloud1Material" };
-	static constexpr HashString CLOUD_2_MATERIAL{ "Cloud2Material" };
-	static constexpr HashString CLOUD_3_MATERIAL{ "Cloud3Material" };
-	static constexpr HashString CLOUD_4_MATERIAL{ "Cloud4Material" };
+	constexpr HashString DAY_ENVIRONMENT_MATERIAL{ "DayEnvironmentMaterial" };
+	constexpr HashString NIGHT_ENVIRONMENT_MATERIAL{ "NightEnvironmentMaterial" };
+	constexpr HashString STONE_MATERIAL{ "StoneMaterial" };
+	constexpr HashString TREE_STOMP_MATERIAL{ "TreeStompMaterial" };
+	constexpr HashString STONE_MODEL{ "StoneModel" };
+	constexpr HashString TREE_STOMP_MODEL{ "TreeStompModel" };
+	constexpr HashString DEFAULT_TERRAIN_MATERIAL{ "DefaultTerrainMaterial" };
+	constexpr HashString DEFAULT_VEGETATION_MATERIAL{ "DefaultVegetationMaterial" };
+	constexpr HashString DEFAULT_WATER_MATERIAL{ "DefaultWaterMaterial" };
+	constexpr HashString FOG_1_MATERIAL{ "Fog1Material" };
+	constexpr HashString CLOUD_1_MATERIAL{ "Cloud1Material" };
+	constexpr HashString CLOUD_2_MATERIAL{ "Cloud2Material" };
+	constexpr HashString CLOUD_3_MATERIAL{ "Cloud3Material" };
+	constexpr HashString CLOUD_4_MATERIAL{ "Cloud4Material" };
 }
 
 /*

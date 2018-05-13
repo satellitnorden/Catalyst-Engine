@@ -130,6 +130,9 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Update the dynamic uniform data.
 	UpdateDynamicUniformData();
 
+	//Update the descriptor sets.
+	UpdateDescriptorSets();
+
 	//Execute the frame-dependant asynchronous tasks.
 	ExecuteFrameDependantAsynchronousTasks();
 
@@ -1049,10 +1052,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		shadowMapBlurPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
 		shadowMapBlurPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
 		shadowMapBlurPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		VkVertexInputBindingDescription shadowMapBlurInputBindingDescription;
-		VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(shadowMapBlurInputBindingDescription);
-		shadowMapBlurPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
-		shadowMapBlurPipelineCreationParameters.vertexInputBindingDescriptions = &shadowMapBlurInputBindingDescription;
+		shadowMapBlurPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
+		shadowMapBlurPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		shadowMapBlurPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
 
 		pipelines[INDEX(Pipeline::ShadowMapBlur)] = VulkanInterface::Instance->CreatePipeline(shadowMapBlurPipelineCreationParameters);
@@ -1290,10 +1291,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		lightingPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
 		lightingPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
 		lightingPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		VkVertexInputBindingDescription lightingVertexInputBindingDescription;
-		VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(lightingVertexInputBindingDescription);
-		lightingPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
-		lightingPipelineCreationParameters.vertexInputBindingDescriptions = &lightingVertexInputBindingDescription;
+		lightingPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
+		lightingPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		lightingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 		pipelines[INDEX(Pipeline::Lighting)] = VulkanInterface::Instance->CreatePipeline(lightingPipelineCreationParameters);
@@ -1335,10 +1334,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		cubeMapPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		cubeMapPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
 		cubeMapPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		VkVertexInputBindingDescription cubeMapVertexInputBindingDescription;
-		VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(cubeMapVertexInputBindingDescription);
-		cubeMapPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
-		cubeMapPipelineCreationParameters.vertexInputBindingDescriptions = &cubeMapVertexInputBindingDescription;
+		cubeMapPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
+		cubeMapPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		cubeMapPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 		pipelines[INDEX(Pipeline::CubeMap)] = VulkanInterface::Instance->CreatePipeline(cubeMapPipelineCreationParameters);
@@ -1380,10 +1377,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		oceanPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
 		oceanPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
 		oceanPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		VkVertexInputBindingDescription oceanInputBindingDescription;
-		VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(oceanInputBindingDescription);
-		oceanPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
-		oceanPipelineCreationParameters.vertexInputBindingDescriptions = &oceanInputBindingDescription;
+		oceanPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
+		oceanPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		oceanPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 		pipelines[INDEX(Pipeline::Ocean)] = VulkanInterface::Instance->CreatePipeline(oceanPipelineCreationParameters);
@@ -1427,10 +1422,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		particleSystemPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 		particleSystemPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
 		particleSystemPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		VkVertexInputBindingDescription particleSystemVertexInputBindingDescription;
-		VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(particleSystemVertexInputBindingDescription);
-		particleSystemPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
-		particleSystemPipelineCreationParameters.vertexInputBindingDescriptions = &particleSystemVertexInputBindingDescription;
+		particleSystemPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
+		particleSystemPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		particleSystemPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 		pipelines[INDEX(Pipeline::ParticleSystem)] = VulkanInterface::Instance->CreatePipeline(particleSystemPipelineCreationParameters);
@@ -1479,10 +1472,8 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		postProcessingPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
 		postProcessingPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
 		postProcessingPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		VkVertexInputBindingDescription postProcessingInputBindingDescription;
-		VulkanTranslationUtilities::GetDefaultVertexInputBindingDescription(postProcessingInputBindingDescription);
-		postProcessingPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
-		postProcessingPipelineCreationParameters.vertexInputBindingDescriptions = &postProcessingInputBindingDescription;
+		postProcessingPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
+		postProcessingPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		postProcessingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 		pipelines[INDEX(Pipeline::PostProcessing)] = VulkanInterface::Instance->CreatePipeline(postProcessingPipelineCreationParameters);
@@ -1659,18 +1650,6 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 	{
 		VulkanRenderingSystem::Instance->RenderPostProcessing();
 	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderPostProcessing)]));
-
-	/*
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
-		VulkanRenderingSystem::Instance->UpdateDynamicUniformData();
-	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)]));
-	*/
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
-		VulkanRenderingSystem::Instance->UpdateDescriptorSets();
-	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)]));
 }
 
 /*
@@ -1815,7 +1794,6 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 
 	//Wait for the frame-dependant asynchonous tasks to finish.
 	taskSemaphores[INDEX(TaskSemaphore::RenderDirectionalShadows)].WaitFor();
-	//taskSemaphores[INDEX(TaskSemaphore::UpdateDynamicUniformData)].WaitFor();
 
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*currentCommandBuffer, 1, semaphores[INDEX(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, semaphores[INDEX(GraphicsSemaphore::RenderFinished)], frameData.GetCurrentFence()->Get());
@@ -2257,9 +2235,6 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 */
 void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 {
-	//Wait for the update of the descriptor sets to finish.
-	taskSemaphores[INDEX(TaskSemaphore::UpdateDescriptorSets)].WaitFor();
-
 	//Cache the command buffer.
 	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentLightingCommandBuffer() };
 

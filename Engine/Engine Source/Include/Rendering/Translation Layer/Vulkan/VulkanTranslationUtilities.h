@@ -97,16 +97,6 @@ namespace VulkanTranslationUtilities
 	}
 
 	/*
-	*	Returns the default vertex input binding description.
-	*/
-	static void GetDefaultVertexInputBindingDescription(VkVertexInputBindingDescription &vertexInputBindingDescription) NOEXCEPT
-	{
-		vertexInputBindingDescription.binding = 0;
-		vertexInputBindingDescription.stride = 0;
-		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-	}
-
-	/*
 	*	Returns the vertex input attribute descriptions for the instanced physical pipeline.
 	*/
 	static void GetInstancedPhysicalVertexInputAttributeDescriptions(StaticArray<VkVertexInputAttributeDescription, 8> &vertexInputAttributeDescriptions) NOEXCEPT

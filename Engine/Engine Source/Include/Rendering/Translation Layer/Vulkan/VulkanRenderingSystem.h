@@ -295,8 +295,6 @@ private:
 		RenderParticleSystemEntities,
 		RenderOcean,
 		RenderPostProcessing,
-		UpdateDynamicUniformData,
-		UpdateDescriptorSets,
 		UpdateParticleSystemProperties,
 		UpdateVegetationCulling,
 		UpdateViewFrustumCuling,
