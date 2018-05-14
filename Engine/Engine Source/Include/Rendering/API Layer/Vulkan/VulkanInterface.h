@@ -165,7 +165,7 @@ public:
 	/*
 	*	Creates and returns a shader module.
 	*/
-	RESTRICTED VulkanShaderModule* CreateShaderModule(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits stage) NOEXCEPT;
+	RESTRICTED VulkanShaderModule* CreateShaderModule(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits stage) NOEXCEPT;
 
 	/*
 	*	Creates and returns a storage buffer.

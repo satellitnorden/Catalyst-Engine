@@ -6,6 +6,10 @@ Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/.vs/*
 Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/x64/*
 Tools/Microbenchmarker/Visual Studio Solution/Microbenchmarker/Microbenchmarker/x64/*
 
+Tools/Vulkan Shader Builder/Visual Studio Solution/Vulkan Shader Builder/.vs/*
+Tools/Vulkan Shader Builder/Visual Studio Solution/Vulkan Shader Builder/x64/*
+Tools/Vulkan Shader Builder/Visual Studio Solution/Vulkan Shader Builder/Vulkan Shader Builder/x64/*
+
 Game/Clairvoyant/Visual Studio Solution/Clairvoyant/.vs/*
 Game/Clairvoyant/Visual Studio Solution/Clairvoyant/x64/*
 Game/Clairvoyant/Visual Studio Solution/Clairvoyant/Clairvoyant/x64/*

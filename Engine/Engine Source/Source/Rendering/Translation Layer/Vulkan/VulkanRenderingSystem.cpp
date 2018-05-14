@@ -32,6 +32,7 @@
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/TextureData.h>
 #include <Rendering/Engine Layer/VegetationMaterial.h>
+#include <Rendering/Shader Data/Vulkan/VulkanShaderData.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanParticleSystemProperties.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanTranslationUtilities.h>
 
@@ -783,140 +784,163 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 
 	{
 		//Initialize the cube map fragment shader module.
-		const DynamicArray<char> cubeMapFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "CubeMapFragmentShader.spv");
-		shaderModules[INDEX(ShaderModule::CubeMapFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(cubeMapFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetCubeMapFragmentShaderData(data);
+		shaderModules[INDEX(ShaderModule::CubeMapFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the cube map vertex shader module.
-		const DynamicArray<char> cubeMapVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "CubeMapVertexShader.spv");
-		shaderModules[INDEX(ShaderModule::CubeMapVertexShader)] = VulkanInterface::Instance->CreateShaderModule(cubeMapVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetCubeMapVertexShaderData(data);
+		shaderModules[INDEX(ShaderModule::CubeMapVertexShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize directional shadowInstanced physical vertex shader module.
-		const DynamicArray<char> directionalShadowInstancedPhysicalVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "DirectionalShadowInstancedPhysicalVertexShader.spv");
-		shaderModules[INDEX(ShaderModule::DirectionalShadowInstancedPhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(directionalShadowInstancedPhysicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetDirectionalShadowInstancedPhysicalVertexShaderData(data);
+		shaderModules[INDEX(ShaderModule::DirectionalShadowInstancedPhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize directional shadow terrain tesselation evaluation shader module.
-		const DynamicArray<char> directionalShadowTerrainTessellationEvaluationShaderByteCode = ShaderLoader::LoadShader(shadersPath + "DirectionalShadowTerrainTessellationEvaluationShader.spv");
-		shaderModules[INDEX(ShaderModule::DirectionalShadowTerrainTessellationEvaluationShader)] = VulkanInterface::Instance->CreateShaderModule(directionalShadowTerrainTessellationEvaluationShaderByteCode, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetDirectionalShadowTerrainTessellationEvaluationShaderData(data);
+		shaderModules[INDEX(ShaderModule::DirectionalShadowTerrainTessellationEvaluationShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 	}
 
 	{
 		//Initialize the instanced physical vertex shader module.
-		const DynamicArray<char> instancedPhysicalVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "InstancedPhysicalVertexShader.spv");
-		shaderModules[INDEX(ShaderModule::InstancedPhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(instancedPhysicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetInstancedPhysicalVertexShaderData(data);
+		shaderModules[INDEX(ShaderModule::InstancedPhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 	
 	{
 		//Initialize the lighting fragment shader module.
-		const DynamicArray<char> lightingFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "LightingFragmentShader.spv");
-		shaderModules[INDEX(ShaderModule::LightingFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(lightingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetLightingFragmentShaderData(data);
+		shaderModules[INDEX(ShaderModule::LightingFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the ocean fragment shader module.
-		const DynamicArray<char> oceanFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "OceanFragmentShader.spv");
-		shaderModules[INDEX(ShaderModule::OceanFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(oceanFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetOceanFragmentShaderData(data);
+		shaderModules[INDEX(ShaderModule::OceanFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the particle system fragment shader module.
-		const DynamicArray<char> particleSystemFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "ParticleSystemFragmentShader.spv");
-		shaderModules[INDEX(ShaderModule::ParticleSystemFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(particleSystemFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetParticleSystemFragmentShaderData(data);
+		shaderModules[INDEX(ShaderModule::ParticleSystemFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the particle system geometry shader module.
-		const DynamicArray<char> particleSystemGeometryShaderByteCode = ShaderLoader::LoadShader(shadersPath + "ParticleSystemGeometryShader.spv");
-		shaderModules[INDEX(ShaderModule::ParticleSystemGeometryShader)] = VulkanInterface::Instance->CreateShaderModule(particleSystemGeometryShaderByteCode, VK_SHADER_STAGE_GEOMETRY_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetParticleSystemGeometryShaderData(data);
+		shaderModules[INDEX(ShaderModule::ParticleSystemGeometryShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 	}
 
 	{
 		//Initialize the particle system vertex shader module.
-		const DynamicArray<char> particleSystemVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "ParticleSystemVertexShader.spv");
-		shaderModules[INDEX(ShaderModule::ParticleSystemVertexShader)] = VulkanInterface::Instance->CreateShaderModule(particleSystemVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetParticleSystemVertexShaderData(data);
+		shaderModules[INDEX(ShaderModule::ParticleSystemVertexShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the post processing fragment shader module.
-		const DynamicArray<char> postProcessingFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "PostProcessingFragmentShader.spv");
-		shaderModules[INDEX(ShaderModule::PostProcessingFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(postProcessingFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetPostProcessingFragmentShaderData(data);
+		shaderModules[INDEX(ShaderModule::PostProcessingFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the physical fragment shader module.
-		const DynamicArray<char> physicalFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "PhysicalFragmentShader.spv");
-		shaderModules[INDEX(ShaderModule::PhysicalFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(physicalFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetPhysicalFragmentShaderData(data);
+		shaderModules[INDEX(ShaderModule::PhysicalFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the physical vertex shader module.
-		const DynamicArray<char> physicalVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "PhysicalVertexShader.spv");
-		shaderModules[INDEX(ShaderModule::PhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(physicalVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetPhysicalVertexShaderData(data);
+		shaderModules[INDEX(ShaderModule::PhysicalVertexShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 	
 	{
 		//Initialize the shadow map blur fragment shader module.
-		const DynamicArray<char> shadowMapBlurFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "ShadowMapBlurFragmentShader.spv");
-		shaderModules[INDEX(ShaderModule::ShadowMapBlurFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(shadowMapBlurFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetShadowMapBlurFragmentShaderData(data);
+		shaderModules[INDEX(ShaderModule::ShadowMapBlurFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the shadow map fragment shader module.
-		const DynamicArray<char> shadowMapFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "ShadowMapFragmentShader.spv");
-		shaderModules[INDEX(ShaderModule::ShadowMapFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(shadowMapFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetShadowMapFragmentShaderData(data);
+		shaderModules[INDEX(ShaderModule::ShadowMapFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the terrain scene buffer fragment shader module.
-		const DynamicArray<char> terrainSceneBufferFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "TerrainSceneBufferFragmentShader.spv");
-		shaderModules[INDEX(ShaderModule::TerrainFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetTerrainSceneBufferFragmentShaderData(data);
+		shaderModules[INDEX(ShaderModule::TerrainFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the terrain scene buffer tessellation control shader module.
-		const DynamicArray<char> terrainSceneBufferTessellationControlShaderByteCode = ShaderLoader::LoadShader(shadersPath + "TerrainSceneBufferTessellationControlShader.spv");
-		shaderModules[INDEX(ShaderModule::TerrainTessellationControlShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferTessellationControlShaderByteCode, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetTerrainSceneBufferTessellationControlShaderData(data);
+		shaderModules[INDEX(ShaderModule::TerrainTessellationControlShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
 	}
 	
 	{
 		//Initialize the terrain scene buffer tessellation evaluation shader module.
-		const DynamicArray<char> terrainSceneBufferTessellationEvaluationShaderByteCode = ShaderLoader::LoadShader(shadersPath + "TerrainSceneBufferTessellationEvaluationShader.spv");
-		shaderModules[INDEX(ShaderModule::TerrainTessellationEvaluationShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferTessellationEvaluationShaderByteCode, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetTerrainSceneBufferTessellationEvaluationShaderData(data);
+		shaderModules[INDEX(ShaderModule::TerrainTessellationEvaluationShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 	}
 	
 	{
 		//Initialize the terrain scene buffer vertex shader module.
-		const DynamicArray<char> terrainSceneBufferVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "TerrainSceneBufferVertexShader.spv");
-		shaderModules[INDEX(ShaderModule::TerrainVertexShader)] = VulkanInterface::Instance->CreateShaderModule(terrainSceneBufferVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetTerrainSceneBufferVertexShaderData(data);
+		shaderModules[INDEX(ShaderModule::TerrainVertexShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 	
 	{
 		//Initialize the vegetation fragment shader module.
-		const DynamicArray<char> vegetationFragmentShaderByteCode = ShaderLoader::LoadShader(shadersPath + "VegetationFragmentShader.spv");
-		shaderModules[INDEX(ShaderModule::VegetationFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(vegetationFragmentShaderByteCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetVegetationFragmentShaderData(data);
+		shaderModules[INDEX(ShaderModule::VegetationFragmentShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the vegetation geometry shader module.
-		const DynamicArray<char> vegetationGeometryShaderByteCode = ShaderLoader::LoadShader(shadersPath + "VegetationGeometryShader.spv");
-		shaderModules[INDEX(ShaderModule::VegetationGeometryShader)] = VulkanInterface::Instance->CreateShaderModule(vegetationGeometryShaderByteCode, VK_SHADER_STAGE_GEOMETRY_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetVegetationGeometryShaderData(data);
+		shaderModules[INDEX(ShaderModule::VegetationGeometryShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 	}
 	
 	{
 		//Initialize the vegetation vertex shader module.
-		const DynamicArray<char> vegetationVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "VegetationVertexShader.spv");
-		shaderModules[INDEX(ShaderModule::VegetationVertexShader)] = VulkanInterface::Instance->CreateShaderModule(vegetationVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetVegetationVertexShaderData(data);
+		shaderModules[INDEX(ShaderModule::VegetationVertexShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 	
 	{
 		//Initialize the viewport vertex shader module.
-		const DynamicArray<char> viewportVertexShaderByteCode = ShaderLoader::LoadShader(shadersPath + "ViewportVertexShader.spv");
-		shaderModules[INDEX(ShaderModule::ViewportVertexShader)] = VulkanInterface::Instance->CreateShaderModule(viewportVertexShaderByteCode, VK_SHADER_STAGE_VERTEX_BIT);
+		DynamicArray<byte> data;
+		VulkanShaderData::GetViewportVertexShaderData(data);
+		shaderModules[INDEX(ShaderModule::ViewportVertexShader)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 }
 

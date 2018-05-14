@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Final|x64">
-      <Configuration>Final</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -16,8 +12,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{B6096AC7-51B8-4D84-92EE-18B55EC3E437}</ProjectGuid>
-    <RootNamespace>Clairvoyant</RootNamespace>
+    <ProjectGuid>{AC9AD9C9-F37D-42B5-87CC-56D2A5F2784D}</ProjectGuid>
+    <RootNamespace>VulkanShaderBuilder</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -28,13 +24,6 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
@@ -52,31 +41,26 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\..\..\..\Engine\Engine Source\Include;..\..\..\Game Source\Include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\..\..\Engine\Engine Source\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\..\Engine\Engine Source\Libraries\Static;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\..\..\..\..\Engine\Engine Source\Source;..\..\..\Game Source\Source;$(SourcePath)</SourcePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
-    <IncludePath>..\..\..\..\..\Engine\Engine Source\Include;..\..\..\Game Source\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\..\..\Engine\Engine Source\Libraries\Static;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\..\..\..\..\Engine\Engine Source\Source;..\..\..\Game Source\Source;$(SourcePath)</SourcePath>
+    <SourcePath>..\..\..\..\..\Engine\Engine Source\Source;..\..\..\Vulkan Shader Builder Source\Source;$(SourcePath)</SourcePath>
+    <TargetName>VulkanShaderBuilder</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\..\..\..\Engine\Engine Source\Include;..\..\..\Game Source\Include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\..\..\Engine\Engine Source\Include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\..\Engine\Engine Source\Libraries\Static;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\..\..\..\..\Engine\Engine Source\Source;..\..\..\Game Source\Source;$(SourcePath)</SourcePath>
+    <SourcePath>..\..\..\..\..\Engine\Engine Source\Source;..\..\..\Vulkan Shader Builder Source\Source;$(SourcePath)</SourcePath>
+    <TargetName>VulkanShaderBuilder</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CATALYST_DEBUG;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -85,28 +69,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Full</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CATALYST_RELEASE;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-    </ClCompile>
-    <Link>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Full</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>CATALYST_FINAL;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -174,7 +142,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Input\InputUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Input\KeyboardState.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\CatalystMath.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\MathematicalConstants.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Matrix3.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Matrix4.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Math\PerlinNoiseGenerator.h" />
@@ -243,30 +210,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\VegetationTransformation.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\WaterUniformData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Window.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\CubeMapFragmentShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\CubeMapVertexShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\DirectionalShadowInstancedPhysicalVertexShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\DirectionalShadowTerrainTessellationEvaluationShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\InstancedPhysicalVertexShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\LightingFragmentShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\OceanFragmentShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\ParticleSystemFragmentShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\ParticleSystemGeometryShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\ParticleSystemVertexShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\PhysicalFragmentShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\PhysicalVertexShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\PostProcessingFragmentShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\ShadowMapBlurFragmentShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\ShadowMapFragmentShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\TerrainSceneBufferFragmentShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationControlShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationEvaluationShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\TerrainSceneBufferVertexShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\VegetationFragmentShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\VegetationGeometryShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\VegetationVertexShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\ViewportVertexShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\VulkanShaderData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Translation Layer\Vulkan\VulkanDynamicUniformData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Translation Layer\Vulkan\VulkanFrameData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Translation Layer\Vulkan\VulkanParticleSystemProperties.h" />
@@ -293,13 +236,48 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\RenderingSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\SoundSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\TaskSystem.h" />
-    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantGameSystem.h" />
-    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantPlayer.h" />
-    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSettings.h" />
-    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSoundDirector.h" />
-    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSoundGUIDs.h" />
-    <ClInclude Include="..\..\..\Game Source\Include\TimeSystem.h" />
-    <ClInclude Include="..\..\..\Game Source\Include\WorldArchitect.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod.hpp" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_codec.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_common.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_dsp.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_dsp_effects.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_errors.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_output.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_studio.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_studio.hpp" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\fmod_studio_common.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\GLFW\glfw3.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\GLFW\glfw3native.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\shaderc\shaderc.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\shaderc\shaderc.hpp" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\stb_image.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\GLSL.std.450.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\spirv.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\spirv.hpp" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vk_icd.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vk_layer.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vk_layer_dispatch_table.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vk_platform.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vk_sdk_platform.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan.hpp" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan_android.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan_core.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan_ios.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan_macos.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan_mir.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan_vi.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan_wayland.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan_win32.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan_xcb.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan_xlib.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Third Party Libraries\vulkan\vulkan_xlib_xrandr.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Vector3.inl" />
+    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanCommandBuffer.inl" />
+    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.inl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp" />
@@ -346,29 +324,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanUniformBuffer.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\PhysicalModel.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Window.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\CubeMapFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\CubeMapVertexShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\DirectionalShadowInstancedPhysicalVertexShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\DirectionalShadowTerrainTessellationEvaluationShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\InstancedPhysicalVertexShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\LightingFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\OceanFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\ParticleSystemFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\ParticleSystemGeometryShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\ParticleSystemVertexShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\PhysicalFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\PhysicalVertexShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\PostProcessingFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\ShadowMapBlurFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\ShadowMapFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationControlShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationEvaluationShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferVertexShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\VegetationFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\VegetationGeometryShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\VegetationVertexShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\ViewportVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Translation Layer\Vulkan\VulkanRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Resources\ResourceLoader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\EngineSystem.cpp" />
@@ -379,17 +334,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\TaskSystem.cpp" />
-    <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp" />
-    <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantMain.cpp" />
-    <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantPlayer.cpp" />
-    <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantSoundDirector.cpp" />
-    <ClCompile Include="..\..\..\Game Source\Source\TimeSystem.cpp" />
-    <ClCompile Include="..\..\..\Game Source\Source\WorldArchitect.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Vector3.inl" />
-    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanCommandBuffer.inl" />
-    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.inl" />
+    <ClCompile Include="..\..\..\Vulkan Shader Builder Source\Source\VulkanShaderBuilderMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

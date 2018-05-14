@@ -22,4 +22,6 @@ glslangValidator.exe -V VegetationGeometryShader.geom -o 				VegetationGeometryS
 glslangValidator.exe -V VegetationVertexShader.vert -o 					VegetationVertexShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
 
+VulkanShaderBuilder.exe
+
 pause

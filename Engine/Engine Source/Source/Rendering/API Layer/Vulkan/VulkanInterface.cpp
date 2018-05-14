@@ -357,13 +357,13 @@ RESTRICTED VulkanSemaphore* VulkanInterface::CreateSemaphore() NOEXCEPT
 /*
 *	Creates and returns a shader module.
 */
-RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits stage) NOEXCEPT
+RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits stage) NOEXCEPT
 {
 	static Spinlock lock;
 	ScopedLock<Spinlock>{ lock };
 
 	VulkanShaderModule *const RESTRICT newShaderModule = new VulkanShaderModule;
-	newShaderModule->Initialize(shaderByteCode, stage);
+	newShaderModule->Initialize(shaderData, shaderDataSize, stage);
 
 	vulkanShaderModules.EmplaceSlow(newShaderModule);
 

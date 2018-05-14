@@ -15,16 +15,6 @@ class VulkanShaderModule final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanShaderModule() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanShaderModule() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan shader module.
 	*/
 	const VkShaderModule Get() const NOEXCEPT { return vulkanShaderModule; }
@@ -32,7 +22,7 @@ public:
 	/*
 	*	Initializes this Vulkan shader module.
 	*/
-	void Initialize(const DynamicArray<char> &shaderByteCode, const VkShaderStageFlagBits newStage) NOEXCEPT;
+	void Initialize(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits newStage) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan shader module.
@@ -55,6 +45,6 @@ private:
 	/*
 	*	Creates a shader module create info
 	*/
-	void CreateShaderModuleCreateInfo(VkShaderModuleCreateInfo &shaderModuleCreateInfo, const DynamicArray<char> & shaderByteCode) const NOEXCEPT;
+	void CreateShaderModuleCreateInfo(VkShaderModuleCreateInfo &shaderModuleCreateInfo, const void* const shaderData, const uint64 shaderDataSize) const NOEXCEPT;
 
 };

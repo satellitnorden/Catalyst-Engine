@@ -1,0 +1,92 @@
+//Engine core.
+#include <Engine Core/EngineCore.h>
+
+//STL.
+#include <filesystem>
+
+//Preprocessor defines.
+#if !defined EXIT_SUCCESS
+	#define EXIT_SUCCESS 0
+#endif
+
+int main()
+{
+	std::ofstream masterOutput{ "..\\..\\Include\\Rendering\\Shader Data\\Vulkan\\VulkanShaderData.h" };
+
+	masterOutput << "/*" << std::endl;
+	masterOutput << "*\tThis file is auto-generated, do not edit manually." << std::endl;
+	masterOutput << "*/" << std::endl;
+	masterOutput << std::endl;
+	masterOutput << "#pragma once" << std::endl;
+	masterOutput << std::endl;
+	masterOutput << "//Engine core." << std::endl;
+	masterOutput << "#include <Engine Core/EngineCore.h>" << std::endl;
+	masterOutput << std::endl;
+	masterOutput << "//Rendering." << std::endl;
+
+	//Iterate over all files in the directory and export them into a C++ header file.
+	for (auto iterator : std::experimental::filesystem::directory_iterator{ std::experimental::filesystem::current_path() })
+	{
+		std::string fileName{ iterator.path().filename().generic_string() };
+
+		if (fileName.find(".spv") != std::string::npos)
+		{
+			BinaryFile<IOMode::In> file{ fileName.c_str() };
+
+			std::string outputFileName{ iterator.path().stem().string() };
+			std::string outputHeaderFileName = "..\\..\\Include\\Rendering\\Shader Data\\Vulkan\\" + outputFileName + ".h";
+			std::string outputSourceFileName = "..\\..\\Source\\Rendering\\Shader Data\\Vulkan\\" + outputFileName + ".cpp";
+			std::ofstream headerOutput{ outputHeaderFileName.c_str() };
+			std::ofstream sourceOutput{ outputSourceFileName.c_str() };
+
+			masterOutput << "#include <Rendering/Shader Data/Vulkan/" << outputFileName << ".h>" << std::endl;
+
+			headerOutput << "/*" << std::endl;
+			headerOutput << "*\tThis file is auto-generated, do not edit manually." << std::endl;
+			headerOutput << "*/" << std::endl;
+			headerOutput << std::endl;
+			headerOutput << "#pragma once" << std::endl;
+			headerOutput << std::endl;
+			headerOutput << "//Engine core." << std::endl;
+			headerOutput << "#include <Engine Core/EngineCore.h>" << std::endl;
+			headerOutput << std::endl;
+			headerOutput << "namespace VulkanShaderData" << std::endl;
+			headerOutput << "{" << std::endl;
+			headerOutput << "\tvoid Get" << outputFileName.c_str() << "Data(DynamicArray<byte> &data);" << std::endl;
+			headerOutput << "}" << std::endl;
+			headerOutput.close();
+
+			sourceOutput << "/*" << std::endl;
+			sourceOutput << "*\tThis file is auto-generated, do not edit manually." << std::endl;
+			sourceOutput << "*/" << std::endl;
+			sourceOutput << std::endl;
+			sourceOutput << "//Header file." << std::endl;
+			sourceOutput << "#include <Rendering/Shader Data/Vulkan/" << outputFileName << ".h>" << std::endl;
+			sourceOutput << std::endl;
+			sourceOutput << "namespace VulkanShaderData" << std::endl;
+			sourceOutput << "{" << std::endl;
+			sourceOutput << "\tvoid Get" << outputFileName.c_str() << "Data(DynamicArray<byte> &data)" << std::endl;
+			sourceOutput << "\t{" << std::endl;
+			sourceOutput << "\t\tdata.Reserve(" << file.Size() << ");" << std::endl;
+			sourceOutput << std::endl;
+
+			for (uint64 i = 0, size = file.Size(); i < size; ++i)
+			{
+				byte outputByte;
+				file.Read(&outputByte, sizeof(byte));
+				sourceOutput << "\t\tdata.EmplaceFast(" << static_cast<uint64>(outputByte) << ");" << std::endl;
+			}
+
+			file.Close();
+
+			sourceOutput << "\t}" << std::endl;
+			sourceOutput << "}" << std::endl;
+
+			sourceOutput.close();
+		}
+	}
+
+	masterOutput.close();
+
+	return EXIT_SUCCESS;
+}
