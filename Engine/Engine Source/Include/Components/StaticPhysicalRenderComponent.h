@@ -19,7 +19,7 @@ public:
 	Matrix4 modelMatrix;
 
 	//The descriptor set.
-	VulkanDescriptorSet descriptorSet{ };
+	DescriptorSetHandle descriptorSet{ };
 
 	//The buffer.
 	VulkanConstantBuffer buffer{ };

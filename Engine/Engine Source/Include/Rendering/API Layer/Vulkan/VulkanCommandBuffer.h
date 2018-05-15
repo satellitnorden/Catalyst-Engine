@@ -53,7 +53,7 @@ public:
 	/*
 	*	Records a bind descriptor sets command.
 	*/
-	void CommandBindDescriptorSets(const VulkanPipeline &vulkanPipeline, const uint32 descriptorSetCount, const VulkanDescriptorSet *RESTRICT descriptorSets) NOEXCEPT;
+	void CommandBindDescriptorSets(const VkPipelineLayout pipelineLayout, const uint32 firstBinding, const uint32 descriptorSetCount, const VkDescriptorSet *RESTRICT descriptorSets) NOEXCEPT;
 
 	/*
 	*	Records a bind index buffer command.
@@ -63,7 +63,7 @@ public:
 	/*
 	*	Records a bind pipeline command.
 	*/
-	void CommandBindPipeline(const VulkanPipeline &vulkanPipeline) NOEXCEPT;
+	void CommandBindPipeline(const VkPipeline vulkanPipeline) NOEXCEPT;
 
 	/*
 	*	Records a bind vertex buffers command.

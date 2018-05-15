@@ -41,6 +41,24 @@ void RenderingSystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
+*	Returns the current frame index.
+*/
+uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
+{
+	//Return the current frame index via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentFrameIndex();
+}
+
+/*
+*	Finalizes the initialization of a render pass.
+*/
+void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT
+{
+	//Finalize the initialization of this render pass via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->FinalizeRenderPassInitialization(renderPass);
+}
+
+/*
 *	Creates an environment material.
 */
 void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT

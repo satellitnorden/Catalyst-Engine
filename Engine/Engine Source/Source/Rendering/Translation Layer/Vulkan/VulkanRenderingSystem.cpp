@@ -165,6 +165,22 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
+*	Returns the current frame index.
+*/
+uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
+{
+	return VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
+}
+
+/*
+*	Finalizes the initialization of a render pass.
+*/
+void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT
+{
+
+}
+
+/*
 *	Creates an environment material.
 */
 void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT
@@ -321,30 +337,33 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 	terrainComponent.terrainProperties = terrainProperties;
 
 	//Create the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(terrainRenderComponent.descriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)]);
+	VulkanDescriptorSet newDescriptorSet;
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)]);
+
+	terrainRenderComponent.descriptorSet = newDescriptorSet.Get();
 
 	DynamicArray<VkWriteDescriptorSet, 18> writeDescriptorSets;
 
 	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(terrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
-	writeDescriptorSets.EmplaceFast(static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 1));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainPropertiesTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 2));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(layerWeightsTexture)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 3));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 4));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 5));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 6));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 7));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 8));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 9));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 10));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 11));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 12));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 13));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 14));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 15));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerAlbedo)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 16));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerNormalMap)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 17));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerMaterialProperties)->GetWriteDescriptorSet(terrainRenderComponent.descriptorSet, 18));
+	writeDescriptorSets.EmplaceFast(static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->GetWriteDescriptorSet(newDescriptorSet, 1));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 2));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(layerWeightsTexture)->GetWriteDescriptorSet(newDescriptorSet, 3));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 4));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 5));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 6));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 7));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 8));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 9));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 10));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 11));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 12));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 13));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 14));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 15));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 16));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 17));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 18));
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
@@ -382,7 +401,7 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 
 	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
 	renderComponent.modelMatrix = Matrix4(position, rotation, scale);
-	renderComponent.descriptorSet = newDescriptorSet;
+	renderComponent.descriptorSet = newDescriptorSet.Get();
 	renderComponent.buffer = *static_cast<VulkanConstantBuffer *RESTRICT>(model.GetBuffer());
 	renderComponent.indexOffset = model.GetIndexOffset();
 	renderComponent.indexCount = model.GetIndexCount();
@@ -421,7 +440,7 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 	//Fill the instanced physical entity components with the relevant data.
 	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents()[entity.GetComponentsIndex()] };
 
-	renderComponent.descriptorSet = newDescriptorSet;
+	renderComponent.descriptorSet = newDescriptorSet.Get();
 	renderComponent.modelBuffer = model.GetBuffer();
 	renderComponent.transformationsBuffer = transformationsBuffer;
 	renderComponent.indexOffset = model.GetIndexOffset();
@@ -474,7 +493,7 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 	VulkanConstantBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateConstantBuffer(transformationsData, transformationsDataSizes, 1);
 
 	//Fill the components with the relevant data.
-	renderComponent.descriptorSet = newDescriptorSet;
+	renderComponent.descriptorSet = newDescriptorSet.Get();
 	renderComponent.transformationsBuffer = transformationsBuffer;
 }
 
@@ -509,7 +528,7 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 
 	component.properties = properties;
 	component.propertiesUniformBuffer = uniformBuffer;
-	renderComponent.descriptorSet = descriptorSet;
+	renderComponent.descriptorSet = descriptorSet.Get();
 }
 
 /*
@@ -1940,7 +1959,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 		VulkanPipeline &directionalShadowTerrainPipeline{ *pipelines[INDEX(Pipeline::DirectionalShadowTerrain)] };
 
 		//Begin the pipeline and render pass.
-		commandBuffer->CommandBindPipeline(directionalShadowTerrainPipeline);
+		commandBuffer->CommandBindPipeline(directionalShadowTerrainPipeline.Get());
 		commandBuffer->CommandBeginRenderPassAndClear<2>(directionalShadowTerrainPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_INLINE);
 
 		//Iterate over all terrain entity components and draw them all.
@@ -1949,15 +1968,15 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 		for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++renderComponent)
 		{
-			StaticArray<VulkanDescriptorSet, 2> terrainDescriptorSets
+			StaticArray<VkDescriptorSet, 2> terrainDescriptorSets
 			{
-				*currentDynamicUniformDataDescriptorSet,
-				renderComponent->descriptorSet
+				currentDynamicUniformDataDescriptorSet->Get(),
+				static_cast<VkDescriptorSet>(renderComponent->descriptorSet)
 			};
 
 			const VkDeviceSize offset{ 0 };
 
-			commandBuffer->CommandBindDescriptorSets(directionalShadowTerrainPipeline, static_cast<uint32>(terrainDescriptorSets.Size()), terrainDescriptorSets.Data());
+			commandBuffer->CommandBindDescriptorSets(directionalShadowTerrainPipeline.GetPipelineLayout(), 0, static_cast<uint32>(terrainDescriptorSets.Size()), terrainDescriptorSets.Data());
 			commandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->vertexAndIndexBuffer)->Get(), &offset);
 			commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->vertexAndIndexBuffer), renderComponent->indexBufferOffset);
 			commandBuffer->CommandDrawIndexed(renderComponent->indexCount, 1);
@@ -1981,15 +2000,15 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 			const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
 
 			//Begin the pipeline and render pass.
-			commandBuffer->CommandBindPipeline(directionalShadowInstancedPhysicalPipeline);
+			commandBuffer->CommandBindPipeline(directionalShadowInstancedPhysicalPipeline.Get());
 			commandBuffer->CommandBeginRenderPass(directionalShadowInstancedPhysicalPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_INLINE);
 
 			for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
 			{
-				StaticArray<VulkanDescriptorSet, 2> instancedPhysicalDescriptorSets
+				StaticArray<VkDescriptorSet, 2> instancedPhysicalDescriptorSets
 				{
-					*currentDynamicUniformDataDescriptorSet,
-					renderComponent->descriptorSet
+					currentDynamicUniformDataDescriptorSet->Get(),
+					static_cast<VkDescriptorSet>(renderComponent->descriptorSet)
 				};
 
 				StaticArray<VkBuffer, 2> instancedPhysicalBuffers
@@ -2004,7 +2023,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 					static_cast<VkDeviceSize>(0)
 				};
 
-				commandBuffer->CommandBindDescriptorSets(directionalShadowInstancedPhysicalPipeline, 2, instancedPhysicalDescriptorSets.Data());
+				commandBuffer->CommandBindDescriptorSets(directionalShadowInstancedPhysicalPipeline.GetPipelineLayout(), 0, 2, instancedPhysicalDescriptorSets.Data());
 				commandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
 				commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
 				commandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
@@ -2018,19 +2037,19 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 	//Blur the directional shadow map.
 	{
 		//Bind the shadow map blur pipeline.
-		commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::ShadowMapBlur)]);
+		commandBuffer->CommandBindPipeline(pipelines[INDEX(Pipeline::ShadowMapBlur)]->Get());
 
 		//Bind the shadow map blur render pass.
 		commandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(Pipeline::ShadowMapBlur)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_INLINE);
 
 		//Bind the shadow map blur descriptor set.
-		StaticArray<VulkanDescriptorSet, 2> shadowMapBlurDescriptorSets
+		StaticArray<VkDescriptorSet, 2> shadowMapBlurDescriptorSets
 		{
-			*currentDynamicUniformDataDescriptorSet,
-			descriptorSets[INDEX(DescriptorSet::ShadowMapBlur)]
+			currentDynamicUniformDataDescriptorSet->Get(),
+			descriptorSets[INDEX(DescriptorSet::ShadowMapBlur)].Get()
 		};
 
-		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::ShadowMapBlur)], static_cast<uint32>(shadowMapBlurDescriptorSets.Size()), shadowMapBlurDescriptorSets.Data());
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(Pipeline::ShadowMapBlur)]->GetPipelineLayout(), 0, static_cast<uint32>(shadowMapBlurDescriptorSets.Size()), shadowMapBlurDescriptorSets.Data());
 
 		//Draw the viewport!
 		commandBuffer->CommandDraw(4, 1);
@@ -2061,23 +2080,21 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::Terrain)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::Terrain)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Terrain)]);
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(Pipeline::Terrain)]->Get());
 
 	//Iterate over all terrain entity components and draw them all.
 	const uint64 numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
 	const TerrainRenderComponent *RESTRICT terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents() };
 
+	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(Pipeline::Terrain)]->GetPipelineLayout(), 0, 1, &currentDynamicUniformDataDescriptorSet->Get());
+
 	for (uint64 i = 0; i < numberOfTerrainEntityComponents; ++i, ++terrainRenderComponent)
 	{
-		StaticArray<VulkanDescriptorSet, 2> terrainDescriptorSets
-		{
-			*currentDynamicUniformDataDescriptorSet,
-			terrainRenderComponent->descriptorSet
-		};
-
 		const VkDeviceSize offset{ 0 };
 
-		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Terrain)], 2, terrainDescriptorSets.Data());
+		const VkDescriptorSet descriptorSet{ static_cast<VkDescriptorSet>(terrainRenderComponent->descriptorSet) };
+
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(Pipeline::Terrain)]->GetPipelineLayout(), 1, 1, &descriptorSet);
 		commandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer)->Get(), &offset);
 		commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
 		commandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
@@ -2114,7 +2131,7 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::StaticPhysical)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::StaticPhysical)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Begin the pipeline and render pass.
-	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::StaticPhysical)]);
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(Pipeline::StaticPhysical)]->Get());
 
 	for (uint64 i = 0; i < numberOfStaticPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{
@@ -2124,16 +2141,16 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 			continue;
 		}
 
-		StaticArray<VulkanDescriptorSet, 2> staticPhysicalEntityDescriptorSets
+		StaticArray<VkDescriptorSet, 2> staticPhysicalEntityDescriptorSets
 		{
-			*currentDynamicUniformDataDescriptorSet,
-			renderComponent->descriptorSet
+			currentDynamicUniformDataDescriptorSet->Get(),
+			static_cast<VkDescriptorSet>(renderComponent->descriptorSet)
 		};
 
 		const VkDeviceSize offset{ 0 };
 
 		commandBuffer->CommandPushConstants(pipelines[INDEX(Pipeline::StaticPhysical)]->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
-		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::StaticPhysical)], 2, staticPhysicalEntityDescriptorSets.Data());
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(Pipeline::StaticPhysical)]->GetPipelineLayout(), 0, 2, staticPhysicalEntityDescriptorSets.Data());
 		commandBuffer->CommandBindVertexBuffers(1, &renderComponent->buffer.Get(), &offset);
 		commandBuffer->CommandBindIndexBuffer(renderComponent->buffer, renderComponent->indexOffset);
 		commandBuffer->CommandDrawIndexed(renderComponent->indexCount, 1);
@@ -2166,14 +2183,14 @@ void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
 	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::InstancedPhysical)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::InstancedPhysical)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline
-	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::InstancedPhysical)]);
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(Pipeline::InstancedPhysical)]->Get());
 	
 	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
 	{
-		StaticArray<VulkanDescriptorSet, 2> instancedPhysicalDescriptorSets
+		StaticArray<VkDescriptorSet, 2> instancedPhysicalDescriptorSets
 		{
-			*currentDynamicUniformDataDescriptorSet,
-			renderComponent->descriptorSet
+			currentDynamicUniformDataDescriptorSet->Get(),
+			static_cast<VkDescriptorSet>(renderComponent->descriptorSet)
 		};
 
 		StaticArray<VkBuffer, 2> instancedPhysicalBuffers
@@ -2188,7 +2205,7 @@ void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
 			static_cast<VkDeviceSize>(0)
 		};
 
-		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::InstancedPhysical)], 2, instancedPhysicalDescriptorSets.Data());
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(Pipeline::InstancedPhysical)]->GetPipelineLayout(), 0, 2, instancedPhysicalDescriptorSets.Data());
 		commandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
 		commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(renderComponent->modelBuffer), renderComponent->indexOffset);
 		commandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
@@ -2221,20 +2238,20 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::Vegetation)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::Vegetation)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline
-	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Vegetation)]);
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(Pipeline::Vegetation)]->Get());
 
 	//Wait for the vegetation culling task to finish.
 	taskSemaphores[INDEX(TaskSemaphore::UpdateVegetationCulling)].WaitFor();
 
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{
-		StaticArray<VulkanDescriptorSet, 2> vegetationDescriptorSets
+		StaticArray<VkDescriptorSet, 2> vegetationDescriptorSets
 		{
-			*currentDynamicUniformDataDescriptorSet,
-			component->descriptorSet
+			currentDynamicUniformDataDescriptorSet->Get(),
+			static_cast<VkDescriptorSet>(component->descriptorSet)
 		};
 
-		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Vegetation)], static_cast<uint32>(vegetationDescriptorSets.Size()), vegetationDescriptorSets.Data());
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(Pipeline::Vegetation)]->GetPipelineLayout(), 0, static_cast<uint32>(vegetationDescriptorSets.Size()), vegetationDescriptorSets.Data());
 
 		for (uint64 j = 0, size = component->shouldDrawGridCell.Size(); j < size; ++j)
 		{
@@ -2262,17 +2279,17 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::Lighting)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Lighting)]);
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(Pipeline::Lighting)]->Get());
 
 	//Bind the descriptor sets.
-	StaticArray<VulkanDescriptorSet, 3> lightingDescriptorSets
+	StaticArray<VkDescriptorSet, 3> lightingDescriptorSets
 	{
-		*currentDynamicUniformDataDescriptorSet,
-		*currentEnvironmentDataDescriptorSet,
-		descriptorSets[INDEX(DescriptorSet::Lighting)]
+		currentDynamicUniformDataDescriptorSet->Get(),
+		currentEnvironmentDataDescriptorSet->Get(),
+		descriptorSets[INDEX(DescriptorSet::Lighting)].Get()
 	};
 
-	commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Lighting)], static_cast<uint32>(lightingDescriptorSets.Size()), lightingDescriptorSets.Data());
+	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(Pipeline::Lighting)]->GetPipelineLayout(), 0, static_cast<uint32>(lightingDescriptorSets.Size()), lightingDescriptorSets.Data());
 
 	//Wait for the directional shadows to finish.
 	commandBuffer->CommandWaitEvents(1, &frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
@@ -2296,16 +2313,16 @@ void VulkanRenderingSystem::RenderSkybox() NOEXCEPT
 	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::CubeMap)]);
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(Pipeline::CubeMap)]->Get());
 
 	//Bind the skybox descriptor set.
-	StaticArray<VulkanDescriptorSet, 2> skyboxDescriptorSets
+	StaticArray<VkDescriptorSet, 2> skyboxDescriptorSets
 	{
-		*currentDynamicUniformDataDescriptorSet,
-		*currentEnvironmentDataDescriptorSet
+		currentDynamicUniformDataDescriptorSet->Get(),
+		currentEnvironmentDataDescriptorSet->Get()
 	};
 
-	commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::CubeMap)], static_cast<uint32>(skyboxDescriptorSets.Size()), skyboxDescriptorSets.Data());
+	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(Pipeline::CubeMap)]->GetPipelineLayout(), 0, static_cast<uint32>(skyboxDescriptorSets.Size()), skyboxDescriptorSets.Data());
 
 	//Draw the skybox!
 	commandBuffer->CommandDraw(36, 1);
@@ -2341,19 +2358,19 @@ void VulkanRenderingSystem::RenderParticleSystemEntities() NOEXCEPT
 	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::ParticleSystem)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::ParticleSystem)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::ParticleSystem)]);
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(Pipeline::ParticleSystem)]->Get());
 
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
-		StaticArray<VulkanDescriptorSet, 2> particleSystemDescriptorSets
+		StaticArray<VkDescriptorSet, 2> particleSystemDescriptorSets
 		{
-			*currentDynamicUniformDataDescriptorSet,
-			component->descriptorSet
+			currentDynamicUniformDataDescriptorSet->Get(),
+			static_cast<VkDescriptorSet>(component->descriptorSet)
 		};
 
 		const float randomSeed{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
 		commandBuffer->CommandPushConstants(pipelines[INDEX(Pipeline::ParticleSystem)]->GetPipelineLayout(), VK_SHADER_STAGE_GEOMETRY_BIT, 0, sizeof(float), &randomSeed);
-		commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::ParticleSystem)], static_cast<uint32>(particleSystemDescriptorSets.Size()), particleSystemDescriptorSets.Data());
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(Pipeline::ParticleSystem)]->GetPipelineLayout(), 0, static_cast<uint32>(particleSystemDescriptorSets.Size()), particleSystemDescriptorSets.Data());
 		commandBuffer->CommandDraw(VulkanRenderingSystemConstants::MAXIMUM_NUMBER_OF_PARTICLES, 1);
 	}
 
@@ -2373,17 +2390,17 @@ void VulkanRenderingSystem::RenderOcean() NOEXCEPT
 	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::Ocean)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::Ocean)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::Ocean)]);
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(Pipeline::Ocean)]->Get());
 
 	//Bind the ocean descriptor sets.
-	StaticArray<VulkanDescriptorSet, 3> oceanDescriptorSets
+	StaticArray<VkDescriptorSet, 3> oceanDescriptorSets
 	{
-		*currentDynamicUniformDataDescriptorSet,
-		*currentEnvironmentDataDescriptorSet,
-		*frameData.GetCurrentOceanDescriptorSet()
+		currentDynamicUniformDataDescriptorSet->Get(),
+		currentEnvironmentDataDescriptorSet->Get(),
+		frameData.GetCurrentOceanDescriptorSet()->Get()
 	};
 
-	commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::Ocean)], static_cast<uint32>(oceanDescriptorSets.Size()), oceanDescriptorSets.Data());
+	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(Pipeline::Ocean)]->GetPipelineLayout(), 0, static_cast<uint32>(oceanDescriptorSets.Size()), oceanDescriptorSets.Data());
 
 	//Draw the viewport!
 	commandBuffer->CommandDraw(4, 1);
@@ -2404,16 +2421,16 @@ void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass().Get(), pipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass().GetFrameBuffers()[frameData.GetCurrentFrame()].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(*pipelines[INDEX(Pipeline::PostProcessing)]);
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(Pipeline::PostProcessing)]->Get());
 
 	//Bind the post processing descriptor sets.
-	StaticArray<VulkanDescriptorSet, 2> postProcessingDescriptorSets
+	StaticArray<VkDescriptorSet, 2> postProcessingDescriptorSets
 	{
-		*currentDynamicUniformDataDescriptorSet,
-		descriptorSets[INDEX(DescriptorSet::PostProcessing)]
+		currentDynamicUniformDataDescriptorSet->Get(),
+		descriptorSets[INDEX(DescriptorSet::PostProcessing)].Get()
 	};
 
-	commandBuffer->CommandBindDescriptorSets(*pipelines[INDEX(Pipeline::PostProcessing)], 2, postProcessingDescriptorSets.Data());
+	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(Pipeline::PostProcessing)]->GetPipelineLayout(), 0, 2, postProcessingDescriptorSets.Data());
 
 	//Draw the viewport!
 	commandBuffer->CommandDraw(4, 1);

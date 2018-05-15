@@ -22,6 +22,7 @@ class PhysicalMaterial;
 class PhysicalMaterialData;
 class PhysicalModel;
 class PhysicalModelData;
+class RenderPass;
 class StaticPhysicalEntity;
 class TerrainEntity;
 class TerrainMaterial;
@@ -59,6 +60,16 @@ public:
 	*	Releases the rendering system.
 	*/
 	void ReleaseSystem() NOEXCEPT;
+
+	/*
+	*	Returns the current frame index.
+	*/
+	uint8 GetCurrentFrameIndex() const NOEXCEPT;
+
+	/*
+	*	Finalizes the initialization of a render pass.
+	*/
+	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
 
 	/*
 	*	Creates an environment material.
