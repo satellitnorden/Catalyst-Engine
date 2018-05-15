@@ -18,7 +18,7 @@ int main() NOEXCEPT
 	//Initialize the engine system.
 	EngineSystem::Instance->InitializeSystem(CatalystProjectInformation(	CatalystProjectGeneralInformation("Clairvoyant"),
 																			CatalystProjectMultithreadingInformation(8),
-																			CatalystProjectRenderingInformation("../../../../../Engine/Engine Source/Shaders/Vulkan/"),
+																			CatalystProjectRenderingInformation(),
 																			CatalystProjectSoundInformation(256)));
 
 	//Initialize the game system.

@@ -68,23 +68,10 @@ class CatalystProjectRenderingInformation final
 
 public:
 
-	//The shaders path.
-	DynamicString shadersPath;
-
 	/*
 	*	Default constructor.
 	*/
 	CatalystProjectRenderingInformation() NOEXCEPT
-	{
-
-	}
-
-	/*
-	*	Constructor taking all values as arguments.
-	*/
-	CatalystProjectRenderingInformation(const char *const RESTRICT initialShadersPath) NOEXCEPT
-		:
-		shadersPath(initialShadersPath)
 	{
 
 	}

@@ -28,7 +28,6 @@
 #include <Rendering/Engine Layer/PhysicalMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/RenderingUtilities.h>
-#include <Rendering/Engine Layer/ShaderLoader.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/TextureData.h>
 #include <Rendering/Engine Layer/VegetationMaterial.h>
@@ -779,9 +778,6 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 {
-	//Initialize the cube map fragment shader module.
-	const DynamicString &shadersPath{ EngineSystem::Instance->GetProjectInformation().renderingInformation.shadersPath };
-
 	{
 		//Initialize the cube map fragment shader module.
 		DynamicArray<byte> data;

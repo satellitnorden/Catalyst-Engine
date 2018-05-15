@@ -169,6 +169,12 @@
     <Filter Include="Engine Source\Rendering\Shader Data\Vulkan\Source">
       <UniqueIdentifier>{c62da3fa-97ff-4e80-8d88-689662addbc4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Rendering\Engine Layer\RenderPasses">
+      <UniqueIdentifier>{0e1a22b0-26f6-46f2-8c6e-bb1df2bca541}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Rendering\Engine Layer\RenderPasses\Include">
+      <UniqueIdentifier>{d7bb68d1-3470-4d70-a6e0-d9f0993cada2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantGameSystem.h">
@@ -445,9 +451,6 @@
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\RenderingUtilities.h">
-      <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\ShaderLoader.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\TerrainMaterial.h">
