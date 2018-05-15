@@ -9,6 +9,7 @@
 
 //Forward declarations.
 class VulkanPipelineCreationParameters;
+class VulkanRenderPassCreationParameters;
 
 class VulkanRenderPass final
 {
@@ -34,6 +35,11 @@ public:
 	*	Initializes this Vulkan render pass.
 	*/
 	void Initialize(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT;
+
+	/*
+	*	Initializes this Vulkan render pass.
+	*/
+	void Initialize(const VulkanRenderPassCreationParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan render pass.

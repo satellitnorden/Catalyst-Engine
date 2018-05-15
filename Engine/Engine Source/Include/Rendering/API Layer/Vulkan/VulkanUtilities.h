@@ -200,6 +200,77 @@ public:
 	}
 
 	/*
+	*	Creates an attachment description.
+	*/
+	static constexpr VkAttachmentDescription CreateAttachmentDescription(	const VkFormat format,
+																			const VkAttachmentLoadOp loadOp,
+																			const VkAttachmentStoreOp storeOp,
+																			const VkAttachmentLoadOp stencilLoadOp,
+																			const VkAttachmentStoreOp stencilStoreOp,
+																			const VkImageLayout initialLayout,
+																			const VkImageLayout finalLayout) NOEXCEPT
+	{
+		return VkAttachmentDescription
+		{
+			0, //flags
+			format,
+			VK_SAMPLE_COUNT_1_BIT, //samples
+			loadOp,
+			storeOp,
+			stencilLoadOp,
+			stencilStoreOp,
+			initialLayout,
+			finalLayout
+		};
+	}
+
+	/*
+	*	Creates an attachment reference.
+	*/
+	static constexpr VkAttachmentReference CreateAttachmentReference(const uint32 attachment, const VkImageLayout layout) NOEXCEPT
+	{
+		return VkAttachmentReference
+		{
+			attachment,
+			layout
+		};
+	}
+
+	/*
+	*	Creates a descriptor set layout binding.
+	*/
+	static constexpr VkDescriptorSetLayoutBinding CreateDescriptorSetLayoutBinding(const uint32 binding, const VkDescriptorType descriptorType, const VkShaderStageFlags stageFlags) NOEXCEPT
+	{
+		return VkDescriptorSetLayoutBinding{ binding, descriptorType, 1, stageFlags, nullptr };
+	}
+
+	/*
+	*	Creates a subpass description.
+	*/
+	static constexpr VkSubpassDescription CreateSubpassDescription(	const uint32 inputAttachmentCount,
+																	const VkAttachmentReference* const inputAttachments,
+																	const uint32 colorAttachmentCount,
+																	const VkAttachmentReference* const colorAttachments,
+																	const VkAttachmentReference* const depthStencilAttachment,
+																	const uint32 preserveAttachmentCount,
+																	const uint32* const preserveAttachments) NOEXCEPT
+	{
+		return VkSubpassDescription
+		{
+			0, //flags
+			VK_PIPELINE_BIND_POINT_GRAPHICS, //pipelineBindPoint
+			inputAttachmentCount,
+			inputAttachments,
+			colorAttachmentCount,
+			colorAttachments,
+			nullptr, //pResolveAttachments
+			depthStencilAttachment,
+			preserveAttachmentCount,
+			preserveAttachments
+		};
+	}
+
+	/*
 	*	Creates a Vulkan buffer.
 	*/
 	static void CreateVulkanBuffer(const VkDeviceSize bufferSize, const VkBufferUsageFlags bufferUsageFlags, const VkMemoryPropertyFlags memoryPropertyFlags, VkBuffer &vulkanBuffer, VkDeviceMemory &vulkanDeviceMemory) NOEXCEPT
@@ -251,14 +322,6 @@ public:
 
 		//Bind the buffer to the memory.
 		VULKAN_ERROR_CHECK(vkBindBufferMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, vulkanDeviceMemory, 0));
-	}
-
-	/*
-	*	Creates a Vulkan descriptor set layout binding.
-	*/
-	static constexpr VkDescriptorSetLayoutBinding CreateDescriptorSetLayoutBinding(const uint32 binding, const VkDescriptorType descriptorType, const VkShaderStageFlags stageFlags) NOEXCEPT
-	{
-		return VkDescriptorSetLayoutBinding{ binding, descriptorType, 1, stageFlags, nullptr };
 	}
 
 	/*

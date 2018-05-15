@@ -70,6 +70,14 @@ void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkan
 }
 
 /*
+*	Initializes this Vulkan render pass.
+*/
+void VulkanRenderPass::Initialize(const VulkanRenderPassCreationParameters &parameters) NOEXCEPT
+{
+
+}
+
+/*
 *	Releases this Vulkan render pass.
 */
 void VulkanRenderPass::Release() NOEXCEPT

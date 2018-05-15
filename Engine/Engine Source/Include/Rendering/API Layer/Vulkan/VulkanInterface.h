@@ -24,6 +24,7 @@
 #include <Rendering/API Layer/Vulkan/VulkanPipelineCreationParameters.h>
 #include <Rendering/API Layer/Vulkan/VulkanQueue.h>
 #include <Rendering/API Layer/Vulkan/VulkanRenderPass.h>
+#include <Rendering/API Layer/Vulkan/VulkanRenderPassCreationParameters.h>
 #include <Rendering/API Layer/Vulkan/VulkanRenderTarget.h>
 #include <Rendering/API Layer/Vulkan/VulkanSemaphore.h>
 #include <Rendering/API Layer/Vulkan/VulkanShaderModule.h>
