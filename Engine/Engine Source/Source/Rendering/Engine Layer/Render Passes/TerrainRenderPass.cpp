@@ -26,21 +26,47 @@ void TerrainRenderPass::Initialize() NOEXCEPT
 	SetTessellationControlShader(Shader::TerrainTessellationControl);
 	SetTessellationEvaluationShader(Shader::TerrainTessellationEvaluation);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::SceneBufferFragment);
+	SetFragmentShader(Shader::TerrainFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetMaximumNumberOfRenderTargets(3);
+	SetNumberOfRenderTargets(3);
 	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
 	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
 
+	//Add the descriptor set layouts.
+	SetNumberOfDescriptorSetLayouts(2);
+	AddDescriptorSetLayout(DescriptorSetLayout::DynamicUniformData);
+	AddDescriptorSetLayout(DescriptorSetLayout::Terrain);
+
+	//Add the vertex input attribute descriptions.
+	SetNumberOfVertexInputAttributeDescriptions(2);
+	AddVertexInputAttributeDescription(	0,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										0);
+	AddVertexInputAttributeDescription(	1,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										sizeof(float) * 3);
+
+	//Add the vertex input binding descriptions.
+	SetNumberOfVertexInputBindingDescriptions(1);
+	AddVertexInputBindingDescription(0, sizeof(float) * 5, VertexInputBindingDescription::InputRate::Vertex);
+
 	//Set the properties of the render pass.
-	SetCullFace(CullFace::Back);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Clear);
+	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);
+	SetCullMode(CullMode::Back);
+	SetDepthAttachmentLoadOperator(AttachmentLoadOperator::Clear);
+	SetDepthAttachmentStoreOperator(AttachmentStoreOperator::Store);
+	SetDepthCompareOperator(CompareOperator::Less);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
+	SetTopology(Topology::PatchList);
 
 	//Finalize the initialization.
 	FinalizeInitialization();
@@ -78,11 +104,8 @@ void TerrainRenderPass::Render() NOEXCEPT
 
 		commandBuffer->BindDescriptorSets(this, 1, 1, &component->descriptorSet);
 		commandBuffer->BindVertexBuffers(this, 1, &component->vertexAndIndexBuffer, &offset);
-
-		/*
-		commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
-		commandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
-		*/
+		commandBuffer->BindIndexBuffer(this, component->vertexAndIndexBuffer, component->indexBufferOffset);
+		commandBuffer->DrawIndexed(this, component->indexCount, 1);
 	}
 
 	//End the command buffer.

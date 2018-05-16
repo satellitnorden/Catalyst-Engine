@@ -10,55 +10,6 @@ namespace RenderingConstants
 	constexpr float SHADOW_VIEW_DISTANCE{ 2'500.0f };
 }
 
-//Enumeration covering all render passes stages.
-enum class RenderPassStage : uint8
-{
-	Terrain,
-
-	NumberOfRenderPasses
-};
-
-//Enumeration covering all shaders.
-enum class Shader : uint8
-{
-	SceneBufferFragment,
-	TerrainFragment,
-	TerrainTessellationControl,
-	TerrainTessellationEvaluation,
-	TerrainVertex,
-
-	NumberOfShaders,
-	
-	None
-};
-
-//Enumeration covering all depth buffers.
-enum class DepthBuffer : uint8
-{
-	SceneBuffer,
-
-	NumberOfDepthBuffers,
-
-	None
-};
-
-//Enumeration covering all render targets.
-enum class RenderTarget : uint8
-{
-	SceneBufferAlbedo,
-	SceneBufferNormalDepth,
-	SceneBufferMaterialProperties,
-	NumberOfRenderTargets
-};
-
-//Enumeration covering all cull faces.
-enum class CullFace : uint8
-{
-	None,
-	Back,
-	Front
-};
-
 /*
 *	Type aliases.
 */
@@ -67,6 +18,139 @@ using GraphicsBufferHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;
 using TextureCubeMapHandle = void *RESTRICT;
 using UniformBufferHandle = void *RESTRICT;
+
+//Enumeration covering all render passes stages.
+enum class RenderPassStage : uint8
+{
+	Terrain,
+
+	NumberOfRenderPassStages
+};
+
+//Enumeration covering all attachment load operators.
+enum class AttachmentLoadOperator : uint8
+{
+	Clear,
+	DontCare,
+	Load
+};
+
+//Enumeration covering all attachment store operators.
+enum class AttachmentStoreOperator : uint8
+{
+	DontCare,
+	Store
+};
+
+//Enumeration covering all compare operators.
+enum class CompareOperator : uint8
+{
+	Always,
+	Equal,
+	Greater,
+	GreaterOrEqual,
+	Less,
+	LessOrEqual,
+	Never,
+	NotEqual
+};
+
+//Enumeration covering all cull modes.
+enum class CullMode : uint8
+{
+	None,
+	Back,
+	Front,
+	FrontAndBack
+};
+
+//Enumeration covering all depth buffers.
+enum class DepthBuffer : uint8
+{
+	DirectionalLight,
+	SceneBuffer,
+
+	NumberOfDepthBuffers,
+
+	None
+};
+
+//Enumeration covering all descriptor set layouts.
+enum class DescriptorSetLayout : uint8
+{
+	DynamicUniformData,
+	ShadowMapBlur,
+	Environment,
+	Terrain,
+	Physical,
+	Vegetation,
+	Lighting,
+	Ocean,
+	ParticleSystem,
+	PostProcessing,
+	NumberOfDescriptorSetLayouts
+};
+
+//Enumeration covering all render targets.
+enum class RenderTarget : uint8
+{
+	DirectionalPreBlurShadowMap,
+	DirectionalPostBlurShadowMap,
+	SceneBufferAlbedo,
+	SceneBufferNormalDepth,
+	SceneBufferMaterialProperties,
+	Scene,
+	WaterScene,
+	NumberOfRenderTargets
+};
+
+//Enumeration covering all shaders.
+enum class Shader : uint8
+{
+	CubeMapFragment,
+	CubeMapVertex,
+	DirectionalShadowInstancedPhysicalVertex,
+	DirectionalShadowTerrainTessellationEvaluation,
+	InstancedPhysicalVertex,
+	LightingFragment,
+	OceanFragment,
+	ParticleSystemFragment,
+	ParticleSystemGeometry,
+	ParticleSystemVertex,
+	PostProcessingFragment,
+	PhysicalFragment,
+	PhysicalVertex,
+	ShadowMapBlurFragment,
+	ShadowMapFragment,
+	TerrainFragment,
+	TerrainTessellationControl,
+	TerrainTessellationEvaluation,
+	TerrainVertex,
+	VegetationFragment,
+	VegetationGeometry,
+	VegetationVertex,
+	ViewportVertex,
+
+	NumberOfShaders,
+
+	None
+};
+
+//Enumeration covering all topologies.
+enum class Topology : uint8
+{
+	LineList,
+	LineListWithAdjacency,
+	LineStrip,
+	LineStripWithAdjacency,
+	PatchList,
+	PointList,
+	TriangleFan,
+	TriangleList,
+	TriangleListWithAdjacency,
+	TriangleStrip,
+	TriangleStripWithAdjacency
+};
 
 //Enumeration covering all address modes.
 enum class AddressMode : uint8
@@ -98,4 +182,94 @@ enum class TextureFormat : uint8
 	R8_Byte,
 	R8G8B8A8_Byte,
 	R32G32B32A32_Float
+};
+
+/*
+*	Vertex input attribute description.
+*/
+class VertexInputAttributeDescription final
+{
+
+public:
+
+	//Enum covering all formats.
+	enum class Format : uint8
+	{
+		X32Y32SignedFloat,
+		X32Y32Z32SignedFloat
+	};
+
+	//The location.
+	uint32 location;
+
+	//The binding.
+	uint32 binding;
+
+	//The format.
+	Format format;
+
+	//The offset.
+	uint32 offset;
+
+	/*
+	*	Default constructor, prohibited - must be constructed with the proper arguments.
+	*/
+	VertexInputAttributeDescription() NOEXCEPT = delete;
+
+	/*
+	*	Constructor taking all values as arguments.
+	*/
+	VertexInputAttributeDescription(const uint32 initialLocation, const uint32 initialBinding, const Format initialFormat, const uint32 initialOffset)
+		:
+		location(initialLocation),
+		binding(initialBinding),
+		format(initialFormat),
+		offset(initialOffset)
+	{
+
+	}
+
+};
+
+/*
+*	Vertex input binding description.
+*/
+class VertexInputBindingDescription final
+{
+
+public:
+
+	//Enum covering all input rates.
+	enum class InputRate : uint8
+	{
+		Instance,
+		Vertex
+	};
+
+	//The binding.
+	uint32 binding;
+
+	//The stride.
+	uint32 stride;
+
+	//The input rate.
+	InputRate inputRate;
+
+	/*
+	*	Default constructor, prohibited - must be constructed with the proper arguments.
+	*/
+	VertexInputBindingDescription() NOEXCEPT = delete;
+
+	/*
+	*	Constructor taking all values as arguments.
+	*/
+	VertexInputBindingDescription(const uint32 initialBinding, const uint32 initialStride, const InputRate initialInputRate)
+		:
+		binding(initialBinding),
+		stride(initialStride),
+		inputRate(initialInputRate)
+	{
+
+	}
+
 };

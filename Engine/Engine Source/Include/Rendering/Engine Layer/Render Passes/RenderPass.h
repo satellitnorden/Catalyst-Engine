@@ -60,9 +60,54 @@ public:
 	const DynamicArray<RenderTarget>& GetRenderTargets() const NOEXCEPT { return renderTargets; }
 
 	/*
-	*	Returns the cull face.
+	*	Returns the descriptor set layouts.
 	*/
-	CullFace GetCullFace() const NOEXCEPT { return cullFace; }
+	const DynamicArray<DescriptorSetLayout>& GetDescriptorSetLayouts() const NOEXCEPT { return descriptorSetLayouts; }
+
+	/*
+	*	Returns the vertex input attribute descriptions.
+	*/
+	const DynamicArray<VertexInputAttributeDescription>& GetVertexInputAttributeDescriptions() const NOEXCEPT { return vertexInputAttributeDescriptions; }
+
+	/*
+	*	Returns the vertex input binding descriptions.
+	*/
+	const DynamicArray<VertexInputBindingDescription>& GetVertexInputBindingDescriptions() const NOEXCEPT { return vertexInputBindingDescriptions; }
+
+	/*
+	*	Returns whether or not blend is enabled.
+	*/
+	bool IsBlendEnabled() const NOEXCEPT { return blendEnabled; }
+
+	/*
+	*	Returns the color attachment load operator.
+	*/
+	AttachmentLoadOperator GetColorAttachmentLoadOperator() const NOEXCEPT { return colorAttachmentLoadOperator; }
+
+	/*
+	*	Returns the color attachment store operator.
+	*/
+	AttachmentStoreOperator GetColorAttachmentStoreOperator() const NOEXCEPT { return colorAttachmentStoreOperator; }
+
+	/*
+	*	Returns the cull mode.
+	*/
+	CullMode GetCullMode() const NOEXCEPT { return cullMode; }
+
+	/*
+	*	Returns the depth attachment load operator.
+	*/
+	AttachmentLoadOperator GetDepthAttachmentLoadOperator() const NOEXCEPT { return depthAttachmentLoadOperator; }
+
+	/*
+	*	Returns the depth attachment store operator.
+	*/
+	AttachmentStoreOperator GetDepthAttachmentStoreOperator() const NOEXCEPT { return depthAttachmentStoreOperator; }
+
+	/*
+	*	Returns the depth compare operator.
+	*/
+	CompareOperator GetDepthCompareOperator() const NOEXCEPT { return depthCompareOperator; }
 
 	/*
 	*	Returns whether or not depth test is enabled.
@@ -73,6 +118,11 @@ public:
 	*	Returns whether or not depth write is enabled.
 	*/
 	bool IsDepthWriteEnabled() const NOEXCEPT { return depthWriteEnabled; }
+
+	/*
+	*	Returns the topology.
+	*/
+	Topology GetTopology() const NOEXCEPT { return topology; }
 
 protected:
 
@@ -112,9 +162,9 @@ protected:
 	void SetDepthBuffer(const DepthBuffer newDepthBuffer) NOEXCEPT { depthBuffer = newDepthBuffer; }
 
 	/*
-	*	Sets the maximum number of render targets.
+	*	Sets the number of render targets.
 	*/
-	void SetMaximumNumberOfRenderTargets(const uint64 maximumNumberOfRenderTargets) NOEXCEPT { renderTargets.Reserve(maximumNumberOfRenderTargets); }
+	void SetNumberOfRenderTargets(const uint64 numberOfRenderTargets) NOEXCEPT { renderTargets.Reserve(numberOfRenderTargets); }
 
 	/*
 	*	Adds a render target.
@@ -122,9 +172,69 @@ protected:
 	void AddRenderTarget(const RenderTarget newRenderTarget) NOEXCEPT { renderTargets.EmplaceFast(newRenderTarget); }
 
 	/*
-	*	Sets the cull face.
+	*	Sets the number of descriptor set layouts.
 	*/
-	void SetCullFace(const CullFace newCullFace) NOEXCEPT { cullFace = newCullFace; }
+	void SetNumberOfDescriptorSetLayouts(const uint64 numberODescriptorSetLayouts) NOEXCEPT { descriptorSetLayouts.Reserve(numberODescriptorSetLayouts); }
+
+	/*
+	*	Adds a descriptor set layout.
+	*/
+	void AddDescriptorSetLayout(const DescriptorSetLayout newDescriptorSetLayout) NOEXCEPT { descriptorSetLayouts.EmplaceFast(newDescriptorSetLayout); }
+
+	/*
+	*	Sets the number of vertex input attribute descriptions.
+	*/
+	void SetNumberOfVertexInputAttributeDescriptions(const uint64 numberOfVertexInputAttributeDescriptions) NOEXCEPT { vertexInputAttributeDescriptions.Reserve(numberOfVertexInputAttributeDescriptions); }
+
+	/*
+	*	Adds a vertex input attribute description.
+	*/
+	void AddVertexInputAttributeDescription(const uint32 location, const uint32 binding, const VertexInputAttributeDescription::Format format, const uint32 offset) NOEXCEPT { vertexInputAttributeDescriptions.EmplaceFast(location, binding, format, offset); }
+
+	/*
+	*	Sets the number of vertex input binding descriptions.
+	*/
+	void SetNumberOfVertexInputBindingDescriptions(const uint64 numberOfVertexInputBindingDescriptions) NOEXCEPT { vertexInputBindingDescriptions.Reserve(numberOfVertexInputBindingDescriptions); }
+
+	/*
+	*	Adds a vertex input binding description.
+	*/
+	void AddVertexInputBindingDescription(const uint32 binding, const uint32 stride, const VertexInputBindingDescription::InputRate inputRate) NOEXCEPT { vertexInputBindingDescriptions.EmplaceFast(binding, stride, inputRate); }
+
+	/*
+	*	Sets whether or not blend is enabled.
+	*/
+	void SetBlendEnabled(const bool newBlendEnabled) NOEXCEPT { blendEnabled = newBlendEnabled; }
+
+	/*
+	*	Sets the color attachment load operator.
+	*/
+	void SetColorAttachmentLoadOperator(const AttachmentLoadOperator newColorAttachmentLoadOperator) NOEXCEPT { colorAttachmentLoadOperator = newColorAttachmentLoadOperator; }
+
+	/*
+	*	Sets the color attachment store operator.
+	*/
+	void SetColorAttachmentStoreOperator(const AttachmentStoreOperator newColorAttachmentStorOperator) NOEXCEPT { colorAttachmentStoreOperator = newColorAttachmentStorOperator; }
+
+	/*
+	*	Sets the cull mode.
+	*/
+	void SetCullMode(const CullMode newCullMode) NOEXCEPT { cullMode = newCullMode; }
+
+	/*
+	*	Sets the depth attachment load operator.
+	*/
+	void SetDepthAttachmentLoadOperator(const AttachmentLoadOperator newDepthAttachmentLoadOperator) NOEXCEPT { depthAttachmentLoadOperator = newDepthAttachmentLoadOperator; }
+
+	/*
+	*	Sets the depth attachment store operator.
+	*/
+	void SetDepthAttachmentStoreOperator(const AttachmentStoreOperator newDepthAttachmentStorOperator) NOEXCEPT { depthAttachmentStoreOperator = newDepthAttachmentStorOperator; }
+
+	/*
+	*	Sets the depth compare operator.
+	*/
+	void SetDepthCompareOperator(const CompareOperator newDepthCompareOperator) NOEXCEPT { depthCompareOperator = newDepthCompareOperator; }
 
 	/*
 	*	Sets whether or not depth test is enabled.
@@ -135,6 +245,11 @@ protected:
 	*	Sets whether or not depth write is enabled.
 	*/
 	void SetDepthWriteEnabled(const bool newDepthWriteEnabled) NOEXCEPT { depthWriteEnabled = newDepthWriteEnabled; }
+
+	/*
+	*	Sets the topology.
+	*/
+	void SetTopology(const Topology newTopology) NOEXCEPT { topology = newTopology; }
 
 	/*
 	*	Finalizes the initialization of a render pass.
@@ -175,14 +290,44 @@ private:
 	//The render targets.
 	DynamicArray<RenderTarget> renderTargets;
 
-	//The cull face.
-	CullFace cullFace;
+	//The descriptor set layouts.
+	DynamicArray<DescriptorSetLayout> descriptorSetLayouts;
+
+	//The vertex input attribute descriptions.
+	DynamicArray<VertexInputAttributeDescription> vertexInputAttributeDescriptions;
+
+	//The vertex input binding descriptions.
+	DynamicArray<VertexInputBindingDescription> vertexInputBindingDescriptions;
+
+	//Denotes whether or not blend is enabled.
+	bool blendEnabled;
+
+	//The color attachment load operator.
+	AttachmentLoadOperator colorAttachmentLoadOperator;
+
+	//The color attachment store operator.
+	AttachmentStoreOperator colorAttachmentStoreOperator;
+	
+	//The cull mode.
+	CullMode cullMode;
+
+	//The depth attachment load operator.
+	AttachmentLoadOperator depthAttachmentLoadOperator;
+
+	//The depth attachment store operator.
+	AttachmentStoreOperator depthAttachmentStoreOperator;
+
+	//The depth compare operator.
+	CompareOperator depthCompareOperator;
 
 	//Denotes whether or not depth test is enabled.
 	bool depthTestEnabled;
 
 	//Denotes whether or not depth write is enabled.
 	bool depthWriteEnabled;
+
+	//The topology.
+	Topology topology;
 
 	//The command buffers.
 	DynamicArray<CommandBuffer *RESTRICT> commandBuffers;

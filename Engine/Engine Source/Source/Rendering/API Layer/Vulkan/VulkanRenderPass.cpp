@@ -13,22 +13,6 @@
 #include <Rendering/API Layer/Vulkan/VulkanUniformBuffer.h>
 
 /*
-*	Default constructor.
-*/
-VulkanRenderPass::VulkanRenderPass() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanRenderPass::~VulkanRenderPass() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan render pass.
 */
 void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT

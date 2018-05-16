@@ -10,8 +10,11 @@
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanCore.h>
 
-namespace VulkanTranslationUtilities
+class VulkanTranslationUtilities
 {
+
+public:
+
 	/*
 	*	Given an address mode, return the corresponding Vulkan address mode.
 	*/
@@ -36,6 +39,63 @@ namespace VulkanTranslationUtilities
 	}
 
 	/*
+	*	Given an attachment load operator, return the corresponding Vulkan attachment load operator.
+	*/
+	static VkAttachmentLoadOp GetVulkanAttachmentLoadOperator(const AttachmentLoadOperator attachmentLoadOperator) NOEXCEPT
+	{
+		switch (attachmentLoadOperator)
+		{
+			case AttachmentLoadOperator::Clear: return VK_ATTACHMENT_LOAD_OP_CLEAR;
+			case AttachmentLoadOperator::DontCare: return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			case AttachmentLoadOperator::Load: return VK_ATTACHMENT_LOAD_OP_LOAD;
+		}
+	}
+
+	/*
+	*	Given an attachment store operator, return the corresponding Vulkan attachment load operator.
+	*/
+	static VkAttachmentStoreOp GetVulkanAttachmentStoreOperator(const AttachmentStoreOperator attachmentSstoreOperator) NOEXCEPT
+	{
+		switch (attachmentSstoreOperator)
+		{
+			case AttachmentStoreOperator::DontCare: return VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			case AttachmentStoreOperator::Store: return VK_ATTACHMENT_STORE_OP_STORE;
+		}
+	}
+
+	/*
+	*	Given a compare operator, return the corresponding Vulkan compare operator.
+	*/
+	static VkCompareOp GetVulkanCompareOperator(const CompareOperator compareOperator) NOEXCEPT
+	{
+		switch (compareOperator)
+		{
+			case CompareOperator::Always: return VK_COMPARE_OP_ALWAYS;
+			case CompareOperator::Equal: return VK_COMPARE_OP_EQUAL;
+			case CompareOperator::Greater: return VK_COMPARE_OP_GREATER;
+			case CompareOperator::GreaterOrEqual: return VK_COMPARE_OP_GREATER_OR_EQUAL;
+			case CompareOperator::Less: return VK_COMPARE_OP_LESS;
+			case CompareOperator::LessOrEqual: return VK_COMPARE_OP_LESS_OR_EQUAL;
+			case CompareOperator::Never: return VK_COMPARE_OP_NEVER;
+			case CompareOperator::NotEqual: return VK_COMPARE_OP_NOT_EQUAL;
+		}
+	}
+
+	/*
+	*	Given a cull mode, return the corresponding Vulkan cull mode.
+	*/
+	static VkCullModeFlagBits GetVulkanCullMode(const CullMode cullMode) NOEXCEPT
+	{
+		switch (cullMode)
+		{
+			case CullMode::None: return VK_CULL_MODE_NONE;
+			case CullMode::Back: return VK_CULL_MODE_BACK_BIT;
+			case CullMode::Front: return VK_CULL_MODE_FRONT_BIT;
+			case CullMode::FrontAndBack: return VK_CULL_MODE_FRONT_AND_BACK;
+		}
+	}
+
+	/*
 	*	Given a format, return the corresponding Vulkan format.
 	*/
 	static VkFormat GetVulkanFormat(const TextureFormat format) NOEXCEPT
@@ -53,6 +113,18 @@ namespace VulkanTranslationUtilities
 #endif
 				return VK_FORMAT_R8G8B8A8_UNORM;
 			}
+		}
+	}
+
+	/*
+	*	Given a format, return the corresponding Vulkan format.
+	*/
+	static VkFormat GetVulkanFormat(const VertexInputAttributeDescription::Format format) NOEXCEPT
+	{
+		switch (format)
+		{
+			case VertexInputAttributeDescription::Format::X32Y32SignedFloat: return VK_FORMAT_R32G32_SFLOAT;
+			case VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat: return VK_FORMAT_R32G32B32_SFLOAT;
 		}
 	}
 
@@ -93,6 +165,60 @@ namespace VulkanTranslationUtilities
 #endif
 				return VK_FILTER_NEAREST;
 			}
+		}
+	}
+
+	/*
+	*	Given a topology, returns the corresponding Vulkan topology.
+	*/
+	static VkPrimitiveTopology GetVulkanTopology(const Topology topology) NOEXCEPT
+	{
+		switch (topology)
+		{
+			case Topology::LineList: return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+			case Topology::LineListWithAdjacency: return VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY;
+			case Topology::LineStrip: return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+			case Topology::LineStripWithAdjacency: return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY;
+			case Topology::PatchList: return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
+			case Topology::PointList: return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+			case Topology::TriangleFan: return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+			case Topology::TriangleList: return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+			case Topology::TriangleListWithAdjacency: return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY;
+			case Topology::TriangleStrip: return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+			case Topology::TriangleStripWithAdjacency: return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY;
+		}
+	}
+
+	/*
+	*	Given a vertex input attribute description, returns the corresponding Vulkan vertex input attribute description.
+	*/
+	static VkVertexInputAttributeDescription GetVulkanVertexInputAttributeDescription(const VertexInputAttributeDescription &vertexInputAttributeDescription) NOEXCEPT
+	{
+		return VkVertexInputAttributeDescription{	vertexInputAttributeDescription.location,
+													vertexInputAttributeDescription.binding,
+													GetVulkanFormat(vertexInputAttributeDescription.format),
+													vertexInputAttributeDescription.offset };
+	}
+
+	/*
+	*	Given a vertex input binding description, returns the corresponding Vulkan vertex input binding description.
+	*/
+	static VkVertexInputBindingDescription GetVulkanVertexInputBindingDescription(const VertexInputBindingDescription &vertexInputBindingDescription) NOEXCEPT
+	{
+		return VkVertexInputBindingDescription{	vertexInputBindingDescription.binding,
+												vertexInputBindingDescription.stride,
+												GetVulkanInputRate(vertexInputBindingDescription.inputRate) };
+	}
+
+	/*
+	*	Given an input rate, returns the corresponding Vulkan input rate.
+	*/
+	static VkVertexInputRate GetVulkanInputRate(const VertexInputBindingDescription::InputRate inputRate) NOEXCEPT
+	{
+		switch (inputRate)
+		{
+			case VertexInputBindingDescription::InputRate::Instance: return VK_VERTEX_INPUT_RATE_INSTANCE;
+			case VertexInputBindingDescription::InputRate::Vertex: return VK_VERTEX_INPUT_RATE_VERTEX;
 		}
 	}
 
@@ -248,4 +374,5 @@ namespace VulkanTranslationUtilities
 		vertexInputBindingDescription.stride = sizeof(VegetationTransformation);
 		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
 	}
-}
+
+};

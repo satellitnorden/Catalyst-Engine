@@ -38,7 +38,7 @@ void VulkanTranslationCommandBuffer::BindDescriptorSets(const RenderPass *const 
 void VulkanTranslationCommandBuffer::BindIndexBuffer(const RenderPass *const RESTRICT renderPass, const GraphicsBufferHandle indexBuffer, const uint64 offset) NOEXCEPT
 {
 	//Bind the index buffer.
-	//commandBuffer.CommandBindIndexBuffer()
+	commandBuffer.CommandBindIndexBuffer(static_cast<const VkBuffer>(indexBuffer), offset);
 }
 
 /*
@@ -48,6 +48,15 @@ void VulkanTranslationCommandBuffer::BindVertexBuffers(const RenderPass *const R
 {
 	//Bind the vertex buffers.
 	commandBuffer.CommandBindVertexBuffers(numberOfVertexBuffers, reinterpret_cast<const VkBuffer *const RESTRICT>(vertexBuffers), offsets);
+}
+
+/*
+*	Draws indexed.
+*/
+void VulkanTranslationCommandBuffer::DrawIndexed(const RenderPass *const RESTRICT renderPass, const uint32 indexCount, const uint32 instanceCount) NOEXCEPT
+{
+	//Draw indexed.
+	commandBuffer.CommandDrawIndexed(indexCount, instanceCount);
 }
 
 /*

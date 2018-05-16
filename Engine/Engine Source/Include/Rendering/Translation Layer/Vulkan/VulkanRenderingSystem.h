@@ -198,14 +198,6 @@ private:
 		NumberOfDefaultTextures
 	};
 
-	//Enumeration covering all depth buffers.
-	enum class DepthBuffer : uint8
-	{
-		DirectionalLight,
-		SceneBuffer,
-		NumberOfDepthBuffers
-	};
-
 	//Enumeration covering all descriptor sets.
 	enum class DescriptorSet : uint8
 	{
@@ -214,22 +206,6 @@ private:
 		Lighting,
 		PostProcessing,
 		NumberOfDescriptorSets
-	};
-
-	//Enumeration covering all descriptor set layouts.
-	enum class DescriptorSetLayout : uint8
-	{
-		DynamicUniformData,
-		ShadowMapBlur,
-		Environment,
-		Terrain,
-		Physical,
-		Vegetation,
-		Lighting,
-		Ocean,
-		ParticleSystem,
-		PostProcessing,
-		NumberOfDescriptorSetLayouts
 	};
 
 	//Enumeration covering all pipelines.
@@ -250,54 +226,12 @@ private:
 		NumberOfPipelines
 	};
 
-	//Enumeration covering all render targets.
-	enum class RenderTarget : uint8
-	{
-		DirectionalPreBlurShadowMap,
-		DirectionalPostBlurShadowMap,
-		SceneBufferAlbedoColor,
-		SceneBufferNormalDirectionDepth,
-		SceneBufferRoughnessMetallicAmbientOcclusion,
-		Scene,
-		WaterScene,
-		NumberOfRenderTargets
-	};
-
 	//Enumeration covering all semaphores.
 	enum class GraphicsSemaphore : uint8
 	{
 		ImageAvailable,
 		RenderFinished,
 		NumberOfSemaphores
-	};
-
-	//Enumeration covering all shader modules.
-	enum class ShaderModule : uint8
-	{
-		CubeMapFragmentShader,
-		CubeMapVertexShader,
-		DirectionalShadowInstancedPhysicalVertexShader,
-		DirectionalShadowTerrainTessellationEvaluationShader,
-		InstancedPhysicalVertexShader,
-		LightingFragmentShader,
-		OceanFragmentShader,
-		ParticleSystemFragmentShader,
-		ParticleSystemGeometryShader,
-		ParticleSystemVertexShader,
-		PostProcessingFragmentShader,
-		PhysicalFragmentShader,
-		PhysicalVertexShader,
-		ShadowMapBlurFragmentShader,
-		ShadowMapFragmentShader,
-		TerrainFragmentShader,
-		TerrainTessellationControlShader,
-		TerrainTessellationEvaluationShader,
-		TerrainVertexShader,
-		VegetationFragmentShader,
-		VegetationGeometryShader,
-		VegetationVertexShader,
-		ViewportVertexShader,
-		NumberOfShaderModules
 	};
 
 	//Enumeration covering all task semaphores.
@@ -359,14 +293,17 @@ private:
 	//Container for all render targets.
 	StaticArray<VulkanRenderTarget *RESTRICT, INDEX(RenderTarget::NumberOfRenderTargets)> renderTargets;
 
+	//Container for all temporary pipelines.
+	StaticArray<VulkanPipeline *RESTRICT, INDEX(Pipeline::NumberOfPipelines)> tempPipelines;
+
 	//Container for all pipelines.
-	StaticArray<VulkanPipeline *RESTRICT, INDEX(Pipeline::NumberOfPipelines)> pipelines;
+	StaticArray<VulkanPipeline *RESTRICT, INDEX(RenderPassStage::NumberOfRenderPassStages)> pipelines;
 
 	//Container for all semaphores.
 	StaticArray<VulkanSemaphore *RESTRICT, INDEX(GraphicsSemaphore::NumberOfSemaphores)> semaphores;
 
 	//Container for all shader modules.
-	StaticArray<VulkanShaderModule *RESTRICT, INDEX(ShaderModule::NumberOfShaderModules)> shaderModules;
+	StaticArray<VulkanShaderModule *RESTRICT, INDEX(Shader::NumberOfShaders)> shaderModules;
 
 	//Container for all uniform buffers.
 	StaticArray<VulkanUniformBuffer *RESTRICT, UniformBuffer::NumberOfUniformBuffers> uniformBuffers;

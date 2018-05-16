@@ -17,16 +17,6 @@ class VulkanRenderPass final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanRenderPass() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanRenderPass() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan render pass.
 	*/
 	const VkRenderPass& Get() const NOEXCEPT { return vulkanRenderPass; }
