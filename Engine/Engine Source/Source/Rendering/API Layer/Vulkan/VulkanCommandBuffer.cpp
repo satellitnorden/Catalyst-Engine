@@ -77,9 +77,9 @@ void VulkanCommandBuffer::CommandBindDescriptorSets(const VkPipelineLayout pipel
 /*
 *	Records a bind index buffer command.
 */
-void VulkanCommandBuffer::CommandBindIndexBuffer(const VulkanConstantBuffer &vulkanIndexBuffer, const VkDeviceSize offset) NOEXCEPT
+void VulkanCommandBuffer::CommandBindIndexBuffer(const VkBuffer vulkanIndexBuffer, const VkDeviceSize offset) NOEXCEPT
 {
-	vkCmdBindIndexBuffer(vulkanCommandBuffer, vulkanIndexBuffer.Get(), offset, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(vulkanCommandBuffer, vulkanIndexBuffer, offset, VK_INDEX_TYPE_UINT32);
 }
 
 /*

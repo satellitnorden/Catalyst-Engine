@@ -28,6 +28,16 @@ public:
 	void BindDescriptorSets(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 descriptorSetCount, const DescriptorSetHandle *const RESTRICT descriptorSets) NOEXCEPT override;
 
 	/*
+	*	Binds an index buffer.
+	*/
+	void BindIndexBuffer(const RenderPass *const RESTRICT renderPass, const GraphicsBufferHandle indexBuffer, const uint64 offset) NOEXCEPT override;
+
+	/*
+	*	Binds a number of vertex buffers.
+	*/
+	void BindVertexBuffers(const RenderPass *const RESTRICT renderPass, const uint32 numberOfVertexBuffers, const GraphicsBufferHandle *const RESTRICT vertexBuffers, const uint64 *const RESTRICT offsets) NOEXCEPT override;
+
+	/*
 	*	Ends the command buffer.
 	*/
 	void End(const RenderPass *const RESTRICT) NOEXCEPT override;

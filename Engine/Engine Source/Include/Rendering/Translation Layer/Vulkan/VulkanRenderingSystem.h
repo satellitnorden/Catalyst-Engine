@@ -82,11 +82,6 @@ public:
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
 
 	/*
-	*	Finalizes the initialization of a render pass.
-	*/
-	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
-
-	/*
 	*	Creates an environment material.
 	*/
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;
@@ -182,6 +177,18 @@ public:
 	void SetPostProcessingSharpenAmount(const float newSharpenAmount) NOEXCEPT;
 
 private:
+
+	friend class RenderingSystem;
+
+	/*
+	*	Finalizes the initialization of a render pass.
+	*/
+	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
+
+	/*
+	*	Returns the current dynamic uniform data descriptor set.
+	*/
+	DescriptorSetHandle GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT;
 
 	//Enumeration covering all default textures.
 	enum DefaultTexture : uint8

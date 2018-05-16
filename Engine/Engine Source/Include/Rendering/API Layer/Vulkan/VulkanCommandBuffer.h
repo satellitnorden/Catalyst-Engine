@@ -58,7 +58,7 @@ public:
 	/*
 	*	Records a bind index buffer command.
 	*/
-	void CommandBindIndexBuffer(const VulkanConstantBuffer &vulkanIndexBuffer, const VkDeviceSize offset = 0) NOEXCEPT;
+	void CommandBindIndexBuffer(const VkBuffer vulkanIndexBuffer, const VkDeviceSize offset = 0) NOEXCEPT;
 
 	/*
 	*	Records a bind pipeline command.

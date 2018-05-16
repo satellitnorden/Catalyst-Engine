@@ -7,6 +7,9 @@
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(TerrainRenderPass);
 
@@ -57,14 +60,30 @@ void TerrainRenderPass::Render() NOEXCEPT
 		return;
 	}
 
-	//Cache the current command buffer.
+	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	const DescriptorSetHandle currentDynamicUniformDataDescriptorSet{ RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet() };
+	const TerrainRenderComponent *RESTRICT component{ ComponentManager::GetTerrainRenderComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
 	//Bind the current dynamic uniform data descriptor set.
+	
+	commandBuffer->BindDescriptorSets(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
 
+	for (uint64 i = 0; i < numberOfTerrainEntityComponents; ++i, ++component)
+	{
+		const uint64 offset{ 0 };
+
+		commandBuffer->BindDescriptorSets(this, 1, 1, &component->descriptorSet);
+		commandBuffer->BindVertexBuffers(this, 1, &component->vertexAndIndexBuffer, &offset);
+
+		/*
+		commandBuffer->CommandBindIndexBuffer(*static_cast<const VulkanConstantBuffer *RESTRICT>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
+		commandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
+		*/
+	}
 
 	//End the command buffer.
 	commandBuffer->End(this);

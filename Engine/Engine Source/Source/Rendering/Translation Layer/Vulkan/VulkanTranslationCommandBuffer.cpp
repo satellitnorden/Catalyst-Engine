@@ -33,6 +33,24 @@ void VulkanTranslationCommandBuffer::BindDescriptorSets(const RenderPass *const 
 }
 
 /*
+*	Binds an index buffer.
+*/
+void VulkanTranslationCommandBuffer::BindIndexBuffer(const RenderPass *const RESTRICT renderPass, const GraphicsBufferHandle indexBuffer, const uint64 offset) NOEXCEPT
+{
+	//Bind the index buffer.
+	//commandBuffer.CommandBindIndexBuffer()
+}
+
+/*
+*	Binds a number of vertex buffers.
+*/
+void VulkanTranslationCommandBuffer::BindVertexBuffers(const RenderPass *const RESTRICT renderPass, const uint32 numberOfVertexBuffers, const GraphicsBufferHandle *const RESTRICT vertexBuffers, const uint64 *const RESTRICT offsets) NOEXCEPT
+{
+	//Bind the vertex buffers.
+	commandBuffer.CommandBindVertexBuffers(numberOfVertexBuffers, reinterpret_cast<const VkBuffer *const RESTRICT>(vertexBuffers), offsets);
+}
+
+/*
 *	Ends the command buffer.
 */
 void VulkanTranslationCommandBuffer::End(const RenderPass *const RESTRICT) NOEXCEPT

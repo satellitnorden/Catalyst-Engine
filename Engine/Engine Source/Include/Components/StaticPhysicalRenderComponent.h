@@ -22,7 +22,7 @@ public:
 	DescriptorSetHandle descriptorSet{ };
 
 	//The buffer.
-	VulkanConstantBuffer buffer{ };
+	GraphicsBufferHandle buffer{ };
 
 	//The offset for the indices in the buffer.
 	uint64 indexOffset{ 0 };

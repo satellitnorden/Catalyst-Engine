@@ -72,6 +72,11 @@ public:
 	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
 
 	/*
+	*	Returns the current dynamic uniform data descriptor set.
+	*/
+	DescriptorSetHandle GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT;
+
+	/*
 	*	Creates an environment material.
 	*/
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;

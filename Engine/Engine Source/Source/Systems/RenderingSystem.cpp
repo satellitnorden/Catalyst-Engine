@@ -59,6 +59,15 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 }
 
 /*
+*	Returns the current dynamic uniform data descriptor set.
+*/
+DescriptorSetHandle RenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT
+{
+	//Return the current dynamic uniform data descriptor set via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->GetCurrentDynamicUniformDataDescriptorSet();
+}
+
+/*
 *	Creates an environment material.
 */
 void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT
