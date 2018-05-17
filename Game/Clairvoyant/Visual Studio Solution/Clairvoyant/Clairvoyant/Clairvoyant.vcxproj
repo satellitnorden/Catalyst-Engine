@@ -238,6 +238,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\RenderPasses.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\StaticPhysicalRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\TerrainRenderPass.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\VegetationRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\RenderingCore.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\RenderingUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Resolution.h" />
@@ -358,6 +359,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\RenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\StaticPhysicalRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\TerrainRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\VegetationRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Window.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\CubeMapFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\CubeMapVertexShader.cpp" />

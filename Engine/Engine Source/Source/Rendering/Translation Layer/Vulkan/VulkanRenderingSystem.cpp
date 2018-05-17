@@ -503,7 +503,7 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 
 	//Fill the components with the relevant data.
 	renderComponent.descriptorSet = newDescriptorSet.Get();
-	renderComponent.transformationsBuffer = transformationsBuffer;
+	renderComponent.transformationsBuffer = transformationsBuffer->Get();
 }
 
 /*
@@ -1236,55 +1236,6 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	}
 
 	{
-		//Create the vegetation pipeline.
-		VulkanPipelineCreationParameters vegetationPipelineCreationParameters;
-
-		vegetationPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-		vegetationPipelineCreationParameters.blendEnable = false;
-		vegetationPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		vegetationPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		vegetationPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		vegetationPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		vegetationPipelineCreationParameters.colorAttachments[0].Reserve(3);
-		vegetationPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetImageView());
-		vegetationPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetImageView());
-		vegetationPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetImageView());
-		vegetationPipelineCreationParameters.cullMode = VK_CULL_MODE_NONE;
-		vegetationPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		vegetationPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		vegetationPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		vegetationPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
-		vegetationPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-		vegetationPipelineCreationParameters.depthTestEnable = VK_TRUE;
-		vegetationPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-		StaticArray<VulkanDescriptorSetLayout, 2> vegetationDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Vegetation)]
-		};
-		vegetationPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(vegetationDescriptorSetLayouts.Size());
-		vegetationPipelineCreationParameters.descriptorSetLayouts = vegetationDescriptorSetLayouts.Data();
-		vegetationPipelineCreationParameters.pushConstantRangeCount = 0;
-		vegetationPipelineCreationParameters.pushConstantRanges = nullptr;
-		vegetationPipelineCreationParameters.shaderModules.Reserve(3);
-		vegetationPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::VegetationVertex)]);
-		vegetationPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::VegetationGeometry)]);
-		vegetationPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::VegetationFragment)]);
-		vegetationPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-		StaticArray<VkVertexInputAttributeDescription, 3> vegetationVertexInputAttributeDescriptions;
-		VulkanTranslationUtilities::GetVegetationVertexInputAttributeDescriptions(vegetationVertexInputAttributeDescriptions);
-		vegetationPipelineCreationParameters.vertexInputAttributeDescriptionCount = static_cast<uint32>(vegetationVertexInputAttributeDescriptions.Size());
-		vegetationPipelineCreationParameters.vertexInputAttributeDescriptions = vegetationVertexInputAttributeDescriptions.Data();
-		VkVertexInputBindingDescription vegetationVertexInputBindingDescription;
-		VulkanTranslationUtilities::GetVegetationVertexInputBindingDescription(vegetationVertexInputBindingDescription);
-		vegetationPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
-		vegetationPipelineCreationParameters.vertexInputBindingDescriptions = &vegetationVertexInputBindingDescription;
-		vegetationPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-		pipelines[INDEX(RenderPassStage::Vegetation)] = VulkanInterface::Instance->CreatePipeline(vegetationPipelineCreationParameters);
-	}
-
-	{
 		//Create the lighting pipeline.
 		VulkanPipelineCreationParameters lightingPipelineCreationParameters;
 
@@ -1637,11 +1588,6 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		VulkanRenderingSystem::Instance->RenderVegetationEntities();
-	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderVegetationEntities)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
 		VulkanRenderingSystem::Instance->RenderLighting();
 	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderLighting)]));
 
@@ -1713,11 +1659,8 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		//Begin the vegetation entities render pass.
 		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::Vegetation)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-		//Wait for the render vegetation entities task to finish.
-		taskSemaphores[INDEX(TaskSemaphore::RenderVegetationEntities)].WaitFor();
-
 		//Record the execute command for the vegetation entities.
-		currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentVegetationEntitiesCommandBuffer()->Get());
+		currentCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(VegetationRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
 		//End the vegetation entities render pass.
 		currentCommandBuffer->CommandEndRenderPass();
@@ -2033,58 +1976,6 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 	//Submit the directional shadow command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*commandBuffer, 0, nullptr, 0, 0, nullptr, nullptr);
-}
-
-/*
-*	Renders all vegetation entities.
-*/
-void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
-{
-	//Iterate over all vegetation entity components and draw them all.
-	const uint64 numberOfVegetationComponents{ ComponentManager::GetNumberOfVegetationComponents() };
-
-	//If there's none to draw - draw none!
-	if (numberOfVegetationComponents == 0)
-	{
-		return;
-	}
-
-	const VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationComponents() };
-
-	//Cache the command buffer.
-	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentVegetationEntitiesCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::Vegetation)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::Vegetation)]->GetRenderPass().GetFrameBuffers()[0].Get());
-
-	//Bind the pipeline
-	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::Vegetation)]->Get());
-
-	//Wait for the vegetation culling task to finish.
-	taskSemaphores[INDEX(TaskSemaphore::UpdateVegetationCulling)].WaitFor();
-
-	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
-	{
-		StaticArray<VkDescriptorSet, 2> vegetationDescriptorSets
-		{
-			currentDynamicUniformDataDescriptorSet->Get(),
-			static_cast<VkDescriptorSet>(component->descriptorSet)
-		};
-
-		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::Vegetation)]->GetPipelineLayout(), 0, static_cast<uint32>(vegetationDescriptorSets.Size()), vegetationDescriptorSets.Data());
-
-		for (uint64 j = 0, size = component->shouldDrawGridCell.Size(); j < size; ++j)
-		{
-			if (component->shouldDrawGridCell[j])
-			{
-				commandBuffer->CommandBindVertexBuffers(1, &static_cast<const VulkanConstantBuffer *RESTRICT>(component->transformationsBuffer)->Get(), &component->transformationOffsets[j]);
-				commandBuffer->CommandDraw(1, component->instanceCounts[j]);
-			}
-		}
-	}
-
-	//End the command buffer.
-	commandBuffer->End();
 }
 
 /*

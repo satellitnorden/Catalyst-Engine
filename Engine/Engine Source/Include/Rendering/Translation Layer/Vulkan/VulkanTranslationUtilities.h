@@ -9,7 +9,6 @@
 //Rendering.
 #include <Rendering/Engine Layer/PhysicalVertex.h>
 #include <Rendering/Engine Layer/TextureData.h>
-#include <Rendering/Engine Layer/VegetationTransformation.h>
 
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanCore.h>
@@ -132,6 +131,7 @@ public:
 		switch (format)
 		{
 			default: return VK_FORMAT_UNDEFINED;
+			case VertexInputAttributeDescription::Format::X32SignedFloat: return VK_FORMAT_R32_SFLOAT;
 			case VertexInputAttributeDescription::Format::X32Y32SignedFloat: return VK_FORMAT_R32G32_SFLOAT;
 			case VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat: return VK_FORMAT_R32G32B32_SFLOAT;
 			case VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat: return VK_FORMAT_R32G32B32A32_SFLOAT;
@@ -381,37 +381,6 @@ public:
 		vertexInputBindingDescription.binding = 0;
 		vertexInputBindingDescription.stride = sizeof(float) * 5;
 		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-	}
-
-	/*
-	*	Returns the vertex input attribute descriptions for the vegetation pipeline.
-	*/
-	static void GetVegetationVertexInputAttributeDescriptions(StaticArray<VkVertexInputAttributeDescription, 3> &vertexInputAttributeDescriptions) NOEXCEPT
-	{
-		vertexInputAttributeDescriptions[0].location = 0;
-		vertexInputAttributeDescriptions[0].binding = 0;
-		vertexInputAttributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-		vertexInputAttributeDescriptions[0].offset = 0;
-
-		vertexInputAttributeDescriptions[1].location = 1;
-		vertexInputAttributeDescriptions[1].binding = 0;
-		vertexInputAttributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
-		vertexInputAttributeDescriptions[1].offset = sizeof(Vector3);
-
-		vertexInputAttributeDescriptions[2].location = 2;
-		vertexInputAttributeDescriptions[2].binding = 0;
-		vertexInputAttributeDescriptions[2].format = VK_FORMAT_R32_SFLOAT;
-		vertexInputAttributeDescriptions[2].offset = sizeof(Vector3) + sizeof(Vector2);
-	}
-
-	/*
-	*	Returns the vertex input binding description for the vegetation pipeline.
-	*/
-	static void GetVegetationVertexInputBindingDescription(VkVertexInputBindingDescription &vertexInputBindingDescription) NOEXCEPT
-	{
-		vertexInputBindingDescription.binding = 0;
-		vertexInputBindingDescription.stride = sizeof(VegetationTransformation);
-		vertexInputBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
 	}
 
 };

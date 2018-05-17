@@ -7,3 +7,4 @@
 #include <Rendering/Engine Layer/Render Passes/InstancedPhysicalRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/StaticPhysicalRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/TerrainRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/VegetationRenderPass.h>

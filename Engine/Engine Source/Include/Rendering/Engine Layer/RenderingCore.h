@@ -253,6 +253,7 @@ public:
 	//Enum covering all formats.
 	enum class Format : uint8
 	{
+		X32SignedFloat,
 		X32Y32SignedFloat,
 		X32Y32Z32SignedFloat,
 		X32Y32Z32W32SignedFloat

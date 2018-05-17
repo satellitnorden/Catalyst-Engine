@@ -35,6 +35,11 @@ public:
 	virtual void BindVertexBuffers(const RenderPass *const RESTRICT renderPass, const uint32 numberOfVertexBuffers, const GraphicsBufferHandle *const RESTRICT vertexBuffers, const uint64 *const RESTRICT offsets) NOEXCEPT = 0;
 
 	/*
+	*	Draws.
+	*/
+	virtual void Draw(const RenderPass *const RESTRICT renderPass, const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT = 0;
+
+	/*
 	*	Draws indexed.
 	*/
 	virtual void DrawIndexed(const RenderPass *const RESTRICT renderPass, const uint32 indexCount, const uint32 instanceCount) NOEXCEPT = 0;

@@ -316,7 +316,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 	treeStomps->Initialize(treeStompModel, treeStompTransformations);
 	*/
 
-	/*
 	//Create some grass.
 	constexpr uint8 numberOfVegetationLayers{ 8 };
 
@@ -407,7 +406,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	ParticleSystemEntity *const RESTRICT cloud4Particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
 	cloud4Particles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::CLOUD_4_MATERIAL), ParticleSystemProperties(10.0f, 120.0f, 10.0f, Vector2(cloudMinimumScale, cloudMinimumScale), Vector2(cloudMaximumScale, cloudMaximumScale), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 2'000.0f, -WorldAchitectConstants::TERRAIN_SIZE * 2.0f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 20'000.0f, WorldAchitectConstants::TERRAIN_SIZE * 2.0f), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength(), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength() * 10.0f, Vector3(0.0f, 0.0f, 0.0f)));
-	*/
 }
 
 /*

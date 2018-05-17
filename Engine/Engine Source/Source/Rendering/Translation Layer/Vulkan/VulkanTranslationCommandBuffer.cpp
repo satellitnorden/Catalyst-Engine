@@ -52,6 +52,15 @@ void VulkanTranslationCommandBuffer::BindVertexBuffers(const RenderPass *const R
 }
 
 /*
+*	Draws.
+*/
+void VulkanTranslationCommandBuffer::Draw(const RenderPass *const RESTRICT renderPass, const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT
+{
+	//Draw.
+	commandBuffer.CommandDraw(vertexCount, instanceCount);
+}
+
+/*
 *	Draws indexed.
 */
 void VulkanTranslationCommandBuffer::DrawIndexed(const RenderPass *const RESTRICT renderPass, const uint32 indexCount, const uint32 instanceCount) NOEXCEPT
