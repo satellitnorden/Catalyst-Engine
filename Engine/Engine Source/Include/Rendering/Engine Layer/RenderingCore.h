@@ -254,7 +254,8 @@ public:
 	enum class Format : uint8
 	{
 		X32Y32SignedFloat,
-		X32Y32Z32SignedFloat
+		X32Y32Z32SignedFloat,
+		X32Y32Z32W32SignedFloat
 	};
 
 	//The location.

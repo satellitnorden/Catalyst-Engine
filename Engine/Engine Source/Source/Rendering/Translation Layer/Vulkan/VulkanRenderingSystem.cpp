@@ -1236,54 +1236,6 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	}
 
 	{
-		//Create the instanced physical pipeline.
-		VulkanPipelineCreationParameters instancedPhysicalPipelineCreationParameters;
-
-		instancedPhysicalPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-		instancedPhysicalPipelineCreationParameters.blendEnable = false;
-		instancedPhysicalPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		instancedPhysicalPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		instancedPhysicalPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		instancedPhysicalPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		instancedPhysicalPipelineCreationParameters.colorAttachments[0].Reserve(3);
-		instancedPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetImageView());
-		instancedPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetImageView());
-		instancedPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetImageView());
-		instancedPhysicalPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
-		instancedPhysicalPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		instancedPhysicalPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		instancedPhysicalPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		instancedPhysicalPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
-		instancedPhysicalPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-		instancedPhysicalPipelineCreationParameters.depthTestEnable = VK_TRUE;
-		instancedPhysicalPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-		StaticArray<VulkanDescriptorSetLayout, 2> instancedPhysicalDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)]
-		};
-		instancedPhysicalPipelineCreationParameters.descriptorSetLayoutCount = 2;
-		instancedPhysicalPipelineCreationParameters.descriptorSetLayouts = instancedPhysicalDescriptorSetLayouts.Data();
-		instancedPhysicalPipelineCreationParameters.pushConstantRangeCount = 0;
-		instancedPhysicalPipelineCreationParameters.pushConstantRanges = nullptr;
-		instancedPhysicalPipelineCreationParameters.shaderModules.Reserve(2);
-		instancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::InstancedPhysicalVertex)]);
-		instancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::PhysicalFragment)]);
-		instancedPhysicalPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		StaticArray<VkVertexInputAttributeDescription, 8> instancedPhysicalVertexInputAttributeDescriptions;
-		VulkanTranslationUtilities::GetInstancedPhysicalVertexInputAttributeDescriptions(instancedPhysicalVertexInputAttributeDescriptions);
-		instancedPhysicalPipelineCreationParameters.vertexInputAttributeDescriptionCount = 8;
-		instancedPhysicalPipelineCreationParameters.vertexInputAttributeDescriptions = instancedPhysicalVertexInputAttributeDescriptions.Data();
-		StaticArray<VkVertexInputBindingDescription, 2> instancedPhysicalVertexInputBindingDescriptions;
-		VulkanTranslationUtilities::GetInstancedPhysicalVertexInputBindingDescriptions(instancedPhysicalVertexInputBindingDescriptions);
-		instancedPhysicalPipelineCreationParameters.vertexInputBindingDescriptionCount = 2;
-		instancedPhysicalPipelineCreationParameters.vertexInputBindingDescriptions = instancedPhysicalVertexInputBindingDescriptions.Data();
-		instancedPhysicalPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-		pipelines[INDEX(RenderPassStage::InstancedPhysical)] = VulkanInterface::Instance->CreatePipeline(instancedPhysicalPipelineCreationParameters);
-	}
-
-	{
 		//Create the vegetation pipeline.
 		VulkanPipelineCreationParameters vegetationPipelineCreationParameters;
 
@@ -1685,11 +1637,6 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		VulkanRenderingSystem::Instance->RenderInstancedPhysicalEntities();
-	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderInstancedPhysicalEntities)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
 		VulkanRenderingSystem::Instance->RenderVegetationEntities();
 	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderVegetationEntities)]));
 
@@ -1752,12 +1699,10 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	{
 		//Begin the instanced physical entities render pass.
 		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::InstancedPhysical)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
-	
-		//Wait for the render instanced physical entities task to finish.
-		taskSemaphores[INDEX(TaskSemaphore::RenderInstancedPhysicalEntities)].WaitFor();
+
 
 		//Record the execute command for the instanced physical entities.
-		currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentInstancedPhysicalEntitiesCommandBuffer()->Get());
+		currentCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(InstancedPhysicalRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
 		//End the instanced physical entities render pass.
 		currentCommandBuffer->CommandEndRenderPass();
@@ -2088,61 +2033,6 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 	//Submit the directional shadow command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*commandBuffer, 0, nullptr, 0, 0, nullptr, nullptr);
-}
-
-/*
-*	Renders all instanced physical entities.
-*/
-void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
-{
-	//Iterate over all instanced physical entity components and draw them all.
-	const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };
-
-	//If there's none to draw - draw none!
-	if (numberOfInstancedPhysicalComponents == 0)
-	{
-		return;
-	}
-
-	const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
-
-	//Cache the command buffer.
-	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentInstancedPhysicalEntitiesCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::InstancedPhysical)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::InstancedPhysical)]->GetRenderPass().GetFrameBuffers()[0].Get());
-
-	//Bind the pipeline
-	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::InstancedPhysical)]->Get());
-	
-	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
-	{
-		StaticArray<VkDescriptorSet, 2> instancedPhysicalDescriptorSets
-		{
-			currentDynamicUniformDataDescriptorSet->Get(),
-			static_cast<VkDescriptorSet>(renderComponent->descriptorSet)
-		};
-
-		StaticArray<VkBuffer, 2> instancedPhysicalBuffers
-		{
-			static_cast<const VkBuffer>(renderComponent->modelBuffer),
-			static_cast<const VkBuffer>(renderComponent->transformationsBuffer)
-		};
-
-		StaticArray<VkDeviceSize, 2> offsets
-		{
-			static_cast<VkDeviceSize>(0),
-			static_cast<VkDeviceSize>(0)
-		};
-
-		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::InstancedPhysical)]->GetPipelineLayout(), 0, 2, instancedPhysicalDescriptorSets.Data());
-		commandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
-		commandBuffer->CommandBindIndexBuffer(static_cast<const VkBuffer>(renderComponent->modelBuffer), renderComponent->indexOffset);
-		commandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
-	}
-
-	//End the command buffer.
-	commandBuffer->End();
 }
 
 /*

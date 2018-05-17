@@ -38,17 +38,6 @@ public:
 			directionalShadowCommandPool->AllocatePrimaryCommandBuffer(directionalShadowCommandBuffer);
 		}
 
-		//Create the instanced physical entities command pool.
-		instancedPhysicalEntitiesCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
-		//Create the instanced physical entities command buffers.
-		instancedPhysicalEntitiesCommandBuffers.UpsizeFast(frameDataCount);
-
-		for (VulkanCommandBuffer &instancedPhysicalEntitiesCommandBuffer : instancedPhysicalEntitiesCommandBuffers)
-		{
-			instancedPhysicalEntitiesCommandPool->AllocateSecondaryCommandBuffer(instancedPhysicalEntitiesCommandBuffer);
-		}
-
 		//Create the vegetation entities command pool.
 		vegetationEntitiesCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
@@ -199,11 +188,6 @@ public:
 	VulkanCommandBuffer *RESTRICT GetCurrentDirectionalShadowCommandBuffer() NOEXCEPT { return &directionalShadowCommandBuffers[currentFrame]; }
 
 	/*
-	*	Returns the current instanced physical entities command buffer.
-	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentInstancedPhysicalEntitiesCommandBuffer() NOEXCEPT { return &instancedPhysicalEntitiesCommandBuffers[currentFrame]; }
-
-	/*
 	*	Returns the current vegetation entities command buffer.
 	*/
 	VulkanCommandBuffer *RESTRICT GetCurrentVegetationEntitiesCommandBuffer() NOEXCEPT { return &vegetationEntitiesCommandBuffers[currentFrame]; }
@@ -295,12 +279,6 @@ private:
 
 	//The directional shadow command buffers.
 	DynamicArray<VulkanCommandBuffer> directionalShadowCommandBuffers;
-
-	//The instanced physical entities command pool.
-	VulkanCommandPool *RESTRICT instancedPhysicalEntitiesCommandPool;
-
-	//The instanced physical entitiees command buffers.
-	DynamicArray<VulkanCommandBuffer> instancedPhysicalEntitiesCommandBuffers;
 
 	//The vegetation entities command pool.
 	VulkanCommandPool *RESTRICT vegetationEntitiesCommandPool;

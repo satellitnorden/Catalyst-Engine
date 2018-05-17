@@ -232,7 +232,6 @@ private:
 	enum class TaskSemaphore : uint8
 	{
 		RenderDirectionalShadows,
-		RenderInstancedPhysicalEntities,
 		RenderVegetationEntities,
 		RenderLighting,
 		RenderSkybox,
@@ -405,11 +404,6 @@ private:
 	*	Renders directional shadows.
 	*/
 	void RenderDirectionalShadows() NOEXCEPT;
-
-	/*
-	*	Renders all instanced physical entities.
-	*/
-	void RenderInstancedPhysicalEntities() NOEXCEPT;
 
 	/*
 	*	Renders all vegetation entities.

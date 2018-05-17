@@ -26,6 +26,7 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize all render passes.
 	TerrainRenderPass::Instance->Initialize();
 	StaticPhysicalRenderPass::Instance->Initialize();
+	InstancedPhysicalRenderPass::Instance->Initialize();
 }
 
 /*
@@ -39,6 +40,7 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Render all render passes.
 	TerrainRenderPass::Instance->Render();
 	StaticPhysicalRenderPass::Instance->Render();
+	InstancedPhysicalRenderPass::Instance->Render();
 
 	//Post-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();
