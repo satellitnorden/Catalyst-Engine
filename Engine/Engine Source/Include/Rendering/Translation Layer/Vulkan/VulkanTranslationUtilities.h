@@ -3,7 +3,11 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Math.
+#include <Math/Matrix4.h>
+
 //Rendering.
+#include <Rendering/Engine Layer/PhysicalVertex.h>
 #include <Rendering/Engine Layer/TextureData.h>
 #include <Rendering/Engine Layer/VegetationTransformation.h>
 
@@ -45,6 +49,7 @@ public:
 	{
 		switch (attachmentLoadOperator)
 		{
+			default: return VK_ATTACHMENT_LOAD_OP_LOAD;
 			case AttachmentLoadOperator::Clear: return VK_ATTACHMENT_LOAD_OP_CLEAR;
 			case AttachmentLoadOperator::DontCare: return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 			case AttachmentLoadOperator::Load: return VK_ATTACHMENT_LOAD_OP_LOAD;
@@ -58,6 +63,7 @@ public:
 	{
 		switch (attachmentSstoreOperator)
 		{
+			default: return VK_ATTACHMENT_STORE_OP_STORE;
 			case AttachmentStoreOperator::DontCare: return VK_ATTACHMENT_STORE_OP_DONT_CARE;
 			case AttachmentStoreOperator::Store: return VK_ATTACHMENT_STORE_OP_STORE;
 		}
@@ -70,6 +76,7 @@ public:
 	{
 		switch (compareOperator)
 		{
+			default: return VK_COMPARE_OP_NEVER;
 			case CompareOperator::Always: return VK_COMPARE_OP_ALWAYS;
 			case CompareOperator::Equal: return VK_COMPARE_OP_EQUAL;
 			case CompareOperator::Greater: return VK_COMPARE_OP_GREATER;
@@ -88,6 +95,7 @@ public:
 	{
 		switch (cullMode)
 		{
+			default: return VK_CULL_MODE_NONE;
 			case CullMode::None: return VK_CULL_MODE_NONE;
 			case CullMode::Back: return VK_CULL_MODE_BACK_BIT;
 			case CullMode::Front: return VK_CULL_MODE_FRONT_BIT;
@@ -123,6 +131,7 @@ public:
 	{
 		switch (format)
 		{
+			default: return VK_FORMAT_UNDEFINED;
 			case VertexInputAttributeDescription::Format::X32Y32SignedFloat: return VK_FORMAT_R32G32_SFLOAT;
 			case VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat: return VK_FORMAT_R32G32B32_SFLOAT;
 		}
@@ -145,6 +154,33 @@ public:
 #endif
 				return VK_SAMPLER_MIPMAP_MODE_NEAREST;
 			}
+		}
+	}
+
+	/*
+	*	Given a push constant range, returns the corresponding Vulkan push constant range.
+	*/
+	static VkPushConstantRange GetVulkanPushConstantRange(const PushConstantRange &pushConstantRange) NOEXCEPT
+	{
+		return VkPushConstantRange{ GetVulkanShaderStage(pushConstantRange.shaderStage),
+									pushConstantRange.offset,
+									pushConstantRange.size };
+	}
+
+	/*
+	*	Given a shader stage, returns the corresponding Vulkan shader stage.
+	*/
+	static VkShaderStageFlags GetVulkanShaderStage(const PushConstantRange::ShaderStage shaderStage) NOEXCEPT
+	{
+		switch (shaderStage)
+		{
+			default: return VK_SHADER_STAGE_VERTEX_BIT;
+			case PushConstantRange::ShaderStage::Vertex: return VK_SHADER_STAGE_VERTEX_BIT;
+			case PushConstantRange::ShaderStage::TessellationControl: return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+			case PushConstantRange::ShaderStage::TessellationEvaluation: return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+			case PushConstantRange::ShaderStage::Geometry: return VK_SHADER_STAGE_GEOMETRY_BIT;
+			case PushConstantRange::ShaderStage::Fragment: return VK_SHADER_STAGE_FRAGMENT_BIT;
+			case PushConstantRange::ShaderStage::Compute: return VK_SHADER_STAGE_COMPUTE_BIT;
 		}
 	}
 
@@ -175,6 +211,7 @@ public:
 	{
 		switch (topology)
 		{
+			default: return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
 			case Topology::LineList: return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
 			case Topology::LineListWithAdjacency: return VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY;
 			case Topology::LineStrip: return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
@@ -217,6 +254,7 @@ public:
 	{
 		switch (inputRate)
 		{
+			default: return VK_VERTEX_INPUT_RATE_VERTEX;
 			case VertexInputBindingDescription::InputRate::Instance: return VK_VERTEX_INPUT_RATE_INSTANCE;
 			case VertexInputBindingDescription::InputRate::Vertex: return VK_VERTEX_INPUT_RATE_VERTEX;
 		}

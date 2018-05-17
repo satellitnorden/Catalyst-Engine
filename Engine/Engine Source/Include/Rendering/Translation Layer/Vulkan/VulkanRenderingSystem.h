@@ -18,6 +18,7 @@
 #include <Rendering/Engine Layer/Window.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanDynamicUniformData.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanFrameData.h>
+#include <Rendering/Translation Layer/Vulkan/VulkanRenderPassData.h>
 
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
@@ -68,9 +69,14 @@ public:
 	void InitializeSystem() NOEXCEPT;
 
 	/*
-	*	Updates the rendering Vulkan system synchronously.
+	*	Pre-updates the Vulkan rendering system synchronously.
 	*/
-	void UpdateSystemSynchronous() NOEXCEPT;
+	void PreUpdateSystemSynchronous() NOEXCEPT;
+
+	/*
+	*	Post-updates the Vulkan rendering system synchronously.
+	*/
+	void PostUpdateSystemSynchronous() NOEXCEPT;
 
 	/*
 	*	Releases the Vulkan rendering system.
@@ -226,8 +232,6 @@ private:
 	enum class TaskSemaphore : uint8
 	{
 		RenderDirectionalShadows,
-		RenderTerrain,
-		RenderStaticPhysicalEntities,
 		RenderInstancedPhysicalEntities,
 		RenderVegetationEntities,
 		RenderLighting,
@@ -292,6 +296,9 @@ private:
 
 	//Container for all uniform buffers.
 	StaticArray<VulkanUniformBuffer *RESTRICT, UniformBuffer::NumberOfUniformBuffers> uniformBuffers;
+
+	//Container for all Vulkan render pass data.
+	StaticArray<VulkanRenderPassData, INDEX(RenderPassStage::NumberOfRenderPassStages)> vulkanRenderPassData;
 
 	//The Vulkan frame data.
 	VulkanFrameData frameData;
@@ -398,16 +405,6 @@ private:
 	*	Renders directional shadows.
 	*/
 	void RenderDirectionalShadows() NOEXCEPT;
-
-	/*
-	*	Renders the terrain.
-	*/
-	void RenderTerrain() NOEXCEPT;
-
-	/*
-	*	Renders all static physical entities.
-	*/
-	void RenderStaticPhysicalEntities() NOEXCEPT;
 
 	/*
 	*	Renders all instanced physical entities.

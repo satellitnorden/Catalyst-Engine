@@ -1,0 +1,8 @@
+#pragma once
+
+//Engine core.
+#include <Engine Core/EngineCore.h>
+
+//Rendering.
+#include <Rendering/Engine Layer/Render Passes/StaticPhysicalRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/TerrainRenderPass.h>

@@ -18,6 +18,21 @@ public:
 	VulkanTranslationCommandBuffer() NOEXCEPT = delete;
 
 	/*
+	*	Constructor taking the Vulkan command buffer.
+	*/
+	VulkanTranslationCommandBuffer(VulkanCommandBuffer initialCommandBuffer) NOEXCEPT
+		:
+		commandBuffer(initialCommandBuffer)
+	{
+
+	}
+
+	/*
+	*	Returns the underlying Vulkan command buffer.
+	*/
+	VulkanCommandBuffer GetVulkanCommandBuffer() const NOEXCEPT { return commandBuffer; }
+
+	/*
 	*	Begins the command buffer.
 	*/
 	void Begin(const RenderPass *const RESTRICT renderPass) NOEXCEPT override;
@@ -41,6 +56,11 @@ public:
 	*	Draws indexed.
 	*/
 	void DrawIndexed(const RenderPass *const RESTRICT renderPass, const uint32 indexCount, const uint32 instanceCount) NOEXCEPT override;
+
+	/*
+	*	Pushes constants.
+	*/
+	void PushConstants(const RenderPass *const RESTRICT renderPass, PushConstantRange::ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT override;
 
 	/*
 	*	Ends the command buffer.

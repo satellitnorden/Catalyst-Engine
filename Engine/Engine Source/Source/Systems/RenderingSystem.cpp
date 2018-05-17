@@ -4,6 +4,7 @@
 //Rendering.
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/Resolution.h>
+#include <Rendering/Engine Layer/Render Passes/RenderPasses.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
 
 //Singleton definition.
@@ -21,6 +22,10 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->InitializeSystem();
+
+	//Initialize all render passes.
+	TerrainRenderPass::Instance->Initialize();
+	StaticPhysicalRenderPass::Instance->Initialize();
 }
 
 /*
@@ -28,8 +33,15 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 */
 void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 {
-	//Update the current rendering system synchronously.
-	CURRENT_RENDERING_SYSTEM::Instance->UpdateSystemSynchronous();
+	//Pre-update the current rendering system synchronously.
+	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
+
+	//Render all render passes.
+	TerrainRenderPass::Instance->Render();
+	StaticPhysicalRenderPass::Instance->Render();
+
+	//Post-update the current rendering system synchronously.
+	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();
 }
 
 /*
@@ -47,7 +59,7 @@ void RenderingSystem::ReleaseSystem() NOEXCEPT
 Resolution RenderingSystem::GetRenderResolution() const NOEXCEPT
 {
 	//Return the render resolution via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->GetRenderResolution();
+	return CURRENT_RENDERING_SYSTEM::Instance->GetRenderResolution();
 }
 
 /*
@@ -74,7 +86,7 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 DescriptorSetHandle RenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT
 {
 	//Return the current dynamic uniform data descriptor set via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->GetCurrentDynamicUniformDataDescriptorSet();
+	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentDynamicUniformDataDescriptorSet();
 }
 
 /*

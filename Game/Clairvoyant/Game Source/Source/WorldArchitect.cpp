@@ -15,6 +15,7 @@
 #include <Entities/PointLightEntity.h>
 #include <Entities/Sound3DEntity.h>
 #include <Entities/SpotLightEntity.h>
+#include <Entities/StaticPhysicalEntity.h>
 #include <Entities/TerrainEntity.h>
 #include <Entities/VegetationEntity.h>
 
@@ -269,6 +270,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 	InstancedPhysicalEntity *RESTRICT stones = EntitySystem::Instance->CreateEntity<InstancedPhysicalEntity>();
 	stones->Initialize(stoneModel, stoneTransformations);
 
+	//Aaand create a really big stone.
+	StaticPhysicalEntity *const RESTRICT bigStone{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	bigStone->Initialize(stoneModel, Vector3(0.0f, 10'000.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(100.0f, 100.0f, 100.0f));
+
 	/*
 	//Create the tree stomp model.
 	PhysicalModel treeStompModel{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::TREE_STOMP_MODEL) };
@@ -311,6 +316,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	treeStomps->Initialize(treeStompModel, treeStompTransformations);
 	*/
 
+	/*
 	//Create some grass.
 	constexpr uint8 numberOfVegetationLayers{ 8 };
 
@@ -401,6 +407,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	ParticleSystemEntity *const RESTRICT cloud4Particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
 	cloud4Particles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::CLOUD_4_MATERIAL), ParticleSystemProperties(10.0f, 120.0f, 10.0f, Vector2(cloudMinimumScale, cloudMinimumScale), Vector2(cloudMaximumScale, cloudMaximumScale), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 2'000.0f, -WorldAchitectConstants::TERRAIN_SIZE * 2.0f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 20'000.0f, WorldAchitectConstants::TERRAIN_SIZE * 2.0f), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength(), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength() * 10.0f, Vector3(0.0f, 0.0f, 0.0f)));
+	*/
 }
 
 /*

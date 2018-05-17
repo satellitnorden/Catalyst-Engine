@@ -31,9 +31,10 @@
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/TextureData.h>
 #include <Rendering/Engine Layer/VegetationMaterial.h>
-#include <Rendering/Engine Layer/Render Passes/RenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/RenderPasses.h>
 #include <Rendering/Shader Data/Vulkan/VulkanShaderData.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanParticleSystemProperties.h>
+#include <Rendering/Translation Layer/Vulkan/VulkanTranslationCommandBuffer.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanTranslationUtilities.h>
 
 //Resources.
@@ -104,23 +105,15 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 }
 
 /*
-*	Updates the graphics system synchronously.
+*	Pre-updates the Vulkan rendering system synchronously.
 */
-void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
+void VulkanRenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
 	//Execute the asynchronous tasks.
 	ExecuteAsynchronousTasks();
 
 	//Update the main window.
 	mainWindow.Update();
-
-	//Check if the main window should close - If so, terminate immediately.
-	if (mainWindow.ShouldClose())
-	{
-		EngineSystem::Instance->Terminate();
-
-		return;
-	}
 
 	//Pre-update the Vulkan interface.
 	VulkanInterface::Instance->PreUpdate(semaphores[INDEX(GraphicsSemaphore::ImageAvailable)]);
@@ -133,7 +126,13 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 
 	//Update the descriptor sets.
 	UpdateDescriptorSets();
+}
 
+/*
+*	Post-updates the Vulkan rendering system synchronously.
+*/
+void VulkanRenderingSystem::PostUpdateSystemSynchronous() NOEXCEPT
+{
 	//Execute the frame-dependant asynchronous tasks.
 	ExecuteFrameDependantAsynchronousTasks();
 
@@ -145,6 +144,12 @@ void VulkanRenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 
 	//Post-update the Vulkan interface.
 	VulkanInterface::Instance->PostUpdate(semaphores[INDEX(GraphicsSemaphore::RenderFinished)]);
+
+	//Check if the main window should close - If so, terminate.
+	if (mainWindow.ShouldClose())
+	{
+		EngineSystem::Instance->Terminate();
+	}
 }
 
 /*
@@ -656,8 +661,28 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 
 	parameters.descriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());
 	parameters.descriptorSetLayouts = pipelineDescriptorSetLayouts.Data();
-	parameters.pushConstantRangeCount = 0;
-	parameters.pushConstantRanges = nullptr;
+
+	DynamicArray<VkPushConstantRange> pushConstantRanges;
+
+	if (renderPass->GetPushConstantRanges().Empty())
+	{
+		parameters.pushConstantRangeCount = 0;
+		parameters.pushConstantRanges = nullptr;
+	}
+
+	else
+	{
+		pushConstantRanges.Reserve(renderPass->GetPushConstantRanges().Size());
+
+		for (const PushConstantRange &pushConstantRange : renderPass->GetPushConstantRanges())
+		{
+			pushConstantRanges.EmplaceFast(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
+		}
+
+		parameters.pushConstantRangeCount = static_cast<uint32>(pushConstantRanges.Size());
+		parameters.pushConstantRanges = pushConstantRanges.Data();
+	}
+	
 	parameters.shaderModules.Reserve(5);
 	if (renderPass->GetVertexShader() != Shader::None) parameters.shaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetVertexShader())]);
 	if (renderPass->GetTessellationControlShader() != Shader::None) parameters.shaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetTessellationControlShader())]);
@@ -691,6 +716,28 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 
 	//Create the pipeline!
 	pipelines[INDEX(renderPass->GetStage())] = VulkanInterface::Instance->CreatePipeline(parameters);
+
+	//Update the Vulkan render pass data.
+	vulkanRenderPassData[INDEX(renderPass->GetStage())].framebuffer = pipelines[INDEX(renderPass->GetStage())]->GetRenderPass().GetFrameBuffers()[0].Get();
+	vulkanRenderPassData[INDEX(renderPass->GetStage())].pipeline = pipelines[INDEX(renderPass->GetStage())]->Get();
+	vulkanRenderPassData[INDEX(renderPass->GetStage())].pipelineLayout = pipelines[INDEX(renderPass->GetStage())]->GetPipelineLayout();
+	vulkanRenderPassData[INDEX(renderPass->GetStage())].renderPass = pipelines[INDEX(renderPass->GetStage())]->GetRenderPass().Get();
+
+	renderPass->SetData(&vulkanRenderPassData[INDEX(renderPass->GetStage())]);
+
+	//Add the command buffers.
+	const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
+	renderPass->SetNumberOfCommandBuffers(numberOfCommandBuffers);
+
+	//Create the directional shadow command pool.
+	VulkanCommandPool *const RESTRICT pipelineCommandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT) };
+
+	for (uint64 i = 0; i < numberOfCommandBuffers; ++i)
+	{
+		VulkanCommandBuffer pipelineCommandBuffer;
+		pipelineCommandPool->AllocateSecondaryCommandBuffer(pipelineCommandBuffer);
+		renderPass->AddCommandBuffer(new VulkanTranslationCommandBuffer(pipelineCommandBuffer));
+	}
 }
 
 /*
@@ -698,7 +745,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 */
 DescriptorSetHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT
 {
-	return frameData.GetCurrentDynamicUniformDataDescriptorSet();
+	return frameData.GetCurrentDynamicUniformDataDescriptorSet()->Get();
 }
 
 /*
@@ -905,14 +952,14 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		//Initialize directional shadowInstanced physical vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDirectionalShadowInstancedPhysicalVertexShaderData(data);
-		shaderModules[INDEX(Shader::DirectionalShadowInstancedPhysicalVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		shaderModules[INDEX(Shader::DirectionalInstancedPhysicalShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize directional shadow terrain tesselation evaluation shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDirectionalShadowTerrainTessellationEvaluationShaderData(data);
-		shaderModules[INDEX(Shader::DirectionalShadowTerrainTessellationEvaluation)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+		shaderModules[INDEX(Shader::DirectionalTerrainShadowTessellationEvaluation)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 	}
 
 	{
@@ -1086,7 +1133,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		directionalShadowTerrainPipelineCreationParameters.shaderModules.Reserve(4);
 		directionalShadowTerrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::TerrainVertex)]);
 		directionalShadowTerrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::TerrainTessellationControl)]);
-		directionalShadowTerrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::DirectionalShadowTerrainTessellationEvaluation)]);
+		directionalShadowTerrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::DirectionalTerrainShadowTessellationEvaluation)]);
 		directionalShadowTerrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::ShadowMapFragment)]);
 		directionalShadowTerrainPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
 		StaticArray<VkVertexInputAttributeDescription, 2> terrainShadowVertexInputAttributeDescriptions;
@@ -1099,7 +1146,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		directionalShadowTerrainPipelineCreationParameters.vertexInputBindingDescriptions = &terrainShadowVertexInputBindingDescription;
 		directionalShadowTerrainPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
 
-		pipelines[INDEX(RenderPassStage::DirectionalShadowTerrain)] = VulkanInterface::Instance->CreatePipeline(directionalShadowTerrainPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::DirectionalTerrainShadow)] = VulkanInterface::Instance->CreatePipeline(directionalShadowTerrainPipelineCreationParameters);
 	}
 
 	{
@@ -1132,7 +1179,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		directionalShadowInstancedPhysicalPipelineCreationParameters.pushConstantRangeCount = 0;
 		directionalShadowInstancedPhysicalPipelineCreationParameters.pushConstantRanges = nullptr;
 		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.Reserve(2);
-		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::DirectionalShadowInstancedPhysicalVertex)]);
+		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::DirectionalInstancedPhysicalShadowVertex)]);
 		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::ShadowMapFragment)]);
 		directionalShadowInstancedPhysicalPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		StaticArray<VkVertexInputAttributeDescription, 8> directionalShadowInstancedPhysicalVertexInputAttributeDescriptions;
@@ -1145,7 +1192,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		directionalShadowInstancedPhysicalPipelineCreationParameters.vertexInputBindingDescriptions = directionalShadowInstancedPhysicalVertexInputBindingDescriptions.Data();
 		directionalShadowInstancedPhysicalPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
 
-		pipelines[INDEX(RenderPassStage::DirectionalShadowInstancedPhysical)] = VulkanInterface::Instance->CreatePipeline(directionalShadowInstancedPhysicalPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::DirectionalInstancedPhysicalShadow)] = VulkanInterface::Instance->CreatePipeline(directionalShadowInstancedPhysicalPipelineCreationParameters);
 	}
 
 	{
@@ -1186,105 +1233,6 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		shadowMapBlurPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
 
 		pipelines[INDEX(RenderPassStage::ShadowMapBlur)] = VulkanInterface::Instance->CreatePipeline(shadowMapBlurPipelineCreationParameters);
-	}
-
-	{
-		//Create the terrain pipeline.
-		VulkanPipelineCreationParameters terrainPipelineCreationParameters;
-
-		terrainPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		terrainPipelineCreationParameters.blendEnable = false;
-		terrainPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		terrainPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		terrainPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		terrainPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		terrainPipelineCreationParameters.colorAttachments[0].Reserve(3);
-		terrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetImageView());
-		terrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetImageView());
-		terrainPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetImageView());
-		terrainPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
-		terrainPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		terrainPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		terrainPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		terrainPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
-		terrainPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-		terrainPipelineCreationParameters.depthTestEnable = VK_TRUE;
-		terrainPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-		StaticArray<VulkanDescriptorSetLayout, 2> terrainDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)]
-		};
-		terrainPipelineCreationParameters.descriptorSetLayoutCount = 2;
-		terrainPipelineCreationParameters.descriptorSetLayouts = terrainDescriptorSetLayouts.Data();
-		terrainPipelineCreationParameters.pushConstantRangeCount = 0;
-		terrainPipelineCreationParameters.pushConstantRanges = nullptr;
-		terrainPipelineCreationParameters.shaderModules.Reserve(4);
-		terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::TerrainVertex)]);
-		terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::TerrainTessellationControl)]);
-		terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::TerrainTessellationEvaluation)]);
-		terrainPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::TerrainFragment)]);
-		terrainPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
-		StaticArray<VkVertexInputAttributeDescription, 2> terrainVertexInputAttributeDescriptions;
-		VulkanTranslationUtilities::GetTerrainVertexInputAttributeDescriptions(terrainVertexInputAttributeDescriptions);
-		terrainPipelineCreationParameters.vertexInputAttributeDescriptionCount = 2;
-		terrainPipelineCreationParameters.vertexInputAttributeDescriptions = terrainVertexInputAttributeDescriptions.Data();
-		VkVertexInputBindingDescription terrainVertexInputBindingDescription;
-		VulkanTranslationUtilities::GetTerrainVertexInputBindingDescription(terrainVertexInputBindingDescription);
-		terrainPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
-		terrainPipelineCreationParameters.vertexInputBindingDescriptions = &terrainVertexInputBindingDescription;
-		terrainPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-		pipelines[INDEX(RenderPassStage::Terrain)] = VulkanInterface::Instance->CreatePipeline(terrainPipelineCreationParameters);
-	}
-
-	{
-		//Create the static physical pipeline.
-		VulkanPipelineCreationParameters staticPhysicalPipelineCreationParameters;
-
-		staticPhysicalPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-		staticPhysicalPipelineCreationParameters.blendEnable = false;
-		staticPhysicalPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		staticPhysicalPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		staticPhysicalPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		staticPhysicalPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		staticPhysicalPipelineCreationParameters.colorAttachments[0].Reserve(3);
-		staticPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetImageView());
-		staticPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetImageView());
-		staticPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetImageView());
-		staticPhysicalPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
-		staticPhysicalPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		staticPhysicalPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		staticPhysicalPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		staticPhysicalPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
-		staticPhysicalPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-		staticPhysicalPipelineCreationParameters.depthTestEnable = VK_TRUE;
-		staticPhysicalPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-		StaticArray<VulkanDescriptorSetLayout, 2> sceneBufferDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)]
-		};
-		staticPhysicalPipelineCreationParameters.descriptorSetLayoutCount = 2;
-		staticPhysicalPipelineCreationParameters.descriptorSetLayouts = sceneBufferDescriptorSetLayouts.Data();
-		VkPushConstantRange staticPhysicalPushConstantRange{ VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4) };
-		staticPhysicalPipelineCreationParameters.pushConstantRangeCount = 1;
-		staticPhysicalPipelineCreationParameters.pushConstantRanges = &staticPhysicalPushConstantRange;
-		staticPhysicalPipelineCreationParameters.shaderModules.Reserve(2);
-		staticPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::PhysicalVertex)]);
-		staticPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::PhysicalFragment)]);
-		staticPhysicalPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		StaticArray<VkVertexInputAttributeDescription, 4> staticPhysicalVertexInputAttributeDescriptions;
-		VulkanTranslationUtilities::GetPhysicalVertexInputAttributeDescriptions(staticPhysicalVertexInputAttributeDescriptions);
-		staticPhysicalPipelineCreationParameters.vertexInputAttributeDescriptionCount = 4;
-		staticPhysicalPipelineCreationParameters.vertexInputAttributeDescriptions = staticPhysicalVertexInputAttributeDescriptions.Data();
-		VkVertexInputBindingDescription staticPhysicalVertexInputBindingDescription;
-		VulkanTranslationUtilities::GetPhysicalVertexInputBindingDescription(staticPhysicalVertexInputBindingDescription);
-		staticPhysicalPipelineCreationParameters.vertexInputBindingDescriptionCount = 1;
-		staticPhysicalPipelineCreationParameters.vertexInputBindingDescriptions = &staticPhysicalVertexInputBindingDescription;
-		staticPhysicalPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-		pipelines[INDEX(RenderPassStage::StaticPhysical)] = VulkanInterface::Instance->CreatePipeline(staticPhysicalPipelineCreationParameters);
 	}
 
 	{
@@ -1737,16 +1685,6 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		VulkanRenderingSystem::Instance->RenderTerrain();
-	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderTerrain)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
-		VulkanRenderingSystem::Instance->RenderStaticPhysicalEntities();
-	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderStaticPhysicalEntities)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
 		VulkanRenderingSystem::Instance->RenderInstancedPhysicalEntities();
 	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderInstancedPhysicalEntities)]));
 
@@ -1792,11 +1730,8 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//Begin the terrain render pass.
 	currentCommandBuffer->CommandBeginRenderPassAndClear<4>(pipelines[INDEX(RenderPassStage::Terrain)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Wait for the render terrain task to finish.
-	taskSemaphores[INDEX(TaskSemaphore::RenderTerrain)].WaitFor();
-
 	//Record the execute command for the terrain.
-	currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentTerrainCommandBuffer()->Get());
+	currentCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(TerrainRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
 	//End the terrain render pass.
 	currentCommandBuffer->CommandEndRenderPass();
@@ -1806,11 +1741,8 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		//Begin the static physical entities render pass.
 		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::StaticPhysical)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-		//Wait for the render static physical entities task to finish.
-		taskSemaphores[INDEX(TaskSemaphore::RenderStaticPhysicalEntities)].WaitFor();
-
 		//Record the execute command for the static physical entities.
-		currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentStaticPhysicalEntitiesCommandBuffer()->Get());
+		currentCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(StaticPhysicalRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
 		//End the static physical entities render pass.
 		currentCommandBuffer->CommandEndRenderPass();
@@ -2046,7 +1978,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 	//Render terrain shadows.
 	{
 		//Cache the pipeline.
-		VulkanPipeline &directionalShadowTerrainPipeline{ *pipelines[INDEX(RenderPassStage::DirectionalShadowTerrain)] };
+		VulkanPipeline &directionalShadowTerrainPipeline{ *pipelines[INDEX(RenderPassStage::DirectionalTerrainShadow)] };
 
 		//Begin the pipeline and render pass.
 		commandBuffer->CommandBindPipeline(directionalShadowTerrainPipeline.Get());
@@ -2085,7 +2017,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 		if (numberOfInstancedPhysicalComponents > 0)
 		{
 			//Cache the pipeline.
-			VulkanPipeline &directionalShadowInstancedPhysicalPipeline{ *pipelines[INDEX(RenderPassStage::DirectionalShadowInstancedPhysical)] };
+			VulkanPipeline &directionalShadowInstancedPhysicalPipeline{ *pipelines[INDEX(RenderPassStage::DirectionalInstancedPhysicalShadow)] };
 
 			const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
 
@@ -2156,98 +2088,6 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 	//Submit the directional shadow command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*commandBuffer, 0, nullptr, 0, 0, nullptr, nullptr);
-}
-
-/*
-*	Renders the terrain.
-*/
-void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
-{
-	//Cache the current terrain command buffer.
-	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentTerrainCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::Terrain)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::Terrain)]->GetRenderPass().GetFrameBuffers()[0].Get());
-
-	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::Terrain)]->Get());
-
-	//Iterate over all terrain entity components and draw them all.
-	const uint64 numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
-	const TerrainRenderComponent *RESTRICT terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents() };
-
-	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::Terrain)]->GetPipelineLayout(), 0, 1, &currentDynamicUniformDataDescriptorSet->Get());
-
-	for (uint64 i = 0; i < numberOfTerrainEntityComponents; ++i, ++terrainRenderComponent)
-	{
-		const VkDeviceSize offset{ 0 };
-
-		const VkDescriptorSet descriptorSet{ static_cast<VkDescriptorSet>(terrainRenderComponent->descriptorSet) };
-
-		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::Terrain)]->GetPipelineLayout(), 1, 1, &descriptorSet);
-		commandBuffer->CommandBindVertexBuffers(1, reinterpret_cast<const VkBuffer *const RESTRICT>(&terrainRenderComponent->vertexAndIndexBuffer), &offset);
-		commandBuffer->CommandBindIndexBuffer(static_cast<const VkBuffer>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
-		commandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
-	}
-
-	//End the command buffer.
-	commandBuffer->End();
-}
-
-/*
-*	Renders all static physical entities.
-*/
-void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
-{
-	//Wait for the update view frustum culling  task to finish.
-	taskSemaphores[INDEX(TaskSemaphore::UpdateViewFrustumCuling)].WaitFor();
-
-
-	//Iterate over all static physical entity components and draw them all.
-	const uint64 numberOfStaticPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
-
-	if (numberOfStaticPhysicalEntityComponents == 0)
-	{
-		return;
-	}
-
-	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
-	const StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents() };
-
-	//Cache the command buffer.
-	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentStaticPhysicalEntitiesCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::StaticPhysical)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::StaticPhysical)]->GetRenderPass().GetFrameBuffers()[0].Get());
-
-	//Begin the pipeline and render pass.
-	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::StaticPhysical)]->Get());
-
-	for (uint64 i = 0; i < numberOfStaticPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
-	{
-		//Don't draw this static physical entity if it isn't in the view frustum.
-		if (!frustumCullingComponent->isInViewFrustum)
-		{
-			continue;
-		}
-
-		StaticArray<VkDescriptorSet, 2> staticPhysicalEntityDescriptorSets
-		{
-			currentDynamicUniformDataDescriptorSet->Get(),
-			static_cast<VkDescriptorSet>(renderComponent->descriptorSet)
-		};
-
-		const VkDeviceSize offset{ 0 };
-
-		commandBuffer->CommandPushConstants(pipelines[INDEX(RenderPassStage::StaticPhysical)]->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
-		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::StaticPhysical)]->GetPipelineLayout(), 0, 2, staticPhysicalEntityDescriptorSets.Data());
-		commandBuffer->CommandBindVertexBuffers(1, reinterpret_cast<const VkBuffer *const RESTRICT>(&renderComponent->buffer), &offset);
-		commandBuffer->CommandBindIndexBuffer(static_cast<const VkBuffer>(renderComponent->buffer), renderComponent->indexOffset);
-		commandBuffer->CommandDrawIndexed(renderComponent->indexCount, 1);
-	}
-
-	//End the command buffer.
-	commandBuffer->End();
 }
 
 /*

@@ -38,28 +38,6 @@ public:
 			directionalShadowCommandPool->AllocatePrimaryCommandBuffer(directionalShadowCommandBuffer);
 		}
 
-		//Create the terrain command pool.
-		terrainCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
-		//Create the terrain command buffers.
-		terrainCommandBuffers.UpsizeFast(frameDataCount);
-
-		for (VulkanCommandBuffer &terrainCommandBuffer : terrainCommandBuffers)
-		{
-			terrainCommandPool->AllocateSecondaryCommandBuffer(terrainCommandBuffer);
-		}
-
-		//Create the static physical entities command pool.
-		staticPhysicalEntitiesCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
-		//Create the static physical entities command buffers.
-		staticPhysicalEntitiesCommandBuffers.UpsizeFast(frameDataCount);
-
-		for (VulkanCommandBuffer &staticPhysicalEntitiesCommandBuffer : staticPhysicalEntitiesCommandBuffers)
-		{
-			staticPhysicalEntitiesCommandPool->AllocateSecondaryCommandBuffer(staticPhysicalEntitiesCommandBuffer);
-		}
-
 		//Create the instanced physical entities command pool.
 		instancedPhysicalEntitiesCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
@@ -221,16 +199,6 @@ public:
 	VulkanCommandBuffer *RESTRICT GetCurrentDirectionalShadowCommandBuffer() NOEXCEPT { return &directionalShadowCommandBuffers[currentFrame]; }
 
 	/*
-	*	Returns the current terrain command buffer.
-	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentTerrainCommandBuffer() NOEXCEPT { return &terrainCommandBuffers[currentFrame]; }
-
-	/*
-	*	Returns the current static physical entities command buffer.
-	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentStaticPhysicalEntitiesCommandBuffer() NOEXCEPT { return &staticPhysicalEntitiesCommandBuffers[currentFrame]; }
-
-	/*
 	*	Returns the current instanced physical entities command buffer.
 	*/
 	VulkanCommandBuffer *RESTRICT GetCurrentInstancedPhysicalEntitiesCommandBuffer() NOEXCEPT { return &instancedPhysicalEntitiesCommandBuffers[currentFrame]; }
@@ -327,18 +295,6 @@ private:
 
 	//The directional shadow command buffers.
 	DynamicArray<VulkanCommandBuffer> directionalShadowCommandBuffers;
-
-	//The terrain command pool.
-	VulkanCommandPool *RESTRICT terrainCommandPool;
-
-	//The terrain command buffers.
-	DynamicArray<VulkanCommandBuffer> terrainCommandBuffers;
-
-	//The static physical entities command pool.
-	VulkanCommandPool *RESTRICT staticPhysicalEntitiesCommandPool;
-
-	//The static physical entitiees command buffers.
-	DynamicArray<VulkanCommandBuffer> staticPhysicalEntitiesCommandBuffers;
 
 	//The instanced physical entities command pool.
 	VulkanCommandPool *RESTRICT instancedPhysicalEntitiesCommandPool;

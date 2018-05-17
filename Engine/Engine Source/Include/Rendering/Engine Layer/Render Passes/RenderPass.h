@@ -21,6 +21,11 @@ public:
 	const void *const RESTRICT GetData() const NOEXCEPT { return data; }
 
 	/*
+	*	Sets the data for this render pass.
+	*/
+	void SetData(const void *const RESTRICT newData) NOEXCEPT { data = newData; }
+
+	/*
 	*	Returns the stage.
 	*/
 	RenderPassStage GetStage() const NOEXCEPT { return stage; }
@@ -64,6 +69,11 @@ public:
 	*	Returns the descriptor set layouts.
 	*/
 	const DynamicArray<DescriptorSetLayout>& GetDescriptorSetLayouts() const NOEXCEPT { return descriptorSetLayouts; }
+
+	/*
+	*	Returns the push constant ranges.
+	*/
+	const DynamicArray<PushConstantRange>& GetPushConstantRanges() const NOEXCEPT { return pushConstantRanges; }
 
 	/*
 	*	Returns the vertex input attribute descriptions.
@@ -130,6 +140,21 @@ public:
 	*/
 	Topology GetTopology() const NOEXCEPT { return topology; }
 
+	/*
+	*	Sets the number of command buffers.
+	*/
+	void SetNumberOfCommandBuffers(const uint64 numberOfCommandBuffers) NOEXCEPT { commandBuffers.Reserve(numberOfCommandBuffers); }
+
+	/*
+	*	Adds a command buffer.
+	*/
+	void AddCommandBuffer(CommandBuffer *const RESTRICT newCommandBuffer) NOEXCEPT { commandBuffers.EmplaceFast(newCommandBuffer); }
+
+	/*
+	*	Returns the current command buffer.
+	*/
+	CommandBuffer *const RESTRICT GetCurrentCommandBuffer() NOEXCEPT;
+
 protected:
 
 	/*
@@ -180,12 +205,22 @@ protected:
 	/*
 	*	Sets the number of descriptor set layouts.
 	*/
-	void SetNumberOfDescriptorSetLayouts(const uint64 numberODescriptorSetLayouts) NOEXCEPT { descriptorSetLayouts.Reserve(numberODescriptorSetLayouts); }
+	void SetNumberOfDescriptorSetLayouts(const uint64 numberOfDescriptorSetLayouts) NOEXCEPT { descriptorSetLayouts.Reserve(numberOfDescriptorSetLayouts); }
 
 	/*
 	*	Adds a descriptor set layout.
 	*/
 	void AddDescriptorSetLayout(const DescriptorSetLayout newDescriptorSetLayout) NOEXCEPT { descriptorSetLayouts.EmplaceFast(newDescriptorSetLayout); }
+
+	/*
+	*	Sets the number of push constant ranges.
+	*/
+	void SetNumberOfPushConstantRanges(const uint64 numberOfPushConstantRanges) NOEXCEPT { pushConstantRanges.Reserve(numberOfPushConstantRanges); }
+
+	/*
+	*	Adds a push constant range.
+	*/
+	void AddPushConstantRange(const PushConstantRange::ShaderStage shaderStage, const uint32 offset, const uint32 size) NOEXCEPT { pushConstantRanges.EmplaceFast(shaderStage, offset, size); }
 
 	/*
 	*	Sets the number of vertex input attribute descriptions.
@@ -267,15 +302,10 @@ protected:
 	*/
 	void FinalizeInitialization() NOEXCEPT;
 
-	/*
-	*	Returns the current command buffer.
-	*/
-	CommandBuffer *const RESTRICT GetCurrentCommandBuffer() NOEXCEPT;
-
 private:
 
 	//The data for this render pass.
-	void *RESTRICT data;
+	const void *RESTRICT data;
 
 	//The stage.
 	RenderPassStage stage;
@@ -303,6 +333,9 @@ private:
 
 	//The descriptor set layouts.
 	DynamicArray<DescriptorSetLayout> descriptorSetLayouts;
+
+	//The push constant ranges.
+	DynamicArray<PushConstantRange> pushConstantRanges;
 
 	//The vertex input attribute descriptions.
 	DynamicArray<VertexInputAttributeDescription> vertexInputAttributeDescriptions;

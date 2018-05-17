@@ -22,8 +22,8 @@ using UniformBufferHandle = void *RESTRICT;
 //Enumeration covering all render passes stages.
 enum class RenderPassStage : uint8
 {
-	DirectionalShadowTerrain,
-	DirectionalShadowInstancedPhysical,
+	DirectionalTerrainShadow,
+	DirectionalInstancedPhysicalShadow,
 	ShadowMapBlur,
 	Terrain,
 	StaticPhysical,
@@ -120,8 +120,8 @@ enum class Shader : uint8
 {
 	CubeMapFragment,
 	CubeMapVertex,
-	DirectionalShadowInstancedPhysicalVertex,
-	DirectionalShadowTerrainTessellationEvaluation,
+	DirectionalInstancedPhysicalShadowVertex,
+	DirectionalTerrainShadowTessellationEvaluation,
 	InstancedPhysicalVertex,
 	LightingFragment,
 	OceanFragment,
@@ -193,6 +193,53 @@ enum class TextureFormat : uint8
 	R8_Byte,
 	R8G8B8A8_Byte,
 	R32G32B32A32_Float
+};
+
+/*
+*	Push constant range.
+*/
+class PushConstantRange final
+{
+
+public:
+
+	//Enumeration covering all shader stages.
+	enum class ShaderStage : uint8
+	{
+		Vertex,
+		TessellationControl,
+		TessellationEvaluation,
+		Geometry,
+		Fragment,
+		Compute
+	};
+
+	//The shader stage.
+	ShaderStage shaderStage;
+
+	//The offset.
+	uint32 offset;
+
+	//The size.
+	uint32 size;
+
+	/*
+	*	Default constructor, prohibited - must be constructed with the proper arguments.
+	*/
+	PushConstantRange() NOEXCEPT = delete;
+
+	/*
+	*	Constructor taking all values as arguments.
+	*/
+	PushConstantRange(const ShaderStage initialShaderStage, const uint32 initialOffset, const uint32 initialSize)
+		:
+		shaderStage(initialShaderStage),
+		offset(initialOffset),
+		size(initialSize)
+	{
+
+	}
+
 };
 
 /*
