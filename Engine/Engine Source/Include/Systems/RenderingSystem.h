@@ -23,6 +23,7 @@ class PhysicalMaterialData;
 class PhysicalModel;
 class PhysicalModelData;
 class RenderPass;
+class Resolution;
 class StaticPhysicalEntity;
 class TerrainEntity;
 class TerrainMaterial;
@@ -60,6 +61,11 @@ public:
 	*	Releases the rendering system.
 	*/
 	void ReleaseSystem() NOEXCEPT;
+
+	/*
+	*	Returns the render resolution.
+	*/
+	Resolution GetRenderResolution() const NOEXCEPT;
 
 	/*
 	*	Returns the current frame index.

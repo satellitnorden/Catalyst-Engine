@@ -22,7 +22,18 @@ using UniformBufferHandle = void *RESTRICT;
 //Enumeration covering all render passes stages.
 enum class RenderPassStage : uint8
 {
+	DirectionalShadowTerrain,
+	DirectionalShadowInstancedPhysical,
+	ShadowMapBlur,
 	Terrain,
+	StaticPhysical,
+	InstancedPhysical,
+	Vegetation,
+	Lighting,
+	CubeMap,
+	Ocean,
+	ParticleSystem,
+	PostProcessing,
 
 	NumberOfRenderPassStages
 };

@@ -3,6 +3,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/PhysicalModel.h>
+#include <Rendering/Engine Layer/Resolution.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
 
 //Singleton definition.
@@ -38,6 +39,15 @@ void RenderingSystem::ReleaseSystem() NOEXCEPT
 {
 	//Release the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->ReleaseSystem();
+}
+
+/*
+*	Returns the render resolution.
+*/
+Resolution RenderingSystem::GetRenderResolution() const NOEXCEPT
+{
+	//Return the render resolution via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->GetRenderResolution();
 }
 
 /*

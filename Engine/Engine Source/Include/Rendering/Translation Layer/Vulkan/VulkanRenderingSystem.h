@@ -38,6 +38,7 @@ class PhysicalMaterialData;
 class PhysicalModel;
 class PhysicalModelData;
 class RenderPass;
+class Resolution;
 class StaticPhysicalEntity;
 class TerrainEntity;
 class TerrainMaterial;
@@ -75,6 +76,11 @@ public:
 	*	Releases the Vulkan rendering system.
 	*/
 	void ReleaseSystem() NOEXCEPT;
+
+	/*
+	*	Returns the render resolution.
+	*/
+	Resolution GetRenderResolution() const NOEXCEPT;
 
 	/*
 	*	Returns the current frame index.
@@ -208,24 +214,6 @@ private:
 		NumberOfDescriptorSets
 	};
 
-	//Enumeration covering all pipelines.
-	enum class Pipeline : uint8
-	{
-		DirectionalShadowTerrain,
-		DirectionalShadowInstancedPhysical,
-		ShadowMapBlur,
-		Terrain,
-		StaticPhysical,
-		InstancedPhysical,
-		Vegetation,
-		Lighting,
-		CubeMap,
-		Ocean,
-		ParticleSystem,
-		PostProcessing,
-		NumberOfPipelines
-	};
-
 	//Enumeration covering all semaphores.
 	enum class GraphicsSemaphore : uint8
 	{
@@ -294,9 +282,6 @@ private:
 	StaticArray<VulkanRenderTarget *RESTRICT, INDEX(RenderTarget::NumberOfRenderTargets)> renderTargets;
 
 	//Container for all temporary pipelines.
-	StaticArray<VulkanPipeline *RESTRICT, INDEX(Pipeline::NumberOfPipelines)> tempPipelines;
-
-	//Container for all pipelines.
 	StaticArray<VulkanPipeline *RESTRICT, INDEX(RenderPassStage::NumberOfRenderPassStages)> pipelines;
 
 	//Container for all semaphores.

@@ -57,6 +57,9 @@ void TerrainRenderPass::Initialize() NOEXCEPT
 	SetNumberOfVertexInputBindingDescriptions(1);
 	AddVertexInputBindingDescription(0, sizeof(float) * 5, VertexInputBindingDescription::InputRate::Vertex);
 
+	//Set the render resolution.
+	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());
+
 	//Set the properties of the render pass.
 	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Clear);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);

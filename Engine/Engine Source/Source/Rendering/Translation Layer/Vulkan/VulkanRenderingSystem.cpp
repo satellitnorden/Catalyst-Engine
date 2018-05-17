@@ -166,6 +166,17 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
+*	Returns the render resolution.
+*/
+Resolution VulkanRenderingSystem::GetRenderResolution() const NOEXCEPT
+{
+	//Return the render resolution.
+	VkExtent2D swapExtent{ VulkanInterface::Instance->GetSwapchain().GetSwapExtent() };
+
+	return Resolution(swapExtent.width, swapExtent.height);
+}
+
+/*
 *	Returns the current frame index.
 */
 uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
@@ -676,10 +687,10 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 
 	parameters.vertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
 	parameters.vertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
+	parameters.viewportExtent = VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height };
 
-	/*
-	directionalShadowTerrainPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
-	*/
+	//Create the pipeline!
+	pipelines[INDEX(renderPass->GetStage())] = VulkanInterface::Instance->CreatePipeline(parameters);
 }
 
 /*
@@ -1088,7 +1099,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		directionalShadowTerrainPipelineCreationParameters.vertexInputBindingDescriptions = &terrainShadowVertexInputBindingDescription;
 		directionalShadowTerrainPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
 
-		tempPipelines[INDEX(Pipeline::DirectionalShadowTerrain)] = VulkanInterface::Instance->CreatePipeline(directionalShadowTerrainPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::DirectionalShadowTerrain)] = VulkanInterface::Instance->CreatePipeline(directionalShadowTerrainPipelineCreationParameters);
 	}
 
 	{
@@ -1134,7 +1145,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		directionalShadowInstancedPhysicalPipelineCreationParameters.vertexInputBindingDescriptions = directionalShadowInstancedPhysicalVertexInputBindingDescriptions.Data();
 		directionalShadowInstancedPhysicalPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
 
-		tempPipelines[INDEX(Pipeline::DirectionalShadowInstancedPhysical)] = VulkanInterface::Instance->CreatePipeline(directionalShadowInstancedPhysicalPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::DirectionalShadowInstancedPhysical)] = VulkanInterface::Instance->CreatePipeline(directionalShadowInstancedPhysicalPipelineCreationParameters);
 	}
 
 	{
@@ -1174,7 +1185,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		shadowMapBlurPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		shadowMapBlurPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
 
-		tempPipelines[INDEX(Pipeline::ShadowMapBlur)] = VulkanInterface::Instance->CreatePipeline(shadowMapBlurPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::ShadowMapBlur)] = VulkanInterface::Instance->CreatePipeline(shadowMapBlurPipelineCreationParameters);
 	}
 
 	{
@@ -1224,7 +1235,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		terrainPipelineCreationParameters.vertexInputBindingDescriptions = &terrainVertexInputBindingDescription;
 		terrainPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-		tempPipelines[INDEX(Pipeline::Terrain)] = VulkanInterface::Instance->CreatePipeline(terrainPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::Terrain)] = VulkanInterface::Instance->CreatePipeline(terrainPipelineCreationParameters);
 	}
 
 	{
@@ -1273,7 +1284,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		staticPhysicalPipelineCreationParameters.vertexInputBindingDescriptions = &staticPhysicalVertexInputBindingDescription;
 		staticPhysicalPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-		tempPipelines[INDEX(Pipeline::StaticPhysical)] = VulkanInterface::Instance->CreatePipeline(staticPhysicalPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::StaticPhysical)] = VulkanInterface::Instance->CreatePipeline(staticPhysicalPipelineCreationParameters);
 	}
 
 	{
@@ -1321,7 +1332,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		instancedPhysicalPipelineCreationParameters.vertexInputBindingDescriptions = instancedPhysicalVertexInputBindingDescriptions.Data();
 		instancedPhysicalPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-		tempPipelines[INDEX(Pipeline::InstancedPhysical)] = VulkanInterface::Instance->CreatePipeline(instancedPhysicalPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::InstancedPhysical)] = VulkanInterface::Instance->CreatePipeline(instancedPhysicalPipelineCreationParameters);
 	}
 
 	{
@@ -1370,7 +1381,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		vegetationPipelineCreationParameters.vertexInputBindingDescriptions = &vegetationVertexInputBindingDescription;
 		vegetationPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-		tempPipelines[INDEX(Pipeline::Vegetation)] = VulkanInterface::Instance->CreatePipeline(vegetationPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::Vegetation)] = VulkanInterface::Instance->CreatePipeline(vegetationPipelineCreationParameters);
 	}
 
 	{
@@ -1413,7 +1424,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		lightingPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		lightingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-		tempPipelines[INDEX(Pipeline::Lighting)] = VulkanInterface::Instance->CreatePipeline(lightingPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::Lighting)] = VulkanInterface::Instance->CreatePipeline(lightingPipelineCreationParameters);
 	}
 
 	{
@@ -1456,7 +1467,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		cubeMapPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		cubeMapPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-		tempPipelines[INDEX(Pipeline::CubeMap)] = VulkanInterface::Instance->CreatePipeline(cubeMapPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::CubeMap)] = VulkanInterface::Instance->CreatePipeline(cubeMapPipelineCreationParameters);
 	}
 
 	{
@@ -1499,7 +1510,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		oceanPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		oceanPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-		tempPipelines[INDEX(Pipeline::Ocean)] = VulkanInterface::Instance->CreatePipeline(oceanPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::Ocean)] = VulkanInterface::Instance->CreatePipeline(oceanPipelineCreationParameters);
 	}
 
 	{
@@ -1544,7 +1555,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		particleSystemPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		particleSystemPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-		tempPipelines[INDEX(Pipeline::ParticleSystem)] = VulkanInterface::Instance->CreatePipeline(particleSystemPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::ParticleSystem)] = VulkanInterface::Instance->CreatePipeline(particleSystemPipelineCreationParameters);
 	}
 
 	{
@@ -1594,7 +1605,7 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 		postProcessingPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
 		postProcessingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-		tempPipelines[INDEX(Pipeline::PostProcessing)] = VulkanInterface::Instance->CreatePipeline(postProcessingPipelineCreationParameters);
+		pipelines[INDEX(RenderPassStage::PostProcessing)] = VulkanInterface::Instance->CreatePipeline(postProcessingPipelineCreationParameters);
 	}
 }
 
@@ -1779,7 +1790,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	currentCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	//Begin the terrain render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<4>(tempPipelines[INDEX(Pipeline::Terrain)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<4>(pipelines[INDEX(RenderPassStage::Terrain)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Wait for the render terrain task to finish.
 	taskSemaphores[INDEX(TaskSemaphore::RenderTerrain)].WaitFor();
@@ -1793,7 +1804,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	if (ComponentManager::GetNumberOfStaticPhysicalComponents() > 0)
 	{
 		//Begin the static physical entities render pass.
-		currentCommandBuffer->CommandBeginRenderPass(tempPipelines[INDEX(Pipeline::StaticPhysical)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::StaticPhysical)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 		//Wait for the render static physical entities task to finish.
 		taskSemaphores[INDEX(TaskSemaphore::RenderStaticPhysicalEntities)].WaitFor();
@@ -1808,7 +1819,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	if (ComponentManager::GetNumberOfInstancedPhysicalComponents() > 0)
 	{
 		//Begin the instanced physical entities render pass.
-		currentCommandBuffer->CommandBeginRenderPass(tempPipelines[INDEX(Pipeline::InstancedPhysical)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::InstancedPhysical)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 	
 		//Wait for the render instanced physical entities task to finish.
 		taskSemaphores[INDEX(TaskSemaphore::RenderInstancedPhysicalEntities)].WaitFor();
@@ -1823,7 +1834,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	if (ComponentManager::GetNumberOfVegetationComponents() > 0)
 	{
 		//Begin the vegetation entities render pass.
-		currentCommandBuffer->CommandBeginRenderPass(tempPipelines[INDEX(Pipeline::Vegetation)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::Vegetation)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 		//Wait for the render vegetation entities task to finish.
 		taskSemaphores[INDEX(TaskSemaphore::RenderVegetationEntities)].WaitFor();
@@ -1836,7 +1847,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	}
 
 	//Begin the lighting render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(tempPipelines[INDEX(Pipeline::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Wait for the render lighting task to finish.
 	taskSemaphores[INDEX(TaskSemaphore::RenderLighting)].WaitFor();
@@ -1851,7 +1862,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	currentCommandBuffer->CommandResetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
 	//Begin the skybox render pass.
-	currentCommandBuffer->CommandBeginRenderPass(tempPipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::CubeMap)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Wait for the render skybox task to finish.
 	taskSemaphores[INDEX(TaskSemaphore::RenderSkybox)].WaitFor();
@@ -1865,7 +1876,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	if (ComponentManager::GetNumberOfParticleSystemComponents() > 0)
 	{
 		//Begin the particle system entities render pass.
-		currentCommandBuffer->CommandBeginRenderPass(tempPipelines[INDEX(Pipeline::ParticleSystem)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 		//Wait for the render particle system entities task to finish.
 		taskSemaphores[INDEX(TaskSemaphore::RenderParticleSystemEntities)].WaitFor();
@@ -1878,7 +1889,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	}
 
 	//Bind the ocean render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(tempPipelines[INDEX(Pipeline::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Wait for the render ocean task to finish.
 	taskSemaphores[INDEX(TaskSemaphore::RenderOcean)].WaitFor();
@@ -1890,7 +1901,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	currentCommandBuffer->CommandEndRenderPass();
 
 	//Bind the post processing render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(tempPipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Wait for the render post processing task to finish.
 	taskSemaphores[INDEX(TaskSemaphore::RenderPostProcessing)].WaitFor();
@@ -2035,7 +2046,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 	//Render terrain shadows.
 	{
 		//Cache the pipeline.
-		VulkanPipeline &directionalShadowTerrainPipeline{ *tempPipelines[INDEX(Pipeline::DirectionalShadowTerrain)] };
+		VulkanPipeline &directionalShadowTerrainPipeline{ *pipelines[INDEX(RenderPassStage::DirectionalShadowTerrain)] };
 
 		//Begin the pipeline and render pass.
 		commandBuffer->CommandBindPipeline(directionalShadowTerrainPipeline.Get());
@@ -2074,7 +2085,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 		if (numberOfInstancedPhysicalComponents > 0)
 		{
 			//Cache the pipeline.
-			VulkanPipeline &directionalShadowInstancedPhysicalPipeline{ *tempPipelines[INDEX(Pipeline::DirectionalShadowInstancedPhysical)] };
+			VulkanPipeline &directionalShadowInstancedPhysicalPipeline{ *pipelines[INDEX(RenderPassStage::DirectionalShadowInstancedPhysical)] };
 
 			const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
 
@@ -2116,10 +2127,10 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 	//Blur the directional shadow map.
 	{
 		//Bind the shadow map blur pipeline.
-		commandBuffer->CommandBindPipeline(tempPipelines[INDEX(Pipeline::ShadowMapBlur)]->Get());
+		commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::ShadowMapBlur)]->Get());
 
 		//Bind the shadow map blur render pass.
-		commandBuffer->CommandBeginRenderPassAndClear<1>(tempPipelines[INDEX(Pipeline::ShadowMapBlur)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_INLINE);
+		commandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::ShadowMapBlur)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_INLINE);
 
 		//Bind the shadow map blur descriptor set.
 		StaticArray<VkDescriptorSet, 2> shadowMapBlurDescriptorSets
@@ -2128,7 +2139,7 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 			descriptorSets[INDEX(DescriptorSet::ShadowMapBlur)].Get()
 		};
 
-		commandBuffer->CommandBindDescriptorSets(tempPipelines[INDEX(Pipeline::ShadowMapBlur)]->GetPipelineLayout(), 0, static_cast<uint32>(shadowMapBlurDescriptorSets.Size()), shadowMapBlurDescriptorSets.Data());
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::ShadowMapBlur)]->GetPipelineLayout(), 0, static_cast<uint32>(shadowMapBlurDescriptorSets.Size()), shadowMapBlurDescriptorSets.Data());
 
 		//Draw the viewport!
 		commandBuffer->CommandDraw(4, 1);
@@ -2156,16 +2167,16 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentTerrainCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, tempPipelines[INDEX(Pipeline::Terrain)]->GetRenderPass().Get(), tempPipelines[INDEX(Pipeline::Terrain)]->GetRenderPass().GetFrameBuffers()[0].Get());
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::Terrain)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::Terrain)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(tempPipelines[INDEX(Pipeline::Terrain)]->Get());
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::Terrain)]->Get());
 
 	//Iterate over all terrain entity components and draw them all.
 	const uint64 numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };
 	const TerrainRenderComponent *RESTRICT terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents() };
 
-	commandBuffer->CommandBindDescriptorSets(tempPipelines[INDEX(Pipeline::Terrain)]->GetPipelineLayout(), 0, 1, &currentDynamicUniformDataDescriptorSet->Get());
+	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::Terrain)]->GetPipelineLayout(), 0, 1, &currentDynamicUniformDataDescriptorSet->Get());
 
 	for (uint64 i = 0; i < numberOfTerrainEntityComponents; ++i, ++terrainRenderComponent)
 	{
@@ -2173,7 +2184,7 @@ void VulkanRenderingSystem::RenderTerrain() NOEXCEPT
 
 		const VkDescriptorSet descriptorSet{ static_cast<VkDescriptorSet>(terrainRenderComponent->descriptorSet) };
 
-		commandBuffer->CommandBindDescriptorSets(tempPipelines[INDEX(Pipeline::Terrain)]->GetPipelineLayout(), 1, 1, &descriptorSet);
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::Terrain)]->GetPipelineLayout(), 1, 1, &descriptorSet);
 		commandBuffer->CommandBindVertexBuffers(1, reinterpret_cast<const VkBuffer *const RESTRICT>(&terrainRenderComponent->vertexAndIndexBuffer), &offset);
 		commandBuffer->CommandBindIndexBuffer(static_cast<const VkBuffer>(terrainRenderComponent->vertexAndIndexBuffer), terrainRenderComponent->indexBufferOffset);
 		commandBuffer->CommandDrawIndexed(terrainRenderComponent->indexCount, 1);
@@ -2207,10 +2218,10 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentStaticPhysicalEntitiesCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, tempPipelines[INDEX(Pipeline::StaticPhysical)]->GetRenderPass().Get(), tempPipelines[INDEX(Pipeline::StaticPhysical)]->GetRenderPass().GetFrameBuffers()[0].Get());
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::StaticPhysical)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::StaticPhysical)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Begin the pipeline and render pass.
-	commandBuffer->CommandBindPipeline(tempPipelines[INDEX(Pipeline::StaticPhysical)]->Get());
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::StaticPhysical)]->Get());
 
 	for (uint64 i = 0; i < numberOfStaticPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{
@@ -2228,8 +2239,8 @@ void VulkanRenderingSystem::RenderStaticPhysicalEntities() NOEXCEPT
 
 		const VkDeviceSize offset{ 0 };
 
-		commandBuffer->CommandPushConstants(tempPipelines[INDEX(Pipeline::StaticPhysical)]->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
-		commandBuffer->CommandBindDescriptorSets(tempPipelines[INDEX(Pipeline::StaticPhysical)]->GetPipelineLayout(), 0, 2, staticPhysicalEntityDescriptorSets.Data());
+		commandBuffer->CommandPushConstants(pipelines[INDEX(RenderPassStage::StaticPhysical)]->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::StaticPhysical)]->GetPipelineLayout(), 0, 2, staticPhysicalEntityDescriptorSets.Data());
 		commandBuffer->CommandBindVertexBuffers(1, reinterpret_cast<const VkBuffer *const RESTRICT>(&renderComponent->buffer), &offset);
 		commandBuffer->CommandBindIndexBuffer(static_cast<const VkBuffer>(renderComponent->buffer), renderComponent->indexOffset);
 		commandBuffer->CommandDrawIndexed(renderComponent->indexCount, 1);
@@ -2259,10 +2270,10 @@ void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
 	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentInstancedPhysicalEntitiesCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, tempPipelines[INDEX(Pipeline::InstancedPhysical)]->GetRenderPass().Get(), tempPipelines[INDEX(Pipeline::InstancedPhysical)]->GetRenderPass().GetFrameBuffers()[0].Get());
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::InstancedPhysical)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::InstancedPhysical)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline
-	commandBuffer->CommandBindPipeline(tempPipelines[INDEX(Pipeline::InstancedPhysical)]->Get());
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::InstancedPhysical)]->Get());
 	
 	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
 	{
@@ -2284,7 +2295,7 @@ void VulkanRenderingSystem::RenderInstancedPhysicalEntities() NOEXCEPT
 			static_cast<VkDeviceSize>(0)
 		};
 
-		commandBuffer->CommandBindDescriptorSets(tempPipelines[INDEX(Pipeline::InstancedPhysical)]->GetPipelineLayout(), 0, 2, instancedPhysicalDescriptorSets.Data());
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::InstancedPhysical)]->GetPipelineLayout(), 0, 2, instancedPhysicalDescriptorSets.Data());
 		commandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
 		commandBuffer->CommandBindIndexBuffer(static_cast<const VkBuffer>(renderComponent->modelBuffer), renderComponent->indexOffset);
 		commandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
@@ -2314,10 +2325,10 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentVegetationEntitiesCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, tempPipelines[INDEX(Pipeline::Vegetation)]->GetRenderPass().Get(), tempPipelines[INDEX(Pipeline::Vegetation)]->GetRenderPass().GetFrameBuffers()[0].Get());
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::Vegetation)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::Vegetation)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline
-	commandBuffer->CommandBindPipeline(tempPipelines[INDEX(Pipeline::Vegetation)]->Get());
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::Vegetation)]->Get());
 
 	//Wait for the vegetation culling task to finish.
 	taskSemaphores[INDEX(TaskSemaphore::UpdateVegetationCulling)].WaitFor();
@@ -2330,7 +2341,7 @@ void VulkanRenderingSystem::RenderVegetationEntities() NOEXCEPT
 			static_cast<VkDescriptorSet>(component->descriptorSet)
 		};
 
-		commandBuffer->CommandBindDescriptorSets(tempPipelines[INDEX(Pipeline::Vegetation)]->GetPipelineLayout(), 0, static_cast<uint32>(vegetationDescriptorSets.Size()), vegetationDescriptorSets.Data());
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::Vegetation)]->GetPipelineLayout(), 0, static_cast<uint32>(vegetationDescriptorSets.Size()), vegetationDescriptorSets.Data());
 
 		for (uint64 j = 0, size = component->shouldDrawGridCell.Size(); j < size; ++j)
 		{
@@ -2355,10 +2366,10 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentLightingCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, tempPipelines[INDEX(Pipeline::Lighting)]->GetRenderPass().Get(), tempPipelines[INDEX(Pipeline::Lighting)]->GetRenderPass().GetFrameBuffers()[0].Get());
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::Lighting)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::Lighting)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(tempPipelines[INDEX(Pipeline::Lighting)]->Get());
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::Lighting)]->Get());
 
 	//Bind the descriptor sets.
 	StaticArray<VkDescriptorSet, 3> lightingDescriptorSets
@@ -2368,7 +2379,7 @@ void VulkanRenderingSystem::RenderLighting() NOEXCEPT
 		descriptorSets[INDEX(DescriptorSet::Lighting)].Get()
 	};
 
-	commandBuffer->CommandBindDescriptorSets(tempPipelines[INDEX(Pipeline::Lighting)]->GetPipelineLayout(), 0, static_cast<uint32>(lightingDescriptorSets.Size()), lightingDescriptorSets.Data());
+	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::Lighting)]->GetPipelineLayout(), 0, static_cast<uint32>(lightingDescriptorSets.Size()), lightingDescriptorSets.Data());
 
 	//Wait for the directional shadows to finish.
 	commandBuffer->CommandWaitEvents(1, &frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
@@ -2389,10 +2400,10 @@ void VulkanRenderingSystem::RenderSkybox() NOEXCEPT
 	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentSkyboxCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, tempPipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass().Get(), tempPipelines[INDEX(Pipeline::CubeMap)]->GetRenderPass().GetFrameBuffers()[0].Get());
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::CubeMap)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::CubeMap)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(tempPipelines[INDEX(Pipeline::CubeMap)]->Get());
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::CubeMap)]->Get());
 
 	//Bind the skybox descriptor set.
 	StaticArray<VkDescriptorSet, 2> skyboxDescriptorSets
@@ -2401,7 +2412,7 @@ void VulkanRenderingSystem::RenderSkybox() NOEXCEPT
 		currentEnvironmentDataDescriptorSet->Get()
 	};
 
-	commandBuffer->CommandBindDescriptorSets(tempPipelines[INDEX(Pipeline::CubeMap)]->GetPipelineLayout(), 0, static_cast<uint32>(skyboxDescriptorSets.Size()), skyboxDescriptorSets.Data());
+	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::CubeMap)]->GetPipelineLayout(), 0, static_cast<uint32>(skyboxDescriptorSets.Size()), skyboxDescriptorSets.Data());
 
 	//Draw the skybox!
 	commandBuffer->CommandDraw(36, 1);
@@ -2434,10 +2445,10 @@ void VulkanRenderingSystem::RenderParticleSystemEntities() NOEXCEPT
 	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentParticleSystemEntitiesCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, tempPipelines[INDEX(Pipeline::ParticleSystem)]->GetRenderPass().Get(), tempPipelines[INDEX(Pipeline::ParticleSystem)]->GetRenderPass().GetFrameBuffers()[0].Get());
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(tempPipelines[INDEX(Pipeline::ParticleSystem)]->Get());
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::ParticleSystem)]->Get());
 
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
@@ -2448,8 +2459,8 @@ void VulkanRenderingSystem::RenderParticleSystemEntities() NOEXCEPT
 		};
 
 		const float randomSeed{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
-		commandBuffer->CommandPushConstants(tempPipelines[INDEX(Pipeline::ParticleSystem)]->GetPipelineLayout(), VK_SHADER_STAGE_GEOMETRY_BIT, 0, sizeof(float), &randomSeed);
-		commandBuffer->CommandBindDescriptorSets(tempPipelines[INDEX(Pipeline::ParticleSystem)]->GetPipelineLayout(), 0, static_cast<uint32>(particleSystemDescriptorSets.Size()), particleSystemDescriptorSets.Data());
+		commandBuffer->CommandPushConstants(pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetPipelineLayout(), VK_SHADER_STAGE_GEOMETRY_BIT, 0, sizeof(float), &randomSeed);
+		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetPipelineLayout(), 0, static_cast<uint32>(particleSystemDescriptorSets.Size()), particleSystemDescriptorSets.Data());
 		commandBuffer->CommandDraw(VulkanRenderingSystemConstants::MAXIMUM_NUMBER_OF_PARTICLES, 1);
 	}
 
@@ -2466,10 +2477,10 @@ void VulkanRenderingSystem::RenderOcean() NOEXCEPT
 	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentOceanCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, tempPipelines[INDEX(Pipeline::Ocean)]->GetRenderPass().Get(), tempPipelines[INDEX(Pipeline::Ocean)]->GetRenderPass().GetFrameBuffers()[0].Get());
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::Ocean)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::Ocean)]->GetRenderPass().GetFrameBuffers()[0].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(tempPipelines[INDEX(Pipeline::Ocean)]->Get());
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::Ocean)]->Get());
 
 	//Bind the ocean descriptor sets.
 	StaticArray<VkDescriptorSet, 3> oceanDescriptorSets
@@ -2479,7 +2490,7 @@ void VulkanRenderingSystem::RenderOcean() NOEXCEPT
 		frameData.GetCurrentOceanDescriptorSet()->Get()
 	};
 
-	commandBuffer->CommandBindDescriptorSets(tempPipelines[INDEX(Pipeline::Ocean)]->GetPipelineLayout(), 0, static_cast<uint32>(oceanDescriptorSets.Size()), oceanDescriptorSets.Data());
+	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::Ocean)]->GetPipelineLayout(), 0, static_cast<uint32>(oceanDescriptorSets.Size()), oceanDescriptorSets.Data());
 
 	//Draw the viewport!
 	commandBuffer->CommandDraw(4, 1);
@@ -2497,10 +2508,10 @@ void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentPostProcessingCommandBuffer() };
 
 	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, tempPipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass().Get(), tempPipelines[INDEX(Pipeline::PostProcessing)]->GetRenderPass().GetFrameBuffers()[frameData.GetCurrentFrame()].Get());
+	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::PostProcessing)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::PostProcessing)]->GetRenderPass().GetFrameBuffers()[frameData.GetCurrentFrame()].Get());
 
 	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(tempPipelines[INDEX(Pipeline::PostProcessing)]->Get());
+	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::PostProcessing)]->Get());
 
 	//Bind the post processing descriptor sets.
 	StaticArray<VkDescriptorSet, 2> postProcessingDescriptorSets
@@ -2509,7 +2520,7 @@ void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
 		descriptorSets[INDEX(DescriptorSet::PostProcessing)].Get()
 	};
 
-	commandBuffer->CommandBindDescriptorSets(tempPipelines[INDEX(Pipeline::PostProcessing)]->GetPipelineLayout(), 0, 2, postProcessingDescriptorSets.Data());
+	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::PostProcessing)]->GetPipelineLayout(), 0, 2, postProcessingDescriptorSets.Data());
 
 	//Draw the viewport!
 	commandBuffer->CommandDraw(4, 1);

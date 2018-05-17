@@ -5,6 +5,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/RenderingCore.h>
+#include <Rendering/Engine Layer/Resolution.h>
 
 //Forward declarations.
 class CommandBuffer;
@@ -73,6 +74,11 @@ public:
 	*	Returns the vertex input binding descriptions.
 	*/
 	const DynamicArray<VertexInputBindingDescription>& GetVertexInputBindingDescriptions() const NOEXCEPT { return vertexInputBindingDescriptions; }
+
+	/*
+	*	Returns the render resolution.
+	*/
+	Resolution GetRenderResolution() const NOEXCEPT { return renderResolution; }
 
 	/*
 	*	Returns whether or not blend is enabled.
@@ -202,6 +208,11 @@ protected:
 	void AddVertexInputBindingDescription(const uint32 binding, const uint32 stride, const VertexInputBindingDescription::InputRate inputRate) NOEXCEPT { vertexInputBindingDescriptions.EmplaceFast(binding, stride, inputRate); }
 
 	/*
+	*	Sets the render resolution.
+	*/
+	void SetRenderResolution(const Resolution &newRenderResolution) NOEXCEPT { renderResolution = newRenderResolution; }
+
+	/*
 	*	Sets whether or not blend is enabled.
 	*/
 	void SetBlendEnabled(const bool newBlendEnabled) NOEXCEPT { blendEnabled = newBlendEnabled; }
@@ -298,6 +309,9 @@ private:
 
 	//The vertex input binding descriptions.
 	DynamicArray<VertexInputBindingDescription> vertexInputBindingDescriptions;
+
+	//The render resolution.
+	Resolution renderResolution;
 
 	//Denotes whether or not blend is enabled.
 	bool blendEnabled;
