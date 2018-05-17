@@ -749,6 +749,22 @@ DescriptorSetHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataDescripto
 }
 
 /*
+*	Returns the current environment data descriptor set.
+*/
+DescriptorSetHandle VulkanRenderingSystem::GetCurrentEnvironmentDataDescriptorSet() NOEXCEPT
+{
+	return frameData.GetCurrentEnvironmentDescriptorSet()->Get();
+}
+
+/*
+*	Returns the lighting descriptor set.
+*/
+DescriptorSetHandle VulkanRenderingSystem::GetLightingDescriptorSet() NOEXCEPT
+{
+	return descriptorSets[INDEX(DescriptorSet::Lighting)].Get();
+}
+
+/*
 *	Initializes all render targets.
 */
 void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT

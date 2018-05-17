@@ -83,6 +83,16 @@ public:
 	DescriptorSetHandle GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT;
 
 	/*
+	*	Returns the current environment data descriptor set.
+	*/
+	DescriptorSetHandle GetCurrentEnvironmentDataDescriptorSet() const NOEXCEPT;
+
+	/*
+	*	Returns the lighting descriptor set.
+	*/
+	DescriptorSetHandle GetLightingDescriptorSet() const NOEXCEPT;
+
+	/*
 	*	Creates an environment material.
 	*/
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;

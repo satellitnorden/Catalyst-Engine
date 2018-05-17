@@ -94,6 +94,24 @@ DescriptorSetHandle RenderingSystem::GetCurrentDynamicUniformDataDescriptorSet()
 }
 
 /*
+*	Returns the current environment data descriptor set.
+*/
+DescriptorSetHandle RenderingSystem::GetCurrentEnvironmentDataDescriptorSet() const NOEXCEPT
+{
+	//Return the current environment data descriptor set via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentEnvironmentDataDescriptorSet();
+}
+
+/*
+*	Returns the lighting descriptor set.
+*/
+DescriptorSetHandle RenderingSystem::GetLightingDescriptorSet() const NOEXCEPT
+{
+	//Return the lighting descriptor set via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetLightingDescriptorSet();
+}
+
+/*
 *	Creates an environment material.
 */
 void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT

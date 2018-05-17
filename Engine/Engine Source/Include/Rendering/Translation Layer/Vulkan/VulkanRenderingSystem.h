@@ -202,6 +202,16 @@ private:
 	*/
 	DescriptorSetHandle GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT;
 
+	/*
+	*	Returns the current environment data descriptor set.
+	*/
+	DescriptorSetHandle GetCurrentEnvironmentDataDescriptorSet() NOEXCEPT;
+
+	/*
+	*	Returns the lighting descriptor set.
+	*/
+	DescriptorSetHandle GetLightingDescriptorSet() NOEXCEPT;
+
 	//Enumeration covering all default textures.
 	enum DefaultTexture : uint8
 	{
