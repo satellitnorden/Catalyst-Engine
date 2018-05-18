@@ -30,6 +30,7 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	VegetationRenderPass::Instance->Initialize();
 	LightingRenderPass::Instance->Initialize();
 	SkyRenderPass::Instance->Initialize();
+	OceanRenderPass::Instance->Initialize();
 }
 
 /*
@@ -47,6 +48,7 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	VegetationRenderPass::Instance->Render();
 	LightingRenderPass::Instance->Render();
 	SkyRenderPass::Instance->Render();
+	OceanRenderPass::Instance->Render();
 
 	//Post-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();
@@ -104,6 +106,15 @@ DescriptorSetHandle RenderingSystem::GetCurrentEnvironmentDataDescriptorSet() co
 {
 	//Return the current environment data descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentEnvironmentDataDescriptorSet();
+}
+
+/*
+*	Returns the current ocean descriptor set.
+*/
+DescriptorSetHandle RenderingSystem::GetCurrentOceanDescriptorSet() const NOEXCEPT
+{
+	//Return the current ocean descriptor set via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentOceanDescriptorSet();
 }
 
 /*

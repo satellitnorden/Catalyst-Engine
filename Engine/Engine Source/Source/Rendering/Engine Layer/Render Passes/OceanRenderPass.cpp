@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/LightingRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/OceanRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
@@ -8,42 +8,41 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(LightingRenderPass);
+DEFINE_SINGLETON(OceanRenderPass);
 
 /*
-*	Initializes the lighting render pass.
+*	Initializes the ocean render pass.
 */
-void LightingRenderPass::Initialize() NOEXCEPT
+void OceanRenderPass::Initialize() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::Lighting);
+	SetStage(RenderPassStage::Ocean);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::LightingFragment);
+	SetFragmentShader(Shader::OceanFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(2);
+	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::Scene);
-	AddRenderTarget(RenderTarget::WaterScene);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(3);
 	AddDescriptorSetLayout(DescriptorSetLayout::DynamicUniformData);
 	AddDescriptorSetLayout(DescriptorSetLayout::Environment);
-	AddDescriptorSetLayout(DescriptorSetLayout::Lighting);
+	AddDescriptorSetLayout(DescriptorSetLayout::Ocean);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());
 
 	//Set the properties of the render pass.
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Clear);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Load);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);
 	SetCullMode(CullMode::Back);
 	SetDepthAttachmentLoadOperator(AttachmentLoadOperator::DontCare);
@@ -58,13 +57,12 @@ void LightingRenderPass::Initialize() NOEXCEPT
 }
 
 /*
-*	Renders the lighting.
+*	Renders the ocean.
 */
-void LightingRenderPass::Render() NOEXCEPT
+void OceanRenderPass::Render() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const EventHandle currentDirectionalShadowEvent{ RenderingSystem::Instance->GetCurrentDirectionalShadowEvent() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
@@ -74,13 +72,10 @@ void LightingRenderPass::Render() NOEXCEPT
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
 		RenderingSystem::Instance->GetCurrentEnvironmentDataDescriptorSet(),
-		RenderingSystem::Instance->GetLightingDescriptorSet()
+		RenderingSystem::Instance->GetCurrentOceanDescriptorSet()
 	};
 
-	commandBuffer->BindDescriptorSets(this, 0, 3, descriptorSets.Data());
-
-	//Wait for the directional shadows to finish.
-	commandBuffer->WaitForEvents(this, 1, &currentDirectionalShadowEvent);
+	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

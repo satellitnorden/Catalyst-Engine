@@ -49,17 +49,6 @@ public:
 			particleSystemEntitiesCommandPool->AllocateSecondaryCommandBuffer(particleSystemEntitiesCommandBuffer);
 		}
 
-		//Create the ocean command pool.
-		oceanCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
-		//Create the ocean command buffers.
-		oceanCommandBuffers.UpsizeFast(frameDataCount);
-
-		for (VulkanCommandBuffer &oceanCommandBuffer : oceanCommandBuffers)
-		{
-			oceanCommandPool->AllocateSecondaryCommandBuffer(oceanCommandBuffer);
-		}
-
 		//Create the post processing command pool.
 		postProcessingCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
@@ -160,11 +149,6 @@ public:
 	VulkanCommandBuffer *RESTRICT GetCurrentParticleSystemEntitiesCommandBuffer() NOEXCEPT { return &particleSystemEntitiesCommandBuffers[currentFrame]; }
 
 	/*
-	*	Returns the current ocean command buffer.
-	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentOceanCommandBuffer() NOEXCEPT { return &oceanCommandBuffers[currentFrame]; }
-
-	/*
 	*	Returns the current post processing command buffer.
 	*/
 	VulkanCommandBuffer *RESTRICT GetCurrentPostProcessingCommandBuffer() NOEXCEPT { return &postProcessingCommandBuffers[currentFrame]; }
@@ -237,12 +221,6 @@ private:
 
 	//The particle system entities command buffers.
 	DynamicArray<VulkanCommandBuffer> particleSystemEntitiesCommandBuffers;
-
-	//The ocean command pool.
-	VulkanCommandPool *RESTRICT oceanCommandPool;
-
-	//The ocean command buffers.
-	DynamicArray<VulkanCommandBuffer> oceanCommandBuffers;
 
 	//The post processing command pool.
 	VulkanCommandPool *RESTRICT postProcessingCommandPool;

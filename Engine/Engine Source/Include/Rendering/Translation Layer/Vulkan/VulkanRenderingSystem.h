@@ -208,6 +208,11 @@ private:
 	DescriptorSetHandle GetCurrentEnvironmentDataDescriptorSet() NOEXCEPT;
 
 	/*
+	*	Returns the current ocean descriptor set.
+	*/
+	DescriptorSetHandle GetCurrentOceanDescriptorSet() NOEXCEPT;
+
+	/*
 	*	Returns the lighting descriptor set.
 	*/
 	DescriptorSetHandle GetLightingDescriptorSet() NOEXCEPT;

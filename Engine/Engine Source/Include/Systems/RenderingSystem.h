@@ -88,6 +88,11 @@ public:
 	DescriptorSetHandle GetCurrentEnvironmentDataDescriptorSet() const NOEXCEPT;
 
 	/*
+	*	Returns the current ocean descriptor set.
+	*/
+	DescriptorSetHandle GetCurrentOceanDescriptorSet() const NOEXCEPT;
+
+	/*
 	*	Returns the lighting descriptor set.
 	*/
 	DescriptorSetHandle GetLightingDescriptorSet() const NOEXCEPT;

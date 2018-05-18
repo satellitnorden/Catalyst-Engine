@@ -757,6 +757,14 @@ DescriptorSetHandle VulkanRenderingSystem::GetCurrentEnvironmentDataDescriptorSe
 }
 
 /*
+*	Returns the current ocean descriptor set.
+*/
+DescriptorSetHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEXCEPT
+{
+	return frameData.GetCurrentOceanDescriptorSet()->Get();
+}
+
+/*
 *	Returns the lighting descriptor set.
 */
 DescriptorSetHandle VulkanRenderingSystem::GetLightingDescriptorSet() NOEXCEPT
@@ -1260,49 +1268,6 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	}
 
 	{
-		//Create the ocean pipeline.
-		VulkanPipelineCreationParameters oceanPipelineCreationParameters;
-
-		oceanPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-		oceanPipelineCreationParameters.blendEnable = false;
-		oceanPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		oceanPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		oceanPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		oceanPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		oceanPipelineCreationParameters.colorAttachments[0].Reserve(1);
-		oceanPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
-		oceanPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
-		oceanPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		oceanPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		oceanPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		oceanPipelineCreationParameters.depthBuffer = nullptr;
-		oceanPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-		oceanPipelineCreationParameters.depthTestEnable = VK_FALSE;
-		oceanPipelineCreationParameters.depthWriteEnable = VK_FALSE;
-		StaticArray<VulkanDescriptorSetLayout, 3> oceanDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Ocean)]
-		};
-		oceanPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(oceanDescriptorSetLayouts.Size());
-		oceanPipelineCreationParameters.descriptorSetLayouts = oceanDescriptorSetLayouts.Data();
-		oceanPipelineCreationParameters.pushConstantRangeCount = 0;
-		oceanPipelineCreationParameters.pushConstantRanges = nullptr;
-		oceanPipelineCreationParameters.shaderModules.Reserve(2);
-		oceanPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::ViewportVertex)]);
-		oceanPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::OceanFragment)]);
-		oceanPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-		oceanPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
-		oceanPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		oceanPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
-		oceanPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
-		oceanPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-		pipelines[INDEX(RenderPassStage::Ocean)] = VulkanInterface::Instance->CreatePipeline(oceanPipelineCreationParameters);
-	}
-
-	{
 		//Create the particle system pipeline.
 		VulkanPipelineCreationParameters particleSystemPipelineCreationParameters;
 
@@ -1531,11 +1496,6 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		VulkanRenderingSystem::Instance->RenderOcean();
-	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderOcean)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
 		VulkanRenderingSystem::Instance->RenderPostProcessing();
 	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderPostProcessing)]));
 }
@@ -1633,11 +1593,8 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//Bind the ocean render pass.
 	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Wait for the render ocean task to finish.
-	taskSemaphores[INDEX(TaskSemaphore::RenderOcean)].WaitFor();
-
 	//Record the execute command for the ocean.
-	currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentOceanCommandBuffer()->Get());
+	currentCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(OceanRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
 	//End the static particle system render pass.
 	currentCommandBuffer->CommandEndRenderPass();
@@ -1942,37 +1899,6 @@ void VulkanRenderingSystem::RenderParticleSystemEntities() NOEXCEPT
 		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetPipelineLayout(), 0, static_cast<uint32>(particleSystemDescriptorSets.Size()), particleSystemDescriptorSets.Data());
 		commandBuffer->CommandDraw(VulkanRenderingSystemConstants::MAXIMUM_NUMBER_OF_PARTICLES, 1);
 	}
-
-	//End the command buffer.
-	commandBuffer->End();
-}
-
-/*
-*	Renders the ocean.
-*/
-void VulkanRenderingSystem::RenderOcean() NOEXCEPT
-{
-	//Cache the command buffer.
-	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentOceanCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::Ocean)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::Ocean)]->GetRenderPass().GetFrameBuffers()[0].Get());
-
-	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::Ocean)]->Get());
-
-	//Bind the ocean descriptor sets.
-	StaticArray<VkDescriptorSet, 3> oceanDescriptorSets
-	{
-		currentDynamicUniformDataDescriptorSet->Get(),
-		currentEnvironmentDataDescriptorSet->Get(),
-		frameData.GetCurrentOceanDescriptorSet()->Get()
-	};
-
-	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::Ocean)]->GetPipelineLayout(), 0, static_cast<uint32>(oceanDescriptorSets.Size()), oceanDescriptorSets.Data());
-
-	//Draw the viewport!
-	commandBuffer->CommandDraw(4, 1);
 
 	//End the command buffer.
 	commandBuffer->End();
