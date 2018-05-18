@@ -247,7 +247,6 @@ private:
 	enum class TaskSemaphore : uint8
 	{
 		RenderDirectionalShadows,
-		RenderSkybox,
 		RenderParticleSystemEntities,
 		RenderOcean,
 		RenderPostProcessing,
@@ -417,11 +416,6 @@ private:
 	*	Renders directional shadows.
 	*/
 	void RenderDirectionalShadows() NOEXCEPT;
-
-	/*
-	*	Renders skybox.
-	*/
-	void RenderSkybox() NOEXCEPT;
 
 	/*
 	*	Renders all particle system entities.

@@ -38,17 +38,6 @@ public:
 			directionalShadowCommandPool->AllocatePrimaryCommandBuffer(directionalShadowCommandBuffer);
 		}
 
-		//Create the skybox command pool.
-		skyboxCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
-		//Create the skybox command buffers.
-		skyboxCommandBuffers.UpsizeFast(frameDataCount);
-
-		for (VulkanCommandBuffer &skyboxCommandBuffer : skyboxCommandBuffers)
-		{
-			skyboxCommandPool->AllocateSecondaryCommandBuffer(skyboxCommandBuffer);
-		}
-
 		//Create the particle system entities command pool.
 		particleSystemEntitiesCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
@@ -166,11 +155,6 @@ public:
 	VulkanCommandBuffer *RESTRICT GetCurrentDirectionalShadowCommandBuffer() NOEXCEPT { return &directionalShadowCommandBuffers[currentFrame]; }
 
 	/*
-	*	Returns the current skybox command buffer.
-	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentSkyboxCommandBuffer() NOEXCEPT { return &skyboxCommandBuffers[currentFrame]; }
-
-	/*
 	*	Returns the current particle system entities command buffer.
 	*/
 	VulkanCommandBuffer *RESTRICT GetCurrentParticleSystemEntitiesCommandBuffer() NOEXCEPT { return &particleSystemEntitiesCommandBuffers[currentFrame]; }
@@ -247,12 +231,6 @@ private:
 
 	//The directional shadow command buffers.
 	DynamicArray<VulkanCommandBuffer> directionalShadowCommandBuffers;
-
-	//The skybox command pool.
-	VulkanCommandPool *RESTRICT skyboxCommandPool;
-
-	//The skybox command buffers.
-	DynamicArray<VulkanCommandBuffer> skyboxCommandBuffers;
 
 	//The particle system entities command pool.
 	VulkanCommandPool *RESTRICT particleSystemEntitiesCommandPool;

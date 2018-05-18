@@ -1260,49 +1260,6 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	}
 
 	{
-		//Create the cube map pipeline.
-		VulkanPipelineCreationParameters cubeMapPipelineCreationParameters;
-
-		cubeMapPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-		cubeMapPipelineCreationParameters.blendEnable = false;
-		cubeMapPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		cubeMapPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		cubeMapPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		cubeMapPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		cubeMapPipelineCreationParameters.colorAttachments[0].Reserve(2);
-		cubeMapPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
-		cubeMapPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::WaterScene)]->GetImageView());
-		cubeMapPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
-		cubeMapPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		cubeMapPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		cubeMapPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		cubeMapPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
-		cubeMapPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
-		cubeMapPipelineCreationParameters.depthTestEnable = VK_TRUE;
-		cubeMapPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-		StaticArray<VulkanDescriptorSetLayout, 2> cubeMapDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)]
-		};
-		cubeMapPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(cubeMapDescriptorSetLayouts.Size());
-		cubeMapPipelineCreationParameters.descriptorSetLayouts = cubeMapDescriptorSetLayouts.Data();
-		cubeMapPipelineCreationParameters.pushConstantRangeCount = 0;
-		cubeMapPipelineCreationParameters.pushConstantRanges = nullptr;
-		cubeMapPipelineCreationParameters.shaderModules.Reserve(2);
-		cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::CubeMapVertex)]);
-		cubeMapPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::CubeMapFragment)]);
-		cubeMapPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		cubeMapPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
-		cubeMapPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		cubeMapPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
-		cubeMapPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
-		cubeMapPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-		pipelines[INDEX(RenderPassStage::CubeMap)] = VulkanInterface::Instance->CreatePipeline(cubeMapPipelineCreationParameters);
-	}
-
-	{
 		//Create the ocean pipeline.
 		VulkanPipelineCreationParameters oceanPipelineCreationParameters;
 
@@ -1569,11 +1526,6 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		VulkanRenderingSystem::Instance->RenderSkybox();
-	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderSkybox)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
 		VulkanRenderingSystem::Instance->RenderParticleSystemEntities();
 	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderParticleSystemEntities)]));
 
@@ -1654,16 +1606,13 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//Reset the directional shadow event.
 	currentCommandBuffer->CommandResetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
-	//Begin the skybox render pass.
-	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::CubeMap)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	//Begin the sky render pass.
+	currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::Sky)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Wait for the render skybox task to finish.
-	taskSemaphores[INDEX(TaskSemaphore::RenderSkybox)].WaitFor();
+	//Record the execute command for the sky.
+	currentCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(SkyRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
-	//Record the execute command for the skybox.
-	currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentSkyboxCommandBuffer()->Get());
-
-	//End the skybox render pass.
+	//End the sky render pass.
 	currentCommandBuffer->CommandEndRenderPass();
 
 	if (ComponentManager::GetNumberOfParticleSystemComponents() > 0)
@@ -1949,36 +1898,6 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 	//Submit the directional shadow command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*commandBuffer, 0, nullptr, 0, 0, nullptr, nullptr);
-}
-
-/*
-*	Renders skybox.
-*/
-void VulkanRenderingSystem::RenderSkybox() NOEXCEPT
-{
-	//Cache the command buffer.
-	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentSkyboxCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::CubeMap)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::CubeMap)]->GetRenderPass().GetFrameBuffers()[0].Get());
-
-	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::CubeMap)]->Get());
-
-	//Bind the skybox descriptor set.
-	StaticArray<VkDescriptorSet, 2> skyboxDescriptorSets
-	{
-		currentDynamicUniformDataDescriptorSet->Get(),
-		currentEnvironmentDataDescriptorSet->Get()
-	};
-
-	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::CubeMap)]->GetPipelineLayout(), 0, static_cast<uint32>(skyboxDescriptorSets.Size()), skyboxDescriptorSets.Data());
-
-	//Draw the skybox!
-	commandBuffer->CommandDraw(36, 1);
-
-	//End the command buffer.
-	commandBuffer->End();
 }
 
 /*

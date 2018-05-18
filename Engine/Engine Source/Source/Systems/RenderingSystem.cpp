@@ -29,6 +29,7 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	InstancedPhysicalRenderPass::Instance->Initialize();
 	VegetationRenderPass::Instance->Initialize();
 	LightingRenderPass::Instance->Initialize();
+	SkyRenderPass::Instance->Initialize();
 }
 
 /*
@@ -45,6 +46,7 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	InstancedPhysicalRenderPass::Instance->Render();
 	VegetationRenderPass::Instance->Render();
 	LightingRenderPass::Instance->Render();
+	SkyRenderPass::Instance->Render();
 
 	//Post-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();

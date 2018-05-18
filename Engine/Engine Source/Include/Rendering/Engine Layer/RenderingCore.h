@@ -31,7 +31,7 @@ enum class RenderPassStage : uint8
 	InstancedPhysical,
 	Vegetation,
 	Lighting,
-	CubeMap,
+	Sky,
 	Ocean,
 	ParticleSystem,
 	PostProcessing,
