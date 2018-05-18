@@ -50,6 +50,11 @@ public:
 	virtual void PushConstants(const RenderPass *const RESTRICT renderPass, PushConstantRange::ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT = 0;
 
 	/*
+	*	Waits for events.
+	*/
+	virtual void WaitForEvents(const RenderPass *const RESTRICT renderPass, const uint32 eventCount, const EventHandle *const RESTRICT events) NOEXCEPT = 0;
+
+	/*
 	*	Ends the command buffer.
 	*/
 	virtual void End(const RenderPass *const RESTRICT renderPass) NOEXCEPT = 0;

@@ -38,17 +38,6 @@ public:
 			directionalShadowCommandPool->AllocatePrimaryCommandBuffer(directionalShadowCommandBuffer);
 		}
 
-		//Create the lighting command pool.
-		lightingCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
-		//Create the lighting command buffers.
-		lightingCommandBuffers.UpsizeFast(frameDataCount);
-
-		for (VulkanCommandBuffer &lightingCommandBuffer : lightingCommandBuffers)
-		{
-			lightingCommandPool->AllocateSecondaryCommandBuffer(lightingCommandBuffer);
-		}
-
 		//Create the skybox command pool.
 		skyboxCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
@@ -177,11 +166,6 @@ public:
 	VulkanCommandBuffer *RESTRICT GetCurrentDirectionalShadowCommandBuffer() NOEXCEPT { return &directionalShadowCommandBuffers[currentFrame]; }
 
 	/*
-	*	Returns the current lighting command buffer.
-	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentLightingCommandBuffer() NOEXCEPT { return &lightingCommandBuffers[currentFrame]; }
-
-	/*
 	*	Returns the current skybox command buffer.
 	*/
 	VulkanCommandBuffer *RESTRICT GetCurrentSkyboxCommandBuffer() NOEXCEPT { return &skyboxCommandBuffers[currentFrame]; }
@@ -263,12 +247,6 @@ private:
 
 	//The directional shadow command buffers.
 	DynamicArray<VulkanCommandBuffer> directionalShadowCommandBuffers;
-
-	//The lighting command pool.
-	VulkanCommandPool *RESTRICT lightingCommandPool;
-
-	//The lighting command buffers.
-	DynamicArray<VulkanCommandBuffer> lightingCommandBuffers;
 
 	//The skybox command pool.
 	VulkanCommandPool *RESTRICT skyboxCommandPool;

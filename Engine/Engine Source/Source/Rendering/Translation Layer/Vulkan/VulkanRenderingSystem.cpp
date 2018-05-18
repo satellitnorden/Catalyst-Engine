@@ -765,6 +765,14 @@ DescriptorSetHandle VulkanRenderingSystem::GetLightingDescriptorSet() NOEXCEPT
 }
 
 /*
+*	Returns the current directional shadow event.
+*/
+EventHandle VulkanRenderingSystem::GetCurrentDirectionalShadowEvent() NOEXCEPT
+{
+	return frameData.GetCurrentDirectionalShadowEvent()->Get();
+}
+
+/*
 *	Initializes all render targets.
 */
 void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
@@ -1252,49 +1260,6 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	}
 
 	{
-		//Create the lighting pipeline.
-		VulkanPipelineCreationParameters lightingPipelineCreationParameters;
-
-		lightingPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-		lightingPipelineCreationParameters.blendEnable = false;
-		lightingPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		lightingPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		lightingPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		lightingPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		lightingPipelineCreationParameters.colorAttachments[0].Reserve(2);
-		lightingPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
-		lightingPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::WaterScene)]->GetImageView());
-		lightingPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
-		lightingPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		lightingPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		lightingPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		lightingPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-		lightingPipelineCreationParameters.depthTestEnable = VK_FALSE;
-		lightingPipelineCreationParameters.depthWriteEnable = VK_FALSE;
-		StaticArray<VulkanDescriptorSetLayout, 3> lightingDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)]
-		};
-		lightingPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(lightingDescriptorSetLayouts.Size());
-		lightingPipelineCreationParameters.descriptorSetLayouts = lightingDescriptorSetLayouts.Data();
-		lightingPipelineCreationParameters.pushConstantRangeCount = 0;
-		lightingPipelineCreationParameters.pushConstantRanges = nullptr;
-		lightingPipelineCreationParameters.shaderModules.Reserve(2);
-		lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::ViewportVertex)]);
-		lightingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::LightingFragment)]);
-		lightingPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-		lightingPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
-		lightingPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		lightingPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
-		lightingPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
-		lightingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-		pipelines[INDEX(RenderPassStage::Lighting)] = VulkanInterface::Instance->CreatePipeline(lightingPipelineCreationParameters);
-	}
-
-	{
 		//Create the cube map pipeline.
 		VulkanPipelineCreationParameters cubeMapPipelineCreationParameters;
 
@@ -1604,11 +1569,6 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		VulkanRenderingSystem::Instance->RenderLighting();
-	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderLighting)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
 		VulkanRenderingSystem::Instance->RenderSkybox();
 	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderSkybox)]));
 
@@ -1683,13 +1643,10 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	}
 
 	//Begin the lighting render pass.
-	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
-
-	//Wait for the render lighting task to finish.
-	taskSemaphores[INDEX(TaskSemaphore::RenderLighting)].WaitFor();
+	currentCommandBuffer->CommandBeginRenderPassAndClear<2>(pipelines[INDEX(RenderPassStage::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Record the execute command for the lighting.
-	currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentLightingCommandBuffer()->Get());
+	currentCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(LightingRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
 	//End the lighting render pass.
 	currentCommandBuffer->CommandEndRenderPass();
@@ -1992,40 +1949,6 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 	//Submit the directional shadow command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*commandBuffer, 0, nullptr, 0, 0, nullptr, nullptr);
-}
-
-/*
-*	Renders lighting.
-*/
-void VulkanRenderingSystem::RenderLighting() NOEXCEPT
-{
-	//Cache the command buffer.
-	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentLightingCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::Lighting)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::Lighting)]->GetRenderPass().GetFrameBuffers()[0].Get());
-
-	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::Lighting)]->Get());
-
-	//Bind the descriptor sets.
-	StaticArray<VkDescriptorSet, 3> lightingDescriptorSets
-	{
-		currentDynamicUniformDataDescriptorSet->Get(),
-		currentEnvironmentDataDescriptorSet->Get(),
-		descriptorSets[INDEX(DescriptorSet::Lighting)].Get()
-	};
-
-	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::Lighting)]->GetPipelineLayout(), 0, static_cast<uint32>(lightingDescriptorSets.Size()), lightingDescriptorSets.Data());
-
-	//Wait for the directional shadows to finish.
-	commandBuffer->CommandWaitEvents(1, &frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-
-	//Draw the viewport!
-	commandBuffer->CommandDraw(4, 1);
-
-	//End the command buffer.
-	commandBuffer->End();
 }
 
 /*

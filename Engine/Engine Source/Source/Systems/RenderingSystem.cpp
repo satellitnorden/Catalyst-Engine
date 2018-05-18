@@ -28,6 +28,7 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	StaticPhysicalRenderPass::Instance->Initialize();
 	InstancedPhysicalRenderPass::Instance->Initialize();
 	VegetationRenderPass::Instance->Initialize();
+	LightingRenderPass::Instance->Initialize();
 }
 
 /*
@@ -43,6 +44,7 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	StaticPhysicalRenderPass::Instance->Render();
 	InstancedPhysicalRenderPass::Instance->Render();
 	VegetationRenderPass::Instance->Render();
+	LightingRenderPass::Instance->Render();
 
 	//Post-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();
@@ -109,6 +111,15 @@ DescriptorSetHandle RenderingSystem::GetLightingDescriptorSet() const NOEXCEPT
 {
 	//Return the lighting descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetLightingDescriptorSet();
+}
+
+/*
+*	Returns the current directional shadow event.
+*/
+EventHandle RenderingSystem::GetCurrentDirectionalShadowEvent() const NOEXCEPT
+{
+	//Return the current directional shadow event via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentDirectionalShadowEvent();
 }
 
 /*

@@ -65,6 +65,7 @@ void LightingRenderPass::Render() NOEXCEPT
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 	const DescriptorSetHandle currentDynamicUniformDataDescriptorSet{ RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet() };
+	const EventHandle currentDirectionalShadowEvent{ RenderingSystem::Instance->GetCurrentDirectionalShadowEvent() };
 	const DescriptorSetHandle currentEnvironmentDataDescriptorSet{ RenderingSystem::Instance->GetCurrentEnvironmentDataDescriptorSet() };
 
 	//Begin the command buffer.
@@ -80,10 +81,8 @@ void LightingRenderPass::Render() NOEXCEPT
 
 	commandBuffer->BindDescriptorSets(this, 0, 3, descriptorSets.Data());
 
-	/*
 	//Wait for the directional shadows to finish.
-	commandBuffer->CommandWaitEvents(1, &frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
-	*/
+	commandBuffer->WaitForEvents(this, 1, &currentDirectionalShadowEvent);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

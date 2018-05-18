@@ -68,6 +68,11 @@ public:
 	void PushConstants(const RenderPass *const RESTRICT renderPass, PushConstantRange::ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT override;
 
 	/*
+	*	Waits for events.
+	*/
+	void WaitForEvents(const RenderPass *const RESTRICT renderPass, const uint32 eventCount, const EventHandle *const RESTRICT events) NOEXCEPT override;
+
+	/*
 	*	Ends the command buffer.
 	*/
 	void End(const RenderPass *const RESTRICT) NOEXCEPT override;

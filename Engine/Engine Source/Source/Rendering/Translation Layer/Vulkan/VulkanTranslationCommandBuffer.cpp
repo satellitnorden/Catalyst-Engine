@@ -82,6 +82,15 @@ void VulkanTranslationCommandBuffer::PushConstants(const RenderPass *const RESTR
 }
 
 /*
+*	Waits for events.
+*/
+void VulkanTranslationCommandBuffer::WaitForEvents(const RenderPass *const RESTRICT renderPass, const uint32 eventCount, const EventHandle *const RESTRICT events) NOEXCEPT
+{
+	//Wait for the events.
+	commandBuffer.CommandWaitEvents(eventCount, reinterpret_cast<const VkEvent *const RESTRICT>(events), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT);
+}
+
+/*
 *	Ends the command buffer.
 */
 void VulkanTranslationCommandBuffer::End(const RenderPass *const RESTRICT) NOEXCEPT

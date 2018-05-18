@@ -212,6 +212,11 @@ private:
 	*/
 	DescriptorSetHandle GetLightingDescriptorSet() NOEXCEPT;
 
+	/*
+	*	Returns the current directional shadow event.
+	*/
+	EventHandle GetCurrentDirectionalShadowEvent() NOEXCEPT;
+
 	//Enumeration covering all default textures.
 	enum DefaultTexture : uint8
 	{
@@ -242,7 +247,6 @@ private:
 	enum class TaskSemaphore : uint8
 	{
 		RenderDirectionalShadows,
-		RenderLighting,
 		RenderSkybox,
 		RenderParticleSystemEntities,
 		RenderOcean,
@@ -413,11 +417,6 @@ private:
 	*	Renders directional shadows.
 	*/
 	void RenderDirectionalShadows() NOEXCEPT;
-
-	/*
-	*	Renders lighting.
-	*/
-	void RenderLighting() NOEXCEPT;
 
 	/*
 	*	Renders skybox.
