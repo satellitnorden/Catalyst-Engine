@@ -257,7 +257,6 @@ private:
 	enum class TaskSemaphore : uint8
 	{
 		RenderDirectionalShadows,
-		RenderPostProcessing,
 		UpdateParticleSystemProperties,
 		UpdateVegetationCulling,
 		UpdateViewFrustumCuling,
@@ -429,11 +428,6 @@ private:
 	*	Renders the ocean.
 	*/
 	void RenderOcean() NOEXCEPT;
-
-	/*
-	*	Renders the post processing.
-	*/
-	void RenderPostProcessing() NOEXCEPT;
 
 	/*
 	*	Updates the descriptor sets.

@@ -19,7 +19,7 @@ void PostProcessingRenderPass::Initialize() NOEXCEPT
 	SetStage(RenderPassStage::PostProcessing);
 
 	//Set the shaders.
-	SetVertexShader(Shader::CubeMapVertex);
+	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);

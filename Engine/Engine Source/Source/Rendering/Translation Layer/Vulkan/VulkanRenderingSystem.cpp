@@ -1301,56 +1301,6 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 
 		pipelines[INDEX(RenderPassStage::ShadowMapBlur)] = VulkanInterface::Instance->CreatePipeline(shadowMapBlurPipelineCreationParameters);
 	}
-
-	{
-		//Create the post processing pipeline.
-		VulkanPipelineCreationParameters postProcessingPipelineCreationParameters;
-
-		postProcessingPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		postProcessingPipelineCreationParameters.blendEnable = false;
-		postProcessingPipelineCreationParameters.colorAttachmentFinalLayout = VULKAN_IMAGE_LAYOUT_PRESENT_SRC;
-		postProcessingPipelineCreationParameters.colorAttachmentFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
-		postProcessingPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-
-		const DynamicArray<VkImageView> &swapchainImageViews{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
-		const uint64 swapchainImageViewsSize{ swapchainImageViews.Size() };
-
-		postProcessingPipelineCreationParameters.colorAttachments.UpsizeSlow(swapchainImageViewsSize);
-
-		for (uint64 i = 0; i < swapchainImageViewsSize; ++i)
-		{
-			postProcessingPipelineCreationParameters.colorAttachments[i].Reserve(1);
-			postProcessingPipelineCreationParameters.colorAttachments[i].EmplaceFast(swapchainImageViews[i]);
-		}
-
-		postProcessingPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		postProcessingPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		postProcessingPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		postProcessingPipelineCreationParameters.depthBuffer = nullptr;
-		postProcessingPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-		postProcessingPipelineCreationParameters.depthTestEnable = VK_FALSE;
-		postProcessingPipelineCreationParameters.depthWriteEnable = VK_FALSE;
-		StaticArray<VulkanDescriptorSetLayout, 2> postProcessingDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::PostProcessing)]
-		};
-		postProcessingPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(postProcessingDescriptorSetLayouts.Size());
-		postProcessingPipelineCreationParameters.descriptorSetLayouts = postProcessingDescriptorSetLayouts.Data();
-		postProcessingPipelineCreationParameters.pushConstantRangeCount = 0;
-		postProcessingPipelineCreationParameters.pushConstantRanges = nullptr;
-		postProcessingPipelineCreationParameters.shaderModules.Reserve(2);
-		postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::ViewportVertex)]);
-		postProcessingPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::PostProcessingFragment)]);
-		postProcessingPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-		postProcessingPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
-		postProcessingPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		postProcessingPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
-		postProcessingPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
-		postProcessingPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-		pipelines[INDEX(RenderPassStage::PostProcessing)] = VulkanInterface::Instance->CreatePipeline(postProcessingPipelineCreationParameters);
-	}
 }
 
 /*
@@ -1478,11 +1428,6 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 	{
 		VulkanRenderingSystem::Instance->RenderDirectionalShadows();
 	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderDirectionalShadows)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
-		VulkanRenderingSystem::Instance->RenderPostProcessing();
-	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderPostProcessing)]));
 }
 
 /*
@@ -1584,11 +1529,8 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//Bind the post processing render pass.
 	currentCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Wait for the render post processing task to finish.
-	taskSemaphores[INDEX(TaskSemaphore::RenderPostProcessing)].WaitFor();
-
 	//Record the execute command for the post processing.
-	currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentPostProcessingCommandBuffer()->Get());
+	currentCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(PostProcessingRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
 	//End the post processing render pass.
 	currentCommandBuffer->CommandEndRenderPass();
@@ -1837,36 +1779,6 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 	//Submit the directional shadow command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*commandBuffer, 0, nullptr, 0, 0, nullptr, nullptr);
-}
-
-/*
-*	Renders the post processing.
-*/
-void VulkanRenderingSystem::RenderPostProcessing() NOEXCEPT
-{
-	//Cache the command buffer.
-	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentPostProcessingCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::PostProcessing)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::PostProcessing)]->GetRenderPass().GetFrameBuffers()[frameData.GetCurrentFrame()].Get());
-
-	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::PostProcessing)]->Get());
-
-	//Bind the post processing descriptor sets.
-	StaticArray<VkDescriptorSet, 2> postProcessingDescriptorSets
-	{
-		currentDynamicUniformDataDescriptorSet->Get(),
-		descriptorSets[INDEX(DescriptorSet::PostProcessing)].Get()
-	};
-
-	commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::PostProcessing)]->GetPipelineLayout(), 0, 2, postProcessingDescriptorSets.Data());
-
-	//Draw the viewport!
-	commandBuffer->CommandDraw(4, 1);
-
-	//End the command buffer.
-	commandBuffer->End();
 }
 
 /*

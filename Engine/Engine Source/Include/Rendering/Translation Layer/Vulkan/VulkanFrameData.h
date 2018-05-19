@@ -38,17 +38,6 @@ public:
 			directionalShadowCommandPool->AllocatePrimaryCommandBuffer(directionalShadowCommandBuffer);
 		}
 
-		//Create the post processing command pool.
-		postProcessingCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
-		//Create the post processing command buffers.
-		postProcessingCommandBuffers.UpsizeFast(frameDataCount);
-
-		for (VulkanCommandBuffer &postProcessingCommandBuffer : postProcessingCommandBuffers)
-		{
-			postProcessingCommandPool->AllocateSecondaryCommandBuffer(postProcessingCommandBuffer);
-		}
-
 		//Create the fences.
 		fences.UpsizeFast(frameDataCount);
 
@@ -133,11 +122,6 @@ public:
 	VulkanCommandBuffer *RESTRICT GetCurrentDirectionalShadowCommandBuffer() NOEXCEPT { return &directionalShadowCommandBuffers[currentFrame]; }
 
 	/*
-	*	Returns the current post processing command buffer.
-	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentPostProcessingCommandBuffer() NOEXCEPT { return &postProcessingCommandBuffers[currentFrame]; }
-
-	/*
 	*	Returns the current fence.
 	*/
 	VulkanFence *RESTRICT GetCurrentFence() NOEXCEPT
@@ -199,12 +183,6 @@ private:
 
 	//The directional shadow command buffers.
 	DynamicArray<VulkanCommandBuffer> directionalShadowCommandBuffers;
-
-	//The post processing command pool.
-	VulkanCommandPool *RESTRICT postProcessingCommandPool;
-
-	//The post processing command buffers.
-	DynamicArray<VulkanCommandBuffer> postProcessingCommandBuffers;
 
 	//The fences.
 	DynamicArray<VulkanFence *RESTRICT> fences;

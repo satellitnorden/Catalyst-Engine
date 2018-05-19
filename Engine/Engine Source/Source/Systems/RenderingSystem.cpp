@@ -32,7 +32,7 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	SkyRenderPass::Instance->Initialize();
 	ParticleSystemRenderPass::Instance->Initialize();
 	OceanRenderPass::Instance->Initialize();
-	//PostProcessingRenderPass::Instance->Initialize();
+	PostProcessingRenderPass::Instance->Initialize();
 }
 
 /*
@@ -52,7 +52,7 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	SkyRenderPass::Instance->Render();
 	ParticleSystemRenderPass::Instance->Render();
 	OceanRenderPass::Instance->Render();
-	//PostProcessingRenderPass::Instance->Render();
+	PostProcessingRenderPass::Instance->Render();
 
 	//Post-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();
