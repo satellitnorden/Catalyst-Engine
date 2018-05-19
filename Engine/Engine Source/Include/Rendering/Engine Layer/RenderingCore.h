@@ -113,6 +113,7 @@ enum class RenderTarget : uint8
 	SceneBufferMaterialProperties,
 	Scene,
 	WaterScene,
+	Screen,
 	NumberOfRenderTargets
 };
 

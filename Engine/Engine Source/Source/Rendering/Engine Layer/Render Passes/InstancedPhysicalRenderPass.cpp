@@ -87,6 +87,7 @@ void InstancedPhysicalRenderPass::Initialize() NOEXCEPT
 	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());
 
 	//Set the properties of the render pass.
+	SetBlendEnabled(false);
 	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Load);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);
 	SetCullMode(CullMode::Back);

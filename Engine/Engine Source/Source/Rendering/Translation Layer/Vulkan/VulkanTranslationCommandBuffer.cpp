@@ -3,6 +3,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/Render Passes/RenderPass.h>
+#include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanRenderPassData.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanTranslationUtilities.h>
 
@@ -15,8 +16,8 @@ void VulkanTranslationCommandBuffer::Begin(const RenderPass *const RESTRICT rend
 	const VulkanRenderPassData *const RESTRICT renderPassData{ static_cast<const VulkanRenderPassData *const RESTRICT>(renderPass->GetData()) };
 
 	//Begin the command buffer.
-	commandBuffer.BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, renderPassData->renderPass, renderPassData->framebuffer);
-
+	commandBuffer.BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, renderPassData->renderPass, renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? renderPassData->framebuffers[VulkanRenderingSystem::Instance->GetCurrentFrameIndex()] : renderPassData->framebuffers[0]);
+	
 	//Bind the pipeline.
 	commandBuffer.CommandBindPipeline(renderPassData->pipeline);
 }

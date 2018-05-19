@@ -61,7 +61,6 @@ DEFINE_SINGLETON(VulkanRenderingSystem);
 //Vulkan rendering system constants.
 namespace VulkanRenderingSystemConstants
 {
-	constexpr uint32 MAXIMUM_NUMBER_OF_PARTICLES{ 16'384 };
 	constexpr VkDeviceSize PARTICLE_SYSTEM_STORAGE_BUFFER_SIZE{ 1'310'736 };
 }
 
@@ -630,16 +629,38 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 
 	parameters.attachmentLoadOperator = VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(renderPass->GetColorAttachmentLoadOperator());
 	parameters.blendEnable = renderPass->IsBlendEnabled();
-	parameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	parameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-	parameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	parameters.colorAttachments.UpsizeSlow(1);
-	parameters.colorAttachments[0].Reserve(renderPass->GetRenderTargets().Size());
-
-	for (const RenderTarget renderTarget : renderPass->GetRenderTargets())
+	if (renderPass->GetRenderTargets()[0] == RenderTarget::Screen)
 	{
-		parameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(renderTarget)]->GetImageView());
+		parameters.colorAttachmentFinalLayout = VULKAN_IMAGE_LAYOUT_PRESENT_SRC;
+		parameters.colorAttachmentFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
+		parameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+		const DynamicArray<VkImageView> &swapchainImageViews{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
+		const uint64 swapchainImageViewsSize{ swapchainImageViews.Size() };
+
+		parameters.colorAttachments.UpsizeSlow(swapchainImageViewsSize);
+
+		for (uint64 i = 0; i < swapchainImageViewsSize; ++i)
+		{
+			parameters.colorAttachments[i].Reserve(1);
+			parameters.colorAttachments[i].EmplaceFast(swapchainImageViews[i]);
+		}
+	}
+
+	else
+	{
+		parameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		parameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+		parameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		parameters.colorAttachments.UpsizeSlow(1);
+		parameters.colorAttachments[0].Reserve(renderPass->GetRenderTargets().Size());
+
+		for (const RenderTarget renderTarget : renderPass->GetRenderTargets())
+		{
+			parameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(renderTarget)]->GetImageView());
+		}
 	}
 
 	parameters.cullMode = VulkanTranslationUtilities::GetVulkanCullMode(renderPass->GetCullMode());
@@ -718,7 +739,13 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	pipelines[INDEX(renderPass->GetStage())] = VulkanInterface::Instance->CreatePipeline(parameters);
 
 	//Update the Vulkan render pass data.
-	vulkanRenderPassData[INDEX(renderPass->GetStage())].framebuffer = pipelines[INDEX(renderPass->GetStage())]->GetRenderPass().GetFrameBuffers()[0].Get();
+	vulkanRenderPassData[INDEX(renderPass->GetStage())].framebuffers.Reserve(pipelines[INDEX(renderPass->GetStage())]->GetRenderPass().GetFrameBuffers().Size());
+
+	for (const VulkanFramebuffer& framebuffer : pipelines[INDEX(renderPass->GetStage())]->GetRenderPass().GetFrameBuffers())
+	{
+		vulkanRenderPassData[INDEX(renderPass->GetStage())].framebuffers.EmplaceFast(framebuffer.Get());
+	}
+
 	vulkanRenderPassData[INDEX(renderPass->GetStage())].pipeline = pipelines[INDEX(renderPass->GetStage())]->Get();
 	vulkanRenderPassData[INDEX(renderPass->GetStage())].pipelineLayout = pipelines[INDEX(renderPass->GetStage())]->GetPipelineLayout();
 	vulkanRenderPassData[INDEX(renderPass->GetStage())].renderPass = pipelines[INDEX(renderPass->GetStage())]->GetRenderPass().Get();
@@ -770,6 +797,14 @@ DescriptorSetHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEXCE
 DescriptorSetHandle VulkanRenderingSystem::GetLightingDescriptorSet() NOEXCEPT
 {
 	return descriptorSets[INDEX(DescriptorSet::Lighting)].Get();
+}
+
+/*
+*	Returns the post processing descriptor set.
+*/
+DescriptorSetHandle VulkanRenderingSystem::GetPostProcessingDescriptorSet() NOEXCEPT
+{
+	return descriptorSets[INDEX(DescriptorSet::PostProcessing)].Get();
 }
 
 /*
@@ -1268,51 +1303,6 @@ void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 	}
 
 	{
-		//Create the particle system pipeline.
-		VulkanPipelineCreationParameters particleSystemPipelineCreationParameters;
-
-		particleSystemPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-		particleSystemPipelineCreationParameters.blendEnable = true;
-		particleSystemPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		particleSystemPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		particleSystemPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		particleSystemPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		particleSystemPipelineCreationParameters.colorAttachments[0].Reserve(2);
-		particleSystemPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::Scene)]->GetImageView());
-		particleSystemPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::WaterScene)]->GetImageView());
-		particleSystemPipelineCreationParameters.cullMode = VK_CULL_MODE_FRONT_BIT;
-		particleSystemPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		particleSystemPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		particleSystemPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		particleSystemPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::SceneBuffer)];
-		particleSystemPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-		particleSystemPipelineCreationParameters.depthTestEnable = VK_TRUE;
-		particleSystemPipelineCreationParameters.depthWriteEnable = VK_FALSE;
-		StaticArray<VulkanDescriptorSetLayout, 2> particleSystemDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::ParticleSystem)]
-		};
-		particleSystemPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(particleSystemDescriptorSetLayouts.Size());
-		particleSystemPipelineCreationParameters.descriptorSetLayouts = particleSystemDescriptorSetLayouts.Data();
-		VkPushConstantRange particleSystemPushConstantRange{ VK_SHADER_STAGE_GEOMETRY_BIT, 0, sizeof(float) };
-		particleSystemPipelineCreationParameters.pushConstantRangeCount = 1;
-		particleSystemPipelineCreationParameters.pushConstantRanges = &particleSystemPushConstantRange;
-		particleSystemPipelineCreationParameters.shaderModules.Reserve(3);
-		particleSystemPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::ParticleSystemVertex)]);
-		particleSystemPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::ParticleSystemGeometry)]);
-		particleSystemPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::ParticleSystemFragment)]);
-		particleSystemPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-		particleSystemPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
-		particleSystemPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		particleSystemPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
-		particleSystemPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
-		particleSystemPipelineCreationParameters.viewportExtent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
-
-		pipelines[INDEX(RenderPassStage::ParticleSystem)] = VulkanInterface::Instance->CreatePipeline(particleSystemPipelineCreationParameters);
-	}
-
-	{
 		//Create the post processing pipeline.
 		VulkanPipelineCreationParameters postProcessingPipelineCreationParameters;
 
@@ -1491,11 +1481,6 @@ void VulkanRenderingSystem::ExecuteFrameDependantAsynchronousTasks() NOEXCEPT
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		VulkanRenderingSystem::Instance->RenderParticleSystemEntities();
-	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderParticleSystemEntities)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
 		VulkanRenderingSystem::Instance->RenderPostProcessing();
 	}, nullptr, &taskSemaphores[INDEX(TaskSemaphore::RenderPostProcessing)]));
 }
@@ -1580,11 +1565,8 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		//Begin the particle system entities render pass.
 		currentCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-		//Wait for the render particle system entities task to finish.
-		taskSemaphores[INDEX(TaskSemaphore::RenderParticleSystemEntities)].WaitFor();
-
 		//Record the execute command for the particle system entities.
-		currentCommandBuffer->CommandExecuteCommands(frameData.GetCurrentParticleSystemEntitiesCommandBuffer()->Get());
+		currentCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(ParticleSystemRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
 		//End the static particle system render pass.
 		currentCommandBuffer->CommandEndRenderPass();
@@ -1855,53 +1837,6 @@ void VulkanRenderingSystem::RenderDirectionalShadows() NOEXCEPT
 
 	//Submit the directional shadow command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue().Submit(*commandBuffer, 0, nullptr, 0, 0, nullptr, nullptr);
-}
-
-/*
-*	Renders all particle system entities.
-*/
-void VulkanRenderingSystem::RenderParticleSystemEntities() NOEXCEPT
-{
-	//Iterate over all particle system entity components and draw them all.
-	const uint64 numberOfParticleSystemComponents{ ComponentManager::GetNumberOfParticleSystemComponents() };
-
-	//If there's none to draw - draw none!
-	if (numberOfParticleSystemComponents == 0)
-	{
-		return;
-	}
-
-	//Wait for the update particle system properties task to finish.
-	taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)].WaitFor();
-
-	//Iterate over all components.
-	const ParticleSystemRenderComponent *RESTRICT component{ ComponentManager::GetParticleSystemRenderComponents() };
-
-	//Cache the command buffer.
-	VulkanCommandBuffer *const RESTRICT commandBuffer{ frameData.GetCurrentParticleSystemEntitiesCommandBuffer() };
-
-	//Begin the command buffer.
-	commandBuffer->BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetRenderPass().Get(), pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetRenderPass().GetFrameBuffers()[0].Get());
-
-	//Bind the pipeline.
-	commandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::ParticleSystem)]->Get());
-
-	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
-	{
-		StaticArray<VkDescriptorSet, 2> particleSystemDescriptorSets
-		{
-			currentDynamicUniformDataDescriptorSet->Get(),
-			static_cast<VkDescriptorSet>(component->descriptorSet)
-		};
-
-		const float randomSeed{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
-		commandBuffer->CommandPushConstants(pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetPipelineLayout(), VK_SHADER_STAGE_GEOMETRY_BIT, 0, sizeof(float), &randomSeed);
-		commandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetPipelineLayout(), 0, static_cast<uint32>(particleSystemDescriptorSets.Size()), particleSystemDescriptorSets.Data());
-		commandBuffer->CommandDraw(VulkanRenderingSystemConstants::MAXIMUM_NUMBER_OF_PARTICLES, 1);
-	}
-
-	//End the command buffer.
-	commandBuffer->End();
 }
 
 /*

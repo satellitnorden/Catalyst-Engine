@@ -98,6 +98,11 @@ public:
 	DescriptorSetHandle GetLightingDescriptorSet() const NOEXCEPT;
 
 	/*
+	*	Returns the post processing descriptor set.
+	*/
+	DescriptorSetHandle GetPostProcessingDescriptorSet() const NOEXCEPT;
+
+	/*
 	*	Returns the current directional shadow event.
 	*/
 	EventHandle GetCurrentDirectionalShadowEvent() const NOEXCEPT;

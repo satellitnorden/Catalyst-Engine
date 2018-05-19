@@ -30,7 +30,9 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	VegetationRenderPass::Instance->Initialize();
 	LightingRenderPass::Instance->Initialize();
 	SkyRenderPass::Instance->Initialize();
+	ParticleSystemRenderPass::Instance->Initialize();
 	OceanRenderPass::Instance->Initialize();
+	//PostProcessingRenderPass::Instance->Initialize();
 }
 
 /*
@@ -48,7 +50,9 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	VegetationRenderPass::Instance->Render();
 	LightingRenderPass::Instance->Render();
 	SkyRenderPass::Instance->Render();
+	ParticleSystemRenderPass::Instance->Render();
 	OceanRenderPass::Instance->Render();
+	//PostProcessingRenderPass::Instance->Render();
 
 	//Post-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();
@@ -124,6 +128,15 @@ DescriptorSetHandle RenderingSystem::GetLightingDescriptorSet() const NOEXCEPT
 {
 	//Return the lighting descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetLightingDescriptorSet();
+}
+
+/*
+*	Returns the post processing descriptor set.
+*/
+DescriptorSetHandle RenderingSystem::GetPostProcessingDescriptorSet() const NOEXCEPT
+{
+	//Return the post processing descriptor set via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetPostProcessingDescriptorSet();
 }
 
 /*

@@ -218,6 +218,11 @@ private:
 	DescriptorSetHandle GetLightingDescriptorSet() NOEXCEPT;
 
 	/*
+	*	Returns the post processing descriptor set.
+	*/
+	DescriptorSetHandle GetPostProcessingDescriptorSet() NOEXCEPT;
+
+	/*
 	*	Returns the current directional shadow event.
 	*/
 	EventHandle GetCurrentDirectionalShadowEvent() NOEXCEPT;
@@ -252,8 +257,6 @@ private:
 	enum class TaskSemaphore : uint8
 	{
 		RenderDirectionalShadows,
-		RenderParticleSystemEntities,
-		RenderOcean,
 		RenderPostProcessing,
 		UpdateParticleSystemProperties,
 		UpdateVegetationCulling,
@@ -421,11 +424,6 @@ private:
 	*	Renders directional shadows.
 	*/
 	void RenderDirectionalShadows() NOEXCEPT;
-
-	/*
-	*	Renders all particle system entities.
-	*/
-	void RenderParticleSystemEntities() NOEXCEPT;
 
 	/*
 	*	Renders the ocean.

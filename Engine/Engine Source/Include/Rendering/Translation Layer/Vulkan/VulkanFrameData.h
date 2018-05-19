@@ -38,17 +38,6 @@ public:
 			directionalShadowCommandPool->AllocatePrimaryCommandBuffer(directionalShadowCommandBuffer);
 		}
 
-		//Create the particle system entities command pool.
-		particleSystemEntitiesCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
-		//Create the particle system entities command buffers.
-		particleSystemEntitiesCommandBuffers.UpsizeFast(frameDataCount);
-
-		for (VulkanCommandBuffer &particleSystemEntitiesCommandBuffer : particleSystemEntitiesCommandBuffers)
-		{
-			particleSystemEntitiesCommandPool->AllocateSecondaryCommandBuffer(particleSystemEntitiesCommandBuffer);
-		}
-
 		//Create the post processing command pool.
 		postProcessingCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
@@ -144,11 +133,6 @@ public:
 	VulkanCommandBuffer *RESTRICT GetCurrentDirectionalShadowCommandBuffer() NOEXCEPT { return &directionalShadowCommandBuffers[currentFrame]; }
 
 	/*
-	*	Returns the current particle system entities command buffer.
-	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentParticleSystemEntitiesCommandBuffer() NOEXCEPT { return &particleSystemEntitiesCommandBuffers[currentFrame]; }
-
-	/*
 	*	Returns the current post processing command buffer.
 	*/
 	VulkanCommandBuffer *RESTRICT GetCurrentPostProcessingCommandBuffer() NOEXCEPT { return &postProcessingCommandBuffers[currentFrame]; }
@@ -215,12 +199,6 @@ private:
 
 	//The directional shadow command buffers.
 	DynamicArray<VulkanCommandBuffer> directionalShadowCommandBuffers;
-
-	//The particle system entities command pool.
-	VulkanCommandPool *RESTRICT particleSystemEntitiesCommandPool;
-
-	//The particle system entities command buffers.
-	DynamicArray<VulkanCommandBuffer> particleSystemEntitiesCommandBuffers;
 
 	//The post processing command pool.
 	VulkanCommandPool *RESTRICT postProcessingCommandPool;

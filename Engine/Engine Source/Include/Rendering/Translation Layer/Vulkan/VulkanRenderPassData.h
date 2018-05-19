@@ -12,7 +12,7 @@ class VulkanRenderPassData final
 public:
 
 	//The framebuffer associated with the render pass.
-	VkFramebuffer framebuffer;
+	DynamicArray<VkFramebuffer> framebuffers;
 
 	//The pipeline associated with the render pass.
 	VkPipeline pipeline;
