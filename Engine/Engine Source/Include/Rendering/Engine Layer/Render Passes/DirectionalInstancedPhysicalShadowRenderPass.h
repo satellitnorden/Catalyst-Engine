@@ -6,16 +6,16 @@
 //Rendering.
 #include <Rendering/Engine Layer/Render Passes/RenderPass.h>
 
-class DirectionalTerrainShadowRenderPass final : public RenderPass
+class DirectionalInstancedPhysicalShadowRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(DirectionalTerrainShadowRenderPass);
+	DECLARE_SINGLETON(DirectionalInstancedPhysicalShadowRenderPass);
 
 	/*
-	*	Initializes the directional terrain shadow render pass.
+	*	Initializes the directional instanced physical shadow render pass.
 	*/
 	void Initialize() NOEXCEPT;
 

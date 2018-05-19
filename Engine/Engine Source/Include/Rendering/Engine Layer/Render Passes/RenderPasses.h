@@ -4,6 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Rendering.
+#include <Rendering/Engine Layer/Render Passes/DirectionalInstancedPhysicalShadowRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/DirectionalTerrainShadowRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/InstancedPhysicalRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/LightingRenderPass.h>

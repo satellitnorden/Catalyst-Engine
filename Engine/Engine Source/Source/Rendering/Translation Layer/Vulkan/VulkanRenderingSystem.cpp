@@ -1166,52 +1166,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
 {
 	{
-		//Create the directional shadow instanced physical pipeline.
-		VulkanPipelineCreationParameters directionalShadowInstancedPhysicalPipelineCreationParameters;
-
-		directionalShadowInstancedPhysicalPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_LOAD;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.blendEnable = false;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachments[0].Reserve(1);
-		directionalShadowInstancedPhysicalPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::DirectionalPreBlurShadowMap)]->GetImageView());
-		directionalShadowInstancedPhysicalPipelineCreationParameters.cullMode = VK_CULL_MODE_BACK_BIT;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.depthBuffer = depthBuffers[INDEX(DepthBuffer::DirectionalLight)];
-		directionalShadowInstancedPhysicalPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.depthTestEnable = VK_TRUE;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.depthWriteEnable = VK_TRUE;
-		StaticArray<VulkanDescriptorSetLayout, 2> directionalShadowInstancedDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)]
-		};
-		directionalShadowInstancedPhysicalPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(directionalShadowInstancedDescriptorSetLayouts.Size());
-		directionalShadowInstancedPhysicalPipelineCreationParameters.descriptorSetLayouts = directionalShadowInstancedDescriptorSetLayouts.Data();
-		directionalShadowInstancedPhysicalPipelineCreationParameters.pushConstantRangeCount = 0;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.pushConstantRanges = nullptr;
-		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.Reserve(2);
-		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::DirectionalInstancedPhysicalShadowVertex)]);
-		directionalShadowInstancedPhysicalPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::ShadowMapFragment)]);
-		directionalShadowInstancedPhysicalPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		StaticArray<VkVertexInputAttributeDescription, 8> directionalShadowInstancedPhysicalVertexInputAttributeDescriptions;
-		VulkanTranslationUtilities::GetInstancedPhysicalVertexInputAttributeDescriptions(directionalShadowInstancedPhysicalVertexInputAttributeDescriptions);
-		directionalShadowInstancedPhysicalPipelineCreationParameters.vertexInputAttributeDescriptionCount = static_cast<uint32>(directionalShadowInstancedPhysicalVertexInputAttributeDescriptions.Size());
-		directionalShadowInstancedPhysicalPipelineCreationParameters.vertexInputAttributeDescriptions = directionalShadowInstancedPhysicalVertexInputAttributeDescriptions.Data();
-		StaticArray<VkVertexInputBindingDescription, 2> directionalShadowInstancedPhysicalVertexInputBindingDescriptions;
-		VulkanTranslationUtilities::GetInstancedPhysicalVertexInputBindingDescriptions(directionalShadowInstancedPhysicalVertexInputBindingDescriptions);
-		directionalShadowInstancedPhysicalPipelineCreationParameters.vertexInputBindingDescriptionCount = static_cast<uint32>(directionalShadowInstancedPhysicalVertexInputBindingDescriptions.Size());
-		directionalShadowInstancedPhysicalPipelineCreationParameters.vertexInputBindingDescriptions = directionalShadowInstancedPhysicalVertexInputBindingDescriptions.Data();
-		directionalShadowInstancedPhysicalPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
-
-		pipelines[INDEX(RenderPassStage::DirectionalInstancedPhysicalShadow)] = VulkanInterface::Instance->CreatePipeline(directionalShadowInstancedPhysicalPipelineCreationParameters);
-	}
-
-	{
 		//Create the shadow map blur pipeline.
 		VulkanPipelineCreationParameters shadowMapBlurPipelineCreationParameters;
 
@@ -1383,55 +1337,14 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//End the render pass.
 	currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
 
-	/*
-	//Render instanced physical shadows.
-	{
-		//Iterate over all instanced physical entity components and draw them all.
-		const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };
+	//Begin the instanced physical shadow render pass.
+	currentDirectionalShadowCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::DirectionalInstancedPhysicalShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-		//If there's none to draw - draw none!
-		if (numberOfInstancedPhysicalComponents > 0)
-		{
-			//Cache the pipeline.
-			VulkanPipeline &directionalShadowInstancedPhysicalPipeline{ *pipelines[INDEX(RenderPassStage::DirectionalInstancedPhysicalShadow)] };
+	//Record the execute command for the instanced physical shadow.
+	currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalInstancedPhysicalShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
-			const InstancedPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents() };
-
-			//Begin the pipeline and render pass.
-			commandBuffer->CommandBindPipeline(directionalShadowInstancedPhysicalPipeline.Get());
-			commandBuffer->CommandBeginRenderPass(directionalShadowInstancedPhysicalPipeline.GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_INLINE);
-
-			for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++renderComponent)
-			{
-				StaticArray<VkDescriptorSet, 2> instancedPhysicalDescriptorSets
-				{
-					currentDynamicUniformDataDescriptorSet->Get(),
-					static_cast<VkDescriptorSet>(renderComponent->descriptorSet)
-				};
-
-				StaticArray<VkBuffer, 2> instancedPhysicalBuffers
-				{
-					static_cast<const VkBuffer>(renderComponent->modelBuffer),
-					static_cast<const VkBuffer>(renderComponent->transformationsBuffer)
-				};
-
-				StaticArray<VkDeviceSize, 2> offsets
-				{
-					static_cast<VkDeviceSize>(0),
-					static_cast<VkDeviceSize>(0)
-				};
-
-				commandBuffer->CommandBindDescriptorSets(directionalShadowInstancedPhysicalPipeline.GetPipelineLayout(), 0, 2, instancedPhysicalDescriptorSets.Data());
-				commandBuffer->CommandBindVertexBuffers(2, instancedPhysicalBuffers.Data(), offsets.Data());
-				commandBuffer->CommandBindIndexBuffer(static_cast<const VkBuffer>(renderComponent->modelBuffer), renderComponent->indexOffset);
-				commandBuffer->CommandDrawIndexed(renderComponent->indexCount, renderComponent->instanceCount);
-			}
-
-			//End the render pass.
-			commandBuffer->CommandEndRenderPass();
-		}
-	}
-	*/
+	//End the render pass.
+	currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
 
 	//Bind the shadow map blur pipeline.
 	currentDirectionalShadowCommandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::ShadowMapBlur)]->Get());
