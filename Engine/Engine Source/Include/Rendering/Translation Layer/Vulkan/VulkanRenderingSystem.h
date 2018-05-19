@@ -321,9 +321,6 @@ private:
 	//The Vulkan frame data.
 	VulkanFrameData frameData;
 
-	//The current command buffer.
-	VulkanCommandBuffer *RESTRICT currentCommandBuffer;
-
 	//The current dynamic uniform data descriptor set.
 	VulkanDescriptorSet *RESTRICT currentDynamicUniformDataDescriptorSet;
 
@@ -386,11 +383,6 @@ private:
 	void BeginFrame() NOEXCEPT;
 
 	/*
-	*	Executes frame-dependant asynchronous tasks.
-	*/
-	void ExecuteFrameDependantAsynchronousTasks() NOEXCEPT;
-
-	/*
 	*	Concatenates all secondary command buffers into the previous one.
 	*/
 	void ConcatenateCommandBuffers() NOEXCEPT;
@@ -418,16 +410,6 @@ private:
 	*	Updates the view frustum culling.
 	*/
 	void UpdateViewFrustumCulling() NOEXCEPT;
-
-	/*
-	*	Renders directional shadows.
-	*/
-	void RenderDirectionalShadows() NOEXCEPT;
-
-	/*
-	*	Renders the ocean.
-	*/
-	void RenderOcean() NOEXCEPT;
 
 	/*
 	*	Updates the descriptor sets.

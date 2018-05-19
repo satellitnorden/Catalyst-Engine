@@ -24,6 +24,7 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	CURRENT_RENDERING_SYSTEM::Instance->InitializeSystem();
 
 	//Initialize all render passes.
+	DirectionalTerrainShadowRenderPass::Instance->Initialize();
 	TerrainRenderPass::Instance->Initialize();
 	StaticPhysicalRenderPass::Instance->Initialize();
 	InstancedPhysicalRenderPass::Instance->Initialize();
@@ -44,6 +45,7 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
 	//Render all render passes.
+	DirectionalTerrainShadowRenderPass::Instance->Render();
 	TerrainRenderPass::Instance->Render();
 	StaticPhysicalRenderPass::Instance->Render();
 	InstancedPhysicalRenderPass::Instance->Render();
