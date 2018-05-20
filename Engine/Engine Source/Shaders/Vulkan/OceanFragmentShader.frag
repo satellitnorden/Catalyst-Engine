@@ -124,19 +124,15 @@ void main()
 	//Calculate the reflection.
     vec3 reflection = CalculateReflection();
 
-    //Calculate the foam weight.
-    //float distanceToBottom = length(sceneWorldPosition - intersectionPoint);
-    //float foamWeight = 1.0f - min(distanceToBottom / 25.0f, 1.0f);
-
     //Sample the scene texture.
-    vec2 sceneTextureCoordinate = sceneWorldPosition.y > 0.0f ? fragmentTextureCoordinate : fragmentTextureCoordinate + normalDirection.xz;
+    vec2 sceneTextureCoordinate = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? fragmentTextureCoordinate : fragmentTextureCoordinate + normalDirection.xz;
     vec4 sceneTextureSampler = texture(sceneTexture, sceneTextureCoordinate);
 
     //Calculate the transparency.
     float transparency = 1.0f - clamp(dot(normalDirection, normalize(cameraWorldPosition - sceneWorldPosition)), 0.0f, 1.0f);
 
     //Calculate the final ocean color.
-    vec3 finalOceanColor = sceneWorldPosition.y > 0.0f ? sceneTextureSampler.rgb : mix(sceneTextureSampler.rgb, reflection, transparency);
+    vec3 finalOceanColor = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneTextureSampler.rgb : mix(sceneTextureSampler.rgb, reflection, transparency);
 
     //Write the fragment
     fragment = vec4(finalOceanColor, 1.0f);
