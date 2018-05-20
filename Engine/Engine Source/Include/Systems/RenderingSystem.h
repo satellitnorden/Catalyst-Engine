@@ -3,6 +3,9 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Math.
+#include <Math/Matrix4.h>
+
 //Rendering.
 #include <Rendering/Engine Layer/RenderingCore.h>
 
@@ -12,7 +15,6 @@ class CPUTexture2D;
 class EnvironmentMaterial;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
-class Matrix4;
 class OceanMaterial;
 class ParticleMaterial;
 class ParticleMaterialData;
@@ -71,6 +73,31 @@ public:
 	*	Returns the current frame index.
 	*/
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
+
+	/*
+	*	Returns the active camera.
+	*/
+	RESTRICTED const CameraEntity *const RESTRICT GetActiveCamera() const NOEXCEPT { return activeCamera; }
+
+	/*
+	*	Sets the active camera.
+	*/
+	void SetActiveCamera(const CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT { activeCamera = newActiveCamera; }
+
+	/*
+	*	Returns the projection matrix.
+	*/
+	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() const NOEXCEPT { return &projectionMatrix; }
+
+	/*
+	*	Returns the camera matrix.
+	*/
+	RESTRICTED const Matrix4 *const RESTRICT GetCameraMatrix() const NOEXCEPT { return &cameraMatrix; }
+
+	/*
+	*	Returns the view matrix.
+	*/
+	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() const NOEXCEPT { return &viewMatrix; }
 
 	/*
 	*	Finalizes the initialization of a render pass.
@@ -183,16 +210,6 @@ public:
 	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;
 
 	/*
-	*	Sets the active camera.
-	*/
-	void SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT;
-
-	/*
-	*	Returns the active camera.
-	*/
-	const CameraEntity *const RESTRICT GetActiveCamera() const NOEXCEPT;
-
-	/*
 	*	Sets the post processing blur amount.
 	*/
 	void SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT;
@@ -211,5 +228,24 @@ public:
 	*	Sets the post processing sharpen amount.
 	*/
 	void SetPostProcessingSharpenAmount(const float newSharpenAmount) NOEXCEPT;
+
+private:
+
+	//The active camera.
+	const CameraEntity *RESTRICT activeCamera{ nullptr };
+
+	//The projection matrix.
+	Matrix4 projectionMatrix;
+
+	//The camera matrix.
+	Matrix4 cameraMatrix;
+
+	//The view matrix.
+	Matrix4 viewMatrix;
+
+	/*
+	*	Updates the matrices.
+	*/
+	void UpdateMatrices() NOEXCEPT;
 
 };

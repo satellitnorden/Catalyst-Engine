@@ -26,6 +26,11 @@ public:
 	void UpdateSystemSynchronous() NOEXCEPT;
 
 	/*
+	*	Waits for the static physical culling to finish.
+	*/
+	void WaitForStaticPhysicalCulling() const NOEXCEPT;
+
+	/*
 	*	Waits for the vegetation culling to finish.
 	*/
 	void WaitForVegetationCulling() const NOEXCEPT;
@@ -35,6 +40,7 @@ private:
 	//Enumeration covering all culling tasks.
 	enum class CullingTask : uint8
 	{
+		StaticPhysical,
 		Vegetation,
 		NumberOfCullingTasks
 	};
@@ -49,6 +55,11 @@ private:
 	*	Initializes the culling tasks.
 	*/
 	void InitializeCullingTasks() NOEXCEPT;
+
+	/*
+	*	Culls static physical.
+	*/
+	void CullStaticPhysical() NOEXCEPT;
 
 	/*
 	*	Culls vegetation.

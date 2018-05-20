@@ -56,6 +56,61 @@ void CullingSystem::WaitForVegetationCulling() const NOEXCEPT
 }
 
 /*
+*	Culls static physical.
+*/
+void CullingSystem::CullStaticPhysical() NOEXCEPT
+{
+	/*
+	//Calulate the view matrix.
+	Vector3 cameraWorldPosition = activeCamera->GetPosition();
+	Vector3 forwardVector = activeCamera->GetForwardVector();
+	Vector3 upVector = activeCamera->GetUpVector();
+
+	Matrix4 cameraMatrix = Matrix4::LookAt(cameraWorldPosition, cameraWorldPosition + forwardVector, upVector);
+	Matrix4 viewMatrix{ projectionMatrix * cameraMatrix };
+
+	//Iterate over all static physical entity components to check if they are in the view frustum.
+	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
+	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
+	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents() };
+
+	for (uint64 i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++transformComponent)
+	{
+		//Make a local copy of the static physical entity's position.
+		const Vector3 position = transformComponent->position;
+		const Vector3 scale = transformComponent->scale;
+		const float biggestScale = CatalystMath::Maximum(scale.X, CatalystMath::Maximum(scale.Y, scale.Z));
+		const float scaledExtent = frustumCullingComponent->axisAlignedBoundingBox.maximum.X * biggestScale;
+
+		Vector4 corners[8];
+
+		corners[0] = Vector4(-scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
+		corners[1] = Vector4(-scaledExtent, scaledExtent, -scaledExtent, 1.0f);
+		corners[2] = Vector4(scaledExtent, scaledExtent, -scaledExtent, 1.0f);
+		corners[3] = Vector4(scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
+
+		corners[4] = Vector4(-scaledExtent, -scaledExtent, scaledExtent, 1.0f);
+		corners[5] = Vector4(-scaledExtent, scaledExtent, scaledExtent, 1.0f);
+		corners[6] = Vector4(scaledExtent, scaledExtent, scaledExtent, 1.0f);
+		corners[7] = Vector4(scaledExtent, -scaledExtent, scaledExtent, 1.0f);
+
+		for (uint8 i = 0; i < 8; ++i)
+		{
+			corners[i] += Vector4(position.X, position.Y, position.Z, 0.0f);
+
+			corners[i] = viewMatrix * corners[i];
+
+			corners[i].X /= corners[i].W;
+			corners[i].Y /= corners[i].W;
+			corners[i].Z /= corners[i].W;
+		}
+
+		frustumCullingComponent->isInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
+	}
+	*/
+}
+
+/*
 *	Culls vegetation.
 */
 void CullingSystem::CullVegetation() NOEXCEPT

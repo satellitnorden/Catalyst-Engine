@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/RenderingSystem.h>
 
+//Entities.
+#include <Entities/CameraEntity.h>
+
 //Rendering.
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/Resolution.h>
@@ -43,6 +46,9 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 */
 void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 {
+	//Update the matrices.
+	UpdateMatrices();
+
 	//Pre-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
@@ -290,24 +296,6 @@ UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBuf
 }
 
 /*
-*	Sets the active camera.
-*/
-void RenderingSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT
-{
-	//Set the active camera via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->SetActiveCamera(newActiveCamera);
-}
-
-/*
-*	Returns the active camera.
-*/
-const CameraEntity *const RESTRICT RenderingSystem::GetActiveCamera() const NOEXCEPT
-{
-	//Return the active camera via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetActiveCamera();
-}
-
-/*
 *	Sets the post processing blur amount.
 */
 void RenderingSystem::SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT
@@ -341,6 +329,24 @@ void RenderingSystem::SetPostProcessingSharpenAmount(const float newSharpenAmoun
 {
 	//Set the post processing sharpen amount via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->SetPostProcessingSharpenAmount(newSharpenAmount);
+}
+
+/*
+*	Updates the matrices.
+*/
+void RenderingSystem::UpdateMatrices() NOEXCEPT
+{
+	if (activeCamera)
+	{
+		//Calculate the projection matrix.
+		projectionMatrix = Matrix4::Perspective(CatalystMath::DegreesToRadians(activeCamera->GetFieldOfView()), 1920.0f / 1080.0f, activeCamera->GetNearPlane(), activeCamera->GetFarPlane());
+	
+		//Calculate the camera matrix.
+		cameraMatrix = Matrix4::LookAt(activeCamera->GetPosition(), activeCamera->GetPosition() + activeCamera->GetForwardVector(), activeCamera->GetUpVector());
+
+		//Calculate the view matrix.
+		viewMatrix = projectionMatrix * cameraMatrix;
+	}
 }
 
 //Undefine defines to keep them from leaking into other scopes.

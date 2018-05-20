@@ -164,16 +164,6 @@ public:
 	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;
 
 	/*
-	*	Sets the active camera.
-	*/
-	void SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT;
-
-	/*
-	*	Returns the active camera.
-	*/
-	const CameraEntity *const RESTRICT GetActiveCamera() const NOEXCEPT;
-
-	/*
 	*	Sets the post processing blur amount.
 	*/
 	void SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT;
@@ -267,7 +257,6 @@ private:
 	enum class TaskSemaphore : uint8
 	{
 		UpdateParticleSystemProperties,
-		UpdateViewFrustumCuling,
 		NumberOfTaskSemaphores
 	};
 
@@ -283,12 +272,6 @@ private:
 
 	//The main window.
 	Window mainWindow;
-
-	//The active camera.
-	CameraEntity *RESTRICT activeCamera;
-
-	//The current projection matrix.
-	Matrix4 projectionMatrix;
 
 	//The dynamic uniform data.
 	VulkanDynamicUniformData dynamicUniformData;
@@ -371,11 +354,6 @@ private:
 	void InitializeDefaultTextures() NOEXCEPT;
 
 	/*
-	*	Calculates the projection matrix.
-	*/
-	void CalculateProjectionMatrix() NOEXCEPT;
-
-	/*
 	*	Execute asynchronous tasks.
 	*/
 	void ExecuteAsynchronousTasks() NOEXCEPT;
@@ -403,11 +381,6 @@ private:
 	*	Updates the properties of particle systems.
 	*/
 	void UpdateParticleSystemProperties() const NOEXCEPT;
-
-	/*
-	*	Updates the view frustum culling.
-	*/
-	void UpdateViewFrustumCulling() NOEXCEPT;
 
 	/*
 	*	Updates the descriptor sets.

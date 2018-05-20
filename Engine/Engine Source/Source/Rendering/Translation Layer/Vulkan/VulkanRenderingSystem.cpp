@@ -50,6 +50,7 @@
 #include <Systems/EngineSystem.h>
 #include <Systems/EnvironmentSystem.h>
 #include <Systems/PhysicsSystem.h>
+#include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
 
 //Vulkan.
@@ -551,27 +552,6 @@ Texture2DHandle VulkanRenderingSystem::Create2DTexture(const TextureData &textur
 UniformBufferHandle VulkanRenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT
 {
 	return VulkanInterface::Instance->CreateUniformBuffer(uniformBufferSize);
-}
-
-/*
-*	Sets the active camera.
-*/
-void VulkanRenderingSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT
-{
-	//Set the active camera.
-	activeCamera = newActiveCamera;
-
-	//Calculate the projection matrix.
-	CalculateProjectionMatrix();
-}
-
-/*
-*	Returns the active camera.
-*/
-const CameraEntity *const RESTRICT VulkanRenderingSystem::GetActiveCamera() const NOEXCEPT
-{
-	//Return the active camera.
-	return activeCamera;
 }
 
 /*
@@ -1236,15 +1216,6 @@ void VulkanRenderingSystem::InitializeDefaultTextures() NOEXCEPT
 }
 
 /*
-*	Calculates the projection matrix.
-*/
-void VulkanRenderingSystem::CalculateProjectionMatrix() NOEXCEPT
-{
-	//Calculate the projection matrix.
-	projectionMatrix = Matrix4::Perspective(CatalystMath::DegreesToRadians(activeCamera->GetFieldOfView()), 1920.0f / 1080.0f, activeCamera->GetNearPlane(), activeCamera->GetFarPlane());
-}
-
-/*
 *	Execute asynchronous tasks.
 */
 void VulkanRenderingSystem::ExecuteAsynchronousTasks() NOEXCEPT
@@ -1254,11 +1225,6 @@ void VulkanRenderingSystem::ExecuteAsynchronousTasks() NOEXCEPT
 	{
 		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateParticleSystemProperties();
 	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateViewFrustumCulling();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateViewFrustumCuling)]));
 }
 
 /*
@@ -1488,59 +1454,6 @@ void VulkanRenderingSystem::UpdateParticleSystemProperties() const NOEXCEPT
 }
 
 /*
-*	Updates the view frustum culling.
-*/
-void VulkanRenderingSystem::UpdateViewFrustumCulling() NOEXCEPT
-{
-	//Calulate the view matrix.
-	Vector3 cameraWorldPosition = activeCamera->GetPosition();
-	Vector3 forwardVector = activeCamera->GetForwardVector();
-	Vector3 upVector = activeCamera->GetUpVector();
-
-	Matrix4 cameraMatrix = Matrix4::LookAt(cameraWorldPosition, cameraWorldPosition + forwardVector, upVector);
-	Matrix4 viewMatrix{ projectionMatrix * cameraMatrix };
-
-	//Iterate over all static physical entity components to check if they are in the view frustum.
-	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
-	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
-	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents() };
-
-	for (uint64 i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++transformComponent)
-	{
-		//Make a local copy of the static physical entity's position.
-		const Vector3 position = transformComponent->position;
-		const Vector3 scale = transformComponent->scale;
-		const float biggestScale = CatalystMath::Maximum(scale.X, CatalystMath::Maximum(scale.Y, scale.Z));
-		const float scaledExtent = frustumCullingComponent->axisAlignedBoundingBox.maximum.X * biggestScale;
-
-		Vector4 corners[8];
-
-		corners[0] = Vector4(-scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
-		corners[1] = Vector4(-scaledExtent, scaledExtent, -scaledExtent, 1.0f);
-		corners[2] = Vector4(scaledExtent, scaledExtent, -scaledExtent, 1.0f);
-		corners[3] = Vector4(scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
-
-		corners[4] = Vector4(-scaledExtent, -scaledExtent, scaledExtent, 1.0f);
-		corners[5] = Vector4(-scaledExtent, scaledExtent, scaledExtent, 1.0f);
-		corners[6] = Vector4(scaledExtent, scaledExtent, scaledExtent, 1.0f);
-		corners[7] = Vector4(scaledExtent, -scaledExtent, scaledExtent, 1.0f);
-
-		for (uint8 i = 0; i < 8; ++i)
-		{
-			corners[i] += Vector4(position.X, position.Y, position.Z, 0.0f);
-
-			corners[i] = viewMatrix * corners[i];
-
-			corners[i].X /= corners[i].W;
-			corners[i].Y /= corners[i].W;
-			corners[i].Z /= corners[i].W;
-		}
-
-		frustumCullingComponent->isInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
-	}
-}
-
-/*
 *	Updates the descriptor sets.
 */
 void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
@@ -1580,28 +1493,30 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 */
 void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 {
-	//Calculate the camera data
+	//Calculate the camera data.
+	const CameraEntity *const RESTRICT activeCamera{ RenderingSystem::Instance->GetActiveCamera() };
 	Vector3 cameraWorldPosition = activeCamera->GetPosition();
 	Vector3 forwardVector = activeCamera->GetForwardVector();
 	Vector3 upVector = activeCamera->GetUpVector();
 
-	Matrix4 cameraMatrix = Matrix4::LookAt(cameraWorldPosition, cameraWorldPosition + forwardVector, upVector);
-	Matrix4 viewMatrix{ projectionMatrix * cameraMatrix };
+	const Matrix4 *const RESTRICT projectionMatrix{ RenderingSystem::Instance->GetProjectionMatrix() };
+	const Matrix4 *const RESTRICT cameraMatrix{ RenderingSystem::Instance->GetCameraMatrix() };
+	const Matrix4 *const RESTRICT viewMatrix{ RenderingSystem::Instance->GetViewMatrix() };
 
-	Matrix4 inverseCameraMatrix{ cameraMatrix };
+	Matrix4 inverseCameraMatrix{ *cameraMatrix };
 	inverseCameraMatrix.Inverse();
 
-	Matrix4 cameraOriginMatrix{ cameraMatrix };
+	Matrix4 cameraOriginMatrix{ *cameraMatrix };
 	cameraOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
 
-	Matrix4 inverseProjectionMatrix{ projectionMatrix };
+	Matrix4 inverseProjectionMatrix{ *projectionMatrix };
 	inverseProjectionMatrix.Inverse();
 
 	dynamicUniformData.cameraFieldOfViewCosine = CatalystMath::CosineDegrees(activeCamera->GetFieldOfView()) - 0.2f;
 	dynamicUniformData.inverseCameraMatrix = inverseCameraMatrix;
 	dynamicUniformData.inverseProjectionMatrix = inverseProjectionMatrix;
-	dynamicUniformData.originViewMatrix = projectionMatrix * cameraOriginMatrix;
-	dynamicUniformData.viewMatrix = viewMatrix;
+	dynamicUniformData.originViewMatrix = *projectionMatrix * cameraOriginMatrix;
+	dynamicUniformData.viewMatrix = *viewMatrix;
 	dynamicUniformData.cameraForwardVector = forwardVector;
 	dynamicUniformData.cameraWorldPosition = cameraWorldPosition;
 
@@ -1615,7 +1530,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 		dynamicUniformData.directionalLightViewMatrix = RenderingUtilities::CalculateDirectionalLightViewMatrix();
 		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->rotation);
 		dynamicUniformData.directionalLightColor = directionalLightComponent->color;
-		dynamicUniformData.directionalLightScreenSpacePosition = viewMatrix * Vector4(-dynamicUniformData.directionalLightDirection.X * 100.0f + cameraWorldPosition.X, -dynamicUniformData.directionalLightDirection.Y * 100.0f + cameraWorldPosition.Y, -dynamicUniformData.directionalLightDirection.Z * 100.0f + cameraWorldPosition.Z, 1.0f);
+		dynamicUniformData.directionalLightScreenSpacePosition = *viewMatrix * Vector4(-dynamicUniformData.directionalLightDirection.X * 100.0f + cameraWorldPosition.X, -dynamicUniformData.directionalLightDirection.Y * 100.0f + cameraWorldPosition.Y, -dynamicUniformData.directionalLightDirection.Z * 100.0f + cameraWorldPosition.Z, 1.0f);
 		dynamicUniformData.directionalLightScreenSpacePosition.X /= dynamicUniformData.directionalLightScreenSpacePosition.W;
 		dynamicUniformData.directionalLightScreenSpacePosition.Y /= dynamicUniformData.directionalLightScreenSpacePosition.W;
 		dynamicUniformData.directionalLightScreenSpacePosition.Z /= dynamicUniformData.directionalLightScreenSpacePosition.W;
