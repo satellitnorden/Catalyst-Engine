@@ -9,6 +9,7 @@
 #include <Rendering/Engine Layer/PhysicalVertex.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
@@ -117,6 +118,9 @@ void StaticPhysicalRenderPass::Render() NOEXCEPT
 
 	//Bind the current dynamic uniform data descriptor set.
 	commandBuffer->BindDescriptorSets(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
+
+	//Wait for the static physical culling to finish.
+	CullingSystem::Instance->WaitForStaticPhysicalCulling();
 
 	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++frustumCullingComponent, ++renderComponent)
 	{

@@ -7,6 +7,9 @@
 //Entities.
 #include <Entities/CameraEntity.h>
 
+//Rendering.
+#include <Rendering/Engine Layer/RenderingUtilities.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
@@ -29,6 +32,7 @@ void CullingSystem::InitializeSystem() NOEXCEPT
 void CullingSystem::UpdateSystemSynchronous() NOEXCEPT
 {
 	//Fire off the culling tasks.
+	TaskSystem::Instance->ExecuteTask(tasks[INDEX(CullingTask::StaticPhysical)]);
 	TaskSystem::Instance->ExecuteTask(tasks[INDEX(CullingTask::Vegetation)]);
 }
 
@@ -37,6 +41,14 @@ void CullingSystem::UpdateSystemSynchronous() NOEXCEPT
 */
 void CullingSystem::InitializeCullingTasks() NOEXCEPT
 {
+	//Initialize the static physical culling task.
+	tasks[INDEX(CullingTask::StaticPhysical)].function = [](void *const RESTRICT)
+	{
+		CullingSystem::Instance->CullStaticPhysical();
+	};
+	tasks[INDEX(CullingTask::StaticPhysical)].arguments = nullptr;
+	tasks[INDEX(CullingTask::StaticPhysical)].semaphore = &semaphores[INDEX(CullingTask::StaticPhysical)];
+
 	//Initialize the vegetation culling task.
 	tasks[INDEX(CullingTask::Vegetation)].function = [](void *const RESTRICT)
 	{
@@ -44,6 +56,15 @@ void CullingSystem::InitializeCullingTasks() NOEXCEPT
 	};
 	tasks[INDEX(CullingTask::Vegetation)].arguments = nullptr;
 	tasks[INDEX(CullingTask::Vegetation)].semaphore = &semaphores[INDEX(CullingTask::Vegetation)];
+}
+
+/*
+*	Waits for the static physical culling to finish.
+*/
+void CullingSystem::WaitForStaticPhysicalCulling() const NOEXCEPT
+{
+	//Wait for the static physical culling to finish.
+	semaphores[INDEX(CullingTask::StaticPhysical)].WaitFor();
 }
 
 /*
@@ -60,29 +81,23 @@ void CullingSystem::WaitForVegetationCulling() const NOEXCEPT
 */
 void CullingSystem::CullStaticPhysical() NOEXCEPT
 {
-	/*
-	//Calulate the view matrix.
-	Vector3 cameraWorldPosition = activeCamera->GetPosition();
-	Vector3 forwardVector = activeCamera->GetForwardVector();
-	Vector3 upVector = activeCamera->GetUpVector();
+	//Get the view matrix.
+	const Matrix4& viewMatrix{ *RenderingSystem::Instance->GetViewMatrix() };
 
-	Matrix4 cameraMatrix = Matrix4::LookAt(cameraWorldPosition, cameraWorldPosition + forwardVector, upVector);
-	Matrix4 viewMatrix{ projectionMatrix * cameraMatrix };
-
-	//Iterate over all static physical entity components to check if they are in the view frustum.
-	const uint64 numberOfPhysicalEntityComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
+	//Iterate over all static physical components to check if they are in the view frustum.
+	const uint64 numberOfStaticPhysicalComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
 	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
 	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents() };
 
-	for (uint64 i = 0; i < numberOfPhysicalEntityComponents; ++i, ++frustumCullingComponent, ++transformComponent)
+	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++frustumCullingComponent, ++transformComponent)
 	{
-		//Make a local copy of the static physical entity's position.
-		const Vector3 position = transformComponent->position;
-		const Vector3 scale = transformComponent->scale;
+		//Cache relevant data.
+		const Vector3& position = transformComponent->position;
+		const Vector3& scale = transformComponent->scale;
 		const float biggestScale = CatalystMath::Maximum(scale.X, CatalystMath::Maximum(scale.Y, scale.Z));
 		const float scaledExtent = frustumCullingComponent->axisAlignedBoundingBox.maximum.X * biggestScale;
 
-		Vector4 corners[8];
+		StaticArray<Vector4, 8> corners;
 
 		corners[0] = Vector4(-scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
 		corners[1] = Vector4(-scaledExtent, scaledExtent, -scaledExtent, 1.0f);
@@ -107,7 +122,6 @@ void CullingSystem::CullStaticPhysical() NOEXCEPT
 
 		frustumCullingComponent->isInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
 	}
-	*/
 }
 
 /*

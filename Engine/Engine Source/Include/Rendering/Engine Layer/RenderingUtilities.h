@@ -14,6 +14,7 @@
 #include <Rendering/Engine Layer/PhysicalVertex.h>
 #include <Rendering/Engine Layer/RenderingCore.h>
 #include <Rendering/Engine Layer/TerrainUniformData.h>
+#include <Rendering/Engine Layer/VegetationTransformation.h>
 #include <Rendering/Engine Layer/WaterUniformData.h>
 
 namespace RenderingUtilities
@@ -215,7 +216,7 @@ namespace RenderingUtilities
 	/*
 	*	Given 8 corners of a cube, determine if it is within the view frustum.
 	*/
-	static bool IsCubeWithinViewFrustum(const Vector4 *RESTRICT corners) NOEXCEPT
+	static bool IsCubeWithinViewFrustum(const StaticArray<Vector4, 8> &corners) NOEXCEPT
 	{
 		float highestX{ -FLOAT_MAXIMUM };
 		float lowestX{ FLOAT_MAXIMUM };
