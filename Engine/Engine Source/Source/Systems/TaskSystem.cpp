@@ -59,7 +59,7 @@ void TaskSystem::ReleaseSystem() NOEXCEPT
 /*
 *	Executes a task.
 */
-void TaskSystem::ExecuteTask(Task &&newTask) NOEXCEPT
+void TaskSystem::ExecuteTask(const Task &newTask) NOEXCEPT
 {
 	//Reset the semaphore.
 	newTask.semaphore->Reset();

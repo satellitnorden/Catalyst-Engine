@@ -15,6 +15,11 @@ class Task final
 public:
 
 	/*
+	*	Default constructor.
+	*/
+	Task() NOEXCEPT = default;
+
+	/*
 	*	Constructor taking all values as arguments.
 	*
 	*	'initialFunction' - The function that this task will exeucte.

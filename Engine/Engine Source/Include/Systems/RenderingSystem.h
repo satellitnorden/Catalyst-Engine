@@ -188,6 +188,11 @@ public:
 	void SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT;
 
 	/*
+	*	Returns the active camera.
+	*/
+	const CameraEntity *const RESTRICT GetActiveCamera() const NOEXCEPT;
+
+	/*
 	*	Sets the post processing blur amount.
 	*/
 	void SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT;

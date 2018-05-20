@@ -35,7 +35,7 @@ public:
 	/*
 	*	Executes a task. If a valid semaphore is passed in, it will be automatically reset.
 	*/
-	void ExecuteTask(Task &&newTask) NOEXCEPT;
+	void ExecuteTask(const Task &newTask) NOEXCEPT;
 
 private:
 

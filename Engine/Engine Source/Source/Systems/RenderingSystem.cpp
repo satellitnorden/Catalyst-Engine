@@ -299,6 +299,15 @@ void RenderingSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NO
 }
 
 /*
+*	Returns the active camera.
+*/
+const CameraEntity *const RESTRICT RenderingSystem::GetActiveCamera() const NOEXCEPT
+{
+	//Return the active camera via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetActiveCamera();
+}
+
+/*
 *	Sets the post processing blur amount.
 */
 void RenderingSystem::SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT

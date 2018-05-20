@@ -169,6 +169,11 @@ public:
 	void SetActiveCamera(CameraEntity *RESTRICT newActiveCamera) NOEXCEPT;
 
 	/*
+	*	Returns the active camera.
+	*/
+	const CameraEntity *const RESTRICT GetActiveCamera() const NOEXCEPT;
+
+	/*
 	*	Sets the post processing blur amount.
 	*/
 	void SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT;
@@ -261,9 +266,7 @@ private:
 	//Enumeration covering all task semaphores.
 	enum class TaskSemaphore : uint8
 	{
-		RenderDirectionalShadows,
 		UpdateParticleSystemProperties,
-		UpdateVegetationCulling,
 		UpdateViewFrustumCuling,
 		NumberOfTaskSemaphores
 	};
@@ -400,11 +403,6 @@ private:
 	*	Updates the properties of particle systems.
 	*/
 	void UpdateParticleSystemProperties() const NOEXCEPT;
-
-	/*
-	*	Updates the vegetation culling.
-	*/
-	void UpdateVegetationCulling() const NOEXCEPT;
 
 	/*
 	*	Updates the view frustum culling.

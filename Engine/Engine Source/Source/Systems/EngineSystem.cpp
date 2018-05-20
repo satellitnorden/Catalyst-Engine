@@ -2,6 +2,7 @@
 #include <Systems/EngineSystem.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/InputSystem.h>
@@ -21,6 +22,7 @@ void EngineSystem::InitializeSystem(const CatalystProjectInformation &initialPro
 	projectInformation = initialProjectInformation;
 
 	//Initialize all systems.
+	CullingSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem();
 	SoundSystem::Instance->InitializeSystem();
 	TaskSystem::Instance->InitializeSystem(projectInformation.multithreadingInformation);
@@ -42,6 +44,9 @@ bool EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 
 	//Update the entity system.
 	EntitySystem::Instance->UpdateSystemSynchronous();
+
+	//Update the culling system.
+	CullingSystem::Instance->UpdateSystemSynchronous();
 
 	//Update the physics system.
 	PhysicsSystem::Instance->UpdateSystemSynchronous(deltaTime);

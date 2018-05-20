@@ -566,6 +566,15 @@ void VulkanRenderingSystem::SetActiveCamera(CameraEntity *RESTRICT newActiveCame
 }
 
 /*
+*	Returns the active camera.
+*/
+const CameraEntity *const RESTRICT VulkanRenderingSystem::GetActiveCamera() const NOEXCEPT
+{
+	//Return the active camera.
+	return activeCamera;
+}
+
+/*
 *	Sets the post processing blur amount.
 */
 void VulkanRenderingSystem::SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT
@@ -1248,11 +1257,6 @@ void VulkanRenderingSystem::ExecuteAsynchronousTasks() NOEXCEPT
 
 	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
 	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateVegetationCulling();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateVegetationCulling)]));
-
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
 		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateViewFrustumCulling();
 	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateViewFrustumCuling)]));
 }
@@ -1480,35 +1484,6 @@ void VulkanRenderingSystem::UpdateParticleSystemProperties() const NOEXCEPT
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
 		static_cast<VulkanUniformBuffer *const RESTRICT>(component->propertiesUniformBuffer)->UploadData(&VulkanParticleSystemProperties(component->properties));
-	}
-}
-
-/*
-*	Updates the vegetation culling.
-*/
-void VulkanRenderingSystem::UpdateVegetationCulling() const NOEXCEPT
-{
-	//Go through all vegetation components and update their culling
-	const uint64 numberOfVegetationComponents{ ComponentManager::GetNumberOfVegetationComponents() };
-
-	//If there are none, just return.
-	if (numberOfVegetationComponents == 0)
-	{
-		return;
-	}
-
-	VegetationComponent *RESTRICT renderComponent{ ComponentManager::GetVegetationComponents() };
-	const VegetationCullingComponent *RESTRICT cullingComponent{ ComponentManager::GetVegetationCullingComponents() };
-
-	const Vector3 &cameraWorldPosition{ activeCamera->GetPosition() };
-
-	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++renderComponent, ++cullingComponent)
-	{
-		for (uint64 i = 0, size = renderComponent->shouldDrawGridCell.Size(); i < size; ++i)
-		{
-			renderComponent->shouldDrawGridCell[i] =	CatalystMath::Absolute(cameraWorldPosition.X - cullingComponent->gridCellCenterLocations[i].X) <= cullingComponent->cutoffDistance &&
-														CatalystMath::Absolute(cameraWorldPosition.Z - cullingComponent->gridCellCenterLocations[i].Y) <= cullingComponent->cutoffDistance;
-		}
 	}
 }
 

@@ -9,6 +9,7 @@
 #include <Rendering/Engine Layer/VegetationTransformation.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
@@ -108,6 +109,9 @@ void VegetationRenderPass::Render() NOEXCEPT
 
 	//Bind the current dynamic uniform data descriptor set.
 	commandBuffer->BindDescriptorSets(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
+
+	//Wait for the vegetation culling to finish.
+	CullingSystem::Instance->WaitForVegetationCulling();
 
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{

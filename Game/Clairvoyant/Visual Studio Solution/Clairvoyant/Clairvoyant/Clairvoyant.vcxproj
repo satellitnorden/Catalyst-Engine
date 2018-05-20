@@ -303,6 +303,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\WaterMaterialData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundBank.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundCore.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\CullingSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EngineSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EnvironmentSystem.h" />
@@ -403,6 +404,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Translation Layer\Vulkan\VulkanRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Translation Layer\Vulkan\VulkanTranslationCommandBuffer.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Resources\ResourceLoader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\CullingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\EngineSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\EntitySystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\EnvironmentSystem.cpp" />
