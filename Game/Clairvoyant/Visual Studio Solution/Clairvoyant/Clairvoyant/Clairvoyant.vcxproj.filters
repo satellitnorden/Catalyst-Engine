@@ -786,6 +786,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\DirectionalInstancedPhysicalShadowRenderPass.h">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\ShadowBlurRenderPass.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
@@ -1074,6 +1077,9 @@
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\DirectionalInstancedPhysicalShadowRenderPass.cpp">
+      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\ShadowBlurRenderPass.cpp">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
     </ClCompile>
   </ItemGroup>

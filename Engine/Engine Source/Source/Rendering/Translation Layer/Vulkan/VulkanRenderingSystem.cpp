@@ -90,9 +90,6 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize all shader modules.
 	InitializeShaderModules();
 
-	//Initialize all pipelines.
-	InitializePipelines();
-
 	//Initialize all descriptor sets.
 	InitializeDescriptorSets();
 
@@ -805,6 +802,14 @@ DescriptorSetHandle VulkanRenderingSystem::GetPostProcessingDescriptorSet() NOEX
 }
 
 /*
+*	Returns the shadow blur descriptor set.
+*/
+DescriptorSetHandle VulkanRenderingSystem::GetShadowBlurDescriptorSet() NOEXCEPT
+{
+	return descriptorSets[INDEX(DescriptorSet::ShadowBlur)].Get();
+}
+
+/*
 *	Returns the current directional shadow event.
 */
 EventHandle VulkanRenderingSystem::GetCurrentDirectionalShadowEvent() NOEXCEPT
@@ -1093,7 +1098,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		//Initialize the shadow map blur fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetShadowMapBlurFragmentShaderData(data);
-		shaderModules[INDEX(Shader::ShadowMapBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		shaderModules[INDEX(Shader::ShadowBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -1161,64 +1166,18 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 }
 
 /*
-*	Initializes all pipelines.
-*/
-void VulkanRenderingSystem::InitializePipelines() NOEXCEPT
-{
-	{
-		//Create the shadow map blur pipeline.
-		VulkanPipelineCreationParameters shadowMapBlurPipelineCreationParameters;
-
-		shadowMapBlurPipelineCreationParameters.attachmentLoadOperator = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		shadowMapBlurPipelineCreationParameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		shadowMapBlurPipelineCreationParameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		shadowMapBlurPipelineCreationParameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		shadowMapBlurPipelineCreationParameters.colorAttachments.UpsizeSlow(1);
-		shadowMapBlurPipelineCreationParameters.colorAttachments[0].Reserve(1);
-		shadowMapBlurPipelineCreationParameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(RenderTarget::DirectionalPostBlurShadowMap)]->GetImageView());
-		shadowMapBlurPipelineCreationParameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		shadowMapBlurPipelineCreationParameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		shadowMapBlurPipelineCreationParameters.depthAttachmentStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		shadowMapBlurPipelineCreationParameters.depthBuffer = nullptr;
-		shadowMapBlurPipelineCreationParameters.depthCompareOp = VK_COMPARE_OP_LESS;
-		shadowMapBlurPipelineCreationParameters.depthTestEnable = VK_FALSE;
-		shadowMapBlurPipelineCreationParameters.depthWriteEnable = VK_FALSE;
-		StaticArray<VulkanDescriptorSetLayout, 2> shadowMapBlurDescriptorSetLayouts
-		{
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)],
-			descriptorSetLayouts[INDEX(DescriptorSetLayout::ShadowMapBlur)]
-		};
-		shadowMapBlurPipelineCreationParameters.descriptorSetLayoutCount = static_cast<uint32>(shadowMapBlurDescriptorSetLayouts.Size());
-		shadowMapBlurPipelineCreationParameters.descriptorSetLayouts = shadowMapBlurDescriptorSetLayouts.Data();
-		shadowMapBlurPipelineCreationParameters.pushConstantRangeCount = 0;
-		shadowMapBlurPipelineCreationParameters.pushConstantRanges = nullptr;
-		shadowMapBlurPipelineCreationParameters.shaderModules.Reserve(2);
-		shadowMapBlurPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::ViewportVertex)]);
-		shadowMapBlurPipelineCreationParameters.shaderModules.EmplaceFast(shaderModules[INDEX(Shader::ShadowMapBlurFragment)]);
-		shadowMapBlurPipelineCreationParameters.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-		shadowMapBlurPipelineCreationParameters.vertexInputAttributeDescriptionCount = 0;
-		shadowMapBlurPipelineCreationParameters.vertexInputAttributeDescriptions = nullptr;
-		shadowMapBlurPipelineCreationParameters.vertexInputBindingDescriptionCount = 0;
-		shadowMapBlurPipelineCreationParameters.vertexInputBindingDescriptions = nullptr;
-		shadowMapBlurPipelineCreationParameters.viewportExtent = VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION };
-
-		pipelines[INDEX(RenderPassStage::ShadowMapBlur)] = VulkanInterface::Instance->CreatePipeline(shadowMapBlurPipelineCreationParameters);
-	}
-}
-
-/*
 *	Initializes all descriptor sets.
 */
 void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 {
 	{
 		//Initialize the shadow map blur descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::ShadowMapBlur)], descriptorSetLayouts[INDEX(DescriptorSetLayout::ShadowMapBlur)]);
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::ShadowBlur)], descriptorSetLayouts[INDEX(DescriptorSetLayout::ShadowMapBlur)]);
 
 		//Update the write descriptor sets.
 		StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
 		{
-			renderTargets[INDEX(RenderTarget::DirectionalPreBlurShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::ShadowMapBlur)], 0)
+			renderTargets[INDEX(RenderTarget::DirectionalPreBlurShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::ShadowBlur)], 0)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -1346,23 +1305,11 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//End the render pass.
 	currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
 
-	//Bind the shadow map blur pipeline.
-	currentDirectionalShadowCommandBuffer->CommandBindPipeline(pipelines[INDEX(RenderPassStage::ShadowMapBlur)]->Get());
-
 	//Bind the shadow map blur render pass.
-	currentDirectionalShadowCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::ShadowMapBlur)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_INLINE);
+	currentDirectionalShadowCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::ShadowBlur)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Bind the shadow map blur descriptor set.
-	StaticArray<VkDescriptorSet, 2> shadowMapBlurDescriptorSets
-	{
-		currentDynamicUniformDataDescriptorSet->Get(),
-		descriptorSets[INDEX(DescriptorSet::ShadowMapBlur)].Get()
-	};
-
-	currentDirectionalShadowCommandBuffer->CommandBindDescriptorSets(pipelines[INDEX(RenderPassStage::ShadowMapBlur)]->GetPipelineLayout(), 0, static_cast<uint32>(shadowMapBlurDescriptorSets.Size()), shadowMapBlurDescriptorSets.Data());
-
-	//Draw the viewport!
-	currentDirectionalShadowCommandBuffer->CommandDraw(4, 1);
+	//Record the execute command for the instanced physical shadow.
+	currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(ShadowBlurRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
 	//End the shadow map blur render pass.
 	currentDirectionalShadowCommandBuffer->CommandEndRenderPass();

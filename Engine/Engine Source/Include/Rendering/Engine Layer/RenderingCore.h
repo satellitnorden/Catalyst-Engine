@@ -25,7 +25,7 @@ enum class RenderPassStage : uint8
 {
 	DirectionalTerrainShadow,
 	DirectionalInstancedPhysicalShadow,
-	ShadowMapBlur,
+	ShadowBlur,
 	Terrain,
 	StaticPhysical,
 	InstancedPhysical,
@@ -133,7 +133,7 @@ enum class Shader : uint8
 	PostProcessingFragment,
 	PhysicalFragment,
 	PhysicalVertex,
-	ShadowMapBlurFragment,
+	ShadowBlurFragment,
 	ShadowMapFragment,
 	TerrainFragment,
 	TerrainTessellationControl,

@@ -26,6 +26,7 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize all render passes.
 	DirectionalTerrainShadowRenderPass::Instance->Initialize();
 	DirectionalInstancedPhysicalShadowRenderPass::Instance->Initialize();
+	ShadowBlurRenderPass::Instance->Initialize();
 	TerrainRenderPass::Instance->Initialize();
 	StaticPhysicalRenderPass::Instance->Initialize();
 	InstancedPhysicalRenderPass::Instance->Initialize();
@@ -48,6 +49,7 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	//Render all render passes.
 	DirectionalTerrainShadowRenderPass::Instance->Render();
 	DirectionalInstancedPhysicalShadowRenderPass::Instance->Render();
+	ShadowBlurRenderPass::Instance->Render();
 	TerrainRenderPass::Instance->Render();
 	StaticPhysicalRenderPass::Instance->Render();
 	InstancedPhysicalRenderPass::Instance->Render();
@@ -141,6 +143,15 @@ DescriptorSetHandle RenderingSystem::GetPostProcessingDescriptorSet() const NOEX
 {
 	//Return the post processing descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetPostProcessingDescriptorSet();
+}
+
+/*
+*	Returns the shadow blur descriptor set.
+*/
+DescriptorSetHandle RenderingSystem::GetShadowBlurDescriptorSet() const NOEXCEPT
+{
+	//Return the shadow blur descriptor set via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetShadowBlurDescriptorSet();
 }
 
 /*

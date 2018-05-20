@@ -103,6 +103,11 @@ public:
 	DescriptorSetHandle GetPostProcessingDescriptorSet() const NOEXCEPT;
 
 	/*
+	*	Returns the shadow blur descriptor set.
+	*/
+	DescriptorSetHandle GetShadowBlurDescriptorSet() const NOEXCEPT;
+
+	/*
 	*	Returns the current directional shadow event.
 	*/
 	EventHandle GetCurrentDirectionalShadowEvent() const NOEXCEPT;

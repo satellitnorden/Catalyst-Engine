@@ -223,6 +223,11 @@ private:
 	DescriptorSetHandle GetPostProcessingDescriptorSet() NOEXCEPT;
 
 	/*
+	*	Returns the shadow blur descriptor set.
+	*/
+	DescriptorSetHandle GetShadowBlurDescriptorSet() NOEXCEPT;
+
+	/*
 	*	Returns the current directional shadow event.
 	*/
 	EventHandle GetCurrentDirectionalShadowEvent() NOEXCEPT;
@@ -239,7 +244,7 @@ private:
 	enum class DescriptorSet : uint8
 	{
 		Environment,
-		ShadowMapBlur,
+		ShadowBlur,
 		Lighting,
 		PostProcessing,
 		NumberOfDescriptorSets
@@ -351,11 +356,6 @@ private:
 	*	Initializes all shader modules.
 	*/
 	void InitializeShaderModules() NOEXCEPT;
-
-	/*
-	*	Initializes all pipelines.
-	*/
-	void InitializePipelines() NOEXCEPT;
 
 	/*
 	*	Initializes all descriptor sets.

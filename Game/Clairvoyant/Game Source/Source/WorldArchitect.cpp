@@ -257,7 +257,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		}
 
 		const Vector3 rotation{ 0.0f, CatalystMath::RandomFloatInRange(0.0f, 360.0f), 0.0f };
-		const float stoneScale = CatalystMath::RandomFloatInRange(0.1f * 10.0f, 0.5f * 10.0f);
+		const float stoneScale = CatalystMath::RandomFloatInRange(0.1f, 0.5f);
 		const Vector3 scale{ stoneScale, stoneScale, stoneScale };
 
 		stoneTransformations.EmplaceFast(position, rotation, scale);
