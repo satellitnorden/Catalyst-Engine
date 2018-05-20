@@ -92,6 +92,9 @@ void VegetationRenderPass::Render() NOEXCEPT
 	//If there's none to render - render none.
 	if (numberOfVegetationComponents == 0)
 	{
+		//Don't include this render pass in the final render.
+		SetIncludeInRender(false);
+
 		return;
 	}
 
@@ -122,4 +125,7 @@ void VegetationRenderPass::Render() NOEXCEPT
 
 	//End the command buffer.
 	commandBuffer->End(this);
+
+	//Include this render pass in the final render.
+	SetIncludeInRender(true);
 }

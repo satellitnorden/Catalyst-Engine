@@ -1291,25 +1291,35 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	currentDirectionalShadowCommandBuffer->CommandBeginRenderPassAndClear<2>(pipelines[INDEX(RenderPassStage::DirectionalTerrainShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Record the execute command for the terrain shadow.
-	currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalTerrainShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
-
+	if (DirectionalTerrainShadowRenderPass::Instance->IncludeInRender())
+	{
+		currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalTerrainShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+	}
+	
 	//End the render pass.
 	currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
 
-	//Begin the instanced physical shadow render pass.
-	currentDirectionalShadowCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::DirectionalInstancedPhysicalShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	if (DirectionalInstancedPhysicalShadowRenderPass::Instance->IncludeInRender())
+	{
+		//Begin the instanced physical shadow render pass.
+		currentDirectionalShadowCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::DirectionalInstancedPhysicalShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Record the execute command for the instanced physical shadow.
-	currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalInstancedPhysicalShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+		//Record the execute command for the instanced physical shadow.
+		currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalInstancedPhysicalShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
-	//End the render pass.
-	currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
-
+		//End the render pass.
+		currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
+	}
+	
 	//Bind the shadow map blur render pass.
 	currentDirectionalShadowCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::ShadowBlur)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Record the execute command for the instanced physical shadow.
-	currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(ShadowBlurRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+	if (ShadowBlurRenderPass::Instance->IncludeInRender())
+	{
+		currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(ShadowBlurRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+
+	}
 
 	//End the shadow map blur render pass.
 	currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
@@ -1331,12 +1341,15 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<4>(pipelines[INDEX(RenderPassStage::Terrain)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Record the execute command for the terrain.
-	currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(TerrainRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+	if (TerrainRenderPass::Instance->IncludeInRender())
+	{
+		currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(TerrainRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+	}
 
 	//End the terrain render pass.
 	currentPrimaryCommandBuffer->CommandEndRenderPass();
 
-	if (ComponentManager::GetNumberOfStaticPhysicalComponents() > 0)
+	if (StaticPhysicalRenderPass::Instance->IncludeInRender())
 	{
 		//Begin the static physical entities render pass.
 		currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::StaticPhysical)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
@@ -1348,7 +1361,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		currentPrimaryCommandBuffer->CommandEndRenderPass();
 	}
 
-	if (ComponentManager::GetNumberOfInstancedPhysicalComponents() > 0)
+	if (InstancedPhysicalRenderPass::Instance->IncludeInRender())
 	{
 		//Begin the instanced physical entities render pass.
 		currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::InstancedPhysical)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
@@ -1360,7 +1373,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		currentPrimaryCommandBuffer->CommandEndRenderPass();
 	}
 
-	if (ComponentManager::GetNumberOfVegetationComponents() > 0)
+	if (VegetationRenderPass::Instance->IncludeInRender())
 	{
 		//Begin the vegetation entities render pass.
 		currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::Vegetation)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
@@ -1376,24 +1389,30 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<2>(pipelines[INDEX(RenderPassStage::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Record the execute command for the lighting.
-	currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(LightingRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
-
+	if (LightingRenderPass::Instance->IncludeInRender())
+	{
+		currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(LightingRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+	}
+	
 	//End the lighting render pass.
 	currentPrimaryCommandBuffer->CommandEndRenderPass();
 
 	//Reset the directional shadow event.
 	currentPrimaryCommandBuffer->CommandResetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
-	//Begin the sky render pass.
-	currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::Sky)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	if (SkyRenderPass::Instance->IncludeInRender())
+	{
+		//Begin the sky render pass.
+		currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::Sky)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
-	//Record the execute command for the sky.
-	currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(SkyRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+		//Record the execute command for the sky.
+		currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(SkyRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
-	//End the sky render pass.
-	currentPrimaryCommandBuffer->CommandEndRenderPass();
-
-	if (ComponentManager::GetNumberOfParticleSystemComponents() > 0)
+		//End the sky render pass.
+		currentPrimaryCommandBuffer->CommandEndRenderPass();
+	}
+	
+	if (ParticleSystemRenderPass::Instance->IncludeInRender())
 	{
 		//Begin the particle system entities render pass.
 		currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::ParticleSystem)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
@@ -1409,14 +1428,20 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Record the execute command for the ocean.
-	currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(OceanRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+	if (OceanRenderPass::Instance->IncludeInRender())
+	{
+		currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(OceanRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+	}
 
 	//End the static particle system render pass.
 	currentPrimaryCommandBuffer->CommandEndRenderPass();
 
 	//Bind the post processing render pass.
-	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
-
+	if (PostProcessingRenderPass::Instance->IncludeInRender())
+	{
+		currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::PostProcessing)]->GetRenderPass(), frameData.GetCurrentFrame(), VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	}
+	
 	//Record the execute command for the post processing.
 	currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(PostProcessingRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 

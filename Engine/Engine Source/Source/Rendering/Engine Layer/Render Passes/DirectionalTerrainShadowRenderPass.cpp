@@ -85,6 +85,9 @@ void DirectionalTerrainShadowRenderPass::Render() NOEXCEPT
 	//If there's none to render - render none.
 	if (numberOfTerrainComponents == 0)
 	{
+		//Don't include this render pass in the final render.
+		SetIncludeInRender(false);
+
 		return;
 	}
 
@@ -111,4 +114,7 @@ void DirectionalTerrainShadowRenderPass::Render() NOEXCEPT
 
 	//End the command buffer.
 	commandBuffer->End(this);
+
+	//Include this render pass in the final render.
+	SetIncludeInRender(true);
 }

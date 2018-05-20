@@ -151,6 +151,11 @@ public:
 	void AddCommandBuffer(CommandBuffer *const RESTRICT newCommandBuffer) NOEXCEPT { commandBuffers.EmplaceFast(newCommandBuffer); }
 
 	/*
+	*	Returns whether or not this render pass should be included in the final render.
+	*/
+	bool IncludeInRender() const NOEXCEPT { return includeInRender; }
+
+	/*
 	*	Returns the current command buffer.
 	*/
 	CommandBuffer *const RESTRICT GetCurrentCommandBuffer() NOEXCEPT;
@@ -302,6 +307,11 @@ protected:
 	*/
 	void FinalizeInitialization() NOEXCEPT;
 
+	/*
+	*	Sets whether or not this render pass should be included in the final render.
+	*/
+	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { includeInRender = newIncludeInRender; }
+
 private:
 
 	//The data for this render pass.
@@ -375,6 +385,9 @@ private:
 
 	//The topology.
 	Topology topology;
+
+	//Denotes whether or not this render pass should be included in the final render.
+	bool includeInRender;
 
 	//The command buffers.
 	DynamicArray<CommandBuffer *RESTRICT> commandBuffers;

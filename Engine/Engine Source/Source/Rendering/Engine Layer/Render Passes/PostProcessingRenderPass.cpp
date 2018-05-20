@@ -81,4 +81,7 @@ void PostProcessingRenderPass::Render() NOEXCEPT
 
 	//End the command buffer.
 	commandBuffer->End(this);
+
+	//Include this render pass in the final render.
+	SetIncludeInRender(true);
 }
