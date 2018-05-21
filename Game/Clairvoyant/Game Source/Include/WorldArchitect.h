@@ -5,6 +5,7 @@
 
 //Forward declarations.
 class DirectionalLightEntity;
+class Vector3;
 
 class WorldArchitect final
 {
@@ -23,5 +24,27 @@ public:
 	*	Updates the world architects.
 	*/
 	void Update(const float deltaTime) NOEXCEPT;
+
+private:
+
+	/*
+	*	Given an X and Y coordinate in the 0.0f-1.0f range, calculate and return the island falloff multiplier.
+	*/
+	float CalculateIslandFalloffMultiplier(const float xCoordinate, const float yCoordinate) NOEXCEPT;
+
+	/*
+	*	Generates a new island.
+	*/
+	void GenerateIsland(const Vector3 &worldPosition) NOEXCEPT;
+
+	/*
+	*	Generates the terrain.
+	*/
+	void GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT;
+
+	/*
+	*	Generates the vegetation.
+	*/
+	void GenerateVegetation(const Vector3 &worldPosition) NOEXCEPT;
 
 };

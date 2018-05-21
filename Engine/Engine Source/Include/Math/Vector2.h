@@ -15,6 +15,16 @@ public:
 	float Y;
 
 	/*
+	*	Given a vector, return it's length.
+	*/
+	static constexpr float Length(const Vector2 &vector) NOEXCEPT { return CatalystMath::SquareRoot(vector.X * vector.X + vector.Y * vector.Y); }
+
+	/*
+	*	Given a vector, return it's length squared.
+	*/
+	static constexpr float LengthSquared(const Vector2 &vector) NOEXCEPT { return vector.X * vector.X + vector.Y * vector.Y; }
+
+	/*
 	*	Default constructor.
 	*/
 	constexpr Vector2() NOEXCEPT

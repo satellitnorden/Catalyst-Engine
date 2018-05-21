@@ -28,10 +28,9 @@ class ResourceLoader final
 public:
 
 	/*
-	*	Given a file path, load a resource collection.
-	*	The loading is done asynchronously, so the semaphore passed in will be signalled as soon as it is done.
+	*	Given a file path, loads a resource collection.
 	*/
-	static void LoadResourceCollection(char *RESTRICT filePath, Semaphore *const RESTRICT semaphore) NOEXCEPT;
+	static void LoadResourceCollection(char *RESTRICT filePath) NOEXCEPT;
 
 	/*
 	*	Given a resource ID, return the corresponding environment material.

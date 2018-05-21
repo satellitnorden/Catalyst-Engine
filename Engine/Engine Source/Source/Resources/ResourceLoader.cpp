@@ -34,13 +34,10 @@ Map<HashString, VegetationMaterial> ResourceLoader::vegetationMaterials;
 /*
 *	Given a file path, load a resource collection.
 */
-void ResourceLoader::LoadResourceCollection(char *RESTRICT filePath, Semaphore *const RESTRICT semaphore) NOEXCEPT
+void ResourceLoader::LoadResourceCollection(char *RESTRICT filePath) NOEXCEPT
 {
-	//Launch the task.
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-	{
-		ResourceLoader::LoadResourceCollectionInternal(static_cast<const char *const RESTRICT>(arguments));
-	}, filePath, semaphore));
+	//Load the resource collection.
+	LoadResourceCollectionInternal(filePath);
 }
 
 /*
