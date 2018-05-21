@@ -60,7 +60,6 @@ namespace WorldAchitectConstants
 #else
 	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 4'096 };
 #endif
-	constexpr float TERRAIN_SIZE{ 10'000.0f };
 	constexpr uint64 VEGETATION_DENSITY{ 25'000'000 };
 
 	//Resource ID's.
@@ -259,6 +258,7 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT
 
 	const float randomOffset{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
 	const float randomHeight{ CatalystMath::RandomFloatInRange(500.0f, 1'500.0f) };
+	const float randomSize{ CatalystMath::RandomFloatInRange(1'000.0f, 10'000.0f) };
 
 	for (uint32 i = 0; i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++i)
 	{
@@ -296,7 +296,7 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT
 		}
 	}
 
-	static constexpr float heightMapPositionoffset{ WorldAchitectConstants::TERRAIN_SIZE / WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
+	const float heightMapPositionoffset{ randomSize / WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
 
 	for (uint32 i = 0; i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++i)
 	{
@@ -357,7 +357,7 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT
 
 			//Set the weight of the rock layer.
 			const Vector4 &terrainPropertiesValue{ terrainProperties.At(i, j) };
-			layerWeight.Z = 1.0f - CatalystMath::SmoothStep<5>(CatalystMath::Clamp<float>(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)) - 0.2f, 0.0f, 1.0f));
+			layerWeight.Z = 1.0f - CatalystMath::SmoothStep<5>(CatalystMath::Clamp<float>(Vector3::DotProduct(Vector3(terrainPropertiesValue.X, terrainPropertiesValue.Y, terrainPropertiesValue.Z), Vector3(0.0f, 1.0f, 0.0f)) - 0.25f, 0.0f, 1.0f));
 
 			//Set the weight of the snow layer.
 			if (worldHeight < 950.0f)
@@ -384,7 +384,7 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(256, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, randomHeight, WorldAchitectConstants::TERRAIN_SIZE, WorldAchitectConstants::TERRAIN_SIZE * 0.05f, worldPosition + Vector3(0.0f, -(randomHeight * 0.1f), 0.0f)), layerWeightsTexture, terrainMaterial);
+	terrain->Initialize(256, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, randomHeight, randomSize, randomSize * 0.05f, worldPosition + Vector3(0.0f, -(randomHeight * 0.1f), 0.0f)), layerWeightsTexture, terrainMaterial);
 }
 
 /*
@@ -418,7 +418,7 @@ void WorldArchitect::GenerateVegetation(const Vector3 &worldPosition) NOEXCEPT
 			for (uint64 i = 0; i < WorldAchitectConstants::VEGETATION_DENSITY; ++i)
 			{
 				//Generate a position.
-				Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f)) };
+				Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-5'000.0f * 0.5f, 5'000.0f * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-5'000.0f * 0.5f, 5'000.0f * 0.5f)) };
 
 				//Align the height to the terrain.
 				position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
