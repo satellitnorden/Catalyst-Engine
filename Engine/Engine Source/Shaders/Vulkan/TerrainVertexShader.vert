@@ -73,6 +73,9 @@ layout (std140, set = 1, binding = 1) uniform TerrainUniformData
 layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec2 vertexTextureCoordinate;
 
+//Texture samplers.
+layout (set = 1, binding = 2) uniform sampler2D terrainPropertiesTexture;
+
 //Out parameters.
 layout (location = 0) out vec2 tessellationControlHeightMapTextureCoordinate;
 layout (location = 1) out vec2 tessellationControlTextureCoordinate;
@@ -84,6 +87,7 @@ void main()
 	tessellationControlHeightMapTextureCoordinate = vertexTextureCoordinate;
 	tessellationControlTextureCoordinate = tessellationControlHeightMapTextureCoordinate * terrainTextureTilingFactor;
 
-	//Pass the unmodified vertex position to the tesselation control shader.
-	tessellationControlPosition = vertexPosition;
+    //Calculate the tessellation control position.
+    tessellationControlPosition = vertexPosition * (terrainSize * 0.5f) + terrainPosition;
+    tessellationControlPosition.y = texture(terrainPropertiesTexture, tessellationControlHeightMapTextureCoordinate).w * terrainHeight;
 }

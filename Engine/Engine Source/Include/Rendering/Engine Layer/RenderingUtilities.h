@@ -146,7 +146,7 @@ namespace RenderingUtilities
 	/*
 	*	Given terrain properties, terrain uniform data and a resolution, generate terrain plane vertices and indices.
 	*/
-	static void GenerateTerrainPlane(const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const uint32 resolution, DynamicArray<float> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
+	static void GenerateTerrainPlane(const uint32 resolution, DynamicArray<float> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
 	{
 		vertices.Reserve((resolution + 1) * (resolution + 1) * 5);
 		indices.Reserve(resolution * resolution * 6);
@@ -158,9 +158,9 @@ namespace RenderingUtilities
 				const float xTextureCoordinate{ static_cast<float>(i) / static_cast<float>(resolution) };
 				const float yTextureCoordinate{ static_cast<float>(j) / static_cast<float>(resolution) };
 
-				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(i) / static_cast<float>(resolution))) * (terrainUniformData.terrainSize * 0.5f) + terrainUniformData.terrainPosition.X);
-				vertices.EmplaceFast(terrainProperties.At(xTextureCoordinate, yTextureCoordinate).W * terrainUniformData.terrainHeight);
-				vertices.EmplaceFast((-1.0f + (2.0f * static_cast<float>(j) / static_cast<float>(resolution))) * (terrainUniformData.terrainSize * 0.5f) + terrainUniformData.terrainPosition.Z);
+				vertices.EmplaceFast(-1.0f + (2.0f * static_cast<float>(i) / static_cast<float>(resolution)));
+				vertices.EmplaceFast(0.0f);
+				vertices.EmplaceFast(-1.0f + (2.0f * static_cast<float>(j) / static_cast<float>(resolution)));
 				vertices.EmplaceFast(xTextureCoordinate);
 				vertices.EmplaceFast(yTextureCoordinate);
 

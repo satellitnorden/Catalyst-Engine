@@ -26,7 +26,7 @@
 #include <Rendering/Shader Data/Vulkan/TerrainSceneBufferFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/TerrainSceneBufferTessellationControlShader.h>
 #include <Rendering/Shader Data/Vulkan/TerrainSceneBufferTessellationEvaluationShader.h>
-#include <Rendering/Shader Data/Vulkan/TerrainSceneBufferVertexShader.h>
+#include <Rendering/Shader Data/Vulkan/TerrainVertexShader.h>
 #include <Rendering/Shader Data/Vulkan/VegetationFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/VegetationGeometryShader.h>
 #include <Rendering/Shader Data/Vulkan/VegetationVertexShader.h>
