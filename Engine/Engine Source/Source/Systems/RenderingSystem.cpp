@@ -42,13 +42,19 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 }
 
 /*
+*	Pre-updates the rendering system synchronously.
+*/
+void RenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
+{
+	//Update the matrices.
+	UpdateMatrices();
+}
+
+/*
 *	Updates the rendering system synchronously.
 */
 void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 {
-	//Update the matrices.
-	UpdateMatrices();
-
 	//Pre-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 

@@ -24,9 +24,6 @@ void CullingSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize the culling tasks.
 	InitializeCullingTasks();
-
-	//Initialize the terrain buffers.
-	InitializeTerrainBuffers();
 }
 
 /*
@@ -71,39 +68,6 @@ void CullingSystem::InitializeCullingTasks() NOEXCEPT
 }
 
 /*
-*	Initializes the terrain buffers.
-*/
-void CullingSystem::InitializeTerrainBuffers() NOEXCEPT
-{
-	constexpr StaticArray<uint32, INDEX(TerrainBuffer::NumberOfTerrainBuffers)> resolutions
-	{
-		static_cast<uint32>(256),
-		static_cast<uint32>(128),
-		static_cast<uint32>(64),
-		static_cast<uint32>(32),
-		static_cast<uint32>(16),
-		static_cast<uint32>(8),
-		static_cast<uint32>(4),
-		static_cast<uint32>(2)
-	};
-
-	for (uint8 i = 0; i < INDEX(TerrainBuffer::NumberOfTerrainBuffers); ++i)
-	{
-		DynamicArray<float> vertices;
-		DynamicArray<uint32> indices;
-
-		RenderingUtilities::GenerateTerrainPlane(resolutions[i], vertices, indices);
-
-		const void *RESTRICT data[]{ vertices.Data(), indices.Data() };
-		const uint64 dataSizes[]{ sizeof(float) * vertices.Size(), sizeof(uint32) * indices.Size() };
-
-		terrainBuffers[i] = RenderingSystem::Instance->CreateConstantBuffer(data, dataSizes, 2);
-		terrainBufferIndexOffsets[i] = sizeof(float) * vertices.Size();
-		terrainBufferIndexCounts[i] = static_cast<uint32>(indices.Size());
-	}
-}
-
-/*
 *	Waits for the terrain culling to finish.
 */
 void CullingSystem::WaitForTerrainCulling() const NOEXCEPT
@@ -135,77 +99,7 @@ void CullingSystem::WaitForVegetationCulling() const NOEXCEPT
 */
 void CullingSystem::CullTerrain() NOEXCEPT
 {
-	const uint64 numberOfTerrainComponents{ ComponentManager::GetNumberOfTerrainComponents() };
-
-	if (numberOfTerrainComponents == 0)
-	{
-		return;
-	}
-
-	const Vector3 cameraWorldPosition{ RenderingSystem::Instance->GetActiveCamera()->GetPosition() };
-	const TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainComponents() };
-	TerrainRenderComponent *RESTRICT renderComponent{ ComponentManager::GetTerrainRenderComponents() };
-
-	for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++component, ++renderComponent)
-	{
-		const float distance{ Vector3::Length(cameraWorldPosition - component->terrainUniformData.terrainPosition) };
-
-		if (distance < 10'000.0f)
-		{
-			renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_256x256)];
-			renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_256x256)];
-			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_256x256)];
-		}
-
-		else if (distance < 20'000.0f)
-		{
-			renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_128x128)];
-			renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_128x128)];
-			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_128x128)];
-		}
-
-		else if (distance < 30'000.0f)
-		{
-			renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_64x64)];
-			renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_64x64)];
-			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_64x64)];
-		}
-
-		else if (distance < 40'000.0f)
-		{
-			renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_32x32)];
-			renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_32x32)];
-			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_32x32)];
-		}
-
-		else if (distance < 50'000.0f)
-		{
-			renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
-			renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
-			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
-		}
-
-		else if (distance < 60'000.0f)
-		{
-			renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_8x8)];
-			renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_8x8)];
-			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_8x8)];
-		}
-
-		else if (distance < 70'000.0f)
-		{
-			renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_4x4)];
-			renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_4x4)];
-			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_4x4)];
-		}
-
-		else if (distance < 80'000.0f)
-		{
-			renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_2x2)];
-			renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_2x2)];
-			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_2x2)];
-		}
-	}
+	//Nothing to do here yet.
 }
 
 /*

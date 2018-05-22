@@ -308,6 +308,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EnvironmentSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\InputSystem.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\LevelOfDetailSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\PhysicsSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\RenderingSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\SoundSystem.h" />
@@ -410,6 +411,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\EntitySystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\EnvironmentSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\InputSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\LevelOfDetailSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\SoundSystem.cpp" />

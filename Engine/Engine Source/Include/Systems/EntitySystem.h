@@ -15,9 +15,9 @@ public:
 	DECLARE_SINGLETON(EntitySystem);
 
 	/*
-	*	Updates the entity system synchronously.
+	*	Pre-updates the entity system synchronously.
 	*/
-	void UpdateSystemSynchronous() NOEXCEPT;
+	void PreUpdateSystemSynchronous() NOEXCEPT;
 
 	/*
 	*	Releases the entity system.

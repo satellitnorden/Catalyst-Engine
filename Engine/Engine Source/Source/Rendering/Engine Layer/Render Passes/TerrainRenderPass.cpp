@@ -9,6 +9,7 @@
 
 //Systems.
 #include <Systems/CullingSystem.h>
+#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
@@ -107,6 +108,9 @@ void TerrainRenderPass::Render() NOEXCEPT
 
 	//Wait for the terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
+
+	//Wait for the terrain level of detail to finish.
+	LevelOfDetailSystem::Instance->WaitForTerrainLevelOfDetail();
 
 	for (uint64 i = 0; i < numberOfTerrainEntityComponents; ++i, ++component)
 	{

@@ -55,6 +55,11 @@ public:
 	void InitializeSystem() NOEXCEPT;
 
 	/*
+	*	Pre-updates the rendering system synchronously.
+	*/
+	void PreUpdateSystemSynchronous() NOEXCEPT;
+
+	/*
 	*	Updates the rendering system synchronously.
 	*/
 	void UpdateSystemSynchronous() NOEXCEPT;
