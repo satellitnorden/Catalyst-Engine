@@ -333,6 +333,11 @@ public:
 	static TerrainComponent *RESTRICT GetTerrainComponents() NOEXCEPT;
 
 	/*
+	*	Returns the terrain frustum culling components.
+	*/
+	static FrustumCullingComponent *const RESTRICT GetTerrainFrustumCullingComponents() NOEXCEPT;
+
+	/*
 	*	Returns the terrain render components.
 	*/
 	static TerrainRenderComponent *RESTRICT GetTerrainRenderComponents() NOEXCEPT;
@@ -344,6 +349,9 @@ private:
 
 	//The terrain components.
 	static DynamicArray<TerrainComponent> terrainComponents;
+
+	//The terrain frustum culling components.
+	static DynamicArray<FrustumCullingComponent> terrainFrustumCullingComponents;
 
 	//The terrain render components.
 	static DynamicArray<TerrainRenderComponent> terrainRenderComponents;

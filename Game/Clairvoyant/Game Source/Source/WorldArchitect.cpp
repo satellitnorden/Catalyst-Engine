@@ -192,10 +192,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 	InstancedPhysicalEntity *RESTRICT treeStomps = EntitySystem::Instance->CreateEntity<InstancedPhysicalEntity>();
 	treeStomps->Initialize(treeStompModel, treeStompTransformations);
 
-	//Spawn some fog. (:
-	ParticleSystemEntity *const RESTRICT fogParticles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
-	fogParticles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::FOG_1_MATERIAL), ParticleSystemProperties(2.5f, 30.0f, 0.0f, Vector2(100.0f, 100.0f), Vector2(500.0f, 500.0f), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, 0.0f, -WorldAchitectConstants::TERRAIN_SIZE * 0.5f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 0.5f, 250.0f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), PhysicsSystem::Instance->GetWindDirection() * 1.0f, PhysicsSystem::Instance->GetWindDirection() * 2.5f, Vector3(0.0f, 0.0f, 0.0f)));
-
 	//Spawn some clouds. (:
 	constexpr float cloudMinimumScale{ 2'500.0f };
 	constexpr float cloudMaximumScale{ 7'500.0f };
@@ -233,7 +229,7 @@ float WorldArchitect::CalculateIslandFalloffMultiplier(const float xCoordinate, 
 	const float distance{ distanceSquared > 0.0f ? CatalystMath::SquareRoot(distanceSquared) * 2.0f : 0.0f };
 	const float inverseDistance{ 1.0f - distance };
 
-	return inverseDistance > 0.0f ? CatalystMath::SmoothStep<1>(inverseDistance) : inverseDistance;
+	return inverseDistance > 0.0f ? CatalystMath::SmoothStep<2>(inverseDistance) : inverseDistance;
 }
 
 /*
@@ -242,23 +238,32 @@ float WorldArchitect::CalculateIslandFalloffMultiplier(const float xCoordinate, 
 void WorldArchitect::GenerateIsland(const Vector3 &worldPosition) NOEXCEPT
 {
 	//Generate the terrain.
-	GenerateTerrain(worldPosition);
+	float extent;
+
+	GenerateTerrain(worldPosition, extent);
 
 	//Generate the vegetation.
-	//GenerateVegetation(worldPosition);
+	//GenerateVegetation(worldPosition, extent);
+
+	//Generate the particle systems.
+	//GenerateParticleSystems(worldPosition, extent);
 }
 
 /*
 *	Generates the terrain.
 */
-void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT
+void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, float& extent) NOEXCEPT
 {
 	//Create the terrain properties!
 	CPUTexture2D terrainProperties{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
 
 	const float randomOffset{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
 	const float randomHeight{ CatalystMath::RandomFloatInRange(500.0f, 1'500.0f) };
-	const float randomSize{ CatalystMath::RandomFloatInRange(1'000.0f, 10'000.0f) };
+	extent = CatalystMath::RandomFloatInRange(1'000.0f, 10'000.0f);
+
+	const float startingFrequency{ CatalystMath::RandomFloatInRange(1.0f, 5.0f) };
+	const float frequenyMultiplier{ CatalystMath::RandomFloatInRange(2.0f, 5.0f) };
+	const float contributionMultiplier{ CatalystMath::RandomFloatInRange(0.25, 0.5f) };
 
 	for (uint32 i = 0; i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++i)
 	{
@@ -274,29 +279,29 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT
 			//Set the height.
 			Vector4 &terrainPropery{ terrainProperties.At(i, j) };
 
-			float frequency{ 2.5f };
+			float frequency{ startingFrequency };
 			float contribution{ 1.0f };
 			terrainPropery.W = ((PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * contribution * islandFalloffMultiplier;
 
-			frequency = 10.0f;
-			contribution = 0.5f;
+			frequency *= frequenyMultiplier;
+			contribution *= contributionMultiplier;
 			terrainPropery.W += ((PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * contribution * islandFalloffMultiplier;
 
-			frequency = 25.0f;
-			contribution = 0.25f;
+			frequency *= frequenyMultiplier;
+			contribution *= contributionMultiplier;
 			terrainPropery.W += ((PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * contribution * islandFalloffMultiplier;
 
-			frequency = 100.0f;
-			contribution = 0.125f;
+			frequency *= frequenyMultiplier;
+			contribution *= contributionMultiplier;
 			terrainPropery.W += ((PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * contribution * islandFalloffMultiplier;
 
-			frequency = 250.0f;
-			contribution = 0.0625f;
+			frequency *= frequenyMultiplier;
+			contribution *= contributionMultiplier;
 			terrainPropery.W += ((PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * contribution * islandFalloffMultiplier;
 		}
 	}
 
-	const float heightMapPositionoffset{ randomSize / WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
+	const float heightMapPositionoffset{ extent / WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
 
 	for (uint32 i = 0; i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++i)
 	{
@@ -384,13 +389,13 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT
 
 	//Create the terrain entity!
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(256, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, randomHeight, randomSize, randomSize * 0.05f, worldPosition + Vector3(0.0f, -(randomHeight * 0.1f), 0.0f)), layerWeightsTexture, terrainMaterial);
+	terrain->Initialize(256, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, randomHeight, extent, extent * 0.05f, worldPosition + Vector3(0.0f, -(randomHeight * 0.1f), 0.0f)), layerWeightsTexture, terrainMaterial);
 }
 
 /*
 *	Generates the vegetation.
 */
-void WorldArchitect::GenerateVegetation(const Vector3 &worldPosition) NOEXCEPT
+void WorldArchitect::GenerateVegetation(const Vector3 &worldPosition, const float extent) NOEXCEPT
 {
 	constexpr uint8 numberOfVegetationLayers{ 8 };
 
@@ -482,4 +487,14 @@ void WorldArchitect::GenerateVegetation(const Vector3 &worldPosition) NOEXCEPT
 	{
 		vegetationSemaphore.WaitFor();
 	}
+}
+
+/*
+*	Generates the particle systems.
+*/
+void WorldArchitect::GenerateParticleSystems(const Vector3 &worldPosition, const float extent) NOEXCEPT
+{
+	//Spawn some fog. (:
+	ParticleSystemEntity *const RESTRICT fogParticles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
+	fogParticles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::FOG_1_MATERIAL), ParticleSystemProperties(2.5f, 30.0f, 0.0f, Vector2(100.0f, 100.0f), Vector2(500.0f, 500.0f), Vector3(-extent * 0.5f, 0.0f, -extent * 0.5f), Vector3(extent * 0.5f, 250.0f, extent * 0.5f), PhysicsSystem::Instance->GetWindDirection() * 1.0f, PhysicsSystem::Instance->GetWindDirection() * 2.5f, worldPosition));
 }

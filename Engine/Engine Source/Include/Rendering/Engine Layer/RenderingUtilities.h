@@ -249,4 +249,66 @@ namespace RenderingUtilities
 			return true;
 		}
 	}
+
+	/*
+	*	Given a view matrix and an axis-aligned bounding box, returns if the box is in the view frustum.
+	*/
+	static bool IsInViewFrustum(const Matrix4 &viewMatrix, const Vector3 &worldPosition, const AxisAlignedBoundingBox &axisAlignedBoundingBox) NOEXCEPT
+	{
+		StaticArray<Vector4, 8> corners;
+
+		corners[0] = Vector4(axisAlignedBoundingBox.minimum.X, axisAlignedBoundingBox.minimum.Y, axisAlignedBoundingBox.minimum.Z, 1.0f);
+		corners[1] = Vector4(axisAlignedBoundingBox.minimum.X, axisAlignedBoundingBox.maximum.Y, axisAlignedBoundingBox.minimum.Z, 1.0f);
+		corners[2] = Vector4(axisAlignedBoundingBox.maximum.X, axisAlignedBoundingBox.maximum.Y, axisAlignedBoundingBox.minimum.Z, 1.0f);
+		corners[3] = Vector4(axisAlignedBoundingBox.maximum.X, axisAlignedBoundingBox.minimum.Y, axisAlignedBoundingBox.minimum.Z, 1.0f);
+
+		corners[4] = Vector4(axisAlignedBoundingBox.minimum.X, axisAlignedBoundingBox.minimum.Y, axisAlignedBoundingBox.maximum.Z, 1.0f);
+		corners[5] = Vector4(axisAlignedBoundingBox.minimum.X, axisAlignedBoundingBox.maximum.Y, axisAlignedBoundingBox.maximum.Z, 1.0f);
+		corners[6] = Vector4(axisAlignedBoundingBox.maximum.X, axisAlignedBoundingBox.maximum.Y, axisAlignedBoundingBox.maximum.Z, 1.0f);
+		corners[7] = Vector4(axisAlignedBoundingBox.maximum.X, axisAlignedBoundingBox.minimum.Y, axisAlignedBoundingBox.maximum.Z, 1.0f);
+
+		for (uint8 i = 0; i < 8; ++i)
+		{
+			corners[i] += Vector4(worldPosition.X, worldPosition.Y, worldPosition.Z, 0.0f);
+
+			corners[i] = viewMatrix * corners[i];
+
+			const float inverseW{ 1.0f / corners[i].W };
+
+			corners[i].X *= inverseW;
+			corners[i].Y *= inverseW;
+			corners[i].Z *= inverseW;
+		}
+
+		float highestX{ -FLOAT_MAXIMUM };
+		float lowestX{ FLOAT_MAXIMUM };
+		float highestY{ -FLOAT_MAXIMUM };
+		float lowestY{ FLOAT_MAXIMUM };
+		float highestZ{ -FLOAT_MAXIMUM };
+		float lowestZ{ FLOAT_MAXIMUM };
+
+		for (uint8 i = 0; i < 8; ++i)
+		{
+			highestX = CatalystMath::Maximum(highestX, corners[i].X);
+			lowestX = CatalystMath::Minimum(lowestX, corners[i].X);
+			highestY = CatalystMath::Maximum(highestY, corners[i].Y);
+			lowestY = CatalystMath::Minimum(lowestY, corners[i].Y);
+			highestZ = CatalystMath::Maximum(highestZ, corners[i].Z);
+			lowestZ = CatalystMath::Minimum(lowestZ, corners[i].Z);
+		}
+
+		if (((highestX > 1.0f && lowestX > 1.0f) || (highestX < -1.0f && lowestX < -1.0f))
+			||
+			((highestY > 1.0f && lowestY > 1.0f) || (highestY < -1.0f && lowestY < -1.0f))
+			||
+			((highestZ > 1.0f && lowestZ > 1.0f) || (highestZ < 0.0f && lowestZ < 0.0f)))
+		{
+			return false;
+		}
+
+		else
+		{
+			return true;
+		}
+	}
 }

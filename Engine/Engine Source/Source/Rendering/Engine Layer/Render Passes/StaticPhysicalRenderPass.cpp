@@ -110,7 +110,6 @@ void StaticPhysicalRenderPass::Render() NOEXCEPT
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 	const DescriptorSetHandle currentDynamicUniformDataDescriptorSet{ RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet() };
-	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
 	const StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents() };
 
 	//Begin the command buffer.
@@ -122,10 +121,10 @@ void StaticPhysicalRenderPass::Render() NOEXCEPT
 	//Wait for the static physical culling to finish.
 	CullingSystem::Instance->WaitForStaticPhysicalCulling();
 
-	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++frustumCullingComponent, ++renderComponent)
+	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++renderComponent)
 	{
 		//Don't draw this static physical entity if it isn't in the view frustum.
-		if (!frustumCullingComponent->isInViewFrustum)
+		if (!renderComponent->isInViewFrustum)
 		{
 			continue;
 		}

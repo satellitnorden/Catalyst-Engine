@@ -80,8 +80,7 @@ void LevelOfDetailSystem::InitializeTerrainBuffers() NOEXCEPT
 		static_cast<uint32>(64),
 		static_cast<uint32>(32),
 		static_cast<uint32>(16),
-		static_cast<uint32>(8),
-		static_cast<uint32>(4)
+		static_cast<uint32>(8)
 	};
 
 	for (uint8 i = 0; i < INDEX(TerrainBuffer::NumberOfTerrainBuffers); ++i)
@@ -158,18 +157,11 @@ void LevelOfDetailSystem::CaltulateTerrainLevelOfDetail() NOEXCEPT
 			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
 		}
 
-		else if (distance < component->terrainUniformData.terrainSize * 6.0f)
+		else
 		{
 			renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_8x8)];
 			renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_8x8)];
 			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_8x8)];
-		}
-
-		else
-		{
-			renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_4x4)];
-			renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_4x4)];
-			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_4x4)];
 		}
 	}
 }

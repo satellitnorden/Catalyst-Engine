@@ -114,6 +114,11 @@ void TerrainRenderPass::Render() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfTerrainEntityComponents; ++i, ++component)
 	{
+		if (!component->isInViewFrustum)
+		{
+			continue;
+		}
+
 		const uint64 offset{ 0 };
 
 		commandBuffer->BindDescriptorSets(this, 1, 1, &component->descriptorSet);

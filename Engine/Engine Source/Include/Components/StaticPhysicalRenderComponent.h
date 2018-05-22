@@ -15,6 +15,9 @@ class StaticPhysicalRenderComponent final
 
 public:
 
+	//Denotes whether or not this static physical model is in the view frustum.
+	bool isInViewFrustum;
+
 	//The model matrix.
 	Matrix4 modelMatrix;
 

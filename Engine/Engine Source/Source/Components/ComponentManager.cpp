@@ -34,6 +34,7 @@ DynamicArray<SpotLightComponent> ComponentManager::spotLightComponents;
 
 std::atomic<uint64> ComponentManager::numberOfTerrainComponents = 0;
 DynamicArray<TerrainComponent> ComponentManager::terrainComponents;
+DynamicArray<FrustumCullingComponent> ComponentManager::terrainFrustumCullingComponents;
 DynamicArray<TerrainRenderComponent> ComponentManager::terrainRenderComponents;
 
 std::atomic<uint64> ComponentManager::numberOfVegetationComponents = 0;
@@ -352,6 +353,7 @@ uint64 ComponentManager::GetNewTerrainComponentsIndex() NOEXCEPT
 {
 	//Create the relevant components.
 	terrainComponents.EmplaceSlow();
+	terrainFrustumCullingComponents.EmplaceSlow();
 	terrainRenderComponents.EmplaceSlow();
 
 	//Return the new index.
@@ -374,6 +376,15 @@ TerrainComponent *RESTRICT ComponentManager::GetTerrainComponents() NOEXCEPT
 {
 	//Return the terrain components.
 	return terrainComponents.Data();
+}
+
+/*
+*	Returns the terrain frustum culling components.
+*/
+FrustumCullingComponent *const RESTRICT ComponentManager::GetTerrainFrustumCullingComponents() NOEXCEPT
+{
+	//Return the terrain frustum culling components.
+	return terrainFrustumCullingComponents.Data();
 }
 
 /*

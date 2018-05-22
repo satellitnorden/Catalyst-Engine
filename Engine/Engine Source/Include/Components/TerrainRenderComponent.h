@@ -11,6 +11,9 @@ class TerrainRenderComponent final
 
 public:
 
+	//Denotes whether or not the terrain is in the view frustum.
+	bool isInViewFrustum;
+
 	//The descriptor set.
 	DescriptorSetHandle descriptorSet{ };
 

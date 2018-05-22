@@ -329,8 +329,12 @@ void VulkanRenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMa
 void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
 {
 	//Fill the terrain entity components with the relevant data.
+	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetTerrainFrustumCullingComponents()[terrainEntity.GetComponentsIndex()] };
 	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[terrainEntity.GetComponentsIndex()] };
 	TerrainRenderComponent &terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents()[terrainEntity.GetComponentsIndex()] };
+
+	frustumCullingComponent.axisAlignedBoundingBox.minimum = Vector3(-(terrainUniformData.terrainSize * 0.5f), -(terrainUniformData.terrainSize * 0.5f), -(terrainUniformData.terrainSize * 0.5f));
+	frustumCullingComponent.axisAlignedBoundingBox.maximum = Vector3(terrainUniformData.terrainSize * 0.5f, terrainUniformData.terrainSize * 0.5f, terrainUniformData.terrainSize * 0.5f);
 
 	terrainComponent.terrainUniformData = terrainUniformData;
 	terrainComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));

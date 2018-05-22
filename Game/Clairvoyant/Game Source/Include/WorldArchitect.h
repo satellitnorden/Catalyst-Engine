@@ -40,11 +40,16 @@ private:
 	/*
 	*	Generates the terrain.
 	*/
-	void GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT;
+	void GenerateTerrain(const Vector3 &worldPosition, float& extent) NOEXCEPT;
 
 	/*
 	*	Generates the vegetation.
 	*/
-	void GenerateVegetation(const Vector3 &worldPosition) NOEXCEPT;
+	void GenerateVegetation(const Vector3 &worldPosition, const float extent) NOEXCEPT;
+
+	/*
+	*	Generates the particle systems.
+	*/
+	void GenerateParticleSystems(const Vector3 &worldPosition, const float extent) NOEXCEPT;
 
 };

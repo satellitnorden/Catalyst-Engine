@@ -99,7 +99,25 @@ void CullingSystem::WaitForVegetationCulling() const NOEXCEPT
 */
 void CullingSystem::CullTerrain() NOEXCEPT
 {
-	//Nothing to do here yet.
+	//Iterate over all terrain components and cull them.
+	const uint64 numberOfTerrainComponents{ ComponentManager::GetNumberOfTerrainComponents() };
+
+	//If there's none to cull., just return.
+	if (numberOfTerrainComponents == 0)
+	{
+		return;
+	}
+
+	//Cache relevant data.
+	const Matrix4 &viewMatrix{ *RenderingSystem::Instance->GetViewMatrix() };
+	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetTerrainFrustumCullingComponents() };
+	const TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainComponents() };
+	TerrainRenderComponent *RESTRICT renderComponent{ ComponentManager::GetTerrainRenderComponents() };
+
+	for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++frustumCullingComponent, ++component, ++renderComponent)
+	{
+		renderComponent->isInViewFrustum = RenderingUtilities::IsInViewFrustum(viewMatrix, component->terrainUniformData.terrainPosition, frustumCullingComponent->axisAlignedBoundingBox);
+	}
 }
 
 /*
@@ -112,10 +130,11 @@ void CullingSystem::CullStaticPhysical() NOEXCEPT
 
 	//Iterate over all static physical components to check if they are in the view frustum.
 	const uint64 numberOfStaticPhysicalComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
-	FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
+	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
+	StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents() };
 	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents() };
 
-	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++frustumCullingComponent, ++transformComponent)
+	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++frustumCullingComponent, ++renderComponent, ++transformComponent)
 	{
 		//Cache relevant data.
 		const Vector3& position = transformComponent->position;
@@ -146,7 +165,7 @@ void CullingSystem::CullStaticPhysical() NOEXCEPT
 			corners[i].Z /= corners[i].W;
 		}
 
-		frustumCullingComponent->isInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
+		renderComponent->isInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
 	}
 }
 

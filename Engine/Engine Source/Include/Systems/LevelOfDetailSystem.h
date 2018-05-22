@@ -56,7 +56,6 @@ private:
 		TerrainBuffer_32x32,
 		TerrainBuffer_16x16,
 		TerrainBuffer_8x8,
-		TerrainBuffer_4x4,
 		NumberOfTerrainBuffers
 	};
 
