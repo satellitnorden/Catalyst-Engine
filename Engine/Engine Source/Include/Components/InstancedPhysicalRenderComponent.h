@@ -15,10 +15,10 @@ public:
 	DescriptorSetHandle descriptorSet;
 
 	//The model buffer.
-	GraphicsBufferHandle modelBuffer;
+	ConstantBufferHandle modelBuffer;
 
 	//The transformations buffer.
-	GraphicsBufferHandle transformationsBuffer;
+	ConstantBufferHandle transformationsBuffer;
 
 	//The offset for the indices in the buffer.
 	uint64 indexOffset;

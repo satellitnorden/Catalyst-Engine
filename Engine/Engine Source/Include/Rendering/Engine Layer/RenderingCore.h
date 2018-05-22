@@ -14,7 +14,7 @@ namespace RenderingConstants
 *	Type aliases.
 */
 using DescriptorSetHandle = void *RESTRICT;
-using GraphicsBufferHandle = void *RESTRICT;
+using ConstantBufferHandle = void *RESTRICT;
 using EventHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;
 using TextureCubeMapHandle = void *RESTRICT;

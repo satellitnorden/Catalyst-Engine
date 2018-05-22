@@ -8,6 +8,7 @@
 #include <Rendering/Engine Layer/CommandBuffer.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
@@ -101,6 +102,9 @@ void DirectionalTerrainShadowRenderPass::Render() NOEXCEPT
 
 	//Bind the current dynamic uniform data descriptor set.
 	commandBuffer->BindDescriptorSets(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
+
+	//Wait for the terrain culling to finish.
+	CullingSystem::Instance->WaitForTerrainCulling();
 
 	for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++component)
 	{

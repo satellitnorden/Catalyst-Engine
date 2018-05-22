@@ -15,7 +15,7 @@ public:
 	DescriptorSetHandle descriptorSet;
 
 	//The transformations buffer.
-	GraphicsBufferHandle transformationsBuffer;
+	ConstantBufferHandle transformationsBuffer;
 
 	//Whether or not to draw a particular grid cell.
 	DynamicArray<bool> shouldDrawGridCell;

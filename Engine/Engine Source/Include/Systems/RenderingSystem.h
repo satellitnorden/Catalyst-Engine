@@ -75,6 +75,11 @@ public:
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
 
 	/*
+	*	Creates a constant buffer.
+	*/
+	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
+
+	/*
 	*	Returns the active camera.
 	*/
 	RESTRICTED const CameraEntity *const RESTRICT GetActiveCamera() const NOEXCEPT { return activeCamera; }

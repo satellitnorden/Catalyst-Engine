@@ -98,6 +98,15 @@ uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 }
 
 /*
+*	Creates a constant buffer.
+*/
+ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
+{
+	//Create the constant buffer via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->CreateConstantBuffer(data, dataSizes, dataChunks);
+}
+
+/*
 *	Finalizes the initialization of a render pass.
 */
 void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT

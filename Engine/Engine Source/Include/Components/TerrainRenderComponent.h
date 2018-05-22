@@ -15,10 +15,10 @@ public:
 	DescriptorSetHandle descriptorSet{ };
 
 	//The vertex buffer.
-	GraphicsBufferHandle vertexAndIndexBuffer{ };
+	ConstantBufferHandle vertexAndIndexBuffer{ };
 
 	//The index buffer offset.
-	uint32 indexBufferOffset{ 0 };
+	uint64 indexBufferOffset{ 0 };
 
 	//The index count.
 	uint32 indexCount{ 0 };

@@ -138,7 +138,7 @@ void InstancedPhysicalRenderPass::Render() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++component)
 	{
-		StaticArray<GraphicsBufferHandle, 2> buffers
+		StaticArray<ConstantBufferHandle, 2> buffers
 		{
 			static_cast<const VkBuffer>(component->modelBuffer),
 			static_cast<const VkBuffer>(component->transformationsBuffer)

@@ -36,6 +36,11 @@ public:
 	static constexpr Vector3 CrossProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT { return Vector3{ firstVector.Y * secondVector.Z - firstVector.Z * secondVector.Y, firstVector.Z * secondVector.X - firstVector.X * secondVector.Z, firstVector.X * secondVector.Y - firstVector.Y * secondVector.X }; }
 
 	/*
+	*	Given a vector, return it's length.
+	*/
+	static constexpr float Length(const Vector3 &vector) NOEXCEPT { return CatalystMath::SquareRoot(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z); }
+
+	/*
 	*	Given a vector, return it's length squared.
 	*/
 	static constexpr float LengthSquared(const Vector3 &vector) NOEXCEPT { return vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z; }

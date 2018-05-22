@@ -22,10 +22,12 @@ void EngineSystem::InitializeSystem(const CatalystProjectInformation &initialPro
 	projectInformation = initialProjectInformation;
 
 	//Initialize all systems.
-	CullingSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem();
 	SoundSystem::Instance->InitializeSystem();
 	TaskSystem::Instance->InitializeSystem(projectInformation.multithreadingInformation);
+
+	//Post-initialize all systems.
+	CullingSystem::Instance->InitializeSystem();
 }
 
 /*

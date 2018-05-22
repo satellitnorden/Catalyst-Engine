@@ -184,6 +184,14 @@ uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 }
 
 /*
+*	Creates a constant buffer.
+*/
+ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
+{
+	return VulkanInterface::Instance->CreateConstantBuffer(data, dataSizes, dataChunks)->Get();
+}
+
+/*
 *	Creates an environment material.
 */
 void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT
@@ -296,7 +304,7 @@ void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physica
 	//Create the vertex and index buffer.
 	const void *RESTRICT modelData[]{ physicalModelData.vertices.Data(), physicalModelData.indices.Data() };
 	const VkDeviceSize modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData.vertices.Size(), sizeof(uint32) * physicalModelData.indices.Size() };
-	GraphicsBufferHandle buffer = VulkanInterface::Instance->CreateConstantBuffer(modelData, modelDataSizes, 2)->Get();
+	ConstantBufferHandle buffer = VulkanInterface::Instance->CreateConstantBuffer(modelData, modelDataSizes, 2)->Get();
 
 	//Set up the physical model.
 	physicalModel.GetAxisAlignedBoundingBox().minimum = Vector3(-physicalModelData.extent, -physicalModelData.extent, -physicalModelData.extent);
@@ -320,16 +328,6 @@ void VulkanRenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMa
 */
 void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
 {
-	//Generate the terrain plane vertices and indices.
-	DynamicArray<float> terrainVertices;
-	DynamicArray<uint32> terrainIndices;
-	RenderingUtilities::GenerateTerrainPlane(terrainPlaneResolution, terrainVertices, terrainIndices);
-
-	//Create the vertex and index buffer.
-	const void *RESTRICT terrainData[]{ terrainVertices.Data(), terrainIndices.Data() };
-	const VkDeviceSize terrainDataSizes[]{ sizeof(float) * terrainVertices.Size(), sizeof(uint32) * terrainIndices.Size() };
-	VulkanConstantBuffer *RESTRICT terrainVertexBuffer{ VulkanInterface::Instance->CreateConstantBuffer(terrainData, terrainDataSizes, 2) };
-
 	//Fill the terrain entity components with the relevant data.
 	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[terrainEntity.GetComponentsIndex()] };
 	TerrainRenderComponent &terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents()[terrainEntity.GetComponentsIndex()] };
@@ -369,10 +367,6 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 18));
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-
-	terrainRenderComponent.vertexAndIndexBuffer = terrainVertexBuffer->Get();
-	terrainRenderComponent.indexBufferOffset = static_cast<uint32>(sizeof(float) * terrainVertices.Size());
-	terrainRenderComponent.indexCount = static_cast<uint32>(terrainIndices.Size());
 }
 
 /*

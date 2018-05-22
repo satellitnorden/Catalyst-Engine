@@ -94,6 +94,11 @@ public:
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
 
 	/*
+	*	Creates a constant buffer.
+	*/
+	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
+
+	/*
 	*	Creates an environment material.
 	*/
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;

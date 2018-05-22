@@ -22,7 +22,7 @@ public:
 	DescriptorSetHandle descriptorSet{ };
 
 	//The buffer.
-	GraphicsBufferHandle buffer{ };
+	ConstantBufferHandle buffer{ };
 
 	//The offset for the indices in the buffer.
 	uint64 indexOffset{ 0 };

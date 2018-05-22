@@ -56,12 +56,12 @@ public:
 	/*
 	*	Returns the buffer.
 	*/
-	GraphicsBufferHandle GetBuffer() const NOEXCEPT { return buffer; }
+	ConstantBufferHandle GetBuffer() const NOEXCEPT { return buffer; }
 
 	/*
 	*	Sets the buffer.
 	*/
-	void SetBuffer(GraphicsBufferHandle newBuffer) NOEXCEPT { buffer = newBuffer; }
+	void SetBuffer(ConstantBufferHandle newBuffer) NOEXCEPT { buffer = newBuffer; }
 
 	/*
 	*	Returns the index offset.
@@ -92,7 +92,7 @@ private:
 	AxisAlignedBoundingBox axisAlignedBoundingBox;
 
 	//The buffer.
-	GraphicsBufferHandle buffer;
+	ConstantBufferHandle buffer;
 
 	//The index offset in the buffer.
 	uint64 indexOffset;
