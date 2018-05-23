@@ -69,12 +69,16 @@ namespace WorldAchitectConstants
 	constexpr HashString FOG_1_MATERIAL{ "Fog1Material" };
 
 	constexpr HashString MARBLE_1_MATERIAL{ "Marble1Material" };
-	constexpr HashString STONE_MATERIAL{ "StoneMaterial" };
+	constexpr HashString STONE_1_MATERIAL{ "Stone1Material" };
+	constexpr HashString STONE_2_MATERIAL{ "Stone2Material" };
 	constexpr HashString TREE_1_MATERIAL{ "Tree1Material" };
 	constexpr HashString WOOD_1_MATERIAL{ "Wood1Material" };
+	constexpr HashString WOOD_LOG_1_MATERIAL{ "WoodLog1Material" };
 
-	constexpr HashString STONE_MODEL{ "StoneModel" };
+	constexpr HashString STONE_1_MODEL{ "Stone1Model" };
+	constexpr HashString STONE_2_MODEL{ "Stone2Model" };
 	constexpr HashString TREE_1_MODEL{ "Tree1Model" };
+	constexpr HashString WOOD_LOG_1_MODEL{ "WoodLog1Model" };
 
 	constexpr HashString GRASS_TERRAIN_MATERIAL{ "GrassTerrainMaterial" };
 
@@ -88,8 +92,10 @@ namespace WorldAchitectConstants
 */
 void WorldArchitect::Initialize() NOEXCEPT
 {
-	//Load the resource collection file.
-	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc");
+	//Load the resource collection files.
+	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection1.crc");
+	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection2.crc");
+	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection3.crc");
 
 	//Set the environment material.
 	EnvironmentSystem::Instance->SetNightEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::NIGHT_ENVIRONMENT_MATERIAL));
@@ -130,19 +136,33 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 	StaticPhysicalEntity *const RESTRICT plane{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
 	plane->Initialize(planeModel, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1'000.0f, 1'000.0f, 1'000.0f));
 
-	//Create a stone.
-	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_MODEL) };
-	stoneModel.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_MATERIAL));
+	//Create the first stone.
+	PhysicalModel stone1Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_1_MODEL) };
+	stone1Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_1_MATERIAL));
 
-	StaticPhysicalEntity *const RESTRICT stone{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	stone->Initialize(stoneModel, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.5f, 1.5f, 1.5f));
+	StaticPhysicalEntity *const RESTRICT stone1{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	stone1->Initialize(stone1Model, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(2.0f, 2.0f, 2.0f));
 
 	//Create the first tree.
 	PhysicalModel tree1Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::TREE_1_MODEL) };
 	tree1Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::TREE_1_MATERIAL));
 
 	StaticPhysicalEntity *const RESTRICT tree1{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	tree1->Initialize(tree1Model, Vector3(100.0f, 100.0f, 0.0f), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.5f, 0.5f, 0.5f));
+	tree1->Initialize(tree1Model, Vector3(250.0f, 100.0f, 0.0f), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+
+	//Create the second stone.
+	PhysicalModel stone2Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_2_MODEL) };
+	stone2Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_2_MATERIAL));
+
+	StaticPhysicalEntity *const RESTRICT stone2{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	stone2->Initialize(stone2Model, Vector3(-250.0f, 100.0f, 0.0f), Vector3(-90.0f, 0.0f, 0.0f), Vector3(1.75f, 1.75f, 1.75f));
+
+	//Create the first wood log.
+	PhysicalModel woodLog1Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::WOOD_LOG_1_MODEL) };
+	woodLog1Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::WOOD_LOG_1_MATERIAL));
+
+	StaticPhysicalEntity *const RESTRICT woodLog1{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	woodLog1->Initialize(woodLog1Model, Vector3(0.0f, 100.0f, 250.0f), Vector3(-90.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f));
 }
 
 /*
