@@ -65,18 +65,20 @@ namespace WorldAchitectConstants
 	//Resource ID's.
 	constexpr HashString DAY_ENVIRONMENT_MATERIAL{ "DayEnvironmentMaterial" };
 	constexpr HashString NIGHT_ENVIRONMENT_MATERIAL{ "NightEnvironmentMaterial" };
-	constexpr HashString STONE_MATERIAL{ "StoneMaterial" };
-	constexpr HashString TREE_STOMP_MATERIAL{ "TreeStompMaterial" };
-	constexpr HashString STONE_MODEL{ "StoneModel" };
-	constexpr HashString TREE_STOMP_MODEL{ "TreeStompModel" };
-	constexpr HashString DEFAULT_TERRAIN_MATERIAL{ "DefaultTerrainMaterial" };
-	constexpr HashString DEFAULT_VEGETATION_MATERIAL{ "DefaultVegetationMaterial" };
-	constexpr HashString DEFAULT_WATER_MATERIAL{ "DefaultWaterMaterial" };
+
 	constexpr HashString FOG_1_MATERIAL{ "Fog1Material" };
-	constexpr HashString CLOUD_1_MATERIAL{ "Cloud1Material" };
-	constexpr HashString CLOUD_2_MATERIAL{ "Cloud2Material" };
-	constexpr HashString CLOUD_3_MATERIAL{ "Cloud3Material" };
-	constexpr HashString CLOUD_4_MATERIAL{ "Cloud4Material" };
+
+	constexpr HashString MARBLE1_MATERIAL{ "Marble1Material" };
+	constexpr HashString STONE_MATERIAL{ "StoneMaterial" };
+
+	constexpr HashString PLANE_MODEL{ "StoneModel" };
+	constexpr HashString STONE_MODEL{ "StoneModel" };
+
+	constexpr HashString GRASS_TERRAIN_MATERIAL{ "GrassTerrainMaterial" };
+
+	constexpr HashString DEFAULT_VEGETATION_MATERIAL{ "DefaultVegetationMaterial" };
+
+	constexpr HashString DEFAULT_WATER_MATERIAL{ "DefaultWaterMaterial" };
 }
 
 /*
@@ -94,8 +96,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Set the ocean material.
 	EnvironmentSystem::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(WorldAchitectConstants::DEFAULT_WATER_MATERIAL));
 
+	//Create the test scene.
+	CreateTestScene();
+
 	//Generate the island.
-	GenerateIsland(Vector3(0.0f, 0.0f, 0.0f));
 	GenerateIsland(Vector3(25'000.0f, 0.0f, 0.0f));
 	GenerateIsland(Vector3(-25'000.0f, 0.0f, 0.0f));
 	GenerateIsland(Vector3(0.0f, 0.0f, 25'000.0f));
@@ -215,6 +219,15 @@ void WorldArchitect::Initialize() NOEXCEPT
 */
 void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 {
+
+}
+
+/*
+*	Creates the test scene.
+*/
+void WorldArchitect::CreateTestScene() NOEXCEPT
+{
+	//Create the floor.
 
 }
 
@@ -383,7 +396,7 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, float& extent
 	}
 
 	//Get the terrain material data.
-	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(WorldAchitectConstants::DEFAULT_TERRAIN_MATERIAL) };
+	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(WorldAchitectConstants::GRASS_TERRAIN_MATERIAL) };
 
 	Texture2DHandle layerWeightsTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(layerWeights), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 

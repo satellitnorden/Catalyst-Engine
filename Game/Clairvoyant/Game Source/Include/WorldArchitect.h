@@ -28,6 +28,11 @@ public:
 private:
 
 	/*
+	*	Creates the test scene.
+	*/
+	void CreateTestScene() NOEXCEPT;
+
+	/*
 	*	Given an X and Y coordinate in the 0.0f-1.0f range, calculate and return the island falloff multiplier.
 	*/
 	float CalculateIslandFalloffMultiplier(const float xCoordinate, const float yCoordinate) NOEXCEPT;

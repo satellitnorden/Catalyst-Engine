@@ -17,6 +17,9 @@
 #include <Rendering/Engine Layer/VegetationTransformation.h>
 #include <Rendering/Engine Layer/WaterUniformData.h>
 
+//Resources.
+#include <Resources/PhysicalModelData.h>
+
 namespace RenderingUtilities
 {
 
@@ -211,6 +214,17 @@ namespace RenderingUtilities
 				}
 			}
 		}
+	}
+
+	/*
+	*	Generates plane model data.
+	*/
+	static void GetPlanePhysicalModelData(PhysicalModelData &data) NOEXCEPT
+	{
+		data.extent = 0.5f;
+
+		data.vertices.Reserve(4);
+
 	}
 
 	/*

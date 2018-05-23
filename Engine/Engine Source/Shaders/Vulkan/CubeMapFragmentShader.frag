@@ -73,9 +73,6 @@ void main()
     //Sample the cube map texture.
     vec3 cubeMapTextureSampler = mix(texture(nightTexture, fragmentTextureCoordinate).rgb, texture(dayTexture, fragmentTextureCoordinate).rgb, environmentBlend);
 
-    //Apply gamma correction.
-    cubeMapTextureSampler = pow(cubeMapTextureSampler, vec3(2.2f));
-
     //Set the fragment color.
     fragmentColor = vec4(cubeMapTextureSampler, 1.0f);
     waterFragmentColor = vec4(cubeMapTextureSampler, 1.0f);
