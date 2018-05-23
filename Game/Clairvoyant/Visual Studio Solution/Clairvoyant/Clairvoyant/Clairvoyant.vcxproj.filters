@@ -795,6 +795,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\LevelOfDetailSystem.h">
       <Filter>Engine Source\Systems\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\DirectionalStaticPhysicalShadowRenderPass.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
@@ -1096,6 +1099,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\LevelOfDetailSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\DirectionalStaticPhysicalShadowRenderPass.cpp">
+      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -37,6 +37,7 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize all render passes.
 	DirectionalTerrainShadowRenderPass::Instance->Initialize();
+	DirectionalStaticPhysicalShadowRenderPass::Instance->Initialize();
 	DirectionalInstancedPhysicalShadowRenderPass::Instance->Initialize();
 	ShadowBlurRenderPass::Instance->Initialize();
 	TerrainRenderPass::Instance->Initialize();
@@ -69,6 +70,7 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 
 	//Render all render passes.
 	DirectionalTerrainShadowRenderPass::Instance->Render();
+	DirectionalStaticPhysicalShadowRenderPass::Instance->Render();
 	DirectionalInstancedPhysicalShadowRenderPass::Instance->Render();
 	ShadowBlurRenderPass::Instance->Render();
 	TerrainRenderPass::Instance->Render();

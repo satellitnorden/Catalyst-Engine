@@ -1216,6 +1216,18 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//End the render pass.
 	currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
 
+	if (DirectionalStaticPhysicalShadowRenderPass::Instance->IncludeInRender())
+	{
+		//Begin the instanced physical shadow render pass.
+		currentDirectionalShadowCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::DirectionalStaticPhysicalShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+
+		//Record the execute command for the instanced physical shadow.
+		currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalStaticPhysicalShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+
+		//End the render pass.
+		currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
+	}
+
 	if (DirectionalInstancedPhysicalShadowRenderPass::Instance->IncludeInRender())
 	{
 		//Begin the instanced physical shadow render pass.

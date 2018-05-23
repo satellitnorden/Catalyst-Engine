@@ -7,7 +7,7 @@
 namespace RenderingConstants
 {
 	constexpr uint32 SHADOW_MAP_RESOLUTION{ 2'048 };
-	constexpr float SHADOW_VIEW_DISTANCE{ 2'500.0f };
+	constexpr float SHADOW_VIEW_DISTANCE{ 1'000.0f };
 }
 
 /*
@@ -24,6 +24,7 @@ using UniformBufferHandle = void *RESTRICT;
 enum class RenderPassStage : uint8
 {
 	DirectionalTerrainShadow,
+	DirectionalStaticPhysicalShadow,
 	DirectionalInstancedPhysicalShadow,
 	ShadowBlur,
 	Terrain,
