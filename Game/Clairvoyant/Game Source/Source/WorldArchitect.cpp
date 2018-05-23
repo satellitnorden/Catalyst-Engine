@@ -70,10 +70,11 @@ namespace WorldAchitectConstants
 
 	constexpr HashString MARBLE_1_MATERIAL{ "Marble1Material" };
 	constexpr HashString STONE_MATERIAL{ "StoneMaterial" };
+	constexpr HashString TREE_1_MATERIAL{ "Tree1Material" };
 	constexpr HashString WOOD_1_MATERIAL{ "Wood1Material" };
 
-	constexpr HashString PLANE_MODEL{ "StoneModel" };
 	constexpr HashString STONE_MODEL{ "StoneModel" };
+	constexpr HashString TREE_1_MODEL{ "Tree1Model" };
 
 	constexpr HashString GRASS_TERRAIN_MATERIAL{ "GrassTerrainMaterial" };
 
@@ -100,118 +101,12 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Create the test scene.
 	CreateTestScene();
 
+	/*
 	//Generate the island.
 	GenerateIsland(Vector3(25'000.0f, 0.0f, 0.0f));
 	GenerateIsland(Vector3(-25'000.0f, 0.0f, 0.0f));
 	GenerateIsland(Vector3(0.0f, 0.0f, 25'000.0f));
 	GenerateIsland(Vector3(0.0f, 0.0f, -25'000.0f));
-
-	/*
-	//Create the stone model.
-	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_MODEL) };
-
-	//Create the stone material.
-	PhysicalMaterial stoneMaterial{ ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_MATERIAL) };
-
-	stoneModel.SetMaterial(stoneMaterial);
-
-	DynamicArray<Matrix4> stoneTransformations;
-	stoneTransformations.Reserve(1'000);
-
-	//Create the stones.
-	const FMOD::Studio::EventDescription *const RESTRICT windEventDescription{ SoundSystem::Instance->GetEventDescription(&ClairvoyantSoundGUIDs::WIND) };
-
-	for (uint64 i = 0; i < 1'000; ++i)
-	{
-		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f)) };
-
-		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
-
-		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.9f)
-		{
-			continue;
-		}
-
-		position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
-
-		if (position.Y <= PhysicsSystem::Instance->GetWaterHeight())
-		{
-			continue;
-		}
-
-		const Vector3 rotation{ 0.0f, CatalystMath::RandomFloatInRange(0.0f, 360.0f), 0.0f };
-		const float stoneScale = CatalystMath::RandomFloatInRange(0.1f, 0.5f);
-		const Vector3 scale{ stoneScale, stoneScale, stoneScale };
-
-		stoneTransformations.EmplaceFast(position, rotation, scale);
-
-		Sound3DEntity *const RESTRICT sound{ EntitySystem::Instance->CreateEntity<Sound3DEntity>() };
-		sound->Initialize(windEventDescription);
-		sound->Move(position);
-	}
-
-	InstancedPhysicalEntity *RESTRICT stones = EntitySystem::Instance->CreateEntity<InstancedPhysicalEntity>();
-	stones->Initialize(stoneModel, stoneTransformations);
-
-	//Aaand create a really big stone.
-	StaticPhysicalEntity *const RESTRICT bigStone{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	bigStone->Initialize(stoneModel, Vector3(0.0f, 10'000.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(100.0f, 100.0f, 100.0f));
-
-	//Create the tree stomp model.
-	PhysicalModel treeStompModel{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::TREE_STOMP_MODEL) };
-
-	//Create the tree stomp material.
-	PhysicalMaterial treeStompMaterial{ ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::TREE_STOMP_MATERIAL) };
-
-	treeStompModel.SetMaterial(treeStompMaterial);
-
-	DynamicArray<Matrix4> treeStompTransformations;
-	treeStompTransformations.Reserve(1'000);
-
-	//Create the tree stomps.
-	for (uint64 i = 0; i < 1'000; ++i)
-	{
-		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f), 0.0f, CatalystMath::RandomFloatInRange(-WorldAchitectConstants::TERRAIN_SIZE * 0.5f, WorldAchitectConstants::TERRAIN_SIZE * 0.5f)) };
-
-		const Vector3 terrainNormal{ PhysicsSystem::Instance->GetTerrainNormalAtPosition(position) };
-
-		if (Vector3::DotProduct(terrainNormal, Vector3(0.0f, 1.0f, 0.0f)) < 0.9f)
-		{
-			continue;
-		}
-
-		position.Y = PhysicsSystem::Instance->GetTerrainHeightAtPosition(position);
-
-		if (position.Y <= PhysicsSystem::Instance->GetWaterHeight())
-		{
-			continue;
-		}
-
-		const Vector3 rotation{ -90.0f, 0.0f, CatalystMath::RandomFloatInRange(0.0f, 360.0f) };
-		const float uniformScale = CatalystMath::RandomFloatInRange(0.75f, 1.0f);
-		const Vector3 scale{ uniformScale, uniformScale, uniformScale };
-
-		treeStompTransformations.EmplaceFast(position, rotation, scale);
-	}
-
-	InstancedPhysicalEntity *RESTRICT treeStomps = EntitySystem::Instance->CreateEntity<InstancedPhysicalEntity>();
-	treeStomps->Initialize(treeStompModel, treeStompTransformations);
-
-	//Spawn some clouds. (:
-	constexpr float cloudMinimumScale{ 2'500.0f };
-	constexpr float cloudMaximumScale{ 7'500.0f };
-
-	ParticleSystemEntity *const RESTRICT cloud1Particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
-	cloud1Particles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::CLOUD_1_MATERIAL), ParticleSystemProperties(10.0f, 120.0f, 10.0f, Vector2(cloudMinimumScale, cloudMinimumScale), Vector2(cloudMaximumScale, cloudMaximumScale), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 2'000.0f, -WorldAchitectConstants::TERRAIN_SIZE * 2.0f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 20'000.0f, WorldAchitectConstants::TERRAIN_SIZE * 2.0f), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength(), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength() * 10.0f, Vector3(0.0f, 0.0f, 0.0f)));
-
-	ParticleSystemEntity *const RESTRICT cloud2Particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
-	cloud2Particles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::CLOUD_2_MATERIAL), ParticleSystemProperties(10.0f, 120.0f, 10.0f, Vector2(cloudMinimumScale, cloudMinimumScale), Vector2(cloudMaximumScale, cloudMaximumScale), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 2'000.0f, -WorldAchitectConstants::TERRAIN_SIZE * 2.0f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 20'000.0f, WorldAchitectConstants::TERRAIN_SIZE * 2.0f), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength(), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength() * 10.0f, Vector3(0.0f, 0.0f, 0.0f)));
-
-	ParticleSystemEntity *const RESTRICT cloud3Particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
-	cloud3Particles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::CLOUD_3_MATERIAL), ParticleSystemProperties(10.0f, 120.0f, 10.0f, Vector2(cloudMinimumScale, cloudMinimumScale), Vector2(cloudMaximumScale, cloudMaximumScale), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 2'000.0f, -WorldAchitectConstants::TERRAIN_SIZE * 2.0f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 20'000.0f, WorldAchitectConstants::TERRAIN_SIZE * 2.0f), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength(), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength() * 10.0f, Vector3(0.0f, 0.0f, 0.0f)));
-
-	ParticleSystemEntity *const RESTRICT cloud4Particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
-	cloud4Particles->Initialize(ResourceLoader::GetParticleMaterial(WorldAchitectConstants::CLOUD_4_MATERIAL), ParticleSystemProperties(10.0f, 120.0f, 10.0f, Vector2(cloudMinimumScale, cloudMinimumScale), Vector2(cloudMaximumScale, cloudMaximumScale), Vector3(-WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 2'000.0f, -WorldAchitectConstants::TERRAIN_SIZE * 2.0f), Vector3(WorldAchitectConstants::TERRAIN_SIZE * 2.0f, 20'000.0f, WorldAchitectConstants::TERRAIN_SIZE * 2.0f), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength(), PhysicsSystem::Instance->GetWindDirection() * PhysicsSystem::Instance->GetWindStrength() * 10.0f, Vector3(0.0f, 0.0f, 0.0f)));
 	*/
 }
 
@@ -240,11 +135,18 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 	stoneModel.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_MATERIAL));
 
 	StaticPhysicalEntity *const RESTRICT stone{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	stone->Initialize(stoneModel, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f));
+	stone->Initialize(stoneModel, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.5f, 1.5f, 1.5f));
+
+	//Create the first tree.
+	PhysicalModel tree1Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::TREE_1_MODEL) };
+	tree1Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::TREE_1_MATERIAL));
+
+	StaticPhysicalEntity *const RESTRICT tree1{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	tree1->Initialize(tree1Model, Vector3(100.0f, 100.0f, 0.0f), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.5f, 0.5f, 0.5f));
 }
 
 /*
-*	Given an X and Y coordinate in the 0.0f-1.0f range, calculate and return the island falloff multiplier.
+*	Given an X and Y coordinate in the 0.0f - 1.0f range, calculate and return the island falloff multiplier.
 */
 float WorldArchitect::CalculateIslandFalloffMultiplier(const float xCoordinate, const float yCoordinate) NOEXCEPT
 {

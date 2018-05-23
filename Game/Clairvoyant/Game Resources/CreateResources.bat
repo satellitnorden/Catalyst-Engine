@@ -6,9 +6,11 @@ ResourceCreator.exe ParticleMaterial Intermediate/Materials/ParticleMaterial Par
 
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/Marble1Material Marble1Material 7 Raw/Textures/General/Marble1Albedo.png Raw/Textures/General/Marble1Normal.png Raw/Textures/General/Marble1Roughness.png None Raw/Textures/General/Marble1AmbientOcclusion.png None
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/StoneMaterial StoneMaterial 5 Raw/Textures/StoneAlbedo.png Raw/Textures/StoneNormalMap.png Raw/Textures/StoneRoughness.png None Raw/Textures/StoneAmbientOcclusion.png Raw/Textures/StoneDisplacement.png
+ResourceCreator.exe PhysicalMaterial Intermediate/Materials/Tree1Material Tree1Material 9 Raw/Textures/ModelTextures/Tree1/Albedo.png Raw/Textures/ModelTextures/Tree1/Normal.png Raw/Textures/ModelTextures/Tree1/Roughness.png None None None
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/Wood1Material Wood1Material 7 Raw/Textures/General/Wood1Albedo.png Raw/Textures/General/Wood1Normal.png Raw/Textures/General/Wood1Roughness.png None None None
 
 ResourceCreator.exe PhysicalModel Intermediate/Models/StoneModel StoneModel Raw/Models/Stone.obj
+ResourceCreator.exe PhysicalModel Intermediate/Models/Tree1Model Tree1Model Raw/Models/Tree1.fbx
 
 ResourceCreator.exe SoundBank Intermediate/SoundBanks/MasterSoundBank MasterSoundBank Raw/SoundBanks/MasterBank.bank
 
@@ -18,6 +20,6 @@ ResourceCreator.exe VegetationMaterial Intermediate/Materials/DefaultVegetationM
 
 ResourceCreator.exe WaterMaterial Intermediate/Materials/DefaultWaterMaterial DefaultWaterMaterial 5 Raw/Textures/WaterNormal.png
 
-ResourceCreator.exe ResourceCollection Final/ClairvoyantResourceCollection Intermediate/Materials/DayEnvironmentMaterial.cr Intermediate/Materials/NightEnvironmentMaterial.cr Intermediate/Materials/Fog1Material.cr Intermediate/Materials/ParticleMaterial.cr Intermediate/Materials/Marble1Material.cr Intermediate/Materials/StoneMaterial.cr Intermediate/Materials/Wood1Material.cr Intermediate/Models/StoneModel.cr Intermediate/SoundBanks/MasterSoundBank.cr Intermediate/Materials/GrassTerrainMaterial.cr Intermediate/Materials/DefaultVegetationMaterial.cr Intermediate/Materials/DefaultWaterMaterial.cr
+ResourceCreator.exe ResourceCollection Final/ClairvoyantResourceCollection Intermediate/Materials/DayEnvironmentMaterial.cr Intermediate/Materials/NightEnvironmentMaterial.cr Intermediate/Materials/Fog1Material.cr Intermediate/Materials/ParticleMaterial.cr Intermediate/Materials/Marble1Material.cr Intermediate/Materials/StoneMaterial.cr Intermediate/Materials/Tree1Material.cr Intermediate/Materials/Wood1Material.cr Intermediate/Models/StoneModel.cr Intermediate/Models/Tree1Model.cr Intermediate/SoundBanks/MasterSoundBank.cr Intermediate/Materials/GrassTerrainMaterial.cr Intermediate/Materials/DefaultVegetationMaterial.cr Intermediate/Materials/DefaultWaterMaterial.cr
 
 pause
