@@ -954,6 +954,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the directional physical shadow vertex shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetDirectionalPhysicalShadowVertexShaderData(data);
+		shaderModules[INDEX(Shader::DirectionalPhysicalShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
 		//Initialize directional shadowInstanced physical vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDirectionalShadowInstancedPhysicalVertexShaderData(data);

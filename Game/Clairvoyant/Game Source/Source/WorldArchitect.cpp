@@ -107,13 +107,12 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Create the test scene.
 	CreateTestScene();
 
-	/*
 	//Generate the island.
-	GenerateIsland(Vector3(25'000.0f, 0.0f, 0.0f));
-	GenerateIsland(Vector3(-25'000.0f, 0.0f, 0.0f));
-	GenerateIsland(Vector3(0.0f, 0.0f, 25'000.0f));
+	//GenerateIsland(Vector3(0.0f, 0.0f, 0.0f));
+	//GenerateIsland(Vector3(25'000.0f, 0.0f, 0.0f));
+	//GenerateIsland(Vector3(-25'000.0f, 0.0f, 0.0f));
+	//GenerateIsland(Vector3(0.0f, 0.0f, 25'000.0f));
 	GenerateIsland(Vector3(0.0f, 0.0f, -25'000.0f));
-	*/
 }
 
 /*
@@ -206,7 +205,7 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, float& extent
 
 	const float randomOffset{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
 	const float randomHeight{ CatalystMath::RandomFloatInRange(500.0f, 1'500.0f) };
-	extent = CatalystMath::RandomFloatInRange(1'000.0f, 10'000.0f);
+	extent = 10'000.0f;
 
 	const float startingFrequency{ CatalystMath::RandomFloatInRange(1.0f, 5.0f) };
 	const float frequenyMultiplier{ CatalystMath::RandomFloatInRange(2.0f, 5.0f) };

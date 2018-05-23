@@ -123,6 +123,7 @@ enum class Shader : uint8
 {
 	CubeMapFragment,
 	CubeMapVertex,
+	DirectionalPhysicalShadowVertex,
 	DirectionalInstancedPhysicalShadowVertex,
 	DirectionalTerrainShadowTessellationEvaluation,
 	InstancedPhysicalVertex,

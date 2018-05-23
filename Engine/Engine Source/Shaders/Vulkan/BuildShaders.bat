@@ -1,5 +1,6 @@
 glslangValidator.exe -V CubeMapFragmentShader.frag -o 					CubeMapFragmentShader.spv
 glslangValidator.exe -V CubeMapVertexShader.vert -o 					CubeMapVertexShader.spv
+glslangValidator.exe -V DirectionalPhysicalShadowVertexShader.vert -o			DirectionalPhysicalShadowVertexShader.spv
 glslangValidator.exe -V DirectionalShadowInstancedPhysicalVertexShader.vert -o		DirectionalShadowInstancedPhysicalVertexShader.spv
 glslangValidator.exe -V DirectionalShadowTerrainTessellationEvaluationShader.tese -o	DirectionalShadowTerrainTessellationEvaluationShader.spv
 glslangValidator.exe -V InstancedPhysicalVertexShader.vert -o 				InstancedPhysicalVertexShader.spv

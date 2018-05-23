@@ -10,6 +10,7 @@
 //Rendering.
 #include <Rendering/Shader Data/Vulkan/CubeMapFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/CubeMapVertexShader.h>
+#include <Rendering/Shader Data/Vulkan/DirectionalPhysicalShadowVertexShader.h>
 #include <Rendering/Shader Data/Vulkan/DirectionalShadowInstancedPhysicalVertexShader.h>
 #include <Rendering/Shader Data/Vulkan/DirectionalShadowTerrainTessellationEvaluationShader.h>
 #include <Rendering/Shader Data/Vulkan/InstancedPhysicalVertexShader.h>

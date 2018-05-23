@@ -24,7 +24,7 @@ void DirectionalStaticPhysicalShadowRenderPass::Initialize() NOEXCEPT
 	SetStage(RenderPassStage::DirectionalStaticPhysicalShadow);
 
 	//Set the shaders.
-	SetVertexShader(Shader::PhysicalVertex);
+	SetVertexShader(Shader::DirectionalPhysicalShadowVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
