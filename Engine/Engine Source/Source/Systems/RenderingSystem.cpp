@@ -6,6 +6,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/PhysicalModel.h>
+#include <Rendering/Engine Layer/RenderingUtilities.h>
 #include <Rendering/Engine Layer/Resolution.h>
 #include <Rendering/Engine Layer/Render Passes/RenderPasses.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
@@ -30,6 +31,9 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->InitializeSystem();
+
+	//Initialize the common physical models.
+	InitializeCommonPhysicalModels();
 
 	//Initialize all render passes.
 	DirectionalTerrainShadowRenderPass::Instance->Initialize();
@@ -391,6 +395,19 @@ void RenderingSystem::SetPostProcessingSharpenAmount(const float newSharpenAmoun
 {
 	//Set the post processing sharpen amount via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->SetPostProcessingSharpenAmount(newSharpenAmount);
+}
+
+/*
+*	Initializes the common physical models.
+*/
+void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
+{
+	{
+		//Create the plane common physical model.
+		PhysicalModelData planePhysicalModelData;
+		RenderingUtilities::GetPlanePhysicalModelData(planePhysicalModelData);
+		CreatePhysicalModel(planePhysicalModelData, commonPhysicalModels[INDEX(CommonPhysicalModel::Plane)]);
+	}
 }
 
 /*

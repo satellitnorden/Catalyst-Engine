@@ -7,6 +7,7 @@
 #include <Math/Matrix4.h>
 
 //Rendering.
+#include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/RenderingCore.h>
 
 //Forward declarations.
@@ -22,7 +23,6 @@ class ParticleSystemEntity;
 class ParticleSystemProperties;
 class PhysicalMaterial;
 class PhysicalMaterialData;
-class PhysicalModel;
 class PhysicalModelData;
 class RenderPass;
 class Resolution;
@@ -48,6 +48,13 @@ public:
 
 	//System declaration.
 	DECLARE_SINGLETON(RenderingSystem);
+
+	//Enumeration covering all common physical model.
+	enum class CommonPhysicalModel : uint8
+	{
+		Plane,
+		NumberOfCommonPhysicalModels
+	};
 
 	/*
 	*	Initializes the rendering system.
@@ -108,6 +115,11 @@ public:
 	*	Returns the view matrix.
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() const NOEXCEPT { return &viewMatrix; }
+
+	/*
+	*	Returns a common physical model.
+	*/
+	const PhysicalModel& GetCommonPhysicalModel(const CommonPhysicalModel commonPhysicalModel) const NOEXCEPT { return commonPhysicalModels[INDEX(commonPhysicalModel)]; }
 
 	/*
 	*	Finalizes the initialization of a render pass.
@@ -241,6 +253,9 @@ public:
 
 private:
 
+	//Container for all common physical models.
+	StaticArray<PhysicalModel, INDEX(CommonPhysicalModel::NumberOfCommonPhysicalModels)> commonPhysicalModels;
+
 	//The active camera.
 	const CameraEntity *RESTRICT activeCamera{ nullptr };
 
@@ -252,6 +267,11 @@ private:
 
 	//The view matrix.
 	Matrix4 viewMatrix;
+
+	/*
+	*	Initializes the common physical models.
+	*/
+	void InitializeCommonPhysicalModels() NOEXCEPT;
 
 	/*
 	*	Updates the matrices.

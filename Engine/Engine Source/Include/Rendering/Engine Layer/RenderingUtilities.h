@@ -221,10 +221,23 @@ namespace RenderingUtilities
 	*/
 	static void GetPlanePhysicalModelData(PhysicalModelData &data) NOEXCEPT
 	{
+		constexpr float textureCoordinateMultiplier{ 10.0f };
+
 		data.extent = 0.5f;
 
 		data.vertices.Reserve(4);
+		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.0f, 0.0f));
+		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.0f, 1.0f * textureCoordinateMultiplier));
+		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(1.0f * textureCoordinateMultiplier, 1.0f * textureCoordinateMultiplier));
+		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(1.0f * textureCoordinateMultiplier, 0.0f));
 
+		data.indices.Reserve(6);
+		data.indices.EmplaceFast(0);
+		data.indices.EmplaceFast(2);
+		data.indices.EmplaceFast(1);
+		data.indices.EmplaceFast(0);
+		data.indices.EmplaceFast(3);
+		data.indices.EmplaceFast(2);
 	}
 
 	/*

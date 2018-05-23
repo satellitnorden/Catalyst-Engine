@@ -68,8 +68,9 @@ namespace WorldAchitectConstants
 
 	constexpr HashString FOG_1_MATERIAL{ "Fog1Material" };
 
-	constexpr HashString MARBLE1_MATERIAL{ "Marble1Material" };
+	constexpr HashString MARBLE_1_MATERIAL{ "Marble1Material" };
 	constexpr HashString STONE_MATERIAL{ "StoneMaterial" };
+	constexpr HashString WOOD_1_MATERIAL{ "Wood1Material" };
 
 	constexpr HashString PLANE_MODEL{ "StoneModel" };
 	constexpr HashString STONE_MODEL{ "StoneModel" };
@@ -228,7 +229,18 @@ void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 void WorldArchitect::CreateTestScene() NOEXCEPT
 {
 	//Create the floor.
+	PhysicalModel planeModel{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Plane) };
+	planeModel.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::WOOD_1_MATERIAL));
 
+	StaticPhysicalEntity *const RESTRICT plane{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	plane->Initialize(planeModel, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1'000.0f, 1'000.0f, 1'000.0f));
+
+	//Create a stone.
+	PhysicalModel stoneModel{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_MODEL) };
+	stoneModel.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_MATERIAL));
+
+	StaticPhysicalEntity *const RESTRICT stone{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	stone->Initialize(stoneModel, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f));
 }
 
 /*
