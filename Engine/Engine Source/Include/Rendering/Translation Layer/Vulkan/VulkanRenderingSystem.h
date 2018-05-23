@@ -94,6 +94,11 @@ public:
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
 
 	/*
+	*	Creates and returns a 2D texture given the texture data.
+	*/
+	Texture2DHandle Create2DTexture(const TextureData &textureData) const NOEXCEPT;
+
+	/*
 	*	Creates a constant buffer.
 	*/
 	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
@@ -102,11 +107,6 @@ public:
 	*	Creates an environment material.
 	*/
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;
-
-	/*
-	*	Creates a terrain material.
-	*/
-	void CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT;
 
 	/*
 	*	Creates and returns physical model.
@@ -157,11 +157,6 @@ public:
 	*	Initializes a particle system entity.
 	*/
 	void InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT;
-
-	/*
-	*	Creates and returns a 2D texture given the texture data.
-	*/
-	Texture2DHandle Create2DTexture(const TextureData &textureData) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.

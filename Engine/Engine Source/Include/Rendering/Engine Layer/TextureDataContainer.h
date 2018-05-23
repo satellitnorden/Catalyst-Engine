@@ -61,8 +61,44 @@ public:
 		textureTexelSize = sizeof(float);
 	}
 
+	/*
+	*	Constructor taking a double dynamic array of bytes.
+	*/
+	TextureDataContainer(const DynamicArray<DynamicArray<byte>> &initialTextureData, const uint16 initialTextureWidth, const uint16 initialTextureHeight, const uint8 initilTextureChannels) NOEXCEPT
+	{
+		textureData.Reserve(initialTextureData.Size());
+
+		for (const DynamicArray<byte> &initialTextureDataChunk : initialTextureData)
+		{
+			textureData.EmplaceFast(initialTextureDataChunk.Data());
+		}
+
+		textureWidth = initialTextureWidth;
+		textureHeight = initialTextureHeight;
+		textureChannels = initilTextureChannels;
+		textureTexelSize = sizeof(byte);
+	}
+
+	/*
+	*	Constructor taking a double dynamic array of floats.
+	*/
+	TextureDataContainer(const DynamicArray<DynamicArray<float>> &initialTextureData, const uint16 initialTextureWidth, const uint16 initialTextureHeight, const uint8 initilTextureChannels) NOEXCEPT
+	{
+		textureData.Reserve(initialTextureData.Size());
+
+		for (const DynamicArray<float> &initialTextureDataChunk : initialTextureData)
+		{
+			textureData.EmplaceFast(initialTextureDataChunk.Data());
+		}
+
+		textureWidth = initialTextureWidth;
+		textureHeight = initialTextureHeight;
+		textureChannels = initilTextureChannels;
+		textureTexelSize = sizeof(float);
+	}
+
 	//Pointer to the underlying texture data.
-	DynamicArray<void *RESTRICT> textureData;
+	DynamicArray<const void *RESTRICT> textureData;
 
 	//The width of the texture.
 	uint16 textureWidth;

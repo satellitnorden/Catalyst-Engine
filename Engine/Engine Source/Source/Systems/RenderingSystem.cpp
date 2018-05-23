@@ -8,7 +8,12 @@
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/Resolution.h>
 #include <Rendering/Engine Layer/Render Passes/RenderPasses.h>
+#include <Rendering/Engine Layer/TerrainMaterial.h>
+#include <Rendering/Engine Layer/TextureData.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
+
+//Resources.
+#include <Resources/TerrainMaterialData.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
@@ -101,6 +106,15 @@ uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 {
 	//Return the current frame index via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentFrameIndex();
+}
+
+/*
+*	Creates and returns a 2D texture given the texture data.
+*/
+Texture2DHandle RenderingSystem::Create2DTexture(const TextureData &textureData) const NOEXCEPT
+{
+	//Create the 2D texture via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->Create2DTexture(textureData);
 }
 
 /*
@@ -198,8 +212,50 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &e
 */
 void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT
 {
-	//Create the terrain material via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreateTerrainMaterial(terrainMaterialData, terrainMaterial);
+	//Create the first layer albedo.
+	terrainMaterial.firstLayerAlbedo = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.firstLayerAlbedoData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the first layer normal map.
+	terrainMaterial.firstLayerNormalMap = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.firstLayerNormalMapData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the first layer material properties.
+	terrainMaterial.firstLayerMaterialProperties = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.firstLayerMaterialPropertiesData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the second layer albedo.
+	terrainMaterial.secondLayerAlbedo = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.secondLayerAlbedoData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the second layer normal map.
+	terrainMaterial.secondLayerNormalMap = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.secondLayerNormalMapData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the second layer material properties.
+	terrainMaterial.secondLayerMaterialProperties = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.secondLayerMaterialPropertiesData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the third layer albedo.
+	terrainMaterial.thirdLayerAlbedo = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerAlbedoData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the third layer normal map.
+	terrainMaterial.thirdLayerNormalMap = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerNormalMapData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the third layer material properties.
+	terrainMaterial.thirdLayerMaterialProperties = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerMaterialPropertiesData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the fourth layer albedo.
+	terrainMaterial.fourthLayerAlbedo = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerAlbedoData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the fourth layer normal map.
+	terrainMaterial.fourthLayerNormalMap = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerNormalMapData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the fourth layer material properties.
+	terrainMaterial.fourthLayerMaterialProperties = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerMaterialPropertiesData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the fifth layer albedo.
+	terrainMaterial.fifthLayerAlbedo = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerAlbedoData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the fifth layer normal map.
+	terrainMaterial.fifthLayerNormalMap = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerNormalMapData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the fifth layer material properties.
+	terrainMaterial.fifthLayerMaterialProperties = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerMaterialPropertiesData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -293,15 +349,6 @@ void RenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity 
 }
 
 /*
-*	Creates and returns a 2D texture given the texture data.
-*/
-Texture2DHandle RenderingSystem::Create2DTexture(const TextureData &textureData) const NOEXCEPT
-{
-	//Create the 2D texture via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->Create2DTexture(textureData);
-}
-
-/*
 *	Creates and returns a uniform buffer.
 */
 UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT
@@ -354,7 +401,7 @@ void RenderingSystem::UpdateMatrices() NOEXCEPT
 	if (activeCamera)
 	{
 		//Calculate the projection matrix.
-		projectionMatrix = Matrix4::Perspective(CatalystMath::DegreesToRadians(activeCamera->GetFieldOfView()), 1920.0f / 1080.0f, activeCamera->GetNearPlane(), activeCamera->GetFarPlane());
+		projectionMatrix = Matrix4::Perspective(CatalystMath::DegreesToRadians(activeCamera->GetFieldOfView()), static_cast<float>(GetRenderResolution().width) / static_cast<float>(GetRenderResolution().height), activeCamera->GetNearPlane(), activeCamera->GetFarPlane());
 	
 		//Calculate the camera matrix.
 		cameraMatrix = Matrix4::LookAt(activeCamera->GetPosition(), activeCamera->GetPosition() + activeCamera->GetForwardVector(), activeCamera->GetUpVector());
