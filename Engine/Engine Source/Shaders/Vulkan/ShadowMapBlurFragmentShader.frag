@@ -110,5 +110,5 @@ vec4 CalculateBlur()
 void main()
 {
     //Set the fragment color.
-    fragmentColor = CalculateBlur();
+    fragmentColor = texture(shadowMapTexture, fragmentTextureCoordinate);
 }

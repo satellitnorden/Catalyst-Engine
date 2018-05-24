@@ -112,7 +112,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//GenerateIsland(Vector3(25'000.0f, 0.0f, 0.0f));
 	//GenerateIsland(Vector3(-25'000.0f, 0.0f, 0.0f));
 	//GenerateIsland(Vector3(0.0f, 0.0f, 25'000.0f));
-	GenerateIsland(Vector3(0.0f, 0.0f, -25'000.0f));
+	//GenerateIsland(Vector3(0.0f, 0.0f, -25'000.0f));
 }
 
 /*
