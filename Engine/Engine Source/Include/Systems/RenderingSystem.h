@@ -167,9 +167,9 @@ public:
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;
 
 	/*
-	*	Creates a terrain material.
+	*	Creates an ocean material.
 	*/
-	void CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT;
+	void CreateOceanMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT;
 
 	/*
 	*	Creates a physical model.
@@ -187,14 +187,14 @@ public:
 	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT;
 
 	/*
+	*	Creates a terrain material.
+	*/
+	void CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT;
+
+	/*
 	*	Creates a vegetation material.
 	*/
 	void CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT;
-
-	/*
-	*	Creates a water material.
-	*/
-	void CreateWaterMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT;
 
 	/*
 	*	Initializes a terrain entity.

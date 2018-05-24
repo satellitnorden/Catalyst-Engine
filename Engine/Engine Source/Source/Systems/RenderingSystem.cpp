@@ -5,16 +5,24 @@
 #include <Entities/CameraEntity.h>
 
 //Rendering.
+#include <Rendering/Engine Layer/OceanMaterial.h>
+#include <Rendering/Engine Layer/ParticleMaterial.h>
+#include <Rendering/Engine Layer/PhysicalMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/RenderingUtilities.h>
 #include <Rendering/Engine Layer/Resolution.h>
+#include <Rendering/Engine Layer/VegetationMaterial.h>
 #include <Rendering/Engine Layer/Render Passes/RenderPasses.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/TextureData.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
 
 //Resources.
+#include <Resources/ParticleMaterialData.h>
+#include <Resources/PhysicalMaterialData.h>
 #include <Resources/TerrainMaterialData.h>
+#include <Resources/VegetationMaterialData.h>
+#include <Resources/WaterMaterialData.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
@@ -214,6 +222,48 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &e
 }
 
 /*
+*	Creates an ocean material.
+*/
+void RenderingSystem::CreateOceanMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT
+{
+	//Create the normal map texture.
+	oceanMaterial.normalMapTexture = Create2DTexture(TextureData(TextureDataContainer(waterMaterialData.normalMapData, waterMaterialData.width, waterMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+}
+
+/*
+*	Creates a physical model.
+*/
+void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
+{
+	//Create the physical model via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->CreatePhysicalModel(physicalModelData, physicalModel);
+}
+
+/*
+*	Creates a particle material.
+*/
+void RenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT
+{
+	//Create the albedo texture
+	particleMaterial.albedoTexture = Create2DTexture(TextureData(TextureDataContainer(particleMaterialData.albedoData, particleMaterialData.width, particleMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+}
+
+/*
+*	Creates a physical material.
+*/
+void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT
+{
+	//Create the albedo texture.
+	physicalMaterial.albedoTexture = Create2DTexture(TextureData(TextureDataContainer(physicalMaterialData.albedoData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the normal map texture.
+	physicalMaterial.normalMapTexture = Create2DTexture(TextureData(TextureDataContainer(physicalMaterialData.normalMapData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the material properties texture.
+	physicalMaterial.materialPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(physicalMaterialData.materialPropertiesData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+}
+
+/*
 *	Creates a terrain material.
 */
 void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT
@@ -265,48 +315,21 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 }
 
 /*
-*	Creates a physical model.
-*/
-void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
-{
-	//Create the physical model via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreatePhysicalModel(physicalModelData, physicalModel);
-}
-
-/*
-*	Creates a particle material.
-*/
-void RenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT
-{
-	//Create the particle material via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreateParticleMaterial(particleMaterialData, particleMaterial);
-}
-
-/*
-*	Creates a physical material.
-*/
-void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT
-{
-	//Create the physical material via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreatePhysicalMaterial(physicalMaterialData, physicalMaterial);
-}
-
-/*
 *	Creates a vegetation material.
 */
 void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT
 {
-	//Create the vegetation model via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreateVegetationMaterial(vegetationMaterialData, vegetationMaterial);
-}
+	//Create the mask texture.
+	vegetationMaterial.maskTexture = Create2DTexture(TextureData(TextureDataContainer(vegetationMaterialData.maskData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
-/*
-*	Creates a water material.
-*/
-void RenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT
-{
-	//Create the water material via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreateWaterMaterial(waterMaterialData, oceanMaterial);
+	//Create the albedo texture.
+	vegetationMaterial.albedoTexture = Create2DTexture(TextureData(TextureDataContainer(vegetationMaterialData.albedoData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the normal map texture.
+	vegetationMaterial.normalMapTexture = Create2DTexture(TextureData(TextureDataContainer(vegetationMaterialData.normalMapData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the properties texture.
+	vegetationMaterial.propertiesTexture = Create2DTexture(TextureData(TextureDataContainer(vegetationMaterialData.propertiesData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*

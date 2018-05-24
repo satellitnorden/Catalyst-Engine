@@ -23,9 +23,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture2D.h>
-#include <Rendering/Engine Layer/OceanMaterial.h>
 #include <Rendering/Engine Layer/ParticleMaterial.h>
-#include <Rendering/Engine Layer/PhysicalMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/RenderingUtilities.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
@@ -39,12 +37,6 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
-#include <Resources/ParticleMaterialData.h>
-#include <Resources/PhysicalMaterialData.h>
-#include <Resources/PhysicalModelData.h>
-#include <Resources/TerrainMaterialData.h>
-#include <Resources/VegetationMaterialData.h>
-#include <Resources/WaterMaterialData.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -204,48 +196,6 @@ void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialD
 }
 
 /*
-*	Creates a particle material.
-*/
-void VulkanRenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT
-{
-	//Load the albedo.
-	particleMaterial.albedoTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(particleMaterialData.width, particleMaterialData.height, 4, particleMaterialData.albedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
-}
-
-/*
-*	Creates a physical material.
-*/
-void VulkanRenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT
-{
-	//Load the albedo.
-	physicalMaterial.albedoTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(physicalMaterialData.width, physicalMaterialData.height, 4, physicalMaterialData.albedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
-
-	//Load the normal map.
-	physicalMaterial.normalMapTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(physicalMaterialData.width, physicalMaterialData.height, 4, physicalMaterialData.normalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
-
-	//Load the material properties.
-	physicalMaterial.materialPropertiesTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(physicalMaterialData.width, physicalMaterialData.height, 4, physicalMaterialData.materialPropertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
-}
-
-/*
-*	Creates a vegetation material.
-*/
-void VulkanRenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT
-{
-	//Load the mask texture.
-	vegetationMaterial.maskTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(vegetationMaterialData.width, vegetationMaterialData.height, 4, vegetationMaterialData.maskData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE));
-
-	//Load the albedo texture.
-	vegetationMaterial.albedoTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(vegetationMaterialData.width, vegetationMaterialData.height, 4, vegetationMaterialData.albedoData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE));
-
-	//Load the normal map texture.
-	vegetationMaterial.normalMapTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(vegetationMaterialData.width, vegetationMaterialData.height, 4, vegetationMaterialData.normalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE));
-
-	//Load the properties texture.
-	vegetationMaterial.propertiesTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(vegetationMaterialData.width, vegetationMaterialData.height, 4, vegetationMaterialData.propertiesData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE));
-}
-
-/*
 *	Creates and returns physical model.
 */
 void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
@@ -261,15 +211,6 @@ void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physica
 	physicalModel.SetBuffer(buffer);
 	physicalModel.SetIndexOffset(modelDataSizes[0]);
 	physicalModel.SetIndexCount(static_cast<uint32>(physicalModelData.indices.Size()));
-}
-
-/*
-*	Creates a water material.
-*/
-void VulkanRenderingSystem::CreateWaterMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT
-{
-	//Load the normal map.
-	oceanMaterial.normalMapTexture = static_cast<Texture2DHandle>(VulkanInterface::Instance->Create2DTexture(waterMaterialData.width, waterMaterialData.height, 4, waterMaterialData.normalMapData, VK_FORMAT_R8G8B8A8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT));
 }
 
 /*

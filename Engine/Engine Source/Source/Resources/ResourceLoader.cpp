@@ -202,8 +202,8 @@ void ResourceLoader::LoadOceanMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 		file.Read(waterMaterialData.normalMapData[i].Data(), textureSize);
 	}
 
-	//Create the water material via the rendering system.
-	RenderingSystem::Instance->CreateWaterMaterial(waterMaterialData, oceanMaterials[resourceID]);
+	//Create the ocean material via the rendering system.
+	RenderingSystem::Instance->CreateOceanMaterial(waterMaterialData, oceanMaterials[resourceID]);
 }
 
 /*

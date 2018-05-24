@@ -29,13 +29,9 @@ class CPUTexture2D;
 class EnvironmentMaterial;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
-class OceanMaterial;
 class ParticleMaterial;
-class ParticleMaterialData;
 class ParticleSystemEntity;
 class ParticleSystemProperties;
-class PhysicalMaterial;
-class PhysicalMaterialData;
 class PhysicalModel;
 class PhysicalModelData;
 class RenderPass;
@@ -43,16 +39,13 @@ class Resolution;
 class StaticPhysicalEntity;
 class TerrainEntity;
 class TerrainMaterial;
-class TerrainMaterialData;
 class TerrainUniformData;
 class TextureData;
 class VegetationEntity;
 class VegetationMaterial;
-class VegetationMaterialData;
 class VegetationProperties;
 class VegetationTransformation;
 class WaterEntity;
-class WaterMaterialData;
 class WaterUniformData;
 
 class VulkanRenderingSystem final
@@ -112,26 +105,6 @@ public:
 	*	Creates and returns physical model.
 	*/
 	void CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT;
-
-	/*
-	*	Creates a particle material.
-	*/
-	void CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT;
-
-	/*
-	*	Creates a physical material.
-	*/
-	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT;
-
-	/*
-	*	Creates a vegetation material.
-	*/
-	void CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT;
-
-	/*
-	*	Creates a water material.
-	*/
-	void CreateWaterMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT;
 
 	/*
 	*	Initializes a terrain entity.
