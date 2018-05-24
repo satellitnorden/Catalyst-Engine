@@ -35,7 +35,7 @@ void DirectionalTerrainShadowRenderPass::Initialize() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::DirectionalPreBlurShadowMap);
+	AddRenderTarget(RenderTarget::DirectionalShadowMap);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);

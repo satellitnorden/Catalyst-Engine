@@ -194,33 +194,7 @@ float LinearStep(float low, float high, float value)
 */
 float CalculateDirectionalLightShadowMultiplier()
 {
-    //Calculate if this fragment's world position is in shadow of the directional light.
-    vec4 directionalLightShadowMapCoordinate = directionalLightViewMatrix * vec4(fragmentWorldPosition, 1.0f);
-    directionalLightShadowMapCoordinate.xy = directionalLightShadowMapCoordinate.xy * 0.5f + 0.5f;
-
-    vec4 directionalDepthSampler = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy);
-    float directionalDepth = directionalDepthSampler.r;
-    float compare = directionalLightShadowMapCoordinate.z;
-
-    return compare >= 1.0f || compare - 0.0025f < directionalDepth ? 1.0f : 0.0f;
-
-    /*
-    //Calculate if this fragment's world position is in shadow of the directional light.
-    vec4 directionalLightShadowMapCoordinate = directionalLightViewMatrix * vec4(fragmentWorldPosition, 1.0f);
-    directionalLightShadowMapCoordinate.xy = directionalLightShadowMapCoordinate.xy * 0.5f + 0.5f;
-
-    vec4 directionalDepthSampler = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy);
-    float directionalDepth = directionalDepthSampler.r;
-    float directionalDepthSquared = directionalDepthSampler.g;
-    float compare = directionalLightShadowMapCoordinate.z;
-    float p = step(compare, directionalDepth);
-    float variance = max(directionalDepthSquared - (directionalDepth * directionalDepth), 0.00002f);
-
-    float d = LinearStep(0.2f, 1.0f, compare - directionalDepth);
-    float pMax = variance / (variance + d * d);
-
-    return compare > 1.0f ? 1.0f : min(max(p, pMax), 1.0f);
-    */
+    return texture(directionalShadowMap, fragmentTextureCoordinate.xy).r;
 }
 
 /*

@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/ShadowBlurRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/DirectionalShadowRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
@@ -8,34 +8,34 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(ShadowBlurRenderPass);
+DEFINE_SINGLETON(DirectionalShadowRenderPass);
 
 /*
-*	Initializes the shadow  render pass.
+*	Initializes the directional shadow render pass.
 */
-void ShadowBlurRenderPass::Initialize() NOEXCEPT
+void DirectionalShadowRenderPass::Initialize() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::ShadowBlur);
+	SetStage(RenderPassStage::DirectionalShadow);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::ShadowBlurFragment);
+	SetFragmentShader(Shader::DirectionalShadowFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::DirectionalPostBlurShadowMap);
+	AddRenderTarget(RenderTarget::DirectionalPreBlurShadowMap);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);
 	AddDescriptorSetLayout(DescriptorSetLayout::DynamicUniformData);
-	AddDescriptorSetLayout(DescriptorSetLayout::ShadowMapBlur);
+	AddDescriptorSetLayout(DescriptorSetLayout::DirectionalShadow);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());
@@ -57,24 +57,28 @@ void ShadowBlurRenderPass::Initialize() NOEXCEPT
 }
 
 /*
-*	Renders the shadow blur.
+*	Renders the directional shadow.
 */
-void ShadowBlurRenderPass::Render() NOEXCEPT
+void DirectionalShadowRenderPass::Render() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+	const EventHandle currentDirectionalShadowEvent{ RenderingSystem::Instance->GetCurrentDirectionalShadowEvent() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the descriptor sets.
+	//Bind the current dynamic uniform data descriptor set.
 	StaticArray<DescriptorSetHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetShadowBlurDescriptorSet()
+		RenderingSystem::Instance->GetDirectionalShadowDescriptorSet()
 	};
 
 	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
+
+	//Wait for the directional shadows to finish.
+	commandBuffer->WaitForEvents(this, 1, &currentDirectionalShadowEvent);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

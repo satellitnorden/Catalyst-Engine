@@ -26,11 +26,12 @@ enum class RenderPassStage : uint8
 	DirectionalTerrainShadow,
 	DirectionalStaticPhysicalShadow,
 	DirectionalInstancedPhysicalShadow,
-	ShadowBlur,
 	Terrain,
 	StaticPhysical,
 	InstancedPhysical,
 	Vegetation,
+	DirectionalShadow,
+	ShadowBlur,
 	Lighting,
 	Sky,
 	Ocean,
@@ -97,6 +98,7 @@ enum class DescriptorSetLayout : uint8
 	Terrain,
 	Physical,
 	Vegetation,
+	DirectionalShadow,
 	Lighting,
 	Ocean,
 	ParticleSystem,
@@ -107,6 +109,7 @@ enum class DescriptorSetLayout : uint8
 //Enumeration covering all render targets.
 enum class RenderTarget : uint8
 {
+	DirectionalShadowMap,
 	DirectionalPreBlurShadowMap,
 	DirectionalPostBlurShadowMap,
 	SceneBufferAlbedo,
@@ -124,6 +127,7 @@ enum class Shader : uint8
 	CubeMapFragment,
 	CubeMapVertex,
 	DirectionalPhysicalShadowVertex,
+	DirectionalShadowFragment,
 	DirectionalInstancedPhysicalShadowVertex,
 	DirectionalTerrainShadowTessellationEvaluation,
 	InstancedPhysicalVertex,

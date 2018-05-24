@@ -644,6 +644,14 @@ DescriptorSetHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEXCE
 }
 
 /*
+*	Returns the directional shadow descriptor set.
+*/
+DescriptorSetHandle VulkanRenderingSystem::GetDirectionalShadowDescriptorSet() NOEXCEPT
+{
+	return descriptorSets[INDEX(DescriptorSet::DirectionalShadow)].Get();
+}
+
+/*
 *	Returns the lighting descriptor set.
 */
 DescriptorSetHandle VulkanRenderingSystem::GetLightingDescriptorSet() NOEXCEPT
@@ -685,8 +693,9 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 	depthBuffers[INDEX(DepthBuffer::SceneBuffer)] = VulkanInterface::Instance->CreateDepthBuffer(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Initialize all render targets.
-	renderTargets[INDEX(RenderTarget::DirectionalPreBlurShadowMap)] = VulkanInterface::Instance->CreateRenderTarget(VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
-	renderTargets[INDEX(RenderTarget::DirectionalPostBlurShadowMap)] = VulkanInterface::Instance->CreateRenderTarget(VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	renderTargets[INDEX(RenderTarget::DirectionalShadowMap)] = VulkanInterface::Instance->CreateRenderTarget(VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	renderTargets[INDEX(RenderTarget::DirectionalPreBlurShadowMap)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	renderTargets[INDEX(RenderTarget::DirectionalPostBlurShadowMap)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 	renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 	renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
@@ -808,6 +817,17 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	}
 
 	{
+		//Initialize the directional shadow descriptor set layout.
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> descriptorSetLayoutBindings
+		{
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		};
+
+		descriptorSetLayouts[INDEX(DescriptorSetLayout::DirectionalShadow)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
+	}
+
+	{
 		//Initialize the lighting descriptor set layout.
 		constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> lightingDescriptorSetLayoutBindings
 		{
@@ -883,7 +903,14 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
-		//Initialize directional shadowInstanced physical vertex shader module.
+		//Initialize the directional shadow fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetDirectionalShadowFragmentShaderData(data);
+		shaderModules[INDEX(Shader::DirectionalShadowFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize directional shadow instanced physical vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDirectionalShadowInstancedPhysicalVertexShaderData(data);
 		shaderModules[INDEX(Shader::DirectionalInstancedPhysicalShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
@@ -1049,6 +1076,20 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 	}
 
 	{
+		//Initialize the directional shadow descriptor set.
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::DirectionalShadow)], descriptorSetLayouts[INDEX(DescriptorSetLayout::DirectionalShadow)]);
+
+		//Update the write descriptor sets.
+		StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
+		{
+			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::DirectionalShadow)], 0),
+			renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::DirectionalShadow)], 1)
+		};
+
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	}
+
+	{
 		//Initialize the lighting descriptor set.
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)]);
 
@@ -1168,19 +1209,6 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		//End the render pass.
 		currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
 	}
-	
-	//Bind the shadow map blur render pass.
-	currentDirectionalShadowCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::ShadowBlur)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
-
-	//Record the execute command for the instanced physical shadow.
-	if (ShadowBlurRenderPass::Instance->IncludeInRender())
-	{
-		currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(ShadowBlurRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
-
-	}
-
-	//End the shadow map blur render pass.
-	currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
 
 	//Signal the directional shadow event.
 	currentDirectionalShadowCommandBuffer->CommandSetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -1242,6 +1270,30 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		//End the vegetation entities render pass.
 		currentPrimaryCommandBuffer->CommandEndRenderPass();
 	}
+
+	//Begin the directional shadow render pass.
+	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::DirectionalShadow)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+
+	//Record the execute command for the lighting.
+	if (DirectionalShadowRenderPass::Instance->IncludeInRender())
+	{
+		currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+	}
+
+	//End the directional shadow render pass.
+	currentPrimaryCommandBuffer->CommandEndRenderPass();
+
+	//Begin the shadow blur render pass.
+	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::ShadowBlur)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+
+	//Record the execute command for the shadow blur.
+	if (ShadowBlurRenderPass::Instance->IncludeInRender())
+	{
+		currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(ShadowBlurRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+	}
+
+	//End the shadow blur render pass.
+	currentPrimaryCommandBuffer->CommandEndRenderPass();
 
 	//Begin the lighting render pass.
 	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<2>(pipelines[INDEX(RenderPassStage::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);

@@ -175,6 +175,11 @@ private:
 	DescriptorSetHandle GetCurrentOceanDescriptorSet() NOEXCEPT;
 
 	/*
+	*	Returns the directional shadow descriptor set.
+	*/
+	DescriptorSetHandle GetDirectionalShadowDescriptorSet() NOEXCEPT;
+
+	/*
 	*	Returns the lighting descriptor set.
 	*/
 	DescriptorSetHandle GetLightingDescriptorSet() NOEXCEPT;
@@ -207,6 +212,7 @@ private:
 	{
 		Environment,
 		ShadowBlur,
+		DirectionalShadow,
 		Lighting,
 		PostProcessing,
 		NumberOfDescriptorSets

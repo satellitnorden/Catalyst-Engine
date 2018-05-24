@@ -142,6 +142,11 @@ public:
 	DescriptorSetHandle GetCurrentOceanDescriptorSet() const NOEXCEPT;
 
 	/*
+	*	Returns the directional shadow descriptor set.
+	*/
+	DescriptorSetHandle GetDirectionalShadowDescriptorSet() const NOEXCEPT;
+
+	/*
 	*	Returns the lighting descriptor set.
 	*/
 	DescriptorSetHandle GetLightingDescriptorSet() const NOEXCEPT;

@@ -47,11 +47,12 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	DirectionalTerrainShadowRenderPass::Instance->Initialize();
 	DirectionalStaticPhysicalShadowRenderPass::Instance->Initialize();
 	DirectionalInstancedPhysicalShadowRenderPass::Instance->Initialize();
-	ShadowBlurRenderPass::Instance->Initialize();
 	TerrainRenderPass::Instance->Initialize();
 	StaticPhysicalRenderPass::Instance->Initialize();
 	InstancedPhysicalRenderPass::Instance->Initialize();
 	VegetationRenderPass::Instance->Initialize();
+	DirectionalShadowRenderPass::Instance->Initialize();
+	ShadowBlurRenderPass::Instance->Initialize();
 	LightingRenderPass::Instance->Initialize();
 	SkyRenderPass::Instance->Initialize();
 	ParticleSystemRenderPass::Instance->Initialize();
@@ -80,11 +81,12 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	DirectionalTerrainShadowRenderPass::Instance->Render();
 	DirectionalStaticPhysicalShadowRenderPass::Instance->Render();
 	DirectionalInstancedPhysicalShadowRenderPass::Instance->Render();
-	ShadowBlurRenderPass::Instance->Render();
 	TerrainRenderPass::Instance->Render();
 	StaticPhysicalRenderPass::Instance->Render();
 	InstancedPhysicalRenderPass::Instance->Render();
 	VegetationRenderPass::Instance->Render();
+	DirectionalShadowRenderPass::Instance->Render();
+	ShadowBlurRenderPass::Instance->Render();
 	LightingRenderPass::Instance->Render();
 	SkyRenderPass::Instance->Render();
 	ParticleSystemRenderPass::Instance->Render();
@@ -174,6 +176,15 @@ DescriptorSetHandle RenderingSystem::GetCurrentOceanDescriptorSet() const NOEXCE
 {
 	//Return the current ocean descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentOceanDescriptorSet();
+}
+
+/*
+*	Returns the directional shadow descriptor set.
+*/
+DescriptorSetHandle RenderingSystem::GetDirectionalShadowDescriptorSet() const NOEXCEPT
+{
+	//Return the directional shadow descriptor set via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetDirectionalShadowDescriptorSet();
 }
 
 /*

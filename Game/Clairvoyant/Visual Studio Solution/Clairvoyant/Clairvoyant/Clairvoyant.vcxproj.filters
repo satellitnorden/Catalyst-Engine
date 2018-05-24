@@ -801,6 +801,12 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\DirectionalPhysicalShadowVertexShader.h">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\DirectionalShadowRenderPass.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\DirectionalShadowFragmentShader.h">
+      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
@@ -1107,6 +1113,12 @@
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\DirectionalPhysicalShadowVertexShader.cpp">
+      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\DirectionalShadowRenderPass.cpp">
+      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\DirectionalShadowFragmentShader.cpp">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
     </ClCompile>
   </ItemGroup>
