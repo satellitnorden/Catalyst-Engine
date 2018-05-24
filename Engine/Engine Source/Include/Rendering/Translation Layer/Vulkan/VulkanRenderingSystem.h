@@ -33,7 +33,6 @@ class ParticleMaterial;
 class ParticleSystemEntity;
 class ParticleSystemProperties;
 class PhysicalModel;
-class PhysicalModelData;
 class RenderPass;
 class Resolution;
 class StaticPhysicalEntity;
@@ -100,11 +99,6 @@ public:
 	*	Creates an environment material.
 	*/
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;
-
-	/*
-	*	Creates and returns physical model.
-	*/
-	void CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT;
 
 	/*
 	*	Initializes a terrain entity.

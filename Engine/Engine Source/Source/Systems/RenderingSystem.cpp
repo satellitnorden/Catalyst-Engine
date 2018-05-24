@@ -235,8 +235,17 @@ void RenderingSystem::CreateOceanMaterial(const WaterMaterialData &waterMaterial
 */
 void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
 {
-	//Create the physical model via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreatePhysicalModel(physicalModelData, physicalModel);
+	//Create the vertex and index buffer.
+	const void *RESTRICT modelData[]{ physicalModelData.vertices.Data(), physicalModelData.indices.Data() };
+	const VkDeviceSize modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData.vertices.Size(), sizeof(uint32) * physicalModelData.indices.Size() };
+	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
+
+	//Set up the physical model.
+	physicalModel.GetAxisAlignedBoundingBox().minimum = Vector3(-physicalModelData.extent, -physicalModelData.extent, -physicalModelData.extent);
+	physicalModel.GetAxisAlignedBoundingBox().maximum = Vector3(physicalModelData.extent, physicalModelData.extent, physicalModelData.extent);
+	physicalModel.SetBuffer(buffer);
+	physicalModel.SetIndexOffset(modelDataSizes[0]);
+	physicalModel.SetIndexCount(static_cast<uint32>(physicalModelData.indices.Size()));
 }
 
 /*

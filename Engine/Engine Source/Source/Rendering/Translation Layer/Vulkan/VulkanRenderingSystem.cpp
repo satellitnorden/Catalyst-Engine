@@ -24,7 +24,6 @@
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture2D.h>
 #include <Rendering/Engine Layer/ParticleMaterial.h>
-#include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/RenderingUtilities.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/TextureData.h>
@@ -193,24 +192,6 @@ void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialD
 
 	//Create the diffuse irradiance texture.
 	environmentMaterial.diffuseIrradianceTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData.diffuseIrradianceData.Data(), environmentMaterialData.diffuseIrradianceResolution, environmentMaterialData.diffuseIrradianceResolution));
-}
-
-/*
-*	Creates and returns physical model.
-*/
-void VulkanRenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
-{
-	//Create the vertex and index buffer.
-	const void *RESTRICT modelData[]{ physicalModelData.vertices.Data(), physicalModelData.indices.Data() };
-	const VkDeviceSize modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData.vertices.Size(), sizeof(uint32) * physicalModelData.indices.Size() };
-	ConstantBufferHandle buffer = VulkanInterface::Instance->CreateConstantBuffer(modelData, modelDataSizes, 2)->Get();
-
-	//Set up the physical model.
-	physicalModel.GetAxisAlignedBoundingBox().minimum = Vector3(-physicalModelData.extent, -physicalModelData.extent, -physicalModelData.extent);
-	physicalModel.GetAxisAlignedBoundingBox().maximum = Vector3(physicalModelData.extent, physicalModelData.extent, physicalModelData.extent);
-	physicalModel.SetBuffer(buffer);
-	physicalModel.SetIndexOffset(modelDataSizes[0]);
-	physicalModel.SetIndexCount(static_cast<uint32>(physicalModelData.indices.Size()));
 }
 
 /*
