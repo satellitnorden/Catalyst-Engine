@@ -96,6 +96,12 @@ void DirectionalInstancedPhysicalShadowRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(true);
 	SetTopology(Topology::TriangleList);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		DirectionalInstancedPhysicalShadowRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -103,7 +109,7 @@ void DirectionalInstancedPhysicalShadowRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the terrain.
 */
-void DirectionalInstancedPhysicalShadowRenderPass::Render() NOEXCEPT
+void DirectionalInstancedPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all instanced physical components and draw them all.
 	const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };

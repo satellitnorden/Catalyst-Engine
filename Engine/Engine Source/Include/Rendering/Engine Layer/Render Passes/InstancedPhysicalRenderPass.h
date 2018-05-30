@@ -22,6 +22,6 @@ public:
 	/*
 	*	Renders the instanced physical entities.
 	*/
-	void Render() NOEXCEPT;
+	void RenderInternal() NOEXCEPT;
 
 };

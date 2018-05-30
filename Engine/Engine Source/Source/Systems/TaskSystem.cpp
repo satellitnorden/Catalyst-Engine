@@ -64,14 +64,12 @@ void TaskSystem::ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT
 	//Reset the semaphore.
 	newTask->semaphore->Reset();
 
-	//If there are as many concurrently executing tasks as there are task executors, just to the task on the calling thread and be done with it.
+	//If there are as many concurrently executing tasks as there are task executors, just do the task on the calling thread and be done with it.
 	const uint32 currentConcurrentlyExecutingTasks{ concurrentlyExecutingTasks.load() };
 
 	if (currentConcurrentlyExecutingTasks == numberOfTaskExecutors)
 	{
-		newTask->function(newTask->arguments);
-
-		newTask->semaphore->Signal();
+		newTask->Execute();
 	}
 
 	//Else, put the task into the task queue.

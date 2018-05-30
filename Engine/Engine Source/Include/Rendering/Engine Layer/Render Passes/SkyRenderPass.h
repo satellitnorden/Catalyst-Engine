@@ -22,6 +22,6 @@ public:
 	/*
 	*	Renders the sky.
 	*/
-	void Render() NOEXCEPT;
+	void RenderInternal() NOEXCEPT;
 
 };

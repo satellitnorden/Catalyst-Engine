@@ -70,7 +70,7 @@ public:
 	/*
 	*	Pops a value from the queue, if the queue is not empty. If the pop was succesful, a pointer to the popped value is returned, otherwise nullptr.
 	*/
-	ValueType *const RESTRICT Pop() NOEXCEPT
+	RESTRICTED ValueType *const RESTRICT Pop() NOEXCEPT
 	{
 		uint64 oldFirstIndex;
 		uint64 oldLastIndex;

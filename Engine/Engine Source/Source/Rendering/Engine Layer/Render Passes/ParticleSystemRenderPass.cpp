@@ -66,6 +66,12 @@ void ParticleSystemRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(false);
 	SetTopology(Topology::PointList);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		ParticleSystemRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -73,7 +79,7 @@ void ParticleSystemRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the particle systems.
 */
-void ParticleSystemRenderPass::Render() NOEXCEPT
+void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all particle system components and draw them all.
 	const uint64 numberOfParticleSystemComponents{ ComponentManager::GetNumberOfParticleSystemComponents() };

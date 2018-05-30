@@ -3,6 +3,10 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Multithreading.
+#include <Multithreading/Semaphore.h>
+#include <Multithreading/Task.h>
+
 //Rendering.
 #include <Rendering/Engine Layer/RenderingCore.h>
 #include <Rendering/Engine Layer/Resolution.h>
@@ -14,6 +18,16 @@ class RenderPass
 {
 
 public:
+
+	/*
+	*	Renders this render pass asynchronously.
+	*/
+	void RenderAsynchronous() NOEXCEPT;
+
+	/*
+	*	Waits for this render pass to finish.
+	*/
+	void WaitForRender() NOEXCEPT;
 
 	/*
 	*	Returns the data for this render pass.
@@ -312,6 +326,11 @@ protected:
 	*/
 	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { includeInRender = newIncludeInRender; }
 
+	/*
+	*	Sets the render function.
+	*/
+	void SetRenderFunction(const TaskFunction newRenderFunction) NOEXCEPT { renderTask.function = newRenderFunction; }
+
 private:
 
 	//The data for this render pass.
@@ -391,5 +410,11 @@ private:
 
 	//The command buffers.
 	DynamicArray<CommandBuffer *RESTRICT> commandBuffers;
+
+	//The render task.
+	Task renderTask;
+
+	//The render semaphore.
+	Semaphore renderSemaphore;
 
 };

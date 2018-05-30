@@ -74,6 +74,12 @@ void TerrainRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(true);
 	SetTopology(Topology::PatchList);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		TerrainRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -81,7 +87,7 @@ void TerrainRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the terrain.
 */
-void TerrainRenderPass::Render() NOEXCEPT
+void TerrainRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all terrain components and draw them all.
 	const uint64 numberOfTerrainEntityComponents{ ComponentManager::GetNumberOfTerrainComponents() };

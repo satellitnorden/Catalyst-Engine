@@ -78,6 +78,12 @@ void VegetationRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(true);
 	SetTopology(Topology::PointList);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		VegetationRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -85,7 +91,7 @@ void VegetationRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the vegetation entities.
 */
-void VegetationRenderPass::Render() NOEXCEPT
+void VegetationRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all vegetation components and draw them all.
 	const uint64 numberOfVegetationComponents{ ComponentManager::GetNumberOfVegetationComponents() };

@@ -22,6 +22,6 @@ public:
 	/*
 	*	Renders the shadow blur.
 	*/
-	void Render() NOEXCEPT;
+	void RenderInternal() NOEXCEPT;
 
 };

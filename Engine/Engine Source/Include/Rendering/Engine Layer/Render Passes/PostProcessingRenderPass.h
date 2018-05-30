@@ -22,6 +22,6 @@ public:
 	/*
 	*	Renders the post processing.
 	*/
-	void Render() NOEXCEPT;
+	void RenderInternal() NOEXCEPT;
 
 };

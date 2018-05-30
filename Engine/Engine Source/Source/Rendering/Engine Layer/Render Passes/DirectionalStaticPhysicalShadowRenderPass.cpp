@@ -84,6 +84,12 @@ void DirectionalStaticPhysicalShadowRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(true);
 	SetTopology(Topology::TriangleList);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		DirectionalStaticPhysicalShadowRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -91,7 +97,7 @@ void DirectionalStaticPhysicalShadowRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the directional static physical entity shadows.
 */
-void DirectionalStaticPhysicalShadowRenderPass::Render() NOEXCEPT
+void DirectionalStaticPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all static physical components and draw them all.
 	const uint64 numberOfStaticPhysicalComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };

@@ -52,6 +52,12 @@ void DirectionalShadowRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(false);
 	SetTopology(Topology::TriangleFan);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		DirectionalShadowRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -59,7 +65,7 @@ void DirectionalShadowRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the directional shadow.
 */
-void DirectionalShadowRenderPass::Render() NOEXCEPT
+void DirectionalShadowRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

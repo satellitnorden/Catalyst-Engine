@@ -78,20 +78,20 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
 	//Render all render passes.
-	DirectionalTerrainShadowRenderPass::Instance->Render();
-	DirectionalStaticPhysicalShadowRenderPass::Instance->Render();
-	DirectionalInstancedPhysicalShadowRenderPass::Instance->Render();
-	TerrainRenderPass::Instance->Render();
-	StaticPhysicalRenderPass::Instance->Render();
-	InstancedPhysicalRenderPass::Instance->Render();
-	VegetationRenderPass::Instance->Render();
-	DirectionalShadowRenderPass::Instance->Render();
-	ShadowBlurRenderPass::Instance->Render();
-	LightingRenderPass::Instance->Render();
-	SkyRenderPass::Instance->Render();
-	ParticleSystemRenderPass::Instance->Render();
-	OceanRenderPass::Instance->Render();
-	PostProcessingRenderPass::Instance->Render();
+	DirectionalTerrainShadowRenderPass::Instance->RenderAsynchronous();
+	DirectionalStaticPhysicalShadowRenderPass::Instance->RenderAsynchronous();
+	DirectionalInstancedPhysicalShadowRenderPass::Instance->RenderAsynchronous();
+	TerrainRenderPass::Instance->RenderAsynchronous();
+	StaticPhysicalRenderPass::Instance->RenderAsynchronous();
+	InstancedPhysicalRenderPass::Instance->RenderAsynchronous();
+	VegetationRenderPass::Instance->RenderAsynchronous();
+	DirectionalShadowRenderPass::Instance->RenderAsynchronous();
+	ShadowBlurRenderPass::Instance->RenderAsynchronous();
+	LightingRenderPass::Instance->RenderAsynchronous();
+	SkyRenderPass::Instance->RenderAsynchronous();
+	ParticleSystemRenderPass::Instance->RenderAsynchronous();
+	OceanRenderPass::Instance->RenderAsynchronous();
+	PostProcessingRenderPass::Instance->RenderAsynchronous();
 
 	//Post-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();

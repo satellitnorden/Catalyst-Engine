@@ -72,6 +72,12 @@ void DirectionalTerrainShadowRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(true);
 	SetTopology(Topology::PatchList);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		DirectionalTerrainShadowRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -79,7 +85,7 @@ void DirectionalTerrainShadowRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the directional terrain shadow.
 */
-void DirectionalTerrainShadowRenderPass::Render() NOEXCEPT
+void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all terrain components and draw them all.
 	const uint64 numberOfTerrainComponents{ ComponentManager::GetNumberOfTerrainComponents() };

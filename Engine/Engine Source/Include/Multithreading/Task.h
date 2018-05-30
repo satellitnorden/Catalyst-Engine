@@ -14,6 +14,15 @@ class Task final
 
 public:
 
+	//The function that this task will exeucte.
+	TaskFunction function;
+
+	//The arguments that will be sent to the function that this task will execute.
+	void *RESTRICT arguments;
+
+	//The semaphore that will be signalled after the function that this task will execute has finished executing.
+	Semaphore *RESTRICT semaphore;
+
 	/*
 	*	Default constructor.
 	*/
@@ -56,14 +65,5 @@ public:
 		//Signal the semaphore.
 		semaphore->Signal();
 	}
-
-	//The function that this task will exeucte.
-	TaskFunction function;
-
-	//The arguments that will be sent to the function that this task will execute.
-	void *RESTRICT arguments;
-
-	//The semaphore that will be signalled after the function that this task will execute has finished executing.
-	Semaphore *RESTRICT semaphore;
 
 };

@@ -22,6 +22,6 @@ public:
 	/*
 	*	Renders the vegetation entities.
 	*/
-	void Render() NOEXCEPT;
+	void RenderInternal() NOEXCEPT;
 
 };

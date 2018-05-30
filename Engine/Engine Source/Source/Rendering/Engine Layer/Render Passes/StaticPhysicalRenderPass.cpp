@@ -86,6 +86,12 @@ void StaticPhysicalRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(true);
 	SetTopology(Topology::TriangleList);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		StaticPhysicalRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -93,7 +99,7 @@ void StaticPhysicalRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the terrain.
 */
-void StaticPhysicalRenderPass::Render() NOEXCEPT
+void StaticPhysicalRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all static physical components and draw them all.
 	const uint64 numberOfStaticPhysicalComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };

@@ -52,6 +52,12 @@ void PostProcessingRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(false);
 	SetTopology(Topology::TriangleFan);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		PostProcessingRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -59,7 +65,7 @@ void PostProcessingRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the post processing.
 */
-void PostProcessingRenderPass::Render() NOEXCEPT
+void PostProcessingRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

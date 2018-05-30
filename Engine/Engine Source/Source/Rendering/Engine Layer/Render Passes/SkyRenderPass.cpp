@@ -53,6 +53,12 @@ void SkyRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(true);
 	SetTopology(Topology::TriangleList);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		SkyRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -60,7 +66,7 @@ void SkyRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the sky.
 */
-void SkyRenderPass::Render() NOEXCEPT
+void SkyRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

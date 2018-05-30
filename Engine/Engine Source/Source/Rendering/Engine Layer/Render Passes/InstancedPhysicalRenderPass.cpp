@@ -98,6 +98,12 @@ void InstancedPhysicalRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(true);
 	SetTopology(Topology::TriangleList);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		InstancedPhysicalRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -105,7 +111,7 @@ void InstancedPhysicalRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the terrain.
 */
-void InstancedPhysicalRenderPass::Render() NOEXCEPT
+void InstancedPhysicalRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all instanced physical components and draw them all.
 	const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };

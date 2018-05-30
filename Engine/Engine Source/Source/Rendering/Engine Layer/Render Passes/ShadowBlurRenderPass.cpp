@@ -52,6 +52,12 @@ void ShadowBlurRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(false);
 	SetTopology(Topology::TriangleFan);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		ShadowBlurRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -59,7 +65,7 @@ void ShadowBlurRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the shadow blur.
 */
-void ShadowBlurRenderPass::Render() NOEXCEPT
+void ShadowBlurRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

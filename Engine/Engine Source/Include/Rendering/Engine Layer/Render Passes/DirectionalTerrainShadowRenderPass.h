@@ -22,6 +22,6 @@ public:
 	/*
 	*	Renders the directional terrain shadow.
 	*/
-	void Render() NOEXCEPT;
+	void RenderInternal() NOEXCEPT;
 
 };

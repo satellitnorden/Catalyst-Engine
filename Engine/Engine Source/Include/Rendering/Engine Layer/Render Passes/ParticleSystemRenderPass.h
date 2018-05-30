@@ -22,6 +22,6 @@ public:
 	/*
 	*	Renders the particle systems.
 	*/
-	void Render() NOEXCEPT;
+	void RenderInternal() NOEXCEPT;
 
 };

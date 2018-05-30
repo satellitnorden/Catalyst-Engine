@@ -1179,6 +1179,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//Begin the terrain shadow render pass.
 	currentDirectionalShadowCommandBuffer->CommandBeginRenderPassAndClear<2>(pipelines[INDEX(RenderPassStage::DirectionalTerrainShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
+	//Wait for the render pass to finish.
+	DirectionalTerrainShadowRenderPass::Instance->WaitForRender();
+
 	//Record the execute command for the terrain shadow.
 	if (DirectionalTerrainShadowRenderPass::Instance->IncludeInRender())
 	{
@@ -1187,6 +1190,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	
 	//End the render pass.
 	currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
+
+	//Wait for the render pass to finish.
+	DirectionalStaticPhysicalShadowRenderPass::Instance->WaitForRender();
 
 	if (DirectionalStaticPhysicalShadowRenderPass::Instance->IncludeInRender())
 	{
@@ -1199,6 +1205,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		//End the render pass.
 		currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
 	}
+
+	//Wait for the render pass to finish.
+	DirectionalInstancedPhysicalShadowRenderPass::Instance->WaitForRender();
 
 	if (DirectionalInstancedPhysicalShadowRenderPass::Instance->IncludeInRender())
 	{
@@ -1228,6 +1237,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//Begin the terrain render pass.
 	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<4>(pipelines[INDEX(RenderPassStage::Terrain)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
+	//Wait for the render pass to finish.
+	TerrainRenderPass::Instance->WaitForRender();
+
 	//Record the execute command for the terrain.
 	if (TerrainRenderPass::Instance->IncludeInRender())
 	{
@@ -1236,6 +1248,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 	//End the terrain render pass.
 	currentPrimaryCommandBuffer->CommandEndRenderPass();
+
+	//Wait for the render pass to finish.
+	StaticPhysicalRenderPass::Instance->WaitForRender();
 
 	if (StaticPhysicalRenderPass::Instance->IncludeInRender())
 	{
@@ -1249,6 +1264,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		currentPrimaryCommandBuffer->CommandEndRenderPass();
 	}
 
+	//Wait for the render pass to finish.
+	InstancedPhysicalRenderPass::Instance->WaitForRender();
+
 	if (InstancedPhysicalRenderPass::Instance->IncludeInRender())
 	{
 		//Begin the instanced physical entities render pass.
@@ -1260,6 +1278,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		//End the instanced physical entities render pass.
 		currentPrimaryCommandBuffer->CommandEndRenderPass();
 	}
+
+	//Wait for the render pass to finish.
+	VegetationRenderPass::Instance->WaitForRender();
 
 	if (VegetationRenderPass::Instance->IncludeInRender())
 	{
@@ -1276,6 +1297,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//Begin the directional shadow render pass.
 	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::DirectionalShadow)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
+	//Wait for the render pass to finish.
+	DirectionalShadowRenderPass::Instance->WaitForRender();
+
 	//Record the execute command for the lighting.
 	if (DirectionalShadowRenderPass::Instance->IncludeInRender())
 	{
@@ -1287,6 +1311,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 	//Begin the shadow blur render pass.
 	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::ShadowBlur)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+
+	//Wait for the render pass to finish.
+	ShadowBlurRenderPass::Instance->WaitForRender();
 
 	//Record the execute command for the shadow blur.
 	if (ShadowBlurRenderPass::Instance->IncludeInRender())
@@ -1300,6 +1327,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//Begin the lighting render pass.
 	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<2>(pipelines[INDEX(RenderPassStage::Lighting)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
+	//Wait for the render pass to finish.
+	LightingRenderPass::Instance->WaitForRender();
+
 	//Record the execute command for the lighting.
 	if (LightingRenderPass::Instance->IncludeInRender())
 	{
@@ -1311,6 +1341,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 	//Reset the directional shadow event.
 	currentPrimaryCommandBuffer->CommandResetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
+
+	//Wait for the render pass to finish.
+	SkyRenderPass::Instance->WaitForRender();
 
 	if (SkyRenderPass::Instance->IncludeInRender())
 	{
@@ -1324,6 +1357,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		currentPrimaryCommandBuffer->CommandEndRenderPass();
 	}
 	
+	//Wait for the render pass to finish.
+	ParticleSystemRenderPass::Instance->WaitForRender();
+
 	if (ParticleSystemRenderPass::Instance->IncludeInRender())
 	{
 		//Begin the particle system entities render pass.
@@ -1339,6 +1375,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//Bind the ocean render pass.
 	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<1>(pipelines[INDEX(RenderPassStage::Ocean)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
+	//Wait for the render pass to finish.
+	OceanRenderPass::Instance->WaitForRender();
+
 	//Record the execute command for the ocean.
 	if (OceanRenderPass::Instance->IncludeInRender())
 	{
@@ -1347,6 +1386,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 	//End the static particle system render pass.
 	currentPrimaryCommandBuffer->CommandEndRenderPass();
+
+	//Wait for the render pass to finish.
+	PostProcessingRenderPass::Instance->WaitForRender();
 
 	//Bind the post processing render pass.
 	if (PostProcessingRenderPass::Instance->IncludeInRender())

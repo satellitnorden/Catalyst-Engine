@@ -22,6 +22,6 @@ public:
 	/*
 	*	Renders the lighting.
 	*/
-	void Render() NOEXCEPT;
+	void RenderInternal() NOEXCEPT;
 
 };

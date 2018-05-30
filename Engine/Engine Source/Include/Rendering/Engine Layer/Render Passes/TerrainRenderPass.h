@@ -22,6 +22,6 @@ public:
 	/*
 	*	Renders the terrain.
 	*/
-	void Render() NOEXCEPT;
+	void RenderInternal() NOEXCEPT;
 
 };

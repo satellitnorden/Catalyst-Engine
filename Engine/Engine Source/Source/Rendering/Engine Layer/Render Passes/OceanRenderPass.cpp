@@ -53,6 +53,12 @@ void OceanRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(false);
 	SetTopology(Topology::TriangleFan);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		OceanRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -60,7 +66,7 @@ void OceanRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the ocean.
 */
-void OceanRenderPass::Render() NOEXCEPT
+void OceanRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

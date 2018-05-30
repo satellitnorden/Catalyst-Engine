@@ -22,6 +22,6 @@ public:
 	/*
 	*	Renders the ocean.
 	*/
-	void Render() NOEXCEPT;
+	void RenderInternal() NOEXCEPT;
 
 };

@@ -54,6 +54,12 @@ void LightingRenderPass::Initialize() NOEXCEPT
 	SetDepthWriteEnabled(false);
 	SetTopology(Topology::TriangleFan);
 
+	//Set the render function.
+	SetRenderFunction([](void *const RESTRICT)
+	{
+		LightingRenderPass::Instance->RenderInternal();
+	});
+
 	//Finalize the initialization.
 	FinalizeInitialization();
 }
@@ -61,7 +67,7 @@ void LightingRenderPass::Initialize() NOEXCEPT
 /*
 *	Renders the lighting.
 */
-void LightingRenderPass::Render() NOEXCEPT
+void LightingRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
