@@ -1,6 +1,15 @@
 #pragma once
 
 /*
+*	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.
+*/
+#if !defined(CATALYST_FINAL)
+	#define ASSERT(condition, message) if (!condition) { PRINT_TO_CONSOLE(message); BREAKPOINT; }
+#else
+	#define ASSERT(condition, message) 
+#endif
+
+/*
 *	Tracks the average execution time of a given function or section of code and prints the average execution time in non-final builds.
 *	Allows for a personalized message.
 */
