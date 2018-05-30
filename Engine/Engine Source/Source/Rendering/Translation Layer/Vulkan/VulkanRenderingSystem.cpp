@@ -1138,10 +1138,12 @@ void VulkanRenderingSystem::InitializeDefaultTextures() NOEXCEPT
 void VulkanRenderingSystem::ExecuteAsynchronousTasks() NOEXCEPT
 {
 	//Execute the asynchronous tasks.
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	static Task particleSystemUpdateTask{ [](void *const RESTRICT arguments)
 	{
 		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateParticleSystemProperties();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)]));
+	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)] };
+
+	TaskSystem::Instance->ExecuteTask(&particleSystemUpdateTask);
 }
 
 /*

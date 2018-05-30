@@ -32,9 +32,9 @@ void CullingSystem::InitializeSystem() NOEXCEPT
 void CullingSystem::UpdateSystemSynchronous() NOEXCEPT
 {
 	//Fire off the culling tasks.
-	TaskSystem::Instance->ExecuteTask(tasks[INDEX(CullingTask::Terrain)]);
-	TaskSystem::Instance->ExecuteTask(tasks[INDEX(CullingTask::StaticPhysical)]);
-	TaskSystem::Instance->ExecuteTask(tasks[INDEX(CullingTask::Vegetation)]);
+	TaskSystem::Instance->ExecuteTask(&tasks[INDEX(CullingTask::Terrain)]);
+	TaskSystem::Instance->ExecuteTask(&tasks[INDEX(CullingTask::StaticPhysical)]);
+	TaskSystem::Instance->ExecuteTask(&tasks[INDEX(CullingTask::Vegetation)]);
 }
 
 /*

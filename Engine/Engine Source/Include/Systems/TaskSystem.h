@@ -35,12 +35,12 @@ public:
 	/*
 	*	Executes a task. If a valid semaphore is passed in, it will be automatically reset.
 	*/
-	void ExecuteTask(const Task &newTask) NOEXCEPT;
+	void ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT;
 
 private:
 
 	//The atomic queue in which to put tasks.
-	AtomicQueue<Task> taskQueue;
+	AtomicQueue<Task *RESTRICT> taskQueue;
 
 	//The number of task executors.
 	uint32 numberOfTaskExecutors;

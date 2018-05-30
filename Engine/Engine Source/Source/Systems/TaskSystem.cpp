@@ -59,19 +59,19 @@ void TaskSystem::ReleaseSystem() NOEXCEPT
 /*
 *	Executes a task.
 */
-void TaskSystem::ExecuteTask(const Task &newTask) NOEXCEPT
+void TaskSystem::ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT
 {
 	//Reset the semaphore.
-	newTask.semaphore->Reset();
+	newTask->semaphore->Reset();
 
 	//If there are as many concurrently executing tasks as there are task executors, just to the task on the calling thread and be done with it.
 	const uint32 currentConcurrentlyExecutingTasks{ concurrentlyExecutingTasks.load() };
 
 	if (currentConcurrentlyExecutingTasks == numberOfTaskExecutors)
 	{
-		newTask.function(newTask.arguments);
+		newTask->function(newTask->arguments);
 
-		newTask.semaphore->Signal();
+		newTask->semaphore->Signal();
 	}
 
 	//Else, put the task into the task queue.
@@ -89,10 +89,10 @@ void TaskSystem::ExecuteTaskExecutor() NOEXCEPT
 	while (!EngineSystem::Instance->ShouldTerminate())
 	{
 		//Try to pop a task from the task queue, and execute it if it succeeds.
-		if (Task *const RESTRICT newTask{ taskQueue.Pop() })
+		if (Task *const RESTRICT *const RESTRICT newTask{ taskQueue.Pop() })
 		{
 			++concurrentlyExecutingTasks;
-			newTask->Execute();
+			(*newTask)->Execute();
 			--concurrentlyExecutingTasks;
 		}
 

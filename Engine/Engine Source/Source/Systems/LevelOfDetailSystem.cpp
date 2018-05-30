@@ -41,7 +41,7 @@ void LevelOfDetailSystem::PostInitializeSystem() NOEXCEPT
 void LevelOfDetailSystem::UpdateSystemSynchronous() NOEXCEPT
 {
 	//Fire off the level of detail tasks.
-	TaskSystem::Instance->ExecuteTask(tasks[INDEX(LevelOfDetailTask::Terrain)]);
+	TaskSystem::Instance->ExecuteTask(&tasks[INDEX(LevelOfDetailTask::Terrain)]);
 }
 
 /*

@@ -79,10 +79,12 @@ void SoundSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	sound3DUpdatePositionRequestBuffers[currentSynchronousSoundSystemBuffer].ClearFast();
 
 	//Execute the asynchronous update task.
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	static Task soundUpdateTask{ [](void *const RESTRICT arguments)
 	{
 		static_cast<SoundSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
-	}, this, &updateSemaphore));
+	}, this, &updateSemaphore };
+
+	TaskSystem::Instance->ExecuteTask(&soundUpdateTask);
 }
 
 /*

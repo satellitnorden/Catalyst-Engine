@@ -19,10 +19,12 @@ DEFINE_SINGLETON(InputSystem);
 void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
 	//Execute the update task.
-	TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
+	static Task inputUpdateTask{ [](void *const RESTRICT arguments)
 	{
 		static_cast<InputSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
-	}, this, &inputUpdateSemaphore));
+	}, this, &inputUpdateSemaphore };
+
+	TaskSystem::Instance->ExecuteTask(&inputUpdateTask);
 }
 
 /*

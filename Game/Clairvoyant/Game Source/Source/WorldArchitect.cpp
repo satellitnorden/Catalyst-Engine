@@ -343,6 +343,7 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, float& extent
 */
 void WorldArchitect::GenerateVegetation(const Vector3 &worldPosition, const float extent) NOEXCEPT
 {
+	/*
 	constexpr uint8 numberOfVegetationLayers{ 8 };
 
 	StaticArray<float, numberOfVegetationLayers> cutoffDistances
@@ -433,6 +434,7 @@ void WorldArchitect::GenerateVegetation(const Vector3 &worldPosition, const floa
 	{
 		vegetationSemaphore.WaitFor();
 	}
+	*/
 }
 
 /*
