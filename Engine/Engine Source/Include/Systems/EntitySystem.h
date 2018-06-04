@@ -15,6 +15,11 @@ public:
 	DECLARE_SINGLETON(EntitySystem);
 
 	/*
+	*	Default constructor.
+	*/
+	EntitySystem() NOEXCEPT = default;
+
+	/*
 	*	Pre-updates the entity system synchronously.
 	*/
 	void PreUpdateSystemSynchronous() NOEXCEPT;

@@ -6,6 +6,36 @@
 #include <Systems/TaskSystem.h>
 
 /*
+*	Default constructor.
+*/
+RenderPass::RenderPass() NOEXCEPT
+{
+	//Set up the tasks.
+	initializationTask.arguments = nullptr;
+	initializationTask.semaphore = &initializationSemaphore;
+	renderTask.arguments = nullptr;
+	renderTask.semaphore = &renderSemaphore;
+}
+
+/*
+*	Initializes this render pass asynchronously.
+*/
+void RenderPass::InitializeAsynchronous() NOEXCEPT
+{
+	//Fire off the initialization task.
+	TaskSystem::Instance->ExecuteTask(&initializationTask);
+}
+
+/*
+*	Waits for the initialization this render pass to finish.
+*/
+void RenderPass::WaitForInitialization() NOEXCEPT
+{
+	//Wait for the initialization this render pass to finish.
+	initializationSemaphore.WaitFor();
+}
+
+/*
 *	Renders this render pass asynchronously.
 */
 void RenderPass::RenderAsynchronous() NOEXCEPT
@@ -15,11 +45,11 @@ void RenderPass::RenderAsynchronous() NOEXCEPT
 }
 
 /*
-*	Waits for this render pass to finish.
+*	Waits for the render this render pass to finish.
 */
 void RenderPass::WaitForRender() NOEXCEPT
 {
-	//Wait for this render pass to finish.
+	//Wait for the render this render pass to finish.
 	renderSemaphore.WaitFor();
 }
 
@@ -28,10 +58,6 @@ void RenderPass::WaitForRender() NOEXCEPT
 */
 void RenderPass::FinalizeInitialization() NOEXCEPT
 {
-	//Set up the render task.
-	renderTask.arguments = nullptr;
-	renderTask.semaphore = &renderSemaphore;
-
 	//Finalize the initialization of this render pass via the rendering system.
 	RenderingSystem::Instance->FinalizeRenderPassInitialization(this);
 }
@@ -42,4 +68,16 @@ void RenderPass::FinalizeInitialization() NOEXCEPT
 CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuffer() NOEXCEPT
 {
 	return commandBuffers[RenderingSystem::Instance->GetCurrentFrameIndex()];
+}
+
+/*
+*	Sets the stage.
+*/
+void RenderPass::SetStage(const RenderPassStage newStage) NOEXCEPT
+{
+	//Set the stage.
+	stage = newStage;
+
+	//Register this render pass.
+	RenderingSystem::Instance->RegisterRenderPass(this);
 }

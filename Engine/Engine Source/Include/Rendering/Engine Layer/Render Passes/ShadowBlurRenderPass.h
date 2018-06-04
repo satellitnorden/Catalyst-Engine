@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(ShadowBlurRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	ShadowBlurRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the shadow blur render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the shadow blur.

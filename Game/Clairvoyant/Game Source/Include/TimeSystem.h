@@ -15,6 +15,11 @@ public:
 	DECLARE_SINGLETON(TimeSystem);
 
 	/*
+	*	Default constructor.
+	*/
+	TimeSystem() NOEXCEPT = default;
+
+	/*
 	*	Initializes the time system.
 	*/
 	void Initialize() NOEXCEPT;

@@ -12,6 +12,11 @@ public:
 	DECLARE_SINGLETON(EngineSystem);
 
 	/*
+	*	Default constructor.
+	*/
+	EngineSystem() NOEXCEPT = default;
+
+	/*
 	*	Initializes the engine system.
 	*/
 	void InitializeSystem(const CatalystProjectInformation &initialProjectInformation) NOEXCEPT;

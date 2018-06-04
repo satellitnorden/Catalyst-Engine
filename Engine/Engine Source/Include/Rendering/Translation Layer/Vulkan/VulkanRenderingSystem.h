@@ -56,6 +56,11 @@ public:
 	DECLARE_SINGLETON(VulkanRenderingSystem);
 
 	/*
+	*	Default constructor.
+	*/
+	VulkanRenderingSystem() NOEXCEPT = default;
+
+	/*
 	*	Initializes the Vulkan rendering system.
 	*/
 	void InitializeSystem() NOEXCEPT;

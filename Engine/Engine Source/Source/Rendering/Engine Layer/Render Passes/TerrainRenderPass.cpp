@@ -16,9 +16,24 @@
 DEFINE_SINGLETON(TerrainRenderPass);
 
 /*
+*	Default constructor.
+*/
+TerrainRenderPass::TerrainRenderPass() NOEXCEPT
+{
+	//Set the stage.
+	SetStage(RenderPassStage::Terrain);
+
+	//Set the initialization function.
+	SetInitializationFunction([](void *const RESTRICT)
+	{
+		TerrainRenderPass::Instance->InitializeInternal();
+	});
+}
+
+/*
 *	Initializes the terrain render pass.
 */
-void TerrainRenderPass::Initialize() NOEXCEPT
+void TerrainRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
 	SetStage(RenderPassStage::Terrain);

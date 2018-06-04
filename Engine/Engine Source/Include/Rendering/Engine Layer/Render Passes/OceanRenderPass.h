@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(OceanRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	OceanRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the ocean render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the ocean.

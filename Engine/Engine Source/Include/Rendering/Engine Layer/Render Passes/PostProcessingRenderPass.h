@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(PostProcessingRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	PostProcessingRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the post processing render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the post processing.

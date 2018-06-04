@@ -16,9 +16,24 @@
 DEFINE_SINGLETON(VegetationRenderPass);
 
 /*
+*	Default constructor.
+*/
+VegetationRenderPass::VegetationRenderPass() NOEXCEPT
+{
+	//Set the stage.
+	SetStage(RenderPassStage::Vegetation);
+
+	//Set the initialization function.
+	SetInitializationFunction([](void *const RESTRICT)
+	{
+		VegetationRenderPass::Instance->InitializeInternal();
+	});
+}
+
+/*
 *	Initializes the vegetation render pass.
 */
-void VegetationRenderPass::Initialize() NOEXCEPT
+void VegetationRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
 	SetStage(RenderPassStage::Vegetation);

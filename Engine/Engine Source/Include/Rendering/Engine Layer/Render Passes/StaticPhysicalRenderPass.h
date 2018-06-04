@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(StaticPhysicalRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	StaticPhysicalRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the static physical render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the static physical entities.

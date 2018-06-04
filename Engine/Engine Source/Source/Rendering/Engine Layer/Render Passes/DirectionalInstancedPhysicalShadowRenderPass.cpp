@@ -15,9 +15,24 @@
 DEFINE_SINGLETON(DirectionalInstancedPhysicalShadowRenderPass);
 
 /*
+*	Default constructor.
+*/
+DirectionalInstancedPhysicalShadowRenderPass::DirectionalInstancedPhysicalShadowRenderPass() NOEXCEPT
+{
+	//Set the stage.
+	SetStage(RenderPassStage::DirectionalInstancedPhysicalShadow);
+
+	//Set the initialization function.
+	SetInitializationFunction([](void *const RESTRICT)
+	{
+		DirectionalInstancedPhysicalShadowRenderPass::Instance->InitializeInternal();
+	});
+}
+
+/*
 *	Initializes the directional instanced physical shadow render pass.
 */
-void DirectionalInstancedPhysicalShadowRenderPass::Initialize() NOEXCEPT
+void DirectionalInstancedPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
 	SetStage(RenderPassStage::DirectionalInstancedPhysicalShadow);

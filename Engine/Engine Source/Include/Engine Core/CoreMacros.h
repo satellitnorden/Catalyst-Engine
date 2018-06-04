@@ -37,7 +37,7 @@
 /*
 *	Declares a singleton class. Must be done inside the class in the header file.
 */
-#define DECLARE_SINGLETON(SingletonClass) public: static UniquePointer<SingletonClass> Instance; SingletonClass() NOEXCEPT = default; SingletonClass(const SingletonClass &otherSingleton) = delete; SingletonClass(SingletonClass &&otherSingleton) = delete;
+#define DECLARE_SINGLETON(SingletonClass) public: static UniquePointer<SingletonClass> Instance; SingletonClass(const SingletonClass &otherSingleton) = delete; SingletonClass(SingletonClass &&otherSingleton) = delete;
 
 /*
 *	Defines a singleton class. Must be done in the source file.

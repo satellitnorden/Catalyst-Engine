@@ -11,9 +11,24 @@
 DEFINE_SINGLETON(PostProcessingRenderPass);
 
 /*
+*	Default constructor.
+*/
+PostProcessingRenderPass::PostProcessingRenderPass() NOEXCEPT
+{
+	//Set the stage.
+	SetStage(RenderPassStage::PostProcessing);
+
+	//Set the initialization function.
+	SetInitializationFunction([](void *const RESTRICT)
+	{
+		PostProcessingRenderPass::Instance->InitializeInternal();
+	});
+}
+
+/*
 *	Initializes the post processing render pass.
 */
-void PostProcessingRenderPass::Initialize() NOEXCEPT
+void PostProcessingRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
 	SetStage(RenderPassStage::PostProcessing);

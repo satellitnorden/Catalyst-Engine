@@ -19,6 +19,11 @@ public:
 	DECLARE_SINGLETON(LevelOfDetailSystem);
 
 	/*
+	*	Default constructor.
+	*/
+	LevelOfDetailSystem() NOEXCEPT = default;
+
+	/*
 	*	Initializes the level of detail system.
 	*/
 	void InitializeSystem() NOEXCEPT;

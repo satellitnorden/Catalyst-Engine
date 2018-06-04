@@ -19,6 +19,11 @@ public:
 	DECLARE_SINGLETON(PhysicsSystem);
 
 	/*
+	*	Default constructor.
+	*/
+	PhysicsSystem() NOEXCEPT = default;
+
+	/*
 	*	Updates the physics system synchronously.
 	*/
 	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
