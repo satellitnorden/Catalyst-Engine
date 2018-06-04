@@ -20,9 +20,6 @@ DEFINE_SINGLETON(VegetationRenderPass);
 */
 VegetationRenderPass::VegetationRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::Vegetation);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

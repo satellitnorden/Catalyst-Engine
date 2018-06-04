@@ -15,9 +15,6 @@ DEFINE_SINGLETON(SkyRenderPass);
 */
 SkyRenderPass::SkyRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::Sky);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

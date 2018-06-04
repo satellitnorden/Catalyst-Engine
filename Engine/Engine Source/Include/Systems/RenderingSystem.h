@@ -127,11 +127,6 @@ public:
 	const PhysicalModel& GetCommonPhysicalModel(const CommonPhysicalModel commonPhysicalModel) const NOEXCEPT { return commonPhysicalModels[INDEX(commonPhysicalModel)]; }
 
 	/*
-	*	Registers a render pass.
-	*/
-	void RegisterRenderPass(RenderPass *const RESTRICT newRenderPass) NOEXCEPT;
-
-	/*
 	*	Finalizes the initialization of a render pass.
 	*/
 	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
@@ -285,6 +280,16 @@ private:
 
 	//The view matrix.
 	Matrix4 viewMatrix;
+
+	/*
+	*	Registers all render passes.
+	*/
+	void RegisterRenderPasses() NOEXCEPT;
+
+	/*
+	*	Initializes all render passes.
+	*/
+	void InitializeRenderPasses() NOEXCEPT;
 
 	/*
 	*	Initializes the common physical models.

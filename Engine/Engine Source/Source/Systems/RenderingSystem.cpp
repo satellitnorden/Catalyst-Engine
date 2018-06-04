@@ -40,20 +40,14 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->InitializeSystem();
 
-	//Initialize the common physical models.
-	InitializeCommonPhysicalModels();
+	//Register all render passes.
+	RegisterRenderPasses();
 
 	//Initialize all render passes.
-	for (RenderPass *const RESTRICT renderPass : renderPasses)
-	{
-		renderPass->InitializeAsynchronous();
-	}
+	InitializeRenderPasses();
 
-	//Wait for all render passes to finish initialization.
-	for (RenderPass *const RESTRICT renderPass : renderPasses)
-	{
-		renderPass->WaitForInitialization();
-	}
+	//Initialize the common physical models.
+	InitializeCommonPhysicalModels();
 }
 
 /*
@@ -136,15 +130,6 @@ ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *RESTRICT 
 {
 	//Create the constant buffer via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->CreateConstantBuffer(data, dataSizes, dataChunks);
-}
-
-/*
-*	Registers a render pass.
-*/
-void RenderingSystem::RegisterRenderPass(RenderPass *const RESTRICT newRenderPass) NOEXCEPT
-{
-	//Add the render pass to the container.
-	renderPasses[INDEX(newRenderPass->GetStage())] = newRenderPass;
 }
 
 /*
@@ -445,6 +430,46 @@ void RenderingSystem::SetPostProcessingSharpenAmount(const float newSharpenAmoun
 {
 	//Set the post processing sharpen amount via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->SetPostProcessingSharpenAmount(newSharpenAmount);
+}
+
+/*
+*	Registers all render passes.
+*/
+void RenderingSystem::RegisterRenderPasses() NOEXCEPT
+{
+	//Register all render passes.
+	renderPasses[INDEX(RenderPassStage::DirectionalTerrainShadow)] = DirectionalTerrainShadowRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::DirectionalStaticPhysicalShadow)] = DirectionalStaticPhysicalShadowRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::DirectionalInstancedPhysicalShadow)] = DirectionalInstancedPhysicalShadowRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::Terrain)] = TerrainRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::StaticPhysical)] = StaticPhysicalRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::InstancedPhysical)] = InstancedPhysicalRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::Vegetation)] = VegetationRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::ShadowBlur)] = ShadowBlurRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::Lighting)] = LightingRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::Sky)] = SkyRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::Ocean)] = OceanRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
+}
+
+/*
+*	Initializes all render passes.
+*/
+void RenderingSystem::InitializeRenderPasses() NOEXCEPT
+{
+	//Initialize all render passes.
+	for (RenderPass *const RESTRICT renderPass : renderPasses)
+	{
+		renderPass->InitializeAsynchronous();
+	}
+
+	//Wait for all render passes to finish initialization.
+	for (RenderPass *const RESTRICT renderPass : renderPasses)
+	{
+		renderPass->WaitForInitialization();
+	}
 }
 
 /*

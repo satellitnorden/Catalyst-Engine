@@ -20,9 +20,6 @@ DEFINE_SINGLETON(DirectionalTerrainShadowRenderPass);
 */
 DirectionalTerrainShadowRenderPass::DirectionalTerrainShadowRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::DirectionalTerrainShadow);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

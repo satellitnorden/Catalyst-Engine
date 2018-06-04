@@ -33,7 +33,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	RESTRICTED const ObjectType* const operator->() const NOEXCEPT
+	RESTRICTED const ObjectType *const RESTRICT operator->() const NOEXCEPT
 	{
 		return pointer;
 	}
@@ -42,6 +42,22 @@ public:
 	*	Arrow operator overload, non-const.
 	*/
 	RESTRICTED ObjectType* operator->() NOEXCEPT
+	{
+		return pointer;
+	}
+
+	/*
+	*	Returns the underlying pointer, const.
+	*/
+	RESTRICTED const ObjectType *const RESTRICT Get() const NOEXCEPT
+	{
+		return pointer;
+	}
+
+	/*
+	*	Returns the underlying pointer, non-const.
+	*/
+	RESTRICTED ObjectType *const RESTRICT Get() NOEXCEPT
 	{
 		return pointer;
 	}

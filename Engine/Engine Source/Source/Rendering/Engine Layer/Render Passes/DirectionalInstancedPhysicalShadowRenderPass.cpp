@@ -19,9 +19,6 @@ DEFINE_SINGLETON(DirectionalInstancedPhysicalShadowRenderPass);
 */
 DirectionalInstancedPhysicalShadowRenderPass::DirectionalInstancedPhysicalShadowRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::DirectionalInstancedPhysicalShadow);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

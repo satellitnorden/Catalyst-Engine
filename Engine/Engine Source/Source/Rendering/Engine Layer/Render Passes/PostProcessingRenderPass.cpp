@@ -15,9 +15,6 @@ DEFINE_SINGLETON(PostProcessingRenderPass);
 */
 PostProcessingRenderPass::PostProcessingRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::PostProcessing);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

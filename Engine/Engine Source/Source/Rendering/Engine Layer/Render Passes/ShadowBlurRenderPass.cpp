@@ -15,9 +15,6 @@ DEFINE_SINGLETON(ShadowBlurRenderPass);
 */
 ShadowBlurRenderPass::ShadowBlurRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::ShadowBlur);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

@@ -15,9 +15,6 @@ DEFINE_SINGLETON(OceanRenderPass);
 */
 OceanRenderPass::OceanRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::Ocean);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

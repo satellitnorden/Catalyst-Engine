@@ -20,9 +20,6 @@ DEFINE_SINGLETON(StaticPhysicalRenderPass);
 */
 StaticPhysicalRenderPass::StaticPhysicalRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::StaticPhysical);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

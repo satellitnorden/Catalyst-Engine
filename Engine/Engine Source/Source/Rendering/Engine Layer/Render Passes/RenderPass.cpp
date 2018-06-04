@@ -77,7 +77,4 @@ void RenderPass::SetStage(const RenderPassStage newStage) NOEXCEPT
 {
 	//Set the stage.
 	stage = newStage;
-
-	//Register this render pass.
-	RenderingSystem::Instance->RegisterRenderPass(this);
 }

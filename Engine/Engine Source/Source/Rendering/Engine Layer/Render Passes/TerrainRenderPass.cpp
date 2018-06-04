@@ -20,9 +20,6 @@ DEFINE_SINGLETON(TerrainRenderPass);
 */
 TerrainRenderPass::TerrainRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::Terrain);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

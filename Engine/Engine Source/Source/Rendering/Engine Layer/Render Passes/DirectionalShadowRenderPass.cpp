@@ -15,9 +15,6 @@ DEFINE_SINGLETON(DirectionalShadowRenderPass);
 */
 DirectionalShadowRenderPass::DirectionalShadowRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::DirectionalShadow);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

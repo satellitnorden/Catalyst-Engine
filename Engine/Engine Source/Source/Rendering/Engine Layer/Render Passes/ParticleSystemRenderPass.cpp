@@ -24,9 +24,6 @@ namespace ParticleSystemRenderPassConstants
 */
 ParticleSystemRenderPass::ParticleSystemRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::ParticleSystem);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

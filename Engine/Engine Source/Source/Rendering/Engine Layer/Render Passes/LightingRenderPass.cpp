@@ -15,9 +15,6 @@ DEFINE_SINGLETON(LightingRenderPass);
 */
 LightingRenderPass::LightingRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::Lighting);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{

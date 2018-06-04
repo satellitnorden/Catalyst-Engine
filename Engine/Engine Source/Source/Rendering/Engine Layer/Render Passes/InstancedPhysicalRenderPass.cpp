@@ -19,9 +19,6 @@ DEFINE_SINGLETON(InstancedPhysicalRenderPass);
 */
 InstancedPhysicalRenderPass::InstancedPhysicalRenderPass() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::InstancedPhysical);
-
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
