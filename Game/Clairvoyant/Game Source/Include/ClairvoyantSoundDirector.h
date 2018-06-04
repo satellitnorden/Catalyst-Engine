@@ -12,6 +12,11 @@ public:
 	DECLARE_SINGLETON(ClairvoyantSoundDirector);
 
 	/*
+	*	Default constructor.
+	*/
+	ClairvoyantSoundDirector() NOEXCEPT = default;
+
+	/*
 	*	Initializes the Clairvoyant sound director.
 	*/
 	void Initialize() NOEXCEPT;

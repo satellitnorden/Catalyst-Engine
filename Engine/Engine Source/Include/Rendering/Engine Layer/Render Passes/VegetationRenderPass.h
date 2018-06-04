@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(VegetationRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	VegetationRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the vegetation render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the vegetation entities.

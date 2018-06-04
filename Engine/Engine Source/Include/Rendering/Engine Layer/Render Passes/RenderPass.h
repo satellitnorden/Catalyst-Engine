@@ -20,12 +20,27 @@ class RenderPass
 public:
 
 	/*
+	*	Default constructor.
+	*/
+	RenderPass() NOEXCEPT;
+
+	/*
+	*	Initializes this render pass asynchronously.
+	*/
+	void InitializeAsynchronous() NOEXCEPT;
+
+	/*
+	*	Waits for the initialization this render pass to finish.
+	*/
+	void WaitForInitialization() NOEXCEPT;
+
+	/*
 	*	Renders this render pass asynchronously.
 	*/
 	void RenderAsynchronous() NOEXCEPT;
 
 	/*
-	*	Waits for this render pass to finish.
+	*	Waits for the render this render pass to finish.
 	*/
 	void WaitForRender() NOEXCEPT;
 
@@ -179,7 +194,7 @@ protected:
 	/*
 	*	Sets the stage.
 	*/
-	void SetStage(const RenderPassStage newStage) NOEXCEPT { stage = newStage; }
+	void SetStage(const RenderPassStage newStage) NOEXCEPT;
 
 	/*
 	*	Sets the vertex shader.
@@ -327,6 +342,11 @@ protected:
 	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { includeInRender = newIncludeInRender; }
 
 	/*
+	*	Sets the initialization function.
+	*/
+	void SetInitializationFunction(const TaskFunction newInitializationFunction) NOEXCEPT { initializationTask.function = newInitializationFunction; }
+
+	/*
 	*	Sets the render function.
 	*/
 	void SetRenderFunction(const TaskFunction newRenderFunction) NOEXCEPT { renderTask.function = newRenderFunction; }
@@ -410,6 +430,12 @@ private:
 
 	//The command buffers.
 	DynamicArray<CommandBuffer *RESTRICT> commandBuffers;
+
+	//The initialization task.
+	Task initializationTask;
+
+	//The initialization semaphore.
+	Semaphore initializationSemaphore;
 
 	//The render task.
 	Task renderTask;

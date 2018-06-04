@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(DirectionalStaticPhysicalShadowRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	DirectionalStaticPhysicalShadowRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the directional static physical shadow render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the directional static physical entity shadows.

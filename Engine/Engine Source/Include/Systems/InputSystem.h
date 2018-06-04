@@ -21,6 +21,11 @@ public:
 	DECLARE_SINGLETON(InputSystem);
 
 	/*
+	*	Default constructor.
+	*/
+	InputSystem() NOEXCEPT = default;
+
+	/*
 	*	Pre-updates the input system synchronously.
 	*/
 	void PreUpdateSystemSynchronous() NOEXCEPT;

@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(SkyRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	SkyRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the sky render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the sky.

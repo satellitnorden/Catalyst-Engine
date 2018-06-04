@@ -28,6 +28,11 @@ public:
 	DECLARE_SINGLETON(SoundSystem);
 
 	/*
+	*	Default constructor.
+	*/
+	SoundSystem() NOEXCEPT = default;
+
+	/*
 	*	Given a string of an FMOD GUID, parse it and return it into a FMOD_GUID struct.
 	*/
 	static FMOD_GUID ParseGUID(const char *const RESTRICT string) NOEXCEPT;

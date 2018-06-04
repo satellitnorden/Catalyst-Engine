@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(LightingRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	LightingRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the lighting render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the lighting.

@@ -16,6 +16,11 @@ public:
 	DECLARE_SINGLETON(EnvironmentSystem);
 
 	/*
+	*	Default constructor.
+	*/
+	EnvironmentSystem() NOEXCEPT = default;
+
+	/*
 	*	Returns the environment blend.
 	*/
 	float GetEnvironmentBlend() const NOEXCEPT { return environmentBlend; }

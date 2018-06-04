@@ -57,6 +57,11 @@ public:
 	};
 
 	/*
+	*	Default constructor.
+	*/
+	RenderingSystem() NOEXCEPT = default;
+
+	/*
 	*	Initializes the rendering system.
 	*/
 	void InitializeSystem() NOEXCEPT;
@@ -120,6 +125,11 @@ public:
 	*	Returns a common physical model.
 	*/
 	const PhysicalModel& GetCommonPhysicalModel(const CommonPhysicalModel commonPhysicalModel) const NOEXCEPT { return commonPhysicalModels[INDEX(commonPhysicalModel)]; }
+
+	/*
+	*	Registers a render pass.
+	*/
+	void RegisterRenderPass(RenderPass *const RESTRICT newRenderPass) NOEXCEPT;
 
 	/*
 	*	Finalizes the initialization of a render pass.
@@ -257,6 +267,9 @@ public:
 	void SetPostProcessingSharpenAmount(const float newSharpenAmount) NOEXCEPT;
 
 private:
+
+	//Container for all render passes.
+	StaticArray<RenderPass *RESTRICT, INDEX(RenderPassStage::NumberOfRenderPassStages)> renderPasses;
 
 	//Container for all common physical models.
 	StaticArray<PhysicalModel, INDEX(CommonPhysicalModel::NumberOfCommonPhysicalModels)> commonPhysicalModels;

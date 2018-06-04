@@ -20,9 +20,24 @@ namespace ParticleSystemRenderPassConstants
 }
 
 /*
+*	Default constructor.
+*/
+ParticleSystemRenderPass::ParticleSystemRenderPass() NOEXCEPT
+{
+	//Set the stage.
+	SetStage(RenderPassStage::ParticleSystem);
+
+	//Set the initialization function.
+	SetInitializationFunction([](void *const RESTRICT)
+	{
+		ParticleSystemRenderPass::Instance->InitializeInternal();
+	});
+}
+
+/*
 *	Initializes the particle system render pass.
 */
-void ParticleSystemRenderPass::Initialize() NOEXCEPT
+void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
 	SetStage(RenderPassStage::ParticleSystem);

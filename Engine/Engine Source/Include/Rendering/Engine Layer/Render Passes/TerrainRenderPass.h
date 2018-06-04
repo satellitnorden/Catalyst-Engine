@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(TerrainRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	TerrainRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the terrain render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the terrain.

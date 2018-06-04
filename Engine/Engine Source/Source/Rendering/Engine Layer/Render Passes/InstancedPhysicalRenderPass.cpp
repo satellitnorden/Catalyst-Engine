@@ -15,9 +15,24 @@
 DEFINE_SINGLETON(InstancedPhysicalRenderPass);
 
 /*
+*	Default constructor.
+*/
+InstancedPhysicalRenderPass::InstancedPhysicalRenderPass() NOEXCEPT
+{
+	//Set the stage.
+	SetStage(RenderPassStage::InstancedPhysical);
+
+	//Set the initialization function.
+	SetInitializationFunction([](void *const RESTRICT)
+	{
+		InstancedPhysicalRenderPass::Instance->InitializeInternal();
+	});
+}
+
+/*
 *	Initializes the instanced physical render pass.
 */
-void InstancedPhysicalRenderPass::Initialize() NOEXCEPT
+void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
 	SetStage(RenderPassStage::InstancedPhysical);

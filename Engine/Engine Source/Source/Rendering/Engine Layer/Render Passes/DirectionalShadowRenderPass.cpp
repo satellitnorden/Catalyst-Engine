@@ -11,9 +11,24 @@
 DEFINE_SINGLETON(DirectionalShadowRenderPass);
 
 /*
+*	Default constructor.
+*/
+DirectionalShadowRenderPass::DirectionalShadowRenderPass() NOEXCEPT
+{
+	//Set the stage.
+	SetStage(RenderPassStage::DirectionalShadow);
+
+	//Set the initialization function.
+	SetInitializationFunction([](void *const RESTRICT)
+	{
+		DirectionalShadowRenderPass::Instance->InitializeInternal();
+	});
+}
+
+/*
 *	Initializes the directional shadow render pass.
 */
-void DirectionalShadowRenderPass::Initialize() NOEXCEPT
+void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
 	SetStage(RenderPassStage::DirectionalShadow);

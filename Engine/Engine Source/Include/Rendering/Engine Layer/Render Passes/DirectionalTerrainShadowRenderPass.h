@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(DirectionalTerrainShadowRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	DirectionalTerrainShadowRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the directional terrain shadow render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the directional terrain shadow.

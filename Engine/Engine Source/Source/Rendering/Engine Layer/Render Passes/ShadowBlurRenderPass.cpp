@@ -11,9 +11,24 @@
 DEFINE_SINGLETON(ShadowBlurRenderPass);
 
 /*
+*	Default constructor.
+*/
+ShadowBlurRenderPass::ShadowBlurRenderPass() NOEXCEPT
+{
+	//Set the stage.
+	SetStage(RenderPassStage::ShadowBlur);
+
+	//Set the initialization function.
+	SetInitializationFunction([](void *const RESTRICT)
+	{
+		ShadowBlurRenderPass::Instance->InitializeInternal();
+	});
+}
+
+/*
 *	Initializes the shadow  render pass.
 */
-void ShadowBlurRenderPass::Initialize() NOEXCEPT
+void ShadowBlurRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
 	SetStage(RenderPassStage::ShadowBlur);

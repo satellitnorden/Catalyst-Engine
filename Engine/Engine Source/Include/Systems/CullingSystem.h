@@ -16,6 +16,11 @@ public:
 	DECLARE_SINGLETON(CullingSystem);
 
 	/*
+	*	Default constructor.
+	*/
+	CullingSystem() NOEXCEPT = default;
+
+	/*
 	*	Initializes the culling system.
 	*/
 	void InitializeSystem() NOEXCEPT;

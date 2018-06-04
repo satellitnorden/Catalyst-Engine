@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(InstancedPhysicalRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	InstancedPhysicalRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the instanced physical render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the instanced physical entities.

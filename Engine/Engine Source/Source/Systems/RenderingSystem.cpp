@@ -44,20 +44,16 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	InitializeCommonPhysicalModels();
 
 	//Initialize all render passes.
-	DirectionalTerrainShadowRenderPass::Instance->Initialize();
-	DirectionalStaticPhysicalShadowRenderPass::Instance->Initialize();
-	DirectionalInstancedPhysicalShadowRenderPass::Instance->Initialize();
-	TerrainRenderPass::Instance->Initialize();
-	StaticPhysicalRenderPass::Instance->Initialize();
-	InstancedPhysicalRenderPass::Instance->Initialize();
-	VegetationRenderPass::Instance->Initialize();
-	DirectionalShadowRenderPass::Instance->Initialize();
-	ShadowBlurRenderPass::Instance->Initialize();
-	LightingRenderPass::Instance->Initialize();
-	SkyRenderPass::Instance->Initialize();
-	ParticleSystemRenderPass::Instance->Initialize();
-	OceanRenderPass::Instance->Initialize();
-	PostProcessingRenderPass::Instance->Initialize();
+	for (RenderPass *const RESTRICT renderPass : renderPasses)
+	{
+		renderPass->InitializeAsynchronous();
+	}
+
+	//Wait for all render passes to finish initialization.
+	for (RenderPass *const RESTRICT renderPass : renderPasses)
+	{
+		renderPass->WaitForInitialization();
+	}
 }
 
 /*
@@ -140,6 +136,15 @@ ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *RESTRICT 
 {
 	//Create the constant buffer via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->CreateConstantBuffer(data, dataSizes, dataChunks);
+}
+
+/*
+*	Registers a render pass.
+*/
+void RenderingSystem::RegisterRenderPass(RenderPass *const RESTRICT newRenderPass) NOEXCEPT
+{
+	//Add the render pass to the container.
+	renderPasses[INDEX(newRenderPass->GetStage())] = newRenderPass;
 }
 
 /*

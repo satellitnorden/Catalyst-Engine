@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(ParticleSystemRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	ParticleSystemRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the particle system render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the particle systems.

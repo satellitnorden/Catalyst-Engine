@@ -16,6 +16,11 @@ public:
 	DECLARE_SINGLETON(WorldArchitect);
 
 	/*
+	*	Default constructor.
+	*/
+	WorldArchitect() NOEXCEPT = default;
+
+	/*
 	*	Initializes the world architect.
 	*/
 	void Initialize() NOEXCEPT;

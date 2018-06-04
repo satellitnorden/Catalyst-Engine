@@ -19,6 +19,11 @@ public:
 	DECLARE_SINGLETON(ClairvoyantGameSystem);
 
 	/*
+	*	Default constructor.
+	*/
+	ClairvoyantGameSystem() NOEXCEPT = default;
+
+	/*
 	*	Initializes the game system.
 	*/
 	void InitializeSystem() NOEXCEPT;

@@ -11,9 +11,24 @@
 DEFINE_SINGLETON(SkyRenderPass);
 
 /*
+*	Default constructor.
+*/
+SkyRenderPass::SkyRenderPass() NOEXCEPT
+{
+	//Set the stage.
+	SetStage(RenderPassStage::Sky);
+
+	//Set the initialization function.
+	SetInitializationFunction([](void *const RESTRICT)
+	{
+		SkyRenderPass::Instance->InitializeInternal();
+	});
+}
+
+/*
 *	Initializes the sky render pass.
 */
-void SkyRenderPass::Initialize() NOEXCEPT
+void SkyRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
 	SetStage(RenderPassStage::Sky);

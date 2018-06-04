@@ -16,9 +16,24 @@
 DEFINE_SINGLETON(DirectionalTerrainShadowRenderPass);
 
 /*
+*	Default constructor.
+*/
+DirectionalTerrainShadowRenderPass::DirectionalTerrainShadowRenderPass() NOEXCEPT
+{
+	//Set the stage.
+	SetStage(RenderPassStage::DirectionalTerrainShadow);
+
+	//Set the initialization function.
+	SetInitializationFunction([](void *const RESTRICT)
+	{
+		DirectionalTerrainShadowRenderPass::Instance->InitializeInternal();
+	});
+}
+
+/*
 *	Initializes the directional terrain shadow render pass.
 */
-void DirectionalTerrainShadowRenderPass::Initialize() NOEXCEPT
+void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
 	SetStage(RenderPassStage::DirectionalTerrainShadow);

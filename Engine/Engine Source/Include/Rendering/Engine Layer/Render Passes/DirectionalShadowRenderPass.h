@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(DirectionalShadowRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	DirectionalShadowRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the directional shadow render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the directional shadow.

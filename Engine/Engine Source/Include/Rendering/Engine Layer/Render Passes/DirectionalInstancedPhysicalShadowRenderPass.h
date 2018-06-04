@@ -15,9 +15,16 @@ public:
 	DECLARE_SINGLETON(DirectionalInstancedPhysicalShadowRenderPass);
 
 	/*
+	*	Default constructor.
+	*/
+	DirectionalInstancedPhysicalShadowRenderPass() NOEXCEPT;
+
+private:
+
+	/*
 	*	Initializes the directional instanced physical shadow render pass.
 	*/
-	void Initialize() NOEXCEPT;
+	void InitializeInternal() NOEXCEPT;
 
 	/*
 	*	Renders the directional terrain shadow.
