@@ -874,13 +874,6 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 {
 	{
-		//Initialize the cube map fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetCubeMapFragmentShaderData(data);
-		shaderModules[INDEX(Shader::CubeMapFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
 		//Initialize the cube map vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetCubeMapVertexShaderData(data);
@@ -990,6 +983,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetShadowMapFragmentShaderData(data);
 		shaderModules[INDEX(Shader::ShadowMapFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize the sky fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetSkyFragmentShaderData(data);
+		shaderModules[INDEX(Shader::SkyFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{

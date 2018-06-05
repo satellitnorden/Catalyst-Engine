@@ -8,7 +8,6 @@
 #include <Engine Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/Shader Data/Vulkan/CubeMapFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/CubeMapVertexShader.h>
 #include <Rendering/Shader Data/Vulkan/DirectionalPhysicalShadowVertexShader.h>
 #include <Rendering/Shader Data/Vulkan/DirectionalShadowFragmentShader.h>
@@ -25,6 +24,7 @@
 #include <Rendering/Shader Data/Vulkan/PostProcessingFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/ShadowMapBlurFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/ShadowMapFragmentShader.h>
+#include <Rendering/Shader Data/Vulkan/SkyFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/TerrainSceneBufferFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/TerrainSceneBufferTessellationControlShader.h>
 #include <Rendering/Shader Data/Vulkan/TerrainSceneBufferTessellationEvaluationShader.h>

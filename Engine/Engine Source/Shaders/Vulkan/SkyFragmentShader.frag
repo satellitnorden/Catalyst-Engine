@@ -73,7 +73,18 @@ void main()
     //Sample the cube map texture.
     vec3 cubeMapTextureSampler = mix(texture(nightTexture, fragmentTextureCoordinate).rgb, texture(dayTexture, fragmentTextureCoordinate).rgb, environmentBlend);
 
+    //Calculate the sun weight.
+    float sunDirection = dot(normalize(fragmentTextureCoordinate), -directionalLightDirection);
+    float sunWeight = sunDirection < 0.999f ? 0.0f : sunDirection < 0.9995f ? (sunDirection - 0.999f) * 2.0f * 1000.0f : 1.0f;
+    sunWeight *= min(directionalLightIntensity, 1.0f);
+
+    //Calculate the sun color.
+    vec3 sunColor = pow(directionalLightColor, vec3(2.2f));
+
+    //Calculate the final sky color.
+    vec3 skyColor = mix(cubeMapTextureSampler, sunColor, sunWeight);
+
     //Set the fragment color.
-    fragmentColor = vec4(cubeMapTextureSampler, 1.0f);
-    waterFragmentColor = vec4(cubeMapTextureSampler, 1.0f);
+    fragmentColor = vec4(skyColor, 1.0f);
+    waterFragmentColor = vec4(skyColor, 1.0f);
 }

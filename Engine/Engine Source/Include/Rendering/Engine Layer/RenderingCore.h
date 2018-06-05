@@ -123,7 +123,6 @@ enum class RenderTarget : uint8
 //Enumeration covering all shaders.
 enum class Shader : uint8
 {
-	CubeMapFragment,
 	CubeMapVertex,
 	DirectionalPhysicalShadowVertex,
 	DirectionalShadowFragment,
@@ -140,6 +139,7 @@ enum class Shader : uint8
 	PhysicalVertex,
 	ShadowBlurFragment,
 	ShadowMapFragment,
+	SkyFragment,
 	TerrainFragment,
 	TerrainTessellationControl,
 	TerrainTessellationEvaluation,

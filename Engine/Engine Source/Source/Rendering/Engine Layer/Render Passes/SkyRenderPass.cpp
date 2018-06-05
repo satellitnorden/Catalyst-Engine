@@ -35,7 +35,7 @@ void SkyRenderPass::InitializeInternal() NOEXCEPT
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::CubeMapFragment);
+	SetFragmentShader(Shader::SkyFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);

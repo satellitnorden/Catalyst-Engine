@@ -9,5 +9,5 @@
 
 namespace VulkanShaderData
 {
-	void GetCubeMapFragmentShaderData(DynamicArray<byte> &data);
+	void GetSkyFragmentShaderData(DynamicArray<byte> &data);
 }

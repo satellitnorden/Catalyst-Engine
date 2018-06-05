@@ -660,9 +660,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanEvent.h">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\CubeMapFragmentShader.h">
-      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\CubeMapVertexShader.h">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
     </ClInclude>
@@ -805,6 +802,9 @@
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\DirectionalShadowFragmentShader.h">
+      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\SkyFragmentShader.h">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -989,9 +989,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanEvent.cpp">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\CubeMapFragmentShader.cpp">
-      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\CubeMapVertexShader.cpp">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
     </ClCompile>
@@ -1119,6 +1116,9 @@
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\DirectionalShadowFragmentShader.cpp">
+      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\SkyFragmentShader.cpp">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
     </ClCompile>
   </ItemGroup>
