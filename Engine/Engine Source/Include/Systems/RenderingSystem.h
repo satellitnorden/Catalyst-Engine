@@ -167,11 +167,6 @@ public:
 	DescriptorSetHandle GetShadowBlurDescriptorSet() const NOEXCEPT;
 
 	/*
-	*	Returns the current directional shadow event.
-	*/
-	EventHandle GetCurrentDirectionalShadowEvent() const NOEXCEPT;
-
-	/*
 	*	Creates an environment material.
 	*/
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;

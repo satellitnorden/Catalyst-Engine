@@ -676,14 +676,6 @@ DescriptorSetHandle VulkanRenderingSystem::GetShadowBlurDescriptorSet() NOEXCEPT
 }
 
 /*
-*	Returns the current directional shadow event.
-*/
-EventHandle VulkanRenderingSystem::GetCurrentDirectionalShadowEvent() NOEXCEPT
-{
-	return frameData.GetCurrentDirectionalShadowEvent()->Get();
-}
-
-/*
 *	Initializes all render targets.
 */
 void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
@@ -1172,12 +1164,12 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 */
 void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 {
-	//Begin the current directional shadow command buffer.
-	VulkanCommandBuffer *const RESTRICT currentDirectionalShadowCommandBuffer{ frameData.GetCurrentDirectionalShadowCommandBuffer() };
-	currentDirectionalShadowCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+	//Begin the current primary command buffer.
+	VulkanCommandBuffer *const RESTRICT currentPrimaryCommandBuffer{ frameData.GetCurrentPrimaryCommandBuffer() };
+	currentPrimaryCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	//Begin the terrain shadow render pass.
-	currentDirectionalShadowCommandBuffer->CommandBeginRenderPassAndClear<2>(pipelines[INDEX(RenderPassStage::DirectionalTerrainShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<2>(pipelines[INDEX(RenderPassStage::DirectionalTerrainShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 	//Wait for the render pass to finish.
 	DirectionalTerrainShadowRenderPass::Instance->WaitForRender();
@@ -1185,11 +1177,11 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//Record the execute command for the terrain shadow.
 	if (DirectionalTerrainShadowRenderPass::Instance->IncludeInRender())
 	{
-		currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalTerrainShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+		currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalTerrainShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 	}
 	
 	//End the render pass.
-	currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
+	currentPrimaryCommandBuffer->CommandEndRenderPass();
 
 	//Wait for the render pass to finish.
 	DirectionalStaticPhysicalShadowRenderPass::Instance->WaitForRender();
@@ -1197,13 +1189,13 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	if (DirectionalStaticPhysicalShadowRenderPass::Instance->IncludeInRender())
 	{
 		//Begin the instanced physical shadow render pass.
-		currentDirectionalShadowCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::DirectionalStaticPhysicalShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+		currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::DirectionalStaticPhysicalShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 		//Record the execute command for the instanced physical shadow.
-		currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalStaticPhysicalShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+		currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalStaticPhysicalShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
 		//End the render pass.
-		currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
+		currentPrimaryCommandBuffer->CommandEndRenderPass();
 	}
 
 	//Wait for the render pass to finish.
@@ -1212,27 +1204,14 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	if (DirectionalInstancedPhysicalShadowRenderPass::Instance->IncludeInRender())
 	{
 		//Begin the instanced physical shadow render pass.
-		currentDirectionalShadowCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::DirectionalInstancedPhysicalShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+		currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(RenderPassStage::DirectionalInstancedPhysicalShadow)]->GetRenderPass(), 0, VkExtent2D{ RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 
 		//Record the execute command for the instanced physical shadow.
-		currentDirectionalShadowCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalInstancedPhysicalShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+		currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<VulkanTranslationCommandBuffer *const RESTRICT>(DirectionalInstancedPhysicalShadowRenderPass::Instance->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 
 		//End the render pass.
-		currentDirectionalShadowCommandBuffer->CommandEndRenderPass();
+		currentPrimaryCommandBuffer->CommandEndRenderPass();
 	}
-
-	//Signal the directional shadow event.
-	currentDirectionalShadowCommandBuffer->CommandSetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-
-	//End the command buffer.
-	currentDirectionalShadowCommandBuffer->End();
-
-	//Submit the directional shadow command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue().Submit(*currentDirectionalShadowCommandBuffer, 0, nullptr, 0, 0, nullptr, nullptr);
-
-	//Begin up the primary command buffer.
-	VulkanCommandBuffer *const RESTRICT currentPrimaryCommandBuffer{ frameData.GetCurrentPrimaryCommandBuffer() };
-	currentPrimaryCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	//Begin the terrain render pass.
 	currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear<4>(pipelines[INDEX(RenderPassStage::Terrain)]->GetRenderPass(), 0, VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
@@ -1338,9 +1317,6 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	
 	//End the lighting render pass.
 	currentPrimaryCommandBuffer->CommandEndRenderPass();
-
-	//Reset the directional shadow event.
-	currentPrimaryCommandBuffer->CommandResetEvent(frameData.GetCurrentDirectionalShadowEvent()->Get(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
 
 	//Wait for the render pass to finish.
 	SkyRenderPass::Instance->WaitForRender();

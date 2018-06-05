@@ -15,7 +15,6 @@ namespace RenderingConstants
 */
 using DescriptorSetHandle = void *RESTRICT;
 using ConstantBufferHandle = void *RESTRICT;
-using EventHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;
 using TextureCubeMapHandle = void *RESTRICT;
 using UniformBufferHandle = void *RESTRICT;

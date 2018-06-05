@@ -199,11 +199,6 @@ private:
 	*/
 	DescriptorSetHandle GetShadowBlurDescriptorSet() NOEXCEPT;
 
-	/*
-	*	Returns the current directional shadow event.
-	*/
-	EventHandle GetCurrentDirectionalShadowEvent() NOEXCEPT;
-
 	//Enumeration covering all default textures.
 	enum DefaultTexture : uint8
 	{

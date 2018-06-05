@@ -27,17 +27,6 @@ public:
 			primaryCommandPool->AllocatePrimaryCommandBuffer(primaryCommandBuffer);
 		}
 
-		//Create the directional shadow command pool.
-		directionalShadowCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
-		//Create the directional shadow command buffers.
-		directionalShadowCommandBuffers.UpsizeFast(frameDataCount);
-
-		for (VulkanCommandBuffer &directionalShadowCommandBuffer : directionalShadowCommandBuffers)
-		{
-			directionalShadowCommandPool->AllocatePrimaryCommandBuffer(directionalShadowCommandBuffer);
-		}
-
 		//Create the fences.
 		fences.UpsizeFast(frameDataCount);
 
@@ -85,14 +74,6 @@ public:
 		{
 			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(oceanDescriptorSets[i], oceanDescriptorSetLayout);
 		}
-
-		//Create the directional shadow events.
-		directionalShadowEvents.UpsizeFast(frameDataCount);
-
-		for (VulkanEvent *RESTRICT &directionalShadowEvent : directionalShadowEvents)
-		{
-			directionalShadowEvent = VulkanInterface::Instance->CreateEvent();
-		}
 	}
 
 	/*
@@ -115,11 +96,6 @@ public:
 	*	Returns the current primary command buffer.
 	*/
 	VulkanCommandBuffer *RESTRICT GetCurrentPrimaryCommandBuffer() NOEXCEPT { return &primaryCommandBuffers[currentFrame]; }
-
-	/*
-	*	Returns the current directional shadow command buffer.
-	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentDirectionalShadowCommandBuffer() NOEXCEPT { return &directionalShadowCommandBuffers[currentFrame]; }
 
 	/*
 	*	Returns the current fence.
@@ -162,11 +138,6 @@ public:
 	*/
 	VulkanDescriptorSet *RESTRICT GetCurrentOceanDescriptorSet() NOEXCEPT { return &oceanDescriptorSets[currentFrame]; }
 
-	/*
-	*	Returns the current directional shadow event.
-	*/
-	VulkanEvent *RESTRICT GetCurrentDirectionalShadowEvent() NOEXCEPT { return directionalShadowEvents[currentFrame]; }
-
 private:
 
 	//Keeps track of the current frame.
@@ -177,12 +148,6 @@ private:
 
 	//The primary command buffers.
 	DynamicArray<VulkanCommandBuffer> primaryCommandBuffers;
-
-	//The directional shadow command pool.
-	VulkanCommandPool *RESTRICT directionalShadowCommandPool;
-
-	//The directional shadow command buffers.
-	DynamicArray<VulkanCommandBuffer> directionalShadowCommandBuffers;
 
 	//The fences.
 	DynamicArray<VulkanFence *RESTRICT> fences;
@@ -198,8 +163,5 @@ private:
 
 	//The ocean descriptor sets.
 	DynamicArray<VulkanDescriptorSet> oceanDescriptorSets;
-
-	//The directional shadow events.
-	DynamicArray<VulkanEvent *RESTRICT> directionalShadowEvents;
 
 };

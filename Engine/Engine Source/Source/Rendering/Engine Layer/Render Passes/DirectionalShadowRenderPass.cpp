@@ -81,7 +81,6 @@ void DirectionalShadowRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const EventHandle currentDirectionalShadowEvent{ RenderingSystem::Instance->GetCurrentDirectionalShadowEvent() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
@@ -94,9 +93,6 @@ void DirectionalShadowRenderPass::RenderInternal() NOEXCEPT
 	};
 
 	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
-
-	//Wait for the directional shadows to finish.
-	commandBuffer->WaitForEvents(this, 1, &currentDirectionalShadowEvent);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

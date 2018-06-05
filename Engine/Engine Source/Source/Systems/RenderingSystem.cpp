@@ -68,20 +68,10 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
 	//Render all render passes.
-	DirectionalTerrainShadowRenderPass::Instance->RenderAsynchronous();
-	DirectionalStaticPhysicalShadowRenderPass::Instance->RenderAsynchronous();
-	DirectionalInstancedPhysicalShadowRenderPass::Instance->RenderAsynchronous();
-	TerrainRenderPass::Instance->RenderAsynchronous();
-	StaticPhysicalRenderPass::Instance->RenderAsynchronous();
-	InstancedPhysicalRenderPass::Instance->RenderAsynchronous();
-	VegetationRenderPass::Instance->RenderAsynchronous();
-	DirectionalShadowRenderPass::Instance->RenderAsynchronous();
-	ShadowBlurRenderPass::Instance->RenderAsynchronous();
-	LightingRenderPass::Instance->RenderAsynchronous();
-	SkyRenderPass::Instance->RenderAsynchronous();
-	ParticleSystemRenderPass::Instance->RenderAsynchronous();
-	OceanRenderPass::Instance->RenderAsynchronous();
-	PostProcessingRenderPass::Instance->RenderAsynchronous();
+	for (RenderPass *const RESTRICT renderPass : renderPasses)
+	{
+		renderPass->RenderAsynchronous();
+	}
 
 	//Post-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();
@@ -202,15 +192,6 @@ DescriptorSetHandle RenderingSystem::GetShadowBlurDescriptorSet() const NOEXCEPT
 {
 	//Return the shadow blur descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetShadowBlurDescriptorSet();
-}
-
-/*
-*	Returns the current directional shadow event.
-*/
-EventHandle RenderingSystem::GetCurrentDirectionalShadowEvent() const NOEXCEPT
-{
-	//Return the current directional shadow event via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentDirectionalShadowEvent();
 }
 
 /*
