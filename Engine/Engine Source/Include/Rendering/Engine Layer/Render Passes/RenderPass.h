@@ -32,7 +32,7 @@ public:
 	/*
 	*	Waits for the initialization this render pass to finish.
 	*/
-	void WaitForInitialization() NOEXCEPT;
+	void WaitForInitialization() const NOEXCEPT;
 
 	/*
 	*	Renders this render pass asynchronously.
@@ -42,7 +42,7 @@ public:
 	/*
 	*	Waits for the render this render pass to finish.
 	*/
-	void WaitForRender() NOEXCEPT;
+	void WaitForRender() const NOEXCEPT;
 
 	/*
 	*	Returns the data for this render pass.
@@ -185,9 +185,14 @@ public:
 	bool IncludeInRender() const NOEXCEPT { return includeInRender; }
 
 	/*
-	*	Returns the current command buffer.
+	*	Returns the current command buffer, non-const.
 	*/
-	CommandBuffer *const RESTRICT GetCurrentCommandBuffer() NOEXCEPT;
+	RESTRICTED const CommandBuffer *const RESTRICT GetCurrentCommandBuffer() const NOEXCEPT;
+
+	/*
+	*	Returns the current command buffer, non-const.
+	*/
+	RESTRICTED CommandBuffer *const RESTRICT GetCurrentCommandBuffer() NOEXCEPT;
 
 protected:
 

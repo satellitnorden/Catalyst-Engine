@@ -82,6 +82,11 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
+	*	Returns the render passes.
+	*/
+	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassStage::NumberOfRenderPassStages)>& GetRenderPasses() const { return renderPasses; }
+
+	/*
 	*	Returns the render resolution.
 	*/
 	Resolution GetRenderResolution() const NOEXCEPT;

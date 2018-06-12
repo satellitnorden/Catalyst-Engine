@@ -47,8 +47,7 @@ public:
 	/*
 	*	Records a begin render pass command and clears.
 	*/
-	template <uint32 NumberOfClearValues>
-	void CommandBeginRenderPassAndClear(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea, const VkSubpassContents contents) NOEXCEPT;
+	void CommandBeginRenderPassAndClear(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea, const VkSubpassContents contents, const uint32 numberOfClearValues) NOEXCEPT;
 
 	/*
 	*	Records a bind descriptor sets command.
@@ -146,6 +145,3 @@ private:
 	void CreateSecondaryCommandBufferBeginInfo(VkCommandBufferBeginInfo &commandBufferBeginInfo, const VkCommandBufferUsageFlags commandBufferUsageFlags, const VkCommandBufferInheritanceInfo *const RESTRICT inheritanceInfo) const NOEXCEPT;
 
 };
-
-//Templated function definitions.
-#include <Rendering/API Layer/Vulkan/VulkanCommandBuffer.inl>

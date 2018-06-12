@@ -433,7 +433,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Vector3.inl" />
-    <None Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\API Layer\Vulkan\VulkanCommandBuffer.inl" />
     <None Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EntitySystem.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

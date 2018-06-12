@@ -29,7 +29,7 @@ void RenderPass::InitializeAsynchronous() NOEXCEPT
 /*
 *	Waits for the initialization this render pass to finish.
 */
-void RenderPass::WaitForInitialization() NOEXCEPT
+void RenderPass::WaitForInitialization() const NOEXCEPT
 {
 	//Wait for the initialization this render pass to finish.
 	initializationSemaphore.WaitFor();
@@ -47,7 +47,7 @@ void RenderPass::RenderAsynchronous() NOEXCEPT
 /*
 *	Waits for the render this render pass to finish.
 */
-void RenderPass::WaitForRender() NOEXCEPT
+void RenderPass::WaitForRender() const NOEXCEPT
 {
 	//Wait for the render this render pass to finish.
 	renderSemaphore.WaitFor();
@@ -63,7 +63,15 @@ void RenderPass::FinalizeInitialization() NOEXCEPT
 }
 
 /*
-*	Returns the current command buffer.
+*	Returns the current command buffer, non-const.
+*/
+RESTRICTED const CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuffer() const NOEXCEPT
+{
+	return commandBuffers[RenderingSystem::Instance->GetCurrentFrameIndex()];
+}
+
+/*
+*	Returns the current command buffer, non-const.
 */
 CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuffer() NOEXCEPT
 {
