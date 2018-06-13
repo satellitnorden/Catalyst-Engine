@@ -804,6 +804,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\SkyFragmentShader.h">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\GaussianBlurFragmentShader.h">
+      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp">
@@ -1116,6 +1119,9 @@
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\SkyFragmentShader.cpp">
+      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\GaussianBlurFragmentShader.cpp">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
     </ClCompile>
   </ItemGroup>

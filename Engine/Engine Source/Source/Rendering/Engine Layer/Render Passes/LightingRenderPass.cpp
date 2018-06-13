@@ -41,8 +41,9 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(1);
+	SetNumberOfRenderTargets(2);
 	AddRenderTarget(RenderTarget::WaterScene);
+	AddRenderTarget(RenderTarget::Bloom);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(3);

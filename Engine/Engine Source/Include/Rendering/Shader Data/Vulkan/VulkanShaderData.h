@@ -13,6 +13,7 @@
 #include <Rendering/Shader Data/Vulkan/DirectionalShadowFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/DirectionalShadowInstancedPhysicalVertexShader.h>
 #include <Rendering/Shader Data/Vulkan/DirectionalShadowTerrainTessellationEvaluationShader.h>
+#include <Rendering/Shader Data/Vulkan/GaussianBlurFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/InstancedPhysicalVertexShader.h>
 #include <Rendering/Shader Data/Vulkan/LightingFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/OceanFragmentShader.h>

@@ -119,6 +119,7 @@ enum class RenderTarget : uint8
 	SceneBufferMaterialProperties,
 	WaterScene,
 	Scene,
+	Bloom,
 	Screen,
 	NumberOfRenderTargets
 };
@@ -131,6 +132,7 @@ enum class Shader : uint8
 	DirectionalShadowFragment,
 	DirectionalInstancedPhysicalShadowVertex,
 	DirectionalTerrainShadowTessellationEvaluation,
+	GaussianBlurFragment,
 	InstancedPhysicalVertex,
 	LightingFragment,
 	OceanFragment,

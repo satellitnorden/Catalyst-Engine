@@ -76,6 +76,7 @@ layout (set = 2, binding = 3) uniform sampler2D directionalShadowMap;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
+layout (location = 1) out vec4 bloomColor;
 
 //Globals.
 float ambientOcclusion;
@@ -312,6 +313,14 @@ vec3 CalculateSpotLight(int index)
     return CalculateLight(lightDirection, radiance);
 }
 
+/*
+*   Returns whether or not a fragment should bloom.
+*/
+bool ShouldBloom(vec3 fragment)
+{
+    return fragment.x > 1.0f || fragment.y > 1.0f || fragment.z > 1.0f;
+}
+
 void main()
 {
     //Sample values from the textures.
@@ -368,4 +377,5 @@ void main()
 
     //Set the final fragment color.
     fragmentColor = vec4(finalFragment, 1.0f);
+    bloomColor = ShouldBloom(finalFragment) ? vec4(finalFragment, 1.0f) : vec4(0.0f);
 }
