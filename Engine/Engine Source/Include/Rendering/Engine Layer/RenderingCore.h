@@ -19,7 +19,10 @@ using Texture2DHandle = void *RESTRICT;
 using TextureCubeMapHandle = void *RESTRICT;
 using UniformBufferHandle = void *RESTRICT;
 
-//Enumeration covering all render passes stages.
+/*
+*	Enumeration covering all render passes stages.
+*	The order of the render pass stage defines the order that the render passes will be rendered in.
+*/
 enum class RenderPassStage : uint8
 {
 	DirectionalTerrainShadow,
