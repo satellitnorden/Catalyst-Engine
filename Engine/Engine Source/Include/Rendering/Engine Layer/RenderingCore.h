@@ -117,8 +117,8 @@ enum class RenderTarget : uint8
 	SceneBufferAlbedo,
 	SceneBufferNormalDepth,
 	SceneBufferMaterialProperties,
-	Scene,
 	WaterScene,
+	Scene,
 	Screen,
 	NumberOfRenderTargets
 };
