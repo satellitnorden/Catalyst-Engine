@@ -52,8 +52,8 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);
-	AddDescriptorSetLayout(DescriptorSetLayout::DynamicUniformData);
-	AddDescriptorSetLayout(DescriptorSetLayout::Physical);
+	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
+	AddDescriptorSetLayout(RenderDataTableLayout::Physical);
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(8);

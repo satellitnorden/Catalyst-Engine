@@ -51,8 +51,8 @@ void DirectionalStaticPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);
-	AddDescriptorSetLayout(DescriptorSetLayout::DynamicUniformData);
-	AddDescriptorSetLayout(DescriptorSetLayout::Physical);
+	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
+	AddDescriptorSetLayout(RenderDataTableLayout::Physical);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);

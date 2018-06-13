@@ -93,7 +93,7 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	InitializeDefaultTextures();
 
 	//Initialize the Vulkan frame data.
-	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Ocean)]);
+	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(RenderDataTableLayout::DynamicUniformData)], descriptorSetLayouts[INDEX(RenderDataTableLayout::Environment)], descriptorSetLayouts[INDEX(RenderDataTableLayout::Ocean)]);
 }
 
 /*
@@ -150,7 +150,7 @@ void VulkanRenderingSystem::PostUpdateSystemSynchronous() NOEXCEPT
 void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 {
 	//Release all descriptor set layouts.
-	for (uint32 i = 0; i < INDEX(DescriptorSetLayout::NumberOfDescriptorSetLayouts); ++i)
+	for (uint32 i = 0; i < INDEX(RenderDataTableLayout::NumberOfDescriptorSetLayouts); ++i)
 	{
 		descriptorSetLayouts[i].Release();
 	}
@@ -221,7 +221,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity
 
 	//Create the descriptor set.
 	VulkanDescriptorSet newDescriptorSet;
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)]);
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(RenderDataTableLayout::Terrain)]);
 
 	terrainRenderComponent.descriptorSet = newDescriptorSet.Get();
 
@@ -261,7 +261,7 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 	const PhysicalMaterial &material = model.GetMaterial();
 
 	//Allocate the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)]);
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(RenderDataTableLayout::Physical)]);
 
 	//Update the write descriptor sets.
 	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
@@ -299,7 +299,7 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 	const PhysicalMaterial &material = model.GetMaterial();
 
 	//Allocate the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)]);
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(RenderDataTableLayout::Physical)]);
 
 	//Update the write descriptor sets.
 	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
@@ -352,7 +352,7 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 	VulkanDescriptorSet newDescriptorSet;
 
 	//Allocate the descriptor set.
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::Vegetation)]);
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(RenderDataTableLayout::Vegetation)]);
 
 	//Update the write descriptor sets.
 	StaticArray<VkWriteDescriptorSet, 5> writeDescriptorSets
@@ -390,7 +390,7 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 
 	//Create the descriptor set.
 	VulkanDescriptorSet descriptorSet;
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSet, descriptorSetLayouts[INDEX(DescriptorSetLayout::ParticleSystem)]);
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSet, descriptorSetLayouts[INDEX(RenderDataTableLayout::ParticleSystem)]);
 
 	StaticArray<VkWriteDescriptorSet, 3> particleSystemWriteDescriptorSets
 	{
@@ -486,7 +486,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	DynamicArray<VulkanDescriptorSetLayout> pipelineDescriptorSetLayouts;
 	pipelineDescriptorSetLayouts.Reserve(renderPass->GetDescriptorSetLayouts().Size());
 
-	for (const DescriptorSetLayout descriptorSetLayout : renderPass->GetDescriptorSetLayouts())
+	for (const RenderDataTableLayout descriptorSetLayout : renderPass->GetDescriptorSetLayouts())
 	{
 		pipelineDescriptorSetLayouts.EmplaceFast(descriptorSetLayouts[INDEX(descriptorSetLayout)]);
 	}
@@ -607,7 +607,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEX
 */
 RenderDataTableHandle VulkanRenderingSystem::GetDirectionalShadowDescriptorSet() NOEXCEPT
 {
-	return descriptorSets[INDEX(DescriptorSet::DirectionalShadow)].Get();
+	return descriptorSets[INDEX(RenderDataTable::DirectionalShadow)].Get();
 }
 
 /*
@@ -615,7 +615,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetDirectionalShadowDescriptorSet()
 */
 RenderDataTableHandle VulkanRenderingSystem::GetLightingDescriptorSet() NOEXCEPT
 {
-	return descriptorSets[INDEX(DescriptorSet::Lighting)].Get();
+	return descriptorSets[INDEX(RenderDataTable::Lighting)].Get();
 }
 
 /*
@@ -623,7 +623,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetLightingDescriptorSet() NOEXCEPT
 */
 RenderDataTableHandle VulkanRenderingSystem::GetPostProcessingDescriptorSet() NOEXCEPT
 {
-	return descriptorSets[INDEX(DescriptorSet::PostProcessing)].Get();
+	return descriptorSets[INDEX(RenderDataTable::PostProcessing)].Get();
 }
 
 /*
@@ -631,7 +631,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetPostProcessingDescriptorSet() NO
 */
 RenderDataTableHandle VulkanRenderingSystem::GetShadowBlurDescriptorSet() NOEXCEPT
 {
-	return descriptorSets[INDEX(DescriptorSet::ShadowBlur)].Get();
+	return descriptorSets[INDEX(RenderDataTable::ShadowBlur)].Get();
 }
 
 /*
@@ -653,6 +653,7 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 	renderTargets[INDEX(RenderTarget::Scene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::WaterScene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::Bloom)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::BloomIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 }
 
 /*
@@ -686,7 +687,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::DynamicUniformData)].Initialize(1, dynamicUniformDataDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::DynamicUniformData)].Initialize(1, dynamicUniformDataDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -696,7 +697,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::ShadowMapBlur)].Initialize(static_cast<uint32>(shadowMapBlurDescriptorSetLayoutBindings.Size()), shadowMapBlurDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::ShadowMapBlur)].Initialize(static_cast<uint32>(shadowMapBlurDescriptorSetLayoutBindings.Size()), shadowMapBlurDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -709,7 +710,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::Environment)].Initialize(static_cast<uint32>(environmentDescriptorSetLayoutBindings.Size()), environmentDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::Environment)].Initialize(static_cast<uint32>(environmentDescriptorSetLayoutBindings.Size()), environmentDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -736,7 +737,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(18, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::Terrain)].Initialize(18, terrainDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::Terrain)].Initialize(18, terrainDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -748,7 +749,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::Physical)].Initialize(3, staticPhysicalDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::Physical)].Initialize(3, staticPhysicalDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -762,7 +763,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::Vegetation)].Initialize(static_cast<uint32>(vegetationDescriptorSetLayoutBindings.Size()), vegetationDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::Vegetation)].Initialize(static_cast<uint32>(vegetationDescriptorSetLayoutBindings.Size()), vegetationDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -773,7 +774,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::DirectionalShadow)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::DirectionalShadow)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -786,7 +787,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)].Initialize(static_cast<uint32>(lightingDescriptorSetLayoutBindings.Size()), lightingDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::Lighting)].Initialize(static_cast<uint32>(lightingDescriptorSetLayoutBindings.Size()), lightingDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -798,7 +799,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::Ocean)].Initialize(static_cast<uint32>(oceanDescriptorSetLayoutBindings.Size()), oceanDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::Ocean)].Initialize(static_cast<uint32>(oceanDescriptorSetLayoutBindings.Size()), oceanDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -810,7 +811,17 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::ParticleSystem)].Initialize(static_cast<uint32>(particleSystemDescriptorSetLayoutBindings.Size()), particleSystemDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::ParticleSystem)].Initialize(static_cast<uint32>(particleSystemDescriptorSetLayoutBindings.Size()), particleSystemDescriptorSetLayoutBindings.Data());
+	}
+
+	{
+		//Initialize the bloom descriptor set layout.
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> descriptorSetLayoutBindings
+		{
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+		};
+
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::Bloom)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -821,7 +832,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		descriptorSetLayouts[INDEX(DescriptorSetLayout::PostProcessing)].Initialize(2, postProcessingDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::PostProcessing)].Initialize(2, postProcessingDescriptorSetLayoutBindings.Data());
 	}
 }
 
@@ -1020,12 +1031,12 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 {
 	{
 		//Initialize the shadow map blur descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::ShadowBlur)], descriptorSetLayouts[INDEX(DescriptorSetLayout::ShadowMapBlur)]);
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::ShadowBlur)], descriptorSetLayouts[INDEX(RenderDataTableLayout::ShadowMapBlur)]);
 
 		//Update the write descriptor sets.
 		StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
 		{
-			renderTargets[INDEX(RenderTarget::DirectionalPreBlurShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::ShadowBlur)], 0)
+			renderTargets[INDEX(RenderTarget::DirectionalPreBlurShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::ShadowBlur)], 0)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -1033,13 +1044,13 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 
 	{
 		//Initialize the directional shadow descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::DirectionalShadow)], descriptorSetLayouts[INDEX(DescriptorSetLayout::DirectionalShadow)]);
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::DirectionalShadow)], descriptorSetLayouts[INDEX(RenderDataTableLayout::DirectionalShadow)]);
 
 		//Update the write descriptor sets.
 		StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
 		{
-			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::DirectionalShadow)], 0),
-			renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::DirectionalShadow)], 1)
+			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::DirectionalShadow)], 0),
+			renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::DirectionalShadow)], 1)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -1047,15 +1058,54 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 
 	{
 		//Initialize the lighting descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], descriptorSetLayouts[INDEX(DescriptorSetLayout::Lighting)]);
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], descriptorSetLayouts[INDEX(RenderDataTableLayout::Lighting)]);
 
 		//Update the write descriptor sets.
 		StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
 		{
-			renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 0),
-			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 1),
-			renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 2),
-			renderTargets[INDEX(RenderTarget::DirectionalPostBlurShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::Lighting)], 3)
+			renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], 0),
+			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], 1),
+			renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], 2),
+			renderTargets[INDEX(RenderTarget::DirectionalPostBlurShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], 3)
+		};
+
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	}
+
+	{
+		//Initialize the bloom descriptor set.
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::Bloom)], descriptorSetLayouts[INDEX(RenderDataTableLayout::Bloom)]);
+
+		//Update the write descriptor sets.
+		StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
+		{
+			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::Bloom)], 0)
+		};
+
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	}
+
+	{
+		//Initialize the bloom horizontal blur descriptor set.
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::BloomHorizontalBlur)], descriptorSetLayouts[INDEX(RenderDataTableLayout::Bloom)]);
+
+		//Update the write descriptor sets.
+		StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
+		{
+			renderTargets[INDEX(RenderTarget::Bloom)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::BloomHorizontalBlur)], 0)
+		};
+
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	}
+
+	{
+		//Initialize the bloom vertical blur descriptor set.
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::BloomVerticalBlur)], descriptorSetLayouts[INDEX(RenderDataTableLayout::Bloom)]);
+
+		//Update the write descriptor sets.
+		StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
+		{
+			renderTargets[INDEX(RenderTarget::BloomIntermediate)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::BloomVerticalBlur)], 0)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -1063,13 +1113,13 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 
 	{
 		//Initialize the post processing descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(DescriptorSet::PostProcessing)], descriptorSetLayouts[INDEX(DescriptorSetLayout::PostProcessing)]);
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], descriptorSetLayouts[INDEX(RenderDataTableLayout::PostProcessing)]);
 
 		//Update the write descriptor sets.
 		StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
 		{
-			uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::PostProcessing)], 1),
-			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[INDEX(DescriptorSet::PostProcessing)], 2)
+			uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 1),
+			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 2)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);

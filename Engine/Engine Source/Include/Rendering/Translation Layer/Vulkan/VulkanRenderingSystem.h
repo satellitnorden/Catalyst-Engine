@@ -186,17 +186,6 @@ private:
 		NumberOfDefaultTextures
 	};
 
-	//Enumeration covering all descriptor sets.
-	enum class DescriptorSet : uint8
-	{
-		Environment,
-		ShadowBlur,
-		DirectionalShadow,
-		Lighting,
-		PostProcessing,
-		NumberOfDescriptorSets
-	};
-
 	//Enumeration covering all semaphores.
 	enum class GraphicsSemaphore : uint8
 	{
@@ -235,10 +224,10 @@ private:
 	StaticArray<VulkanDepthBuffer *RESTRICT, INDEX(DepthBuffer::NumberOfDepthBuffers)> depthBuffers;
 
 	//Container for all descriptor sets.
-	StaticArray<VulkanDescriptorSet, INDEX(DescriptorSet::NumberOfDescriptorSets)> descriptorSets;
+	StaticArray<VulkanDescriptorSet, INDEX(RenderDataTable::NumberOfDescriptorSets)> descriptorSets;
 
 	//Container for all descriptor set layouts.
-	StaticArray<VulkanDescriptorSetLayout, INDEX(DescriptorSetLayout::NumberOfDescriptorSetLayouts)> descriptorSetLayouts;
+	StaticArray<VulkanDescriptorSetLayout, INDEX(RenderDataTableLayout::NumberOfDescriptorSetLayouts)> descriptorSetLayouts;
 
 	//Container for all render targets.
 	StaticArray<VulkanRenderTarget *RESTRICT, INDEX(RenderTarget::NumberOfRenderTargets)> renderTargets;

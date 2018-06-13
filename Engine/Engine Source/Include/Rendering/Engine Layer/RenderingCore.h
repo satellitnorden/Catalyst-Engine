@@ -91,8 +91,22 @@ enum class DepthBuffer : uint8
 	None
 };
 
-//Enumeration covering all descriptor set layouts.
-enum class DescriptorSetLayout : uint8
+//Enumeration covering all render data tables.
+enum class RenderDataTable : uint8
+{
+	Environment,
+	ShadowBlur,
+	DirectionalShadow,
+	Lighting,
+	Bloom,
+	BloomHorizontalBlur,
+	BloomVerticalBlur,
+	PostProcessing,
+	NumberOfDescriptorSets
+};
+
+//Enumeration covering all render data table layouts.
+enum class RenderDataTableLayout : uint8
 {
 	DynamicUniformData,
 	ShadowMapBlur,
@@ -104,6 +118,7 @@ enum class DescriptorSetLayout : uint8
 	Lighting,
 	Ocean,
 	ParticleSystem,
+	Bloom,
 	PostProcessing,
 	NumberOfDescriptorSetLayouts
 };
@@ -120,6 +135,7 @@ enum class RenderTarget : uint8
 	WaterScene,
 	Scene,
 	Bloom,
+	BloomIntermediate,
 	Screen,
 	NumberOfRenderTargets
 };

@@ -46,8 +46,8 @@ void PostProcessingRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);
-	AddDescriptorSetLayout(DescriptorSetLayout::DynamicUniformData);
-	AddDescriptorSetLayout(DescriptorSetLayout::PostProcessing);
+	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
+	AddDescriptorSetLayout(RenderDataTableLayout::PostProcessing);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());

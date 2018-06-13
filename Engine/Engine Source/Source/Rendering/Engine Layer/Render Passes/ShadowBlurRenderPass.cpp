@@ -46,8 +46,8 @@ void ShadowBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);
-	AddDescriptorSetLayout(DescriptorSetLayout::DynamicUniformData);
-	AddDescriptorSetLayout(DescriptorSetLayout::ShadowMapBlur);
+	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
+	AddDescriptorSetLayout(RenderDataTableLayout::ShadowMapBlur);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());
