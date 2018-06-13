@@ -25,7 +25,7 @@ void VulkanTranslationCommandBuffer::Begin(const RenderPass *const RESTRICT rend
 /*
 *	Binds a number of descriptor sets.
 */
-void VulkanTranslationCommandBuffer::BindDescriptorSets(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 descriptorSetCount, const DescriptorSetHandle *const RESTRICT descriptorSets) NOEXCEPT
+void VulkanTranslationCommandBuffer::BindDescriptorSets(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 descriptorSetCount, const RenderDataTableHandle *const RESTRICT descriptorSets) NOEXCEPT
 {
 	//Cache the Vulkan render pass data.
 	const VulkanRenderPassData *const RESTRICT renderPassData{ static_cast<const VulkanRenderPassData *const RESTRICT>(renderPass->GetData()) };

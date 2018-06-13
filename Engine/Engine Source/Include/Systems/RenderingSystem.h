@@ -139,37 +139,37 @@ public:
 	/*
 	*	Returns the current dynamic uniform data descriptor set.
 	*/
-	DescriptorSetHandle GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT;
+	RenderDataTableHandle GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT;
 
 	/*
 	*	Returns the current environment data descriptor set.
 	*/
-	DescriptorSetHandle GetCurrentEnvironmentDataDescriptorSet() const NOEXCEPT;
+	RenderDataTableHandle GetCurrentEnvironmentDataDescriptorSet() const NOEXCEPT;
 
 	/*
 	*	Returns the current ocean descriptor set.
 	*/
-	DescriptorSetHandle GetCurrentOceanDescriptorSet() const NOEXCEPT;
+	RenderDataTableHandle GetCurrentOceanDescriptorSet() const NOEXCEPT;
 
 	/*
 	*	Returns the directional shadow descriptor set.
 	*/
-	DescriptorSetHandle GetDirectionalShadowDescriptorSet() const NOEXCEPT;
+	RenderDataTableHandle GetDirectionalShadowDescriptorSet() const NOEXCEPT;
 
 	/*
 	*	Returns the lighting descriptor set.
 	*/
-	DescriptorSetHandle GetLightingDescriptorSet() const NOEXCEPT;
+	RenderDataTableHandle GetLightingDescriptorSet() const NOEXCEPT;
 
 	/*
 	*	Returns the post processing descriptor set.
 	*/
-	DescriptorSetHandle GetPostProcessingDescriptorSet() const NOEXCEPT;
+	RenderDataTableHandle GetPostProcessingDescriptorSet() const NOEXCEPT;
 
 	/*
 	*	Returns the shadow blur descriptor set.
 	*/
-	DescriptorSetHandle GetShadowBlurDescriptorSet() const NOEXCEPT;
+	RenderDataTableHandle GetShadowBlurDescriptorSet() const NOEXCEPT;
 
 	/*
 	*	Creates an environment material.

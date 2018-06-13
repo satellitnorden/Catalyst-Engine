@@ -86,7 +86,7 @@ void DirectionalShadowRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->Begin(this);
 
 	//Bind the current dynamic uniform data descriptor set.
-	StaticArray<DescriptorSetHandle, 2> descriptorSets
+	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
 		RenderingSystem::Instance->GetDirectionalShadowDescriptorSet()

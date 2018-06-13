@@ -622,7 +622,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 /*
 *	Returns the current dynamic uniform data descriptor set.
 */
-DescriptorSetHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT
+RenderDataTableHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT
 {
 	return frameData.GetCurrentDynamicUniformDataDescriptorSet()->Get();
 }
@@ -630,7 +630,7 @@ DescriptorSetHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataDescripto
 /*
 *	Returns the current environment data descriptor set.
 */
-DescriptorSetHandle VulkanRenderingSystem::GetCurrentEnvironmentDataDescriptorSet() NOEXCEPT
+RenderDataTableHandle VulkanRenderingSystem::GetCurrentEnvironmentDataDescriptorSet() NOEXCEPT
 {
 	return frameData.GetCurrentEnvironmentDescriptorSet()->Get();
 }
@@ -638,7 +638,7 @@ DescriptorSetHandle VulkanRenderingSystem::GetCurrentEnvironmentDataDescriptorSe
 /*
 *	Returns the current ocean descriptor set.
 */
-DescriptorSetHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEXCEPT
+RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEXCEPT
 {
 	return frameData.GetCurrentOceanDescriptorSet()->Get();
 }
@@ -646,7 +646,7 @@ DescriptorSetHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEXCE
 /*
 *	Returns the directional shadow descriptor set.
 */
-DescriptorSetHandle VulkanRenderingSystem::GetDirectionalShadowDescriptorSet() NOEXCEPT
+RenderDataTableHandle VulkanRenderingSystem::GetDirectionalShadowDescriptorSet() NOEXCEPT
 {
 	return descriptorSets[INDEX(DescriptorSet::DirectionalShadow)].Get();
 }
@@ -654,7 +654,7 @@ DescriptorSetHandle VulkanRenderingSystem::GetDirectionalShadowDescriptorSet() N
 /*
 *	Returns the lighting descriptor set.
 */
-DescriptorSetHandle VulkanRenderingSystem::GetLightingDescriptorSet() NOEXCEPT
+RenderDataTableHandle VulkanRenderingSystem::GetLightingDescriptorSet() NOEXCEPT
 {
 	return descriptorSets[INDEX(DescriptorSet::Lighting)].Get();
 }
@@ -662,7 +662,7 @@ DescriptorSetHandle VulkanRenderingSystem::GetLightingDescriptorSet() NOEXCEPT
 /*
 *	Returns the post processing descriptor set.
 */
-DescriptorSetHandle VulkanRenderingSystem::GetPostProcessingDescriptorSet() NOEXCEPT
+RenderDataTableHandle VulkanRenderingSystem::GetPostProcessingDescriptorSet() NOEXCEPT
 {
 	return descriptorSets[INDEX(DescriptorSet::PostProcessing)].Get();
 }
@@ -670,7 +670,7 @@ DescriptorSetHandle VulkanRenderingSystem::GetPostProcessingDescriptorSet() NOEX
 /*
 *	Returns the shadow blur descriptor set.
 */
-DescriptorSetHandle VulkanRenderingSystem::GetShadowBlurDescriptorSet() NOEXCEPT
+RenderDataTableHandle VulkanRenderingSystem::GetShadowBlurDescriptorSet() NOEXCEPT
 {
 	return descriptorSets[INDEX(DescriptorSet::ShadowBlur)].Get();
 }

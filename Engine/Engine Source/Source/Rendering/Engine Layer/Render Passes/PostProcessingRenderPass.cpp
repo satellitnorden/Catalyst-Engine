@@ -86,7 +86,7 @@ void PostProcessingRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->Begin(this);
 
 	//Bind the descriptor sets.
-	StaticArray<DescriptorSetHandle, 2> descriptorSets
+	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
 		RenderingSystem::Instance->GetPostProcessingDescriptorSet()

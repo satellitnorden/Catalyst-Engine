@@ -12,7 +12,7 @@ class VegetationComponent final
 public:
 
 	//The descriptor set.
-	DescriptorSetHandle descriptorSet;
+	RenderDataTableHandle descriptorSet;
 
 	//The transformations buffer.
 	ConstantBufferHandle transformationsBuffer;

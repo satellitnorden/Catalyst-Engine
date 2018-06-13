@@ -87,7 +87,7 @@ void LightingRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->Begin(this);
 
 	//Bind the current dynamic uniform data descriptor set.
-	StaticArray<DescriptorSetHandle, 3> descriptorSets
+	StaticArray<RenderDataTableHandle, 3> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
 		RenderingSystem::Instance->GetCurrentEnvironmentDataDescriptorSet(),

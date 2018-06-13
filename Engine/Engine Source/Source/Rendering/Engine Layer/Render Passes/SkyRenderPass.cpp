@@ -86,7 +86,7 @@ void SkyRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->Begin(this);
 
 	//Bind the descriptor set2.
-	StaticArray<DescriptorSetHandle, 2> descriptorSets
+	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
 		RenderingSystem::Instance->GetCurrentEnvironmentDataDescriptorSet()

@@ -134,7 +134,7 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 /*
 *	Returns the current dynamic uniform data descriptor set.
 */
-DescriptorSetHandle RenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT
 {
 	//Return the current dynamic uniform data descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentDynamicUniformDataDescriptorSet();
@@ -143,7 +143,7 @@ DescriptorSetHandle RenderingSystem::GetCurrentDynamicUniformDataDescriptorSet()
 /*
 *	Returns the current environment data descriptor set.
 */
-DescriptorSetHandle RenderingSystem::GetCurrentEnvironmentDataDescriptorSet() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetCurrentEnvironmentDataDescriptorSet() const NOEXCEPT
 {
 	//Return the current environment data descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentEnvironmentDataDescriptorSet();
@@ -152,7 +152,7 @@ DescriptorSetHandle RenderingSystem::GetCurrentEnvironmentDataDescriptorSet() co
 /*
 *	Returns the current ocean descriptor set.
 */
-DescriptorSetHandle RenderingSystem::GetCurrentOceanDescriptorSet() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetCurrentOceanDescriptorSet() const NOEXCEPT
 {
 	//Return the current ocean descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentOceanDescriptorSet();
@@ -161,7 +161,7 @@ DescriptorSetHandle RenderingSystem::GetCurrentOceanDescriptorSet() const NOEXCE
 /*
 *	Returns the directional shadow descriptor set.
 */
-DescriptorSetHandle RenderingSystem::GetDirectionalShadowDescriptorSet() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetDirectionalShadowDescriptorSet() const NOEXCEPT
 {
 	//Return the directional shadow descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetDirectionalShadowDescriptorSet();
@@ -170,7 +170,7 @@ DescriptorSetHandle RenderingSystem::GetDirectionalShadowDescriptorSet() const N
 /*
 *	Returns the lighting descriptor set.
 */
-DescriptorSetHandle RenderingSystem::GetLightingDescriptorSet() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetLightingDescriptorSet() const NOEXCEPT
 {
 	//Return the lighting descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetLightingDescriptorSet();
@@ -179,7 +179,7 @@ DescriptorSetHandle RenderingSystem::GetLightingDescriptorSet() const NOEXCEPT
 /*
 *	Returns the post processing descriptor set.
 */
-DescriptorSetHandle RenderingSystem::GetPostProcessingDescriptorSet() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetPostProcessingDescriptorSet() const NOEXCEPT
 {
 	//Return the post processing descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetPostProcessingDescriptorSet();
@@ -188,7 +188,7 @@ DescriptorSetHandle RenderingSystem::GetPostProcessingDescriptorSet() const NOEX
 /*
 *	Returns the shadow blur descriptor set.
 */
-DescriptorSetHandle RenderingSystem::GetShadowBlurDescriptorSet() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetShadowBlurDescriptorSet() const NOEXCEPT
 {
 	//Return the shadow blur descriptor set via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetShadowBlurDescriptorSet();

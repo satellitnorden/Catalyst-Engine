@@ -9,6 +9,6 @@ class WaterRenderComponent final
 public:
 
 	//The descriptor set.
-	DescriptorSetHandle descriptorSet;
+	RenderDataTableHandle descriptorSet;
 
 };

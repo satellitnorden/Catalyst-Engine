@@ -13,7 +13,7 @@ namespace RenderingConstants
 /*
 *	Type aliases.
 */
-using DescriptorSetHandle = void *RESTRICT;
+using RenderDataTableHandle = void *RESTRICT;
 using ConstantBufferHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;
 using TextureCubeMapHandle = void *RESTRICT;

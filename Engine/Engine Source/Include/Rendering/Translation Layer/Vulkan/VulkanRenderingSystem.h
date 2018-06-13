@@ -167,37 +167,37 @@ private:
 	/*
 	*	Returns the current dynamic uniform data descriptor set.
 	*/
-	DescriptorSetHandle GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT;
+	RenderDataTableHandle GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT;
 
 	/*
 	*	Returns the current environment data descriptor set.
 	*/
-	DescriptorSetHandle GetCurrentEnvironmentDataDescriptorSet() NOEXCEPT;
+	RenderDataTableHandle GetCurrentEnvironmentDataDescriptorSet() NOEXCEPT;
 
 	/*
 	*	Returns the current ocean descriptor set.
 	*/
-	DescriptorSetHandle GetCurrentOceanDescriptorSet() NOEXCEPT;
+	RenderDataTableHandle GetCurrentOceanDescriptorSet() NOEXCEPT;
 
 	/*
 	*	Returns the directional shadow descriptor set.
 	*/
-	DescriptorSetHandle GetDirectionalShadowDescriptorSet() NOEXCEPT;
+	RenderDataTableHandle GetDirectionalShadowDescriptorSet() NOEXCEPT;
 
 	/*
 	*	Returns the lighting descriptor set.
 	*/
-	DescriptorSetHandle GetLightingDescriptorSet() NOEXCEPT;
+	RenderDataTableHandle GetLightingDescriptorSet() NOEXCEPT;
 
 	/*
 	*	Returns the post processing descriptor set.
 	*/
-	DescriptorSetHandle GetPostProcessingDescriptorSet() NOEXCEPT;
+	RenderDataTableHandle GetPostProcessingDescriptorSet() NOEXCEPT;
 
 	/*
 	*	Returns the shadow blur descriptor set.
 	*/
-	DescriptorSetHandle GetShadowBlurDescriptorSet() NOEXCEPT;
+	RenderDataTableHandle GetShadowBlurDescriptorSet() NOEXCEPT;
 
 	//Enumeration covering all default textures.
 	enum DefaultTexture : uint8

@@ -15,7 +15,7 @@ public:
 	bool isInViewFrustum;
 
 	//The descriptor set.
-	DescriptorSetHandle descriptorSet{ };
+	RenderDataTableHandle descriptorSet{ };
 
 	//The vertex buffer.
 	ConstantBufferHandle vertexAndIndexBuffer{ };

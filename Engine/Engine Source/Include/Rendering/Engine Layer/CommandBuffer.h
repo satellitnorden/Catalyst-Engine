@@ -22,7 +22,7 @@ public:
 	/*
 	*	Binds a number of descriptor sets.
 	*/
-	virtual void BindDescriptorSets(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 descriptorSetCount, const DescriptorSetHandle *const RESTRICT descriptorSets) NOEXCEPT = 0;
+	virtual void BindDescriptorSets(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 descriptorSetCount, const RenderDataTableHandle *const RESTRICT descriptorSets) NOEXCEPT = 0;
 
 	/*
 	*	Binds an index buffer.

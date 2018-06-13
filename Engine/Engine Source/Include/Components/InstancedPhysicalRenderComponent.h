@@ -12,7 +12,7 @@ class InstancedPhysicalRenderComponent final
 public:
 
 	//The descriptor set.
-	DescriptorSetHandle descriptorSet;
+	RenderDataTableHandle descriptorSet;
 
 	//The model buffer.
 	ConstantBufferHandle modelBuffer;

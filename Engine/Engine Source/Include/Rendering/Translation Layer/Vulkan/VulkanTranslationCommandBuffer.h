@@ -40,7 +40,7 @@ public:
 	/*
 	*	Binds a number of descriptor sets.
 	*/
-	void BindDescriptorSets(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 descriptorSetCount, const DescriptorSetHandle *const RESTRICT descriptorSets) NOEXCEPT override;
+	void BindDescriptorSets(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 descriptorSetCount, const RenderDataTableHandle *const RESTRICT descriptorSets) NOEXCEPT override;
 
 	/*
 	*	Binds an index buffer.
