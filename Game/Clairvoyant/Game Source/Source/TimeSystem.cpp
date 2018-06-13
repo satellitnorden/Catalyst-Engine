@@ -4,12 +4,14 @@
 //Entities.
 #include <Entities/DirectionalLightEntity.h>
 
+//Managers.
+#include <Managers/EnvironmentManager.h>
+
 //Math.
 #include <Math/CatalystMath.h>
 
 //Systems.
 #include <Systems/EntitySystem.h>
-#include <Systems/EnvironmentSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(TimeSystem);
@@ -96,5 +98,5 @@ void TimeSystem::Update(const float deltaTime) NOEXCEPT
 	sun->SetIntensity(CatalystMath::LinearlyInterpolate(TimeSystemConstants::SUN_MINIMUM_INTENSITY, TimeSystemConstants::SUN_MAXIMUM_INTENSITY, sunAlpha));
 
 	//Set the environment blend.
-	EnvironmentSystem::Instance->SetEnvironmentBlend(dayAlpha);
+	EnvironmentManager::Instance->SetEnvironmentBlend(dayAlpha);
 }

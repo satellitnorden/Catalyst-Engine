@@ -7,18 +7,18 @@
 #include <Rendering/Engine Layer/EnvironmentMaterial.h>
 #include <Rendering/Engine Layer/OceanMaterial.h>
 
-class EnvironmentSystem final
+class EnvironmentManager final
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(EnvironmentSystem);
+	DECLARE_SINGLETON(EnvironmentManager);
 
 	/*
 	*	Default constructor.
 	*/
-	EnvironmentSystem() NOEXCEPT = default;
+	EnvironmentManager() NOEXCEPT = default;
 
 	/*
 	*	Returns the environment blend.

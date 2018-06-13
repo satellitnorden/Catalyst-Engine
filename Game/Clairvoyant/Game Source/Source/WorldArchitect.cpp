@@ -19,6 +19,9 @@
 #include <Entities/TerrainEntity.h>
 #include <Entities/VegetationEntity.h>
 
+//Managers.
+#include <Managers/EnvironmentManager.h>
+
 //Math.
 #include <Math/CatalystMath.h>
 #include <Math/Matrix4.h>
@@ -43,7 +46,6 @@
 
 //Systems.
 #include <Systems/EntitySystem.h>
-#include <Systems/EnvironmentSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/SoundSystem.h>
@@ -98,11 +100,11 @@ void WorldArchitect::Initialize() NOEXCEPT
 	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection3.crc");
 
 	//Set the environment material.
-	EnvironmentSystem::Instance->SetNightEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::NIGHT_ENVIRONMENT_MATERIAL));
-	EnvironmentSystem::Instance->SetDayEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::DAY_ENVIRONMENT_MATERIAL));
+	EnvironmentManager::Instance->SetNightEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::NIGHT_ENVIRONMENT_MATERIAL));
+	EnvironmentManager::Instance->SetDayEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::DAY_ENVIRONMENT_MATERIAL));
 
 	//Set the ocean material.
-	EnvironmentSystem::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(WorldAchitectConstants::DEFAULT_WATER_MATERIAL));
+	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(WorldAchitectConstants::DEFAULT_WATER_MATERIAL));
 
 	//Create the test scene.
 	CreateTestScene();

@@ -241,26 +241,6 @@ public:
 	*/
 	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;
 
-	/*
-	*	Sets the post processing blur amount.
-	*/
-	void SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT;
-
-	/*
-	*	Sets the post processing chromatic aberration amount.
-	*/
-	void SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) NOEXCEPT;
-
-	/*
-	*	Sets the post processing saturation.
-	*/
-	void SetPostProcessingSaturation(const float newSaturation) NOEXCEPT;
-
-	/*
-	*	Sets the post processing sharpen amount.
-	*/
-	void SetPostProcessingSharpenAmount(const float newSharpenAmount) NOEXCEPT;
-
 private:
 
 	//Container for all render passes.

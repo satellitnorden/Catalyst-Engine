@@ -13,7 +13,6 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/EnvironmentMaterial.h>
-#include <Rendering/Engine Layer/PostProcessingUniformData.h>
 #include <Rendering/Engine Layer/RenderingCore.h>
 #include <Rendering/Engine Layer/Window.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanDynamicUniformData.h>
@@ -135,26 +134,6 @@ public:
 	*/
 	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;
 
-	/*
-	*	Sets the post processing blur amount.
-	*/
-	void SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT;
-
-	/*
-	*	Sets the post processing chromatic aberration amount.
-	*/
-	void SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) NOEXCEPT;
-
-	/*
-	*	Sets the post processing saturation.
-	*/
-	void SetPostProcessingSaturation(const float newSaturation) NOEXCEPT;
-
-	/*
-	*	Sets the post processing sharpen amount.
-	*/
-	void SetPostProcessingSharpenAmount(const float newSharpenAmount) NOEXCEPT;
-
 private:
 
 	friend class RenderingSystem;
@@ -249,9 +228,6 @@ private:
 	//The dynamic uniform data.
 	VulkanDynamicUniformData dynamicUniformData;
 
-	//The post processing uniform data.
-	PostProcessingUniformData postProcessingUniformData;
-
 	//Container for all default textures.
 	StaticArray<Vulkan2DTexture *RESTRICT, DefaultTexture::NumberOfDefaultTextures> defaultTextures;
 
@@ -330,6 +306,11 @@ private:
 	*	Execute asynchronous tasks.
 	*/
 	void ExecuteAsynchronousTasks() NOEXCEPT;
+
+	/*
+	*	Updates the post processing data.
+	*/
+	void UpdatePostProcessingData() NOEXCEPT;
 
 	/*
 	*	Begins the frame.

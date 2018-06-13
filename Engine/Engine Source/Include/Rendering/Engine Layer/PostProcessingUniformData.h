@@ -8,16 +8,16 @@ class PostProcessingUniformData final
 
 public:
 
-	//The blur amount.
-	float blurAmount{ 0.0f };
+	//The blur strength.
+	float blurStrength{ 0.0f };
 
-	//The chromatic aberration amount.
-	float chromaticAberrationAmount{ 0.0f };
+	//The chromatic aberration strength.
+	float chromaticAberrationStrength{ 0.0f };
 
-	//The saturation.
-	float saturation{ 1.0f };
+	//The saturation strength.
+	float saturationStrength{ 1.0f };
 
-	//The sharpen amount.
-	float sharpenAmount{ 0.0f };
+	//The sharpen strength.
+	float sharpenStrength{ 0.0f };
 
 };

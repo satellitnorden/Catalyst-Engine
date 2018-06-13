@@ -175,6 +175,15 @@
     <Filter Include="Engine Source\Rendering\Engine Layer\Render Passes\Source">
       <UniqueIdentifier>{83c82137-359f-4ba2-beb9-356ecb81e8e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Managers">
+      <UniqueIdentifier>{17ca2877-6c9c-4d7b-a1b2-7c33a1c864cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Managers\Include">
+      <UniqueIdentifier>{f427f7c6-25f5-4285-90cc-2c074988bdad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Managers\Source">
+      <UniqueIdentifier>{e530f220-b91e-4c89-9a7b-df85b1ee8539}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantGameSystem.h">
@@ -648,9 +657,6 @@
     <ClInclude Include="..\..\..\Game Source\Include\TimeSystem.h">
       <Filter>Game Source\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\EnvironmentSystem.h">
-      <Filter>Engine Source\Systems\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\OceanMaterial.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
     </ClInclude>
@@ -806,6 +812,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\GaussianBlurFragmentShader.h">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Managers\PostProcessingManager.h">
+      <Filter>Engine Source\Managers\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Managers\EnvironmentManager.h">
+      <Filter>Engine Source\Managers\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -983,9 +995,6 @@
     <ClCompile Include="..\..\..\Game Source\Source\TimeSystem.cpp">
       <Filter>Game Source\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\EnvironmentSystem.cpp">
-      <Filter>Engine Source\Systems\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanEvent.cpp">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
     </ClCompile>
@@ -1123,6 +1132,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\GaussianBlurFragmentShader.cpp">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Managers\PostProcessingManager.cpp">
+      <Filter>Engine Source\Managers\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Managers\EnvironmentManager.cpp">
+      <Filter>Engine Source\Managers\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

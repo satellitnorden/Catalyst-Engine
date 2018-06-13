@@ -378,42 +378,6 @@ UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBuf
 }
 
 /*
-*	Sets the post processing blur amount.
-*/
-void RenderingSystem::SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT
-{
-	//Set the post processing blur amount via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->SetPostProcessingBlurAmount(newBlurAmount);
-}
-
-/*
-*	Sets the post processing chromatic aberration amount.
-*/
-void RenderingSystem::SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) NOEXCEPT
-{
-	//Set the post processing chromatic aberration amount via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->SetPostProcessingChromaticAberrationAmount(newChromaticAberrationAmount);
-}
-
-/*
-*	Sets the post processing saturation.
-*/
-void RenderingSystem::SetPostProcessingSaturation(const float newSaturation) NOEXCEPT
-{
-	//Set the post processing saturation via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->SetPostProcessingSaturation(newSaturation);
-}
-
-/*
-*	Sets the post processing sharpen amount.
-*/
-void RenderingSystem::SetPostProcessingSharpenAmount(const float newSharpenAmount) NOEXCEPT
-{
-	//Set the post processing sharpen amount via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->SetPostProcessingSharpenAmount(newSharpenAmount);
-}
-
-/*
 *	Registers all render passes.
 */
 void RenderingSystem::RegisterRenderPasses() NOEXCEPT

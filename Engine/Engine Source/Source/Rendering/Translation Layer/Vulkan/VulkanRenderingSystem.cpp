@@ -14,6 +14,10 @@
 #include <Entities/TerrainEntity.h>
 #include <Entities/VegetationEntity.h>
 
+//Managers.
+#include <Managers/EnvironmentManager.h>
+#include <Managers/PostProcessingManager.h>
+
 //Math.
 #include <Math/CatalystMath.h>
 #include <Math/Matrix3.h>
@@ -24,6 +28,7 @@
 //Rendering.
 #include <Rendering/Engine Layer/CPUTexture2D.h>
 #include <Rendering/Engine Layer/ParticleMaterial.h>
+#include <Rendering/Engine Layer/PostProcessingUniformData.h>
 #include <Rendering/Engine Layer/RenderingUtilities.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/TextureData.h>
@@ -39,7 +44,6 @@
 
 //Systems.
 #include <Systems/EngineSystem.h>
-#include <Systems/EnvironmentSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
@@ -99,6 +103,9 @@ void VulkanRenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
 	//Execute the asynchronous tasks.
 	ExecuteAsynchronousTasks();
+
+	//Update the post processing data.
+	UpdatePostProcessingData();
 
 	//Update the main window.
 	mainWindow.Update();
@@ -424,54 +431,6 @@ UniformBufferHandle VulkanRenderingSystem::CreateUniformBuffer(const uint64 unif
 }
 
 /*
-*	Sets the post processing blur amount.
-*/
-void VulkanRenderingSystem::SetPostProcessingBlurAmount(const float newBlurAmount) NOEXCEPT
-{
-	//Update the post processing uniform data.
-	postProcessingUniformData.blurAmount = newBlurAmount;
-
-	//Upload the data to the post processing data uniform buffer.
-	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&postProcessingUniformData);
-}
-
-/*
-*	Sets the post processing chromatic aberration amount.
-*/
-void VulkanRenderingSystem::SetPostProcessingChromaticAberrationAmount(const float newChromaticAberrationAmount) NOEXCEPT
-{
-	//Update the post processing uniform data.
-	postProcessingUniformData.chromaticAberrationAmount = newChromaticAberrationAmount;
-
-	//Upload the data to the post processing data uniform buffer.
-	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&postProcessingUniformData);
-}
-
-/*
-*	Sets the post processing saturation.
-*/
-void VulkanRenderingSystem::SetPostProcessingSaturation(const float newSaturation) NOEXCEPT
-{
-	//Update the post processing uniform data.
-	postProcessingUniformData.saturation = newSaturation;
-
-	//Upload the data to the post processing data uniform buffer.
-	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&postProcessingUniformData);
-}
-
-/*
-*	Sets the post processing sharpen amount.
-*/
-void VulkanRenderingSystem::SetPostProcessingSharpenAmount(const float newSharpenAmount) NOEXCEPT
-{
-	//Update the post processing uniform data.
-	postProcessingUniformData.sharpenAmount = newSharpenAmount;
-
-	//Upload the data to the post processing data uniform buffer.
-	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&postProcessingUniformData);
-}
-
-/*
 *	Finalizes the initialization of a render pass.
 */
 void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT
@@ -713,9 +672,6 @@ void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 {
 	//Create the post processing uniform data buffer.
 	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(PostProcessingUniformData));
-
-	//Upload the initial data to the post processing uniform data buffer.
-	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&postProcessingUniformData);
 }
 
 /*
@@ -1147,6 +1103,26 @@ void VulkanRenderingSystem::ExecuteAsynchronousTasks() NOEXCEPT
 }
 
 /*
+*	Updates the post processing data.
+*/
+void VulkanRenderingSystem::UpdatePostProcessingData() NOEXCEPT
+{
+	if (PostProcessingManager::Instance->GetHasBeenUpdated())
+	{
+		PostProcessingManager::Instance->SetHasBeenUpdated(false);
+
+		PostProcessingUniformData data;
+
+		data.blurStrength = PostProcessingManager::Instance->GetBlurStrength();
+		data.chromaticAberrationStrength = PostProcessingManager::Instance->GetChromaticAbberationStrength();
+		data.saturationStrength = PostProcessingManager::Instance->GetSaturationStrength();
+		data.sharpenStrength = PostProcessingManager::Instance->GetSharpenStrength();
+
+		uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&data);
+	}
+}
+
+/*
 *	Begins the frame.
 */
 void VulkanRenderingSystem::BeginFrame() NOEXCEPT
@@ -1273,10 +1249,10 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 
 		StaticArray<VkWriteDescriptorSet, 4> environmentWriteDescriptorSets
 		{
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetNightEnvironmentMaterial().diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 0),
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetNightEnvironmentMaterial().diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 1),
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetDayEnvironmentMaterial().diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 2),
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetDayEnvironmentMaterial().diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 3)
+			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetNightEnvironmentMaterial().diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 0),
+			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetNightEnvironmentMaterial().diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 1),
+			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetDayEnvironmentMaterial().diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 2),
+			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetDayEnvironmentMaterial().diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 3)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(environmentWriteDescriptorSets.Size()), environmentWriteDescriptorSets.Data(), 0, nullptr);
@@ -1290,7 +1266,7 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 		{
 			renderTargets[INDEX(RenderTarget::WaterScene)]->GetWriteDescriptorSet(oceanDescriptorSet, 0),
 			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(oceanDescriptorSet, 1),
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentSystem::Instance->GetOceanMaterial().normalMapTexture)->GetWriteDescriptorSet(oceanDescriptorSet, 2)
+			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetOceanMaterial().normalMapTexture)->GetWriteDescriptorSet(oceanDescriptorSet, 2)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(oceanWriteDescriptorSets.Size()), oceanWriteDescriptorSets.Data(), 0, nullptr);
@@ -1354,7 +1330,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 		dynamicUniformData.directionalLightScreenSpacePosition = Vector3(0.0f, 0.0f, 0.0f);
 	}
 
-	dynamicUniformData.environmentBlend = EnvironmentSystem::Instance->GetEnvironmentBlend();
+	dynamicUniformData.environmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
 
 	dynamicUniformData.deltaTime = EngineSystem::Instance->GetDeltaTime();
 	dynamicUniformData.totalGameTime = EngineSystem::Instance->GetTotalGameTime();
