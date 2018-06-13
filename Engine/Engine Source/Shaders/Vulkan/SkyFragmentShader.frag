@@ -66,7 +66,6 @@ layout (set = 1, binding = 2) uniform samplerCube dayTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
-layout (location = 1) out vec4 waterFragmentColor;
 
 void main()
 {
@@ -86,5 +85,4 @@ void main()
 
     //Set the fragment color.
     fragmentColor = vec4(skyColor, 1.0f);
-    waterFragmentColor = vec4(skyColor, 1.0f);
 }

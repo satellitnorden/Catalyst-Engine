@@ -41,8 +41,7 @@ void SkyRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(2);
-	AddRenderTarget(RenderTarget::Scene);
+	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::WaterScene);
 
 	//Add the descriptor set layouts.

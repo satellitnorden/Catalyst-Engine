@@ -50,9 +50,8 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(2);
+	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::Scene);
-	AddRenderTarget(RenderTarget::WaterScene);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);

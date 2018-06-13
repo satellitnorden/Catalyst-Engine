@@ -67,7 +67,6 @@ layout (set = 1, binding = 3) uniform sampler2D albedoTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
-layout (location = 1) out vec4 waterFragment;
 
 /*
 *   Calculates the directional light.
@@ -154,5 +153,4 @@ void main()
 
     //Write the fragment.
     fragment = vec4(finalFragment, blendFactor);
-    waterFragment = vec4(finalFragment, blendFactor);
 }

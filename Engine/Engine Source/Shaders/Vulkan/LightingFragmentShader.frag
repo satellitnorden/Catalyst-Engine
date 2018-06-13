@@ -76,7 +76,6 @@ layout (set = 2, binding = 3) uniform sampler2D directionalShadowMap;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
-layout (location = 1) out vec4 waterFragmentColor;
 
 //Globals.
 float ambientOcclusion;
@@ -369,5 +368,4 @@ void main()
 
     //Set the final fragment color.
     fragmentColor = vec4(finalFragment, 1.0f);
-    waterFragmentColor = vec4(finalFragment, 1.0f);
 }
