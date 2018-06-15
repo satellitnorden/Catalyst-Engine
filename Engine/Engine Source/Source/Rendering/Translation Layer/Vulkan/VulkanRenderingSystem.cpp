@@ -603,35 +603,11 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEX
 }
 
 /*
-*	Returns the directional shadow descriptor set.
+*	Returns the given render data table.
 */
-RenderDataTableHandle VulkanRenderingSystem::GetDirectionalShadowDescriptorSet() NOEXCEPT
+RenderDataTableHandle VulkanRenderingSystem::GetRenderDataTable(const RenderDataTable renderDataTable) NOEXCEPT
 {
-	return descriptorSets[INDEX(RenderDataTable::DirectionalShadow)].Get();
-}
-
-/*
-*	Returns the lighting descriptor set.
-*/
-RenderDataTableHandle VulkanRenderingSystem::GetLightingDescriptorSet() NOEXCEPT
-{
-	return descriptorSets[INDEX(RenderDataTable::Lighting)].Get();
-}
-
-/*
-*	Returns the post processing descriptor set.
-*/
-RenderDataTableHandle VulkanRenderingSystem::GetPostProcessingDescriptorSet() NOEXCEPT
-{
-	return descriptorSets[INDEX(RenderDataTable::PostProcessing)].Get();
-}
-
-/*
-*	Returns the shadow blur descriptor set.
-*/
-RenderDataTableHandle VulkanRenderingSystem::GetShadowBlurDescriptorSet() NOEXCEPT
-{
-	return descriptorSets[INDEX(RenderDataTable::ShadowBlur)].Get();
+	return descriptorSets[INDEX(renderDataTable)].Get();
 }
 
 /*
@@ -826,13 +802,14 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 	{
 		//Initialize the post processing descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> postProcessingDescriptorSetLayoutBindings
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> postProcessingDescriptorSetLayoutBindings
 		{
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		descriptorSetLayouts[INDEX(RenderDataTableLayout::PostProcessing)].Initialize(2, postProcessingDescriptorSetLayoutBindings.Data());
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::PostProcessing)].Initialize(static_cast<uint32>(postProcessingDescriptorSetLayoutBindings.Size()), postProcessingDescriptorSetLayoutBindings.Data());
 	}
 }
 
@@ -841,6 +818,13 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 {
+	{
+		//Initialize the bloom fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetBloomFragmentShaderData(data);
+		shaderModules[INDEX(Shader::BloomFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
 	{
 		//Initialize the cube map vertex shader module.
 		DynamicArray<byte> data;
@@ -1116,10 +1100,11 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], descriptorSetLayouts[INDEX(RenderDataTableLayout::PostProcessing)]);
 
 		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
+		StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
 		{
 			uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 1),
-			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 2)
+			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 2),
+			renderTargets[INDEX(RenderTarget::Bloom)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 3)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);

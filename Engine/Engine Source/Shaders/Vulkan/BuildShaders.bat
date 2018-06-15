@@ -1,3 +1,4 @@
+glslangValidator.exe -V BloomFragmentShader.frag -o 					BloomFragmentShader.spv
 glslangValidator.exe -V CubeMapVertexShader.vert -o 					CubeMapVertexShader.spv
 glslangValidator.exe -V DirectionalPhysicalShadowVertexShader.vert -o			DirectionalPhysicalShadowVertexShader.spv
 glslangValidator.exe -V DirectionalShadowFragmentShader.frag -o				DirectionalShadowFragmentShader.spv

@@ -159,24 +159,9 @@ private:
 	RenderDataTableHandle GetCurrentOceanDescriptorSet() NOEXCEPT;
 
 	/*
-	*	Returns the directional shadow descriptor set.
+	*	Returns the given render data table.
 	*/
-	RenderDataTableHandle GetDirectionalShadowDescriptorSet() NOEXCEPT;
-
-	/*
-	*	Returns the lighting descriptor set.
-	*/
-	RenderDataTableHandle GetLightingDescriptorSet() NOEXCEPT;
-
-	/*
-	*	Returns the post processing descriptor set.
-	*/
-	RenderDataTableHandle GetPostProcessingDescriptorSet() NOEXCEPT;
-
-	/*
-	*	Returns the shadow blur descriptor set.
-	*/
-	RenderDataTableHandle GetShadowBlurDescriptorSet() NOEXCEPT;
+	RenderDataTableHandle GetRenderDataTable(const RenderDataTable renderDataTable) NOEXCEPT;
 
 	//Enumeration covering all default textures.
 	enum DefaultTexture : uint8

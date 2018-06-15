@@ -152,24 +152,9 @@ public:
 	RenderDataTableHandle GetCurrentOceanDescriptorSet() const NOEXCEPT;
 
 	/*
-	*	Returns the directional shadow descriptor set.
+	*	Returns the given render data table.
 	*/
-	RenderDataTableHandle GetDirectionalShadowDescriptorSet() const NOEXCEPT;
-
-	/*
-	*	Returns the lighting descriptor set.
-	*/
-	RenderDataTableHandle GetLightingDescriptorSet() const NOEXCEPT;
-
-	/*
-	*	Returns the post processing descriptor set.
-	*/
-	RenderDataTableHandle GetPostProcessingDescriptorSet() const NOEXCEPT;
-
-	/*
-	*	Returns the shadow blur descriptor set.
-	*/
-	RenderDataTableHandle GetShadowBlurDescriptorSet() const NOEXCEPT;
+	RenderDataTableHandle GetRenderDataTable(const RenderDataTable renderDataTable) const NOEXCEPT;
 
 	/*
 	*	Creates an environment material.

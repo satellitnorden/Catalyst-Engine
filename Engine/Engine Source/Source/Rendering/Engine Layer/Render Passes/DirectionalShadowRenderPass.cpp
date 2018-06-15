@@ -89,7 +89,7 @@ void DirectionalShadowRenderPass::RenderInternal() NOEXCEPT
 	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetDirectionalShadowDescriptorSet()
+		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::DirectionalShadow)
 	};
 
 	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());

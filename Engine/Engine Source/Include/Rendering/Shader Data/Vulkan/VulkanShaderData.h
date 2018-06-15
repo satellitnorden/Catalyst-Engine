@@ -8,6 +8,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Rendering.
+#include <Rendering/Shader Data/Vulkan/BloomFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/CubeMapVertexShader.h>
 #include <Rendering/Shader Data/Vulkan/DirectionalPhysicalShadowVertexShader.h>
 #include <Rendering/Shader Data/Vulkan/DirectionalShadowFragmentShader.h>

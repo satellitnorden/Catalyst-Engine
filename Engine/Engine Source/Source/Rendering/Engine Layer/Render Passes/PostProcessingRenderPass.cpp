@@ -89,7 +89,7 @@ void PostProcessingRenderPass::RenderInternal() NOEXCEPT
 	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetPostProcessingDescriptorSet()
+		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::PostProcessing)
 	};
 
 	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());

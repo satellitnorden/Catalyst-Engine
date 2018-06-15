@@ -41,9 +41,8 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(2);
+	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::WaterScene);
-	AddRenderTarget(RenderTarget::Bloom);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(3);
@@ -92,7 +91,7 @@ void LightingRenderPass::RenderInternal() NOEXCEPT
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
 		RenderingSystem::Instance->GetCurrentEnvironmentDataDescriptorSet(),
-		RenderingSystem::Instance->GetLightingDescriptorSet()
+		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::Lighting)
 	};
 
 	commandBuffer->BindDescriptorSets(this, 0, 3, descriptorSets.Data());

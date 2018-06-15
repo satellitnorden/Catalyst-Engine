@@ -38,6 +38,7 @@ enum class RenderPassStage : uint8
 	Sky,
 	Ocean,
 	ParticleSystem,
+	Bloom,
 	PostProcessing,
 
 	NumberOfRenderPassStages
@@ -143,6 +144,7 @@ enum class RenderTarget : uint8
 //Enumeration covering all shaders.
 enum class Shader : uint8
 {
+	BloomFragment,
 	CubeMapVertex,
 	DirectionalPhysicalShadowVertex,
 	DirectionalShadowFragment,

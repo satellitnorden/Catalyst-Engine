@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/ShadowBlurRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/BloomRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
@@ -8,46 +8,46 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(ShadowBlurRenderPass);
+DEFINE_SINGLETON(BloomRenderPass);
 
 /*
 *	Default constructor.
 */
-ShadowBlurRenderPass::ShadowBlurRenderPass() NOEXCEPT
+BloomRenderPass::BloomRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		ShadowBlurRenderPass::Instance->InitializeInternal();
+		BloomRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the shadow  render pass.
+*	Initializes the bloom render pass.
 */
-void ShadowBlurRenderPass::InitializeInternal() NOEXCEPT
+void BloomRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::ShadowBlur);
+	SetStage(RenderPassStage::Bloom);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::ShadowBlurFragment);
+	SetFragmentShader(Shader::BloomFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::DirectionalPostBlurShadowMap);
+	AddRenderTarget(RenderTarget::Bloom);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);
 	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::ShadowMapBlur);
+	AddDescriptorSetLayout(RenderDataTableLayout::Bloom);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());
@@ -67,7 +67,7 @@ void ShadowBlurRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		ShadowBlurRenderPass::Instance->RenderInternal();
+		BloomRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -75,9 +75,9 @@ void ShadowBlurRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the shadow blur.
+*	Renders the bloom.
 */
-void ShadowBlurRenderPass::RenderInternal() NOEXCEPT
+void BloomRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -85,11 +85,11 @@ void ShadowBlurRenderPass::RenderInternal() NOEXCEPT
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the descriptor sets.
+	//Bind the current dynamic uniform data descriptor set.
 	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::ShadowBlur)
+		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::Bloom)
 	};
 
 	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());

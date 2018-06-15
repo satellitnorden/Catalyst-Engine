@@ -159,39 +159,12 @@ RenderDataTableHandle RenderingSystem::GetCurrentOceanDescriptorSet() const NOEX
 }
 
 /*
-*	Returns the directional shadow descriptor set.
+*	Returns the given render data table.
 */
-RenderDataTableHandle RenderingSystem::GetDirectionalShadowDescriptorSet() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetRenderDataTable(const RenderDataTable renderDataTable) const NOEXCEPT
 {
-	//Return the directional shadow descriptor set via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetDirectionalShadowDescriptorSet();
-}
-
-/*
-*	Returns the lighting descriptor set.
-*/
-RenderDataTableHandle RenderingSystem::GetLightingDescriptorSet() const NOEXCEPT
-{
-	//Return the lighting descriptor set via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetLightingDescriptorSet();
-}
-
-/*
-*	Returns the post processing descriptor set.
-*/
-RenderDataTableHandle RenderingSystem::GetPostProcessingDescriptorSet() const NOEXCEPT
-{
-	//Return the post processing descriptor set via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetPostProcessingDescriptorSet();
-}
-
-/*
-*	Returns the shadow blur descriptor set.
-*/
-RenderDataTableHandle RenderingSystem::GetShadowBlurDescriptorSet() const NOEXCEPT
-{
-	//Return the shadow blur descriptor set via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetShadowBlurDescriptorSet();
+	//Return the given render data table via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetRenderDataTable(renderDataTable);
 }
 
 /*
@@ -396,6 +369,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	renderPasses[INDEX(RenderPassStage::Sky)] = SkyRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::Ocean)] = OceanRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::Bloom)] = BloomRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
 }
 

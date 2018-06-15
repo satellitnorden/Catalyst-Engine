@@ -71,6 +71,7 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 2) uniform sampler2D sceneTexture;
+layout (set = 1, binding = 3) uniform sampler2D bloomTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
