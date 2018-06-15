@@ -3,6 +3,9 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Math.
+#include <Math/CatalystMath.h>
+
 class Vector2 final
 {
 

@@ -5,6 +5,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/Render Passes/BloomRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/BloomHorizontalBlurRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/DirectionalInstancedPhysicalShadowRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/DirectionalStaticPhysicalShadowRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/DirectionalShadowRenderPass.h>
