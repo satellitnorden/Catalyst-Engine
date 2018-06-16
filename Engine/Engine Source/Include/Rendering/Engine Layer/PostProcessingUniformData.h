@@ -8,6 +8,9 @@ class PostProcessingUniformData final
 
 public:
 
+	//The bloom strength.
+	float bloomStrength{ 1.0f };
+
 	//The blur strength.
 	float blurStrength{ 0.0f };
 

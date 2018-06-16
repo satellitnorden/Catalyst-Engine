@@ -45,7 +45,7 @@ void ClairvoyantPlayer::Initialize() NOEXCEPT
 	flashlight = EntitySystem::Instance->CreateChildEntity<SpotLightEntity>(this);
 	flashlight->SetEnabled(false);
 	flashlight->SetAttenuationDistance(100.0f);
-	flashlight->SetIntensity(25.0f);
+	flashlight->SetIntensity(100.0f);
 	flashlight->Rotate(Vector3(-90.0f, 180.0f, 0.0f));
 
 	//Add a particle system following the player.
@@ -116,8 +116,7 @@ void ClairvoyantPlayer::Update(const float deltaTime) NOEXCEPT
 		}
 
 		//Lerp post processing effects.
-		PostProcessingManager::Instance->SetChromaticAbberationStrength(CatalystMath::LinearlyInterpolate(0.0f, 0.01f, currentGamepadState.leftTriggerValue));
-		PostProcessingManager::Instance->SetBlurStrength(CatalystMath::LinearlyInterpolate(0.0f, 1.0f, currentGamepadState.rightTriggerValue));
+		PostProcessingManager::Instance->SetBloomStrength(CatalystMath::LinearlyInterpolate(0.0f, 1.0f, currentGamepadState.leftTriggerValue));
 
 		if (currentGamepadState.aButtonState == GamepadButtonState::Pressed)
 		{

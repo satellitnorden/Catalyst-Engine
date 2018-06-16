@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/BloomHorizontalBlurRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/BloomVerticalBlurRenderPass.h>
 
 //Math.
 #include <Math/Vector2.h>
@@ -11,27 +11,27 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(BloomHorizontalBlurRenderPass);
+DEFINE_SINGLETON(BloomVerticalBlurRenderPass);
 
 /*
 *	Default constructor.
 */
-BloomHorizontalBlurRenderPass::BloomHorizontalBlurRenderPass() NOEXCEPT
+BloomVerticalBlurRenderPass::BloomVerticalBlurRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		BloomHorizontalBlurRenderPass::Instance->InitializeInternal();
+		BloomVerticalBlurRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the bloom horizontal blur render pass.
+*	Initializes the bloom vertical blur render pass.
 */
-void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
+void BloomVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::BloomHorizontalBlur);
+	SetStage(RenderPassStage::BloomVerticalBlur);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -45,7 +45,7 @@ void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::BloomIntermediate);
+	AddRenderTarget(RenderTarget::Bloom);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);
@@ -61,7 +61,7 @@ void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Clear);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DontCare);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);
 	SetCullMode(CullMode::Back);
 	SetDepthAttachmentLoadOperator(AttachmentLoadOperator::DontCare);
@@ -74,7 +74,7 @@ void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		BloomHorizontalBlurRenderPass::Instance->RenderInternal();
+		BloomVerticalBlurRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -82,9 +82,9 @@ void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the bloom horizontal blur.
+*	Renders the bloom vertical blur.
 */
-void BloomHorizontalBlurRenderPass::RenderInternal() NOEXCEPT
+void BloomVerticalBlurRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -96,13 +96,13 @@ void BloomHorizontalBlurRenderPass::RenderInternal() NOEXCEPT
 	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::BloomHorizontalBlur)
+		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::BloomVerticalBlur)
 	};
 
 	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
 	//Push the direction constant.
-	constexpr Vector2 direction{ 0.0005f, 0.0f };
+	constexpr Vector2 direction{ 0.0f, 0.0005f };
 	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(Vector2), &direction);
 
 	//Draw!

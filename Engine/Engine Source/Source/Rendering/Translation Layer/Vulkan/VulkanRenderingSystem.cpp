@@ -1148,6 +1148,7 @@ void VulkanRenderingSystem::UpdatePostProcessingData() NOEXCEPT
 
 		PostProcessingUniformData data;
 
+		data.bloomStrength = PostProcessingManager::Instance->GetBloomStrength();
 		data.blurStrength = PostProcessingManager::Instance->GetBlurStrength();
 		data.chromaticAberrationStrength = PostProcessingManager::Instance->GetChromaticAbberationStrength();
 		data.saturationStrength = PostProcessingManager::Instance->GetSaturationStrength();

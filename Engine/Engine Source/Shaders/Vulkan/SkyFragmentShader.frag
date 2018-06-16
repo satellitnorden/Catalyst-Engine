@@ -74,11 +74,11 @@ void main()
 
     //Calculate the sun weight.
     float sunDirection = dot(normalize(fragmentTextureCoordinate), -directionalLightDirection);
-    float sunWeight = sunDirection < 0.999f ? 0.0f : sunDirection < 0.9995f ? (sunDirection - 0.999f) * 2.0f * 1000.0f : 1.0f;
+    float sunWeight = sunDirection < 0.999f ? 0.0f : 1.0f;
     sunWeight *= min(directionalLightIntensity, 1.0f);
 
     //Calculate the sun color.
-    vec3 sunColor = pow(directionalLightColor, vec3(2.2f));
+    vec3 sunColor = directionalLightColor * directionalLightIntensity;
 
     //Calculate the final sky color.
     vec3 skyColor = mix(cubeMapTextureSampler, sunColor, sunWeight);

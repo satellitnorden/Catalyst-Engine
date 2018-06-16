@@ -27,6 +27,20 @@ public:
 	void SetHasBeenUpdated(const bool newHasBeenUpdated) NOEXCEPT { hasBeenUpdated = newHasBeenUpdated; }
 
 	/*
+	*	Returns the bloom strength.
+	*/
+	float GetBloomStrength() const NOEXCEPT { return bloomStrength; }
+
+	/*
+	*	Sets the bloom strength.
+	*/
+	void SetBloomStrength(const float newBloomStrength) NOEXCEPT
+	{
+		bloomStrength = newBloomStrength;
+		hasBeenUpdated = true;
+	}
+
+	/*
 	*	Returns the blur strength.
 	*/
 	float GetBlurStrength() const NOEXCEPT { return blurStrength; }
@@ -86,6 +100,9 @@ private:
 
 	//Denotes whether or not any post processing value has been updated.
 	bool hasBeenUpdated{ true };
+
+	//The bloom strength.
+	float bloomStrength{ 1.0f };
 
 	//The blur strength.
 	float blurStrength{ 0.0f };

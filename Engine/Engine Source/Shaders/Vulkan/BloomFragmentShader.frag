@@ -68,6 +68,14 @@ layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
 layout (location = 0) out vec4 fragment;
 
 /*
+*	Calculates the average of a fragment.
+*/
+float CalculateAverage(vec4 fragment)
+{
+	return (fragment.r + fragment.b + fragment.b) * 0.33333333f;
+}
+
+/*
 *   Returns whether or not a fragment should bloom.
 */
 bool ShouldBloom(vec4 fragment)
@@ -80,6 +88,9 @@ void main()
     //Sample the scene texture.
     vec4 sceneTextureSampler = texture(sceneTexture, fragmentTextureCoordinate);
 
+    //Calculate the average.
+    float average = CalculateAverage(sceneTextureSampler);
+
     //Write the fragment.
-    fragment = ShouldBloom(sceneTextureSampler) ? sceneTextureSampler : vec4(0.0f);
+    fragment = average > 1.0f ? vec4(sceneTextureSampler.rgb, average - 1.0f) : vec4(0.0f);
 }

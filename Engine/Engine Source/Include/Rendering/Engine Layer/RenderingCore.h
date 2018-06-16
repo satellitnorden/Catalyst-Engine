@@ -40,6 +40,7 @@ enum class RenderPassStage : uint8
 	ParticleSystem,
 	Bloom,
 	BloomHorizontalBlur,
+	BloomVerticalBlur,
 	PostProcessing,
 
 	NumberOfRenderPassStages

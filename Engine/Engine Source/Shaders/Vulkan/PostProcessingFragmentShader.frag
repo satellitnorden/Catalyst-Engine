@@ -58,6 +58,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //Post processing data.
 layout (std140, set = 1, binding = 1) uniform PostProcessingUniformData
 {
+    float bloomStrength;
     float blurAmount;
     float chromaticAberrationAmount;
     float saturation;
@@ -118,6 +119,26 @@ float sharpenKernel[9] = float[]
 );
 
 /*
+*   Applies bloom.
+*/
+vec3 ApplyBloom(vec3 fragment)
+{
+    if (bloomStrength > 0.0f)
+    {
+        //Sample the bloom texture.
+        vec4 bloomTextureSampler = texture(bloomTexture, fragmentTextureCoordinate);
+
+        //Apply the bloom.
+        return fragment + (bloomTextureSampler.rgb * bloomTextureSampler.a * bloomStrength);
+    }
+
+    else
+    {
+        return fragment;
+    }
+}
+
+/*
 *   Applies blur.
 */
 vec3 ApplyBlur(vec3 sceneTextureSampler)
@@ -140,7 +161,15 @@ vec3 ApplyBlur(vec3 sceneTextureSampler)
 vec3 ApplyChromaticAberration(vec3 sceneTextureSampler)
 {
     //Return the calculated color.
-    return vec3(texture(sceneTexture, fragmentTextureCoordinate + vec2(chromaticAberrationAmount, chromaticAberrationAmount)).r, sceneTextureSampler.g, texture(sceneTexture, fragmentTextureCoordinate + vec2(-chromaticAberrationAmount, -chromaticAberrationAmount)).b);
+    if (chromaticAberrationAmount > 0.0f)
+    {
+        return vec3(texture(sceneTexture, fragmentTextureCoordinate + vec2(chromaticAberrationAmount, chromaticAberrationAmount)).r, sceneTextureSampler.g, texture(sceneTexture, fragmentTextureCoordinate + vec2(-chromaticAberrationAmount, -chromaticAberrationAmount)).b);
+    }
+    
+    else
+    {
+        return sceneTextureSampler;
+    }
 }
 
 /*
@@ -195,6 +224,9 @@ void main()
 {
     //Sample the scene texture.
     vec3 sceneTextureSampler = texture(sceneTexture, fragmentTextureCoordinate).rgb;
+
+    //Apply bloom.
+    sceneTextureSampler = ApplyBloom(sceneTextureSampler);
 
     //Apply blur.
     sceneTextureSampler = ApplyBlur(sceneTextureSampler);
