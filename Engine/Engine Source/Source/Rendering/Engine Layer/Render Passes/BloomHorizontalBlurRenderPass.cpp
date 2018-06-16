@@ -61,7 +61,7 @@ void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Clear);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DontCare);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);
 	SetCullMode(CullMode::Back);
 	SetDepthAttachmentLoadOperator(AttachmentLoadOperator::DontCare);
