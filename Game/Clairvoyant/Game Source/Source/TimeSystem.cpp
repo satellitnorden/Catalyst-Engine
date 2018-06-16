@@ -20,8 +20,10 @@ DEFINE_SINGLETON(TimeSystem);
 namespace TimeSystemConstants
 {
 	constexpr float INVERSE_MIDDAY{ 1.0f / 12.0f };
+	constexpr float STARTING_TIME{ 5.0f };
 	constexpr float SUN_MINIMUM_INTENSITY{ 0.0f };
 	constexpr float SUN_MAXIMUM_INTENSITY{ 100.0f };
+	constexpr float TIME_MULTIPLIER{ 250.0f };
 }
 
 /*
@@ -32,6 +34,9 @@ void TimeSystem::Initialize() NOEXCEPT
 	//Create the sun!
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	sun->Rotate(Vector3(90.0f, 45.0f, 0.0f));
+
+	//Update the time system once to set it to it's starting time.
+	Update(TimeSystemConstants::STARTING_TIME * 60.0f * 60.0f / TimeSystemConstants::TIME_MULTIPLIER);
 }
 
 /*
@@ -40,7 +45,7 @@ void TimeSystem::Initialize() NOEXCEPT
 void TimeSystem::Update(const float deltaTime) NOEXCEPT
 {
 	//Convert the delta time from seconds, to minutes and then to hours and increment the current time.
-	const float timeIncrease = ((deltaTime / 60.0f) / 60.0f) * currentTimeMultiplier;
+	const float timeIncrease = ((deltaTime / 60.0f) / 60.0f) * TimeSystemConstants::TIME_MULTIPLIER;
 
 	//Add it to the current time.
 	currentTime += timeIncrease;

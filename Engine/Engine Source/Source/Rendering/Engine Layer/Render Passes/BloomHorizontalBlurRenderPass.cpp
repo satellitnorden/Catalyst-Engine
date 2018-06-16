@@ -102,7 +102,7 @@ void BloomHorizontalBlurRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
 	//Push the direction constant.
-	constexpr Vector2 direction{ 0.0005f, 0.0f };
+	constexpr Vector2 direction{ 0.00025f, 0.0f };
 	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(Vector2), &direction);
 
 	//Draw!
