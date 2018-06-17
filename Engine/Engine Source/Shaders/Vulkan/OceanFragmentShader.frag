@@ -77,18 +77,19 @@ float depth;
 vec3 intersectionPoint;
 vec3 normalDirection;
 vec3 sceneWorldPosition;
+vec3 viewDirection;
 
 /*
 *   Calculates the reflection.
 */
 vec3 CalculateReflection()
 {
-    vec3 viewDirection = sceneWorldPosition - cameraWorldPosition;
-    normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * 0.025f) + (vec2(totalGameTime, totalGameTime) * 0.025f)).xzy * 2.0f - 1.0f;
+    vec3 inverseViewDirection = sceneWorldPosition - cameraWorldPosition;
+    normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * 0.01f) + (vec2(totalGameTime, totalGameTime) * 0.025f)).xzy * 2.0f - 1.0f;
     vec3 compareVector = cameraWorldPosition.y >= 0.0f ? vec3(0.0f, 1.0f, 0.0f) : vec3(0.0f, -1.0f, 0.0f);
     normalDirection = mix(normalDirection, compareVector, 0.75f);
 
-    vec3 reflectionDirection = reflect(viewDirection, normalDirection);
+    vec3 reflectionDirection = reflect(inverseViewDirection, normalDirection);
 
     return mix(texture(nightTexture, reflectionDirection).rgb, texture(dayTexture, reflectionDirection).rgb, environmentBlend);
 }
@@ -108,6 +109,15 @@ vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
     return worldSpacePosition.xyz;
 }
 
+/*
+*   Calculates the directional light.
+*/
+vec3 CalculateDirectionalLight()
+{
+    vec3 halfwayDirection = normalize(-directionalLightDirection + viewDirection);
+    return directionalLightColor * directionalLightIntensity * pow(max(dot(normalDirection, halfwayDirection), 0.0), 256);
+}
+
 void main()
 {
 	 //Sample the depth of the scene at this point.
@@ -117,8 +127,8 @@ void main()
     sceneWorldPosition = CalculateWorldPosition(fragmentTextureCoordinate, sceneDepth);
 
     //Calculate the intersection point.
-    vec3 lineDirection = normalize(cameraWorldPosition - sceneWorldPosition);
-    intersectionPoint = (dot(-sceneWorldPosition, vec3(0.0f, 1.0f, 0.0f)) / dot (lineDirection, vec3(0.0f, 1.0f, 0.0f))) * lineDirection + sceneWorldPosition;
+    viewDirection = normalize(cameraWorldPosition - sceneWorldPosition);
+    intersectionPoint = (dot(-sceneWorldPosition, vec3(0.0f, 1.0f, 0.0f)) / dot (viewDirection, vec3(0.0f, 1.0f, 0.0f))) * viewDirection + sceneWorldPosition;
 
 	//Calculate the reflection.
     vec3 reflection = CalculateReflection();
@@ -132,6 +142,12 @@ void main()
 
     //Calculate the final ocean color.
     vec3 finalOceanColor = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneTextureSampler.rgb : mix(sceneTextureSampler.rgb, reflection, transparency);
+
+    //Apply the directional light.
+    if (sceneWorldPosition.y < 0.0f && cameraWorldPosition.y > 0.0f)
+    {
+        finalOceanColor += CalculateDirectionalLight();
+    }
 
     //Write the depth.
     gl_FragDepth = depth;
