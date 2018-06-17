@@ -51,7 +51,7 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 	AddDescriptorSetLayout(RenderDataTableLayout::Lighting);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);

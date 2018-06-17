@@ -87,12 +87,12 @@ void RenderingSystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
-*	Returns the render resolution.
+*	Returns the resolution.
 */
-Resolution RenderingSystem::GetRenderResolution() const NOEXCEPT
+Resolution RenderingSystem::GetResolution() const NOEXCEPT
 {
 	//Return the render resolution via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetRenderResolution();
+	return CURRENT_RENDERING_SYSTEM::Instance->GetResolution();
 }
 
 /*
@@ -414,7 +414,7 @@ void RenderingSystem::UpdateMatrices() NOEXCEPT
 	if (activeCamera)
 	{
 		//Calculate the projection matrix.
-		projectionMatrix = Matrix4::Perspective(CatalystMath::DegreesToRadians(activeCamera->GetFieldOfView()), static_cast<float>(GetRenderResolution().width) / static_cast<float>(GetRenderResolution().height), activeCamera->GetNearPlane(), activeCamera->GetFarPlane());
+		projectionMatrix = Matrix4::Perspective(CatalystMath::DegreesToRadians(activeCamera->GetFieldOfView()), static_cast<float>(GetResolution().width) / static_cast<float>(GetResolution().height), activeCamera->GetNearPlane(), activeCamera->GetFarPlane());
 	
 		//Calculate the camera matrix.
 		cameraMatrix = Matrix4::LookAt(activeCamera->GetPosition(), activeCamera->GetPosition() + activeCamera->GetForwardVector(), activeCamera->GetUpVector());

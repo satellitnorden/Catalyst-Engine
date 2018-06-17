@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/Engine Layer/Render Passes/BloomVerticalBlurRenderPass.h>
 
-//Math.
-#include <Math/Vector2.h>
-
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
 
@@ -54,10 +51,10 @@ void BloomVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(Vector2));
+	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(GaussianBlurData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -79,6 +76,11 @@ void BloomVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Finalize the initialization.
 	FinalizeInitialization();
+
+	//Initialize the gaussian blur data.
+	data.direction = Vector2(0.0f, 1.0f);
+	data.inverseResolution = Vector2(	1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().width),
+										1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().height));
 }
 
 /*
@@ -101,9 +103,8 @@ void BloomVerticalBlurRenderPass::RenderInternal() NOEXCEPT
 
 	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
-	//Push the direction constant.
-	constexpr Vector2 direction{ 0.0f, 0.00025f };
-	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(Vector2), &direction);
+	//Push the constant data.
+	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(GaussianBlurData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

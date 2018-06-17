@@ -68,6 +68,7 @@ layout (location = 0) out vec4 fragment;
 layout (push_constant) uniform ModelData
 {
     vec2 blurDirection;
+    vec2 inverseResolution;
 };
 
 /*
@@ -82,12 +83,12 @@ vec4 CalculateBlur()
     vec2 offset3 = vec2(5.176470588235294f) * blurDirection;
 
     color += texture(blurTexture, fragmentTextureCoordinate) * 0.1964825501511404f;
-    color += texture(blurTexture, fragmentTextureCoordinate + offset1) * 0.2969069646728344f;
-    color += texture(blurTexture, fragmentTextureCoordinate - offset1) * 0.2969069646728344f;
-    color += texture(blurTexture, fragmentTextureCoordinate + offset2) * 0.09447039785044732f;
-    color += texture(blurTexture, fragmentTextureCoordinate - offset2) * 0.09447039785044732f;
-    color += texture(blurTexture, fragmentTextureCoordinate + offset3) * 0.010381362401148057f;
-    color += texture(blurTexture, fragmentTextureCoordinate - offset3) * 0.010381362401148057f;
+    color += texture(blurTexture, fragmentTextureCoordinate + (offset1 * inverseResolution)) * 0.2969069646728344f;
+    color += texture(blurTexture, fragmentTextureCoordinate - (offset1 * inverseResolution)) * 0.2969069646728344f;
+    color += texture(blurTexture, fragmentTextureCoordinate + (offset2 * inverseResolution)) * 0.09447039785044732f;
+    color += texture(blurTexture, fragmentTextureCoordinate - (offset2 * inverseResolution)) * 0.09447039785044732f;
+    color += texture(blurTexture, fragmentTextureCoordinate + (offset3 * inverseResolution)) * 0.010381362401148057f;
+    color += texture(blurTexture, fragmentTextureCoordinate - (offset3 * inverseResolution)) * 0.010381362401148057f;
 
     return color;
 }

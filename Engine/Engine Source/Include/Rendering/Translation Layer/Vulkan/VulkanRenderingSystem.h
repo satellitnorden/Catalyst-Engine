@@ -80,9 +80,9 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
-	*	Returns the render resolution.
+	*	Returns the resolution.
 	*/
-	Resolution GetRenderResolution() const NOEXCEPT;
+	Resolution GetResolution() const NOEXCEPT;
 
 	/*
 	*	Returns the current frame index.

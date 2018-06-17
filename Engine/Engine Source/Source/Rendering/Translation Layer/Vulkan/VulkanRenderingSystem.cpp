@@ -163,9 +163,9 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
-*	Returns the render resolution.
+*	Returns the resolution.
 */
-Resolution VulkanRenderingSystem::GetRenderResolution() const NOEXCEPT
+Resolution VulkanRenderingSystem::GetResolution() const NOEXCEPT
 {
 	//Return the render resolution.
 	VkExtent2D swapExtent{ VulkanInterface::Instance->GetSwapchain().GetSwapExtent() };

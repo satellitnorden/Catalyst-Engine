@@ -96,7 +96,7 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputBindingDescription(1, sizeof(Matrix4), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);

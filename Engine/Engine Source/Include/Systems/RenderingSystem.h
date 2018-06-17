@@ -87,9 +87,9 @@ public:
 	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassStage::NumberOfRenderPassStages)>& GetRenderPasses() const { return renderPasses; }
 
 	/*
-	*	Returns the render resolution.
+	*	Returns the resolution.
 	*/
-	Resolution GetRenderResolution() const NOEXCEPT;
+	Resolution GetResolution() const NOEXCEPT;
 
 	/*
 	*	Returns the current frame index.

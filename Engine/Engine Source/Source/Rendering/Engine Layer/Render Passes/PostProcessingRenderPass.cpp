@@ -50,7 +50,7 @@ void PostProcessingRenderPass::InitializeInternal() NOEXCEPT
 	AddDescriptorSetLayout(RenderDataTableLayout::PostProcessing);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);

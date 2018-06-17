@@ -116,7 +116,7 @@ void ClairvoyantPlayer::Update(const float deltaTime) NOEXCEPT
 		}
 
 		//Lerp post processing effects.
-		PostProcessingManager::Instance->SetChromaticAbberationStrength(CatalystMath::LinearlyInterpolate(0.0f, 0.01f, currentGamepadState.leftTriggerValue));
+		PostProcessingManager::Instance->SetBloomStrength(CatalystMath::LinearlyInterpolate(0.0f, 1.0f, currentGamepadState.leftTriggerValue));
 
 		if (currentGamepadState.aButtonState == GamepadButtonState::Pressed)
 		{

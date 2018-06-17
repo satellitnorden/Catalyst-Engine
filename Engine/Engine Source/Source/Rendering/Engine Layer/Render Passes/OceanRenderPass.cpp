@@ -51,7 +51,7 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 	AddDescriptorSetLayout(RenderDataTableLayout::Ocean);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetRenderResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
