@@ -3,6 +3,9 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Math.
+#include <Math/Vector2.h>
+
 //Rendering constants.
 namespace RenderingConstants
 {
@@ -33,7 +36,8 @@ enum class RenderPassStage : uint8
 	InstancedPhysical,
 	Vegetation,
 	DirectionalShadow,
-	ShadowBlur,
+	DirectionalShadowHorizontalBlur,
+	DirectionalShadowVerticalBlur,
 	Lighting,
 	Sky,
 	Ocean,
@@ -98,8 +102,9 @@ enum class DepthBuffer : uint8
 enum class RenderDataTable : uint8
 {
 	Environment,
-	ShadowBlur,
 	DirectionalShadow,
+	DirectionalShadowHorizontalBlur,
+	DirectionalShadowVerticalBlur,
 	Lighting,
 	Bloom,
 	BloomHorizontalBlur,
@@ -121,7 +126,7 @@ enum class RenderDataTableLayout : uint8
 	Lighting,
 	Ocean,
 	ParticleSystem,
-	Bloom,
+	GaussianBlur,
 	PostProcessing,
 	NumberOfDescriptorSetLayouts
 };
@@ -130,8 +135,8 @@ enum class RenderDataTableLayout : uint8
 enum class RenderTarget : uint8
 {
 	DirectionalShadowMap,
-	DirectionalPreBlurShadowMap,
-	DirectionalPostBlurShadowMap,
+	DirectionalShadow,
+	DirectionalShadowIntermediate,
 	SceneBufferAlbedo,
 	SceneBufferNormalDepth,
 	SceneBufferMaterialProperties,
@@ -225,6 +230,21 @@ enum class TextureFormat : uint8
 	R8_Byte,
 	R8G8B8A8_Byte,
 	R32G32B32A32_Float
+};
+
+/*
+*	Gaussian blur data.
+*/
+class GaussianBlurData final
+{
+
+public:
+
+	//The direction.
+	Vector2 direction;
+
+	//The inverse resolution.
+	Vector2 inverseResolution;
 };
 
 /*

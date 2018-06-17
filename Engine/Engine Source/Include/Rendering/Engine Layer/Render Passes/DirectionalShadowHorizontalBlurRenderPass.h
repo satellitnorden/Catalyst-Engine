@@ -3,21 +3,24 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Math.
+#include <Math/Vector2.h>
+
 //Rendering.
 #include <Rendering/Engine Layer/Render Passes/RenderPass.h>
 
-class BloomVerticalBlurRenderPass final : public RenderPass
+class DirectionalShadowHorizontalBlurRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(BloomVerticalBlurRenderPass);
+	DECLARE_SINGLETON(DirectionalShadowHorizontalBlurRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	BloomVerticalBlurRenderPass() NOEXCEPT;
+	DirectionalShadowHorizontalBlurRenderPass() NOEXCEPT;
 
 private:
 
@@ -25,12 +28,12 @@ private:
 	GaussianBlurData data;
 
 	/*
-	*	Initializes the bloom vertical render pass.
+	*	Initializes the directional shadow horizontal render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
 	/*
-	*	Renders the bloom vertical blur.
+	*	Renders the directional shadow horizontal blur.
 	*/
 	void RenderInternal() NOEXCEPT;
 

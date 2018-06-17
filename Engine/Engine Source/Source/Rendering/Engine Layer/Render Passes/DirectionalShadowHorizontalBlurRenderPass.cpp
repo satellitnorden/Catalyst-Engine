@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/BloomHorizontalBlurRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/DirectionalShadowHorizontalBlurRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
@@ -8,27 +8,27 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(BloomHorizontalBlurRenderPass);
+DEFINE_SINGLETON(DirectionalShadowHorizontalBlurRenderPass);
 
 /*
 *	Default constructor.
 */
-BloomHorizontalBlurRenderPass::BloomHorizontalBlurRenderPass() NOEXCEPT
+DirectionalShadowHorizontalBlurRenderPass::DirectionalShadowHorizontalBlurRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		BloomHorizontalBlurRenderPass::Instance->InitializeInternal();
+		DirectionalShadowHorizontalBlurRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the bloom horizontal blur render pass.
+*	Initializes the directional shadow horizontal blur render pass.
 */
-void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
+void DirectionalShadowHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::BloomHorizontalBlur);
+	SetStage(RenderPassStage::DirectionalShadowHorizontalBlur);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -42,7 +42,7 @@ void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::BloomIntermediate);
+	AddRenderTarget(RenderTarget::DirectionalShadowIntermediate);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);
@@ -71,7 +71,7 @@ void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		BloomHorizontalBlurRenderPass::Instance->RenderInternal();
+		DirectionalShadowHorizontalBlurRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -84,9 +84,9 @@ void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the bloom horizontal blur.
+*	Renders the directional shadow horizontal blur.
 */
-void BloomHorizontalBlurRenderPass::RenderInternal() NOEXCEPT
+void DirectionalShadowHorizontalBlurRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -98,7 +98,7 @@ void BloomHorizontalBlurRenderPass::RenderInternal() NOEXCEPT
 	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::BloomHorizontalBlur)
+		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::DirectionalShadowHorizontalBlur)
 	};
 
 	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
