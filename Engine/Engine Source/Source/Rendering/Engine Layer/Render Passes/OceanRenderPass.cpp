@@ -38,7 +38,7 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 	SetFragmentShader(Shader::OceanFragment);
 
 	//Set the depth buffer.
-	SetDepthBuffer(DepthBuffer::None);
+	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
@@ -62,7 +62,7 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthAttachmentStoreOperator(AttachmentStoreOperator::DontCare);
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);
-	SetDepthWriteEnabled(false);
+	SetDepthWriteEnabled(true);
 	SetTopology(Topology::TriangleFan);
 
 	//Set the render function.

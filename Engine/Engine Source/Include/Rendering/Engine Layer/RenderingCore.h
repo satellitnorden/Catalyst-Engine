@@ -37,10 +37,10 @@ enum class RenderPassStage : uint8
 	Lighting,
 	Sky,
 	Ocean,
-	ParticleSystem,
 	Bloom,
 	BloomHorizontalBlur,
 	BloomVerticalBlur,
+	ParticleSystem,
 	PostProcessing,
 
 	NumberOfRenderPassStages
