@@ -10,7 +10,7 @@
 //Preprocessor defines.
 #define EXIT_SUCCESS 0
 
-int main() NOEXCEPT
+int32 main() NOEXCEPT
 {
 	//The delta timer.
 	DeltaTimer deltaTimer;
