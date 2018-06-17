@@ -56,8 +56,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //Preprocessor defines.
-#define MAXIMUM_WAVE_HEIGHT 1.0f
-#define NUMBER_OF_ITERATIONS 3
+#define NUMBER_OF_SCREEN_SPACE_REFLECTION_ITERATIONS 100
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
@@ -74,24 +73,74 @@ layout (location = 0) out vec4 fragment;
 
 //Globals.
 float depth;
+float screenSpaceReflectionWeight;
 vec3 intersectionPoint;
 vec3 normalDirection;
+vec3 reflectionDirection;
 vec3 sceneWorldPosition;
+vec3 screenSpaceReflection;
 vec3 viewDirection;
+
+/*
+*   Calculates the normal direction.
+*/
+void CalculateNormalDirection()
+{
+    normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * 0.01f) + (vec2(totalGameTime, totalGameTime) * 0.025f)).xzy * 2.0f - 1.0f;
+    normalDirection = mix(normalDirection, vec3(0.0f, 1.0f, 0.0f), 0.75f);
+}
+
+/*
+*   Calculates the reflection direction.
+*/
+void CalculateReflectionDirection()
+{
+    vec3 inverseViewDirection = sceneWorldPosition - cameraWorldPosition;
+    reflectionDirection = normalize(reflect(inverseViewDirection, normalDirection));
+}
+
+/*
+*   Calculates the screen space reflection.
+*/
+void CalculateScreenSpaceReflection()
+{
+    //Disabled for now.
+    screenSpaceReflectionWeight = 0.0f;
+
+    /*
+    //Set the preliminary screen space reflection weight.
+    screenSpaceReflectionWeight = 0.0f;
+
+    //Iterate N times and see if there's a hit.
+    vec3 currentPosition = intersectionPoint + reflectionDirection;
+
+    for (int i = 0; i < NUMBER_OF_SCREEN_SPACE_REFLECTION_ITERATIONS; ++i)
+    {
+        vec4 screenSpacePosition = viewMatrix * vec4(currentPosition, 1.0f);
+        screenSpacePosition.xyz /= screenSpacePosition.w;
+        screenSpacePosition.xy = screenSpacePosition.xy * 0.5f + 0.5f;
+
+        float sceneDepth = texture(sceneNormalDepthTexture, screenSpacePosition.xy).a;
+
+        if (sceneDepth < screenSpacePosition.z)
+        {
+            screenSpaceReflectionWeight = 1.0f;
+            screenSpaceReflection = texture(sceneTexture, screenSpacePosition.xy).rgb;
+
+            break;
+        }
+
+        currentPosition += reflectionDirection;
+    }
+    */
+}
 
 /*
 *   Calculates the reflection.
 */
 vec3 CalculateReflection()
 {
-    vec3 inverseViewDirection = sceneWorldPosition - cameraWorldPosition;
-    normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * 0.01f) + (vec2(totalGameTime, totalGameTime) * 0.025f)).xzy * 2.0f - 1.0f;
-    vec3 compareVector = cameraWorldPosition.y >= 0.0f ? vec3(0.0f, 1.0f, 0.0f) : vec3(0.0f, -1.0f, 0.0f);
-    normalDirection = mix(normalDirection, compareVector, 0.75f);
-
-    vec3 reflectionDirection = reflect(inverseViewDirection, normalDirection);
-
-    return mix(texture(nightTexture, reflectionDirection).rgb, texture(dayTexture, reflectionDirection).rgb, environmentBlend);
+    return mix(mix(texture(nightTexture, reflectionDirection).rgb, texture(dayTexture, reflectionDirection).rgb, environmentBlend), screenSpaceReflection, screenSpaceReflectionWeight);
 }
 
 /*
@@ -130,6 +179,15 @@ void main()
     viewDirection = normalize(cameraWorldPosition - sceneWorldPosition);
     intersectionPoint = (dot(-sceneWorldPosition, vec3(0.0f, 1.0f, 0.0f)) / dot (viewDirection, vec3(0.0f, 1.0f, 0.0f))) * viewDirection + sceneWorldPosition;
 
+    //Calculate the normal direction.
+    CalculateNormalDirection();
+
+    //Calculate the reflection direction.
+    CalculateReflectionDirection();
+
+    //Calculate the screen space reflection.
+    CalculateScreenSpaceReflection();
+
 	//Calculate the reflection.
     vec3 reflection = CalculateReflection();
 
@@ -141,7 +199,7 @@ void main()
     float transparency = 1.0f - clamp(dot(normalDirection, normalize(cameraWorldPosition - sceneWorldPosition)), 0.0f, 1.0f);
 
     //Calculate the final ocean color.
-    vec3 finalOceanColor = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneTextureSampler.rgb : mix(sceneTextureSampler.rgb, reflection, transparency);
+    vec3 finalOceanColor = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneTextureSampler.rgb : mix(sceneTextureSampler.rgb, reflection, 1.0f);
 
     //Apply the directional light.
     if (sceneWorldPosition.y < 0.0f && cameraWorldPosition.y > 0.0f)
