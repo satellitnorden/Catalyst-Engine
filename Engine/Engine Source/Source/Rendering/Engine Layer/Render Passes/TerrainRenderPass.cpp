@@ -122,7 +122,7 @@ void TerrainRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->Begin(this);
 
 	//Bind the current dynamic uniform data descriptor set.
-	commandBuffer->BindDescriptorSets(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
+	commandBuffer->BindRenderDataTables(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
 
 	//Wait for the terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
@@ -139,7 +139,7 @@ void TerrainRenderPass::RenderInternal() NOEXCEPT
 
 		const uint64 offset{ 0 };
 
-		commandBuffer->BindDescriptorSets(this, 1, 1, &component->descriptorSet);
+		commandBuffer->BindRenderDataTables(this, 1, 1, &component->descriptorSet);
 		commandBuffer->BindVertexBuffers(this, 1, &component->vertexAndIndexBuffer, &offset);
 		commandBuffer->BindIndexBuffer(this, component->vertexAndIndexBuffer, component->indexBufferOffset);
 		commandBuffer->DrawIndexed(this, component->indexCount, 1);

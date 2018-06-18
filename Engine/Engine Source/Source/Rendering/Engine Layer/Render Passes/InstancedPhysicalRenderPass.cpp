@@ -146,7 +146,7 @@ void InstancedPhysicalRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->Begin(this);
 
 	//Bind the current dynamic uniform data descriptor set.
-	commandBuffer->BindDescriptorSets(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
+	commandBuffer->BindRenderDataTables(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
 
 	StaticArray<uint64, 2> offsets
 	{
@@ -162,7 +162,7 @@ void InstancedPhysicalRenderPass::RenderInternal() NOEXCEPT
 			static_cast<const VkBuffer>(component->transformationsBuffer)
 		};
 
-		commandBuffer->BindDescriptorSets(this, 1, 1, &component->descriptorSet);
+		commandBuffer->BindRenderDataTables(this, 1, 1, &component->descriptorSet);
 		commandBuffer->BindVertexBuffers(this, 2, buffers.Data(), offsets.Data());
 		commandBuffer->BindIndexBuffer(this, component->modelBuffer, component->indexOffset);
 		commandBuffer->DrawIndexed(this, component->indexCount, component->instanceCount);

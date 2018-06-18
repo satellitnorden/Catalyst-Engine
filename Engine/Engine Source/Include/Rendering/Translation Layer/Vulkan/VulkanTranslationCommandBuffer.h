@@ -38,14 +38,14 @@ public:
 	void Begin(const RenderPass *const RESTRICT renderPass) NOEXCEPT override;
 
 	/*
-	*	Binds a number of descriptor sets.
-	*/
-	void BindDescriptorSets(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 descriptorSetCount, const RenderDataTableHandle *const RESTRICT descriptorSets) NOEXCEPT override;
-
-	/*
 	*	Binds an index buffer.
 	*/
 	void BindIndexBuffer(const RenderPass *const RESTRICT renderPass, const ConstantBufferHandle indexBuffer, const uint64 offset) NOEXCEPT override;
+
+	/*
+	*	Binds a number of render data tables.
+	*/
+	void BindRenderDataTables(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 renderDataTableCount, const RenderDataTableHandle *const RESTRICT renderDataTables) NOEXCEPT override;
 
 	/*
 	*	Binds a number of vertex buffers.

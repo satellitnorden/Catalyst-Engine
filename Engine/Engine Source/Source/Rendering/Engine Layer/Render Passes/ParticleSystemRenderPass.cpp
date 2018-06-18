@@ -113,13 +113,13 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->Begin(this);
 
 	//Bind the current dynamic uniform data descriptor set.
-	commandBuffer->BindDescriptorSets(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
+	commandBuffer->BindRenderDataTables(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
 
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
 		const float randomSeed{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
 		commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Geometry, 0, sizeof(float), &randomSeed);
-		commandBuffer->BindDescriptorSets(this, 1, 1, &component->descriptorSet);
+		commandBuffer->BindRenderDataTables(this, 1, 1, &component->descriptorSet);
 		commandBuffer->Draw(this, ParticleSystemRenderPassConstants::MAXIMUM_NUMBER_OF_PARTICLES, 1);
 	}
 

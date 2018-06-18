@@ -101,7 +101,7 @@ void DirectionalShadowVerticalBlurRenderPass::RenderInternal() NOEXCEPT
 		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::DirectionalShadowVerticalBlur)
 	};
 
-	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
+	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
 	//Push the constant data.
 	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(GaussianBlurData), &data);

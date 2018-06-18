@@ -94,7 +94,7 @@ void LightingRenderPass::RenderInternal() NOEXCEPT
 		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::Lighting)
 	};
 
-	commandBuffer->BindDescriptorSets(this, 0, 3, descriptorSets.Data());
+	commandBuffer->BindRenderDataTables(this, 0, 3, descriptorSets.Data());
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);
