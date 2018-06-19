@@ -1,0 +1,34 @@
+#pragma once
+
+//Engine core.
+#include <Engine Core/EngineCore.h>
+
+//Rendering.
+#include <Rendering/Engine Layer/Render Passes/RenderPass.h>
+
+class ScreenSpaceAmbientOcclusionRenderPass final : public RenderPass
+{
+
+public:
+
+	//Singleton declaration.
+	DECLARE_SINGLETON(ScreenSpaceAmbientOcclusionRenderPass);
+
+	/*
+	*	Default constructor.
+	*/
+	ScreenSpaceAmbientOcclusionRenderPass() NOEXCEPT;
+
+private:
+
+	/*
+	*	Initializes the screen space ambient occlusion render pass.
+	*/
+	void InitializeInternal() NOEXCEPT;
+
+	/*
+	*	Renders the screen space ambient occlusion.
+	*/
+	void RenderInternal() NOEXCEPT;
+
+};

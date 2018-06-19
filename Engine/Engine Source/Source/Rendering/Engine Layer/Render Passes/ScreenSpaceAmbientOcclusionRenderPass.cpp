@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/SkyRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/ScreenSpaceAmbientOcclusionRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
@@ -8,66 +8,66 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(SkyRenderPass);
+DEFINE_SINGLETON(ScreenSpaceAmbientOcclusionRenderPass);
 
 /*
 *	Default constructor.
 */
-SkyRenderPass::SkyRenderPass() NOEXCEPT
+ScreenSpaceAmbientOcclusionRenderPass::ScreenSpaceAmbientOcclusionRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		SkyRenderPass::Instance->InitializeInternal();
+		ScreenSpaceAmbientOcclusionRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the sky render pass.
+*	Initializes the screen space ambient occlusion render pass.
 */
-void SkyRenderPass::InitializeInternal() NOEXCEPT
+void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::Sky);
+	SetStage(RenderPassStage::SceenSpaceAmbientOcclusion);
 
 	//Set the shaders.
-	SetVertexShader(Shader::CubeMapVertex);
+	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::SkyFragment);
+	SetFragmentShader(Shader::ScreenSpaceAmbientOcclusionFragment);
 
 	//Set the depth buffer.
-	SetDepthBuffer(DepthBuffer::SceneBuffer);
+	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::SceneIntermediate);
+	AddRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);
 	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::Environment);
+	AddDescriptorSetLayout(RenderDataTableLayout::ScreenSpaceAmbientOcclusion);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Load);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DontCare);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);
 	SetCullMode(CullMode::Back);
-	SetDepthAttachmentLoadOperator(AttachmentLoadOperator::Load);
-	SetDepthAttachmentStoreOperator(AttachmentStoreOperator::Store);
-	SetDepthCompareOperator(CompareOperator::LessOrEqual);
-	SetDepthTestEnabled(true);
-	SetDepthWriteEnabled(true);
-	SetTopology(Topology::TriangleList);
+	SetDepthAttachmentLoadOperator(AttachmentLoadOperator::DontCare);
+	SetDepthAttachmentStoreOperator(AttachmentStoreOperator::DontCare);
+	SetDepthCompareOperator(CompareOperator::Always);
+	SetDepthTestEnabled(false);
+	SetDepthWriteEnabled(false);
+	SetTopology(Topology::TriangleFan);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		SkyRenderPass::Instance->RenderInternal();
+		ScreenSpaceAmbientOcclusionRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -75,9 +75,9 @@ void SkyRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the sky.
+*	Renders the screen space ambient occlusion.
 */
-void SkyRenderPass::RenderInternal() NOEXCEPT
+void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -85,17 +85,17 @@ void SkyRenderPass::RenderInternal() NOEXCEPT
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the descriptor set2.
+	//Bind the current dynamic uniform data descriptor set.
 	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetCurrentEnvironmentDataDescriptorSet()
+		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::Bloom)
 	};
 
 	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
 	//Draw!
-	commandBuffer->Draw(this, 36, 1);
+	commandBuffer->Draw(this, 4, 1);
 
 	//End the command buffer.
 	commandBuffer->End(this);

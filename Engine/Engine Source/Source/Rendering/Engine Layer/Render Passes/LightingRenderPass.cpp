@@ -42,7 +42,7 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::WaterScene);
+	AddRenderTarget(RenderTarget::SceneIntermediate);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(3);

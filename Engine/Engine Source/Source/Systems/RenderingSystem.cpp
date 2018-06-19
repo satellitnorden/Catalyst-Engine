@@ -4,6 +4,9 @@
 //Entities.
 #include <Entities/CameraEntity.h>
 
+//Math.
+#include <Math/CatalystMath.h>
+
 //Rendering.
 #include <Rendering/Engine Layer/OceanMaterial.h>
 #include <Rendering/Engine Layer/ParticleMaterial.h>
@@ -48,6 +51,9 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize the common physical models.
 	InitializeCommonPhysicalModels();
+
+	//Initialize the special textures.
+	InitializeSpecialTextures();
 }
 
 /*
@@ -366,6 +372,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	renderPasses[INDEX(RenderPassStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::DirectionalShadowHorizontalBlur)] = DirectionalShadowHorizontalBlurRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::DirectionalShadowVerticalBlur)] = DirectionalShadowVerticalBlurRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::SceenSpaceAmbientOcclusion)] = ScreenSpaceAmbientOcclusionRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::Lighting)] = LightingRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::Sky)] = SkyRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::Ocean)] = OceanRenderPass::Instance.Get();
@@ -404,6 +411,45 @@ void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
 		PhysicalModelData planePhysicalModelData;
 		RenderingUtilities::GetPlanePhysicalModelData(planePhysicalModelData);
 		CreatePhysicalModel(planePhysicalModelData, commonPhysicalModels[INDEX(CommonPhysicalModel::Plane)]);
+	}
+}
+
+/*
+*	Initializes the special textures.
+*/
+void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
+{
+	//Initialize the screen space ambient occlusion random kernel texture.
+	{
+		StaticArray<Vector3, RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE> samples;
+
+		for (Vector3& sample : samples)
+		{
+			sample.X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample.Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample.Z = 0.0f;
+		}
+
+		//specialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomKernel)] = Create2DTexture(TextureData(TextureDataContainer(samples, 4, 4, 3), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
+	}
+
+	{
+		//Initialize the screen space ambient occlusion sample kernel texture.
+		StaticArray<Vector3, RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE> samples;
+
+		for (Vector3& sample : samples)
+		{
+			sample.X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample.Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample.Z = CatalystMath::RandomFloatInRange(0.0f, 1.0f);
+
+			sample.Normalize();
+
+			float scale{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
+			scale = CatalystMath::LinearlyInterpolate(0.1f, 1.0f, scale * scale);
+
+			sample *= scale;
+		}
 	}
 }
 
