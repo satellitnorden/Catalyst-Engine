@@ -29,8 +29,8 @@ void TaskSystem::InitializeSystem(const CatalystProjectMultithreadingInformation
 	if (numberOfHardwareThreads == 0)
 		numberOfHardwareThreads = 8;
 
-	//Set the number of task executors.
-	numberOfTaskExecutors = numberOfHardwareThreads;
+	//Set the number of task executors. Leave one slot open for the main thread.
+	numberOfTaskExecutors = numberOfHardwareThreads - 1;
 
 	//Initialize the task queue.
 	taskQueue.Initialize(numberOfTaskExecutors + TaskSystemConstants::NUMBER_OF_ENGINE_TASKS + multithreadingInformation.numberOfGameTasks);
@@ -97,7 +97,7 @@ void TaskSystem::ExecuteTaskExecutor() NOEXCEPT
 		//Else, sleep for a bit.
 		else
 		{
-			THREAD_SLEEP();
+			THREAD_YIELD();
 		}
 	}
 }
