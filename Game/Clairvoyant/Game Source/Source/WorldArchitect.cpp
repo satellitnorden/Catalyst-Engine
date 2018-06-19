@@ -130,6 +130,9 @@ void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 */
 void WorldArchitect::CreateTestScene() NOEXCEPT
 {
+	//Defines.
+	constexpr float randomFactor{ 100.0f };
+
 	//Create the floor.
 	PhysicalModel planeModel{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Plane) };
 	planeModel.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::WOOD_1_MATERIAL));
@@ -137,33 +140,50 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 	StaticPhysicalEntity *const RESTRICT plane{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
 	plane->Initialize(planeModel, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1'000.0f, 1'000.0f, 1'000.0f));
 
-	//Create the first stone.
-	PhysicalModel stone1Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_1_MODEL) };
-	stone1Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_1_MATERIAL));
-
-	StaticPhysicalEntity *const RESTRICT stone1{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	stone1->Initialize(stone1Model, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(2.0f, 2.0f, 2.0f));
-
 	//Create the first tree.
 	PhysicalModel tree1Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::TREE_1_MODEL) };
 	tree1Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::TREE_1_MATERIAL));
 
 	StaticPhysicalEntity *const RESTRICT tree1{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	tree1->Initialize(tree1Model, Vector3(250.0f, 100.0f, 0.0f), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+	tree1->Initialize(tree1Model, Vector3(0.0f+ CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+
+	//Create the second tree.
+	StaticPhysicalEntity *const RESTRICT tree2{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	tree2->Initialize(tree1Model, Vector3(0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+
+	//Create the third tree.
+	StaticPhysicalEntity *const RESTRICT tree3{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	tree3->Initialize(tree1Model, Vector3(0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, -250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+
+	//Create the fourth tree.
+	StaticPhysicalEntity *const RESTRICT tree4{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	tree4->Initialize(tree1Model, Vector3(250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+
+	//Create the fifth tree.
+	StaticPhysicalEntity *const RESTRICT tree5{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	tree5->Initialize(tree1Model, Vector3(-250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+
+	//Create the first stone.
+	PhysicalModel stone1Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_1_MODEL) };
+	stone1Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_1_MATERIAL));
+
+	StaticPhysicalEntity *const RESTRICT stone1{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	stone1->Initialize(stone1Model, Vector3(250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(0.0f, 0.0f, 0.0f), Vector3(2.0f, 2.0f, 2.0f));
 
 	//Create the second stone.
+	StaticPhysicalEntity *const RESTRICT stone2{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	stone2->Initialize(stone1Model, Vector3(-250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, -250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(0.0f, 0.0f, 0.0f), Vector3(2.0f, 2.0f, 2.0f));
+
+	//Create the third stone.
 	PhysicalModel stone2Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_2_MODEL) };
 	stone2Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_2_MATERIAL));
 
-	StaticPhysicalEntity *const RESTRICT stone2{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	stone2->Initialize(stone2Model, Vector3(-250.0f, 100.0f, 0.0f), Vector3(-90.0f, 0.0f, 0.0f), Vector3(1.75f, 1.75f, 1.75f));
+	StaticPhysicalEntity *const RESTRICT stone3{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	stone3->Initialize(stone2Model, Vector3(250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, -250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(1.75f, 1.75f, 1.75f));
 
-	//Create the first wood log.
-	PhysicalModel woodLog1Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::WOOD_LOG_1_MODEL) };
-	woodLog1Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::WOOD_LOG_1_MATERIAL));
-
-	StaticPhysicalEntity *const RESTRICT woodLog1{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	woodLog1->Initialize(woodLog1Model, Vector3(0.0f, 100.0f, 250.0f), Vector3(-90.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f));
+	//Create the fourth stone.
+	StaticPhysicalEntity *const RESTRICT stone4{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	stone4->Initialize(stone2Model, Vector3(-250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(1.75f, 1.75f, 1.75f));
 }
 
 /*
