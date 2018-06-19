@@ -1269,6 +1269,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 */
 void VulkanRenderingSystem::EndFrame() NOEXCEPT
 {
+	//Wait for the particle system properties update to finish.
+	taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)].WaitFor();
+
 	//End the current command buffer.
 	frameData.GetCurrentPrimaryCommandBuffer()->End();
 
