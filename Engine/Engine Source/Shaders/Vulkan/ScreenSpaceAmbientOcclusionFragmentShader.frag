@@ -55,60 +55,42 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Layout specification.
+layout (early_fragment_tests) in;
+
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D shadowMapTexture;
+layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentColor;
-
-//The blur kernel.
-float blurKernel[9] = float[]
-(
-    0.0625f,    0.125f,     0.0625f,
-    0.125f,     0.25f,      0.125f,
-    0.0625f,    0.125f,     0.0625f
-);
+layout (location = 0) out vec4 fragment;
 
 /*
-*   Calculates blur.
+*	Calculates the average of a fragment.
 */
-vec4 CalculateBlur()
+float CalculateAverage(vec4 fragment)
 {
-    //Sample the current fragment.
-    vec4 currentFragmentSampler = texture(shadowMapTexture, fragmentTextureCoordinate);
+	return (fragment.r + fragment.b + fragment.b) * 0.33333333f;
+}
 
-    //Set the sample offsets.
-    float sampleOffset = currentFragmentSampler.g;
-
-    vec2 sampleOffsets[9] = vec2[]
-    (
-        vec2(-sampleOffset, -sampleOffset),     vec2(0.0f, -sampleOffset),  vec2(sampleOffset, -sampleOffset),
-        vec2(-sampleOffset, 0.0f),              vec2(0.0f, 0.0f),           vec2(sampleOffset, 0.0f),
-        vec2(-sampleOffset, sampleOffset),      vec2(0.0f, sampleOffset),   vec2(sampleOffset, sampleOffset)
-    );
-
-    //Calculate the blurred sample.
-    vec4 blurredSample = vec4(0.0f);
-
-    blurredSample += texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[0]) * blurKernel[0];
-    blurredSample += texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[1]) * blurKernel[1];
-    blurredSample += texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[2]) * blurKernel[2];
-    blurredSample += texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[3]) * blurKernel[3];
-    blurredSample += currentFragmentSampler * blurKernel[4];
-    blurredSample += texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[5]) * blurKernel[5];
-    blurredSample += texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[6]) * blurKernel[6];
-    blurredSample += texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[7]) * blurKernel[7];
-    blurredSample += texture(shadowMapTexture, fragmentTextureCoordinate + sampleOffsets[8]) * blurKernel[8];
-
-    //Return the calculated color.
-    return blurredSample;
+/*
+*   Returns whether or not a fragment should bloom.
+*/
+bool ShouldBloom(vec4 fragment)
+{
+    return fragment.x > 1.0f || fragment.y > 1.0f || fragment.z > 1.0f;
 }
 
 void main()
 {
-    //Set the fragment color.
-    fragmentColor = texture(shadowMapTexture, fragmentTextureCoordinate);
+    //Sample the scene texture.
+    vec4 sceneTextureSampler = texture(sceneTexture, fragmentTextureCoordinate);
+
+    //Calculate the average.
+    float average = CalculateAverage(sceneTextureSampler);
+
+    //Write the fragment.
+    fragment = average > 1.0f ? vec4(sceneTextureSampler.rgb, average - 1.0f) : vec4(0.0f);
 }

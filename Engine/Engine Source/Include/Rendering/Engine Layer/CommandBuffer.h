@@ -20,14 +20,15 @@ public:
 	virtual void Begin(const RenderPass *const RESTRICT renderPass) NOEXCEPT = 0;
 
 	/*
-	*	Binds a number of descriptor sets.
-	*/
-	virtual void BindDescriptorSets(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 descriptorSetCount, const RenderDataTableHandle *const RESTRICT descriptorSets) NOEXCEPT = 0;
-
-	/*
 	*	Binds an index buffer.
 	*/
 	virtual void BindIndexBuffer(const RenderPass *const RESTRICT renderPass, const ConstantBufferHandle indexBuffer, const uint64 offset) NOEXCEPT = 0;
+
+	/*
+	*	Binds a number of render data tables.
+	*/
+	virtual void BindRenderDataTables(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 renderDataTableCount, const RenderDataTableHandle *const RESTRICT renderDataTables) NOEXCEPT = 0;
+
 
 	/*
 	*	Binds a number of vertex buffers.

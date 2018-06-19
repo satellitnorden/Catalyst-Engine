@@ -9,5 +9,5 @@
 
 namespace VulkanShaderData
 {
-	void GetShadowMapBlurFragmentShaderData(DynamicArray<byte> &data);
+	void GetScreenSpaceAmbientOcclusionFragmentShaderData(DynamicArray<byte> &data);
 }

@@ -94,7 +94,7 @@ void OceanRenderPass::RenderInternal() NOEXCEPT
 		RenderingSystem::Instance->GetCurrentOceanDescriptorSet()
 	};
 
-	commandBuffer->BindDescriptorSets(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
+	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

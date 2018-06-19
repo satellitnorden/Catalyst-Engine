@@ -626,8 +626,9 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 	renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 	renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::ScreenSpaceAmbientOcclusion)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::SceneIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::Scene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::WaterScene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::Bloom)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::BloomIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 }
@@ -751,6 +752,16 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 		};
 
 		descriptorSetLayouts[INDEX(RenderDataTableLayout::DirectionalShadow)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
+	}
+
+	{
+		//Initialize the screen space ambient occlusion descriptor set layout.
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> descriptorSetLayoutBindings
+		{
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+		};
+
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::ScreenSpaceAmbientOcclusion)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -931,10 +942,10 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 	
 	{
-		//Initialize the shadow map blur fragment shader module.
+		//Initialize the screen space ambient occlusion fragment shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetShadowMapBlurFragmentShaderData(data);
-		shaderModules[INDEX(Shader::ShadowBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanShaderData::GetScreenSpaceAmbientOcclusionFragmentShaderData(data);
+		shaderModules[INDEX(Shader::ScreenSpaceAmbientOcclusionFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -1258,6 +1269,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 */
 void VulkanRenderingSystem::EndFrame() NOEXCEPT
 {
+	//Wait for the particle system properties update to finish.
+	taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)].WaitFor();
+
 	//End the current command buffer.
 	frameData.GetCurrentPrimaryCommandBuffer()->End();
 
@@ -1313,7 +1327,7 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 
 		StaticArray<VkWriteDescriptorSet, 3> oceanWriteDescriptorSets
 		{
-			renderTargets[INDEX(RenderTarget::WaterScene)]->GetWriteDescriptorSet(oceanDescriptorSet, 0),
+			renderTargets[INDEX(RenderTarget::SceneIntermediate)]->GetWriteDescriptorSet(oceanDescriptorSet, 0),
 			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(oceanDescriptorSet, 1),
 			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetOceanMaterial().normalMapTexture)->GetWriteDescriptorSet(oceanDescriptorSet, 2)
 		};

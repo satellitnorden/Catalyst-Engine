@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/BloomRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/ScreenSpaceAmbientOcclusionRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
@@ -8,46 +8,46 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(BloomRenderPass);
+DEFINE_SINGLETON(ScreenSpaceAmbientOcclusionRenderPass);
 
 /*
 *	Default constructor.
 */
-BloomRenderPass::BloomRenderPass() NOEXCEPT
+ScreenSpaceAmbientOcclusionRenderPass::ScreenSpaceAmbientOcclusionRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		BloomRenderPass::Instance->InitializeInternal();
+		ScreenSpaceAmbientOcclusionRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the bloom render pass.
+*	Initializes the screen space ambient occlusion render pass.
 */
-void BloomRenderPass::InitializeInternal() NOEXCEPT
+void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::Bloom);
+	SetStage(RenderPassStage::SceenSpaceAmbientOcclusion);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::BloomFragment);
+	SetFragmentShader(Shader::ScreenSpaceAmbientOcclusionFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Bloom);
+	AddRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion);
 
 	//Add the descriptor set layouts.
 	SetNumberOfDescriptorSetLayouts(2);
 	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::GaussianBlur);
+	AddDescriptorSetLayout(RenderDataTableLayout::ScreenSpaceAmbientOcclusion);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -67,7 +67,7 @@ void BloomRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		BloomRenderPass::Instance->RenderInternal();
+		ScreenSpaceAmbientOcclusionRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -75,9 +75,9 @@ void BloomRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the bloom.
+*	Renders the screen space ambient occlusion.
 */
-void BloomRenderPass::RenderInternal() NOEXCEPT
+void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

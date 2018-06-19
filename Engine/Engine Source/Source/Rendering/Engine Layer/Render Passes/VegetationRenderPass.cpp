@@ -126,14 +126,14 @@ void VegetationRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->Begin(this);
 
 	//Bind the current dynamic uniform data descriptor set.
-	commandBuffer->BindDescriptorSets(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
+	commandBuffer->BindRenderDataTables(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
 
 	//Wait for the vegetation culling to finish.
 	CullingSystem::Instance->WaitForVegetationCulling();
 
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{
-		commandBuffer->BindDescriptorSets(this, 1, 1, &component->descriptorSet);
+		commandBuffer->BindRenderDataTables(this, 1, 1, &component->descriptorSet);
 		
 		for (uint64 j = 0, size = component->shouldDrawGridCell.Size(); j < size; ++j)
 		{

@@ -251,6 +251,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\PostProcessingRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\RenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\RenderPasses.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\SkyRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\StaticPhysicalRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\TerrainRenderPass.h" />
@@ -283,7 +284,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\PhysicalFragmentShader.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\PhysicalVertexShader.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\PostProcessingFragmentShader.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\ShadowMapBlurFragmentShader.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\ScreenSpaceAmbientOcclusionFragmentShader.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\ShadowMapFragmentShader.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\SkyFragmentShader.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\TerrainSceneBufferFragmentShader.h" />
@@ -393,6 +394,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\ParticleSystemRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\PostProcessingRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\RenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\SkyRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\StaticPhysicalRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\TerrainRenderPass.cpp" />
@@ -414,7 +416,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\PhysicalFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\PhysicalVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\PostProcessingFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\ShadowMapBlurFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\ScreenSpaceAmbientOcclusionFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\ShadowMapFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\SkyFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferFragmentShader.cpp" />

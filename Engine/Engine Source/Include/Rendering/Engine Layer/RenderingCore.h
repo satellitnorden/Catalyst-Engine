@@ -9,6 +9,8 @@
 //Rendering constants.
 namespace RenderingConstants
 {
+	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE{ 16 };
+	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE{ 64 };
 	constexpr uint32 SHADOW_MAP_RESOLUTION{ 2'048 };
 	constexpr float SHADOW_VIEW_DISTANCE{ 1'000.0f };
 }
@@ -38,6 +40,7 @@ enum class RenderPassStage : uint8
 	DirectionalShadow,
 	DirectionalShadowHorizontalBlur,
 	DirectionalShadowVerticalBlur,
+	SceenSpaceAmbientOcclusion,
 	Lighting,
 	Sky,
 	Ocean,
@@ -123,6 +126,7 @@ enum class RenderDataTableLayout : uint8
 	Physical,
 	Vegetation,
 	DirectionalShadow,
+	ScreenSpaceAmbientOcclusion,
 	Lighting,
 	Ocean,
 	ParticleSystem,
@@ -140,7 +144,8 @@ enum class RenderTarget : uint8
 	SceneBufferAlbedo,
 	SceneBufferNormalDepth,
 	SceneBufferMaterialProperties,
-	WaterScene,
+	ScreenSpaceAmbientOcclusion,
+	SceneIntermediate,
 	Scene,
 	Bloom,
 	BloomIntermediate,
@@ -167,7 +172,7 @@ enum class Shader : uint8
 	PostProcessingFragment,
 	PhysicalFragment,
 	PhysicalVertex,
-	ShadowBlurFragment,
+	ScreenSpaceAmbientOcclusionFragment,
 	ShadowMapFragment,
 	SkyFragment,
 	TerrainFragment,
@@ -182,6 +187,15 @@ enum class Shader : uint8
 	NumberOfShaders,
 
 	None
+};
+
+//Enumeration covering all special textures.
+enum class SpecialTexture : uint8
+{
+	ScreenSpaceAmbientOcclusionRandomKernel,
+	ScreenSpaceAmbientOcclusionSampleKernel,
+
+	NumberOfSpecialTextures
 };
 
 //Enumeration covering all topologies.
