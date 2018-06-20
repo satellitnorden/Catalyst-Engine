@@ -111,6 +111,7 @@ public:
 		{
 			case TextureFormat::R8_Byte: return VK_FORMAT_R8_UNORM;
 			case TextureFormat::R8G8B8A8_Byte: return VK_FORMAT_R8G8B8A8_UNORM;
+			case TextureFormat::R32G32B32_Float: return VK_FORMAT_R32G32B32_SFLOAT;
 			case TextureFormat::R32G32B32A32_Float: return VK_FORMAT_R32G32B32A32_SFLOAT;
 
 			default:

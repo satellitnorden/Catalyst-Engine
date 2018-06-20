@@ -89,9 +89,6 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize all descriptor sets.
 	InitializeDescriptorSets();
 
-	//Initialize all default textures.
-	InitializeDefaultTextures();
-
 	//Initialize the Vulkan frame data.
 	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(RenderDataTableLayout::DynamicUniformData)], descriptorSetLayouts[INDEX(RenderDataTableLayout::Environment)], descriptorSetLayouts[INDEX(RenderDataTableLayout::Ocean)]);
 }
@@ -1133,18 +1130,6 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 	}
-}
-
-/*
-*	Initializes all default textures.
-*/
-void VulkanRenderingSystem::InitializeDefaultTextures() NOEXCEPT
-{
-	byte defaultMetallic[]{ 0 };
-	defaultTextures[DefaultTexture::Black] = static_cast<Vulkan2DTexture *RESTRICT>(Create2DTexture(TextureData(TextureDataContainer(defaultMetallic, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte)));
-
-	byte defaultRoughness[]{ 255 };
-	defaultTextures[DefaultTexture::White] = static_cast<Vulkan2DTexture *RESTRICT>(Create2DTexture(TextureData(TextureDataContainer(defaultRoughness, 1, 1, 1), AddressMode::Repeat, TextureFilter::Nearest, MipmapMode::Nearest, TextureFormat::R8_Byte)));
 }
 
 /*

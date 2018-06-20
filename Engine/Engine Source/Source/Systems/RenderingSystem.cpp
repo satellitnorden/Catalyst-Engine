@@ -430,7 +430,7 @@ void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
 			sample.Z = 0.0f;
 		}
 
-		//specialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomKernel)] = Create2DTexture(TextureData(TextureDataContainer(samples, 4, 4, 3), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
+		//specialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomKernel)] = Create2DTexture(TextureData(TextureDataContainer(samples, 4, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32_Float));
 	}
 
 	{
@@ -450,6 +450,8 @@ void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
 
 			sample *= scale;
 		}
+
+		//specialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomKernel)] = Create2DTexture(TextureData(TextureDataContainer(samples, 8, 8), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32_Float));
 	}
 }
 

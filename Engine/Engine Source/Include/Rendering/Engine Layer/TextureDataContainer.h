@@ -97,6 +97,21 @@ public:
 		textureTexelSize = sizeof(float);
 	}
 
+	/*
+	*	Constructor taking a static array of Vector3.
+	*/
+	template <uint64 NumberOfTexels>
+	TextureDataContainer(const StaticArray<Vector3, NumberOfTexels> &initialTextureData, const uint16 initialTextureWidth, const uint16 initialTextureHeight) NOEXCEPT
+	{
+		textureData.Reserve(1);
+		textureData.EmplaceFast(initialTextureData.Data());
+
+		textureWidth = initialTextureWidth;
+		textureHeight = initialTextureHeight;
+		textureChannels = 3;
+		textureTexelSize = sizeof(float);
+	}
+
 	//Pointer to the underlying texture data.
 	DynamicArray<const void *RESTRICT> textureData;
 

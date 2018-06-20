@@ -163,14 +163,6 @@ private:
 	*/
 	RenderDataTableHandle GetRenderDataTable(const RenderDataTable renderDataTable) NOEXCEPT;
 
-	//Enumeration covering all default textures.
-	enum DefaultTexture : uint8
-	{
-		Black,
-		White,
-		NumberOfDefaultTextures
-	};
-
 	//Enumeration covering all semaphores.
 	enum class GraphicsSemaphore : uint8
 	{
@@ -201,9 +193,6 @@ private:
 
 	//The dynamic uniform data.
 	VulkanDynamicUniformData dynamicUniformData;
-
-	//Container for all default textures.
-	StaticArray<Vulkan2DTexture *RESTRICT, DefaultTexture::NumberOfDefaultTextures> defaultTextures;
 
 	//Container for all depth buffers.
 	StaticArray<VulkanDepthBuffer *RESTRICT, INDEX(DepthBuffer::NumberOfDepthBuffers)> depthBuffers;
@@ -270,11 +259,6 @@ private:
 	*	Initializes all descriptor sets.
 	*/
 	void InitializeDescriptorSets() NOEXCEPT;
-
-	/*
-	*	Initializes all default textures.
-	*/
-	void InitializeDefaultTextures() NOEXCEPT;
 
 	/*
 	*	Execute asynchronous tasks.
