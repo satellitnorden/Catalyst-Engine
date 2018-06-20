@@ -28,6 +28,11 @@ void VulkanInterface::Initialize(Window &window) NOEXCEPT
 	//Initialize the graphics queue.
 	queues[INDEX(Queue::Graphics)].Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
 
+#if !RENDERDOC_DEBUGGING
+	//Initialize the present queue.
+	queues[INDEX(Queue::Present)].Initialize(vulkanPhysicalDevice.GetPresentQueueFamilyIndex());
+#endif
+
 	//Initialize the Vulkan swap chain.
 	vulkanSwapchain.Initialize();
 
@@ -60,6 +65,9 @@ void VulkanInterface::Release() NOEXCEPT
 {
 	//Wait for all queues to finish.
 	queues[INDEX(Queue::Graphics)].WaitIdle();
+#if !RENDERDOC_DEBUGGING
+	queues[INDEX(Queue::Present)].WaitIdle();
+#endif
 
 	//Release all Vulkan 2D textures.
 	for (Vulkan2DTexture *const RESTRICT vulkan2DTexture : vulkan2DTextures)

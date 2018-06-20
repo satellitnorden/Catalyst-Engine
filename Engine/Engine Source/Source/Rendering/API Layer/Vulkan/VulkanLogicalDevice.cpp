@@ -59,6 +59,7 @@ void VulkanLogicalDevice::Release() NOEXCEPT
 */
 void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const float *const RESTRICT queuePriorities) const NOEXCEPT
 {
+#if RENDERDOC_DEBUGGING
 	VkDeviceQueueCreateInfo newDeviceQueueCreateInfo;
 
 	newDeviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -69,6 +70,27 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 	newDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
 
 	deviceQueueCreateInfos.EmplaceSlow(newDeviceQueueCreateInfo);
+#else
+	//Gather all unique indices and how many queues will be created from them.
+	std::map<uint32, uint8> uniqueQueueFamilyIndices;
+
+	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex()];
+	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex()];
+
+	for (const auto &uniqueQueueFamilyIndex : uniqueQueueFamilyIndices)
+	{
+		VkDeviceQueueCreateInfo newDeviceQueueCreateInfo;
+
+		newDeviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		newDeviceQueueCreateInfo.pNext = nullptr;
+		newDeviceQueueCreateInfo.flags = 0;
+		newDeviceQueueCreateInfo.queueFamilyIndex = uniqueQueueFamilyIndex.first;
+		newDeviceQueueCreateInfo.queueCount = uniqueQueueFamilyIndex.second;
+		newDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
+
+		deviceQueueCreateInfos.EmplaceSlow(newDeviceQueueCreateInfo);
+	}
+#endif
 }
 
 /*

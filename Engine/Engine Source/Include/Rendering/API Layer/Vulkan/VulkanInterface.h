@@ -102,7 +102,11 @@ public:
 	/*
 	*	Returns the present queue.
 	*/
+#if RENDERDOC_DEBUGGING
 	const VulkanQueue& GetPresentQueue() const NOEXCEPT { return queues[INDEX(Queue::Graphics)]; }
+#else
+	const VulkanQueue& GetPresentQueue() const NOEXCEPT { return queues[INDEX(Queue::Present)]; }
+#endif
 
 	/*
 	*	Returns the descriptor pool.
@@ -190,6 +194,7 @@ private:
 	enum class Queue : uint8
 	{
 		Graphics,
+		Present,
 		NumberOfQueues
 	};
 
