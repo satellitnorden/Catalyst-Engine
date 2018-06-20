@@ -93,11 +93,5 @@ void TaskSystem::ExecuteTaskExecutor() NOEXCEPT
 			(*newTask)->Execute();
 			--concurrentlyExecutingTasks;
 		}
-
-		//Else, sleep for a bit.
-		else
-		{
-			THREAD_YIELD();
-		}
 	}
 }
