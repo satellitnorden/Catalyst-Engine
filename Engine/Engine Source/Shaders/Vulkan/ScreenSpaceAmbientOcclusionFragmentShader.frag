@@ -55,42 +55,96 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Preprocessor defines.
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS 0.025f
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS 0.1f
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES 64
+
 //Layout specification.
 layout (early_fragment_tests) in;
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
+//Post processing data.
+layout (std140, set = 1, binding = 0) uniform ScreenSpaceAmbientOcclusionUniformData
+{
+    vec4 samples[SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES];
+};
+
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
+layout (set = 1, binding = 1) uniform sampler2D normalDepthTexture;
+layout (set = 1, binding = 2) uniform sampler2D noiseTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
-/*
-*	Calculates the average of a fragment.
-*/
-float CalculateAverage(vec4 fragment)
+//Push constant
+layout (push_constant) uniform ScreenSpaceAmbientOcclusionData
 {
-	return (fragment.r + fragment.b + fragment.b) * 0.33333333f;
-}
+    vec2 noiseScale;
+};
 
 /*
-*   Returns whether or not a fragment should bloom.
+*   Calculates the fragment world position.
 */
-bool ShouldBloom(vec4 fragment)
+vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
 {
-    return fragment.x > 1.0f || fragment.y > 1.0f || fragment.z > 1.0f;
+    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
+    vec3 fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, depth);
+    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
+    viewSpacePosition /= viewSpacePosition.w;
+    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
+
+    return worldSpacePosition.xyz;
 }
 
 void main()
 {
-    //Sample the scene texture.
-    vec4 sceneTextureSampler = texture(sceneTexture, fragmentTextureCoordinate);
+    /*
+    //Sample the normal depth texture.
+    vec4 normalDepthTextureSampler = texture(normalDepthTexture, fragmentTextureCoordinate);
 
-    //Calculate the average.
-    float average = CalculateAverage(sceneTextureSampler);
+    //Retrieve the normal.
+    vec3 normal = normalDepthTextureSampler.xyz;
+
+    //Retrieve the depth.
+    float depth = normalDepthTextureSampler.w;
+
+    //Retrieve the fragment world position.
+    vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, depth);
+
+    //Calculate the TBN matrix.
+    vec3 randomVector = normalize(texture(noiseTexture, fragmentTextureCoordinate * noiseScale).xyz);
+    vec3 tangent = normalize(randomVector - normal * dot(randomVector, normal));
+    vec3 bitangent = cross(normal, tangent);
+    mat3 TBN = mat3(tangent, bitangent, normal);
+
+    //Calculate the occlusion factor.
+    float occlusion = 0.0f;
+
+    for (int i = 0; i < SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
+    {
+        vec3 currentSample = TBN * samples[i].xyz;
+        currentSample = fragmentWorldPosition + currentSample;
+
+        vec4 offset = vec4(currentSample, 1.0f);
+        offset = viewMatrix * offset;
+        offset.xyz /= offset.w;
+        offset.xy = offset.xy * 0.5f + 0.5f;
+
+        float sampleDepth = texture(normalDepthTexture, offset.xy).w;
+
+        //float rangeCheck = smoothstep(0.0f, 1.0f, SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS / abs(depth - sampleDepth));
+        occlusion += (sampleDepth >= offset.z + SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS ? 1.0f : 0.0f);    
+    }
+
+    occlusion = 1.0f - (occlusion / SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES);
 
     //Write the fragment.
-    fragment = average > 1.0f ? vec4(sceneTextureSampler.rgb, average - 1.0f) : vec4(0.0f);
+    fragment = vec4(occlusion);
+    */
+
+    //For now, don't do any calculations.
+    fragment = vec4(1.0f);
 }

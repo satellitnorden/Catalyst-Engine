@@ -44,10 +44,14 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion);
 
-	//Add the descriptor set layouts.
-	SetNumberOfDescriptorSetLayouts(2);
-	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::ScreenSpaceAmbientOcclusion);
+	//Add the render data table layouts.
+	SetNumberOfRenderDataTableLayouts(2);
+	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(RenderDataTableLayout::ScreenSpaceAmbientOcclusion);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(Vector2));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -72,6 +76,12 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 
 	//Finalize the initialization.
 	FinalizeInitialization();
+
+	//Set the noise scale.
+	Resolution resolution{ RenderingSystem::Instance->GetResolution() };
+
+	noiseScale.X = static_cast<float>(resolution.width) / 4.0f;
+	noiseScale.Y = static_cast<float>(resolution.height) / 4.0f;
 }
 
 /*
@@ -89,10 +99,13 @@ void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
 	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::Bloom)
+		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::ScreenSpaceAmbientOcclusion)
 	};
 
 	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
+
+	//Push constants.
+	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(Vector2), &noiseScale);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

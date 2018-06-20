@@ -71,6 +71,9 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize the Vulkan interface.
 	VulkanInterface::Instance->Initialize(mainWindow);
 
+	//Initialize all special textures.
+	InitializeSpecialTextures();
+
 	//Initialize all render targets.
 	InitializeRenderTargets();
 
@@ -608,6 +611,29 @@ RenderDataTableHandle VulkanRenderingSystem::GetRenderDataTable(const RenderData
 }
 
 /*
+*	Initializes all special textures.
+*/
+void VulkanRenderingSystem::InitializeSpecialTextures() NOEXCEPT
+{
+	{
+		//Initialize the screen space ambient occlusion random kernel texture.
+		StaticArray<Vector4, RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE> samples;
+
+		for (Vector4& sample : samples)
+		{
+			sample.X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample.Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample.Z = 0.0f;
+			sample.W = 0.0f;
+		}
+
+		const void* const RESTRICT data{ samples.Data() };
+
+		specialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)] = VulkanInterface::Instance->Create2DTexture(1, 4, 4, 4, sizeof(float), &data, VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT);
+	}
+}
+
+/*
 *	Initializes all render targets.
 */
 void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
@@ -645,7 +671,30 @@ void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 {
-	//Create the post processing uniform data buffer.
+	{
+		//Initialize the screen space ambient occlusion sample kernel texture.
+		StaticArray<Vector4, RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE> samples;
+
+		for (Vector4& sample : samples)
+		{
+			sample.X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample.Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample.Z = CatalystMath::RandomFloatInRange(0.0f, 1.0f);
+			sample.W = 0.0f;
+
+			sample.Normalize();
+
+			float scale{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
+			scale = CatalystMath::LinearlyInterpolate(0.1f, 1.0f, scale * scale);
+
+			sample *= scale;
+		}
+
+		uniformBuffers[INDEX(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(Vector4) * RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE);
+		uniformBuffers[INDEX(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)]->UploadData(samples.Data());
+	}
+
+	//Initialize the post processing uniform data buffer.
 	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(PostProcessingUniformData));
 }
 
@@ -753,9 +802,11 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 	{
 		//Initialize the screen space ambient occlusion descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> descriptorSetLayoutBindings
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> descriptorSetLayoutBindings
 		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
 		descriptorSetLayouts[INDEX(RenderDataTableLayout::ScreenSpaceAmbientOcclusion)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
@@ -763,12 +814,13 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 	{
 		//Initialize the lighting descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> lightingDescriptorSetLayoutBindings
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 5> lightingDescriptorSetLayoutBindings
 		{
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
 		descriptorSetLayouts[INDEX(RenderDataTableLayout::Lighting)].Initialize(static_cast<uint32>(lightingDescriptorSetLayoutBindings.Size()), lightingDescriptorSetLayoutBindings.Data());
@@ -1049,7 +1101,7 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 	}
 
 	{
-		//Initialize the directional shadow horizontal blurdescriptor set.
+		//Initialize the directional shadow horizontal blur descriptor set.
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::DirectionalShadowVerticalBlur)], descriptorSetLayouts[INDEX(RenderDataTableLayout::GaussianBlur)]);
 
 		//Update the write descriptor sets.
@@ -1062,16 +1114,32 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 	}
 
 	{
+		//Initialize the screen space ambient occlusion descriptor set.
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusion)], descriptorSetLayouts[INDEX(RenderDataTableLayout::ScreenSpaceAmbientOcclusion)]);
+
+		//Update the write descriptor sets.
+		StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
+		{
+			uniformBuffers[INDEX(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusion)], 0),
+			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusion)], 1),
+			specialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusion)], 2)
+		};
+
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	}
+
+	{
 		//Initialize the lighting descriptor set.
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], descriptorSetLayouts[INDEX(RenderDataTableLayout::Lighting)]);
 
 		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
+		StaticArray<VkWriteDescriptorSet, 5> writeDescriptorSets
 		{
 			renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], 0),
 			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], 1),
 			renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], 2),
-			renderTargets[INDEX(RenderTarget::DirectionalShadow)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], 3)
+			renderTargets[INDEX(RenderTarget::ScreenSpaceAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], 3),
+			renderTargets[INDEX(RenderTarget::DirectionalShadow)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], 4)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);

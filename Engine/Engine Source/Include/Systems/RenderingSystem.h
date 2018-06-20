@@ -127,7 +127,7 @@ public:
 	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() const NOEXCEPT { return &viewMatrix; }
 
 	/*
-	*	Returns a common physical model.
+	*	Returns the given common physical model.
 	*/
 	const PhysicalModel& GetCommonPhysicalModel(const CommonPhysicalModel commonPhysicalModel) const NOEXCEPT { return commonPhysicalModels[INDEX(commonPhysicalModel)]; }
 
@@ -155,11 +155,6 @@ public:
 	*	Returns the given render data table.
 	*/
 	RenderDataTableHandle GetRenderDataTable(const RenderDataTable renderDataTable) const NOEXCEPT;
-
-	/*
-	*	Returns the given special texture.
-	*/
-	Texture2DHandle GetSpecialTexture(const SpecialTexture specialTexture) const NOEXCEPT { return specialTextures[INDEX(specialTexture)]; }
 
 	/*
 	*	Creates an environment material.
@@ -239,9 +234,6 @@ private:
 	//Container for all common physical models.
 	StaticArray<PhysicalModel, INDEX(CommonPhysicalModel::NumberOfCommonPhysicalModels)> commonPhysicalModels;
 
-	//Container for all special textures.
-	StaticArray<Texture2DHandle, INDEX(SpecialTexture::NumberOfSpecialTextures)> specialTextures;
-
 	//The active camera.
 	const CameraEntity *RESTRICT activeCamera{ nullptr };
 
@@ -268,11 +260,6 @@ private:
 	*	Initializes the common physical models.
 	*/
 	void InitializeCommonPhysicalModels() NOEXCEPT;
-
-	/*
-	*	Initializes the special textures.
-	*/
-	void InitializeSpecialTextures() NOEXCEPT;
 
 	/*
 	*	Updates the matrices.

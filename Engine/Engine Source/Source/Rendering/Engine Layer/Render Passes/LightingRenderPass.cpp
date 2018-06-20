@@ -45,10 +45,10 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::SceneIntermediate);
 
 	//Add the descriptor set layouts.
-	SetNumberOfDescriptorSetLayouts(3);
-	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::Environment);
-	AddDescriptorSetLayout(RenderDataTableLayout::Lighting);
+	SetNumberOfRenderDataTableLayouts(3);
+	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(RenderDataTableLayout::Environment);
+	AddRenderDataTableLayout(RenderDataTableLayout::Lighting);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());

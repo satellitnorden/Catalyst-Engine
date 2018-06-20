@@ -45,9 +45,9 @@ void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::DirectionalShadow);
 
 	//Add the descriptor set layouts.
-	SetNumberOfDescriptorSetLayouts(2);
-	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::DirectionalShadow);
+	SetNumberOfRenderDataTableLayouts(2);
+	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(RenderDataTableLayout::DirectionalShadow);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());

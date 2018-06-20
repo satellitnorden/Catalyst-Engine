@@ -401,17 +401,3 @@ RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(const uint6
 
 	return newUniformBuffer;
 }
-
-/*
-*	Destroys a Vulkan command pool.
-*/
-void VulkanInterface::DestroyCommandPool(VulkanCommandPool *const RESTRICT commandPool) NOEXCEPT
-{
-	//Release the command pool.
-	commandPool->Release();
-
-	//Erase the command pool from the command pools list.
-	vulkanCommandPoolsLock.Lock();
-	vulkanCommandPools.Erase(commandPool);
-	vulkanCommandPoolsLock.Unlock();
-}

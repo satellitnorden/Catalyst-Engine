@@ -97,7 +97,7 @@ public:
 	/*
 	*	Returns the descriptor set layouts.
 	*/
-	const DynamicArray<RenderDataTableLayout>& GetDescriptorSetLayouts() const NOEXCEPT { return descriptorSetLayouts; }
+	const DynamicArray<RenderDataTableLayout>& GetDescriptorSetLayouts() const NOEXCEPT { return renderDataTableLayouts; }
 
 	/*
 	*	Returns the push constant ranges.
@@ -242,14 +242,14 @@ protected:
 	void AddRenderTarget(const RenderTarget newRenderTarget) NOEXCEPT { renderTargets.EmplaceFast(newRenderTarget); }
 
 	/*
-	*	Sets the number of descriptor set layouts.
+	*	Sets the number of render data table layouts.
 	*/
-	void SetNumberOfDescriptorSetLayouts(const uint64 numberOfDescriptorSetLayouts) NOEXCEPT { descriptorSetLayouts.Reserve(numberOfDescriptorSetLayouts); }
+	void SetNumberOfRenderDataTableLayouts(const uint64 numberOfRenderDataTableLayouts) NOEXCEPT { renderDataTableLayouts.Reserve(numberOfRenderDataTableLayouts); }
 
 	/*
-	*	Adds a descriptor set layout.
+	*	Adds a render data table layout.
 	*/
-	void AddDescriptorSetLayout(const RenderDataTableLayout newDescriptorSetLayout) NOEXCEPT { descriptorSetLayouts.EmplaceFast(newDescriptorSetLayout); }
+	void AddRenderDataTableLayout(const RenderDataTableLayout newRenderDataTableLayout) NOEXCEPT { renderDataTableLayouts.EmplaceFast(newRenderDataTableLayout); }
 
 	/*
 	*	Sets the number of push constant ranges.
@@ -386,7 +386,7 @@ private:
 	DynamicArray<RenderTarget> renderTargets;
 
 	//The descriptor set layouts.
-	DynamicArray<RenderDataTableLayout> descriptorSetLayouts;
+	DynamicArray<RenderDataTableLayout> renderDataTableLayouts;
 
 	//The push constant ranges.
 	DynamicArray<PushConstantRange> pushConstantRanges;

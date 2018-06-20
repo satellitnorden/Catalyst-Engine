@@ -45,9 +45,9 @@ void BloomRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::Bloom);
 
 	//Add the descriptor set layouts.
-	SetNumberOfDescriptorSetLayouts(2);
-	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::GaussianBlur);
+	SetNumberOfRenderDataTableLayouts(2);
+	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(RenderDataTableLayout::GaussianBlur);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());

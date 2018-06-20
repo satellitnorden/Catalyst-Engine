@@ -184,9 +184,9 @@ public:
 	RESTRICTED VulkanUniformBuffer* CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT;
 
 	/*
-	*	Destroys a Vulkan command pool.
+	*	Returns the container for all Vulkan 2D textures.
 	*/
-	void DestroyCommandPool(VulkanCommandPool *const RESTRICT commandPool) NOEXCEPT;
+	const DynamicArray<Vulkan2DTexture *RESTRICT>& Get2DTextures() const NOEXCEPT { return vulkan2DTextures; }
 
 private:
 

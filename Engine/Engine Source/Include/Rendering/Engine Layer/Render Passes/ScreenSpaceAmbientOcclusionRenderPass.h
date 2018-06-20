@@ -21,6 +21,9 @@ public:
 
 private:
 
+	//The noise scale.
+	Vector2 noiseScale;
+
 	/*
 	*	Initializes the screen space ambient occlusion render pass.
 	*/

@@ -52,9 +52,9 @@ void TerrainRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
 
 	//Add the descriptor set layouts.
-	SetNumberOfDescriptorSetLayouts(2);
-	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::Terrain);
+	SetNumberOfRenderDataTableLayouts(2);
+	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(RenderDataTableLayout::Terrain);
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(2);

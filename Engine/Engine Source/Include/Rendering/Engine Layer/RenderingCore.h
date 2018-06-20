@@ -12,7 +12,7 @@ namespace RenderingConstants
 	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE{ 16 };
 	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE{ 64 };
 	constexpr uint32 SHADOW_MAP_RESOLUTION{ 2'048 };
-	constexpr float SHADOW_VIEW_DISTANCE{ 1'000.0f };
+	constexpr float SHADOW_VIEW_DISTANCE{ 100.0f };
 }
 
 /*
@@ -108,6 +108,7 @@ enum class RenderDataTable : uint8
 	DirectionalShadow,
 	DirectionalShadowHorizontalBlur,
 	DirectionalShadowVerticalBlur,
+	ScreenSpaceAmbientOcclusion,
 	Lighting,
 	Bloom,
 	BloomHorizontalBlur,
@@ -192,8 +193,7 @@ enum class Shader : uint8
 //Enumeration covering all special textures.
 enum class SpecialTexture : uint8
 {
-	ScreenSpaceAmbientOcclusionRandomKernel,
-	ScreenSpaceAmbientOcclusionSampleKernel,
+	ScreenSpaceAmbientOcclusionRandomNoise,
 
 	NumberOfSpecialTextures
 };
@@ -243,7 +243,6 @@ enum class TextureFormat : uint8
 {
 	R8_Byte,
 	R8G8B8A8_Byte,
-	R32G32B32_Float,
 	R32G32B32A32_Float
 };
 

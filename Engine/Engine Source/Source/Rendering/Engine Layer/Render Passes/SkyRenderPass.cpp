@@ -45,9 +45,9 @@ void SkyRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::SceneIntermediate);
 
 	//Add the descriptor set layouts.
-	SetNumberOfDescriptorSetLayouts(2);
-	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::Environment);
+	SetNumberOfRenderDataTableLayouts(2);
+	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(RenderDataTableLayout::Environment);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());

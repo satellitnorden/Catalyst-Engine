@@ -44,10 +44,10 @@ void DirectionalShadowHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::DirectionalShadowIntermediate);
 
-	//Add the descriptor set layouts.
-	SetNumberOfDescriptorSetLayouts(2);
-	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::GaussianBlur);
+	//Add the render data table layouts.
+	SetNumberOfRenderDataTableLayouts(2);
+	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(RenderDataTableLayout::GaussianBlur);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);

@@ -181,6 +181,7 @@ private:
 	//Enumeration covering all uniform buffers.
 	enum UniformBuffer : uint8
 	{
+		ScreenSpaceAmbientOcclusionSamples,
 		PostProcessingUniformDataBuffer,
 		NumberOfUniformBuffers
 	};
@@ -221,6 +222,9 @@ private:
 	//Container for all Vulkan render pass data.
 	StaticArray<VulkanRenderPassData, INDEX(RenderPassStage::NumberOfRenderPassStages)> vulkanRenderPassData;
 
+	//Container for all special textures.
+	StaticArray<Vulkan2DTexture* RESTRICT, INDEX(SpecialTexture::NumberOfSpecialTextures)> specialTextures;
+
 	//The Vulkan frame data.
 	VulkanFrameData frameData;
 
@@ -229,6 +233,11 @@ private:
 
 	//The current environment descriptor set.
 	VulkanDescriptorSet *RESTRICT currentEnvironmentDataDescriptorSet;
+
+	/*
+	*	Initializes all special textures.
+	*/
+	void InitializeSpecialTextures() NOEXCEPT;
 
 	/*
 	*	Initializes all render targets.

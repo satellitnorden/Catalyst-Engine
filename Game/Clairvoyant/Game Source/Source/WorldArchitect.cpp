@@ -62,7 +62,7 @@ namespace WorldAchitectConstants
 #else
 	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 4'096 };
 #endif
-	constexpr uint64 VEGETATION_DENSITY{ 100'000 };
+	constexpr uint64 VEGETATION_DENSITY{ 25'000 };
 
 	//Resource ID's.
 	constexpr HashString DAY_ENVIRONMENT_MATERIAL{ "DayEnvironmentMaterial" };
@@ -132,59 +132,59 @@ void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 void WorldArchitect::CreateTestScene() NOEXCEPT
 {
 	//Defines.
-	constexpr float randomFactor{ 100.0f };
+	constexpr float randomFactor{ 10.0f };
 
 	//Create the floor.
 	PhysicalModel planeModel{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Plane) };
 	planeModel.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::GRASS_1_MATERIAL));
 
 	StaticPhysicalEntity *const RESTRICT plane{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	plane->Initialize(planeModel, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1'000.0f, 1'000.0f, 1'000.0f));
+	plane->Initialize(planeModel, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(100.0f, 100.0f, 100.0f));
 
 	//Create the first tree.
 	PhysicalModel tree1Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::TREE_1_MODEL) };
 	tree1Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::TREE_1_MATERIAL));
 
 	StaticPhysicalEntity *const RESTRICT tree1{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	tree1->Initialize(tree1Model, Vector3(0.0f+ CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+	tree1->Initialize(tree1Model, Vector3(0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.075f, 0.075f, 0.075f));
 
 	//Create the second tree.
 	StaticPhysicalEntity *const RESTRICT tree2{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	tree2->Initialize(tree1Model, Vector3(0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+	tree2->Initialize(tree1Model, Vector3(0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.075f, 0.075f, 0.075f));
 
 	//Create the third tree.
 	StaticPhysicalEntity *const RESTRICT tree3{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	tree3->Initialize(tree1Model, Vector3(0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, -250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+	tree3->Initialize(tree1Model, Vector3(0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, -25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.075f, 0.075f, 0.075f));
 
 	//Create the fourth tree.
 	StaticPhysicalEntity *const RESTRICT tree4{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	tree4->Initialize(tree1Model, Vector3(250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+	tree4->Initialize(tree1Model, Vector3(25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.075f, 0.075f, 0.075f));
 
 	//Create the fifth tree.
 	StaticPhysicalEntity *const RESTRICT tree5{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	tree5->Initialize(tree1Model, Vector3(-250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.75f, 0.75f, 0.75f));
+	tree5->Initialize(tree1Model, Vector3(-25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 0.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.075f, 0.075f, 0.075f));
 
 	//Create the first stone.
 	PhysicalModel stone1Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_1_MODEL) };
 	stone1Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_1_MATERIAL));
 
 	StaticPhysicalEntity *const RESTRICT stone1{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	stone1->Initialize(stone1Model, Vector3(250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(0.0f, 0.0f, 0.0f), Vector3(2.0f, 2.0f, 2.0f));
+	stone1->Initialize(stone1Model, Vector3(25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f));
 
 	//Create the second stone.
 	StaticPhysicalEntity *const RESTRICT stone2{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	stone2->Initialize(stone1Model, Vector3(-250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, -250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(0.0f, 0.0f, 0.0f), Vector3(2.0f, 2.0f, 2.0f));
+	stone2->Initialize(stone1Model, Vector3(-25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, -25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f));
 
 	//Create the third stone.
 	PhysicalModel stone2Model{ ResourceLoader::GetPhysicalModel(WorldAchitectConstants::STONE_2_MODEL) };
 	stone2Model.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::STONE_2_MATERIAL));
 
 	StaticPhysicalEntity *const RESTRICT stone3{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	stone3->Initialize(stone2Model, Vector3(250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, -250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(1.75f, 1.75f, 1.75f));
+	stone3->Initialize(stone2Model, Vector3(25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, -25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.175f, 0.175f, 0.175f));
 
 	//Create the fourth stone.
 	StaticPhysicalEntity *const RESTRICT stone4{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	stone4->Initialize(stone2Model, Vector3(-250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(1.75f, 1.75f, 1.75f));
+	stone4->Initialize(stone2Model, Vector3(-25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.175f, 0.175f, 0.175f));
 
 	//Generate some vegetation.
 	DynamicArray<VegetationTransformation> vegetationTransformations;
@@ -193,13 +193,13 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 	for (uint64 i = 0; i < WorldAchitectConstants::VEGETATION_DENSITY; ++i)
 	{
 		//Generate a position.
-		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-500.0f, 500.0f), 100.0f, CatalystMath::RandomFloatInRange(-500.0f, 500.0f)) };
+		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-50.0f, 50.0f), 100.0f, CatalystMath::RandomFloatInRange(-50.0f, 50.0f)) };
 
-		vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(10.0f, 20.0f), CatalystMath::RandomFloatInRange(10.0f, 17.5f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
+		vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(2.0f, 4.0f), CatalystMath::RandomFloatInRange(0.75f, 1.5f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
 	}
 
 	VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
-	vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations, VegetationProperties(1'000.0f));
+	vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations, VegetationProperties(100.0f));
 }
 
 /*

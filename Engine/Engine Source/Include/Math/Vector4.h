@@ -109,6 +109,17 @@ public:
 	}
 
 	/*
+	*	Vector4 by scalar multiplication assignment overload.
+	*/
+	constexpr void operator*=(const float scalar) NOEXCEPT
+	{
+		X *= scalar;
+		Y *= scalar;
+		Z *= scalar;
+		W *= scalar;
+	}
+
+	/*
 	*	Vector4 by Vector4 addition overload.
 	*/
 	constexpr Vector4 operator+(const Vector4 &vector) const NOEXCEPT
@@ -159,6 +170,20 @@ public:
 	constexpr float LengthXYZ() const NOEXCEPT
 	{
 		return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z * Z));
+	}
+
+	/*
+	*	Normalizes the vector.
+	*/
+	constexpr void Normalize() NOEXCEPT
+	{
+		const float length{ Length() };
+		const float inverseLength{ 1.0f / length };
+
+		X *= inverseLength;
+		Y *= inverseLength;
+		Z *= inverseLength;
+		W *= inverseLength;
 	}
 
 	/*

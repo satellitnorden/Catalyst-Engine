@@ -45,10 +45,10 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::Scene);
 
 	//Add the descriptor set layouts.
-	SetNumberOfDescriptorSetLayouts(3);
-	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::Environment);
-	AddDescriptorSetLayout(RenderDataTableLayout::Ocean);
+	SetNumberOfRenderDataTableLayouts(3);
+	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(RenderDataTableLayout::Environment);
+	AddRenderDataTableLayout(RenderDataTableLayout::Ocean);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());

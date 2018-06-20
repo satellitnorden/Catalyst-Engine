@@ -45,9 +45,9 @@ void BloomVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::Bloom);
 
 	//Add the descriptor set layouts.
-	SetNumberOfDescriptorSetLayouts(2);
-	AddDescriptorSetLayout(RenderDataTableLayout::DynamicUniformData);
-	AddDescriptorSetLayout(RenderDataTableLayout::GaussianBlur);
+	SetNumberOfRenderDataTableLayouts(2);
+	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(RenderDataTableLayout::GaussianBlur);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);

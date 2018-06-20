@@ -56,7 +56,7 @@ public:
 private:
 
 	//The wind strength.
-	float windStrength{ 10.0f };
+	float windStrength{ 5.0f };
 
 	//The wind direction.
 	Vector3 windDirection{ -1.0f, 0.0f, -1.0f };
