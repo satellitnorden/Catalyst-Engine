@@ -7,15 +7,6 @@
 #include <Third Party Libraries/vulkan/vulkan.h>
 
 /*
-*	Turns RenderDoc debugging on/off.
-*/
-#if !defined(CATALYST_FINAL)
-	#define RENDERDOC_DEBUGGING false
-#else
-	#define RENDERDOC_DEBUGGING false
-#endif
-
-/*
 *	Turns Vulkan debugging on/off.
 */
 #if !defined(CATALYST_FINAL)
