@@ -62,7 +62,7 @@ namespace WorldAchitectConstants
 #else
 	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 4'096 };
 #endif
-	constexpr uint64 VEGETATION_DENSITY{ 25'000'000 };
+	constexpr uint64 VEGETATION_DENSITY{ 100'000 };
 
 	//Resource ID's.
 	constexpr HashString DAY_ENVIRONMENT_MATERIAL{ "DayEnvironmentMaterial" };
@@ -70,6 +70,7 @@ namespace WorldAchitectConstants
 
 	constexpr HashString FOG_1_MATERIAL{ "Fog1Material" };
 
+	constexpr HashString GRASS_1_MATERIAL{ "Grass1Material" };
 	constexpr HashString MARBLE_1_MATERIAL{ "Marble1Material" };
 	constexpr HashString STONE_1_MATERIAL{ "Stone1Material" };
 	constexpr HashString STONE_2_MATERIAL{ "Stone2Material" };
@@ -135,7 +136,7 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 
 	//Create the floor.
 	PhysicalModel planeModel{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Plane) };
-	planeModel.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::WOOD_1_MATERIAL));
+	planeModel.SetMaterial(ResourceLoader::GetPhysicalMaterial(WorldAchitectConstants::GRASS_1_MATERIAL));
 
 	StaticPhysicalEntity *const RESTRICT plane{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
 	plane->Initialize(planeModel, Vector3(0.0f, 100.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1'000.0f, 1'000.0f, 1'000.0f));
@@ -184,6 +185,21 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 	//Create the fourth stone.
 	StaticPhysicalEntity *const RESTRICT stone4{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
 	stone4->Initialize(stone2Model, Vector3(-250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 250.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(1.75f, 1.75f, 1.75f));
+
+	//Generate some vegetation.
+	DynamicArray<VegetationTransformation> vegetationTransformations;
+	vegetationTransformations.Reserve(WorldAchitectConstants::VEGETATION_DENSITY);
+
+	for (uint64 i = 0; i < WorldAchitectConstants::VEGETATION_DENSITY; ++i)
+	{
+		//Generate a position.
+		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-500.0f, 500.0f), 100.0f, CatalystMath::RandomFloatInRange(-500.0f, 500.0f)) };
+
+		vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(10.0f, 20.0f), CatalystMath::RandomFloatInRange(10.0f, 17.5f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
+	}
+
+	VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
+	vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations, VegetationProperties(1'000.0f));
 }
 
 /*

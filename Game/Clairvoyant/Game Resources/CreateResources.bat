@@ -4,7 +4,7 @@ ResourceCreator.exe EnvironmentMaterial Intermediate/Materials/NightEnvironmentM
 ResourceCreator.exe ParticleMaterial Intermediate/Materials/Fog1Material Fog1Material 5 Raw/Textures/Particles/Fog1.png
 ResourceCreator.exe ParticleMaterial Intermediate/Materials/ParticleMaterial ParticleMaterial 4 Raw/Textures/Particles/Particle.png
 
-ResourceCreator.exe PhysicalMaterial Intermediate/Materials/Grass1Material Grass1Material 7 Raw/Textures/Vegetation/Grass1/Albedo.png Raw/Textures/Vegetation/Grass1/Normal.png Raw/Textures/Vegetation/Grass1/Roughness.png Raw/Textures/Vegetation/Grass1/AmbientOcclusion.png None Raw/Textures/Vegetation/Grass1/Opacity.png
+ResourceCreator.exe PhysicalMaterial Intermediate/Materials/Grass1Material Grass1Material 7 Raw/Textures/General/Grass1Albedo.png Raw/Textures/General/Grass1Normal.png Raw/Textures/General/Grass1Roughness.png Raw/Textures/General/Grass1AmbientOcclusion.png None None
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/Marble1Material Marble1Material 7 Raw/Textures/General/Marble1Albedo.png Raw/Textures/General/Marble1Normal.png Raw/Textures/General/Marble1Roughness.png None Raw/Textures/General/Marble1AmbientOcclusion.png None
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/Stone1Material Stone1Material 5 Raw/Textures/StoneAlbedo.png Raw/Textures/StoneNormalMap.png Raw/Textures/StoneRoughness.png None Raw/Textures/StoneAmbientOcclusion.png Raw/Textures/StoneDisplacement.png
 ResourceCreator.exe PhysicalMaterial Intermediate/Materials/Stone2Material Stone2Material 9 Raw/Textures/ModelTextures/Stone2/Albedo.png Raw/Textures/ModelTextures/Stone2/Normal.png Raw/Textures/ModelTextures/Stone2/Roughness.png None  None None
