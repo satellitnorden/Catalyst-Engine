@@ -102,7 +102,7 @@ private:
 	bool hasBeenUpdated{ true };
 
 	//The bloom strength.
-	float bloomStrength{ 0.5f };
+	float bloomStrength{ 0.25f };
 
 	//The blur strength.
 	float blurStrength{ 0.0f };

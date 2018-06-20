@@ -9,18 +9,18 @@ class PostProcessingUniformData final
 public:
 
 	//The bloom strength.
-	float bloomStrength{ 0.5f };
+	float bloomStrength;
 
 	//The blur strength.
-	float blurStrength{ 0.0f };
+	float blurStrength;
 
 	//The chromatic aberration strength.
-	float chromaticAberrationStrength{ 0.0f };
+	float chromaticAberrationStrength;
 
 	//The saturation strength.
-	float saturationStrength{ 1.0f };
+	float saturationStrength;
 
 	//The sharpen strength.
-	float sharpenStrength{ 0.0f };
+	float sharpenStrength;
 
 };
