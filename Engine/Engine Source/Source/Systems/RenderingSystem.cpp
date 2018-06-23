@@ -370,6 +370,8 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	renderPasses[INDEX(RenderPassStage::DirectionalShadowHorizontalBlur)] = DirectionalShadowHorizontalBlurRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::DirectionalShadowVerticalBlur)] = DirectionalShadowVerticalBlurRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::SceenSpaceAmbientOcclusion)] = ScreenSpaceAmbientOcclusionRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::SceenSpaceAmbientOcclusionHorizontalBlur)] = ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassStage::SceenSpaceAmbientOcclusionVerticalBlur)] = ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::Lighting)] = LightingRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::Sky)] = SkyRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::Ocean)] = OceanRenderPass::Instance.Get();

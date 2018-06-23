@@ -10,7 +10,7 @@
 namespace RenderingConstants
 {
 	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE{ 16 };
-	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE{ 64 };
+	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE{ 8 };
 	constexpr uint32 SHADOW_MAP_RESOLUTION{ 2'048 };
 	constexpr float SHADOW_VIEW_DISTANCE{ 100.0f };
 }
@@ -41,6 +41,8 @@ enum class RenderPassStage : uint8
 	DirectionalShadowHorizontalBlur,
 	DirectionalShadowVerticalBlur,
 	SceenSpaceAmbientOcclusion,
+	SceenSpaceAmbientOcclusionHorizontalBlur,
+	SceenSpaceAmbientOcclusionVerticalBlur,
 	Lighting,
 	Sky,
 	Ocean,
@@ -109,6 +111,8 @@ enum class RenderDataTable : uint8
 	DirectionalShadowHorizontalBlur,
 	DirectionalShadowVerticalBlur,
 	ScreenSpaceAmbientOcclusion,
+	ScreenSpaceAmbientOcclusionHorizontalBlur,
+	ScreenSpaceAmbientOcclusionVerticalBlur,
 	Lighting,
 	Bloom,
 	BloomHorizontalBlur,
@@ -146,6 +150,7 @@ enum class RenderTarget : uint8
 	SceneBufferNormalDepth,
 	SceneBufferMaterialProperties,
 	ScreenSpaceAmbientOcclusion,
+	ScreenSpaceAmbientOcclusionIntermediate,
 	SceneIntermediate,
 	Scene,
 	Bloom,

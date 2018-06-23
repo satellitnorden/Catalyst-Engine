@@ -56,9 +56,10 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //Preprocessor defines.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS 0.025f
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS 0.1f
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES 64
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS 0.0f
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS 1.0f
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS_SQUARED SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS * SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES 8
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -99,9 +100,16 @@ vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
     return worldSpacePosition.xyz;
 }
 
+/*
+*   Returns the length of a vector squared, ignoring the Y component.
+*/
+float LengthSquared(vec3 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+}
+
 void main()
 {
-    /*
     //Sample the normal depth texture.
     vec4 normalDepthTextureSampler = texture(normalDepthTexture, fragmentTextureCoordinate);
 
@@ -126,7 +134,7 @@ void main()
     for (int i = 0; i < SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES; ++i)
     {
         vec3 currentSample = TBN * samples[i].xyz;
-        currentSample = fragmentWorldPosition + currentSample;
+        currentSample = fragmentWorldPosition + currentSample * SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS;
 
         vec4 offset = vec4(currentSample, 1.0f);
         offset = viewMatrix * offset;
@@ -134,17 +142,14 @@ void main()
         offset.xy = offset.xy * 0.5f + 0.5f;
 
         float sampleDepth = texture(normalDepthTexture, offset.xy).w;
+        vec3 actualSamplePosition = CalculateFragmentWorldPosition(offset.xy, sampleDepth);
 
-        //float rangeCheck = smoothstep(0.0f, 1.0f, SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS / abs(depth - sampleDepth));
-        occlusion += (sampleDepth >= offset.z + SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS ? 1.0f : 0.0f);    
+        float rangeCheck = smoothstep(0.0f, 1.0f, SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS_SQUARED / LengthSquared(currentSample - actualSamplePosition));
+        occlusion += (offset.z >= sampleDepth + SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS ? 1.0f : 0.0f) * rangeCheck;    
     }
 
     occlusion = 1.0f - (occlusion / SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES);
 
     //Write the fragment.
     fragment = vec4(occlusion);
-    */
-
-    //For now, don't do any calculations.
-    fragment = vec4(1.0f);
 }

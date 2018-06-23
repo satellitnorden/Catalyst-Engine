@@ -30,4 +30,12 @@ public:
 
 	}
 
+	/*
+	*	Division operator overload.	
+	*/
+	Resolution operator/(const uint32 scalar) NOEXCEPT
+	{
+		return Resolution(width / scalar, height / scalar);
+	}
+
 };

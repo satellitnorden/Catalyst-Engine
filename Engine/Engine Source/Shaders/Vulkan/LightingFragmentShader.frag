@@ -178,7 +178,7 @@ vec3 CalculateLight(vec3 lightDirection, vec3 radiance)
     vec3 specularComponent = nominator / denominator;
 
     //Return the combined components.
-    return (diffuseComponent * albedoColor / PI + specularComponent) * radiance * lightAngle;
+    return (diffuseComponent * albedoColor / PI + specularComponent) * radiance * lightAngle * screenSpaceAmbientOcclusion;
 }
 
 /*
@@ -249,7 +249,7 @@ vec3 CalculateDirectionalLight()
     vec3 lightDirection = -directionalLightDirection;
     vec3 radiance = mix(directionalLightColor, albedoColor, thinness) * directionalLightIntensity;
 
-    return CalculateLight(lightDirection, radiance) * CalculateDirectionalLightShadowMultiplier() * min(1.0f, screenSpaceAmbientOcclusion + 0.75f);
+    return CalculateLight(lightDirection, radiance) * CalculateDirectionalLightShadowMultiplier();
 }
 
 /*

@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/ScreenSpaceAmbientOcclusionRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
@@ -8,34 +8,34 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(ScreenSpaceAmbientOcclusionRenderPass);
+DEFINE_SINGLETON(ScreenSpaceAmbientOcclusionVerticalBlurRenderPass);
 
 /*
 *	Default constructor.
 */
-ScreenSpaceAmbientOcclusionRenderPass::ScreenSpaceAmbientOcclusionRenderPass() NOEXCEPT
+ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::ScreenSpaceAmbientOcclusionVerticalBlurRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		ScreenSpaceAmbientOcclusionRenderPass::Instance->InitializeInternal();
+		ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the screen space ambient occlusion render pass.
+*	Initializes the screen space ambient occlusion vertical blur render pass.
 */
-void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
+void ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::SceenSpaceAmbientOcclusion);
+	SetStage(RenderPassStage::SceenSpaceAmbientOcclusionVerticalBlur);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::ScreenSpaceAmbientOcclusionFragment);
+	SetFragmentShader(Shader::GaussianBlurFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
@@ -44,14 +44,14 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusion);
 
-	//Add the render data table layouts.
+	//Add the descriptor set layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
-	AddRenderDataTableLayout(RenderDataTableLayout::ScreenSpaceAmbientOcclusion);
+	AddRenderDataTableLayout(RenderDataTableLayout::GaussianBlur);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(Vector2));
+	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(GaussianBlurData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution() / 2);
@@ -71,23 +71,22 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		ScreenSpaceAmbientOcclusionRenderPass::Instance->RenderInternal();
+		ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
 	FinalizeInitialization();
 
-	//Set the noise scale.
-	Resolution resolution{ RenderingSystem::Instance->GetResolution() };
-
-	noiseScale.X = static_cast<float>(resolution.width) / 4.0f;
-	noiseScale.Y = static_cast<float>(resolution.height) / 4.0f;
+	//Initialize the gaussian blur data.
+	data.direction = Vector2(0.0f, 1.0f);
+	data.inverseResolution = Vector2(	1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().width / 2),
+										1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().height / 2));
 }
 
 /*
-*	Renders the screen space ambient occlusion.
+*	Renders the screen space ambient occlusion vertical blur.
 */
-void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
+void ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -95,17 +94,17 @@ void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the current dynamic uniform data descriptor set.
+	//Bind the render data tables
 	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::ScreenSpaceAmbientOcclusion)
+		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::ScreenSpaceAmbientOcclusionVerticalBlur)
 	};
 
 	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
-	//Push constants.
-	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(Vector2), &noiseScale);
+	//Push the constant data.
+	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(GaussianBlurData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);
