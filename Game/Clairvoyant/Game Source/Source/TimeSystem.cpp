@@ -22,8 +22,8 @@ namespace TimeSystemConstants
 	constexpr float INVERSE_MIDDAY{ 1.0f / 12.0f };
 	constexpr float STARTING_TIME{ 5.0f };
 	constexpr float SUN_MINIMUM_INTENSITY{ 0.0f };
-	constexpr float SUN_MAXIMUM_INTENSITY{ 250.0f };
-	constexpr float TIME_MULTIPLIER{ 250.0f };
+	constexpr float SUN_MAXIMUM_INTENSITY{ 100.0f };
+	constexpr float TIME_MULTIPLIER{ 100.0f };
 }
 
 /*
