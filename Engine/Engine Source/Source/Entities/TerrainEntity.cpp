@@ -96,12 +96,3 @@ void TerrainEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 		child->Scale(scaleVector);
 	}
 }
-
-/*
-*	Initializes this terrain entity.
-*/
-void TerrainEntity::Initialize(const uint32 terrainPlaneResolution, const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) NOEXCEPT
-{
-	//Initialize this terrain entity.
-	RenderingSystem::Instance->InitializeTerrainEntity(*this, terrainPlaneResolution, terrainProperties, terrainUniformData, layerWeightsTexture, terrainMaterial);
-}

@@ -62,9 +62,4 @@ public:
 	*/
 	void Scale(const Vector3 &scaleVector) NOEXCEPT final override;
 
-	/*
-	*	Initializes this terrain entity.
-	*/
-	void Initialize(const uint32 terrainPlaneResolution, const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) NOEXCEPT;
-
 };

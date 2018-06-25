@@ -150,7 +150,7 @@ void StaticPhysicalRenderPass::RenderInternal() NOEXCEPT
 		const uint64 offset{ 0 };
 
 		commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Vertex, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
-		commandBuffer->BindRenderDataTables(this, 1, 1, &renderComponent->descriptorSet);
+		commandBuffer->BindRenderDataTables(this, 1, 1, &renderComponent->renderDataTable);
 		commandBuffer->BindVertexBuffers(this, 1, &renderComponent->buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, renderComponent->buffer, renderComponent->indexOffset);
 		commandBuffer->DrawIndexed(this, renderComponent->indexCount, 1);

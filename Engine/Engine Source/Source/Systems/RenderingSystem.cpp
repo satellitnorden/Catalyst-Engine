@@ -302,10 +302,10 @@ void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &veg
 /*
 *	Initializes a terrain entity.
 */
-void RenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
+void RenderingSystem::InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT
 {
 	//Initialize the terrain entity via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->InitializeTerrainEntity(terrainEntity, terrainPlaneResolution, terrainProperties, terrainUniformData, layerWeightsTexture, terrainMaterial);
+	CURRENT_RENDERING_SYSTEM::Instance->InitializeTerrainEntity(entity, data);
 }
 
 /*

@@ -22,7 +22,7 @@ public:
 	Matrix4 modelMatrix;
 
 	//The descriptor set.
-	RenderDataTableHandle descriptorSet{ };
+	RenderDataTableHandle renderDataTable{ };
 
 	//The buffer.
 	ConstantBufferHandle buffer{ };

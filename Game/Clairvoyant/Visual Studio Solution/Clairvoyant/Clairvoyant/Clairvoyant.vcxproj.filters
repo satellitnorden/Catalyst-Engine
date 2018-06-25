@@ -184,6 +184,15 @@
     <Filter Include="Engine Source\Managers\Source">
       <UniqueIdentifier>{e530f220-b91e-4c89-9a7b-df85b1ee8539}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Entities\Initialization Data">
+      <UniqueIdentifier>{a1fc5534-d1a7-4555-bda5-3c4c324b301a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Entities\Initialization Data\Include">
+      <UniqueIdentifier>{42f7e4c3-2cb1-422f-adf9-b21512a4b040}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Entities\Initialization Data\Source">
+      <UniqueIdentifier>{a9570e08-7194-4029-98dc-526a26beb982}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantGameSystem.h">
@@ -842,6 +851,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.h">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Initialization Data\TerrainInitializationData.h">
+      <Filter>Engine Source\Entities\Initialization Data\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Initialization Data\EntityInitializationData.h">
+      <Filter>Engine Source\Entities\Initialization Data\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

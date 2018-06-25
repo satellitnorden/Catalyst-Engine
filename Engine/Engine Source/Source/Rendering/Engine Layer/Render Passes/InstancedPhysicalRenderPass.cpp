@@ -162,7 +162,7 @@ void InstancedPhysicalRenderPass::RenderInternal() NOEXCEPT
 			static_cast<const VkBuffer>(component->transformationsBuffer)
 		};
 
-		commandBuffer->BindRenderDataTables(this, 1, 1, &component->descriptorSet);
+		commandBuffer->BindRenderDataTables(this, 1, 1, &component->renderDataTable);
 		commandBuffer->BindVertexBuffers(this, 2, buffers.Data(), offsets.Data());
 		commandBuffer->BindIndexBuffer(this, component->modelBuffer, component->indexOffset);
 		commandBuffer->DrawIndexed(this, component->indexCount, component->instanceCount);

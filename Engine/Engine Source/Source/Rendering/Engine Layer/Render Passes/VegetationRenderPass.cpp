@@ -133,7 +133,7 @@ void VegetationRenderPass::RenderInternal() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{
-		commandBuffer->BindRenderDataTables(this, 1, 1, &component->descriptorSet);
+		commandBuffer->BindRenderDataTables(this, 1, 1, &component->renderDataTable);
 		
 		for (uint64 j = 0, size = component->shouldDrawGridCell.Size(); j < size; ++j)
 		{

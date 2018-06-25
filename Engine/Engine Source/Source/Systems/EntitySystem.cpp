@@ -3,6 +3,13 @@
 
 //Entities.
 #include <Entities/Entity.h>
+#include <Entities/Initialization Data/EntityInitializationData.h>
+
+//Multithreading.
+#include <Multithreading/ScopedLock.h>
+
+//Systems.
+#include <Systems/RenderingSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(EntitySystem);
@@ -25,10 +32,24 @@ void EntitySystem::ReleaseSystem() NOEXCEPT
 void EntitySystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
 	//Destroy all entities that are marked to be destroyed.
-	for (int64 i = entitiesToBeDestroyed.Size() - 1; i >= 0; --i)
+	for (int64 i = destructionQueue.Size() - 1; i >= 0; --i)
 	{
-		delete entitiesToBeDestroyed[i];
+		delete destructionQueue[i];
 	}
+}
+
+/*
+*	Requests the initialization of en entity.
+*	Usually one entity is initialized at each update of the entity system.
+*	But if the initialization is forced, it will take priority and will be initialized on the next update.
+*/
+void EntitySystem::RequestInitialization(const Entity* const RESTRICT entity, const void* const RESTRICT data, const bool force) NOEXCEPT
+{
+	//Lock the queue.
+	ScopedLock<Spinlock>{initializationQueueLock};
+
+	//Add the data.
+	initializationQueue.EmplaceSlow(entity, data, force);
 }
 
 /*
@@ -36,5 +57,75 @@ void EntitySystem::PreUpdateSystemSynchronous() NOEXCEPT
 */
 void EntitySystem::MarkForDestruction(Entity *const RESTRICT entityToBeDestroyed) NOEXCEPT
 {
-	entitiesToBeDestroyed.EmplaceSlow(entityToBeDestroyed);
+	destructionQueue.EmplaceSlow(entityToBeDestroyed);
+}
+
+/*
+*	Initializes entities.
+*/
+void EntitySystem::InitializeEntities() NOEXCEPT
+{
+	//If there's none to initialize, initialize none.
+	if (initializationQueue.Empty())
+	{
+		return;
+	}
+
+	//Iterate through all initialization request and check for the force flag.
+	uint64 forceInitialized{ 0 };
+
+	for (EntityInitializationData& data : initializationQueue)
+	{
+		if (data.force)
+		{
+			InitializeEntity(&data);
+
+			++forceInitialized;
+		}
+	}
+
+	//If none were force-initialized, just initialize one.
+	if (forceInitialized == 0)
+	{
+		EntityInitializationData *const RESTRICT data = &initializationQueue.Back();
+		InitializeEntity(data);
+		initializationQueue.Pop();
+	}
+}
+
+/*
+*	Initializes one entity.
+*/
+void EntitySystem::InitializeEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT
+{
+	switch (data->entity->GetEntityType())
+	{
+		case Entity::EntityType::Terrain:
+		{
+			InitializeTerrainEntity(data);
+
+			break;
+		}
+
+#if !defined(CATALYST_FINAL)
+		default:
+		{
+			PRINT_TO_CONSOLE("Invalid entity type!");
+
+			BREAKPOINT;
+		}
+#endif
+	}
+}
+
+/*
+*	Initializes a terrain entity.
+*/
+void EntitySystem::InitializeTerrainEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT
+{
+	//Initialize the terrain entity via the rendering system.
+	RenderingSystem::Instance->InitializeTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(data->entity), static_cast<const TerrainInitializationData *const RESTRICT>(data->data));
+
+	//Destroy the initialization data.
+	DestroyInitializationData<TerrainInitializationData>(static_cast<const TerrainInitializationData *const RESTRICT>(data->data));
 }

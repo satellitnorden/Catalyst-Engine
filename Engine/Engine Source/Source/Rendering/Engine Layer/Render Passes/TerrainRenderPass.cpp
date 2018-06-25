@@ -139,7 +139,7 @@ void TerrainRenderPass::RenderInternal() NOEXCEPT
 
 		const uint64 offset{ 0 };
 
-		commandBuffer->BindRenderDataTables(this, 1, 1, &component->descriptorSet);
+		commandBuffer->BindRenderDataTables(this, 1, 1, &component->renderDataTable);
 		commandBuffer->BindVertexBuffers(this, 1, &component->vertexAndIndexBuffer, &offset);
 		commandBuffer->BindIndexBuffer(this, component->vertexAndIndexBuffer, component->indexBufferOffset);
 		commandBuffer->DrawIndexed(this, component->indexCount, 1);

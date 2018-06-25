@@ -36,6 +36,7 @@ class RenderPass;
 class Resolution;
 class StaticPhysicalEntity;
 class TerrainEntity;
+class TerrainInitializationData;
 class TerrainMaterial;
 class TerrainUniformData;
 class TextureData;
@@ -107,7 +108,7 @@ public:
 	/*
 	*	Initializes a terrain entity.
 	*/
-	void InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT;
+	void InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT;
 
 	/*
 	*	Initializes a static physical entity.

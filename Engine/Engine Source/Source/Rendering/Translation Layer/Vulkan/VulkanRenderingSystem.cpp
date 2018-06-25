@@ -13,6 +13,7 @@
 #include <Entities/StaticPhysicalEntity.h>
 #include <Entities/TerrainEntity.h>
 #include <Entities/VegetationEntity.h>
+#include <Entities/Initialization Data/TerrainInitializationData.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
@@ -204,49 +205,49 @@ void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialD
 /*
 *	Initializes a terrain entity.
 */
-void VulkanRenderingSystem::InitializeTerrainEntity(TerrainEntity &terrainEntity, const uint32 terrainPlaneResolution, const CPUTexture2D &terrainProperties, const TerrainUniformData &terrainUniformData, const Texture2DHandle layerWeightsTexture, const TerrainMaterial &terrainMaterial) const NOEXCEPT
+void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT
 {
 	//Fill the terrain entity components with the relevant data.
-	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetTerrainFrustumCullingComponents()[terrainEntity.GetComponentsIndex()] };
-	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[terrainEntity.GetComponentsIndex()] };
-	TerrainRenderComponent &terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents()[terrainEntity.GetComponentsIndex()] };
+	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetTerrainFrustumCullingComponents()[entity->GetComponentsIndex()] };
+	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[entity->GetComponentsIndex()] };
+	TerrainRenderComponent &terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents()[entity->GetComponentsIndex()] };
 
-	frustumCullingComponent.axisAlignedBoundingBox.minimum = Vector3(-(terrainUniformData.terrainSize * 0.5f), -(terrainUniformData.terrainSize * 0.5f), -(terrainUniformData.terrainSize * 0.5f));
-	frustumCullingComponent.axisAlignedBoundingBox.maximum = Vector3(terrainUniformData.terrainSize * 0.5f, terrainUniformData.terrainSize * 0.5f, terrainUniformData.terrainSize * 0.5f);
+	frustumCullingComponent.axisAlignedBoundingBox.minimum = Vector3(-(data->terrainUniformData.terrainSize * 0.5f), -(data->terrainUniformData.terrainSize * 0.5f), -(data->terrainUniformData.terrainSize * 0.5f));
+	frustumCullingComponent.axisAlignedBoundingBox.maximum = Vector3(data->terrainUniformData.terrainSize * 0.5f, data->terrainUniformData.terrainSize * 0.5f, data->terrainUniformData.terrainSize * 0.5f);
 
-	terrainComponent.terrainUniformData = terrainUniformData;
+	terrainComponent.terrainUniformData = data->terrainUniformData;
 	terrainComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));
 	static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->UploadData(&terrainComponent.terrainUniformData);
-	terrainComponent.terrainProperties = terrainProperties;
+	terrainComponent.terrainProperties = data->terrainProperties;
 
 	//Create the descriptor set.
 	VulkanDescriptorSet newDescriptorSet;
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(RenderDataTableLayout::Terrain)]);
 
-	terrainRenderComponent.descriptorSet = newDescriptorSet.Get();
+	terrainRenderComponent.renderDataTable = newDescriptorSet.Get();
 
 	DynamicArray<VkWriteDescriptorSet, 18> writeDescriptorSets;
 
-	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(terrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
+	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(data->terrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
 	writeDescriptorSets.EmplaceFast(static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->GetWriteDescriptorSet(newDescriptorSet, 1));
 	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 2));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(layerWeightsTexture)->GetWriteDescriptorSet(newDescriptorSet, 3));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 4));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 5));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.firstLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 6));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 7));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 8));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.secondLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 9));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 10));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 11));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.thirdLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 12));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 13));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 14));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fourthLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 15));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 16));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 17));
-	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainMaterial.fifthLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 18));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->layerWeightsTexture)->GetWriteDescriptorSet(newDescriptorSet, 3));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.firstLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 4));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.firstLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 5));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.firstLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 6));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.secondLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 7));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.secondLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 8));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.secondLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 9));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.thirdLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 10));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.thirdLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 11));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.thirdLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 12));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.fourthLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 13));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.fourthLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 14));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.fourthLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 15));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.fifthLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 16));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.fifthLayerNormalMap)->GetWriteDescriptorSet(newDescriptorSet, 17));
+	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.fifthLayerMaterialProperties)->GetWriteDescriptorSet(newDescriptorSet, 18));
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 }
@@ -280,7 +281,7 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 
 	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
 	renderComponent.modelMatrix = Matrix4(position, rotation, scale);
-	renderComponent.descriptorSet = newDescriptorSet.Get();
+	renderComponent.renderDataTable = newDescriptorSet.Get();
 	renderComponent.buffer = model.GetBuffer();
 	renderComponent.indexOffset = model.GetIndexOffset();
 	renderComponent.indexCount = model.GetIndexCount();
@@ -319,7 +320,7 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 	//Fill the instanced physical entity components with the relevant data.
 	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents()[entity.GetComponentsIndex()] };
 
-	renderComponent.descriptorSet = newDescriptorSet.Get();
+	renderComponent.renderDataTable = newDescriptorSet.Get();
 	renderComponent.modelBuffer = model.GetBuffer();
 	renderComponent.transformationsBuffer = transformationsBuffer->Get();
 	renderComponent.indexOffset = model.GetIndexOffset();
@@ -372,7 +373,7 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 	VulkanConstantBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateConstantBuffer(transformationsData, transformationsDataSizes, 1);
 
 	//Fill the components with the relevant data.
-	renderComponent.descriptorSet = newDescriptorSet.Get();
+	renderComponent.renderDataTable = newDescriptorSet.Get();
 	renderComponent.transformationsBuffer = transformationsBuffer->Get();
 }
 
@@ -389,14 +390,14 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 	uniformBuffer->UploadData(&VulkanParticleSystemProperties(properties));
 
 	//Create the descriptor set.
-	VulkanDescriptorSet descriptorSet;
-	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSet, descriptorSetLayouts[INDEX(RenderDataTableLayout::ParticleSystem)]);
+	VulkanDescriptorSet renderDataTable;
+	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(renderDataTable, descriptorSetLayouts[INDEX(RenderDataTableLayout::ParticleSystem)]);
 
 	StaticArray<VkWriteDescriptorSet, 3> particleSystemWriteDescriptorSets
 	{
-		storageBuffer->GetWriteDescriptorSet(descriptorSet, 1),
-		uniformBuffer->GetWriteDescriptorSet(descriptorSet, 2),
-		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(descriptorSet, 3)
+		storageBuffer->GetWriteDescriptorSet(renderDataTable, 1),
+		uniformBuffer->GetWriteDescriptorSet(renderDataTable, 2),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(renderDataTable, 3)
 	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(particleSystemWriteDescriptorSets.Size()), particleSystemWriteDescriptorSets.Data(), 0, nullptr);
@@ -407,7 +408,7 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 
 	component.properties = properties;
 	component.propertiesUniformBuffer = uniformBuffer;
-	renderComponent.descriptorSet = descriptorSet.Get();
+	renderComponent.renderDataTable = renderDataTable.Get();
 }
 
 /*

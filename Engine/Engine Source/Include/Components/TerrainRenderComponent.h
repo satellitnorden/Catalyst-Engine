@@ -14,8 +14,8 @@ public:
 	//Denotes whether or not the terrain is in the view frustum.
 	bool isInViewFrustum;
 
-	//The descriptor set.
-	RenderDataTableHandle descriptorSet{ };
+	//The render data table.
+	RenderDataTableHandle renderDataTable{ };
 
 	//The vertex buffer.
 	ConstantBufferHandle vertexAndIndexBuffer{ };

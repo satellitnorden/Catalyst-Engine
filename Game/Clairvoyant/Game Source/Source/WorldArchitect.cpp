@@ -18,6 +18,7 @@
 #include <Entities/StaticPhysicalEntity.h>
 #include <Entities/TerrainEntity.h>
 #include <Entities/VegetationEntity.h>
+#include <Entities/Initialization Data/TerrainInitializationData.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
@@ -375,8 +376,16 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, float& extent
 	Texture2DHandle layerWeightsTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(layerWeights), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
 	//Create the terrain entity!
+	TerrainInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<TerrainInitializationData>() };
+
+	data->terrainProperties = terrainProperties;
+	data->terrainUniformData = TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, randomHeight, extent, extent * 0.05f, worldPosition + Vector3(0.0f, -(randomHeight * 0.1f), 0.0f));
+	data->layerWeightsTexture = layerWeightsTexture;
+	data->terrainMaterial = terrainMaterial;
+
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
-	terrain->Initialize(256, terrainProperties, TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, randomHeight, extent, extent * 0.05f, worldPosition + Vector3(0.0f, -(randomHeight * 0.1f), 0.0f)), layerWeightsTexture, terrainMaterial);
+
+	EntitySystem::Instance->RequestInitialization(terrain, data, false);
 }
 
 /*

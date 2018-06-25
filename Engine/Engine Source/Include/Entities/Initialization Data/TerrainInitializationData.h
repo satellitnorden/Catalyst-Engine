@@ -1,0 +1,29 @@
+#pragma once
+
+//Engine core.
+#include <Engine Core/EngineCore.h>
+
+//Rendering.
+#include <Rendering/Engine Layer/CPUTexture2D.h>
+#include <Rendering/Engine Layer/RenderingCore.h>
+#include <Rendering/Engine Layer/TerrainMaterial.h>
+#include <Rendering/Engine Layer/TerrainUniformData.h>
+
+class TerrainInitializationData final
+{
+
+public:
+
+	//The terrain properties.
+	CPUTexture2D terrainProperties;
+
+	//The terrain uniform data.
+	TerrainUniformData terrainUniformData;
+
+	//The layer weights texture.
+	Texture2DHandle layerWeightsTexture;
+
+	//The terrain material.
+	TerrainMaterial terrainMaterial;
+
+};

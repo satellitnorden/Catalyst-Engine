@@ -119,7 +119,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 	{
 		const float randomSeed{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
 		commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Geometry, 0, sizeof(float), &randomSeed);
-		commandBuffer->BindRenderDataTables(this, 1, 1, &component->descriptorSet);
+		commandBuffer->BindRenderDataTables(this, 1, 1, &component->renderDataTable);
 		commandBuffer->Draw(this, ParticleSystemRenderPassConstants::MAXIMUM_NUMBER_OF_PARTICLES, 1);
 	}
 

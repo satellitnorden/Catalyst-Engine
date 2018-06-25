@@ -12,6 +12,6 @@ class ParticleSystemRenderComponent final
 public:
 
 	//The descriptor set.
-	RenderDataTableHandle descriptorSet;
+	RenderDataTableHandle renderDataTable;
 
 };

@@ -20,6 +20,14 @@ public:
 	//Declare the entity class.
 	DECLARE_ENTITY_CLASS(Entity);
 
+	//Enumeration covering all entity types.
+	enum class EntityType : uint8
+	{
+		Terrain,
+
+		NumberOfEntityTypes
+	};
+
 	/*
 	*	Default constructor.
 	*/
@@ -34,6 +42,11 @@ public:
 	*	Returns the component index.
 	*/
 	uint64 GetComponentsIndex() const NOEXCEPT { return componentsIndex; }
+
+	/*
+	*	Returns the entity type.
+	*/
+	EntityType GetEntityType() const NOEXCEPT { return entityType; }
 
 	/*
 	*	Returns a pointer to the parent of this entity.
@@ -101,14 +114,17 @@ protected:
 	//The default scale.
 	static constexpr Vector3 defaultScale{ 1.0f, 1.0f, 1.0f };
 
+	//The entity type.
+	EntityType entityType{ EntityType::NumberOfEntityTypes };
+
+	//The components index for this entity.
+	uint64 componentsIndex;
+
 	//Pointer to this entity's parent.
 	Entity *RESTRICT parent{ nullptr };
 
 	//Pointers to this entity's children.
 	DynamicArray<Entity *RESTRICT> children;
-
-	//The components index for this entity.
-	uint64 componentsIndex;
 
 private:
 
