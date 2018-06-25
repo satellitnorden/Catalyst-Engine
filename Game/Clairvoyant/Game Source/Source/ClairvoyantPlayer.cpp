@@ -1,6 +1,9 @@
 //Header file.
 #include <ClairvoyantPlayer.h>
 
+//Components.
+#include <Components/ComponentManager.h>
+
 //Engine core.
 #include <Engine Core/HashString.h>
 
@@ -126,11 +129,22 @@ void ClairvoyantPlayer::Update(const float deltaTime) NOEXCEPT
 
 	if (constrainToGround)
 	{
-		//Always set the position to be 2 meters above the terrain.
-		Vector3 currentPosition{ GetPosition() };
-		const float terrainHeight{ PhysicsSystem::Instance->GetTerrainHeightAtPosition(currentPosition) };
-		const float heightDifference{ terrainHeight - currentPosition.Y };
+		if (ComponentManager::GetNumberOfTerrainComponents() > 0)
+		{
+			//Always set the position to be 2 meters above the terrain.
+			Vector3 currentPosition{ GetPosition() };
+			const float terrainHeight{ PhysicsSystem::Instance->GetTerrainHeightAtPosition(currentPosition) };
+			const float heightDifference{ terrainHeight - currentPosition.Y };
 
-		Move(Vector3(0.0f, heightDifference + 2.0f, 0.0f));
+			Move(Vector3(0.0f, heightDifference + 2.0f, 0.0f));
+		}
+
+		else
+		{
+			Vector3 currentPosition{ GetPosition() };
+			const float heightDifference{ 100.0f - currentPosition.Y };
+
+			Move(Vector3(0.0f, heightDifference + 2.0f, 0.0f));
+		}
 	}
 }

@@ -3803,10 +3803,10 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
-		data.EmplaceFast(10);
-		data.EmplaceFast(215);
-		data.EmplaceFast(35);
-		data.EmplaceFast(60);
+		data.EmplaceFast(143);
+		data.EmplaceFast(194);
+		data.EmplaceFast(245);
+		data.EmplaceFast(59);
 		data.EmplaceFast(23);
 		data.EmplaceFast(0);
 		data.EmplaceFast(4);

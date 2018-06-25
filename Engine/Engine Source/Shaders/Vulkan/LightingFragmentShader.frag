@@ -116,8 +116,9 @@ vec3 CalculateAmbient()
     vec3 reclectionDirection = reflect(-viewDirection, normalDirection);
     vec3 specularIrradiance = mix(texture(nightDiffuseTexture, normalDirection).rgb, texture(dayDiffuseTexture, normalDirection).rgb, environmentBlend);
     vec3 specular = mix(specularIrradiance, irradiance, roughness);
+    vec3 ambient = (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion * screenSpaceAmbientOcclusion;
 
-    return (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion * screenSpaceAmbientOcclusion;
+    return vec3(min(ambient.r, 1.0f), min(ambient.g, 1.0f), min(ambient.b, 1.0f));
 }
 
 /*
@@ -178,7 +179,7 @@ vec3 CalculateLight(vec3 lightDirection, vec3 radiance)
     vec3 specularComponent = nominator / denominator;
 
     //Return the combined components.
-    return (diffuseComponent * albedoColor / PI + specularComponent) * radiance * lightAngle * screenSpaceAmbientOcclusion;
+    return (diffuseComponent * albedoColor / PI + specularComponent) * radiance * lightAngle;
 }
 
 /*
@@ -249,7 +250,7 @@ vec3 CalculateDirectionalLight()
     vec3 lightDirection = -directionalLightDirection;
     vec3 radiance = mix(directionalLightColor, albedoColor, thinness) * directionalLightIntensity;
 
-    return CalculateLight(lightDirection, radiance) * CalculateDirectionalLightShadowMultiplier();
+    return CalculateLight(lightDirection, radiance) * CalculateDirectionalLightShadowMultiplier() * screenSpaceAmbientOcclusion;
 }
 
 /*

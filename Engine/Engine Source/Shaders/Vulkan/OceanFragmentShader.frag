@@ -86,7 +86,7 @@ vec3 viewDirection;
 */
 void CalculateNormalDirection()
 {
-    normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * 0.01f) + (vec2(totalGameTime, totalGameTime) * 0.025f)).xzy * 2.0f - 1.0f;
+    normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * 0.0075f) + (vec2(totalGameTime, totalGameTime) * 0.025f)).xzy * 2.0f - 1.0f;
     normalDirection = mix(normalDirection, vec3(0.0f, 1.0f, 0.0f), 0.75f);
 }
 

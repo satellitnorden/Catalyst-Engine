@@ -62,7 +62,7 @@ namespace WorldAchitectConstants
 #else
 	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 4'096 };
 #endif
-	constexpr uint64 VEGETATION_DENSITY{ 25'000 };
+	constexpr uint64 VEGETATION_DENSITY{ 50'000 };
 
 	//Resource ID's.
 	constexpr HashString DAY_ENVIRONMENT_MATERIAL{ "DayEnvironmentMaterial" };
@@ -195,11 +195,14 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 		//Generate a position.
 		Vector3 position{ Vector3(CatalystMath::RandomFloatInRange(-50.0f, 50.0f), 100.0f, CatalystMath::RandomFloatInRange(-50.0f, 50.0f)) };
 
-		vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(2.0f, 4.0f), CatalystMath::RandomFloatInRange(0.75f, 1.5f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
+		vegetationTransformations.EmplaceFast(position, Vector2(CatalystMath::RandomFloatInRange(2.0f, 4.0f), CatalystMath::RandomFloatInRange(0.75f, 1.25f)), CatalystMath::RandomFloatInRange(0.0f, 360.0f));
 	}
 
 	VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
 	vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations, VegetationProperties(100.0f));
+
+	//Generate the particle systems.
+	//GenerateParticleSystems(Vector3(0.0f, 0.0f, 0.0f) , 100.0f);
 }
 
 /*
@@ -230,7 +233,7 @@ void WorldArchitect::GenerateIsland(const Vector3 &worldPosition) NOEXCEPT
 	//GenerateVegetation(worldPosition, extent);
 
 	//Generate the particle systems.
-	//GenerateParticleSystems(worldPosition, extent);
+	GenerateParticleSystems(worldPosition, extent);
 }
 
 /*
