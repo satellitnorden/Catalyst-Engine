@@ -253,7 +253,7 @@ void WorldArchitect::GenerateIsland(const Vector3 &worldPosition) NOEXCEPT
 	//GenerateVegetation(worldPosition, extent);
 
 	//Generate the particle systems.
-	GenerateParticleSystems(worldPosition, extent);
+	//GenerateParticleSystems(worldPosition, extent);
 }
 
 /*
