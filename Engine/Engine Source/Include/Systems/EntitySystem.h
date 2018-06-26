@@ -34,6 +34,15 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
+	*	Requests the initialization of en entity.
+	*	Initialization will happen at the next synchronous update of the entity system.
+	*	Usually only one entity is initialized at each update of the entity system.
+	*	But if the initialization is forced, it will take priority and will be initialized on the next update.
+	*	So if N entities are forced for the next eneity system update, all of them will be initialized.
+	*/
+	void RequestInitialization(Entity* const RESTRICT entity, void* const RESTRICT data, const bool force) NOEXCEPT;
+
+	/*
 	*	Creates a new entity.
 	*/
 	template <class EntityClass, class... Arguments>
@@ -46,23 +55,12 @@ public:
 	RESTRICTED EntityClass* const RESTRICT CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) const NOEXCEPT;
 
 	/*
-	*	Requests the initialization of en entity.
-	*	Usually one entity is initialized at each update of the entity system.
-	*	But if the initialization is forced, it will take priority and will be initialized on the next update.
-	*/
-	void RequestInitialization(Entity* const RESTRICT entity, void* const RESTRICT data, const bool force) NOEXCEPT;
-
-	/*
 	*	Creates initialization data for an entity.
+	*	Returns a pointer to the newly created data.
+	*	The memory is freed after the entity system has finished initialization.
 	*/
 	template <class InitializationDataClass>
 	RESTRICTED InitializationDataClass* const RESTRICT CreateInitializationData() NOEXCEPT;
-
-	/*
-	*	Destroys initialization data for an entity.
-	*/
-	template <class InitializationDataClass>
-	void DestroyInitializationData(void* const RESTRICT data) NOEXCEPT;
 
 private:
 
@@ -86,6 +84,12 @@ private:
 	*	Initializes a terrain entity.
 	*/
 	void InitializeTerrainEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Destroys initialization data for an entity.
+	*/
+	template <class InitializationDataClass>
+	void DestroyInitializationData(void* const RESTRICT data) NOEXCEPT;
 
 };
 

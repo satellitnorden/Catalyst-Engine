@@ -199,7 +199,7 @@ void main()
     float transparency = 1.0f - clamp(dot(normalDirection, normalize(cameraWorldPosition - sceneWorldPosition)), 0.0f, 1.0f);
 
     //Calculate the final ocean color.
-    vec3 finalOceanColor = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneTextureSampler.rgb : mix(sceneTextureSampler.rgb, reflection, 1.0f);
+    vec3 finalOceanColor = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneTextureSampler.rgb : mix(sceneTextureSampler.rgb, reflection, transparency);
 
     //Apply the directional light.
     if (sceneWorldPosition.y < 0.0f && cameraWorldPosition.y > 0.0f)
