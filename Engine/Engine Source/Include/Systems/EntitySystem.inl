@@ -31,20 +31,20 @@ RESTRICTED EntityClass* const RESTRICT EntitySystem::CreateChildEntity(Entity *R
 template <class InitializationDataClass>
 RESTRICTED InitializationDataClass* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEPT
 {
-	const void* const RESTRICT memory{ MemoryUtilities::AllocateMemory(sizeof(InitializationDataClass)) };
+	void* const RESTRICT memory{ MemoryUtilities::AllocateMemory(sizeof(InitializationDataClass)) };
 
 	new (memory) InitializationDataClass();
 
-	return memory;
+	return static_cast<InitializationDataClass* const RESTRICT>(memory);
 }
 
 /*
 *	Destroys initialization data for an entity.
 */
 template <class InitializationDataClass>
-void EntitySystem::DestroyInitializationData(InitializationDataClass* const RESTRICT data) NOEXCEPT
+void EntitySystem::DestroyInitializationData(void* const RESTRICT data) NOEXCEPT
 {
-	data->~InitializationDataClass();
+	static_cast<InitializationDataClass* const RESTRICT>(data)->~InitializationDataClass();
 
 	MemoryUtilities::FreeMemory(data);
 }

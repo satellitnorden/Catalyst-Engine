@@ -15,8 +15,8 @@ DEFINE_ENTITY_CLASS(TerrainEntity);
 */
 TerrainEntity::TerrainEntity() NOEXCEPT
 {
-	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewTerrainComponentsIndex();
+	//Set the entity type.
+	entityType = EntityType::Terrain;
 
 	//Add this terrain entity to the universal container.
 	Instances.EmplaceSlow(this);

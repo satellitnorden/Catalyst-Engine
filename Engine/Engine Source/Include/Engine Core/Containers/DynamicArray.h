@@ -249,11 +249,21 @@ public:
 	}
 
 	/*
+	*	Erases the element at the specified index in the array. Does not respect order of elements.
+	*/
+	void Erase(const uint64 index) NOEXCEPT
+	{
+		array[index] = std::move(Back());
+
+		Pop();
+	}
+
+	/*
 	*	Finds and erases an element in the array. Does not respect order of elements.
 	*/
 	void Erase(const ObjectType &objectToErase) NOEXCEPT
 	{
-		for (auto object : *this)
+		for (ObjectType &object : *this)
 		{
 			if (object == objectToErase)
 			{

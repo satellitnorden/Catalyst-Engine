@@ -3,6 +3,10 @@
 //Engine core.
 #include <Engine Core/EngineCore.h>
 
+//Multithreading.
+#include <Multithreading/Semaphore.h>
+#include <Multithreading/Task.h>
+
 //Forward declarations.
 class DirectionalLightEntity;
 class Vector3;
@@ -31,6 +35,17 @@ public:
 	void Update(const float deltaTime) NOEXCEPT;
 
 private:
+
+	//The generation task.
+	Task generationTask;
+
+	//The generation semaphore.
+	Semaphore generationSemaphore;
+
+	/*
+	*	Initializes the generation task.
+	*/
+	void InitializeGenerationTask() NOEXCEPT;
 
 	/*
 	*	Creates the test scene.

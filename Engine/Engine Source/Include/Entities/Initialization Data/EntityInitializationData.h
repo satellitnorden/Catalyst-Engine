@@ -19,7 +19,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	EntityInitializationData(const Entity* const RESTRICT initialEntity, const void* const RESTRICT initialData, const bool initialForce) NOEXCEPT
+	EntityInitializationData(Entity* const RESTRICT initialEntity, void* const RESTRICT initialData, const bool initialForce) NOEXCEPT
 		:
 		entity(initialEntity),
 		data(initialData),
@@ -29,12 +29,12 @@ public:
 	}
 
 	//The entity to initialize.
-	const Entity* const RESTRICT entity;
+	Entity* RESTRICT entity;
 
 	//The initialization data.
-	const void* const RESTRICT data;
+	void* RESTRICT data;
 
 	//Denotes whether or not to force this initialization.
-	const bool force;
+	bool force;
 
 };

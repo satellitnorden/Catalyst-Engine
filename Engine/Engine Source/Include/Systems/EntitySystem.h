@@ -50,12 +50,7 @@ public:
 	*	Usually one entity is initialized at each update of the entity system.
 	*	But if the initialization is forced, it will take priority and will be initialized on the next update.
 	*/
-	void RequestInitialization(const Entity* const RESTRICT entity, const void* const RESTRICT data, const bool force) NOEXCEPT;
-
-	/*
-	*	Marks a given entity for destruction.
-	*/
-	void MarkForDestruction(Entity *RESTRICT entityToBeDestroyed) NOEXCEPT;
+	void RequestInitialization(Entity* const RESTRICT entity, void* const RESTRICT data, const bool force) NOEXCEPT;
 
 	/*
 	*	Creates initialization data for an entity.
@@ -67,7 +62,7 @@ public:
 	*	Destroys initialization data for an entity.
 	*/
 	template <class InitializationDataClass>
-	void DestroyInitializationData(InitializationDataClass* const RESTRICT data) NOEXCEPT;
+	void DestroyInitializationData(void* const RESTRICT data) NOEXCEPT;
 
 private:
 
@@ -76,9 +71,6 @@ private:
 
 	//Container for all entities that have requested initialization.
 	DynamicArray<EntityInitializationData> initializationQueue;
-
-	//Container for all entities that have requested destruction.
-	DynamicArray<Entity *RESTRICT> destructionQueue;
 
 	/*
 	*	Initializes entities.

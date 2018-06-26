@@ -44,6 +44,11 @@ public:
 	uint64 GetComponentsIndex() const NOEXCEPT { return componentsIndex; }
 
 	/*
+	*	Sets the component index.
+	*/
+	void SetComponentsIndex(const uint64 newComponentsIndex) NOEXCEPT { componentsIndex = newComponentsIndex; }
+
+	/*
 	*	Returns the entity type.
 	*/
 	EntityType GetEntityType() const NOEXCEPT { return entityType; }

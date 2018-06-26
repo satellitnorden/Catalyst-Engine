@@ -108,8 +108,14 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Set the ocean material.
 	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(WorldAchitectConstants::DEFAULT_WATER_MATERIAL));
 
+	//Initialize the generation task.
+	InitializeGenerationTask();
+
+	//Execute the generation task.
+	TaskSystem::Instance->ExecuteTask(&generationTask);
+
 	//Create the test scene.
-	CreateTestScene();
+	//CreateTestScene();
 
 	//Generate the island.
 	//GenerateIsland(Vector3(0.0f, 0.0f, 0.0f));
@@ -125,6 +131,19 @@ void WorldArchitect::Initialize() NOEXCEPT
 void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 {
 
+}
+
+/*
+*	Initializes the generation task.
+*/
+void WorldArchitect::InitializeGenerationTask() NOEXCEPT
+{
+	generationTask.function = [](void *const RESTRICT)
+	{
+		WorldArchitect::Instance->GenerateIsland(Vector3(0.0f, 0.0f, 0.0f));
+	};
+	generationTask.arguments = nullptr;
+	generationTask.semaphore = &generationSemaphore;
 }
 
 /*
