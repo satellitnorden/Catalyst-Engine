@@ -120,6 +120,7 @@ void LevelOfDetailSystem::CaltulateTerrainLevelOfDetail() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++component, ++renderComponent)
 	{
+		/*
 		const float distance{ Vector3::Length(cameraWorldPosition - component->terrainUniformData.terrainPosition) };
 
 		if (distance < component->terrainUniformData.terrainSize)
@@ -163,5 +164,10 @@ void LevelOfDetailSystem::CaltulateTerrainLevelOfDetail() NOEXCEPT
 			renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_8x8)];
 			renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_8x8)];
 		}
+		*/
+
+		renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_8x8)];
+		renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_8x8)];
+		renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_8x8)];
 	}
 }

@@ -19,7 +19,7 @@ public:
 	*/
 	ScopedLock(LockType &newLock) NOEXCEPT
 		:
-	lock(newLock)
+		lock(newLock)
 	{
 		//Lock the lock.
 		lock.Lock();

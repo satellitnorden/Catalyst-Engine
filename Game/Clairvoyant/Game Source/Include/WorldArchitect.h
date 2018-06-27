@@ -53,19 +53,14 @@ private:
 	void CreateTestScene() NOEXCEPT;
 
 	/*
-	*	Given an X and Y coordinate in the 0.0f-1.0f range, calculate and return the island falloff multiplier.
+	*	Generates a new patch.
 	*/
-	float CalculateIslandFalloffMultiplier(const float xCoordinate, const float yCoordinate) NOEXCEPT;
-
-	/*
-	*	Generates a new island.
-	*/
-	void GenerateIsland(const Vector3 &worldPosition) NOEXCEPT;
+	void GeneratePatch(const Vector3 &worldPosition) NOEXCEPT;
 
 	/*
 	*	Generates the terrain.
 	*/
-	void GenerateTerrain(const Vector3 &worldPosition, float& extent) NOEXCEPT;
+	void GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT;
 
 	/*
 	*	Generates the vegetation.

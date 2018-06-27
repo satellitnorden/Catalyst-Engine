@@ -47,6 +47,10 @@ public:
 	*/
 	static constexpr float GenerateNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
 	{
+		X = CatalystMath::Absolute(X);
+		Y = CatalystMath::Absolute(Y);
+		Z = CatalystMath::Absolute(Z);
+
 		X += randomOffset;
 		Y += randomOffset;
 		Z += randomOffset;
