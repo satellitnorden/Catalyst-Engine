@@ -47,13 +47,13 @@ public:
 	*/
 	static constexpr float GenerateNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
 	{
-		X = CatalystMath::Absolute(X);
-		Y = CatalystMath::Absolute(Y);
-		Z = CatalystMath::Absolute(Z);
-
 		X += randomOffset;
 		Y += randomOffset;
 		Z += randomOffset;
+
+		X = CatalystMath::Absolute(X);
+		Y = CatalystMath::Absolute(Y);
+		Z = CatalystMath::Absolute(Z);
 
 		uint32 xInt = static_cast<uint32>(X) & 255;
 		uint32 yInt = static_cast<uint32>(Y) & 255;
@@ -68,13 +68,13 @@ public:
 		float w = Fade(zFloat);
 
 		uint32 aaa = permutations[permutations[permutations[xInt] + yInt] + zInt];
-		uint32 aba = permutations[permutations[permutations[xInt] + yInt + 1] + zInt];
-		uint32 aab = permutations[permutations[permutations[xInt] + yInt] + zInt + 1];
-		uint32 abb = permutations[permutations[permutations[xInt] + yInt + 1] + zInt + 1];
-		uint32 baa = permutations[permutations[permutations[xInt + 1] + yInt] + zInt];
-		uint32 bba = permutations[permutations[permutations[xInt + 1] + yInt + 1] + zInt];
-		uint32 bab = permutations[permutations[permutations[xInt + 1] + yInt] + zInt + 1];
-		uint32 bbb = permutations[permutations[permutations[xInt + 1] + yInt + 1] + zInt + 1];
+		uint32 aba = permutations[permutations[permutations[xInt] + Increment(yInt)] + zInt];
+		uint32 aab = permutations[permutations[permutations[xInt] + yInt] + Increment(zInt)];
+		uint32 abb = permutations[permutations[permutations[xInt] + Increment(yInt)] + Increment(zInt)];
+		uint32 baa = permutations[permutations[permutations[Increment(xInt)] + yInt] + zInt];
+		uint32 bba = permutations[permutations[permutations[Increment(xInt)] + Increment(yInt)] + zInt];
+		uint32 bab = permutations[permutations[permutations[Increment(xInt)] + yInt] + Increment(zInt)];
+		uint32 bbb = permutations[permutations[permutations[Increment(xInt)] + Increment(yInt)] + Increment(zInt)];
 
 		float x1 = CatalystMath::LinearlyInterpolate(Gradient(aaa, xFloat, yFloat, zFloat), Gradient(baa, xFloat - 1.0f, yFloat, zFloat), u);
 
@@ -120,6 +120,14 @@ public:
 	static constexpr float Fade(const float value) NOEXCEPT
 	{
 		return value * value * value * (value * (value * 6.0f - 15.0f) + 10.0f);
+	}
+
+	/*
+	*	Increments a number.
+	*/
+	static constexpr uint32 Increment(uint32 number) NOEXCEPT
+	{
+		return (++number) & 255;
 	}
 
 	/*

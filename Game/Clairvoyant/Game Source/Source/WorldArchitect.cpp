@@ -58,7 +58,7 @@ DEFINE_SINGLETON(WorldArchitect);
 //World architects constants.
 namespace WorldAchitectConstants
 {
-	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 256 };
+	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 128 };
 	constexpr float TERRAIN_EXTENT{ 100.0f };
 	constexpr uint64 VEGETATION_DENSITY{ 50'000 };
 
@@ -137,17 +137,19 @@ void WorldArchitect::InitializeGenerationTask() NOEXCEPT
 {
 	generationTask.function = [](void *const RESTRICT)
 	{
-		WorldArchitect::Instance->GeneratePatch(Vector3(-WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, -WorldAchitectConstants::TERRAIN_EXTENT));
-		WorldArchitect::Instance->GeneratePatch(Vector3(-WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, 0.0f));
-		WorldArchitect::Instance->GeneratePatch(Vector3(-WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, WorldAchitectConstants::TERRAIN_EXTENT));
+		constexpr uint8 GRID_SIZE{ 9 };
 
-		WorldArchitect::Instance->GeneratePatch(Vector3(0.0f, 0.0f, -WorldAchitectConstants::TERRAIN_EXTENT));
-		WorldArchitect::Instance->GeneratePatch(Vector3(0.0f, 0.0f, 0.0f));
-		WorldArchitect::Instance->GeneratePatch(Vector3(0.0f, 0.0f, WorldAchitectConstants::TERRAIN_EXTENT));
-
-		WorldArchitect::Instance->GeneratePatch(Vector3(WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, -WorldAchitectConstants::TERRAIN_EXTENT));
-		WorldArchitect::Instance->GeneratePatch(Vector3(WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, 0.0f));
-		WorldArchitect::Instance->GeneratePatch(Vector3(WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, WorldAchitectConstants::TERRAIN_EXTENT));
+		for (uint8 i = 0; i < GRID_SIZE; ++i)
+		{
+			for (uint8 j = 0; j < GRID_SIZE; ++j)
+			{
+				const Vector3 position{	(-WorldAchitectConstants::TERRAIN_EXTENT * static_cast<float>(GRID_SIZE - 1)) + (WorldAchitectConstants::TERRAIN_EXTENT * static_cast<float>(i)),
+										0.0f,
+										(-WorldAchitectConstants::TERRAIN_EXTENT * static_cast<float>(GRID_SIZE - 1)) + (WorldAchitectConstants::TERRAIN_EXTENT * static_cast<float>(j)) };
+			
+				WorldArchitect::Instance->GeneratePatch(position, i, j);
+			}
+		}
 	};
 	generationTask.arguments = nullptr;
 	generationTask.semaphore = &generationSemaphore;
@@ -235,10 +237,10 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 /*
 *	Generates a new patch.
 */
-void WorldArchitect::GeneratePatch(const Vector3 &worldPosition) NOEXCEPT
+void WorldArchitect::GeneratePatch(const Vector3 &worldPosition, const uint8 gridPositionX, const uint8 gridPositionY) NOEXCEPT
 {
 	//Generate the terrain.
-	GenerateTerrain(worldPosition);
+	GenerateTerrain(worldPosition, gridPositionX, gridPositionY);
 
 	//Generate the vegetation.
 	//GenerateVegetation(worldPosition, extent);
@@ -250,25 +252,28 @@ void WorldArchitect::GeneratePatch(const Vector3 &worldPosition) NOEXCEPT
 /*
 *	Generates the terrain.
 */
-void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT
+void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, const uint8 gridPositionX, const uint8 gridPositionY) NOEXCEPT
 {
 	//Create the terrain properties!
 	CPUTexture2D terrainProperties{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
 
 	static const float randomOffset{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
 	
-	constexpr float height{ 100.0f };
+	constexpr float height{ 75.0f };
 	constexpr float startingFrequency{ 1.0f };
 	constexpr float frequenyMultiplier{ 2.0f };
 	constexpr float contributionMultiplier{ 0.25 };
+
+	const float xOffset{ 1.0f * static_cast<float>(gridPositionX) };
+	const float yOffset{ 1.0f * static_cast<float>(gridPositionY) };
 
 	for (uint32 i = 0; i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++i)
 	{
 		for (uint32 j = 0; j < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++j)
 		{
 			//Calculate the X and Y coordinate.
-			const float xCoordinate{ (static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION)) + (worldPosition.X / WorldAchitectConstants::TERRAIN_EXTENT) };
-			const float yCoordinate{ (static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION)) + (worldPosition.Z / WorldAchitectConstants::TERRAIN_EXTENT) };
+			const float xCoordinate{ static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) + xOffset };
+			const float yCoordinate{ static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) + yOffset };
 
 			//Set the height.
 			Vector4 &terrainPropery{ terrainProperties.At(i, j) };
@@ -330,8 +335,8 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT
 		for (uint32 j = 0; j < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++j)
 		{
 			//Get the height.
-			const float height{ terrainProperties.At(i, j).W };
-			const float worldHeight{ height * height - height * 0.1f };
+			const float terrainHeight{ terrainProperties.At(i, j).W };
+			const float worldHeight{ terrainHeight * height - height * 0.1f };
 
 			//Set the weight of the first grass layer.
 			Vector4 &layerWeight{ layerWeights.At(i, j) };
@@ -385,7 +390,8 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT
 	TerrainInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<TerrainInitializationData>() };
 
 	data->terrainProperties = terrainProperties;
-	data->terrainUniformData = TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, height, WorldAchitectConstants::TERRAIN_EXTENT, WorldAchitectConstants::TERRAIN_EXTENT * 0.05f, worldPosition);
+	//data->terrainUniformData = TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, height, WorldAchitectConstants::TERRAIN_EXTENT, WorldAchitectConstants::TERRAIN_EXTENT * 0.05f, worldPosition);
+	data->terrainUniformData = TerrainUniformData(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, height, WorldAchitectConstants::TERRAIN_EXTENT, 1.0f, worldPosition);
 	data->layerWeightsTexture = layerWeightsTexture;
 	data->terrainMaterial = terrainMaterial;
 

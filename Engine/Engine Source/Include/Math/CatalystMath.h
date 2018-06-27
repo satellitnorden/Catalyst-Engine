@@ -129,7 +129,7 @@ public:
 	template <class IntegerType>
 	static constexpr IntegerType Floor(const float number) NOEXCEPT
 	{
-		return static_cast<IntegerType>(number);
+		return number > 0.0f ? static_cast<IntegerType>(number) : static_cast<IntegerType>(number - 0.5f);
 	}
 
 	/*

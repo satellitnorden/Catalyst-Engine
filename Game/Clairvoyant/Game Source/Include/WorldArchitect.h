@@ -55,12 +55,12 @@ private:
 	/*
 	*	Generates a new patch.
 	*/
-	void GeneratePatch(const Vector3 &worldPosition) NOEXCEPT;
+	void GeneratePatch(const Vector3 &worldPosition, const uint8 gridPositionX, const uint8 gridPositionY) NOEXCEPT;
 
 	/*
 	*	Generates the terrain.
 	*/
-	void GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT;
+	void GenerateTerrain(const Vector3 &worldPosition, const uint8 gridPositionX, const uint8 gridPositionY) NOEXCEPT;
 
 	/*
 	*	Generates the vegetation.

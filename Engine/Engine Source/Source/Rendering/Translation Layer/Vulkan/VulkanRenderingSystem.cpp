@@ -228,7 +228,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 
 	DynamicArray<VkWriteDescriptorSet, 18> writeDescriptorSets;
 
-	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(data->terrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
+	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(data->terrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
 
 	writeDescriptorSets.EmplaceFast(static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->GetWriteDescriptorSet(newDescriptorSet, 1));
 	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 2));
