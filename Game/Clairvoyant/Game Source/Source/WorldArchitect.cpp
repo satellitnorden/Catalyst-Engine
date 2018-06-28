@@ -60,6 +60,7 @@ namespace WorldAchitectConstants
 {
 	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 128 };
 	constexpr float TERRAIN_EXTENT{ 100.0f };
+	constexpr float TERRAIN_HEIGHT{ 75 };
 	constexpr uint64 VEGETATION_DENSITY{ 50'000 };
 
 	//Resource ID's.
@@ -137,7 +138,7 @@ void WorldArchitect::InitializeGenerationTask() NOEXCEPT
 {
 	generationTask.function = [](void *const RESTRICT)
 	{
-		constexpr uint8 GRID_SIZE{ 9 };
+		constexpr uint8 GRID_SIZE{ 15 };
 
 		for (uint8 i = 0; i < GRID_SIZE; ++i)
 		{
@@ -259,13 +260,9 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, const uint8 g
 
 	static const float randomOffset{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
 	
-	constexpr float height{ 75.0f };
 	constexpr float startingFrequency{ 1.0f };
 	constexpr float frequenyMultiplier{ 2.0f };
 	constexpr float contributionMultiplier{ 0.25 };
-
-	//const float xOffset{ 1.0f * static_cast<float>(gridPositionX) };
-	//const float yOffset{ 1.0f * static_cast<float>(gridPositionY) };
 
 	const float xOffset{ worldPosition.X / WorldAchitectConstants::TERRAIN_EXTENT };
 	const float yOffset{ worldPosition.Z / WorldAchitectConstants::TERRAIN_EXTENT };
@@ -275,8 +272,8 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, const uint8 g
 		for (uint32 j = 0; j < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++j)
 		{
 			//Calculate the X and Y coordinate.
-			const float xCoordinate{ static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) + xOffset };
-			const float yCoordinate{ static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION) + yOffset };
+			const float xCoordinate{ static_cast<float>(i) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION - 1) + xOffset };
+			const float yCoordinate{ static_cast<float>(j) / static_cast<float>(WorldAchitectConstants::HEIGHT_MAP_RESOLUTION - 1) + yOffset };
 
 			//Set the height.
 			Vector4 &terrainPropery{ terrainProperties.At(i, j) };
@@ -309,11 +306,11 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, const uint8 g
 	{
 		for (uint32 j = 0; j < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++j)
 		{
-			const Vector3 left{ -heightMapPositionoffset, terrainProperties.At(i > 0 ? i - 1 : i, j).W * height, 0.0f };
-			const Vector3 right{ heightMapPositionoffset, terrainProperties.At(i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION - 1 ? i + 1 : i, j).W * height, 0.0f };
-			const Vector3 up{ 0.0f, terrainProperties.At(i, j > 0 ? j - 1 : j).W * height, -heightMapPositionoffset };
-			const Vector3 down{ 0.0f, terrainProperties.At(i, j < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION - 1 ? j + 1 : j).W * height, heightMapPositionoffset };
-			const Vector3 center{ 0.0f, terrainProperties.At(i, j).W * height, 0.0f };
+			const Vector3 left{ -heightMapPositionoffset, terrainProperties.At(i > 0 ? i - 1 : i, j).W * WorldAchitectConstants::TERRAIN_HEIGHT, 0.0f };
+			const Vector3 right{ heightMapPositionoffset, terrainProperties.At(i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION - 1 ? i + 1 : i, j).W * WorldAchitectConstants::TERRAIN_HEIGHT, 0.0f };
+			const Vector3 up{ 0.0f, terrainProperties.At(i, j > 0 ? j - 1 : j).W * WorldAchitectConstants::TERRAIN_HEIGHT, -heightMapPositionoffset };
+			const Vector3 down{ 0.0f, terrainProperties.At(i, j < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION - 1 ? j + 1 : j).W * WorldAchitectConstants::TERRAIN_HEIGHT, heightMapPositionoffset };
+			const Vector3 center{ 0.0f, terrainProperties.At(i, j).W * WorldAchitectConstants::TERRAIN_HEIGHT, 0.0f };
 
 			const Vector3 normal1{ Vector3::CrossProduct(up - center, left - center) };
 			const Vector3 normal2{ Vector3::CrossProduct(right - center, up - center) };
@@ -339,7 +336,7 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, const uint8 g
 		{
 			//Get the height.
 			const float terrainHeight{ terrainProperties.At(i, j).W };
-			const float worldHeight{ terrainHeight * height - height * 0.1f };
+			const float worldHeight{ terrainHeight * WorldAchitectConstants::TERRAIN_HEIGHT };
 
 			//Set the weight of the first grass layer.
 			Vector4 &layerWeight{ layerWeights.At(i, j) };
@@ -394,7 +391,7 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, const uint8 g
 
 	data->terrainProperties = terrainProperties;
 	//data->terrainUniformData = TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, height, WorldAchitectConstants::TERRAIN_EXTENT, WorldAchitectConstants::TERRAIN_EXTENT * 0.05f, worldPosition);
-	data->terrainUniformData = TerrainUniformData(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, height, WorldAchitectConstants::TERRAIN_EXTENT, 1.0f, worldPosition);
+	data->terrainUniformData = TerrainUniformData(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, WorldAchitectConstants::TERRAIN_HEIGHT, WorldAchitectConstants::TERRAIN_EXTENT, 1.0f, worldPosition);
 	data->layerWeightsTexture = layerWeightsTexture;
 	data->terrainMaterial = terrainMaterial;
 
