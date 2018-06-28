@@ -161,9 +161,9 @@ namespace RenderingUtilities
 				const float xTextureCoordinate{ static_cast<float>(i) / static_cast<float>(resolution) };
 				const float yTextureCoordinate{ static_cast<float>(j) / static_cast<float>(resolution) };
 
-				vertices.EmplaceFast(-1.0f + (2.0f * static_cast<float>(i) / static_cast<float>(resolution)));
+				vertices.EmplaceFast(-1.0f + (2.0f * xTextureCoordinate));
 				vertices.EmplaceFast(0.0f);
-				vertices.EmplaceFast(-1.0f + (2.0f * static_cast<float>(j) / static_cast<float>(resolution)));
+				vertices.EmplaceFast(-1.0f + (2.0f * yTextureCoordinate));
 				vertices.EmplaceFast(xTextureCoordinate);
 				vertices.EmplaceFast(yTextureCoordinate);
 
