@@ -51,26 +51,26 @@ public:
 		Y += randomOffset;
 		Z += randomOffset;
 
-		uint32 xInt = static_cast<uint32>(X) & 255;
-		uint32 yInt = static_cast<uint32>(Y) & 255;
-		uint32 zInt = static_cast<uint32>(Z) & 255;
+		int32 xInt = static_cast<int32>(CatalystMath::Floor<float>(X)) & 255;
+		int32 yInt = static_cast<int32>(CatalystMath::Floor<float>(Y)) & 255;
+		int32 zInt = static_cast<int32>(CatalystMath::Floor<float>(Z)) & 255;
 
-		float xFloat = X - static_cast<uint32>(X);
-		float yFloat = Y - static_cast<uint32>(Y);
-		float zFloat = Z - static_cast<uint32>(Z);
+		float xFloat = X - CatalystMath::Floor<float>(X);
+		float yFloat = Y - CatalystMath::Floor<float>(Y);
+		float zFloat = Z - CatalystMath::Floor<float>(Z);
 
 		float u = Fade(xFloat);
 		float v = Fade(yFloat);
 		float w = Fade(zFloat);
 
-		uint32 aaa = permutations[permutations[permutations[xInt] + yInt] + zInt];
-		uint32 aba = permutations[permutations[permutations[xInt] + Increment(yInt)] + zInt];
-		uint32 aab = permutations[permutations[permutations[xInt] + yInt] + Increment(zInt)];
-		uint32 abb = permutations[permutations[permutations[xInt] + Increment(yInt)] + Increment(zInt)];
-		uint32 baa = permutations[permutations[permutations[Increment(xInt)] + yInt] + zInt];
-		uint32 bba = permutations[permutations[permutations[Increment(xInt)] + Increment(yInt)] + zInt];
-		uint32 bab = permutations[permutations[permutations[Increment(xInt)] + yInt] + Increment(zInt)];
-		uint32 bbb = permutations[permutations[permutations[Increment(xInt)] + Increment(yInt)] + Increment(zInt)];
+		int32 aaa = permutations[permutations[permutations[xInt] + yInt] + zInt];
+		int32 aba = permutations[permutations[permutations[xInt] + Increment(yInt)] + zInt];
+		int32 aab = permutations[permutations[permutations[xInt] + yInt] + Increment(zInt)];
+		int32 abb = permutations[permutations[permutations[xInt] + Increment(yInt)] + Increment(zInt)];
+		int32 baa = permutations[permutations[permutations[Increment(xInt)] + yInt] + zInt];
+		int32 bba = permutations[permutations[permutations[Increment(xInt)] + Increment(yInt)] + zInt];
+		int32 bab = permutations[permutations[permutations[Increment(xInt)] + yInt] + Increment(zInt)];
+		int32 bbb = permutations[permutations[permutations[Increment(xInt)] + Increment(yInt)] + Increment(zInt)];
 
 		float x1 = CatalystMath::LinearlyInterpolate(Gradient(aaa, xFloat, yFloat, zFloat), Gradient(baa, xFloat - 1.0f, yFloat, zFloat), u);
 
@@ -121,7 +121,7 @@ public:
 	/*
 	*	Increments a number.
 	*/
-	static constexpr uint32 Increment(uint32 number) NOEXCEPT
+	static constexpr int32 Increment(int32 number) NOEXCEPT
 	{
 		return (++number) & 255;
 	}
@@ -129,7 +129,7 @@ public:
 	/*
 	*	The gradient function.
 	*/
-	static constexpr float Gradient(uint32 hash, float X, float Y, float Z) NOEXCEPT
+	static constexpr float Gradient(int32 hash, float X, float Y, float Z) NOEXCEPT
 	{
 		switch (hash & 0xF)
 		{

@@ -76,10 +76,10 @@ public:
 	/*
 	*	Rounds a number up to the nearest integer.
 	*/
-	template <class IntegerType>
-	static constexpr IntegerType Ceiling(const float number) NOEXCEPT
+	template <class NumberType>
+	static constexpr NumberType Ceiling(const float number) NOEXCEPT
 	{
-		return static_cast<IntegerType>(number + 1.0f);
+		return static_cast<NumberType>(number + 1.0f);
 	}
 
 	/*
@@ -126,10 +126,10 @@ public:
 	/*
 	*	Rounds a number down to the nearest integer.
 	*/
-	template <class IntegerType>
-	static constexpr IntegerType Floor(const float number) NOEXCEPT
+	template <class NumberType>
+	static constexpr NumberType Floor(const float number) NOEXCEPT
 	{
-		return number > 0.0f ? static_cast<IntegerType>(number) : static_cast<IntegerType>(number - 0.5f);
+		return number > 0.0f ? static_cast<NumberType>(static_cast<int32>(number)) : static_cast<NumberType>(static_cast<int32>(number - 1.0f));
 	}
 
 	/*
@@ -143,8 +143,8 @@ public:
 	/*
 	*	Returns whether or not an integer is even or not.
 	*/
-	template <class IntegerType>
-	constexpr static IntegerType IsEven(const IntegerType number) NOEXCEPT
+	template <class NumberType>
+	constexpr static NumberType IsEven(const NumberType number) NOEXCEPT
 	{
 		return Modulo(number, 2) == 0;
 	}
@@ -152,8 +152,8 @@ public:
 	/*
 	*	Returns whether or not an integer is odd or not.
 	*/
-	template <class IntegerType>
-	constexpr static IntegerType IsOdd(const IntegerType number) NOEXCEPT
+	template <class NumberType>
+	constexpr static NumberType IsOdd(const NumberType number) NOEXCEPT
 	{
 		return Modulo(number, 2) != 0;
 	}
@@ -232,13 +232,13 @@ public:
 	/*
 	*	Given a range, returns an integer value in that range.
 	*/
-	template <class IntegerType>
-	static IntegerType RandomIntegerInRange(const IntegerType minimum, const IntegerType maximum) NOEXCEPT
+	template <class NumberType>
+	static NumberType RandomIntegerInRange(const NumberType minimum, const NumberType maximum) NOEXCEPT
 	{
 		static thread_local std::random_device randomDevice;
 		static thread_local std::mt19937 randomEngine{ randomDevice() };
 
-		std::uniform_int_distribution<IntegerType> distribution{ minimum, maximum };
+		std::uniform_int_distribution<NumberType> distribution{ minimum, maximum };
 
 		return distribution(randomEngine);
 	}
@@ -254,10 +254,10 @@ public:
 	/*
 	*	Rounds a float to the nearest integral value, with halfway cases rounded away from zero.
 	*/
-	template <class IntegerType>
-	constexpr static IntegerType Round(const float value) NOEXCEPT
+	template <class NumberType>
+	constexpr static NumberType Round(const float value) NOEXCEPT
 	{
-		return static_cast<IntegerType>(value + 0.5f);
+		return static_cast<NumberType>(value + 0.5f);
 	}
 
 	/*

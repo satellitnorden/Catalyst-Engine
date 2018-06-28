@@ -264,8 +264,11 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, const uint8 g
 	constexpr float frequenyMultiplier{ 2.0f };
 	constexpr float contributionMultiplier{ 0.25 };
 
-	const float xOffset{ 1.0f * static_cast<float>(gridPositionX) };
-	const float yOffset{ 1.0f * static_cast<float>(gridPositionY) };
+	//const float xOffset{ 1.0f * static_cast<float>(gridPositionX) };
+	//const float yOffset{ 1.0f * static_cast<float>(gridPositionY) };
+
+	const float xOffset{ worldPosition.X / WorldAchitectConstants::TERRAIN_EXTENT };
+	const float yOffset{ worldPosition.Z / WorldAchitectConstants::TERRAIN_EXTENT };
 
 	for (uint32 i = 0; i < WorldAchitectConstants::HEIGHT_MAP_RESOLUTION; ++i)
 	{
