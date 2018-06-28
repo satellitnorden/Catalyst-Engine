@@ -51,10 +51,6 @@ public:
 		Y += randomOffset;
 		Z += randomOffset;
 
-		X = CatalystMath::Absolute(X);
-		Y = CatalystMath::Absolute(Y);
-		Z = CatalystMath::Absolute(Z);
-
 		uint32 xInt = static_cast<uint32>(X) & 255;
 		uint32 yInt = static_cast<uint32>(Y) & 255;
 		uint32 zInt = static_cast<uint32>(Z) & 255;
