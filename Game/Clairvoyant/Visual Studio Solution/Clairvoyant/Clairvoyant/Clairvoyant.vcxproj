@@ -337,6 +337,7 @@
     <ClInclude Include="..\..\..\Game Source\Include\World\TimeSystem.h" />
     <ClInclude Include="..\..\..\Game Source\Include\World\WorldArchitect.h" />
     <ClInclude Include="..\..\..\Game Source\Include\World\WorldChunk.h" />
+    <ClInclude Include="..\..\..\Game Source\Include\World\WorldScanningData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp" />
