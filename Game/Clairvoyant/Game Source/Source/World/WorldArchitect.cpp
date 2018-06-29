@@ -1,5 +1,5 @@
 //Header file.
-#include <WorldArchitect.h>
+#include <World/WorldArchitect.h>
 
 //Clairvoyant.
 #include <ClairvoyantSettings.h>

@@ -2,7 +2,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Clairvoyant.
-#include <ClairvoyantGameSystem.h>
+#include <Main/ClairvoyantGameSystem.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>

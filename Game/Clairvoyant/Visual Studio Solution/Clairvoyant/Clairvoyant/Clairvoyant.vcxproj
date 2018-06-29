@@ -329,13 +329,13 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\RenderingSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\SoundSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\TaskSystem.h" />
-    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantGameSystem.h" />
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantPlayer.h" />
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSettings.h" />
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSoundDirector.h" />
     <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSoundGUIDs.h" />
+    <ClInclude Include="..\..\..\Game Source\Include\Main\ClairvoyantGameSystem.h" />
     <ClInclude Include="..\..\..\Game Source\Include\TimeSystem.h" />
-    <ClInclude Include="..\..\..\Game Source\Include\WorldArchitect.h" />
+    <ClInclude Include="..\..\..\Game Source\Include\World\WorldArchitect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp" />
@@ -446,12 +446,12 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\TaskSystem.cpp" />
-    <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantGameSystem.cpp" />
-    <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantMain.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantPlayer.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantSoundDirector.cpp" />
+    <ClCompile Include="..\..\..\Game Source\Source\Main\ClairvoyantGameSystem.cpp" />
+    <ClCompile Include="..\..\..\Game Source\Source\Main\ClairvoyantMain.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\TimeSystem.cpp" />
-    <ClCompile Include="..\..\..\Game Source\Source\WorldArchitect.cpp" />
+    <ClCompile Include="..\..\..\Game Source\Source\World\WorldArchitect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\..\Engine\Engine Source\Include\Math\Vector3.inl" />

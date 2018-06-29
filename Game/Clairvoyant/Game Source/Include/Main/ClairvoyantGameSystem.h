@@ -5,7 +5,7 @@
 
 //Clairvoyant.
 #include <ClairvoyantSoundDirector.h>
-#include <WorldArchitect.h>
+#include <World/WorldArchitect.h>
 
 //Forward declarations.
 class ClairvoyantPlayer;
