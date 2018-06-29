@@ -4,7 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Clairvoyant.
-#include <ClairvoyantSoundDirector.h>
+#include <Sound/ClairvoyantSoundDirector.h>
 #include <World/WorldArchitect.h>
 
 //Forward declarations.

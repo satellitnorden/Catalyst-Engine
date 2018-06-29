@@ -2,8 +2,8 @@
 #include <Main/ClairvoyantGameSystem.h>
 
 //Clairvoyant.
-#include <ClairvoyantPlayer.h>
-#include <TimeSystem.h>
+#include <Player/ClairvoyantPlayer.h>
+#include <World/TimeSystem.h>
 
 //Multithreading.
 #include <Multithreading/Semaphore.h>

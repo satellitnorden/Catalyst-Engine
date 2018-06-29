@@ -115,12 +115,6 @@
     <Filter Include="Game Source">
       <UniqueIdentifier>{25bad5aa-6eb3-4c60-b112-5bca2c8a9974}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game Source\Include">
-      <UniqueIdentifier>{72f3797a-ce31-4e10-b949-e8aec38d29db}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game Source\Source">
-      <UniqueIdentifier>{8347cd03-7074-4d63-a05b-1a3ac1ad3f8b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine Source\Sound">
       <UniqueIdentifier>{fd18099f-10a7-40ed-9e22-bb0270652d48}</UniqueIdentifier>
     </Filter>
@@ -211,14 +205,32 @@
     <Filter Include="Game Source\Main\Include">
       <UniqueIdentifier>{a54657d1-62f9-4ca0-9557-87225e6d3599}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game Source\Sound">
+      <UniqueIdentifier>{a4814dd5-b747-4177-9e46-c8900e72b377}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game Source\Sound\Include">
+      <UniqueIdentifier>{ee088b6e-bfcc-4ba8-b82e-a4a9d54e224f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game Source\Sound\Source">
+      <UniqueIdentifier>{cf917ff0-dcbf-41b7-8ecf-ac95748eb72b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game Source\Player">
+      <UniqueIdentifier>{e0558295-fe4c-4109-872e-21f802a9a9be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game Source\Player\Include">
+      <UniqueIdentifier>{abe86bf4-ac35-4690-9f66-68d227233b6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game Source\Player\Source">
+      <UniqueIdentifier>{8347cd03-7074-4d63-a05b-1a3ac1ad3f8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game Source\Resources">
+      <UniqueIdentifier>{f7e4e392-489b-41cc-933a-fcf07ce88391}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game Source\Resources\Include">
+      <UniqueIdentifier>{8f8eef83-44ea-4b10-9d87-cd82cd4aa6af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantPlayer.h">
-      <Filter>Game Source\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSettings.h">
-      <Filter>Game Source\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\CameraComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
     </ClInclude>
@@ -564,9 +576,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Sound\SoundCore.h">
       <Filter>Engine Source\Sound\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSoundDirector.h">
-      <Filter>Game Source\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Sound3DEntity.h">
       <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
@@ -578,9 +587,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\Sound2DComponent.h">
       <Filter>Engine Source\Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Game Source\Include\ClairvoyantSoundGUIDs.h">
-      <Filter>Game Source\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Resources\EnvironmentMaterialData.h">
       <Filter>Engine Source\Resources\Include</Filter>
@@ -674,9 +680,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Utilities\MultithreadingUtilities.h">
       <Filter>Engine Source\Engine Core\Utilities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Game Source\Include\TimeSystem.h">
-      <Filter>Game Source\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\OceanMaterial.h">
       <Filter>Engine Source\Rendering\Engine Layer\Include</Filter>
@@ -876,11 +879,23 @@
     <ClInclude Include="..\..\..\Game Source\Include\Main\ClairvoyantGameSystem.h">
       <Filter>Game Source\Main\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Game Source\Include\Sound\ClairvoyantSoundDirector.h">
+      <Filter>Game Source\Sound\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Game Source\Include\Sound\ClairvoyantSoundGUIDs.h">
+      <Filter>Game Source\Sound\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Game Source\Include\Player\ClairvoyantPlayer.h">
+      <Filter>Game Source\Player\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Game Source\Include\World\TimeSystem.h">
+      <Filter>Game Source\World\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Game Source\Include\Resources\ClairvoyantSettings.h">
+      <Filter>Game Source\Resources\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantPlayer.cpp">
-      <Filter>Game Source\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp">
       <Filter>Engine Source\Components\Source</Filter>
     </ClCompile>
@@ -1019,9 +1034,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\TaskSystem.cpp">
       <Filter>Engine Source\Systems\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Game Source\Source\ClairvoyantSoundDirector.cpp">
-      <Filter>Game Source\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Entities\Sound3DEntity.cpp">
       <Filter>Engine Source\Entities\Source</Filter>
     </ClCompile>
@@ -1039,9 +1051,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanStorageBuffer.cpp">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Game Source\Source\TimeSystem.cpp">
-      <Filter>Game Source\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\API Layer\Vulkan\VulkanEvent.cpp">
       <Filter>Engine Source\Rendering\API Layer\Vulkan\Source</Filter>
@@ -1219,6 +1228,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Game Source\Source\Main\ClairvoyantGameSystem.cpp">
       <Filter>Game Source\Main\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Game Source\Source\Sound\ClairvoyantSoundDirector.cpp">
+      <Filter>Game Source\Sound\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Game Source\Source\World\TimeSystem.cpp">
+      <Filter>Game Source\World\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Game Source\Source\Player\ClairvoyantPlayer.cpp">
+      <Filter>Game Source\Player\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

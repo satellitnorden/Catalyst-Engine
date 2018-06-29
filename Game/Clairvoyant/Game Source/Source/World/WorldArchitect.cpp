@@ -2,8 +2,8 @@
 #include <World/WorldArchitect.h>
 
 //Clairvoyant.
-#include <ClairvoyantSettings.h>
-#include <ClairvoyantSoundGUIDs.h>
+#include <Resources/ClairvoyantSettings.h>
+#include <Sound/ClairvoyantSoundGUIDs.h>
 
 //Engine core.
 #include <Engine Core/HashString.h>

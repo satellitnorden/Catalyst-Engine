@@ -1,5 +1,5 @@
 //Header file.
-#include <ClairvoyantSoundDirector.h>
+#include <Sound/ClairvoyantSoundDirector.h>
 
 //Entities.
 #include <Entities/Sound2DEntity.h>
@@ -10,7 +10,7 @@
 #include <Systems/SoundSystem.h>
 
 //Clairvoyant.
-#include <ClairvoyantSettings.h>
+#include <Resources/ClairvoyantSettings.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(ClairvoyantSoundDirector);

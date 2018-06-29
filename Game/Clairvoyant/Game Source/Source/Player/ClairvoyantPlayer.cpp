@@ -1,5 +1,5 @@
 //Header file.
-#include <ClairvoyantPlayer.h>
+#include <Player/ClairvoyantPlayer.h>
 
 //Components.
 #include <Components/ComponentManager.h>
