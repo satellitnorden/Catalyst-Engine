@@ -9,6 +9,7 @@
 #include <Engine Core/HashString.h>
 
 //Entities.
+#include <Entities/CameraEntity.h>
 #include <Entities/DirectionalLightEntity.h>
 #include <Entities/InstancedPhysicalEntity.h>
 #include <Entities/ParticleSystemEntity.h>
@@ -154,6 +155,18 @@ void WorldArchitect::InitializeGenerationTask() NOEXCEPT
 	};
 	generationTask.arguments = nullptr;
 	generationTask.semaphore = &generationSemaphore;
+}
+
+/*
+*	Updates the idling state.
+*/
+void WorldArchitect::UpdateIdling() NOEXCEPT
+{
+	//Gather the world scanning data.
+	scanningData.cameraPosition = RenderingSystem::Instance->GetActiveCamera()->GetPosition();
+
+	//The the new state.
+	currentState = WorldArchitectState::Scanning;
 }
 
 /*

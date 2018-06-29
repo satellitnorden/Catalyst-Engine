@@ -894,6 +894,9 @@
     <ClInclude Include="..\..\..\Game Source\Include\Resources\ClairvoyantSettings.h">
       <Filter>Game Source\Resources\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Game Source\Include\World\WorldChunk.h">
+      <Filter>Game Source\World\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp">

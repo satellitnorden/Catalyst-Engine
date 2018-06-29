@@ -7,6 +7,10 @@
 #include <Multithreading/Semaphore.h>
 #include <Multithreading/Task.h>
 
+//Clairvoyant.
+#include <World/WorldChunk.h>
+#include <World/WorldScanningData.h>
+
 //Forward declarations.
 class DirectionalLightEntity;
 class Vector3;
@@ -36,16 +40,38 @@ public:
 
 private:
 
+	//Enumeration covering all world architects states.
+	enum class WorldArchitectState : uint8
+	{
+		Idling,
+		Scanning,
+		Generating
+	};
+
 	//The generation task.
 	Task generationTask;
 
 	//The generation semaphore.
 	Semaphore generationSemaphore;
 
+	//The current world architect state.
+	WorldArchitectState currentState{ WorldArchitectState::Idling };
+
+	//The world scanning data.
+	WorldScanningData scanningData;
+
+	//The world chunks.
+	StaticArray<WorldChunk, 9> worldChunks;
+
 	/*
 	*	Initializes the generation task.
 	*/
 	void InitializeGenerationTask() NOEXCEPT;
+
+	/*
+	*	Updates the idling state.
+	*/
+	void UpdateIdling() NOEXCEPT;
 
 	/*
 	*	Creates the test scene.
