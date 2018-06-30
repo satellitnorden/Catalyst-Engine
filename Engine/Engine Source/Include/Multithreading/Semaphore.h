@@ -26,14 +26,19 @@ public:
 	}
 
 	/*
+	*	Signals this semaphore.
+	*/
+	void Signal() NOEXCEPT { signalled.store(true); }
+
+	/*
 	*	Resets this semaphore.
 	*/
 	void Reset() NOEXCEPT { signalled.store(false); }
 
 	/*
-	*	Signals this semaphore.
+	*	Returns whether or not this semaphore is signalled.
 	*/
-	void Signal() NOEXCEPT { signalled.store(true); }
+	bool IsSignalled() const NOEXCEPT { return signalled.load(); }
 
 	/*
 	*	Waits for this semaphore.

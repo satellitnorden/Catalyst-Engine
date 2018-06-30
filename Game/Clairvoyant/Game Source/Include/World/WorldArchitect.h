@@ -8,6 +8,7 @@
 #include <Multithreading/Task.h>
 
 //Clairvoyant.
+#include <World/SuggestedWorldChunk.h>
 #include <World/WorldChunk.h>
 #include <World/WorldScanningData.h>
 
@@ -34,7 +35,7 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Updates the world architects.
+	*	Updates the world architect.
 	*/
 	void Update(const float deltaTime) NOEXCEPT;
 
@@ -48,11 +49,11 @@ private:
 		Generating
 	};
 
-	//The generation task.
-	Task generationTask;
+	//The task.
+	Task task;
 
-	//The generation semaphore.
-	Semaphore generationSemaphore;
+	//The semaphore.
+	Semaphore semaphore;
 
 	//The current world architect state.
 	WorldArchitectState currentState{ WorldArchitectState::Idling };
@@ -60,13 +61,16 @@ private:
 	//The world scanning data.
 	WorldScanningData scanningData;
 
+	//The suggested world chunk.
+	SuggestedWorldChunk suggestedWorldChunk;
+
 	//The world chunks.
 	StaticArray<WorldChunk, 9> worldChunks;
 
 	/*
-	*	Initializes the generation task.
+	*	Initializes the task.
 	*/
-	void InitializeGenerationTask() NOEXCEPT;
+	void InitializeTask() NOEXCEPT;
 
 	/*
 	*	Updates the idling state.
@@ -74,19 +78,34 @@ private:
 	void UpdateIdling() NOEXCEPT;
 
 	/*
+	*	Updates the scanning state.
+	*/
+	void UpdateScanning() NOEXCEPT;
+
+	/*
+	*	Updates the generating state.
+	*/
+	void UpdateGenerating() NOEXCEPT;
+
+	/*
+	*	Scans the world, generating chunks to generate and chunks to destroy.
+	*/
+	void Scan() NOEXCEPT;
+
+	/*
+	*	Generates a new chunk.
+	*/
+	void Generate() NOEXCEPT;
+
+	/*
 	*	Creates the test scene.
 	*/
 	void CreateTestScene() NOEXCEPT;
 
 	/*
-	*	Generates a new patch.
-	*/
-	void GeneratePatch(const Vector3 &worldPosition, const uint8 gridPositionX, const uint8 gridPositionY) NOEXCEPT;
-
-	/*
 	*	Generates the terrain.
 	*/
-	void GenerateTerrain(const Vector3 &worldPosition, const uint8 gridPositionX, const uint8 gridPositionY) NOEXCEPT;
+	RESTRICTED TerrainEntity *const RESTRICT GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT;
 
 	/*
 	*	Generates the vegetation.

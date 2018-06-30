@@ -900,6 +900,9 @@
     <ClInclude Include="..\..\..\Game Source\Include\World\WorldScanningData.h">
       <Filter>Game Source\World\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Game Source\Include\World\SuggestedWorldChunk.h">
+      <Filter>Game Source\World\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp">

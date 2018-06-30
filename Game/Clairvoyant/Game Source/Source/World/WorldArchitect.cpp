@@ -107,54 +107,48 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Set the ocean material.
 	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(WorldAchitectConstants::DEFAULT_WATER_MATERIAL));
 
-	//Initialize the generation task.
-	InitializeGenerationTask();
-
-	//Execute the generation task.
-	TaskSystem::Instance->ExecuteTask(&generationTask);
-
-	//Create the test scene.
-	//CreateTestScene();
-
-	//Generate the island.
-	//GenerateIsland(Vector3(0.0f, 0.0f, 0.0f));
-	//GenerateIsland(Vector3(25'000.0f, 0.0f, 0.0f));
-	//GenerateIsland(Vector3(-25'000.0f, 0.0f, 0.0f));
-	//GenerateIsland(Vector3(0.0f, 0.0f, 25'000.0f));
-	//GenerateIsland(Vector3(0.0f, 0.0f, -25'000.0f));
+	//Initialize the task.
+	InitializeTask();
 }
 
 /*
-*	Updates the world architects.
+*	Updates the world architect.
 */
 void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 {
+	//Update depending on the current state.
+	switch (currentState)
+	{
+		case WorldArchitectState::Idling:
+		{
+			UpdateIdling();
 
+			break;
+		}
+
+		case WorldArchitectState::Scanning:
+		{
+			UpdateScanning();
+
+			break;
+		}
+
+		case WorldArchitectState::Generating:
+		{
+			UpdateGenerating();
+
+			break;
+		}
+	}
 }
 
 /*
-*	Initializes the generation task.
+*	Initializes the task.
 */
-void WorldArchitect::InitializeGenerationTask() NOEXCEPT
+void WorldArchitect::InitializeTask() NOEXCEPT
 {
-	generationTask.function = [](void *const RESTRICT)
-	{
-		constexpr uint8 GRID_SIZE{ 15 };
-
-		for (uint8 i = 0; i < GRID_SIZE; ++i)
-		{
-			for (uint8 j = 0; j < GRID_SIZE; ++j)
-			{
-				const Vector3 position{	(-WorldAchitectConstants::TERRAIN_EXTENT * static_cast<float>(GRID_SIZE - 1)) + (WorldAchitectConstants::TERRAIN_EXTENT * static_cast<float>(i)),
-										0.0f,
-										(-WorldAchitectConstants::TERRAIN_EXTENT * static_cast<float>(GRID_SIZE - 1)) + (WorldAchitectConstants::TERRAIN_EXTENT * static_cast<float>(j)) };
-			
-				WorldArchitect::Instance->GeneratePatch(position, i, j);
-			}
-		}
-	};
-	generationTask.arguments = nullptr;
-	generationTask.semaphore = &generationSemaphore;
+	task.arguments = nullptr;
+	task.semaphore = &semaphore;
 }
 
 /*
@@ -165,8 +159,145 @@ void WorldArchitect::UpdateIdling() NOEXCEPT
 	//Gather the world scanning data.
 	scanningData.cameraPosition = RenderingSystem::Instance->GetActiveCamera()->GetPosition();
 
-	//The the new state.
+	//Update the task.
+	task.function = [](void *const RESTRICT)
+	{
+		WorldArchitect::Instance->Scan();
+	};
+
+	//Execute the task.
+	TaskSystem::Instance->ExecuteTask(&task);
+
+	//Set the new state.
 	currentState = WorldArchitectState::Scanning;
+}
+
+/*
+*	Updates the generating state.
+*/
+void WorldArchitect::UpdateGenerating() NOEXCEPT
+{
+	//When the task is done, go back to idling.
+	if (semaphore.IsSignalled())
+	{
+		currentState = WorldArchitectState::Idling;
+	}
+}
+
+/*
+*	Updates the scanning state.
+*/
+void WorldArchitect::UpdateScanning() NOEXCEPT
+{
+	//Check if the scanning task has been finished.
+	if (semaphore.IsSignalled())
+	{
+		//If the suggested world chunk is valid, proceed with generating, otherwise go back to idling.
+		if (suggestedWorldChunk.IsValid())
+		{
+			//Update the task.
+			task.function = [](void *const RESTRICT)
+			{
+				WorldArchitect::Instance->Generate();
+			};
+
+			//Execute the task.
+			TaskSystem::Instance->ExecuteTask(&task);
+
+			currentState = WorldArchitectState::Generating;
+		}
+
+		else
+		{
+			currentState = WorldArchitectState::Idling;
+		}
+	}
+}
+
+/*
+*	Scans the world, generating chunks to generate and chunks to destroy.
+*/
+void WorldArchitect::Scan() NOEXCEPT
+{
+	//Invalidate the suggested world chunk.
+	suggestedWorldChunk.Invalidate();
+
+	//Calculate the grid position that the camera is currently in.
+	const int32 currentGridPositionX{ static_cast<int32>(scanningData.cameraPosition.X / WorldAchitectConstants::TERRAIN_EXTENT) };
+	const int32 currentGridPositionY{ static_cast<int32>(scanningData.cameraPosition.Z / WorldAchitectConstants::TERRAIN_EXTENT) };
+
+	//Generate a list of suggested world chunks, adding those closest to the camera first so that they take priority.
+	StaticArray<SuggestedWorldChunk, 9> suggestedWorldChunks;
+
+	suggestedWorldChunks[0] = SuggestedWorldChunk(currentGridPositionX, currentGridPositionY);
+
+	suggestedWorldChunks[1] = SuggestedWorldChunk(currentGridPositionX + 1, currentGridPositionY);
+	suggestedWorldChunks[2] = SuggestedWorldChunk(currentGridPositionX - 1, currentGridPositionY);
+	suggestedWorldChunks[3] = SuggestedWorldChunk(currentGridPositionX, currentGridPositionY + 1);
+	suggestedWorldChunks[4] = SuggestedWorldChunk(currentGridPositionX, currentGridPositionY - 1);
+
+	suggestedWorldChunks[5] = SuggestedWorldChunk(currentGridPositionX + 1, currentGridPositionY + 1);
+	suggestedWorldChunks[6] = SuggestedWorldChunk(currentGridPositionX - 1, currentGridPositionY - 1);
+	suggestedWorldChunks[7] = SuggestedWorldChunk(currentGridPositionX + 1, currentGridPositionY - 1);
+	suggestedWorldChunks[8] = SuggestedWorldChunk(currentGridPositionX - 1, currentGridPositionY + 1);
+
+	//Go through the list of suggested world chunks and compare it with the current list of world chunks.
+	for (const SuggestedWorldChunk &newSuggestedWorldChunk : suggestedWorldChunks)
+	{
+		bool foundCorrespondingWorldChunk{ false };
+
+		for (const WorldChunk &worldChunk : worldChunks)
+		{
+			if (worldChunk.gridPositionX == newSuggestedWorldChunk.gridPositionX && worldChunk.gridPositionY == newSuggestedWorldChunk.gridPositionY)
+			{
+				foundCorrespondingWorldChunk = true;
+
+				break;
+			}
+		}
+
+		if (!foundCorrespondingWorldChunk)
+		{
+			suggestedWorldChunk.gridPositionX = newSuggestedWorldChunk.gridPositionX;
+			suggestedWorldChunk.gridPositionY = newSuggestedWorldChunk.gridPositionY;
+
+			break;
+		}
+	}
+}
+
+/*
+*	Generates a new chunk.
+*/
+void WorldArchitect::Generate() NOEXCEPT
+{
+	//Add the new world chunk to the list of world chunks.
+	WorldChunk *RESTRICT newWorldChunk{ nullptr };
+
+	for (WorldChunk &worldChunk : worldChunks)
+	{
+		if (!worldChunk.IsValid())
+		{
+			newWorldChunk = &worldChunk;
+
+			break;
+		}
+	}
+
+	if (!newWorldChunk)
+	{
+		return;
+	}
+
+	//Set the grid position of this world chunk.
+	newWorldChunk->gridPositionX = suggestedWorldChunk.gridPositionX;
+	newWorldChunk->gridPositionY = suggestedWorldChunk.gridPositionY;
+
+	//Calculate the world position from the suggested world chunk.
+	const Vector3 worldPosition{ static_cast<float>(suggestedWorldChunk.gridPositionX) * WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, static_cast<float>(suggestedWorldChunk.gridPositionY) * WorldAchitectConstants::TERRAIN_EXTENT };
+
+	//Generate the terrain.
+	newWorldChunk->terrainEntity = GenerateTerrain(worldPosition);
 }
 
 /*
@@ -243,30 +374,12 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 
 	VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
 	vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations, VegetationProperties(100.0f));
-
-	//Generate the particle systems.
-	//GenerateParticleSystems(Vector3(0.0f, 0.0f, 0.0f) , 100.0f);
-}
-
-/*
-*	Generates a new patch.
-*/
-void WorldArchitect::GeneratePatch(const Vector3 &worldPosition, const uint8 gridPositionX, const uint8 gridPositionY) NOEXCEPT
-{
-	//Generate the terrain.
-	GenerateTerrain(worldPosition, gridPositionX, gridPositionY);
-
-	//Generate the vegetation.
-	//GenerateVegetation(worldPosition, extent);
-
-	//Generate the particle systems.
-	//GenerateParticleSystems(worldPosition, extent);
 }
 
 /*
 *	Generates the terrain.
 */
-void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, const uint8 gridPositionX, const uint8 gridPositionY) NOEXCEPT
+RESTRICTED TerrainEntity *const RESTRICT WorldArchitect::GenerateTerrain(const Vector3 &worldPosition) NOEXCEPT
 {
 	//Create the terrain properties!
 	CPUTexture2D terrainProperties{ WorldAchitectConstants::HEIGHT_MAP_RESOLUTION };
@@ -403,14 +516,15 @@ void WorldArchitect::GenerateTerrain(const Vector3 &worldPosition, const uint8 g
 	TerrainInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<TerrainInitializationData>() };
 
 	data->terrainProperties = terrainProperties;
-	//data->terrainUniformData = TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, height, WorldAchitectConstants::TERRAIN_EXTENT, WorldAchitectConstants::TERRAIN_EXTENT * 0.05f, worldPosition);
-	data->terrainUniformData = TerrainUniformData(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, WorldAchitectConstants::TERRAIN_HEIGHT, WorldAchitectConstants::TERRAIN_EXTENT, 1.0f, worldPosition);
+	data->terrainUniformData = TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, WorldAchitectConstants::TERRAIN_HEIGHT, WorldAchitectConstants::TERRAIN_EXTENT, 1.0f, worldPosition);
 	data->layerWeightsTexture = layerWeightsTexture;
 	data->terrainMaterial = terrainMaterial;
 
 	TerrainEntity *RESTRICT terrain{ EntitySystem::Instance->CreateEntity<TerrainEntity>() };
 
 	EntitySystem::Instance->RequestInitialization(terrain, data, false);
+
+	return terrain;
 }
 
 /*

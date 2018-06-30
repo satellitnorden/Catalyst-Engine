@@ -20,4 +20,9 @@ public:
 	//The terrain entity.
 	TerrainEntity *RESTRICT terrainEntity{ nullptr };
 
+	/*
+	*	Returns whether or not this world chunk is valid.
+	*/
+	bool IsValid() const NOEXCEPT { return gridPositionX != INT32_MAXIMUM && gridPositionY != INT32_MAXIMUM; }
+
 };
