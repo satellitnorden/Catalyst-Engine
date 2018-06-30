@@ -184,9 +184,6 @@
     <Filter Include="Engine Source\Entities\Initialization Data\Include">
       <UniqueIdentifier>{42f7e4c3-2cb1-422f-adf9-b21512a4b040}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine Source\Entities\Initialization Data\Source">
-      <UniqueIdentifier>{a9570e08-7194-4029-98dc-526a26beb982}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game Source\World">
       <UniqueIdentifier>{b78cb417-6fe9-4a16-be63-79ce579afe4e}</UniqueIdentifier>
     </Filter>
@@ -870,9 +867,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Initialization Data\TerrainInitializationData.h">
       <Filter>Engine Source\Entities\Initialization Data\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Initialization Data\EntityInitializationData.h">
-      <Filter>Engine Source\Entities\Initialization Data\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Game Source\Include\World\WorldArchitect.h">
       <Filter>Game Source\World\Include</Filter>
     </ClInclude>
@@ -902,6 +896,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Game Source\Include\World\SuggestedWorldChunk.h">
       <Filter>Game Source\World\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\EntityInitializationData.h">
+      <Filter>Engine Source\Entities\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\EntityTerminationData.h">
+      <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

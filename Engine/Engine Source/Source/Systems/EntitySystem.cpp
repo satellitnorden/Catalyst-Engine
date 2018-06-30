@@ -6,7 +6,8 @@
 
 //Entities.
 #include <Entities/Entity.h>
-#include <Entities/Initialization Data/EntityInitializationData.h>
+#include <Entities/EntityInitializationData.h>
+#include <Entities/EntityTerminationData.h>
 #include <Entities/Initialization Data/TerrainInitializationData.h>
 
 //Multithreading.
@@ -41,8 +42,10 @@ void EntitySystem::PreUpdateSystemSynchronous() NOEXCEPT
 
 /*
 *	Requests the initialization of en entity.
-*	Usually one entity is initialized at each update of the entity system.
+*	Initialization will happen at the next synchronous update of the entity system.
+*	Usually only one entity is initialized at each update of the entity system.
 *	But if the initialization is forced, it will take priority and will be initialized on the next update.
+*	So if N entities are forced for the next entity system update, all of them will be initialized.
 */
 void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, void* const RESTRICT data, const bool force) NOEXCEPT
 {
@@ -51,6 +54,22 @@ void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, void* co
 
 	//Add the data.
 	initializationQueue.EmplaceSlow(entity, data, force);
+}
+
+/*
+*	Requests the termination of en entity.
+*	Termination will happen at the next synchronous update of the entity system.
+*	Usually only one entity is terminated at each update of the entity system.
+*	But if the termination is forced, it will take priority and will be terminated on the next update.
+*	So if N entities are forced for the next entity system update, all of them will be terminated.
+*/
+void EntitySystem::RequesTermination(Entity* const RESTRICT entity, const bool force) NOEXCEPT
+{
+	//Lock the queue.
+	ScopedLock<Spinlock>{terminationQueueLock};
+
+	//Add the data.
+	terminationQueue.EmplaceSlow(entity, force);
 }
 
 /*

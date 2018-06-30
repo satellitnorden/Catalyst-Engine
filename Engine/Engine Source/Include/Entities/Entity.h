@@ -54,6 +54,16 @@ public:
 	EntityType GetEntityType() const NOEXCEPT { return entityType; }
 
 	/*
+	*	Returns whether or not this entity is initialized.
+	*/
+	bool IsInitialized() const NOEXCEPT { return isInitialized; }
+
+	/*
+	*	Sets whether or not this entity is initialized.
+	*/
+	void SetIsInitialized(const bool newIsInitialized) NOEXCEPT { isInitialized = newIsInitialized; }
+
+	/*
 	*	Returns a pointer to the parent of this entity.
 	*/
 	RESTRICTED const Entity* GetParent() const NOEXCEPT { return parent; }
@@ -121,6 +131,9 @@ protected:
 
 	//The entity type.
 	EntityType entityType{ EntityType::NumberOfEntityTypes };
+
+	//Denotes whether or not this entity is initialized.
+	bool isInitialized{ false };
 
 	//The components index for this entity.
 	uint64 componentsIndex;

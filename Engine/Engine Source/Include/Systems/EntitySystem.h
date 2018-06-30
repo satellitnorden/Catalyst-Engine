@@ -9,6 +9,7 @@
 //Forward declarations.
 class Entity;
 class EntityInitializationData;
+class EntityTerminationData;
 
 class EntitySystem final
 {
@@ -38,9 +39,18 @@ public:
 	*	Initialization will happen at the next synchronous update of the entity system.
 	*	Usually only one entity is initialized at each update of the entity system.
 	*	But if the initialization is forced, it will take priority and will be initialized on the next update.
-	*	So if N entities are forced for the next eneity system update, all of them will be initialized.
+	*	So if N entities are forced for the next entity system update, all of them will be initialized.
 	*/
 	void RequestInitialization(Entity* const RESTRICT entity, void* const RESTRICT data, const bool force) NOEXCEPT;
+
+	/*
+	*	Requests the termination of en entity.
+	*	Termination will happen at the next synchronous update of the entity system.
+	*	Usually only one entity is terminated at each update of the entity system.
+	*	But if the termination is forced, it will take priority and will be terminated on the next update.
+	*	So if N entities are forced for the next entity system update, all of them will be terminated.
+	*/
+	void RequesTermination(Entity* const RESTRICT entity, const bool force) NOEXCEPT;
 
 	/*
 	*	Creates a new entity.
@@ -69,6 +79,12 @@ private:
 
 	//Container for all entities that have requested initialization.
 	DynamicArray<EntityInitializationData> initializationQueue;
+
+	//Lock for the termination queue.
+	Spinlock terminationQueueLock;
+
+	//Container for all entities that have requested termination.
+	DynamicArray<EntityTerminationData> terminationQueue;
 
 	/*
 	*	Initializes entities.

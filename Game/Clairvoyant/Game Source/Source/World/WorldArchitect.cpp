@@ -61,7 +61,7 @@ namespace WorldAchitectConstants
 {
 	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 128 };
 	constexpr float TERRAIN_EXTENT{ 100.0f };
-	constexpr float TERRAIN_HEIGHT{ 75 };
+	constexpr float TERRAIN_HEIGHT{ 100.0f };
 	constexpr uint64 VEGETATION_DENSITY{ 50'000 };
 
 	//Resource ID's.
@@ -241,7 +241,31 @@ void WorldArchitect::Scan() NOEXCEPT
 	suggestedWorldChunks[7] = SuggestedWorldChunk(currentGridPositionX + 1, currentGridPositionY - 1);
 	suggestedWorldChunks[8] = SuggestedWorldChunk(currentGridPositionX - 1, currentGridPositionY + 1);
 
-	//Go through the list of suggested world chunks and compare it with the current list of world chunks.
+	//Go through the list of world chunks and compare it with the list of suggested world chunks and destroy any world chunk that shouldn't be active.
+	for (WorldChunk &worldChunk : worldChunks)
+	{
+		bool foundCorrespondingSuggestedWorldChunk{ false };
+
+		for (const SuggestedWorldChunk &newSuggestedWorldChunk : suggestedWorldChunks)
+		{
+			if (worldChunk.gridPositionX == newSuggestedWorldChunk.gridPositionX && worldChunk.gridPositionY == newSuggestedWorldChunk.gridPositionY)
+			{
+				foundCorrespondingSuggestedWorldChunk = true;
+
+				break;
+			}
+		}
+
+		if (!foundCorrespondingSuggestedWorldChunk)
+		{
+			EntitySystem::Instance->RequesTermination(worldChunk.terrainEntity, false);
+			//EntitySystem::Instance->RequesDestruction(worldChunk.terrainEntity, false);
+
+			worldChunk.Invalidate();
+		}
+	}
+
+	//Go through the list of suggested world chunks and compare it with the current list of world chunks and set the suggested new chunk.
 	for (const SuggestedWorldChunk &newSuggestedWorldChunk : suggestedWorldChunks)
 	{
 		bool foundCorrespondingWorldChunk{ false };

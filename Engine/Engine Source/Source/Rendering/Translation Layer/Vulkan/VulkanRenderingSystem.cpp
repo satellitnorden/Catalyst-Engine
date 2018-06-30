@@ -218,7 +218,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 	terrainComponent.terrainUniformData = data->terrainUniformData;
 	terrainComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));
 	static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->UploadData(&terrainComponent.terrainUniformData);
-	terrainComponent.terrainProperties = data->terrainProperties;
+ 	terrainComponent.terrainProperties = data->terrainProperties;
 
 	//Create the descriptor set.
 	VulkanDescriptorSet newDescriptorSet;

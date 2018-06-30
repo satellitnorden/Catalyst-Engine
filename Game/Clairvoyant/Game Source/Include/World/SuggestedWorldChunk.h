@@ -38,6 +38,10 @@ public:
 	/*
 	*	Invalidates this suggested world chunk.
 	*/
-	void Invalidate() NOEXCEPT { gridPositionX = INT32_MAXIMUM; gridPositionY = INT32_MAXIMUM; }
+	void Invalidate() NOEXCEPT
+	{
+		gridPositionX = INT32_MAXIMUM;
+		gridPositionY = INT32_MAXIMUM;
+	}
 
 };

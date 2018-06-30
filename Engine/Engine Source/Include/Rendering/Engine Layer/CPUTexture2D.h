@@ -28,6 +28,18 @@ public:
 	}
 
 	/*
+	*	Copy constructor.
+	*/
+	CPUTexture2D(const CPUTexture2D &otherTexture) NOEXCEPT
+		:
+		width(otherTexture.width),
+		height(otherTexture.width),
+		data(otherTexture.data)
+	{
+
+	}
+
+	/*
 	*	Constructor taking in the resolution of the texture. Assumes that width and height does not differ.
 	*/
 	CPUTexture2D(const uint64 initialResolution) NOEXCEPT
@@ -49,6 +61,16 @@ public:
 	{
 		//Resize the underlying texture data to be able to hold all the data.
 		data.UpsizeFast(width * height);
+	}
+
+	/*
+	*	Copy assignment operator overload.
+	*/
+	void operator=(const CPUTexture2D &otherTexture) NOEXCEPT
+	{
+		width = otherTexture.width;
+		height = otherTexture.height;
+		data = otherTexture.data;
 	}
 
 	/*

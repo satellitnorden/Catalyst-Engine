@@ -25,4 +25,13 @@ public:
 	*/
 	bool IsValid() const NOEXCEPT { return gridPositionX != INT32_MAXIMUM && gridPositionY != INT32_MAXIMUM; }
 
+	/*
+	*	Invalidates this world chunk.
+	*/
+	void Invalidate() NOEXCEPT
+	{
+		gridPositionX = INT32_MAXIMUM;
+		gridPositionY = INT32_MAXIMUM;
+	}
+
 };

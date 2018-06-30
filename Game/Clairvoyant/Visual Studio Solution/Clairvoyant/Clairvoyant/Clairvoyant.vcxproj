@@ -160,7 +160,8 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\CameraEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Entity.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Initialization Data\EntityInitializationData.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\EntityInitializationData.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\EntityTerminationData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Initialization Data\TerrainInitializationData.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\InstancedPhysicalEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\ParticleSystemEntity.h" />

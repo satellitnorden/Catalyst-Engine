@@ -91,10 +91,7 @@ public:
 		Reserve(otherDynamicArray.capacity);
 		size = capacity;
 
-		for (uint64 i = 0; i < size; ++i)
-		{
-			array[i] = otherDynamicArray.array[i];
-		}
+		MemoryUtilities::CopyMemory(array, otherDynamicArray.array, size);
 	}
 
 	/*
