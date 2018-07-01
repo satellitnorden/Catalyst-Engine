@@ -114,14 +114,14 @@ public:
 	const VulkanDescriptorPool& GetDescriptorPool() const NOEXCEPT { return vulkanDescriptorPool; }
 
 	/*
-	*	Creates and returns a 2D texture with void data.
+	*	Creates and returns a 2D texture.
 	*/
 	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
 
 	/*
-	*	Creates and returns a 2D texture with byte data.
+	*	Destroys a 2D texture.
 	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const DynamicArray<DynamicArray<byte>> &textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
+	void Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) NOEXCEPT;
 
 	/*
 	*	Creates and returns a graphics command pool.

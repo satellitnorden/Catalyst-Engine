@@ -424,6 +424,15 @@ Texture2DHandle VulkanRenderingSystem::Create2DTexture(const TextureData &textur
 }
 
 /*
+*	Destroys a 2D texture.
+*/
+void VulkanRenderingSystem::Destroy2DTexture(Texture2DHandle texture) const NOEXCEPT
+{
+	//Destroy the texture.
+	VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture *const RESTRICT>(texture));
+}
+
+/*
 *	Creates a uniform buffer and returns the identifier for the uniform buffer.
 */
 UniformBufferHandle VulkanRenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT

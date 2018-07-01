@@ -203,6 +203,11 @@ public:
 	void InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT;
 
 	/*
+	*	Terminates a terrain entity.
+	*/
+	void TerminateTerrainEntity(const TerrainEntity *const RESTRICT entity) const NOEXCEPT;
+
+	/*
 	*	Initializes a static physical entity.
 	*/
 	void InitializeStaticPhysicalEntity(StaticPhysicalEntity &staticPhysicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT;

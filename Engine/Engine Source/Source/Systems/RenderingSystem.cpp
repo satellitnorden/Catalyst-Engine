@@ -3,6 +3,7 @@
 
 //Entities.
 #include <Entities/CameraEntity.h>
+#include <Entities/TerrainEntity.h>
 
 //Math.
 #include <Math/CatalystMath.h>
@@ -306,6 +307,18 @@ void RenderingSystem::InitializeTerrainEntity(const TerrainEntity *const RESTRIC
 {
 	//Initialize the terrain entity via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->InitializeTerrainEntity(entity, data);
+}
+
+/*
+*	Terminates a terrain entity.
+*/
+void RenderingSystem::TerminateTerrainEntity(const TerrainEntity *const RESTRICT entity) const NOEXCEPT
+{
+	//Retrieve the component.
+	TerrainRenderComponent &component{ ComponentManager::GetTerrainRenderComponents()[entity->GetComponentsIndex()] };
+
+	//Destroy the render data table.
+
 }
 
 /*

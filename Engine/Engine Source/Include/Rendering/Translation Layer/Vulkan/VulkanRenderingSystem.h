@@ -96,6 +96,11 @@ public:
 	Texture2DHandle Create2DTexture(const TextureData &textureData) const NOEXCEPT;
 
 	/*
+	*	Destroys a 2D texture.
+	*/
+	void Destroy2DTexture(Texture2DHandle texture) const NOEXCEPT;
+
+	/*
 	*	Creates a constant buffer.
 	*/
 	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
