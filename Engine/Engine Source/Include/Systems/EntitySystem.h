@@ -102,6 +102,21 @@ private:
 	void InitializeTerrainEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT;
 
 	/*
+	*	Terminates entities.
+	*/
+	void TerminateEntities() NOEXCEPT;
+
+	/*
+	*	Terminates one entity.
+	*/
+	void TerminateEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Terminates a terrain entity.
+	*/
+	void TerminateTerrainEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT;
+
+	/*
 	*	Destroys initialization data for an entity.
 	*/
 	template <class InitializationDataClass>

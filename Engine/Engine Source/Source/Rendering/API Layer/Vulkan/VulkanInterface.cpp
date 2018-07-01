@@ -265,6 +265,15 @@ RESTRICTED VulkanDepthBuffer* VulkanInterface::CreateDepthBuffer(const VkExtent2
 }
 
 /*
+*	Destroys a descriptor set.
+*/
+void VulkanInterface::DestroyDescriptorSet(VkDescriptorSet descriptorSet) const NOEXCEPT
+{
+	//Destroy the descriptor set.
+	vulkanDescriptorPool.FreeDescriptorSet(descriptorSet);
+}
+
+/*
 *	Creates and returns an event.
 */
 RESTRICTED VulkanEvent* VulkanInterface::CreateEvent() NOEXCEPT

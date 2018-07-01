@@ -59,7 +59,7 @@ DEFINE_SINGLETON(WorldArchitect);
 //World architects constants.
 namespace WorldAchitectConstants
 {
-	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 1'024 };
+	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 2'048 };
 	constexpr float TERRAIN_EXTENT{ 1'000.0f };
 	constexpr float TERRAIN_HEIGHT{ 1'000.0f };
 	constexpr uint64 VEGETATION_DENSITY{ 50'000 };
@@ -244,6 +244,11 @@ void WorldArchitect::Scan() NOEXCEPT
 	//Go through the list of world chunks and compare it with the list of suggested world chunks and destroy any world chunk that shouldn't be active.
 	for (WorldChunk &worldChunk : worldChunks)
 	{
+		if (!worldChunk.IsValid())
+		{
+			continue;
+		}
+
 		bool foundCorrespondingSuggestedWorldChunk{ false };
 
 		for (const SuggestedWorldChunk &newSuggestedWorldChunk : suggestedWorldChunks)

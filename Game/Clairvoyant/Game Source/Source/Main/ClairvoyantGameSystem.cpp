@@ -26,19 +26,19 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	//Initialize the world architect.
 	WorldArchitect::Instance->Initialize();
 
-	/*
-	//Create the player.
-	player = EntitySystem::Instance->CreateEntity<ClairvoyantPlayer>();
-
-	//Initialize the player.
-	player->Initialize();
-	*/
-
+#if USE_SOAK_CAMERA
 	//Create the soak camera.
 	soakCamera = EntitySystem::Instance->CreateEntity<SoakCamera>();
 
 	//Initialize the soak camera.
 	soakCamera->Initialize();
+#else
+	//Create the player.
+	player = EntitySystem::Instance->CreateEntity<ClairvoyantPlayer>();
+
+	//Initialize the player.
+	player->Initialize();
+#endif
 
 	//Initialize the sound director.
 	ClairvoyantSoundDirector::Instance->Initialize();
@@ -55,13 +55,13 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 */
 void ClairvoyantGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
-	/*
-	//Update the player.
-	player->Update(deltaTime);
-	*/
-
+#if USE_SOAK_CAMERA
 	//Update the soak camera.
 	soakCamera->Update(deltaTime);
+#else
+	//Update the player.
+	player->Update(deltaTime);
+#endif
 
 	//Update the sound director.
 	ClairvoyantSoundDirector::Instance->Update();

@@ -201,6 +201,11 @@ public:
 	}
 
 	/*
+	*	Returns the last index if this dynamic array.
+	*/
+	uint64 LastIndex() const NOEXCEPT { return size - 1; }
+
+	/*
 	*	Clears this dynamic array of elements without calling the destructor on the underlying elements.
 	*/
 	void ClearFast() NOEXCEPT
@@ -249,7 +254,10 @@ public:
 	*/
 	void Erase(const uint64 index) NOEXCEPT
 	{
-		array[index] = std::move(Back());
+		ObjectType &object{ array[index] };
+
+		object.~ObjectType();
+		object = std::move(Back());
 
 		Pop();
 	}
@@ -263,6 +271,7 @@ public:
 		{
 			if (object == objectToErase)
 			{
+				object.~ObjectType();
 				object = std::move(Back());
 				Pop();
 

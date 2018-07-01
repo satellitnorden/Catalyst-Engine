@@ -38,6 +38,9 @@ void EntitySystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
 	//Initialize entities.
 	InitializeEntities();
+
+	//Terminate entities.
+	TerminateEntities();
 }
 
 /*
@@ -77,14 +80,14 @@ void EntitySystem::RequesTermination(Entity* const RESTRICT entity, const bool f
 */
 void EntitySystem::InitializeEntities() NOEXCEPT
 {
+	//Lock the initialization queue.
+	ScopedLock<Spinlock>{ initializationQueueLock };
+
 	//If there's none to initialize, initialize none.
 	if (initializationQueue.Empty())
 	{
 		return;
 	}
-
-	//Lock the initialization queue.
-	ScopedLock<Spinlock>{ initializationQueueLock };
 
 	//Iterate through all initialization request and check for the force flag.
 	uint64 forceInitialized{ 0 };
@@ -146,11 +149,91 @@ void EntitySystem::InitializeEntity(EntityInitializationData* const RESTRICT dat
 void EntitySystem::InitializeTerrainEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
 	//Retrieve a new components index for the terrain entity.
-	data->entity->SetComponentsIndex(ComponentManager::GetNewTerrainComponentsIndex());
+	data->entity->SetComponentsIndex(ComponentManager::GetNewTerrainComponentsIndex(data->entity));
 
 	//Initialize the terrain entity via the rendering system.
 	RenderingSystem::Instance->InitializeTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(data->entity), static_cast<const TerrainInitializationData *const RESTRICT>(data->data));
 
 	//Destroy the initialization data.
 	DestroyInitializationData<TerrainInitializationData>(data->data);
+}
+
+/*
+*	Terminates entities.
+*/
+void EntitySystem::TerminateEntities() NOEXCEPT
+{
+	//Lock the termination queue.
+	ScopedLock<Spinlock>{ terminationQueueLock };
+
+	//If there's none to terminate, terminate none.
+	if (terminationQueue.Empty())
+	{
+		return;
+	}
+
+	//Iterate through all termination requests and check for the force flag.
+	uint64 forceTerminated{ 0 };
+	uint64 counter{ terminationQueue.Size() - 1 };
+
+	for (uint64 i = 0, size = terminationQueue.Size(); i < size; ++i)
+	{
+		EntityTerminationData& data{ terminationQueue[counter] };
+
+		if (data.force)
+		{
+			TerminateEntity(&data);
+
+			++forceTerminated;
+
+			terminationQueue.Erase(counter);
+		}
+
+		--counter;
+	}
+
+	//If none were force-terminated, just terminate one.
+	if (forceTerminated == 0)
+	{
+		EntityTerminationData *const RESTRICT data = &terminationQueue.Back();
+		TerminateEntity(data);
+		terminationQueue.Pop();
+	}
+}
+
+/*
+*	Terminates one entity.
+*/
+void EntitySystem::TerminateEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT
+{
+	switch (data->entity->GetEntityType())
+	{
+		case Entity::EntityType::Terrain:
+		{
+			TerminateTerrainEntity(data);
+
+			break;
+		}
+
+#if !defined(CATALYST_FINAL)
+		default:
+		{
+			PRINT_TO_CONSOLE("Invalid entity type!");
+
+			BREAKPOINT;
+		}
+#endif
+	}
+}
+
+/*
+*	Terminates a terrain entity.
+*/
+void EntitySystem::TerminateTerrainEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT
+{
+	//Terminate the terrain entity via the rendering system.
+	RenderingSystem::Instance->TerminateTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(data->entity));
+
+	//Return this entities components index.
+	ComponentManager::ReturnTerrainComponentsIndex(data->entity->GetComponentsIndex());
 }

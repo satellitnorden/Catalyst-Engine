@@ -16,16 +16,6 @@ class VulkanDescriptorSet final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanDescriptorSet() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanDescriptorSet() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan descriptor set.
 	*/
 	const VkDescriptorSet& Get() const NOEXCEPT { return vulkanDescriptorSet; }

@@ -17,23 +17,6 @@ namespace VulkanDescriptorPoolConstants
 	
 }
 
-
-/*
-*	Default constructor.
-*/
-VulkanDescriptorPool::VulkanDescriptorPool() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanDescriptorPool::~VulkanDescriptorPool() NOEXCEPT
-{
-
-}
-
 /*
 *	Initializes this Vulkan descriptor pool.
 */
@@ -67,6 +50,15 @@ void VulkanDescriptorPool::AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescr
 {
 	//Initialize the Vulkan descriptor set.
 	vulkaDescriptorSet.Initialize(*this, vulkanDescriptorSetLayout);
+}
+
+/*
+*	Frees a Vulkan descritor set.
+*/
+void VulkanDescriptorPool::FreeDescriptorSet(VkDescriptorSet descriptorSet) const NOEXCEPT
+{
+	//Free the Vulkan descriptor set.
+	vkFreeDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDescriptorPool, 1, &descriptorSet);
 }
 
 /*
@@ -105,7 +97,7 @@ void VulkanDescriptorPool::CreateDescriptorPoolCreateInfo(VkDescriptorPoolCreate
 {
 	descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	descriptorPoolCreateInfo.pNext = nullptr;
-	descriptorPoolCreateInfo.flags = 0;
+	descriptorPoolCreateInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 	descriptorPoolCreateInfo.maxSets = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS;
 	descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32>(descriptorPoolSizes.Size());
 	descriptorPoolCreateInfo.pPoolSizes = descriptorPoolSizes.Data();

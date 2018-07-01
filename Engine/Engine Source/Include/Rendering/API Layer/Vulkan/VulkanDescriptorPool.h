@@ -17,16 +17,6 @@ class VulkanDescriptorPool final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanDescriptorPool() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanDescriptorPool() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan descriptor pool.
 	*/
 	const VkDescriptorPool& Get() const NOEXCEPT { return vulkanDescriptorPool; }
@@ -45,6 +35,11 @@ public:
 	*	Allocates a Vulkan descriptor set.
 	*/
 	void AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescriptorSet, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const NOEXCEPT;
+
+	/*
+	*	Frees a Vulkan descritor set.
+	*/
+	void FreeDescriptorSet(VkDescriptorSet descriptorSet) const NOEXCEPT;
 
 private:
 

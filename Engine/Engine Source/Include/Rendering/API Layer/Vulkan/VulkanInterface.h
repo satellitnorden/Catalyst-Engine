@@ -144,6 +144,11 @@ public:
 	RESTRICTED VulkanDepthBuffer* CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT;
 
 	/*
+	*	Destroys a descriptor set.
+	*/
+	void DestroyDescriptorSet(VkDescriptorSet descriptorSet) const NOEXCEPT;
+
+	/*
 	*	Creates and returns an event.
 	*/
 	RESTRICTED VulkanEvent* CreateEvent() NOEXCEPT;

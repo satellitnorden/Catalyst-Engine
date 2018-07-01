@@ -191,6 +191,14 @@ ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *RES
 }
 
 /*
+*	Destroys a render data table.
+*/
+void VulkanRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT
+{
+	VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VkDescriptorSet>(renderDataTable));
+}
+
+/*
 *	Creates an environment material.
 */
 void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT

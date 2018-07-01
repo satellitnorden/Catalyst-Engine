@@ -106,6 +106,11 @@ public:
 	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
 
 	/*
+	*	Destroys a render data table.
+	*/
+	void DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT;
+
+	/*
 	*	Creates an environment material.
 	*/
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;

@@ -233,6 +233,11 @@ public:
 	Texture2DHandle Create2DTexture(const TextureData &textureData) const NOEXCEPT;
 
 	/*
+	*	Destroys a render data table.
+	*/
+	void DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT;
+
+	/*
 	*	Creates and returns a uniform buffer.
 	*/
 	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;

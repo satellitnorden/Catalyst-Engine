@@ -7,22 +7,6 @@
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
 
 /*
-*	Default constructor.
-*/
-VulkanDescriptorSet::VulkanDescriptorSet() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanDescriptorSet::~VulkanDescriptorSet() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan descriptor set.
 */
 void VulkanDescriptorSet::Initialize(const VulkanDescriptorPool &vulkanDescriptorPool, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) NOEXCEPT

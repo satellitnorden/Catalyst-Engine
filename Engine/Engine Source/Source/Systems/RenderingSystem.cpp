@@ -118,6 +118,15 @@ Texture2DHandle RenderingSystem::Create2DTexture(const TextureData &textureData)
 }
 
 /*
+*	Destroys a render data table.
+*/
+void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT
+{
+	//Destroy the render data table via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->DestroyRenderDataTable(renderDataTable);
+}
+
+/*
 *	Creates a constant buffer.
 */
 ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
@@ -318,7 +327,7 @@ void RenderingSystem::TerminateTerrainEntity(const TerrainEntity *const RESTRICT
 	TerrainRenderComponent &component{ ComponentManager::GetTerrainRenderComponents()[entity->GetComponentsIndex()] };
 
 	//Destroy the render data table.
-
+	DestroyRenderDataTable(component.renderDataTable);
 }
 
 /*

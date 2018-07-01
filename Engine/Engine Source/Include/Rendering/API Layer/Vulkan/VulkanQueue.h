@@ -19,16 +19,6 @@ class VulkanQueue final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanQueue() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanQueue() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan queue.
 	*/
 	const VkQueue& Get() const NOEXCEPT { return vulkanQueue; }

@@ -7,6 +7,9 @@
 #include <Sound/ClairvoyantSoundDirector.h>
 #include <World/WorldArchitect.h>
 
+//Preprocessor defines.
+#define USE_SOAK_CAMERA true
+
 //Forward declarations.
 class ClairvoyantPlayer;
 class SoakCamera;
@@ -41,10 +44,12 @@ public:
 
 private:
 
-	//The player.
-	ClairvoyantPlayer *RESTRICT player;
-
+#if USE_SOAK_CAMERA
 	//The soak camera.
 	SoakCamera *RESTRICT soakCamera;
+#else
+	//The player.
+	ClairvoyantPlayer *RESTRICT player;
+#endif
 
 };

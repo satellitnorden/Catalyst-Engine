@@ -8,22 +8,6 @@
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
 
 /*
-*	Default constructor.
-*/
-VulkanQueue::VulkanQueue() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanQueue::~VulkanQueue() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan queue.
 */
 void VulkanQueue::Initialize(const uint32 queueFamilyIndex) NOEXCEPT
@@ -37,12 +21,12 @@ void VulkanQueue::Initialize(const uint32 queueFamilyIndex) NOEXCEPT
 */
 void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const uint32 waitSemaphoreCount, const VulkanSemaphore *RESTRICT waitSemaphores, const VkPipelineStageFlags waitStages, const uint32 signalSemaphoreCount, const VulkanSemaphore *RESTRICT signalSemaphores, const VkFence fence) const NOEXCEPT
 {
+	//Lock the queue.
+	ScopedLock<Spinlock>{ lock };
+
 	//Create the submit info.
 	VkSubmitInfo submitInfo;
 	CreateSubmitInfo(submitInfo, waitSemaphoreCount, waitSemaphores, waitStages, vulkanCommandBuffer, signalSemaphoreCount, signalSemaphores);
-
-	//Lock the queue.
-	ScopedLock<Spinlock>{ lock };
 
 	//Submit the command buffer!
 	VULKAN_ERROR_CHECK(vkQueueSubmit(vulkanQueue, 1, &submitInfo, fence));

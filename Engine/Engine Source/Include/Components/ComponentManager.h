@@ -23,6 +23,9 @@
 #include <Components/WaterComponent.h>
 #include <Components/WaterRenderComponent.h>
 
+//Forward declarations.
+class Entity;
+
 class ComponentManager final
 {
 
@@ -320,7 +323,7 @@ public:
 	/*
 	*	Returns a new components index for terrain entities.
 	*/
-	static uint64 GetNewTerrainComponentsIndex() NOEXCEPT;
+	static uint64 GetNewTerrainComponentsIndex(Entity *const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Returns the number of terrain components.
@@ -342,10 +345,15 @@ public:
 	*/
 	static TerrainRenderComponent *RESTRICT GetTerrainRenderComponents() NOEXCEPT;
 
+	/*
+	*	Returns a components index for terrain entities.
+	*/
+	static void ReturnTerrainComponentsIndex(const uint64 componentsIndex) NOEXCEPT;
+
 private:
 
-	//The number of terrain components.
-	static std::atomic<uint64> numberOfTerrainComponents;
+	//The terrain entities.
+	static DynamicArray<Entity *RESTRICT> terrainEntities;
 
 	//The terrain components.
 	static DynamicArray<TerrainComponent> terrainComponents;

@@ -1,6 +1,9 @@
 //Header file.
 #include <Components/ComponentManager.h>
 
+//Entities.
+#include <Entities/Entity.h>
+
 //Static variable definitions.
 std::atomic<uint64> ComponentManager::numberOfCameraComponents = 0;
 DynamicArray<CameraComponent> ComponentManager::cameraComponents;
@@ -32,7 +35,7 @@ DynamicArray<Sound3DComponent> ComponentManager::sound3DComponents;
 std::atomic<uint64> ComponentManager::numberOfSpotLightComponents = 0;
 DynamicArray<SpotLightComponent> ComponentManager::spotLightComponents;
 
-std::atomic<uint64> ComponentManager::numberOfTerrainComponents = 0;
+DynamicArray<Entity *RESTRICT> ComponentManager::terrainEntities;
 DynamicArray<TerrainComponent> ComponentManager::terrainComponents;
 DynamicArray<FrustumCullingComponent> ComponentManager::terrainFrustumCullingComponents;
 DynamicArray<TerrainRenderComponent> ComponentManager::terrainRenderComponents;
@@ -349,15 +352,16 @@ SpotLightComponent *RESTRICT ComponentManager::GetSpotLightComponents() NOEXCEPT
 /*
 *	Returns a new components index for terrain entities.
 */
-uint64 ComponentManager::GetNewTerrainComponentsIndex() NOEXCEPT
+uint64 ComponentManager::GetNewTerrainComponentsIndex(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//Create the relevant components.
+	terrainEntities.EmplaceSlow(entity);
 	terrainComponents.EmplaceSlow();
 	terrainFrustumCullingComponents.EmplaceSlow();
 	terrainRenderComponents.EmplaceSlow();
 
 	//Return the new index.
-	return numberOfTerrainComponents++;
+	return terrainEntities.LastIndex();
 }
 
 /*
@@ -366,7 +370,7 @@ uint64 ComponentManager::GetNewTerrainComponentsIndex() NOEXCEPT
 uint64 ComponentManager::GetNumberOfTerrainComponents() NOEXCEPT
 {
 	//Return the number of terrain components.
-	return numberOfTerrainComponents;
+	return terrainEntities.Size();
 }
 
 /*
@@ -394,6 +398,21 @@ TerrainRenderComponent *RESTRICT ComponentManager::GetTerrainRenderComponents() 
 {
 	//Return the terrain render components.
 	return terrainRenderComponents.Data();
+}
+
+/*
+*	Returns a components index for terrain entities.
+*/
+void ComponentManager::ReturnTerrainComponentsIndex(const uint64 componentsIndex) NOEXCEPT
+{
+	//Tell the entity at the back that it is getting a new components index.
+	terrainEntities.Back()->SetComponentsIndex(componentsIndex);
+
+	//Erase the components.
+	terrainEntities.Erase(componentsIndex);
+	terrainComponents.Erase(componentsIndex);
+	terrainFrustumCullingComponents.Erase(componentsIndex);
+	terrainRenderComponents.Erase(componentsIndex);
 }
 
 /*
