@@ -23,6 +23,9 @@ public:
 
 	//Singleton declaration.
 	DECLARE_SINGLETON(WorldArchitect);
+	
+	//Defines the size of the world chunk grid.
+	static constexpr uint8 WORLD_CHUNK_GRID_SIZE{ 15 };
 
 	/*
 	*	Default constructor.
@@ -65,7 +68,7 @@ private:
 	SuggestedWorldChunk suggestedWorldChunk;
 
 	//The world chunks.
-	StaticArray<WorldChunk, 9> worldChunks;
+	StaticArray<WorldChunk, WORLD_CHUNK_GRID_SIZE * WORLD_CHUNK_GRID_SIZE> worldChunks;
 
 	/*
 	*	Initializes the task.

@@ -59,7 +59,7 @@ DEFINE_SINGLETON(WorldArchitect);
 //World architects constants.
 namespace WorldAchitectConstants
 {
-	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 2'048 };
+	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 32 };
 	constexpr float TERRAIN_EXTENT{ 1'000.0f };
 	constexpr float TERRAIN_HEIGHT{ 1'000.0f };
 	constexpr uint64 VEGETATION_DENSITY{ 50'000 };
@@ -227,19 +227,25 @@ void WorldArchitect::Scan() NOEXCEPT
 	const int32 currentGridPositionY{ static_cast<int32>(scanningData.cameraPosition.Z / WorldAchitectConstants::TERRAIN_EXTENT) };
 
 	//Generate a list of suggested world chunks, adding those closest to the camera first so that they take priority.
-	StaticArray<SuggestedWorldChunk, 9> suggestedWorldChunks;
+	StaticArray<SuggestedWorldChunk, WORLD_CHUNK_GRID_SIZE * WORLD_CHUNK_GRID_SIZE> suggestedWorldChunks;
 
-	suggestedWorldChunks[0] = SuggestedWorldChunk(currentGridPositionX, currentGridPositionY);
+	for (uint8 i = 0; i < WORLD_CHUNK_GRID_SIZE; ++i)
+	{
+		for (uint8 j = 0; j < WORLD_CHUNK_GRID_SIZE; ++j)
+		{
+			const int32 suggestedGridPositionX{ currentGridPositionX + (i - ((WORLD_CHUNK_GRID_SIZE - 1) / 2)) };
+			const int32 suggestedGridPositionY{ currentGridPositionY + (j - ((WORLD_CHUNK_GRID_SIZE - 1) / 2)) };
 
-	suggestedWorldChunks[1] = SuggestedWorldChunk(currentGridPositionX + 1, currentGridPositionY);
-	suggestedWorldChunks[2] = SuggestedWorldChunk(currentGridPositionX - 1, currentGridPositionY);
-	suggestedWorldChunks[3] = SuggestedWorldChunk(currentGridPositionX, currentGridPositionY + 1);
-	suggestedWorldChunks[4] = SuggestedWorldChunk(currentGridPositionX, currentGridPositionY - 1);
+			suggestedWorldChunks[(i * WORLD_CHUNK_GRID_SIZE) + j] = SuggestedWorldChunk(suggestedGridPositionX, suggestedGridPositionY);
+		}
+	}
 
-	suggestedWorldChunks[5] = SuggestedWorldChunk(currentGridPositionX + 1, currentGridPositionY + 1);
-	suggestedWorldChunks[6] = SuggestedWorldChunk(currentGridPositionX - 1, currentGridPositionY - 1);
-	suggestedWorldChunks[7] = SuggestedWorldChunk(currentGridPositionX + 1, currentGridPositionY - 1);
-	suggestedWorldChunks[8] = SuggestedWorldChunk(currentGridPositionX - 1, currentGridPositionY + 1);
+	/*
+	std::sort(suggestedWorldChunks.begin(), suggestedWorldChunks.end(), [&](const SuggestedWorldChunk &first, const SuggestedWorldChunk &second)
+	{
+		return (first.gridPositionX - currentGridPositionX) + (first.gridPositionY - currentGridPositionY) > (second.gridPositionX - currentGridPositionX) + (second.gridPositionY - currentGridPositionY);
+	});
+	*/
 
 	//Go through the list of world chunks and compare it with the list of suggested world chunks and destroy any world chunk that shouldn't be active.
 	for (WorldChunk &worldChunk : worldChunks)

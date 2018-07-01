@@ -8,7 +8,7 @@
 #include <World/WorldArchitect.h>
 
 //Preprocessor defines.
-#define USE_SOAK_CAMERA true
+#define USE_SOAK_CAMERA false
 
 //Forward declarations.
 class ClairvoyantPlayer;
