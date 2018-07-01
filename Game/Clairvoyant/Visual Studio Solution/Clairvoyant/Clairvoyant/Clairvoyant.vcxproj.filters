@@ -915,6 +915,9 @@
     <ClInclude Include="..\..\..\Game Source\Include\Debug\SoakCamera.h">
       <Filter>Game Source\Debug\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Game Source\Include\Main\ClairvoyantParticleSystem.h">
+      <Filter>Game Source\Main\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp">
@@ -1261,6 +1264,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Game Source\Source\Debug\SoakCamera.cpp">
       <Filter>Game Source\Debug\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Game Source\Source\Main\ClairvoyantParticleSystem.cpp">
+      <Filter>Game Source\Main\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

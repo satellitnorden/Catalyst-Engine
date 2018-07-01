@@ -39,9 +39,9 @@ public:
 	const Vector3& GetWindDirection() const NOEXCEPT { return windDirection; }
 
 	/*
-	*	Returns the water height.
+	*	Returns the ocean height.
 	*/
-	constexpr float GetWaterHeight() const NOEXCEPT { return 0.0f; }
+	constexpr float GetOceanHeight() const NOEXCEPT { return 0.0f; }
 
 	/*
 	*	Given a world position, returns the height of the terrain at that point.

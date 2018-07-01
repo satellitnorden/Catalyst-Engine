@@ -30,7 +30,7 @@ void SoakCamera::Update(const float deltaTime) NOEXCEPT
 
 	//Set the Y position a bit above the terrain.
 	const Vector3 &currentPosition{ GetPosition() };
-	const float currentTerrainHeight{ PhysicsSystem::Instance->GetTerrainHeightAtPosition(currentPosition) };
+	const float currentTerrainHeight{ CatalystMath::Maximum<float>(PhysicsSystem::Instance->GetTerrainHeightAtPosition(currentPosition), PhysicsSystem::Instance->GetOceanHeight()) };
 
 	Move(Vector3(0.0f, currentTerrainHeight - currentPosition.Y + 10.0f, 0.0f));
 
@@ -41,7 +41,7 @@ void SoakCamera::Update(const float deltaTime) NOEXCEPT
 	{
 		static float multiplier{ 1.0f };
 
-		rotationAmount = CatalystMath::RandomFloatInRange(1.0f, 5.0f) * multiplier;
+		rotationAmount = CatalystMath::RandomFloatInRange(0.0f, 2.5f) * multiplier;
 
 		multiplier *= -1.0f;
 

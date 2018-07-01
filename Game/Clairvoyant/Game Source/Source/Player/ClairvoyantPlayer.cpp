@@ -29,12 +29,6 @@
 #include <Systems/PhysicsSystem.h>
 #include <Systems/SoundSystem.h>
 
-//Clairvoyant player constants.
-namespace ClairvoyantPlayerConstants
-{
-	constexpr HashString PARTICLE_MATERIAL{ "ParticleMaterial" };
-}
-
 /*
 *	Initializes the player.
 */
@@ -50,10 +44,6 @@ void ClairvoyantPlayer::Initialize() NOEXCEPT
 	flashlight->SetAttenuationDistance(100.0f);
 	flashlight->SetIntensity(100.0f);
 	flashlight->Rotate(Vector3(-90.0f, 180.0f, 0.0f));
-
-	//Add a particle system following the player.
-	ParticleSystemEntity *const RESTRICT particles{ EntitySystem::Instance->CreateChildEntity<ParticleSystemEntity>(this) };
-	particles->Initialize(ResourceLoader::GetParticleMaterial(ClairvoyantPlayerConstants::PARTICLE_MATERIAL), ParticleSystemProperties(5.0f, 60.0f, 0.0f, Vector2(0.05f, 0.05f), Vector2(0.2f, 0.2f), Vector3(-100.0f, -100.0f, -100.0f), Vector3(100.0f, 100.0f, 100.0f), Vector3(-1.0f, -1.0f, -1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(0.0f, 0.0f, 0.0f)));
 }
 
 /*

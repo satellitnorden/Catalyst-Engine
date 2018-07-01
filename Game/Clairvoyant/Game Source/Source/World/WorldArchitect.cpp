@@ -412,7 +412,7 @@ RESTRICTED TerrainEntity *const RESTRICT WorldArchitect::GenerateTerrain(const V
 	
 	constexpr float startingFrequency{ 1.0f };
 	constexpr float frequenyMultiplier{ 2.0f };
-	constexpr float contributionMultiplier{ 0.25 };
+	constexpr float contributionMultiplier{ 0.25f };
 
 	const float xOffset{ worldPosition.X / WorldAchitectConstants::TERRAIN_EXTENT };
 	const float yOffset{ worldPosition.Z / WorldAchitectConstants::TERRAIN_EXTENT };
@@ -430,23 +430,25 @@ RESTRICTED TerrainEntity *const RESTRICT WorldArchitect::GenerateTerrain(const V
 
 			float frequency{ startingFrequency };
 			float contribution{ 1.0f };
-			terrainPropery.W = ((PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * contribution;
+			terrainPropery.W = PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) * contribution;
 
 			frequency *= frequenyMultiplier;
 			contribution *= contributionMultiplier;
-			terrainPropery.W += ((PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * contribution;
+			terrainPropery.W += PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) * contribution;
 
 			frequency *= frequenyMultiplier;
 			contribution *= contributionMultiplier;
-			terrainPropery.W += ((PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * contribution;
+			terrainPropery.W += PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) * contribution;
 
 			frequency *= frequenyMultiplier;
 			contribution *= contributionMultiplier;
-			terrainPropery.W += ((PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * contribution;
+			terrainPropery.W += PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) * contribution;
 
 			frequency *= frequenyMultiplier;
 			contribution *= contributionMultiplier;
-			terrainPropery.W += ((PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) + 1.0f) * 0.5f) * contribution;
+			terrainPropery.W += PerlinNoiseGenerator::GenerateNoise(xCoordinate * frequency, yCoordinate * frequency, 0.0f, randomOffset) * contribution;
+
+			terrainPropery.W += 0.5f;
 		}
 	}
 
@@ -494,19 +496,19 @@ RESTRICTED TerrainEntity *const RESTRICT WorldArchitect::GenerateTerrain(const V
 			layerWeight.X = 0.0f;
 
 			//Set the weight of the second grass layer.
-			if (worldHeight < PhysicsSystem::Instance->GetWaterHeight())
+			if (worldHeight < PhysicsSystem::Instance->GetOceanHeight())
 			{
 				layerWeight.Y = 0.0f;
 			}
 
-			else if (worldHeight > PhysicsSystem::Instance->GetWaterHeight() + 100.0f)
+			else if (worldHeight > PhysicsSystem::Instance->GetOceanHeight() + 100.0f)
 			{
 				layerWeight.Y = 1.0f;
 			}
 
 			else
 			{
-				layerWeight.Y = (worldHeight - PhysicsSystem::Instance->GetWaterHeight()) * 0.01f;
+				layerWeight.Y = (worldHeight - PhysicsSystem::Instance->GetOceanHeight()) * 0.01f;
 			}
 
 			//Set the weight of the rock layer.

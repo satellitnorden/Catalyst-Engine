@@ -103,14 +103,19 @@ public:
 	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
 
 	/*
-	*	Returns the active camera.
+	*	Returns the active camera, const.
 	*/
 	RESTRICTED const CameraEntity *const RESTRICT GetActiveCamera() const NOEXCEPT { return activeCamera; }
 
 	/*
+	*	Returns the active camera, const.
+	*/
+	RESTRICTED CameraEntity *const RESTRICT GetActiveCamera() NOEXCEPT { return activeCamera; }
+
+	/*
 	*	Sets the active camera.
 	*/
-	void SetActiveCamera(const CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT { activeCamera = newActiveCamera; }
+	void SetActiveCamera(CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT { activeCamera = newActiveCamera; }
 
 	/*
 	*	Returns the projection matrix.
@@ -236,7 +241,7 @@ private:
 	StaticArray<PhysicalModel, INDEX(CommonPhysicalModel::NumberOfCommonPhysicalModels)> commonPhysicalModels;
 
 	//The active camera.
-	const CameraEntity *RESTRICT activeCamera{ nullptr };
+	CameraEntity *RESTRICT activeCamera{ nullptr };
 
 	//The projection matrix.
 	Matrix4 projectionMatrix;

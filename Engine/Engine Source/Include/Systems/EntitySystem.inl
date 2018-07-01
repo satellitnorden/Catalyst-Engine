@@ -15,9 +15,9 @@ RESTRICTED EntityClass* const RESTRICT EntitySystem::CreateEntity(Arguments&&...
 *	Creates a new child entity.
 */
 template <class EntityClass, class... Arguments>
-RESTRICTED EntityClass* const RESTRICT EntitySystem::CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) const NOEXCEPT
+RESTRICTED EntityClass *const RESTRICT EntitySystem::CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) const NOEXCEPT
 {
-	EntityClass *RESTRICT newChild = new EntityClass(std::forward<Arguments>(arguments)...);
+	EntityClass *const RESTRICT newChild{ new EntityClass(std::forward<Arguments>(arguments)...) };
 
 	parentEntity->AddChild(newChild);
 	newChild->SetParent(parentEntity);

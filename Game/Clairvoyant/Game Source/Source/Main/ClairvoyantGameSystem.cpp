@@ -2,6 +2,7 @@
 #include <Main/ClairvoyantGameSystem.h>
 
 //Clairvoyant.
+#include <Main/ClairvoyantParticleSystem.h>
 #include <Debug/SoakCamera.h>
 #include <Player/ClairvoyantPlayer.h>
 #include <World/TimeSystem.h>
@@ -44,6 +45,9 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize the time system.
 	TimeSystem::Instance->Initialize();
+
+	//Initialize the particle system.
+	ClairvoyantParticleSystem::Instance->InitializeSystem();
 }
 
 /*

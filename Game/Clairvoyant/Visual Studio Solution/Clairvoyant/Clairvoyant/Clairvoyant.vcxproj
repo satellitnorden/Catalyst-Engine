@@ -332,6 +332,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\TaskSystem.h" />
     <ClInclude Include="..\..\..\Game Source\Include\Debug\SoakCamera.h" />
     <ClInclude Include="..\..\..\Game Source\Include\Main\ClairvoyantGameSystem.h" />
+    <ClInclude Include="..\..\..\Game Source\Include\Main\ClairvoyantParticleSystem.h" />
     <ClInclude Include="..\..\..\Game Source\Include\Player\ClairvoyantPlayer.h" />
     <ClInclude Include="..\..\..\Game Source\Include\Resources\ClairvoyantSettings.h" />
     <ClInclude Include="..\..\..\Game Source\Include\Sound\ClairvoyantSoundDirector.h" />
@@ -454,6 +455,7 @@
     <ClCompile Include="..\..\..\Game Source\Source\Debug\SoakCamera.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\Main\ClairvoyantGameSystem.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\Main\ClairvoyantMain.cpp" />
+    <ClCompile Include="..\..\..\Game Source\Source\Main\ClairvoyantParticleSystem.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\Player\ClairvoyantPlayer.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\Sound\ClairvoyantSoundDirector.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\World\TimeSystem.cpp" />
