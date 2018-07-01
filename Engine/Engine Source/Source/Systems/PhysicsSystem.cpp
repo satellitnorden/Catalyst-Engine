@@ -48,6 +48,12 @@ float PhysicsSystem::GetTerrainHeightAtPosition(const Vector3 &position) const N
 		}
 	}
 
+	//If a nearest component could not be found, just return zero.
+	if (!nearestComponent)
+	{
+		return 0.0f;
+	}
+
 	const TerrainComponent &terrainComponent{ *nearestComponent };
 	const CPUTexture2D &terrainProperties{ terrainComponent.terrainProperties };
 	const float terrainSize{ terrainComponent.terrainUniformData.terrainSize };

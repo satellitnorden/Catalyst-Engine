@@ -9,6 +9,7 @@
 
 //Forward declarations.
 class ClairvoyantPlayer;
+class SoakCamera;
 
 class ClairvoyantGameSystem final
 {
@@ -42,5 +43,8 @@ private:
 
 	//The player.
 	ClairvoyantPlayer *RESTRICT player;
+
+	//The soak camera.
+	SoakCamera *RESTRICT soakCamera;
 
 };

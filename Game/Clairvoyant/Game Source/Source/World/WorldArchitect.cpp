@@ -59,9 +59,9 @@ DEFINE_SINGLETON(WorldArchitect);
 //World architects constants.
 namespace WorldAchitectConstants
 {
-	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 128 };
-	constexpr float TERRAIN_EXTENT{ 100.0f };
-	constexpr float TERRAIN_HEIGHT{ 100.0f };
+	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 1'024 };
+	constexpr float TERRAIN_EXTENT{ 1'000.0f };
+	constexpr float TERRAIN_HEIGHT{ 1'000.0f };
 	constexpr uint64 VEGETATION_DENSITY{ 50'000 };
 
 	//Resource ID's.
@@ -540,7 +540,7 @@ RESTRICTED TerrainEntity *const RESTRICT WorldArchitect::GenerateTerrain(const V
 	TerrainInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<TerrainInitializationData>() };
 
 	data->terrainProperties = terrainProperties;
-	data->terrainUniformData = TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, WorldAchitectConstants::TERRAIN_HEIGHT, WorldAchitectConstants::TERRAIN_EXTENT, 1.0f, worldPosition);
+	data->terrainUniformData = TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, WorldAchitectConstants::TERRAIN_HEIGHT, WorldAchitectConstants::TERRAIN_EXTENT, WorldAchitectConstants::TERRAIN_EXTENT * 0.1f, worldPosition);
 	data->layerWeightsTexture = layerWeightsTexture;
 	data->terrainMaterial = terrainMaterial;
 

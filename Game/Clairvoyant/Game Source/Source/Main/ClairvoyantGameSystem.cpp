@@ -2,6 +2,7 @@
 #include <Main/ClairvoyantGameSystem.h>
 
 //Clairvoyant.
+#include <Debug/SoakCamera.h>
 #include <Player/ClairvoyantPlayer.h>
 #include <World/TimeSystem.h>
 
@@ -24,11 +25,19 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	//Initialize the world architect.
 	WorldArchitect::Instance->Initialize();
 
+	/*
 	//Create the player.
 	player = EntitySystem::Instance->CreateEntity<ClairvoyantPlayer>();
 
 	//Initialize the player.
 	player->Initialize();
+	*/
+
+	//Create the soak camera.
+	soakCamera = EntitySystem::Instance->CreateEntity<SoakCamera>();
+
+	//Initialize the soak camera.
+	soakCamera->Initialize();
 
 	//Initialize the sound director.
 	ClairvoyantSoundDirector::Instance->Initialize();
@@ -42,8 +51,13 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 */
 void ClairvoyantGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
+	/*
 	//Update the player.
 	player->Update(deltaTime);
+	*/
+
+	//Update the soak camera.
+	soakCamera->Update(deltaTime);
 
 	//Update the sound director.
 	ClairvoyantSoundDirector::Instance->Update();

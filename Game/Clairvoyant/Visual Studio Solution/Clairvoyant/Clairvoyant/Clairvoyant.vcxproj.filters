@@ -226,6 +226,15 @@
     <Filter Include="Game Source\Resources\Include">
       <UniqueIdentifier>{8f8eef83-44ea-4b10-9d87-cd82cd4aa6af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game Source\Debug">
+      <UniqueIdentifier>{b4c3e1ff-9300-43f7-a9ad-45eefa9f6bd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game Source\Debug\Include">
+      <UniqueIdentifier>{2d42cc67-32de-41ac-9e8a-287b9492c530}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game Source\Debug\Source">
+      <UniqueIdentifier>{574c5e0e-cc9f-4bbc-bd77-b9a0f1f441bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\CameraComponent.h">
@@ -903,6 +912,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\EntityTerminationData.h">
       <Filter>Engine Source\Entities\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Game Source\Include\Debug\SoakCamera.h">
+      <Filter>Game Source\Debug\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp">
@@ -1246,6 +1258,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Game Source\Source\Player\ClairvoyantPlayer.cpp">
       <Filter>Game Source\Player\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Game Source\Source\Debug\SoakCamera.cpp">
+      <Filter>Game Source\Debug\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
