@@ -46,10 +46,9 @@ public:
 	DynamicArray(const DynamicArray &otherDynamicArray) NOEXCEPT
 	{
 		ReserveConstruct(otherDynamicArray.capacity);
+		size = otherDynamicArray.size;
 
-		MemoryUtilities::CopyMemory(array, otherDynamicArray.array, sizeof(ObjectType) * capacity);
-
-		size = capacity;
+		MemoryUtilities::CopyMemory(array, otherDynamicArray.array, sizeof(ObjectType) * size);
 	}
 
 	/*
@@ -88,10 +87,10 @@ public:
 	*/
 	void operator=(const DynamicArray &otherDynamicArray) NOEXCEPT
 	{
-		Reserve(otherDynamicArray.capacity);
-		size = capacity;
+		ReserveConstruct(otherDynamicArray.capacity);
+		size = otherDynamicArray.size;
 
-		MemoryUtilities::CopyMemory(array, otherDynamicArray.array, size);
+		MemoryUtilities::CopyMemory(array, otherDynamicArray.array, sizeof(ObjectType) * size);
 	}
 
 	/*

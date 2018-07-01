@@ -48,13 +48,13 @@ float PhysicsSystem::GetTerrainHeightAtPosition(const Vector3 &position) const N
 		}
 	}
 
-	const TerrainComponent &terrainComponent{ *component };
+	const TerrainComponent &terrainComponent{ *nearestComponent };
 	const CPUTexture2D &terrainProperties{ terrainComponent.terrainProperties };
 	const float terrainSize{ terrainComponent.terrainUniformData.terrainSize };
 	const float terrainHeight{ terrainComponent.terrainUniformData.terrainHeight };
 
-	const float xIndex = (position.X + (terrainSize * 0.5f)) / terrainSize;
-	const float yIndex = (position.Z + (terrainSize * 0.5f)) / terrainSize;
+	const float xIndex = (position.X - terrainComponent.terrainUniformData.terrainPosition.X + (terrainSize * 0.5f)) / terrainSize;
+	const float yIndex = (position.Z - terrainComponent.terrainUniformData.terrainPosition.Z + (terrainSize * 0.5f)) / terrainSize;
 
 	return terrainProperties.At(xIndex, yIndex).W * terrainHeight + terrainComponent.terrainUniformData.terrainPosition.Y;
 }
