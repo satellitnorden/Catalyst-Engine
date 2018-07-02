@@ -871,6 +871,17 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	}
 
 	{
+		//Initialize the post processing bloom descriptor set layout.
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> descriptorSetLayoutBindings
+		{
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+		};
+
+		descriptorSetLayouts[INDEX(RenderDataTableLayout::PostProcessingBloom)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
+	}
+
+	{
 		//Initialize the bloom descriptor set layout.
 		constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> descriptorSetLayoutBindings
 		{
@@ -988,6 +999,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetParticleSystemVertexShaderData(data);
 		shaderModules[INDEX(Shader::ParticleSystemVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
+		//Initialize the post processing bloom fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetPostProcessingBloomFragmentShaderData(data);
+		shaderModules[INDEX(Shader::PostProcessingBloomFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -1232,13 +1250,27 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 	}
 
 	{
+		//Initialize the bloom horizontal blur descriptor set.
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingBloom)], descriptorSetLayouts[INDEX(RenderDataTableLayout::PostProcessingBloom)]);
+
+		//Update the write descriptor sets.
+		StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
+		{
+			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingBloom)], 0),
+			renderTargets[INDEX(RenderTarget::Bloom)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingBloom)], 1)
+		};
+
+		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
+	}
+
+	{
 		//Initialize the horizontal blur descriptor set.
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::HorizontalBlur)], descriptorSetLayouts[INDEX(RenderDataTableLayout::GaussianBlur)]);
 
 		//Update the write descriptor sets.
 		StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
 		{
-			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::HorizontalBlur)], 0)
+			renderTargets[INDEX(RenderTarget::SceneIntermediate)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::HorizontalBlur)], 0)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);

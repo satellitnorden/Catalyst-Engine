@@ -120,26 +120,6 @@ float sharpenKernel[9] = float[]
 );
 
 /*
-*   Applies bloom.
-*/
-vec3 ApplyBloom(vec3 fragment)
-{
-    if (bloomStrength > 0.0f)
-    {
-        //Sample the bloom texture.
-        vec4 bloomTextureSampler = texture(bloomTexture, fragmentTextureCoordinate);
-
-        //Apply the bloom.
-        return fragment + (bloomTextureSampler.rgb * bloomTextureSampler.a * bloomStrength);
-    }
-
-    else
-    {
-        return fragment;
-    }
-}
-
-/*
 *   Applies blur.
 */
 vec3 ApplyBlur(vec3 sceneTextureSampler)
@@ -220,9 +200,6 @@ void main()
 {
     //Sample the scene texture.
     vec3 sceneTextureSampler = texture(sceneTexture, fragmentTextureCoordinate).rgb;
-
-    //Apply bloom.
-    sceneTextureSampler = ApplyBloom(sceneTextureSampler);
 
     //Apply blur.
     sceneTextureSampler = ApplyBlur(sceneTextureSampler);

@@ -1,5 +1,8 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/VerticalBlurRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/PostProcessingBloomRenderPass.h>
+
+//Managers.
+#include <Managers/PostProcessingManager.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
@@ -8,50 +11,50 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(VerticalBlurRenderPass);
+DEFINE_SINGLETON(PostProcessingBloomRenderPass);
 
 /*
 *	Default constructor.
 */
-VerticalBlurRenderPass::VerticalBlurRenderPass() NOEXCEPT
+PostProcessingBloomRenderPass::PostProcessingBloomRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		VerticalBlurRenderPass::Instance->InitializeInternal();
+		PostProcessingBloomRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the vertical blur render pass.
+*	Initializes the post processing bloom render pass.
 */
-void VerticalBlurRenderPass::InitializeInternal() NOEXCEPT
+void PostProcessingBloomRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::VerticalBlur);
+	SetStage(RenderPassStage::PostProcessingBloom);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::GaussianBlurFragment);
+	SetFragmentShader(Shader::PostProcessingBloomFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Blur);
+	AddRenderTarget(RenderTarget::SceneIntermediate);
 
-	//Add the descriptor set layouts.
+	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
-	AddRenderDataTableLayout(RenderDataTableLayout::GaussianBlur);
+	AddRenderDataTableLayout(RenderDataTableLayout::PostProcessingBloom);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(GaussianBlurData));
+	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(float));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -71,22 +74,17 @@ void VerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		VerticalBlurRenderPass::Instance->RenderInternal();
+		PostProcessingBloomRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
 	FinalizeInitialization();
-
-	//Initialize the gaussian blur data.
-	data.direction = Vector2(0.0f, 1.0f);
-	data.inverseResolution = Vector2(	1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().width),
-										1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().height));
 }
 
 /*
-*	Renders the horizontal blur.
+*	Renders the post processing bloom.
 */
-void VerticalBlurRenderPass::RenderInternal() NOEXCEPT
+void PostProcessingBloomRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -94,17 +92,18 @@ void VerticalBlurRenderPass::RenderInternal() NOEXCEPT
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the current dynamic uniform data descriptor set.
+	//Bind the descriptor sets.
 	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::VerticalBlur)
+		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::PostProcessingBloom)
 	};
 
 	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
-	//Push the constant data.
-	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(GaussianBlurData), &data);
+	//Push constants.
+	const float bloomStrength{ PostProcessingManager::Instance->GetBloomStrength() };
+	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(float), &bloomStrength);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

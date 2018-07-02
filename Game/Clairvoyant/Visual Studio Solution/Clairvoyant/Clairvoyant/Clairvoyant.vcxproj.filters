@@ -924,6 +924,12 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\VerticalBlurRenderPass.h">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\PostProcessingBloomRenderPass.h">
+      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\PostProcessingBloomFragmentShader.h">
+      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp">
@@ -1279,6 +1285,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\VerticalBlurRenderPass.cpp">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\PostProcessingBloomRenderPass.cpp">
+      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\PostProcessingBloomFragmentShader.cpp">
+      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

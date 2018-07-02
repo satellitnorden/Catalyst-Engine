@@ -79,8 +79,8 @@ void HorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Initialize the gaussian blur data.
 	data.direction = Vector2(1.0f, 0.0f);
-	data.inverseResolution = Vector2(	2.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().width),
-		2.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().height));
+	data.inverseResolution = Vector2(	1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().width),
+										1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().height));
 }
 
 /*

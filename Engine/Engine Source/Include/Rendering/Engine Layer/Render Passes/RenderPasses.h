@@ -18,6 +18,7 @@
 #include <Rendering/Engine Layer/Render Passes/LightingRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/OceanRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/ParticleSystemRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/PostProcessingBloomRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/PostProcessingRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h>
 #include <Rendering/Engine Layer/Render Passes/ScreenSpaceAmbientOcclusionRenderPass.h>
