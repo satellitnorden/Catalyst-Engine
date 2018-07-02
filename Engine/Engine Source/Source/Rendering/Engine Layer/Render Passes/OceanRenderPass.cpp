@@ -41,8 +41,9 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(1);
+	SetNumberOfRenderTargets(2);
 	AddRenderTarget(RenderTarget::Scene);
+	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 
 	//Add the descriptor set layouts.
 	SetNumberOfRenderDataTableLayouts(3);

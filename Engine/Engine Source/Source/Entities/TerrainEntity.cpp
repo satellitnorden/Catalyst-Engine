@@ -17,18 +17,6 @@ TerrainEntity::TerrainEntity() NOEXCEPT
 {
 	//Set the entity type.
 	entityType = EntityType::Terrain;
-
-	//Add this terrain entity to the universal container.
-	Instances.EmplaceSlow(this);
-}
-
-/*
-*	Default destructor.
-*/
-TerrainEntity::~TerrainEntity() NOEXCEPT
-{
-	//Remove this terrain entity from the universal container.
-	Instances.Erase(this);
 }
 
 /*

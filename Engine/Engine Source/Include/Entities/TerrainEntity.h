@@ -28,11 +28,6 @@ public:
 	TerrainEntity() NOEXCEPT;
 
 	/*
-	*	Default destructor.
-	*/
-	~TerrainEntity() NOEXCEPT;
-
-	/*
 	*	Returns the position of this entity.
 	*/
 	const Vector3& GetPosition() const NOEXCEPT final override;

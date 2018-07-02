@@ -70,6 +70,7 @@ layout (set = 2, binding = 2) uniform sampler2D oceanNormalTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
+layout (location = 1) out vec4 normalDepth;
 
 //Globals.
 float depth;
@@ -153,7 +154,6 @@ vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
     vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
     viewSpacePosition /= viewSpacePosition.w;
     vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
-    depth = viewSpacePosition.z;
 
     return worldSpacePosition.xyz;
 }
@@ -170,7 +170,7 @@ vec3 CalculateDirectionalLight()
 void main()
 {
 	 //Sample the depth of the scene at this point.
-    float sceneDepth = texture(sceneNormalDepthTexture, fragmentTextureCoordinate).a;
+    float sceneDepth = texture(sceneNormalDepthTexture, fragmentTextureCoordinate).w;
 
     //Calculate the scene world position.
     sceneWorldPosition = CalculateWorldPosition(fragmentTextureCoordinate, sceneDepth);
@@ -207,9 +207,15 @@ void main()
         finalOceanColor += CalculateDirectionalLight();
     }
 
+    //Calculate the depth.
+    vec4 projectedPosition = viewMatrix * vec4(intersectionPoint, 1.0f);
+    projectedPosition.xyz /= projectedPosition.w;
+    float depth = projectedPosition.z;
+
     //Write the depth.
-    gl_FragDepth = depth;
+    gl_FragDepth = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneDepth : depth;
 
     //Write the fragment
     fragment = vec4(finalOceanColor, 1.0f);
+    normalDepth.w = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneDepth : depth;
 }
