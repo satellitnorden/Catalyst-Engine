@@ -116,8 +116,7 @@ void CullingSystem::CullTerrain() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++frustumCullingComponent, ++component, ++renderComponent)
 	{
-		//renderComponent->isInViewFrustum = RenderingUtilities::IsInViewFrustum(viewMatrix, component->terrainUniformData.terrainPosition, frustumCullingComponent->axisAlignedBoundingBox);
-		renderComponent->isInViewFrustum = true;
+		renderComponent->isInViewFrustum = RenderingUtilities::IsInViewFrustum(viewMatrix, frustumCullingComponent->axisAlignedBoundingBox);
 	}
 }
 

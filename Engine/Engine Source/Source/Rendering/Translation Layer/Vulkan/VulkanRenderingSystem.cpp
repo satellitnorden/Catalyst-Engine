@@ -220,8 +220,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[entity->GetComponentsIndex()] };
 	TerrainRenderComponent &terrainRenderComponent{ ComponentManager::GetTerrainRenderComponents()[entity->GetComponentsIndex()] };
 
-	frustumCullingComponent.axisAlignedBoundingBox.minimum = Vector3(-(data->terrainUniformData.terrainSize * 0.5f), -(data->terrainUniformData.terrainSize * 0.5f), -(data->terrainUniformData.terrainSize * 0.5f));
-	frustumCullingComponent.axisAlignedBoundingBox.maximum = Vector3(data->terrainUniformData.terrainSize * 0.5f, data->terrainUniformData.terrainSize * 0.5f, data->terrainUniformData.terrainSize * 0.5f);
+	frustumCullingComponent.axisAlignedBoundingBox = data->axisAlignedBoundingBox;
 
 	terrainComponent.terrainUniformData = data->terrainUniformData;
 	terrainComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));

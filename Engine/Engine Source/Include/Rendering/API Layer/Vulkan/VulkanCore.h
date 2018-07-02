@@ -10,7 +10,7 @@
 *	Turns RenderDoc debugging on/off.
 */
 #if !defined(CATALYST_FINAL)
-	#define RENDERDOC_DEBUGGING false
+	#define RENDERDOC_DEBUGGING true
 #else
 	#define RENDERDOC_DEBUGGING false
 #endif
@@ -98,6 +98,13 @@ static void PrintResultAndBreak(const char *const RESTRICT function, const VkRes
 		case VK_ERROR_MEMORY_MAP_FAILED:
 		{
 			PRINT_TO_CONSOLE("Result was VK_ERROR_MEMORY_MAP_FAILED.");
+
+			break;
+		}
+
+		case VK_ERROR_OUT_OF_DATE_KHR:
+		{
+			PRINT_TO_CONSOLE("Result was VK_ERROR_OUT_OF_DATE_KHR.");
 
 			break;
 		}

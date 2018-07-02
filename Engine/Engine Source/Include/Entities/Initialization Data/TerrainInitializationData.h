@@ -4,6 +4,7 @@
 #include <Engine Core/EngineCore.h>
 
 //Rendering.
+#include <Rendering/Engine Layer/AxisAlignedBoundingBox.h>
 #include <Rendering/Engine Layer/CPUTexture2D.h>
 #include <Rendering/Engine Layer/RenderingCore.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
@@ -13,6 +14,9 @@ class TerrainInitializationData final
 {
 
 public:
+
+	//The axis aligned bounding box.
+	AxisAlignedBoundingBox axisAlignedBoundingBox;
 
 	//The terrain properties.
 	CPUTexture2D terrainProperties;

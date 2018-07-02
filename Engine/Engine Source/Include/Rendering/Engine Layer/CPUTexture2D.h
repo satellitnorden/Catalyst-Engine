@@ -74,6 +74,26 @@ public:
 	}
 
 	/*
+	*	Begin iterator, const.
+	*/
+	RESTRICTED const Vector4 *const RESTRICT begin() const NOEXCEPT { return data.begin(); }
+
+	/*
+	*	Begin iterator, non-const.
+	*/
+	RESTRICTED Vector4 *const RESTRICT begin() NOEXCEPT { return data.begin(); }
+
+	/*
+	*	End iterator, const.
+	*/
+	RESTRICTED const Vector4 *const RESTRICT end() const NOEXCEPT { return data.end(); }
+
+	/*
+	*	End iterator, non-const.
+	*/
+	RESTRICTED Vector4 *const RESTRICT end() NOEXCEPT { return data.end(); }
+
+	/*
 	*	Returns the texture data, const.
 	*/
 	RESTRICTED const Vector4* Data() const NOEXCEPT { return data.Data(); }

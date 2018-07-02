@@ -48,6 +48,26 @@ namespace RenderingUtilities
 	}
 
 	/*
+	*	Calculates an axis-aligned bounding box for a terrain.
+	*/
+	static void CalculateTerrainAxisAlignedBoundingBox(const CPUTexture2D *const RESTRICT properties, const float extent, const Vector3 *const RESTRICT worldPosition, const float height, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	{
+		float lowest{ FLOAT_MAXIMUM };
+		float highest{ -FLOAT_MAXIMUM };
+
+		for (const Vector4 &property : *properties)
+		{
+			lowest = CatalystMath::Minimum(lowest, property.W);
+			highest = CatalystMath::Maximum(highest, property.W);
+		}
+
+		const float halfExtent{ extent * 0.5f };
+
+		box->minimum = *worldPosition + Vector3(-halfExtent, lowest * height, -halfExtent);
+		box->maximum = *worldPosition + Vector3(halfExtent, highest * height, halfExtent);
+	}
+
+	/*
 	*	Calculates the vegetation grid. Outputs a new container for the sorted transformations.
 	*/
 	static void CalculateVegetationGrid(const float cutoffDistance, const DynamicArray<VegetationTransformation> &transformations, VegetationComponent *const RESTRICT renderComponent, VegetationCullingComponent *const RESTRICT cullingComponent, DynamicArray<VegetationTransformation> &sortedTransformations) NOEXCEPT
@@ -280,7 +300,7 @@ namespace RenderingUtilities
 	/*
 	*	Given a view matrix and an axis-aligned bounding box, returns if the box is in the view frustum.
 	*/
-	static bool IsInViewFrustum(const Matrix4 &viewMatrix, const Vector3 &worldPosition, const AxisAlignedBoundingBox &axisAlignedBoundingBox) NOEXCEPT
+	static bool IsInViewFrustum(const Matrix4 &viewMatrix, const AxisAlignedBoundingBox &axisAlignedBoundingBox) NOEXCEPT
 	{
 		StaticArray<Vector4, 8> corners;
 
@@ -296,8 +316,6 @@ namespace RenderingUtilities
 
 		for (uint8 i = 0; i < 8; ++i)
 		{
-			corners[i] += Vector4(worldPosition.X, worldPosition.Y, worldPosition.Z, 0.0f);
-
 			corners[i] = viewMatrix * corners[i];
 
 			const float inverseW{ 1.0f / corners[i].W };

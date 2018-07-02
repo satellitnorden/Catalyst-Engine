@@ -38,6 +38,7 @@
 #include <Rendering/Engine Layer/EnvironmentMaterial.h>
 #include <Rendering/Engine Layer/OceanMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
+#include <Rendering/Engine Layer/RenderingUtilities.h>
 #include <Rendering/Engine Layer/TerrainMaterial.h>
 #include <Rendering/Engine Layer/TerrainUniformData.h>
 #include <Rendering/Engine Layer/TextureData.h>
@@ -552,6 +553,7 @@ RESTRICTED TerrainEntity *const RESTRICT WorldArchitect::GenerateTerrain(const V
 	//Create the terrain entity!
 	TerrainInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<TerrainInitializationData>() };
 
+	RenderingUtilities::CalculateTerrainAxisAlignedBoundingBox(&terrainProperties, WorldAchitectConstants::TERRAIN_EXTENT, &worldPosition, WorldAchitectConstants::TERRAIN_HEIGHT, &data->axisAlignedBoundingBox);
 	data->terrainProperties = terrainProperties;
 	data->terrainUniformData = TerrainUniformData(3.0f, 0.5f, 1.0f, 10.0f, 2.0f, WorldAchitectConstants::TERRAIN_HEIGHT, WorldAchitectConstants::TERRAIN_EXTENT, WorldAchitectConstants::TERRAIN_EXTENT * 0.1f, worldPosition);
 	data->layerWeightsTexture = layerWeightsTexture;
