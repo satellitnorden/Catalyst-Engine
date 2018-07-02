@@ -50,6 +50,8 @@ enum class RenderPassStage : uint8
 	BloomHorizontalBlur,
 	BloomVerticalBlur,
 	ParticleSystem,
+	HorizontalBlur,
+	VerticalBlur,
 	PostProcessing,
 
 	NumberOfRenderPassStages
@@ -117,6 +119,8 @@ enum class RenderDataTable : uint8
 	Bloom,
 	BloomHorizontalBlur,
 	BloomVerticalBlur,
+	HorizontalBlur,
+	VerticalBlur,
 	PostProcessing,
 	NumberOfDescriptorSets
 };
@@ -155,6 +159,8 @@ enum class RenderTarget : uint8
 	Scene,
 	Bloom,
 	BloomIntermediate,
+	BlurIntermediate,
+	Blur,
 	Screen,
 	NumberOfRenderTargets
 };

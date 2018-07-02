@@ -73,6 +73,7 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 //Texture samplers.
 layout (set = 1, binding = 2) uniform sampler2D sceneTexture;
 layout (set = 1, binding = 3) uniform sampler2D bloomTexture;
+layout (set = 1, binding = 4) uniform sampler2D blurTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
@@ -144,15 +145,10 @@ vec3 ApplyBloom(vec3 fragment)
 vec3 ApplyBlur(vec3 sceneTextureSampler)
 {
     //Calculate the blurred sample.
-    vec3 blurredSample = vec3(0.0f, 0.0f, 0.0f);
-
-    for (int i = 0; i < 9; ++i)
-    {
-        blurredSample += textureSamples[i] * blurKernel[i];
-    }
+    vec4 blur = texture(blurTexture, fragmentTextureCoordinate);
 
     //Return the calculated color.
-    return mix(sceneTextureSampler, blurredSample, blurAmount);
+    return mix(sceneTextureSampler, blur.rgb, blurAmount);
 }
 
 /*
