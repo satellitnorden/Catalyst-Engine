@@ -112,7 +112,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	InitializeTask();
 
 	//Create the test scene.
-	CreateTestScene();
+	//CreateTestScene();
 }
 
 /*
@@ -120,7 +120,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 */
 void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 {
-	/*
 	//Update depending on the current state.
 	switch (currentState)
 	{
@@ -145,7 +144,6 @@ void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 			break;
 		}
 	}
-	*/
 }
 
 /*
