@@ -1265,12 +1265,12 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 
 	{
 		//Initialize the horizontal blur descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::HorizontalBlur)], descriptorSetLayouts[INDEX(RenderDataTableLayout::GaussianBlur)]);
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingHorizontalBlur)], descriptorSetLayouts[INDEX(RenderDataTableLayout::GaussianBlur)]);
 
 		//Update the write descriptor sets.
 		StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
 		{
-			renderTargets[INDEX(RenderTarget::SceneIntermediate)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::HorizontalBlur)], 0)
+			renderTargets[INDEX(RenderTarget::SceneIntermediate)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingHorizontalBlur)], 0)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
@@ -1278,12 +1278,12 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 
 	{
 		//Initialize the vertical blur descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::VerticalBlur)], descriptorSetLayouts[INDEX(RenderDataTableLayout::GaussianBlur)]);
+		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingVerticalBlur)], descriptorSetLayouts[INDEX(RenderDataTableLayout::GaussianBlur)]);
 
 		//Update the write descriptor sets.
 		StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
 		{
-			renderTargets[INDEX(RenderTarget::BlurIntermediate)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::VerticalBlur)], 0)
+			renderTargets[INDEX(RenderTarget::BlurIntermediate)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingVerticalBlur)], 0)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);

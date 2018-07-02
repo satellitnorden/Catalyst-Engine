@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/HorizontalBlurRenderPass.h>
+#include <Rendering/Engine Layer/Render Passes/PostProcessingVerticalBlurRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
@@ -8,27 +8,27 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(HorizontalBlurRenderPass);
+DEFINE_SINGLETON(PostProcessingVerticalBlurRenderPass);
 
 /*
 *	Default constructor.
 */
-HorizontalBlurRenderPass::HorizontalBlurRenderPass() NOEXCEPT
+PostProcessingVerticalBlurRenderPass::PostProcessingVerticalBlurRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		HorizontalBlurRenderPass::Instance->InitializeInternal();
+		PostProcessingVerticalBlurRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the horizontal blur render pass.
+*	Initializes the post processing vertical blur render pass.
 */
-void HorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
+void PostProcessingVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the stage.
-	SetStage(RenderPassStage::HorizontalBlur);
+	SetStage(RenderPassStage::PostProcessingVerticalBlur);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -42,7 +42,7 @@ void HorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::BlurIntermediate);
+	AddRenderTarget(RenderTarget::Blur);
 
 	//Add the descriptor set layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -71,22 +71,22 @@ void HorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		HorizontalBlurRenderPass::Instance->RenderInternal();
+		PostProcessingVerticalBlurRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
 	FinalizeInitialization();
 
 	//Initialize the gaussian blur data.
-	data.direction = Vector2(1.0f, 0.0f);
+	data.direction = Vector2(0.0f, 1.0f);
 	data.inverseResolution = Vector2(	1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().width),
 										1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().height));
 }
 
 /*
-*	Renders the horizontal blur.
+*	Renders the post processing vertical blur.
 */
-void HorizontalBlurRenderPass::RenderInternal() NOEXCEPT
+void PostProcessingVerticalBlurRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -98,7 +98,7 @@ void HorizontalBlurRenderPass::RenderInternal() NOEXCEPT
 	StaticArray<RenderDataTableHandle, 2> descriptorSets
 	{
 		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::HorizontalBlur)
+		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::PostProcessingVerticalBlur)
 	};
 
 	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());

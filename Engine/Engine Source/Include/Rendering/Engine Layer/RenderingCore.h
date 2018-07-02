@@ -51,8 +51,8 @@ enum class RenderPassStage : uint8
 	BloomVerticalBlur,
 	ParticleSystem,
 	PostProcessingBloom,
-	HorizontalBlur,
-	VerticalBlur,
+	PostProcessingHorizontalBlur,
+	PostProcessingVerticalBlur,
 	PostProcessing,
 
 	NumberOfRenderPassStages
@@ -121,8 +121,8 @@ enum class RenderDataTable : uint8
 	BloomHorizontalBlur,
 	BloomVerticalBlur,
 	PostProcessingBloom,
-	HorizontalBlur,
-	VerticalBlur,
+	PostProcessingHorizontalBlur,
+	PostProcessingVerticalBlur,
 	PostProcessing,
 	NumberOfDescriptorSets
 };

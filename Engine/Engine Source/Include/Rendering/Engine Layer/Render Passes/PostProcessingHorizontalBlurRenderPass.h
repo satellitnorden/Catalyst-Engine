@@ -6,18 +6,18 @@
 //Rendering.
 #include <Rendering/Engine Layer/Render Passes/RenderPass.h>
 
-class VerticalBlurRenderPass final : public RenderPass
+class PostProcessingHorizontalBlurRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(VerticalBlurRenderPass);
+	DECLARE_SINGLETON(PostProcessingHorizontalBlurRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	VerticalBlurRenderPass() NOEXCEPT;
+	PostProcessingHorizontalBlurRenderPass() NOEXCEPT;
 
 private:
 
@@ -25,12 +25,12 @@ private:
 	GaussianBlurData data;
 
 	/*
-	*	Initializes the vertical render pass.
+	*	Initializes the post processing horizontal render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
 	/*
-	*	Renders the vertical blur.
+	*	Renders the post processing horizontal blur.
 	*/
 	void RenderInternal() NOEXCEPT;
 

@@ -247,13 +247,14 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\DirectionalShadowVerticalBlurRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\DirectionalStaticPhysicalShadowRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\DirectionalTerrainShadowRenderPass.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\HorizontalBlurRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\InstancedPhysicalRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\LightingRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\OceanRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\ParticleSystemRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\PostProcessingBloomRenderPass.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\PostProcessingHorizontalBlurRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\PostProcessingRenderPass.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\PostProcessingVerticalBlurRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\RenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\RenderPasses.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h" />
@@ -263,7 +264,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\StaticPhysicalRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\TerrainRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\VegetationRenderPass.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\VerticalBlurRenderPass.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\RenderingCore.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\RenderingUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Resolution.h" />
@@ -402,13 +402,14 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\DirectionalShadowVerticalBlurRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\DirectionalStaticPhysicalShadowRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\DirectionalTerrainShadowRenderPass.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\HorizontalBlurRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\InstancedPhysicalRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\LightingRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\OceanRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\ParticleSystemRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\PostProcessingBloomRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\PostProcessingHorizontalBlurRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\PostProcessingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\PostProcessingVerticalBlurRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\RenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionRenderPass.cpp" />
@@ -417,7 +418,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\StaticPhysicalRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\TerrainRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\VegetationRenderPass.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\VerticalBlurRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Window.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\BloomFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\CubeMapVertexShader.cpp" />
