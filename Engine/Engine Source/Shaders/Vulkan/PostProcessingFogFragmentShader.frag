@@ -97,7 +97,7 @@ void main()
     vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, texture(normalDepthTexture, fragmentTextureCoordinate).w);
 
     //Calculate the fog factor.
-    float distanceFalloffFactor = min(LengthSquared(cameraWorldPosition - fragmentWorldPosition) / (10000.0f * 10000.0f), 1.0f);
+    float distanceFalloffFactor = min(LengthSquared(cameraWorldPosition - fragmentWorldPosition) / (25000.0f * 25000.0f), 1.0f);
     float heightFalloffFactor = clamp(1.0f - (max(fragmentWorldPosition.y, 0.0f) / (100.0f * 100.0f)), 0.0f, 1.0f);
     float fogFactor = distanceFalloffFactor * heightFalloffFactor;
 
@@ -105,8 +105,8 @@ void main()
     vec3 sceneColor = mix(texture(sceneTexture, fragmentTextureCoordinate).rgb, texture(blurTexture, fragmentTextureCoordinate).rgb, fogFactor);
 
     //Calculate the fog folor.
-    vec3 fogColor = directionalLightColor;
-
+    vec3 baseColor = directionalLightColor * 0.1f;
+    vec3 fogColor = baseColor * (1.0f + directionalLightIntensity);
 
     //Write the fragment.
     fragment = vec4(mix(sceneColor, fogColor, fogFactor), 1.0f);

@@ -144,17 +144,20 @@ public:
 		const float xStartTexel{ (xPixelPosition - xFractional) * xTexelSize };
 		const float yStartTexel{ (yPixelPosition - yFractional) * yTexelSize };
 
-		const uint64 xBottomLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(width)), 0, width - 1) };
-		const uint64 yBottomLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(height)), 0, height - 1) };
+		//Apparently this is needed, to sample the correct texel. I do not know why. Need to investigate. This keeps the camera from clipping against the terrain though.
+		constexpr uint64 xModifier{ static_cast<uint64>(-1) };
+		constexpr uint64 yModifier{ static_cast<uint64>(-1) };
 
-		const uint64 xBottomRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(width)), 0, width - 1) };
-		const uint64 yBottomRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(height)), 0, height - 1) };
+		const uint64 xBottomLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(width)) + xModifier, 0, width - 1) };
+		const uint64 yBottomLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(height)) + yModifier, 0, height - 1) };
 
-		const uint64 xTopLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(width)), 0, width - 1) };
-		const uint64 yTopLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(height)), 0, height - 1) };
+		const uint64 xBottomRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(width)) + xModifier, 0, width - 1) };
+		const uint64 yBottomRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(height)) + yModifier, 0, height - 1) };
 
-		const uint64 xTopRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(width)), 0, width - 1) };
-		const uint64 yTopRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(height)), 0, height - 1) };
+		const uint64 xTopLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(width)) + xModifier, 0, width - 1) };
+		const uint64 yTopLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(height)) + yModifier, 0, height - 1) };
+		const uint64 xTopRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(width)) + xModifier, 0, width - 1) };
+		const uint64 yTopRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(height)) + yModifier, 0, height - 1) };
 
 		const Vector4 &bottomLeftValue{ data[(yBottomLeftCoordinate * width) + xBottomLeftCoordinate] };
 		const Vector4 &bottomRightValue{ data[(yBottomRightCoordinate * width) + xBottomRightCoordinate] };
