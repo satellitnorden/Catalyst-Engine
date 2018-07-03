@@ -69,6 +69,12 @@ layout (set = 1, binding = 2) uniform sampler2D blurTexture;
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
+//Push constant
+layout (push_constant) uniform FogData
+{
+    float squaredFogDistance;
+};
+
 /*
 *   Calculates the fragment world position.
 */
@@ -97,7 +103,7 @@ void main()
     vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, texture(normalDepthTexture, fragmentTextureCoordinate).w);
 
     //Calculate the fog factor.
-    float distanceFalloffFactor = min(LengthSquared(cameraWorldPosition - fragmentWorldPosition) / (25000.0f * 25000.0f), 1.0f);
+    float distanceFalloffFactor = min(LengthSquared(cameraWorldPosition - fragmentWorldPosition) / squaredFogDistance, 1.0f);
     float heightFalloffFactor = clamp(1.0f - (max(fragmentWorldPosition.y, 0.0f) / (100.0f * 100.0f)), 0.0f, 1.0f);
     float fogFactor = distanceFalloffFactor * heightFalloffFactor;
 

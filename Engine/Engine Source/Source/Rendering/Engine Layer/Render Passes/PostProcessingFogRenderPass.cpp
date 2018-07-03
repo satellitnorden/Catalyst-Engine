@@ -44,10 +44,14 @@ void PostProcessingFogRenderPass::InitializeInternal() NOEXCEPT
 	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::Scene);
 
-	//Add the descriptor set layouts.
+	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
 	AddRenderDataTableLayout(RenderDataTableLayout::PostProcessingFog);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(float));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -93,6 +97,11 @@ void PostProcessingFogRenderPass::RenderInternal() NOEXCEPT
 	};
 
 	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
+
+	//Push the constant data.
+	constexpr float fogDistance{ 100.0f };
+	constexpr float fogDistanceSquared{ fogDistance * fogDistance };
+	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(float), &fogDistanceSquared);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

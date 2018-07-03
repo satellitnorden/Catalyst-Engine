@@ -45,10 +45,15 @@ public:
 		copyCommandBuffer.End();
 
 		//Submit the command buffer to the transfer queue.
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(copyCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+		VulkanFence fence;
+		fence.Initialize(0);
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(copyCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
-		//Wait idle for the transfer queue to finish.
-		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
+		//Wait for the command to finish.
+		fence.WaitFor();
+
+		//Release the fence.
+		fence.Release();
 
 		//Free the copy command buffer.
 		commandPool->FreeCommandBuffer(copyCommandBuffer);
@@ -101,10 +106,15 @@ public:
 		transferCommandBuffer.End();
 
 		//Submit the command buffer.
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+		VulkanFence fence;
+		fence.Initialize(0);
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
-		//Wait for the transfer operation to finish.
-		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
+		//Wait for the transfer command to finish.
+		fence.WaitFor();
+
+		//Release the fence.
+		fence.Release();
 
 		//Free the transfer command buffer,
 		commandPool->FreeCommandBuffer(transferCommandBuffer);
@@ -145,10 +155,15 @@ public:
 		transferCommandBuffer.End();
 
 		//Submit the command buffer.
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+		VulkanFence fence;
+		fence.Initialize(0);
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
-		//Wait for the transfer operation to finish.
-		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
+		//Wait for the transfer command to finish.
+		fence.WaitFor();
+
+		//Release the fence.
+		fence.Release();
 
 		//Free the transfer command buffer,
 		commandPool->FreeCommandBuffer(transferCommandBuffer);
@@ -190,10 +205,15 @@ public:
 		transferCommandBuffer.End();
 
 		//Submit the command buffer.
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+		VulkanFence fence;
+		fence.Initialize(0);
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
-		//Wait for the transfer operation to finish.
-		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
+		//Wait for the transfer command to finish.
+		fence.WaitFor();
+
+		//Release the fence.
+		fence.Release();
 
 		//Free the transfer command buffer,
 		commandPool->FreeCommandBuffer(transferCommandBuffer);
@@ -488,10 +508,15 @@ public:
 		transitionCommandBuffer.End();
 
 		//Submit the command buffer.
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(transitionCommandBuffer, 0, nullptr, 0, 0, nullptr, VK_NULL_HANDLE);
+		VulkanFence fence;
+		fence.Initialize(0);
+		VulkanInterface::Instance->GetGraphicsQueue().Submit(transitionCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
-		//Wait for the transition operation to finish.
-		VulkanInterface::Instance->GetGraphicsQueue().WaitIdle();
+		//Wait for the transfer command to finish.
+		fence.WaitFor();
+
+		//Release the fence.
+		fence.Release();
 
 		//Free the transition command buffer.
 		commandPool->FreeCommandBuffer(transitionCommandBuffer);
