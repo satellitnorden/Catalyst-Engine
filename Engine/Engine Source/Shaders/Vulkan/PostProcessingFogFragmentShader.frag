@@ -55,6 +55,10 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Preprocessor defines.
+#define NUMBER_OF_SAMPLES 32
+#define SEARCH_DISTANCE 25.0f
+
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -65,6 +69,7 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 layout (set = 1, binding = 0) uniform sampler2D normalDepthTexture;
 layout (set = 1, binding = 1) uniform sampler2D sceneTexture;
 layout (set = 1, binding = 2) uniform sampler2D blurTexture;
+layout (set = 1, binding = 3) uniform sampler2D shadowTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -105,14 +110,39 @@ void main()
     //Calculate the fog factor.
     float distanceFalloffFactor = min(LengthSquared(cameraWorldPosition - fragmentWorldPosition) / squaredFogDistance, 1.0f);
     float heightFalloffFactor = clamp(1.0f - (max(fragmentWorldPosition.y, 0.0f) / (100.0f * 100.0f)), 0.0f, 1.0f);
-    float fogFactor = distanceFalloffFactor * heightFalloffFactor;
+    float fogFactor = distanceFalloffFactor;
 
     //Calculate the scene color.
     vec3 sceneColor = mix(texture(sceneTexture, fragmentTextureCoordinate).rgb, texture(blurTexture, fragmentTextureCoordinate).rgb, fogFactor);
 
     //Calculate the fog folor.
     vec3 baseColor = directionalLightColor * 0.1f;
-    vec3 fogColor = baseColor * (1.0f + directionalLightIntensity);
+
+    vec3 rayDirection = normalize(fragmentWorldPosition - cameraWorldPosition);
+    float rayLength = min(length(fragmentWorldPosition - cameraWorldPosition), SEARCH_DISTANCE);
+    float rayStep = rayLength / NUMBER_OF_SAMPLES;
+
+    vec3 currentPosition = cameraWorldPosition + (rayDirection * rayStep);
+
+    vec3 accumulatedColor = baseColor;
+
+    for (int i = 0; i < NUMBER_OF_SAMPLES; ++i)
+    {
+	    //Calculate the directional light screen space position.
+	    vec4 directionalLightShadowMapCoordinate = directionalLightViewMatrix * vec4(currentPosition, 1.0f);
+	    directionalLightShadowMapCoordinate.xy = directionalLightShadowMapCoordinate.xy * 0.5f + 0.5f;
+
+	    //Calculate whether or not this fragment is in shadow.
+	    vec4 directionalDepthSampler = texture(shadowTexture, directionalLightShadowMapCoordinate.xy);
+	    float directionalDepth = directionalDepthSampler.r;
+	    float compare = directionalLightShadowMapCoordinate.z;
+
+	   	accumulatedColor += compare >= 1.0f || compare < directionalDepth ? baseColor * (1.0f + directionalLightIntensity) : baseColor;
+
+	   	currentPosition += rayDirection * rayStep;
+    }
+
+    vec3 fogColor = accumulatedColor / NUMBER_OF_SAMPLES;
 
     //Write the fragment.
     fragment = vec4(mix(sceneColor, fogColor, fogFactor), 1.0f);

@@ -895,11 +895,12 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 	{
 		//Initialize the post processing fog descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> descriptorSetLayoutBindings
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> descriptorSetLayoutBindings
 		{
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
 		descriptorSetLayouts[INDEX(RenderDataTableLayout::PostProcessingFog)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
@@ -1315,11 +1316,12 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingFog)], descriptorSetLayouts[INDEX(RenderDataTableLayout::PostProcessingFog)]);
 
 		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
+		StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
 		{
 			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingFog)], 0),
 			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingFog)], 1),
-			renderTargets[INDEX(RenderTarget::FogBlur)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingFog)], 2)
+			renderTargets[INDEX(RenderTarget::FogBlur)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingFog)], 2),
+			renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessingFog)], 3)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
