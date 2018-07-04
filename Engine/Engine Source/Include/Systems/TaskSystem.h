@@ -44,6 +44,9 @@ public:
 
 private:
 
+	//Defines whether or not task executors should execute tasks.
+	bool executeTasks{ true };
+
 	//The atomic queue in which to put tasks.
 	AtomicQueue<Task *RESTRICT> taskQueue;
 

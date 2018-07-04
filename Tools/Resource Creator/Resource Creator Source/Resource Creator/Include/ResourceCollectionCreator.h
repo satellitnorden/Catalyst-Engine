@@ -14,21 +14,21 @@ public:
 	/*
 	*	Creates a resource collection file.
 	*/
-	static void CreateResourceCollection(const int32 argumentCount, char *RESTRICT arguments[]) noexcept
+	static void CreateResourceCollection(const int32 argumentCount, const char *const RESTRICT arguments[]) noexcept
 	{
 		//What should the collection be called?
-		DynamicString fileName{ arguments[2] };
+		DynamicString fileName{ arguments[0] };
 		fileName += ".crc";
 
 		//Open the file to be written to.
 		BinaryFile<IOMode::Out> resourceCollectionFile{ fileName.CString() };
 
 		//Write the number of resources in the resource collection.
-		const uint64 numberOfResources{ static_cast<uint64>(argumentCount - 3) };
+		const uint64 numberOfResources{ static_cast<uint64>(argumentCount - 1) };
 		resourceCollectionFile.Write(&numberOfResources, sizeof(uint64));
 
 		//Slam all resources into the resource collection.
-		for (int32 i = 3; i < argumentCount; ++i)
+		for (int32 i = 1; i < argumentCount; ++i)
 		{
 			//Open the resource file.
 			BinaryFile<IOMode::In> resourceFile{ arguments[i] };

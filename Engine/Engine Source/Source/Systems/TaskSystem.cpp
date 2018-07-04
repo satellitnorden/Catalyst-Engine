@@ -49,6 +49,9 @@ void TaskSystem::InitializeSystem(const CatalystProjectMultithreadingInformation
 */
 void TaskSystem::ReleaseSystem() NOEXCEPT
 {
+	//Stop executing tasks.
+	executeTasks = false;
+
 	//Join all adventurer threads.
 	for (auto &taskExecutorThread : taskExecutorThreads)
 	{
@@ -84,7 +87,7 @@ void TaskSystem::ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT
 */
 void TaskSystem::ExecuteTaskExecutor() NOEXCEPT
 {
-	while (!EngineSystem::Instance->ShouldTerminate())
+	while (executeTasks)
 	{
 		//Try to pop a task from the task queue, and execute it if it succeeds.
 		if (Task *const RESTRICT *const RESTRICT newTask{ taskQueue.Pop() })

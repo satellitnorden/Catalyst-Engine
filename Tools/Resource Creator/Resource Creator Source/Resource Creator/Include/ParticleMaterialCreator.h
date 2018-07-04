@@ -19,10 +19,10 @@ public:
 	/*
 	*	Creates a particle material resource file.
 	*/
-	static void CreateParticleMaterial(const int32 argumentCount, char *RESTRICT arguments[]) noexcept
+	static void CreateParticleMaterial(const char *const RESTRICT arguments[]) noexcept
 	{
 		//What should the material be called?
-		DynamicString fileName{ arguments[2] };
+		DynamicString fileName{ arguments[0] };
 		fileName += ".cr";
 
 		//Open the file to be written to.
@@ -33,18 +33,18 @@ public:
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
-		const HashString resourceID{ arguments[3] };
+		const HashString resourceID{ arguments[1] };
 		file.Write(&resourceID, sizeof(HashString));
 
 		//Determine how many mipmap levels that should be generated.
-		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[4] - '0') };
+		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[2] - '0') };
 
 		//Write the number of mipmap levels to the file.
 		file.Write(&numberOfMipmapLevels, sizeof(uint8));
 
 		//Load the albedo.
 		int32 width, height, numberOfChannels;
-		byte *RESTRICT data{ stbi_load(arguments[5], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+		byte *RESTRICT data{ stbi_load(arguments[3], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 		//Write the width and height of the albedo into the file, to be read into uint32's.
 		file.Write(&width, sizeof(int32));

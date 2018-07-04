@@ -15,10 +15,10 @@ public:
 	/*
 	*	Creates a sound bank resource file.
 	*/
-	static void CreateSoundBank(const int32 argumentCount, char *RESTRICT arguments[]) noexcept
+	static void CreateSoundBank(const char *const RESTRICT arguments[]) noexcept
 	{
 		//What should the file be called?
-		DynamicString fileName{ arguments[2] };
+		DynamicString fileName{ arguments[0] };
 		fileName += ".cr";
 
 		//Open the file to be written to.
@@ -29,11 +29,11 @@ public:
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
-		const HashString resourceID{ arguments[3] };
+		const HashString resourceID{ arguments[1] };
 		file.Write(&resourceID, sizeof(HashString));
 
 		//Open the sound bank file.
-		BinaryFile<IOMode::In> soundBankFile{ arguments[4] };
+		BinaryFile<IOMode::In> soundBankFile{ arguments[2] };
 
 		//Get the size of the sound bank file.
 		const uint64 soundBankFileSize{ soundBankFile.Size() };

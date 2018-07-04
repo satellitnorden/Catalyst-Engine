@@ -19,10 +19,10 @@ public:
 	/*
 	*	Creates a vegetation material resource file.
 	*/
-	static void CreateVegetationMaterial(const int32 argumentCount, char *RESTRICT arguments[]) noexcept
+	static void CreateVegetationMaterial(const char *const RESTRICT arguments[]) noexcept
 	{
 		//What should the material be called?
-		DynamicString fileName{ arguments[2] };
+		DynamicString fileName{ arguments[0] };
 		fileName += ".cr";
 
 		//Open the file to be written to.
@@ -33,14 +33,14 @@ public:
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
-		const HashString resourceID{ arguments[3] };
+		const HashString resourceID{ arguments[1] };
 		file.Write(&resourceID, sizeof(HashString));
 
 		//Determine how many mipmap levels that should be generated for the mask texture.
-		const uint8 numberOfMaskMipmapLevels{ static_cast<uint8>(std::stoul(arguments[4])) };
+		const uint8 numberOfMaskMipmapLevels{ static_cast<uint8>(std::stoul(arguments[2])) };
 
 		//Determine how many mipmap levels that should be generated for the remaining texture.
-		const uint8 numberOfRemainingMipmapLevels{ static_cast<uint8>(std::stoul(arguments[5])) };
+		const uint8 numberOfRemainingMipmapLevels{ static_cast<uint8>(std::stoul(arguments[3])) };
 
 		//Write the number of mipmap levels to the file.
 		file.Write(&numberOfMaskMipmapLevels, sizeof(uint8));
@@ -48,7 +48,7 @@ public:
 
 		//Load the mask texture.
 		int32 width, height, numberOfChannels;
-		byte *RESTRICT data{ stbi_load(arguments[6], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+		byte *RESTRICT data{ stbi_load(arguments[4], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 		const uint32 uWidth{ static_cast<uint32>(width) };
 		const uint32 uHeight{ static_cast<uint32>(height) };
@@ -84,7 +84,7 @@ public:
 		stbi_image_free(data);
 
 		//Load the albedo texture.
-		data = stbi_load(arguments[7], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+		data = stbi_load(arguments[5], &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 		//Write the albedo to the file.
 		for (uint8 i = 0; i < numberOfRemainingMipmapLevels; ++i)
@@ -113,7 +113,7 @@ public:
 		stbi_image_free(data);
 
 		//Load the normal map texture.
-		data = stbi_load(arguments[8], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+		data = stbi_load(arguments[6], &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 		//Write the normal map to the file.
 		for (uint8 i = 0; i < numberOfRemainingMipmapLevels; ++i)
@@ -142,9 +142,9 @@ public:
 		stbi_image_free(data);
 
 		//Load the roughness, ambient occlusion and thinness data.
-		byte *RESTRICT roughnessData = stbi_load(arguments[9], &width, &height, &numberOfChannels, STBI_rgb_alpha);
-		byte *RESTRICT ambientOcclusionData = stbi_load(arguments[10], &width, &height, &numberOfChannels, STBI_rgb_alpha);
-		byte *RESTRICT thinnessData = stbi_load(arguments[11], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+		byte *RESTRICT roughnessData = stbi_load(arguments[7], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+		byte *RESTRICT ambientOcclusionData = stbi_load(arguments[8], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+		byte *RESTRICT thinnessData = stbi_load(arguments[9], &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 		//Write the roughness, ambient occlusion and thinness data to the file.
 		constexpr byte defaultRoughness{ 255 };

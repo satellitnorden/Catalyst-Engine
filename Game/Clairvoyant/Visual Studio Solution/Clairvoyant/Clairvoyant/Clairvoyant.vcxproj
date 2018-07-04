@@ -57,19 +57,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\..\..\..\Engine\Engine Source\Include;..\..\..\Game Source\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\..\..\Engine\Engine Source\Libraries\Static;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\..\..\..\..\Engine\Engine Source\Source;..\..\..\Game Source\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\..\..\Engine\Engine Source\Include;..\..\..\Game Source\Include;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\..\Engine\Engine Source\Libraries\Static;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Third Party Libraries\Libraries\Static;$(LibraryPath)</LibraryPath>
+    <SourcePath>..\..\..\..\..\Engine\Engine Source\Source;..\..\..\Game Source\Source;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
-    <IncludePath>..\..\..\..\..\Engine\Engine Source\Include;..\..\..\Game Source\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\..\..\Engine\Engine Source\Libraries\Static;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\..\..\..\..\Engine\Engine Source\Source;..\..\..\Game Source\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\..\..\Engine\Engine Source\Include;..\..\..\Game Source\Include;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\..\Engine\Engine Source\Libraries\Static;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Third Party Libraries\Libraries\Static;$(LibraryPath)</LibraryPath>
+    <SourcePath>..\..\..\..\..\Engine\Engine Source\Source;..\..\..\Game Source\Source;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\..\..\..\Engine\Engine Source\Include;..\..\..\Game Source\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\..\..\Engine\Engine Source\Libraries\Static;$(LibraryPath)</LibraryPath>
-    <SourcePath>..\..\..\..\..\Engine\Engine Source\Source;..\..\..\Game Source\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\..\..\Engine\Engine Source\Include;..\..\..\Game Source\Include;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\..\Engine\Engine Source\Libraries\Static;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Third Party Libraries\Libraries\Static;$(LibraryPath)</LibraryPath>
+    <SourcePath>..\..\..\..\..\Engine\Engine Source\Source;..\..\..\Game Source\Source;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -79,7 +79,7 @@
       <PreprocessorDefinitions>CATALYST_DEBUG;CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp.lib;fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -95,7 +95,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp.lib;fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
@@ -111,7 +111,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp.lib;fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -338,6 +338,17 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\RenderingSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\SoundSystem.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Systems\TaskSystem.h" />
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\EnvironmentMaterialCreator.h" />
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\ParticleMaterialCreator.h" />
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\PhysicalMaterialCreator.h" />
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\PhysicalModelCreator.h" />
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\ResourceCollectionCreator.h" />
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\SoundBankCreator.h" />
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\stb_image.h" />
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\stb_image_resize.h" />
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\TerrainMaterialCreator.h" />
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\VegetationMaterialCreator.h" />
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\WaterMaterialCreator.h" />
     <ClInclude Include="..\..\..\Game Source\Include\Debug\SoakCamera.h" />
     <ClInclude Include="..\..\..\Game Source\Include\Main\ClairvoyantGameSystem.h" />
     <ClInclude Include="..\..\..\Game Source\Include\Main\ClairvoyantParticleSystem.h" />
@@ -468,6 +479,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Systems\TaskSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\Debug\SoakCamera.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\Main\ClairvoyantGameSystem.cpp" />
     <ClCompile Include="..\..\..\Game Source\Source\Main\ClairvoyantMain.cpp" />

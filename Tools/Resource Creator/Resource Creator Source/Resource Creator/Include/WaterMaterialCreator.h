@@ -19,32 +19,32 @@ public:
 	/*
 	*	Creates a water material resource file.
 	*/
-	static void CreateWaterMaterial(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
+	static void CreateWaterMaterial(const char *const RESTRICT arguments[]) NOEXCEPT
 	{
 		//What should the material be called?
-		DynamicString fileName{ arguments[2] };
+		DynamicString fileName{ arguments[0] };
 		fileName += ".cr";
 
 		//Open the file to be written to.
 		BinaryFile<IOMode::Out> file{ fileName.CString() };
 
 		//Write the resource type to the file.
-		constexpr ResourceType resourceType{ ResourceType::WaterMaterial };
+		constexpr ResourceType resourceType{ ResourceType::OceanMaterial };
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
-		const HashString resourceID{ arguments[3] };
+		const HashString resourceID{ arguments[1] };
 		file.Write(&resourceID, sizeof(HashString));
 
 		//Determine how many mipmap levels that should be generated.
-		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[4] - '0') };
+		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[2] - '0') };
 
 		//Write the number of mipmap levels to the file.
 		file.Write(&numberOfMipmapLevels, sizeof(uint8));
 
 		//Load the normal map.
 		int32 width, height, numberOfChannels;
-		byte *RESTRICT data{ stbi_load(arguments[5], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+		byte *RESTRICT data{ stbi_load(arguments[3], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 		const uint32 uWidth{ static_cast<uint32>(width) };
 		const uint32 uHeight{ static_cast<uint32>(height) };

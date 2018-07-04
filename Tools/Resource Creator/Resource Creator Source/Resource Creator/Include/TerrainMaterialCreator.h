@@ -16,10 +16,10 @@
 namespace TerrainMaterialCreator
 {
 
-	void CreateTerrainMaterial(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
+	void CreateTerrainMaterial(const char *const RESTRICT arguments[]) NOEXCEPT
 	{
 		//What should the material be called?
-		DynamicString terrainMaterialName{ arguments[2] };
+		DynamicString terrainMaterialName{ arguments[0] };
 		terrainMaterialName += ".cr";
 
 		//Open the file to be written to.
@@ -30,11 +30,11 @@ namespace TerrainMaterialCreator
 		terrainMaterialFile.Write(&resourceType, sizeof(ResourceType));
 	
 		//Write the resource ID to the file.
-		const HashString resourceID{ arguments[3] };
+		const HashString resourceID{ arguments[1] };
 		terrainMaterialFile.Write(&resourceID, sizeof(HashString));
 
 		//Determine how many mipmap levels that should be generated.
-		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[4] - '0') };
+		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[2] - '0') };
 
 		//Write the number of mipmap levels to the file, to be read into a uint8.
 		terrainMaterialFile.Write(&numberOfMipmapLevels, sizeof(uint8));
@@ -43,7 +43,7 @@ namespace TerrainMaterialCreator
 		{
 			//Load the layer albedo.
 			int32 width, height, numberOfChannels;
-			byte *data{ stbi_load(arguments[5 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+			byte *data{ stbi_load(arguments[3 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 			const uint32 uWidth{ static_cast<uint32>(width) };
 			const uint32 uHeight{ static_cast<uint32>(height) };
@@ -79,7 +79,7 @@ namespace TerrainMaterialCreator
 			stbi_image_free(data);
 
 			//Load the layer normal map.
-			data = stbi_load(arguments[6 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+			data = stbi_load(arguments[4 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 			//Write the layer albedo to the file, to be read into byte's.
 			for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
@@ -108,10 +108,10 @@ namespace TerrainMaterialCreator
 			stbi_image_free(data);
 
 			//Load the roughness, metallic, ambient occlusion and displacement data.
-			unsigned char *roughnessData = stbi_load(arguments[7 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
-			unsigned char *metallicData = stbi_load(arguments[8 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
-			unsigned char *ambientOcclusionData = stbi_load(arguments[9 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
-			unsigned char *displacementData = stbi_load(arguments[10 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+			unsigned char *roughnessData = stbi_load(arguments[5 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+			unsigned char *metallicData = stbi_load(arguments[6 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+			unsigned char *ambientOcclusionData = stbi_load(arguments[7 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+			unsigned char *displacementData = stbi_load(arguments[8 + (6 * i)], &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 			//Write the roughness, metallic, ambient occlusion and displacement data to the file.
 			unsigned char defaultRoughness{ 255 };

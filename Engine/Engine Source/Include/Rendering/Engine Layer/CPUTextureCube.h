@@ -63,7 +63,7 @@ private:
 	*/
 	void CubeSampling(const Vector3 &direction, uint8 &faceIndex, Vector2 &textureCoordinate) const NOEXCEPT
 	{
-		const Vector3 absoluteDirection{ CatalystMath::Absolute(direction) };
+		const Vector3 absoluteDirection{ Vector3::Absolute(direction) };
 
 		float ma;
 

@@ -41,10 +41,10 @@ public:
 	/*
 	*	Creates an environment material resource file.
 	*/
-	static void CreateEnvironmentMaterial(const int32 argumentCount, char *RESTRICT arguments[]) noexcept
+	static void CreateEnvironmentMaterial(const char *const RESTRICT arguments[]) noexcept
 	{
 		//What should the material be called?
-		DynamicString fileName{ arguments[2] };
+		DynamicString fileName{ arguments[0] };
 		fileName += ".cr";
 
 		//Open the file to be written to.
@@ -55,12 +55,12 @@ public:
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
-		const HashString resourceID{ arguments[3] };
+		const HashString resourceID{ arguments[1] };
 		file.Write(&resourceID, sizeof(HashString));
 
 		//Load the texture.
 		int32 width, height, numberOfChannels;
-		float *const RESTRICT data{ stbi_loadf(arguments[4], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+		float *const RESTRICT data{ stbi_loadf(arguments[2], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 		//Wrap the data into a cpu texture for easier manipulation.
 		CPUTexture2D hdrTexture{ static_cast<uint64>(width), static_cast<uint64>(height) };
@@ -69,10 +69,10 @@ public:
 		MemoryUtilities::CopyMemory(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
 
 		//Get the resolution of the diffuse output textures.
-		const uint32 diffuseOutputResolution{ std::strtoul(arguments[5], nullptr, 0) };
+		const uint32 diffuseOutputResolution{ std::strtoul(arguments[3], nullptr, 0) };
 
 		//Get the resolution of the diffuse irradiance output textures.
-		const uint32 diffuseIrradianceOutputResolution{ std::strtoul(arguments[6], nullptr, 0) };
+		const uint32 diffuseIrradianceOutputResolution{ std::strtoul(arguments[4], nullptr, 0) };
 
 		//Create the diffuse output textures.
 		StaticArray<CPUTexture2D, 6> diffuseOutputTextures
@@ -96,22 +96,9 @@ public:
 		};
 
 		//Calculate the diffuse.
-		StaticArray<Semaphore, 6> diffuseSemaphores;
-
 		for (uint8 i = 0; i < 6; ++i)
 		{
-			TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-			{
-				const DiffuseLayerCreationParameters &parameters{ *static_cast<DiffuseLayerCreationParameters *const RESTRICT>(arguments) };
-
-				CreateDiffuseLayer(parameters);
-			}, &diffuseLayerCreationParameters[i], &diffuseSemaphores[i]));
-		}
-		
-		//Wait for the diffuse tasks to finish.
-		for (uint8 i = 0; i < 6; ++i)
-		{
-			diffuseSemaphores[i].WaitFor();
+			CreateDiffuseLayer(diffuseLayerCreationParameters[i]);
 		}
 
 		//Create the diffuse texture.
@@ -139,22 +126,9 @@ public:
 		};
 
 		//Calculate the diffuse.
-		StaticArray<Semaphore, 6> diffuseIrradianceSemaphores;
-
 		for (uint8 i = 0; i < 6; ++i)
 		{
-			TaskSystem::Instance->ExecuteTask(Task([](void *const RESTRICT arguments)
-			{
-				const IrradianceLayerCreationParameters &parameters{ *static_cast<IrradianceLayerCreationParameters *const RESTRICT>(arguments) };
-
-				CreateDiffuseIrradianceLayer(parameters);
-			}, &diffuseIrradianceLayerCreationParameters[i], &diffuseIrradianceSemaphores[i]));
-		}
-
-		//Wait for the irradiance tasks to finish.
-		for (uint8 i = 0; i < 6; ++i)
-		{
-			diffuseIrradianceSemaphores[i].WaitFor();
+			CreateDiffuseIrradianceLayer(diffuseIrradianceLayerCreationParameters[i]);
 		}
 
 		//Write the diffuse output resolution to the file.

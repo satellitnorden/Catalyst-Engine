@@ -235,6 +235,15 @@
     <Filter Include="Game Source\Debug\Source">
       <UniqueIdentifier>{574c5e0e-cc9f-4bbc-bd77-b9a0f1f441bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Creator Source">
+      <UniqueIdentifier>{b673d021-d2d8-4203-9885-f7ddccec9eec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Creator Source\Include">
+      <UniqueIdentifier>{119b4ded-6d78-4e82-a5dc-aef7626d16cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Creator Source\Source">
+      <UniqueIdentifier>{a81dd121-35fa-41eb-b112-7f6fe89e668d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\CameraComponent.h">
@@ -942,6 +951,39 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Shader Data\Vulkan\PostProcessingFogFragmentShader.h">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\EnvironmentMaterialCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\ParticleMaterialCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\PhysicalMaterialCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\PhysicalModelCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\ResourceCollectionCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\SoundBankCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\TerrainMaterialCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\VegetationMaterialCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\WaterMaterialCreator.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\stb_image.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\stb_image_resize.h">
+      <Filter>Resource Creator Source\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp">
@@ -1315,6 +1357,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Shader Data\Vulkan\PostProcessingFogFragmentShader.cpp">
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp">
+      <Filter>Resource Creator Source\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

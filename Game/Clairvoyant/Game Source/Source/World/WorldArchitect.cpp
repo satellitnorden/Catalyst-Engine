@@ -72,17 +72,13 @@ namespace WorldAchitectConstants
 	constexpr HashString FOG_1_MATERIAL{ "Fog1Material" };
 
 	constexpr HashString GRASS_1_MATERIAL{ "Grass1Material" };
-	constexpr HashString MARBLE_1_MATERIAL{ "Marble1Material" };
 	constexpr HashString STONE_1_MATERIAL{ "Stone1Material" };
 	constexpr HashString STONE_2_MATERIAL{ "Stone2Material" };
 	constexpr HashString TREE_1_MATERIAL{ "Tree1Material" };
-	constexpr HashString WOOD_1_MATERIAL{ "Wood1Material" };
-	constexpr HashString WOOD_LOG_1_MATERIAL{ "WoodLog1Material" };
 
 	constexpr HashString STONE_1_MODEL{ "Stone1Model" };
 	constexpr HashString STONE_2_MODEL{ "Stone2Model" };
 	constexpr HashString TREE_1_MODEL{ "Tree1Model" };
-	constexpr HashString WOOD_LOG_1_MODEL{ "WoodLog1Model" };
 
 	constexpr HashString GRASS_TERRAIN_MATERIAL{ "GrassTerrainMaterial" };
 
@@ -97,9 +93,7 @@ namespace WorldAchitectConstants
 void WorldArchitect::Initialize() NOEXCEPT
 {
 	//Load the resource collection files.
-	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection1.crc");
-	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection2.crc");
-	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection3.crc");
+	ResourceLoader::LoadResourceCollection(CLAIRVOYANT_RESOURCES_FOLDER "ClairvoyantResourceCollection.crc");
 
 	//Set the environment material.
 	EnvironmentManager::Instance->SetNightEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::NIGHT_ENVIRONMENT_MATERIAL));
@@ -112,7 +106,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	InitializeTask();
 
 	//Create the test scene.
-	//CreateTestScene();
+	CreateTestScene();
 }
 
 /*
@@ -120,6 +114,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 */
 void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 {
+	/*
 	//Update depending on the current state.
 	switch (currentState)
 	{
@@ -144,6 +139,7 @@ void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 			break;
 		}
 	}
+	*/
 }
 
 /*

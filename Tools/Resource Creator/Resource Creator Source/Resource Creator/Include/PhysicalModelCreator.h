@@ -26,10 +26,10 @@ public:
 	/*
 	*	Creates a physical model resource file.
 	*/
-	static void CreatePhysicalModel(const int32 argumentCount, char *RESTRICT arguments[]) noexcept
+	static void CreatePhysicalModel(const char *const RESTRICT arguments[]) noexcept
 	{
 		//What should the material be called?
-		DynamicString fileName{ arguments[2] };
+		DynamicString fileName{ arguments[0] };
 		fileName += ".cr";
 
 		//Open the file to be written to.
@@ -40,7 +40,7 @@ public:
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
-		const HashString resourceID{ arguments[3] };
+		const HashString resourceID{ arguments[1] };
 		file.Write(&resourceID, sizeof(HashString));
 
 		//Load the model.
@@ -49,7 +49,7 @@ public:
 		float extent{ 0.0f };
 
 		Assimp::Importer modelImporter;
-		const aiScene *modelScene = modelImporter.ReadFile(arguments[4], aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+		const aiScene *modelScene = modelImporter.ReadFile(arguments[2], aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
 		ProcessNode(modelScene->mRootNode, modelScene, vertices, indices, extent);
 
