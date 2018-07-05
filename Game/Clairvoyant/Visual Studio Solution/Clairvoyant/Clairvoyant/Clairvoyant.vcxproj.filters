@@ -864,12 +864,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\BloomVerticalBlurRenderPass.h">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\DirectionalShadowHorizontalBlurRenderPass.h">
-      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\DirectionalShadowVerticalBlurRenderPass.h">
-      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionRenderPass.h">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
     </ClInclude>
@@ -1292,9 +1286,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\BloomVerticalBlurRenderPass.cpp">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\DirectionalShadowHorizontalBlurRenderPass.cpp">
-      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionRenderPass.cpp">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
     </ClCompile>
@@ -1302,9 +1293,6 @@
       <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.cpp">
-      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\DirectionalShadowVerticalBlurRenderPass.cpp">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.cpp">

@@ -38,8 +38,6 @@ enum class RenderPassStage : uint8
 	InstancedPhysical,
 	Vegetation,
 	DirectionalShadow,
-	DirectionalShadowHorizontalBlur,
-	DirectionalShadowVerticalBlur,
 	SceenSpaceAmbientOcclusion,
 	SceenSpaceAmbientOcclusionHorizontalBlur,
 	SceenSpaceAmbientOcclusionVerticalBlur,
@@ -114,8 +112,6 @@ enum class RenderDataTable : uint8
 {
 	Environment,
 	DirectionalShadow,
-	DirectionalShadowHorizontalBlur,
-	DirectionalShadowVerticalBlur,
 	ScreenSpaceAmbientOcclusion,
 	ScreenSpaceAmbientOcclusionHorizontalBlur,
 	ScreenSpaceAmbientOcclusionVerticalBlur,
@@ -159,7 +155,6 @@ enum class RenderTarget : uint8
 {
 	DirectionalShadowMap,
 	DirectionalShadow,
-	DirectionalShadowIntermediate,
 	SceneBufferAlbedo,
 	SceneBufferNormalDepth,
 	SceneBufferMaterialProperties,
