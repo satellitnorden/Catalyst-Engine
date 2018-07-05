@@ -110,40 +110,15 @@ void main()
     //Calculate the fog factor.
     float distanceFalloffFactor = min(LengthSquared(cameraWorldPosition - fragmentWorldPosition) / squaredFogDistance, 1.0f);
     float heightFalloffFactor = clamp(1.0f - (max(fragmentWorldPosition.y, 0.0f) / (100.0f * 100.0f)), 0.0f, 1.0f);
-    float fogFactor = distanceFalloffFactor;
+    float fogFactor = distanceFalloffFactor * heightFalloffFactor;
 
     //Calculate the scene color.
     vec3 sceneColor = mix(texture(sceneTexture, fragmentTextureCoordinate).rgb, texture(blurTexture, fragmentTextureCoordinate).rgb, fogFactor);
 
     //Calculate the fog folor.
     vec3 baseColor = directionalLightColor * 0.1f;
-
-    vec3 rayDirection = normalize(fragmentWorldPosition - cameraWorldPosition);
-    float rayLength = min(length(fragmentWorldPosition - cameraWorldPosition), SEARCH_DISTANCE);
-    float rayStep = rayLength / NUMBER_OF_SAMPLES;
-
-    vec3 currentPosition = cameraWorldPosition + (rayDirection * rayStep);
-
-    vec3 accumulatedColor = baseColor;
-
-    for (int i = 0; i < NUMBER_OF_SAMPLES; ++i)
-    {
-	    //Calculate the directional light screen space position.
-	    vec4 directionalLightShadowMapCoordinate = directionalLightViewMatrix * vec4(currentPosition, 1.0f);
-	    directionalLightShadowMapCoordinate.xy = directionalLightShadowMapCoordinate.xy * 0.5f + 0.5f;
-
-	    //Calculate whether or not this fragment is in shadow.
-	    vec4 directionalDepthSampler = texture(shadowTexture, directionalLightShadowMapCoordinate.xy);
-	    float directionalDepth = directionalDepthSampler.r;
-	    float compare = directionalLightShadowMapCoordinate.z;
-
-	   	accumulatedColor += compare >= 1.0f || compare < directionalDepth ? baseColor * (1.0f + directionalLightIntensity) : baseColor;
-
-	   	currentPosition += rayDirection * rayStep;
-    }
-
-    vec3 fogColor = accumulatedColor / NUMBER_OF_SAMPLES;
-
+    vec3 fogColor = baseColor * (1.0f + directionalLightIntensity);
+    
     //Write the fragment.
     fragment = vec4(mix(sceneColor, fogColor, fogFactor), 1.0f);
 }
