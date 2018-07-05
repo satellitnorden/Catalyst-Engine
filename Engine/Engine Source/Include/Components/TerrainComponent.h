@@ -25,4 +25,7 @@ public:
 	//The height map.
 	CPUTexture2D terrainProperties;
 
+	//The terrain properties texture.
+	Texture2DHandle terrainPropertiesTexture;
+
 };

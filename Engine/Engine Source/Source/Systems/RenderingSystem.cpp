@@ -109,12 +109,21 @@ uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 }
 
 /*
-*	Creates and returns a 2D texture given the texture data.
+*	Creates and returns a texture 2D given the texture data.
 */
-Texture2DHandle RenderingSystem::Create2DTexture(const TextureData &textureData) const NOEXCEPT
+Texture2DHandle RenderingSystem::CreateTexture2D(const TextureData &textureData) const NOEXCEPT
 {
-	//Create the 2D texture via the current rendering system.
+	//Create the texture 2D via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->Create2DTexture(textureData);
+}
+
+/*
+*	Destroys a texture 2D
+*/
+void RenderingSystem::DestroyTexture2D(Texture2DHandle texture) const NOEXCEPT
+{
+	//Destroy the texture 2D via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->DestroyTexture2D(texture);
 }
 
 /*
@@ -195,7 +204,7 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &e
 void RenderingSystem::CreateOceanMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT
 {
 	//Create the normal map texture.
-	oceanMaterial.normalMapTexture = Create2DTexture(TextureData(TextureDataContainer(waterMaterialData.normalMapData, waterMaterialData.width, waterMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	oceanMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(waterMaterialData.normalMapData, waterMaterialData.width, waterMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -222,7 +231,7 @@ void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModel
 void RenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT
 {
 	//Create the albedo texture
-	particleMaterial.albedoTexture = Create2DTexture(TextureData(TextureDataContainer(particleMaterialData.albedoData, particleMaterialData.width, particleMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	particleMaterial.albedoTexture = CreateTexture2D(TextureData(TextureDataContainer(particleMaterialData.albedoData, particleMaterialData.width, particleMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -231,13 +240,13 @@ void RenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particl
 void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT
 {
 	//Create the albedo texture.
-	physicalMaterial.albedoTexture = Create2DTexture(TextureData(TextureDataContainer(physicalMaterialData.albedoData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	physicalMaterial.albedoTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData.albedoData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the normal map texture.
-	physicalMaterial.normalMapTexture = Create2DTexture(TextureData(TextureDataContainer(physicalMaterialData.normalMapData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	physicalMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData.normalMapData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the material properties texture.
-	physicalMaterial.materialPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(physicalMaterialData.materialPropertiesData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	physicalMaterial.materialPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData.materialPropertiesData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -246,49 +255,49 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT
 {
 	//Create the first layer albedo.
-	terrainMaterial.firstLayerAlbedo = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.firstLayerAlbedoData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.firstLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.firstLayerAlbedoData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the first layer normal map.
-	terrainMaterial.firstLayerNormalMap = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.firstLayerNormalMapData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.firstLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.firstLayerNormalMapData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the first layer material properties.
-	terrainMaterial.firstLayerMaterialProperties = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.firstLayerMaterialPropertiesData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.firstLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.firstLayerMaterialPropertiesData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the second layer albedo.
-	terrainMaterial.secondLayerAlbedo = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.secondLayerAlbedoData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.secondLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.secondLayerAlbedoData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the second layer normal map.
-	terrainMaterial.secondLayerNormalMap = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.secondLayerNormalMapData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.secondLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.secondLayerNormalMapData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the second layer material properties.
-	terrainMaterial.secondLayerMaterialProperties = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.secondLayerMaterialPropertiesData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.secondLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.secondLayerMaterialPropertiesData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the third layer albedo.
-	terrainMaterial.thirdLayerAlbedo = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerAlbedoData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.thirdLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerAlbedoData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the third layer normal map.
-	terrainMaterial.thirdLayerNormalMap = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerNormalMapData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.thirdLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerNormalMapData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the third layer material properties.
-	terrainMaterial.thirdLayerMaterialProperties = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerMaterialPropertiesData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.thirdLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerMaterialPropertiesData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fourth layer albedo.
-	terrainMaterial.fourthLayerAlbedo = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerAlbedoData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fourthLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerAlbedoData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fourth layer normal map.
-	terrainMaterial.fourthLayerNormalMap = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerNormalMapData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fourthLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerNormalMapData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fourth layer material properties.
-	terrainMaterial.fourthLayerMaterialProperties = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerMaterialPropertiesData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fourthLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerMaterialPropertiesData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fifth layer albedo.
-	terrainMaterial.fifthLayerAlbedo = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerAlbedoData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fifthLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerAlbedoData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fifth layer normal map.
-	terrainMaterial.fifthLayerNormalMap = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerNormalMapData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fifthLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerNormalMapData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fifth layer material properties.
-	terrainMaterial.fifthLayerMaterialProperties = Create2DTexture(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerMaterialPropertiesData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fifthLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerMaterialPropertiesData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -297,16 +306,16 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT
 {
 	//Create the mask texture.
-	vegetationMaterial.maskTexture = Create2DTexture(TextureData(TextureDataContainer(vegetationMaterialData.maskData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	vegetationMaterial.maskTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData.maskData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the albedo texture.
-	vegetationMaterial.albedoTexture = Create2DTexture(TextureData(TextureDataContainer(vegetationMaterialData.albedoData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	vegetationMaterial.albedoTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData.albedoData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the normal map texture.
-	vegetationMaterial.normalMapTexture = Create2DTexture(TextureData(TextureDataContainer(vegetationMaterialData.normalMapData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	vegetationMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData.normalMapData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the properties texture.
-	vegetationMaterial.propertiesTexture = Create2DTexture(TextureData(TextureDataContainer(vegetationMaterialData.propertiesData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	vegetationMaterial.propertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData.propertiesData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -324,10 +333,12 @@ void RenderingSystem::InitializeTerrainEntity(const TerrainEntity *const RESTRIC
 void RenderingSystem::TerminateTerrainEntity(const TerrainEntity *const RESTRICT entity) const NOEXCEPT
 {
 	//Retrieve the component.
-	TerrainRenderComponent &component{ ComponentManager::GetTerrainRenderComponents()[entity->GetComponentsIndex()] };
+	TerrainComponent &component{ ComponentManager::GetTerrainComponents()[entity->GetComponentsIndex()] };
+	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainRenderComponents()[entity->GetComponentsIndex()] };
 
-	//Destroy the render data table.
-	DestroyRenderDataTable(component.renderDataTable);
+	//Destroy the terrain entity's resources.
+	DestroyTexture2D(component.terrainPropertiesTexture);
+	DestroyRenderDataTable(renderComponent.renderDataTable);
 }
 
 /*

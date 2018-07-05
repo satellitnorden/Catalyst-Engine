@@ -228,9 +228,14 @@ public:
 	void InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT;
 
 	/*
-	*	Creates and returns a 2D texture given the texture data.
+	*	Creates and returns a texture 2D given the texture data.
 	*/
-	Texture2DHandle Create2DTexture(const TextureData &textureData) const NOEXCEPT;
+	Texture2DHandle CreateTexture2D(const TextureData &textureData) const NOEXCEPT;
+
+	/*
+	*	Destroys a texture 2D
+	*/
+	void DestroyTexture2D(Texture2DHandle texture) const NOEXCEPT;
 
 	/*
 	*	Destroys a render data table.

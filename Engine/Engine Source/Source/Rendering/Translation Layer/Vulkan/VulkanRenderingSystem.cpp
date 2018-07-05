@@ -222,10 +222,13 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 
 	frustumCullingComponent.axisAlignedBoundingBox = data->axisAlignedBoundingBox;
 
+	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(data->terrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
+
 	terrainComponent.terrainUniformData = data->terrainUniformData;
 	terrainComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));
 	static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->UploadData(&terrainComponent.terrainUniformData);
  	terrainComponent.terrainProperties = data->terrainProperties;
+	terrainComponent.terrainPropertiesTexture = terrainPropertiesTexture;
 
 	//Create the descriptor set.
 	VulkanDescriptorSet newDescriptorSet;
@@ -234,8 +237,6 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 	terrainRenderComponent.renderDataTable = newDescriptorSet.Get();
 
 	DynamicArray<VkWriteDescriptorSet, 18> writeDescriptorSets;
-
-	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(data->terrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
 
 	writeDescriptorSets.EmplaceFast(static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->GetWriteDescriptorSet(newDescriptorSet, 1));
 	writeDescriptorSets.EmplaceFast(static_cast<const Vulkan2DTexture *RESTRICT>(terrainPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 2));
@@ -431,9 +432,9 @@ Texture2DHandle VulkanRenderingSystem::Create2DTexture(const TextureData &textur
 }
 
 /*
-*	Destroys a 2D texture.
+*	Destroys a texture 2D
 */
-void VulkanRenderingSystem::Destroy2DTexture(Texture2DHandle texture) const NOEXCEPT
+void VulkanRenderingSystem::DestroyTexture2D(Texture2DHandle texture) const NOEXCEPT
 {
 	//Destroy the texture.
 	VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture *const RESTRICT>(texture));
