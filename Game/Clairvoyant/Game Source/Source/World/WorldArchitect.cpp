@@ -62,7 +62,7 @@ namespace WorldAchitectConstants
 {
 	constexpr uint32 HEIGHT_MAP_RESOLUTION{ 256 };
 	constexpr float TERRAIN_EXTENT{ 1'000.0f };
-	constexpr float TERRAIN_HEIGHT{ 1'000.0f };
+	constexpr float TERRAIN_HEIGHT{ 750.0f };
 	constexpr uint64 VEGETATION_DENSITY{ 50'000 };
 
 	//Resource ID's.
@@ -397,6 +397,7 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 	StaticPhysicalEntity *const RESTRICT stone4{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
 	stone4->Initialize(stone2Model, Vector3(-25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.175f, 0.175f, 0.175f));
 
+	/*
 	//Generate some vegetation.
 	DynamicArray<VegetationTransformation> vegetationTransformations;
 	vegetationTransformations.Reserve(WorldAchitectConstants::VEGETATION_DENSITY);
@@ -411,6 +412,7 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 
 	VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
 	vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations, VegetationProperties(100.0f));
+	*/
 }
 
 /*
@@ -549,7 +551,7 @@ RESTRICTED TerrainEntity *const RESTRICT WorldArchitect::GenerateTerrain(const V
 	//Get the terrain material data.
 	TerrainMaterial terrainMaterial{ ResourceLoader::GetTerrainMaterial(WorldAchitectConstants::GRASS_TERRAIN_MATERIAL) };
 
-	Texture2DHandle layerWeightsTexture = RenderingSystem::Instance->Create2DTexture(TextureData(TextureDataContainer(layerWeights), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
+	Texture2DHandle layerWeightsTexture = RenderingSystem::Instance->CreateTexture2D(TextureData(TextureDataContainer(layerWeights), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R32G32B32A32_Float));
 
 	//Create the terrain entity!
 	TerrainInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<TerrainInitializationData>() };

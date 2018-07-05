@@ -53,7 +53,7 @@ void EntitySystem::PreUpdateSystemSynchronous() NOEXCEPT
 void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, void* const RESTRICT data, const bool force) NOEXCEPT
 {
 	//Lock the queue.
-	ScopedLock<Spinlock>{initializationQueueLock};
+	ScopedLock<Spinlock> scopedLock{ initializationQueueLock };
 
 	//Add the data.
 	initializationQueue.EmplaceSlow(entity, data, force);
@@ -69,7 +69,7 @@ void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, void* co
 void EntitySystem::RequesTermination(Entity* const RESTRICT entity, const bool force) NOEXCEPT
 {
 	//Lock the queue.
-	ScopedLock<Spinlock>{terminationQueueLock};
+	ScopedLock<Spinlock> scopedLock{ terminationQueueLock };
 
 	//Add the data.
 	terminationQueue.EmplaceSlow(entity, force);
@@ -81,7 +81,7 @@ void EntitySystem::RequesTermination(Entity* const RESTRICT entity, const bool f
 void EntitySystem::InitializeEntities() NOEXCEPT
 {
 	//Lock the initialization queue.
-	ScopedLock<Spinlock>{ initializationQueueLock };
+	ScopedLock<Spinlock> scopedLock{ initializationQueueLock };
 
 	//If there's none to initialize, initialize none.
 	if (initializationQueue.Empty())
@@ -164,7 +164,7 @@ void EntitySystem::InitializeTerrainEntity(EntityInitializationData* const RESTR
 void EntitySystem::TerminateEntities() NOEXCEPT
 {
 	//Lock the termination queue.
-	ScopedLock<Spinlock>{ terminationQueueLock };
+	ScopedLock<Spinlock> scopedLock{ terminationQueueLock };
 
 	//If there's none to terminate, terminate none.
 	if (terminationQueue.Empty())

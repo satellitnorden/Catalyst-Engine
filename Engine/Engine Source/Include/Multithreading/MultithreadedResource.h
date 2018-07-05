@@ -45,7 +45,7 @@ public:
 	*/
 	const ResourceType GetSafe() const NOEXCEPT
 	{
-		ScopedLock<Spinlock>{ spinlock };
+		ScopedLock<Spinlock> scopedLock{ lock };
 
 		return resource;
 	}
@@ -63,7 +63,7 @@ public:
 	*/
 	void Set(const ResourceType &newResource) NOEXCEPT
 	{
-		ScopedLock<Spinlock>{ spinlock };
+		ScopedLock<Spinlock> scopedLock{ lock };
 
 		resource = newResource;
 	}
@@ -74,6 +74,6 @@ private:
 	ResourceType resource;
 
 	//The spin lock.
-	mutable Spinlock spinlock;
+	mutable Spinlock lock;
 
 };

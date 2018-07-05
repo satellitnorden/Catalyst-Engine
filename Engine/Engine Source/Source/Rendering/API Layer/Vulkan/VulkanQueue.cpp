@@ -22,7 +22,7 @@ void VulkanQueue::Initialize(const uint32 queueFamilyIndex) NOEXCEPT
 void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const uint32 waitSemaphoreCount, const VulkanSemaphore *RESTRICT waitSemaphores, const VkPipelineStageFlags waitStages, const uint32 signalSemaphoreCount, const VulkanSemaphore *RESTRICT signalSemaphores, const VkFence fence) const NOEXCEPT
 {
 	//Lock the queue.
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	//Create the submit info.
 	VkSubmitInfo submitInfo;
@@ -38,7 +38,7 @@ void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const u
 void VulkanQueue::WaitIdle() const NOEXCEPT
 {
 	//Lock the queue.
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	//Wait idle for this Vulkan queue.
 	VULKAN_ERROR_CHECK(vkQueueWaitIdle(vulkanQueue));

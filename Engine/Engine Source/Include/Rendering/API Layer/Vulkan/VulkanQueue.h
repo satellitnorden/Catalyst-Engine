@@ -46,6 +46,8 @@ private:
 	//The lock for the queue.
 	mutable Spinlock lock;
 
+	mutable std::atomic<uint8> useCount{ 0 };
+
 	/*
 	*	Creates a submit info for a single command buffer.
 	*/

@@ -182,7 +182,7 @@ void VulkanInterface::Release() NOEXCEPT
 RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	Vulkan2DTexture *const RESTRICT new2DTexture = new Vulkan2DTexture;
 	new2DTexture->Initialize(textureMipmapLevels, textureWidth, textureHeight, textureChannels, textureTexelSize, textureData, format, magnificationFilter, mipmapMode, addressMode);
@@ -222,7 +222,7 @@ RESTRICTED VulkanCommandPool* VulkanInterface::CreateGraphicsCommandPool(const V
 RESTRICTED VulkanConstantBuffer* VulkanInterface::CreateConstantBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	VulkanConstantBuffer *const RESTRICT newBuffer = new VulkanConstantBuffer;
 	newBuffer->Initialize(data, dataSizes, dataChunks);
@@ -238,7 +238,7 @@ RESTRICTED VulkanConstantBuffer* VulkanInterface::CreateConstantBuffer(const voi
 RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	VulkanCubeMapTexture *const RESTRICT newCubeMapTexture = new VulkanCubeMapTexture;
 	newCubeMapTexture->Initialize(data, width, height);
@@ -254,7 +254,7 @@ RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const flo
 RESTRICTED VulkanDepthBuffer* VulkanInterface::CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	VulkanDepthBuffer *const RESTRICT newDepthBuffer = new VulkanDepthBuffer;
 	newDepthBuffer->Initialize(depthBufferExtent);
@@ -279,7 +279,7 @@ void VulkanInterface::DestroyDescriptorSet(VkDescriptorSet descriptorSet) const 
 RESTRICTED VulkanEvent* VulkanInterface::CreateEvent() NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	VulkanEvent *const RESTRICT newEvent = new VulkanEvent;
 	newEvent->Initialize();
@@ -295,7 +295,7 @@ RESTRICTED VulkanEvent* VulkanInterface::CreateEvent() NOEXCEPT
 RESTRICTED VulkanFence* VulkanInterface::CreateFence(const VkFenceCreateFlags flags) NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	VulkanFence *const RESTRICT newFence = new VulkanFence;
 	newFence->Initialize(flags);
@@ -311,7 +311,7 @@ RESTRICTED VulkanFence* VulkanInterface::CreateFence(const VkFenceCreateFlags fl
 RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	VulkanPipeline *const RESTRICT newPipeline = new VulkanPipeline;
 
@@ -328,7 +328,7 @@ RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const VulkanPipelineC
 RESTRICTED VulkanRenderTarget* VulkanInterface::CreateRenderTarget(const VkExtent2D extent, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	VulkanRenderTarget *const RESTRICT newRenderTarget = new VulkanRenderTarget;
 
@@ -345,7 +345,7 @@ RESTRICTED VulkanRenderTarget* VulkanInterface::CreateRenderTarget(const VkExten
 RESTRICTED VulkanSemaphore* VulkanInterface::CreateSemaphore() NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	VulkanSemaphore *const RESTRICT newSemaphore = new VulkanSemaphore;
 
@@ -362,7 +362,7 @@ RESTRICTED VulkanSemaphore* VulkanInterface::CreateSemaphore() NOEXCEPT
 RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits stage) NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	VulkanShaderModule *const RESTRICT newShaderModule = new VulkanShaderModule;
 	newShaderModule->Initialize(shaderData, shaderDataSize, stage);
@@ -378,7 +378,7 @@ RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(const void* c
 RESTRICTED VulkanStorageBuffer* VulkanInterface::CreateStorageBuffer(const VkDeviceSize initialStorageBufferSize) NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	VulkanStorageBuffer *const RESTRICT newStorageBuffer = new VulkanStorageBuffer;
 	newStorageBuffer->Initialize(initialStorageBufferSize);
@@ -394,7 +394,7 @@ RESTRICTED VulkanStorageBuffer* VulkanInterface::CreateStorageBuffer(const VkDev
 RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT
 {
 	static Spinlock lock;
-	ScopedLock<Spinlock>{ lock };
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	VulkanUniformBuffer *const RESTRICT newUniformBuffer = new VulkanUniformBuffer;
 	newUniformBuffer->Initialize(newUniformBufferSize);
