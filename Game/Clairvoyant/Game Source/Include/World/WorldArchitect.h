@@ -25,7 +25,7 @@ public:
 	DECLARE_SINGLETON(WorldArchitect);
 	
 	//Defines the size of the world chunk grid.
-	static constexpr uint8 WORLD_CHUNK_GRID_SIZE{ 11 };
+	static constexpr uint8 WORLD_CHUNK_GRID_SIZE{ 33 };
 
 	/*
 	*	Default constructor.
