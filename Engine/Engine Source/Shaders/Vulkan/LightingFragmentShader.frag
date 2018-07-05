@@ -116,7 +116,7 @@ vec3 CalculateAmbient()
     vec3 reclectionDirection = reflect(-viewDirection, normalDirection);
     vec3 specularIrradiance = mix(texture(nightDiffuseTexture, normalDirection).rgb, texture(dayDiffuseTexture, normalDirection).rgb, environmentBlend);
     vec3 specular = mix(specularIrradiance, irradiance, roughness);
-    vec3 ambient = (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion * screenSpaceAmbientOcclusion;
+    vec3 ambient = (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion * (screenSpaceAmbientOcclusion * screenSpaceAmbientOcclusion);
 
     return vec3(min(ambient.r, 1.0f), min(ambient.g, 1.0f), min(ambient.b, 1.0f));
 }

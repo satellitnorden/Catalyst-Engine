@@ -54,7 +54,7 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(Vector2));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetResolution() / 2);
+	SetRenderResolution(RenderingSystem::Instance->GetResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);

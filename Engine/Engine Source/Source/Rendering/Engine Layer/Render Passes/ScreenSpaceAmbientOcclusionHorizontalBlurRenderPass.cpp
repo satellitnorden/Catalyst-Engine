@@ -54,7 +54,7 @@ void ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::InitializeInternal() N
 	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(GaussianBlurData));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetResolution() / 2);
+	SetRenderResolution(RenderingSystem::Instance->GetResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -79,8 +79,8 @@ void ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::InitializeInternal() N
 
 	//Initialize the gaussian blur data.
 	data.direction = Vector2(1.0f, 0.0f);
-	data.inverseResolution = Vector2(	1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().width / 2),
-										1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().height / 2));
+	data.inverseResolution = Vector2(	1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().width),
+										1.0f / static_cast<float>(RenderingSystem::Instance->GetResolution().height));
 }
 
 /*

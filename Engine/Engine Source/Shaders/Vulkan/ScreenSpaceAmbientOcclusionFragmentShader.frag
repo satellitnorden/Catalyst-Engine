@@ -56,8 +56,8 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //Preprocessor defines.
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS 0.0001f
-#define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS 1.0f
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS 0.00001f
+#define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS 0.25f
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS_SQUARED SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS * SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS
 #define SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES 8
 
@@ -149,6 +149,9 @@ void main()
     }
 
     occlusion = 1.0f - (occlusion / SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLES);
+
+    //Modify the value a bit.
+    occlusion *= occlusion;
 
     //Write the fragment.
     fragment = vec4(occlusion);
