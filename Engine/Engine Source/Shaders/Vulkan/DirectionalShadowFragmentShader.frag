@@ -115,14 +115,33 @@ void main()
     vec4 directionalLightShadowMapCoordinate = directionalLightViewMatrix * vec4(fragmentWorldPosition, 1.0f);
     directionalLightShadowMapCoordinate.xy = directionalLightShadowMapCoordinate.xy * 0.5f + 0.5f;
 
-    //Calculate whether or not this fragment is in shadow.
-    vec4 directionalDepthSampler = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy);
-    float directionalDepth = directionalDepthSampler.r;
-    float compare = directionalLightShadowMapCoordinate.z - SHADOW_BIAS;
+    float texelStep = 1.0f / 2048.0f;
 
-    float directionalShadowMultiplier = compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f;
-    float distanceToImpactPoint = compare > directionalDepth ? compare - directionalDepth : 0.0f;
+	int numberOfShadowTexels = 3;
+
+	float xCoordinate = -texelStep * numberOfShadowTexels;
+	float yCoordinate = -texelStep * numberOfShadowTexels;
+
+	float accumulatedShadow = 0.0f;
+
+	for (int i = 0; i < numberOfShadowTexels; ++i)
+	{
+		for (int j = 0; j < numberOfShadowTexels; ++j)
+		{
+		    //Calculate whether or not this fragment is in shadow.
+		    vec4 directionalDepthSampler = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy + vec2(xCoordinate, yCoordinate));
+		    float directionalDepth = directionalDepthSampler.r;
+		    float compare = directionalLightShadowMapCoordinate.z - SHADOW_BIAS;
+
+		    accumulatedShadow += compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f;
+
+			yCoordinate += texelStep;
+		}
+
+		xCoordinate += texelStep;
+		yCoordinate = -texelStep * numberOfShadowTexels;
+	}
 
     //Set the final fragment color.
-    fragmentColor = vec4(directionalShadowMultiplier, 0.001f, 0.0f, 0.0f);
+    fragmentColor = vec4(accumulatedShadow / (numberOfShadowTexels * numberOfShadowTexels), 0.001f, 0.0f, 0.0f);
 }
