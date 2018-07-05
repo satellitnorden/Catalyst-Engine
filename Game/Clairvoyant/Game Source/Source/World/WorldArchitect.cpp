@@ -106,7 +106,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	InitializeTask();
 
 	//Create the test scene.
-	CreateTestScene();
+	//CreateTestScene();
 }
 
 /*
@@ -114,7 +114,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 */
 void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 {
-	/*
 	//Update depending on the current state.
 	switch (currentState)
 	{
@@ -139,7 +138,6 @@ void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 			break;
 		}
 	}
-	*/
 }
 
 /*
@@ -240,12 +238,16 @@ void WorldArchitect::Scan() NOEXCEPT
 		}
 	}
 
-	/*
 	std::sort(suggestedWorldChunks.begin(), suggestedWorldChunks.end(), [&](const SuggestedWorldChunk &first, const SuggestedWorldChunk &second)
 	{
-		return (first.gridPositionX - currentGridPositionX) + (first.gridPositionY - currentGridPositionY) > (second.gridPositionX - currentGridPositionX) + (second.gridPositionY - currentGridPositionY);
+		const Vector3 firstWorldPosition{ first.gridPositionX * WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, first.gridPositionY * WorldAchitectConstants::TERRAIN_EXTENT };
+		const Vector3 secondWorldPosition{ second.gridPositionX * WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, second.gridPositionY * WorldAchitectConstants::TERRAIN_EXTENT };
+
+		const float distanceToFirst{ Vector3::LengthSquaredXZ(scanningData.cameraPosition - firstWorldPosition) };
+		const float distanceToSecond{ Vector3::LengthSquaredXZ(scanningData.cameraPosition - secondWorldPosition) };
+
+		return distanceToFirst < distanceToSecond;
 	});
-	*/
 
 	//Go through the list of world chunks and compare it with the list of suggested world chunks and destroy any world chunk that shouldn't be active.
 	for (WorldChunk &worldChunk : worldChunks)

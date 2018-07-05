@@ -99,7 +99,7 @@ void PostProcessingFogRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
 	//Push the constant data.
-	constexpr float fogDistance{ 100.0f };
+	constexpr float fogDistance{ 10'000.0f };
 	constexpr float fogDistanceSquared{ fogDistance * fogDistance };
 	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(float), &fogDistanceSquared);
 
