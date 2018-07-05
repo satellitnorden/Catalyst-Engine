@@ -156,7 +156,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\UniquePointer.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Utilities\CompileTimeUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Utilities\MemoryUtilities.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Utilities\MultithreadingUtilities.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\CameraEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Entities\Entity.h" />

@@ -29,7 +29,7 @@ public:
 	*/
 	void Lock() NOEXCEPT
 	{
-		while (!lock.compare_exchange_weak(MultiThreadingUtilities::expectedFalse, true));
+		while (!lock.test_and_set(std::memory_order_acquire));
 	}
 
 	/*
@@ -37,12 +37,12 @@ public:
 	*/
 	void Unlock() NOEXCEPT
 	{
-		lock.store(false);
+		lock.clear(std::memory_order_release);
 	}
 
 private:
 
 	//The underlying atomic lock.
-	std::atomic<bool> lock{ false };
+	std::atomic_flag lock{ ATOMIC_FLAG_INIT };
 
 };
