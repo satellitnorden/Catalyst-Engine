@@ -44,7 +44,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	constexpr const ObjectType *const RESTRICT begin() const NOEXCEPT
+	RESTRICTED constexpr const ObjectType *const RESTRICT begin() const NOEXCEPT
 	{
 		return array;
 	}
@@ -52,7 +52,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	constexpr ObjectType *RESTRICT begin()  NOEXCEPT
+	RESTRICTED constexpr ObjectType *const RESTRICT begin()  NOEXCEPT
 	{
 		return array;
 	}
@@ -60,7 +60,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	constexpr const ObjectType *const RESTRICT end() const NOEXCEPT
+	RESTRICTED constexpr const ObjectType *const RESTRICT end() const NOEXCEPT
 	{
 		return array + ArraySize;
 	}
@@ -68,7 +68,7 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	constexpr ObjectType *RESTRICT end() NOEXCEPT
+	RESTRICTED constexpr ObjectType *const RESTRICT end() NOEXCEPT
 	{
 		return array + ArraySize;
 	}

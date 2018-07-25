@@ -975,6 +975,9 @@
     <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\stb_image_resize.h">
       <Filter>Resource Creator Source\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Algorithms\SortingAlgorithms.h">
+      <Filter>Engine Source\Engine Core\Algorithms\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Engine Source\Source\Components\ComponentManager.cpp">

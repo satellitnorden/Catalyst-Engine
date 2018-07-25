@@ -135,6 +135,7 @@
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\WaterComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Components\WaterRenderComponent.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Algorithms\HashAlgorithms.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Algorithms\SortingAlgorithms.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\BinaryFile.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\BitField.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\CatalystProjectInformation.h" />

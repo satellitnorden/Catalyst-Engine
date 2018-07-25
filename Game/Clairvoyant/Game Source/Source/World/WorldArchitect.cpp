@@ -7,6 +7,7 @@
 
 //Engine core.
 #include <Engine Core/HashString.h>
+#include <Engine Core/Algorithms/SortingAlgorithms.h>
 
 //Entities.
 #include <Entities/CameraEntity.h>
@@ -238,13 +239,13 @@ void WorldArchitect::Scan() NOEXCEPT
 		}
 	}
 
-	std::sort(suggestedWorldChunks.begin(), suggestedWorldChunks.end(), [&](const SuggestedWorldChunk &first, const SuggestedWorldChunk &second)
+	SortingAlgorithms::InsertionSort<SuggestedWorldChunk>(suggestedWorldChunks.begin(), suggestedWorldChunks.end(), [](const SuggestedWorldChunk *const RESTRICT first, const SuggestedWorldChunk *const RESTRICT second)
 	{
-		const Vector3 firstWorldPosition{ first.gridPositionX * WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, first.gridPositionY * WorldAchitectConstants::TERRAIN_EXTENT };
-		const Vector3 secondWorldPosition{ second.gridPositionX * WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, second.gridPositionY * WorldAchitectConstants::TERRAIN_EXTENT };
+		const Vector3 firstWorldPosition{ first->gridPositionX * WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, first->gridPositionY * WorldAchitectConstants::TERRAIN_EXTENT };
+		const Vector3 secondWorldPosition{ second->gridPositionX * WorldAchitectConstants::TERRAIN_EXTENT, 0.0f, second->gridPositionY * WorldAchitectConstants::TERRAIN_EXTENT };
 
-		const float distanceToFirst{ Vector3::LengthSquaredXZ(scanningData.cameraPosition - firstWorldPosition) };
-		const float distanceToSecond{ Vector3::LengthSquaredXZ(scanningData.cameraPosition - secondWorldPosition) };
+		const float distanceToFirst{ Vector3::LengthSquaredXZ(WorldArchitect::Instance->scanningData.cameraPosition - firstWorldPosition) };
+		const float distanceToSecond{ Vector3::LengthSquaredXZ(WorldArchitect::Instance->scanningData.cameraPosition - secondWorldPosition) };
 
 		return distanceToFirst < distanceToSecond;
 	});

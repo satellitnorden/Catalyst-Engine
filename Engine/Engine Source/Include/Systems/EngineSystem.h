@@ -24,7 +24,7 @@ public:
 	/*
 	*	Updates the engine system synchronously. Returns whether or not the game should terminate.
 	*/
-	bool UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
+	bool UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT;
 
 	/*
 	*	Releases the engine system.
