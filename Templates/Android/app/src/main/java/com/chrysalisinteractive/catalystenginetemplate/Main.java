@@ -10,8 +10,8 @@ public class Main extends AppCompatActivity
     static
     {
         //Load the necessary native libraries.
-        System.loadLibrary("catalyst-engine-lib");
-        System.loadLibrary("clairvoyant-lib");
+        //System.loadLibrary("catalyst-engine-lib");
+        //System.loadLibrary("clairvoyant-lib");
     }
 
     @Override
@@ -19,14 +19,6 @@ public class Main extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //Call the C++ main function.
-        main();
     }
-
-    /*
-    *   The C++ main function.
-    */
-    public native int main();
 
 }

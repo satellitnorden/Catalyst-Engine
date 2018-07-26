@@ -27,7 +27,7 @@ public:
 	*/
 	bool IsBitSet(const uint8 index) const NOEXCEPT
 	{
-		return bitField & (StaticCast<uint64>(0x00000001) << index);
+		return bitField & (static_cast<uint64>(0x00000001) << index);
 	}
 
 	/*
@@ -35,7 +35,7 @@ public:
 	*/
 	void SetBit(const uint8 index) NOEXCEPT
 	{
-		bitField |= StaticCast<uint64>(0x00000001) << index;
+		bitField |= static_cast<uint64>(0x00000001) << index;
 	}
 
 	/*
@@ -43,7 +43,7 @@ public:
 	*/
 	void UnsetBit(const uint8 index) NOEXCEPT
 	{
-		bitField &= ~(StaticCast<uint64>(0x00000001) << index);
+		bitField &= ~(static_cast<uint64>(0x00000001) << index);
 	}
 
 	/*
@@ -51,7 +51,7 @@ public:
 	*/
 	void ToggleBit(const uint8 index) NOEXCEPT
 	{
-		bitField ^= StaticCast<uint64>(0x00000001) << index;
+		bitField ^= static_cast<uint64>(0x00000001) << index;
 	}
 
 private:

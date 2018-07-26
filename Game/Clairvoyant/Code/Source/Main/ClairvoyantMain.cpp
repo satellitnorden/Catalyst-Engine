@@ -19,10 +19,12 @@ MAIN
 {
 #if !defined(CATALYST_FINAL)
 	//Create resources, if necessary.
+	/*
 	if (false)
 	{
 		CreateResources();
 	}
+	*/
 #endif
 
 	//The delta timer.
@@ -58,11 +60,10 @@ MAIN
 	//Release the engine system.
 	EngineSystem::Instance->ReleaseSystem();
 
-	//Return success!
-	return EXIT_SUCCESS;
+	MAIN_RETURN_SUCCESS;
 }
 
-#if !defined(CATALYST_FINAL)
+#if false
 //Multithreading.
 #include <Multithreading/Semaphore.h>
 #include <Multithreading/Task.h>

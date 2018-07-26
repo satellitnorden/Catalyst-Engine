@@ -2,12 +2,14 @@
 
 #pragma once
 
-//JNI.
-#include <jni.h>
-
 /*
 *	Main function signature.
 */
-#define MAIN JNICALL Java_com_chrysalisinteractive_catalystenginetemplate_Main_main(JNIEnv *environment, jobject)
+#define MAIN void android_main(/*struct android_app *state*/)
+
+/*
+*	Main return success.
+*/
+#define MAIN_RETURN_SUCCESS
 
 #endif

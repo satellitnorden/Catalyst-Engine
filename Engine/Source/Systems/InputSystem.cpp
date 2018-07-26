@@ -41,6 +41,7 @@ void InputSystem::PostUpdateSystemSynchronous() NOEXCEPT
 */
 void InputSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
+#if defined(CATALYST_WINDOWS)
 	//Update gamepad states.
 	for (uint8 i = 0; i < INPUT_MAXIMUM_GAMEPADS; ++i)
 	{
@@ -49,6 +50,7 @@ void InputSystem::UpdateSystemAsynchronous() NOEXCEPT
 
 	//Update the keyboard.
 	InputUtilities::GetCurrentKeyboardState(currentKeyboardState);
+#endif
 }
 
 /*

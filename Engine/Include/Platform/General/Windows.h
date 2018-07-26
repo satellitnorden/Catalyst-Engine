@@ -1,5 +1,6 @@
 //Windows.
 #if defined(CATALYST_WINDOWS)
+
 #pragma once
 
 #include <Windows.h>
@@ -17,4 +18,10 @@
 *	Main function signature.
 */
 #define MAIN int32 main() NOEXCEPT
+
+/*
+*	Main return success.
+*/
+#define MAIN_RETURN_SUCCESS return 0;
+
 #endif

@@ -32,7 +32,7 @@
 DEFINE_SINGLETON(RenderingSystem);
 
 //Define the current rendering system.
-#if defined(CATALYST_WINDOWS)
+#if defined(CATALYST_WINDOWS) || defined(CATALYST_ANDROID)
 	#define CURRENT_RENDERING_SYSTEM VulkanRenderingSystem
 #endif
 
