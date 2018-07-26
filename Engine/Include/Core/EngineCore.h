@@ -21,17 +21,17 @@
 #include <unordered_map>
 
 //Core defines.
-#include <Engine Core/CoreDefines.h>
+#include <Core/CoreDefines.h>
 
 //Core macros.
-#include <Engine Core/CoreMacros.h>
+#include <Core/CoreMacros.h>
 
 //Core type aliases.
-#include <Engine Core/CoreTypeAliases.h>
+#include <Core/CoreTypeAliases.h>
 
 //Utilities.
-#include <Engine Core/Utilities/CompileTimeUtilities.h>
-#include <Engine Core/Utilities/MemoryUtilities.h>
+#include <Core/Utilities/CompileTimeUtilities.h>
+#include <Core/Utilities/MemoryUtilities.h>
 
 //Core types, forward declarations.
 enum class IOMode : uint8;
@@ -66,17 +66,17 @@ template <class ObjectType>
 class UniquePointer;
 
 //Core types, implementations.
-#include <Engine Core/BinaryFile.h>
-#include <Engine Core/Bitfield.h>
-#include <Engine Core/DeltaTimer.h>
-#include <Engine Core/Containers/DynamicArray.h>
-#include <Engine Core/DynamicString.h>
-#include <Engine Core/Containers/Map.h>
-#include <Engine Core/Optional.h>
-#include <Engine Core/Padding.h>
-#include <Engine Core/Pair.h>
-#include <Engine Core/Containers/StaticArray.h>
-#include <Engine Core/UniquePointer.h>
+#include <Core/BinaryFile.h>
+#include <Core/Bitfield.h>
+#include <Core/DeltaTimer.h>
+#include <Core/Containers/DynamicArray.h>
+#include <Core/DynamicString.h>
+#include <Core/Containers/Map.h>
+#include <Core/Optional.h>
+#include <Core/Padding.h>
+#include <Core/Pair.h>
+#include <Core/Containers/StaticArray.h>
+#include <Core/UniquePointer.h>
 
 //The Catalyst project information.
-#include <Engine Core/CatalystProjectInformation.h>
+#include <Core/CatalystProjectInformation.h>

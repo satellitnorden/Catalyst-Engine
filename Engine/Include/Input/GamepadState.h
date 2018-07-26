@@ -1,7 +1,7 @@
 #pragma once
 
-//Engine core.
-#include <Engine Core/EngineCore.h>
+//Core.
+#include <Core/EngineCore.h>
 
 //Defines.
 #define GAMEPAD_DEADZONE 0.1f

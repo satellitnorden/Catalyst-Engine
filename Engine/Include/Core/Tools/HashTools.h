@@ -2,8 +2,8 @@
 
 #pragma once
 
-//Engine Core.
-#include <Engine Core/HashString.h>
+//Core.
+#include <Core/HashString.h>
 
 //Math.
 #include <Math/CatalystMath.h>

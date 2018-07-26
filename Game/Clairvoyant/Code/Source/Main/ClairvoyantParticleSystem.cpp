@@ -1,8 +1,8 @@
 //Header file.
 #include <Main/ClairvoyantParticleSystem.h>
 
-//Engine core.
-#include <Engine Core/HashString.h>
+//Core.
+#include <Core/HashString.h>
 
 //Entities.
 #include <Entities/CameraEntity.h>

@@ -1,10 +1,10 @@
 #pragma once
 
-//Engine core.
-#include <Engine Core/EngineCore.h>
+//Core.
+#include <Core/EngineCore.h>
 
 //Algorithms.
-#include <Engine Core/Algorithms/HashAlgorithms.h>
+#include <Core/Algorithms/HashAlgorithms.h>
 
 /*
 *	Defines the hashing algorithm used by the HashString function.

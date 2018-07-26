@@ -5,9 +5,9 @@
 #include <Resources/ClairvoyantSettings.h>
 #include <Sound/ClairvoyantSoundGUIDs.h>
 
-//Engine core.
-#include <Engine Core/HashString.h>
-#include <Engine Core/Algorithms/SortingAlgorithms.h>
+//Core.
+#include <Core/HashString.h>
+#include <Core/Algorithms/SortingAlgorithms.h>
 
 //Entities.
 #include <Entities/CameraEntity.h>
