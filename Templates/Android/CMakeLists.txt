@@ -15,3 +15,7 @@ add_library(	catalyst-engine-lib
 		../../Engine/Source/ )
 
 include_directories( ../../Engine/Include/ )
+
+set_target_properties(	catalyst-engine-lib
+			PROPERTIES LINKER_LANGUAGE
+			CXX )
