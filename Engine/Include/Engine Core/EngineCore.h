@@ -1,5 +1,8 @@
 #pragma once
 
+//Platform.
+#include <Platform/General/Platform.h>
+
 //STL.
 #include <algorithm>
 #include <atomic>
@@ -17,20 +20,6 @@
 #include <thread>
 #include <unordered_map>
 
-//Windows.
-#if defined(CATALYST_WINDOWS)
-	#include <Windows.h>
-	#include <Xinput.h>
-
-	//Undefine annoying Windows defines. Fuck Windows. I hate everything.
-	#undef CopyMemory
-	#undef CreateEvent
-	#undef CreateSemaphore
-	#undef max
-	#undef min
-	#undef PlaySound
-#endif
-
 //Core defines.
 #include <Engine Core/CoreDefines.h>
 
@@ -39,9 +28,6 @@
 
 //Core type aliases.
 #include <Engine Core/CoreTypeAliases.h>
-
-//Algorithms.
-//#include <Engine Core/Algorithms/HashAlgorithms.h>
 
 //Utilities.
 #include <Engine Core/Utilities/CompileTimeUtilities.h>

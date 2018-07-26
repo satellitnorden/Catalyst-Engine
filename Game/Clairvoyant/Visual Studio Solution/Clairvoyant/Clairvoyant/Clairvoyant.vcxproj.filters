@@ -244,6 +244,15 @@
     <Filter Include="Resource Creator Source\Source">
       <UniqueIdentifier>{a81dd121-35fa-41eb-b112-7f6fe89e668d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine Source\Platform">
+      <UniqueIdentifier>{0631f83f-0f18-4b92-98b0-46128304dbc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Platform\General">
+      <UniqueIdentifier>{ebab88cd-c168-4529-87d2-ba087c2060f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine Source\Platform\General\Include">
+      <UniqueIdentifier>{0d25d66f-8229-4e65-9e57-16a3eb7a0f13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\..\Engine\Include\Components\CameraComponent.h">
@@ -977,6 +986,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Include\Engine Core\Algorithms\SortingAlgorithms.h">
       <Filter>Engine Source\Engine Core\Algorithms\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Include\Platform\General\Platform.h">
+      <Filter>Engine Source\Platform\General\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Include\Platform\General\Android.h">
+      <Filter>Engine Source\Platform\General\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\Engine\Include\Platform\General\Windows.h">
+      <Filter>Engine Source\Platform\General\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

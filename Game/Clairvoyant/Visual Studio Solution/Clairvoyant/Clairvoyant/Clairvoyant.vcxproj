@@ -194,6 +194,9 @@
     <ClInclude Include="..\..\..\..\..\Engine\Include\Multithreading\Task.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Include\Multithreading\Threadlock.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Include\Physics\PhysicalConstants.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Include\Platform\General\Android.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Include\Platform\General\Platform.h" />
+    <ClInclude Include="..\..\..\..\..\Engine\Include\Platform\General\Windows.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Include\Rendering\API Layer\Vulkan\Vulkan2DTexture.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Include\Rendering\API Layer\Vulkan\VulkanAllocation.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Include\Rendering\API Layer\Vulkan\VulkanAllocator.h" />

@@ -15,7 +15,7 @@
 void CreateResources() NOEXCEPT;
 #endif
 
-int32 main() NOEXCEPT
+MAIN
 {
 #if !defined(CATALYST_FINAL)
 	//Create resources, if necessary.
