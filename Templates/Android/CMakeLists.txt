@@ -19,3 +19,13 @@ include_directories( ../../Engine/Include/ )
 set_target_properties(	catalyst-engine-lib
 			PROPERTIES LINKER_LANGUAGE
 			CXX )
+
+add_library(	clairvoyant-lib
+		SHARED
+		../../Game/Clairvoyant/Code/Source/ )
+
+include_directories( ../../Game/Clairvoyant/Code/Include/ )
+
+set_target_properties(	clairvoyant-lib
+			PROPERTIES LINKER_LANGUAGE
+			CXX )

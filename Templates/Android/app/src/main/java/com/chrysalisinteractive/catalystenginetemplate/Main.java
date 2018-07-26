@@ -11,6 +11,7 @@ public class Main extends AppCompatActivity
     {
         //Load the necessary native libraries.
         System.loadLibrary("catalyst-engine-lib");
+        System.loadLibrary("clairvoyant-lib");
     }
 
     @Override
