@@ -12,12 +12,6 @@ cmake_minimum_required(VERSION 3.4.1)
 
 add_library(	catalyst-engine-lib
 		SHARED
-		../../Engine/EngineSource/Source/ )
+		../../Engine/Source/ )
 
-include_directories( ../../Engine/EngineSource/Include/ )
-
-add_library(	clairvoyant-game-lib
-		SHARED
-		../../Game/Clairvoyant/GameSource/Source/ )
-
-include_directories( ../../Game/Clairvoyant/GameSource/Include/ )
+include_directories( ../../Engine/Include/ )
