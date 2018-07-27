@@ -297,9 +297,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Include\Core\BinaryFile.h">
       <Filter>Engine Source\Core\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Include\Core\BitField.h">
-      <Filter>Engine Source\Core\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Engine\Include\Core\CatalystProjectInformation.h">
       <Filter>Engine Source\Core\Include</Filter>
     </ClInclude>

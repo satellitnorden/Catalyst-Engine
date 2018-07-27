@@ -1,26 +1,13 @@
 cmake_minimum_required(VERSION 3.4.1)
 
-file( GLOB_RECURSE ENGINESOURCE ../../Engine/Source/*.cpp )
-
-include_directories(	../../Engine/Include/
-			../../Game/Clairvoyant/Code/Include/ )
+file( GLOB_RECURSE ENGINESOURCE ../../Engine/Include/*.h ../../Engine/Source/*.cpp )
+file( GLOB_RECURSE GAMESOURCE ../../Game/Clairvoyant/Code/Include/*.h ../../Game/Clairvoyant/Code/Source/*.cpp )
 
 add_library(	catalyst-engine-lib
 		SHARED
-		${ENGINESOURCE} )
-
-set_target_properties(	catalyst-engine-lib
-			PROPERTIES LINKER_LANGUAGE
-			CXX )
-
-file( GLOB_RECURSE GAMESOURCE ../../Game/Clairvoyant/Code/Source/*.cpp )
-
-add_library(	game-lib
-		SHARED
+		${ENGINESOURCE}
 		${GAMESOURCE} )
 
-set_target_properties(	game-lib
-			PROPERTIES LINKER_LANGUAGE
-			CXX )
+include_directories( ../../Engine/Include/ ../../Game/Clairvoyant/Code/Include/ )
 
 add_definitions( -DCATALYST_ANDROID )

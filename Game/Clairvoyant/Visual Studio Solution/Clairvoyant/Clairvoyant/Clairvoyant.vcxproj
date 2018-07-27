@@ -137,7 +137,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Include\Core\Algorithms\HashAlgorithms.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Include\Core\Algorithms\SortingAlgorithms.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Include\Core\BinaryFile.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Include\Core\BitField.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Include\Core\CatalystProjectInformation.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Include\Core\Containers\DynamicArray.h" />
     <ClInclude Include="..\..\..\..\..\Engine\Include\Core\Containers\Map.h" />

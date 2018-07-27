@@ -39,9 +39,6 @@ enum class IOMode : uint8;
 template <IOMode IoMode>
 class BinaryFile;
 
-template <uint8 BitFieldSize>
-class BitField;
-
 template <class ObjectType, uint64 InitialCapacity>
 class DynamicArray;
 
@@ -67,7 +64,6 @@ class UniquePointer;
 
 //Core types, implementations.
 #include <Core/BinaryFile.h>
-#include <Core/Bitfield.h>
 #include <Core/DeltaTimer.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/DynamicString.h>
