@@ -43,6 +43,6 @@ public:
 private:
 
 	//The underlying atomic lock.
-	std::atomic_flag lock{ ATOMIC_FLAG_INIT };
+	std::atomic_flag lock{ 0 };
 
 };
