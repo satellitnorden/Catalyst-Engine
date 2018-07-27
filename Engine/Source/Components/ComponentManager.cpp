@@ -5,34 +5,34 @@
 #include <Entities/Entity.h>
 
 //Static variable definitions.
-std::atomic<uint64> ComponentManager::numberOfCameraComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfCameraComponents{ 0 };
 DynamicArray<CameraComponent> ComponentManager::cameraComponents;
 
-std::atomic<uint64> ComponentManager::numberOfDirectionalLightComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfDirectionalLightComponents{ 0 };
 DynamicArray<DirectionalLightComponent> ComponentManager::directionalLightComponents;
 
-std::atomic<uint64> ComponentManager::numberOfInstancedPhysicalComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfInstancedPhysicalComponents{ 0 };
 DynamicArray<InstancedPhysicalRenderComponent> ComponentManager::instancedPhysicalRenderComponents;
 
-std::atomic<uint64> ComponentManager::numberOfStaticPhysicalComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfStaticPhysicalComponents{ 0 };
 DynamicArray<FrustumCullingComponent> ComponentManager::staticPhysicalFrustumCullingComponents;
 DynamicArray<StaticPhysicalRenderComponent> ComponentManager::staticPhysicalRenderComponents;
 DynamicArray<TransformComponent> ComponentManager::staticPhysicalTransformComponents;
 
-std::atomic<uint64> ComponentManager::numberOfParticleSystemComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfParticleSystemComponents{ 0 };
 DynamicArray<ParticleSystemComponent> ComponentManager::particleSystemComponents;
 DynamicArray<ParticleSystemRenderComponent> ComponentManager::particleSystemRenderComponents;
 
-std::atomic<uint64> ComponentManager::numberOfPointLightComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfPointLightComponents{ 0 };
 DynamicArray<PointLightComponent> ComponentManager::pointLightComponents;
 
-std::atomic<uint64> ComponentManager::numberOfSound2DComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfSound2DComponents{ 0 };
 DynamicArray<Sound2DComponent> ComponentManager::sound2DComponents;
 
-std::atomic<uint64> ComponentManager::numberOfSound3DComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfSound3DComponents{ 0 };
 DynamicArray<Sound3DComponent> ComponentManager::sound3DComponents;
 
-std::atomic<uint64> ComponentManager::numberOfSpotLightComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfSpotLightComponents{ 0 };
 DynamicArray<SpotLightComponent> ComponentManager::spotLightComponents;
 
 DynamicArray<Entity *RESTRICT> ComponentManager::terrainEntities;
@@ -40,11 +40,11 @@ DynamicArray<TerrainComponent> ComponentManager::terrainComponents;
 DynamicArray<FrustumCullingComponent> ComponentManager::terrainFrustumCullingComponents;
 DynamicArray<TerrainRenderComponent> ComponentManager::terrainRenderComponents;
 
-std::atomic<uint64> ComponentManager::numberOfVegetationComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfVegetationComponents{ 0 };
 DynamicArray<VegetationComponent> ComponentManager::vegetationComponents;
 DynamicArray<VegetationCullingComponent> ComponentManager::vegetationCullingComponents;
 
-std::atomic<uint64> ComponentManager::numberOfWaterComponents = 0;
+std::atomic<uint64> ComponentManager::numberOfWaterComponents{ 0 };
 DynamicArray<WaterComponent> ComponentManager::waterComponents;
 DynamicArray<WaterRenderComponent> ComponentManager::waterRenderComponents;
 
