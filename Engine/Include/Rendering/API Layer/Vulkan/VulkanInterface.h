@@ -47,7 +47,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanInterface() NOEXCEPT = default;
+	VulkanInterface() NOEXCEPT { }
 
 	/*
 	*	Initializes this Vulkan interface.

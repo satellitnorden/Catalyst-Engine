@@ -17,7 +17,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	TimeSystem() NOEXCEPT = default;
+	TimeSystem() NOEXCEPT { }
 
 	/*
 	*	Initializes the time system.

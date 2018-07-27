@@ -14,7 +14,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	ClairvoyantParticleSystem() NOEXCEPT = default;
+	ClairvoyantParticleSystem() NOEXCEPT { }
 
 	/*
 	*	Initializes the particle system.

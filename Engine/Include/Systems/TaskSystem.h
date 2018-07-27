@@ -20,7 +20,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	TaskSystem() NOEXCEPT = default;
+	TaskSystem() NOEXCEPT { }
 
 	/*
 	*	Initializes the task system.

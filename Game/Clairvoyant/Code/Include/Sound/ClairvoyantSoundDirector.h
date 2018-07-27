@@ -14,7 +14,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	ClairvoyantSoundDirector() NOEXCEPT = default;
+	ClairvoyantSoundDirector() NOEXCEPT { }
 
 	/*
 	*	Initializes the Clairvoyant sound director.

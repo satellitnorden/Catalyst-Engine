@@ -14,7 +14,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	PostProcessingManager() NOEXCEPT = default;
+	PostProcessingManager() NOEXCEPT { }
 
 	/*
 	*	Returns whether or not any post processing value has been updated.

@@ -26,7 +26,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Task() NOEXCEPT = default;
+	Task() NOEXCEPT { }
 
 	/*
 	*	Constructor taking all values as arguments.

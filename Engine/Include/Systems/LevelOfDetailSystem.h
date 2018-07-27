@@ -21,7 +21,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	LevelOfDetailSystem() NOEXCEPT = default;
+	LevelOfDetailSystem() NOEXCEPT { }
 
 	/*
 	*	Initializes the level of detail system.

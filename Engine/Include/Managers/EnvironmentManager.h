@@ -18,7 +18,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	EnvironmentManager() NOEXCEPT = default;
+	EnvironmentManager() NOEXCEPT { }
 
 	/*
 	*	Returns the environment blend.

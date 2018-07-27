@@ -30,7 +30,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	WorldArchitect() NOEXCEPT = default;
+	WorldArchitect() NOEXCEPT { }
 
 	/*
 	*	Initializes the world architect.

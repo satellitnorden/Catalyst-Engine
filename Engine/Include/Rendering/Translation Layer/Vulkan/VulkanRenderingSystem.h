@@ -58,7 +58,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	VulkanRenderingSystem() NOEXCEPT = default;
+	VulkanRenderingSystem() NOEXCEPT { }
 
 	/*
 	*	Initializes the Vulkan rendering system.

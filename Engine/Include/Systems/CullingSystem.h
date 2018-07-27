@@ -18,7 +18,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	CullingSystem() NOEXCEPT = default;
+	CullingSystem() NOEXCEPT { }
 
 	/*
 	*	Initializes the culling system.

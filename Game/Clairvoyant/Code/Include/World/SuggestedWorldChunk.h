@@ -17,7 +17,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	SuggestedWorldChunk() NOEXCEPT = default;
+	SuggestedWorldChunk() NOEXCEPT { }
 
 	/*
 	*	Constructor taking all values as arguments.

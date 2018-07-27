@@ -22,7 +22,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	EntitySystem() NOEXCEPT = default;
+	EntitySystem() NOEXCEPT;
 
 	/*
 	*	Pre-updates the entity system synchronously.

@@ -21,7 +21,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	PhysicsSystem() NOEXCEPT = default;
+	PhysicsSystem() NOEXCEPT { }
 
 	/*
 	*	Updates the physics system synchronously.

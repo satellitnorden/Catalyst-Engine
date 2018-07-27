@@ -60,7 +60,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	RenderingSystem() NOEXCEPT = default;
+	RenderingSystem() NOEXCEPT { }
 
 	/*
 	*	Initializes the rendering system.

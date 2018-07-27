@@ -25,7 +25,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	ClairvoyantGameSystem() NOEXCEPT = default;
+	ClairvoyantGameSystem() NOEXCEPT { }
 
 	/*
 	*	Initializes the game system.

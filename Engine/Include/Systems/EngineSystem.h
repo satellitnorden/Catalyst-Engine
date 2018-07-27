@@ -14,7 +14,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	EngineSystem() NOEXCEPT = default;
+	EngineSystem() NOEXCEPT { }
 
 	/*
 	*	Initializes the engine system.

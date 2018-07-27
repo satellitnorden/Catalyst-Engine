@@ -23,7 +23,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	InputSystem() NOEXCEPT = default;
+	InputSystem() NOEXCEPT { }
 
 	/*
 	*	Pre-updates the input system synchronously.

@@ -20,6 +20,14 @@
 DEFINE_SINGLETON(EntitySystem);
 
 /*
+*	Default constructor.
+*/
+EntitySystem::EntitySystem() NOEXCEPT
+{
+
+}
+
+/*
 *	Releases the entity system.
 */
 void EntitySystem::ReleaseSystem() NOEXCEPT

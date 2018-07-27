@@ -17,7 +17,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Resolution() NOEXCEPT = default;
+	Resolution() NOEXCEPT { }
 
 	/*
 	*	Constructor taking all values as arguments.

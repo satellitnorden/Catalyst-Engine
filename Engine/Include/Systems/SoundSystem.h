@@ -30,7 +30,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	SoundSystem() NOEXCEPT = default;
+	SoundSystem() NOEXCEPT { }
 
 	/*
 	*	Given a string of an FMOD GUID, parse it and return it into a FMOD_GUID struct.
