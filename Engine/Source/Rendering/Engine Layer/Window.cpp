@@ -5,6 +5,7 @@
 #include <Systems/EngineSystem.h>
 
 //Third party libraries.
+#define GLFW_INCLUDE_NONE
 #include <Third Party Libraries/GLFW/glfw3.h>
 
 //Preprocessor defines.

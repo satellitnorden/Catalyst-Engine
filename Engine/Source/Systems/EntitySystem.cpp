@@ -5,7 +5,6 @@
 #include <Components/ComponentManager.h>
 
 //Entities.
-#include <Entities/Entity.h>
 #include <Entities/EntityInitializationData.h>
 #include <Entities/EntityTerminationData.h>
 #include <Entities/Initialization Data/TerrainInitializationData.h>

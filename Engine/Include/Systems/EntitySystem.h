@@ -3,11 +3,13 @@
 //Core.
 #include <Core/EngineCore.h>
 
+//Entities.
+#include <Entities/Entity.h>
+
 //Multithreading.
 #include <Multithreading/Spinlock.h>
 
 //Forward declarations.
-class Entity;
 class EntityInitializationData;
 class EntityTerminationData;
 

@@ -395,7 +395,8 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 
 	//Create the uniform buffer.
 	VulkanUniformBuffer *const RESTRICT uniformBuffer{ VulkanInterface::Instance->CreateUniformBuffer(static_cast<VkDeviceSize>(sizeof(VulkanParticleSystemProperties))) };
-	uniformBuffer->UploadData(&VulkanParticleSystemProperties(properties));
+	const VulkanParticleSystemProperties vulkanParticleSystemProperties{ properties };
+	uniformBuffer->UploadData(&vulkanParticleSystemProperties);
 
 	//Create the descriptor set.
 	VulkanDescriptorSet renderDataTable;
@@ -1494,7 +1495,8 @@ void VulkanRenderingSystem::UpdateParticleSystemProperties() const NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
-		static_cast<VulkanUniformBuffer *const RESTRICT>(component->propertiesUniformBuffer)->UploadData(&VulkanParticleSystemProperties(component->properties));
+		const VulkanParticleSystemProperties vulkanParticleSystemProperties{ component->properties };
+		static_cast<VulkanUniformBuffer *const RESTRICT>(component->propertiesUniformBuffer)->UploadData(&vulkanParticleSystemProperties);
 	}
 }
 
