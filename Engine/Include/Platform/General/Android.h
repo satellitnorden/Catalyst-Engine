@@ -5,7 +5,7 @@
 /*
 *	Main function signature.
 */
-#define MAIN void android_main(/*struct android_app *state*/)
+#define MAIN void android_main(struct android_app *state)
 
 /*
 *	Main return success.

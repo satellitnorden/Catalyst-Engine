@@ -1,3 +1,5 @@
+#if defined(CATALYST_WINDOWS)
+
 //Header file.
 #include <Systems/SoundSystem.h>
 
@@ -301,3 +303,5 @@ void SoundSystem::UpdateSound3DUpdatePositionRequests() NOEXCEPT
 		FMOD_ERROR_CHECK(component.eventInstance->start());
 	}
 }
+
+#endif

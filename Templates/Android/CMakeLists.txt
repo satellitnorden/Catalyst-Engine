@@ -5,11 +5,14 @@ file( GLOB_RECURSE ENGINELIBRARIES ../../Engine/Libraries/Static/*.lib )
 file( GLOB_RECURSE GAMESOURCE ../../Game/Clairvoyant/Code/Include/*.h ../../Game/Clairvoyant/Code/Source/*.cpp )
 
 add_library(	catalyst-engine-lib
-		STATIC
+		SHARED
 		${ENGINESOURCE}
-		${ENGINELIBRARIES}
 		${GAMESOURCE} )
 
 include_directories( ../../Engine/Include/ ../../Game/Clairvoyant/Code/Include/ )
+
+find_library( Vulkan-Library vulkan )
+
+target_link_libraries( catalyst-engine-lib ${Vulkan-Library} )
 
 add_definitions( -DCATALYST_ANDROID )
