@@ -12,16 +12,6 @@ class VulkanInstance final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanInstance() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanInstance() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan instance.
 	*/
 	const VkInstance& Get() const NOEXCEPT { return vulkanInstance; }

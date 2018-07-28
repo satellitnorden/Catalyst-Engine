@@ -4,9 +4,10 @@
 //Systems.
 #include <Systems/EngineSystem.h>
 
+#if defined(CATALYST_WINDOWS)
 //Third party libraries.
-#define GLFW_INCLUDE_NONE
 #include <Third Party Libraries/GLFW/glfw3.h>
+#endif
 
 //Preprocessor defines.
 #define WINDOW_WIDTH 1'920
@@ -37,6 +38,7 @@ Window::~Window() NOEXCEPT
 */
 void Window::Initialize() NOEXCEPT
 {
+#if defined(CATALYST_WINDOWS)
 	//Initialize GLFW.
 	glfwInit();
 
@@ -48,6 +50,7 @@ void Window::Initialize() NOEXCEPT
 
 	//Create the window!
 	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, EngineSystem::Instance->GetProjectInformation().generalInformation.projectName.CString(), nullptr, nullptr);
+#endif
 }
 
 /*
@@ -55,8 +58,10 @@ void Window::Initialize() NOEXCEPT
 */
 void Window::Update() const NOEXCEPT
 {
+#if defined(CATALYST_WINDOWS)
 	//Poll events.
 	glfwPollEvents();
+#endif
 }
 
 /*
@@ -64,11 +69,13 @@ void Window::Update() const NOEXCEPT
 */
 void Window::Release() NOEXCEPT
 {
+#if defined(CATALYST_WINDOWS)
 	//Destroy the window.
 	glfwDestroyWindow(window);
 
 	//Terminate GLFW.
 	glfwTerminate();
+#endif
 }
 
 /*
@@ -76,5 +83,9 @@ void Window::Release() NOEXCEPT
 */
 bool Window::ShouldClose() const NOEXCEPT
 {
+#if defined(CATALYST_WINDOWS)
 	return static_cast<bool>(glfwWindowShouldClose(window));
+#else
+	return false;
+#endif
 }

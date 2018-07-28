@@ -7,9 +7,10 @@
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanCore.h>
 
+#if defined(CATALYST_WINDOWS)
 //Third party libraries.
-#define GLFW_INCLUDE_NONE
 #include <Third Party Libraries/GLFW/glfw3.h>
+#endif
 
 #if VULKAN_DEBUGGING
 //Define the validation layers.
@@ -18,22 +19,6 @@ namespace
 	const DynamicArray<const char *RESTRICT> validationLayers{ "VK_LAYER_LUNARG_standard_validation" };
 }
 #endif
-
-/*
-*	Default constructor.
-*/
-VulkanInstance::VulkanInstance() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanInstance::~VulkanInstance() NOEXCEPT
-{
-
-}
 
 /*
 *	Initializes this Vulkan instance.
@@ -80,11 +65,6 @@ void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) c
 */
 void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstanceInfo, const VkApplicationInfo &applicationInfo) const NOEXCEPT
 {
-	uint32 glfwExtensionCount{ 0 };
-	const char *RESTRICT *RESTRICT glfwExtensions{ nullptr };
-
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
 	createInstanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInstanceInfo.pNext = nullptr;
 	createInstanceInfo.flags = 0;
@@ -98,6 +78,16 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 	createInstanceInfo.ppEnabledLayerNames = nullptr;
 #endif
 
+#if defined(CATALYST_WINDOWS)
+	uint32 glfwExtensionCount{ 0 };
+	const char *RESTRICT *RESTRICT glfwExtensions{ nullptr };
+
+	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
 	createInstanceInfo.enabledExtensionCount = glfwExtensionCount;
 	createInstanceInfo.ppEnabledExtensionNames = glfwExtensions;
+#elif defined(CATALYST_ANDROID)
+	createInstanceInfo.enabledExtensionCount = 0;
+	createInstanceInfo.ppEnabledExtensionNames = nullptr;
+#endif
 }

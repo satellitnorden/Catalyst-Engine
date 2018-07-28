@@ -158,8 +158,8 @@ void InstancedPhysicalRenderPass::RenderInternal() NOEXCEPT
 	{
 		StaticArray<ConstantBufferHandle, 2> buffers
 		{
-			static_cast<const VkBuffer>(component->modelBuffer),
-			static_cast<const VkBuffer>(component->transformationsBuffer)
+			component->modelBuffer,
+			component->transformationsBuffer
 		};
 
 		commandBuffer->BindRenderDataTables(this, 1, 1, &component->renderDataTable);

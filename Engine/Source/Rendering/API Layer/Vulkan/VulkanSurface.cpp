@@ -7,9 +7,10 @@
 //Vulkan.
 #include <Rendering/API Layer/Vulkan/VulkanInterface.h>
 
+#if defined(CATALYST_WINDOWS)
 //Third party libraries.
-#define GLFW_INCLUDE_NONE
 #include <Third Party Libraries/GLFW/glfw3.h>
+#endif
 
 /*
 *	Default constructor.
@@ -32,8 +33,10 @@ VulkanSurface::~VulkanSurface() NOEXCEPT
 */
 void VulkanSurface::Initialize(Window &window) NOEXCEPT
 {
+#if defined(CATALYST_WINDOWS)
 	//Create the Vulkan surface!
 	VULKAN_ERROR_CHECK(glfwCreateWindowSurface(VulkanInterface::Instance->GetInstance().Get(), window.Get(), nullptr, &vulkanSurface));
+#endif
 }
 
 /*
