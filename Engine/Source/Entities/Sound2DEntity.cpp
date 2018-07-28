@@ -94,6 +94,7 @@ void Sound2DEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 	}
 }
 
+#if defined(CATALYST_WINDOWS)
 /*
 *	Initializes this sound 2D entity.
 */
@@ -102,3 +103,4 @@ void Sound2DEntity::Initialize(const FMOD::Studio::EventDescription *const RESTR
 	//Initialize this sound 2D entity via the Sound System.
 	SoundSystem::Instance->InitializeSound2DEntity(this, eventDescription);
 }
+#endif

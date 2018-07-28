@@ -57,9 +57,11 @@ public:
 	*/
 	void Scale(const Vector3 &scaleVector) NOEXCEPT final override;
 
+#if defined(CATALYST_WINDOWS)
 	/*
 	*	Initializes this sound 2D entity.
 	*/
 	void Initialize(const FMOD::Studio::EventDescription *const RESTRICT eventDescription) NOEXCEPT;
+#endif
 
 };

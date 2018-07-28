@@ -66,8 +66,10 @@ void Sound3DEntity::Move(const Vector3 &moveVector) NOEXCEPT
 	//Move this entity.
 	ComponentManager::GetSound3DComponents()[componentsIndex].position += moveVector;
 
+#if defined(CATALYST_WINDOWS)
 	//Request the sound system to update the position of this sound 3D entity.
 	SoundSystem::Instance->UpdateSound3DEntityPosition(this, ComponentManager::GetSound3DComponents()[componentsIndex].position);
+#endif
 
 	//Move all children.
 	for (auto child : children)
@@ -100,6 +102,7 @@ void Sound3DEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 	}
 }
 
+#if defined(CATALYST_WINDOWS)
 /*
 *	Initializes this sound 3D entity.
 */
@@ -108,3 +111,4 @@ void Sound3DEntity::Initialize(const FMOD::Studio::EventDescription *const RESTR
 	//Initialize this sound 3D entity via the Sound System.
 	SoundSystem::Instance->InitializeSound3DEntity(this, eventDescription);
 }
+#endif

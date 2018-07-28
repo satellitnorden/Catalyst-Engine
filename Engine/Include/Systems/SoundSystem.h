@@ -32,10 +32,12 @@ public:
 	*/
 	SoundSystem() NOEXCEPT { }
 
+#if defined(CATALYST_WINDOWS)
 	/*
 	*	Given a string of an FMOD GUID, parse it and return it into a FMOD_GUID struct.
 	*/
 	static FMOD_GUID ParseGUID(const char *const RESTRICT string) NOEXCEPT;
+#endif
 
 	/*
 	*	Initializes the sound system.
@@ -57,6 +59,7 @@ public:
 	*/
 	void SetActiveListener(const CameraEntity *const RESTRICT newActiveListener) NOEXCEPT;
 
+#if defined(CATALYST_WINDOWS)
 	/*
 	*	Loads a sound bank into memory.
 	*/
@@ -246,5 +249,6 @@ private:
 	*	Updates the sound 3D update position requests.
 	*/
 	void UpdateSound3DUpdatePositionRequests() NOEXCEPT;
+#endif
 
 };

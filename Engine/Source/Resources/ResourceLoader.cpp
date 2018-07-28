@@ -360,8 +360,10 @@ void ResourceLoader::LoadSoundBank(BinaryFile<IOMode::In> &file) NOEXCEPT
 	//Read the sound bank data.
 	file.Read(soundBankData.data.Data(), soundBankData.size);
 
+#if defined(CATALYST_WINDOWS)
 	//Load the sound bank via the sound system.
 	SoundSystem::Instance->LoadSoundBank(soundBankData, soundBanks[resourceID]);
+#endif
 }
 
 /*

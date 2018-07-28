@@ -1,5 +1,3 @@
-#if defined(CATALYST_WINDOWS)
-
 //Header file.
 #include <Systems/SoundSystem.h>
 
@@ -28,6 +26,7 @@
 //Define the singleton.
 DEFINE_SINGLETON(SoundSystem);
 
+#if defined(CATALYST_WINDOWS)
 /*
 *	Given a string of an FMOD GUID, parse it and return it into a FMOD_GUID struct.
 */
@@ -39,12 +38,14 @@ FMOD_GUID SoundSystem::ParseGUID(const char *const RESTRICT string) NOEXCEPT
 
 	return newGuid;
 }
+#endif
 
 /*
 *	Initializes the sound system.
 */
 void SoundSystem::InitializeSystem() NOEXCEPT
 {
+#if defined(CATALYST_WINDOWS)
 	//Create the FMOD Studio System.
 	FMOD_ERROR_CHECK(FMOD::Studio::System::create(&studioSystem, FMOD_VERSION));
 
@@ -58,6 +59,7 @@ void SoundSystem::InitializeSystem() NOEXCEPT
 #endif
 
 	FMOD_ERROR_CHECK(studioSystem->initialize(EngineSystem::Instance->GetProjectInformation().soundInformation.maximumNumberOfChannels, studioInitFlags, initFlags, nullptr));
+#endif
 }
 
 /*
@@ -65,6 +67,7 @@ void SoundSystem::InitializeSystem() NOEXCEPT
 */
 void SoundSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
+#if defined(CATALYST_WINDOWS)
 	//Wait for the asynchronous update to finish.
 	updateSemaphore.WaitFor();
 
@@ -87,6 +90,7 @@ void SoundSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	}, this, &updateSemaphore };
 
 	TaskSystem::Instance->ExecuteTask(&soundUpdateTask);
+#endif
 }
 
 /*
@@ -94,6 +98,7 @@ void SoundSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 */
 void SoundSystem::ReleaseSystem() NOEXCEPT
 {
+#if defined(CATALYST_WINDOWS)
 	//Unload all banks.
 	for (FMOD::Studio::Bank *const RESTRICT bank : banks)
 	{
@@ -102,6 +107,7 @@ void SoundSystem::ReleaseSystem() NOEXCEPT
 
 	//Release the FMOD Studio System.
 	FMOD_ERROR_CHECK(studioSystem->release());
+#endif
 }
 
 /*
@@ -109,10 +115,13 @@ void SoundSystem::ReleaseSystem() NOEXCEPT
 */
 void SoundSystem::SetActiveListener(const CameraEntity *const RESTRICT newActiveListener) NOEXCEPT
 {
+#if defined(CATALYST_WINDOWS)
 	//Set the active listener.
 	activeListenerData.activeListener = newActiveListener;
+#endif
 }
 
+#if defined(CATALYST_WINDOWS)
 /*
 *	Loads a sound bank into memory.
 */
@@ -303,5 +312,4 @@ void SoundSystem::UpdateSound3DUpdatePositionRequests() NOEXCEPT
 		FMOD_ERROR_CHECK(component.eventInstance->start());
 	}
 }
-
 #endif
