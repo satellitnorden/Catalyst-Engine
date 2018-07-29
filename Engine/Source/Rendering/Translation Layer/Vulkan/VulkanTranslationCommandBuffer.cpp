@@ -28,7 +28,7 @@ void VulkanTranslationCommandBuffer::Begin(const RenderPass *const RESTRICT rend
 void VulkanTranslationCommandBuffer::BindIndexBuffer(const RenderPass *const RESTRICT renderPass, const ConstantBufferHandle indexBuffer, const uint64 offset) NOEXCEPT
 {
 	//Bind the index buffer.
-	commandBuffer.CommandBindIndexBuffer(static_cast<const VkBuffer>(indexBuffer), offset);
+	commandBuffer.CommandBindIndexBuffer(reinterpret_cast<const VkBuffer>(indexBuffer), offset);
 }
 
 /*

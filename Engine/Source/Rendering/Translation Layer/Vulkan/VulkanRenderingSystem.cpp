@@ -187,7 +187,7 @@ uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 */
 ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
 {
-	return VulkanInterface::Instance->CreateConstantBuffer(data, dataSizes, dataChunks)->Get();
+	return reinterpret_cast<ConstantBufferHandle>(VulkanInterface::Instance->CreateConstantBuffer(data, dataSizes, dataChunks)->Get());
 }
 
 /*
@@ -195,7 +195,7 @@ ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *RES
 */
 void VulkanRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT
 {
-	VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VkDescriptorSet>(renderDataTable));
+	VulkanInterface::Instance->DestroyDescriptorSet(reinterpret_cast<VkDescriptorSet>(renderDataTable));
 }
 
 /*
@@ -234,7 +234,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 	VulkanDescriptorSet newDescriptorSet;
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(newDescriptorSet, descriptorSetLayouts[INDEX(RenderDataTableLayout::Terrain)]);
 
-	terrainRenderComponent.renderDataTable = newDescriptorSet.Get();
+	terrainRenderComponent.renderDataTable = reinterpret_cast<RenderDataTableHandle>(newDescriptorSet.Get());
 
 	DynamicArray<VkWriteDescriptorSet, 18> writeDescriptorSets;
 
@@ -289,7 +289,7 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 
 	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
 	renderComponent.modelMatrix = Matrix4(position, rotation, scale);
-	renderComponent.renderDataTable = newDescriptorSet.Get();
+	renderComponent.renderDataTable = reinterpret_cast<RenderDataTableHandle>(newDescriptorSet.Get());
 	renderComponent.buffer = model.GetBuffer();
 	renderComponent.indexOffset = model.GetIndexOffset();
 	renderComponent.indexCount = model.GetIndexCount();
@@ -328,9 +328,9 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 	//Fill the instanced physical entity components with the relevant data.
 	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents()[entity.GetComponentsIndex()] };
 
-	renderComponent.renderDataTable = newDescriptorSet.Get();
+	renderComponent.renderDataTable = reinterpret_cast<RenderDataTableHandle>(newDescriptorSet.Get());
 	renderComponent.modelBuffer = model.GetBuffer();
-	renderComponent.transformationsBuffer = transformationsBuffer->Get();
+	renderComponent.transformationsBuffer = reinterpret_cast<ConstantBufferHandle>(transformationsBuffer->Get());
 	renderComponent.indexOffset = model.GetIndexOffset();
 	renderComponent.indexCount = model.GetIndexCount();
 	renderComponent.instanceCount = static_cast<uint32>(transformations.Size());
@@ -381,8 +381,8 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 	VulkanConstantBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateConstantBuffer(transformationsData, transformationsDataSizes, 1);
 
 	//Fill the components with the relevant data.
-	renderComponent.renderDataTable = newDescriptorSet.Get();
-	renderComponent.transformationsBuffer = transformationsBuffer->Get();
+	renderComponent.renderDataTable = reinterpret_cast<RenderDataTableHandle>(newDescriptorSet.Get());
+	renderComponent.transformationsBuffer = reinterpret_cast<ConstantBufferHandle>(transformationsBuffer->Get());
 }
 
 /*
@@ -417,7 +417,7 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 
 	component.properties = properties;
 	component.propertiesUniformBuffer = uniformBuffer;
-	renderComponent.renderDataTable = renderDataTable.Get();
+	renderComponent.renderDataTable = reinterpret_cast<RenderDataTableHandle>(renderDataTable.Get());
 }
 
 /*
@@ -602,7 +602,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 */
 RenderDataTableHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT
 {
-	return frameData.GetCurrentDynamicUniformDataDescriptorSet()->Get();
+	return reinterpret_cast<RenderDataTableHandle>(frameData.GetCurrentDynamicUniformDataDescriptorSet()->Get());
 }
 
 /*
@@ -610,7 +610,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataDescrip
 */
 RenderDataTableHandle VulkanRenderingSystem::GetCurrentEnvironmentDataDescriptorSet() NOEXCEPT
 {
-	return frameData.GetCurrentEnvironmentDescriptorSet()->Get();
+	return reinterpret_cast<RenderDataTableHandle>(frameData.GetCurrentEnvironmentDescriptorSet()->Get());
 }
 
 /*
@@ -618,7 +618,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentEnvironmentDataDescriptor
 */
 RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEXCEPT
 {
-	return frameData.GetCurrentOceanDescriptorSet()->Get();
+	return reinterpret_cast<RenderDataTableHandle>(frameData.GetCurrentOceanDescriptorSet()->Get());
 }
 
 /*
@@ -626,7 +626,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEX
 */
 RenderDataTableHandle VulkanRenderingSystem::GetRenderDataTable(const RenderDataTable renderDataTable) NOEXCEPT
 {
-	return descriptorSets[INDEX(renderDataTable)].Get();
+	return reinterpret_cast<RenderDataTableHandle>(descriptorSets[INDEX(renderDataTable)].Get());
 }
 
 /*
