@@ -1,5 +1,0 @@
-1. Create a new Android Studio project with enabled C++ support.
-
-2. Either make build.gradle point to the provided CMakeLists.txt document, or copypaste the contents of it into the default document.
-
-3. Set minSdkVersion  to at least 24.
