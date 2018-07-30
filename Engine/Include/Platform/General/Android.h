@@ -3,6 +3,11 @@
 #pragma once
 
 /*
+*	Android specific includes.
+*/
+#include <Third Party Libraries/android_native_app_glue.h>
+
+/*
 *	Main function signature.
 */
 #define MAIN void android_main(struct android_app *state)
