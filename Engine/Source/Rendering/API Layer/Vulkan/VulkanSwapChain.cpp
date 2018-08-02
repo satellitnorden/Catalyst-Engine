@@ -103,7 +103,7 @@ void VulkanSwapchain::Present(const VulkanSemaphore *const RESTRICT renderFinish
 	CreatePresentInfo(presentInfo, renderFinishedSemaphore);
 
 	//Present on the present queue!
-	VULKAN_ERROR_CHECK(VULKAN_QUEUUE_PRESENT(VulkanInterface::Instance->GetPresentQueue().Get(), &presentInfo));
+	VULKAN_ERROR_CHECK(VULKAN_QUEUUE_PRESENT(VulkanInterface::Instance->GetPresentQueue()->Get(), &presentInfo));
 }
 
 /*

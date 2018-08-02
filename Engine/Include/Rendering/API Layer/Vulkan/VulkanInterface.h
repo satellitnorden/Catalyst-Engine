@@ -97,12 +97,12 @@ public:
 	/*
 	*	Returns the graphics queue.
 	*/
-	const VulkanQueue& GetGraphicsQueue() const NOEXCEPT { return queues[INDEX(Queue::Graphics)]; }
+	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT { return &queues[INDEX(Queue::Graphics)]; }
 
 	/*
 	*	Returns the present queue.
 	*/
-	const VulkanQueue& GetPresentQueue() const NOEXCEPT { return queues[INDEX(Queue::Present)]; }
+	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT { return &queues[INDEX(Queue::Present)]; }
 
 	/*
 	*	Returns the descriptor pool.

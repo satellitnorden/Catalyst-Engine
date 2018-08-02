@@ -47,7 +47,7 @@ public:
 		//Submit the command buffer to the transfer queue.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(copyCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetGraphicsQueue()->Submit(copyCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Wait for the command to finish.
 		fence.WaitFor();
@@ -108,7 +108,7 @@ public:
 		//Submit the command buffer.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetGraphicsQueue()->Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Wait for the transfer command to finish.
 		fence.WaitFor();
@@ -157,7 +157,7 @@ public:
 		//Submit the command buffer.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetGraphicsQueue()->Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Wait for the transfer command to finish.
 		fence.WaitFor();
@@ -207,7 +207,7 @@ public:
 		//Submit the command buffer.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetGraphicsQueue()->Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Wait for the transfer command to finish.
 		fence.WaitFor();
@@ -510,7 +510,7 @@ public:
 		//Submit the command buffer.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetGraphicsQueue().Submit(transitionCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetGraphicsQueue()->Submit(transitionCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Wait for the transfer command to finish.
 		fence.WaitFor();

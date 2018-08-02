@@ -1474,7 +1474,7 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 	frameData.GetCurrentPrimaryCommandBuffer()->End();
 
 	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue().Submit(*frameData.GetCurrentPrimaryCommandBuffer(), 1, semaphores[INDEX(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, semaphores[INDEX(GraphicsSemaphore::RenderFinished)], frameData.GetCurrentFence()->Get());
+	VulkanInterface::Instance->GetGraphicsQueue()->Submit(*frameData.GetCurrentPrimaryCommandBuffer(), 1, semaphores[INDEX(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, semaphores[INDEX(GraphicsSemaphore::RenderFinished)], frameData.GetCurrentFence()->Get());
 }
 
 /*
