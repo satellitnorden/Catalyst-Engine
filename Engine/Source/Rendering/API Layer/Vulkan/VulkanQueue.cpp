@@ -33,6 +33,19 @@ void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const u
 }
 
 /*
+*	Presents on this queue.
+*/
+void VulkanQueue::Present(const VulkanSemaphore *const RESTRICT renderFinishedSemaphore, const VULKAN_SWAPCHAIN_TYPE *const RESTRICT swapchain, const uint32 *const RESTRICT imageIndex) NOEXCEPT
+{
+	//Create the present info.
+	VULKAN_PRESENT_INFO_TYPE presentInfo;
+	CreatePresentInfo(presentInfo, renderFinishedSemaphore, swapchain, imageIndex);
+
+	//Present!
+	VULKAN_ERROR_CHECK(VULKAN_QUEUUE_PRESENT(vulkanQueue, &presentInfo));
+}
+
+/*
 *	Waits idle for this Vulkan queue.
 */
 void VulkanQueue::WaitIdle() const NOEXCEPT
@@ -58,4 +71,19 @@ void VulkanQueue::CreateSubmitInfo(VkSubmitInfo &submitInfo, const uint32 waitSe
 	submitInfo.pCommandBuffers = &vulkanCommandBuffer.Get();
 	submitInfo.signalSemaphoreCount = signalSemaphoreCount;
 	submitInfo.pSignalSemaphores = reinterpret_cast<const VkSemaphore *RESTRICT>(signalSemaphores);
+}
+
+/*
+*	Creates a present info.
+*/
+void VulkanQueue::CreatePresentInfo(VULKAN_PRESENT_INFO_TYPE &presentInfo, const VulkanSemaphore *const RESTRICT renderFinishedSemaphore, const VULKAN_SWAPCHAIN_TYPE *const RESTRICT swapchain, const uint32 *const RESTRICT imageIndex) const NOEXCEPT
+{
+	presentInfo.sType = VULKAN_STRUCTURE_TYPE_PRESENT_INFO;
+	presentInfo.pNext = nullptr;
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = reinterpret_cast<const VkSemaphore *RESTRICT>(renderFinishedSemaphore);
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = swapchain;
+	presentInfo.pImageIndices = imageIndex;
+	presentInfo.pResults = nullptr;
 }

@@ -34,6 +34,11 @@ public:
 	void Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const uint32 waitSemaphoreCount, const VulkanSemaphore *RESTRICT waitSemaphores, const VkPipelineStageFlags waitStages, const uint32 signalSemaphoreCount, const VulkanSemaphore *RESTRICT signalSemaphores, const VkFence fence) NOEXCEPT;
 
 	/*
+	*	Presents on this queue.
+	*/
+	void Present(const VulkanSemaphore *const RESTRICT renderFinishedSemaphore, const VULKAN_SWAPCHAIN_TYPE *const RESTRICT swapchain, const uint32 *const RESTRICT imageIndex) NOEXCEPT;
+
+	/*
 	*	Waits idle for this Vulkan queue.
 	*/
 	void WaitIdle() const NOEXCEPT;
@@ -52,5 +57,10 @@ private:
 	*	Creates a submit info for a single command buffer.
 	*/
 	void CreateSubmitInfo(VkSubmitInfo &submitInfo, const uint32 waitSemaphoreCount, const VulkanSemaphore *RESTRICT waitSemaphores, const VkPipelineStageFlags &waitStages, const VulkanCommandBuffer &vulkanCommandBuffer, const uint32 signalSemaphoreCount, const VulkanSemaphore *RESTRICT signalSemaphores) const NOEXCEPT;
+
+	/*
+	*	Creates a present info.
+	*/
+	void CreatePresentInfo(VULKAN_PRESENT_INFO_TYPE &presentInfo, const VulkanSemaphore *const RESTRICT renderFinishedSemaphore, const VULKAN_SWAPCHAIN_TYPE *const RESTRICT swapchain, const uint32 *const RESTRICT imageIndex) const NOEXCEPT;
 
 };

@@ -98,12 +98,8 @@ void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const RESTRICT
 */
 void VulkanSwapchain::Present(const VulkanSemaphore *const RESTRICT renderFinishedSemaphore) NOEXCEPT
 {
-	//Create the present info.
-	VULKAN_PRESENT_INFO_TYPE presentInfo;
-	CreatePresentInfo(presentInfo, renderFinishedSemaphore);
-
 	//Present on the present queue!
-	VULKAN_ERROR_CHECK(VULKAN_QUEUUE_PRESENT(VulkanInterface::Instance->GetPresentQueue()->Get(), &presentInfo));
+	VulkanInterface::Instance->GetPresentQueue()->Present(renderFinishedSemaphore, &vulkanSwapChain, &currentImageIndex);
 }
 
 /*
@@ -175,19 +171,4 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VULKAN_SWAPCHAIN_CREATE_INFO_TYP
 	swapChainCreateInfo.presentMode = presentMode;
 	swapChainCreateInfo.clipped = VK_TRUE;
 	swapChainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
-}
-
-/*
-*	Creates a present info.
-*/
-void VulkanSwapchain::CreatePresentInfo(VULKAN_PRESENT_INFO_TYPE &presentInfo, const VulkanSemaphore *const RESTRICT renderFinishedSemaphore) const NOEXCEPT
-{
-	presentInfo.sType = VULKAN_STRUCTURE_TYPE_PRESENT_INFO;
-	presentInfo.pNext = nullptr;
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = reinterpret_cast<const VkSemaphore *RESTRICT>(renderFinishedSemaphore);
-	presentInfo.swapchainCount = 1;
-	presentInfo.pSwapchains = &vulkanSwapChain;
-	presentInfo.pImageIndices = &currentImageIndex;
-	presentInfo.pResults = nullptr;
 }
