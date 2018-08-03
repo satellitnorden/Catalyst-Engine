@@ -55,6 +55,12 @@ void VulkanInterface::PostUpdate(const VulkanSemaphore *const RESTRICT renderFin
 */
 void VulkanInterface::Release() NOEXCEPT
 {
+	//Wait for all queues to finish.
+	vulkanLogicalDevice.GetComputeQueue()->WaitIdle();
+	vulkanLogicalDevice.GetGraphicsQueue()->WaitIdle();
+	vulkanLogicalDevice.GetPresentQueue()->WaitIdle();
+	vulkanLogicalDevice.GetTransferQueue()->WaitIdle();
+
 	//Release all Vulkan 2D textures.
 	for (Vulkan2DTexture *const RESTRICT vulkan2DTexture : vulkan2DTextures)
 	{
