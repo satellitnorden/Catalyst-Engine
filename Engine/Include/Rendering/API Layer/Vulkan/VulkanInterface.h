@@ -135,6 +135,11 @@ public:
 	RESTRICTED VulkanCommandPool* CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
 
 	/*
+	*	Creates and returns a transfer command pool.
+	*/
+	RESTRICTED VulkanCommandPool* CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
+
+	/*
 	*	Creates and returns a constant buffer.
 	*/
 	RESTRICTED VulkanConstantBuffer* CreateConstantBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;

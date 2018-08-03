@@ -22,7 +22,7 @@ public:
 	static void CopyBufferToBuffer(const VkDeviceSize &size, const VkBuffer &sourceBuffer, VkBuffer &destinationBuffer) NOEXCEPT
 	{
 		//Create the command pool.
-		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
+		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateTransferCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
 
 		//Create a command buffer for the copy operation.
 		VulkanCommandBuffer copyCommandBuffer;
@@ -47,7 +47,7 @@ public:
 		//Submit the command buffer to the transfer queue.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetGraphicsQueue()->Submit(copyCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetTransferQueue()->Submit(copyCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Wait for the command to finish.
 		fence.WaitFor();
@@ -65,7 +65,7 @@ public:
 	static void CopyBufferToImage(const VkBuffer &vulkanBuffer, VkImage &vulkanImage, const uint32 mipLevels, const uint32 layerCount, const uint32 width, const uint32 height) NOEXCEPT
 	{
 		//Create the command pool.
-		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
+		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateTransferCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
 
 		//Create the transfer command buffer.
 		VulkanCommandBuffer transferCommandBuffer;
@@ -108,7 +108,7 @@ public:
 		//Submit the command buffer.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetGraphicsQueue()->Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetTransferQueue()->Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Wait for the transfer command to finish.
 		fence.WaitFor();
@@ -126,7 +126,7 @@ public:
 	static void CopyImageToBuffer(const uint32 imageWidth, const uint32 imageHeight, const VkImage vulkanImage, const VkBuffer vulkanBuffer) NOEXCEPT
 	{
 		//Create the command pool.
-		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
+		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateTransferCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
 
 		//Create the buffer image copy.
 		VkBufferImageCopy bufferImageCopy;
@@ -157,7 +157,7 @@ public:
 		//Submit the command buffer.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetGraphicsQueue()->Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetTransferQueue()->Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Wait for the transfer command to finish.
 		fence.WaitFor();
@@ -175,7 +175,7 @@ public:
 	static void CopyImageToImage(const uint32 imageWidth, const uint32 imageHeight, const VkImage sourceImage, const VkImage destinationImage) NOEXCEPT
 	{
 		//Create the command pool.
-		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
+		static thread_local VulkanCommandPool *const RESTRICT commandPool{ VulkanInterface::Instance->CreateTransferCommandPool(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT) };
 
 		//Create the image copy.
 		VkImageCopy imageCopy;
@@ -207,7 +207,7 @@ public:
 		//Submit the command buffer.
 		VulkanFence fence;
 		fence.Initialize(0);
-		VulkanInterface::Instance->GetGraphicsQueue()->Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
+		VulkanInterface::Instance->GetTransferQueue()->Submit(transferCommandBuffer, 0, nullptr, 0, 0, nullptr, fence.Get());
 
 		//Wait for the transfer command to finish.
 		fence.WaitFor();

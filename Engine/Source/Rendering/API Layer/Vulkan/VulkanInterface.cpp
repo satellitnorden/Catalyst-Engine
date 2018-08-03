@@ -203,6 +203,21 @@ RESTRICTED VulkanCommandPool* VulkanInterface::CreateGraphicsCommandPool(const V
 }
 
 /*
+*	Creates and returns a transfer command pool.
+*/
+RESTRICTED VulkanCommandPool* VulkanInterface::CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
+{
+	VulkanCommandPool *const RESTRICT newCommandPool = new VulkanCommandPool;
+	newCommandPool->Initialize(flags, vulkanPhysicalDevice.GetTransferQueueFamilyIndex());
+
+	vulkanCommandPoolsLock.Lock();
+	vulkanCommandPools.EmplaceSlow(newCommandPool);
+	vulkanCommandPoolsLock.Unlock();
+
+	return newCommandPool;
+}
+
+/*
 *	Creates and returns a constant buffer.
 */
 RESTRICTED VulkanConstantBuffer* VulkanInterface::CreateConstantBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
