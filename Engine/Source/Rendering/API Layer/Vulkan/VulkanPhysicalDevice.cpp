@@ -68,26 +68,22 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 
 	for (VkQueueFamilyProperties &queueFamilyProperty : queueFamilyProperties)
 	{
-		const bool hasGraphicsSupport{ static_cast<bool>(queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT) };
-		const bool hasComputeSupport{ static_cast<bool>(queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT) };
-		const bool hasTransferSupport{ static_cast<bool>(queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT) };
-		VkBool32 hasPresentSupport{ false };
+		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT && computeQueueFamilyIndex == UINT32_MAXIMUM)
+		{
+			computeQueueFamilyIndex = queueFamilyCounter++;
 
-		VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(vulkanPhysicalDevice, queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &hasPresentSupport));
+			continue;
+		}
 
-		if (queueFamilyProperty.queueCount > 0 && hasGraphicsSupport && graphicsQueueFamilyIndex == UINT32_MAXIMUM)
+		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && graphicsQueueFamilyIndex == UINT32_MAXIMUM)
 		{
 			graphicsQueueFamilyIndex = queueFamilyCounter++;
 
 			continue;
 		}
 
-		if (queueFamilyProperty.queueCount > 0 && hasTransferSupport && transferQueueFamilyIndex == UINT32_MAXIMUM)
-		{
-			transferQueueFamilyIndex = queueFamilyCounter++;
-
-			continue;
-		}
+		VkBool32 hasPresentSupport{ false };
+		VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(vulkanPhysicalDevice, queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &hasPresentSupport));
 
 		if (queueFamilyProperty.queueCount > 0 && hasPresentSupport && presentQueueFamilyIndex == UINT32_MAXIMUM)
 		{
@@ -95,9 +91,17 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 
 			continue;
 		}
+
+		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT && transferQueueFamilyIndex == UINT32_MAXIMUM)
+		{
+			transferQueueFamilyIndex = queueFamilyCounter++;
+
+			continue;
+		}
 	}
 
-	if (	graphicsQueueFamilyIndex == UINT32_MAXIMUM ||
+	if (	computeQueueFamilyIndex == UINT32_MAXIMUM ||
+			graphicsQueueFamilyIndex == UINT32_MAXIMUM ||
 			transferQueueFamilyIndex == UINT32_MAXIMUM ||
 			presentQueueFamilyIndex == UINT32_MAXIMUM	)
 	{
@@ -105,14 +109,14 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 
 		for (auto &queueFamilyProperty : queueFamilyProperties)
 		{
+			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT && computeQueueFamilyIndex == UINT32_MAXIMUM)
+			{
+				computeQueueFamilyIndex = queueFamilyCounter;
+			}
+
 			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && graphicsQueueFamilyIndex == UINT32_MAXIMUM)
 			{
 				graphicsQueueFamilyIndex = queueFamilyCounter;
-			}
-
-			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT && transferQueueFamilyIndex == UINT32_MAXIMUM)
-			{
-				transferQueueFamilyIndex = queueFamilyCounter;
 			}
 
 			VkBool32 presentSupport = false;
@@ -122,6 +126,11 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 			if (queueFamilyProperty.queueCount > 0 && presentSupport && presentQueueFamilyIndex == UINT32_MAXIMUM)
 			{
 				presentQueueFamilyIndex = queueFamilyCounter;
+			}
+
+			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT && transferQueueFamilyIndex == UINT32_MAXIMUM)
+			{
+				transferQueueFamilyIndex = queueFamilyCounter;
 			}
 
 			++queueFamilyCounter;

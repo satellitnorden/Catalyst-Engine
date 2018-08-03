@@ -25,12 +25,6 @@ void VulkanInterface::Initialize(Window &window) NOEXCEPT
 	//Initialize the Vulkan logical device.
 	vulkanLogicalDevice.Initialize();
 
-	//Initialize the graphics queue.
-	queues[INDEX(Queue::Graphics)].Initialize(vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
-
-	//Initialize the present queue.
-	queues[INDEX(Queue::Present)].Initialize(vulkanPhysicalDevice.GetPresentQueueFamilyIndex());
-
 	//Initialize the Vulkan swap chain.
 	vulkanSwapchain.Initialize();
 
@@ -61,10 +55,6 @@ void VulkanInterface::PostUpdate(const VulkanSemaphore *const RESTRICT renderFin
 */
 void VulkanInterface::Release() NOEXCEPT
 {
-	//Wait for all queues to finish.
-	queues[INDEX(Queue::Graphics)].WaitIdle();
-	queues[INDEX(Queue::Present)].WaitIdle();
-
 	//Release all Vulkan 2D textures.
 	for (Vulkan2DTexture *const RESTRICT vulkan2DTexture : vulkan2DTextures)
 	{

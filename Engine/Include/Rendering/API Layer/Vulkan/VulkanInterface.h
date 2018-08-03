@@ -95,14 +95,24 @@ public:
 	const VulkanSwapchain& GetSwapchain() const NOEXCEPT { return vulkanSwapchain; }
 
 	/*
+	*	Returns the compute queue.
+	*/
+	RESTRICTED VulkanQueue *const RESTRICT GetComputeQueue() NOEXCEPT { return vulkanLogicalDevice.GetComputeQueue(); }
+
+	/*
 	*	Returns the graphics queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT { return &queues[INDEX(Queue::Graphics)]; }
+	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT { return vulkanLogicalDevice.GetGraphicsQueue(); }
 
 	/*
 	*	Returns the present queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT { return &queues[INDEX(Queue::Present)]; }
+	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT { return vulkanLogicalDevice.GetPresentQueue(); }
+
+	/*
+	*	Returns the transfer queue.
+	*/
+	RESTRICTED VulkanQueue *const RESTRICT GetTransferQueue() NOEXCEPT { return vulkanLogicalDevice.GetTransferQueue(); }
 
 	/*
 	*	Returns the descriptor pool.
@@ -191,14 +201,6 @@ public:
 
 private:
 
-	//Enumeration covering all queues.
-	enum class Queue : uint8
-	{
-		Graphics,
-		Present,
-		NumberOfQueues
-	};
-
 	//The Vulkan instance.
 	VulkanInstance vulkanInstance;
 
@@ -216,9 +218,6 @@ private:
 
 	//The Vulkan descriptor pool.
 	VulkanDescriptorPool vulkanDescriptorPool;
-
-	//Container for all queues.
-	VulkanQueue queues[INDEX(Queue::NumberOfQueues)];
 
 	//Container for all Vulkan 2D textures.
 	DynamicArray<Vulkan2DTexture *RESTRICT> vulkan2DTextures;

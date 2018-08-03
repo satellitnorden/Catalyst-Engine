@@ -43,6 +43,9 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 
 	//Create the logical device!
 	VULKAN_ERROR_CHECK(vkCreateDevice(VulkanInterface::Instance->GetPhysicalDevice().Get(), &deviceCreateInfo, nullptr, &vulkanLogicalDevice));
+
+	//Retrieve the queues.
+	RetrieveQueues();
 }
 
 /*
@@ -50,6 +53,9 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 */
 void VulkanLogicalDevice::Release() NOEXCEPT
 {
+	//Release the queues.
+	ReleaseQueues();
+
 	//Destroy the Vulkan logical device.
 	vkDestroyDevice(vulkanLogicalDevice, nullptr);
 }
@@ -62,8 +68,10 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 	//Gather all unique indices and how many queues will be created from them.
 	std::map<uint32, uint8> uniqueQueueFamilyIndices;
 
+	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetPhysicalDevice().GetComputeQueueFamilyIndex()];
 	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex()];
 	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex()];
+	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetPhysicalDevice().GetTransferQueueFamilyIndex()];
 
 	for (const auto &uniqueQueueFamilyIndex : uniqueQueueFamilyIndices)
 	{
@@ -73,7 +81,7 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 		newDeviceQueueCreateInfo.pNext = nullptr;
 		newDeviceQueueCreateInfo.flags = 0;
 		newDeviceQueueCreateInfo.queueFamilyIndex = uniqueQueueFamilyIndex.first;
-		newDeviceQueueCreateInfo.queueCount = uniqueQueueFamilyIndex.second;
+		newDeviceQueueCreateInfo.queueCount = 1;
 		newDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
 
 		deviceQueueCreateInfos.EmplaceSlow(newDeviceQueueCreateInfo);
@@ -158,4 +166,107 @@ void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreat
 	deviceCreateInfo.enabledExtensionCount = static_cast<uint32>(requiredExtensions.Size());
 	deviceCreateInfo.ppEnabledExtensionNames = requiredExtensions.Data();
 	deviceCreateInfo.pEnabledFeatures = enabledFeatures;
+}
+
+/*
+*	Retrieves the queues.
+*/
+void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
+{
+	//Retrieve the queue family indices.
+	const uint32 computeQueueFamilyIndex{ VulkanInterface::Instance->GetPhysicalDevice().GetComputeQueueFamilyIndex() };
+	const uint32 graphicsQueueFamilyIndex{ VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex() };
+	const uint32 presentQueueFamilyIndex{ VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex() };
+	const uint32 transferQueueFamilyIndex{ VulkanInterface::Instance->GetPhysicalDevice().GetTransferQueueFamilyIndex() };
+
+	//Retrieve the compute queue.
+	computeQueue = new VulkanQueue();
+	computeQueue->Initialize(computeQueueFamilyIndex);
+
+	//Retrieve the graphics queue.
+	if (graphicsQueueFamilyIndex == computeQueueFamilyIndex)
+	{
+		graphicsQueue = computeQueue;
+	}
+
+	else
+	{
+		graphicsQueue = new VulkanQueue();
+		graphicsQueue->Initialize(graphicsQueueFamilyIndex);
+	}
+
+	//Retrieve the present queue.
+	if (presentQueueFamilyIndex == computeQueueFamilyIndex)
+	{
+		presentQueue = computeQueue;
+	}
+
+	else if (presentQueueFamilyIndex == graphicsQueueFamilyIndex)
+	{
+		presentQueue = graphicsQueue;
+	}
+
+	else
+	{
+		presentQueue = new VulkanQueue();
+		presentQueue->Initialize(presentQueueFamilyIndex);
+	}
+
+	//Retrieve the transfer queue.
+	if (transferQueueFamilyIndex == computeQueueFamilyIndex)
+	{
+		transferQueue = computeQueue;
+	}
+
+	else if (transferQueueFamilyIndex == graphicsQueueFamilyIndex)
+	{
+		transferQueue = graphicsQueue;
+	}
+
+	else if (transferQueueFamilyIndex == presentQueueFamilyIndex)
+	{
+		transferQueue = presentQueue;
+	}
+
+	else
+	{
+		transferQueue = new VulkanQueue();
+		transferQueue->Initialize(transferQueueFamilyIndex);
+	}
+}
+
+/*
+*	Releases the queues.
+*/
+void VulkanLogicalDevice::ReleaseQueues() NOEXCEPT
+{
+	//Retrieve the queue family indices.
+	const uint32 computeQueueFamilyIndex{ VulkanInterface::Instance->GetPhysicalDevice().GetComputeQueueFamilyIndex() };
+	const uint32 graphicsQueueFamilyIndex{ VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex() };
+	const uint32 presentQueueFamilyIndex{ VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex() };
+	const uint32 transferQueueFamilyIndex{ VulkanInterface::Instance->GetPhysicalDevice().GetTransferQueueFamilyIndex() };
+
+	//Destroy the compute queue.
+	delete computeQueue;
+
+	//Destroy the graphics queue.
+	if (graphicsQueueFamilyIndex != computeQueueFamilyIndex)
+	{
+		delete graphicsQueue;
+	}
+
+	//Destroy the present queue.
+	if (	presentQueueFamilyIndex != computeQueueFamilyIndex &&
+			presentQueueFamilyIndex != graphicsQueueFamilyIndex)
+	{
+		delete presentQueue;
+	}
+
+	//Destroy the transfer queue.
+	if (	transferQueueFamilyIndex != computeQueueFamilyIndex &&
+			transferQueueFamilyIndex != graphicsQueueFamilyIndex &&
+			transferQueueFamilyIndex != presentQueueFamilyIndex)
+	{
+		delete transferQueue;
+	}
 }
