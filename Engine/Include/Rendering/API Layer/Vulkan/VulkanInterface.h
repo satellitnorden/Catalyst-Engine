@@ -97,22 +97,22 @@ public:
 	/*
 	*	Returns the compute queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetComputeQueue() NOEXCEPT { return vulkanLogicalDevice.GetComputeQueue(); }
+	RESTRICTED VulkanQueue *const RESTRICT GetQueue() NOEXCEPT { return vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Compute); }
 
 	/*
 	*	Returns the graphics queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT { return vulkanLogicalDevice.GetGraphicsQueue(); }
+	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT { return vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Graphics); }
 
 	/*
 	*	Returns the present queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT { return vulkanLogicalDevice.GetPresentQueue(); }
+	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT { return vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Present); }
 
 	/*
 	*	Returns the transfer queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetTransferQueue() NOEXCEPT { return vulkanLogicalDevice.GetTransferQueue(); }
+	RESTRICTED VulkanQueue *const RESTRICT GetTransferQueue() NOEXCEPT { return vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Transfer); }
 
 	/*
 	*	Returns the descriptor pool.

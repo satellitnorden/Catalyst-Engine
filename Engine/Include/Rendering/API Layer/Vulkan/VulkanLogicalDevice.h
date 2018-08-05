@@ -54,24 +54,9 @@ public:
 	uint32 GetQueueFamilyIndex(const QueueType queueType) const NOEXCEPT { return queueFamilyIndices[INDEX(queueType)]; }
 
 	/*
-	*	Returns the compute queue.
+	*	Returns the queue of a queue type.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetComputeQueue() NOEXCEPT { return computeQueue; }
-
-	/*
-	*	Returns the graphics queue.
-	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT { return graphicsQueue; }
-
-	/*
-	*	Returns the present queue.
-	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT { return presentQueue; }
-
-	/*
-	*	Returns the transfer queue.
-	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetTransferQueue() NOEXCEPT { return transferQueue; }
+	RESTRICTED VulkanQueue *const RESTRICT GetQueue(const QueueType queueType) NOEXCEPT { return queues[INDEX(queueType)]; }
 
 private:
 
@@ -81,17 +66,8 @@ private:
 	//The queue family indices.
 	StaticArray<uint32, INDEX(QueueType::NumberOfQueueTypes)> queueFamilyIndices;
 
-	//The compute queue.
-	VulkanQueue *RESTRICT computeQueue;
-
-	//The graphics queue.
-	VulkanQueue *RESTRICT graphicsQueue;
-
-	//The present queue.
-	VulkanQueue *RESTRICT presentQueue;
-
-	//The transfer queue.
-	VulkanQueue *RESTRICT transferQueue;
+	//The queues.
+	StaticArray<VulkanQueue *RESTRICT, INDEX(QueueType::NumberOfQueueTypes)> queues;
 
 	/*
 	*	Creates the device queue create infos.

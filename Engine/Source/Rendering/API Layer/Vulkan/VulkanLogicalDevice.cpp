@@ -315,58 +315,58 @@ void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 	const uint32 transferQueueFamilyIndex{ queueFamilyIndices[INDEX(QueueType::Transfer)] };
 
 	//Retrieve the compute queue.
-	computeQueue = new VulkanQueue();
-	computeQueue->Initialize(computeQueueFamilyIndex);
+	queues[INDEX(QueueType::Compute)] = new VulkanQueue();
+	queues[INDEX(QueueType::Compute)]->Initialize(computeQueueFamilyIndex);
 
 	//Retrieve the graphics queue.
 	if (graphicsQueueFamilyIndex == computeQueueFamilyIndex)
 	{
-		graphicsQueue = computeQueue;
+		queues[INDEX(QueueType::Graphics)] = queues[INDEX(QueueType::Compute)];
 	}
 
 	else
 	{
-		graphicsQueue = new VulkanQueue();
-		graphicsQueue->Initialize(graphicsQueueFamilyIndex);
+		queues[INDEX(QueueType::Graphics)] = new VulkanQueue();
+		queues[INDEX(QueueType::Graphics)]->Initialize(graphicsQueueFamilyIndex);
 	}
 
 	//Retrieve the present queue.
 	if (presentQueueFamilyIndex == computeQueueFamilyIndex)
 	{
-		presentQueue = computeQueue;
+		queues[INDEX(QueueType::Present)] = queues[INDEX(QueueType::Compute)];
 	}
 
 	else if (presentQueueFamilyIndex == graphicsQueueFamilyIndex)
 	{
-		presentQueue = graphicsQueue;
+		queues[INDEX(QueueType::Present)] = queues[INDEX(QueueType::Graphics)];
 	}
 
 	else
 	{
-		presentQueue = new VulkanQueue();
-		presentQueue->Initialize(presentQueueFamilyIndex);
+		queues[INDEX(QueueType::Present)] = new VulkanQueue();
+		queues[INDEX(QueueType::Present)]->Initialize(presentQueueFamilyIndex);
 	}
 
 	//Retrieve the transfer queue.
 	if (transferQueueFamilyIndex == computeQueueFamilyIndex)
 	{
-		transferQueue = computeQueue;
+		queues[INDEX(QueueType::Transfer)] = queues[INDEX(QueueType::Compute)];
 	}
 
 	else if (transferQueueFamilyIndex == graphicsQueueFamilyIndex)
 	{
-		transferQueue = graphicsQueue;
+		queues[INDEX(QueueType::Transfer)] = queues[INDEX(QueueType::Graphics)];
 	}
 
 	else if (transferQueueFamilyIndex == presentQueueFamilyIndex)
 	{
-		transferQueue = presentQueue;
+		queues[INDEX(QueueType::Transfer)] = queues[INDEX(QueueType::Present)];
 	}
 
 	else
 	{
-		transferQueue = new VulkanQueue();
-		transferQueue->Initialize(transferQueueFamilyIndex);
+		queues[INDEX(QueueType::Transfer)] = new VulkanQueue();
+		queues[INDEX(QueueType::Transfer)]->Initialize(transferQueueFamilyIndex);
 	}
 }
 
@@ -382,19 +382,19 @@ void VulkanLogicalDevice::ReleaseQueues() NOEXCEPT
 	const uint32 transferQueueFamilyIndex{ queueFamilyIndices[INDEX(QueueType::Transfer)] };
 
 	//Destroy the compute queue.
-	delete computeQueue;
+	delete queues[INDEX(QueueType::Compute)];
 
 	//Destroy the graphics queue.
 	if (graphicsQueueFamilyIndex != computeQueueFamilyIndex)
 	{
-		delete graphicsQueue;
+		delete queues[INDEX(QueueType::Graphics)];
 	}
 
 	//Destroy the present queue.
 	if (	presentQueueFamilyIndex != computeQueueFamilyIndex &&
 			presentQueueFamilyIndex != graphicsQueueFamilyIndex)
 	{
-		delete presentQueue;
+		delete queues[INDEX(QueueType::Present)];
 	}
 
 	//Destroy the transfer queue.
@@ -402,6 +402,6 @@ void VulkanLogicalDevice::ReleaseQueues() NOEXCEPT
 			transferQueueFamilyIndex != graphicsQueueFamilyIndex &&
 			transferQueueFamilyIndex != presentQueueFamilyIndex)
 	{
-		delete transferQueue;
+		delete queues[INDEX(QueueType::Transfer)];
 	}
 }
