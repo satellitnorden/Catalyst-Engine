@@ -1,5 +1,5 @@
-//Engine core.
-#include <Engine Core/EngineCore.h>
+//Core.
+#include <Core/EngineCore.h>
 
 //STL.
 #include <filesystem>
@@ -19,11 +19,11 @@ int main()
 	masterOutput << std::endl;
 	masterOutput << "#pragma once" << std::endl;
 	masterOutput << std::endl;
-	masterOutput << "//Engine core." << std::endl;
-	masterOutput << "#include <Engine Core/EngineCore.h>" << std::endl;
+	masterOutput << "//Core." << std::endl;
+	masterOutput << "#include <Core/EngineCore.h>" << std::endl;
 	masterOutput << std::endl;
 	masterOutput << "//Rendering." << std::endl;
-
+	 
 	//Iterate over all files in the directory and export them into a C++ header file.
 	for (auto iterator : std::experimental::filesystem::directory_iterator{ std::experimental::filesystem::current_path() })
 	{
@@ -47,8 +47,8 @@ int main()
 			headerOutput << std::endl;
 			headerOutput << "#pragma once" << std::endl;
 			headerOutput << std::endl;
-			headerOutput << "//Engine core." << std::endl;
-			headerOutput << "#include <Engine Core/EngineCore.h>" << std::endl;
+			headerOutput << "//Core." << std::endl;
+			headerOutput << "#include <Core/EngineCore.h>" << std::endl;
 			headerOutput << std::endl;
 			headerOutput << "namespace VulkanShaderData" << std::endl;
 			headerOutput << "{" << std::endl;
