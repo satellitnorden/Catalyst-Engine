@@ -13,6 +13,16 @@ class VulkanLogicalDevice final
 
 public:
 
+	//Enumeration covering all queue types.
+	enum class QueueType : uint8
+	{
+		Compute,
+		Graphics,
+		Present,
+		Transfer,
+		NumberOfQueueTypes
+	};
+
 	/*
 	*	Default constructor.
 	*/
@@ -39,6 +49,11 @@ public:
 	void Release() NOEXCEPT;
 
 	/*
+	*	Returns the queue family index of a queue type.
+	*/
+	uint32 GetQueueFamilyIndex(const QueueType queueType) const NOEXCEPT { return queueFamilyIndices[INDEX(queueType)]; }
+
+	/*
 	*	Returns the compute queue.
 	*/
 	RESTRICTED VulkanQueue *const RESTRICT GetComputeQueue() NOEXCEPT { return computeQueue; }
@@ -62,6 +77,9 @@ private:
 
 	//The underlying Vulkan logical device.
 	VkDevice vulkanLogicalDevice;
+
+	//The queue family indices.
+	StaticArray<uint32, INDEX(QueueType::NumberOfQueueTypes)> queueFamilyIndices;
 
 	//The compute queue.
 	VulkanQueue *RESTRICT computeQueue;
@@ -89,6 +107,11 @@ private:
 	*	Creates the device create info.
 	*/
 	void CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreateInfo, const DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const DynamicArray<const char *RESTRICT> &requiredExtensions, const VkPhysicalDeviceFeatures *RESTRICT enabledFeatures) const NOEXCEPT;
+
+	/*
+	*	Finds the queue family indices.
+	*/
+	void FindQueueFamilyIndices() NOEXCEPT;
 
 	/*
 	*	Retrieves the queues.

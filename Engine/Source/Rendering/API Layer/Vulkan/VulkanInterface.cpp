@@ -199,7 +199,7 @@ void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) 
 RESTRICTED VulkanCommandPool* VulkanInterface::CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
 	VulkanCommandPool *const RESTRICT newCommandPool = new VulkanCommandPool;
-	newCommandPool->Initialize(flags, vulkanPhysicalDevice.GetGraphicsQueueFamilyIndex());
+	newCommandPool->Initialize(flags, vulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Graphics));
 
 	vulkanCommandPoolsLock.Lock();
 	vulkanCommandPools.EmplaceSlow(newCommandPool);
@@ -214,7 +214,7 @@ RESTRICTED VulkanCommandPool* VulkanInterface::CreateGraphicsCommandPool(const V
 RESTRICTED VulkanCommandPool* VulkanInterface::CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
 	VulkanCommandPool *const RESTRICT newCommandPool = new VulkanCommandPool;
-	newCommandPool->Initialize(flags, vulkanPhysicalDevice.GetTransferQueueFamilyIndex());
+	newCommandPool->Initialize(flags, vulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Transfer));
 
 	vulkanCommandPoolsLock.Lock();
 	vulkanCommandPools.EmplaceSlow(newCommandPool);

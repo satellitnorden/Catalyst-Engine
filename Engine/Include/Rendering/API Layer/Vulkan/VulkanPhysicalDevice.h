@@ -51,26 +51,6 @@ public:
 	*/
 	const VULKAN_SURFACE_FORMAT_TYPE& GetSurfaceFormat() const NOEXCEPT { return surfaceFormat; }
 
-	/*
-	*	Returns the compute queue family index.
-	*/
-	uint32 GetComputeQueueFamilyIndex() const NOEXCEPT { return computeQueueFamilyIndex; }
-
-	/*
-	*	Returns the graphics queue family index.
-	*/
-	uint32 GetGraphicsQueueFamilyIndex() const NOEXCEPT { return graphicsQueueFamilyIndex; }
-
-	/*
-	*	Returns the present queue family index.
-	*/
-	uint32 GetPresentQueueFamilyIndex() const NOEXCEPT { return presentQueueFamilyIndex; }
-
-	/*
-	*	Returns the transfer queue family index.
-	*/
-	uint32 GetTransferQueueFamilyIndex() const NOEXCEPT { return transferQueueFamilyIndex; }
-
 private:
 
 	//The underlying Vulkan physical device.
@@ -93,18 +73,6 @@ private:
 
 	//The surface format.
 	VULKAN_SURFACE_FORMAT_TYPE surfaceFormat;
-
-	//The index for the compute queue family.
-	uint32 computeQueueFamilyIndex{ UINT32_MAXIMUM };
-
-	//The index for the graphics queue family.
-	uint32 graphicsQueueFamilyIndex{ UINT32_MAXIMUM };
-
-	//The index for the present queue family.
-	uint32 presentQueueFamilyIndex{ UINT32_MAXIMUM };
-
-	//The index for the transfer queue family.
-	uint32 transferQueueFamilyIndex{ UINT32_MAXIMUM };
 
 	/*
 	*	Given a Vulkan physical device, return if it is suitable for this game.

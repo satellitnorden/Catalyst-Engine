@@ -37,8 +37,8 @@ void VulkanSwapchain::Initialize() NOEXCEPT
 	FindMostOptimalSwapExtent();
 
 	//Set up the queue family indices.
-	const uint32 graphicsQueueFamilyIndex = VulkanInterface::Instance->GetPhysicalDevice().GetGraphicsQueueFamilyIndex();
-	const uint32 presentQueueFamilyIndex = VulkanInterface::Instance->GetPhysicalDevice().GetPresentQueueFamilyIndex();
+	const uint32 graphicsQueueFamilyIndex = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Graphics);
+	const uint32 presentQueueFamilyIndex = VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Present);
 
 	uint32 queueFamilyIndices[] = { graphicsQueueFamilyIndex, presentQueueFamilyIndex };
 
