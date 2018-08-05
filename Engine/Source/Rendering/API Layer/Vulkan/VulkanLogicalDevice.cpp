@@ -229,37 +229,35 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 		++queueFamilyCounter;
 	}
 
-	queueFamilyCounter = 0;
-
-	for (VkQueueFamilyProperties &queueFamilyProperty : queueFamilyProperties)
+	for (int64 i = queueFamilyProperties.LastIndex(); i >= 0; --i)
 	{
-		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT && queueFamilyIndices[INDEX(QueueType::Compute)] == UINT32_MAXIMUM)
+		if (queueFamilyProperties[i].queueCount > 0 && queueFamilyProperties[i].queueFlags & VK_QUEUE_COMPUTE_BIT && queueFamilyIndices[INDEX(QueueType::Compute)] == UINT32_MAXIMUM)
 		{
-			queueFamilyIndices[INDEX(QueueType::Compute)] = queueFamilyCounter++;
+			queueFamilyIndices[INDEX(QueueType::Compute)] = static_cast<uint32>(i);
 
 			continue;
 		}
 
-		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && queueFamilyIndices[INDEX(QueueType::Graphics)] == UINT32_MAXIMUM)
+		if (queueFamilyProperties[i].queueCount > 0 && queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT && queueFamilyIndices[INDEX(QueueType::Graphics)] == UINT32_MAXIMUM)
 		{
-			queueFamilyIndices[INDEX(QueueType::Graphics)] = queueFamilyCounter++;
+			queueFamilyIndices[INDEX(QueueType::Graphics)] = static_cast<uint32>(i);
 
 			continue;
 		}
 
 		VkBool32 hasPresentSupport{ false };
-		VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(VulkanInterface::Instance->GetPhysicalDevice().Get(), queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &hasPresentSupport));
+		VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(VulkanInterface::Instance->GetPhysicalDevice().Get(), static_cast<uint32>(i), VulkanInterface::Instance->GetSurface().Get(), &hasPresentSupport));
 
-		if (queueFamilyProperty.queueCount > 0 && hasPresentSupport && queueFamilyIndices[INDEX(QueueType::Present)] == UINT32_MAXIMUM)
+		if (queueFamilyProperties[i].queueCount > 0 && hasPresentSupport && queueFamilyIndices[INDEX(QueueType::Present)] == UINT32_MAXIMUM)
 		{
-			queueFamilyIndices[INDEX(QueueType::Present)] = queueFamilyCounter++;
+			queueFamilyIndices[INDEX(QueueType::Present)] = static_cast<uint32>(i);
 
 			continue;
 		}
 
-		if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT && queueFamilyIndices[INDEX(QueueType::Transfer)] == UINT32_MAXIMUM)
+		if (queueFamilyProperties[i].queueCount > 0 && queueFamilyProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT && queueFamilyIndices[INDEX(QueueType::Transfer)] == UINT32_MAXIMUM)
 		{
-			queueFamilyIndices[INDEX(QueueType::Transfer)] = queueFamilyCounter++;
+			queueFamilyIndices[INDEX(QueueType::Transfer)] = static_cast<uint32>(i);
 
 			continue;
 		}
