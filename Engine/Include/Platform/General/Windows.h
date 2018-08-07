@@ -17,7 +17,7 @@
 /*
 *	Main function signature.
 */
-#define MAIN int32 main() NOEXCEPT
+#define MAIN int32 main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT
 
 /*
 *	Main return success.
