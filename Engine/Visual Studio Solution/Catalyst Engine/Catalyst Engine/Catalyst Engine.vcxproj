@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Default|x64">
+      <Configuration>Default</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{46D08F96-EEDA-4C91-8169-55E211129D2A}</ProjectGuid>
+    <RootNamespace>CatalystEngine</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Default|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Default|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Default|x64'">
+    <IncludePath>..\..\..\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Libraries\Static;$(LibraryPath)</LibraryPath>
+    <SourcePath>..\..\..\Source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Default|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Components\CameraComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\ComponentManager.h" />
+    <ClInclude Include="..\..\..\Include\Components\DirectionalLightComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\FrustumCullingComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\InstancedPhysicalRenderComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\ParticleSystemComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\ParticleSystemRenderComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\PointLightComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\Sound2DComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\Sound3DComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\SpotLightComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\StaticPhysicalRenderComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\TerrainComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\TerrainRenderComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\TransformComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\VegetationComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\VegetationCullingComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\WaterComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\WaterRenderComponent.h" />
+    <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h" />
+    <ClInclude Include="..\..\..\Include\Core\Algorithms\SortingAlgorithms.h" />
+    <ClInclude Include="..\..\..\Include\Core\BinaryFile.h" />
+    <ClInclude Include="..\..\..\Include\Core\CatalystProjectInformation.h" />
+    <ClInclude Include="..\..\..\Include\Core\Containers\DynamicArray.h" />
+    <ClInclude Include="..\..\..\Include\Core\Containers\Map.h" />
+    <ClInclude Include="..\..\..\Include\Core\Containers\StaticArray.h" />
+    <ClInclude Include="..\..\..\Include\Core\CoreDefines.h" />
+    <ClInclude Include="..\..\..\Include\Core\CoreMacros.h" />
+    <ClInclude Include="..\..\..\Include\Core\CoreTypeAliases.h" />
+    <ClInclude Include="..\..\..\Include\Core\DeltaTimer.h" />
+    <ClInclude Include="..\..\..\Include\Core\DynamicString.h" />
+    <ClInclude Include="..\..\..\Include\Core\EngineCore.h" />
+    <ClInclude Include="..\..\..\Include\Core\HashString.h" />
+    <ClInclude Include="..\..\..\Include\Core\Optional.h" />
+    <ClInclude Include="..\..\..\Include\Core\Padding.h" />
+    <ClInclude Include="..\..\..\Include\Core\Pair.h" />
+    <ClInclude Include="..\..\..\Include\Core\SharedPointer.h" />
+    <ClInclude Include="..\..\..\Include\Core\Tools\HashTools.h" />
+    <ClInclude Include="..\..\..\Include\Core\UniquePointer.h" />
+    <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Entities\CameraEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\DirectionalLightEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Entity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\EntityInitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\EntityTerminationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Initialization Data\TerrainInitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\InstancedPhysicalEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\ParticleSystemEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\PointLightEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Sound2DEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Sound3DEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\SpotLightEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\StaticPhysicalEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\TerrainEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\VegetationEntity.h" />
+    <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
+    <ClInclude Include="..\..\..\Include\Input\InputConstants.h" />
+    <ClInclude Include="..\..\..\Include\Input\InputUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />
+    <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h" />
+    <ClInclude Include="..\..\..\Include\Managers\PostProcessingManager.h" />
+    <ClInclude Include="..\..\..\Include\Math\CatalystMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\Matrix3.h" />
+    <ClInclude Include="..\..\..\Include\Math\Matrix4.h" />
+    <ClInclude Include="..\..\..\Include\Math\PerlinNoiseGenerator.h" />
+    <ClInclude Include="..\..\..\Include\Math\Vector2.h" />
+    <ClInclude Include="..\..\..\Include\Math\Vector3.h" />
+    <ClInclude Include="..\..\..\Include\Math\Vector4.h" />
+    <ClInclude Include="..\..\..\Include\Multithreading\AtomicQueue.h" />
+    <ClInclude Include="..\..\..\Include\Multithreading\MultithreadedResource.h" />
+    <ClInclude Include="..\..\..\Include\Multithreading\ScopedLock.h" />
+    <ClInclude Include="..\..\..\Include\Multithreading\Semaphore.h" />
+    <ClInclude Include="..\..\..\Include\Multithreading\Spinlock.h" />
+    <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
+    <ClInclude Include="..\..\..\Include\Multithreading\Threadlock.h" />
+    <ClInclude Include="..\..\..\Include\Physics\PhysicalConstants.h" />
+    <ClInclude Include="..\..\..\Include\Platform\General\Android.h" />
+    <ClInclude Include="..\..\..\Include\Platform\General\Platform.h" />
+    <ClInclude Include="..\..\..\Include\Platform\General\Windows.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\Vulkan2DTexture.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanAllocation.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanAllocator.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanCommandBuffer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanCommandPool.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanConstantBuffer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanCore.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanCubeMapTexture.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanDepthBuffer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanDescriptorPool.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanDescriptorSet.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanDescriptorSetLayout.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanEvent.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanFence.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanFramebuffer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanInstance.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanInterface.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanLogicalDevice.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanPhysicalDevice.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanPipeline.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanPipelineCreationParameters.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanQueue.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanRenderPassCreationParameters.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanRenderTarget.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanSemaphore.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanShaderModule.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanStorageBuffer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanSurface.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanSwapChain.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanUniformBuffer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API Layer\Vulkan\VulkanUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\AxisAlignedBoundingBox.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\CommandBuffer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\CPUTexture2D.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\CPUTextureCube.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\EnvironmentMaterial.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\OceanMaterial.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\ParticleMaterial.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\ParticleSystemProperties.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\PhysicalMaterial.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\PhysicalModel.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\PhysicalVertex.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\PostProcessingUniformData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\BloomHorizontalBlurRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\BloomRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\BloomVerticalBlurRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\DirectionalInstancedPhysicalShadowRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\DirectionalShadowRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\DirectionalStaticPhysicalShadowRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\DirectionalTerrainShadowRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\InstancedPhysicalRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\LightingRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\OceanRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\ParticleSystemRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\PostProcessingBloomRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\PostProcessingHorizontalBlurRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\PostProcessingRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\PostProcessingVerticalBlurRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\RenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\RenderPasses.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\SkyRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\StaticPhysicalRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\TerrainRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Render Passes\VegetationRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\RenderingCore.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\RenderingUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Resolution.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\TerrainMaterial.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\TerrainUniformData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\TextureData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\TextureDataContainer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\VegetationMaterial.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\VegetationProperties.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\VegetationTransformation.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\WaterUniformData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine Layer\Window.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\BloomFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\CubeMapVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\DirectionalPhysicalShadowVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\DirectionalShadowFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\DirectionalShadowInstancedPhysicalVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\DirectionalShadowTerrainTessellationEvaluationShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\GaussianBlurFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\InstancedPhysicalVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\LightingFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\OceanFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\ParticleSystemFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\ParticleSystemGeometryShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\ParticleSystemVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\PhysicalFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\PhysicalVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\PostProcessingBloomFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\PostProcessingFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\ScreenSpaceAmbientOcclusionFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\ShadowMapFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\SkyFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\TerrainSceneBufferFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationControlShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationEvaluationShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\TerrainSceneBufferVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\TerrainVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\VegetationFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\VegetationGeometryShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\VegetationVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\ViewportVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Shader Data\Vulkan\VulkanShaderData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Translation Layer\Vulkan\VulkanDynamicUniformData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Translation Layer\Vulkan\VulkanFrameData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Translation Layer\Vulkan\VulkanParticleSystemProperties.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Translation Layer\Vulkan\VulkanRenderingSystem.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Translation Layer\Vulkan\VulkanRenderPassData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Translation Layer\Vulkan\VulkanTranslationCommandBuffer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Translation Layer\Vulkan\VulkanTranslationUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Resources\EnvironmentMaterialData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\ParticleMaterialData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\PhysicalMaterialData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\PhysicalModelData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\ResourceLoader.h" />
+    <ClInclude Include="..\..\..\Include\Resources\ResourceLoaderUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h" />
+    <ClInclude Include="..\..\..\Include\Resources\SoundBankData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\TerrainMaterialData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\VegetationMaterialData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\WaterMaterialData.h" />
+    <ClInclude Include="..\..\..\Include\Sound\SoundBank.h" />
+    <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
+    <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\EngineSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\EntitySystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\InputSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\LevelOfDetailSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\PhysicsSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\RenderingSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\SoundSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\TaskSystem.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\CameraEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\DirectionalLightEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Entity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\InstancedPhysicalEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\ParticleSystemEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\PointLightEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Sound2DEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Sound3DEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\SpotLightEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\StaticPhysicalEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\TerrainEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\VegetationEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp" />
+    <ClCompile Include="..\..\..\Source\Managers\PostProcessingManager.cpp" />
+    <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp" />
+    <ClCompile Include="..\..\..\Source\Math\Matrix4.cpp" />
+    <ClCompile Include="..\..\..\Source\Math\PerlinNoiseGenerator.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\Vulkan2DTexture.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanAllocator.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanCommandBuffer.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanCommandPool.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanConstantBuffer.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanCubeMapTexture.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanDepthBuffer.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanDescriptorPool.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanDescriptorSet.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanDescriptorSetLayout.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanEvent.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanFence.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanFramebuffer.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanInstance.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanInterface.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanLogicalDevice.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanPhysicalDevice.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanPipeline.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanQueue.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanRenderTarget.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanSemaphore.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanShaderModule.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanStorageBuffer.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanSurface.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanSwapChain.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API Layer\Vulkan\VulkanUniformBuffer.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\PhysicalModel.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\BloomHorizontalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\BloomRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\BloomVerticalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\DirectionalInstancedPhysicalShadowRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\DirectionalShadowRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\DirectionalStaticPhysicalShadowRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\DirectionalTerrainShadowRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\InstancedPhysicalRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\LightingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\OceanRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\ParticleSystemRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\PostProcessingBloomRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\PostProcessingHorizontalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\PostProcessingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\PostProcessingVerticalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\RenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\SkyRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\StaticPhysicalRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\TerrainRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Render Passes\VegetationRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine Layer\Window.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\BloomFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\CubeMapVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\DirectionalPhysicalShadowVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\DirectionalShadowFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\DirectionalShadowInstancedPhysicalVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\DirectionalShadowTerrainTessellationEvaluationShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\GaussianBlurFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\InstancedPhysicalVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\LightingFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\OceanFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\ParticleSystemFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\ParticleSystemGeometryShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\ParticleSystemVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\PhysicalFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\PhysicalVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\PostProcessingBloomFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\PostProcessingFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\ScreenSpaceAmbientOcclusionFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\ShadowMapFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\SkyFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationControlShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationEvaluationShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\TerrainVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\VegetationFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\VegetationGeometryShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\VegetationVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Shader Data\Vulkan\ViewportVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Translation Layer\Vulkan\VulkanRenderingSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Translation Layer\Vulkan\VulkanTranslationCommandBuffer.cpp" />
+    <ClCompile Include="..\..\..\Source\Resources\ResourceLoader.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\EngineSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\EntitySystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\LevelOfDetailSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\PhysicsSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\RenderingSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\SoundSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\TaskSystem.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Include\Math\Vector3.inl" />
+    <None Include="..\..\..\Include\Systems\EntitySystem.inl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,3 +1,7 @@
+Engine/Visual Studio Solution/Catalyst Engine/.vs/*
+Engine/Visual Studio Solution/Catalyst Engine/x64/*
+Engine/Visual Studio Solution/Catalyst Engine/Catalyst Engine/x64/*
+
 Tools/Resource Creator/Visual Studio Solution/Resource Creator/.vs/*
 Tools/Resource Creator/Visual Studio Solution/Resource Creator/x64/*
 Tools/Resource Creator/Visual Studio Solution/Resource Creator/Resource Creator/x64/*
@@ -13,6 +17,10 @@ Tools/Vulkan Shader Builder/Visual Studio Solution/Vulkan Shader Builder/Vulkan 
 Game/Clairvoyant/Visual Studio Solution/Clairvoyant/.vs/*
 Game/Clairvoyant/Visual Studio Solution/Clairvoyant/x64/*
 Game/Clairvoyant/Visual Studio Solution/Clairvoyant/Clairvoyant/x64/*
+
+Game/Maxim/Visual Studio Solution/Maxim/.vs/*
+Game/Maxim/Visual Studio Solution/Maxim/x64/*
+Game/Maxim/Visual Studio Solution/Maxim/Maxim/x64/*
 
 *.cr
 *.crc

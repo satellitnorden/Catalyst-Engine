@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Final|Win32">
+      <Configuration>Final</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Final|x64">
+      <Configuration>Final</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|Win32">
+      <Configuration>Profile</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Profile|x64">
+      <Configuration>Profile</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\CameraEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\DirectionalLightEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Entity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\InstancedPhysicalEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\ParticleSystemEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\PointLightEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Sound2DEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Sound3DEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\SpotLightEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\StaticPhysicalEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\TerrainEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\VegetationEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\EnvironmentManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\PostProcessingManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix3.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix4.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Math\PerlinNoiseGenerator.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\Vulkan2DTexture.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanAllocator.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanCommandBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanCommandPool.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanConstantBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanCubeMapTexture.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanDepthBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanDescriptorPool.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanDescriptorSet.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanDescriptorSetLayout.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanEvent.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanFence.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanFramebuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanInstance.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanInterface.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanLogicalDevice.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanPhysicalDevice.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanPipeline.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanQueue.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanRenderTarget.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanSemaphore.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanShaderModule.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanStorageBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanSurface.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanSwapChain.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API Layer\Vulkan\VulkanUniformBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\PhysicalModel.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\BloomHorizontalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\BloomRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\BloomVerticalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\DirectionalInstancedPhysicalShadowRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\DirectionalShadowRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\DirectionalStaticPhysicalShadowRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\DirectionalTerrainShadowRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\InstancedPhysicalRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\LightingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\OceanRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\ParticleSystemRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\PostProcessingBloomRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\PostProcessingHorizontalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\PostProcessingRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\PostProcessingVerticalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\RenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\SkyRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\StaticPhysicalRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\TerrainRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\VegetationRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Window.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\BloomFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\CubeMapVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\DirectionalPhysicalShadowVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\DirectionalShadowFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\DirectionalShadowInstancedPhysicalVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\DirectionalShadowTerrainTessellationEvaluationShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\GaussianBlurFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\InstancedPhysicalVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\LightingFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\OceanFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ParticleSystemFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ParticleSystemGeometryShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ParticleSystemVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\PhysicalFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\PhysicalVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\PostProcessingBloomFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\PostProcessingFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ScreenSpaceAmbientOcclusionFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ShadowMapFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\SkyFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationControlShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationEvaluationShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\TerrainVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\VegetationFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\VegetationGeometryShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\VegetationVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ViewportVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation Layer\Vulkan\VulkanRenderingSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation Layer\Vulkan\VulkanTranslationCommandBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Resources\ResourceLoader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\CullingSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EngineSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntitySystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\InputSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\LevelOfDetailSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\PhysicsSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\RenderingSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\SoundSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TaskSystem.cpp" />
+    <ClCompile Include="..\..\..\Code\Source\Main\MaximMain.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{E129A146-9678-4C9B-AF5D-9D56C868B9D5}</ProjectGuid>
+    <RootNamespace>Maxim</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <SourcePath>..\..\..\Maxim Source\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <SourcePath>..\..\..\Maxim Source\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
+    <SourcePath>..\..\..\Maxim Source\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">
+    <SourcePath>..\..\..\Maxim Source\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <SourcePath>..\..\..\..\..\Engine\Source;..\..\..\Code\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\..\..\Engine\Libraries\Static;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <SourcePath>..\..\..\..\..\Engine\Source;..\..\..\Code\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\..\..\Engine\Libraries\Static;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <SourcePath>..\..\..\..\..\Engine\Source;..\..\..\Code\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\..\..\Engine\Libraries\Static;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
+    <SourcePath>..\..\..\..\..\Engine\Source;..\..\..\Code\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\..\..\Engine\Libraries\Static;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>CATALYST_DEBUG;CATALYST_WINDOWS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>CATALYST_RELEASE;CATALYST_WINDOWS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>CATALYST_PROFILE;CATALYST_WINDOWS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>CATALYST_FINAL;CATALYST_WINDOWS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
