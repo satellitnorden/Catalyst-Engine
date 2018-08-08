@@ -411,9 +411,6 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	renderPasses[INDEX(RenderPassStage::BloomVerticalBlur)] = BloomVerticalBlurRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::PostProcessingBloom)] = PostProcessingBloomRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::PostProcessingFogHorizontalBlur)] = PostProcessingFogHorizontalBlurRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::PostProcessingFogVerticalBlur)] = PostProcessingFogVerticalBlurRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::PostProcessingFog)] = PostProcessingFogRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::PostProcessingHorizontalBlur)] = PostProcessingHorizontalBlurRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::PostProcessingVerticalBlur)] = PostProcessingVerticalBlurRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();

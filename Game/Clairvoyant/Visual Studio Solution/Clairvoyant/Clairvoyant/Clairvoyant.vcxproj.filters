@@ -936,18 +936,6 @@
     <ClInclude Include="..\..\..\..\..\Engine\Include\Rendering\Engine Layer\Render Passes\PostProcessingVerticalBlurRenderPass.h">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Include\Rendering\Engine Layer\Render Passes\PostProcessingFogHorizontalBlurRenderPass.h">
-      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Include\Rendering\Engine Layer\Render Passes\PostProcessingFogVerticalBlurRenderPass.h">
-      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Include\Rendering\Engine Layer\Render Passes\PostProcessingFogRenderPass.h">
-      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Include\Rendering\Shader Data\Vulkan\PostProcessingFogFragmentShader.h">
-      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include\EnvironmentMaterialCreator.h">
       <Filter>Resource Creator Source\Include</Filter>
     </ClInclude>
@@ -1348,18 +1336,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\PostProcessingVerticalBlurRenderPass.cpp">
       <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\PostProcessingFogHorizontalBlurRenderPass.cpp">
-      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\PostProcessingFogVerticalBlurRenderPass.cpp">
-      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Render Passes\PostProcessingFogRenderPass.cpp">
-      <Filter>Engine Source\Rendering\Engine Layer\Render Passes\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\PostProcessingFogFragmentShader.cpp">
-      <Filter>Engine Source\Rendering\Shader Data\Vulkan\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp">
       <Filter>Resource Creator Source\Source</Filter>

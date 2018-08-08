@@ -24,7 +24,6 @@
 #include <Rendering/Shader Data/Vulkan/PhysicalFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/PhysicalVertexShader.h>
 #include <Rendering/Shader Data/Vulkan/PostProcessingBloomFragmentShader.h>
-#include <Rendering/Shader Data/Vulkan/PostProcessingFogFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/PostProcessingFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/ScreenSpaceAmbientOcclusionFragmentShader.h>
 #include <Rendering/Shader Data/Vulkan/ShadowMapFragmentShader.h>

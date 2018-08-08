@@ -1025,13 +1025,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
-		//Initialize the post processing fog fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetPostProcessingFogFragmentShaderData(data);
-		shaderModules[INDEX(Shader::PostProcessingFogFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
 		//Initialize the post processing fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetPostProcessingFragmentShaderData(data);
