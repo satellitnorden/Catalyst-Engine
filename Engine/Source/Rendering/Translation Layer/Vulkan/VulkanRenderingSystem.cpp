@@ -1498,6 +1498,7 @@ void VulkanRenderingSystem::UpdateParticleSystemProperties() const NOEXCEPT
 */
 void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 {
+	if (EnvironmentManager::Instance->GetNightEnvironmentMaterial() && EnvironmentManager::Instance->GetDayEnvironmentMaterial())
 	{
 		//Update the environment descriptor set.
 		VulkanDescriptorSet &environmentDescriptorSet{ *currentEnvironmentDataDescriptorSet };
@@ -1513,6 +1514,7 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(environmentWriteDescriptorSets.Size()), environmentWriteDescriptorSets.Data(), 0, nullptr);
 	}
 
+	if (EnvironmentManager::Instance->GetOceanMaterial())
 	{
 		//Update the ocean descriptor set.
 		VulkanDescriptorSet &oceanDescriptorSet{ *frameData.GetCurrentOceanDescriptorSet() };

@@ -1,0 +1,56 @@
+//Header file.
+#include <Main/MaximGameSystem.h>
+
+//Entities.
+#include <Entities/CameraEntity.h>
+#include <Entities/DirectionalLightEntity.h>
+#include <Entities/StaticPhysicalEntity.h>
+
+//Systems.
+#include <Systems/EntitySystem.h>
+#include <Systems/RenderingSystem.h>
+#include <Systems/SoundSystem.h>
+
+//Singleton definition.
+DEFINE_SINGLETON(MaximGameSystem);
+
+/*
+*	Initializes the Maxim game system.
+*/
+void MaximGameSystem::InitializeSystem() NOEXCEPT
+{
+	//Create the camera.
+	camera = EntitySystem::Instance->CreateEntity<CameraEntity>();
+
+	//Set it as the active camera.
+	RenderingSystem::Instance->SetActiveCamera(camera);
+
+	//Set it as the active listener.
+	SoundSystem::Instance->SetActiveListener(camera);
+
+	//Create something to look at.
+	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Plane) };
+	model.SetMaterial(RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Purple));
+
+	StaticPhysicalEntity *const RESTRICT plane{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	plane->Initialize(model, Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(100.0f, 100.0f, 100.0f));
+
+	//Create, uh, sun.
+	DirectionalLightEntity *const RESTRICT sun{ EntitySystem::Instance->CreateEntity<DirectionalLightEntity>() };
+}
+
+/*
+*	Updates the Maxim game system synchronously.
+*/
+void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
+{
+
+}
+
+/*
+*	Releases the Maxim game system.
+*/
+void MaximGameSystem::ReleaseSystem() NOEXCEPT
+{
+
+}

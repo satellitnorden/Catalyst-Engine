@@ -17,4 +17,12 @@ public:
 	//The diffuse irradiance texture.
 	TextureCubeMapHandle diffuseIrradianceTexture;
 
+	/*
+	*	Bool operator overload.
+	*/
+	operator bool() const NOEXCEPT
+	{
+		return static_cast<bool>(diffuseTexture) && static_cast<bool>(diffuseIrradianceTexture);
+	}
+
 };

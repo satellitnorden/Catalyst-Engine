@@ -10,6 +10,9 @@
     <Filter Include="Engine Source">
       <UniqueIdentifier>{0cb732d4-f103-49f3-8075-c2bdbe1b52e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Main\Include">
+      <UniqueIdentifier>{c86f29cd-c9c2-41bc-b12d-19cb7d2843e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Code\Source\Main\MaximMain.cpp">
@@ -348,5 +351,13 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TaskSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\Main\MaximGameSystem.cpp">
+      <Filter>Main\Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Code\Include\Main\MaximGameSystem.h">
+      <Filter>Main\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

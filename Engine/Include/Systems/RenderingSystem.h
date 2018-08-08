@@ -50,7 +50,14 @@ public:
 	//System declaration.
 	DECLARE_SINGLETON(RenderingSystem);
 
-	//Enumeration covering all common physical model.
+	//Enumeration covering all common physical materials.
+	enum class CommonPhysicalMaterial : uint8
+	{
+		Purple,
+		NumberOfCommonPhysicalMaterials
+	};
+
+	//Enumeration covering all common physical models.
 	enum class CommonPhysicalModel : uint8
 	{
 		Plane,
@@ -131,6 +138,12 @@ public:
 	*	Returns the view matrix.
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() const NOEXCEPT { return &viewMatrix; }
+
+	/*
+	*	Returns the given common physical material.
+	*/
+	const PhysicalMaterial& GetCommonPhysicalMaterial(const CommonPhysicalMaterial commonPhysicalMaterial) const NOEXCEPT { return commonPhysicalMaterials[INDEX(commonPhysicalMaterial)]; }
+
 
 	/*
 	*	Returns the given common physical model.
@@ -252,6 +265,9 @@ private:
 	//Container for all render passes.
 	StaticArray<RenderPass *RESTRICT, INDEX(RenderPassStage::NumberOfRenderPassStages)> renderPasses;
 
+	//Container for all common physical materials.
+	StaticArray<PhysicalMaterial, INDEX(CommonPhysicalMaterial::NumberOfCommonPhysicalMaterials)> commonPhysicalMaterials;
+
 	//Container for all common physical models.
 	StaticArray<PhysicalModel, INDEX(CommonPhysicalModel::NumberOfCommonPhysicalModels)> commonPhysicalModels;
 
@@ -276,6 +292,11 @@ private:
 	*	Initializes all render passes.
 	*/
 	void InitializeRenderPasses() NOEXCEPT;
+
+	/*
+	*	Initializes the common physical materials.
+	*/
+	void InitializeCommonPhysicalMaterials() NOEXCEPT;
 
 	/*
 	*	Initializes the common physical models.

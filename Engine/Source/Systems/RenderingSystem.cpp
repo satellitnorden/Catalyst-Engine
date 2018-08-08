@@ -50,6 +50,9 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize all render passes.
 	InitializeRenderPasses();
 
+	//Initializes the common physical materials.
+	InitializeCommonPhysicalMaterials();
+
 	//Initialize the common physical models.
 	InitializeCommonPhysicalModels();
 }
@@ -431,6 +434,41 @@ void RenderingSystem::InitializeRenderPasses() NOEXCEPT
 	for (RenderPass *const RESTRICT renderPass : renderPasses)
 	{
 		renderPass->WaitForInitialization();
+	}
+}
+
+/*
+*	Initializes the common physical materials.
+*/
+void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
+{
+	{
+		//Create the purple common physical material.
+		PhysicalMaterialData physicalMaterialData;
+		
+		physicalMaterialData.mipmapLevels = 1;
+		physicalMaterialData.width = 1;
+		physicalMaterialData.height = 1;
+		physicalMaterialData.albedoData.UpsizeSlow(1);
+		physicalMaterialData.albedoData[0].Reserve(4);
+		physicalMaterialData.albedoData[0].EmplaceFast(127);
+		physicalMaterialData.albedoData[0].EmplaceFast(0);
+		physicalMaterialData.albedoData[0].EmplaceFast(255);
+		physicalMaterialData.albedoData[0].EmplaceFast(255);
+		physicalMaterialData.normalMapData.UpsizeSlow(1);
+		physicalMaterialData.normalMapData[0].Reserve(4);
+		physicalMaterialData.normalMapData[0].EmplaceFast(0);
+		physicalMaterialData.normalMapData[0].EmplaceFast(0);
+		physicalMaterialData.normalMapData[0].EmplaceFast(255);
+		physicalMaterialData.normalMapData[0].EmplaceFast(255);
+		physicalMaterialData.materialPropertiesData.UpsizeSlow(1);
+		physicalMaterialData.materialPropertiesData[0].Reserve(4);
+		physicalMaterialData.materialPropertiesData[0].EmplaceFast(127);
+		physicalMaterialData.materialPropertiesData[0].EmplaceFast(127);
+		physicalMaterialData.materialPropertiesData[0].EmplaceFast(255);
+		physicalMaterialData.materialPropertiesData[0].EmplaceFast(255);
+
+		CreatePhysicalMaterial(physicalMaterialData, commonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Purple)]);
 	}
 }
 

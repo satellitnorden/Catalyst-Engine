@@ -146,7 +146,11 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TaskSystem.cpp" />
+    <ClCompile Include="..\..\..\Code\Source\Main\MaximGameSystem.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Main\MaximMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Code\Include\Main\MaximGameSystem.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
