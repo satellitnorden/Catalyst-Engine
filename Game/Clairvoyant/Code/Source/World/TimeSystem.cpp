@@ -23,7 +23,7 @@ namespace TimeSystemConstants
 	constexpr float STARTING_TIME{ 6.0f };
 	constexpr float SUN_MINIMUM_INTENSITY{ 0.0f };
 	constexpr float SUN_MAXIMUM_INTENSITY{ 10.0f };
-	constexpr float TIME_MULTIPLIER{ 100.0f };
+	constexpr float TIME_MULTIPLIER{ 250.0f };
 }
 
 /*
