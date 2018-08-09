@@ -1,11 +1,11 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/ParticleSystemRenderPass.h>
+#include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 
 //Components.
 #include <Components/ComponentManager.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CommandBuffer.h>
+#include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

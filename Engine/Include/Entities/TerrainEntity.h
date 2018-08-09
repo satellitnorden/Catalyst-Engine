@@ -7,7 +7,7 @@
 #include <Entities/Entity.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/RenderingCore.h>
+#include <Rendering/Engine/RenderingCore.h>
 
 //Forward declarations.
 class CPUTexture2D;

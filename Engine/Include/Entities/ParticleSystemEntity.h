@@ -7,8 +7,8 @@
 #include <Entities/Entity.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/ParticleMaterial.h>
-#include <Rendering/Engine Layer/ParticleSystemProperties.h>
+#include <Rendering/Engine/ParticleMaterial.h>
+#include <Rendering/Engine/ParticleSystemProperties.h>
 
 class ParticleSystemEntity : public Entity
 {

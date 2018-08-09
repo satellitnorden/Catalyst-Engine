@@ -1,11 +1,11 @@
 //Header file.
-#include <Rendering/API Layer/Vulkan/VulkanDescriptorPool.h>
+#include <Rendering/API/Vulkan/VulkanDescriptorPool.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanDescriptorSet.h>
-#include <Rendering/API Layer/Vulkan/VulkanDescriptorSetLayout.h>
-#include <Rendering/API Layer/Vulkan/VulkanInterface.h>
-#include <Rendering/API Layer/Vulkan/VulkanLogicalDevice.h>
+#include <Rendering/API/Vulkan/VulkanDescriptorSet.h>
+#include <Rendering/API/Vulkan/VulkanDescriptorSetLayout.h>
+#include <Rendering/API/Vulkan/VulkanInterface.h>
+#include <Rendering/API/Vulkan/VulkanLogicalDevice.h>
 
 //Vulkan descriptor pool constants.
 namespace VulkanDescriptorPoolConstants

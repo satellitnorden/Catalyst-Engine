@@ -13,7 +13,7 @@
 #include <Entities/StaticPhysicalEntity.h>
 #include <Entities/TerrainEntity.h>
 #include <Entities/VegetationEntity.h>
-#include <Entities/Initialization Data/TerrainInitializationData.h>
+#include <Entities/InitializationData/TerrainInitializationData.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
@@ -27,15 +27,15 @@
 #include <Multithreading/Task.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CPUTexture2D.h>
-#include <Rendering/Engine Layer/ParticleMaterial.h>
-#include <Rendering/Engine Layer/PostProcessingUniformData.h>
-#include <Rendering/Engine Layer/RenderingUtilities.h>
-#include <Rendering/Engine Layer/TerrainMaterial.h>
-#include <Rendering/Engine Layer/TextureData.h>
-#include <Rendering/Engine Layer/VegetationMaterial.h>
-#include <Rendering/Engine Layer/Render Passes/RenderPasses.h>
-#include <Rendering/Shader Data/Vulkan/VulkanShaderData.h>
+#include <Rendering/Engine/CPUTexture2D.h>
+#include <Rendering/Engine/ParticleMaterial.h>
+#include <Rendering/Engine/PostProcessingUniformData.h>
+#include <Rendering/Engine/RenderingUtilities.h>
+#include <Rendering/Engine/TerrainMaterial.h>
+#include <Rendering/Engine/TextureData.h>
+#include <Rendering/Engine/VegetationMaterial.h>
+#include <Rendering/Engine/RenderPasses/RenderPasses.h>
+#include <Rendering/ShaderData/Vulkan/VulkanShaderData.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanParticleSystemProperties.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanTranslationCommandBuffer.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanTranslationUtilities.h>
@@ -50,7 +50,7 @@
 #include <Systems/TaskSystem.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanUtilities.h>
+#include <Rendering/API/Vulkan/VulkanUtilities.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(VulkanRenderingSystem);
@@ -1346,7 +1346,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	VulkanCommandBuffer *const RESTRICT currentPrimaryCommandBuffer{ frameData.GetCurrentPrimaryCommandBuffer() };
 	currentPrimaryCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-	//Iterate over all render passes an concatenate their command buffers into the primary command buffer.
+	//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
 	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassStage::NumberOfRenderPassStages)>& renderPasses{ RenderingSystem::Instance->GetRenderPasses() };
 
 	for (const RenderPass *const RESTRICT renderPass : renderPasses)

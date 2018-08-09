@@ -2,7 +2,7 @@
 #include <Rendering/Translation Layer/Vulkan/VulkanTranslationCommandBuffer.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/Render Passes/RenderPass.h>
+#include <Rendering/Engine/RenderPasses/RenderPass.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanRenderPassData.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanTranslationUtilities.h>

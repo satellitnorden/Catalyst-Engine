@@ -5,13 +5,13 @@
 #include <Core/HashString.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/EnvironmentMaterial.h>
-#include <Rendering/Engine Layer/ParticleMaterial.h>
-#include <Rendering/Engine Layer/PhysicalMaterial.h>
-#include <Rendering/Engine Layer/PhysicalModel.h>
-#include <Rendering/Engine Layer/TerrainMaterial.h>
-#include <Rendering/Engine Layer/VegetationMaterial.h>
-#include <Rendering/Engine Layer/OceanMaterial.h>
+#include <Rendering/Engine/EnvironmentMaterial.h>
+#include <Rendering/Engine/ParticleMaterial.h>
+#include <Rendering/Engine/PhysicalMaterial.h>
+#include <Rendering/Engine/PhysicalModel.h>
+#include <Rendering/Engine/TerrainMaterial.h>
+#include <Rendering/Engine/VegetationMaterial.h>
+#include <Rendering/Engine/OceanMaterial.h>
 
 //Resources.
 #include <Resources/ResourcesCore.h>

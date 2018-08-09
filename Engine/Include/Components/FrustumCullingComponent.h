@@ -4,7 +4,7 @@
 #include <Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/AxisAlignedBoundingBox.h>
+#include <Rendering/Engine/AxisAlignedBoundingBox.h>
 
 class FrustumCullingComponent final
 {

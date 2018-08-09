@@ -1,8 +1,8 @@
 //Header file.
-#include <Rendering/API Layer/Vulkan/VulkanRenderTarget.h>
+#include <Rendering/API/Vulkan/VulkanRenderTarget.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanUtilities.h>
+#include <Rendering/API/Vulkan/VulkanUtilities.h>
 
 /*
 *	Default constructor.

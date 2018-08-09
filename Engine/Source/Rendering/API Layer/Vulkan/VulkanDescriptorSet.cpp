@@ -1,10 +1,10 @@
 //Header file.
-#include <Rendering/API Layer/Vulkan/VulkanDescriptorSet.h>
+#include <Rendering/API/Vulkan/VulkanDescriptorSet.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanDescriptorPool.h>
-#include <Rendering/API Layer/Vulkan/VulkanDescriptorSetLayout.h>
-#include <Rendering/API Layer/Vulkan/VulkanInterface.h>
+#include <Rendering/API/Vulkan/VulkanDescriptorPool.h>
+#include <Rendering/API/Vulkan/VulkanDescriptorSetLayout.h>
+#include <Rendering/API/Vulkan/VulkanInterface.h>
 
 /*
 *	Initializes this Vulkan descriptor set.

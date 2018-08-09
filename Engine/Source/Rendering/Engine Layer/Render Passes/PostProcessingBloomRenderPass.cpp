@@ -1,11 +1,11 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/PostProcessingBloomRenderPass.h>
+#include <Rendering/Engine/RenderPasses/PostProcessingBloomRenderPass.h>
 
 //Managers.
 #include <Managers/PostProcessingManager.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CommandBuffer.h>
+#include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

@@ -4,7 +4,7 @@
 #include <Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/ParticleSystemProperties.h>
+#include <Rendering/Engine/ParticleSystemProperties.h>
 
 class VulkanParticleSystemProperties final
 {

@@ -1,8 +1,8 @@
 //Header file.
-#include <Rendering/API Layer/Vulkan/VulkanPhysicalDevice.h>
+#include <Rendering/API/Vulkan/VulkanPhysicalDevice.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanInterface.h>
+#include <Rendering/API/Vulkan/VulkanInterface.h>
 
 /*
 *	Initializes this Vulkan physical device.

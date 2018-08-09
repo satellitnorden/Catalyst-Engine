@@ -8,7 +8,7 @@
 #include <Multithreading/Task.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/RenderingCore.h>
+#include <Rendering/Engine/RenderingCore.h>
 
 class LevelOfDetailSystem final
 {

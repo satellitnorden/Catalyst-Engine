@@ -7,8 +7,8 @@
 #include <Math/Matrix4.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanConstantBuffer.h>
-#include <Rendering/API Layer/Vulkan/VulkanDescriptorSet.h>
+#include <Rendering/API/Vulkan/VulkanConstantBuffer.h>
+#include <Rendering/API/Vulkan/VulkanDescriptorSet.h>
 
 class StaticPhysicalRenderComponent final
 {

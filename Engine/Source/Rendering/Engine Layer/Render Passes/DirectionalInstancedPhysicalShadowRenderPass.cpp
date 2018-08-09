@@ -1,12 +1,12 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/DirectionalInstancedPhysicalShadowRenderPass.h>
+#include <Rendering/Engine/RenderPasses/DirectionalInstancedPhysicalShadowRenderPass.h>
 
 //Components.
 #include <Components/ComponentManager.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CommandBuffer.h>
-#include <Rendering/Engine Layer/PhysicalVertex.h>
+#include <Rendering/Engine/CommandBuffer.h>
+#include <Rendering/Engine/PhysicalVertex.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

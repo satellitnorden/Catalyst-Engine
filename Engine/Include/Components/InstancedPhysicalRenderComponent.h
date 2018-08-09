@@ -4,7 +4,7 @@
 #include <Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/RenderingCore.h>
+#include <Rendering/Engine/RenderingCore.h>
 
 class InstancedPhysicalRenderComponent final
 {

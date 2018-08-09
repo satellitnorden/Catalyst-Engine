@@ -12,15 +12,15 @@
 #include <Multithreading/Semaphore.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/EnvironmentMaterial.h>
-#include <Rendering/Engine Layer/RenderingCore.h>
-#include <Rendering/Engine Layer/Window.h>
+#include <Rendering/Engine/EnvironmentMaterial.h>
+#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Engine/Window.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanDynamicUniformData.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanRenderPassData.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanInterface.h>
+#include <Rendering/API/Vulkan/VulkanInterface.h>
 
 //Forward declarations.
 class CameraEntity;

@@ -1,8 +1,8 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/PostProcessingHorizontalBlurRenderPass.h>
+#include <Rendering/Engine/RenderPasses/PostProcessingHorizontalBlurRenderPass.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CommandBuffer.h>
+#include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

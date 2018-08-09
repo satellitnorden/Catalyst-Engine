@@ -4,8 +4,8 @@
 #include <Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/RenderingCore.h>
-#include <Rendering/Engine Layer/WaterUniformData.h>
+#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Engine/WaterUniformData.h>
 
 class WaterComponent final
 {

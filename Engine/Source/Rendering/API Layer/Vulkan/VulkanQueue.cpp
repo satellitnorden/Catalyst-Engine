@@ -1,11 +1,11 @@
 //Header file.
-#include <Rendering/API Layer/Vulkan/VulkanQueue.h>
+#include <Rendering/API/Vulkan/VulkanQueue.h>
 
 //Multithreading.
 #include <Multithreading/ScopedLock.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanInterface.h>
+#include <Rendering/API/Vulkan/VulkanInterface.h>
 
 /*
 *	Initializes this Vulkan queue.

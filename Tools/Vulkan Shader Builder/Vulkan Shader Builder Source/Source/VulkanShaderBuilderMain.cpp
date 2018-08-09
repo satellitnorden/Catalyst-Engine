@@ -11,7 +11,7 @@
 
 int main()
 {
-	std::ofstream masterOutput{ "..\\..\\Include\\Rendering\\Shader Data\\Vulkan\\VulkanShaderData.h" };
+	std::ofstream masterOutput{ "..\\..\\Include\\Rendering\\ShaderData\\Vulkan\\VulkanShaderData.h" };
 
 	masterOutput << "/*" << std::endl;
 	masterOutput << "*\tThis file is auto-generated, do not edit manually." << std::endl;
@@ -34,12 +34,12 @@ int main()
 			BinaryFile<IOMode::In> file{ fileName.c_str() };
 
 			std::string outputFileName{ iterator.path().stem().string() };
-			std::string outputHeaderFileName = "..\\..\\Include\\Rendering\\Shader Data\\Vulkan\\" + outputFileName + ".h";
-			std::string outputSourceFileName = "..\\..\\Source\\Rendering\\Shader Data\\Vulkan\\" + outputFileName + ".cpp";
+			std::string outputHeaderFileName = "..\\..\\Include\\Rendering\\ShaderData\\Vulkan\\" + outputFileName + ".h";
+			std::string outputSourceFileName = "..\\..\\Source\\Rendering\\ShaderData\\Vulkan\\" + outputFileName + ".cpp";
 			std::ofstream headerOutput{ outputHeaderFileName.c_str() };
 			std::ofstream sourceOutput{ outputSourceFileName.c_str() };
 
-			masterOutput << "#include <Rendering/Shader Data/Vulkan/" << outputFileName << ".h>" << std::endl;
+			masterOutput << "#include <Rendering/ShaderData/Vulkan/" << outputFileName << ".h>" << std::endl;
 
 			headerOutput << "/*" << std::endl;
 			headerOutput << "*\tThis file is auto-generated, do not edit manually." << std::endl;
@@ -61,7 +61,7 @@ int main()
 			sourceOutput << "*/" << std::endl;
 			sourceOutput << std::endl;
 			sourceOutput << "//Header file." << std::endl;
-			sourceOutput << "#include <Rendering/Shader Data/Vulkan/" << outputFileName << ".h>" << std::endl;
+			sourceOutput << "#include <Rendering/ShaderData/Vulkan/" << outputFileName << ".h>" << std::endl;
 			sourceOutput << std::endl;
 			sourceOutput << "namespace VulkanShaderData" << std::endl;
 			sourceOutput << "{" << std::endl;

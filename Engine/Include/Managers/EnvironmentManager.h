@@ -4,8 +4,8 @@
 #include <Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/EnvironmentMaterial.h>
-#include <Rendering/Engine Layer/OceanMaterial.h>
+#include <Rendering/Engine/EnvironmentMaterial.h>
+#include <Rendering/Engine/OceanMaterial.h>
 
 class EnvironmentManager final
 {

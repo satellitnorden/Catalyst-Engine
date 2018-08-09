@@ -7,8 +7,8 @@
 #include <Entities/Entity.h>
 
 //Rendering
-#include <Rendering/Engine Layer/VegetationProperties.h>
-#include <Rendering/Engine Layer/VegetationTransformation.h>
+#include <Rendering/Engine/VegetationProperties.h>
+#include <Rendering/Engine/VegetationTransformation.h>
 
 //Forward declarations.
 class VegetationMaterial;

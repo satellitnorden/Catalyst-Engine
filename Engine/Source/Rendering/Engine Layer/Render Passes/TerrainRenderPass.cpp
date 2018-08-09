@@ -1,11 +1,11 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/TerrainRenderPass.h>
+#include <Rendering/Engine/RenderPasses/TerrainRenderPass.h>
 
 //Components.
 #include <Components/ComponentManager.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CommandBuffer.h>
+#include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
 #include <Systems/CullingSystem.h>

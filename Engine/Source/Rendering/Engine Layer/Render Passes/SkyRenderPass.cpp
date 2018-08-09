@@ -1,8 +1,8 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/SkyRenderPass.h>
+#include <Rendering/Engine/RenderPasses/SkyRenderPass.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CommandBuffer.h>
+#include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

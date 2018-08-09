@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering\Engine Layer\Render Passes\RenderPass.h>
+#include <Rendering\Engine\RenderPasses\RenderPass.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

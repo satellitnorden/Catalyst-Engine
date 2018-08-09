@@ -7,10 +7,10 @@
 #include <Math/Matrix4.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/EnvironmentMaterial.h>
-#include <Rendering/Engine Layer/OceanMaterial.h>
-#include <Rendering/Engine Layer/PhysicalModel.h>
-#include <Rendering/Engine Layer/RenderingCore.h>
+#include <Rendering/Engine/EnvironmentMaterial.h>
+#include <Rendering/Engine/OceanMaterial.h>
+#include <Rendering/Engine/PhysicalModel.h>
+#include <Rendering/Engine/RenderingCore.h>
 
 //Forward declarations.
 class CameraEntity;

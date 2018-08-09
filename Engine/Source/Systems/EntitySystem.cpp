@@ -7,7 +7,7 @@
 //Entities.
 #include <Entities/EntityInitializationData.h>
 #include <Entities/EntityTerminationData.h>
-#include <Entities/Initialization Data/TerrainInitializationData.h>
+#include <Entities/InitializationData/TerrainInitializationData.h>
 
 //Multithreading.
 #include <Multithreading/ScopedLock.h>

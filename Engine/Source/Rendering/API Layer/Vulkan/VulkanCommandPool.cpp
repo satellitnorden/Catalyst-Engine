@@ -1,10 +1,10 @@
 //Header file.
-#include <Rendering/API Layer/Vulkan/VulkanCommandPool.h>
+#include <Rendering/API/Vulkan/VulkanCommandPool.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanCommandBuffer.h>
-#include <Rendering/API Layer/Vulkan/VulkanInterface.h>
-#include <Rendering/API Layer/Vulkan/VulkanLogicalDevice.h>
+#include <Rendering/API/Vulkan/VulkanCommandBuffer.h>
+#include <Rendering/API/Vulkan/VulkanInterface.h>
+#include <Rendering/API/Vulkan/VulkanLogicalDevice.h>
 
 /*
 *	Initializes this Vulkan command pool.

@@ -4,8 +4,8 @@
 #include <Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/API Layer/Vulkan/VulkanCommandBuffer.h>
-#include <Rendering/Engine Layer/CommandBuffer.h>
+#include <Rendering/API/Vulkan/VulkanCommandBuffer.h>
+#include <Rendering/Engine/CommandBuffer.h>
 
 class VulkanTranslationCommandBuffer final : public CommandBuffer
 {

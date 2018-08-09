@@ -1,12 +1,12 @@
 //Header file.
-#include <Rendering/Engine Layer/Render Passes/VegetationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/VegetationRenderPass.h>
 
 //Components.
 #include <Components/ComponentManager.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CommandBuffer.h>
-#include <Rendering/Engine Layer/VegetationTransformation.h>
+#include <Rendering/Engine/CommandBuffer.h>
+#include <Rendering/Engine/VegetationTransformation.h>
 
 //Systems.
 #include <Systems/CullingSystem.h>

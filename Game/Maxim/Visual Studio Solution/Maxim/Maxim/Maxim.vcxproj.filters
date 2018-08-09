@@ -18,6 +18,9 @@
     <ClCompile Include="..\..\..\Code\Source\Main\MaximMain.cpp">
       <Filter>Main\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\Main\MaximGameSystem.cpp">
+      <Filter>Main\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -228,91 +231,88 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine Layer\Window.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\BloomFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\CubeMapVertexShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\CubeMapVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\DirectionalPhysicalShadowVertexShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\DirectionalShadowFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalShadowFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\DirectionalShadowInstancedPhysicalVertexShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalShadowInstancedPhysicalVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\DirectionalShadowTerrainTessellationEvaluationShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalShadowTerrainTessellationEvaluationShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\GaussianBlurFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GaussianBlurFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\InstancedPhysicalVertexShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\InstancedPhysicalVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\LightingFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\LightingFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\OceanFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\OceanFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ParticleSystemFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\ParticleSystemFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ParticleSystemGeometryShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\ParticleSystemGeometryShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ParticleSystemVertexShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\ParticleSystemVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\PhysicalFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\PhysicalFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\PhysicalVertexShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\PhysicalVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\PostProcessingBloomFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\PostProcessingBloomFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\PostProcessingFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\PostProcessingFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ScreenSpaceAmbientOcclusionFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\ScreenSpaceAmbientOcclusionFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ShadowMapFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\ShadowMapFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\SkyFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\SkyFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationControlShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferTessellationControlShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferTessellationEvaluationShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferTessellationEvaluationShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\TerrainSceneBufferVertexShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\TerrainVertexShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\VegetationFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\VegetationFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\VegetationGeometryShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\VegetationGeometryShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\VegetationVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\VegetationVertexShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Shader Data\Vulkan\ViewportVertexShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\ViewportVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation Layer\Vulkan\VulkanRenderingSystem.cpp">
@@ -350,9 +350,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TaskSystem.cpp">
       <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Code\Source\Main\MaximGameSystem.cpp">
-      <Filter>Main\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,11 +1,11 @@
 //Header file.
-#include <Rendering/API Layer/Vulkan/VulkanSurface.h>
+#include <Rendering/API/Vulkan/VulkanSurface.h>
 
 //Graphics.
-#include <Rendering/Engine Layer/Window.h>
+#include <Rendering/Engine/Window.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanInterface.h>
+#include <Rendering/API/Vulkan/VulkanInterface.h>
 
 #if defined(CATALYST_WINDOWS)
 //Third party libraries.

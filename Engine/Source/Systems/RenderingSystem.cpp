@@ -12,16 +12,16 @@
 #include <Math/CatalystMath.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/OceanMaterial.h>
-#include <Rendering/Engine Layer/ParticleMaterial.h>
-#include <Rendering/Engine Layer/PhysicalMaterial.h>
-#include <Rendering/Engine Layer/PhysicalModel.h>
-#include <Rendering/Engine Layer/RenderingUtilities.h>
-#include <Rendering/Engine Layer/Resolution.h>
-#include <Rendering/Engine Layer/VegetationMaterial.h>
-#include <Rendering/Engine Layer/Render Passes/RenderPasses.h>
-#include <Rendering/Engine Layer/TerrainMaterial.h>
-#include <Rendering/Engine Layer/TextureData.h>
+#include <Rendering/Engine/OceanMaterial.h>
+#include <Rendering/Engine/ParticleMaterial.h>
+#include <Rendering/Engine/PhysicalMaterial.h>
+#include <Rendering/Engine/PhysicalModel.h>
+#include <Rendering/Engine/RenderingUtilities.h>
+#include <Rendering/Engine/Resolution.h>
+#include <Rendering/Engine/VegetationMaterial.h>
+#include <Rendering/Engine/RenderPasses/RenderPasses.h>
+#include <Rendering/Engine/TerrainMaterial.h>
+#include <Rendering/Engine/TextureData.h>
 #include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
 
 //Resources.

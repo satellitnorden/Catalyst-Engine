@@ -1,16 +1,16 @@
 //Header file.
-#include <Rendering/API Layer/Vulkan/VulkanSwapChain.h>
+#include <Rendering/API/Vulkan/VulkanSwapChain.h>
 
 //Math.
 #include <Math/CatalystMath.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanInterface.h>
-#include <Rendering/API Layer/Vulkan/VulkanLogicalDevice.h>
-#include <Rendering/API Layer/Vulkan/VulkanPhysicalDevice.h>
-#include <Rendering/API Layer/Vulkan/VulkanSemaphore.h>
-#include <Rendering/API Layer/Vulkan/VulkanSurface.h>
-#include <Rendering/API Layer/Vulkan/VulkanUtilities.h>
+#include <Rendering/API/Vulkan/VulkanInterface.h>
+#include <Rendering/API/Vulkan/VulkanLogicalDevice.h>
+#include <Rendering/API/Vulkan/VulkanPhysicalDevice.h>
+#include <Rendering/API/Vulkan/VulkanSemaphore.h>
+#include <Rendering/API/Vulkan/VulkanSurface.h>
+#include <Rendering/API/Vulkan/VulkanUtilities.h>
 
 /*
 *	Default constructor.

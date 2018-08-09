@@ -1,16 +1,16 @@
 //Header file.
-#include <Rendering/API Layer/Vulkan/VulkanRenderPass.h>
+#include <Rendering/API/Vulkan/VulkanRenderPass.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanCommandPool.h>
-#include <Rendering/API Layer/Vulkan/VulkanDescriptorSet.h>
-#include <Rendering/API Layer/Vulkan/VulkanInterface.h>
-#include <Rendering/API Layer/Vulkan/VulkanLogicalDevice.h>
-#include <Rendering/API Layer/Vulkan/VulkanPhysicalDevice.h>
-#include <Rendering/API Layer/Vulkan/VulkanPipeline.h>
-#include <Rendering/API Layer/Vulkan/VulkanSemaphore.h>
-#include <Rendering/API Layer/Vulkan/VulkanSwapChain.h>
-#include <Rendering/API Layer/Vulkan/VulkanUniformBuffer.h>
+#include <Rendering/API/Vulkan/VulkanCommandPool.h>
+#include <Rendering/API/Vulkan/VulkanDescriptorSet.h>
+#include <Rendering/API/Vulkan/VulkanInterface.h>
+#include <Rendering/API/Vulkan/VulkanLogicalDevice.h>
+#include <Rendering/API/Vulkan/VulkanPhysicalDevice.h>
+#include <Rendering/API/Vulkan/VulkanPipeline.h>
+#include <Rendering/API/Vulkan/VulkanSemaphore.h>
+#include <Rendering/API/Vulkan/VulkanSwapChain.h>
+#include <Rendering/API/Vulkan/VulkanUniformBuffer.h>
 
 /*
 *	Initializes this Vulkan render pass.

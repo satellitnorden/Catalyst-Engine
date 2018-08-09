@@ -4,12 +4,12 @@
 #include <Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CPUTexture2D.h>
-#include <Rendering/Engine Layer/RenderingCore.h>
-#include <Rendering/Engine Layer/TerrainUniformData.h>
+#include <Rendering/Engine/CPUTexture2D.h>
+#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Engine/TerrainUniformData.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanUniformBuffer.h>
+#include <Rendering/API/Vulkan/VulkanUniformBuffer.h>
 
 class TerrainComponent final
 {

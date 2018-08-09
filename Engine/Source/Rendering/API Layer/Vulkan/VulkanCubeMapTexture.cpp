@@ -1,11 +1,11 @@
 //Header file.
-#include <Rendering/API Layer/Vulkan/VulkanCubeMapTexture.h>
+#include <Rendering/API/Vulkan/VulkanCubeMapTexture.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanInterface.h>
-#include <Rendering/API Layer/Vulkan/VulkanLogicalDevice.h>
-#include <Rendering/API Layer/Vulkan/VulkanPhysicalDevice.h>
-#include <Rendering/API Layer/Vulkan/VulkanUtilities.h>
+#include <Rendering/API/Vulkan/VulkanInterface.h>
+#include <Rendering/API/Vulkan/VulkanLogicalDevice.h>
+#include <Rendering/API/Vulkan/VulkanPhysicalDevice.h>
+#include <Rendering/API/Vulkan/VulkanUtilities.h>
 
 /*
 *	Default constructor.

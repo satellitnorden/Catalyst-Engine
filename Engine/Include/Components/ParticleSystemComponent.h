@@ -4,8 +4,8 @@
 #include <Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/ParticleSystemProperties.h>
-#include <Rendering/Engine Layer/RenderingCore.h>
+#include <Rendering/Engine/ParticleSystemProperties.h>
+#include <Rendering/Engine/RenderingCore.h>
 
 class ParticleSystemComponent final
 {

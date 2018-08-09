@@ -8,7 +8,7 @@
 #include <Entities/CameraEntity.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/RenderingUtilities.h>
+#include <Rendering/Engine/RenderingUtilities.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

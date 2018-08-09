@@ -7,11 +7,11 @@
 #include <Math/Matrix4.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/PhysicalVertex.h>
-#include <Rendering/Engine Layer/TextureData.h>
+#include <Rendering/Engine/PhysicalVertex.h>
+#include <Rendering/Engine/TextureData.h>
 
 //Vulkan.
-#include <Rendering/API Layer/Vulkan/VulkanCore.h>
+#include <Rendering/API/Vulkan/VulkanCore.h>
 
 class VulkanTranslationUtilities
 {
