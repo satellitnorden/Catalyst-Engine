@@ -1,4 +1,4 @@
-package com.chrysalisinteractive.clicker;
+package com.chrysalisinteractive.maxim;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.chrysalisinteractive.clicker", appContext.getPackageName());
+        assertEquals("com.chrysalisinteractive.maxim", appContext.getPackageName());
     }
 }

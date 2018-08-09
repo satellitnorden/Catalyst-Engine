@@ -1,4 +1,4 @@
-package com.chrysalisinteractive.clicker;
+package com.chrysalisinteractive.maxim;
 
 import org.junit.Test;
 
