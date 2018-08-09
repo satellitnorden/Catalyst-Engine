@@ -8,6 +8,7 @@
 
 //Rendering.
 #include <Rendering/Engine Layer/EnvironmentMaterial.h>
+#include <Rendering/Engine Layer/OceanMaterial.h>
 #include <Rendering/Engine Layer/PhysicalModel.h>
 #include <Rendering/Engine Layer/RenderingCore.h>
 
@@ -16,7 +17,6 @@ class CameraEntity;
 class CPUTexture2D;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
-class OceanMaterial;
 class ParticleMaterial;
 class ParticleMaterialData;
 class ParticleSystemEntity;
@@ -162,6 +162,11 @@ public:
 	const PhysicalModel& GetCommonPhysicalModel(const CommonPhysicalModel commonPhysicalModel) const NOEXCEPT { return commonPhysicalModels[INDEX(commonPhysicalModel)]; }
 
 	/*
+	*	Returns the default ocean material.
+	*/
+	const OceanMaterial& GetDefaultOceanMaterial() const NOEXCEPT { return defaultOceanMaterial; }
+
+	/*
 	*	Finalizes the initialization of a render pass.
 	*/
 	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
@@ -284,6 +289,9 @@ private:
 
 	//Container for all common physical models.
 	StaticArray<PhysicalModel, INDEX(CommonPhysicalModel::NumberOfCommonPhysicalModels)> commonPhysicalModels;
+
+	//The default ocean material.
+	OceanMaterial defaultOceanMaterial;
 
 	//The active camera.
 	CameraEntity *RESTRICT activeCamera{ nullptr };

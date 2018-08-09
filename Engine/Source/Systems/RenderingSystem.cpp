@@ -521,6 +521,17 @@ void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
 }
 
 /*
+*	Initializes all default assets.
+*/
+void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
+{
+	{
+		//Initialize the default ocean material.
+		WaterMaterialData data;
+	}
+}
+
+/*
 *	Updates the matrices.
 */
 void RenderingSystem::UpdateMatrices() NOEXCEPT
