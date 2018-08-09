@@ -6,7 +6,11 @@
 #include <Entities/DirectionalLightEntity.h>
 #include <Entities/StaticPhysicalEntity.h>
 
+//Math.
+#include <Math/CatalystMath.h>
+
 //Systems.
+#include <Systems/EngineSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/SoundSystem.h>
@@ -48,7 +52,8 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 */
 void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
-
+	//Eh. Move the camera a bit.
+	camera->Move(Vector3(CatalystMath::SineRadians(EngineSystem::Instance->GetTotalGameTime()) * 0.01f, 0.0f, 0.0f));
 }
 
 /*
