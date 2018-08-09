@@ -5,7 +5,7 @@
 /*
 *	Android specific includes.
 */
-#include <Third Party Libraries/android_native_app_glue.h>
+#include <ThirdParty/android_native_app_glue.h>
 
 /*
 *	Main function signature.

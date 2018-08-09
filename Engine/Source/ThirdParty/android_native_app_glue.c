@@ -23,7 +23,7 @@
 #include <unistd.h>
 #include <sys/resource.h>
 
-#include <Third Party Libraries/android_native_app_glue.h>
+#include <ThirdParty/android_native_app_glue.h>
 #include <android/log.h>
 
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "threaded_app", __VA_ARGS__))
