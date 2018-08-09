@@ -117,9 +117,6 @@ enum class RenderDataTable : uint8
 	BloomHorizontalBlur,
 	BloomVerticalBlur,
 	PostProcessingBloom,
-	PostProcessingFogHorizontalBlur,
-	PostProcessingFogVerticalBlur,
-	PostProcessingFog,
 	PostProcessingHorizontalBlur,
 	PostProcessingVerticalBlur,
 	PostProcessing,
@@ -142,7 +139,6 @@ enum class RenderDataTableLayout : uint8
 	ParticleSystem,
 	PostProcessingBloom,
 	GaussianBlur,
-	PostProcessingFog,
 	PostProcessing,
 	NumberOfDescriptorSetLayouts
 };
@@ -161,8 +157,6 @@ enum class RenderTarget : uint8
 	Scene,
 	Bloom,
 	BloomIntermediate,
-	FogBlurIntermediate,
-	FogBlur,
 	BlurIntermediate,
 	Blur,
 	Screen,
