@@ -50,17 +50,10 @@ public:
 	//System declaration.
 	DECLARE_SINGLETON(RenderingSystem);
 
-	//Enumeration covering all common environment materials.
-	enum class CommonEnvironmentMaterial : uint8
-	{
-		Teal,
-		NumberOfCommonEnvironmentMaterials
-	};
-
 	//Enumeration covering all common physical materials.
 	enum class CommonPhysicalMaterial : uint8
 	{
-		Purple,
+		Red,
 		NumberOfCommonPhysicalMaterials
 	};
 
@@ -145,11 +138,6 @@ public:
 	*	Returns the view matrix.
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() const NOEXCEPT { return &viewMatrix; }
-
-	/*
-	*	Returns the given common environment material.
-	*/
-	const EnvironmentMaterial& GetCommonEnvironmentMaterial(const CommonEnvironmentMaterial commonEnvironmentMaterial) const NOEXCEPT { return commonEnvironmentMaterials[INDEX(commonEnvironmentMaterial)]; }
 
 	/*
 	*	Returns the given common physical material.
@@ -281,14 +269,17 @@ private:
 	//Container for all render passes.
 	StaticArray<RenderPass *RESTRICT, INDEX(RenderPassStage::NumberOfRenderPassStages)> renderPasses;
 
-	//Container for all common environment materials.
-	StaticArray<EnvironmentMaterial, INDEX(CommonEnvironmentMaterial::NumberOfCommonEnvironmentMaterials)> commonEnvironmentMaterials;
-
 	//Container for all common physical materials.
 	StaticArray<PhysicalMaterial, INDEX(CommonPhysicalMaterial::NumberOfCommonPhysicalMaterials)> commonPhysicalMaterials;
 
 	//Container for all common physical models.
 	StaticArray<PhysicalModel, INDEX(CommonPhysicalModel::NumberOfCommonPhysicalModels)> commonPhysicalModels;
+
+	//The default night environment material.
+	EnvironmentMaterial defaultNightEnvironmentMaterial;
+
+	//The default day environment material.
+	EnvironmentMaterial defaultDayEnvironmentMaterial;
 
 	//The default ocean material.
 	OceanMaterial defaultOceanMaterial;
@@ -316,11 +307,6 @@ private:
 	void InitializeRenderPasses() NOEXCEPT;
 
 	/*
-	*	Initializes the common environment materials.
-	*/
-	void InitializeCommonEnvironmentMaterials() NOEXCEPT;
-
-	/*
 	*	Initializes the common physical materials.
 	*/
 	void InitializeCommonPhysicalMaterials() NOEXCEPT;
@@ -329,6 +315,11 @@ private:
 	*	Initializes the common physical models.
 	*/
 	void InitializeCommonPhysicalModels() NOEXCEPT;
+
+	/*
+	*	Initializes all default assets.
+	*/
+	void InitializeDefaultAssets() NOEXCEPT;
 
 	/*
 	*	Updates the matrices.

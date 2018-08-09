@@ -84,14 +84,6 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 */
 void OceanRenderPass::RenderInternal() NOEXCEPT
 {
-	//If there's no ocean material, don't render the ocean!
-	if (!EnvironmentManager::Instance->GetOceanMaterial())
-	{
-		SetIncludeInRender(false);
-
-		return;
-	}
-
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 

@@ -14,12 +14,4 @@ public:
 	//The normal map texture.
 	Texture2DHandle normalMapTexture;
 
-	/*
-	*	Bool operator overload.
-	*/
-	operator bool() const NOEXCEPT
-	{
-		return static_cast<bool>(normalMapTexture);
-	}
-
 };

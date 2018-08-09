@@ -5,6 +5,9 @@
 #include <Entities/CameraEntity.h>
 #include <Entities/TerrainEntity.h>
 
+//Managers.
+#include <Managers/EnvironmentManager.h>
+
 //Math.
 #include <Math/CatalystMath.h>
 
@@ -51,14 +54,14 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize all render passes.
 	InitializeRenderPasses();
 
-	//Initialize the common environment materials.
-	InitializeCommonEnvironmentMaterials();
-
 	//Initializes the common physical materials.
 	InitializeCommonPhysicalMaterials();
 
 	//Initialize the common physical models.
 	InitializeCommonPhysicalModels();
+
+	//Initialize all default assets.
+	InitializeDefaultAssets();
 }
 
 /*
@@ -442,37 +445,6 @@ void RenderingSystem::InitializeRenderPasses() NOEXCEPT
 }
 
 /*
-*	Initializes the common environment materials.
-*/
-void RenderingSystem::InitializeCommonEnvironmentMaterials() NOEXCEPT
-{
-	{
-		//Initialize the teal common environment material.
-		EnvironmentMaterialData data;
-
-		data.diffuseResolution = 1;
-		data.diffuseData.Reserve(4 * 6);
-		data.diffuseIrradianceResolution = 1;
-		data.diffuseIrradianceData.Reserve(4 * 6);
-
-		for (uint8 i = 0; i < 6; ++i)
-		{
-			data.diffuseData.EmplaceFast(0.0f);
-			data.diffuseData.EmplaceFast(1.0f);
-			data.diffuseData.EmplaceFast(1.0f);
-			data.diffuseData.EmplaceFast(1.0f);
-
-			data.diffuseIrradianceData.EmplaceFast(0.0f);
-			data.diffuseIrradianceData.EmplaceFast(1.0f);
-			data.diffuseIrradianceData.EmplaceFast(1.0f);
-			data.diffuseIrradianceData.EmplaceFast(1.0f);
-		}
-
-		CreateEnvironmentMaterial(data, commonEnvironmentMaterials[INDEX(CommonEnvironmentMaterial::Teal)]);
-	}
-}
-
-/*
 *	Initializes the common physical materials.
 */
 void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
@@ -486,9 +458,9 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		physicalMaterialData.height = 1;
 		physicalMaterialData.albedoData.UpsizeSlow(1);
 		physicalMaterialData.albedoData[0].Reserve(4);
-		physicalMaterialData.albedoData[0].EmplaceFast(127);
-		physicalMaterialData.albedoData[0].EmplaceFast(0);
 		physicalMaterialData.albedoData[0].EmplaceFast(255);
+		physicalMaterialData.albedoData[0].EmplaceFast(0);
+		physicalMaterialData.albedoData[0].EmplaceFast(0);
 		physicalMaterialData.albedoData[0].EmplaceFast(255);
 		physicalMaterialData.normalMapData.UpsizeSlow(1);
 		physicalMaterialData.normalMapData[0].Reserve(4);
@@ -498,12 +470,12 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		physicalMaterialData.normalMapData[0].EmplaceFast(255);
 		physicalMaterialData.materialPropertiesData.UpsizeSlow(1);
 		physicalMaterialData.materialPropertiesData[0].Reserve(4);
-		physicalMaterialData.materialPropertiesData[0].EmplaceFast(127);
-		physicalMaterialData.materialPropertiesData[0].EmplaceFast(127);
 		physicalMaterialData.materialPropertiesData[0].EmplaceFast(255);
+		physicalMaterialData.materialPropertiesData[0].EmplaceFast(0);
 		physicalMaterialData.materialPropertiesData[0].EmplaceFast(255);
+		physicalMaterialData.materialPropertiesData[0].EmplaceFast(0);
 
-		CreatePhysicalMaterial(physicalMaterialData, commonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Purple)]);
+		CreatePhysicalMaterial(physicalMaterialData, commonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Red)]);
 	}
 }
 
@@ -526,8 +498,79 @@ void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
 void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 {
 	{
+		//Initialize the default night environment material.
+		EnvironmentMaterialData data;
+
+		data.diffuseResolution = 1;
+		data.diffuseData.Reserve(4 * 6);
+		data.diffuseIrradianceResolution = 1;
+		data.diffuseIrradianceData.Reserve(4 * 6);
+
+		for (uint8 i = 0; i < 6; ++i)
+		{
+			data.diffuseData.EmplaceFast(0.0f);
+			data.diffuseData.EmplaceFast(0.25f);
+			data.diffuseData.EmplaceFast(0.5f);
+			data.diffuseData.EmplaceFast(0.5f);
+
+			data.diffuseIrradianceData.EmplaceFast(0.0f);
+			data.diffuseIrradianceData.EmplaceFast(0.25f);
+			data.diffuseIrradianceData.EmplaceFast(0.5f);
+			data.diffuseIrradianceData.EmplaceFast(0.5f);
+		}
+
+		CreateEnvironmentMaterial(data, defaultNightEnvironmentMaterial);
+
+		EnvironmentManager::Instance->SetNightEnvironmentMaterial(defaultNightEnvironmentMaterial);
+	}
+
+	{
+		//Initialize the default day environment material.
+		EnvironmentMaterialData data;
+
+		data.diffuseResolution = 1;
+		data.diffuseData.Reserve(4 * 6);
+		data.diffuseIrradianceResolution = 1;
+		data.diffuseIrradianceData.Reserve(4 * 6);
+
+		for (uint8 i = 0; i < 6; ++i)
+		{
+			data.diffuseData.EmplaceFast(0.0f);
+			data.diffuseData.EmplaceFast(0.5f);
+			data.diffuseData.EmplaceFast(1.0f);
+			data.diffuseData.EmplaceFast(1.0f);
+
+			data.diffuseIrradianceData.EmplaceFast(0.0f);
+			data.diffuseIrradianceData.EmplaceFast(0.5f);
+			data.diffuseIrradianceData.EmplaceFast(1.0f);
+			data.diffuseIrradianceData.EmplaceFast(1.0f);
+		}
+
+		CreateEnvironmentMaterial(data, defaultDayEnvironmentMaterial);
+
+		EnvironmentManager::Instance->SetDayEnvironmentMaterial(defaultDayEnvironmentMaterial);
+	}
+
+	//Set the environment blend to be day by default.
+	EnvironmentManager::Instance->SetEnvironmentBlend(1.0f);
+
+	{
 		//Initialize the default ocean material.
 		WaterMaterialData data;
+
+		data.mipmapLevels = 1;
+		data.width = 1;
+		data.height = 1;
+		data.normalMapData.UpsizeSlow(1);
+		data.normalMapData[0].Reserve(4);
+		data.normalMapData[0].EmplaceFast(0);
+		data.normalMapData[0].EmplaceFast(0);
+		data.normalMapData[0].EmplaceFast(255);
+		data.normalMapData[0].EmplaceFast(0);
+
+		CreateOceanMaterial(data, defaultOceanMaterial);
+
+		EnvironmentManager::Instance->SetOceanMaterial(defaultOceanMaterial);
 	}
 }
 
