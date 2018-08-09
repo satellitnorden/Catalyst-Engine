@@ -451,17 +451,22 @@ void RenderingSystem::InitializeCommonEnvironmentMaterials() NOEXCEPT
 		EnvironmentMaterialData data;
 
 		data.diffuseResolution = 1;
-		data.diffuseData.Reserve(4);
-		data.diffuseData.EmplaceFast(0.0f);
-		data.diffuseData.EmplaceFast(1.0f);
-		data.diffuseData.EmplaceFast(1.0f);
-		data.diffuseData.EmplaceFast(1.0f);
+		data.diffuseData.Reserve(4 * 6);
 		data.diffuseIrradianceResolution = 1;
-		data.diffuseIrradianceData.Reserve(4);
-		data.diffuseIrradianceData.EmplaceFast(0.0f);
-		data.diffuseIrradianceData.EmplaceFast(1.0f);
-		data.diffuseIrradianceData.EmplaceFast(1.0f);
-		data.diffuseIrradianceData.EmplaceFast(1.0f);
+		data.diffuseIrradianceData.Reserve(4 * 6);
+
+		for (uint8 i = 0; i < 6; ++i)
+		{
+			data.diffuseData.EmplaceFast(0.0f);
+			data.diffuseData.EmplaceFast(1.0f);
+			data.diffuseData.EmplaceFast(1.0f);
+			data.diffuseData.EmplaceFast(1.0f);
+
+			data.diffuseIrradianceData.EmplaceFast(0.0f);
+			data.diffuseIrradianceData.EmplaceFast(1.0f);
+			data.diffuseIrradianceData.EmplaceFast(1.0f);
+			data.diffuseIrradianceData.EmplaceFast(1.0f);
+		}
 
 		CreateEnvironmentMaterial(data, commonEnvironmentMaterials[INDEX(CommonEnvironmentMaterial::Teal)]);
 	}
