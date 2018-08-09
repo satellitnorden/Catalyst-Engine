@@ -22,6 +22,7 @@
 #include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
 
 //Resources.
+#include <Resources/EnvironmentMaterialData.h>
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/TerrainMaterialData.h>
@@ -49,6 +50,9 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize all render passes.
 	InitializeRenderPasses();
+
+	//Initialize the common environment materials.
+	InitializeCommonEnvironmentMaterials();
 
 	//Initializes the common physical materials.
 	InitializeCommonPhysicalMaterials();
@@ -434,6 +438,32 @@ void RenderingSystem::InitializeRenderPasses() NOEXCEPT
 	for (RenderPass *const RESTRICT renderPass : renderPasses)
 	{
 		renderPass->WaitForInitialization();
+	}
+}
+
+/*
+*	Initializes the common environment materials.
+*/
+void RenderingSystem::InitializeCommonEnvironmentMaterials() NOEXCEPT
+{
+	{
+		//Initialize the teal common environment material.
+		EnvironmentMaterialData data;
+
+		data.diffuseResolution = 1;
+		data.diffuseData.Reserve(4);
+		data.diffuseData.EmplaceFast(0.0f);
+		data.diffuseData.EmplaceFast(1.0f);
+		data.diffuseData.EmplaceFast(1.0f);
+		data.diffuseData.EmplaceFast(1.0f);
+		data.diffuseIrradianceResolution = 1;
+		data.diffuseIrradianceData.Reserve(4);
+		data.diffuseIrradianceData.EmplaceFast(0.0f);
+		data.diffuseIrradianceData.EmplaceFast(1.0f);
+		data.diffuseIrradianceData.EmplaceFast(1.0f);
+		data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+		CreateEnvironmentMaterial(data, commonEnvironmentMaterials[INDEX(CommonEnvironmentMaterial::Teal)]);
 	}
 }
 

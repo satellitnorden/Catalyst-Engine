@@ -1498,18 +1498,39 @@ void VulkanRenderingSystem::UpdateParticleSystemProperties() const NOEXCEPT
 */
 void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 {
-	if (EnvironmentManager::Instance->GetNightEnvironmentMaterial() && EnvironmentManager::Instance->GetDayEnvironmentMaterial())
 	{
 		//Update the environment descriptor set.
 		VulkanDescriptorSet &environmentDescriptorSet{ *currentEnvironmentDataDescriptorSet };
 
-		StaticArray<VkWriteDescriptorSet, 4> environmentWriteDescriptorSets
+		StaticArray<VkWriteDescriptorSet, 4> environmentWriteDescriptorSets;
+
+		if (EnvironmentManager::Instance->GetNightEnvironmentMaterial())
 		{
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetNightEnvironmentMaterial().diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 0),
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetNightEnvironmentMaterial().diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 1),
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetDayEnvironmentMaterial().diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 2),
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetDayEnvironmentMaterial().diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 3)
-		};
+			environmentWriteDescriptorSets[0] = static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetNightEnvironmentMaterial().diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 0);
+			environmentWriteDescriptorSets[1] = static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetNightEnvironmentMaterial().diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 1);
+		}
+
+		else
+		{
+			const EnvironmentMaterial defaultMaterial{ RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Teal) };
+
+			environmentWriteDescriptorSets[0] = static_cast<const VulkanCubeMapTexture *const RESTRICT>(defaultMaterial.diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 0);
+			environmentWriteDescriptorSets[1] = static_cast<const VulkanCubeMapTexture *const RESTRICT>(defaultMaterial.diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 1);
+		}
+
+		if (EnvironmentManager::Instance->GetDayEnvironmentMaterial())
+		{
+			environmentWriteDescriptorSets[2] = static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetDayEnvironmentMaterial().diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 2);
+			environmentWriteDescriptorSets[3] = static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetDayEnvironmentMaterial().diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 3);
+		}
+
+		else
+		{
+			const EnvironmentMaterial defaultMaterial{ RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Teal) };
+
+			environmentWriteDescriptorSets[2] = static_cast<const VulkanCubeMapTexture *const RESTRICT>(defaultMaterial.diffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 2);
+			environmentWriteDescriptorSets[3] = static_cast<const VulkanCubeMapTexture *const RESTRICT>(defaultMaterial.diffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 3);
+		}
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(environmentWriteDescriptorSets.Size()), environmentWriteDescriptorSets.Data(), 0, nullptr);
 	}

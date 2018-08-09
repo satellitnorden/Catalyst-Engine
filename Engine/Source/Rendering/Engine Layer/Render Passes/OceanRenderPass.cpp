@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Engine Layer/Render Passes/OceanRenderPass.h>
 
+//Managers.
+#include <Managers/EnvironmentManager.h>
+
 //Rendering.
 #include <Rendering/Engine Layer/CommandBuffer.h>
 
@@ -81,6 +84,14 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 */
 void OceanRenderPass::RenderInternal() NOEXCEPT
 {
+	//If there's no ocean material, don't render the ocean!
+	if (!EnvironmentManager::Instance->GetOceanMaterial())
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
