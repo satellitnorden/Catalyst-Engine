@@ -6,7 +6,7 @@
 
 #if defined(CATALYST_WINDOWS)
 //Third party libraries.
-#include <Third Party Libraries/GLFW/glfw3.h>
+#include <ThirdParty/GLFW/glfw3.h>
 #endif
 
 //Preprocessor defines.

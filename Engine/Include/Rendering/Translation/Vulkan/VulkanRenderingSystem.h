@@ -15,9 +15,9 @@
 #include <Rendering/Engine/EnvironmentMaterial.h>
 #include <Rendering/Engine/RenderingCore.h>
 #include <Rendering/Engine/Window.h>
-#include <Rendering/Translation Layer/Vulkan/VulkanDynamicUniformData.h>
-#include <Rendering/Translation Layer/Vulkan/VulkanFrameData.h>
-#include <Rendering/Translation Layer/Vulkan/VulkanRenderPassData.h>
+#include <Rendering/Translation/Vulkan/VulkanDynamicUniformData.h>
+#include <Rendering/Translation/Vulkan/VulkanFrameData.h>
+#include <Rendering/Translation/Vulkan/VulkanRenderPassData.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanInterface.h>

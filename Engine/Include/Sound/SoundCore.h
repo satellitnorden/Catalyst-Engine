@@ -5,7 +5,7 @@
 
 #if defined(CATALYST_WINDOWS)
 //Third party libraries.
-#include <Third Party Libraries/fmod_studio.hpp>
+#include <ThirdParty/fmod_studio.hpp>
 #endif
 
 #if !defined(CATALYST_FINAL) && defined(CATALYST_WINDOWS)

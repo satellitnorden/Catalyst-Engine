@@ -22,7 +22,7 @@
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/Engine/TerrainMaterial.h>
 #include <Rendering/Engine/TextureData.h>
-#include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
+#include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>

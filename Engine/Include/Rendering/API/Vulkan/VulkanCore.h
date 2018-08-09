@@ -4,7 +4,7 @@
 #include <Core/EngineCore.h>
 
 //Vulkan.
-#include <Third Party Libraries/vulkan/vulkan.h>
+#include <ThirdParty/vulkan/vulkan.h>
 
 /*
 *	Turns Vulkan debugging on/off.

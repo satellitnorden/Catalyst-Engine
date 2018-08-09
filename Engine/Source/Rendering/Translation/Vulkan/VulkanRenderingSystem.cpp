@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
+#include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
 
 //Components.
 #include <Components/ComponentManager.h>
@@ -36,9 +36,9 @@
 #include <Rendering/Engine/VegetationMaterial.h>
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/ShaderData/Vulkan/VulkanShaderData.h>
-#include <Rendering/Translation Layer/Vulkan/VulkanParticleSystemProperties.h>
-#include <Rendering/Translation Layer/Vulkan/VulkanTranslationCommandBuffer.h>
-#include <Rendering/Translation Layer/Vulkan/VulkanTranslationUtilities.h>
+#include <Rendering/Translation/Vulkan/VulkanParticleSystemProperties.h>
+#include <Rendering/Translation/Vulkan/VulkanTranslationCommandBuffer.h>
+#include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>

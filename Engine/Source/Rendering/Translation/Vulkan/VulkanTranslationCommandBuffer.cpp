@@ -1,11 +1,11 @@
 //Header file.
-#include <Rendering/Translation Layer/Vulkan/VulkanTranslationCommandBuffer.h>
+#include <Rendering/Translation/Vulkan/VulkanTranslationCommandBuffer.h>
 
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
-#include <Rendering/Translation Layer/Vulkan/VulkanRenderingSystem.h>
-#include <Rendering/Translation Layer/Vulkan/VulkanRenderPassData.h>
-#include <Rendering/Translation Layer/Vulkan/VulkanTranslationUtilities.h>
+#include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
+#include <Rendering/Translation/Vulkan/VulkanRenderPassData.h>
+#include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
 /*
 *	Begins the command buffer.
