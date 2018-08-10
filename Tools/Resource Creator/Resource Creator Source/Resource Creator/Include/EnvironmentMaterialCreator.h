@@ -1,8 +1,8 @@
 #pragma once
 
-//Engine core.
-#include <Engine Core/EngineCore.h>
-#include <Engine Core/HashString.h>
+//Core.
+#include <Core/EngineCore.h>
+#include <Core/HashString.h>
 
 //Math.
 #include <Math/CatalystMath.h>
@@ -14,8 +14,8 @@
 #include <Multithreading/Task.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CPUTexture2D.h>
-#include <Rendering/Engine Layer/CPUTextureCube.h>
+#include <Rendering/Engine/CPUTexture2D.h>
+#include <Rendering/Engine/CPUTextureCube.h>
 
 //Resources
 #include <Resources/ResourcesCore.h>

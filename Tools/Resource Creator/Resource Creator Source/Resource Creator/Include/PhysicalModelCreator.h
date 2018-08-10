@@ -1,14 +1,14 @@
 #pragma once
 
-//Engine core.
-#include <Engine Core/EngineCore.h>
-#include <Engine Core/HashString.h>
+//Core.
+#include <Core/EngineCore.h>
+#include <Core/HashString.h>
 
 //Math.
 #include <Math/CatalystMath.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/PhysicalVertex.h>
+#include <Rendering/Engine/PhysicalVertex.h>
 
 //Resources
 #include <Resources/ResourcesCore.h>

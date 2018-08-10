@@ -44,6 +44,17 @@ public:
 	}
 
 	/*
+	*	Copy constructor.
+	*/
+	Task(const Task &otherTask) NOEXCEPT
+		:
+		function(otherTask.function),
+		arguments(otherTask.arguments)
+	{
+
+	}
+
+	/*
 	*	Executes this task.
 	*/
 	void Execute() NOEXCEPT

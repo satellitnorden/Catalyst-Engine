@@ -1,8 +1,8 @@
 #pragma once
 
-//Engine core.
-#include <Engine Core/EngineCore.h>
-#include <Engine Core/HashString.h>
+//Core.
+#include <Core/EngineCore.h>
+#include <Core/HashString.h>
 
 //Resources
 #include <Resources/ResourcesCore.h>
