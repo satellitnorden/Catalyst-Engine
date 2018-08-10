@@ -5,6 +5,7 @@
 
 //Forward declarations.
 class CameraEntity;
+class DirectionalLightEntity;
 
 class MaximGameSystem final
 {
@@ -37,6 +38,9 @@ public:
 private:
 
 	//The camera.
-	CameraEntity *RESTRICT camera;
+	CameraEntity * RESTRICT camera;
+
+	//The sun.
+	DirectionalLightEntity *RESTRICT sun;
 
 };

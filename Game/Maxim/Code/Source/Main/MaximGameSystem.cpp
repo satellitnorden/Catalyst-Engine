@@ -27,8 +27,8 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	camera = EntitySystem::Instance->CreateEntity<CameraEntity>();
 
 	//Move the camera into position.
-	camera->Move(Vector3(0.0f, 1.0f + 2.0f, 1.0f));
-	camera->Rotate(Vector3(-60.0f, 0.0f, 0.0f));
+	camera->Move(Vector3(0.0f, 1.0f + 2.0f, 4.0f));
+	camera->Rotate(Vector3(-30.0f, 0.0f, 0.0f));
 
 	//Set it as the active camera.
 	RenderingSystem::Instance->SetActiveCamera(camera);
@@ -40,11 +40,12 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Octahedron) };
 	model.SetMaterial(RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red));
 
-	StaticPhysicalEntity *const RESTRICT plane{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	plane->Initialize(model, Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f));
+	StaticPhysicalEntity *const RESTRICT object{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	object->Initialize(model, Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.5f, 1.0f));
 
 	//Create, uh, sun.
-	DirectionalLightEntity *const RESTRICT sun{ EntitySystem::Instance->CreateEntity<DirectionalLightEntity>() };
+	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
+	sun->SetIntensity(100.0f);
 }
 
 /*
@@ -54,6 +55,9 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
 	//Eh. Move the camera a bit.
 	camera->Move(Vector3(CatalystMath::SineRadians(EngineSystem::Instance->GetTotalGameTime()) * 0.01f, 0.0f, 0.0f));
+
+	//Eh. Rotate the "sun".
+	sun->Rotate(Vector3(0.0f, 45.0f * deltaTime, 0.0f));
 }
 
 /*

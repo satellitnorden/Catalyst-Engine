@@ -465,14 +465,14 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		physicalMaterialData.albedoData[0].EmplaceFast(255);
 		physicalMaterialData.normalMapData.UpsizeSlow(1);
 		physicalMaterialData.normalMapData[0].Reserve(4);
-		physicalMaterialData.normalMapData[0].EmplaceFast(0);
-		physicalMaterialData.normalMapData[0].EmplaceFast(0);
+		physicalMaterialData.normalMapData[0].EmplaceFast(127);
+		physicalMaterialData.normalMapData[0].EmplaceFast(127);
 		physicalMaterialData.normalMapData[0].EmplaceFast(255);
 		physicalMaterialData.normalMapData[0].EmplaceFast(255);
 		physicalMaterialData.materialPropertiesData.UpsizeSlow(1);
 		physicalMaterialData.materialPropertiesData[0].Reserve(4);
+		physicalMaterialData.materialPropertiesData[0].EmplaceFast(127);
 		physicalMaterialData.materialPropertiesData[0].EmplaceFast(255);
-		physicalMaterialData.materialPropertiesData[0].EmplaceFast(0);
 		physicalMaterialData.materialPropertiesData[0].EmplaceFast(255);
 		physicalMaterialData.materialPropertiesData[0].EmplaceFast(0);
 
