@@ -574,12 +574,28 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 		WaterMaterialData data;
 
 		data.mipmapLevels = 1;
-		data.width = 1;
-		data.height = 1;
+		data.width = 2;
+		data.height = 2;
 		data.normalMapData.UpsizeSlow(1);
-		data.normalMapData[0].Reserve(4);
+		data.normalMapData[0].Reserve(16);
+
+		data.normalMapData[0].EmplaceFast(255);
 		data.normalMapData[0].EmplaceFast(127);
+		data.normalMapData[0].EmplaceFast(255);
+		data.normalMapData[0].EmplaceFast(0);
+
+		data.normalMapData[0].EmplaceFast(0);
 		data.normalMapData[0].EmplaceFast(127);
+		data.normalMapData[0].EmplaceFast(255);
+		data.normalMapData[0].EmplaceFast(0);
+
+		data.normalMapData[0].EmplaceFast(127);
+		data.normalMapData[0].EmplaceFast(255);
+		data.normalMapData[0].EmplaceFast(255);
+		data.normalMapData[0].EmplaceFast(0);
+
+		data.normalMapData[0].EmplaceFast(127);
+		data.normalMapData[0].EmplaceFast(0);
 		data.normalMapData[0].EmplaceFast(255);
 		data.normalMapData[0].EmplaceFast(0);
 

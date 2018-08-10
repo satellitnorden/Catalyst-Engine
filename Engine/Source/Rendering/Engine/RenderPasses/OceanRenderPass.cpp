@@ -48,11 +48,15 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::Scene);
 	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 
-	//Add the descriptor set layouts.
+	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
 	AddRenderDataTableLayout(RenderDataTableLayout::Environment);
 	AddRenderDataTableLayout(RenderDataTableLayout::Ocean);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(float));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -99,6 +103,10 @@ void OceanRenderPass::RenderInternal() NOEXCEPT
 	};
 
 	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
+
+	//Push constant data.
+	constexpr float scaling{ 0.025f };
+	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(float), &scaling);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

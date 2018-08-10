@@ -58,6 +58,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //Preprocessor defines.
 #define NUMBER_OF_SCREEN_SPACE_REFLECTION_ITERATIONS 100
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    float oceanScaling;
+};
+
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
@@ -87,7 +93,7 @@ vec3 viewDirection;
 */
 void CalculateNormalDirection()
 {
-    normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * 0.0075f) + (vec2(totalGameTime, totalGameTime) * 0.025f)).xzy * 2.0f - 1.0f;
+    normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * oceanScaling) - (vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.1f)).xzy * 2.0f - 1.0f;
     normalDirection = mix(normalDirection, vec3(0.0f, 1.0f, 0.0f), 0.75f);
 }
 

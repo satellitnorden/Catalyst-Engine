@@ -51,7 +51,7 @@ void StaticPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
 
-	//Add the descriptor set layouts.
+	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
 	AddRenderDataTableLayout(RenderDataTableLayout::Physical);

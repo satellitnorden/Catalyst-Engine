@@ -55,52 +55,6 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
-//The cube map vertices.
-vec3 cubeMapVertices[36] = vec3[]
-(
-  vec3(-1.0f, 1.0f, -1.0f),
-  vec3(-1.0f, -1.0f, -1.0f),
-  vec3(1.0f, -1.0f, -1.0f),
-  vec3(1.0f, -1.0f, -1.0f),
-  vec3(1.0f, 1.0f, -1.0f),
-  vec3(-1.0f, 1.0f, -1.0f),
-
-  vec3(-1.0f, -1.0f, 1.0f),
-  vec3(-1.0f, -1.0f, -1.0f),
-  vec3(-1.0f, 1.0f, -1.0f),
-  vec3(-1.0f, 1.0f, -1.0f),
-  vec3(-1.0f, 1.0f, 1.0f),
-  vec3(-1.0f, -1.0f, 1.0f),
-
-  vec3(1.0f, -1.0f, -1.0f),
-  vec3(1.0f, -1.0f, 1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(1.0f, 1.0f, -1.0f),
-  vec3(1.0f, -1.0f, -1.0f),
-
-  vec3(-1.0f, -1.0f, 1.0f),
-  vec3(-1.0f, 1.0f, 1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(1.0f, -1.0f, 1.0f),
-  vec3(-1.0f, -1.0f, 1.0f),
-
-  vec3(-1.0f, 1.0f, -1.0f),
-  vec3(1.0f, 1.0f, -1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(-1.0f, 1.0f, 1.0f),
-  vec3(-1.0f, 1.0f, -1.0f),
-
-  vec3(-1.0f, -1.0f, -1.0f),
-  vec3(-1.0f, -1.0f, 1.0f),
-  vec3(1.0f, -1.0f, -1.0f),
-  vec3(1.0f, -1.0f, -1.0f),
-  vec3(-1.0f, -1.0f, 1.0f),
-  vec3(1.0f, -1.0f, 1.0f)
-);
-
 //Model uniform buffer.
 layout (push_constant) uniform ModelData
 {
