@@ -38,7 +38,7 @@ public:
 	uint32 GetNumberOfTaskExecutors() const NOEXCEPT { return numberOfTaskExecutors; }
 
 	/*
-	*	Executes a task. If a valid semaphore is passed in, it will be automatically reset.
+	*	Executes a task.
 	*/
 	void ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT;
 

@@ -4,8 +4,8 @@
 #include <Core/EngineCore.h>
 
 //Multithreading.
-#include <Multithreading/Semaphore.h>
 #include <Multithreading/MultithreadedResource.h>
+#include <Multithreading/Task.h>
 
 //Input.
 #include <Input/GamepadState.h>
@@ -52,8 +52,8 @@ public:
 
 private:
 
-	//The update semaphore.
-	Semaphore inputUpdateSemaphore;
+	//The update task.
+	Task inputUpdateTask;
 
 	//The current gamepad states.
 	StaticArray<GamepadState, INPUT_MAXIMUM_GAMEPADS> currentGamepadStates;

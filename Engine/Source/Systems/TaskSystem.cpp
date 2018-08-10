@@ -65,7 +65,7 @@ void TaskSystem::ReleaseSystem() NOEXCEPT
 void TaskSystem::ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT
 {
 	//Reset the semaphore.
-	newTask->semaphore->Reset();
+	newTask->semaphore.Reset();
 
 	//Put the task into the task queue.
 	taskQueue.Push(newTask);

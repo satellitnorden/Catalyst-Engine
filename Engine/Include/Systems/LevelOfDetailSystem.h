@@ -4,7 +4,6 @@
 #include <Core/EngineCore.h>
 
 //Multithreading.
-#include <Multithreading/Semaphore.h>
 #include <Multithreading/Task.h>
 
 //Rendering.
@@ -66,9 +65,6 @@ private:
 
 	//Container for all tasks.
 	StaticArray<Task, INDEX(LevelOfDetailTask::NumberOfLevelOfDetailTasks)> tasks;
-
-	//Container for all semaphores.
-	StaticArray<Semaphore, INDEX(LevelOfDetailTask::NumberOfLevelOfDetailTasks)> semaphores;
 
 	//Container for all terrain buffers.
 	StaticArray<ConstantBufferHandle, INDEX(TerrainBuffer::NumberOfTerrainBuffers)> terrainBuffers;

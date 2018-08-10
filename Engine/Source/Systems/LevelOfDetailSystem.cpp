@@ -50,7 +50,7 @@ void LevelOfDetailSystem::UpdateSystemSynchronous() NOEXCEPT
 void LevelOfDetailSystem::WaitForTerrainLevelOfDetail() const NOEXCEPT
 {
 	//Wait for the terrain level of detail to finish.
-	semaphores[INDEX(LevelOfDetailTask::Terrain)].WaitFor();
+	tasks[INDEX(LevelOfDetailTask::Terrain)].WaitFor();
 }
 
 /*
@@ -64,7 +64,6 @@ void LevelOfDetailSystem::InitializeLevelOfDetailTasks() NOEXCEPT
 		LevelOfDetailSystem::Instance->CaltulateTerrainLevelOfDetail();
 	};
 	tasks[INDEX(LevelOfDetailTask::Terrain)].arguments = nullptr;
-	tasks[INDEX(LevelOfDetailTask::Terrain)].semaphore = &semaphores[INDEX(LevelOfDetailTask::Terrain)];
 }
 
 /*

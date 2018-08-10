@@ -6,9 +6,6 @@
 //Math.
 #include <Math/Vector3.h>
 
-//Multithreading.
-#include <Multithreading/Semaphore.h>
-
 //Sound.
 #include <Sound/SoundCore.h>
 
@@ -192,9 +189,6 @@ private:
 		}
 
 	};
-
-	//The update semaphore.
-	Semaphore updateSemaphore{ SemaphoreCreationFlags::Signalled };
 
 	//The fmod studio system.
 	FMOD::Studio::System *RESTRICT studioSystem;

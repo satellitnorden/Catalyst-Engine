@@ -48,7 +48,6 @@ void CullingSystem::InitializeCullingTasks() NOEXCEPT
 		CullingSystem::Instance->CullTerrain();
 	};
 	tasks[INDEX(CullingTask::Terrain)].arguments = nullptr;
-	tasks[INDEX(CullingTask::Terrain)].semaphore = &semaphores[INDEX(CullingTask::Terrain)];
 
 	//Initialize the static physical culling task.
 	tasks[INDEX(CullingTask::StaticPhysical)].function = [](void *const RESTRICT)
@@ -56,7 +55,6 @@ void CullingSystem::InitializeCullingTasks() NOEXCEPT
 		CullingSystem::Instance->CullStaticPhysical();
 	};
 	tasks[INDEX(CullingTask::StaticPhysical)].arguments = nullptr;
-	tasks[INDEX(CullingTask::StaticPhysical)].semaphore = &semaphores[INDEX(CullingTask::StaticPhysical)];
 
 	//Initialize the vegetation culling task.
 	tasks[INDEX(CullingTask::Vegetation)].function = [](void *const RESTRICT)
@@ -64,7 +62,6 @@ void CullingSystem::InitializeCullingTasks() NOEXCEPT
 		CullingSystem::Instance->CullVegetation();
 	};
 	tasks[INDEX(CullingTask::Vegetation)].arguments = nullptr;
-	tasks[INDEX(CullingTask::Vegetation)].semaphore = &semaphores[INDEX(CullingTask::Vegetation)];
 }
 
 /*
@@ -73,7 +70,7 @@ void CullingSystem::InitializeCullingTasks() NOEXCEPT
 void CullingSystem::WaitForTerrainCulling() const NOEXCEPT
 {
 	//Wait for the terrain culling to finish.
-	semaphores[INDEX(CullingTask::Terrain)].WaitFor();
+	tasks[INDEX(CullingTask::Terrain)].WaitFor();
 }
 
 /*
@@ -82,7 +79,7 @@ void CullingSystem::WaitForTerrainCulling() const NOEXCEPT
 void CullingSystem::WaitForStaticPhysicalCulling() const NOEXCEPT
 {
 	//Wait for the static physical culling to finish.
-	semaphores[INDEX(CullingTask::StaticPhysical)].WaitFor();
+	tasks[INDEX(CullingTask::StaticPhysical)].WaitFor();
 }
 
 /*
@@ -91,7 +88,7 @@ void CullingSystem::WaitForStaticPhysicalCulling() const NOEXCEPT
 void CullingSystem::WaitForVegetationCulling() const NOEXCEPT
 {
 	//Wait for the vegetation culling to finish.
-	semaphores[INDEX(CullingTask::Vegetation)].WaitFor();
+	tasks[INDEX(CullingTask::Vegetation)].WaitFor();
 }
 
 /*

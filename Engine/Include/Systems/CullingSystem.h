@@ -4,7 +4,6 @@
 #include <Core/EngineCore.h>
 
 //Multithreading.
-#include <Multithreading/Semaphore.h>
 #include <Multithreading/Task.h>
 
 class CullingSystem final
@@ -58,9 +57,6 @@ private:
 
 	//Container for all tasks.
 	StaticArray<Task, INDEX(CullingTask::NumberOfCullingTasks)> tasks;
-
-	//Container for all semaphores.
-	StaticArray<Semaphore, INDEX(CullingTask::NumberOfCullingTasks)> semaphores;
 
 	/*
 	*	Initializes the culling tasks.

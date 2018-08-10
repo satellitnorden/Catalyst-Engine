@@ -12,9 +12,7 @@ RenderPass::RenderPass() NOEXCEPT
 {
 	//Set up the tasks.
 	initializationTask.arguments = nullptr;
-	initializationTask.semaphore = &initializationSemaphore;
 	renderTask.arguments = nullptr;
-	renderTask.semaphore = &renderSemaphore;
 }
 
 /*
@@ -32,7 +30,7 @@ void RenderPass::InitializeAsynchronous() NOEXCEPT
 void RenderPass::WaitForInitialization() const NOEXCEPT
 {
 	//Wait for the initialization this render pass to finish.
-	initializationSemaphore.WaitFor();
+	initializationTask.WaitFor();
 }
 
 /*
@@ -50,7 +48,7 @@ void RenderPass::RenderAsynchronous() NOEXCEPT
 void RenderPass::WaitForRender() const NOEXCEPT
 {
 	//Wait for the render this render pass to finish.
-	renderSemaphore.WaitFor();
+	renderTask.WaitFor();
 }
 
 /*

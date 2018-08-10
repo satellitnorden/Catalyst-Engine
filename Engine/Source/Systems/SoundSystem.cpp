@@ -68,8 +68,14 @@ void SoundSystem::InitializeSystem() NOEXCEPT
 void SoundSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
 #if defined(CATALYST_WINDOWS)
+	//Create the asynchronous update task.
+	static Task soundUpdateTask{ [](void *const RESTRICT arguments)
+	{
+		static_cast<SoundSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
+	}, this };
+
 	//Wait for the asynchronous update to finish.
-	updateSemaphore.WaitFor();
+	soundUpdateTask.WaitFor();
 
 	//Update active listener synchronously.
 	UpdateActiveListenerSynchronous(deltaTime);
@@ -84,11 +90,6 @@ void SoundSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	sound3DUpdatePositionRequestBuffers[currentSynchronousSoundSystemBuffer].ClearFast();
 
 	//Execute the asynchronous update task.
-	static Task soundUpdateTask{ [](void *const RESTRICT arguments)
-	{
-		static_cast<SoundSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
-	}, this, &updateSemaphore };
-
 	TaskSystem::Instance->ExecuteTask(&soundUpdateTask);
 #endif
 }

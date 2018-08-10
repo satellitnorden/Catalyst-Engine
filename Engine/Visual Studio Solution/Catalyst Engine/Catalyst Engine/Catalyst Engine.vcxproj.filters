@@ -828,6 +828,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Multithreading\AtomicFlag.h">
+      <Filter>Multithreading\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

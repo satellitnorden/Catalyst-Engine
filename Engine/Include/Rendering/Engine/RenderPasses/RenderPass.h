@@ -4,7 +4,6 @@
 #include <Core/EngineCore.h>
 
 //Multithreading.
-#include <Multithreading/Semaphore.h>
 #include <Multithreading/Task.h>
 
 //Rendering.
@@ -439,13 +438,7 @@ private:
 	//The initialization task.
 	Task initializationTask;
 
-	//The initialization semaphore.
-	Semaphore initializationSemaphore;
-
 	//The render task.
 	Task renderTask;
-
-	//The render semaphore.
-	Semaphore renderSemaphore;
 
 };

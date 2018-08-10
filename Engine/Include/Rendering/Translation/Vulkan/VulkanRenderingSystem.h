@@ -9,7 +9,7 @@
 
 //Multithreading.
 #include <Multithreading/MultithreadedResource.h>
-#include <Multithreading/Semaphore.h>
+#include <Multithreading/Task.h>
 
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>
@@ -182,11 +182,11 @@ private:
 		NumberOfSemaphores
 	};
 
-	//Enumeration covering all task semaphores.
-	enum class TaskSemaphore : uint8
+	//Enumeration covering all Vulkan rendering tasks.
+	enum class VulkanRenderingTask : uint8
 	{
 		UpdateParticleSystemProperties,
-		NumberOfTaskSemaphores
+		NumberOfVulkanRenderingTasks
 	};
 
 	//Enumeration covering all uniform buffers.
@@ -197,8 +197,8 @@ private:
 		NumberOfUniformBuffers
 	};
 
-	//Container for all task semaphores.
-	StaticArray<Semaphore, INDEX(TaskSemaphore::NumberOfTaskSemaphores)> taskSemaphores;
+	//Container for all tasks.
+	StaticArray<Task, INDEX(VulkanRenderingTask::NumberOfVulkanRenderingTasks)> tasks;
 
 	//The main window.
 	Window mainWindow;
@@ -244,6 +244,11 @@ private:
 
 	//The current environment descriptor set.
 	VulkanDescriptorSet *RESTRICT currentEnvironmentDataDescriptorSet;
+
+	/*
+	*	Initializes all Vulkan rendering tasks.
+	*/
+	void InitializeVulkanRenderingTasks() NOEXCEPT;
 
 	/*
 	*	Initializes all special textures.

@@ -72,6 +72,9 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize the Vulkan interface.
 	VulkanInterface::Instance->Initialize(mainWindow);
 
+	//Initialize all Vulkan rendering tasks.
+	InitializeVulkanRenderingTasks();
+
 	//Initialize all special textures.
 	InitializeSpecialTextures();
 
@@ -627,6 +630,19 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEX
 RenderDataTableHandle VulkanRenderingSystem::GetRenderDataTable(const RenderDataTable renderDataTable) NOEXCEPT
 {
 	return reinterpret_cast<RenderDataTableHandle>(descriptorSets[INDEX(renderDataTable)].Get());
+}
+
+/*
+*	Initializes all Vulkan rendering tasks.
+*/
+void VulkanRenderingSystem::InitializeVulkanRenderingTasks() NOEXCEPT
+{
+	//Initialize the update particle system properties task.
+	tasks[INDEX(VulkanRenderingTask::UpdateParticleSystemProperties)].function = [](void *const RESTRICT arguments)
+	{
+		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateParticleSystemProperties();
+	};
+	tasks[INDEX(VulkanRenderingTask::UpdateParticleSystemProperties)].arguments = this;
 }
 
 /*
@@ -1287,12 +1303,7 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 void VulkanRenderingSystem::ExecuteAsynchronousTasks() NOEXCEPT
 {
 	//Execute the asynchronous tasks.
-	static Task particleSystemUpdateTask{ [](void *const RESTRICT arguments)
-	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateParticleSystemProperties();
-	}, this, &taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)] };
-
-	TaskSystem::Instance->ExecuteTask(&particleSystemUpdateTask);
+	TaskSystem::Instance->ExecuteTask(&tasks[INDEX(VulkanRenderingTask::UpdateParticleSystemProperties)]);
 }
 
 /*
@@ -1404,7 +1415,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 void VulkanRenderingSystem::EndFrame() NOEXCEPT
 {
 	//Wait for the particle system properties update to finish.
-	taskSemaphores[INDEX(TaskSemaphore::UpdateParticleSystemProperties)].WaitFor();
+	tasks[INDEX(VulkanRenderingTask::UpdateParticleSystemProperties)].WaitFor();
 
 	//End the current command buffer.
 	frameData.GetCurrentPrimaryCommandBuffer()->End();
