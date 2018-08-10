@@ -27,9 +27,8 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	camera = EntitySystem::Instance->CreateEntity<CameraEntity>();
 
 	//Move the camera into position.
-	//camera->Move(Vector3(0.0f, 1.0f + 2.0f, 4.0f));
-	//camera->Rotate(Vector3(-30.0f, 0.0f, 0.0f));
-	camera->Move(Vector3(0.0f, 1.0f, 5.0f));
+	camera->Move(Vector3(0.0f, 1.0f + 4.0f, 8.0f));
+	camera->Rotate(Vector3(-30.0f, 0.0f, 0.0f));
 
 	//Set it as the active camera.
 	RenderingSystem::Instance->SetActiveCamera(camera);
