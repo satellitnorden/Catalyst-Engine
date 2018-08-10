@@ -563,8 +563,8 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 		data.height = 1;
 		data.normalMapData.UpsizeSlow(1);
 		data.normalMapData[0].Reserve(4);
-		data.normalMapData[0].EmplaceFast(0);
-		data.normalMapData[0].EmplaceFast(0);
+		data.normalMapData[0].EmplaceFast(127);
+		data.normalMapData[0].EmplaceFast(127);
 		data.normalMapData[0].EmplaceFast(255);
 		data.normalMapData[0].EmplaceFast(0);
 
