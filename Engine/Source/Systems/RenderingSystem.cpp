@@ -12,6 +12,7 @@
 #include <Math/CatalystMath.h>
 
 //Rendering.
+#include <Rendering/Engine/CommonPhysicalModelData.h>
 #include <Rendering/Engine/OceanMaterial.h>
 #include <Rendering/Engine/ParticleMaterial.h>
 #include <Rendering/Engine/PhysicalMaterial.h>
@@ -485,10 +486,17 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
 {
 	{
+		//Create the cube common physical model.
+		PhysicalModelData data;
+		CommonPhysicalModelData::GetCubePhysicalModelData(data);
+		CreatePhysicalModel(data, commonPhysicalModels[INDEX(CommonPhysicalModel::Cube)]);
+	}
+
+	{
 		//Create the plane common physical model.
-		PhysicalModelData planePhysicalModelData;
-		RenderingUtilities::GetPlanePhysicalModelData(planePhysicalModelData);
-		CreatePhysicalModel(planePhysicalModelData, commonPhysicalModels[INDEX(CommonPhysicalModel::Plane)]);
+		PhysicalModelData data;
+		CommonPhysicalModelData::GetPlanePhysicalModelData(data);
+		CreatePhysicalModel(data, commonPhysicalModels[INDEX(CommonPhysicalModel::Plane)]);
 	}
 }
 

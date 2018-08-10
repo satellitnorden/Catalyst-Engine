@@ -60,6 +60,7 @@ public:
 	//Enumeration covering all common physical models.
 	enum class CommonPhysicalModel : uint8
 	{
+		Cube,
 		Plane,
 		NumberOfCommonPhysicalModels
 	};

@@ -831,6 +831,9 @@
     <ClInclude Include="..\..\..\Include\Multithreading\AtomicFlag.h">
       <Filter>Multithreading\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalModelData.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
