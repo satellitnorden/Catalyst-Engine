@@ -61,6 +61,7 @@ public:
 	enum class CommonPhysicalModel : uint8
 	{
 		Cube,
+		Octahedron,
 		Plane,
 		NumberOfCommonPhysicalModels
 	};

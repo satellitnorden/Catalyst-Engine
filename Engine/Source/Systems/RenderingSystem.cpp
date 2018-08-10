@@ -493,6 +493,13 @@ void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
 	}
 
 	{
+		//Create the octahedron common physical model.
+		PhysicalModelData data;
+		CommonPhysicalModelData::GetOctahedronPhysicalModelData(data);
+		CreatePhysicalModel(data, commonPhysicalModels[INDEX(CommonPhysicalModel::Octahedron)]);
+	}
+
+	{
 		//Create the plane common physical model.
 		PhysicalModelData data;
 		CommonPhysicalModelData::GetPlanePhysicalModelData(data);
