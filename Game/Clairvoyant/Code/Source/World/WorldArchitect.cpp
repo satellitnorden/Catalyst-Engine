@@ -20,7 +20,7 @@
 #include <Entities/StaticPhysicalEntity.h>
 #include <Entities/TerrainEntity.h>
 #include <Entities/VegetationEntity.h>
-#include <Entities/Initialization Data/TerrainInitializationData.h>
+#include <Entities/InitializationData/TerrainInitializationData.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
@@ -35,15 +35,15 @@
 #include <Multithreading/Task.h>
 
 //Rendering.
-#include <Rendering/Engine Layer/CPUTexture2D.h>
-#include <Rendering/Engine Layer/EnvironmentMaterial.h>
-#include <Rendering/Engine Layer/OceanMaterial.h>
-#include <Rendering/Engine Layer/PhysicalModel.h>
-#include <Rendering/Engine Layer/RenderingUtilities.h>
-#include <Rendering/Engine Layer/TerrainMaterial.h>
-#include <Rendering/Engine Layer/TerrainUniformData.h>
-#include <Rendering/Engine Layer/TextureData.h>
-#include <Rendering/Engine Layer/WaterUniformData.h>
+#include <Rendering/Engine/CPUTexture2D.h>
+#include <Rendering/Engine/EnvironmentMaterial.h>
+#include <Rendering/Engine/OceanMaterial.h>
+#include <Rendering/Engine/PhysicalModel.h>
+#include <Rendering/Engine/RenderingUtilities.h>
+#include <Rendering/Engine/TerrainMaterial.h>
+#include <Rendering/Engine/TerrainUniformData.h>
+#include <Rendering/Engine/TextureData.h>
+#include <Rendering/Engine/WaterUniformData.h>
 
 //Resources.
 #include <Resources/ResourceLoader.h>
@@ -149,7 +149,6 @@ void WorldArchitect::Update(const float deltaTime) NOEXCEPT
 void WorldArchitect::InitializeTask() NOEXCEPT
 {
 	task.arguments = nullptr;
-	task.semaphore = &semaphore;
 }
 
 /*
@@ -179,7 +178,7 @@ void WorldArchitect::UpdateIdling() NOEXCEPT
 void WorldArchitect::UpdateGenerating() NOEXCEPT
 {
 	//When the task is done, go back to idling.
-	if (semaphore.IsSignalled())
+	if (task.IsExecuted())
 	{
 		currentState = WorldArchitectState::Idling;
 	}
@@ -191,7 +190,7 @@ void WorldArchitect::UpdateGenerating() NOEXCEPT
 void WorldArchitect::UpdateScanning() NOEXCEPT
 {
 	//Check if the scanning task has been finished.
-	if (semaphore.IsSignalled())
+	if (task.IsExecuted())
 	{
 		//If the suggested world chunk is valid, proceed with generating, otherwise go back to idling.
 		if (suggestedWorldChunk.IsValid())

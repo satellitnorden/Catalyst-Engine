@@ -4,7 +4,6 @@
 #include <Core/EngineCore.h>
 
 //Multithreading.
-#include <Multithreading/Semaphore.h>
 #include <Multithreading/Task.h>
 
 //Clairvoyant.
@@ -54,9 +53,6 @@ private:
 
 	//The task.
 	Task task;
-
-	//The semaphore.
-	Semaphore semaphore;
 
 	//The current world architect state.
 	WorldArchitectState currentState{ WorldArchitectState::Idling };

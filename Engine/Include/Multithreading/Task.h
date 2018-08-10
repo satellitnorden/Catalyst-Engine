@@ -56,7 +56,12 @@ public:
 	}
 
 	/*
-	*	Waits for this task to finish.
+	*	Returns whether or not this task has finished executing.
+	*/
+	bool IsExecuted() const NOEXCEPT { return semaphore.IsSignalled(); }
+
+	/*
+	*	Waits for this task to finish executing.
 	*/
 	void WaitFor() const NOEXCEPT { semaphore.WaitFor(); }
 
