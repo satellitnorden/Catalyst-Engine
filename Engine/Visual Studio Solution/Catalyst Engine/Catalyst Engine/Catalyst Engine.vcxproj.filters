@@ -169,14 +169,11 @@
     <Filter Include="Rendering\Source\Translation\Vulkan">
       <UniqueIdentifier>{6ad81507-7dde-4f1c-a4d5-88f1b5b7cad8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Platform\Include\Rendering">
-      <UniqueIdentifier>{85e481f7-f03a-4744-b909-d6a7d5b46707}</UniqueIdentifier>
+    <Filter Include="Platform\Include\Windows">
+      <UniqueIdentifier>{3d64d995-e321-49fd-8f19-fc76db16ef6a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Platform\Include\Rendering\API">
-      <UniqueIdentifier>{29c77fe4-6728-40e9-bbe8-18af905dc9f9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Platform\Include\Rendering\API\Vulkan">
-      <UniqueIdentifier>{aa7ab438-6601-49bb-862d-ab82b0e7ca9c}</UniqueIdentifier>
+    <Filter Include="Platform\Include\Android">
+      <UniqueIdentifier>{e2f38b16-67ff-4b5c-93fa-3ceb91282d53}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -408,13 +405,7 @@
     <ClInclude Include="..\..\..\Include\Physics\PhysicalConstants.h">
       <Filter>Physics\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\General\Android.h">
-      <Filter>Platform\Include\General</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h">
-      <Filter>Platform\Include\General</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\General\Windows.h">
       <Filter>Platform\Include\General</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\EnvironmentMaterialData.h">
@@ -843,11 +834,17 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Surface.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\Rendering\API\Vulkan\AndroidPlatformVulkan.h">
-      <Filter>Platform\Include\Rendering\API\Vulkan</Filter>
+    <ClInclude Include="..\..\..\Include\Platform\Android\Android.h">
+      <Filter>Platform\Include\Android</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\Rendering\API\Vulkan\WindowsPlatformVulkan.h">
-      <Filter>Platform\Include\Rendering\API\Vulkan</Filter>
+    <ClInclude Include="..\..\..\Include\Platform\Windows\Windows.h">
+      <Filter>Platform\Include\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Platform\Android\AndroidPlatformVulkan.h">
+      <Filter>Platform\Include\Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Platform\Windows\WindowsPlatformVulkan.h">
+      <Filter>Platform\Include\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -124,11 +124,11 @@
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Threadlock.h" />
     <ClInclude Include="..\..\..\Include\Physics\PhysicalConstants.h" />
-    <ClInclude Include="..\..\..\Include\Platform\General\Android.h" />
+    <ClInclude Include="..\..\..\Include\Platform\Android\Android.h" />
+    <ClInclude Include="..\..\..\Include\Platform\Android\AndroidPlatformVulkan.h" />
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h" />
-    <ClInclude Include="..\..\..\Include\Platform\General\Windows.h" />
-    <ClInclude Include="..\..\..\Include\Platform\Rendering\API\Vulkan\AndroidPlatformVulkan.h" />
-    <ClInclude Include="..\..\..\Include\Platform\Rendering\API\Vulkan\WindowsPlatformVulkan.h" />
+    <ClInclude Include="..\..\..\Include\Platform\Windows\Windows.h" />
+    <ClInclude Include="..\..\..\Include\Platform\Windows\WindowsPlatformVulkan.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\Vulkan2DTexture.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanAllocation.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanAllocator.h" />

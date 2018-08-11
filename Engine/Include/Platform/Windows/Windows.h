@@ -5,7 +5,7 @@
 /*
 *	Windows specific includes.
 */
-#include <Platform/Rendering/API/Vulkan/WindowsPlatformVulkan.h>
+#include <Platform/Windows/WindowsPlatformVulkan.h>
 
 /*
 *	Windows specific third party includes.
