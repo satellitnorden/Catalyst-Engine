@@ -5,6 +5,9 @@
 //Core.
 #include <Core/EngineCore.h>
 
+//Vulkan.
+#include <ThirdParty/vulkan/vulkan.h>
+
 namespace PlatformVulkan
 {
 

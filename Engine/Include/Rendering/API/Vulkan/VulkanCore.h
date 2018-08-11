@@ -3,9 +3,6 @@
 //Core.
 #include <Core/EngineCore.h>
 
-//Vulkan.
-#include <ThirdParty/vulkan/vulkan.h>
-
 /*
 *	Turns Vulkan debugging on/off.
 */
