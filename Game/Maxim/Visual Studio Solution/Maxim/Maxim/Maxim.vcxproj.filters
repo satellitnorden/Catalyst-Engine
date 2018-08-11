@@ -228,7 +228,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\VegetationRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\Window.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\Surface.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp">
@@ -315,6 +315,12 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\ViewportVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Resources\ResourceLoader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -345,10 +351,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TaskSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\android_native_app_glue.c">
       <Filter>Engine Source</Filter>
     </ClCompile>
   </ItemGroup>

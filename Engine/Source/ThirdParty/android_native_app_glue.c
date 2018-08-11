@@ -1,3 +1,4 @@
+#if defined(CATALYST_ANDROID)
 /*
  * Copyright (C) 2010 The Android Open Source Project
  *
@@ -440,3 +441,4 @@ void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState,
 
     activity->instance = android_app_create(activity, savedState, savedStateSize);
 }
+#endif

@@ -104,7 +104,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\StaticPhysicalRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\TerrainRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\VegetationRenderPass.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\Window.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\Surface.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\CubeMapVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.cpp" />
@@ -145,6 +145,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TaskSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\android_native_app_glue.c" />
     <ClCompile Include="..\..\..\Code\Source\Main\MaximGameSystem.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Main\MaximMain.cpp" />
   </ItemGroup>

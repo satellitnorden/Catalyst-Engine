@@ -11,13 +11,13 @@ DEFINE_SINGLETON(VulkanInterface);
 /*
 *	Initializes this Vulkan interface.
 */
-void VulkanInterface::Initialize(Window &window) NOEXCEPT
+void VulkanInterface::Initialize(Surface &surface) NOEXCEPT
 {
 	//Initialize the Vulkan instance.
 	vulkanInstance.Initialize();
 
 	//Initialize the Vulkan surface.
-	vulkanSurface.Initialize(window);
+	vulkanSurface.Initialize(surface);
 
 	//Initialize the Vulkan physical device.
 	vulkanPhysicalDevice.Initialize();

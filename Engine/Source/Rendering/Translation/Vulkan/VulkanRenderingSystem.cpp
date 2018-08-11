@@ -66,11 +66,11 @@ namespace VulkanRenderingSystemConstants
 */
 void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 {
-	//Initialize the main window.
-	mainWindow.Initialize();
+	//Initialize the main surface.
+	mainSurface.Initialize();
 
 	//Initialize the Vulkan interface.
-	VulkanInterface::Instance->Initialize(mainWindow);
+	VulkanInterface::Instance->Initialize(mainSurface);
 
 	//Initialize all Vulkan rendering tasks.
 	InitializeVulkanRenderingTasks();
@@ -111,8 +111,8 @@ void VulkanRenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
 	//Update the post processing data.
 	UpdatePostProcessingData();
 
-	//Update the main window.
-	mainWindow.Update();
+	//Update the main surface.
+	mainSurface.Update();
 
 	//Pre-update the Vulkan interface.
 	VulkanInterface::Instance->PreUpdate(semaphores[INDEX(GraphicsSemaphore::ImageAvailable)]);
@@ -141,8 +141,8 @@ void VulkanRenderingSystem::PostUpdateSystemSynchronous() NOEXCEPT
 	//Post-update the Vulkan interface.
 	VulkanInterface::Instance->PostUpdate(semaphores[INDEX(GraphicsSemaphore::RenderFinished)]);
 
-	//Check if the main window should close - If so, terminate.
-	if (mainWindow.ShouldClose())
+	//Check if the main surface should close - If so, terminate.
+	if (mainSurface.ShouldClose())
 	{
 		EngineSystem::Instance->Terminate();
 	}
@@ -159,8 +159,8 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 		descriptorSetLayouts[i].Release();
 	}
 
-	//Release the main window.
-	mainWindow.Release();
+	//Release the main surface.
+	mainSurface.Release();
 
 	//Release the Vulkan interface.
 	VulkanInterface::Instance->Release();

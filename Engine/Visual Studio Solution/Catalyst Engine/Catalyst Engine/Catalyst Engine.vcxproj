@@ -199,6 +199,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TerrainRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VegetationRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Surface.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h" />
@@ -207,7 +208,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationProperties.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationTransformation.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\WaterUniformData.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Window.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BloomFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\CubeMapVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.h" />
@@ -338,7 +338,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\StaticPhysicalRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TerrainRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\VegetationRenderPass.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\Window.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\Surface.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\CubeMapVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.cpp" />

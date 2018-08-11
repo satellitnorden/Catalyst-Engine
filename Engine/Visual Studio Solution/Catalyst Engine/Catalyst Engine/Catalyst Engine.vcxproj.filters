@@ -714,9 +714,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\WaterUniformData.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Window.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BloomFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
@@ -832,6 +829,9 @@
       <Filter>Multithreading\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalModelData.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Surface.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1091,9 +1091,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\PhysicalModel.cpp">
       <Filter>Rendering\Source\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\Window.cpp">
-      <Filter>Rendering\Source\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomHorizontalBlurRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
@@ -1168,6 +1165,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.cpp">
       <Filter>Rendering\Source\Translation\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\Surface.cpp">
+      <Filter>Rendering\Source\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

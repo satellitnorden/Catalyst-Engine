@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/Window.h>
+#include <Rendering/Engine/Surface.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -16,7 +16,7 @@
 /*
 *	Default constructor.
 */
-Window::Window() NOEXCEPT
+Surface::Surface() NOEXCEPT
 	:
 	window(nullptr),
 	width(WINDOW_WIDTH),
@@ -28,15 +28,15 @@ Window::Window() NOEXCEPT
 /*
 *	Default destructor.
 */
-Window::~Window() NOEXCEPT
+Surface::~Surface() NOEXCEPT
 {
 
 }
 
 /*
-*	Initializes this window.
+*	Initializes this surface.
 */
-void Window::Initialize() NOEXCEPT
+void Surface::Initialize() NOEXCEPT
 {
 #if defined(CATALYST_WINDOWS)
 	//Initialize GLFW.
@@ -54,9 +54,9 @@ void Window::Initialize() NOEXCEPT
 }
 
 /*
-*	Updates this window.
+*	Updates this surface.
 */
-void Window::Update() const NOEXCEPT
+void Surface::Update() const NOEXCEPT
 {
 #if defined(CATALYST_WINDOWS)
 	//Poll events.
@@ -65,9 +65,9 @@ void Window::Update() const NOEXCEPT
 }
 
 /*
-*	Releases this window.
+*	Releases this surface.
 */
-void Window::Release() NOEXCEPT
+void Surface::Release() NOEXCEPT
 {
 #if defined(CATALYST_WINDOWS)
 	//Destroy the window.
@@ -79,9 +79,9 @@ void Window::Release() NOEXCEPT
 }
 
 /*
-*	Returns whether or not this window should close.
+*	Returns whether or not this surface should close.
 */
-bool Window::ShouldClose() const NOEXCEPT
+bool Surface::ShouldClose() const NOEXCEPT
 {
 #if defined(CATALYST_WINDOWS)
 	return static_cast<bool>(glfwWindowShouldClose(window));

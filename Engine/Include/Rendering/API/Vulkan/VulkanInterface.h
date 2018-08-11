@@ -34,7 +34,7 @@
 #include <Rendering/API/Vulkan/VulkanUniformBuffer.h>
 
 //Forward declarations.
-class Window;
+class Surface;
 
 class VulkanInterface final
 {
@@ -52,7 +52,7 @@ public:
 	/*
 	*	Initializes this Vulkan interface.
 	*/
-	void Initialize(Window &window) NOEXCEPT;
+	void Initialize(Surface &surface) NOEXCEPT;
 
 	/*
 	*	Pre-updates this Vulkan interface.

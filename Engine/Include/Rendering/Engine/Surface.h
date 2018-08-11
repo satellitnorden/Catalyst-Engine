@@ -6,7 +6,7 @@
 //Forward declarations.
 struct GLFWwindow;
 
-class Window final
+class Surface final
 {
 
 public:
@@ -14,12 +14,12 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	Window() NOEXCEPT;
+	Surface() NOEXCEPT;
 
 	/*
 	*	Default destructor.
 	*/
-	~Window() NOEXCEPT;
+	~Surface() NOEXCEPT;
 
 	/*
 	*	Returns the underlying GLFW window, const version.
@@ -32,22 +32,22 @@ public:
 	RESTRICTED GLFWwindow* Get() NOEXCEPT { return window; }
 
 	/*
-	*	Initializes this window.
+	*	Initializes this surface.
 	*/
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Updates this window.
+	*	Updates this surface.
 	*/
 	void Update() const NOEXCEPT;
 
 	/*
-	*	Releases this window.
+	*	Releases this surface.
 	*/
 	void Release() NOEXCEPT;
 
 	/*
-	*	Returns whether or not this window should close.
+	*	Returns whether or not this surface should close.
 	*/
 	bool ShouldClose() const NOEXCEPT;
 

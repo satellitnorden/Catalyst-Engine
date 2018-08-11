@@ -7,7 +7,7 @@
 #include <Rendering/API/Vulkan/VulkanCore.h>
 
 //Forward declarations.
-class Window;
+class Surface;
 
 class VulkanSurface final
 {
@@ -32,7 +32,7 @@ public:
 	/*
 	*	Initializes this Vulkan surface.
 	*/
-	void Initialize(Window &window) NOEXCEPT;
+	void Initialize(Surface &surface) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan surface.

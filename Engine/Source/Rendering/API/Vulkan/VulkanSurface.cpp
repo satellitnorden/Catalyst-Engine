@@ -2,7 +2,7 @@
 #include <Rendering/API/Vulkan/VulkanSurface.h>
 
 //Graphics.
-#include <Rendering/Engine/Window.h>
+#include <Rendering/Engine/Surface.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanInterface.h>
@@ -31,11 +31,11 @@ VulkanSurface::~VulkanSurface() NOEXCEPT
 /*
 *	Initializes this Vulkan surface.
 */
-void VulkanSurface::Initialize(Window &window) NOEXCEPT
+void VulkanSurface::Initialize(Surface &surface) NOEXCEPT
 {
 #if defined(CATALYST_WINDOWS)
 	//Create the Vulkan surface!
-	VULKAN_ERROR_CHECK(glfwCreateWindowSurface(VulkanInterface::Instance->GetInstance().Get(), window.Get(), nullptr, &vulkanSurface));
+	VULKAN_ERROR_CHECK(glfwCreateWindowSurface(VulkanInterface::Instance->GetInstance().Get(), surface.Get(), nullptr, &vulkanSurface));
 #endif
 }
 
