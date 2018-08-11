@@ -7,16 +7,16 @@
 //Systems.
 #include <Systems/EngineSystem.h>
 
-MAIN
-{
+MAIN_FUNCTION
+(
 	//The delta timer.
 	DeltaTimer deltaTimer;
 
 	//Initialize the engine system.
-	EngineSystem::Instance->InitializeSystem(CatalystProjectInformation(CatalystProjectGeneralInformation("Maxim"),
-	CatalystProjectMultithreadingInformation(0),
-	CatalystProjectRenderingInformation(),
-	CatalystProjectSoundInformation(16)));
+	EngineSystem::Instance->InitializeSystem(	CatalystProjectInformation(CatalystProjectGeneralInformation("Maxim"),
+												CatalystProjectMultithreadingInformation(0),
+												CatalystProjectRenderingInformation(),
+												CatalystProjectSoundInformation(16)));
 
 	//Initialize the game system.
 	MaximGameSystem::Instance->InitializeSystem();
@@ -41,6 +41,4 @@ MAIN
 
 	//Release the engine system.
 	EngineSystem::Instance->ReleaseSystem();
-
-	MAIN_RETURN_SUCCESS;
-}
+)

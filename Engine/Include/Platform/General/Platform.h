@@ -4,7 +4,7 @@
 *	Platform-specific general files.
 */
 #if defined(CATALYST_WINDOWS)
-#include <Platform/General/Windows.h>
+#include <Platform/Windows/Windows.h>
 #elif defined(CATALYST_ANDROID)
-#include <Platform/General/Android.h>
+#include <Platform/Android/Android.h>
 #endif

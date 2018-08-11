@@ -1,8 +1,5 @@
 #pragma once
 
-//Platform.
-#include <Platform/General/Platform.h>
-
 //STL.
 #include <algorithm>
 #include <atomic>
@@ -73,6 +70,9 @@ class UniquePointer;
 #include <Core/Pair.h>
 #include <Core/Containers/StaticArray.h>
 #include <Core/UniquePointer.h>
+
+//Platform.
+#include <Platform/General/Platform.h>
 
 //The Catalyst project information.
 #include <Core/CatalystProjectInformation.h>

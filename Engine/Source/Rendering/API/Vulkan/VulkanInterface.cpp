@@ -13,6 +13,9 @@ DEFINE_SINGLETON(VulkanInterface);
 */
 void VulkanInterface::Initialize(Surface &surface) NOEXCEPT
 {
+	//Load vulkan.
+	PlatformVulkan::LoadVulkan();
+
 	//Initialize the Vulkan instance.
 	vulkanInstance.Initialize();
 
