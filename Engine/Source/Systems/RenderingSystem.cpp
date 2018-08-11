@@ -244,7 +244,7 @@ void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModel
 void RenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT
 {
 	//Create the albedo texture
-	particleMaterial.albedoTexture = CreateTexture2D(TextureData(TextureDataContainer(particleMaterialData.albedoData, particleMaterialData.width, particleMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	particleMaterial.albedoTexture = CreateTexture2D(TextureData(TextureDataContainer(particleMaterialData.albedoData, particleMaterialData.width, particleMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -454,59 +454,34 @@ void RenderingSystem::InitializeCommonParticleMaterials() NOEXCEPT
 {
 	{
 		//Create the white circle common particle material.
+		constexpr uint8 RESOLUTION{ 7 };
+		constexpr Vector2 MIDDLE_POINT{ 0.5f, 0.5f };
+
 		ParticleMaterialData data;
 
 		data.mipmapLevels = 1;
-		data.width = 3;
-		data.height = 3;
+		data.width = RESOLUTION;
+		data.height = RESOLUTION;
 
 		data.albedoData.UpsizeSlow(1);
-		data.albedoData[0].Reserve(36);
+		data.albedoData[0].Reserve(RESOLUTION * RESOLUTION * 4);
 
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(0);
+		for (uint8 i = 0; i < RESOLUTION; ++i)
+		{
+			for (uint8 j = 0; j < RESOLUTION; ++j)
+			{
+				const Vector2 point{ static_cast<float>(i) / static_cast<float>(RESOLUTION - 1), static_cast<float>(j) / static_cast<float>(RESOLUTION - 1) };
+				const float distance{ Vector2::LengthSquared(MIDDLE_POINT - point) * 2.0f };
+				float alpha{ 1.0f - distance };
+				alpha *= alpha;
+				alpha *= alpha;
 
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(127);
-
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(0);
-
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(127);
-
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(127);
-
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(0);
-
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(127);
-
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(255);
-		data.albedoData[0].EmplaceFast(0);
+				data.albedoData[0].EmplaceFast(255);
+				data.albedoData[0].EmplaceFast(255);
+				data.albedoData[0].EmplaceFast(255);
+				data.albedoData[0].EmplaceFast(static_cast<byte>(static_cast<float>(255) * alpha));
+			}
+		}
 
 		CreateParticleMaterial(data, commonParticleMaterials[INDEX(CommonParticleMaterial::WhiteCircle)]);
 	}
