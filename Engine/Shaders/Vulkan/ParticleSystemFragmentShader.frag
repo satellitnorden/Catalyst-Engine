@@ -101,12 +101,6 @@ vec3 CalculatePointLight(int index)
 */
 vec3 CalculateSpotLight(int index)
 {
-    //If the fragment is under the water, just discard it.
-    if (fragmentWorldPosition.y < 0.0f)
-    {
-        discard;
-    }
-
     //Start off with just the color of the spot light.
     vec3 spotLightColor = spotLightColors[index];
 
@@ -133,6 +127,12 @@ vec3 CalculateSpotLight(int index)
 
 void main()
 {
+    //If the fragment is under the water, just discard it.
+    if (fragmentWorldPosition.y < 0.0f)
+    {
+        discard;
+    }
+
     //Sample the albedo texture.
     vec4 albedoTextureSampler = pow(texture(albedoTexture, fragmentTextureCoordinate), vec4(2.2f));
 

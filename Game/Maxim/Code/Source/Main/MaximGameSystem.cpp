@@ -29,7 +29,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	//Move the camera into position.
 	camera->Move(Vector3(0.0f, 1.0f + 8.0f, 32.0f));
-	camera->Rotate(Vector3(-17.5f, 0.0f, 0.0f));
+	camera->Rotate(Vector3(-20.0f, 0.0f, 0.0f));
 
 	//Set it as the active camera.
 	RenderingSystem::Instance->SetActiveCamera(camera);
@@ -87,8 +87,8 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 			Vector3(1.0f, 20.0f, 1.0f),
 			Vector3(1.0f, 20.0f, 1.0f),
 			Vector3(1.0f, 10.0f, 1.0f),
-			Vector3(1.0f, 100.0f, 1.0f),
-			Vector3(1.0f, 100.0f, 1.0f)
+			Vector3(1.0f, 250.0f, 1.0f),
+			Vector3(1.0f, 250.0f, 1.0f)
 		};
 
 		for (uint8 i = 0; i < 6; ++i)
@@ -119,7 +119,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	//Create, uh, sun.
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
-	sun->SetIntensity(100.0f);
+	sun->SetIntensity(25.0f);
 }
 
 /*
