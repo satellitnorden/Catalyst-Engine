@@ -812,30 +812,18 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 		WaterMaterialData data;
 
 		data.mipmapLevels = 1;
-		data.width = 2;
-		data.height = 2;
+		data.width = 8;
+		data.height = 8;
 		data.normalMapData.UpsizeSlow(1);
-		data.normalMapData[0].Reserve(16);
+		data.normalMapData[0].Reserve(256);
 
-		data.normalMapData[0].EmplaceFast(255);
-		data.normalMapData[0].EmplaceFast(127);
-		data.normalMapData[0].EmplaceFast(255);
-		data.normalMapData[0].EmplaceFast(0);
-
-		data.normalMapData[0].EmplaceFast(0);
-		data.normalMapData[0].EmplaceFast(127);
-		data.normalMapData[0].EmplaceFast(255);
-		data.normalMapData[0].EmplaceFast(0);
-
-		data.normalMapData[0].EmplaceFast(127);
-		data.normalMapData[0].EmplaceFast(255);
-		data.normalMapData[0].EmplaceFast(255);
-		data.normalMapData[0].EmplaceFast(0);
-
-		data.normalMapData[0].EmplaceFast(127);
-		data.normalMapData[0].EmplaceFast(0);
-		data.normalMapData[0].EmplaceFast(255);
-		data.normalMapData[0].EmplaceFast(0);
+		for (uint8 i = 0; i < 64; ++i)
+		{
+			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(0, 255)));
+			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(0, 255)));
+			data.normalMapData[0].EmplaceFast(255);
+			data.normalMapData[0].EmplaceFast(255);
+		}
 
 		CreateOceanMaterial(data, defaultOceanMaterial);
 

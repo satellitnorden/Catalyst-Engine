@@ -93,7 +93,7 @@ vec3 viewDirection;
 */
 void CalculateNormalDirection()
 {
-    normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * oceanScaling) - (vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.1f)).xzy * 2.0f - 1.0f;
+    normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * oceanScaling) - (vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.025f)).xzy * 2.0f - 1.0f;
     normalDirection = mix(normalDirection, vec3(0.0f, 1.0f, 0.0f), 0.75f);
 }
 
@@ -170,7 +170,7 @@ vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
 vec3 CalculateDirectionalLight()
 {
     vec3 halfwayDirection = normalize(-directionalLightDirection + viewDirection);
-    return directionalLightColor * directionalLightIntensity * pow(max(dot(normalDirection, halfwayDirection), 0.0), 256);
+    return directionalLightColor * directionalLightIntensity * pow(max(dot(normalDirection, halfwayDirection), 0.0f), 512) * 0.1f;
 }
 
 void main()

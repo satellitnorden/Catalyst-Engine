@@ -55,20 +55,6 @@ public:
 	}
 
 	/*
-	*	Returns the chromatic abberation strength.
-	*/
-	float GetChromaticAbberationStrength() const NOEXCEPT { return chromaticAberrationStrength; }
-
-	/*
-	*	Sets the chromatic abberation strength.
-	*/
-	void SetChromaticAbberationStrength(const float newChromaticAbberationStrength) NOEXCEPT
-	{
-		chromaticAberrationStrength = newChromaticAbberationStrength;
-		hasBeenUpdated = true;
-	}
-
-	/*
 	*	Returns the saturation strength.
 	*/
 	float GetSaturationStrength() const NOEXCEPT { return saturationStrength; }
@@ -82,38 +68,18 @@ public:
 		hasBeenUpdated = true;
 	}
 
-	/*
-	*	Returns the sharpen strength.
-	*/
-	float GetSharpenStrength() const NOEXCEPT { return sharpenStrength; }
-
-	/*
-	*	Sets the sharpen strength.
-	*/
-	void SetSharpenStrength(const float newSharpenStrength) NOEXCEPT
-	{
-		sharpenStrength = newSharpenStrength;
-		hasBeenUpdated = true;
-	}
-
 private:
 
 	//Denotes whether or not any post processing value has been updated.
 	bool hasBeenUpdated{ true };
 
 	//The bloom strength.
-	float bloomStrength{ 1.0f };
+	float bloomStrength{ 0.25f };
 
 	//The blur strength.
 	float blurStrength{ 0.0f };
 
-	//The chromatic aberration strength.
-	float chromaticAberrationStrength{ 0.0f };
-
 	//The saturation strength.
 	float saturationStrength{ 1.0f };
-
-	//The sharpen strength.
-	float sharpenStrength{ 0.0f };
 
 };

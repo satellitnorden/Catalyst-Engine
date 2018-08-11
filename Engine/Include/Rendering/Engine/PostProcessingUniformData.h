@@ -14,13 +14,7 @@ public:
 	//The blur strength.
 	float blurStrength;
 
-	//The chromatic aberration strength.
-	float chromaticAberrationStrength;
-
 	//The saturation strength.
 	float saturationStrength;
-
-	//The sharpen strength.
-	float sharpenStrength;
 
 };

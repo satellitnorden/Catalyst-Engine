@@ -105,7 +105,7 @@ void OceanRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
 	//Push constant data.
-	constexpr float scaling{ 0.025f };
+	constexpr float scaling{ 0.25f };
 	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(float), &scaling);
 
 	//Draw!

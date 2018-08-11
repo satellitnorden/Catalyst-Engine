@@ -1319,9 +1319,7 @@ void VulkanRenderingSystem::UpdatePostProcessingData() NOEXCEPT
 
 		data.bloomStrength = PostProcessingManager::Instance->GetBloomStrength();
 		data.blurStrength = PostProcessingManager::Instance->GetBlurStrength();
-		data.chromaticAberrationStrength = PostProcessingManager::Instance->GetChromaticAbberationStrength();
 		data.saturationStrength = PostProcessingManager::Instance->GetSaturationStrength();
-		data.sharpenStrength = PostProcessingManager::Instance->GetSharpenStrength();
 
 		uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&data);
 	}
