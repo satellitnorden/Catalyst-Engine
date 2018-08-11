@@ -8,16 +8,11 @@
 #include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
+#include <Systems/EngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(ParticleSystemRenderPass);
-
-//Particle system render pass constants.
-namespace ParticleSystemRenderPassConstants
-{
-	constexpr uint32 MAXIMUM_NUMBER_OF_PARTICLES{ 16'384 };
-}
 
 /*
 *	Default constructor.
@@ -60,7 +55,7 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(PushConstantRange::ShaderStage::Geometry, 0, sizeof(float));
+	AddPushConstantRange(PushConstantRange::ShaderStage::Geometry, 0, sizeof(float) * 2);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -117,10 +112,18 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
-		const float randomSeed{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
-		commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Geometry, 0, sizeof(float), &randomSeed);
+		struct ParticleSystemData
+		{
+			float particleSystemRandomSeed;
+			float particleSystemTotalTime;
+		} particleSystemData;
+
+		particleSystemData.particleSystemRandomSeed = component->particleSystemRandomSeed;
+		particleSystemData.particleSystemTotalTime = EngineSystem::Instance->GetTotalGameTime() - component->particleSystemStartingTime;
+
+		commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Geometry, 0, sizeof(float) * 2, &particleSystemData);
 		commandBuffer->BindRenderDataTables(this, 1, 1, &component->renderDataTable);
-		commandBuffer->Draw(this, ParticleSystemRenderPassConstants::MAXIMUM_NUMBER_OF_PARTICLES, 1);
+		commandBuffer->Draw(this, 1, component->instanceCount);
 	}
 
 	//End the command buffer.

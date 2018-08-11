@@ -181,13 +181,6 @@ private:
 		NumberOfSemaphores
 	};
 
-	//Enumeration covering all Vulkan rendering tasks.
-	enum class VulkanRenderingTask : uint8
-	{
-		UpdateParticleSystemProperties,
-		NumberOfVulkanRenderingTasks
-	};
-
 	//Enumeration covering all uniform buffers.
 	enum UniformBuffer : uint8
 	{
@@ -195,9 +188,6 @@ private:
 		PostProcessingUniformDataBuffer,
 		NumberOfUniformBuffers
 	};
-
-	//Container for all tasks.
-	StaticArray<Task, INDEX(VulkanRenderingTask::NumberOfVulkanRenderingTasks)> tasks;
 
 	//The dynamic uniform data.
 	VulkanDynamicUniformData dynamicUniformData;
@@ -242,11 +232,6 @@ private:
 	VulkanDescriptorSet *RESTRICT currentEnvironmentDataDescriptorSet;
 
 	/*
-	*	Initializes all Vulkan rendering tasks.
-	*/
-	void InitializeVulkanRenderingTasks() NOEXCEPT;
-
-	/*
 	*	Initializes all special textures.
 	*/
 	void InitializeSpecialTextures() NOEXCEPT;
@@ -282,11 +267,6 @@ private:
 	void InitializeDescriptorSets() NOEXCEPT;
 
 	/*
-	*	Execute asynchronous tasks.
-	*/
-	void ExecuteAsynchronousTasks() NOEXCEPT;
-
-	/*
 	*	Updates the post processing data.
 	*/
 	void UpdatePostProcessingData() NOEXCEPT;
@@ -309,11 +289,6 @@ private:
 	/****************************/
 	/*	Asynchronous functions. */
 	/****************************/
-
-	/*
-	*	Updates the properties of particle systems.
-	*/
-	void UpdateParticleSystemProperties() const NOEXCEPT;
 
 	/*
 	*	Updates the descriptor sets.

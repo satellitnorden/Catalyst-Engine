@@ -55,12 +55,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(VulkanRenderingSystem);
 
-//Vulkan rendering system constants.
-namespace VulkanRenderingSystemConstants
-{
-	constexpr VkDeviceSize PARTICLE_SYSTEM_STORAGE_BUFFER_SIZE{ 1'310'736 };
-}
-
 /*
 *	Initializes the Vulkan rendering system.
 */
@@ -68,9 +62,6 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize the Vulkan interface.
 	VulkanInterface::Instance->Initialize(*RenderingSystem::Instance->GetMainSurface());
-
-	//Initialize all Vulkan rendering tasks.
-	InitializeVulkanRenderingTasks();
 
 	//Initialize all special textures.
 	InitializeSpecialTextures();
@@ -102,9 +93,6 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 */
 void VulkanRenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
-	//Execute the asynchronous tasks.
-	ExecuteAsynchronousTasks();
-
 	//Update the post processing data.
 	UpdatePostProcessingData();
 
@@ -378,9 +366,6 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 */
 void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT
 {
-	//Create the storage buffer.
-	VulkanStorageBuffer *const RESTRICT storageBuffer{ VulkanInterface::Instance->CreateStorageBuffer(VulkanRenderingSystemConstants::PARTICLE_SYSTEM_STORAGE_BUFFER_SIZE) };
-
 	//Create the uniform buffer.
 	VulkanUniformBuffer *const RESTRICT uniformBuffer{ VulkanInterface::Instance->CreateUniformBuffer(static_cast<VkDeviceSize>(sizeof(VulkanParticleSystemProperties))) };
 	const VulkanParticleSystemProperties vulkanParticleSystemProperties{ properties };
@@ -390,11 +375,10 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 	VulkanDescriptorSet renderDataTable;
 	VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(renderDataTable, descriptorSetLayouts[INDEX(RenderDataTableLayout::ParticleSystem)]);
 
-	StaticArray<VkWriteDescriptorSet, 3> particleSystemWriteDescriptorSets
+	StaticArray<VkWriteDescriptorSet, 2> particleSystemWriteDescriptorSets
 	{
-		storageBuffer->GetWriteDescriptorSet(renderDataTable, 1),
-		uniformBuffer->GetWriteDescriptorSet(renderDataTable, 2),
-		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(renderDataTable, 3)
+		uniformBuffer->GetWriteDescriptorSet(renderDataTable, 0),
+		static_cast<const Vulkan2DTexture *RESTRICT>(material.albedoTexture)->GetWriteDescriptorSet(renderDataTable, 1)
 	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(particleSystemWriteDescriptorSets.Size()), particleSystemWriteDescriptorSets.Data(), 0, nullptr);
@@ -405,7 +389,10 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 
 	component.properties = properties;
 	component.propertiesUniformBuffer = uniformBuffer;
+	renderComponent.particleSystemRandomSeed = CatalystMath::RandomFloatInRange(0.0f, 1.0f);
+	renderComponent.particleSystemStartingTime = EngineSystem::Instance->GetTotalGameTime();
 	renderComponent.renderDataTable = reinterpret_cast<RenderDataTableHandle>(renderDataTable.Get());
+	renderComponent.instanceCount = CatalystMath::Round<uint32>(properties.lifetime / properties.spawnFrequency);
 }
 
 /*
@@ -615,19 +602,6 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEX
 RenderDataTableHandle VulkanRenderingSystem::GetRenderDataTable(const RenderDataTable renderDataTable) NOEXCEPT
 {
 	return reinterpret_cast<RenderDataTableHandle>(descriptorSets[INDEX(renderDataTable)].Get());
-}
-
-/*
-*	Initializes all Vulkan rendering tasks.
-*/
-void VulkanRenderingSystem::InitializeVulkanRenderingTasks() NOEXCEPT
-{
-	//Initialize the update particle system properties task.
-	tasks[INDEX(VulkanRenderingTask::UpdateParticleSystemProperties)].function = [](void *const RESTRICT arguments)
-	{
-		static_cast<VulkanRenderingSystem *const RESTRICT>(arguments)->UpdateParticleSystemProperties();
-	};
-	tasks[INDEX(VulkanRenderingTask::UpdateParticleSystemProperties)].arguments = this;
 }
 
 /*
@@ -862,11 +836,10 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 	{
 		//Initialize the particle system descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> particleSystemDescriptorSetLayoutBindings
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> particleSystemDescriptorSetLayoutBindings
 		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
 		descriptorSetLayouts[INDEX(RenderDataTableLayout::ParticleSystem)].Initialize(static_cast<uint32>(particleSystemDescriptorSetLayoutBindings.Size()), particleSystemDescriptorSetLayoutBindings.Data());
@@ -1283,15 +1256,6 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 }
 
 /*
-*	Execute asynchronous tasks.
-*/
-void VulkanRenderingSystem::ExecuteAsynchronousTasks() NOEXCEPT
-{
-	//Execute the asynchronous tasks.
-	TaskSystem::Instance->ExecuteTask(&tasks[INDEX(VulkanRenderingTask::UpdateParticleSystemProperties)]);
-}
-
-/*
 *	Updates the post processing data.
 */
 void VulkanRenderingSystem::UpdatePostProcessingData() NOEXCEPT
@@ -1397,37 +1361,11 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 */
 void VulkanRenderingSystem::EndFrame() NOEXCEPT
 {
-	//Wait for the particle system properties update to finish.
-	tasks[INDEX(VulkanRenderingTask::UpdateParticleSystemProperties)].WaitFor();
-
 	//End the current command buffer.
 	frameData.GetCurrentPrimaryCommandBuffer()->End();
 
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue()->Submit(*frameData.GetCurrentPrimaryCommandBuffer(), 1, semaphores[INDEX(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, semaphores[INDEX(GraphicsSemaphore::RenderFinished)], frameData.GetCurrentFence()->Get());
-}
-
-/*
-*	Updates the properties of particle systems.
-*/
-void VulkanRenderingSystem::UpdateParticleSystemProperties() const NOEXCEPT
-{
-	//Go through every particle system component and re-upload the properties, since they might change.
-	const uint64 numberOfParticleSystemComponents{ ComponentManager::GetNumberOfParticleSystemComponents() };
-
-	//If there are none, just return.
-	if (numberOfParticleSystemComponents == 0)
-	{
-		return;
-	}
-
-	const ParticleSystemComponent *RESTRICT component{ ComponentManager::GetParticleSystemComponents() };
-
-	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
-	{
-		const VulkanParticleSystemProperties vulkanParticleSystemProperties{ component->properties };
-		static_cast<VulkanUniformBuffer *const RESTRICT>(component->propertiesUniformBuffer)->UploadData(&vulkanParticleSystemProperties);
-	}
 }
 
 /*

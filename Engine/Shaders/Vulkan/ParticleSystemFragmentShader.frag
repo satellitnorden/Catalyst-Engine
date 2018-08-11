@@ -58,12 +58,11 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //In parameters.
 layout (location = 0) in float fragmentFadeFactor;
 layout (location = 1) in vec2 fragmentTextureCoordinate;
-layout (location = 2) in vec3 fragmentNormal;
-layout (location = 3) in vec3 fragmentWorldPosition;
+layout (location = 2) in vec3 fragmentWorldPosition;
 
 //Texture samplers.
 //Out parameters.
-layout (set = 1, binding = 3) uniform sampler2D albedoTexture;
+layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;

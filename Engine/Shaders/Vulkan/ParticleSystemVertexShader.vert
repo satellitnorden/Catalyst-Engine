@@ -56,10 +56,10 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //Out parameters.
-layout (location = 0) out int vertexIndex;
+layout (location = 0) out int instanceIndex;
 
 void main()
 {
     //Pass along the vertex index.
-    vertexIndex = gl_VertexIndex;
+    instanceIndex = gl_InstanceIndex;
 } 
