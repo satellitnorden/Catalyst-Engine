@@ -32,6 +32,9 @@
 #include <Resources/VegetationMaterialData.h>
 #include <Resources/WaterMaterialData.h>
 
+//Systems.
+#include <Systems/EngineSystem.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
 
@@ -45,6 +48,9 @@ DEFINE_SINGLETON(RenderingSystem);
 */
 void RenderingSystem::InitializeSystem() NOEXCEPT
 {
+	//Initialize the main surface.
+	mainSurface.Initialize();
+
 	//Initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->InitializeSystem();
 
@@ -72,6 +78,15 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 */
 void RenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
+	//Update the main surface.
+	mainSurface.Update();
+
+	//Check if the main surface should close - If so, terminate.
+	if (mainSurface.ShouldClose())
+	{
+		EngineSystem::Instance->Terminate();
+	}
+
 	//Update the matrices.
 	UpdateMatrices();
 }
@@ -99,6 +114,9 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 */
 void RenderingSystem::ReleaseSystem() NOEXCEPT
 {
+	//Release the main surface.
+	mainSurface.Release();
+
 	//Release the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->ReleaseSystem();
 }

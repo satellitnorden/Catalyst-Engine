@@ -22,7 +22,7 @@
 #include <Platform/Windows/WindowsPlatformVulkan.h>
 
 /*
-*	Main function
+*	Main function.
 */
 #define MAIN_FUNCTION(implementation) int32 main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT	\
 {																													\

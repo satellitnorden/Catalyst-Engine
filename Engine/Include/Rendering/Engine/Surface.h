@@ -3,9 +3,6 @@
 //Core.
 #include <Core/EngineCore.h>
 
-//Forward declarations.
-struct GLFWwindow;
-
 class Surface final
 {
 
@@ -22,14 +19,14 @@ public:
 	~Surface() NOEXCEPT;
 
 	/*
-	*	Returns the underlying GLFW window, const version.
+	*	Returns the underlying surface handle.
 	*/
-	RESTRICTED const GLFWwindow* const Get() const NOEXCEPT { return window; }
+	RESTRICTED void* Get() NOEXCEPT { return surface; }
 
 	/*
-	*	Returns the underlying GLFW window, non-const version.
+	*	Sets the underlying surface handle.
 	*/
-	RESTRICTED GLFWwindow* Get() NOEXCEPT { return window; }
+	void Set(void *const RESTRICT newSurface) { surface = newSurface; }
 
 	/*
 	*	Initializes this surface.
@@ -53,13 +50,7 @@ public:
 
 private:
 
-	//The underlying GLFW window.
-	GLFWwindow *RESTRICT window;
-
-	//The width of the window.
-	uint16 width;
-
-	//The height of the window.
-	uint16 height;
+	//The underlying surface handle.
+	void *RESTRICT surface;
 
 };

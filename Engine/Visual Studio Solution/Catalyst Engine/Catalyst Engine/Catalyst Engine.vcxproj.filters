@@ -175,6 +175,15 @@
     <Filter Include="Platform\Include\Android">
       <UniqueIdentifier>{e2f38b16-67ff-4b5c-93fa-3ceb91282d53}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Platform\Source">
+      <UniqueIdentifier>{c54384bd-33f8-4e20-85ac-03c84c608714}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Source\Android">
+      <UniqueIdentifier>{2590d384-1980-4d0b-b2cf-7ee1fa721bec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Source\Windows">
+      <UniqueIdentifier>{e7808115-0193-40f6-a619-eef50e6af51c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\CameraComponent.h">
@@ -1180,6 +1189,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\Surface.cpp">
       <Filter>Rendering\Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Android\AndroidPlatformVulkan.cpp">
+      <Filter>Platform\Source\Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsPlatformVulkan.cpp">
+      <Filter>Platform\Source\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

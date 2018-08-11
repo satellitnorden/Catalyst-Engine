@@ -13,9 +13,7 @@
 */
 Surface::Surface() NOEXCEPT
 	:
-	window(nullptr),
-	width(WINDOW_WIDTH),
-	height(WINDOW_HEIGHT)
+	surface(nullptr)
 {
 	
 }
@@ -44,7 +42,7 @@ void Surface::Initialize() NOEXCEPT
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	//Create the window!
-	window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, EngineSystem::Instance->GetProjectInformation().generalInformation.projectName.CString(), nullptr, nullptr);
+	surface = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, EngineSystem::Instance->GetProjectInformation().generalInformation.projectName.CString(), nullptr, nullptr);
 #endif
 }
 
@@ -66,7 +64,7 @@ void Surface::Release() NOEXCEPT
 {
 #if defined(CATALYST_WINDOWS)
 	//Destroy the window.
-	glfwDestroyWindow(window);
+	glfwDestroyWindow(static_cast<GLFWwindow *const RESTRICT>(surface));
 
 	//Terminate GLFW.
 	glfwTerminate();
@@ -79,7 +77,7 @@ void Surface::Release() NOEXCEPT
 bool Surface::ShouldClose() const NOEXCEPT
 {
 #if defined(CATALYST_WINDOWS)
-	return static_cast<bool>(glfwWindowShouldClose(window));
+	return static_cast<bool>(glfwWindowShouldClose(static_cast<GLFWwindow *const RESTRICT>(surface)));
 #else
 	return false;
 #endif

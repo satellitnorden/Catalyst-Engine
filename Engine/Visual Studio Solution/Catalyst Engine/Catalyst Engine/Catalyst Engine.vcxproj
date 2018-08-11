@@ -289,6 +289,8 @@
     <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\Source\Math\PerlinNoiseGenerator.cpp" />
+    <ClCompile Include="..\..\..\Source\Platform\Android\AndroidPlatformVulkan.cpp" />
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsPlatformVulkan.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanAllocator.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanCommandBuffer.cpp" />

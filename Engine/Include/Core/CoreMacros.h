@@ -4,7 +4,7 @@
 *	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.
 */
 #if !defined(CATALYST_FINAL)
-	#define ASSERT(condition, message) if (!condition) { PRINT_TO_CONSOLE(message); BREAKPOINT; }
+	#define ASSERT(condition, message) if (!(condition)) { PRINT_TO_CONSOLE(message); BREAKPOINT; }
 #else
 	#define ASSERT(condition, message) 
 #endif

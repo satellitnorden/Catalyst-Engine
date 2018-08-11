@@ -14,7 +14,6 @@
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>
 #include <Rendering/Engine/RenderingCore.h>
-#include <Rendering/Engine/Surface.h>
 #include <Rendering/Translation/Vulkan/VulkanDynamicUniformData.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassData.h>
@@ -199,9 +198,6 @@ private:
 
 	//Container for all tasks.
 	StaticArray<Task, INDEX(VulkanRenderingTask::NumberOfVulkanRenderingTasks)> tasks;
-
-	//The main surface.
-	Surface mainSurface;
 
 	//The dynamic uniform data.
 	VulkanDynamicUniformData dynamicUniformData;

@@ -28,10 +28,7 @@ VulkanSurface::~VulkanSurface() NOEXCEPT
 */
 void VulkanSurface::Initialize(Surface &surface) NOEXCEPT
 {
-#if defined(CATALYST_WINDOWS)
-	//Create the Vulkan surface!
-	VULKAN_ERROR_CHECK(glfwCreateWindowSurface(VulkanInterface::Instance->GetInstance().Get(), surface.Get(), nullptr, &vulkanSurface));
-#endif
+	PlatformVulkan::CreateVulkanSurface(&vulkanSurface);
 }
 
 /*

@@ -55,7 +55,7 @@ void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) c
 	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	applicationInfo.pEngineName = "Catalyst Engine";
 	applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-	applicationInfo.apiVersion = VK_API_VERSION_1_1;
+	applicationInfo.apiVersion = VULKAN_API_VERSION;
 }
 
 /*
@@ -68,7 +68,7 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 	createInstanceInfo.flags = 0;
 	createInstanceInfo.pApplicationInfo = &applicationInfo;
 
-#if VULKAN_DEBUGGING
+#if VULKAN_DEBUGGING && !defined(CATALYST_ANDROID)
 	createInstanceInfo.enabledLayerCount = static_cast<uint32>(validationLayers.Size());
 	createInstanceInfo.ppEnabledLayerNames = validationLayers.Data();
 #else

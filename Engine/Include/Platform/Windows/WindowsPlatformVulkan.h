@@ -10,6 +10,14 @@
 #define GLFW_INCLUDE_NONE
 #include <ThirdParty/GLFW/glfw3.h>
 
+/*
+*	Defines the Vulkan API version.
+*/
+#define VULKAN_API_VERSION VK_API_VERSION_1_1
+
+//Forward declarations.
+class Surface;
+
 namespace PlatformVulkan
 {
 
@@ -38,6 +46,11 @@ namespace PlatformVulkan
 			extensions.EmplaceFast(glfwExtensions[i]);
 		}
 	}
+
+	/*
+	*	Creates the Vulkan surface.
+	*/
+	void CreateVulkanSurface(VkSurfaceKHR *const RESTRICT vulkanSurface) NOEXCEPT;
 
 }
 

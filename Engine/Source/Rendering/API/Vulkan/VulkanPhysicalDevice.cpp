@@ -79,14 +79,12 @@ bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulk
 */
 bool VulkanPhysicalDevice::HasRequiredFeatures(const VkPhysicalDevice vulkanPhysicalDevice) const NOEXCEPT
 {
-	//The physical device needs to have both anisotropy and tessellation shader enabled.
 	VkPhysicalDeviceFeatures features;
 	vkGetPhysicalDeviceFeatures(vulkanPhysicalDevice, &features);
 
-	return	features.geometryShader == VK_TRUE &&
-			features.samplerAnisotropy == VK_TRUE &&
-			features.tessellationShader == VK_TRUE &&
-			features.vertexPipelineStoresAndAtomics == VK_TRUE;
+	return	features.geometryShader == VK_TRUE
+			&& features.tessellationShader == VK_TRUE
+			&& features.vertexPipelineStoresAndAtomics == VK_TRUE;
 }
 
 /*
