@@ -851,18 +851,20 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 
 	{
 		//Initialize the default ocean material.
+		constexpr uint8 RESOLUTION{ 32 };
+
 		WaterMaterialData data;
 
 		data.mipmapLevels = 1;
-		data.width = 8;
-		data.height = 8;
+		data.width = RESOLUTION;
+		data.height = RESOLUTION;
 		data.normalMapData.UpsizeSlow(1);
-		data.normalMapData[0].Reserve(256);
+		data.normalMapData[0].Reserve(RESOLUTION * RESOLUTION * 4);
 
-		for (uint8 i = 0; i < 64; ++i)
+		for (uint16 i = 0; i < RESOLUTION * RESOLUTION; ++i)
 		{
-			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(0, 255)));
-			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(0, 255)));
+			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(126, 128)));
+			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(126, 128)));
 			data.normalMapData[0].EmplaceFast(255);
 			data.normalMapData[0].EmplaceFast(255);
 		}

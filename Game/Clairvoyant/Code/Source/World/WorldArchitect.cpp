@@ -84,8 +84,6 @@ namespace WorldAchitectConstants
 	constexpr HashString GRASS_TERRAIN_MATERIAL{ "GrassTerrainMaterial" };
 
 	constexpr HashString DEFAULT_VEGETATION_MATERIAL{ "DefaultVegetationMaterial" };
-
-	constexpr HashString DEFAULT_WATER_MATERIAL{ "DefaultWaterMaterial" };
 }
 
 /*
@@ -99,9 +97,6 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Set the environment material.
 	EnvironmentManager::Instance->SetNightEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::NIGHT_ENVIRONMENT_MATERIAL));
 	EnvironmentManager::Instance->SetDayEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(WorldAchitectConstants::DAY_ENVIRONMENT_MATERIAL));
-
-	//Set the ocean material.
-	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(WorldAchitectConstants::DEFAULT_WATER_MATERIAL));
 
 	//Initialize the task.
 	InitializeTask();
@@ -399,7 +394,6 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 	StaticPhysicalEntity *const RESTRICT stone4{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
 	stone4->Initialize(stone2Model, Vector3(-25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor), 100.0f, 25.0f + CatalystMath::RandomFloatInRange(-randomFactor, randomFactor)), Vector3(-90.0f, 0.0f, 0.0f), Vector3(0.175f, 0.175f, 0.175f));
 
-	/*
 	//Generate some vegetation.
 	DynamicArray<VegetationTransformation> vegetationTransformations;
 	vegetationTransformations.Reserve(WorldAchitectConstants::VEGETATION_DENSITY);
@@ -414,7 +408,6 @@ void WorldArchitect::CreateTestScene() NOEXCEPT
 
 	VegetationEntity *const RESTRICT vegetation{ EntitySystem::Instance->CreateEntity<VegetationEntity>() };
 	vegetation->Initialize(ResourceLoader::GetVegetationMaterial(WorldAchitectConstants::DEFAULT_VEGETATION_MATERIAL), vegetationTransformations, VegetationProperties(100.0f));
-	*/
 }
 
 /*

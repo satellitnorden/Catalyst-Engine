@@ -10,20 +10,12 @@
 //Preprocessor defines.
 #define EXIT_SUCCESS 0
 
-#if !defined(CATALYST_FINAL) && defined(CATALYST_WINDOWS)
 //Forward declarations.
 void CreateResources() NOEXCEPT;
-#endif
 
-MAIN
-{
-#if !defined(CATALYST_FINAL) && defined(CATALYST_WINDOWS)
-	//Create resources, if necessary.
-	if (false)
-	{
-		CreateResources();
-	}
-#endif
+MAIN_FUNCTION
+(
+	CreateResources();
 
 	//The delta timer.
 	DeltaTimer deltaTimer;
@@ -57,9 +49,7 @@ MAIN
 
 	//Release the engine system.
 	EngineSystem::Instance->ReleaseSystem();
-
-	MAIN_RETURN_SUCCESS;
-}
+)
 
 #if !defined(CATALYST_FINAL) && defined(CATALYST_WINDOWS)
 //Multithreading.
@@ -89,7 +79,6 @@ enum class Resource : uint16
 
 	//Particle materials.
 	Fog1Material,
-	ParticleMaterial,
 
 	//Physical materials.
 	Grass1Material,
@@ -111,14 +100,17 @@ enum class Resource : uint16
 	//Vegetation materials.
 	DefaulVegetationMaterial,
 
-	//Water materials.
-	DefaultWaterMaterial,
-
 	NumberOfResources
 };
 
 void CreateResources() NOEXCEPT
 {
+#if !defined(CATALYST_FINAL) && defined(CATALYST_WINDOWS)
+	if (true)
+	{
+		return;
+	}
+
 	//The tasks.
 	StaticArray<Task, INDEX(Resource::NumberOfResources)> tasks
 	{
@@ -169,20 +161,6 @@ void CreateResources() NOEXCEPT
 				"Fog1Material",
 				"5",
 				"../../../Game Resources/Raw/Textures/Particles/Fog1.png"
-			};
-
-			ParticleMaterialCreator::CreateParticleMaterial(arguments);
-		}, nullptr),
-
-		//Particle material.
-		Task([](void *const RESTRICT)
-		{
-			const char *const RESTRICT arguments[]
-			{
-				"../../../Game Resources/Intermediate/Materials/ParticleMaterial",
-				"ParticleMaterial",
-				"4",
-				"../../../Game Resources/Raw/Textures/Particles/Particle.png"
 			};
 
 			ParticleMaterialCreator::CreateParticleMaterial(arguments);
@@ -408,24 +386,6 @@ void CreateResources() NOEXCEPT
 
 			VegetationMaterialCreator::CreateVegetationMaterial(arguments);
 		}, nullptr),
-
-		/*
-		*	Water materials.
-		*/
-
-		//Default water material
-		Task([](void *const RESTRICT)
-		{
-			const char *const RESTRICT arguments[]
-			{
-				"../../../Game Resources/Intermediate/Materials/DefaultWaterMaterial",
-				"DefaultWaterMaterial",
-				"5",
-				"../../../Game Resources/Raw/Textures/WaterNormal.png"
-			};
-
-			WaterMaterialCreator::CreateWaterMaterial(arguments);
-		}, nullptr),
 	};
 
 	//Initialize the task system.
@@ -476,5 +436,6 @@ void CreateResources() NOEXCEPT
 
 	//Release the task system.
 	TaskSystem::Instance->ReleaseSystem();
+#endif
 }
 #endif

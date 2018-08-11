@@ -94,7 +94,6 @@ vec3 viewDirection;
 void CalculateNormalDirection()
 {
     normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * oceanScaling) - (vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.025f)).xzy * 2.0f - 1.0f;
-    normalDirection = mix(normalDirection, vec3(0.0f, 1.0f, 0.0f), 0.9f);
 }
 
 /*
@@ -173,6 +172,14 @@ vec3 CalculateDirectionalLight()
     return directionalLightColor * directionalLightIntensity * pow(max(dot(normalDirection, halfwayDirection), 0.0f), 512) * 0.1f;
 }
 
+/*
+*   Returns the length of a vector squared, ignoring the Y component.
+*/
+float LengthSquared(vec3 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+}
+
 void main()
 {
 	 //Sample the depth of the scene at this point.
@@ -199,6 +206,9 @@ void main()
 
     //Sample the scene texture.
     vec2 sceneTextureCoordinate = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? fragmentTextureCoordinate : fragmentTextureCoordinate + normalDirection.xz;
+    float suggestedSceneDepth = texture(sceneNormalDepthTexture, sceneTextureCoordinate).w;
+	vec3 suggestedSceneWorldPosition = CalculateWorldPosition(sceneTextureCoordinate, suggestedSceneDepth);
+	sceneTextureCoordinate = suggestedSceneWorldPosition.y > 0.0f ? fragmentTextureCoordinate : sceneTextureCoordinate;
     vec4 sceneTextureSampler = texture(sceneTexture, sceneTextureCoordinate);
 
     //Calculate the transparency.
