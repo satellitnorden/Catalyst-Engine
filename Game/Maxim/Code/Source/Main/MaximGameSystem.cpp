@@ -4,6 +4,7 @@
 //Entities.
 #include <Entities/CameraEntity.h>
 #include <Entities/DirectionalLightEntity.h>
+#include <Entities/ParticleSystemEntity.h>
 #include <Entities/StaticPhysicalEntity.h>
 
 //Math.
@@ -106,6 +107,13 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 			StaticPhysicalEntity *const RESTRICT object{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
 			object->Initialize(model, Vector3(-25.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 25.0f, 10.0f));
 		}
+	}
+
+	//Create some particles.
+	for (uint8 i = 0; i < 2; ++i)
+	{
+		ParticleSystemEntity *const RESTRICT particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
+		particles->Initialize(RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle), ParticleSystemProperties(10.0f, 60.0f, 0.0f, Vector2(0.02f, 0.02f), Vector2(0.04f, 0.04f), Vector3(-25.0f, 0.0f, -25.0f), Vector3(25.0f, 25.0f, 25.0f), Vector3(-0.25f, -0.25f, -0.25f), Vector3(0.25f, 0.25f, 0.25f), Vector3(0.0f, 0.0f, 0.0f)));
 	}
 
 	//Create, uh, sun.

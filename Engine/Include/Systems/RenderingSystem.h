@@ -9,6 +9,7 @@
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>
 #include <Rendering/Engine/OceanMaterial.h>
+#include <Rendering/Engine/ParticleMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/RenderingCore.h>
 
@@ -17,7 +18,6 @@ class CameraEntity;
 class CPUTexture2D;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
-class ParticleMaterial;
 class ParticleMaterialData;
 class ParticleSystemEntity;
 class ParticleSystemProperties;
@@ -49,6 +49,13 @@ public:
 
 	//System declaration.
 	DECLARE_SINGLETON(RenderingSystem);
+
+	//Enumeration covering all common particle materials.
+	enum class CommonParticleMaterial : uint8
+	{
+		WhiteCircle,
+		NumberOfCommonParticleMaterials
+	};
 
 	//Enumeration covering all common physical materials.
 	enum class CommonPhysicalMaterial : uint8
@@ -140,6 +147,11 @@ public:
 	*	Returns the view matrix.
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() const NOEXCEPT { return &viewMatrix; }
+
+	/*
+	*	Returns the given common particle material.
+	*/
+	const ParticleMaterial& GetCommonParticleMaterial(const CommonParticleMaterial commonParticlelMaterial) const NOEXCEPT { return commonParticleMaterials[INDEX(commonParticlelMaterial)]; }
 
 	/*
 	*	Returns the given common physical material.
@@ -271,6 +283,9 @@ private:
 	//Container for all render passes.
 	StaticArray<RenderPass *RESTRICT, INDEX(RenderPassStage::NumberOfRenderPassStages)> renderPasses;
 
+	//Container for all common particle materials.
+	StaticArray<ParticleMaterial, INDEX(CommonParticleMaterial::NumberOfCommonParticleMaterials)> commonParticleMaterials;
+
 	//Container for all common physical materials.
 	StaticArray<PhysicalMaterial, INDEX(CommonPhysicalMaterial::NumberOfCommonPhysicalMaterials)> commonPhysicalMaterials;
 
@@ -307,6 +322,11 @@ private:
 	*	Initializes all render passes.
 	*/
 	void InitializeRenderPasses() NOEXCEPT;
+
+	/*
+	*	Initializes the common particle materials.
+	*/
+	void InitializeCommonParticleMaterials() NOEXCEPT;
 
 	/*
 	*	Initializes the common physical materials.

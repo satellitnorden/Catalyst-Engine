@@ -14,7 +14,6 @@
 //Rendering.
 #include <Rendering/Engine/CommonPhysicalModelData.h>
 #include <Rendering/Engine/OceanMaterial.h>
-#include <Rendering/Engine/ParticleMaterial.h>
 #include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/RenderingUtilities.h>
@@ -54,6 +53,9 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize all render passes.
 	InitializeRenderPasses();
+
+	//Initialize the common particle materials.
+	InitializeCommonParticleMaterials();
 
 	//Initializes the common physical materials.
 	InitializeCommonPhysicalMaterials();
@@ -442,6 +444,71 @@ void RenderingSystem::InitializeRenderPasses() NOEXCEPT
 	for (RenderPass *const RESTRICT renderPass : renderPasses)
 	{
 		renderPass->WaitForInitialization();
+	}
+}
+
+/*
+*	Initializes the common particle materials.
+*/
+void RenderingSystem::InitializeCommonParticleMaterials() NOEXCEPT
+{
+	{
+		//Create the white circle common particle material.
+		ParticleMaterialData data;
+
+		data.mipmapLevels = 1;
+		data.width = 3;
+		data.height = 3;
+
+		data.albedoData.UpsizeSlow(1);
+		data.albedoData[0].Reserve(36);
+
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(0);
+
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(127);
+
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(0);
+
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(127);
+
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(127);
+
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(0);
+
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(127);
+
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(255);
+		data.albedoData[0].EmplaceFast(0);
+
+		CreateParticleMaterial(data, commonParticleMaterials[INDEX(CommonParticleMaterial::WhiteCircle)]);
 	}
 }
 
