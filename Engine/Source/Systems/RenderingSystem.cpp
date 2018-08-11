@@ -887,8 +887,8 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 
 		for (uint16 i = 0; i < RESOLUTION * RESOLUTION; ++i)
 		{
-			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(126, 128)));
-			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(126, 128)));
+			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(125, 129)));
+			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(125, 129)));
 			data.normalMapData[0].EmplaceFast(255);
 			data.normalMapData[0].EmplaceFast(255);
 		}
