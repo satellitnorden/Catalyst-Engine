@@ -52,11 +52,11 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 		StaticArray<Vector3, 5> scales
 		{
-			Vector3(1.0f, 5.0f, 1.0f),
 			Vector3(2.0f, 7.5f, 2.0f),
-			Vector3(2.0f, 7.5f, 2.0f),
+			Vector3(3.0f, 10.0f, 3.0f),
+			Vector3(3.0f, 10.0f, 3.0f),
 			Vector3(1.0f, 5.0f, 1.0f),
-			Vector3(3.0f, 10.0f, 3.0f)
+			Vector3(4.0f, 12.5f, 4.0f)
 		};
 
 		for (uint8 i = 0; i < 5; ++i)
