@@ -410,6 +410,17 @@ namespace PlatformVulkan
 #endif
 	}
 
+	/*
+	*	Returns the required Vulkan instance extensions.
+	*/
+	static void GetRequiredInstanceExtensions(DynamicArray<const char *RESTRICT> &extensions) NOEXCEPT
+	{
+		extensions.Reserve(2);
+
+		extensions.EmplaceFast("VK_KHR_surface");
+		extensions.EmplaceFast("VK_KHR_android_surface");
+	}
+
 }
 
 PFN_vkCreateInstance vkCreateInstance;

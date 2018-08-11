@@ -7,11 +7,6 @@
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
-#if defined(CATALYST_WINDOWS)
-//Third party libraries.
-#include <ThirdParty/GLFW/glfw3.h>
-#endif
-
 /*
 *	Default constructor.
 */

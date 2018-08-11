@@ -7,11 +7,6 @@
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>
 
-#if defined(CATALYST_WINDOWS)
-//Third party libraries.
-#include <ThirdParty/GLFW/glfw3.h>
-#endif
-
 #if VULKAN_DEBUGGING
 //Define the validation layers.
 namespace
@@ -19,6 +14,9 @@ namespace
 	const DynamicArray<const char *RESTRICT> validationLayers{ "VK_LAYER_LUNARG_standard_validation" };
 }
 #endif
+
+//The instance extensions.
+DynamicArray<const char *RESTRICT> extensions;
 
 /*
 *	Initializes this Vulkan instance.
@@ -78,16 +76,8 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 	createInstanceInfo.ppEnabledLayerNames = nullptr;
 #endif
 
-#if defined(CATALYST_WINDOWS)
-	uint32 glfwExtensionCount{ 0 };
-	const char *RESTRICT *RESTRICT glfwExtensions{ nullptr };
+	PlatformVulkan::GetRequiredInstanceExtensions(extensions);
 
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-	createInstanceInfo.enabledExtensionCount = glfwExtensionCount;
-	createInstanceInfo.ppEnabledExtensionNames = glfwExtensions;
-#elif defined(CATALYST_ANDROID)
-	createInstanceInfo.enabledExtensionCount = 0;
-	createInstanceInfo.ppEnabledExtensionNames = nullptr;
-#endif
+	createInstanceInfo.enabledExtensionCount = static_cast<uint32>(extensions.Size());
+	createInstanceInfo.ppEnabledExtensionNames = extensions.Data();
 }

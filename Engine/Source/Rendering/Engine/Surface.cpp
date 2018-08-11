@@ -4,11 +4,6 @@
 //Systems.
 #include <Systems/EngineSystem.h>
 
-#if defined(CATALYST_WINDOWS)
-//Third party libraries.
-#include <ThirdParty/GLFW/glfw3.h>
-#endif
-
 //Preprocessor defines.
 #define WINDOW_WIDTH 1'920
 #define WINDOW_HEIGHT 1'080

@@ -3,11 +3,6 @@
 #pragma once
 
 /*
-*	Windows specific includes.
-*/
-#include <Platform/Windows/WindowsPlatformVulkan.h>
-
-/*
 *	Windows specific third party includes.
 */
 #include <Windows.h>
@@ -20,6 +15,11 @@
 #undef max
 #undef min
 #undef PlaySound
+
+/*
+*	Windows specific includes.
+*/
+#include <Platform/Windows/WindowsPlatformVulkan.h>
 
 /*
 *	Main function
