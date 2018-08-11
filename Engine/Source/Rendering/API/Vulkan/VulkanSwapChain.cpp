@@ -43,17 +43,17 @@ void VulkanSwapchain::Initialize() NOEXCEPT
 	uint32 queueFamilyIndices[] = { graphicsQueueFamilyIndex, presentQueueFamilyIndex };
 
 	//Create the swap chain create info.
-	VULKAN_SWAPCHAIN_CREATE_INFO_TYPE swapChainCreateInfo;
+	VkSwapchainCreateInfoKHR swapChainCreateInfo;
 	CreateSwapChainCreateInfo(swapChainCreateInfo, queueFamilyIndices, graphicsQueueFamilyIndex, presentQueueFamilyIndex);
 
 	//Create the swap chain!
-	VULKAN_ERROR_CHECK(VULKAN_CREATE_SWAPCHAIN(VulkanInterface::Instance->GetLogicalDevice().Get(), &swapChainCreateInfo, nullptr, &vulkanSwapChain));
+	VULKAN_ERROR_CHECK(vkCreateSwapchainKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), &swapChainCreateInfo, nullptr, &vulkanSwapChain));
 
 	//Query the swap chain images.
-	VULKAN_ERROR_CHECK(VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &numberOfSwapChainImages, nullptr));
+	VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &numberOfSwapChainImages, nullptr));
 
 	swapChainImages.UpsizeFast(numberOfSwapChainImages);
-	VULKAN_ERROR_CHECK(VULKAN_GET_SWAPCHAIN_IMAGES(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &numberOfSwapChainImages, swapChainImages.Data()));
+	VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &numberOfSwapChainImages, swapChainImages.Data()));
 
 	//Create the image views.
 	swapChainImageViews.UpsizeFast(numberOfSwapChainImages);
@@ -82,7 +82,7 @@ void VulkanSwapchain::Release() NOEXCEPT
 	}
 
 	//Destroy the Vulkan swap chain.
-	VULKAN_DESTROY_SWAPCHAIN(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, nullptr);
+	vkDestroySwapchainKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, nullptr);
 }
 
 /*
@@ -90,7 +90,7 @@ void VulkanSwapchain::Release() NOEXCEPT
 */
 void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const RESTRICT imageAvailableSemaphore) NOEXCEPT
 {
-	VULKAN_ERROR_CHECK(VULKAN_AQUIRE_NEXT_IMAGE(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, UINT64_MAXIMUM, imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &currentImageIndex));
+	VULKAN_ERROR_CHECK(vkAcquireNextImageKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, UINT64_MAXIMUM, imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &currentImageIndex));
 }
 
 /*
@@ -107,8 +107,8 @@ void VulkanSwapchain::Present(const VulkanSemaphore *const RESTRICT renderFinish
 */
 void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 {
-	VULKAN_SURFACE_CAPABILITIES_TYPE surfaceCapabilities;
-	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_CAPABILITIES(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
+	VkSurfaceCapabilitiesKHR surfaceCapabilities;
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
 
 	if (surfaceCapabilities.currentExtent.width != UINT32_MAXIMUM)
 	{
@@ -129,9 +129,9 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 /*
 *	Creates the swap chain create info.
 */
-void VulkanSwapchain::CreateSwapChainCreateInfo(VULKAN_SWAPCHAIN_CREATE_INFO_TYPE &swapChainCreateInfo, uint32 *RESTRICT queueFamilyIndices, const uint32 graphicsQueueFamilyIndex, const uint32 presentQueueFamilyIndex) const NOEXCEPT
+void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapChainCreateInfo, uint32 *RESTRICT queueFamilyIndices, const uint32 graphicsQueueFamilyIndex, const uint32 presentQueueFamilyIndex) const NOEXCEPT
 {
-	swapChainCreateInfo.sType = VULKAN_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO;
+	swapChainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	swapChainCreateInfo.pNext = nullptr;
 	swapChainCreateInfo.flags = 0;
 	swapChainCreateInfo.surface = VulkanInterface::Instance->GetSurface().Get();
@@ -167,7 +167,7 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VULKAN_SWAPCHAIN_CREATE_INFO_TYP
 	}
 
 	swapChainCreateInfo.preTransform = surfaceCapabilities.currentTransform;
-	swapChainCreateInfo.compositeAlpha = VULKAN_COMPOSITE_ALPHA_OPAQUE_BIT;
+	swapChainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	swapChainCreateInfo.presentMode = presentMode;
 	swapChainCreateInfo.clipped = VK_TRUE;
 	swapChainCreateInfo.oldSwapchain = VK_NULL_HANDLE;

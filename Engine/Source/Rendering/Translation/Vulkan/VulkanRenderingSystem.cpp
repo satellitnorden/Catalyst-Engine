@@ -465,7 +465,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 
 	if (renderPass->GetRenderTargets()[0] == RenderTarget::Screen)
 	{
-		parameters.colorAttachmentFinalLayout = VULKAN_IMAGE_LAYOUT_PRESENT_SRC;
+		parameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 		parameters.colorAttachmentFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
 		parameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 

@@ -27,7 +27,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan surface.
 	*/
-	const VULKAN_SURFACE_TYPE& Get() const NOEXCEPT { return vulkanSurface; }
+	const VkSurfaceKHR& Get() const NOEXCEPT { return vulkanSurface; }
 
 	/*
 	*	Initializes this Vulkan surface.
@@ -42,6 +42,6 @@ public:
 private:
 
 	//The underlying Vulkan surface.
-	VULKAN_SURFACE_TYPE vulkanSurface;
+	VkSurfaceKHR vulkanSurface;
 
 };

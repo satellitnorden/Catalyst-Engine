@@ -32,7 +32,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan swap chain.
 	*/
-	const VULKAN_SWAPCHAIN_TYPE& Get() const NOEXCEPT { return vulkanSwapChain; }
+	const VkSwapchainKHR& Get() const NOEXCEPT { return vulkanSwapChain; }
 
 	/*
 	*	Initializes this Vulkan swap chain.
@@ -87,7 +87,7 @@ public:
 private:
 
 	//The underlying Vulkan swap chain.
-	VULKAN_SWAPCHAIN_TYPE vulkanSwapChain;
+	VkSwapchainKHR vulkanSwapChain;
 
 	//The number of swap chain images.
 	uint32 numberOfSwapChainImages;
@@ -115,6 +115,6 @@ private:
 	/*
 	*	Creates the swap chain create info.
 	*/
-	void CreateSwapChainCreateInfo(VULKAN_SWAPCHAIN_CREATE_INFO_TYPE &swapChainCreateInfo, uint32 *RESTRICT queueFamilyIndices, const uint32 graphicsQueueFamilyIndex, const uint32 presentQueueFamilyIndex) const NOEXCEPT;
+	void CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapChainCreateInfo, uint32 *RESTRICT queueFamilyIndices, const uint32 graphicsQueueFamilyIndex, const uint32 presentQueueFamilyIndex) const NOEXCEPT;
 
 };

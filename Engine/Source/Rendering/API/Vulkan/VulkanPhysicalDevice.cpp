@@ -47,7 +47,7 @@ void VulkanPhysicalDevice::Initialize() NOEXCEPT
 	presentMode = GetMostOptimalPresentMode();
 
 	//Get the surface capabilities.
-	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_CAPABILITIES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
 
 	//Get the most optimal surface format.
 	surfaceFormat = GetMostOptimalSurfaceFormat();
@@ -95,7 +95,7 @@ bool VulkanPhysicalDevice::HasRequiredFeatures(const VkPhysicalDevice vulkanPhys
 bool VulkanPhysicalDevice::HasRequiredExtensions(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT
 {
 	//Define the list of the required extensions.
-	std::set<DynamicString> requiredExtensions{ VULKAN_SWAPCHAIN_EXTENSION_NAME };
+	std::set<DynamicString> requiredExtensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
 	//Get the extension count.
 	uint32_t extensionCount;
@@ -123,21 +123,21 @@ bool VulkanPhysicalDevice::HasProperSwapChainSupport(const VkPhysicalDevice &vul
 {
 	//Query for format support.
 	uint32 formatsCount = 0; 
-	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &formatsCount, nullptr));
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &formatsCount, nullptr));
 
-	DynamicArray<VULKAN_SURFACE_FORMAT_TYPE> formats;
+	DynamicArray<VkSurfaceFormatKHR> formats;
 	formats.UpsizeFast(formatsCount);
 
-	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &formatsCount, formats.Data()));
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &formatsCount, formats.Data()));
 
 	//Query for present mode support.
 	uint32 presentModesCount = 0;
-	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &presentModesCount, nullptr));
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &presentModesCount, nullptr));
 
-	DynamicArray<VULKAN_PRESENT_MODE_TYPE> presentModes;
+	DynamicArray<VkPresentModeKHR> presentModes;
 	presentModes.UpsizeFast(presentModesCount);
 
-	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &presentModesCount, presentModes.Data()));
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &presentModesCount, presentModes.Data()));
 
 	//If there are at least one format and one present mode available, this physical device is considered to have proper swap chain support.
 	return !formats.Empty() && !presentModes.Empty();
@@ -155,16 +155,16 @@ VkPhysicalDevice VulkanPhysicalDevice::GetMostSuitableDevice(const DynamicArray<
 /*
 *	Given a physical device and a surface, returns the most optimal surface format.
 */
-VULKAN_SURFACE_FORMAT_TYPE VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() const NOEXCEPT
+VkSurfaceFormatKHR VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() const NOEXCEPT
 {
 	//Query for format support.
 	uint32 availableFormatsCount = 0;
-	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availableFormatsCount, nullptr));
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availableFormatsCount, nullptr));
 
-	DynamicArray<VULKAN_SURFACE_FORMAT_TYPE> availableFormats;
+	DynamicArray<VkSurfaceFormatKHR> availableFormats;
 	availableFormats.UpsizeFast(availableFormatsCount);
 
-	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_FORMATS(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availableFormatsCount, availableFormats.Data()));
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceFormatsKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availableFormatsCount, availableFormats.Data()));
 
 	//Find the most optimal surface format.
 	if (availableFormats.Size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED)
@@ -186,25 +186,25 @@ VULKAN_SURFACE_FORMAT_TYPE VulkanPhysicalDevice::GetMostOptimalSurfaceFormat() c
 /*
 *	Given a physical device and a surface, returns the most optimal present mode.
 */
-VULKAN_PRESENT_MODE_TYPE VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEPT
+VkPresentModeKHR VulkanPhysicalDevice::GetMostOptimalPresentMode() const NOEXCEPT
 {
 	//Query for present mode support.
 	uint32 availablePresentModesCount = 0;
-	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, nullptr));
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, nullptr));
 
-	DynamicArray<VULKAN_PRESENT_MODE_TYPE> availablePresentModes;
+	DynamicArray<VkPresentModeKHR> availablePresentModes;
 	availablePresentModes.UpsizeFast(availablePresentModesCount);
 
-	VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_PRESENT_MODES(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, availablePresentModes.Data()));
+	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfacePresentModesKHR(vulkanPhysicalDevice, VulkanInterface::Instance->GetSurface().Get(), &availablePresentModesCount, availablePresentModes.Data()));
 
 	//Find the most optimal present mode.
 	for (const auto& availablePresentMode : availablePresentModes)
 	{
-		if (availablePresentMode == VULKAN_PRESENT_MODE_MAILBOX)
+		if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
 		{
 			return availablePresentMode;
 		}
 	}
 
-	return VULKAN_PRESENT_MODE_FIFO;
+	return VK_PRESENT_MODE_FIFO_KHR;
 }

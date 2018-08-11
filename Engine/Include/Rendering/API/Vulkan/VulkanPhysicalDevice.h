@@ -39,17 +39,17 @@ public:
 	/*
 	*	Returns the surface format.
 	*/
-	const VULKAN_PRESENT_MODE_TYPE& GetPresentMode() const NOEXCEPT { return presentMode; }
+	const VkPresentModeKHR& GetPresentMode() const NOEXCEPT { return presentMode; }
 
 	/*
 	*	Returns the surface capabilities.
 	*/
-	const VULKAN_SURFACE_CAPABILITIES_TYPE& GetSurfaceCapabilities() const NOEXCEPT { return surfaceCapabilities; }
+	const VkSurfaceCapabilitiesKHR& GetSurfaceCapabilities() const NOEXCEPT { return surfaceCapabilities; }
 
 	/*
 	*	Returns the surface format.
 	*/
-	const VULKAN_SURFACE_FORMAT_TYPE& GetSurfaceFormat() const NOEXCEPT { return surfaceFormat; }
+	const VkSurfaceFormatKHR& GetSurfaceFormat() const NOEXCEPT { return surfaceFormat; }
 
 private:
 
@@ -66,13 +66,13 @@ private:
 	VkPhysicalDeviceProperties physicalDeviceProperties;
 
 	//The present mode.
-	VULKAN_PRESENT_MODE_TYPE presentMode;
+	VkPresentModeKHR presentMode;
 
 	//The surface capabilities.
-	VULKAN_SURFACE_CAPABILITIES_TYPE surfaceCapabilities;
+	VkSurfaceCapabilitiesKHR surfaceCapabilities;
 
 	//The surface format.
-	VULKAN_SURFACE_FORMAT_TYPE surfaceFormat;
+	VkSurfaceFormatKHR surfaceFormat;
 
 	/*
 	*	Given a Vulkan physical device, return if it is suitable for this game.
@@ -102,11 +102,11 @@ private:
 	/*
 	*	Given a physical device and a surface, returns the most optimal surface format.
 	*/
-	VULKAN_SURFACE_FORMAT_TYPE GetMostOptimalSurfaceFormat() const NOEXCEPT;
+	VkSurfaceFormatKHR GetMostOptimalSurfaceFormat() const NOEXCEPT;
 
 	/*
 	*	Given a physical device and a surface, returns the most optimal present mode.
 	*/
-	VULKAN_PRESENT_MODE_TYPE GetMostOptimalPresentMode() const NOEXCEPT;
+	VkPresentModeKHR GetMostOptimalPresentMode() const NOEXCEPT;
 
 };

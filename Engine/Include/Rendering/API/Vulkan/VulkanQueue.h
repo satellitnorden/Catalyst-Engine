@@ -36,7 +36,7 @@ public:
 	/*
 	*	Presents on this queue.
 	*/
-	void Present(const VulkanSemaphore *const RESTRICT renderFinishedSemaphore, const VULKAN_SWAPCHAIN_TYPE *const RESTRICT swapchain, const uint32 *const RESTRICT imageIndex) NOEXCEPT;
+	void Present(const VulkanSemaphore *const RESTRICT renderFinishedSemaphore, const VkSwapchainKHR *const RESTRICT swapchain, const uint32 *const RESTRICT imageIndex) NOEXCEPT;
 
 	/*
 	*	Waits idle for this Vulkan queue.
@@ -61,6 +61,6 @@ private:
 	/*
 	*	Creates a present info.
 	*/
-	void CreatePresentInfo(VULKAN_PRESENT_INFO_TYPE &presentInfo, const VulkanSemaphore *const RESTRICT renderFinishedSemaphore, const VULKAN_SWAPCHAIN_TYPE *const RESTRICT swapchain, const uint32 *const RESTRICT imageIndex) const NOEXCEPT;
+	void CreatePresentInfo(VkPresentInfoKHR &presentInfo, const VulkanSemaphore *const RESTRICT renderFinishedSemaphore, const VkSwapchainKHR *const RESTRICT swapchain, const uint32 *const RESTRICT imageIndex) const NOEXCEPT;
 
 };

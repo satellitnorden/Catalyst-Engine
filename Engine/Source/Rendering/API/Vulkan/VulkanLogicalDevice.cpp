@@ -39,7 +39,7 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 	CreatePhysicalDeviceFeatures(physicalDeviceFeatures);
 
 	//Create the device create info.
-	const DynamicArray<const char *RESTRICT> requiredExtensions{ VULKAN_SWAPCHAIN_EXTENSION_NAME };
+	const DynamicArray<const char *RESTRICT> requiredExtensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
 	VkDeviceCreateInfo deviceCreateInfo;
 	CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, requiredExtensions, &physicalDeviceFeatures);
@@ -203,7 +203,7 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 	{
 		//We want the graphics and present queue to come from the same family.
 		VkBool32 hasPresentSupport{ false };
-		VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(VulkanInterface::Instance->GetPhysicalDevice().Get(), queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &hasPresentSupport));
+		VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &hasPresentSupport));
 
 		if (hasPresentSupport && queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && queueFamilyIndices[INDEX(QueueType::Graphics)] == UINT32_MAXIMUM)
 		{
@@ -246,7 +246,7 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 		}
 
 		VkBool32 hasPresentSupport{ false };
-		VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(VulkanInterface::Instance->GetPhysicalDevice().Get(), static_cast<uint32>(i), VulkanInterface::Instance->GetSurface().Get(), &hasPresentSupport));
+		VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), static_cast<uint32>(i), VulkanInterface::Instance->GetSurface().Get(), &hasPresentSupport));
 
 		if (queueFamilyProperties[i].queueCount > 0 && hasPresentSupport && queueFamilyIndices[INDEX(QueueType::Present)] == UINT32_MAXIMUM)
 		{
@@ -284,7 +284,7 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 
 			VkBool32 presentSupport = false;
 
-			VULKAN_ERROR_CHECK(VULKAN_GET_PHYSICAL_DEVICE_SURFACE_SUPPORT(VulkanInterface::Instance->GetPhysicalDevice().Get(), queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &presentSupport));
+			VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &presentSupport));
 
 			if (queueFamilyProperty.queueCount > 0 && presentSupport && queueFamilyIndices[INDEX(QueueType::Present)] == UINT32_MAXIMUM)
 			{

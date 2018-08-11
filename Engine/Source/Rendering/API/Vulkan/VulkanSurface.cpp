@@ -45,5 +45,5 @@ void VulkanSurface::Initialize(Surface &surface) NOEXCEPT
 void VulkanSurface::Release() NOEXCEPT
 {
 	//Destroy the Vulkan surface.
-	VULKAN_DESTROY_SURFACE(VulkanInterface::Instance->GetInstance().Get(), vulkanSurface, nullptr);
+	vkDestroySurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), vulkanSurface, nullptr);
 }
