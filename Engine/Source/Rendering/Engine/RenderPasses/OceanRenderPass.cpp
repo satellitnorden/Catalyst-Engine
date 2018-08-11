@@ -41,12 +41,11 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 	SetFragmentShader(Shader::OceanFragment);
 
 	//Set the depth buffer.
-	SetDepthBuffer(DepthBuffer::SceneBuffer);
+	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(2);
+	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::Scene);
-	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(3);

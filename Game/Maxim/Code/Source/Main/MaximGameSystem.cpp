@@ -29,7 +29,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	//Move the camera into position.
 	camera->Move(Vector3(0.0f, 1.0f + 8.0f, 32.0f));
-	camera->Rotate(Vector3(-15.0f, 0.0f, 0.0f));
+	camera->Rotate(Vector3(-17.5f, 0.0f, 0.0f));
 
 	//Set it as the active camera.
 	RenderingSystem::Instance->SetActiveCamera(camera);
@@ -71,23 +71,27 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 		PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
 		model.SetMaterial(RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red));
 
-		StaticArray<Vector3, 4> positions
+		StaticArray<Vector3, 6> positions
 		{
 			Vector3(10.0f, 1.0f, 10.0f),
 			Vector3(10.0f, 1.0f, -10.0f),
 			Vector3(-10.0f, 1.0f, -10.0f),
-			Vector3(-10.0f, 1.0f, 10.0f)
+			Vector3(-10.0f, 1.0f, 10.0f),
+			Vector3(-32.5f, 1.0f, -25.0f),
+			Vector3(32.5f, 1.0f, -25.0f)
 		};
 
-		StaticArray<Vector3, 4> scales
+		StaticArray<Vector3, 6> scales
 		{
 			Vector3(1.0f, 10.0f, 1.0f),
 			Vector3(1.0f, 20.0f, 1.0f),
 			Vector3(1.0f, 20.0f, 1.0f),
-			Vector3(1.0f, 10.0f, 1.0f)
+			Vector3(1.0f, 10.0f, 1.0f),
+			Vector3(1.0f, 100.0f, 1.0f),
+			Vector3(1.0f, 100.0f, 1.0f)
 		};
 
-		for (uint8 i = 0; i < 4; ++i)
+		for (uint8 i = 0; i < 6; ++i)
 		{
 			StaticPhysicalEntity *const RESTRICT object{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
 			object->Initialize(model, positions[i], Vector3(0.0f, 0.0f, 0.0f), scales[i]);
@@ -100,12 +104,12 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 		{
 			StaticPhysicalEntity *const RESTRICT object{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-			object->Initialize(model, Vector3(25.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 25.0f, 10.0f));
+			object->Initialize(model, Vector3(25.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 100.0f, 10.0f));
 		}
 
 		{
 			StaticPhysicalEntity *const RESTRICT object{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-			object->Initialize(model, Vector3(-25.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 25.0f, 10.0f));
+			object->Initialize(model, Vector3(-25.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 100.0f, 10.0f));
 		}
 	}
 

@@ -76,7 +76,6 @@ layout (set = 2, binding = 2) uniform sampler2D oceanNormalTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
-layout (location = 1) out vec4 normalDepth;
 
 //Globals.
 float depth;
@@ -180,6 +179,14 @@ float LengthSquared(vec3 vector)
     return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 }
 
+/*
+*	Calculates the average of a fragment.
+*/
+float CalculateAverage(vec3 fragment)
+{
+	return (fragment.r + fragment.b + fragment.b) * 0.33333333f;
+}
+
 void main()
 {
 	 //Sample the depth of the scene at this point.
@@ -214,8 +221,15 @@ void main()
     //Calculate the transparency.
     float transparency = 1.0f - clamp(dot(normalDirection, normalize(cameraWorldPosition - sceneWorldPosition)), 0.0f, 1.0f);
 
+    //Calculate the underwater color.
+    float underwaterColorWeight = suggestedSceneWorldPosition.y > 0.0f ? 0.0f : clamp(-suggestedSceneWorldPosition.y / 50.0f, 0.0f, 1.0f);
+    vec3 underwaterColor = mix(vec3(0.0f, 0.75f, 1.0f), vec3(0.0f, 0.25f, 0.5f), underwaterColorWeight) * (CalculateAverage(reflection) + directionalLightIntensity * 0.1f);
+
+    //Calculate the underwater weight.
+    float underwaterWeight = clamp(length(suggestedSceneWorldPosition - intersectionPoint) / 50.0f, 0.0f, 1.0f);
+
     //Calculate the final ocean color.
-    vec3 finalOceanColor = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneTextureSampler.rgb : mix(sceneTextureSampler.rgb, reflection, transparency);
+    vec3 finalOceanColor = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneTextureSampler.rgb : mix(mix(sceneTextureSampler.rgb, underwaterColor, underwaterWeight), reflection, transparency);
 
     //Apply the directional light.
     if (sceneWorldPosition.y < 0.0f && cameraWorldPosition.y > 0.0f)
@@ -228,10 +242,6 @@ void main()
     projectedPosition.xyz /= projectedPosition.w;
     float depth = projectedPosition.z;
 
-    //Write the depth.
-    gl_FragDepth = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneDepth : depth;
-
     //Write the fragment
     fragment = vec4(finalOceanColor, 1.0f);
-    normalDepth.w = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneDepth : depth;
 }
