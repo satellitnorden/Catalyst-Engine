@@ -516,22 +516,141 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 		//Initialize the default night environment material.
 		EnvironmentMaterialData data;
 
-		data.diffuseResolution = 1;
-		data.diffuseData.Reserve(4 * 6);
-		data.diffuseIrradianceResolution = 1;
-		data.diffuseIrradianceData.Reserve(4 * 6);
+		data.diffuseResolution = 2;
+		data.diffuseData.Reserve(16 * 6);
+		data.diffuseIrradianceResolution = 2;
+		data.diffuseIrradianceData.Reserve(16 * 6);
 
 		for (uint8 i = 0; i < 6; ++i)
 		{
-			data.diffuseData.EmplaceFast(0.0f);
-			data.diffuseData.EmplaceFast(0.25f);
-			data.diffuseData.EmplaceFast(0.5f);
-			data.diffuseData.EmplaceFast(0.5f);
+			if (i == 2)
+			{
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.5f);
+				data.diffuseData.EmplaceFast(1.0f);
 
-			data.diffuseIrradianceData.EmplaceFast(0.0f);
-			data.diffuseIrradianceData.EmplaceFast(0.25f);
-			data.diffuseIrradianceData.EmplaceFast(0.5f);
-			data.diffuseIrradianceData.EmplaceFast(0.5f);
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.5f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.5f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.5f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.5f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.5f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.5f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.5f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+			}
+
+			else if (i == 3)
+			{
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+			}
+
+			else
+			{
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.5f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.5f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(0.375f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.5f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.5f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(0.375f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+			}
 		}
 
 		CreateEnvironmentMaterial(data, defaultNightEnvironmentMaterial);
@@ -543,22 +662,141 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 		//Initialize the default day environment material.
 		EnvironmentMaterialData data;
 
-		data.diffuseResolution = 1;
-		data.diffuseData.Reserve(4 * 6);
-		data.diffuseIrradianceResolution = 1;
-		data.diffuseIrradianceData.Reserve(4 * 6);
+		data.diffuseResolution = 2;
+		data.diffuseData.Reserve(16 * 6);
+		data.diffuseIrradianceResolution = 2;
+		data.diffuseIrradianceData.Reserve(16 * 6);
 
 		for (uint8 i = 0; i < 6; ++i)
 		{
-			data.diffuseData.EmplaceFast(0.0f);
-			data.diffuseData.EmplaceFast(0.5f);
-			data.diffuseData.EmplaceFast(1.0f);
-			data.diffuseData.EmplaceFast(1.0f);
+			if (i == 2)
+			{
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+				data.diffuseData.EmplaceFast(1.0f);
 
-			data.diffuseIrradianceData.EmplaceFast(0.0f);
-			data.diffuseIrradianceData.EmplaceFast(0.5f);
-			data.diffuseIrradianceData.EmplaceFast(1.0f);
-			data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+			}
+
+			else if (i == 3)
+			{
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+			}
+
+			else
+			{
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.0f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(0.75f);
+				data.diffuseData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.0f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(0.75f);
+				data.diffuseIrradianceData.EmplaceFast(1.0f);
+			}
 		}
 
 		CreateEnvironmentMaterial(data, defaultDayEnvironmentMaterial);

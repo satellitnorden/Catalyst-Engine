@@ -27,8 +27,8 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	camera = EntitySystem::Instance->CreateEntity<CameraEntity>();
 
 	//Move the camera into position.
-	camera->Move(Vector3(0.0f, 1.0f + 4.0f, 8.0f));
-	camera->Rotate(Vector3(-30.0f, 0.0f, 0.0f));
+	camera->Move(Vector3(0.0f, 1.0f + 4.0f, 16.0f));
+	camera->Rotate(Vector3(-15.0f, 0.0f, 0.0f));
 
 	//Set it as the active camera.
 	RenderingSystem::Instance->SetActiveCamera(camera);
@@ -37,11 +37,44 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	SoundSystem::Instance->SetActiveListener(camera);
 
 	//Create something to look at.
-	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Octahedron) };
-	model.SetMaterial(RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red));
+	{
+		PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Octahedron) };
+		model.SetMaterial(RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red));
 
-	StaticPhysicalEntity *const RESTRICT object{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	object->Initialize(model, Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 5.0f, 1.0f));
+		StaticArray<Vector3, 5> positions
+		{
+			Vector3(0.0f, 1.0f, 0.0f),
+			Vector3(10.0f, 1.0f, 0.0f),
+			Vector3(-10.0f, 1.0f, 0.0f),
+			Vector3(0.0f, 1.0f, 10.0f),
+			Vector3(0.0f, 1.0f, -10.0f)
+		};
+
+		for (uint8 i = 0; i < 5; ++i)
+		{
+			StaticPhysicalEntity *const RESTRICT object{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+			object->Initialize(model, positions[i], Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 5.0f, 1.0f));
+		}
+	}
+
+	{
+		PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
+		model.SetMaterial(RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red));
+
+		StaticArray<Vector3, 4> positions
+		{
+			Vector3(10.0f, 1.0f, 10.0f),
+			Vector3(10.0f, 1.0f, -10.0f),
+			Vector3(-10.0f, 1.0f, -10.0f),
+			Vector3(-10.0f, 1.0f, 10.0f)
+		};
+
+		for (uint8 i = 0; i < 4; ++i)
+		{
+			StaticPhysicalEntity *const RESTRICT object{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+			object->Initialize(model, positions[i], Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 10.0f, 1.0f));
+		}
+	}
 
 	//Create, uh, sun.
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
@@ -53,11 +86,8 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 */
 void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
-	//Eh. Move the camera a bit.
-	camera->Move(Vector3(CatalystMath::SineRadians(EngineSystem::Instance->GetTotalGameTime()) * 0.01f, 0.0f, 0.0f));
-
 	//Eh. Rotate the "sun".
-	sun->Rotate(Vector3(0.0f, 45.0f * deltaTime, 0.0f));
+	sun->Rotate(Vector3(0.0f, 2.5f * deltaTime, 0.0f));
 }
 
 /*
