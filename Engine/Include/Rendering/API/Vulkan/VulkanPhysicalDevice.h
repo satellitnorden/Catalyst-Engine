@@ -85,11 +85,6 @@ private:
 	bool HasRequiredFeatures(const VkPhysicalDevice vulkanPhysicalDevice) const NOEXCEPT;
 
 	/*
-	*	Given a Vulkan physical device, return if it has the required extensions.
-	*/
-	bool HasRequiredExtensions(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT;
-
-	/*
 	*	Given a Vulkan physical device and a Vulkan surface, return if the Physical device has the proper swap chain support.
 	*/
 	bool HasProperSwapChainSupport(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT;

@@ -60,15 +60,15 @@ bool VulkanPhysicalDevice::IsPhysicalDeviceSuitable(const VkPhysicalDevice &vulk
 {
 	//Check if it has the required features.
 	if (!HasRequiredFeatures(vulkanPhysicalDevice))
+	{
 		return false;
-
-	//Check if it has the required extensions.
-	if (!HasRequiredExtensions(vulkanPhysicalDevice))
-		return false;
+	}
 
 	//Check if the physical device has proper swap chain support.
 	if (!HasProperSwapChainSupport(vulkanPhysicalDevice))
+	{
 		return false;
+	}
 
 	//If the device has not failed on any of the previous checks, it is deemed suitable.
 	return true;
@@ -85,33 +85,6 @@ bool VulkanPhysicalDevice::HasRequiredFeatures(const VkPhysicalDevice vulkanPhys
 	return	features.geometryShader == VK_TRUE
 			&& features.tessellationShader == VK_TRUE
 			&& features.vertexPipelineStoresAndAtomics == VK_TRUE;
-}
-
-/*
-*	Given a Vulkan physical device, return if it has the required extensions.
-*/
-bool VulkanPhysicalDevice::HasRequiredExtensions(const VkPhysicalDevice &vulkanPhysicalDevice) const NOEXCEPT
-{
-	//Define the list of the required extensions.
-	std::set<DynamicString> requiredExtensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-
-	//Get the extension count.
-	uint32_t extensionCount;
-	VULKAN_ERROR_CHECK(vkEnumerateDeviceExtensionProperties(vulkanPhysicalDevice, nullptr, &extensionCount, nullptr));
-
-	//Get the available extensions.
-	DynamicArray<VkExtensionProperties> availableExtensions;
-	availableExtensions.UpsizeFast(extensionCount);
-	VULKAN_ERROR_CHECK(vkEnumerateDeviceExtensionProperties(vulkanPhysicalDevice, nullptr, &extensionCount, availableExtensions.Data()));
-
-	//Iterate over all available extensions and match them with the required extensions.
-	for (auto &availableExtension : availableExtensions)
-	{
-		requiredExtensions.erase(availableExtension.extensionName);
-	}
-
-	//If the required extensions list has been cleared, that means that all required extensions are available.
-	return requiredExtensions.empty();
 }
 
 /*
