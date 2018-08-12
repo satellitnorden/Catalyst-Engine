@@ -77,10 +77,10 @@ CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuffer() NOEXCEPT
 }
 
 /*
-*	Sets the stage.
+*	Sets the sub stage.
 */
-void RenderPass::SetStage(const RenderPassStage newStage) NOEXCEPT
+void RenderPass::SetSubStage(const RenderPassSubStage newSubStage) NOEXCEPT
 {
-	//Set the stage.
-	stage = newStage;
+	//Set the sub stage.
+	subStage = newSubStage;
 }

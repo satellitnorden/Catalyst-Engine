@@ -30,8 +30,8 @@ OceanRenderPass::OceanRenderPass() NOEXCEPT
 */
 void OceanRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::Ocean);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::Ocean);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

@@ -30,8 +30,8 @@ PostProcessingBloomRenderPass::PostProcessingBloomRenderPass() NOEXCEPT
 */
 void PostProcessingBloomRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::PostProcessingBloom);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::PostProcessingBloom);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

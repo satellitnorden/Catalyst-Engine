@@ -31,8 +31,8 @@ InstancedPhysicalRenderPass::InstancedPhysicalRenderPass() NOEXCEPT
 */
 void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::InstancedPhysical);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::InstancedPhysical);
 
 	//Set the shaders.
 	SetVertexShader(Shader::InstancedPhysicalVertex);

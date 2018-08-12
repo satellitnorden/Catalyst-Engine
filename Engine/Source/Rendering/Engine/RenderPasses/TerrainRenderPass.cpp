@@ -32,8 +32,8 @@ TerrainRenderPass::TerrainRenderPass() NOEXCEPT
 */
 void TerrainRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::Terrain);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::Terrain);
 
 	//Set the shaders.
 	SetVertexShader(Shader::TerrainVertex);

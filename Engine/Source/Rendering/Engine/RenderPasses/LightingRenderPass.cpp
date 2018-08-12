@@ -27,8 +27,8 @@ LightingRenderPass::LightingRenderPass() NOEXCEPT
 */
 void LightingRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::Lighting);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::Lighting);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

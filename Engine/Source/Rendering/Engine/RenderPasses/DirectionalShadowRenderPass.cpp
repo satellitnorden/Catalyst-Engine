@@ -27,8 +27,8 @@ DirectionalShadowRenderPass::DirectionalShadowRenderPass() NOEXCEPT
 */
 void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::DirectionalShadow);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::DirectionalShadow);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

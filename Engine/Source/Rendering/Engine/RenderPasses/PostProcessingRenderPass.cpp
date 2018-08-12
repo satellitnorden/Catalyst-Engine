@@ -27,8 +27,8 @@ PostProcessingRenderPass::PostProcessingRenderPass() NOEXCEPT
 */
 void PostProcessingRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::PostProcessing);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::PostProcessing);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

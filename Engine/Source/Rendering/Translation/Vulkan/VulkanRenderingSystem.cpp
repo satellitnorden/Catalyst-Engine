@@ -541,21 +541,21 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	parameters.viewportExtent = VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height };
 
 	//Create the pipeline!
-	pipelines[INDEX(renderPass->GetStage())] = VulkanInterface::Instance->CreatePipeline(parameters);
+	pipelines[INDEX(renderPass->GetSubStage())] = VulkanInterface::Instance->CreatePipeline(parameters);
 
 	//Update the Vulkan render pass data.
-	vulkanRenderPassData[INDEX(renderPass->GetStage())].framebuffers.Reserve(pipelines[INDEX(renderPass->GetStage())]->GetRenderPass().GetFrameBuffers().Size());
+	vulkanRenderPassData[INDEX(renderPass->GetSubStage())].framebuffers.Reserve(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().GetFrameBuffers().Size());
 
-	for (const VulkanFramebuffer& framebuffer : pipelines[INDEX(renderPass->GetStage())]->GetRenderPass().GetFrameBuffers())
+	for (const VulkanFramebuffer& framebuffer : pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().GetFrameBuffers())
 	{
-		vulkanRenderPassData[INDEX(renderPass->GetStage())].framebuffers.EmplaceFast(framebuffer.Get());
+		vulkanRenderPassData[INDEX(renderPass->GetSubStage())].framebuffers.EmplaceFast(framebuffer.Get());
 	}
 
-	vulkanRenderPassData[INDEX(renderPass->GetStage())].pipeline = pipelines[INDEX(renderPass->GetStage())]->Get();
-	vulkanRenderPassData[INDEX(renderPass->GetStage())].pipelineLayout = pipelines[INDEX(renderPass->GetStage())]->GetPipelineLayout();
-	vulkanRenderPassData[INDEX(renderPass->GetStage())].renderPass = pipelines[INDEX(renderPass->GetStage())]->GetRenderPass().Get();
+	vulkanRenderPassData[INDEX(renderPass->GetSubStage())].pipeline = pipelines[INDEX(renderPass->GetSubStage())]->Get();
+	vulkanRenderPassData[INDEX(renderPass->GetSubStage())].pipelineLayout = pipelines[INDEX(renderPass->GetSubStage())]->GetPipelineLayout();
+	vulkanRenderPassData[INDEX(renderPass->GetSubStage())].renderPass = pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().Get();
 
-	renderPass->SetData(&vulkanRenderPassData[INDEX(renderPass->GetStage())]);
+	renderPass->SetData(&vulkanRenderPassData[INDEX(renderPass->GetSubStage())]);
 
 	//Add the command buffers.
 	const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
@@ -1305,7 +1305,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	currentPrimaryCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
-	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassStage::NumberOfRenderPassStages)>& renderPasses{ RenderingSystem::Instance->GetRenderPasses() };
+	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassStages)>& renderPasses{ RenderingSystem::Instance->GetRenderPasses() };
 
 	for (const RenderPass *const RESTRICT renderPass : renderPasses)
 	{
@@ -1333,12 +1333,12 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		{
 			if (numberOfClearValues > 0)
 			{
-				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(pipelines[INDEX(renderPass->GetStage())]->GetRenderPass(), frameBuffer, VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, numberOfClearValues);
+				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass(), frameBuffer, VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, numberOfClearValues);
 			}
 			
 			else
 			{
-				currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(renderPass->GetStage())]->GetRenderPass(), frameBuffer, VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+				currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass(), frameBuffer, VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 			}
 		}
 

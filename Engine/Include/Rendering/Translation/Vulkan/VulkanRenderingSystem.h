@@ -205,7 +205,7 @@ private:
 	StaticArray<VulkanRenderTarget *RESTRICT, INDEX(RenderTarget::NumberOfRenderTargets)> renderTargets;
 
 	//Container for all temporary pipelines.
-	StaticArray<VulkanPipeline *RESTRICT, INDEX(RenderPassStage::NumberOfRenderPassStages)> pipelines;
+	StaticArray<VulkanPipeline *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassStages)> pipelines;
 
 	//Container for all semaphores.
 	StaticArray<VulkanSemaphore *RESTRICT, INDEX(GraphicsSemaphore::NumberOfSemaphores)> semaphores;
@@ -217,7 +217,7 @@ private:
 	StaticArray<VulkanUniformBuffer *RESTRICT, UniformBuffer::NumberOfUniformBuffers> uniformBuffers;
 
 	//Container for all Vulkan render pass data.
-	StaticArray<VulkanRenderPassData, INDEX(RenderPassStage::NumberOfRenderPassStages)> vulkanRenderPassData;
+	StaticArray<VulkanRenderPassData, INDEX(RenderPassSubStage::NumberOfRenderPassStages)> vulkanRenderPassData;
 
 	//Container for all special textures.
 	StaticArray<Vulkan2DTexture* RESTRICT, INDEX(SpecialTexture::NumberOfSpecialTextures)> specialTextures;

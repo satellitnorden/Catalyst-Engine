@@ -27,8 +27,8 @@ ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::ScreenSpaceAmbientOcclusion
 */
 void ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::SceenSpaceAmbientOcclusionHorizontalBlur);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::SceenSpaceAmbientOcclusionHorizontalBlur);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

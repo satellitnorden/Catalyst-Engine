@@ -27,8 +27,8 @@ PostProcessingVerticalBlurRenderPass::PostProcessingVerticalBlurRenderPass() NOE
 */
 void PostProcessingVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::PostProcessingVerticalBlur);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::PostProcessingVerticalBlur);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

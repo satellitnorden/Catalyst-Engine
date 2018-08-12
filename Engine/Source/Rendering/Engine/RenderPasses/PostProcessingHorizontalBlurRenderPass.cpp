@@ -27,8 +27,8 @@ PostProcessingHorizontalBlurRenderPass::PostProcessingHorizontalBlurRenderPass()
 */
 void PostProcessingHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::PostProcessingHorizontalBlur);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::PostProcessingHorizontalBlur);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

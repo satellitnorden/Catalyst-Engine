@@ -31,8 +31,8 @@ ParticleSystemRenderPass::ParticleSystemRenderPass() NOEXCEPT
 */
 void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::ParticleSystem);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::ParticleSystem);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ParticleSystemVertex);

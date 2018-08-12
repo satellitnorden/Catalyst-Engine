@@ -32,8 +32,8 @@ VegetationRenderPass::VegetationRenderPass() NOEXCEPT
 */
 void VegetationRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::Vegetation);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::Vegetation);
 
 	//Set the shaders.
 	SetVertexShader(Shader::VegetationVertex);

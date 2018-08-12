@@ -27,8 +27,8 @@ ScreenSpaceAmbientOcclusionRenderPass::ScreenSpaceAmbientOcclusionRenderPass() N
 */
 void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::SceenSpaceAmbientOcclusion);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::SceenSpaceAmbientOcclusion);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

@@ -27,8 +27,8 @@ BloomVerticalBlurRenderPass::BloomVerticalBlurRenderPass() NOEXCEPT
 */
 void BloomVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::BloomVerticalBlur);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::BloomVerticalBlur);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

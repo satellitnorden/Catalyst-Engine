@@ -32,8 +32,8 @@ StaticPhysicalRenderPass::StaticPhysicalRenderPass() NOEXCEPT
 */
 void StaticPhysicalRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::StaticPhysical);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::StaticPhysical);
 
 	//Set the shaders.
 	SetVertexShader(Shader::PhysicalVertex);

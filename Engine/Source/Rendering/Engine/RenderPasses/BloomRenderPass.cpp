@@ -27,8 +27,8 @@ BloomRenderPass::BloomRenderPass() NOEXCEPT
 */
 void BloomRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::Bloom);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::Bloom);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

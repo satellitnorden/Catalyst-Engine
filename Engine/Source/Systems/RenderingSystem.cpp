@@ -423,28 +423,28 @@ UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBuf
 void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 {
 	//Register all render passes.
-	renderPasses[INDEX(RenderPassStage::DirectionalTerrainShadow)] = DirectionalTerrainShadowRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::DirectionalStaticPhysicalShadow)] = DirectionalStaticPhysicalShadowRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::DirectionalInstancedPhysicalShadow)] = DirectionalInstancedPhysicalShadowRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::Terrain)] = TerrainRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::StaticPhysical)] = StaticPhysicalRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::InstancedPhysical)] = InstancedPhysicalRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::Vegetation)] = VegetationRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::SceenSpaceAmbientOcclusion)] = ScreenSpaceAmbientOcclusionRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::SceenSpaceAmbientOcclusionHorizontalBlur)] = ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::SceenSpaceAmbientOcclusionVerticalBlur)] = ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::Lighting)] = LightingRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::Sky)] = SkyRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::Ocean)] = OceanRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::Bloom)] = BloomRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::BloomHorizontalBlur)] = BloomHorizontalBlurRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::BloomVerticalBlur)] = BloomVerticalBlurRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::PostProcessingBloom)] = PostProcessingBloomRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::PostProcessingHorizontalBlur)] = PostProcessingHorizontalBlurRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::PostProcessingVerticalBlur)] = PostProcessingVerticalBlurRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::DirectionalTerrainShadow)] = DirectionalTerrainShadowRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::DirectionalStaticPhysicalShadow)] = DirectionalStaticPhysicalShadowRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::DirectionalInstancedPhysicalShadow)] = DirectionalInstancedPhysicalShadowRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::Terrain)] = TerrainRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::StaticPhysical)] = StaticPhysicalRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::InstancedPhysical)] = InstancedPhysicalRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::Vegetation)] = VegetationRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::SceenSpaceAmbientOcclusion)] = ScreenSpaceAmbientOcclusionRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::SceenSpaceAmbientOcclusionHorizontalBlur)] = ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::SceenSpaceAmbientOcclusionVerticalBlur)] = ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::Ocean)] = OceanRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::Bloom)] = BloomRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::BloomHorizontalBlur)] = BloomHorizontalBlurRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::BloomVerticalBlur)] = BloomVerticalBlurRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::PostProcessingBloom)] = PostProcessingBloomRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::PostProcessingHorizontalBlur)] = PostProcessingHorizontalBlurRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::PostProcessingVerticalBlur)] = PostProcessingVerticalBlurRenderPass::Instance.Get();
+	renderPasses[INDEX(RenderPassSubStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
 }
 
 /*

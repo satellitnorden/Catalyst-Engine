@@ -27,8 +27,8 @@ SkyRenderPass::SkyRenderPass() NOEXCEPT
 */
 void SkyRenderPass::InitializeInternal() NOEXCEPT
 {
-	//Set the stage.
-	SetStage(RenderPassStage::Sky);
+	//Set the sub stage.
+	SetSubStage(RenderPassSubStage::Sky);
 
 	//Set the shaders.
 	SetVertexShader(Shader::CubeMapVertex);
