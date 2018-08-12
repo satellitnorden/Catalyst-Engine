@@ -51,7 +51,7 @@ void VulkanInstance::CreateApplicationInfo(VkApplicationInfo &applicationInfo) c
 {
 	applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	applicationInfo.pNext = nullptr;
-	applicationInfo.pApplicationName = EngineSystem::Instance->GetProjectInformation().generalInformation.projectName.CString();
+	applicationInfo.pApplicationName = EngineSystem::Instance->GetProjectConfiguration().generalConfiguration.projectName.CString();
 	applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 	applicationInfo.pEngineName = "Catalyst Engine";
 	applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);

@@ -25,7 +25,7 @@ public:
 	/*
 	*	Initializes the task system.
 	*/
-	void InitializeSystem(const CatalystProjectMultithreadingInformation &multithreadingInformation) NOEXCEPT;
+	void InitializeSystem(const CatalystProjectMultithreadingConfiguration &multithreadingConfiguration) NOEXCEPT;
 
 	/*
 	*	Releases the task system.

@@ -42,7 +42,7 @@ void Surface::Initialize() NOEXCEPT
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	//Create the window!
-	surface = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, EngineSystem::Instance->GetProjectInformation().generalInformation.projectName.CString(), nullptr, nullptr);
+	surface = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, EngineSystem::Instance->GetProjectConfiguration().generalConfiguration.projectName.CString(), nullptr, nullptr);
 #endif
 }
 

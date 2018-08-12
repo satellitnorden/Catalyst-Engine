@@ -58,7 +58,7 @@ void SoundSystem::InitializeSystem() NOEXCEPT
 	constexpr uint32 initFlags{ FMOD_INIT_NORMAL };
 #endif
 
-	FMOD_ERROR_CHECK(studioSystem->initialize(EngineSystem::Instance->GetProjectInformation().soundInformation.maximumNumberOfChannels, studioInitFlags, initFlags, nullptr));
+	FMOD_ERROR_CHECK(studioSystem->initialize(EngineSystem::Instance->GetProjectConfiguration().soundConfiguration.maximumNumberOfChannels, studioInitFlags, initFlags, nullptr));
 #endif
 }
 

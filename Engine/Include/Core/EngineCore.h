@@ -74,5 +74,5 @@ class UniquePointer;
 //Platform.
 #include <Platform/General/Platform.h>
 
-//The Catalyst project information.
-#include <Core/CatalystProjectInformation.h>
+//The Catalyst project configuration.
+#include <Core/CatalystProjectConfiguration.h>

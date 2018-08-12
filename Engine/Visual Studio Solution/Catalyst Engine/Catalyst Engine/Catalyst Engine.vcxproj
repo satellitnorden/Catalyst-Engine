@@ -68,7 +68,7 @@
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\SortingAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\BinaryFile.h" />
-    <ClInclude Include="..\..\..\Include\Core\CatalystProjectInformation.h" />
+    <ClInclude Include="..\..\..\Include\Core\CatalystProjectConfiguration.h" />
     <ClInclude Include="..\..\..\Include\Core\Containers\DynamicArray.h" />
     <ClInclude Include="..\..\..\Include\Core\Containers\Map.h" />
     <ClInclude Include="..\..\..\Include\Core\Containers\StaticArray.h" />

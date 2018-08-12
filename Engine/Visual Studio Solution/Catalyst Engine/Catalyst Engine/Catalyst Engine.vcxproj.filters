@@ -246,9 +246,6 @@
     <ClInclude Include="..\..\..\Include\Core\BinaryFile.h">
       <Filter>Core\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\CatalystProjectInformation.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\CoreDefines.h">
       <Filter>Core\Include</Filter>
     </ClInclude>
@@ -857,6 +854,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h">
       <Filter>Managers\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\CatalystProjectConfiguration.h">
+      <Filter>Core\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

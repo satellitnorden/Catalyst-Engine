@@ -20,7 +20,7 @@ namespace TaskSystemConstants
 /*
 *	Initializes the task system.
 */
-void TaskSystem::InitializeSystem(const CatalystProjectMultithreadingInformation &multithreadingInformation) NOEXCEPT
+void TaskSystem::InitializeSystem(const CatalystProjectMultithreadingConfiguration &multithreadingConfiguration) NOEXCEPT
 {
 	//Find out how many hardware threads there is.
 	uint32 numberOfHardwareThreads = std::thread::hardware_concurrency();
@@ -33,7 +33,7 @@ void TaskSystem::InitializeSystem(const CatalystProjectMultithreadingInformation
 	numberOfTaskExecutors = numberOfHardwareThreads - 2;
 
 	//Initialize the task queue.
-	taskQueue.Initialize(numberOfTaskExecutors + TaskSystemConstants::NUMBER_OF_ENGINE_TASKS + multithreadingInformation.numberOfGameTasks);
+	taskQueue.Initialize(numberOfTaskExecutors + TaskSystemConstants::NUMBER_OF_ENGINE_TASKS + multithreadingConfiguration.numberOfGameTasks);
 
 	//Kick off all task executor threads.
 	taskExecutorThreads.Reserve(numberOfTaskExecutors);

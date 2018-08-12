@@ -9,6 +9,7 @@
 #include <Rendering/Engine/PhysicalVertex.h>
 
 //Systems.
+#include <Systems/EngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
@@ -94,7 +95,7 @@ void DirectionalInstancedPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputBindingDescription(1, sizeof(Matrix4), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
-	SetRenderResolution(Resolution(RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION));
+	SetRenderResolution(Resolution(EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution));
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);

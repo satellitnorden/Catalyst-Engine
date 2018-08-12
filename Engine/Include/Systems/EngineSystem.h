@@ -19,7 +19,7 @@ public:
 	/*
 	*	Initializes the engine system.
 	*/
-	void InitializeSystem(const CatalystProjectInformation &initialProjectInformation) NOEXCEPT;
+	void InitializeSystem(const CatalystProjectConfiguration &initialProjectConfiguration) NOEXCEPT;
 
 	/*
 	*	Updates the engine system synchronously.
@@ -32,9 +32,9 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
-	*	Returns the project information.
+	*	Returns the project configuration.
 	*/
-	const CatalystProjectInformation& GetProjectInformation() const { return projectInformation; }
+	const CatalystProjectConfiguration& GetProjectConfiguration() const { return projectConfiguration; }
 
 	/*
 	*	Returns whether or not the game should terminate.
@@ -58,8 +58,8 @@ public:
 
 private:
 
-	//The project information.
-	CatalystProjectInformation projectInformation;
+	//The project configuration.
+	CatalystProjectConfiguration projectConfiguration;
 
 	//Denotes whether or not the game should terminate.
 	std::atomic<bool> shouldTerminate{ false };

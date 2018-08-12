@@ -7,16 +7,35 @@
 //Systems.
 #include <Systems/EngineSystem.h>
 
+/*
+*	Creates the Catalyst project configuration.
+*/
+void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const RESTRICT configuration) NOEXCEPT
+{
+	configuration->generalConfiguration.projectName = "Maxim";
+
+	configuration->multithreadingConfiguration.numberOfGameTasks = 0;
+
+#if defined(CATALYST_WINDOWS)
+	configuration->renderingConfiguration.shadowMapResolution = 2'048;
+#else
+	configuration->renderingConfiguration.shadowMapResolution = 512;
+#endif
+
+	configuration->soundConfiguration.maximumNumberOfChannels = 4;
+}
+
 MAIN_FUNCTION
 (
 	//The delta timer.
 	DeltaTimer deltaTimer;
 
+	//Create the Catalyst project configuration.
+	CatalystProjectConfiguration configuration;
+	CreateCatalystProjectConfiguration(&configuration);
+
 	//Initialize the engine system.
-	EngineSystem::Instance->InitializeSystem(	CatalystProjectInformation(CatalystProjectGeneralInformation("Maxim"),
-												CatalystProjectMultithreadingInformation(0),
-												CatalystProjectRenderingInformation(),
-												CatalystProjectSoundInformation(16)));
+	EngineSystem::Instance->InitializeSystem(configuration);
 
 	//Initialize the game system.
 	MaximGameSystem::Instance->InitializeSystem();

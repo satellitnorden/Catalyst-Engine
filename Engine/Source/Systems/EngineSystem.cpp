@@ -17,13 +17,13 @@ DEFINE_SINGLETON(EngineSystem);
 /*
 *	Initializes the engine system.
 */
-void EngineSystem::InitializeSystem(const CatalystProjectInformation &initialProjectInformation) NOEXCEPT
+void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialProjectConfiguration) NOEXCEPT
 {
-	//Set the project information.
-	projectInformation = initialProjectInformation;
+	//Set the project configuration.
+	projectConfiguration = initialProjectConfiguration;
 
 	//Initialize all systems.
-	TaskSystem::Instance->InitializeSystem(projectInformation.multithreadingInformation);
+	TaskSystem::Instance->InitializeSystem(projectConfiguration.multithreadingConfiguration);
 	CullingSystem::Instance->InitializeSystem();
 	LevelOfDetailSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem();

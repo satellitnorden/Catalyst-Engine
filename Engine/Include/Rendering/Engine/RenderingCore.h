@@ -11,7 +11,6 @@ namespace RenderingConstants
 {
 	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE{ 16 };
 	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE{ 8 };
-	constexpr uint32 SHADOW_MAP_RESOLUTION{ 1'024 };
 	constexpr float SHADOW_VIEW_DISTANCE{ 100.0f };
 }
 

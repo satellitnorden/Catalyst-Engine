@@ -9,6 +9,7 @@
 
 //Systems.
 #include <Systems/CullingSystem.h>
+#include <Systems/EngineSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 
@@ -70,7 +71,7 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputBindingDescription(0, sizeof(float) * 5, VertexInputBindingDescription::InputRate::Vertex);
 
 	//Set the render resolution.
-	SetRenderResolution(Resolution(RenderingConstants::SHADOW_MAP_RESOLUTION, RenderingConstants::SHADOW_MAP_RESOLUTION));
+	SetRenderResolution(Resolution(EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution));
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
