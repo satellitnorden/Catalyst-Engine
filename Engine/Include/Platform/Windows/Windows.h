@@ -31,4 +31,13 @@
 	return 0;																										\
 }																													\
 
+/*
+*	Main loop.
+*/
+#define MAIN_LOOP(implementation)					\
+while (!EngineSystem::Instance->ShouldTerminate())	\
+{													\
+	implementation;									\
+}													\
+
 #endif

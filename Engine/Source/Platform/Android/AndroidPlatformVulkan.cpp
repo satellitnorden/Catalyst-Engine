@@ -9,7 +9,7 @@
 #include <dlfcn.h>
 
 //Static variable definitions.
-struct ANativeWindow *RESTRICT PlatformVulkan::surface = nullptr;
+ANativeWindow *RESTRICT PlatformVulkan::surface = nullptr;
 
 /*
 *	Loads Vulkan.

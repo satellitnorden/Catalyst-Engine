@@ -22,9 +22,9 @@ public:
 	void InitializeSystem(const CatalystProjectInformation &initialProjectInformation) NOEXCEPT;
 
 	/*
-	*	Updates the engine system synchronously. Returns whether or not the game should terminate.
+	*	Updates the engine system synchronously.
 	*/
-	bool UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT;
+	void UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT;
 
 	/*
 	*	Releases the engine system.
