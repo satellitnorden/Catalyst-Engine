@@ -106,7 +106,14 @@ void CatalystPlatform::PostInitialize() NOEXCEPT
 */
 void CatalystPlatform::Update() NOEXCEPT
 {
+	//Process messages.
+	MSG message;
 
+	while (PeekMessage(&message, window, 0, 0, PM_REMOVE) > 0)
+	{
+		TranslateMessage(&message);
+		DispatchMessage(&message);
+	}
 }
 
 /*
