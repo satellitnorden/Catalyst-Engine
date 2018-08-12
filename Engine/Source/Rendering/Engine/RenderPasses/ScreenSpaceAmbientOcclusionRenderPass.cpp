@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionRenderPass.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
 
@@ -58,7 +61,7 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DontCare);
+	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Clear);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);
 	SetCullMode(CullMode::Back);
 	SetDepthAttachmentLoadOperator(AttachmentLoadOperator::DontCare);
@@ -89,6 +92,14 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 */
 void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
 {
+	//If screen space ambient occlusion is not enabled, don't render this render pass.
+	if (!RenderingConfigurationManager::Instance->GetScreenSpaceAmbientOcclusionEnabled())
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 

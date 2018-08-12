@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
 
@@ -88,6 +91,14 @@ void ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::InitializeInternal() N
 */
 void ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::RenderInternal() NOEXCEPT
 {
+	//If screen space ambient occlusion is not enabled, don't render this render pass.
+	if (!RenderingConfigurationManager::Instance->GetScreenSpaceAmbientOcclusionEnabled())
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 

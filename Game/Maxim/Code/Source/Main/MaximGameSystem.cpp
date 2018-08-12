@@ -7,6 +7,9 @@
 #include <Entities/ParticleSystemEntity.h>
 #include <Entities/StaticPhysicalEntity.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Math.
 #include <Math/CatalystMath.h>
 
@@ -120,6 +123,9 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	//Create, uh, sun.
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	sun->SetIntensity(25.0f);
+
+	//Disable screen space ambient occlusion.
+	RenderingConfigurationManager::Instance->SetScreenSpaceAmbientOcclusionEnabled(false);
 }
 
 /*

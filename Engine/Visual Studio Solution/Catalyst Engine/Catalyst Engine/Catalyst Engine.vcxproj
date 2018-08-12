@@ -108,6 +108,7 @@
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />
     <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h" />
     <ClInclude Include="..\..\..\Include\Managers\PostProcessingManager.h" />
+    <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
     <ClInclude Include="..\..\..\Include\Math\CatalystMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix3.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix4.h" />
@@ -286,6 +287,7 @@
     <ClCompile Include="..\..\..\Source\Entities\VegetationEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\PostProcessingManager.cpp" />
+    <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\Source\Math\PerlinNoiseGenerator.cpp" />

@@ -50,6 +50,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\VegetationEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\PostProcessingManager.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\RenderingConfigurationManager.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\PerlinNoiseGenerator.cpp" />

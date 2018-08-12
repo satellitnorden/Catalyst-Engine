@@ -66,6 +66,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\PostProcessingManager.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\RenderingConfigurationManager.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix3.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>

@@ -855,6 +855,9 @@
     <ClInclude Include="..\..\..\Include\Platform\Windows\WindowsPlatformVulkan.h">
       <Filter>Platform\Include\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h">
+      <Filter>Managers\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1195,6 +1198,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsPlatformVulkan.cpp">
       <Filter>Platform\Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp">
+      <Filter>Managers\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
