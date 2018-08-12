@@ -6,6 +6,7 @@
 #include <Core/EngineCore.h>
 
 //Third party.
+#define VK_USE_PLATFORM_WIN32_KHR
 #include <ThirdParty/vulkan/vulkan.h>
 #define GLFW_INCLUDE_NONE
 #include <ThirdParty/GLFW/glfw3.h>
@@ -14,9 +15,6 @@
 *	Defines the Vulkan API version.
 */
 #define VULKAN_API_VERSION VK_API_VERSION_1_1
-
-//Forward declarations.
-class Surface;
 
 namespace PlatformVulkan
 {
@@ -34,17 +32,10 @@ namespace PlatformVulkan
 	*/
 	static void GetRequiredInstanceExtensions(DynamicArray<const char *RESTRICT> &extensions) NOEXCEPT
 	{
-		uint32 glfwExtensionCount{ 0 };
-		const char *RESTRICT *RESTRICT glfwExtensions{ nullptr };
+		extensions.Reserve(2);
 
-		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-		extensions.Reserve(glfwExtensionCount);
-
-		for (uint32 i = 0; i < glfwExtensionCount; ++i)
-		{
-			extensions.EmplaceFast(glfwExtensions[i]);
-		}
+		extensions.EmplaceFast(VK_KHR_SURFACE_EXTENSION_NAME);
+		extensions.EmplaceFast(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 	}
 
 	/*

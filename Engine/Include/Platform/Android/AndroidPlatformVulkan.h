@@ -6,7 +6,7 @@
 #include <Core/EngineCore.h>
 
 //Vulkan.
-#define VK_NO_PROTOTYPES 1
+#define VK_NO_PROTOTYPES
 #define VK_USE_PLATFORM_ANDROID_KHR
 #include <vulkan/vulkan.h>
 
@@ -168,50 +168,12 @@ extern PFN_vkCreateDisplayModeKHR vkCreateDisplayModeKHR;
 extern PFN_vkGetDisplayPlaneCapabilitiesKHR vkGetDisplayPlaneCapabilitiesKHR;
 extern PFN_vkCreateDisplayPlaneSurfaceKHR vkCreateDisplayPlaneSurfaceKHR;
 extern PFN_vkCreateSharedSwapchainsKHR vkCreateSharedSwapchainsKHR;
-
-#if defined(VK_USE_PLATFORM_XLIB_KHR)
-	extern PFN_vkCreateXlibSurfaceKHR vkCreateXlibSurfaceKHR;
-	extern PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR vkGetPhysicalDeviceXlibPresentationSupportKHR;
-#endif
-
-#if defined(VK_USE_PLATFORM_XCB_KHR)
-	extern PFN_vkCreateXcbSurfaceKHR vkCreateXcbSurfaceKHR;
-	extern PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR vkGetPhysicalDeviceXcbPresentationSupportKHR;
-#endif
-
-#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
-	extern PFN_vkCreateWaylandSurfaceKHR vkCreateWaylandSurfaceKHR;
-	extern PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR vkGetPhysicalDeviceWaylandPresentationSupportKHR;
-#endif
-
-#if defined(VK_USE_PLATFORM_MIR_KHR)
-	extern PFN_vkCreateMirSurfaceKHR vkCreateMirSurfaceKHR;
-	extern PFN_vkGetPhysicalDeviceMirPresentationSupportKHR vkGetPhysicalDeviceMirPresentationSupportKHR;
-#endif
-
-#if defined(VK_USE_PLATFORM_ANDROID_KHR)
-	extern PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
-#endif
-
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-	extern PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR;
-	extern PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin32PresentationSupportKHR;
-#endif
-
-#if defined(USE_DEBUG_EXTENTIONS)
-	#include <vulkan/vk_sdk_platform.h>
-	extern PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;
-	extern PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;
-	extern PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT;
-#endif
+extern PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
 
 /*
 *	Defines the Vulkan API version.
 */
 #define VULKAN_API_VERSION VK_MAKE_VERSION(1, 0, 0)
-
-//Forward declarations.
-class Surface;
 
 class PlatformVulkan
 {
@@ -219,7 +181,7 @@ class PlatformVulkan
 public:
 
 	//The native window handle.
-	static struct ANativeWindow *RESTRICT surface;
+	static ANativeWindow *RESTRICT surface;
 
 	/*
 	*	Loads Vulkan.
@@ -233,8 +195,8 @@ public:
 	{
 		extensions.Reserve(2);
 
-		extensions.EmplaceFast("VK_KHR_surface");
-		extensions.EmplaceFast("VK_KHR_android_surface");
+		extensions.EmplaceFast(VK_KHR_SURFACE_EXTENSION_NAME);
+		extensions.EmplaceFast(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
 	}
 
 	/*

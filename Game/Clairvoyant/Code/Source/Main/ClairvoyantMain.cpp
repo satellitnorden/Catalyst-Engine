@@ -21,10 +21,10 @@ MAIN_FUNCTION
 	DeltaTimer deltaTimer;
 
 	//Initialize the engine system.
-	EngineSystem::Instance->InitializeSystem(	CatalystProjectInformation(CatalystProjectGeneralInformation("Clairvoyant"),
-												CatalystProjectMultithreadingInformation(8),
-												CatalystProjectRenderingInformation(),
-												CatalystProjectSoundInformation(256)));
+	EngineSystem::Instance->InitializeSystem(	CatalystProjectConfiguration(CatalystProjectGeneralConfiguration("Clairvoyant"),
+												CatalystProjectMultithreadingConfiguration(8),
+												CatalystProjectRenderingConfiguration(),
+												CatalystProjectSoundConfiguration(256)));
 
 	//Initialize the game system.
 	ClairvoyantGameSystem::Instance->InitializeSystem();
