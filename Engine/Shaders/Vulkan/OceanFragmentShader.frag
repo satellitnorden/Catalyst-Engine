@@ -212,23 +212,19 @@ void main()
     vec3 reflection = CalculateReflection();
 
     //Sample the scene texture.
-    float deformationWeight = clamp(length(sceneWorldPosition - intersectionPoint) / 25.0f, 0.0f, 1.0f);
+    float deformationWeight = clamp(length(sceneWorldPosition - intersectionPoint) / 50.0f, 0.0f, 1.0f);
     vec2 sceneTextureCoordinate = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? fragmentTextureCoordinate : fragmentTextureCoordinate + (normalDirection.xz * deformationWeight);
     float suggestedSceneDepth = texture(sceneNormalDepthTexture, sceneTextureCoordinate).w;
 	vec3 suggestedSceneWorldPosition = CalculateWorldPosition(sceneTextureCoordinate, suggestedSceneDepth);
 
-	//Calculate the underwater weight.
-    float underwaterWeight = clamp(length(suggestedSceneWorldPosition - intersectionPoint) / 25.0f, 0.0f, 1.0f);
-
 	sceneTextureCoordinate = suggestedSceneWorldPosition.y > 0.0f ? fragmentTextureCoordinate : sceneTextureCoordinate;
-	sceneTextureCoordinate = mix(fragmentTextureCoordinate, sceneTextureCoordinate, underwaterWeight);
     vec4 sceneTextureSampler = texture(sceneTexture, sceneTextureCoordinate);
 
-    
+	//Calculate the underwater weight.
+    float underwaterWeight = clamp(length(suggestedSceneWorldPosition - intersectionPoint) / 50.0f, 0.0f, 1.0f);
 
     //Calculate the underwater color.
-    float underwaterColorWeight = suggestedSceneWorldPosition.y > 0.0f ? 0.0f : clamp(-suggestedSceneWorldPosition.y / 25.0f, 0.0f, 1.0f);
-    vec3 underwaterColor = mix(vec3(0.0f, 0.75f, 1.0f), vec3(0.0f, 0.25f, 0.5f), underwaterColorWeight) * (CalculateAverage(reflection) + directionalLightIntensity * 0.1f);
+    vec3 underwaterColor = vec3(0.0f, 0.375f, 0.5f) * (CalculateAverage(reflection) + directionalLightIntensity * 0.5f);
 
     //Calculate the transparency.
     float transparency = 1.0f - clamp(dot(normalDirection, normalize(cameraWorldPosition - sceneWorldPosition)), 0.0f, 1.0f);
