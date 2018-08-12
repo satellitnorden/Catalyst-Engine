@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Engine/RenderPasses/PostProcessingVerticalBlurRenderPass.h>
 
+//Managers.
+#include <Managers/PostProcessingManager.h>
+
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
 
@@ -88,6 +91,14 @@ void PostProcessingVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 */
 void PostProcessingVerticalBlurRenderPass::RenderInternal() NOEXCEPT
 {
+	//If the blur has no strength, skip rendering.
+	if (PostProcessingManager::Instance->GetBlurStrength() == 0.0f)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 

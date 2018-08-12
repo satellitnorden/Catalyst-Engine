@@ -81,11 +81,19 @@ layout (location = 0) out vec4 fragmentColor;
 */
 vec3 ApplyBlur(vec3 sceneTextureSampler)
 {
-    //Calculate the blurred sample.
-    vec4 blur = texture(blurTexture, fragmentTextureCoordinate);
+    if (blurStrength > 0.0f)
+    {
+        //Calculate the blurred sample.
+        vec4 blur = texture(blurTexture, fragmentTextureCoordinate);
 
-    //Return the calculated color.
-    return mix(sceneTextureSampler, blur.rgb, blurStrength);
+        //Return the calculated color.
+        return mix(sceneTextureSampler, blur.rgb, blurStrength);
+    }
+    
+    else
+    {
+        return sceneTextureSampler;
+    }
 }
 
 /*
@@ -93,14 +101,22 @@ vec3 ApplyBlur(vec3 sceneTextureSampler)
 */
 vec3 ApplySaturation(vec3 sceneTextureSampler)
 {
-    //Calculate the average.
-    float average = 0.2126f * sceneTextureSampler.r + 0.7152f * sceneTextureSampler.g + 0.0722f * sceneTextureSampler.b;
+    if (saturation != 0.0f)
+    {
+        //Calculate the average.
+        float average = 0.2126f * sceneTextureSampler.r + 0.7152f * sceneTextureSampler.g + 0.0722f * sceneTextureSampler.b;
 
-    //Calculate the grayscale color.
-    vec3 grayscaleColor = vec3(average, average, average);
+        //Calculate the grayscale color.
+        vec3 grayscaleColor = vec3(average, average, average);
 
-    //Return the calculated color.
-    return mix (grayscaleColor, sceneTextureSampler, saturation);
+        //Return the calculated color.
+        return mix (grayscaleColor, sceneTextureSampler, saturation);
+    }
+    
+    else
+    {
+        return sceneTextureSampler;
+    }
 }
 
 /*
