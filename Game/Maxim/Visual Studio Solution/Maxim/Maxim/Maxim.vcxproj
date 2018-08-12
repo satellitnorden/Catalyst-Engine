@@ -55,6 +55,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\PerlinNoiseGenerator.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\AndroidPlatformVulkan.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\CatalystWindows.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\WindowsPlatformVulkan.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\Vulkan2DTexture.cpp" />
@@ -108,7 +109,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\StaticPhysicalRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\TerrainRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\VegetationRenderPass.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\Surface.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\CubeMapVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.cpp" />
@@ -300,7 +300,7 @@
       <PreprocessorDefinitions>CATALYST_DEBUG;CATALYST_WINDOWS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>fmodstudio64_vc.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -1,9 +1,6 @@
 //Header file.
 #include <Rendering/API/Vulkan/VulkanSurface.h>
 
-//Graphics.
-#include <Rendering/Engine/Surface.h>
-
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
@@ -26,7 +23,7 @@ VulkanSurface::~VulkanSurface() NOEXCEPT
 /*
 *	Initializes this Vulkan surface.
 */
-void VulkanSurface::Initialize(Surface &surface) NOEXCEPT
+void VulkanSurface::Initialize() NOEXCEPT
 {
 	PlatformVulkan::CreateVulkanSurface(&vulkanSurface);
 }

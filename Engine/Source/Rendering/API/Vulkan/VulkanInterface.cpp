@@ -11,7 +11,7 @@ DEFINE_SINGLETON(VulkanInterface);
 /*
 *	Initializes this Vulkan interface.
 */
-void VulkanInterface::Initialize(Surface &surface) NOEXCEPT
+void VulkanInterface::Initialize() NOEXCEPT
 {
 	//Load vulkan.
 	PlatformVulkan::LoadVulkan();
@@ -20,7 +20,7 @@ void VulkanInterface::Initialize(Surface &surface) NOEXCEPT
 	vulkanInstance.Initialize();
 
 	//Initialize the Vulkan surface.
-	vulkanSurface.Initialize(surface);
+	vulkanSurface.Initialize();
 
 	//Initialize the Vulkan physical device.
 	vulkanPhysicalDevice.Initialize();

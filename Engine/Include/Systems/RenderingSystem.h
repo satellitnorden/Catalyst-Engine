@@ -12,7 +12,6 @@
 #include <Rendering/Engine/ParticleMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/RenderingCore.h>
-#include <Rendering/Engine/Surface.h>
 
 //Forward declarations.
 class CameraEntity;
@@ -98,11 +97,6 @@ public:
 	*	Releases the rendering system.
 	*/
 	void ReleaseSystem() NOEXCEPT;
-
-	/*
-	*	Returns the main surface.
-	*/
-	RESTRICTED Surface *const RESTRICT GetMainSurface() { return &mainSurface; }
 
 	/*
 	*	Returns the render passes.
@@ -285,9 +279,6 @@ public:
 	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;
 
 private:
-
-	//The main surface.
-	Surface mainSurface;
 
 	//Container for all render passes.
 	StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassStages)> renderPasses;

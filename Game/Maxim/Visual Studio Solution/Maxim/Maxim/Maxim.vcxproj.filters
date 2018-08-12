@@ -81,6 +81,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\AndroidPlatformVulkan.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\CatalystAndroid.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\CatalystWindows.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -238,9 +241,6 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\VegetationRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\Surface.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp">

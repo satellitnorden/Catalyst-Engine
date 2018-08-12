@@ -30,6 +30,7 @@
 																_In_ int32 nCmdShow) NOEXCEPT	\
 {																								\
 	CatalystPlatform::instance = hInstance;														\
+	CatalystPlatform::showCommand = nCmdShow;													\
 																								\
 	implementation;																				\
 																								\
@@ -44,10 +45,21 @@ public:
 	//Handle to the instance.
 	static HINSTANCE instance;
 
+	//The command to show the window.
+	static int32 showCommand;
+
+	//Handle to the window.
+	static HWND window;
+
 	/*
 	*	Initializes the platform.
 	*/
 	static void Initialize() NOEXCEPT;
+
+	/*
+	*	Post-nitializes the platform.
+	*/
+	static void PostInitialize() NOEXCEPT;
 
 	/*
 	*	Updates the platform.

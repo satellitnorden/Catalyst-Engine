@@ -837,9 +837,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalModelData.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Surface.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\Android\AndroidPlatformVulkan.h">
       <Filter>Platform\Include\Android</Filter>
     </ClInclude>
@@ -1189,9 +1186,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.cpp">
       <Filter>Rendering\Source\Translation\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\Surface.cpp">
-      <Filter>Rendering\Source\Engine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Android\AndroidPlatformVulkan.cpp">
       <Filter>Platform\Source\Android</Filter>

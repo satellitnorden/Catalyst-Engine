@@ -180,14 +180,14 @@ void PlatformVulkan::LoadVulkan() NOEXCEPT
 */
 void PlatformVulkan::CreateVulkanSurface(VkSurfaceKHR *const RESTRICT vulkanSurface) NOEXCEPT
 {
-	VkAndroidSurfaceCreateInfoKHR androidSurfaceCreateInfoKHR;
+	VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo;
 
-	androidSurfaceCreateInfoKHR.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-	androidSurfaceCreateInfoKHR.pNext = nullptr;
-	androidSurfaceCreateInfoKHR.flags = 0;
-	androidSurfaceCreateInfoKHR.window = CatalystPlatform::window;
+	surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+	surfaceCreateInfo.pNext = nullptr;
+	surfaceCreateInfo.flags = 0;
+	surfaceCreateInfo.window = CatalystPlatform::window;
 
-	const VkResult result{ vkCreateAndroidSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &androidSurfaceCreateInfoKHR, nullptr, vulkanSurface) };
+	const VkResult result{ vkCreateAndroidSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, vulkanSurface) };
 
 	ASSERT(result == VK_SUCCESS, "Could not create Vulkan surface!");
 }

@@ -61,7 +61,7 @@ DEFINE_SINGLETON(VulkanRenderingSystem);
 void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize the Vulkan interface.
-	VulkanInterface::Instance->Initialize(*RenderingSystem::Instance->GetMainSurface());
+	VulkanInterface::Instance->Initialize();
 
 	//Initialize all special textures.
 	InitializeSpecialTextures();

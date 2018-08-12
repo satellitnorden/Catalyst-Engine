@@ -2,9 +2,6 @@
 //Header file.
 #include <Platform/Windows/WindowsPlatformVulkan.h>
 
-//Rendering.
-#include <Rendering/Engine/Surface.h>
-
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -19,7 +16,15 @@ namespace PlatformVulkan
 	*/
 	void CreateVulkanSurface(VkSurfaceKHR *const RESTRICT vulkanSurface) NOEXCEPT
 	{
-		const VkResult result{ glfwCreateWindowSurface(VulkanInterface::Instance->GetInstance().Get(), static_cast<GLFWwindow *const RESTRICT>(RenderingSystem::Instance->GetMainSurface()->Get()), nullptr, vulkanSurface) };
+		VkWin32SurfaceCreateInfoKHR surfaceCreateInfo;
+
+		surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+		surfaceCreateInfo.pNext = nullptr;
+		surfaceCreateInfo.flags = 0;
+		surfaceCreateInfo.hinstance = CatalystPlatform::instance;
+		surfaceCreateInfo.hwnd = CatalystPlatform::window;
+
+		const VkResult result{ vkCreateWin32SurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, vulkanSurface) };
 
 		ASSERT(result == VK_SUCCESS, "Could not create Vulkan surface!");
 	}

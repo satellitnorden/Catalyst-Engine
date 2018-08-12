@@ -68,6 +68,14 @@ void CatalystPlatform::Initialize() NOEXCEPT
 }
 
 /*
+*	Post-nitializes the platform.
+*/
+void CatalystPlatform::PostInitialize() NOEXCEPT
+{
+
+}
+
+/*
 *	Updates the platform.
 */
 void CatalystPlatform::Update() NOEXCEPT

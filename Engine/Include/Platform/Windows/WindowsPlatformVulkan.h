@@ -8,8 +8,6 @@
 //Third party.
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <ThirdParty/vulkan/vulkan.h>
-#define GLFW_INCLUDE_NONE
-#include <ThirdParty/GLFW/glfw3.h>
 
 /*
 *	Defines the Vulkan API version.

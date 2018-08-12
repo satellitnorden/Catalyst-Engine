@@ -42,7 +42,7 @@
       <PreprocessorDefinitions>CATALYST_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>fmodstudio64_vc.lib;glfw3.lib;vulkan-1.lib;xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -202,7 +202,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TerrainRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VegetationRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\Surface.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h" />
@@ -346,7 +345,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\StaticPhysicalRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TerrainRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\VegetationRenderPass.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\Surface.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\CubeMapVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.cpp" />

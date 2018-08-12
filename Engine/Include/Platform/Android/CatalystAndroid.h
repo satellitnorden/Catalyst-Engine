@@ -36,6 +36,11 @@ public:
 	static void Initialize() NOEXCEPT;
 
 	/*
+	*	Post-nitializes the platform.
+	*/
+	static void PostInitialize() NOEXCEPT;
+
+	/*
 	*	Updates the platform.
 	*/
 	static void Update() NOEXCEPT;
