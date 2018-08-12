@@ -5,18 +5,11 @@
 //Core.
 #include <Core/EngineCore.h>
 
-//Multithreading.
-#include <Multithreading/Task.h>
-
 //Systems.
 #include <Systems/EngineSystem.h>
-#include <Systems/TaskSystem.h>
 
 //Windows.
 #include <tchar.h>
-
-//Global variables.
-Task messageProcessingTask;
 
 //Static variable definitions.
 HINSTANCE CatalystPlatform::instance;
@@ -105,22 +98,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 */
 void CatalystPlatform::PostInitialize() NOEXCEPT
 {
-	//Fire off the message processing task.
-	messageProcessingTask.function = [](void *const RESTRICT)
-	{
-		//Process messages.
-		MSG message;
 
-		if (!EngineSystem::Instance->ShouldTerminate()
-			&& GetMessage(&message, nullptr, 0, 0) > 0 )
-		{
-			TranslateMessage(&message);
-			DispatchMessage(&message);
-		}
-	};
-	messageProcessingTask.arguments = nullptr;
-
-	TaskSystem::Instance->ExecuteTask(&messageProcessingTask);
 }
 
 /*
