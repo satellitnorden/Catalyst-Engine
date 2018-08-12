@@ -29,32 +29,35 @@
 																_In_ LPSTR lpCmdLine,			\
 																_In_ int32 nCmdShow) NOEXCEPT	\
 {																								\
-	CatalystWindows::instance = hInstance;														\
+	CatalystPlatform::instance = hInstance;														\
 																								\
 	implementation;																				\
 																								\
 	return 0;																					\
 }																								\
 
-/*
-*	Main loop.
-*/
-#define MAIN_LOOP(implementation)					\
-while (!EngineSystem::Instance->ShouldTerminate())	\
-{													\
-	implementation;									\
-}													\
-
-/*
-*	Catalyst Windows.
-*/
-class CatalystWindows final
+class CatalystPlatform final
 {
 
 public:
 
-	//The instance handle.
+	//Handle to the instance.
 	static HINSTANCE instance;
+
+	/*
+	*	Initializes the platform.
+	*/
+	static void Initialize() NOEXCEPT;
+
+	/*
+	*	Updates the platform.
+	*/
+	static void Update() NOEXCEPT;
+
+	/*
+	*	Releases the platform.
+	*/
+	static void Release() NOEXCEPT;
 
 };
 

@@ -185,7 +185,7 @@ void PlatformVulkan::CreateVulkanSurface(VkSurfaceKHR *const RESTRICT vulkanSurf
 	androidSurfaceCreateInfoKHR.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
 	androidSurfaceCreateInfoKHR.pNext = nullptr;
 	androidSurfaceCreateInfoKHR.flags = 0;
-	androidSurfaceCreateInfoKHR.window = CatalystAndroid::window;
+	androidSurfaceCreateInfoKHR.window = CatalystPlatform::window;
 
 	const VkResult result{ vkCreateAndroidSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &androidSurfaceCreateInfoKHR, nullptr, vulkanSurface) };
 

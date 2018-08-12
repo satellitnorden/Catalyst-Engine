@@ -41,8 +41,8 @@ MAIN_FUNCTION
 	MaximGameSystem::Instance->InitializeSystem();
 
 	//Main game loop.
-	MAIN_LOOP
-	(
+	while (!EngineSystem::Instance->ShouldTerminate())
+	{
 		//Calculate the delta time.
 		const float deltaTime{ deltaTimer.Update() };
 
@@ -51,7 +51,7 @@ MAIN_FUNCTION
 
 		//Update the engine system.
 		EngineSystem::Instance->UpdateSystemSynchronous(deltaTime);
-	)
+	}
 
 	//Release the game system.
 	MaximGameSystem::Instance->ReleaseSystem();

@@ -12,85 +12,38 @@
 *	Main function.
 */
 #define MAIN_FUNCTION(implementation)																		\
-void HandleCommand(android_app *app, int32 command)															\
+void android_main(android_app *app)																			\
 {																											\
-	switch (command)																						\
-	{																										\
-		case APP_CMD_INIT_WINDOW:																			\
-		{																									\
-			CatalystAndroid::window = app->window;															\
-																											\
-			break;																							\
-		}																									\
-																											\
-		case APP_CMD_TERM_WINDOW:																			\
-		{																									\
-			EngineSystem::Instance->Terminate();															\
-																											\
-			break;																							\
-		}																									\
-	}																										\
-}																											\
-																											\
-void android_main(struct android_app *app)																	\
-{																											\
-	app->onAppCmd = HandleCommand;																			\
-																											\
-	while (CatalystAndroid::window == nullptr)																\
-	{																										\
-		int32 events;																						\
-		android_poll_source *RESTRICT source;																\
-																											\
-		if (ALooper_pollAll(0, nullptr, &events, reinterpret_cast<void *RESTRICT *RESTRICT>(&source)) >= 0)	\
-		{																									\
-			if (source)																						\
-			{																								\
-				source->process(app, source);																\
-			}																								\
-		}																									\
-	}																										\
+	CatalystPlatform::app = app;																			\
 																											\
 	implementation;																							\
 }																											\
 
-/*
-*	Main loop.
-*/
-#define MAIN_LOOP(implementation)																		\
-while (!EngineSystem::Instance->ShouldTerminate())														\
-{																										\
-	int32 events;																						\
-	android_poll_source *RESTRICT source;																\
-																										\
-	if (ALooper_pollAll(0, nullptr, &events, reinterpret_cast<void *RESTRICT *RESTRICT>(&source)) >= 0)	\
-	{																									\
-		if (source)																						\
-		{																								\
-			source->process(app, source);																\
-		}																								\
-	}																									\
-																										\
-	if (app->destroyRequested != 0)																		\
-	{																									\
-		EngineSystem::Instance->Terminate();															\
-	}																									\
-																										\
-	else																								\
-	{																									\
-		implementation;																					\
-	}																									\
-}																										\
-
-/*
-*	Catalyst Android.
-*/
-class CatalystAndroid final
+class CatalystPlatform final
 {
 
 public:
 
-	//The native window handle.
+	//Handle to the app.
+	static android_app *RESTRICT app;
+
+	//Handle to the window.
 	static ANativeWindow *RESTRICT window;
+
+	/*
+	*	Initializes the platform.
+	*/
+	static void Initialize() NOEXCEPT;
+
+	/*
+	*	Updates the platform.
+	*/
+	static void Update() NOEXCEPT;
+
+	/*
+	*	Releases the platform.
+	*/
+	static void Release() NOEXCEPT;
 
 };
 

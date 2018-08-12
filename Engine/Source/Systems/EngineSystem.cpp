@@ -22,6 +22,9 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 	//Set the project configuration.
 	projectConfiguration = initialProjectConfiguration;
 
+	//Initialize the platform.
+	CatalystPlatform::Initialize();
+
 	//Initialize all systems.
 	TaskSystem::Instance->InitializeSystem(projectConfiguration.multithreadingConfiguration);
 	CullingSystem::Instance->InitializeSystem();
@@ -43,6 +46,9 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 
 	//Update the total game time.
 	totalGameTime += deltaTime;
+
+	//Update the platform.
+	CatalystPlatform::Update();
 
 	//Pre-update the input system.
 	InputSystem::Instance->PreUpdateSystemSynchronous();
@@ -79,6 +85,9 @@ void EngineSystem::ReleaseSystem() NOEXCEPT
 {
 	//Signal to other systems that the game should terminate.
 	shouldTerminate = true;
+
+	//Release the platform.
+	CatalystPlatform::Release();
 
 	//Release all systems.
 	InputSystem::Instance->ReleaseSystem();

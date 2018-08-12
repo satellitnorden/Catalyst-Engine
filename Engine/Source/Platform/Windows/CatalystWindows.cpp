@@ -6,5 +6,29 @@
 #include <Core/EngineCore.h>
 
 //Static variable definitions.
-HINSTANCE CatalystWindows::instance;
+HINSTANCE CatalystPlatform::instance;
+
+/*
+*	Initializes the platform.
+*/
+void CatalystPlatform::Initialize() NOEXCEPT
+{
+
+}
+
+/*
+*	Updates the platform.
+*/
+void CatalystPlatform::Update() NOEXCEPT
+{
+
+}
+
+/*
+*	Releases the platform.
+*/
+void CatalystPlatform::Release() NOEXCEPT
+{
+
+}
 #endif
