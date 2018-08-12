@@ -840,12 +840,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Surface.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\Android\Android.h">
-      <Filter>Platform\Include\Android</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\Windows\Windows.h">
-      <Filter>Platform\Include\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\Android\AndroidPlatformVulkan.h">
       <Filter>Platform\Include\Android</Filter>
     </ClInclude>
@@ -857,6 +851,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\CatalystProjectConfiguration.h">
       <Filter>Core\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystWindows.h">
+      <Filter>Platform\Include\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h">
+      <Filter>Platform\Include\Android</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1201,6 +1201,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp">
       <Filter>Managers\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp">
+      <Filter>Platform\Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp">
+      <Filter>Platform\Source\Android</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -18,7 +18,7 @@ void HandleCommand(android_app *app, int32 command)															\
 	{																										\
 		case APP_CMD_INIT_WINDOW:																			\
 		{																									\
-			PlatformVulkan::surface = app->window;															\
+			CatalystAndroid::window = app->window;															\
 																											\
 			break;																							\
 		}																									\
@@ -36,7 +36,7 @@ void android_main(struct android_app *app)																	\
 {																											\
 	app->onAppCmd = HandleCommand;																			\
 																											\
-	while (PlatformVulkan::surface == nullptr)																\
+	while (CatalystAndroid::window == nullptr)																\
 	{																										\
 		int32 events;																						\
 		android_poll_source *RESTRICT source;																\
@@ -80,5 +80,18 @@ while (!EngineSystem::Instance->ShouldTerminate())														\
 		implementation;																					\
 	}																									\
 }																										\
+
+/*
+*	Catalyst Android.
+*/
+class CatalystAndroid final
+{
+
+public:
+
+	//The native window handle.
+	static ANativeWindow *RESTRICT window;
+
+};
 
 #endif

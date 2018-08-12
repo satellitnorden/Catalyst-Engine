@@ -8,9 +8,6 @@
 //Third party.
 #include <dlfcn.h>
 
-//Static variable definitions.
-ANativeWindow *RESTRICT PlatformVulkan::surface = nullptr;
-
 /*
 *	Loads Vulkan.
 */
@@ -188,7 +185,7 @@ void PlatformVulkan::CreateVulkanSurface(VkSurfaceKHR *const RESTRICT vulkanSurf
 	androidSurfaceCreateInfoKHR.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
 	androidSurfaceCreateInfoKHR.pNext = nullptr;
 	androidSurfaceCreateInfoKHR.flags = 0;
-	androidSurfaceCreateInfoKHR.window = surface;
+	androidSurfaceCreateInfoKHR.window = CatalystAndroid::window;
 
 	const VkResult result{ vkCreateAndroidSurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &androidSurfaceCreateInfoKHR, nullptr, vulkanSurface) };
 

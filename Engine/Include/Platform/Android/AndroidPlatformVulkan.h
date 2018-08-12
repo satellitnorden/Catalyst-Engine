@@ -180,8 +180,7 @@ class PlatformVulkan
 
 public:
 
-	//The native window handle.
-	static ANativeWindow *RESTRICT surface;
+	
 
 	/*
 	*	Loads Vulkan.

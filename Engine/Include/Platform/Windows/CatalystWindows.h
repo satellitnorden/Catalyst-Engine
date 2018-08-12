@@ -24,12 +24,17 @@
 /*
 *	Main function.
 */
-#define MAIN_FUNCTION(implementation) int32 main(const int32 argumentCount, char *RESTRICT arguments[]) NOEXCEPT	\
-{																													\
-	implementation;																									\
-																													\
-	return 0;																										\
-}																													\
+#define MAIN_FUNCTION(implementation) int32 CALLBACK WinMain(	_In_ HINSTANCE hInstance,		\
+																_In_ HINSTANCE hPrevInstance,	\
+																_In_ LPSTR lpCmdLine,			\
+																_In_ int32 nCmdShow) NOEXCEPT	\
+{																								\
+	CatalystWindows::instance = hInstance;														\
+																								\
+	implementation;																				\
+																								\
+	return 0;																					\
+}																								\
 
 /*
 *	Main loop.
@@ -39,5 +44,18 @@ while (!EngineSystem::Instance->ShouldTerminate())	\
 {													\
 	implementation;									\
 }													\
+
+/*
+*	Catalyst Windows.
+*/
+class CatalystWindows final
+{
+
+public:
+
+	//The instance handle.
+	static HINSTANCE instance;
+
+};
 
 #endif

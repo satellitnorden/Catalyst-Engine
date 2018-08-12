@@ -55,6 +55,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\PerlinNoiseGenerator.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\AndroidPlatformVulkan.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\CatalystWindows.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\WindowsPlatformVulkan.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanAllocator.cpp" />

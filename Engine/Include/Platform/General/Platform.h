@@ -1,10 +1,10 @@
 #pragma once
 
 /*
-*	Platform-specific general files.
+*	Platform-specific files.
 */
 #if defined(CATALYST_WINDOWS)
-#include <Platform/Windows/Windows.h>
+#include <Platform/Windows/CatalystWindows.h>
 #elif defined(CATALYST_ANDROID)
-#include <Platform/Android/Android.h>
+#include <Platform/Android/CatalystAndroid.h>
 #endif
