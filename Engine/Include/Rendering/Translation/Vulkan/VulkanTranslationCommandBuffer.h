@@ -65,7 +65,7 @@ public:
 	/*
 	*	Pushes constants.
 	*/
-	void PushConstants(const RenderPass *const RESTRICT renderPass, PushConstantRange::ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT override;
+	void PushConstants(const RenderPass *const RESTRICT renderPass, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT override;
 
 	/*
 	*	Ends the command buffer.

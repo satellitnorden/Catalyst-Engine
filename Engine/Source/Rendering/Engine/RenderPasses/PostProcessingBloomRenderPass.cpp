@@ -54,7 +54,7 @@ void PostProcessingBloomRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(float));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(float));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -103,7 +103,7 @@ void PostProcessingBloomRenderPass::RenderInternal() NOEXCEPT
 
 	//Push constants.
 	const float bloomStrength{ PostProcessingManager::Instance->GetBloomStrength() };
-	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(float), &bloomStrength);
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(float), &bloomStrength);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

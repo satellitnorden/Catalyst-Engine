@@ -54,7 +54,7 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(Vector2));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(Vector2));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -116,7 +116,7 @@ void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
 	//Push constants.
-	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(Vector2), &noiseScale);
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(Vector2), &noiseScale);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

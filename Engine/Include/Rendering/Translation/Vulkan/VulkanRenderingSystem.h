@@ -154,6 +154,11 @@ private:
 	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
 
 	/*
+	*	Creates a render data table layout.
+	*/
+	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) NOEXCEPT;
+
+	/*
 	*	Returns the current dynamic uniform data descriptor set.
 	*/
 	RenderDataTableHandle GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT;

@@ -103,6 +103,25 @@ public:
 	}
 
 	/*
+	*	Given a render data table layout binding type, return the corresponding Vulkan descriptor type.
+	*/
+	static VkDescriptorType GetVulkanDescriptorType(const RenderDataTableLayoutBinding::Type type) NOEXCEPT
+	{
+		switch (type)
+		{
+			case RenderDataTableLayoutBinding::Type::UniformBuffer: return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+
+			default:
+			{
+#if !defined(CATALYST_FINAL)
+				PRINT_TO_CONSOLE("Unknown texture format."); BREAKPOINT;
+#endif
+				return VK_DESCRIPTOR_TYPE_SAMPLER;
+			}
+		}
+	}
+
+	/*
 	*	Given a format, return the corresponding Vulkan format.
 	*/
 	static VkFormat GetVulkanFormat(const TextureFormat format) NOEXCEPT
@@ -171,17 +190,17 @@ public:
 	/*
 	*	Given a shader stage, returns the corresponding Vulkan shader stage.
 	*/
-	static VkShaderStageFlags GetVulkanShaderStage(const PushConstantRange::ShaderStage shaderStage) NOEXCEPT
+	static VkShaderStageFlags GetVulkanShaderStage(const ShaderStage shaderStage) NOEXCEPT
 	{
 		switch (shaderStage)
 		{
 			default: return VK_SHADER_STAGE_VERTEX_BIT;
-			case PushConstantRange::ShaderStage::Vertex: return VK_SHADER_STAGE_VERTEX_BIT;
-			case PushConstantRange::ShaderStage::TessellationControl: return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-			case PushConstantRange::ShaderStage::TessellationEvaluation: return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-			case PushConstantRange::ShaderStage::Geometry: return VK_SHADER_STAGE_GEOMETRY_BIT;
-			case PushConstantRange::ShaderStage::Fragment: return VK_SHADER_STAGE_FRAGMENT_BIT;
-			case PushConstantRange::ShaderStage::Compute: return VK_SHADER_STAGE_COMPUTE_BIT;
+			case ShaderStage::Vertex: return VK_SHADER_STAGE_VERTEX_BIT;
+			case ShaderStage::TessellationControl: return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+			case ShaderStage::TessellationEvaluation: return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+			case ShaderStage::Geometry: return VK_SHADER_STAGE_GEOMETRY_BIT;
+			case ShaderStage::Fragment: return VK_SHADER_STAGE_FRAGMENT_BIT;
+			case ShaderStage::Compute: return VK_SHADER_STAGE_COMPUTE_BIT;
 		}
 	}
 

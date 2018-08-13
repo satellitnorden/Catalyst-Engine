@@ -258,7 +258,7 @@ protected:
 	/*
 	*	Adds a push constant range.
 	*/
-	void AddPushConstantRange(const PushConstantRange::ShaderStage shaderStage, const uint32 offset, const uint32 size) NOEXCEPT { pushConstantRanges.EmplaceFast(shaderStage, offset, size); }
+	void AddPushConstantRange(const ShaderStage shaderStage, const uint32 offset, const uint32 size) NOEXCEPT { pushConstantRanges.EmplaceFast(shaderStage, offset, size); }
 
 	/*
 	*	Sets the number of vertex input attribute descriptions.

@@ -55,7 +55,7 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(float));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(float));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -105,7 +105,7 @@ void OceanRenderPass::RenderInternal() NOEXCEPT
 
 	//Push constant data.
 	constexpr float scaling{ 0.25f };
-	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(float), &scaling);
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(float), &scaling);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

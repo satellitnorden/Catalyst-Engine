@@ -73,7 +73,7 @@ void VulkanTranslationCommandBuffer::DrawIndexed(const RenderPass *const RESTRIC
 /*
 *	Pushes constants.
 */
-void VulkanTranslationCommandBuffer::PushConstants(const RenderPass *const RESTRICT renderPass, PushConstantRange::ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT
+void VulkanTranslationCommandBuffer::PushConstants(const RenderPass *const RESTRICT renderPass, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT
 {
 	//Cache the Vulkan render pass data.
 	const VulkanRenderPassData *const RESTRICT renderPassData{ static_cast<const VulkanRenderPassData *const RESTRICT>(renderPass->GetData()) };

@@ -57,7 +57,7 @@ void DirectionalStaticPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(PushConstantRange::ShaderStage::Vertex, 0, sizeof(Matrix4));
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(Matrix4));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -139,7 +139,7 @@ void DirectionalStaticPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 	{
 		const uint64 offset{ 0 };
 
-		commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Vertex, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
 		commandBuffer->BindRenderDataTables(this, 1, 1, &renderComponent->renderDataTable);
 		commandBuffer->BindVertexBuffers(this, 1, &renderComponent->buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, renderComponent->buffer, renderComponent->indexOffset);

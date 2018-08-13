@@ -48,7 +48,7 @@ public:
 	/*
 	*	Pushes constants.
 	*/
-	virtual void PushConstants(const RenderPass *const RESTRICT renderPass, PushConstantRange::ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT = 0;
+	virtual void PushConstants(const RenderPass *const RESTRICT renderPass, ShaderStage shaderStage, const uint32 offset, const uint32 size, const void *const RESTRICT data) NOEXCEPT = 0;
 
 	/*
 	*	Ends the command buffer.

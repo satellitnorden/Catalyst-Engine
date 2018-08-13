@@ -58,26 +58,26 @@ void StaticPhysicalRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(PushConstantRange::ShaderStage::Vertex, 0, sizeof(Matrix4));
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(Matrix4));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
-	AddVertexInputAttributeDescription(0,
-		0,
-		VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-		offsetof(PhysicalVertex, position));
-	AddVertexInputAttributeDescription(1,
-		0,
-		VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-		offsetof(PhysicalVertex, normal));
-	AddVertexInputAttributeDescription(2,
-		0,
-		VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-		offsetof(PhysicalVertex, tangent));
-	AddVertexInputAttributeDescription(3,
-		0,
-		VertexInputAttributeDescription::Format::X32Y32SignedFloat,
-		offsetof(PhysicalVertex, textureCoordinate));
+	AddVertexInputAttributeDescription(	0,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										offsetof(PhysicalVertex, position));
+										AddVertexInputAttributeDescription(1,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										offsetof(PhysicalVertex, normal));
+										AddVertexInputAttributeDescription(2,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										offsetof(PhysicalVertex, tangent));
+										AddVertexInputAttributeDescription(3,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										offsetof(PhysicalVertex, textureCoordinate));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
@@ -149,7 +149,7 @@ void StaticPhysicalRenderPass::RenderInternal() NOEXCEPT
 
 		const uint64 offset{ 0 };
 
-		commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Vertex, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
 		commandBuffer->BindRenderDataTables(this, 1, 1, &renderComponent->renderDataTable);
 		commandBuffer->BindVertexBuffers(this, 1, &renderComponent->buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, renderComponent->buffer, renderComponent->indexOffset);

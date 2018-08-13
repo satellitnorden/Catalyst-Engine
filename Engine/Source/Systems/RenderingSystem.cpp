@@ -125,6 +125,15 @@ uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 }
 
 /*
+*	Creates a constant buffer.
+*/
+ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
+{
+	//Create the constant buffer via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->CreateConstantBuffer(data, dataSizes, dataChunks);
+}
+
+/*
 *	Creates and returns a texture 2D given the texture data.
 */
 Texture2DHandle RenderingSystem::CreateTexture2D(const TextureData &textureData) const NOEXCEPT
@@ -152,21 +161,21 @@ void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderDataTab
 }
 
 /*
-*	Creates a constant buffer.
-*/
-ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
-{
-	//Create the constant buffer via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->CreateConstantBuffer(data, dataSizes, dataChunks);
-}
-
-/*
 *	Finalizes the initialization of a render pass.
 */
 void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT
 {
 	//Finalize the initialization of this render pass via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->FinalizeRenderPassInitialization(renderPass);
+}
+
+/*
+*	Creates a render data table layout.
+*/
+void RenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) NOEXCEPT
+{
+	//Create the render data table layout via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->CreateRenderDataTableLayout(bindings, numberOfBindings, handle);
 }
 
 /*

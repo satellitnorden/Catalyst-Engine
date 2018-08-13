@@ -55,7 +55,7 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(PushConstantRange::ShaderStage::Geometry, 0, sizeof(float) * 2);
+	AddPushConstantRange(ShaderStage::Geometry, 0, sizeof(float) * 2);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -121,7 +121,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 		particleSystemData.particleSystemRandomSeed = component->particleSystemRandomSeed;
 		particleSystemData.particleSystemTotalTime = EngineSystem::Instance->GetTotalGameTime() - component->particleSystemStartingTime;
 
-		commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Geometry, 0, sizeof(float) * 2, &particleSystemData);
+		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(float) * 2, &particleSystemData);
 		commandBuffer->BindRenderDataTables(this, 1, 1, &component->renderDataTable);
 		commandBuffer->Draw(this, 1, component->instanceCount);
 	}

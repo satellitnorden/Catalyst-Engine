@@ -18,6 +18,7 @@ namespace RenderingConstants
 *	Type aliases.
 */
 using RenderDataTableHandle = void *RESTRICT;
+using RenderDataTableLayoutHandle = void *RESTRICT;
 using ConstantBufferHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;
 using TextureCubeMapHandle = void *RESTRICT;
@@ -199,6 +200,17 @@ enum class Shader : uint8
 	None
 };
 
+//Enumeration covering all shader stages.
+enum class ShaderStage : uint8
+{
+	Vertex,
+	TessellationControl,
+	TessellationEvaluation,
+	Geometry,
+	Fragment,
+	Compute
+};
+
 //Enumeration covering all special textures.
 enum class SpecialTexture : uint8
 {
@@ -278,17 +290,6 @@ class PushConstantRange final
 
 public:
 
-	//Enumeration covering all shader stages.
-	enum class ShaderStage : uint8
-	{
-		Vertex,
-		TessellationControl,
-		TessellationEvaluation,
-		Geometry,
-		Fragment,
-		Compute
-	};
-
 	//The shader stage.
 	ShaderStage shaderStage;
 
@@ -315,6 +316,30 @@ public:
 
 	}
 
+};
+
+/*
+*	Render data table layout information.
+*/
+class RenderDataTableLayoutBinding final
+{
+
+public:
+
+	//Enumeration covering all types.
+	enum class Type : uint8
+	{
+		UniformBuffer
+	};
+
+	//The binding.
+	uint32 binding;
+
+	//The type.
+	Type type;
+
+	//The shader stage.
+	ShaderStage shaderStage;
 };
 
 /*

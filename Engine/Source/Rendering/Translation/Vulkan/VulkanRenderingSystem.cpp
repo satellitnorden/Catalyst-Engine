@@ -573,6 +573,25 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 }
 
 /*
+*	Creates a render data table layout.
+*/
+void VulkanRenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) NOEXCEPT
+{
+	//Translate from the API-agnostic structure to the Vulkan-specific.
+	DynamicArray<VkDescriptorSetLayoutBinding> vulkanBindings;
+	vulkanBindings.Reserve(numberOfBindings);
+
+	for (uint32 i = 0; i < numberOfBindings; ++i)
+	{
+		const RenderDataTableLayoutBinding &binding{ bindings[i] };
+
+		vulkanBindings.EmplaceFast(VulkanUtilities::CreateDescriptorSetLayoutBinding(binding.binding, VulkanTranslationUtilities::GetVulkanDescriptorType(binding.type), VulkanTranslationUtilities::GetVulkanShaderStage(binding.shaderStage)));
+	}
+
+	//TODO: Finalize this. (:
+}
+
+/*
 *	Returns the current dynamic uniform data descriptor set.
 */
 RenderDataTableHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT

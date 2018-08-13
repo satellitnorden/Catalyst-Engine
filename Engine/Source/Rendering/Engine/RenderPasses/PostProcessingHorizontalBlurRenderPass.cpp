@@ -54,7 +54,7 @@ void PostProcessingHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(PushConstantRange::ShaderStage::Fragment, 0, sizeof(GaussianBlurData));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(GaussianBlurData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -115,7 +115,7 @@ void PostProcessingHorizontalBlurRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
 
 	//Push the constant data.
-	commandBuffer->PushConstants(this, PushConstantRange::ShaderStage::Fragment, 0, sizeof(GaussianBlurData), &data);
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(GaussianBlurData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

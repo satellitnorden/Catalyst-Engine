@@ -114,11 +114,6 @@ public:
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
 
 	/*
-	*	Creates a constant buffer.
-	*/
-	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
-
-	/*
 	*	Returns the active camera, const.
 	*/
 	RESTRICTED const CameraEntity *const RESTRICT GetActiveCamera() const NOEXCEPT { return activeCamera; }
@@ -164,14 +159,14 @@ public:
 	const PhysicalModel& GetCommonPhysicalModel(const CommonPhysicalModel commonPhysicalModel) const NOEXCEPT { return commonPhysicalModels[INDEX(commonPhysicalModel)]; }
 
 	/*
-	*	Returns the default ocean material.
-	*/
-	const OceanMaterial& GetDefaultOceanMaterial() const NOEXCEPT { return defaultOceanMaterial; }
-
-	/*
 	*	Finalizes the initialization of a render pass.
 	*/
 	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
+
+	/*
+	*	Creates a render data table layout.
+	*/
+	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
 	*	Returns the current dynamic uniform data descriptor set.
@@ -257,6 +252,11 @@ public:
 	*	Initializes a particle system entity.
 	*/
 	void InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT;
+
+	/*
+	*	Creates a constant buffer.
+	*/
+	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a texture 2D given the texture data.
