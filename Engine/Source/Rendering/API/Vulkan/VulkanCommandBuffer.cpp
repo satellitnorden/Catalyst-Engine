@@ -4,6 +4,12 @@
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
+//Vulkan command buffer constants.
+namespace VulkanCommandBufferConstants
+{
+	constexpr uint64 MAXIMUM_NUMBER_OF_CLEAR_VALUES{ 4 };
+}
+
 /*
 *	Initializes this Vulkan command buffer.
 */
@@ -71,8 +77,7 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanR
 */
 void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea, const VkSubpassContents contents, const uint32 numberOfClearValues) NOEXCEPT
 {
-	DynamicArray<VkClearValue> clearValues;
-	clearValues.UpsizeFast(numberOfClearValues);
+	StaticArray<VkClearValue, VulkanCommandBufferConstants::MAXIMUM_NUMBER_OF_CLEAR_VALUES> clearValues;
 
 	for (uint32 i = 0; i < numberOfClearValues; ++i)
 	{
