@@ -9,14 +9,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\EngineCore.h">
-      <Filter>Engine Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Microbenchmarker Source\Include\Microbenchmarker.h">
       <Filter>Microbenchmarker Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Algorithms\SortingAlgorithms.h">
-      <Filter>Engine Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

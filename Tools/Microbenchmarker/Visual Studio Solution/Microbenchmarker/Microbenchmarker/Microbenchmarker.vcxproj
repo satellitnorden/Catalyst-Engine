@@ -70,12 +70,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\..\Microbenchmarker Source\Include;..\..\..\..\..\Engine\Engine Source\Include;$(IncludePath)</IncludePath>
-    <SourcePath>..\..\..\Microbenchmarker Source\Source;..\..\..\..\..\Engine\Engine Source\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\Microbenchmarker Source\Include;..\..\..\..\..\Engine\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\..\Microbenchmarker Source\Source;..\..\..\..\..\Engine\Source;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\..\Microbenchmarker Source\Include;..\..\..\..\..\Engine\Engine Source\Include;$(IncludePath)</IncludePath>
-    <SourcePath>..\..\..\Microbenchmarker Source\Source;..\..\..\..\..\Engine\Engine Source\Source;$(SourcePath)</SourcePath>
+    <IncludePath>..\..\..\Microbenchmarker Source\Include;..\..\..\..\..\Engine\Include;$(IncludePath)</IncludePath>
+    <SourcePath>..\..\..\Microbenchmarker Source\Source;..\..\..\..\..\Engine\Source;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -122,8 +122,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\Algorithms\SortingAlgorithms.h" />
-    <ClInclude Include="..\..\..\..\..\Engine\Engine Source\Include\Engine Core\EngineCore.h" />
     <ClInclude Include="..\..\..\Microbenchmarker Source\Include\Microbenchmarker.h" />
   </ItemGroup>
   <ItemGroup>

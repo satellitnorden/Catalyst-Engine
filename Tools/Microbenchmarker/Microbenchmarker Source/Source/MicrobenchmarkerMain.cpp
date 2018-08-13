@@ -1,6 +1,5 @@
-//Engine core.
-#include <Engine Core/EngineCore.h>
-#include <Engine Core/Algorithms/SortingAlgorithms.h>
+//Core.
+#include <Core/EngineCore.h>
 
 //Math.
 #include <Math/CatalystMath.h>
@@ -11,39 +10,49 @@
 DynamicArray<uint64> first;
 DynamicArray<uint64> second;
 
+int sum1 = 0;
+int sum2 = 0;
+
+#define ARRAY_SIZE 100
+
 void Function1() NOEXCEPT
 {
-	SortingAlgorithms::StandardSort(first.begin(), first.end());
+	int myInts[ARRAY_SIZE];
+
+	for (int i = 0; i < ARRAY_SIZE; ++i)
+	{
+		myInts[i] = CatalystMath::RandomIntegerInRange<int>(0, 100);
+	}
+
+	for (int i = 0; i < ARRAY_SIZE; ++i)
+	{
+		sum1 += myInts[i];
+	}
 }
 
 void Function2() NOEXCEPT
 {
-	SortingAlgorithms::InsertionSort(second.begin(), second.end());
+	int *myInts = new int[ARRAY_SIZE];
+
+	for (int i = 0; i < ARRAY_SIZE; ++i)
+	{
+		myInts[i] = CatalystMath::RandomIntegerInRange<int>(0, 100);
+	}
+
+	for (int i = 0; i < ARRAY_SIZE; ++i)
+	{
+		sum1 += myInts[i];
+	}
+
+	delete[] myInts;
 }
 
 int main() NOEXCEPT
 {
-	//Fill the arrays.
-	constexpr uint64 arraySize{ 100'000 };
+	Microbenchmarker::StartBenchmark(1'000'000, Function1, Function2);
 
-	first.Reserve(arraySize);
-	
-	for (uint64 i = 0; i < arraySize; ++i)
-	{
-		first.EmplaceFast(CatalystMath::RandomIntegerInRange<uint64>(UINT64_MINIMUM, UINT64_MAXIMUM));
-	}
-
-	second = first;
-
-	Microbenchmarker::StartBenchmark(1, Function1, Function2);
-
-	for (uint64 i = 0; i < arraySize; ++i)
-	{
-		if (first[i] != second[i])
-		{
-			PRINT_TO_CONSOLE("Arrays are not the same. ): " << first[i] << " " << second[i]);
-		}
-	}
+	PRINT_TO_CONSOLE(sum1);
+	PRINT_TO_CONSOLE(sum2);
 
 	return EXIT_SUCCESS;
 }
