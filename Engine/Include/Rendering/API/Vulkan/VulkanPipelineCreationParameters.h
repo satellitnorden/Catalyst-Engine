@@ -58,7 +58,7 @@ public:
 	uint32 descriptorSetLayoutCount;
 
 	//The descriptor set layouts count.
-	VulkanDescriptorSetLayout *RESTRICT descriptorSetLayouts;
+	const VulkanDescriptorSetLayout *RESTRICT descriptorSetLayouts;
 
 	//The number of push constant ranges.
 	uint32 pushConstantRangeCount;

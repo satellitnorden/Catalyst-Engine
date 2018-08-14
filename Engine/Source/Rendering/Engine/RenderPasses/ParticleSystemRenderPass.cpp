@@ -50,8 +50,8 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the descriptor set layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData);
-	AddRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem);
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);

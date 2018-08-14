@@ -49,8 +49,8 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData);
-	AddRenderDataTableLayout(CommonRenderDataTableLayout::ScreenSpaceAmbientOcclusion);
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ScreenSpaceAmbientOcclusion));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);

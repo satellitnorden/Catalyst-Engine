@@ -476,13 +476,13 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	parameters.depthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(renderPass->GetDepthCompareOperator());
 	parameters.depthTestEnable = renderPass->IsDepthTestEnabled();
 	parameters.depthWriteEnable = renderPass->IsDepthWriteEnabled();
-	
-	DynamicArray<VulkanDescriptorSetLayout> pipelineDescriptorSetLayouts;
-	pipelineDescriptorSetLayouts.Reserve(renderPass->GetDescriptorSetLayouts().Size());
 
-	for (const CommonRenderDataTableLayout descriptorSetLayout : renderPass->GetDescriptorSetLayouts())
+	DynamicArray<VulkanDescriptorSetLayout> pipelineDescriptorSetLayouts;
+	pipelineDescriptorSetLayouts.Reserve(renderPass->GetRenderDataTableLayouts().Size());
+
+	for (RenderDataTableLayoutHandle renderDataTableLayout : renderPass->GetRenderDataTableLayouts())
 	{
-		pipelineDescriptorSetLayouts.EmplaceFast(descriptorSetLayouts[INDEX(descriptorSetLayout)]);
+		pipelineDescriptorSetLayouts.EmplaceFast(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
 	}
 
 	parameters.descriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());

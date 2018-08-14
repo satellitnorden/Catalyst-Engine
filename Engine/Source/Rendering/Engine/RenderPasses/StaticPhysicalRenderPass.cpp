@@ -53,8 +53,8 @@ void StaticPhysicalRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData);
-	AddRenderDataTableLayout(CommonRenderDataTableLayout::Physical);
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -66,15 +66,15 @@ void StaticPhysicalRenderPass::InitializeInternal() NOEXCEPT
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
 										offsetof(PhysicalVertex, position));
-										AddVertexInputAttributeDescription(1,
+	AddVertexInputAttributeDescription(	1,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
 										offsetof(PhysicalVertex, normal));
-										AddVertexInputAttributeDescription(2,
+	AddVertexInputAttributeDescription(	2,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
 										offsetof(PhysicalVertex, tangent));
-										AddVertexInputAttributeDescription(3,
+	AddVertexInputAttributeDescription(	3,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
 										offsetof(PhysicalVertex, textureCoordinate));

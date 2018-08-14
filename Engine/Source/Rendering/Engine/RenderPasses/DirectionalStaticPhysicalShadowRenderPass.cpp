@@ -52,8 +52,8 @@ void DirectionalStaticPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the descriptor set layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData);
-	AddRenderDataTableLayout(CommonRenderDataTableLayout::Physical);
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -61,22 +61,22 @@ void DirectionalStaticPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
-	AddVertexInputAttributeDescription(0,
-		0,
-		VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-		offsetof(PhysicalVertex, position));
-	AddVertexInputAttributeDescription(1,
-		0,
-		VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-		offsetof(PhysicalVertex, normal));
-	AddVertexInputAttributeDescription(2,
-		0,
-		VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-		offsetof(PhysicalVertex, tangent));
-	AddVertexInputAttributeDescription(3,
-		0,
-		VertexInputAttributeDescription::Format::X32Y32SignedFloat,
-		offsetof(PhysicalVertex, textureCoordinate));
+	AddVertexInputAttributeDescription(	0,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										offsetof(PhysicalVertex, position));
+	AddVertexInputAttributeDescription(	1,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										offsetof(PhysicalVertex, normal));
+	AddVertexInputAttributeDescription(	2,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										offsetof(PhysicalVertex, tangent));
+	AddVertexInputAttributeDescription(	3,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										offsetof(PhysicalVertex, textureCoordinate));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
