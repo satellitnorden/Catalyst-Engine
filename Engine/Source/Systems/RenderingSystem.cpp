@@ -954,8 +954,6 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
 {
 	{
-		//TextureData(TextureDataContainer())
-
 		//Initialize the screen space ambient occlusion random kernel texture.
 		StaticArray<Vector4, RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE> samples;
 
