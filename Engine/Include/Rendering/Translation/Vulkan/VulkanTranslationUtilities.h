@@ -109,6 +109,7 @@ public:
 	{
 		switch (type)
 		{
+			case RenderDataTableLayoutBinding::Type::CombinedImageSampler: return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			case RenderDataTableLayoutBinding::Type::UniformBuffer: return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
 			default:

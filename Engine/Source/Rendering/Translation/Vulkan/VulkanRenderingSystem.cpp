@@ -159,6 +159,14 @@ uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 }
 
 /*
+*	Returns the given render target.
+*/
+RenderTargetHandle VulkanRenderingSystem::GetRenderTarget(const RenderTarget renderTarget) NOEXCEPT
+{
+	return renderTargets[INDEX(renderTarget)];
+}
+
+/*
 *	Creates a constant buffer.
 */
 ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
@@ -840,17 +848,6 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	}
 
 	{
-		//Initialize the directional shadow descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> descriptorSetLayoutBindings
-		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-		};
-
-		descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::DirectionalShadow)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
-	}
-
-	{
 		//Initialize the screen space ambient occlusion descriptor set layout.
 		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> descriptorSetLayoutBindings
 		{
@@ -1141,20 +1138,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 {
-	{
-		//Initialize the directional shadow descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::DirectionalShadow)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::DirectionalShadow)]);
-
-		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 2> writeDescriptorSets
-		{
-			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::DirectionalShadow)], 0),
-			renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::DirectionalShadow)], 1)
-		};
-
-		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-	}
-
 	{
 		//Initialize the screen space ambient occlusion descriptor set.
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusion)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::ScreenSpaceAmbientOcclusion)]);

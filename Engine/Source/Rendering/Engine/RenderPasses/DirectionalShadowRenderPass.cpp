@@ -27,6 +27,12 @@ DirectionalShadowRenderPass::DirectionalShadowRenderPass() NOEXCEPT
 */
 void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::DirectionalShadow);
 
@@ -47,7 +53,7 @@ void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 	//Add the descriptor set layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DirectionalShadow));
+	AddRenderDataTableLayout(renderDataTableLayout);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -75,6 +81,30 @@ void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
+*	Creates the render data table layout.
+*/
+void DirectionalShadowRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &renderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void DirectionalShadowRenderPass::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(renderDataTableLayout, &renderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), renderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadowMap)), renderDataTable);
+}
+
+/*
 *	Renders the directional shadow.
 */
 void DirectionalShadowRenderPass::RenderInternal() NOEXCEPT
@@ -87,7 +117,7 @@ void DirectionalShadowRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::DirectionalShadow));
+	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

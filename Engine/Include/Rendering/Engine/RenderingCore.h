@@ -18,9 +18,11 @@ namespace RenderingConstants
 *	Type aliases.
 */
 using OpaqueHandle = void *RESTRICT;
+
+using ConstantBufferHandle = void *RESTRICT;
 using RenderDataTableHandle = void *RESTRICT;
 using RenderDataTableLayoutHandle = void *RESTRICT;
-using ConstantBufferHandle = void *RESTRICT;
+using RenderTargetHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;
 using TextureCubeMapHandle = void *RESTRICT;
 using UniformBufferHandle = void *RESTRICT;
@@ -108,8 +110,6 @@ enum class DepthBuffer : uint8
 //Enumeration covering all render data tables.
 enum class RenderDataTable : uint8
 {
-	Environment,
-	DirectionalShadow,
 	ScreenSpaceAmbientOcclusion,
 	ScreenSpaceAmbientOcclusionHorizontalBlur,
 	ScreenSpaceAmbientOcclusionVerticalBlur,
@@ -133,7 +133,6 @@ enum class CommonRenderDataTableLayout : uint8
 	Terrain,
 	Physical,
 	Vegetation,
-	DirectionalShadow,
 	ScreenSpaceAmbientOcclusion,
 	Lighting,
 	Ocean,
@@ -330,6 +329,7 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
+		CombinedImageSampler,
 		UniformBuffer
 	};
 
@@ -341,6 +341,18 @@ public:
 
 	//The shader stage.
 	ShaderStage shaderStage;
+
+	/*
+	*	Constructor taking all values as arguments.
+	*/
+	RenderDataTableLayoutBinding(const uint32 initialBinding, const Type initialType, const ShaderStage initialShaderStage) NOEXCEPT
+		:
+		binding(initialBinding),
+		type(initialType),
+		shaderStage(initialShaderStage)
+	{
+
+	}
 };
 
 /*

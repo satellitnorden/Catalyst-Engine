@@ -144,6 +144,11 @@ public:
 	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() const NOEXCEPT { return &viewMatrix; }
 
 	/*
+	*	Returns the given render target.
+	*/
+	RenderTargetHandle GetRenderTarget(const RenderTarget renderTarget) const NOEXCEPT;
+
+	/*
 	*	Returns the given common particle material.
 	*/
 	const ParticleMaterial& GetCommonParticleMaterial(const CommonParticleMaterial commonParticlelMaterial) const NOEXCEPT { return commonParticleMaterials[INDEX(commonParticlelMaterial)]; }

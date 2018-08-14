@@ -125,6 +125,15 @@ uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 }
 
 /*
+*	Returns the given render target.
+*/
+RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget renderTarget) const NOEXCEPT
+{
+	//Return the given render target via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetRenderTarget(renderTarget);
+}
+
+/*
 *	Creates a constant buffer.
 */
 ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT

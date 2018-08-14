@@ -89,6 +89,11 @@ public:
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
 
 	/*
+	*	Returns the given render target.
+	*/
+	RenderTargetHandle GetRenderTarget(const RenderTarget renderTarget) NOEXCEPT;
+
+	/*
 	*	Creates and returns a 2D texture given the texture data.
 	*/
 	Texture2DHandle Create2DTexture(const TextureData &textureData) const NOEXCEPT;
