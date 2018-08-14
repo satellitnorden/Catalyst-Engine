@@ -27,6 +27,9 @@ BloomHorizontalBlurRenderPass::BloomHorizontalBlurRenderPass() NOEXCEPT
 */
 void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::BloomHorizontalBlur);
 
@@ -84,6 +87,16 @@ void BloomHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
+*	Creates the render data table.
+*/
+void BloomHorizontalBlurRenderPass::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GaussianBlur), &renderDataTable);
+
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Bloom)), renderDataTable);
+}
+
+/*
 *	Renders the bloom horizontal blur.
 */
 void BloomHorizontalBlurRenderPass::RenderInternal() NOEXCEPT
@@ -96,7 +109,7 @@ void BloomHorizontalBlurRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::BloomHorizontalBlur));
+	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
 
 	//Push the constant data.
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(GaussianBlurData), &data);

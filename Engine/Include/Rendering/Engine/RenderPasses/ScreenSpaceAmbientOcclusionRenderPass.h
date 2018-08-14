@@ -21,14 +21,14 @@ public:
 
 private:
 
-	//The noise scale.
-	Vector2 noiseScale;
-
 	//The render data table layout.
 	RenderDataTableLayoutHandle renderDataTableLayout;
 
 	//The render data table.
 	RenderDataTableHandle renderDataTable;
+
+	//The noise scale.
+	Vector2 noiseScale;
 
 	/*
 	*	Initializes the screen space ambient occlusion render pass.

@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/API/Vulkan/VulkanDescriptorPool.h>
 
+//Multithreading.
+#include <Multithreading/ScopedLock.h>
+
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanDescriptorSet.h>
 #include <Rendering/API/Vulkan/VulkanDescriptorSetLayout.h>
@@ -10,9 +13,9 @@
 //Vulkan descriptor pool constants.
 namespace VulkanDescriptorPoolConstants
 {
-	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS{ 16'384 };
-	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS{ 32'768 };
-	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS{ 8'192 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS{ 64 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS{ 128 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS{ 8 };
 }
 
 /*
@@ -46,6 +49,9 @@ void VulkanDescriptorPool::Release() NOEXCEPT
 */
 void VulkanDescriptorPool::AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescriptorSet, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const NOEXCEPT
 {
+	//Lock the descriptor pool.
+	ScopedLock<Spinlock> scopedLock{ lock };
+
 	//Initialize the Vulkan descriptor set.
 	vulkaDescriptorSet.Initialize(*this, vulkanDescriptorSetLayout);
 }
@@ -55,6 +61,9 @@ void VulkanDescriptorPool::AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescr
 */
 void VulkanDescriptorPool::FreeDescriptorSet(VkDescriptorSet descriptorSet) const NOEXCEPT
 {
+	//Lock the descriptor pool.
+	ScopedLock<Spinlock> scopedLock{ lock };
+
 	//Free the Vulkan descriptor set.
 	vkFreeDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDescriptorPool, 1, &descriptorSet);
 }

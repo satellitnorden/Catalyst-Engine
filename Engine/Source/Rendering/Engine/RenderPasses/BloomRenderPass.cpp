@@ -27,6 +27,12 @@ BloomRenderPass::BloomRenderPass() NOEXCEPT
 */
 void BloomRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::Bloom);
 
@@ -75,6 +81,29 @@ void BloomRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
+*	Creates the render data table layout.
+*/
+void BloomRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &renderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void BloomRenderPass::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(renderDataTableLayout, &renderDataTable);
+
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene)), renderDataTable);
+}
+
+/*
 *	Renders the bloom.
 */
 void BloomRenderPass::RenderInternal() NOEXCEPT
@@ -87,7 +116,7 @@ void BloomRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::Bloom));
+	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

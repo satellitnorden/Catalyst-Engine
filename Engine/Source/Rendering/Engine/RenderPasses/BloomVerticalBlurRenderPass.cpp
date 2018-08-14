@@ -27,6 +27,9 @@ BloomVerticalBlurRenderPass::BloomVerticalBlurRenderPass() NOEXCEPT
 */
 void BloomVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::BloomVerticalBlur);
 
@@ -84,6 +87,16 @@ void BloomVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
+*	Creates the render data table.
+*/
+void BloomVerticalBlurRenderPass::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GaussianBlur), &renderDataTable);
+
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::BloomIntermediate)), renderDataTable);
+}
+
+/*
 *	Renders the bloom vertical blur.
 */
 void BloomVerticalBlurRenderPass::RenderInternal() NOEXCEPT
@@ -96,7 +109,7 @@ void BloomVerticalBlurRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::BloomVerticalBlur));
+	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
 
 	//Push the constant data.
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(GaussianBlurData), &data);

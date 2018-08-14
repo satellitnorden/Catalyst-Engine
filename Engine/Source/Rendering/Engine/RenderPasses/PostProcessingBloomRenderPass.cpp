@@ -30,6 +30,12 @@ PostProcessingBloomRenderPass::PostProcessingBloomRenderPass() NOEXCEPT
 */
 void PostProcessingBloomRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::PostProcessingBloom);
 
@@ -50,7 +56,7 @@ void PostProcessingBloomRenderPass::InitializeInternal() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::PostProcessingBloom));
+	AddRenderDataTableLayout(renderDataTableLayout);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -82,6 +88,31 @@ void PostProcessingBloomRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
+*	Creates the render data table layout.
+*/
+void PostProcessingBloomRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &renderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void PostProcessingBloomRenderPass::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(renderDataTableLayout, &renderDataTable);
+
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene)), renderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Bloom)), renderDataTable);
+}
+
+/*
 *	Renders the post processing bloom.
 */
 void PostProcessingBloomRenderPass::RenderInternal() NOEXCEPT
@@ -94,7 +125,7 @@ void PostProcessingBloomRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::PostProcessingBloom));
+	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
 
 	//Push constants.
 	const float bloomStrength{ PostProcessingManager::Instance->GetBloomStrength() };

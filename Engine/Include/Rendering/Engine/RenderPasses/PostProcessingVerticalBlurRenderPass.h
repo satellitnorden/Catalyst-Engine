@@ -21,6 +21,9 @@ public:
 
 private:
 
+	//The render data table.
+	RenderDataTableHandle renderDataTable;
+
 	//The gaussian blur data.
 	GaussianBlurData data;
 
@@ -28,6 +31,11 @@ private:
 	*	Initializes the post processing vertical render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
+
+	/*
+	*	Creates the render data table.
+	*/
+	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
 	*	Renders the post processing vertical blur.

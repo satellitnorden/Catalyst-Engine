@@ -197,11 +197,6 @@ private:
 	*/
 	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) NOEXCEPT;
 
-	/*
-	*	Returns the given render data table.
-	*/
-	RenderDataTableHandle GetRenderDataTable(const RenderDataTable renderDataTable) NOEXCEPT;
-
 	//Enumeration covering all semaphores.
 	enum class GraphicsSemaphore : uint8
 	{
@@ -215,9 +210,6 @@ private:
 
 	//Container for all depth buffers.
 	StaticArray<VulkanDepthBuffer *RESTRICT, INDEX(DepthBuffer::NumberOfDepthBuffers)> depthBuffers;
-
-	//Container for all descriptor sets.
-	StaticArray<VulkanDescriptorSet, INDEX(RenderDataTable::NumberOfDescriptorSets)> descriptorSets;
 
 	//Container for all descriptor set layouts.
 	StaticArray<VulkanDescriptorSetLayout, INDEX(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> descriptorSetLayouts;
@@ -276,11 +268,6 @@ private:
 	*	Initializes all shader modules.
 	*/
 	void InitializeShaderModules() NOEXCEPT;
-
-	/*
-	*	Initializes all descriptor sets.
-	*/
-	void InitializeDescriptorSets() NOEXCEPT;
 
 	/*
 	*	Begins the frame.

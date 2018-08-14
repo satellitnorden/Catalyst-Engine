@@ -261,15 +261,6 @@ RenderDataTableHandle RenderingSystem::GetCommonRenderDataTableLayout(const Comm
 }
 
 /*
-*	Returns the given render data table.
-*/
-RenderDataTableHandle RenderingSystem::GetRenderDataTable(const RenderDataTable renderDataTable) const NOEXCEPT
-{
-	//Return the given render data table via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetRenderDataTable(renderDataTable);
-}
-
-/*
 *	Creates an environment material.
 */
 void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT

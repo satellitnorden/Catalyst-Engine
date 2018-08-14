@@ -28,7 +28,6 @@ void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const u
 	//Lock the queue.
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-
 	//Submit the command buffer!
 	VULKAN_ERROR_CHECK(vkQueueSubmit(vulkanQueue, 1, &submitInfo, fence));
 }

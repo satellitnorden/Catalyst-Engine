@@ -214,11 +214,6 @@ public:
 	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
 
 	/*
-	*	Returns the given render data table.
-	*/
-	RenderDataTableHandle GetRenderDataTable(const RenderDataTable renderDataTable) const NOEXCEPT;
-
-	/*
 	*	Creates an environment material.
 	*/
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;

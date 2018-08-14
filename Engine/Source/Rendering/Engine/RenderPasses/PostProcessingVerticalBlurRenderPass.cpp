@@ -30,6 +30,9 @@ PostProcessingVerticalBlurRenderPass::PostProcessingVerticalBlurRenderPass() NOE
 */
 void PostProcessingVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::PostProcessingVerticalBlur);
 
@@ -87,6 +90,16 @@ void PostProcessingVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
+*	Creates the render data table.
+*/
+void PostProcessingVerticalBlurRenderPass::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GaussianBlur), &renderDataTable);
+
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::BlurIntermediate)), renderDataTable);
+}
+
+/*
 *	Renders the post processing vertical blur.
 */
 void PostProcessingVerticalBlurRenderPass::RenderInternal() NOEXCEPT
@@ -107,7 +120,7 @@ void PostProcessingVerticalBlurRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::PostProcessingVerticalBlur));
+	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
 
 	//Push the constant data.
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(GaussianBlurData), &data);

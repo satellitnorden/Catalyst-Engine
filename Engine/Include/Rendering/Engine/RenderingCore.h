@@ -107,35 +107,17 @@ enum class DepthBuffer : uint8
 	None
 };
 
-//Enumeration covering all render data tables.
-enum class RenderDataTable : uint8
-{
-	Lighting,
-	Bloom,
-	BloomHorizontalBlur,
-	BloomVerticalBlur,
-	PostProcessingBloom,
-	PostProcessingHorizontalBlur,
-	PostProcessingVerticalBlur,
-	PostProcessing,
-	NumberOfDescriptorSets
-};
-
 //Enumeration covering all common render data table layouts.
 enum class CommonRenderDataTableLayout : uint8
 {
 	DynamicUniformData,
-	ShadowMapBlur,
 	Environment,
 	Terrain,
 	Physical,
 	Vegetation,
-	Lighting,
 	Ocean,
 	ParticleSystem,
-	PostProcessingBloom,
 	GaussianBlur,
-	PostProcessing,
 	NumberOfCommonRenderDataTableLayouts
 };
 

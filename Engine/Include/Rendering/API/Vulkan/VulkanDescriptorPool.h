@@ -3,6 +3,9 @@
 //Core.
 #include <Core/EngineCore.h>
 
+//Multithreading.
+#include <Multithreading/Spinlock.h>
+
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>
 
@@ -45,6 +48,9 @@ private:
 
 	//The underlying Vulkan descriptor pool.
 	VkDescriptorPool vulkanDescriptorPool;
+
+	//The lock for the descriptor pool.
+	mutable Spinlock lock;
 
 	/*
 	*	Creates a descriptor pool size.

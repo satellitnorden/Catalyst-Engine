@@ -21,10 +21,26 @@ public:
 
 private:
 
+	//The render data table layout.
+	RenderDataTableLayoutHandle renderDataTableLayout;
+
+	//The render data table.
+	RenderDataTableHandle renderDataTable;
+
 	/*
 	*	Initializes the post processing render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
+
+	/*
+	*	Creates the render data table layout.
+	*/
+	void CreateRenderDataTableLayout() NOEXCEPT;
+
+	/*
+	*	Creates the render data table.
+	*/
+	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
 	*	Renders the post processing.
