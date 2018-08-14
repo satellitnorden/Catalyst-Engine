@@ -30,6 +30,12 @@ ScreenSpaceAmbientOcclusionRenderPass::ScreenSpaceAmbientOcclusionRenderPass() N
 */
 void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::SceenSpaceAmbientOcclusion);
 
@@ -50,7 +56,7 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ScreenSpaceAmbientOcclusion));
+	AddRenderDataTableLayout(renderDataTableLayout);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -88,6 +94,33 @@ void ScreenSpaceAmbientOcclusionRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
+*	Creates the render data table layout.
+*/
+void ScreenSpaceAmbientOcclusionRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 3> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &renderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void ScreenSpaceAmbientOcclusionRenderPass::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(renderDataTableLayout, &renderDataTable);
+
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::UniformBuffer, RenderingSystem::Instance->GetUniformBuffer(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)), renderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), renderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, RenderingSystem::Instance->GetSpecialTexture(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)), renderDataTable);
+}
+
+/*
 *	Renders the screen space ambient occlusion.
 */
 void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
@@ -108,7 +141,7 @@ void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::ScreenSpaceAmbientOcclusion));
+	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
 
 	//Push constants.
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(Vector2), &noiseScale);

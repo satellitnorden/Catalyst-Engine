@@ -94,6 +94,11 @@ public:
 	RenderTargetHandle GetRenderTarget(const RenderTarget renderTarget) NOEXCEPT;
 
 	/*
+	*	Returns the given uniform buffer.
+	*/
+	UniformBufferHandle GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT;
+
+	/*
 	*	Creates and returns a 2D texture given the texture data.
 	*/
 	Texture2DHandle Create2DTexture(const TextureData &textureData) const NOEXCEPT;
@@ -205,14 +210,6 @@ private:
 		NumberOfSemaphores
 	};
 
-	//Enumeration covering all uniform buffers.
-	enum UniformBuffer : uint8
-	{
-		ScreenSpaceAmbientOcclusionSamples,
-		PostProcessingUniformDataBuffer,
-		NumberOfUniformBuffers
-	};
-
 	//The dynamic uniform data.
 	VulkanDynamicUniformData dynamicUniformData;
 
@@ -238,7 +235,7 @@ private:
 	StaticArray<VulkanShaderModule *RESTRICT, INDEX(Shader::NumberOfShaders)> shaderModules;
 
 	//Container for all uniform buffers.
-	StaticArray<VulkanUniformBuffer *RESTRICT, UniformBuffer::NumberOfUniformBuffers> uniformBuffers;
+	StaticArray<VulkanUniformBuffer *RESTRICT, INDEX(UniformBuffer::NumberOfUniformBuffers)> uniformBuffers;
 
 	//Container for all Vulkan render pass data.
 	StaticArray<VulkanRenderPassData, INDEX(RenderPassSubStage::NumberOfRenderPassStages)> vulkanRenderPassData;
@@ -254,11 +251,6 @@ private:
 
 	//The current environment descriptor set.
 	VulkanDescriptorSet *RESTRICT currentEnvironmentDataDescriptorSet;
-
-	/*
-	*	Initializes all special textures.
-	*/
-	void InitializeSpecialTextures() NOEXCEPT;
 
 	/*
 	*	Initializes all render targets.
@@ -289,11 +281,6 @@ private:
 	*	Initializes all descriptor sets.
 	*/
 	void InitializeDescriptorSets() NOEXCEPT;
-
-	/*
-	*	Updates the post processing data.
-	*/
-	void UpdatePostProcessingData() NOEXCEPT;
 
 	/*
 	*	Begins the frame.

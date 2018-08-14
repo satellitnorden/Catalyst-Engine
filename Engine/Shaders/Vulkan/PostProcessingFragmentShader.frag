@@ -56,9 +56,8 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //Post processing data.
-layout (std140, set = 1, binding = 1) uniform PostProcessingUniformData
+layout (push_constant) uniform PostProcessingData
 {
-    float bloomStrength;
     float blurStrength;
     float saturation;
 };
@@ -69,9 +68,9 @@ layout (early_fragment_tests) in;
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 2) uniform sampler2D sceneTexture;
-layout (set = 1, binding = 3) uniform sampler2D bloomTexture;
-layout (set = 1, binding = 4) uniform sampler2D blurTexture;
+layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
+layout (set = 1, binding = 1) uniform sampler2D bloomTexture;
+layout (set = 1, binding = 2) uniform sampler2D blurTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;

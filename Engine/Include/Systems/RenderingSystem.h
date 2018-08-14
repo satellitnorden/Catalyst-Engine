@@ -149,6 +149,16 @@ public:
 	RenderTargetHandle GetRenderTarget(const RenderTarget renderTarget) const NOEXCEPT;
 
 	/*
+	*	Returns the given special texture.
+	*/
+	Texture2DHandle GetSpecialTexture(const SpecialTexture specialTexture) NOEXCEPT;
+
+	/*
+	*	Returns the given uniform buffer.
+	*/
+	UniformBufferHandle GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT;
+
+	/*
 	*	Returns the given common particle material.
 	*/
 	const ParticleMaterial& GetCommonParticleMaterial(const CommonParticleMaterial commonParticlelMaterial) const NOEXCEPT { return commonParticleMaterials[INDEX(commonParticlelMaterial)]; }
@@ -312,6 +322,9 @@ private:
 	//Container for all common physical models.
 	StaticArray<PhysicalModel, INDEX(CommonPhysicalModel::NumberOfCommonPhysicalModels)> commonPhysicalModels;
 
+	//Container for all special textures.
+	StaticArray<Texture2DHandle, INDEX(SpecialTexture::NumberOfSpecialTextures)> specialTextures;
+
 	//The default night environment material.
 	EnvironmentMaterial defaultNightEnvironmentMaterial;
 
@@ -362,6 +375,11 @@ private:
 	*	Initializes all default assets.
 	*/
 	void InitializeDefaultAssets() NOEXCEPT;
+
+	/*
+	*	Initializes all special textures.
+	*/
+	void InitializeSpecialTextures() NOEXCEPT;
 
 	/*
 	*	Updates the matrices.

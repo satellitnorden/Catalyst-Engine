@@ -51,12 +51,6 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->InitializeSystem();
 
-	//Register all render passes.
-	RegisterRenderPasses();
-
-	//Initialize all render passes.
-	InitializeRenderPasses();
-
 	//Initialize the common particle materials.
 	InitializeCommonParticleMaterials();
 
@@ -68,6 +62,15 @@ void RenderingSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize all default assets.
 	InitializeDefaultAssets();
+
+	//Initialize all special textures.
+	InitializeSpecialTextures();
+
+	//Register all render passes.
+	RegisterRenderPasses();
+
+	//Initialize all render passes.
+	InitializeRenderPasses();
 }
 
 /*
@@ -131,6 +134,22 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget renderTar
 {
 	//Return the given render target via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetRenderTarget(renderTarget);
+}
+
+/*
+*	Returns the given special texture.
+*/
+Texture2DHandle RenderingSystem::GetSpecialTexture(const SpecialTexture specialTexture) NOEXCEPT
+{
+	return specialTextures[INDEX(specialTexture)];
+}
+
+/*
+*	Returns the given uniform buffer.
+*/
+UniformBufferHandle RenderingSystem::GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT
+{
+	return CURRENT_RENDERING_SYSTEM::Instance->GetUniformBuffer(uniformBuffer);
 }
 
 /*
@@ -926,6 +945,29 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 		CreateOceanMaterial(data, defaultOceanMaterial);
 
 		EnvironmentManager::Instance->SetOceanMaterial(defaultOceanMaterial);
+	}
+}
+
+/*
+*	Initializes all special textures.
+*/
+void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
+{
+	{
+		//TextureData(TextureDataContainer())
+
+		//Initialize the screen space ambient occlusion random kernel texture.
+		StaticArray<Vector4, RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE> samples;
+
+		for (Vector4& sample : samples)
+		{
+			sample.X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample.Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample.Z = 0.0f;
+			sample.W = 0.0f;
+		}
+
+		specialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)] = CreateTexture2D(TextureData(TextureDataContainer(samples, 4, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
 	}
 }
 

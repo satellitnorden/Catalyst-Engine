@@ -17,16 +17,6 @@ public:
 	PostProcessingManager() NOEXCEPT { }
 
 	/*
-	*	Returns whether or not any post processing value has been updated.
-	*/
-	bool GetHasBeenUpdated() const NOEXCEPT { return hasBeenUpdated; }
-
-	/*
-	*	Sets whether or not any post processing value has been updated.
-	*/
-	void SetHasBeenUpdated(const bool newHasBeenUpdated) NOEXCEPT { hasBeenUpdated = newHasBeenUpdated; }
-
-	/*
 	*	Returns the bloom strength.
 	*/
 	float GetBloomStrength() const NOEXCEPT { return bloomStrength; }
@@ -34,11 +24,7 @@ public:
 	/*
 	*	Sets the bloom strength.
 	*/
-	void SetBloomStrength(const float newBloomStrength) NOEXCEPT
-	{
-		bloomStrength = newBloomStrength;
-		hasBeenUpdated = true;
-	}
+	void SetBloomStrength(const float newBloomStrength) NOEXCEPT { bloomStrength = newBloomStrength; }
 
 	/*
 	*	Returns the blur strength.
@@ -48,11 +34,7 @@ public:
 	/*
 	*	Sets the blur strength.
 	*/
-	void SetBlurStrength(const float newBlurStrength) NOEXCEPT
-	{
-		blurStrength = newBlurStrength;
-		hasBeenUpdated = true;
-	}
+	void SetBlurStrength(const float newBlurStrength) NOEXCEPT { blurStrength = newBlurStrength; }
 
 	/*
 	*	Returns the saturation strength.
@@ -62,16 +44,9 @@ public:
 	/*
 	*	Sets the saturation strength.
 	*/
-	void SetSaturationStrength(const float newSaturationStrength) NOEXCEPT
-	{
-		saturationStrength = newSaturationStrength;
-		hasBeenUpdated = true;
-	}
+	void SetSaturationStrength(const float newSaturationStrength) NOEXCEPT { saturationStrength = newSaturationStrength; }
 
 private:
-
-	//Denotes whether or not any post processing value has been updated.
-	bool hasBeenUpdated{ true };
 
 	//The bloom strength.
 	float bloomStrength{ 0.25f };

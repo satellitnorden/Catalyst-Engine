@@ -110,7 +110,6 @@ enum class DepthBuffer : uint8
 //Enumeration covering all render data tables.
 enum class RenderDataTable : uint8
 {
-	ScreenSpaceAmbientOcclusion,
 	ScreenSpaceAmbientOcclusionHorizontalBlur,
 	ScreenSpaceAmbientOcclusionVerticalBlur,
 	Lighting,
@@ -133,7 +132,6 @@ enum class CommonRenderDataTableLayout : uint8
 	Terrain,
 	Physical,
 	Vegetation,
-	ScreenSpaceAmbientOcclusion,
 	Lighting,
 	Ocean,
 	ParticleSystem,
@@ -252,6 +250,14 @@ enum class MipmapMode : uint8
 	Nearest
 };
 
+//Enumeration covering all uniform buffers.
+enum class UniformBuffer : uint8
+{
+	ScreenSpaceAmbientOcclusionSamples,
+
+	NumberOfUniformBuffers
+};
+
 //Enumeration covering all texture filters.
 enum class TextureFilter : uint8
 {
@@ -366,7 +372,9 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
-		RenderTarget
+		RenderTarget,
+		Texture2D,
+		UniformBuffer
 	};
 
 	//The binding.

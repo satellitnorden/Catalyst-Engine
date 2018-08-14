@@ -63,9 +63,6 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	//Initialize the Vulkan interface.
 	VulkanInterface::Instance->Initialize();
 
-	//Initialize all special textures.
-	InitializeSpecialTextures();
-
 	//Initialize all render targets.
 	InitializeRenderTargets();
 
@@ -93,9 +90,6 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 */
 void VulkanRenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
-	//Update the post processing data.
-	UpdatePostProcessingData();
-
 	//Pre-update the Vulkan interface.
 	VulkanInterface::Instance->PreUpdate(semaphores[INDEX(GraphicsSemaphore::ImageAvailable)]);
 
@@ -164,6 +158,14 @@ uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 RenderTargetHandle VulkanRenderingSystem::GetRenderTarget(const RenderTarget renderTarget) NOEXCEPT
 {
 	return renderTargets[INDEX(renderTarget)];
+}
+
+/*
+*	Returns the given uniform buffer.
+*/
+UniformBufferHandle VulkanRenderingSystem::GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT
+{
+	return uniformBuffers[INDEX(uniformBuffer)];
 }
 
 /*
@@ -615,6 +617,20 @@ void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInf
 			break;
 		}
 
+		case RenderDataTableUpdateInformation::Type::Texture2D:
+		{
+			writeDescriptorSet = static_cast<Vulkan2DTexture *const RESTRICT>(information.handle)->GetWriteDescriptorSet(*descriptorSet, information.binding);
+
+			break;
+		}
+
+		case RenderDataTableUpdateInformation::Type::UniformBuffer:
+		{
+			writeDescriptorSet = static_cast<VulkanUniformBuffer *const RESTRICT>(information.handle)->GetWriteDescriptorSet(*descriptorSet, information.binding);
+
+			break;
+		}
+
 #if !defined(CATALYST_FINAL)
 		default:
 		{
@@ -664,29 +680,6 @@ RenderDataTableHandle VulkanRenderingSystem::GetCommonRenderDataTableLayout(cons
 RenderDataTableHandle VulkanRenderingSystem::GetRenderDataTable(const RenderDataTable renderDataTable) NOEXCEPT
 {
 	return reinterpret_cast<RenderDataTableHandle>(&descriptorSets[INDEX(renderDataTable)]);
-}
-
-/*
-*	Initializes all special textures.
-*/
-void VulkanRenderingSystem::InitializeSpecialTextures() NOEXCEPT
-{
-	{
-		//Initialize the screen space ambient occlusion random kernel texture.
-		StaticArray<Vector4, RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE> samples;
-
-		for (Vector4& sample : samples)
-		{
-			sample.X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample.Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample.Z = 0.0f;
-			sample.W = 0.0f;
-		}
-
-		const void* const RESTRICT data{ samples.Data() };
-
-		specialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)] = VulkanInterface::Instance->Create2DTexture(1, 4, 4, 4, sizeof(float), &data, VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT);
-	}
 }
 
 /*
@@ -751,9 +744,6 @@ void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 		uniformBuffers[INDEX(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(Vector4) * RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE);
 		uniformBuffers[INDEX(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)]->UploadData(samples.Data());
 	}
-
-	//Initialize the post processing uniform data buffer.
-	uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(PostProcessingUniformData));
 }
 
 /*
@@ -848,18 +838,6 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 	}
 
 	{
-		//Initialize the screen space ambient occlusion descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> descriptorSetLayoutBindings
-		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-		};
-
-		descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::ScreenSpaceAmbientOcclusion)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
-	}
-
-	{
 		//Initialize the lighting descriptor set layout.
 		constexpr StaticArray<VkDescriptorSetLayoutBinding, 5> lightingDescriptorSetLayoutBindings
 		{
@@ -919,12 +897,11 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 	{
 		//Initialize the post processing descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> postProcessingDescriptorSetLayoutBindings
+		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> postProcessingDescriptorSetLayoutBindings
 		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
+			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
 		descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::PostProcessing)].Initialize(static_cast<uint32>(postProcessingDescriptorSetLayoutBindings.Size()), postProcessingDescriptorSetLayoutBindings.Data());
@@ -1139,21 +1116,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 {
 	{
-		//Initialize the screen space ambient occlusion descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusion)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::ScreenSpaceAmbientOcclusion)]);
-
-		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
-		{
-			uniformBuffers[INDEX(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusion)], 0),
-			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusion)], 1),
-			specialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusion)], 2)
-		};
-
-		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-	}
-
-	{
 		//Initialize the screen space ambient occlusion horizontal blur descriptor set.
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusionHorizontalBlur)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::GaussianBlur)]);
 
@@ -1280,34 +1242,14 @@ void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::PostProcessing)]);
 
 		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 4> writeDescriptorSets
+		StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
 		{
-			uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 1),
-			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 2),
-			renderTargets[INDEX(RenderTarget::Bloom)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 3),
-			renderTargets[INDEX(RenderTarget::Blur)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 4)
+			renderTargets[INDEX(RenderTarget::Scene)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 0),
+			renderTargets[INDEX(RenderTarget::Bloom)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 1),
+			renderTargets[INDEX(RenderTarget::Blur)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::PostProcessing)], 2)
 		};
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-	}
-}
-
-/*
-*	Updates the post processing data.
-*/
-void VulkanRenderingSystem::UpdatePostProcessingData() NOEXCEPT
-{
-	if (PostProcessingManager::Instance->GetHasBeenUpdated())
-	{
-		PostProcessingManager::Instance->SetHasBeenUpdated(false);
-
-		PostProcessingUniformData data;
-
-		data.bloomStrength = PostProcessingManager::Instance->GetBloomStrength();
-		data.blurStrength = PostProcessingManager::Instance->GetBlurStrength();
-		data.saturationStrength = PostProcessingManager::Instance->GetSaturationStrength();
-
-		uniformBuffers[UniformBuffer::PostProcessingUniformDataBuffer]->UploadData(&data);
 	}
 }
 

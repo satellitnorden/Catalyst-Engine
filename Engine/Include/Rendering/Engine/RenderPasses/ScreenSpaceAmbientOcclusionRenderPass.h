@@ -24,10 +24,26 @@ private:
 	//The noise scale.
 	Vector2 noiseScale;
 
+	//The render data table layout.
+	RenderDataTableLayoutHandle renderDataTableLayout;
+
+	//The render data table.
+	RenderDataTableHandle renderDataTable;
+
 	/*
 	*	Initializes the screen space ambient occlusion render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
+
+	/*
+	*	Creates the render data table layout.
+	*/
+	void CreateRenderDataTableLayout() NOEXCEPT;
+
+	/*
+	*	Creates the render data table.
+	*/
+	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
 	*	Renders the screen space ambient occlusion.
