@@ -102,13 +102,12 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 	const ParticleSystemRenderComponent *RESTRICT component{ ComponentManager::GetParticleSystemRenderComponents() };
-	RenderDataTableHandle currentDynamicUniformDataDescriptorSet{ RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the current dynamic uniform data descriptor set.
-	commandBuffer->BindRenderDataTables(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
+	//Bind the render data table.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
 
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
@@ -122,7 +121,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 		particleSystemData.particleSystemTotalTime = EngineSystem::Instance->GetTotalGameTime() - component->particleSystemStartingTime;
 
 		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(float) * 2, &particleSystemData);
-		commandBuffer->BindRenderDataTables(this, 1, 1, &component->renderDataTable);
+		commandBuffer->BindRenderDataTable(this, 1, component->renderDataTable);
 		commandBuffer->Draw(this, 1, component->instanceCount);
 	}
 

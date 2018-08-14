@@ -25,9 +25,9 @@ public:
 	virtual void BindIndexBuffer(const RenderPass *const RESTRICT renderPass, const ConstantBufferHandle indexBuffer, const uint64 offset) NOEXCEPT = 0;
 
 	/*
-	*	Binds a number of render data tables.
+	*	Binds a render data table.
 	*/
-	virtual void BindRenderDataTables(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 renderDataTableCount, const RenderDataTableHandle *const RESTRICT renderDataTables) NOEXCEPT = 0;
+	virtual void BindRenderDataTable(const RenderPass *const RESTRICT renderPass, const uint32 binding, const RenderDataTableHandle renderDataTable) NOEXCEPT = 0;
 
 
 	/*

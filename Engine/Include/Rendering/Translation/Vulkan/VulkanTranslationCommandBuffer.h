@@ -43,9 +43,9 @@ public:
 	void BindIndexBuffer(const RenderPass *const RESTRICT renderPass, const ConstantBufferHandle indexBuffer, const uint64 offset) NOEXCEPT override;
 
 	/*
-	*	Binds a number of render data tables.
+	*	Binds a render data table.
 	*/
-	void BindRenderDataTables(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 renderDataTableCount, const RenderDataTableHandle *const RESTRICT renderDataTables) NOEXCEPT override;
+	void BindRenderDataTable(const RenderPass *const RESTRICT renderPass, const uint32 binding, const RenderDataTableHandle renderDataTable) NOEXCEPT override;
 
 	/*
 	*	Binds a number of vertex buffers.

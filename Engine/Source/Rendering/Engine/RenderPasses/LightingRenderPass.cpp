@@ -86,15 +86,10 @@ void LightingRenderPass::RenderInternal() NOEXCEPT
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the current dynamic uniform data descriptor set.
-	StaticArray<RenderDataTableHandle, 3> descriptorSets
-	{
-		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetCurrentEnvironmentDataDescriptorSet(),
-		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::Lighting)
-	};
-
-	commandBuffer->BindRenderDataTables(this, 0, 3, descriptorSets.Data());
+	//Bind the render data tables.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
+	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetCurrentEnvironmentDataDescriptorSet());
+	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::Lighting));
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

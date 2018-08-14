@@ -115,13 +115,12 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 	const TerrainRenderComponent *RESTRICT component{ ComponentManager::GetTerrainRenderComponents() };
-	const RenderDataTableHandle currentDynamicUniformDataDescriptorSet{ RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the current dynamic uniform data descriptor set.
-	commandBuffer->BindRenderDataTables(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
+	//Bind the render data table.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
 
 	//Wait for the terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
@@ -133,7 +132,7 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 	{
 		const VkDeviceSize offset{ 0 };
 
-		commandBuffer->BindRenderDataTables(this, 1, 1, &component->renderDataTable);
+		commandBuffer->BindRenderDataTable(this, 1, component->renderDataTable);
 		commandBuffer->BindVertexBuffers(this, 1, &component->vertexAndIndexBuffer, &offset);
 		commandBuffer->BindIndexBuffer(this, component->vertexAndIndexBuffer, component->indexBufferOffset);
 		commandBuffer->DrawIndexed(this, component->indexCount, 1);

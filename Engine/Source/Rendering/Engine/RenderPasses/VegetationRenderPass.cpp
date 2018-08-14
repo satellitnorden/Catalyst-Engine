@@ -119,21 +119,20 @@ void VegetationRenderPass::RenderInternal() NOEXCEPT
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const RenderDataTableHandle currentDynamicUniformDataDescriptorSet{ RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet() };
 	const VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
 	//Bind the current dynamic uniform data descriptor set.
-	commandBuffer->BindRenderDataTables(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
 
 	//Wait for the vegetation culling to finish.
 	CullingSystem::Instance->WaitForVegetationCulling();
 
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{
-		commandBuffer->BindRenderDataTables(this, 1, 1, &component->renderDataTable);
+		commandBuffer->BindRenderDataTable(this, 1, component->renderDataTable);
 		
 		for (uint64 j = 0, size = component->shouldDrawGridCell.Size(); j < size; ++j)
 		{

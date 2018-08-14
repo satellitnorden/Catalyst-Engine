@@ -93,15 +93,10 @@ void OceanRenderPass::RenderInternal() NOEXCEPT
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the current dynamic uniform data descriptor set.
-	StaticArray<RenderDataTableHandle, 3> descriptorSets
-	{
-		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetCurrentEnvironmentDataDescriptorSet(),
-		RenderingSystem::Instance->GetCurrentOceanDescriptorSet()
-	};
-
-	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
+	//Bind the render data tables.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
+	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetCurrentEnvironmentDataDescriptorSet());
+	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetCurrentOceanDescriptorSet());
 
 	//Push constant data.
 	constexpr float scaling{ 0.25f };

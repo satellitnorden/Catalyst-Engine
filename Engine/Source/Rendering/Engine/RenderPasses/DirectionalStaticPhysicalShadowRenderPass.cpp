@@ -126,21 +126,20 @@ void DirectionalStaticPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const RenderDataTableHandle currentDynamicUniformDataDescriptorSet{ RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet() };
 	const StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the current dynamic uniform data descriptor set.
-	commandBuffer->BindRenderDataTables(this, 0, 1, &currentDynamicUniformDataDescriptorSet);
+	//Bind the render data table.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
 
 	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++renderComponent)
 	{
 		const uint64 offset{ 0 };
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
-		commandBuffer->BindRenderDataTables(this, 1, 1, &renderComponent->renderDataTable);
+		commandBuffer->BindRenderDataTable(this, 1, renderComponent->renderDataTable);
 		commandBuffer->BindVertexBuffers(this, 1, &renderComponent->buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, renderComponent->buffer, renderComponent->indexOffset);
 		commandBuffer->DrawIndexed(this, renderComponent->indexCount, 1);

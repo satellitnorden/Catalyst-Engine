@@ -106,14 +106,9 @@ void ScreenSpaceAmbientOcclusionRenderPass::RenderInternal() NOEXCEPT
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the current dynamic uniform data descriptor set.
-	StaticArray<RenderDataTableHandle, 2> descriptorSets
-	{
-		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::ScreenSpaceAmbientOcclusion)
-	};
-
-	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
+	//Bind the render data tables.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
+	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::ScreenSpaceAmbientOcclusion));
 
 	//Push constants.
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(Vector2), &noiseScale);

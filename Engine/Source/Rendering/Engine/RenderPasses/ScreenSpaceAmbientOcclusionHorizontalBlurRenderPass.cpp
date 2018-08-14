@@ -105,14 +105,9 @@ void ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::RenderInternal() NOEXC
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the render data tables
-	StaticArray<RenderDataTableHandle, 2> descriptorSets
-	{
-		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::ScreenSpaceAmbientOcclusionHorizontalBlur)
-	};
-
-	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
+	//Bind the render data tables.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
+	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::ScreenSpaceAmbientOcclusionHorizontalBlur));
 
 	//Push the constant data.
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(GaussianBlurData), &data);

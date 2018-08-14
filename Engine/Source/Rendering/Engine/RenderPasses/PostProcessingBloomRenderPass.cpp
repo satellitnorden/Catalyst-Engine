@@ -92,14 +92,9 @@ void PostProcessingBloomRenderPass::RenderInternal() NOEXCEPT
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the descriptor sets.
-	StaticArray<RenderDataTableHandle, 2> descriptorSets
-	{
-		RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet(),
-		RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::PostProcessingBloom)
-	};
-
-	commandBuffer->BindRenderDataTables(this, 0, static_cast<uint32>(descriptorSets.Size()), descriptorSets.Data());
+	//Bind the render data tables.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
+	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::PostProcessingBloom));
 
 	//Push constants.
 	const float bloomStrength{ PostProcessingManager::Instance->GetBloomStrength() };

@@ -32,15 +32,15 @@ void VulkanTranslationCommandBuffer::BindIndexBuffer(const RenderPass *const RES
 }
 
 /*
-*	Binds a number of render data tables.
+*	Binds a render data table.
 */
-void VulkanTranslationCommandBuffer::BindRenderDataTables(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 renderDataTableCount, const RenderDataTableHandle *const RESTRICT renderDataTables) NOEXCEPT
+void VulkanTranslationCommandBuffer::BindRenderDataTable(const RenderPass *const RESTRICT renderPass, const uint32 binding, const RenderDataTableHandle renderDataTable) NOEXCEPT
 {
 	//Cache the Vulkan render pass data.
 	const VulkanRenderPassData *const RESTRICT renderPassData{ static_cast<const VulkanRenderPassData *const RESTRICT>(renderPass->GetData()) };
 
 	//Bind the render data tables.
-	commandBuffer.CommandBindDescriptorSets(renderPassData->pipelineLayout, firstBinding, renderDataTableCount, reinterpret_cast<const VkDescriptorSet *const RESTRICT>(renderDataTables));
+	commandBuffer.CommandBindDescriptorSets(renderPassData->pipelineLayout, binding, 1, &static_cast<const VulkanDescriptorSet *const RESTRICT>(renderDataTable)->Get());
 }
 
 /*
