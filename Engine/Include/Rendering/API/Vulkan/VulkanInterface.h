@@ -119,7 +119,7 @@ public:
 	/*
 	*	Creates and returns a 2D texture.
 	*/
-	RESTRICTED Vulkan2DTexture* Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
+	RESTRICTED Vulkan2DTexture *const RESTRICT Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
 
 	/*
 	*	Destroys a 2D texture.
@@ -129,27 +129,32 @@ public:
 	/*
 	*	Creates and returns a graphics command pool.
 	*/
-	RESTRICTED VulkanCommandPool* CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
+	RESTRICTED VulkanCommandPool *const RESTRICT CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
 
 	/*
 	*	Creates and returns a transfer command pool.
 	*/
-	RESTRICTED VulkanCommandPool* CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
+	RESTRICTED VulkanCommandPool *const RESTRICT CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
 
 	/*
 	*	Creates and returns a constant buffer.
 	*/
-	RESTRICTED VulkanConstantBuffer* CreateConstantBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
+	RESTRICTED VulkanConstantBuffer *const RESTRICT CreateConstantBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
 
 	/*
 	*	Creates and returns a cube map texture.
 	*/
-	RESTRICTED VulkanCubeMapTexture* CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT;
+	RESTRICTED VulkanCubeMapTexture *const RESTRICT CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT;
 
 	/*
 	*	Creates and returns a depth buffer.
 	*/
-	RESTRICTED VulkanDepthBuffer* CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT;
+	RESTRICTED VulkanDepthBuffer *const RESTRICT CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT;
+
+	/*
+	*	Creates and returns a descriptor set layout.
+	*/
+	RESTRICTED VulkanDescriptorSetLayout *const RESTRICT CreateDescriptorSetLayout(const VkDescriptorSetLayoutBinding *RESTRICT descriptorSetLayoutBindings, const uint32 numberOfDescriptorSetLayoutBindings) NOEXCEPT;
 
 	/*
 	*	Destroys a descriptor set.
@@ -159,47 +164,42 @@ public:
 	/*
 	*	Creates and returns an event.
 	*/
-	RESTRICTED VulkanEvent* CreateEvent() NOEXCEPT;
+	RESTRICTED VulkanEvent *const RESTRICT CreateEvent() NOEXCEPT;
 
 	/*
 	*	Creates and returns a fence.
 	*/
-	RESTRICTED VulkanFence* CreateFence(const VkFenceCreateFlags flags = 0) NOEXCEPT;
+	RESTRICTED VulkanFence *const RESTRICT CreateFence(const VkFenceCreateFlags flags = 0) NOEXCEPT;
 
 	/*
 	*	Creates and returns a pipeline.
 	*/
-	RESTRICTED VulkanPipeline* CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT;
+	RESTRICTED VulkanPipeline *const RESTRICT CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT;
 
 	/*
 	*	Creates and returns a render target.
 	*/
-	RESTRICTED VulkanRenderTarget* CreateRenderTarget(const VkExtent2D extent, const VkSamplerAddressMode addressMode) NOEXCEPT;
+	RESTRICTED VulkanRenderTarget *const RESTRICT CreateRenderTarget(const VkExtent2D extent, const VkSamplerAddressMode addressMode) NOEXCEPT;
 
 	/*
 	*	Creates and returns a semaphore.
 	*/
-	RESTRICTED VulkanSemaphore* CreateSemaphore() NOEXCEPT;
+	RESTRICTED VulkanSemaphore *const RESTRICT CreateSemaphore() NOEXCEPT;
 
 	/*
 	*	Creates and returns a shader module.
 	*/
-	RESTRICTED VulkanShaderModule* CreateShaderModule(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits stage) NOEXCEPT;
+	RESTRICTED VulkanShaderModule *const RESTRICT CreateShaderModule(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits stage) NOEXCEPT;
 
 	/*
 	*	Creates and returns a storage buffer.
 	*/
-	RESTRICTED VulkanStorageBuffer* CreateStorageBuffer(const VkDeviceSize initialStorageBufferSize) NOEXCEPT;
+	RESTRICTED VulkanStorageBuffer *const RESTRICT CreateStorageBuffer(const VkDeviceSize initialStorageBufferSize) NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.
 	*/
-	RESTRICTED VulkanUniformBuffer* CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT;
-
-	/*
-	*	Returns the container for all Vulkan 2D textures.
-	*/
-	const DynamicArray<Vulkan2DTexture *RESTRICT>& Get2DTextures() const NOEXCEPT { return vulkan2DTextures; }
+	RESTRICTED VulkanUniformBuffer *const RESTRICT CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT;
 
 private:
 
@@ -238,6 +238,9 @@ private:
 
 	//Container for all Vulkan depth buffers.
 	DynamicArray<VulkanDepthBuffer *RESTRICT> vulkanDepthBuffers;
+
+	//Container for all Vulkan descriptor set layouts..
+	DynamicArray<VulkanDescriptorSetLayout *RESTRICT> vulkanDescriptorSetLayouts;
 
 	//Container for all Vulkan events.
 	DynamicArray<VulkanEvent *RESTRICT> vulkanEvents;

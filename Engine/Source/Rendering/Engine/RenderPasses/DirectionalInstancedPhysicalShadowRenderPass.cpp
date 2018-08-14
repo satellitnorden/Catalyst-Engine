@@ -51,8 +51,8 @@ void DirectionalInstancedPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the descriptor set layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
-	AddRenderDataTableLayout(RenderDataTableLayout::Physical);
+	AddRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(CommonRenderDataTableLayout::Physical);
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(8);

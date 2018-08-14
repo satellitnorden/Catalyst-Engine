@@ -184,6 +184,11 @@ public:
 	RenderDataTableHandle GetCurrentOceanDescriptorSet() const NOEXCEPT;
 
 	/*
+	*	Returns the given common render data table layout.
+	*/
+	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
+
+	/*
 	*	Returns the given render data table.
 	*/
 	RenderDataTableHandle GetRenderDataTable(const RenderDataTable renderDataTable) const NOEXCEPT;

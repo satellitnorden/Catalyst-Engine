@@ -52,8 +52,8 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the descriptor set layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
-	AddRenderDataTableLayout(RenderDataTableLayout::Terrain);
+	AddRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(CommonRenderDataTableLayout::Terrain);
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(2);

@@ -174,6 +174,11 @@ private:
 	RenderDataTableHandle GetCurrentOceanDescriptorSet() NOEXCEPT;
 
 	/*
+	*	Returns the given common render data table layout.
+	*/
+	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) NOEXCEPT;
+
+	/*
 	*	Returns the given render data table.
 	*/
 	RenderDataTableHandle GetRenderDataTable(const RenderDataTable renderDataTable) NOEXCEPT;
@@ -204,7 +209,7 @@ private:
 	StaticArray<VulkanDescriptorSet, INDEX(RenderDataTable::NumberOfDescriptorSets)> descriptorSets;
 
 	//Container for all descriptor set layouts.
-	StaticArray<VulkanDescriptorSetLayout, INDEX(RenderDataTableLayout::NumberOfDescriptorSetLayouts)> descriptorSetLayouts;
+	StaticArray<VulkanDescriptorSetLayout, INDEX(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> descriptorSetLayouts;
 
 	//Container for all render targets.
 	StaticArray<VulkanRenderTarget *RESTRICT, INDEX(RenderTarget::NumberOfRenderTargets)> renderTargets;

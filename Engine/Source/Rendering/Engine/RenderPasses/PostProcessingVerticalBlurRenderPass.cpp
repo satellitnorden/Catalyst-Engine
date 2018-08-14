@@ -49,8 +49,8 @@ void PostProcessingVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the descriptor set layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
-	AddRenderDataTableLayout(RenderDataTableLayout::GaussianBlur);
+	AddRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(CommonRenderDataTableLayout::GaussianBlur);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);

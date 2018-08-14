@@ -49,8 +49,8 @@ void PostProcessingBloomRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
-	AddRenderDataTableLayout(RenderDataTableLayout::PostProcessingBloom);
+	AddRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(CommonRenderDataTableLayout::PostProcessingBloom);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);

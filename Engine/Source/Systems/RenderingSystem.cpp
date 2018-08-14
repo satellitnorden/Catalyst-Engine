@@ -206,6 +206,15 @@ RenderDataTableHandle RenderingSystem::GetCurrentOceanDescriptorSet() const NOEX
 }
 
 /*
+*	Returns the given common render data table layout.
+*/
+RenderDataTableHandle RenderingSystem::GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT
+{
+	//Return the given common render data table layout via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetCommonRenderDataTableLayout(commonRenderDataTableLayout);
+}
+
+/*
 *	Returns the given render data table.
 */
 RenderDataTableHandle RenderingSystem::GetRenderDataTable(const RenderDataTable renderDataTable) const NOEXCEPT

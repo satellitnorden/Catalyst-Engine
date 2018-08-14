@@ -123,8 +123,8 @@ enum class RenderDataTable : uint8
 	NumberOfDescriptorSets
 };
 
-//Enumeration covering all render data table layouts.
-enum class RenderDataTableLayout : uint8
+//Enumeration covering all common render data table layouts.
+enum class CommonRenderDataTableLayout : uint8
 {
 	DynamicUniformData,
 	ShadowMapBlur,
@@ -140,7 +140,7 @@ enum class RenderDataTableLayout : uint8
 	PostProcessingBloom,
 	GaussianBlur,
 	PostProcessing,
-	NumberOfDescriptorSetLayouts
+	NumberOfCommonRenderDataTableLayouts
 };
 
 //Enumeration covering all render targets.

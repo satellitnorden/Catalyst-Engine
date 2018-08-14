@@ -99,6 +99,13 @@ void VulkanInterface::Release() NOEXCEPT
 		delete vulkanDepthBuffer;
 	}
 
+	//Release all Vulkan descriptor set layouts.
+	for (VulkanDescriptorSetLayout *const RESTRICT vulkanDescriptorSetLayout : vulkanDescriptorSetLayouts)
+	{
+		vulkanDescriptorSetLayout->Release();
+		delete vulkanDescriptorSetLayout;
+	}
+
 	//Release all Vulkan events.
 	for (VulkanEvent *const RESTRICT vulkanEvent : vulkanEvents)
 	{
@@ -174,7 +181,7 @@ void VulkanInterface::Release() NOEXCEPT
 /*
 *	Creates and returns a 2D texture.
 */
-RESTRICTED Vulkan2DTexture* VulkanInterface::Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
+RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
 	Vulkan2DTexture *const RESTRICT new2DTexture = new Vulkan2DTexture;
 	new2DTexture->Initialize(textureMipmapLevels, textureWidth, textureHeight, textureChannels, textureTexelSize, textureData, format, magnificationFilter, mipmapMode, addressMode);
@@ -200,7 +207,7 @@ void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) 
 /*
 *	Creates and returns a graphics command pool.
 */
-RESTRICTED VulkanCommandPool* VulkanInterface::CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
+RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
 	VulkanCommandPool *const RESTRICT newCommandPool = new VulkanCommandPool;
 	newCommandPool->Initialize(flags, vulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Graphics));
@@ -215,7 +222,7 @@ RESTRICTED VulkanCommandPool* VulkanInterface::CreateGraphicsCommandPool(const V
 /*
 *	Creates and returns a transfer command pool.
 */
-RESTRICTED VulkanCommandPool* VulkanInterface::CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
+RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
 	VulkanCommandPool *const RESTRICT newCommandPool = new VulkanCommandPool;
 	newCommandPool->Initialize(flags, vulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Transfer));
@@ -230,7 +237,7 @@ RESTRICTED VulkanCommandPool* VulkanInterface::CreateTransferCommandPool(const V
 /*
 *	Creates and returns a constant buffer.
 */
-RESTRICTED VulkanConstantBuffer* VulkanInterface::CreateConstantBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
+RESTRICTED VulkanConstantBuffer *const RESTRICT VulkanInterface::CreateConstantBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
 {
 	VulkanConstantBuffer *const RESTRICT newBuffer = new VulkanConstantBuffer;
 	newBuffer->Initialize(data, dataSizes, dataChunks);
@@ -246,7 +253,7 @@ RESTRICTED VulkanConstantBuffer* VulkanInterface::CreateConstantBuffer(const voi
 /*
 *	Creates and returns a cube map texture.
 */
-RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT
+RESTRICTED VulkanCubeMapTexture *const RESTRICT VulkanInterface::CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT
 {
 	VulkanCubeMapTexture *const RESTRICT newCubeMapTexture = new VulkanCubeMapTexture;
 	newCubeMapTexture->Initialize(data, width, height);
@@ -262,7 +269,7 @@ RESTRICTED VulkanCubeMapTexture* VulkanInterface::CreateCubeMapTexture(const flo
 /*
 *	Creates and returns a depth buffer.
 */
-RESTRICTED VulkanDepthBuffer* VulkanInterface::CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT
+RESTRICTED VulkanDepthBuffer *const RESTRICT VulkanInterface::CreateDepthBuffer(const VkExtent2D &depthBufferExtent) NOEXCEPT
 {
 	VulkanDepthBuffer *const RESTRICT newDepthBuffer = new VulkanDepthBuffer;
 	newDepthBuffer->Initialize(depthBufferExtent);
@@ -273,6 +280,22 @@ RESTRICTED VulkanDepthBuffer* VulkanInterface::CreateDepthBuffer(const VkExtent2
 	vulkanDepthBuffers.EmplaceSlow(newDepthBuffer);
 
 	return newDepthBuffer;
+}
+
+/*
+*	Creates and returns a descriptor set layout.
+*/
+RESTRICTED VulkanDescriptorSetLayout *const RESTRICT VulkanInterface::CreateDescriptorSetLayout(const VkDescriptorSetLayoutBinding *RESTRICT descriptorSetLayoutBindings, const uint32 numberOfDescriptorSetLayoutBindings) NOEXCEPT
+{
+	VulkanDescriptorSetLayout *const RESTRICT newDescriptorSetLayout = new VulkanDescriptorSetLayout;
+	newDescriptorSetLayout->Initialize(numberOfDescriptorSetLayoutBindings, descriptorSetLayoutBindings);
+
+	static Spinlock lock;
+	ScopedLock<Spinlock> scopedLock{ lock };
+
+	vulkanDescriptorSetLayouts.EmplaceSlow(newDescriptorSetLayout);
+
+	return newDescriptorSetLayout;
 }
 
 /*
@@ -287,7 +310,7 @@ void VulkanInterface::DestroyDescriptorSet(VkDescriptorSet descriptorSet) const 
 /*
 *	Creates and returns an event.
 */
-RESTRICTED VulkanEvent* VulkanInterface::CreateEvent() NOEXCEPT
+RESTRICTED VulkanEvent *const RESTRICT VulkanInterface::CreateEvent() NOEXCEPT
 {
 	VulkanEvent *const RESTRICT newEvent = new VulkanEvent;
 	newEvent->Initialize();
@@ -303,7 +326,7 @@ RESTRICTED VulkanEvent* VulkanInterface::CreateEvent() NOEXCEPT
 /*
 *	Creates and returns a fence.
 */
-RESTRICTED VulkanFence* VulkanInterface::CreateFence(const VkFenceCreateFlags flags) NOEXCEPT
+RESTRICTED VulkanFence *const RESTRICT VulkanInterface::CreateFence(const VkFenceCreateFlags flags) NOEXCEPT
 {
 	VulkanFence *const RESTRICT newFence = new VulkanFence;
 	newFence->Initialize(flags);
@@ -319,7 +342,7 @@ RESTRICTED VulkanFence* VulkanInterface::CreateFence(const VkFenceCreateFlags fl
 /*
 *	Creates and returns a pipeline.
 */
-RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT
+RESTRICTED VulkanPipeline *const RESTRICT VulkanInterface::CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT
 {
 	VulkanPipeline *const RESTRICT newPipeline = new VulkanPipeline;
 	newPipeline->Initialize(vulkanPipelineCreationParameters);
@@ -335,7 +358,7 @@ RESTRICTED VulkanPipeline* VulkanInterface::CreatePipeline(const VulkanPipelineC
 /*
 *	Creates and returns a render target.
 */
-RESTRICTED VulkanRenderTarget* VulkanInterface::CreateRenderTarget(const VkExtent2D extent, const VkSamplerAddressMode addressMode) NOEXCEPT
+RESTRICTED VulkanRenderTarget *const RESTRICT VulkanInterface::CreateRenderTarget(const VkExtent2D extent, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
 	VulkanRenderTarget *const RESTRICT newRenderTarget = new VulkanRenderTarget;
 	newRenderTarget->Initialize(extent, addressMode);
@@ -351,7 +374,7 @@ RESTRICTED VulkanRenderTarget* VulkanInterface::CreateRenderTarget(const VkExten
 /*
 *	Creates and returns a semaphore.
 */
-RESTRICTED VulkanSemaphore* VulkanInterface::CreateSemaphore() NOEXCEPT
+RESTRICTED VulkanSemaphore *const RESTRICT VulkanInterface::CreateSemaphore() NOEXCEPT
 {
 	VulkanSemaphore *const RESTRICT newSemaphore = new VulkanSemaphore;
 	newSemaphore->Initialize();
@@ -367,7 +390,7 @@ RESTRICTED VulkanSemaphore* VulkanInterface::CreateSemaphore() NOEXCEPT
 /*
 *	Creates and returns a shader module.
 */
-RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits stage) NOEXCEPT
+RESTRICTED VulkanShaderModule *const RESTRICT VulkanInterface::CreateShaderModule(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits stage) NOEXCEPT
 {
 	VulkanShaderModule *const RESTRICT newShaderModule = new VulkanShaderModule;
 	newShaderModule->Initialize(shaderData, shaderDataSize, stage);
@@ -383,7 +406,7 @@ RESTRICTED VulkanShaderModule* VulkanInterface::CreateShaderModule(const void* c
 /*
 *	Creates and returns a storage buffer.
 */
-RESTRICTED VulkanStorageBuffer* VulkanInterface::CreateStorageBuffer(const VkDeviceSize initialStorageBufferSize) NOEXCEPT
+RESTRICTED VulkanStorageBuffer *const RESTRICT VulkanInterface::CreateStorageBuffer(const VkDeviceSize initialStorageBufferSize) NOEXCEPT
 {
 	VulkanStorageBuffer *const RESTRICT newStorageBuffer = new VulkanStorageBuffer;
 	newStorageBuffer->Initialize(initialStorageBufferSize);
@@ -399,7 +422,7 @@ RESTRICTED VulkanStorageBuffer* VulkanInterface::CreateStorageBuffer(const VkDev
 /*
 *	Creates and returns a uniform buffer.
 */
-RESTRICTED VulkanUniformBuffer* VulkanInterface::CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT
+RESTRICTED VulkanUniformBuffer *const RESTRICT VulkanInterface::CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT
 {
 	VulkanUniformBuffer *const RESTRICT newUniformBuffer = new VulkanUniformBuffer;
 	newUniformBuffer->Initialize(newUniformBufferSize);

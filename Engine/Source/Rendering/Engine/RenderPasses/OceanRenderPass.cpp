@@ -49,9 +49,9 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(3);
-	AddRenderDataTableLayout(RenderDataTableLayout::DynamicUniformData);
-	AddRenderDataTableLayout(RenderDataTableLayout::Environment);
-	AddRenderDataTableLayout(RenderDataTableLayout::Ocean);
+	AddRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData);
+	AddRenderDataTableLayout(CommonRenderDataTableLayout::Environment);
+	AddRenderDataTableLayout(CommonRenderDataTableLayout::Ocean);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
