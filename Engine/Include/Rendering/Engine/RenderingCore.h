@@ -110,8 +110,6 @@ enum class DepthBuffer : uint8
 //Enumeration covering all render data tables.
 enum class RenderDataTable : uint8
 {
-	ScreenSpaceAmbientOcclusionHorizontalBlur,
-	ScreenSpaceAmbientOcclusionVerticalBlur,
 	Lighting,
 	Bloom,
 	BloomHorizontalBlur,

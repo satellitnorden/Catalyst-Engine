@@ -124,8 +124,10 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	sun->SetIntensity(25.0f);
 
+#if defined(CATALYST_ANDROID)
 	//Disable screen space ambient occlusion.
 	RenderingConfigurationManager::Instance->SetScreenSpaceAmbientOcclusionEnabled(false);
+#endif
 }
 
 /*

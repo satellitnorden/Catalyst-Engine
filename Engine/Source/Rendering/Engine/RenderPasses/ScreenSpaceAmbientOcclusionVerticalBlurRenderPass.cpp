@@ -30,6 +30,9 @@ ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::ScreenSpaceAmbientOcclusionVe
 */
 void ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::SceenSpaceAmbientOcclusionVerticalBlur);
 
@@ -87,6 +90,16 @@ void ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::InitializeInternal() NOE
 }
 
 /*
+*	Creates the render data table.
+*/
+void ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GaussianBlur), &renderDataTable);
+
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusionIntermediate)), renderDataTable);
+}
+
+/*
 *	Renders the screen space ambient occlusion vertical blur.
 */
 void ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::RenderInternal() NOEXCEPT
@@ -107,7 +120,7 @@ void ScreenSpaceAmbientOcclusionVerticalBlurRenderPass::RenderInternal() NOEXCEP
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetRenderDataTable(RenderDataTable::ScreenSpaceAmbientOcclusionVerticalBlur));
+	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
 
 	//Push the constant data.
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(GaussianBlurData), &data);

@@ -1116,32 +1116,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 void VulkanRenderingSystem::InitializeDescriptorSets() NOEXCEPT
 {
 	{
-		//Initialize the screen space ambient occlusion horizontal blur descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusionHorizontalBlur)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::GaussianBlur)]);
-
-		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
-		{
-			renderTargets[INDEX(RenderTarget::ScreenSpaceAmbientOcclusion)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusionHorizontalBlur)], 0)
-		};
-
-		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-	}
-
-	{
-		//Initialize the screen space ambient occlusion vertical blur descriptor set.
-		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusionVerticalBlur)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::GaussianBlur)]);
-
-		//Update the write descriptor sets.
-		StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
-		{
-			renderTargets[INDEX(RenderTarget::ScreenSpaceAmbientOcclusionIntermediate)]->GetWriteDescriptorSet(descriptorSets[INDEX(RenderDataTable::ScreenSpaceAmbientOcclusionVerticalBlur)], 0)
-		};
-
-		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-	}
-
-	{
 		//Initialize the lighting descriptor set.
 		VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(descriptorSets[INDEX(RenderDataTable::Lighting)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Lighting)]);
 
