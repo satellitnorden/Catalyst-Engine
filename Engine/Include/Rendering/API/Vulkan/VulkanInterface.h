@@ -157,6 +157,11 @@ public:
 	RESTRICTED VulkanDescriptorSetLayout *const RESTRICT CreateDescriptorSetLayout(const VkDescriptorSetLayoutBinding *RESTRICT descriptorSetLayoutBindings, const uint32 numberOfDescriptorSetLayoutBindings) NOEXCEPT;
 
 	/*
+	*	Creates and returns a descriptor set.
+	*/
+	RESTRICTED VulkanDescriptorSet *const RESTRICT CreateDescriptorSet(const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) NOEXCEPT;
+
+	/*
 	*	Destroys a descriptor set.
 	*/
 	void DestroyDescriptorSet(VkDescriptorSet descriptorSet) const NOEXCEPT;
@@ -239,8 +244,11 @@ private:
 	//Container for all Vulkan depth buffers.
 	DynamicArray<VulkanDepthBuffer *RESTRICT> vulkanDepthBuffers;
 
-	//Container for all Vulkan descriptor set layouts..
+	//Container for all Vulkan descriptor set layouts.
 	DynamicArray<VulkanDescriptorSetLayout *RESTRICT> vulkanDescriptorSetLayouts;
+
+	//Container for all Vulkan descriptor sets.
+	DynamicArray<VulkanDescriptorSet *RESTRICT> vulkanDescriptorSets;
 
 	//Container for all Vulkan events.
 	DynamicArray<VulkanEvent *RESTRICT> vulkanEvents;

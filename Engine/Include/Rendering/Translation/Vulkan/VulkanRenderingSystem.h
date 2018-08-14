@@ -3,7 +3,6 @@
 //Core.
 #include <Core/EngineCore.h>
 
-
 //Math.
 #include <Math/Matrix4.h>
 
@@ -156,7 +155,17 @@ private:
 	/*
 	*	Creates a render data table layout.
 	*/
-	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) NOEXCEPT;
+	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT;
+
+	/*
+	*	Creates a render data table.
+	*/
+	void CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT;
+
+	/*
+	*	Updates a render data table.
+	*/
+	void UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT;
 
 	/*
 	*	Returns the current dynamic uniform data descriptor set.

@@ -575,7 +575,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 /*
 *	Creates a render data table layout.
 */
-void VulkanRenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) NOEXCEPT
+void VulkanRenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Translate from the API-agnostic structure to the Vulkan-specific.
 	DynamicArray<VkDescriptorSetLayoutBinding> vulkanBindings;
@@ -589,6 +589,42 @@ void VulkanRenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLay
 	}
 
 	*handle = VulkanInterface::Instance->CreateDescriptorSetLayout(vulkanBindings.Data(), numberOfBindings);
+}
+
+/*
+*	Creates a render data table.
+*/
+void VulkanRenderingSystem::CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
+{
+	*handle = VulkanInterface::Instance->CreateDescriptorSet(*static_cast<const VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
+}
+
+/*
+*	Updates a render data table.
+*/
+void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT
+{
+	VulkanDescriptorSet *const RESTRICT descriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(handle) };
+	VkWriteDescriptorSet writeDescriptorSet;
+
+	switch (information.type)
+	{
+		case RenderDataTableUpdateInformation::Type::RenderTarget:
+		{
+			writeDescriptorSet = static_cast<VulkanRenderTarget *const RESTRICT>(information.handle)->GetWriteDescriptorSet(*descriptorSet, information.binding);
+
+			break;
+		}
+
+#if !defined(CATALYST_FINAL)
+		default:
+		{
+			BREAKPOINT;
+		}
+#endif
+	}
+
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &writeDescriptorSet, 0, nullptr);
 }
 
 /*

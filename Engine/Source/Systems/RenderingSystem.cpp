@@ -179,6 +179,24 @@ void RenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBin
 }
 
 /*
+*	Creates a render data table.
+*/
+void RenderingSystem::CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) NOEXCEPT
+{
+	//Create the render data table via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->CreateRenderDataTable(renderDataTableLayout, handle);
+}
+
+/*
+*	Updates a render data table.
+*/
+void RenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT
+{
+	//Update the render data table via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->UpdateRenderDataTable(information, handle);
+}
+
+/*
 *	Returns the current dynamic uniform data descriptor set.
 */
 RenderDataTableHandle RenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT

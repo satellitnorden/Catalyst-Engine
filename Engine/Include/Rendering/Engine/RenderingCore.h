@@ -17,6 +17,7 @@ namespace RenderingConstants
 /*
 *	Type aliases.
 */
+using OpaqueHandle = void *RESTRICT;
 using RenderDataTableHandle = void *RESTRICT;
 using RenderDataTableLayoutHandle = void *RESTRICT;
 using ConstantBufferHandle = void *RESTRICT;
@@ -340,6 +341,42 @@ public:
 
 	//The shader stage.
 	ShaderStage shaderStage;
+};
+
+/*
+*	Render data table update information.
+*/
+class RenderDataTableUpdateInformation final
+{
+
+public:
+
+	//Enumeration covering all types.
+	enum class Type : uint8
+	{
+		RenderTarget
+	};
+
+	//The binding.
+	uint32 binding;
+
+	//The type.
+	Type type;
+
+	//The handle.
+	OpaqueHandle handle;
+
+	/*
+	*	Constructor taking all values as arguments.
+	*/
+	RenderDataTableUpdateInformation(const uint32 initialBinding, const Type initialType, OpaqueHandle initialHandle) NOEXCEPT
+		:
+		binding(initialBinding),
+		type(initialType),
+		handle(initialHandle)
+	{
+
+	}
 };
 
 /*

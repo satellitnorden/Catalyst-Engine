@@ -106,6 +106,12 @@ void VulkanInterface::Release() NOEXCEPT
 		delete vulkanDescriptorSetLayout;
 	}
 
+	//Release all Vulkan descriptor sets.
+	for (VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet : vulkanDescriptorSets)
+	{
+		delete vulkanDescriptorSet;
+	}
+
 	//Release all Vulkan events.
 	for (VulkanEvent *const RESTRICT vulkanEvent : vulkanEvents)
 	{
@@ -296,6 +302,22 @@ RESTRICTED VulkanDescriptorSetLayout *const RESTRICT VulkanInterface::CreateDesc
 	vulkanDescriptorSetLayouts.EmplaceSlow(newDescriptorSetLayout);
 
 	return newDescriptorSetLayout;
+}
+
+/*
+*	Creates and returns a descriptor set.
+*/
+RESTRICTED VulkanDescriptorSet *const RESTRICT VulkanInterface::CreateDescriptorSet(const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) NOEXCEPT
+{
+	VulkanDescriptorSet *const RESTRICT newDescriptorSet = new VulkanDescriptorSet;
+	newDescriptorSet->Initialize(vulkanDescriptorPool, vulkanDescriptorSetLayout);
+
+	static Spinlock lock;
+	ScopedLock<Spinlock> scopedLock{ lock };
+
+	vulkanDescriptorSets.EmplaceSlow(newDescriptorSet);
+
+	return newDescriptorSet;
 }
 
 /*

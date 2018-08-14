@@ -169,6 +169,16 @@ public:
 	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) NOEXCEPT;
 
 	/*
+	*	Creates a render data table.
+	*/
+	void CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) NOEXCEPT;
+
+	/*
+	*	Updates a render data table.
+	*/
+	void UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT;
+
+	/*
 	*	Returns the current dynamic uniform data descriptor set.
 	*/
 	RenderDataTableHandle GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT;
