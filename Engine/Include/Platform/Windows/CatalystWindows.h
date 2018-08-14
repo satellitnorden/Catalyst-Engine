@@ -62,9 +62,14 @@ public:
 	static void PostInitialize() NOEXCEPT;
 
 	/*
-	*	Updates the platform.
+	*	Pre-updates the platform.
 	*/
-	static void Update() NOEXCEPT;
+	static void PreUpdate() NOEXCEPT;
+
+	/*
+	*	Post-updates the platform.
+	*/
+	static void PostUpdate() NOEXCEPT;
 
 	/*
 	*	Releases the platform.

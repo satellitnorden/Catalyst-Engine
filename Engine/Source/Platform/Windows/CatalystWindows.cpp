@@ -102,9 +102,17 @@ void CatalystPlatform::PostInitialize() NOEXCEPT
 }
 
 /*
-*	Updates the platform.
+*	Pre-updates the platform.
 */
-void CatalystPlatform::Update() NOEXCEPT
+void CatalystPlatform::PreUpdate() NOEXCEPT
+{
+
+}
+
+/*
+*	Post-updates the platform.
+*/
+void CatalystPlatform::PostUpdate() NOEXCEPT
 {
 	//Process messages.
 	MSG message;

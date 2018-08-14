@@ -50,8 +50,8 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	//Update the total game time.
 	totalGameTime += deltaTime;
 
-	//Update the platform.
-	CatalystPlatform::Update();
+	//Pre-update the platform.
+	CatalystPlatform::PreUpdate();
 
 	//Pre-update the input system.
 	InputSystem::Instance->PreUpdateSystemSynchronous();
@@ -79,6 +79,9 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 
 	//Post-update the input system.
 	InputSystem::Instance->PostUpdateSystemSynchronous();
+
+	//Post-update the platform.
+	CatalystPlatform::PostUpdate();
 }
 
 /*
