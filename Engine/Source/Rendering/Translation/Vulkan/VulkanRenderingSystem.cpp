@@ -1197,19 +1197,51 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	currentPrimaryCommandBuffer->BeginPrimary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
 	//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
-	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)>& renderPasses{ RenderingSystem::Instance->GetRenderPasses() };
+	RenderPassMainStage currentStage{ RenderPassMainStage::None };
 
-	for (const RenderPass *const RESTRICT renderPass : renderPasses)
+	for (const RenderPass *const RESTRICT renderPass : RenderingSystem::Instance->GetRenderPasses())
 	{
-		/*
 		if (renderPass->GetMainStage() != RenderPassMainStage::None)
 		{
+			//Begin a new render pass, if necessary.
+			if (currentStage != renderPass->GetMainStage())
+			{
+				if (currentStage != RenderPassMainStage::None)
+				{
+					currentPrimaryCommandBuffer->CommandEndRenderPass();
+				}
 
+				currentStage = renderPass->GetMainStage();
+
+				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(	vulkanRenderPasses[INDEX(currentStage)]->Get(),
+																				vulkanFramebuffers[INDEX(currentStage)]->Get(),
+																				VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height },
+																				VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, 4);
+			}
+
+			else
+			{
+				currentPrimaryCommandBuffer->CommandNextSubpass();
+			}
+
+			//Wait for the render pass to finish it's render.
+			renderPass->WaitForRender();
+
+			//Record the execute commands.
+			if (renderPass->IncludeInRender())
+			{
+				currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<const VulkanTranslationCommandBuffer *const RESTRICT>(renderPass->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+			}
 		}
 
 		else
-		*/
 		{
+			if (currentStage != RenderPassMainStage::None)
+			{
+				currentPrimaryCommandBuffer->CommandEndRenderPass();
+				currentStage = RenderPassMainStage::None;
+			}
+
 			//Calculate the number of clear values.
 			uint32 numberOfClearValues{ 0 };
 
@@ -1243,9 +1275,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 				}
 			}
 
+			//Record the execute commands.
 			if (renderPass->IncludeInRender())
 			{
-				//Record the execute commands.
 				currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<const VulkanTranslationCommandBuffer *const RESTRICT>(renderPass->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 			}
 

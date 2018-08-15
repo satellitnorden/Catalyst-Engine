@@ -90,6 +90,11 @@ public:
 	void CommandExecuteCommands(const VkCommandBuffer commandBuffer) NOEXCEPT;
 
 	/*
+	*	Records a next subpass command.
+	*/
+	void CommandNextSubpass() NOEXCEPT;
+
+	/*
 	*	Records a push constants command.
 	*/
 	void CommandPushConstants(const VkPipelineLayout layout, const VkShaderStageFlags stageFlags, const uint32 offset, const uint32 size, const void *RESTRICT data) NOEXCEPT;

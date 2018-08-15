@@ -265,6 +265,28 @@ public:
 	}
 
 	/*
+	*	Creates a subpass dependency.
+	*/
+	static constexpr VkSubpassDependency CreateSubpassDependency(	const uint32 sourceSubpass,
+																	const uint32 destinationSubpass,
+																	const VkPipelineStageFlags sourceStageMask,
+																	const VkPipelineStageFlags destinationStageMask,
+																	const VkAccessFlags sourceAccessMask,
+																	const VkAccessFlags destinationAccessMask) NOEXCEPT
+	{
+		return VkSubpassDependency
+		{
+			sourceSubpass,
+			destinationSubpass,
+			sourceStageMask,
+			destinationStageMask,
+			sourceAccessMask,
+			destinationAccessMask,
+			0 //dependencyFlags
+		};
+	}
+
+	/*
 	*	Creates a subpass description.
 	*/
 	static constexpr VkSubpassDescription CreateSubpassDescription(	const uint32 inputAttachmentCount,
