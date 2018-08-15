@@ -179,7 +179,7 @@ public:
 	/*
 	*	Creates and returns a framebuffer.
 	*/
-	RESTRICTED VulkanFramebuffer *const RESTRICT CreateFramebuffer() NOEXCEPT;
+	RESTRICTED VulkanFramebuffer *const RESTRICT CreateFramebuffer(const VulkanFramebufferCreationParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Creates and returns a pipeline.
@@ -270,6 +270,9 @@ private:
 
 	//Container for all Vulkan fences.
 	DynamicArray<VulkanFence *RESTRICT> vulkanFences;
+
+	//Container for all Vulkan framebuffers.
+	DynamicArray<VulkanFramebuffer *RESTRICT> vulkanFramebuffers;
 
 	//Container for all Vulkan pipelines.
 	DynamicArray<VulkanPipeline *RESTRICT> vulkanPipelines;

@@ -236,6 +236,9 @@ private:
 	//Container for all Vulkan render passes.
 	StaticArray<VulkanRenderPass* RESTRICT, INDEX(RenderPassMainStage::NumberOfRenderPassMainStages)> vulkanRenderPasses;
 
+	//Container for all Vulkan framebuffers.
+	StaticArray<VulkanFramebuffer* RESTRICT, INDEX(RenderPassMainStage::NumberOfRenderPassMainStages)> vulkanFramebuffers;
+
 	//The Vulkan frame data.
 	VulkanFrameData frameData;
 

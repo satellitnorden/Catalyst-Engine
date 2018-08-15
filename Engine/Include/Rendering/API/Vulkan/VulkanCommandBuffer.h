@@ -47,7 +47,7 @@ public:
 	/*
 	*	Records a begin render pass command and clears.
 	*/
-	void CommandBeginRenderPassAndClear(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea, const VkSubpassContents contents, const uint32 numberOfClearValues) NOEXCEPT;
+	void CommandBeginRenderPassAndClear(const VkRenderPass renderPass, const VkFramebuffer framebuffer, const VkExtent2D renderArea, const VkSubpassContents contents, const uint32 numberOfClearValues) NOEXCEPT;
 
 	/*
 	*	Records a bind descriptor sets command.

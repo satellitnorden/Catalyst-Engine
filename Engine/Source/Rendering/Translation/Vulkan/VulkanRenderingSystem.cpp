@@ -83,6 +83,9 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize the Vulkan frame data.
 	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::DynamicUniformData)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Environment)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Ocean)]);
+
+	//Initialize the Vulkan render passes.
+	InitializeVulkanRenderPasses();
 }
 
 /*
@@ -1069,7 +1072,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		constexpr uint32 NORMAL_DEPTH_INDEX{ 2 };
 		constexpr uint32 MATERIAL_PROPERTIES_INDEX{ 3 };
 
-		VulkanRenderPassCreationParameters parameters;
+		VulkanRenderPassCreationParameters renderPassParameters;
 
 		StaticArray<VkAttachmentDescription, 4> attachmenDescriptions
 		{
@@ -1110,8 +1113,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
 		};
 
-		parameters.attachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
-		parameters.attachmentDescriptions = attachmenDescriptions.Data();
+		renderPassParameters.attachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters.attachmentDescriptions = attachmenDescriptions.Data();
 
 		constexpr StaticArray<const VkAttachmentReference, 3> colorAttachmentReferences
 		{
@@ -1135,12 +1138,31 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			nullptr);
 		}
 
-		parameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
-		parameters.subpassDescriptions = subpassDescriptions.Data();
-		parameters.subpassDependencyCount = 0;
-		parameters.subpassDependencies = nullptr;
+		renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
+		renderPassParameters.subpassDependencyCount = 0;
+		renderPassParameters.subpassDependencies = nullptr;
 
-		vulkanRenderPasses[INDEX(RenderPassMainStage::SceneBuffer)] = VulkanInterface::Instance->CreateRenderPass(parameters);
+		vulkanRenderPasses[INDEX(RenderPassMainStage::SceneBuffer)] = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+
+		//Create the framebuffer.
+		VulkanFramebufferCreationParameters framebufferParameters;
+
+		framebufferParameters.renderPass = vulkanRenderPasses[INDEX(RenderPassMainStage::SceneBuffer)]->Get();
+		framebufferParameters.attachmentCount = 4;
+
+		StaticArray<VkImageView, 4> attachments
+		{
+			depthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetImageView(),
+			renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetImageView(),
+			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetImageView(),
+			renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetImageView()
+		};
+
+		framebufferParameters.attachments = attachments.Data();
+		framebufferParameters.extent = { GetResolution().width, GetResolution().height };
+
+		vulkanFramebuffers[INDEX(RenderPassMainStage::SceneBuffer)] = VulkanInterface::Instance->CreateFramebuffer(framebufferParameters);
 	}
 }
 
@@ -1179,49 +1201,59 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 	for (const RenderPass *const RESTRICT renderPass : renderPasses)
 	{
-		//Calculate the number of clear values.
-		uint32 numberOfClearValues{ 0 };
-
-		if (renderPass->GetDepthAttachmentLoadOperator() == AttachmentLoadOperator::Clear)
+		/*
+		if (renderPass->GetMainStage() != RenderPassMainStage::None)
 		{
-			++numberOfClearValues;
+
 		}
 
-		if (renderPass->GetColorAttachmentLoadOperator() == AttachmentLoadOperator::Clear)
+		else
+		*/
 		{
-			numberOfClearValues += static_cast<uint32>(renderPass->GetRenderTargets().Size());
-		}
+			//Calculate the number of clear values.
+			uint32 numberOfClearValues{ 0 };
 
-		//Calculate which framebuffer should be used.
-		const uint32 frameBuffer{ renderPass->GetRenderTargets().Size() > 0 && renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : static_cast<uint32>(0) };
-
-		//Wait for the render pass to finish it's render.
-		renderPass->WaitForRender();
-
-		//If a clear should be done, the render pass needs to be begun in order for the clear to happen.
-		if (renderPass->IncludeInRender() || numberOfClearValues > 0)
-		{
-			if (numberOfClearValues > 0)
+			if (renderPass->GetDepthAttachmentLoadOperator() == AttachmentLoadOperator::Clear)
 			{
-				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass(), frameBuffer, VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, numberOfClearValues);
+				++numberOfClearValues;
 			}
-			
-			else
+
+			if (renderPass->GetColorAttachmentLoadOperator() == AttachmentLoadOperator::Clear)
 			{
-				currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass(), frameBuffer, VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+				numberOfClearValues += static_cast<uint32>(renderPass->GetRenderTargets().Size());
 			}
-		}
 
-		if (renderPass->IncludeInRender())
-		{
-			//Record the execute commands.
-			currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<const VulkanTranslationCommandBuffer *const RESTRICT>(renderPass->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
-		}
+			//Calculate which framebuffer should be used.
+			const uint32 frameBuffer{ renderPass->GetRenderTargets().Size() > 0 && renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : static_cast<uint32>(0) };
 
-		if (renderPass->IncludeInRender() || numberOfClearValues > 0)
-		{
-			//End the render pass.
-			currentPrimaryCommandBuffer->CommandEndRenderPass();
+			//Wait for the render pass to finish it's render.
+			renderPass->WaitForRender();
+
+			//If a clear should be done, the render pass needs to be begun in order for the clear to happen.
+			if (renderPass->IncludeInRender() || numberOfClearValues > 0)
+			{
+				if (numberOfClearValues > 0)
+				{
+					currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().Get(), pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().GetFrameBuffers()[frameBuffer].Get(), VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, numberOfClearValues);
+				}
+
+				else
+				{
+					currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass(), frameBuffer, VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+				}
+			}
+
+			if (renderPass->IncludeInRender())
+			{
+				//Record the execute commands.
+				currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<const VulkanTranslationCommandBuffer *const RESTRICT>(renderPass->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+			}
+
+			if (renderPass->IncludeInRender() || numberOfClearValues > 0)
+			{
+				//End the render pass.
+				currentPrimaryCommandBuffer->CommandEndRenderPass();
+			}
 		}
 	}
 }

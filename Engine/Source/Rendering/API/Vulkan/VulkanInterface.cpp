@@ -126,6 +126,13 @@ void VulkanInterface::Release() NOEXCEPT
 		delete vulkanFence;
 	}
 
+	//Release all Vulkan framebuffers.
+	for (VulkanFramebuffer *const RESTRICT vulkanFramebuffer : vulkanFramebuffers)
+	{
+		vulkanFramebuffer->Release();
+		delete vulkanFramebuffer;
+	}
+
 	//Release all Vulkan render targets.
 	for (VulkanRenderTarget *const RESTRICT vulkanRenderTarget : vulkanRenderTargets)
 	{
@@ -366,6 +373,22 @@ RESTRICTED VulkanFence *const RESTRICT VulkanInterface::CreateFence(const VkFenc
 	vulkanFences.EmplaceSlow(newFence);
 
 	return newFence;
+}
+
+/*
+*	Creates and returns a framebuffer.
+*/
+RESTRICTED VulkanFramebuffer *const RESTRICT VulkanInterface::CreateFramebuffer(const VulkanFramebufferCreationParameters &parameters) NOEXCEPT
+{
+	VulkanFramebuffer *const RESTRICT newFramebuffer = new VulkanFramebuffer;
+	newFramebuffer->Initialize(parameters);
+
+	static Spinlock lock;
+	ScopedLock<Spinlock> scopedLock{ lock };
+
+	vulkanFramebuffers.EmplaceSlow(newFramebuffer);
+
+	return newFramebuffer;
 }
 
 /*

@@ -75,7 +75,7 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanR
 /*
 *	Records a begin render pass command and clears.
 */
-void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea, const VkSubpassContents contents, const uint32 numberOfClearValues) NOEXCEPT
+void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VkRenderPass renderPass, const VkFramebuffer framebuffer, const VkExtent2D renderArea, const VkSubpassContents contents, const uint32 numberOfClearValues) NOEXCEPT
 {
 	StaticArray<VkClearValue, VulkanCommandBufferConstants::MAXIMUM_NUMBER_OF_CLEAR_VALUES> clearValues;
 
@@ -89,8 +89,8 @@ void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VulkanRenderPass 
 
 	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassBeginInfo.pNext = nullptr;
-	renderPassBeginInfo.renderPass = vulkanRenderPass.Get();
-	renderPassBeginInfo.framebuffer = vulkanRenderPass.GetFrameBuffers()[framebufferIndex].Get();
+	renderPassBeginInfo.renderPass = renderPass;
+	renderPassBeginInfo.framebuffer = framebuffer;
 	renderPassBeginInfo.renderArea.offset = { 0, 0 };
 	renderPassBeginInfo.renderArea.extent = renderArea;
 	renderPassBeginInfo.clearValueCount = numberOfClearValues;
