@@ -268,10 +268,10 @@ public:
 	*	Creates a subpass description.
 	*/
 	static constexpr VkSubpassDescription CreateSubpassDescription(	const uint32 inputAttachmentCount,
-																	const VkAttachmentReference* const inputAttachments,
+																	const VkAttachmentReference *RESTRICT const inputAttachments,
 																	const uint32 colorAttachmentCount,
-																	const VkAttachmentReference* const colorAttachments,
-																	const VkAttachmentReference* const depthStencilAttachment,
+																	const VkAttachmentReference *RESTRICT const colorAttachments,
+																	const VkAttachmentReference *RESTRICT const depthStencilAttachment,
 																	const uint32 preserveAttachmentCount,
 																	const uint32* const preserveAttachments) NOEXCEPT
 	{

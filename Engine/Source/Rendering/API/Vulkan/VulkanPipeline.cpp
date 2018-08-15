@@ -6,22 +6,6 @@
 #include <Rendering/API/Vulkan/VulkanUtilities.h>
 
 /*
-*	Default constructor.
-*/
-VulkanPipeline::VulkanPipeline() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanPipeline::~VulkanPipeline() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan pipeline.
 */
 void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT
@@ -88,11 +72,19 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 	VULKAN_ERROR_CHECK(vkCreatePipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &pipelineLayoutCreateInfo, nullptr, &vulkanPipelineLayout));
 
 	//Initialize the Vulkan render pass.
-	vulkanRenderPass.Initialize(vulkanPipelineCreationParameters);
+	if (vulkanPipelineCreationParameters.renderPass)
+	{
+		vulkanRenderPass = *vulkanPipelineCreationParameters.renderPass;
+	}
+	
+	else
+	{
+		vulkanRenderPass.Initialize(vulkanPipelineCreationParameters);
+	}
 
 	//Create the graphics pipeline create info.
 	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo;
-	CreateGraphicsPipelineCreateInfo(graphicsPipelineCreateInfo, pipelineShaderStageCreateInfos, pipelineVertexInputStateCreateInfo, pipelineInputAssemblyStateCreateInfo, useTessellationStage ? &pipelineTessellationStateCreateInfo : nullptr, pipelineViewportStateCreateInfo, pipelineRasterizationStateCreateInfo, pipelineMultisampleStateCreateInfo, pipelineDepthStencilStateCreateInfo, pipelineColorBlendStateCreateInfo, vulkanPipelineLayout, vulkanRenderPass);
+	CreateGraphicsPipelineCreateInfo(graphicsPipelineCreateInfo, pipelineShaderStageCreateInfos, pipelineVertexInputStateCreateInfo, pipelineInputAssemblyStateCreateInfo, useTessellationStage ? &pipelineTessellationStateCreateInfo : nullptr, pipelineViewportStateCreateInfo, pipelineRasterizationStateCreateInfo, pipelineMultisampleStateCreateInfo, pipelineDepthStencilStateCreateInfo, pipelineColorBlendStateCreateInfo, vulkanPipelineLayout);
 
 	//Create the Vulkan pipeline!
 	VULKAN_ERROR_CHECK(vkCreateGraphicsPipelines(VulkanInterface::Instance->GetLogicalDevice().Get(), VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &vulkanPipeline));
@@ -300,7 +292,7 @@ void VulkanPipeline::CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &
 /*
 *	Creates a graphics pipeline create info.
 */
-void VulkanPipeline::CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateInfo &graphicsPipelineCreateInfo, const DynamicArray<VkPipelineShaderStageCreateInfo> &pipelineShaderStageCreateInfos, const VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VkPipelineTessellationStateCreateInfo *pipelineTessellationStateCreateInfo, const VkPipelineViewportStateCreateInfo &pipelineViewportStateCreateInfo, const VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo, const VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo, const VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const VkPipelineLayout &pipelineLayout, const VulkanRenderPass &vulkanRenderPass) const NOEXCEPT
+void VulkanPipeline::CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateInfo &graphicsPipelineCreateInfo, const DynamicArray<VkPipelineShaderStageCreateInfo> &pipelineShaderStageCreateInfos, const VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VkPipelineTessellationStateCreateInfo *pipelineTessellationStateCreateInfo, const VkPipelineViewportStateCreateInfo &pipelineViewportStateCreateInfo, const VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo, const VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo, const VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const VkPipelineLayout &pipelineLayout) const NOEXCEPT
 {
 	graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	graphicsPipelineCreateInfo.pNext = nullptr;

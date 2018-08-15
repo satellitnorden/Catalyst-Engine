@@ -58,7 +58,12 @@ void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkan
 */
 void VulkanRenderPass::Initialize(const VulkanRenderPassCreationParameters &parameters) NOEXCEPT
 {
+	//Create the render pass create info.
+	VkRenderPassCreateInfo renderPassCreateInfo;
+	CreateRenderPassCreateInfo(renderPassCreateInfo, parameters);
 
+	//Create the render pass!
+	VULKAN_ERROR_CHECK(vkCreateRenderPass(VulkanInterface::Instance->GetLogicalDevice().Get(), &renderPassCreateInfo, nullptr, &vulkanRenderPass));
 }
 
 /*
@@ -86,7 +91,7 @@ void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDes
 		VkAttachmentDescription depthAttachmentDescription;
 
 		depthAttachmentDescription.flags = 0;
-		depthAttachmentDescription.format = VulkanInterface::Instance->GetSwapchain().GetDepthBuffer().GetFormat();
+		depthAttachmentDescription.format = vulkanPipelineCreationParameters.depthBuffer->GetFormat();
 		depthAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
 		depthAttachmentDescription.loadOp = vulkanPipelineCreationParameters.attachmentLoadOperator;
 		depthAttachmentDescription.storeOp = vulkanPipelineCreationParameters.depthAttachmentStoreOp;
@@ -187,4 +192,20 @@ void VulkanRenderPass::CreateRenderPassCreateInfo(VkRenderPassCreateInfo &render
 	renderPassCreateInfo.pSubpasses = &subpassDescription;
 	renderPassCreateInfo.dependencyCount = 1;
 	renderPassCreateInfo.pDependencies = &subpassDependency;
+}
+
+/*
+*	Creates a render pass create info.
+*/
+void VulkanRenderPass::CreateRenderPassCreateInfo(VkRenderPassCreateInfo &renderPassCreateInfo, const VulkanRenderPassCreationParameters &parameters) const NOEXCEPT
+{
+	renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassCreateInfo.pNext = nullptr;
+	renderPassCreateInfo.flags = 0;
+	renderPassCreateInfo.attachmentCount = parameters.attachmentCount;
+	renderPassCreateInfo.pAttachments = parameters.attachmentDescriptions;
+	renderPassCreateInfo.subpassCount = parameters.subpassDescriptionCount;
+	renderPassCreateInfo.pSubpasses = parameters.subpassDescriptions;
+	renderPassCreateInfo.dependencyCount = parameters.subpassDependencyCount;
+	renderPassCreateInfo.pDependencies = parameters.subpassDependencies;
 }

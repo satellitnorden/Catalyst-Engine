@@ -33,6 +33,9 @@ DirectionalStaticPhysicalShadowRenderPass::DirectionalStaticPhysicalShadowRender
 */
 void DirectionalStaticPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Set the main stage.
+	SetMainStage(RenderPassMainStage::None);
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::DirectionalStaticPhysicalShadow);
 

@@ -54,6 +54,11 @@ public:
 	void SetData(const void *const RESTRICT newData) NOEXCEPT { data = newData; }
 
 	/*
+	*	Returns the main stage.
+	*/
+	RenderPassMainStage GetMainStage() const NOEXCEPT { return mainStage; }
+
+	/*
 	*	Returns the sub stage.
 	*/
 	RenderPassSubStage GetSubStage() const NOEXCEPT { return subStage; }
@@ -196,9 +201,14 @@ public:
 protected:
 
 	/*
+	*	Sets the main stage.
+	*/
+	void SetMainStage(const RenderPassMainStage newMainStage) NOEXCEPT { mainStage = newMainStage; }
+
+	/*
 	*	Sets the sub stage.
 	*/
-	void SetSubStage(const RenderPassSubStage newSubStage) NOEXCEPT;
+	void SetSubStage(const RenderPassSubStage newSubStage) NOEXCEPT { subStage = newSubStage; }
 
 	/*
 	*	Sets the vertex shader.
@@ -359,6 +369,9 @@ private:
 
 	//The data for this render pass.
 	const void *RESTRICT data;
+
+	//The main stage.
+	RenderPassMainStage mainStage;
 
 	//The sub stage.
 	RenderPassSubStage subStage;

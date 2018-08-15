@@ -140,6 +140,13 @@ void VulkanInterface::Release() NOEXCEPT
 		delete vulkanPipeline;
 	}
 
+	//Release all Vulkan render passes.
+	for (VulkanRenderPass *const RESTRICT vulkanRenderPass : vulkanRenderPasses)
+	{
+		vulkanRenderPass->Release();
+		delete vulkanRenderPass;
+	}
+
 	//Release all Vulkan semaphores.
 	for (VulkanSemaphore *const RESTRICT vulkanSemaphore : vulkanSemaphores)
 	{
@@ -375,6 +382,22 @@ RESTRICTED VulkanPipeline *const RESTRICT VulkanInterface::CreatePipeline(const 
 	vulkanPipelines.EmplaceSlow(newPipeline);
 
 	return newPipeline;
+}
+
+/*
+*	Creates and returns a render pass.
+*/
+RESTRICTED VulkanRenderPass *const RESTRICT VulkanInterface::CreateRenderPass(const VulkanRenderPassCreationParameters &vulkanRenderPassCreationParameters) NOEXCEPT
+{
+	VulkanRenderPass *const RESTRICT newRenderPass = new VulkanRenderPass;
+	newRenderPass->Initialize(vulkanRenderPassCreationParameters);
+
+	static Spinlock lock;
+	ScopedLock<Spinlock> scopedLock{ lock };
+
+	vulkanRenderPasses.EmplaceSlow(newRenderPass);
+
+	return newRenderPass;
 }
 
 /*

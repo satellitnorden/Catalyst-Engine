@@ -31,6 +31,9 @@ InstancedPhysicalRenderPass::InstancedPhysicalRenderPass() NOEXCEPT
 */
 void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Set the main stage.
+	SetMainStage(RenderPassMainStage::SceneBuffer);
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::InstancedPhysical);
 

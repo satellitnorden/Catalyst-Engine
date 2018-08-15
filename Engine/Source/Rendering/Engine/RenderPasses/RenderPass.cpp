@@ -75,12 +75,3 @@ CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuffer() NOEXCEPT
 {
 	return commandBuffers[RenderingSystem::Instance->GetCurrentFrameIndex()];
 }
-
-/*
-*	Sets the sub stage.
-*/
-void RenderPass::SetSubStage(const RenderPassSubStage newSubStage) NOEXCEPT
-{
-	//Set the sub stage.
-	subStage = newSubStage;
-}

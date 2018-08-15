@@ -28,6 +28,17 @@ using TextureCubeMapHandle = void *RESTRICT;
 using UniformBufferHandle = void *RESTRICT;
 
 /*
+*	Enumeration covering all render pass main stages.
+*/
+enum class RenderPassMainStage : uint8
+{
+	None, //This will be removed once all the main stages are in place.
+	SceneBuffer,
+
+	NumberOfRenderPassMainStages
+};
+
+/*
 *	Enumeration covering all render pass sub stages.
 *	The order of the render pass sub stage defines the order that the render passes will be rendered in.
 */
@@ -56,7 +67,7 @@ enum class RenderPassSubStage : uint8
 	PostProcessingVerticalBlur,
 	PostProcessing,
 
-	NumberOfRenderPassStages
+	NumberOfRenderPassSubStages
 };
 
 //Enumeration covering all attachment load operators.

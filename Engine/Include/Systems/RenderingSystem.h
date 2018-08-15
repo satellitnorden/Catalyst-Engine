@@ -100,7 +100,7 @@ public:
 	/*
 	*	Returns the render passes.
 	*/
-	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassStages)>& GetRenderPasses() const { return renderPasses; }
+	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)>& GetRenderPasses() const { return renderPasses; }
 
 	/*
 	*	Returns the resolution.
@@ -305,7 +305,7 @@ public:
 private:
 
 	//Container for all render passes.
-	StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassStages)> renderPasses;
+	StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> renderPasses;
 
 	//Container for all common particle materials.
 	StaticArray<ParticleMaterial, INDEX(CommonParticleMaterial::NumberOfCommonParticleMaterials)> commonParticleMaterials;

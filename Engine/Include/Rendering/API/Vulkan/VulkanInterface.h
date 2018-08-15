@@ -182,6 +182,11 @@ public:
 	RESTRICTED VulkanPipeline *const RESTRICT CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT;
 
 	/*
+	*	Creates and returns a render pass.
+	*/
+	RESTRICTED VulkanRenderPass *const RESTRICT CreateRenderPass(const VulkanRenderPassCreationParameters &vulkanRenderPassCreationParameters) NOEXCEPT;
+
+	/*
 	*	Creates and returns a render target.
 	*/
 	RESTRICTED VulkanRenderTarget *const RESTRICT CreateRenderTarget(const VkExtent2D extent, const VkSamplerAddressMode addressMode) NOEXCEPT;
@@ -258,6 +263,9 @@ private:
 
 	//Container for all Vulkan pipelines.
 	DynamicArray<VulkanPipeline *RESTRICT> vulkanPipelines;
+
+	//Container for all Vulkan render passes.
+	DynamicArray<VulkanRenderPass *RESTRICT> vulkanRenderPasses;
 
 	//Container for all Vulkan render targets.
 	DynamicArray<VulkanRenderTarget *RESTRICT> vulkanRenderTargets;

@@ -32,6 +32,9 @@ VegetationRenderPass::VegetationRenderPass() NOEXCEPT
 */
 void VegetationRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Set the main stage.
+	SetMainStage(RenderPassMainStage::SceneBuffer);
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::Vegetation);
 

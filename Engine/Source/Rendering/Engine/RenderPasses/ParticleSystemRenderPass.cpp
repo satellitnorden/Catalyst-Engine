@@ -31,6 +31,9 @@ ParticleSystemRenderPass::ParticleSystemRenderPass() NOEXCEPT
 */
 void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Set the main stage.
+	SetMainStage(RenderPassMainStage::None);
+
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::ParticleSystem);
 

@@ -87,4 +87,7 @@ public:
 	//The viewport extent.
 	VkExtent2D viewportExtent{ 0, 0 };
 
+	//Optional render pass.
+	const VulkanRenderPass *RESTRICT renderPass{ nullptr };
+
 };

@@ -216,7 +216,7 @@ private:
 	StaticArray<VulkanRenderTarget *RESTRICT, INDEX(RenderTarget::NumberOfRenderTargets)> renderTargets;
 
 	//Container for all temporary pipelines.
-	StaticArray<VulkanPipeline *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassStages)> pipelines;
+	StaticArray<VulkanPipeline *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> pipelines;
 
 	//Container for all semaphores.
 	StaticArray<VulkanSemaphore *RESTRICT, INDEX(GraphicsSemaphore::NumberOfSemaphores)> semaphores;
@@ -228,10 +228,13 @@ private:
 	StaticArray<VulkanUniformBuffer *RESTRICT, INDEX(UniformBuffer::NumberOfUniformBuffers)> uniformBuffers;
 
 	//Container for all Vulkan render pass data.
-	StaticArray<VulkanRenderPassData, INDEX(RenderPassSubStage::NumberOfRenderPassStages)> vulkanRenderPassData;
+	StaticArray<VulkanRenderPassData, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> vulkanRenderPassData;
 
 	//Container for all special textures.
 	StaticArray<Vulkan2DTexture* RESTRICT, INDEX(SpecialTexture::NumberOfSpecialTextures)> specialTextures;
+
+	//Container for all Vulkan render passes.
+	StaticArray<VulkanRenderPass* RESTRICT, INDEX(RenderPassMainStage::NumberOfRenderPassMainStages)> vulkanRenderPasses;
 
 	//The Vulkan frame data.
 	VulkanFrameData frameData;
@@ -266,6 +269,11 @@ private:
 	*	Initializes all shader modules.
 	*/
 	void InitializeShaderModules() NOEXCEPT;
+
+	/*
+	*	Initializes all Vulkan render passes.
+	*/
+	void InitializeVulkanRenderPasses() NOEXCEPT;
 
 	/*
 	*	Begins the frame.
