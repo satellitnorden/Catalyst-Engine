@@ -4,7 +4,6 @@
 #include <Core/EngineCore.h>
 
 //Vulkan.
-#include <Rendering/API/Vulkan/VulkanCore.h>
 #include <Rendering/API/Vulkan/VulkanShaderModule.h>
 
 class VulkanPipelineCreationParameters final

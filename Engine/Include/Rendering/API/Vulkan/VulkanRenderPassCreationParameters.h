@@ -3,9 +3,6 @@
 //Core.
 #include <Core/EngineCore.h>
 
-//Vulkan.
-#include <Rendering/API/Vulkan/VulkanCore.h>
-
 class VulkanRenderPassCreationParameters final
 {
 

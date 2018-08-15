@@ -139,6 +139,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanEvent.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFence.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFramebuffer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFramebufferCreationParameters.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanInstance.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanInterface.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanLogicalDevice.h" />

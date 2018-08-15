@@ -49,7 +49,28 @@ void VulkanRenderPass::Initialize(const VulkanPipelineCreationParameters &vulkan
 
 	for (uint64 i = 0, size = vulkanPipelineCreationParameters.colorAttachments.Size(); i < size; ++i)
 	{
-		framebuffers[i].Initialize(*this, vulkanPipelineCreationParameters.depthBuffer, vulkanPipelineCreationParameters.colorAttachments[i], vulkanPipelineCreationParameters.viewportExtent);
+		VulkanFramebufferCreationParameters parameters;
+
+		parameters.renderPass = vulkanRenderPass;
+		parameters.attachmentCount = vulkanPipelineCreationParameters.depthBuffer ? static_cast<uint32>(vulkanPipelineCreationParameters.colorAttachments[i].Size() + 1) : static_cast<uint32>(vulkanPipelineCreationParameters.colorAttachments[i].Size());
+
+		DynamicArray<VkImageView> attachments;
+		attachments.Reserve(parameters.attachmentCount);
+
+		if (vulkanPipelineCreationParameters.depthBuffer)
+		{
+			attachments.EmplaceFast(vulkanPipelineCreationParameters.depthBuffer->GetImageView());
+		}
+		
+		for (VkImageView imageView : vulkanPipelineCreationParameters.colorAttachments[i])
+		{
+			attachments.EmplaceFast(imageView);
+		}
+
+		parameters.attachments = attachments.Data();
+		parameters.extent = vulkanPipelineCreationParameters.viewportExtent;
+
+		framebuffers[i].Initialize(parameters);
 	}
 }
 

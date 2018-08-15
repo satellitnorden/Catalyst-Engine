@@ -42,7 +42,7 @@ public:
 	/*
 	*	Returns the Vulkan render pass.
 	*/
-	const VulkanRenderPass& GetRenderPass() const NOEXCEPT { return vulkanRenderPass; }
+	const VulkanRenderPass& GetRenderPass() const NOEXCEPT { return *vulkanRenderPass; }
 
 private:
 
@@ -53,7 +53,7 @@ private:
 	VkPipelineLayout vulkanPipelineLayout;
 
 	//The Vulkan render pass.
-	VulkanRenderPass vulkanRenderPass;
+	const VulkanRenderPass *RESTRICT vulkanRenderPass;
 
 	/*
 	*	Creates a vertex pipeline shader stage create info.

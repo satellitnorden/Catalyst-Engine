@@ -828,6 +828,9 @@
     <ClInclude Include="..\..\..\Include\Resources\OceanMaterialData.h">
       <Filter>Resources\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFramebufferCreationParameters.h">
+      <Filter>Rendering\Include\API\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

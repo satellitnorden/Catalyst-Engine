@@ -16,7 +16,7 @@
 #include <Rendering/API/Vulkan/VulkanDescriptorSetLayout.h>
 #include <Rendering/API/Vulkan/VulkanEvent.h>
 #include <Rendering/API/Vulkan/VulkanFence.h>
-#include <Rendering/API/Vulkan/VulkanFrameBuffer.h>
+#include <Rendering/API/Vulkan/VulkanFramebuffer.h>
 #include <Rendering/API/Vulkan/VulkanInstance.h>
 #include <Rendering/API/Vulkan/VulkanLogicalDevice.h>
 #include <Rendering/API/Vulkan/VulkanPhysicalDevice.h>
@@ -177,6 +177,11 @@ public:
 	RESTRICTED VulkanFence *const RESTRICT CreateFence(const VkFenceCreateFlags flags = 0) NOEXCEPT;
 
 	/*
+	*	Creates and returns a framebuffer.
+	*/
+	RESTRICTED VulkanFramebuffer *const RESTRICT CreateFramebuffer() NOEXCEPT;
+
+	/*
 	*	Creates and returns a pipeline.
 	*/
 	RESTRICTED VulkanPipeline *const RESTRICT CreatePipeline(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT;
@@ -184,7 +189,12 @@ public:
 	/*
 	*	Creates and returns a render pass.
 	*/
-	RESTRICTED VulkanRenderPass *const RESTRICT CreateRenderPass(const VulkanRenderPassCreationParameters &vulkanRenderPassCreationParameters) NOEXCEPT;
+	RESTRICTED VulkanRenderPass *const RESTRICT CreateRenderPass(const VulkanPipelineCreationParameters &parameters) NOEXCEPT;
+
+	/*
+	*	Creates and returns a render pass.
+	*/
+	RESTRICTED VulkanRenderPass *const RESTRICT CreateRenderPass(const VulkanRenderPassCreationParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Creates and returns a render target.

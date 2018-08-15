@@ -5,26 +5,12 @@
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>
-
-//Forward declarations.
-class VulkanDepthBuffer;
-class VulkanLogicalDevice;
-class VulkanRenderPass;
+#include <Rendering/API/Vulkan/VulkanFramebufferCreationParameters.h>
 
 class VulkanFramebuffer final
 {
 
 public:
-
-	/*
-	*	Default constructor.
-	*/
-	VulkanFramebuffer() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanFramebuffer() NOEXCEPT;
 
 	/*
 	*	Returns the underlying Vulkan framebuffer.
@@ -34,7 +20,7 @@ public:
 	/*
 	*	Initializes this Vulkan framebuffer.
 	*/
-	void Initialize(const VulkanRenderPass &vulkanRenderPass, const VulkanDepthBuffer *RESTRICT depthBuffer, const DynamicArray<VkImageView> &colorAttachments, const VkExtent2D &extent) NOEXCEPT;
+	void Initialize(const VulkanFramebufferCreationParameters &parameters) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan framebuffer.
@@ -49,6 +35,6 @@ private:
 	/*
 	*	Creates a framebuffer create info.
 	*/
-	void CreateFramebufferCreateInfo(VkFramebufferCreateInfo &framebufferCreateInfo, const VulkanRenderPass &vulkanRenderPass, const DynamicArray<VkImageView> &attachments, const VkExtent2D &extent) const NOEXCEPT;
+	void CreateFramebufferCreateInfo(VkFramebufferCreateInfo &framebufferCreateInfo, const VulkanFramebufferCreationParameters &parameters) const NOEXCEPT;
 
 };

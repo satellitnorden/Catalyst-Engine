@@ -74,12 +74,12 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 	//Initialize the Vulkan render pass.
 	if (vulkanPipelineCreationParameters.renderPass)
 	{
-		vulkanRenderPass = *vulkanPipelineCreationParameters.renderPass;
+		vulkanRenderPass = vulkanPipelineCreationParameters.renderPass;
 	}
 	
 	else
 	{
-		vulkanRenderPass.Initialize(vulkanPipelineCreationParameters);
+		vulkanRenderPass = VulkanInterface::Instance->CreateRenderPass(vulkanPipelineCreationParameters);
 	}
 
 	//Create the graphics pipeline create info.
@@ -97,9 +97,6 @@ void VulkanPipeline::Release() NOEXCEPT
 {
 	//Destroy the Vulkan pipeline.
 	vkDestroyPipeline(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanPipeline, nullptr);
-
-	//Release the Vulkan render pass.
-	vulkanRenderPass.Release();
 
 	//Destroy the Vulkan pipeline layout.
 	vkDestroyPipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanPipelineLayout, nullptr);
@@ -309,7 +306,7 @@ void VulkanPipeline::CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateIn
 	graphicsPipelineCreateInfo.pColorBlendState = &pipelineColorBlendStateCreateInfo;
 	graphicsPipelineCreateInfo.pDynamicState = nullptr;
 	graphicsPipelineCreateInfo.layout = pipelineLayout;
-	graphicsPipelineCreateInfo.renderPass = vulkanRenderPass.Get();
+	graphicsPipelineCreateInfo.renderPass = vulkanRenderPass->Get();
 	graphicsPipelineCreateInfo.subpass = 0;
 	graphicsPipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 	graphicsPipelineCreateInfo.basePipelineIndex = -1;
