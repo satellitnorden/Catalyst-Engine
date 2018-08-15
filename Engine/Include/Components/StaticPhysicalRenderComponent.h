@@ -21,7 +21,7 @@ public:
 	//The model matrix.
 	Matrix4 modelMatrix;
 
-	//The descriptor set.
+	//The render data table.
 	RenderDataTableHandle renderDataTable{ };
 
 	//The buffer.

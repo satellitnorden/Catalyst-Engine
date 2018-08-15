@@ -6,6 +6,7 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
+#include <Resources/OceanMaterialData.h>
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/PhysicalModelData.h>
@@ -14,7 +15,6 @@
 #include <Resources/SoundBankData.h>
 #include <Resources/TerrainMaterialData.h>
 #include <Resources/VegetationMaterialData.h>
-#include <Resources/WaterMaterialData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -174,36 +174,36 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 */
 void ResourceLoader::LoadOceanMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
-	//Store the water material data in the water material data structure.
-	WaterMaterialData waterMaterialData;
+	//Store the ocean material data in the ocean material data structure.
+	OceanMaterialData oceanMaterialData;
 
 	//Read the resource ID.
 	HashString resourceID;
 	file.Read(&resourceID, sizeof(HashString));
 
 	//Read the number of mipmap levels.
-	file.Read(&waterMaterialData.mipmapLevels, sizeof(uint8));
+	file.Read(&oceanMaterialData.mipmapLevels, sizeof(uint8));
 
 	//Read the width.
-	file.Read(&waterMaterialData.width, sizeof(uint32));
+	file.Read(&oceanMaterialData.width, sizeof(uint32));
 
 	//Read the height.
-	file.Read(&waterMaterialData.height, sizeof(uint32));
+	file.Read(&oceanMaterialData.height, sizeof(uint32));
 
 	//Read the normal map.
-	waterMaterialData.normalMapData.UpsizeSlow(waterMaterialData.mipmapLevels);
+	oceanMaterialData.normalMapData.UpsizeSlow(oceanMaterialData.mipmapLevels);
 
-	for (uint8 i = 0; i < waterMaterialData.mipmapLevels; ++i)
+	for (uint8 i = 0; i < oceanMaterialData.mipmapLevels; ++i)
 	{
-		const uint64 textureSize{ (waterMaterialData.width >> i) * (waterMaterialData.height >> i) * 4 };
+		const uint64 textureSize{ (oceanMaterialData.width >> i) * (oceanMaterialData.height >> i) * 4 };
 
-		waterMaterialData.normalMapData[i].Reserve(textureSize);
+		oceanMaterialData.normalMapData[i].Reserve(textureSize);
 
-		file.Read(waterMaterialData.normalMapData[i].Data(), textureSize);
+		file.Read(oceanMaterialData.normalMapData[i].Data(), textureSize);
 	}
 
 	//Create the ocean material via the rendering system.
-	RenderingSystem::Instance->CreateOceanMaterial(waterMaterialData, oceanMaterials[resourceID]);
+	RenderingSystem::Instance->CreateOceanMaterial(oceanMaterialData, oceanMaterials[resourceID]);
 }
 
 /*

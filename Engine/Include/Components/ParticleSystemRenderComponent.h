@@ -17,7 +17,7 @@ public:
 	//The starting time of the particle system.
 	float particleSystemStartingTime;
 
-	//The descriptor set.
+	//The render data table.
 	RenderDataTableHandle renderDataTable;
 
 	//The instance count.

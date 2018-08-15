@@ -167,8 +167,8 @@ vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
 */
 vec3 CalculateDirectionalLight()
 {
-    vec3 halfwayDirection = normalize(-directionalLightDirection + viewDirection);
-    return directionalLightColor * directionalLightIntensity * pow(max(dot(normalDirection, halfwayDirection), 0.0f), 512) * 0.1f;
+
+    return directionalLightColor * directionalLightIntensity * pow(max(dot(-directionalLightDirection, reflectionDirection), 0.0f), 4096.0f);
 }
 
 /*

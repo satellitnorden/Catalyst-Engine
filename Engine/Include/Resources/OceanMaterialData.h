@@ -3,7 +3,7 @@
 //Core.
 #include <Core/EngineCore.h>
 
-class WaterMaterialData final
+class OceanMaterialData final
 {
 
 public:

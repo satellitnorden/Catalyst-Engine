@@ -642,15 +642,15 @@ void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInf
 /*
 *	Returns the current dynamic uniform data descriptor set.
 */
-RenderDataTableHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT
+RenderDataTableHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT
 {
-	return reinterpret_cast<RenderDataTableHandle>(frameData.GetCurrentDynamicUniformDataDescriptorSet());
+	return reinterpret_cast<RenderDataTableHandle>(frameData.GetCurrentDynamicUniformDataRenderDataTable());
 }
 
 /*
 *	Returns the current environment data descriptor set.
 */
-RenderDataTableHandle VulkanRenderingSystem::GetCurrentEnvironmentDataDescriptorSet() NOEXCEPT
+RenderDataTableHandle VulkanRenderingSystem::GetCurrentEnvironmentRenderDataTable() NOEXCEPT
 {
 	return reinterpret_cast<RenderDataTableHandle>(frameData.GetCurrentEnvironmentDescriptorSet());
 }
@@ -658,9 +658,9 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentEnvironmentDataDescriptor
 /*
 *	Returns the current ocean descriptor set.
 */
-RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanDescriptorSet() NOEXCEPT
+RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanRenderDataTable() NOEXCEPT
 {
-	return reinterpret_cast<RenderDataTableHandle>(frameData.GetCurrentOceanDescriptorSet());
+	return reinterpret_cast<RenderDataTableHandle>(frameData.GetCurrentOceanRenderDataTable());
 }
 
 /*
@@ -1061,7 +1061,7 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 	frameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
 
 	//Set the current dynamic uniform data descriptor set.
-	currentDynamicUniformDataDescriptorSet = frameData.GetCurrentDynamicUniformDataDescriptorSet();
+	currentDynamicUniformDataDescriptorSet = frameData.GetCurrentDynamicUniformDataRenderDataTable();
 
 	//Set the current environment descriptor set.
 	currentEnvironmentDataDescriptorSet = frameData.GetCurrentEnvironmentDescriptorSet();
@@ -1168,7 +1168,7 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 
 	{
 		//Update the ocean descriptor set.
-		VulkanDescriptorSet &oceanDescriptorSet{ *frameData.GetCurrentOceanDescriptorSet() };
+		VulkanDescriptorSet &oceanDescriptorSet{ *frameData.GetCurrentOceanRenderDataTable() };
 
 		StaticArray<VkWriteDescriptorSet, 3> oceanWriteDescriptorSets
 		{

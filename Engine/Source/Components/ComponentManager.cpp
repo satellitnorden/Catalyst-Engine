@@ -44,10 +44,6 @@ std::atomic<uint64> ComponentManager::numberOfVegetationComponents{ 0 };
 DynamicArray<VegetationComponent> ComponentManager::vegetationComponents;
 DynamicArray<VegetationCullingComponent> ComponentManager::vegetationCullingComponents;
 
-std::atomic<uint64> ComponentManager::numberOfWaterComponents{ 0 };
-DynamicArray<WaterComponent> ComponentManager::waterComponents;
-DynamicArray<WaterRenderComponent> ComponentManager::waterRenderComponents;
-
 /*
 *	Returns a new components index for camera entities.
 */
@@ -453,44 +449,4 @@ VegetationCullingComponent *RESTRICT ComponentManager::GetVegetationCullingCompo
 {
 	//Return the vegetation components.
 	return vegetationCullingComponents.Data();
-}
-
-/*
-*	Returns a new components index for water entities.
-*/
-uint64 ComponentManager::GetNewWaterComponentsIndex() NOEXCEPT
-{
-	//Create the relevant components.
-	waterComponents.EmplaceSlow();
-	waterRenderComponents.EmplaceSlow();
-
-	//Return the new index.
-	return numberOfWaterComponents++;
-}
-
-/*
-*	Returns the number of water components.
-*/
-uint64 ComponentManager::GetNumberOfWaterComponents() NOEXCEPT
-{
-	//Return the number of water components.
-	return numberOfWaterComponents;
-}
-
-/*
-*	Returns the water components.
-*/
-WaterComponent *RESTRICT ComponentManager::GetWaterComponents() NOEXCEPT
-{
-	//Return the water components.
-	return waterComponents.Data();
-}
-
-/*
-*	Returns the water render components.
-*/
-WaterRenderComponent *RESTRICT ComponentManager::GetWaterRenderComponents() NOEXCEPT
-{
-	//Return the water render components.
-	return waterRenderComponents.Data();
 }

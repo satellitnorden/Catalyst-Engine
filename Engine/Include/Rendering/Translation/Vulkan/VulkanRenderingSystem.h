@@ -42,8 +42,6 @@ class VegetationEntity;
 class VegetationMaterial;
 class VegetationProperties;
 class VegetationTransformation;
-class WaterEntity;
-class WaterUniformData;
 
 class VulkanRenderingSystem final
 {
@@ -180,17 +178,17 @@ private:
 	/*
 	*	Returns the current dynamic uniform data descriptor set.
 	*/
-	RenderDataTableHandle GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT;
+	RenderDataTableHandle GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT;
 
 	/*
 	*	Returns the current environment data descriptor set.
 	*/
-	RenderDataTableHandle GetCurrentEnvironmentDataDescriptorSet() NOEXCEPT;
+	RenderDataTableHandle GetCurrentEnvironmentRenderDataTable() NOEXCEPT;
 
 	/*
 	*	Returns the current ocean descriptor set.
 	*/
-	RenderDataTableHandle GetCurrentOceanDescriptorSet() NOEXCEPT;
+	RenderDataTableHandle GetCurrentOceanRenderDataTable() NOEXCEPT;
 
 	/*
 	*	Returns the given common render data table layout.

@@ -133,7 +133,7 @@ void StaticPhysicalRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->Begin(this);
 
 	//Bind the render data table.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
 	//Wait for the static physical culling to finish.
 	CullingSystem::Instance->WaitForStaticPhysicalCulling();

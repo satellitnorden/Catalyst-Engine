@@ -94,9 +94,9 @@ void OceanRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->Begin(this);
 
 	//Bind the render data tables.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataDescriptorSet());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetCurrentEnvironmentDataDescriptorSet());
-	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetCurrentOceanDescriptorSet());
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetCurrentEnvironmentRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetCurrentOceanRenderDataTable());
 
 	//Push constant data.
 	constexpr float scaling{ 0.25f };

@@ -26,11 +26,11 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
+#include <Resources/OceanMaterialData.h>
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/TerrainMaterialData.h>
 #include <Resources/VegetationMaterialData.h>
-#include <Resources/WaterMaterialData.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -225,30 +225,30 @@ void RenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInformati
 }
 
 /*
-*	Returns the current dynamic uniform data descriptor set.
+*	Returns the current dynamic uniform data render data table.
 */
-RenderDataTableHandle RenderingSystem::GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetCurrentDynamicUniformDataRenderDataTable() const NOEXCEPT
 {
-	//Return the current dynamic uniform data descriptor set via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentDynamicUniformDataDescriptorSet();
+	//Return the current dynamic uniform data render data table via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentDynamicUniformDataRenderDataTable();
 }
 
 /*
-*	Returns the current environment data descriptor set.
+*	Returns the current environment render data table.
 */
-RenderDataTableHandle RenderingSystem::GetCurrentEnvironmentDataDescriptorSet() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetCurrentEnvironmentRenderDataTable() const NOEXCEPT
 {
-	//Return the current environment data descriptor set via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentEnvironmentDataDescriptorSet();
+	//Return the current environment render data table via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentEnvironmentRenderDataTable();
 }
 
 /*
-*	Returns the current ocean descriptor set.
+*	Returns the current ocean render data table.
 */
-RenderDataTableHandle RenderingSystem::GetCurrentOceanDescriptorSet() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetCurrentOceanRenderDataTable() const NOEXCEPT
 {
-	//Return the current ocean descriptor set via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentOceanDescriptorSet();
+	//Return the current ocean render data table via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentOceanRenderDataTable();
 }
 
 /*
@@ -272,10 +272,10 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &e
 /*
 *	Creates an ocean material.
 */
-void RenderingSystem::CreateOceanMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT
+void RenderingSystem::CreateOceanMaterial(const OceanMaterialData &oceanMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT
 {
 	//Create the normal map texture.
-	oceanMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(waterMaterialData.normalMapData, waterMaterialData.width, waterMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	oceanMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(oceanMaterialData.normalMapData, oceanMaterialData.width, oceanMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -917,7 +917,7 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 		//Initialize the default ocean material.
 		constexpr uint8 RESOLUTION{ 32 };
 
-		WaterMaterialData data;
+		OceanMaterialData data;
 
 		data.mipmapLevels = 1;
 		data.width = RESOLUTION;

@@ -63,8 +63,6 @@
     <ClInclude Include="..\..\..\Include\Components\TransformComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\VegetationComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\VegetationCullingComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\WaterComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\WaterRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\SortingAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\BinaryFile.h" />
@@ -209,7 +207,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationProperties.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationTransformation.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\WaterUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BloomFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\CubeMapVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.h" />
@@ -248,6 +245,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\EnvironmentMaterialData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\OceanMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\ParticleMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\PhysicalMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\PhysicalModelData.h" />
@@ -257,7 +255,6 @@
     <ClInclude Include="..\..\..\Include\Resources\SoundBankData.h" />
     <ClInclude Include="..\..\..\Include\Resources\TerrainMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\VegetationMaterialData.h" />
-    <ClInclude Include="..\..\..\Include\Resources\WaterMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundBank.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />

@@ -18,6 +18,7 @@ class CameraEntity;
 class CPUTexture2D;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
+class OceanMaterialData;
 class ParticleMaterialData;
 class ParticleSystemEntity;
 class ParticleSystemProperties;
@@ -39,8 +40,6 @@ class VegetationMaterial;
 class VegetationMaterialData;
 class VegetationProperties;
 class VegetationTransformation;
-class WaterMaterialData;
-class WaterUniformData;
 
 class RenderingSystem final
 {
@@ -194,19 +193,19 @@ public:
 	void UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT;
 
 	/*
-	*	Returns the current dynamic uniform data descriptor set.
+	*	Returns the current dynamic uniform data render data table.
 	*/
-	RenderDataTableHandle GetCurrentDynamicUniformDataDescriptorSet() const NOEXCEPT;
+	RenderDataTableHandle GetCurrentDynamicUniformDataRenderDataTable() const NOEXCEPT;
 
 	/*
-	*	Returns the current environment data descriptor set.
+	*	Returns the current environment render data table.
 	*/
-	RenderDataTableHandle GetCurrentEnvironmentDataDescriptorSet() const NOEXCEPT;
+	RenderDataTableHandle GetCurrentEnvironmentRenderDataTable() const NOEXCEPT;
 
 	/*
-	*	Returns the current ocean descriptor set.
+	*	Returns the current ocean render data table.
 	*/
-	RenderDataTableHandle GetCurrentOceanDescriptorSet() const NOEXCEPT;
+	RenderDataTableHandle GetCurrentOceanRenderDataTable() const NOEXCEPT;
 
 	/*
 	*	Returns the given common render data table layout.
@@ -221,7 +220,7 @@ public:
 	/*
 	*	Creates an ocean material.
 	*/
-	void CreateOceanMaterial(const WaterMaterialData &waterMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT;
+	void CreateOceanMaterial(const OceanMaterialData &oceanMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT;
 
 	/*
 	*	Creates a physical model.

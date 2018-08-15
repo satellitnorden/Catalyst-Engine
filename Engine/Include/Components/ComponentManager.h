@@ -20,8 +20,6 @@
 #include <Components/TransformComponent.h>
 #include <Components/VegetationComponent.h>
 #include <Components/VegetationCullingComponent.h>
-#include <Components/WaterComponent.h>
-#include <Components/WaterRenderComponent.h>
 
 //Forward declarations.
 class Entity;
@@ -400,42 +398,5 @@ private:
 
 	//The vegetation culling components.
 	static DynamicArray<VegetationCullingComponent> vegetationCullingComponents;
-
-public:
-
-	/*							*/
-	/*	Water Entity Interface.	*/
-	/*							*/
-
-	/*
-	*	Returns a new components index for water entities.
-	*/
-	static uint64 GetNewWaterComponentsIndex() NOEXCEPT;
-
-	/*
-	*	Returns the number of water components.
-	*/
-	static uint64 GetNumberOfWaterComponents() NOEXCEPT;
-
-	/*
-	*	Returns the water components.
-	*/
-	static WaterComponent *RESTRICT GetWaterComponents() NOEXCEPT;
-
-	/*
-	*	Returns the water render components.
-	*/
-	static WaterRenderComponent *RESTRICT GetWaterRenderComponents() NOEXCEPT;
-
-private:
-
-	//The number of water components.
-	static std::atomic<uint64> numberOfWaterComponents;
-
-	//The water components.
-	static DynamicArray<WaterComponent> waterComponents;
-
-	//The water render components.
-	static DynamicArray<WaterRenderComponent> waterRenderComponents;
 
 };

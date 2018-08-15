@@ -237,12 +237,6 @@
     <ClInclude Include="..\..\..\Include\Components\VegetationCullingComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\WaterComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\WaterRenderComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\BinaryFile.h">
       <Filter>Core\Include</Filter>
     </ClInclude>
@@ -442,9 +436,6 @@
       <Filter>Resources\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\VegetationMaterialData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\WaterMaterialData.h">
       <Filter>Resources\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Sound\SoundBank.h">
@@ -717,9 +708,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationTransformation.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\WaterUniformData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BloomFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
@@ -854,6 +842,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h">
       <Filter>Platform\Include\Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\OceanMaterialData.h">
+      <Filter>Resources\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

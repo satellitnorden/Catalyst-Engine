@@ -118,7 +118,7 @@ public:
 	/*
 	*	Returns the current dynamic uniform data descriptor set.
 	*/
-	VulkanDescriptorSet *RESTRICT GetCurrentDynamicUniformDataDescriptorSet() NOEXCEPT
+	VulkanDescriptorSet *RESTRICT GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT
 	{
 		//Return the current dynamic uniform data buffer.
 		return &dynamicUniformDataDescriptorSets[currentFrame];
@@ -136,7 +136,7 @@ public:
 	/*
 	*	Returns the current ocean descriptor set.
 	*/
-	VulkanDescriptorSet *RESTRICT GetCurrentOceanDescriptorSet() NOEXCEPT { return &oceanDescriptorSets[currentFrame]; }
+	VulkanDescriptorSet *RESTRICT GetCurrentOceanRenderDataTable() NOEXCEPT { return &oceanDescriptorSets[currentFrame]; }
 
 private:
 
