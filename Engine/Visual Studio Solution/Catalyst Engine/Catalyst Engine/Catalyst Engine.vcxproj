@@ -54,8 +54,6 @@
     <ClInclude Include="..\..\..\Include\Components\ParticleSystemComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\ParticleSystemRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\PointLightComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\Sound2DComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\Sound3DComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\SpotLightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\StaticPhysicalRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\TerrainComponent.h" />
@@ -94,8 +92,6 @@
     <ClInclude Include="..\..\..\Include\Entities\InstancedPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\ParticleSystemEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\PointLightEntity.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Sound2DEntity.h" />
-    <ClInclude Include="..\..\..\Include\Entities\Sound3DEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\SpotLightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\StaticPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\TerrainEntity.h" />
@@ -252,10 +248,8 @@
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoader.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoaderUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h" />
-    <ClInclude Include="..\..\..\Include\Resources\SoundBankData.h" />
     <ClInclude Include="..\..\..\Include\Resources\TerrainMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\VegetationMaterialData.h" />
-    <ClInclude Include="..\..\..\Include\Sound\SoundBank.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\EngineSystem.h" />
@@ -275,8 +269,6 @@
     <ClCompile Include="..\..\..\Source\Entities\InstancedPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\ParticleSystemEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\PointLightEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\Sound2DEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\Sound3DEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\SpotLightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\StaticPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\TerrainEntity.cpp" />

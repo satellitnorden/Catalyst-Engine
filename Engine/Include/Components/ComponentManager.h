@@ -11,8 +11,6 @@
 #include <Components/ParticleSystemComponent.h>
 #include <Components/ParticleSystemRenderComponent.h>
 #include <Components/PointLightComponent.h>
-#include <Components/Sound2DComponent.h>
-#include <Components/Sound3DComponent.h>
 #include <Components/SpotLightComponent.h>
 #include <Components/StaticPhysicalRenderComponent.h>
 #include <Components/TerrainComponent.h>
@@ -224,64 +222,6 @@ private:
 
 	//The point light components.
 	static DynamicArray<PointLightComponent> pointLightComponents;
-
-public:
-
-	/*								*/
-	/*	Sound 2D Entity Interface.	*/
-	/*								*/
-
-	/*
-	*	Returns a new components index for sound 2D entities.
-	*/
-	static uint64 GetNewSound2DComponentsIndex() NOEXCEPT;
-
-	/*
-	*	Returns the number of sound 2D components.
-	*/
-	static uint64 GetNumberOfSound2DComponents() NOEXCEPT;
-
-	/*
-	*	Returns the sound 2D components.
-	*/
-	static Sound2DComponent *RESTRICT GetSound2DComponents() NOEXCEPT;
-
-private:
-
-	//The number of sound 2D components.
-	static std::atomic<uint64> numberOfSound2DComponents;
-
-	//The sound 2D components.
-	static DynamicArray<Sound2DComponent> sound2DComponents;
-
-public:
-
-	/*								*/
-	/*	Sound 3D Entity Interface.	*/
-	/*								*/
-
-	/*
-	*	Returns a new components index for sound 3D entities.
-	*/
-	static uint64 GetNewSound3DComponentsIndex() NOEXCEPT;
-
-	/*
-	*	Returns the number of sound 3D components.
-	*/
-	static uint64 GetNumberOfSound3DComponents() NOEXCEPT;
-
-	/*
-	*	Returns the sound 3D components.
-	*/
-	static Sound3DComponent *RESTRICT GetSound3DComponents() NOEXCEPT;
-
-private:
-
-	//The number of sound 3D components.
-	static std::atomic<uint64> numberOfSound3DComponents;
-
-	//The sound 3D components.
-	static DynamicArray<Sound3DComponent> sound3DComponents;
 
 public:
 

@@ -26,12 +26,6 @@ DynamicArray<ParticleSystemRenderComponent> ComponentManager::particleSystemRend
 std::atomic<uint64> ComponentManager::numberOfPointLightComponents{ 0 };
 DynamicArray<PointLightComponent> ComponentManager::pointLightComponents;
 
-std::atomic<uint64> ComponentManager::numberOfSound2DComponents{ 0 };
-DynamicArray<Sound2DComponent> ComponentManager::sound2DComponents;
-
-std::atomic<uint64> ComponentManager::numberOfSound3DComponents{ 0 };
-DynamicArray<Sound3DComponent> ComponentManager::sound3DComponents;
-
 std::atomic<uint64> ComponentManager::numberOfSpotLightComponents{ 0 };
 DynamicArray<SpotLightComponent> ComponentManager::spotLightComponents;
 
@@ -253,66 +247,6 @@ PointLightComponent *RESTRICT ComponentManager::GetPointLightComponents() NOEXCE
 {
 	//Return the point light components.
 	return pointLightComponents.Data();
-}
-
-/*
-*	Returns a new components index for sound 2D entities.
-*/
-uint64 ComponentManager::GetNewSound2DComponentsIndex() NOEXCEPT
-{
-	//Create the relevant components.
-	sound2DComponents.EmplaceSlow();
-
-	//Return the new index.
-	return numberOfSound2DComponents++;
-}
-
-/*
-*	Returns the number of sound 2D components.
-*/
-uint64 ComponentManager::GetNumberOfSound2DComponents() NOEXCEPT
-{
-	//Return the number of sound 2D components.
-	return numberOfSound2DComponents;
-}
-
-/*
-*	Returns the sound 2D components.
-*/
-Sound2DComponent *RESTRICT ComponentManager::GetSound2DComponents() NOEXCEPT
-{
-	//Return the sound 2D components.
-	return sound2DComponents.Data();
-}
-
-/*
-*	Returns a new components index for sound 3D entities.
-*/
-uint64 ComponentManager::GetNewSound3DComponentsIndex() NOEXCEPT
-{
-	//Create the relevant components.
-	sound3DComponents.EmplaceSlow();
-
-	//Return the new index.
-	return numberOfSound3DComponents++;
-}
-
-/*
-*	Returns the number of sound 3D components.
-*/
-uint64 ComponentManager::GetNumberOfSound3DComponents() NOEXCEPT
-{
-	//Return the number of sound 3D components.
-	return numberOfSound3DComponents;
-}
-
-/*
-*	Returns the sound 3D components.
-*/
-Sound3DComponent *RESTRICT ComponentManager::GetSound3DComponents() NOEXCEPT
-{
-	//Return the sound 3D components.
-	return sound3DComponents.Data();
 }
 
 /*

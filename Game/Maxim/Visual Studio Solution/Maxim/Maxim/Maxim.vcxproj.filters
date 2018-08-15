@@ -42,12 +42,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\PointLightEntity.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Sound2DEntity.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Sound3DEntity.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\SpotLightEntity.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>

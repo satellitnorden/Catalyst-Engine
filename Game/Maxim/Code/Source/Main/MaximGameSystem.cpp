@@ -17,7 +17,6 @@
 #include <Systems/EngineSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
-#include <Systems/SoundSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(MaximGameSystem);
@@ -36,9 +35,6 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	//Set it as the active camera.
 	RenderingSystem::Instance->SetActiveCamera(camera);
-
-	//Set it as the active listener.
-	SoundSystem::Instance->SetActiveListener(camera);
 
 	//Create something to look at.
 	{

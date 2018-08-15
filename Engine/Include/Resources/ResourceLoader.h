@@ -16,9 +16,6 @@
 //Resources.
 #include <Resources/ResourcesCore.h>
 
-//Sound.
-#include <Sound/SoundBank.h>
-
 //Forward declarations.
 class Semaphore;
 
@@ -84,9 +81,6 @@ private:
 	//Container for all physical models.
 	static Map<HashString, PhysicalModel> physicalModels;
 
-	//Container for all sound banks.
-	static Map<HashString, SoundBank> soundBanks;
-
 	//Container for all terrain materials.
 	static Map<HashString, TerrainMaterial> terrainMaterials;
 
@@ -122,11 +116,6 @@ private:
 	*	Given a file, load a physical model.
 	*/
 	static void LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
-
-	/*
-	*	Given a file, load a sound bank.
-	*/
-	static void LoadSoundBank(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a terrain material.

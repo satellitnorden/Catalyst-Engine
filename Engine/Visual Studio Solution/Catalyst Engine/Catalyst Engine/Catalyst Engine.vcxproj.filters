@@ -210,12 +210,6 @@
     <ClInclude Include="..\..\..\Include\Components\PointLightComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Sound2DComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\Sound3DComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\SpotLightComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
@@ -324,12 +318,6 @@
     <ClInclude Include="..\..\..\Include\Entities\PointLightEntity.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Sound2DEntity.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Sound3DEntity.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\SpotLightEntity.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
@@ -429,17 +417,11 @@
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h">
       <Filter>Resources\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\SoundBankData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\TerrainMaterialData.h">
       <Filter>Resources\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\VegetationMaterialData.h">
       <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Sound\SoundBank.h">
-      <Filter>Sound\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h">
       <Filter>Sound\Include</Filter>
@@ -867,12 +849,6 @@
       <Filter>Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\PointLightEntity.cpp">
-      <Filter>Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\Sound2DEntity.cpp">
-      <Filter>Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\Sound3DEntity.cpp">
       <Filter>Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\SpotLightEntity.cpp">
