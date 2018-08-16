@@ -31,7 +31,7 @@ public:
 				//Compare the string against each other. If they match, it means there's a duplicate the should be removed.
 				if (strcmp(testStrings[i], testStrings[j]) == 0)
 				{
-					PRINT_TO_CONSOLE(testStrings[i] << " is duplicated!");
+					PRINT_TO_OUTPUT(testStrings[i] << " is duplicated!");
 
 					BREAKPOINT;
 				}
@@ -55,7 +55,7 @@ public:
 		float collisionPercent{ static_cast<float>(numberOfCollisions) / static_cast<float>(numberOfTestStrings) };
 		collisionPercent *= 100.0f;
 
-		PRINT_TO_CONSOLE("Out of " << numberOfTestStrings << " hashed strings, " << collisionPercent << "% of them were collisions.");
+		PRINT_TO_OUTPUT("Out of " << numberOfTestStrings << " hashed strings, " << collisionPercent << "% of them were collisions.");
 		
 		BREAKPOINT;
 	}
@@ -99,7 +99,7 @@ public:
 		float collisionPercent{ static_cast<float>(numberOfCollisions) / static_cast<float>(iterations) };
 		collisionPercent *= 100.0f;
 
-		PRINT_TO_CONSOLE("Out of " << iterations << " hashed strings, " << collisionPercent << "% of them were collisions.");
+		PRINT_TO_OUTPUT("Out of " << iterations << " hashed strings, " << collisionPercent << "% of them were collisions.");
 
 		BREAKPOINT;
 	}

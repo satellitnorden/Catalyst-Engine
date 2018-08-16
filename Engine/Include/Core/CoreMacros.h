@@ -4,7 +4,7 @@
 *	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.
 */
 #if !defined(CATALYST_FINAL)
-	#define ASSERT(condition, message) if (!(condition)) { PRINT_TO_CONSOLE(message); BREAKPOINT; }
+	#define ASSERT(condition, message) if (!(condition)) { PRINT_TO_OUTPUT(message); BREAKPOINT; }
 #else
 	#define ASSERT(condition, message) 
 #endif
@@ -23,7 +23,7 @@
 		averageDuration += std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - timeBeforeFunction).count(); 		\
 		++iterations;																																			\
 		float duration = static_cast<float>(averageDuration / iterations) / 1'000.0f;																			\
-		PRINT_TO_CONSOLE(message << " - " << duration << " milliseconds.");																						\
+		PRINT_TO_OUTPUT(message << " - " << duration << " milliseconds.");																						\
 	}
 #else
 	#define CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE(message, function) function;
@@ -45,10 +45,10 @@
 #define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance = new SingletonClass;
 
 /*
-*	Prints a message to the console in non-final builds.
+*	Prints a message to the output in non-final builds.
 */
 #if !defined(CATALYST_FINAL)
-	#define PRINT_TO_CONSOLE(message) std::cout << message << std::endl;
+	#define PRINT_TO_OUTPUT(message) { std::ostringstream output; output << message << std::endl; OutputDebugString(output.str().c_str()); }
 #endif
 
 /*

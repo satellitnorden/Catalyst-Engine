@@ -18,76 +18,76 @@
 */
 static void PrintResultAndBreak(const char *const RESTRICT function, const VkResult result) NOEXCEPT
 {
-	PRINT_TO_CONSOLE(function << " failed.");
+	PRINT_TO_OUTPUT(function << " failed.");
 
 	switch (result)
 	{
 		default:
 		{
-			PRINT_TO_CONSOLE("Could not find a VkResult case for this result");
+			PRINT_TO_OUTPUT("Could not find a VkResult case for this result");
 
 			break;
 		}
 
 		case VK_ERROR_DEVICE_LOST:
 		{
-			PRINT_TO_CONSOLE("Result was VK_ERROR_DEVICE_LOST.");
+			PRINT_TO_OUTPUT("Result was VK_ERROR_DEVICE_LOST.");
 
 			break;
 		}
 
 		case VK_ERROR_INITIALIZATION_FAILED:
 		{
-			PRINT_TO_CONSOLE("Result was VK_ERROR_INITIALIZATION_FAILED.");
+			PRINT_TO_OUTPUT("Result was VK_ERROR_INITIALIZATION_FAILED.");
 
 			break;
 		}
 
 		case VK_ERROR_MEMORY_MAP_FAILED:
 		{
-			PRINT_TO_CONSOLE("Result was VK_ERROR_MEMORY_MAP_FAILED.");
+			PRINT_TO_OUTPUT("Result was VK_ERROR_MEMORY_MAP_FAILED.");
 
 			break;
 		}
 
 		case VK_ERROR_OUT_OF_DATE_KHR:
 		{
-			PRINT_TO_CONSOLE("Result was VK_ERROR_OUT_OF_DATE_KHR.");
+			PRINT_TO_OUTPUT("Result was VK_ERROR_OUT_OF_DATE_KHR.");
 
 			break;
 		}
 
 		case VK_ERROR_OUT_OF_DEVICE_MEMORY:
 		{
-			PRINT_TO_CONSOLE("Result was VK_ERROR_OUT_OF_DEVICE_MEMORY.");
+			PRINT_TO_OUTPUT("Result was VK_ERROR_OUT_OF_DEVICE_MEMORY.");
 
 			break;
 		}
 
 		case VK_ERROR_OUT_OF_HOST_MEMORY:
 		{
-			PRINT_TO_CONSOLE("Result was VK_ERROR_OUT_OF_HOST_MEMORY.");
+			PRINT_TO_OUTPUT("Result was VK_ERROR_OUT_OF_HOST_MEMORY.");
 
 			break;
 		}
 
 		case VK_ERROR_OUT_OF_POOL_MEMORY_KHR:
 		{
-			PRINT_TO_CONSOLE("Result was VK_ERROR_OUT_OF_POOL_MEMORY_KHR.");
+			PRINT_TO_OUTPUT("Result was VK_ERROR_OUT_OF_POOL_MEMORY_KHR.");
 
 			break;
 		}
 
 		case VK_SUCCESS:
 		{
-			PRINT_TO_CONSOLE("Result was VK_SUCCESS.");
+			PRINT_TO_OUTPUT("Result was VK_SUCCESS.");
 
 			break;
 		}
 
 		case VK_TIMEOUT:
 		{
-			PRINT_TO_CONSOLE("Result was VK_TIMEOUT.");
+			PRINT_TO_OUTPUT("Result was VK_TIMEOUT.");
 
 			break;
 		}

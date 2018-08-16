@@ -43,6 +43,8 @@ MAIN_FUNCTION
 	//Main game loop.
 	while (!EngineSystem::Instance->ShouldTerminate())
 	{
+		CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game Loop",
+
 		//Calculate the delta time.
 		const float deltaTime{ deltaTimer.Update() };
 
@@ -51,6 +53,8 @@ MAIN_FUNCTION
 
 		//Update the engine system.
 		EngineSystem::Instance->UpdateSystemSynchronous(deltaTime);
+
+		);
 	}
 
 	//Release the game system.

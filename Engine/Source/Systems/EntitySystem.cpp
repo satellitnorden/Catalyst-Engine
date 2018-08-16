@@ -142,7 +142,7 @@ void EntitySystem::InitializeEntity(EntityInitializationData* const RESTRICT dat
 #if !defined(CATALYST_FINAL)
 		default:
 		{
-			PRINT_TO_CONSOLE("Invalid entity type!");
+			PRINT_TO_OUTPUT("Invalid entity type!");
 
 			BREAKPOINT;
 		}
@@ -225,7 +225,7 @@ void EntitySystem::TerminateEntity(EntityTerminationData* const RESTRICT data) N
 #if !defined(CATALYST_FINAL)
 		default:
 		{
-			PRINT_TO_CONSOLE("Invalid entity type!");
+			PRINT_TO_OUTPUT("Invalid entity type!");
 
 			BREAKPOINT;
 		}
