@@ -272,7 +272,8 @@ public:
 																	const VkPipelineStageFlags sourceStageMask,
 																	const VkPipelineStageFlags destinationStageMask,
 																	const VkAccessFlags sourceAccessMask,
-																	const VkAccessFlags destinationAccessMask) NOEXCEPT
+																	const VkAccessFlags destinationAccessMask,
+																	const VkDependencyFlags dependencyFlags) NOEXCEPT
 	{
 		return VkSubpassDependency
 		{
@@ -282,7 +283,7 @@ public:
 			destinationStageMask,
 			sourceAccessMask,
 			destinationAccessMask,
-			0 //dependencyFlags
+			dependencyFlags
 		};
 	}
 
