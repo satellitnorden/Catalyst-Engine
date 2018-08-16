@@ -83,9 +83,6 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize the Vulkan frame data.
 	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::DynamicUniformData)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Environment)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Ocean)]);
-
-	//Initialize the Vulkan render passes.
-	InitializeVulkanRenderPasses();
 }
 
 /*
@@ -1140,8 +1137,33 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
 		renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
-		renderPassParameters.subpassDependencyCount = 0;
-		renderPassParameters.subpassDependencies = nullptr;
+
+		StaticArray<VkSubpassDependency, 3> subpassDependencies
+		{
+			VulkanUtilities::CreateSubpassDependency(	0,
+														1,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	1,
+														2,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	2,
+														3,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT)
+		};
+
+		renderPassParameters.subpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
+		renderPassParameters.subpassDependencies = subpassDependencies.Data();
 
 		vulkanRenderPasses[INDEX(RenderPassMainStage::SceneBuffer)] = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
