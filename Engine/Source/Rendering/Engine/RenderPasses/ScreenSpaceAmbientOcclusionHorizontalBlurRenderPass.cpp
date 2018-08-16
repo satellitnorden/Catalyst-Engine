@@ -39,6 +39,9 @@ void ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::InitializeInternal() N
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::SceenSpaceAmbientOcclusionHorizontalBlur);
 
+	//Set the sub stage index.
+	SetSubStageIndex(0);
+
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);

@@ -64,6 +64,11 @@ public:
 	RenderPassSubStage GetSubStage() const NOEXCEPT { return subStage; }
 
 	/*
+	*	Returns the sub stage index.
+	*/
+	uint32 GetSubStageIndex() const NOEXCEPT { return subStageIndex; }
+
+	/*
 	*	Returns the vertex shader.
 	*/
 	Shader GetVertexShader() const NOEXCEPT { return vertexShader; }
@@ -209,6 +214,11 @@ protected:
 	*	Sets the sub stage.
 	*/
 	void SetSubStage(const RenderPassSubStage newSubStage) NOEXCEPT { subStage = newSubStage; }
+
+	/*
+	*	Sets the sub stage index.
+	*/
+	void SetSubStageIndex(const uint32 newSubStageIndex) NOEXCEPT { subStageIndex = newSubStageIndex; }
 
 	/*
 	*	Sets the vertex shader.
@@ -375,6 +385,9 @@ private:
 
 	//The sub stage.
 	RenderPassSubStage subStage;
+
+	//The sub stage index.
+	uint32 subStageIndex;
 
 	//The vertex shader.
 	Shader vertexShader;

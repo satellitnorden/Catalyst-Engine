@@ -516,6 +516,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	if (renderPass->GetTessellationEvaluationShader() != Shader::None) parameters.shaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetTessellationEvaluationShader())]);
 	if (renderPass->GetGeometryShader() != Shader::None) parameters.shaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetGeometryShader())]);
 	if (renderPass->GetFragmentShader() != Shader::None) parameters.shaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetFragmentShader())]);
+	parameters.subpass = renderPass->GetSubStageIndex();
 	parameters.topology = VulkanTranslationUtilities::GetVulkanTopology(renderPass->GetTopology());
 
 	DynamicArray<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
@@ -541,15 +542,29 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	parameters.vertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
 	parameters.viewportExtent = VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height };
 
+	if (renderPass->GetMainStage() != RenderPassMainStage::None)
+	{
+		parameters.renderPass = vulkanRenderPasses[INDEX(renderPass->GetMainStage())];
+	}
+
 	//Create the pipeline!
 	pipelines[INDEX(renderPass->GetSubStage())] = VulkanInterface::Instance->CreatePipeline(parameters);
 
 	//Update the Vulkan render pass data.
-	vulkanRenderPassData[INDEX(renderPass->GetSubStage())].framebuffers.Reserve(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().GetFrameBuffers().Size());
-
-	for (const VulkanFramebuffer& framebuffer : pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().GetFrameBuffers())
+	if (renderPass->GetMainStage() != RenderPassMainStage::None)
 	{
-		vulkanRenderPassData[INDEX(renderPass->GetSubStage())].framebuffers.EmplaceFast(framebuffer.Get());
+		vulkanRenderPassData[INDEX(renderPass->GetSubStage())].framebuffers.Reserve(1);
+		vulkanRenderPassData[INDEX(renderPass->GetSubStage())].framebuffers.EmplaceFast(vulkanFramebuffers[INDEX(renderPass->GetMainStage())]->Get());
+	}
+
+	else
+	{
+		vulkanRenderPassData[INDEX(renderPass->GetSubStage())].framebuffers.Reserve(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().GetFrameBuffers().Size());
+
+		for (const VulkanFramebuffer& framebuffer : pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().GetFrameBuffers())
+		{
+			vulkanRenderPassData[INDEX(renderPass->GetSubStage())].framebuffers.EmplaceFast(framebuffer.Get());
+		}
 	}
 
 	vulkanRenderPassData[INDEX(renderPass->GetSubStage())].pipeline = pipelines[INDEX(renderPass->GetSubStage())]->Get();

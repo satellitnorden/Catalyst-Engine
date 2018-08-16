@@ -37,7 +37,7 @@ public:
 	/*
 	*	Begins this Vulkan command buffer as a secondary command buffer.
 	*/
-	void BeginSecondary(const VkCommandBufferUsageFlags commandBufferUsageFlags, const VkRenderPass renderPass, const VkFramebuffer framebuffer) NOEXCEPT;
+	void BeginSecondary(const VkCommandBufferUsageFlags commandBufferUsageFlags, const VkRenderPass renderPass, const uint32 subpass, const VkFramebuffer framebuffer) NOEXCEPT;
 
 	/*
 	*	Records a begin render pass command.
@@ -142,7 +142,7 @@ private:
 	/*
 	*	Creates a command buffer inheritance info.
 	*/
-	void CreateCommandBufferInheritanceInfo(VkCommandBufferInheritanceInfo &commandBufferInheritanceInfo, const VkRenderPass renderPass, const VkFramebuffer framebuffer) const NOEXCEPT;
+	void CreateCommandBufferInheritanceInfo(VkCommandBufferInheritanceInfo &commandBufferInheritanceInfo, const VkRenderPass renderPass, const uint32 subpass, const VkFramebuffer framebuffer) const NOEXCEPT;
 
 	/*
 	*	Creates a secondary command buffer begin info.

@@ -68,6 +68,9 @@ public:
 	//The shader modules.
 	DynamicArray<VulkanShaderModule *RESTRICT> shaderModules{};
 
+	//The subpass.
+	uint32 subpass;
+
 	//The topology of the pipeline.
 	VkPrimitiveTopology topology;
 

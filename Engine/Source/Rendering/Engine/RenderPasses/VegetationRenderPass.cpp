@@ -38,6 +38,9 @@ void VegetationRenderPass::InitializeInternal() NOEXCEPT
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::Vegetation);
 
+	//Set the sub stage index.
+	SetSubStageIndex(3);
+
 	//Set the shaders.
 	SetVertexShader(Shader::VegetationVertex);
 	SetTessellationControlShader(Shader::None);

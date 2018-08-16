@@ -39,11 +39,11 @@ void VulkanCommandBuffer::BeginPrimary(const VkCommandBufferUsageFlags commandBu
 /*
 *	Begins this Vulkan command buffer as a secondary command buffer.
 */
-void VulkanCommandBuffer::BeginSecondary(const VkCommandBufferUsageFlags commandBufferUsageFlags, const VkRenderPass renderPass, const VkFramebuffer framebuffer) NOEXCEPT
+void VulkanCommandBuffer::BeginSecondary(const VkCommandBufferUsageFlags commandBufferUsageFlags, const VkRenderPass renderPass, const uint32 subpass, const VkFramebuffer framebuffer) NOEXCEPT
 {
 	//Create the command buffer inheritance info.
 	VkCommandBufferInheritanceInfo commandBufferInheritanceInfo;
-	CreateCommandBufferInheritanceInfo(commandBufferInheritanceInfo, renderPass, framebuffer);
+	CreateCommandBufferInheritanceInfo(commandBufferInheritanceInfo, renderPass, subpass, framebuffer);
 
 	//Create the command buffer begin info.
 	VkCommandBufferBeginInfo commandBufferBeginInfo;
@@ -246,12 +246,12 @@ void VulkanCommandBuffer::CreatePrimaryCommandBufferBeginInfo(VkCommandBufferBeg
 /*
 *	Creates a command buffer inheritance info.
 */
-void VulkanCommandBuffer::CreateCommandBufferInheritanceInfo(VkCommandBufferInheritanceInfo &commandBufferInheritanceInfo, const VkRenderPass renderPass, const VkFramebuffer framebuffer) const NOEXCEPT
+void VulkanCommandBuffer::CreateCommandBufferInheritanceInfo(VkCommandBufferInheritanceInfo &commandBufferInheritanceInfo, const VkRenderPass renderPass, const uint32 subpass, const VkFramebuffer framebuffer) const NOEXCEPT
 {
 	commandBufferInheritanceInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO;
 	commandBufferInheritanceInfo.pNext = nullptr;
 	commandBufferInheritanceInfo.renderPass = renderPass;
-	commandBufferInheritanceInfo.subpass = 0;
+	commandBufferInheritanceInfo.subpass = subpass;
 	commandBufferInheritanceInfo.framebuffer = framebuffer;
 	commandBufferInheritanceInfo.occlusionQueryEnable = VK_FALSE;
 	commandBufferInheritanceInfo.queryFlags = 0;
