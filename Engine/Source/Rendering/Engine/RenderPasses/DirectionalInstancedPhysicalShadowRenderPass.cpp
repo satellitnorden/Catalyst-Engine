@@ -33,13 +33,13 @@ DirectionalInstancedPhysicalShadowRenderPass::DirectionalInstancedPhysicalShadow
 void DirectionalInstancedPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::None);
+	SetMainStage(RenderPassMainStage::DirectionalShadow);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::DirectionalInstancedPhysicalShadow);
 
 	//Set the sub stage index.
-	SetSubStageIndex(0);
+	SetSubStageIndex(2);
 
 	//Set the shaders.
 	SetVertexShader(Shader::DirectionalInstancedPhysicalShadowVertex);

@@ -1075,6 +1075,104 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 {
+	//Initialize the directional shadow render pass.
+	{
+		constexpr uint64 NUMBER_OF_DIRECTIONAL_SHADOW_SUBPASSES{ 3 };
+
+		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
+		constexpr uint32 SHADOW_MAP_INDEX{ 1 };
+
+		VulkanRenderPassCreationParameters renderPassParameters;
+
+		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
+		{
+			//Depth buffer.
+			VulkanUtilities::CreateAttachmentDescription(	depthBuffers[INDEX(DepthBuffer::DirectionalLight)]->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_CLEAR,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
+
+			//Shadow map.
+			VulkanUtilities::CreateAttachmentDescription(	VK_FORMAT_R32G32B32A32_SFLOAT,
+															VK_ATTACHMENT_LOAD_OP_CLEAR,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+		};
+
+		renderPassParameters.attachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters.attachmentDescriptions = attachmenDescriptions.Data();
+
+		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
+		{
+			VkAttachmentReference{ SHADOW_MAP_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+		};
+
+		constexpr VkAttachmentReference depthAttachmentReference{ DEPTH_BUFFER_INDEX, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
+
+		StaticArray<VkSubpassDescription, NUMBER_OF_DIRECTIONAL_SHADOW_SUBPASSES> subpassDescriptions;
+
+		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
+		{
+			subpassDescription = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			1,
+																			colorAttachmentReferences.Data(),
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
+		}
+
+		renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
+
+		StaticArray<VkSubpassDependency, 2> subpassDependencies
+		{
+			VulkanUtilities::CreateSubpassDependency(	0,
+														1,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	1,
+														2,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT)
+		};
+
+		renderPassParameters.subpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
+		renderPassParameters.subpassDependencies = subpassDependencies.Data();
+
+		vulkanRenderPasses[INDEX(RenderPassMainStage::DirectionalShadow)] = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+
+		//Create the framebuffer.
+		VulkanFramebufferCreationParameters framebufferParameters;
+
+		framebufferParameters.renderPass = vulkanRenderPasses[INDEX(RenderPassMainStage::DirectionalShadow)]->Get();
+		
+		StaticArray<VkImageView, 2> attachments
+		{
+			depthBuffers[INDEX(DepthBuffer::DirectionalLight)]->GetImageView(),
+			renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetImageView()
+		};
+
+		framebufferParameters.attachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters.attachments = attachments.Data();
+		framebufferParameters.extent = { EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution };
+
+		vulkanFramebuffers[INDEX(RenderPassMainStage::DirectionalShadow)] = VulkanInterface::Instance->CreateFramebuffer(framebufferParameters);
+	}
+
 	//Initialize the scene buffer render pass.
 	{
 		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 4 };
@@ -1189,7 +1287,6 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		VulkanFramebufferCreationParameters framebufferParameters;
 
 		framebufferParameters.renderPass = vulkanRenderPasses[INDEX(RenderPassMainStage::SceneBuffer)]->Get();
-		framebufferParameters.attachmentCount = 4;
 
 		StaticArray<VkImageView, 4> attachments
 		{
@@ -1199,6 +1296,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetImageView()
 		};
 
+		framebufferParameters.attachmentCount = static_cast<uint32>(attachments.Size());
 		framebufferParameters.attachments = attachments.Data();
 		framebufferParameters.extent = { GetResolution().width, GetResolution().height };
 

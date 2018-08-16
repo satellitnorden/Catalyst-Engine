@@ -33,6 +33,7 @@ using UniformBufferHandle = void *RESTRICT;
 enum class RenderPassMainStage : uint8
 {
 	None, //This will be removed once all the main stages are in place.
+	DirectionalShadow,
 	SceneBuffer,
 
 	NumberOfRenderPassMainStages
