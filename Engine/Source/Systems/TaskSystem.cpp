@@ -10,13 +10,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(TaskSystem);
 
-//Task system constants.
-namespace TaskSystemConstants
-{
-	//Denotes the maximum number of tasks that the engine system will itself fire off at any given time.
-	static constexpr uint32 NUMBER_OF_ENGINE_TASKS{ 32 };
-}
-
 /*
 *	Initializes the task system.
 */
@@ -32,15 +25,23 @@ void TaskSystem::InitializeSystem(const CatalystProjectMultithreadingConfigurati
 	//Set the number of task executors. Leave one slot open for the main thread and another slot open for the operating system.
 	numberOfTaskExecutors = numberOfHardwareThreads - 2;
 
-	//Initialize the task queue.
-	taskQueue.Initialize(numberOfTaskExecutors + TaskSystemConstants::NUMBER_OF_ENGINE_TASKS + multithreadingConfiguration.numberOfGameTasks);
-
 	//Kick off all task executor threads.
 	taskExecutorThreads.Reserve(numberOfTaskExecutors);
+	taskQueues.UpsizeSlow(numberOfTaskExecutors);
 
 	for (uint8 i = 0; i < numberOfTaskExecutors; ++i)
 	{
-		taskExecutorThreads.EmplaceFast(std::move(std::thread(&TaskSystem::ExecuteTaskExecutor, this)));
+		taskExecutorThreads.EmplaceFast(std::move(std::thread([](AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS> *const RESTRICT queue)
+		{
+			while (TaskSystem::Instance->ExecuteTasks())
+			{
+				//Try to pop a task from the task queue, and execute it if it succeeds.
+				if (Task *const RESTRICT *const RESTRICT newTask{ queue->Pop() })
+				{
+					(*newTask)->Execute();
+				}
+			}
+		}, &taskQueues[i])));
 	}
 }
 
@@ -53,7 +54,7 @@ void TaskSystem::ReleaseSystem() NOEXCEPT
 	executeTasks = false;
 
 	//Join all adventurer threads.
-	for (auto &taskExecutorThread : taskExecutorThreads)
+	for (std::thread &taskExecutorThread : taskExecutorThreads)
 	{
 		taskExecutorThread.join();
 	}
@@ -64,24 +65,13 @@ void TaskSystem::ReleaseSystem() NOEXCEPT
 */
 void TaskSystem::ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT
 {
+	static uint64 currentTaskQueue{ 0 };
+
+	currentTaskQueue = currentTaskQueue == numberOfTaskExecutors - 1 ? 0 : currentTaskQueue + 1;
+
 	//Reset the semaphore.
 	newTask->semaphore.Reset();
 
 	//Put the task into the task queue.
-	taskQueue.Push(newTask);
-}
-
-/*
-*	Executes a task executor.
-*/
-void TaskSystem::ExecuteTaskExecutor() NOEXCEPT
-{
-	while (executeTasks)
-	{
-		//Try to pop a task from the task queue, and execute it if it succeeds.
-		if (Task *const RESTRICT *const RESTRICT newTask{ taskQueue.Pop() })
-		{
-			(*newTask)->Execute();
-		}
-	}
+	taskQueues[currentTaskQueue].Push(newTask);
 }

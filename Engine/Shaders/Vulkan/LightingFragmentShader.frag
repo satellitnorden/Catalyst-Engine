@@ -61,6 +61,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 
 layout (early_fragment_tests) in;
 
+//Post processing data.
+layout (push_constant) uniform LightingData
+{
+    bool screenSpaceAmbientOcclusionEnabled;
+};
+
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
@@ -289,7 +295,7 @@ vec3 CalculatePointLight(int index)
 */
 void CalculateScreenSpaceAmbientOcclusion()
 {
-    screenSpaceAmbientOcclusion = texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate).r;
+    screenSpaceAmbientOcclusion = screenSpaceAmbientOcclusionEnabled ? texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate).r : 1.0f;
 }
 
 /*

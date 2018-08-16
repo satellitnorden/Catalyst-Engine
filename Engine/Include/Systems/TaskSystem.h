@@ -33,9 +33,9 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
-	*	Returns the number of task executors.
+	*	Returns whether or not tasks should be executed.
 	*/
-	uint32 GetNumberOfTaskExecutors() const NOEXCEPT { return numberOfTaskExecutors; }
+	bool ExecuteTasks() const NOEXCEPT { return executeTasks; }
 
 	/*
 	*	Executes a task.
@@ -44,11 +44,11 @@ public:
 
 private:
 
-	//Defines whether or not task executors should execute tasks.
-	bool executeTasks{ true };
+	//The maximum number of tasks.
+	static constexpr uint64 MAXIMUM_NUMBER_OF_TASKS{ 64 };
 
-	//The atomic queue in which to put tasks.
-	AtomicQueue<Task *RESTRICT> taskQueue;
+	//Denotes whether or not tasks should be executed.
+	bool executeTasks{ true };
 
 	//The number of task executors.
 	uint32 numberOfTaskExecutors;
@@ -56,9 +56,7 @@ private:
 	//Container for all task executor threads.
 	DynamicArray<std::thread> taskExecutorThreads;
 
-	/*
-	*	Executes a task executor.
-	*/
-	void ExecuteTaskExecutor() NOEXCEPT;
+	//Container for all atomic queues in which to put tasks in.
+	DynamicArray<AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS>> taskQueues;
 
 };

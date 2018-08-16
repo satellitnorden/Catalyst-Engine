@@ -4,6 +4,9 @@
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 
@@ -61,6 +64,10 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Environment));
 	AddRenderDataTableLayout(renderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(int32));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -133,6 +140,10 @@ void LightingRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetCurrentEnvironmentRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 2, renderDataTable);
+
+	//Pust constants.
+	const int32 screenSpaceAmbientOcclusionEnabled{ static_cast<bool>(RenderingConfigurationManager::Instance->GetScreenSpaceAmbientOcclusionEnabled()) };
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(int32), &screenSpaceAmbientOcclusionEnabled);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);
