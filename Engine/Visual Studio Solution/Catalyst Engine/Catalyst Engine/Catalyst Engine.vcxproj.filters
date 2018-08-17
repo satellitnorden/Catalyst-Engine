@@ -552,13 +552,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanUtilities.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomHorizontalBlurRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomVerticalBlurRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalInstancedPhysicalShadowRenderPass.h">
@@ -831,6 +825,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFramebufferCreationParameters.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\KawaseBlurFragmentShader.h">
+      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1082,13 +1079,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\PhysicalModel.cpp">
       <Filter>Rendering\Source\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomHorizontalBlurRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomVerticalBlurRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalInstancedPhysicalShadowRenderPass.cpp">
@@ -1171,6 +1162,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp">
       <Filter>Platform\Source\Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\KawaseBlurFragmentShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

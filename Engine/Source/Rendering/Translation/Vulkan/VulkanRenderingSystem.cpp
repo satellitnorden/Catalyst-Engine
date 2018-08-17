@@ -708,8 +708,7 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 	renderTargets[INDEX(RenderTarget::ScreenSpaceAmbientOcclusionIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::SceneIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::Scene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::Bloom)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::BloomIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::Bloom)] = VulkanInterface::Instance->CreateRenderTarget({ GetResolution().width / 1, GetResolution().height / 1 }, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::BlurIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::Blur)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 }
@@ -928,7 +927,14 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		VulkanShaderData::GetInstancedPhysicalVertexShaderData(data);
 		shaderModules[INDEX(Shader::InstancedPhysicalVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
-	
+
+	{
+		//Initialize the kawase blur shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetKawaseBlurFragmentShaderData(data);
+		shaderModules[INDEX(Shader::KawaseBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
 	{
 		//Initialize the lighting fragment shader module.
 		DynamicArray<byte> data;

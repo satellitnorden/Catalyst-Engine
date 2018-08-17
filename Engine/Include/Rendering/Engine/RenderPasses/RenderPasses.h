@@ -4,9 +4,7 @@
 #include <Core/EngineCore.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderPasses/BloomHorizontalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BloomRenderPass.h>
-#include <Rendering/Engine/RenderPasses/BloomVerticalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalInstancedPhysicalShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalStaticPhysicalShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalShadowRenderPass.h>

@@ -55,69 +55,40 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
-//Preprocessor defines.
-#define SHADOW_BIAS 0.0025f
-
-//Layout specification.
-layout (early_fragment_tests) in;
-
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D normalDirectionDepthTexture;
-layout (set = 1, binding = 1) uniform sampler2D directionalShadowMap;
+layout (set = 1, binding = 0) uniform sampler2D inputTexture;
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentColor;
+layout (location = 0) out vec4 fragment;
 
-//Globals.
-float fragmentDepth;
-vec3 fragmentWorldPosition;
+//Push constant
+layout (push_constant) uniform BlurData
+{
+    float radius;
+};
 
 /*
-*   Calculates the fragment world position.
+*   Calculates the blur.
 */
-vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
+vec4 CalculateBlur()
 {
-    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
-    vec3 fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, depth);
-    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
-    viewSpacePosition /= viewSpacePosition.w;
-    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
+    vec4 blurredFragment = vec4(0.0f);
 
-    return worldSpacePosition.xyz;
-}
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(-radius, -radius));
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(-radius, radius));
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(radius, radius));
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(radius, -radius));
 
-/*
-*   Returns the distance from camera multiplier.
-*/
-float GetDistanceToCameraMultiplier()
-{
-    vec3 distanceVector = cameraWorldPosition - fragmentWorldPosition;
-    float squaredDistance = distanceVector.x * distanceVector.x + distanceVector.y * distanceVector.y + distanceVector.z * distanceVector.z;
+    blurredFragment *= 0.25f;
 
-    return 1.0f - clamp(squaredDistance / 100000000.0f, 0.0f, 1.0f);
+    return blurredFragment;
 }
 
 void main()
 {
-    //Sample values from the textures.
-    vec4 normalDirectionDepthSampler = texture(normalDirectionDepthTexture, fragmentTextureCoordinate);
-
-    //Set the fragment depth.
-    fragmentDepth = normalDirectionDepthSampler.a;
-
-    //Calculate the world position of this fragment.
-    fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, fragmentDepth);
-
-    //Calculate the directional light screen space position.
-    vec4 directionalLightShadowMapCoordinate = directionalLightViewMatrix * vec4(fragmentWorldPosition, 1.0f);
-    directionalLightShadowMapCoordinate.xy = directionalLightShadowMapCoordinate.xy * 0.5f + 0.5f;
-
-    float directionalDepth = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy).r;
-    float compare = directionalLightShadowMapCoordinate.z - SHADOW_BIAS;
-
-    //Set the final fragment color.
-    fragmentColor = vec4(compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
+    //Write the fragment.
+    fragment = CalculateBlur();
 }

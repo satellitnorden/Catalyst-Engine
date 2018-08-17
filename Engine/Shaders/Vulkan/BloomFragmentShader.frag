@@ -55,6 +55,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Push constant
+layout (push_constant) uniform BloomData
+{
+    float radius;
+};
+
 //Layout specification.
 layout (early_fragment_tests) in;
 
@@ -76,21 +82,28 @@ float CalculateAverage(vec4 fragment)
 }
 
 /*
-*   Returns whether or not a fragment should bloom.
+*   Calculates the bloom at a given texture coordinate.
 */
-bool ShouldBloom(vec4 fragment)
+vec4 CalculateBloom(vec2 textureCoordinate)
 {
-    return fragment.x > 1.0f || fragment.y > 1.0f || fragment.z > 1.0f;
+    vec4 textureSampler = texture(sceneTexture, textureCoordinate);
+    float average = CalculateAverage(textureSampler);
+
+    return average > 1.0f ? vec4(textureSampler.rgb, average - 1.0f) : vec4(0.0f);
 }
+
 
 void main()
 {
-    //Sample the scene texture.
-    vec4 sceneTextureSampler = texture(sceneTexture, fragmentTextureCoordinate);
+    vec4 finalFragment = vec4(0.0f);
 
-    //Calculate the average.
-    float average = CalculateAverage(sceneTextureSampler);
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(-radius, -radius));
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(-radius, radius));
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(radius, radius));
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(radius, -radius));
+
+    finalFragment *= 0.25f;
 
     //Write the fragment.
-    fragment = average > 1.0f ? vec4(sceneTextureSampler.rgb, average - 1.0f) : vec4(0.0f);
+    fragment = finalFragment;
 }

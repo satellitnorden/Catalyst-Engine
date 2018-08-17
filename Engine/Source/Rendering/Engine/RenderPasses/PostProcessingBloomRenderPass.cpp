@@ -123,6 +123,14 @@ void PostProcessingBloomRenderPass::CreateRenderDataTable() NOEXCEPT
 */
 void PostProcessingBloomRenderPass::RenderInternal() NOEXCEPT
 {
+	//If the bloom doesn't have any strength, no need to render it.
+	if (PostProcessingManager::Instance->GetBloomStrength() == 0.0f)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 

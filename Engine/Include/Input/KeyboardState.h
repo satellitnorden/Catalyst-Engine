@@ -194,6 +194,14 @@ public:
 		return keyboardButtonStates[INDEX(button)];
 	}
 
+	/*
+	*	Returns the keyboard button state for the given keyboard button.
+	*/
+	KeyboardButtonState GetKeyboardButtonState(const KeyboardButton button) const NOEXCEPT
+	{
+		return keyboardButtonStates[INDEX(button)];
+	}
+
 private:
 
 	//The underlying keyboard button states.

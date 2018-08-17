@@ -1,6 +1,10 @@
 //Header file.
 #include <Rendering/Engine/RenderPasses/BloomRenderPass.h>
 
+//Managers.
+#include <Managers/PostProcessingManager.h>
+#include <Managers/RenderingConfigurationManager.h>
+
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
 
@@ -61,8 +65,12 @@ void BloomRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GaussianBlur));
 
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(float));
+
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetResolution() / 1);
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -114,6 +122,14 @@ void BloomRenderPass::CreateRenderDataTable() NOEXCEPT
 */
 void BloomRenderPass::RenderInternal() NOEXCEPT
 {
+	//If the bloom doesn't have any strength, no need to render it.
+	if (PostProcessingManager::Instance->GetBloomStrength() == 0.0f)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 
@@ -123,6 +139,10 @@ void BloomRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
+
+	//Push constants.
+	const float bloomRadius{ RenderingConfigurationManager::Instance->GetBloomRadius() };
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(float), &bloomRadius);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

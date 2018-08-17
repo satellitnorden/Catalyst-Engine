@@ -50,6 +50,11 @@ public:
 	*/
 	const GamepadState& GetCurrentGamepadState(uint8 index = 0) const NOEXCEPT { return currentGamepadStates[index]; }
 
+	/*
+	*	Returns the current keyboard state.
+	*/
+	RESTRICTED const KeyboardState *const RESTRICT GetCurrentKeyboardState() const NOEXCEPT { return &currentKeyboardState; }
+
 private:
 
 	//The update task.

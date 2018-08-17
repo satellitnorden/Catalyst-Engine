@@ -16,6 +16,7 @@
 //Systems.
 #include <Systems/EngineSystem.h>
 #include <Systems/EntitySystem.h>
+#include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
@@ -118,13 +119,11 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	//Create, uh, sun.
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
-	sun->SetIntensity(25.0f);
+	sun->SetIntensity(100.0f);
 	sun->Rotate(Vector3(-2.5f, 135.0f, 0.0f));
 
-#if defined(CATALYST_ANDROID)
 	//Disable screen space ambient occlusion.
 	RenderingConfigurationManager::Instance->SetScreenSpaceAmbientOcclusionEnabled(false);
-#endif
 }
 
 /*
@@ -134,6 +133,19 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
 	//Eh. Rotate the "sun".
 	sun->Rotate(Vector3(0.0f, 2.5f * deltaTime, 0.0f));
+
+	//Eh. Set bloom radius.
+	const KeyboardState *const RESTRICT keyboard{ InputSystem::Instance->GetCurrentKeyboardState() };
+
+	if (keyboard->GetKeyboardButtonState(KeyboardButton::UpArrow) == KeyboardButtonState::PressedHold)
+	{
+		RenderingConfigurationManager::Instance->SetBloomRadius(RenderingConfigurationManager::Instance->GetBloomRadius() + (deltaTime * 0.001f));
+	}
+
+	if (keyboard->GetKeyboardButtonState(KeyboardButton::DownArrow) == KeyboardButtonState::PressedHold)
+	{
+		RenderingConfigurationManager::Instance->SetBloomRadius(RenderingConfigurationManager::Instance->GetBloomRadius() - (deltaTime * 0.001f));
+	}
 }
 
 /*

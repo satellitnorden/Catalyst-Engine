@@ -6,6 +6,7 @@ glslangValidator.exe -V DirectionalShadowInstancedPhysicalVertexShader.vert -o		
 glslangValidator.exe -V DirectionalShadowTerrainTessellationEvaluationShader.tese -o	DirectionalShadowTerrainTessellationEvaluationShader.spv
 glslangValidator.exe -V GaussianBlurFragmentShader.frag -o				GaussianBlurFragmentShader.spv
 glslangValidator.exe -V InstancedPhysicalVertexShader.vert -o 				InstancedPhysicalVertexShader.spv
+glslangValidator.exe -V KawaseBlurFragmentShader.frag -o 				KawaseBlurFragmentShader.spv
 glslangValidator.exe -V LightingFragmentShader.frag -o 					LightingFragmentShader.spv
 glslangValidator.exe -V OceanFragmentShader.frag -o 					OceanFragmentShader.spv
 glslangValidator.exe -V ParticleSystemFragmentShader.frag -o 				ParticleSystemFragmentShader.spv
