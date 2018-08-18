@@ -43,6 +43,13 @@ static void PrintResultAndBreak(const char *const RESTRICT function, const VkRes
 			break;
 		}
 
+		case VK_ERROR_LAYER_NOT_PRESENT:
+		{
+			PRINT_TO_OUTPUT("Result was VK_ERROR_LAYER_NOT_PRESENT.");
+
+			break;
+		}
+
 		case VK_ERROR_MEMORY_MAP_FAILED:
 		{
 			PRINT_TO_OUTPUT("Result was VK_ERROR_MEMORY_MAP_FAILED.");
