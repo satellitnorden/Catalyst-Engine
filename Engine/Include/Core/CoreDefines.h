@@ -58,7 +58,7 @@
 *	Sets a breakpoint in the code in non-final builds.
 */
 #if !defined(CATALYST_FINAL)
-	#define BREAKPOINT
+	#define BREAKPOINT __builtin_trap()
 #else
 	#define BREAKPOINT #error "This should not be in final!"
 #endif
