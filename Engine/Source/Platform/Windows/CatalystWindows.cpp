@@ -131,4 +131,14 @@ void CatalystPlatform::Release() NOEXCEPT
 {
 
 }
+
+#if !defined(CATALYST_FINAL)
+/*
+*	Prints a string to output.
+*/
+void CatalystPlatform::PrintToOutput(const char *const RESTRICT message) NOEXCEPT
+{
+	OutputDebugString(message);
+}
+#endif
 #endif

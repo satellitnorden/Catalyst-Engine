@@ -48,7 +48,7 @@
 *	Prints a message to the output in non-final builds.
 */
 #if !defined(CATALYST_FINAL)
-	#define PRINT_TO_OUTPUT(message) { std::ostringstream output; output << message << std::endl; OutputDebugString(output.str().c_str()); }
+	#define PRINT_TO_OUTPUT(message) { std::ostringstream output; output << message << std::endl; CatalystPlatform::PrintToOutput(output.str().c_str()); }
 #endif
 
 /*

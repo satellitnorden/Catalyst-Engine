@@ -76,6 +76,13 @@ public:
 	*/
 	static void Release() NOEXCEPT;
 
+#if !defined(CATALYST_FINAL)
+	/*
+	*	Prints a string to output.
+	*/
+	static void PrintToOutput(const char *const RESTRICT message) NOEXCEPT;
+#endif
+
 };
 
 #endif

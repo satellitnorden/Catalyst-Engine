@@ -8,6 +8,8 @@
 //Systems.
 #include <Systems/EngineSystem.h>
 
+#include <android/log.h>
+
 //Static variable definitions.
 android_app *RESTRICT CatalystPlatform::app = nullptr;
 ANativeWindow *RESTRICT CatalystPlatform::window = nullptr;
@@ -105,4 +107,14 @@ void CatalystPlatform::Release() NOEXCEPT
 {
 
 }
+
+#if !defined(CATALYST_FINAL)
+/*
+*	Prints a string to output.
+*/
+void CatalystPlatform::PrintToOutput(const char *const RESTRICT message) NOEXCEPT
+{
+	__android_log_print(ANDROID_LOG_DEBUG, "Catalyst Engine:", "%s", message);
+}
+#endif
 #endif
