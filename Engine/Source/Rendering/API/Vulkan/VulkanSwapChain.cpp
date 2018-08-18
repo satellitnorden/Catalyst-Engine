@@ -162,8 +162,8 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapCh
 	else
 	{
 		swapChainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		swapChainCreateInfo.queueFamilyIndexCount = 0;
-		swapChainCreateInfo.pQueueFamilyIndices = nullptr;
+		swapChainCreateInfo.queueFamilyIndexCount = 1;
+		swapChainCreateInfo.pQueueFamilyIndices = queueFamilyIndices;
 	}
 
 	swapChainCreateInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
