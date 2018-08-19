@@ -124,12 +124,12 @@ void VulkanRenderPass::CreateAttachmentDescriptions(DynamicArray<VkAttachmentDes
 		attachmentDescriptions.EmplaceSlow(depthAttachmentDescription);
 	}
 
-	for (VkImageView imageView : vulkanPipelineCreationParameters.colorAttachments[0])
+	for (uint64 i = 0; i < vulkanPipelineCreationParameters.colorAttachments[0].Size(); ++i)
 	{
 		VkAttachmentDescription colorAttachmentDescription;
 
 		colorAttachmentDescription.flags = 0;
-		colorAttachmentDescription.format = vulkanPipelineCreationParameters.colorAttachmentFormat;
+		colorAttachmentDescription.format = vulkanPipelineCreationParameters.colorAttachmentFormats[i];
 		colorAttachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
 		colorAttachmentDescription.loadOp = vulkanPipelineCreationParameters.attachmentLoadOperator;
 		colorAttachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE;

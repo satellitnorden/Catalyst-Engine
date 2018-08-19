@@ -15,19 +15,9 @@ class VulkanRenderTarget final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanRenderTarget() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanRenderTarget() NOEXCEPT;
-
-	/*
 	*	Initializes this Vulkan render target.
 	*/
-	void Initialize(const VkExtent2D extent, const VkSamplerAddressMode addressMode) NOEXCEPT;
+	void Initialize(const VkExtent2D extent, const VkFormat format, const VkSamplerAddressMode addressMode) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan render target.
@@ -37,22 +27,32 @@ public:
 	/*
 	*	Returns the Vulkan image.
 	*/
-	const VkImage& GetImage() const NOEXCEPT { return vulkanImage; }
+	const VkImage GetImage() const NOEXCEPT { return vulkanImage; }
 
 	/*
 	*	Returns the Vulkan image view.
 	*/
-	const VkImageView& GetImageView() const NOEXCEPT { return vulkanImageView; }
+	const VkImageView GetImageView() const NOEXCEPT { return vulkanImageView; }
 
 	/*
 	*	Returns the Vulkan sampler.
 	*/
-	const VkSampler& GetSampler() const NOEXCEPT { return vulkanSampler; }
+	const VkSampler GetSampler() const NOEXCEPT { return vulkanSampler; }
 
 	/*
 	*	Returns the write descriptor set for this texture.
 	*/
 	VkWriteDescriptorSet GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT;
+
+	/*
+	*	Returns the extent of the render target.
+	*/
+	VkExtent2D GetExtent() const NOEXCEPT { return extent; }
+
+	/*
+	*	Returns the format of the render target.
+	*/
+	VkFormat GetFormat() const NOEXCEPT { return format; }
 
 private:
 
@@ -75,7 +75,10 @@ private:
 	VkWriteDescriptorSet vulkanWriteDescriptorSet;
 
 	//The extent of the image.
-	VkExtent2D imageExtent;
+	VkExtent2D extent;
+
+	//The format of the image.
+	VkFormat format;
 
 	/*
 	*	Creates the descriptor image info.

@@ -439,33 +439,35 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	if (renderPass->GetRenderTargets()[0] == RenderTarget::Screen)
 	{
 		parameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		parameters.colorAttachmentFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
 		parameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 		const DynamicArray<VkImageView> &swapchainImageViews{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
 		const uint64 swapchainImageViewsSize{ swapchainImageViews.Size() };
 
 		parameters.colorAttachments.UpsizeSlow(swapchainImageViewsSize);
+		parameters.colorAttachmentFormats.UpsizeSlow(swapchainImageViewsSize);
 
 		for (uint64 i = 0; i < swapchainImageViewsSize; ++i)
 		{
 			parameters.colorAttachments[i].Reserve(1);
 			parameters.colorAttachments[i].EmplaceFast(swapchainImageViews[i]);
+			parameters.colorAttachmentFormats[i] = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
 		}
 	}
 
 	else
 	{
 		parameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		parameters.colorAttachmentFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 		parameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		parameters.colorAttachments.UpsizeSlow(1);
 		parameters.colorAttachments[0].Reserve(renderPass->GetRenderTargets().Size());
+		parameters.colorAttachmentFormats.Reserve(renderPass->GetRenderTargets().Size());
 
 		for (const RenderTarget renderTarget : renderPass->GetRenderTargets())
 		{
 			parameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(renderTarget)]->GetImageView());
+			parameters.colorAttachmentFormats.EmplaceFast(renderTargets[INDEX(renderTarget)]->GetFormat());
 		}
 	}
 
@@ -699,14 +701,14 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 	depthBuffers[INDEX(DepthBuffer::SceneBuffer)] = VulkanInterface::Instance->CreateDepthBuffer(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
 
 	//Initialize all render targets.
-	renderTargets[INDEX(RenderTarget::DirectionalShadowMap)] = VulkanInterface::Instance->CreateRenderTarget({ EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution }, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
-	renderTargets[INDEX(RenderTarget::DirectionalShadow)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
-	renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
-	renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::ScreenSpaceAmbientOcclusion)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::SceneIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::Scene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::DirectionalShadowMap)] = VulkanInterface::Instance->CreateRenderTarget({ EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution }, VK_FORMAT_R32G32B32A32_SFLOAT,VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	renderTargets[INDEX(RenderTarget::DirectionalShadow)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R8G8B8A8_SNORM, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R8G8B8A8_SNORM, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R32G32B32A32_SFLOAT, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R8G8B8A8_SNORM, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::ScreenSpaceAmbientOcclusion)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R8G8B8A8_SNORM, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::SceneIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R32G32B32A32_SFLOAT, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::Scene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R32G32B32A32_SFLOAT, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 }
 
 /*
@@ -1198,7 +1200,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
 			
 			//Albedo.
-			VulkanUtilities::CreateAttachmentDescription(	VK_FORMAT_R32G32B32A32_SFLOAT,
+			VulkanUtilities::CreateAttachmentDescription(	VK_FORMAT_R8G8B8A8_SNORM,
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1216,7 +1218,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
 
 			//Material properties.
-			VulkanUtilities::CreateAttachmentDescription(	VK_FORMAT_R32G32B32A32_SFLOAT,
+			VulkanUtilities::CreateAttachmentDescription(	VK_FORMAT_R8G8B8A8_SNORM,
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,

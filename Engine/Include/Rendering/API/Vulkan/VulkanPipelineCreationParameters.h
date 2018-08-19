@@ -21,7 +21,7 @@ public:
 	VkImageLayout colorAttachmentFinalLayout;
 
 	//The format of the color attachments.
-	VkFormat colorAttachmentFormat;
+	DynamicArray<VkFormat> colorAttachmentFormats;
 	
 	//The initial layout that color attachments will be in when a render pass instance begins.
 	VkImageLayout colorAttachmentInitialLayout;
