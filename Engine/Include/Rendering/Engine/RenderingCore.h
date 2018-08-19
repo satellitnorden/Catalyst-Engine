@@ -134,19 +134,21 @@ enum class CommonRenderDataTableLayout : uint8
 //Enumeration covering all render targets.
 enum class RenderTarget : uint8
 {
+	//Directional Shadows.
 	DirectionalShadowMap,
 	DirectionalShadow,
+
+	//Scene.
+	SceneIntermediate,
 	SceneBufferAlbedo,
 	SceneBufferNormalDepth,
 	SceneBufferMaterialProperties,
 	ScreenSpaceAmbientOcclusion,
-	ScreenSpaceAmbientOcclusionIntermediate,
-	SceneIntermediate,
 	Scene,
-	Bloom,
-	BlurIntermediate,
-	Blur,
+
+	//Screen.
 	Screen,
+
 	NumberOfRenderTargets
 };
 

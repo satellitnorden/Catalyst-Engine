@@ -54,7 +54,7 @@ void ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass::InitializeInternal() N
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::ScreenSpaceAmbientOcclusionIntermediate);
+	AddRenderTarget(RenderTarget::SceneIntermediate);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

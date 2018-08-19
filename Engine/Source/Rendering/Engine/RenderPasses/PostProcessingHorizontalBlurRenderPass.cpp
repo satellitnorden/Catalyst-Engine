@@ -54,7 +54,7 @@ void PostProcessingHorizontalBlurRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::BlurIntermediate);
+	AddRenderTarget(RenderTarget::SceneIntermediate);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
