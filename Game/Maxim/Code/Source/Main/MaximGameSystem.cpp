@@ -119,7 +119,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	//Create, uh, sun.
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
-	sun->SetIntensity(100.0f);
+	sun->SetIntensity(25.0f);
 	sun->Rotate(Vector3(-2.5f, 135.0f, 0.0f));
 
 	//Disable screen space ambient occlusion.
