@@ -7,7 +7,7 @@
 /*
 *	Initializes this Vulkan render target.
 */
-void VulkanRenderTarget::Initialize(const VkExtent2D extent, const VkFormat format, const VkSamplerAddressMode addressMode) NOEXCEPT
+void VulkanRenderTarget::Initialize(const VkExtent2D extent, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
 	//Set the extent
 	this->extent = extent;
@@ -25,7 +25,7 @@ void VulkanRenderTarget::Initialize(const VkExtent2D extent, const VkFormat form
 	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1, vulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(vulkanSampler, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, addressMode, 0.0f);
+	VulkanUtilities::CreateVulkanSampler(vulkanSampler, magnificationFilter, VK_SAMPLER_MIPMAP_MODE_NEAREST, addressMode, 0.0f);
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();

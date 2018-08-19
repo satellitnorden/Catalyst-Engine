@@ -442,10 +442,10 @@ RESTRICTED VulkanRenderPass *const RESTRICT VulkanInterface::CreateRenderPass(co
 /*
 *	Creates and returns a render target.
 */
-RESTRICTED VulkanRenderTarget *const RESTRICT VulkanInterface::CreateRenderTarget(const VkExtent2D extent, const VkFormat format, const VkSamplerAddressMode addressMode) NOEXCEPT
+RESTRICTED VulkanRenderTarget *const RESTRICT VulkanInterface::CreateRenderTarget(const VkExtent2D extent, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerAddressMode addressMode) NOEXCEPT
 {
 	VulkanRenderTarget *const RESTRICT newRenderTarget = new VulkanRenderTarget;
-	newRenderTarget->Initialize(extent, format, addressMode);
+	newRenderTarget->Initialize(extent, format, magnificationFilter, addressMode);
 
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
