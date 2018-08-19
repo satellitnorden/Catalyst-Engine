@@ -7,11 +7,11 @@
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>
 
-#if VULKAN_DEBUGGING
+#if VULKAN_DEBUGGING && !defined(CATALYST_ANDROID)
 //Define the validation layers.
 namespace
 {
-	const DynamicArray<const char *RESTRICT> validationLayers{ "VK_LAYER_LUNARG_standard_validation" };
+	const DynamicArray<const char *RESTRICT> validationLayers{ "VK_LAYER_LUNARG_standard_validation", "VK_LAYER_LUNARG_assistant_layer" };
 }
 #endif
 
