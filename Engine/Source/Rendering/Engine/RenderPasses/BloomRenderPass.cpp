@@ -70,7 +70,7 @@ void BloomRenderPass::InitializeInternal() NOEXCEPT
 	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(float));
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetResolution() / 1);
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);

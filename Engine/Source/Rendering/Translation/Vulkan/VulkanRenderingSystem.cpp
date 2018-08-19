@@ -133,17 +133,6 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
-*	Returns the resolution.
-*/
-Resolution VulkanRenderingSystem::GetResolution() const NOEXCEPT
-{
-	//Return the render resolution.
-	VkExtent2D swapExtent{ VulkanInterface::Instance->GetSwapchain().GetSwapExtent() };
-
-	return Resolution(swapExtent.width, swapExtent.height);
-}
-
-/*
 *	Returns the current frame index.
 */
 uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
@@ -541,7 +530,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 
 	parameters.vertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
 	parameters.vertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
-	parameters.viewportExtent = VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height };
+	parameters.viewportExtent = renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height };
 
 	if (renderPass->GetMainStage() != RenderPassMainStage::None)
 	{
@@ -695,19 +684,22 @@ RenderDataTableHandle VulkanRenderingSystem::GetCommonRenderDataTableLayout(cons
 */
 void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 {
+	//Get the scaled extent.
+	const VkExtent2D scaledExtent{ VulkanTranslationUtilities::GetVulkanExtent(RenderingSystem::Instance->GetScaledResolution()) };
+
 	//Initialize all depth buffers.
 	depthBuffers[INDEX(DepthBuffer::DirectionalLight)] = VulkanInterface::Instance->CreateDepthBuffer({ EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution });
-	depthBuffers[INDEX(DepthBuffer::SceneBuffer)] = VulkanInterface::Instance->CreateDepthBuffer(VulkanInterface::Instance->GetSwapchain().GetSwapExtent());
+	depthBuffers[INDEX(DepthBuffer::SceneBuffer)] = VulkanInterface::Instance->CreateDepthBuffer(scaledExtent);
 
 	//Initialize all render targets.
 	renderTargets[INDEX(RenderTarget::DirectionalShadowMap)] = VulkanInterface::Instance->CreateRenderTarget({ EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution }, VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
-	renderTargets[INDEX(RenderTarget::DirectionalShadow)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R8G8B8A8_SNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
-	renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R8G8B8A8_SNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R8G8B8A8_SNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::ScreenSpaceAmbientOcclusion)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R8G8B8A8_SNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::SceneIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	renderTargets[INDEX(RenderTarget::Scene)] = VulkanInterface::Instance->CreateRenderTarget(VulkanInterface::Instance->GetSwapchain().GetSwapExtent(), VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::DirectionalShadow)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R8G8B8A8_SNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R8G8B8A8_SNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R8G8B8A8_SNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::ScreenSpaceAmbientOcclusion)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R8G8B8A8_SNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::SceneIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+	renderTargets[INDEX(RenderTarget::Scene)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 }
 
 /*
@@ -1301,7 +1293,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		framebufferParameters.attachmentCount = static_cast<uint32>(attachments.Size());
 		framebufferParameters.attachments = attachments.Data();
-		framebufferParameters.extent = { GetResolution().width, GetResolution().height };
+		framebufferParameters.extent = { RenderingSystem::Instance->GetScaledResolution().width, RenderingSystem::Instance->GetScaledResolution().height };
 
 		vulkanFramebuffers[INDEX(RenderPassMainStage::SceneBuffer)] = VulkanInterface::Instance->CreateFramebuffer(framebufferParameters);
 	}
@@ -1407,12 +1399,12 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 			{
 				if (numberOfClearValues > 0)
 				{
-					currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().Get(), pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().GetFrameBuffers()[frameBuffer].Get(), VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, numberOfClearValues);
+					currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().Get(), pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().GetFrameBuffers()[frameBuffer].Get(), renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, numberOfClearValues);
 				}
 
 				else
 				{
-					currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass(), frameBuffer, VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+					currentPrimaryCommandBuffer->CommandBeginRenderPass(pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass(), frameBuffer, renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height }, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 				}
 			}
 

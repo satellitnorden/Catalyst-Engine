@@ -123,6 +123,14 @@ public:
 	}
 
 	/*
+	*	Given a resolution, return the corresponding Vulkan extent.
+	*/
+	static VkExtent2D GetVulkanExtent(const Resolution resolution) NOEXCEPT
+	{
+		return VkExtent2D{ resolution.width, resolution.height };
+	}
+
+	/*
 	*	Given a format, return the corresponding Vulkan format.
 	*/
 	static VkFormat GetVulkanFormat(const TextureFormat format) NOEXCEPT

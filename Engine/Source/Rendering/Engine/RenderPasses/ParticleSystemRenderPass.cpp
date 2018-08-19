@@ -64,7 +64,7 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	AddPushConstantRange(ShaderStage::Geometry, 0, sizeof(float) * 2);
 
 	//Set the render resolution.
-	SetRenderResolution(RenderingSystem::Instance->GetResolution());
+	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(true);

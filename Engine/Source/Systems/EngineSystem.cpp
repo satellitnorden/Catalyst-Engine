@@ -29,7 +29,7 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 	TaskSystem::Instance->InitializeSystem();
 	CullingSystem::Instance->InitializeSystem();
 	LevelOfDetailSystem::Instance->InitializeSystem();
-	RenderingSystem::Instance->InitializeSystem();
+	RenderingSystem::Instance->InitializeSystem(projectConfiguration.renderingConfiguration);
 	SoundSystem::Instance->InitializeSystem();
 
 	//Post-initialize the platform.

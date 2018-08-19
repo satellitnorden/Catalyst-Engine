@@ -80,7 +80,7 @@ public:
 	/*
 	*	Initializes the rendering system.
 	*/
-	void InitializeSystem() NOEXCEPT;
+	void InitializeSystem(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT;
 
 	/*
 	*	Pre-updates the rendering system synchronously.
@@ -98,19 +98,34 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
-	*	Returns the render passes.
-	*/
-	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)>& GetRenderPasses() const { return renderPasses; }
-
-	/*
 	*	Returns the resolution.
 	*/
-	Resolution GetResolution() const NOEXCEPT;
+	Resolution GetResolution() const NOEXCEPT { return resolution; }
+
+	/*
+	*	Returns the scaled resolution.
+	*/
+	Resolution GetScaledResolution() const NOEXCEPT { return scaledResolution; }
 
 	/*
 	*	Returns the current frame index.
 	*/
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
+
+	/*
+	*	Returns the projection matrix.
+	*/
+	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() const NOEXCEPT { return &projectionMatrix; }
+
+	/*
+	*	Returns the camera matrix.
+	*/
+	RESTRICTED const Matrix4 *const RESTRICT GetCameraMatrix() const NOEXCEPT { return &cameraMatrix; }
+
+	/*
+	*	Returns the view matrix.
+	*/
+	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() const NOEXCEPT { return &viewMatrix; }
 
 	/*
 	*	Returns the active camera, const.
@@ -128,19 +143,10 @@ public:
 	void SetActiveCamera(CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT { activeCamera = newActiveCamera; }
 
 	/*
-	*	Returns the projection matrix.
+	*	Returns the render passes.
 	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() const NOEXCEPT { return &projectionMatrix; }
+	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)>& GetRenderPasses() const { return renderPasses; }
 
-	/*
-	*	Returns the camera matrix.
-	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetCameraMatrix() const NOEXCEPT { return &cameraMatrix; }
-
-	/*
-	*	Returns the view matrix.
-	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() const NOEXCEPT { return &viewMatrix; }
 
 	/*
 	*	Returns the given render target.
@@ -304,6 +310,24 @@ public:
 
 private:
 
+	//The resolution.
+	Resolution resolution;
+
+	//The scaled resolution.
+	Resolution scaledResolution;
+
+	//The projection matrix.
+	Matrix4 projectionMatrix;
+
+	//The camera matrix.
+	Matrix4 cameraMatrix;
+
+	//The view matrix.
+	Matrix4 viewMatrix;
+
+	//The active camera.
+	CameraEntity *RESTRICT activeCamera{ nullptr };
+
 	//Container for all render passes.
 	StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> renderPasses;
 
@@ -327,18 +351,6 @@ private:
 
 	//The default ocean material.
 	OceanMaterial defaultOceanMaterial;
-
-	//The active camera.
-	CameraEntity *RESTRICT activeCamera{ nullptr };
-
-	//The projection matrix.
-	Matrix4 projectionMatrix;
-
-	//The camera matrix.
-	Matrix4 cameraMatrix;
-
-	//The view matrix.
-	Matrix4 viewMatrix;
 
 	/*
 	*	Registers all render passes.

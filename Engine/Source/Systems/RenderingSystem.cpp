@@ -46,8 +46,14 @@ DEFINE_SINGLETON(RenderingSystem);
 /*
 *	Initializes the rendering system.
 */
-void RenderingSystem::InitializeSystem() NOEXCEPT
+void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT
 {
+	//Set the resolution.
+	resolution = configuration.resolution;
+
+	//Set the scaled resolution.
+	scaledResolution = Resolution(static_cast<uint32>(static_cast<float>(resolution.width) * configuration.resolutionScale), static_cast<uint32>(static_cast<float>(resolution.height) * configuration.resolutionScale));
+
 	//Initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->InitializeSystem();
 
@@ -107,15 +113,6 @@ void RenderingSystem::ReleaseSystem() NOEXCEPT
 {
 	//Release the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->ReleaseSystem();
-}
-
-/*
-*	Returns the resolution.
-*/
-Resolution RenderingSystem::GetResolution() const NOEXCEPT
-{
-	//Return the render resolution via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetResolution();
 }
 
 /*

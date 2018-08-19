@@ -1067,6 +1067,30 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\PhysicalModel.cpp">
       <Filter>Rendering\Source\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp">
+      <Filter>Rendering\Source\Translation\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.cpp">
+      <Filter>Rendering\Source\Translation\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Android\AndroidPlatformVulkan.cpp">
+      <Filter>Platform\Source\Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsPlatformVulkan.cpp">
+      <Filter>Platform\Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp">
+      <Filter>Managers\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp">
+      <Filter>Platform\Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp">
+      <Filter>Platform\Source\Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BoxBlurFragmentShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
@@ -1097,19 +1121,19 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PostProcessingBloomRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PostProcessingHorizontalBlurRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PostProcessingRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PostProcessingVerticalBlurRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\SkyRenderPass.cpp">
@@ -1123,30 +1147,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\VegetationRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp">
-      <Filter>Rendering\Source\Translation\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.cpp">
-      <Filter>Rendering\Source\Translation\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Android\AndroidPlatformVulkan.cpp">
-      <Filter>Platform\Source\Android</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsPlatformVulkan.cpp">
-      <Filter>Platform\Source\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp">
-      <Filter>Managers\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp">
-      <Filter>Platform\Source\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp">
-      <Filter>Platform\Source\Android</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BoxBlurFragmentShader.cpp">
-      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

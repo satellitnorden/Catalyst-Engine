@@ -15,6 +15,7 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 	configuration->generalConfiguration.projectName = "Maxim";
 
 	configuration->renderingConfiguration.resolution = Resolution(1'920, 1'080);
+	configuration->renderingConfiguration.resolutionScale = 1.0f;
 
 #if defined(CATALYST_WINDOWS)
 	configuration->renderingConfiguration.shadowMapResolution = 2'048;

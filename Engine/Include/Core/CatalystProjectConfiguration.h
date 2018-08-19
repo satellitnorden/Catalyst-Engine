@@ -42,6 +42,9 @@ public:
 	//The resolution.
 	Resolution resolution;
 
+	//The resolution scale.
+	float resolutionScale;
+
 	//The shadow map resolution.
 	uint32 shadowMapResolution;
 

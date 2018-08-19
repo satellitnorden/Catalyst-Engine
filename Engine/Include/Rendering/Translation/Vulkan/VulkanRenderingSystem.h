@@ -77,11 +77,6 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
-	*	Returns the resolution.
-	*/
-	Resolution GetResolution() const NOEXCEPT;
-
-	/*
 	*	Returns the current frame index.
 	*/
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
