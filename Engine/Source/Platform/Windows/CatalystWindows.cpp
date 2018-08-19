@@ -61,10 +61,12 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	windowInfo.lpszClassName = _T("Catalyst Engine");
 	windowInfo.hIconSm = LoadIcon(windowInfo.hInstance, IDI_APPLICATION);
 
+#if !defined(CATALYST_FINAL)
 	if (!RegisterClassEx(&windowInfo))
 	{
 		BREAKPOINT;
 	}
+#endif
 
 	//Create the window.
 	window = CreateWindow(	_T("Catalyst Engine"),
@@ -79,12 +81,14 @@ void CatalystPlatform::Initialize() NOEXCEPT
 							instance,
 							nullptr);
 
+#if !defined(CATALYST_FINAL)
 	if (!window)
 	{
 		const DWORD result{ GetLastError() };
 
 		BREAKPOINT;
 	}
+#endif
 
 	//Show the window.
 	ShowWindow(window, showCommand);

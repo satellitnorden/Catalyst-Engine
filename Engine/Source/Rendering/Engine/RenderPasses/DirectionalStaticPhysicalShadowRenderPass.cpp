@@ -140,14 +140,31 @@ void DirectionalStaticPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
+	//Track the previous state, so if two static physical entities share the same state, it doesn't have to be rebound.
+	ConstantBufferHandle previousBuffer{ nullptr };
+	RenderDataTableHandle previousRenderDataTable{ nullptr };
+
 	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++renderComponent)
 	{
 		const uint64 offset{ 0 };
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
-		commandBuffer->BindRenderDataTable(this, 1, renderComponent->renderDataTable);
-		commandBuffer->BindVertexBuffers(this, 1, &renderComponent->buffer, &offset);
-		commandBuffer->BindIndexBuffer(this, renderComponent->buffer, renderComponent->indexOffset);
+
+		if (previousBuffer != renderComponent->buffer)
+		{
+			previousBuffer = renderComponent->buffer;
+
+			commandBuffer->BindVertexBuffers(this, 1, &renderComponent->buffer, &offset);
+			commandBuffer->BindIndexBuffer(this, renderComponent->buffer, renderComponent->indexOffset);
+		}
+
+		if (previousRenderDataTable != renderComponent->renderDataTable)
+		{
+			previousRenderDataTable = renderComponent->renderDataTable;
+
+			commandBuffer->BindRenderDataTable(this, 1, renderComponent->renderDataTable);
+		}
+
 		commandBuffer->DrawIndexed(this, renderComponent->indexCount, 1);
 	}
 

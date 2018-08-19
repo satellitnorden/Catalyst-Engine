@@ -144,6 +144,10 @@ void StaticPhysicalRenderPass::RenderInternal() NOEXCEPT
 	//Wait for the static physical culling to finish.
 	CullingSystem::Instance->WaitForStaticPhysicalCulling();
 
+	//Track the previous state, so if two static physical entities share the same state, it doesn't have to be rebound.
+	ConstantBufferHandle previousBuffer{ nullptr };
+	RenderDataTableHandle previousRenderDataTable{ nullptr };
+
 	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++renderComponent)
 	{
 		//Don't draw this static physical entity if it isn't in the view frustum.
@@ -155,9 +159,22 @@ void StaticPhysicalRenderPass::RenderInternal() NOEXCEPT
 		const uint64 offset{ 0 };
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
-		commandBuffer->BindRenderDataTable(this, 1, renderComponent->renderDataTable);
-		commandBuffer->BindVertexBuffers(this, 1, &renderComponent->buffer, &offset);
-		commandBuffer->BindIndexBuffer(this, renderComponent->buffer, renderComponent->indexOffset);
+
+		if (previousBuffer != renderComponent->buffer)
+		{
+			previousBuffer = renderComponent->buffer;
+
+			commandBuffer->BindVertexBuffers(this, 1, &renderComponent->buffer, &offset);
+			commandBuffer->BindIndexBuffer(this, renderComponent->buffer, renderComponent->indexOffset);
+		}
+
+		if (previousRenderDataTable != renderComponent->renderDataTable)
+		{
+			previousRenderDataTable = renderComponent->renderDataTable;
+
+			commandBuffer->BindRenderDataTable(this, 1, renderComponent->renderDataTable);
+		}
+		
 		commandBuffer->DrawIndexed(this, renderComponent->indexCount, 1);
 	}
 
