@@ -26,7 +26,7 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 	CatalystPlatform::Initialize();
 
 	//Initialize all systems.
-	TaskSystem::Instance->InitializeSystem(projectConfiguration.multithreadingConfiguration);
+	TaskSystem::Instance->InitializeSystem();
 	CullingSystem::Instance->InitializeSystem();
 	LevelOfDetailSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem();

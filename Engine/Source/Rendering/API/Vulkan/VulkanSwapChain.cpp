@@ -4,6 +4,9 @@
 //Math.
 #include <Math/CatalystMath.h>
 
+//Systems.
+#include <Systems/EngineSystem.h>
+
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 #include <Rendering/API/Vulkan/VulkanLogicalDevice.h>
@@ -11,22 +14,6 @@
 #include <Rendering/API/Vulkan/VulkanSemaphore.h>
 #include <Rendering/API/Vulkan/VulkanSurface.h>
 #include <Rendering/API/Vulkan/VulkanUtilities.h>
-
-/*
-*	Default constructor.
-*/
-VulkanSwapchain::VulkanSwapchain() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanSwapchain::~VulkanSwapchain() NOEXCEPT
-{
-
-}
 
 /*
 *	Initializes this Vulkan swap chain.
@@ -110,20 +97,8 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
 
-	if (surfaceCapabilities.currentExtent.width != UINT32_MAXIMUM)
-	{
-		swapExtent = surfaceCapabilities.currentExtent;
-	}
-
-	else
-	{
-		VkExtent2D actualExtent;
-
-		actualExtent.width = std::max(surfaceCapabilities.minImageExtent.width, std::min(surfaceCapabilities.maxImageExtent.width, actualExtent.width));
-		actualExtent.height = std::max(surfaceCapabilities.minImageExtent.height, std::min(surfaceCapabilities.maxImageExtent.height, actualExtent.height));
-
-		swapExtent = actualExtent;
-	}
+	swapExtent.width = CatalystMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.resolution.width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
+	swapExtent.height = CatalystMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.resolution.height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
 }
 
 /*

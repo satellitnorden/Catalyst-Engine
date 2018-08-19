@@ -20,19 +20,9 @@ class VulkanSwapchain final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanSwapchain() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanSwapchain() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan swap chain.
 	*/
-	const VkSwapchainKHR& Get() const NOEXCEPT { return vulkanSwapChain; }
+	const VkSwapchainKHR Get() const NOEXCEPT { return vulkanSwapChain; }
 
 	/*
 	*	Initializes this Vulkan swap chain.

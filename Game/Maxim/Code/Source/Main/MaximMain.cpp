@@ -14,15 +14,13 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 {
 	configuration->generalConfiguration.projectName = "Maxim";
 
-	configuration->multithreadingConfiguration.numberOfGameTasks = 0;
+	configuration->renderingConfiguration.resolution = Resolution(1'920, 1'080);
 
 #if defined(CATALYST_WINDOWS)
 	configuration->renderingConfiguration.shadowMapResolution = 2'048;
 #else
 	configuration->renderingConfiguration.shadowMapResolution = 512;
 #endif
-
-	configuration->soundConfiguration.maximumNumberOfChannels = 4;
 }
 
 MAIN_FUNCTION

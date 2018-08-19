@@ -13,7 +13,7 @@ DEFINE_SINGLETON(TaskSystem);
 /*
 *	Initializes the task system.
 */
-void TaskSystem::InitializeSystem(const CatalystProjectMultithreadingConfiguration &multithreadingConfiguration) NOEXCEPT
+void TaskSystem::InitializeSystem() NOEXCEPT
 {
 	//Find out how many hardware threads there is.
 	uint32 numberOfHardwareThreads = std::thread::hardware_concurrency();
