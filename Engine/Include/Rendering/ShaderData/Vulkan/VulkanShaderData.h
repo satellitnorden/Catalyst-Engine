@@ -9,6 +9,7 @@
 
 //Rendering.
 #include <Rendering/ShaderData/Vulkan/BloomFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/BoxBlurFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/CubeMapVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalPhysicalShadowVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalShadowFragmentShader.h>
@@ -16,7 +17,6 @@
 #include <Rendering/ShaderData/Vulkan/DirectionalShadowTerrainTessellationEvaluationShader.h>
 #include <Rendering/ShaderData/Vulkan/GaussianBlurFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/InstancedPhysicalVertexShader.h>
-#include <Rendering/ShaderData/Vulkan/KawaseBlurFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LightingFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/OceanFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemFragmentShader.h>

@@ -2,7 +2,7 @@
 #include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
 
 //Managers.
-#include <Managers/PostProcessingManager.h>
+#include <Managers/RenderingConfigurationManager.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -66,7 +66,7 @@ void PostProcessingRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(Vector2));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(float));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -99,10 +99,9 @@ void PostProcessingRenderPass::InitializeInternal() NOEXCEPT
 */
 void PostProcessingRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &renderDataTableLayout);
@@ -116,7 +115,6 @@ void PostProcessingRenderPass::CreateRenderDataTable() NOEXCEPT
 	RenderingSystem::Instance->CreateRenderDataTable(renderDataTableLayout, &renderDataTable);
 
 	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene)), renderDataTable);
-	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate)), renderDataTable);
 }
 
 /*
@@ -135,8 +133,8 @@ void PostProcessingRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
 
 	//Pust constants.
-	Vector2 postProcessingData{ PostProcessingManager::Instance->GetBlurStrength(), PostProcessingManager::Instance->GetSaturationStrength() };
-	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(Vector2), &postProcessingData);
+	float postProcessingData{ RenderingConfigurationManager::Instance->GetSaturationStrength() };
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(float), &postProcessingData);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

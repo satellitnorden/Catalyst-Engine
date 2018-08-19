@@ -58,7 +58,6 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //Post processing data.
 layout (push_constant) uniform PostProcessingData
 {
-    float blurStrength;
     float saturation;
 };
 
@@ -69,30 +68,9 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
-layout (set = 1, binding = 1) uniform sampler2D blurTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
-
-/*
-*   Applies blur.
-*/
-vec3 ApplyBlur(vec3 sceneTextureSampler)
-{
-    if (blurStrength > 0.0f)
-    {
-        //Calculate the blurred sample.
-        vec4 blur = texture(blurTexture, fragmentTextureCoordinate);
-
-        //Return the calculated color.
-        return mix(sceneTextureSampler, blur.rgb, blurStrength);
-    }
-    
-    else
-    {
-        return sceneTextureSampler;
-    }
-}
 
 /*
 *   Applies saturation.
@@ -137,9 +115,6 @@ void main()
 {
     //Sample the scene texture.
     vec3 sceneTextureSampler = texture(sceneTexture, fragmentTextureCoordinate).rgb;
-
-    //Apply blur.
-    sceneTextureSampler = ApplyBlur(sceneTextureSampler);
 
     //Apply saturation.
     sceneTextureSampler = ApplySaturation(sceneTextureSampler);

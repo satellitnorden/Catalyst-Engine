@@ -97,12 +97,17 @@ void main()
 {
     vec4 finalFragment = vec4(0.0f);
 
-    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(-radius, -radius));
-    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(-radius, radius));
-    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(radius, radius));
-    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(radius, -radius));
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(-radius, -radius)) * 0.0625f;
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(-radius, 0.0f)) * 0.125f;
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(-radius, radius)) * 0.0625f;
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(0.0f, -radius)) * 0.125f;
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(0.0f, 0.0f)) * 0.25f;
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(0.0f, radius)) * 0.125f;
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(radius, -radius)) * 0.0625f;
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(radius, 0.0f)) * 0.125f;
+    finalFragment += CalculateBloom(fragmentTextureCoordinate + vec2(radius, radius)) * 0.0625f;
 
-    finalFragment *= 0.25f;
+    finalFragment *= 0.111111f;
 
     //Write the fragment.
     fragment = finalFragment;

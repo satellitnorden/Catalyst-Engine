@@ -342,9 +342,6 @@
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h">
       <Filter>Input\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Managers\PostProcessingManager.h">
-      <Filter>Managers\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h">
       <Filter>Managers\Include</Filter>
     </ClInclude>
@@ -582,13 +579,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PostProcessingBloomRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PostProcessingHorizontalBlurRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PostProcessingRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PostProcessingVerticalBlurRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPass.h">
@@ -825,7 +816,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFramebufferCreationParameters.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\KawaseBlurFragmentShader.h">
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BoxBlurFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
@@ -864,9 +855,6 @@
       <Filter>Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp">
-      <Filter>Managers\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Managers\PostProcessingManager.cpp">
       <Filter>Managers\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp">
@@ -1121,13 +1109,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\SkyRenderPass.cpp">
@@ -1163,7 +1145,7 @@
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp">
       <Filter>Platform\Source\Android</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\KawaseBlurFragmentShader.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BoxBlurFragmentShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>

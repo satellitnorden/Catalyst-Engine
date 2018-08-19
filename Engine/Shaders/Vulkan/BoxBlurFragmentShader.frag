@@ -77,12 +77,15 @@ vec4 CalculateBlur()
 {
     vec4 blurredFragment = vec4(0.0f);
 
-    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(-radius, -radius));
-    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(-radius, radius));
-    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(radius, radius));
-    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(radius, -radius));
-
-    blurredFragment *= 0.25f;
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(-radius, -radius)) * 0.0625f;
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(-radius, 0.0f)) * 0.125f;
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(-radius, radius)) * 0.0625f;
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(0.0f, -radius)) * 0.125f;
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(0.0f, 0.0f)) * 0.25f;
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(0.0f, radius)) * 0.125f;
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(radius, -radius)) * 0.0625f;
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(radius, 0.0f)) * 0.125f;
+    blurredFragment += texture(inputTexture, fragmentTextureCoordinate + vec2(radius, radius)) * 0.0625f;
 
     return blurredFragment;
 }

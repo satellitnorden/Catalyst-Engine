@@ -2,7 +2,7 @@
 #include <Rendering/Engine/RenderPasses/PostProcessingBloomRenderPass.h>
 
 //Managers.
-#include <Managers/PostProcessingManager.h>
+#include <Managers/RenderingConfigurationManager.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -124,7 +124,7 @@ void PostProcessingBloomRenderPass::CreateRenderDataTable() NOEXCEPT
 void PostProcessingBloomRenderPass::RenderInternal() NOEXCEPT
 {
 	//If the bloom doesn't have any strength, no need to render it.
-	if (PostProcessingManager::Instance->GetBloomStrength() == 0.0f)
+	if (RenderingConfigurationManager::Instance->GetBloomStrength() == 0.0f)
 	{
 		SetIncludeInRender(false);
 
@@ -142,7 +142,7 @@ void PostProcessingBloomRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
 
 	//Push constants.
-	const float bloomStrength{ PostProcessingManager::Instance->GetBloomStrength() };
+	const float bloomStrength{ RenderingConfigurationManager::Instance->GetBloomStrength() };
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(float), &bloomStrength);
 
 	//Draw!

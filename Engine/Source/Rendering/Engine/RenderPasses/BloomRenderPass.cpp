@@ -2,7 +2,7 @@
 #include <Rendering/Engine/RenderPasses/BloomRenderPass.h>
 
 //Managers.
-#include <Managers/PostProcessingManager.h>
+#include <Managers/RenderingConfigurationManager.h>
 #include <Managers/RenderingConfigurationManager.h>
 
 //Rendering.
@@ -123,7 +123,7 @@ void BloomRenderPass::CreateRenderDataTable() NOEXCEPT
 void BloomRenderPass::RenderInternal() NOEXCEPT
 {
 	//If the bloom doesn't have any strength, no need to render it.
-	if (PostProcessingManager::Instance->GetBloomStrength() == 0.0f)
+	if (RenderingConfigurationManager::Instance->GetBloomStrength() == 0.0f)
 	{
 		SetIncludeInRender(false);
 

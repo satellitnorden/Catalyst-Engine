@@ -9,5 +9,5 @@
 
 namespace VulkanShaderData
 {
-	void GetKawaseBlurFragmentShaderData(DynamicArray<byte> &data);
+	void GetBoxBlurFragmentShaderData(DynamicArray<byte> &data);
 }

@@ -14,9 +14,7 @@
 #include <Rendering/Engine/RenderPasses/OceanRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PostProcessingBloomRenderPass.h>
-#include <Rendering/Engine/RenderPasses/PostProcessingHorizontalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
-#include <Rendering/Engine/RenderPasses/PostProcessingVerticalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.h>

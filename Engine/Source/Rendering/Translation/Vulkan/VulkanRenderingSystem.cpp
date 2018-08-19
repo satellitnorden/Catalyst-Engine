@@ -17,7 +17,6 @@
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
-#include <Managers/PostProcessingManager.h>
 
 //Math.
 #include <Math/CatalystMath.h>
@@ -878,6 +877,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the box blur shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetBoxBlurFragmentShaderData(data);
+		shaderModules[INDEX(Shader::BoxBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
 		//Initialize the cube map vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetCubeMapVertexShaderData(data);
@@ -924,13 +930,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetInstancedPhysicalVertexShaderData(data);
 		shaderModules[INDEX(Shader::InstancedPhysicalVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
-	}
-
-	{
-		//Initialize the kawase blur shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetKawaseBlurFragmentShaderData(data);
-		shaderModules[INDEX(Shader::KawaseBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{

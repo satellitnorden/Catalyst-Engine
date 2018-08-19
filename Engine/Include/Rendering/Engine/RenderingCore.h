@@ -62,8 +62,6 @@ enum class RenderPassSubStage : uint8
 	Bloom,
 	ParticleSystem,
 	PostProcessingBloom,
-	PostProcessingHorizontalBlur,
-	PostProcessingVerticalBlur,
 	PostProcessing,
 
 	NumberOfRenderPassSubStages
@@ -156,6 +154,7 @@ enum class RenderTarget : uint8
 enum class Shader : uint8
 {
 	BloomFragment,
+	BoxBlurFragment,
 	CubeMapVertex,
 	DirectionalPhysicalShadowVertex,
 	DirectionalShadowFragment,
@@ -163,7 +162,6 @@ enum class Shader : uint8
 	DirectionalTerrainShadowTessellationEvaluation,
 	GaussianBlurFragment,
 	InstancedPhysicalVertex,
-	KawaseBlurFragment,
 	LightingFragment,
 	OceanFragment,
 	ParticleSystemFragment,
