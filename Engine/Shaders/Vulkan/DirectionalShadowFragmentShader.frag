@@ -69,7 +69,7 @@ layout (set = 1, binding = 0) uniform sampler2D normalDirectionDepthTexture;
 layout (set = 1, binding = 1) uniform sampler2D directionalShadowMap;
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentColor;
+layout (location = 4) out vec4 fragmentColor;
 
 //Globals.
 float fragmentDepth;

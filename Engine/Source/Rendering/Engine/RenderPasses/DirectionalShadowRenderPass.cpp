@@ -34,13 +34,13 @@ void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::None);
+	SetMainStage(RenderPassMainStage::SceneBuffer);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::DirectionalShadow);
 
 	//Set the sub stage index.
-	SetSubStageIndex(0);
+	SetSubStageIndex(4);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
