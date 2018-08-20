@@ -172,6 +172,14 @@ void VulkanCommandBuffer::CommandNextSubpass() NOEXCEPT
 }
 
 /*
+*	Records a pipeline barrier command.
+*/
+void VulkanCommandBuffer::CommandPipelineBarrer(const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, const VkDependencyFlags dependencyFlags) NOEXCEPT
+{
+	//vkCmdPipelineBarrier(vulkanCommandBuffer, sourceStageMask, destinationStageMask, dependencyFlags)
+}
+
+/*
 *	Records a push constants command.
 */
 void VulkanCommandBuffer::CommandPushConstants(const VkPipelineLayout layout, const VkShaderStageFlags stageFlags, const uint32 offset, const uint32 size, const void *RESTRICT data) NOEXCEPT

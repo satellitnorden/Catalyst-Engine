@@ -69,7 +69,10 @@ layout (set = 1, binding = 0) uniform sampler2D normalDirectionDepthTexture;
 layout (set = 1, binding = 1) uniform sampler2D directionalShadowMap;
 
 //Out parameters.
-layout (location = 4) out vec4 fragmentColor;
+layout (location = 0) out vec4 albedoColor;
+layout (location = 1) out vec4 normalDirectionDepth;
+layout (location = 2) out vec4 materialProperties;
+layout (location = 3) out vec4 directionalShadow;
 
 //Globals.
 float fragmentDepth;
@@ -119,5 +122,5 @@ void main()
     float compare = directionalLightShadowMapCoordinate.z - SHADOW_BIAS;
 
     //Set the final fragment color.
-    fragmentColor = vec4(compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
+    directionalShadow = vec4(compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
 }

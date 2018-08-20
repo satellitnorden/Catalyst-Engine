@@ -52,10 +52,11 @@ void TerrainRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(3);
+	SetNumberOfRenderTargets(4);
 	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
 	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
+	AddRenderTarget(RenderTarget::DirectionalShadow);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

@@ -1243,16 +1243,45 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkSubpassDescription, NUMBER_OF_SCENE_BUFFER_SUBPASSES> subpassDescriptions;
 
-		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
-		{
-			subpassDescription = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[0] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
-																			3,
+																			static_cast<uint32>(colorAttachmentReferences.Size()),
 																			colorAttachmentReferences.Data(),
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
-		}
+
+		subpassDescriptions[1] = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			static_cast<uint32>(colorAttachmentReferences.Size()),
+																			colorAttachmentReferences.Data(),
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
+
+		subpassDescriptions[2] = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			static_cast<uint32>(colorAttachmentReferences.Size()),
+																			colorAttachmentReferences.Data(),
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
+
+		subpassDescriptions[3] = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			static_cast<uint32>(colorAttachmentReferences.Size()),
+																			colorAttachmentReferences.Data(),
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
+
+		subpassDescriptions[4] = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			static_cast<uint32>(colorAttachmentReferences.Size()),
+																			colorAttachmentReferences.Data(),
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
 
 		renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
 		renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
@@ -1285,10 +1314,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 			VulkanUtilities::CreateSubpassDependency(	3,
 														4,
-														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
-														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
-														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_SHADER_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT)
 		};
 
@@ -1383,7 +1412,17 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 			//Record the execute commands.
 			if (renderPass->IncludeInRender())
 			{
+				if (renderPass->GetSubStage() == RenderPassSubStage::DirectionalShadow)
+				{
+					
+				}
+
 				currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<const VulkanTranslationCommandBuffer *const RESTRICT>(renderPass->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+			
+				if (renderPass->GetSubStage() == RenderPassSubStage::DirectionalShadow)
+				{
+
+				}
 			}
 		}
 

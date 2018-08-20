@@ -70,7 +70,8 @@ layout (set = 1, binding = 3) uniform sampler2D materialPropertiesTexture;
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
 layout (location = 1) out vec4 normalDirectionDepth;
-layout (location = 2) out vec4 roughnessMetallicAmbientOcclusion;
+layout (location = 2) out vec4 materialProperties;
+layout (location = 3) out vec4 directionalShadow;
 
 void main()
 {
@@ -87,14 +88,14 @@ void main()
     vec4 materialPropertiesSampler = texture(materialPropertiesTexture, fragmentTextureCoordinate);
 
     //Set the roughness.
-    roughnessMetallicAmbientOcclusion.r = materialPropertiesSampler.r;
+    materialProperties.r = materialPropertiesSampler.r;
 
     //Set the metallic.
-    roughnessMetallicAmbientOcclusion.g = materialPropertiesSampler.g;
+    materialProperties.g = materialPropertiesSampler.g;
 
     //Set the ambient occlusion.
-    roughnessMetallicAmbientOcclusion.b = materialPropertiesSampler.b;
+    materialProperties.b = materialPropertiesSampler.b;
 
     //Write the thinness.
-    roughnessMetallicAmbientOcclusion.a = 0.0f;
+    materialProperties.a = 0.0f;
 }
