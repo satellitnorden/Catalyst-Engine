@@ -51,11 +51,10 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(4);
+	SetNumberOfRenderTargets(3);
 	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
 	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
-	AddRenderTarget(RenderTarget::DirectionalShadow);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);

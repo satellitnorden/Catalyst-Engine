@@ -1188,55 +1188,54 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
-															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_UNDEFINED,
 															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
 			
 			//Albedo.
-			VulkanUtilities::CreateAttachmentDescription(	VK_FORMAT_R8G8B8A8_SNORM,
+			VulkanUtilities::CreateAttachmentDescription(	renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
-															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_UNDEFINED,
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
 
 			//Normal depth.
-			VulkanUtilities::CreateAttachmentDescription(	VK_FORMAT_R32G32B32A32_SFLOAT,
+			VulkanUtilities::CreateAttachmentDescription(	renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
-															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_UNDEFINED,
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
 
 			//Material properties.
-			VulkanUtilities::CreateAttachmentDescription(	VK_FORMAT_R8G8B8A8_SNORM,
+			VulkanUtilities::CreateAttachmentDescription(	renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
-															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_UNDEFINED,
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
 
 			//Directional shadow.
-			VulkanUtilities::CreateAttachmentDescription(	VK_FORMAT_R8G8B8A8_SNORM,
+			VulkanUtilities::CreateAttachmentDescription(	renderTargets[INDEX(RenderTarget::DirectionalShadow)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
-															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_UNDEFINED,
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
 		};
 
 		renderPassParameters.attachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
 		renderPassParameters.attachmentDescriptions = attachmenDescriptions.Data();
 
-		constexpr StaticArray<const VkAttachmentReference, 4> colorAttachmentReferences
+		constexpr StaticArray<const VkAttachmentReference, 3> sceneBufferColorAttachmentReferences
 		{
 			VkAttachmentReference{ ALBEDO_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
 			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
-			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
-			VkAttachmentReference{ DIRECTIONAL_SHADOW_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
 		};
 
 		constexpr VkAttachmentReference depthAttachmentReference{ DEPTH_BUFFER_INDEX, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
@@ -1245,40 +1244,47 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		subpassDescriptions[0] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
-																			static_cast<uint32>(colorAttachmentReferences.Size()),
-																			colorAttachmentReferences.Data(),
+																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
+																			sceneBufferColorAttachmentReferences.Data(),
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
 
 		subpassDescriptions[1] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
-																			static_cast<uint32>(colorAttachmentReferences.Size()),
-																			colorAttachmentReferences.Data(),
+																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
+																			sceneBufferColorAttachmentReferences.Data(),
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
 
 		subpassDescriptions[2] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
-																			static_cast<uint32>(colorAttachmentReferences.Size()),
-																			colorAttachmentReferences.Data(),
+																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
+																			sceneBufferColorAttachmentReferences.Data(),
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
 
 		subpassDescriptions[3] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
-																			static_cast<uint32>(colorAttachmentReferences.Size()),
-																			colorAttachmentReferences.Data(),
+																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
+																			sceneBufferColorAttachmentReferences.Data(),
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
 
-		subpassDescriptions[4] = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			static_cast<uint32>(colorAttachmentReferences.Size()),
-																			colorAttachmentReferences.Data(),
+		const VkAttachmentReference normalDepthInputReference{ VulkanUtilities::CreateAttachmentReference(NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) };
+
+		constexpr StaticArray<const VkAttachmentReference, 1> directionalShadowColorAttachmentReferences
+		{
+			VkAttachmentReference{ DIRECTIONAL_SHADOW_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+		};
+
+		subpassDescriptions[4] = VulkanUtilities::CreateSubpassDescription(	1,
+																			&normalDepthInputReference,
+																			static_cast<uint32>(directionalShadowColorAttachmentReferences.Size()),
+																			directionalShadowColorAttachmentReferences.Data(),
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
@@ -1412,17 +1418,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 			//Record the execute commands.
 			if (renderPass->IncludeInRender())
 			{
-				if (renderPass->GetSubStage() == RenderPassSubStage::DirectionalShadow)
-				{
-					
-				}
-
 				currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<const VulkanTranslationCommandBuffer *const RESTRICT>(renderPass->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
-			
-				if (renderPass->GetSubStage() == RenderPassSubStage::DirectionalShadow)
-				{
-
-				}
 			}
 		}
 

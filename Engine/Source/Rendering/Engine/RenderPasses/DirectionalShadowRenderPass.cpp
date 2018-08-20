@@ -53,10 +53,7 @@ void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(4);
-	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
-	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
-	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
+	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::DirectionalShadow);
 
 	//Add the render data table layouts.
