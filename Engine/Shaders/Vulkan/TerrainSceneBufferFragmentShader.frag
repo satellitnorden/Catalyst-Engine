@@ -98,7 +98,6 @@ layout (set = 1, binding = 18) uniform sampler2D layer5MaterialPropertiesTexture
 layout (location = 0) out vec4 albedoColor;
 layout (location = 1) out vec4 normalDirectionDepth;
 layout (location = 2) out vec4 materialProperties;
-layout (location = 3) out vec4 directionalShadow;
 
 //Globals.
 vec4 layer1MaterialPropertiesSampler;
