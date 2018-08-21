@@ -1284,17 +1284,14 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		const VkAttachmentReference normalDepthInputReference{ VulkanUtilities::CreateAttachmentReference(NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) };
+		constexpr VkAttachmentReference directionalShadowInputAttachmentReference{ VulkanUtilities::CreateAttachmentReference(NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) };
 
-		constexpr StaticArray<const VkAttachmentReference, 1> directionalShadowColorAttachmentReferences
-		{
-			VkAttachmentReference{ DIRECTIONAL_SHADOW_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
-		};
+		constexpr VkAttachmentReference directionalShadowColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(DIRECTIONAL_SHADOW_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) };
 
 		subpassDescriptions[4] = VulkanUtilities::CreateSubpassDescription(	1,
-																			&normalDepthInputReference,
-																			static_cast<uint32>(directionalShadowColorAttachmentReferences.Size()),
-																			directionalShadowColorAttachmentReferences.Data(),
+																			&directionalShadowInputAttachmentReference,
+																			1,
+																			&directionalShadowColorAttachmentReference,
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
