@@ -39,6 +39,14 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	//Create something to look at.
 	{
+		PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Plane) };
+		model.SetMaterial(RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red));
+
+		StaticPhysicalEntity *const RESTRICT object{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+		object->Initialize(model, Vector3(0.0f, -2.5f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(100.0f, 100.0f, 100.0f));
+	}
+
+	{
 		PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Octahedron) };
 		model.SetMaterial(RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red));
 
