@@ -35,6 +35,7 @@ enum class RenderPassMainStage : uint8
 	None, //This will be removed once all the main stages are in place.
 	DirectionalShadow,
 	Scene,
+	PostProcessingFinal,
 
 	NumberOfRenderPassMainStages
 };

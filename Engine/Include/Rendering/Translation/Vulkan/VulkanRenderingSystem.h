@@ -198,6 +198,19 @@ private:
 		NumberOfSemaphores
 	};
 
+	class VulkanRenderPassMainStageData final
+	{
+
+	public:
+
+		//The render pass.
+		VulkanRenderPass *RESTRICT renderPass;
+
+		//The framebuffers.
+		DynamicArray<VulkanFramebuffer *RESTRICT> frameBuffers;
+
+	};
+
 	//The dynamic uniform data.
 	VulkanDynamicUniformData dynamicUniformData;
 
@@ -222,17 +235,14 @@ private:
 	//Container for all uniform buffers.
 	StaticArray<VulkanUniformBuffer *RESTRICT, INDEX(UniformBuffer::NumberOfUniformBuffers)> uniformBuffers;
 
-	//Container for all Vulkan render pass data.
-	StaticArray<VulkanRenderPassData, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> vulkanRenderPassData;
-
 	//Container for all special textures.
 	StaticArray<Vulkan2DTexture* RESTRICT, INDEX(SpecialTexture::NumberOfSpecialTextures)> specialTextures;
 
-	//Container for all Vulkan render passes.
-	StaticArray<VulkanRenderPass* RESTRICT, INDEX(RenderPassMainStage::NumberOfRenderPassMainStages)> vulkanRenderPasses;
+	//Container for all Vulkan render pass main stage data.
+	StaticArray<VulkanRenderPassMainStageData, INDEX(RenderPassMainStage::NumberOfRenderPassMainStages)> vulkanRenderPassMainStageData;
 
-	//Container for all Vulkan framebuffers.
-	StaticArray<VulkanFramebuffer* RESTRICT, INDEX(RenderPassMainStage::NumberOfRenderPassMainStages)> vulkanFramebuffers;
+	//Container for all Vulkan render pass data.
+	StaticArray<VulkanRenderPassData, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> vulkanRenderPassData;
 
 	//The Vulkan frame data.
 	VulkanFrameData frameData;

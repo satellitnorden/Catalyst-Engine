@@ -37,7 +37,7 @@ void PostProcessingRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::None);
+	SetMainStage(RenderPassMainStage::PostProcessingFinal);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::PostProcessing);
