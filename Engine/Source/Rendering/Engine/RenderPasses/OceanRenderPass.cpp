@@ -93,6 +93,13 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 */
 void OceanRenderPass::RenderInternal() NOEXCEPT
 {
+	if (true)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 

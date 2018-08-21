@@ -1170,17 +1170,18 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 	//Initialize the scene buffer render pass.
 	{
-		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 5 };
+		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 6 };
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 ALBEDO_INDEX{ 1 };
 		constexpr uint32 NORMAL_DEPTH_INDEX{ 2 };
 		constexpr uint32 MATERIAL_PROPERTIES_INDEX{ 3 };
 		constexpr uint32 DIRECTIONAL_SHADOW_INDEX{ 4 };
+		constexpr uint32 SCENE_INDEX{ 5 };
 
 		VulkanRenderPassCreationParameters renderPassParameters;
 
-		StaticArray<VkAttachmentDescription, 5> attachmenDescriptions
+		StaticArray<VkAttachmentDescription, 6> attachmenDescriptions
 		{
 			//Depth buffer.
 			VulkanUtilities::CreateAttachmentDescription(	depthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetFormat(),
@@ -1221,6 +1222,15 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			//Directional shadow.
 			VulkanUtilities::CreateAttachmentDescription(	renderTargets[INDEX(RenderTarget::DirectionalShadow)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_UNDEFINED,
+															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
+
+			//Scene.
+			VulkanUtilities::CreateAttachmentDescription(	renderTargets[INDEX(RenderTarget::Scene)]->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
@@ -1289,10 +1299,27 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
+		constexpr StaticArray<const VkAttachmentReference, 3> lightingInputAttachmentReferences
+		{
+			VkAttachmentReference{ ALBEDO_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL },
+			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL },
+			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }
+		};
+
+		constexpr VkAttachmentReference lightingColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(SCENE_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) };
+
+		subpassDescriptions[5] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(lightingInputAttachmentReferences.Size()),
+																			lightingInputAttachmentReferences.Data(),
+																			1,
+																			&lightingColorAttachmentReference,
+																			nullptr,
+																			0,
+																			nullptr);
+
 		renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
 		renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
 
-		StaticArray<VkSubpassDependency, 4> subpassDependencies
+		StaticArray<VkSubpassDependency, 5> subpassDependencies
 		{
 			VulkanUtilities::CreateSubpassDependency(	0,
 														1,
@@ -1323,7 +1350,15 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-														VK_ACCESS_SHADER_READ_BIT,
+														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	4,
+														5,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT)
 		};
 
@@ -1337,13 +1372,14 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		framebufferParameters.renderPass = vulkanRenderPasses[INDEX(RenderPassMainStage::SceneBuffer)]->Get();
 
-		StaticArray<VkImageView, 5> attachments
+		StaticArray<VkImageView, 6> attachments
 		{
 			depthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetImageView(),
 			renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetImageView(),
 			renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetImageView(),
 			renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetImageView(),
-			renderTargets[INDEX(RenderTarget::DirectionalShadow)]->GetImageView()
+			renderTargets[INDEX(RenderTarget::DirectionalShadow)]->GetImageView(),
+			renderTargets[INDEX(RenderTarget::Scene)]->GetImageView()
 		};
 
 		framebufferParameters.attachmentCount = static_cast<uint32>(attachments.Size());

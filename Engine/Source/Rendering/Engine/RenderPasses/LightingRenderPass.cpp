@@ -37,13 +37,13 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::None);
+	SetMainStage(RenderPassMainStage::SceneBuffer);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::Lighting);
 
 	//Set the sub stage index.
-	SetSubStageIndex(0);
+	SetSubStageIndex(5);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -57,7 +57,7 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::SceneIntermediate);
+	AddRenderTarget(RenderTarget::Scene);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(3);
