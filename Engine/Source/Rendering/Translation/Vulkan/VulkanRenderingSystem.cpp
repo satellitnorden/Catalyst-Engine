@@ -1195,7 +1195,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			//Albedo.
 			VulkanUtilities::CreateAttachmentDescription(	renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
-															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
 															VK_IMAGE_LAYOUT_UNDEFINED,
@@ -1213,7 +1213,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			//Material properties.
 			VulkanUtilities::CreateAttachmentDescription(	renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
-															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
 															VK_IMAGE_LAYOUT_UNDEFINED,
