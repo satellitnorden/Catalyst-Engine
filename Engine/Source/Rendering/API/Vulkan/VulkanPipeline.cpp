@@ -8,19 +8,19 @@
 /*
 *	Initializes this Vulkan pipeline.
 */
-void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) NOEXCEPT
+void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &parameters) NOEXCEPT
 {
 	//Create the pipeline shader stage create infos for both shaders.
 	DynamicArray<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfos;
-	pipelineShaderStageCreateInfos.UpsizeFast(vulkanPipelineCreationParameters.shaderModules.Size());
+	pipelineShaderStageCreateInfos.UpsizeFast(parameters.shaderModules.Size());
 
 	bool useTessellationStage{ false };
 
-	for (uint64 i = 0, size = vulkanPipelineCreationParameters.shaderModules.Size(); i < size; ++i)
+	for (uint64 i = 0, size = parameters.shaderModules.Size(); i < size; ++i)
 	{
-		CreatePipelineShaderStageCreateInfo(pipelineShaderStageCreateInfos[i], vulkanPipelineCreationParameters.shaderModules[i]);
+		CreatePipelineShaderStageCreateInfo(pipelineShaderStageCreateInfos[i], parameters.shaderModules[i]);
 
-		if (vulkanPipelineCreationParameters.shaderModules[i]->GetStage() == VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT || vulkanPipelineCreationParameters.shaderModules[i]->GetStage() == VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT)
+		if (parameters.shaderModules[i]->GetStage() == VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT || parameters.shaderModules[i]->GetStage() == VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT)
 		{
 			useTessellationStage = true;
 		}
@@ -28,11 +28,11 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 
 	//Create the pipeline vertex input state create info.
 	VkPipelineVertexInputStateCreateInfo pipelineVertexInputStateCreateInfo;
-	CreatePipelineVertexInputStateCreateInfo(pipelineVertexInputStateCreateInfo, vulkanPipelineCreationParameters);
+	CreatePipelineVertexInputStateCreateInfo(pipelineVertexInputStateCreateInfo, parameters);
 
 	//Create the pipeline input assembly state create info.
 	VkPipelineInputAssemblyStateCreateInfo pipelineInputAssemblyStateCreateInfo;
-	CreatePipelineInputAssemblyStateCreateInfo(pipelineInputAssemblyStateCreateInfo, vulkanPipelineCreationParameters);
+	CreatePipelineInputAssemblyStateCreateInfo(pipelineInputAssemblyStateCreateInfo, parameters);
 
 	//Create the pipeline tessellation create info.
 	VkPipelineTessellationStateCreateInfo pipelineTessellationStateCreateInfo;
@@ -42,11 +42,11 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 	VkPipelineViewportStateCreateInfo pipelineViewportStateCreateInfo;
 	VkViewport viewport;
 	VkRect2D scissors;
-	CreatePipelineViewportStateCreateInfo(pipelineViewportStateCreateInfo, viewport, scissors, vulkanPipelineCreationParameters);
+	CreatePipelineViewportStateCreateInfo(pipelineViewportStateCreateInfo, viewport, scissors, parameters);
 
 	//Create the pipeline rasterization state create info.
 	VkPipelineRasterizationStateCreateInfo pipelineRasterizationStateCreateInfo;
-	CreatePipelineRasterizationStateCreateInfo(pipelineRasterizationStateCreateInfo, vulkanPipelineCreationParameters);
+	CreatePipelineRasterizationStateCreateInfo(pipelineRasterizationStateCreateInfo, parameters);
 
 	//Create the pipeline multisample state create info.
 	VkPipelineMultisampleStateCreateInfo pipelineMultisampleStateCreateInfo;
@@ -54,37 +54,26 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &vulkanPi
 
 	//Create the pipeline depth stencil state create info.
 	VkPipelineDepthStencilStateCreateInfo pipelineDepthStencilStateCreateInfo;
-	CreatePipelineDepthStencilStateCreateInfo(pipelineDepthStencilStateCreateInfo, vulkanPipelineCreationParameters);
+	CreatePipelineDepthStencilStateCreateInfo(pipelineDepthStencilStateCreateInfo, parameters);
 
 	//Create the pipeline color blend attachment state.
 	DynamicArray<VkPipelineColorBlendAttachmentState> pipelineColorBlendAttachmentStates;
-	CreatePipelineColorBlendAttachmentStates(pipelineColorBlendAttachmentStates, vulkanPipelineCreationParameters);
+	CreatePipelineColorBlendAttachmentStates(pipelineColorBlendAttachmentStates, parameters);
 
 	//Create the pipeline color blend state create info.
 	VkPipelineColorBlendStateCreateInfo pipelineColorBlendStateCreateInfo;
-	CreatePipelineColorBlendStateCreateInfo(pipelineColorBlendStateCreateInfo, pipelineColorBlendAttachmentStates, vulkanPipelineCreationParameters);
+	CreatePipelineColorBlendStateCreateInfo(pipelineColorBlendStateCreateInfo, pipelineColorBlendAttachmentStates, parameters);
 
 	//Create the pipeline layout create info.
 	VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo;
-	CreatePipelineLayoutCreateInfo(pipelineLayoutCreateInfo, vulkanPipelineCreationParameters);
+	CreatePipelineLayoutCreateInfo(pipelineLayoutCreateInfo, parameters);
 
 	//Create the Vulkan pipeline layout!
 	VULKAN_ERROR_CHECK(vkCreatePipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &pipelineLayoutCreateInfo, nullptr, &vulkanPipelineLayout));
 
-	//Initialize the Vulkan render pass.
-	if (vulkanPipelineCreationParameters.renderPass)
-	{
-		vulkanRenderPass = vulkanPipelineCreationParameters.renderPass;
-	}
-	
-	else
-	{
-		vulkanRenderPass = VulkanInterface::Instance->CreateRenderPass(vulkanPipelineCreationParameters);
-	}
-
 	//Create the graphics pipeline create info.
 	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo;
-	CreateGraphicsPipelineCreateInfo(graphicsPipelineCreateInfo, pipelineShaderStageCreateInfos, pipelineVertexInputStateCreateInfo, pipelineInputAssemblyStateCreateInfo, useTessellationStage ? &pipelineTessellationStateCreateInfo : nullptr, pipelineViewportStateCreateInfo, pipelineRasterizationStateCreateInfo, pipelineMultisampleStateCreateInfo, pipelineDepthStencilStateCreateInfo, pipelineColorBlendStateCreateInfo, vulkanPipelineLayout, vulkanPipelineCreationParameters.subpass);
+	CreateGraphicsPipelineCreateInfo(graphicsPipelineCreateInfo, pipelineShaderStageCreateInfos, pipelineVertexInputStateCreateInfo, pipelineInputAssemblyStateCreateInfo, useTessellationStage ? &pipelineTessellationStateCreateInfo : nullptr, pipelineViewportStateCreateInfo, pipelineRasterizationStateCreateInfo, pipelineMultisampleStateCreateInfo, pipelineDepthStencilStateCreateInfo, pipelineColorBlendStateCreateInfo, vulkanPipelineLayout, parameters.subpass, parameters);
 
 	//Create the Vulkan pipeline!
 	VULKAN_ERROR_CHECK(vkCreateGraphicsPipelines(VulkanInterface::Instance->GetLogicalDevice().Get(), VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &vulkanPipeline));
@@ -237,7 +226,9 @@ void VulkanPipeline::CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthSt
 */
 void VulkanPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
-	for (VkImageView colorAttachment : vulkanPipelineCreationParameters.colorAttachments[0])
+	pipelineColorBlendAttachmentStates.Reserve(vulkanPipelineCreationParameters.colorAttachmentCount);
+
+	for (uint32 i = 0; i < vulkanPipelineCreationParameters.colorAttachmentCount; ++i)
 	{
 		VkPipelineColorBlendAttachmentState newPipelineColorBlendAttachmentState;
 
@@ -249,8 +240,8 @@ void VulkanPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPip
 		newPipelineColorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 		newPipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
 		newPipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-
-		pipelineColorBlendAttachmentStates.EmplaceSlow(newPipelineColorBlendAttachmentState);
+	
+		pipelineColorBlendAttachmentStates.EmplaceFast(newPipelineColorBlendAttachmentState);
 	}
 }
 
@@ -289,7 +280,7 @@ void VulkanPipeline::CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &
 /*
 *	Creates a graphics pipeline create info.
 */
-void VulkanPipeline::CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateInfo &graphicsPipelineCreateInfo, const DynamicArray<VkPipelineShaderStageCreateInfo> &pipelineShaderStageCreateInfos, const VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VkPipelineTessellationStateCreateInfo *pipelineTessellationStateCreateInfo, const VkPipelineViewportStateCreateInfo &pipelineViewportStateCreateInfo, const VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo, const VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo, const VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const VkPipelineLayout &pipelineLayout, const uint32 subpass) const NOEXCEPT
+void VulkanPipeline::CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateInfo &graphicsPipelineCreateInfo, const DynamicArray<VkPipelineShaderStageCreateInfo> &pipelineShaderStageCreateInfos, const VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VkPipelineTessellationStateCreateInfo *pipelineTessellationStateCreateInfo, const VkPipelineViewportStateCreateInfo &pipelineViewportStateCreateInfo, const VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo, const VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo, const VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const VkPipelineLayout &pipelineLayout, const uint32 subpass, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
 	graphicsPipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	graphicsPipelineCreateInfo.pNext = nullptr;
@@ -306,7 +297,7 @@ void VulkanPipeline::CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateIn
 	graphicsPipelineCreateInfo.pColorBlendState = &pipelineColorBlendStateCreateInfo;
 	graphicsPipelineCreateInfo.pDynamicState = nullptr;
 	graphicsPipelineCreateInfo.layout = pipelineLayout;
-	graphicsPipelineCreateInfo.renderPass = vulkanRenderPass->Get();
+	graphicsPipelineCreateInfo.renderPass = vulkanPipelineCreationParameters.renderPass->Get();
 	graphicsPipelineCreateInfo.subpass = subpass;
 	graphicsPipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 	graphicsPipelineCreateInfo.basePipelineIndex = -1;

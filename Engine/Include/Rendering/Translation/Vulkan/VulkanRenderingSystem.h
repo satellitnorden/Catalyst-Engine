@@ -209,6 +209,12 @@ private:
 		//The framebuffers.
 		DynamicArray<VulkanFramebuffer *RESTRICT> frameBuffers;
 
+		//Defines whether or not to clear the framebuffers.
+		bool shouldClear;
+
+		//The number of attachments.
+		uint32 numberOfAttachments;
+
 	};
 
 	//The dynamic uniform data.

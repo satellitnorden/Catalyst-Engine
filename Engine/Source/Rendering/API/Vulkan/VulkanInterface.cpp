@@ -407,23 +407,6 @@ RESTRICTED VulkanPipeline *const RESTRICT VulkanInterface::CreatePipeline(const 
 	return newPipeline;
 }
 
-Spinlock renderPassLock;
-
-/*
-*	Creates and returns a render pass.
-*/
-RESTRICTED VulkanRenderPass *const RESTRICT VulkanInterface::CreateRenderPass(const VulkanPipelineCreationParameters &parameters) NOEXCEPT
-{
-	VulkanRenderPass *const RESTRICT newRenderPass = new VulkanRenderPass;
-	newRenderPass->Initialize(parameters);
-
-	ScopedLock<Spinlock> scopedLock{ renderPassLock };
-
-	vulkanRenderPasses.EmplaceSlow(newRenderPass);
-
-	return newRenderPass;
-}
-
 /*
 *	Creates and returns a render pass.
 */
@@ -432,7 +415,8 @@ RESTRICTED VulkanRenderPass *const RESTRICT VulkanInterface::CreateRenderPass(co
 	VulkanRenderPass *const RESTRICT newRenderPass = new VulkanRenderPass;
 	newRenderPass->Initialize(parameters);
 
-	ScopedLock<Spinlock> scopedLock{ renderPassLock };
+	static Spinlock lock;
+	ScopedLock<Spinlock> scopedLock{ lock };
 
 	vulkanRenderPasses.EmplaceSlow(newRenderPass);
 

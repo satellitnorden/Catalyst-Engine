@@ -11,38 +11,14 @@ class VulkanPipelineCreationParameters final
 
 public:
 
-	//The attachment load operator.
-	VkAttachmentLoadOp attachmentLoadOperator;
-
 	//Whether or not to enable blend.
 	bool blendEnable;
 
-	//The final layout that color attachments will be in when a render pass instance begins.
-	VkImageLayout colorAttachmentFinalLayout;
-
-	//The format of the color attachments.
-	DynamicArray<VkFormat> colorAttachmentFormats;
-	
-	//The initial layout that color attachments will be in when a render pass instance begins.
-	VkImageLayout colorAttachmentInitialLayout;
-
-	//The color attachments.
-	DynamicArray<DynamicArray<VkImageView>> colorAttachments{ };
+	//The number of color attachments.
+	uint32 colorAttachmentCount;
 
 	//The cull mode.
 	VkCullModeFlagBits cullMode;
-
-	//The final layout that depth attachments will be in when a render pass instance begins.
-	VkImageLayout depthAttachmentFinalLayout;
-
-	//The initial layout that depth attachments will be in when a render pass instance begins.
-	VkImageLayout depthAttachmentInitialLayout;
-
-	//The store op for the depth attachment.
-	VkAttachmentStoreOp depthAttachmentStoreOp;
-
-	//The depth buffer.
-	VulkanDepthBuffer *RESTRICT depthBuffer;
 
 	//The depth compare operator.
 	VkCompareOp depthCompareOp;
@@ -66,7 +42,7 @@ public:
 	VkPushConstantRange *RESTRICT pushConstantRanges;
 
 	//The shader modules.
-	DynamicArray<VulkanShaderModule *RESTRICT> shaderModules{};
+	DynamicArray<VulkanShaderModule *RESTRICT> shaderModules;
 
 	//The subpass.
 	uint32 subpass;

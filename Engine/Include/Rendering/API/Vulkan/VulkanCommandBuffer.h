@@ -42,7 +42,7 @@ public:
 	/*
 	*	Records a begin render pass command.
 	*/
-	void CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea, const VkSubpassContents contents) NOEXCEPT;
+	void CommandBeginRenderPass(const VkRenderPass renderPass, const VkFramebuffer framebuffer, const VkExtent2D renderArea, const VkSubpassContents contents) NOEXCEPT;
 
 	/*
 	*	Records a begin render pass command and clears.

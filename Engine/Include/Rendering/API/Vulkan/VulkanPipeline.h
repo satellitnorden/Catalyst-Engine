@@ -7,7 +7,6 @@
 #include <Rendering/API/Vulkan/VulkanCore.h>
 #include <Rendering/API/Vulkan/VulkanDescriptorSet.h>
 #include <Rendering/API/Vulkan/VulkanDescriptorSetLayout.h>
-#include <Rendering/API/Vulkan/VulkanRenderPass.h>
 
 //Forward declarations.
 class VulkanDescriptorSetLayout;
@@ -39,11 +38,6 @@ public:
 	*/
 	const VkPipelineLayout& GetPipelineLayout() const NOEXCEPT { return vulkanPipelineLayout; }
 
-	/*
-	*	Returns the Vulkan render pass.
-	*/
-	const VulkanRenderPass& GetRenderPass() const NOEXCEPT { return *vulkanRenderPass; }
-
 private:
 
 	//The underlying Vulkan pipeline.
@@ -51,9 +45,6 @@ private:
 
 	//The underlying Vulkan pipeline layout.
 	VkPipelineLayout vulkanPipelineLayout;
-
-	//The Vulkan render pass.
-	const VulkanRenderPass *RESTRICT vulkanRenderPass;
 
 	/*
 	*	Creates a vertex pipeline shader stage create info.
@@ -104,6 +95,7 @@ private:
 	*	Creates a pipeline color state create info.
 	*/
 	void CreatePipelineColorBlendStateCreateInfo(VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameter) const NOEXCEPT;
+	
 	/*
 	*	Creates a pipeline layout create info.
 	*/
@@ -112,6 +104,6 @@ private:
 	/*
 	*	Creates a graphics pipeline create info.
 	*/
-	void CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateInfo &graphicsPipelineCreateInfo, const DynamicArray<VkPipelineShaderStageCreateInfo> &pipelineShaderStageCreateInfos, const VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VkPipelineTessellationStateCreateInfo *pipelineTessellationStateCreateInfo, const VkPipelineViewportStateCreateInfo &pipelineViewportStateCreateInfo, const VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo, const VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo, const VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const VkPipelineLayout &pipelineLayout, const uint32 subpass) const NOEXCEPT;
+	void CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateInfo &graphicsPipelineCreateInfo, const DynamicArray<VkPipelineShaderStageCreateInfo> &pipelineShaderStageCreateInfos, const VkPipelineVertexInputStateCreateInfo &pipelineVertexInputStateCreateInfo, const VkPipelineInputAssemblyStateCreateInfo &pipelineInputAssemblyStateCreateInfo, const VkPipelineTessellationStateCreateInfo *pipelineTessellationStateCreateInfo, const VkPipelineViewportStateCreateInfo &pipelineViewportStateCreateInfo, const VkPipelineRasterizationStateCreateInfo &pipelineRasterizationStateCreateInfo, const VkPipelineMultisampleStateCreateInfo &pipelineMultisampleStateCreateInfo, const VkPipelineDepthStencilStateCreateInfo &pipelineDepthStencilStateCreateInfo, const VkPipelineColorBlendStateCreateInfo &pipelineColorBlendStateCreateInfo, const VkPipelineLayout &pipelineLayout, const uint32 subpass, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
 
 };

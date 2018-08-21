@@ -421,49 +421,9 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	//Create the pipeline.
 	VulkanPipelineCreationParameters parameters;
 
-	parameters.attachmentLoadOperator = VulkanTranslationUtilities::GetVulkanAttachmentLoadOperator(renderPass->GetColorAttachmentLoadOperator());
 	parameters.blendEnable = renderPass->IsBlendEnabled();
-
-	if (renderPass->GetRenderTargets()[0] == RenderTarget::Screen)
-	{
-		parameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		parameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-
-		const DynamicArray<VkImageView> &swapchainImageViews{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
-		const uint64 swapchainImageViewsSize{ swapchainImageViews.Size() };
-
-		parameters.colorAttachments.UpsizeSlow(swapchainImageViewsSize);
-		parameters.colorAttachmentFormats.UpsizeSlow(swapchainImageViewsSize);
-
-		for (uint64 i = 0; i < swapchainImageViewsSize; ++i)
-		{
-			parameters.colorAttachments[i].Reserve(1);
-			parameters.colorAttachments[i].EmplaceFast(swapchainImageViews[i]);
-			parameters.colorAttachmentFormats[i] = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format;
-		}
-	}
-
-	else
-	{
-		parameters.colorAttachmentFinalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		parameters.colorAttachmentInitialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-		parameters.colorAttachments.UpsizeSlow(1);
-		parameters.colorAttachments[0].Reserve(renderPass->GetRenderTargets().Size());
-		parameters.colorAttachmentFormats.Reserve(renderPass->GetRenderTargets().Size());
-
-		for (const RenderTarget renderTarget : renderPass->GetRenderTargets())
-		{
-			parameters.colorAttachments[0].EmplaceFast(renderTargets[INDEX(renderTarget)]->GetImageView());
-			parameters.colorAttachmentFormats.EmplaceFast(renderTargets[INDEX(renderTarget)]->GetFormat());
-		}
-	}
-
+	parameters.colorAttachmentCount = static_cast<uint32>(renderPass->GetRenderTargets().Size());
 	parameters.cullMode = VulkanTranslationUtilities::GetVulkanCullMode(renderPass->GetCullMode());
-	parameters.depthAttachmentFinalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	parameters.depthAttachmentInitialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	parameters.depthAttachmentStoreOp = VulkanTranslationUtilities::GetVulkanAttachmentStoreOperator(renderPass->GetDepthAttachmentStoreOperator());
-	parameters.depthBuffer = renderPass->GetDepthBuffer() == DepthBuffer::None ? nullptr : depthBuffers[INDEX(renderPass->GetDepthBuffer())];
 	parameters.depthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(renderPass->GetDepthCompareOperator());
 	parameters.depthTestEnable = renderPass->IsDepthTestEnabled();
 	parameters.depthWriteEnable = renderPass->IsDepthWriteEnabled();
@@ -547,7 +507,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 
 	vulkanRenderPassData[INDEX(renderPass->GetSubStage())].pipeline = pipelines[INDEX(renderPass->GetSubStage())]->Get();
 	vulkanRenderPassData[INDEX(renderPass->GetSubStage())].pipelineLayout = pipelines[INDEX(renderPass->GetSubStage())]->GetPipelineLayout();
-	vulkanRenderPassData[INDEX(renderPass->GetSubStage())].renderPass = pipelines[INDEX(renderPass->GetSubStage())]->GetRenderPass().Get();
+	vulkanRenderPassData[INDEX(renderPass->GetSubStage())].renderPass = vulkanRenderPassMainStageData[INDEX(renderPass->GetMainStage())].renderPass->Get();
 
 	renderPass->SetData(&vulkanRenderPassData[INDEX(renderPass->GetSubStage())]);
 
@@ -1154,6 +1114,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)].frameBuffers.Reserve(1);
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)].frameBuffers.EmplaceFast( VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)].numberOfAttachments = 2;
+		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)].shouldClear = true;
 	}
 
 	//Initialize the scene buffer render pass.
@@ -1405,6 +1367,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)].frameBuffers.Reserve(1);
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)].frameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)].numberOfAttachments = 6;
+		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)].shouldClear = true;
 	}
 
 	//Initialize the post processing final render pass.
@@ -1472,6 +1436,9 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 			vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)].frameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		}
+
+		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)].numberOfAttachments = 1;
+		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)].shouldClear = false;
 	}
 }
 
@@ -1520,10 +1487,21 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 			currentStage = renderPass->GetMainStage();
 
-			currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(	vulkanRenderPassMainStageData[INDEX(currentStage)].renderPass->Get(),
-																			vulkanRenderPassMainStageData[INDEX(currentStage)].frameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
-																			renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height },
-																			VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, 5);
+			if (vulkanRenderPassMainStageData[INDEX(currentStage)].shouldClear)
+			{
+				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(	vulkanRenderPassMainStageData[INDEX(currentStage)].renderPass->Get(),
+																				vulkanRenderPassMainStageData[INDEX(currentStage)].frameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
+																				renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height },
+																				VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, vulkanRenderPassMainStageData[INDEX(currentStage)].numberOfAttachments);
+			}
+
+			else
+			{
+				currentPrimaryCommandBuffer->CommandBeginRenderPass(	vulkanRenderPassMainStageData[INDEX(currentStage)].renderPass->Get(),
+																		vulkanRenderPassMainStageData[INDEX(currentStage)].frameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
+																		renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height },
+																		VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+			}
 		}
 
 		else

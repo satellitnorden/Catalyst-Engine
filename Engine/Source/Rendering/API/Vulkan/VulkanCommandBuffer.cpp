@@ -7,7 +7,7 @@
 //Vulkan command buffer constants.
 namespace VulkanCommandBufferConstants
 {
-	constexpr uint64 MAXIMUM_NUMBER_OF_CLEAR_VALUES{ 5 };
+	constexpr uint64 MAXIMUM_NUMBER_OF_CLEAR_VALUES{ 6 };
 }
 
 /*
@@ -56,14 +56,14 @@ void VulkanCommandBuffer::BeginSecondary(const VkCommandBufferUsageFlags command
 /*
 *	Records a begin render pass command.
 */
-void VulkanCommandBuffer::CommandBeginRenderPass(const VulkanRenderPass &vulkanRenderPass, const uint64 framebufferIndex, const VkExtent2D renderArea, const VkSubpassContents contents) NOEXCEPT
+void VulkanCommandBuffer::CommandBeginRenderPass(const VkRenderPass renderPass, const VkFramebuffer framebuffer, const VkExtent2D renderArea, const VkSubpassContents contents) NOEXCEPT
 {
 	VkRenderPassBeginInfo renderPassBeginInfo;
 
 	renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassBeginInfo.pNext = nullptr;
-	renderPassBeginInfo.renderPass = vulkanRenderPass.Get();
-	renderPassBeginInfo.framebuffer = vulkanRenderPass.GetFrameBuffers()[framebufferIndex].Get();
+	renderPassBeginInfo.renderPass = renderPass;
+	renderPassBeginInfo.framebuffer = framebuffer;
 	renderPassBeginInfo.renderArea.offset = { 0, 0 };
 	renderPassBeginInfo.renderArea.extent = renderArea;
 	renderPassBeginInfo.clearValueCount = 0;

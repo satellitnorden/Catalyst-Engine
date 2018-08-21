@@ -189,11 +189,6 @@ public:
 	/*
 	*	Creates and returns a render pass.
 	*/
-	RESTRICTED VulkanRenderPass *const RESTRICT CreateRenderPass(const VulkanPipelineCreationParameters &parameters) NOEXCEPT;
-
-	/*
-	*	Creates and returns a render pass.
-	*/
 	RESTRICTED VulkanRenderPass *const RESTRICT CreateRenderPass(const VulkanRenderPassCreationParameters &parameters) NOEXCEPT;
 
 	/*
