@@ -6,137 +6,70 @@
 #define NOEXCEPT noexcept
 
 /*
-*	MSVC-specific defines.
+*	Sets a breakpoint in the code in non-final builds.
+*/
+#if !defined(CATALYST_FINAL)
+	#if defined(_MSC_VER)
+		#define BREAKPOINT __debugbreak()
+	#elif defined(__clang__)
+		#define BREAKPOINT
+	#endif
+#else
+	#define BREAKPOINT #error "This should not be in final!"
+#endif
+
+/*
+*	Stronger hint than the regular inline to inline a given function. Note that this does not guarantee it will actually be inlined.
 */
 #if defined(_MSC_VER)
-
-/*
-*	Sets a breakpoint in the code in non-final builds.
-*/
-#if !defined(CATALYST_FINAL)
-	#define BREAKPOINT __debugbreak()
-#else
-	#define BREAKPOINT #error "This should not be in final!"
-#endif
-
-/*
-*	Stronger hint than the regular inline to inline a given function. Note that this does not guarantee it will actually be inlined.
-*/
-#define FORCE_INLINE __forceinline
-
-/*
-*	Indicates to the branch predictor that an expression is expected to most times be true.
-*/
-#define LIKELY(expression) expression
-
-/*
-*	Indicates to the compiler that a given function does not modify memory outside the first level of indirection from the function's parameters.
-*/
-#define NOALIAS __declspec(noalias)
-
-/*
-*	Indicates to the branch predictor that an expression is expected to most times not be true.
-*/
-#define UNLIKELY(expression) expression
-
-/*
-*	Indicates to the compiler that within the scope of the given pointer, it does not alias with other pointers of the same type in the same scope.
-*/
-#define RESTRICT __restrict
-
-/*
-*	Indicates to the compiler that the pointer returned by a given function does not alias with other pointers in the same scope.
-*/
-#define RESTRICTED __declspec(restrict)
-
-/*
-*	Clang-specific defines.
-*/
+	#define FORCE_INLINE __forceinline
 #elif defined(__clang__)
-
-/*
-*	Sets a breakpoint in the code in non-final builds.
-*/
-#if !defined(CATALYST_FINAL)
-	#define BREAKPOINT __builtin_trap()
-#else
-	#define BREAKPOINT #error "This should not be in final!"
+	#define FORCE_INLINE
 #endif
-
-/*
-*	Stronger hint than the regular inline to inline a given function. Note that this does not guarantee it will actually be inlined.
-*/
-#define FORCE_INLINE
 
 /*
 *	Indicates to the branch predictor that an expression is expected to most times be true.
 */
-#define LIKELY(expression) expression
-
-/*
-*	Indicates to the compiler that a given function does not modify memory outside the first level of indirection from the function's parameters.
-*/
-#define NOALIAS
-
-/*
-*	Indicates to the branch predictor that an expression is expected to most times not be true.
-*/
-#define UNLIKELY(expression) expression
-
-/*
-*	Indicates to the compiler that within the scope of the given pointer, it does not alias with other pointers of the same type in the same scope.
-*/
-#define RESTRICT
-
-/*
-*	Indicates to the compiler that the pointer returned by a given function does not alias with other pointers in the same scope.
-*/
-#define RESTRICTED
-
-/*
-*	Unknown compiler!
-*/
-#else
-
-/*
-*	Sets a breakpoint in the code in non-final builds.
-*/
-#if !defined(CATALYST_FINAL)
-	#define BREAKPOINT
-#else
-	#define BREAKPOINT #error "This should not be in final!"
+#if defined(_MSC_VER)
+	#define LIKELY(expression) expression
+#elif defined(__clang__)
+	#define LIKELY(expression) expression
 #endif
 
 /*
-*	Stronger hint than the regular inline to inline a given function. Note that this does not guarantee it will actually be inlined.
-*/
-#define FORCE_INLINE
-
-/*
-*	Indicates to the branch predictor that an expression is expected to most times be true.
-*/
-#define LIKELY(expression) expression
-
-/*
 *	Indicates to the compiler that a given function does not modify memory outside the first level of indirection from the function's parameters.
 */
-#define NOALIAS
+#if defined(_MSC_VER)
+	#define NOALIAS __declspec(noalias)
+#elif defined(__clang__)
+	#define NOALIAS 
+#endif
 
 /*
 *	Indicates to the branch predictor that an expression is expected to most times not be true.
 */
-#define UNLIKELY(expression) expression
+#if defined(_MSC_VER)
+	#define UNLIKELY(expression) expression
+#elif defined(__clang__)
+	#define UNLIKELY(expression) expression
+#endif
 
 /*
 *	Indicates to the compiler that within the scope of the given pointer, it does not alias with other pointers of the same type in the same scope.
 */
-#define RESTRICT
+#if defined(_MSC_VER)
+	#define RESTRICT __restrict
+#elif defined(__clang__)
+	#define RESTRICT
+#endif
 
 /*
 *	Indicates to the compiler that the pointer returned by a given function does not alias with other pointers in the same scope.
 */
-#define RESTRICTED
-
+#if defined(_MSC_VER)
+	#define RESTRICTED __declspec(restrict)
+#elif defined(__clang__)
+	#define RESTRICTED
 #endif
 
 /*
