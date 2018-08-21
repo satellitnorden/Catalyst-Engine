@@ -28,13 +28,13 @@ SkyRenderPass::SkyRenderPass() NOEXCEPT
 void SkyRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::None);
+	SetMainStage(RenderPassMainStage::SceneBuffer);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::Sky);
 
 	//Set the sub stage index.
-	SetSubStageIndex(0);
+	SetSubStageIndex(6);
 
 	//Set the shaders.
 	SetVertexShader(Shader::CubeMapVertex);

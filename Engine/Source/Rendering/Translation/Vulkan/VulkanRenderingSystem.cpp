@@ -1170,7 +1170,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 	//Initialize the scene buffer render pass.
 	{
-		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 6 };
+		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 7 };
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 ALBEDO_INDEX{ 1 };
@@ -1306,20 +1306,28 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL }
 		};
 
-		constexpr VkAttachmentReference lightingColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(SCENE_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) };
+		constexpr VkAttachmentReference sceneColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(SCENE_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) };
 
 		subpassDescriptions[5] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(lightingInputAttachmentReferences.Size()),
 																			lightingInputAttachmentReferences.Data(),
 																			1,
-																			&lightingColorAttachmentReference,
+																			&sceneColorAttachmentReference,
 																			nullptr,
+																			0,
+																			nullptr);
+
+		subpassDescriptions[6] = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			1,
+																			&sceneColorAttachmentReference,
+																			&depthAttachmentReference,
 																			0,
 																			nullptr);
 
 		renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
 		renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
 
-		StaticArray<VkSubpassDependency, 5> subpassDependencies
+		StaticArray<VkSubpassDependency, 6> subpassDependencies
 		{
 			VulkanUtilities::CreateSubpassDependency(	0,
 														1,
@@ -1359,6 +1367,14 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	5,
+														6,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT)
 		};
 
