@@ -34,7 +34,7 @@ enum class RenderPassMainStage : uint8
 {
 	None, //This will be removed once all the main stages are in place.
 	DirectionalShadow,
-	SceneBuffer,
+	Scene,
 
 	NumberOfRenderPassMainStages
 };
@@ -45,9 +45,12 @@ enum class RenderPassMainStage : uint8
 */
 enum class RenderPassSubStage : uint8
 {
+	//Directional shadow main stage.
 	DirectionalTerrainShadow,
 	DirectionalStaticPhysicalShadow,
 	DirectionalInstancedPhysicalShadow,
+
+	//Scene main stage.
 	Terrain,
 	StaticPhysical,
 	InstancedPhysical,
@@ -56,6 +59,8 @@ enum class RenderPassSubStage : uint8
 	Lighting,
 	Sky,
 	ParticleSystem,
+
+	//None main stage.
 	Ocean,
 	Bloom,
 	PostProcessingBloom,

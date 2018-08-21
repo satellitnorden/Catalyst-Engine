@@ -33,7 +33,7 @@ StaticPhysicalRenderPass::StaticPhysicalRenderPass() NOEXCEPT
 void StaticPhysicalRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::SceneBuffer);
+	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::StaticPhysical);

@@ -1186,7 +1186,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			//Depth buffer.
 			VulkanUtilities::CreateAttachmentDescription(	depthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
-															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
 															VK_IMAGE_LAYOUT_UNDEFINED,
@@ -1195,7 +1195,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			//Albedo.
 			VulkanUtilities::CreateAttachmentDescription(	renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
-															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
 															VK_IMAGE_LAYOUT_UNDEFINED,
@@ -1213,7 +1213,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			//Material properties.
 			VulkanUtilities::CreateAttachmentDescription(	renderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
-															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
 															VK_IMAGE_LAYOUT_UNDEFINED,
@@ -1397,12 +1397,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters.subpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
 		renderPassParameters.subpassDependencies = subpassDependencies.Data();
 
-		vulkanRenderPasses[INDEX(RenderPassMainStage::SceneBuffer)] = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		vulkanRenderPasses[INDEX(RenderPassMainStage::Scene)] = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters.renderPass = vulkanRenderPasses[INDEX(RenderPassMainStage::SceneBuffer)]->Get();
+		framebufferParameters.renderPass = vulkanRenderPasses[INDEX(RenderPassMainStage::Scene)]->Get();
 
 		StaticArray<VkImageView, 6> attachments
 		{
@@ -1418,7 +1418,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters.attachments = attachments.Data();
 		framebufferParameters.extent = { RenderingSystem::Instance->GetScaledResolution().width, RenderingSystem::Instance->GetScaledResolution().height };
 
-		vulkanFramebuffers[INDEX(RenderPassMainStage::SceneBuffer)] = VulkanInterface::Instance->CreateFramebuffer(framebufferParameters);
+		vulkanFramebuffers[INDEX(RenderPassMainStage::Scene)] = VulkanInterface::Instance->CreateFramebuffer(framebufferParameters);
 	}
 }
 
