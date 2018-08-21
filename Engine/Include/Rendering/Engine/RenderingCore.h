@@ -55,9 +55,9 @@ enum class RenderPassSubStage : uint8
 	DirectionalShadow,
 	Lighting,
 	Sky,
+	ParticleSystem,
 	Ocean,
 	Bloom,
-	ParticleSystem,
 	PostProcessingBloom,
 	PostProcessing,
 
