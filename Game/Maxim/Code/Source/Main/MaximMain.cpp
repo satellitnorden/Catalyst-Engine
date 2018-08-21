@@ -20,7 +20,7 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 	configuration->renderingConfiguration.resolutionScale = 1.0f;
 	configuration->renderingConfiguration.shadowMapResolution = 2'048;
 #else
-	configuration->renderingConfiguration.resolutionScale = 1.0f;
+	configuration->renderingConfiguration.resolutionScale = 0.75f;
 	configuration->renderingConfiguration.shadowMapResolution = 1'024;
 #endif
 }

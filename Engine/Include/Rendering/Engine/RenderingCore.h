@@ -60,10 +60,7 @@ enum class RenderPassSubStage : uint8
 	Sky,
 	ParticleSystem,
 
-	//None main stage.
-	Ocean,
-	Bloom,
-	PostProcessingBloom,
+	//Post processing final main stage.
 	PostProcessing,
 
 	NumberOfRenderPassSubStages
@@ -143,7 +140,6 @@ enum class RenderTarget : uint8
 	SceneBufferAlbedo,
 	SceneBufferNormalDepth,
 	SceneBufferMaterialProperties,
-	ScreenSpaceAmbientOcclusion,
 	Scene,
 
 	//Screen.

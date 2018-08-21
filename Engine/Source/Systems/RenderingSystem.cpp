@@ -471,9 +471,6 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	renderPasses[INDEX(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::Ocean)] = OceanRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::Bloom)] = BloomRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::PostProcessingBloom)] = PostProcessingBloomRenderPass::Instance.Get();
 	renderPasses[INDEX(RenderPassSubStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
 }
 

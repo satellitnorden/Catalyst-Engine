@@ -78,8 +78,7 @@ layout (set = 1, binding = 3) uniform samplerCube dayDiffuseIrradianceTexture;
 layout (set = 2, binding = 0) uniform sampler2D albedoTexture;
 layout (set = 2, binding = 1) uniform sampler2D normalDirectionDepthTexture;
 layout (set = 2, binding = 2) uniform sampler2D roughnessMetallicAmbientOcclusionTexture;
-layout (set = 2, binding = 3) uniform sampler2D screenSpaceAmbientOcclusionTexture;
-layout (set = 2, binding = 4) uniform sampler2D directionalShadowMap;
+layout (set = 2, binding = 3) uniform sampler2D directionalShadow;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;
@@ -201,7 +200,7 @@ float LinearStep(float low, float high, float value)
 */
 float CalculateDirectionalLightShadowMultiplier()
 {
-    return texture(directionalShadowMap, fragmentTextureCoordinate.xy).r;
+    return texture(directionalShadow, fragmentTextureCoordinate.xy).r;
 }
 
 /*
@@ -295,7 +294,7 @@ vec3 CalculatePointLight(int index)
 */
 void CalculateScreenSpaceAmbientOcclusion()
 {
-    screenSpaceAmbientOcclusion = screenSpaceAmbientOcclusionEnabled ? texture(screenSpaceAmbientOcclusionTexture, fragmentTextureCoordinate).r : 1.0f;
+    screenSpaceAmbientOcclusion = 1.0f;
 }
 
 /*
