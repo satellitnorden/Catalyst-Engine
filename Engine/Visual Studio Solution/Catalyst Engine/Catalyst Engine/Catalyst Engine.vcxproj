@@ -184,9 +184,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PostProcessingRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPasses.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\SkyRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\StaticPhysicalRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TerrainRenderPass.h" />
@@ -319,9 +316,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PostProcessingBloomRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PostProcessingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderPass.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\SkyRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\StaticPhysicalRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TerrainRenderPass.cpp" />

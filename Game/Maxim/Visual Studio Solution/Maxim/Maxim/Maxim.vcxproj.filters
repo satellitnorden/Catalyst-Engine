@@ -201,15 +201,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\RenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\SkyRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>

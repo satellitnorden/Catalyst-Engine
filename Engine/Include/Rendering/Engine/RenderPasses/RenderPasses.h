@@ -15,9 +15,6 @@
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PostProcessingBloomRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
-#include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionHorizontalBlurRenderPass.h>
-#include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionRenderPass.h>
-#include <Rendering/Engine/RenderPasses/ScreenSpaceAmbientOcclusionVerticalBlurRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>
 #include <Rendering/Engine/RenderPasses/StaticPhysicalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/TerrainRenderPass.h>
