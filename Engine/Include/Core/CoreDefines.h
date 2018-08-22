@@ -10,9 +10,9 @@
 */
 #if !defined(CATALYST_FINAL)
 	#if defined(_MSC_VER)
-		#define BREAKPOINT __debugbreak()
+		#define BREAKPOINT { __debugbreak(); }
 	#elif defined(__clang__)
-		#define BREAKPOINT
+		#define BREAKPOINT { __asm__ volatile("int3"); }
 	#endif
 #else
 	#define BREAKPOINT #error "This should not be in final!"
@@ -24,7 +24,7 @@
 #if defined(_MSC_VER)
 	#define FORCE_INLINE __forceinline
 #elif defined(__clang__)
-	#define FORCE_INLINE
+	#define FORCE_INLINE __attribute__((always_inline))
 #endif
 
 /*
@@ -33,7 +33,7 @@
 #if defined(_MSC_VER)
 	#define LIKELY(expression) expression
 #elif defined(__clang__)
-	#define LIKELY(expression) expression
+	#define LIKELY(expression) __builtin_expect(expression, 1)
 #endif
 
 /*
@@ -51,7 +51,7 @@
 #if defined(_MSC_VER)
 	#define UNLIKELY(expression) expression
 #elif defined(__clang__)
-	#define UNLIKELY(expression) expression
+	#define UNLIKELY(expression) __builtin_expect(expression, 0)
 #endif
 
 /*
@@ -60,7 +60,7 @@
 #if defined(_MSC_VER)
 	#define RESTRICT __restrict
 #elif defined(__clang__)
-	#define RESTRICT
+	#define RESTRICT __restrict__
 #endif
 
 /*
