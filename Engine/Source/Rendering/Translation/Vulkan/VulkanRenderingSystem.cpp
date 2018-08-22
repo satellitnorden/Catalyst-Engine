@@ -1234,12 +1234,12 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		constexpr VkAttachmentReference directionalShadowInputAttachmentReference{ VulkanUtilities::CreateAttachmentReference(NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) };
+		constexpr VkAttachmentReference normalDepthInputAttachmentReference{ VulkanUtilities::CreateAttachmentReference(NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) };
 
 		constexpr VkAttachmentReference directionalShadowColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(DIRECTIONAL_SHADOW_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) };
 
 		subpassDescriptions[4] = VulkanUtilities::CreateSubpassDescription(	1,
-																			&directionalShadowInputAttachmentReference,
+																			&normalDepthInputAttachmentReference,
 																			1,
 																			&directionalShadowColorAttachmentReference,
 																			&depthAttachmentReference,
@@ -1271,10 +1271,16 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[7] = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			1,
-																			&sceneColorAttachmentReference,
+		constexpr StaticArray<const VkAttachmentReference, 2> particleSystemAttachmentReferences
+		{
+			VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_GENERAL },
+			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL }
+		};
+
+		subpassDescriptions[7] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(particleSystemAttachmentReferences.Size()),
+																			particleSystemAttachmentReferences.Data(),
+																			static_cast<uint32>(particleSystemAttachmentReferences.Size()),
+																			particleSystemAttachmentReferences.Data(),
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);

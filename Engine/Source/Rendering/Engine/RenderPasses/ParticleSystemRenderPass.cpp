@@ -31,6 +31,12 @@ ParticleSystemRenderPass::ParticleSystemRenderPass() NOEXCEPT
 */
 void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
@@ -51,12 +57,14 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(1);
+	SetNumberOfRenderTargets(2);
 	AddRenderTarget(RenderTarget::Scene);
+	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
+	AddRenderDataTableLayout(renderDataTableLayout);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem));
 
 	//Add the push constant ranges.
@@ -67,7 +75,7 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
-	SetBlendEnabled(true);
+	SetBlendEnabled(false);
 	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Load);
 	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);
 	SetCullMode(CullMode::Front);
@@ -86,6 +94,31 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 
 	//Finalize the initialization.
 	FinalizeInitialization();
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void ParticleSystemRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &renderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void ParticleSystemRenderPass::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(renderDataTableLayout, &renderDataTable);
+
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene)), renderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), renderDataTable);
 }
 
 /*
@@ -114,6 +147,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
 
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
@@ -127,7 +161,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 		particleSystemData.particleSystemTotalTime = EngineSystem::Instance->GetTotalGameTime() - component->particleSystemStartingTime;
 
 		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(float) * 2, &particleSystemData);
-		commandBuffer->BindRenderDataTable(this, 1, component->renderDataTable);
+		commandBuffer->BindRenderDataTable(this, 2, component->renderDataTable);
 		commandBuffer->Draw(this, 1, component->instanceCount);
 	}
 

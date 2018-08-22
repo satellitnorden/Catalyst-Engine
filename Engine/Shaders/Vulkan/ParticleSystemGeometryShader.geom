@@ -67,7 +67,7 @@ layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
 
 //The particle system uniform data.
-layout (std140, set = 1, binding = 0) uniform ParticleSystemUniformData
+layout (std140, set = 2, binding = 0) uniform ParticleSystemUniformData
 { 
 	layout (offset = 0) float fadeTime;
 	layout (offset = 4) float lifetime;
