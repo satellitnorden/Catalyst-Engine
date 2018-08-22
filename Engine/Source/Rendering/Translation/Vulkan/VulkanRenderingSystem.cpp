@@ -1371,6 +1371,73 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)].shouldClear = true;
 	}
 
+	//Initialize the ocean render pass.
+	{
+	constexpr uint64 NUMBER_OF_OCEAN_SUBPASSES{ 1 };
+
+	constexpr uint32 SCENE_INDEX{ 0 };
+
+	VulkanRenderPassCreationParameters renderPassParameters;
+
+	StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
+	{
+		//Scene.
+		VulkanUtilities::CreateAttachmentDescription(renderTargets[INDEX(RenderTarget::Scene)]->GetFormat(),
+		VK_ATTACHMENT_LOAD_OP_LOAD,
+		VK_ATTACHMENT_STORE_OP_STORE,
+		VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+		VK_ATTACHMENT_STORE_OP_DONT_CARE,
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+	};
+
+	renderPassParameters.attachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+	renderPassParameters.attachmentDescriptions = attachmenDescriptions.Data();
+
+	constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
+	{
+		VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+	};
+
+	StaticArray<VkSubpassDescription, NUMBER_OF_OCEAN_SUBPASSES> subpassDescriptions
+	{
+		VulkanUtilities::CreateSubpassDescription(0,
+		nullptr,
+		1,
+		colorAttachmentReferences.Data(),
+		nullptr,
+		0,
+		nullptr)
+	};
+
+	renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+	renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
+
+	renderPassParameters.subpassDependencyCount = 0;
+	renderPassParameters.subpassDependencies = nullptr;
+
+	vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].renderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+
+	//Create the framebuffer.
+	VulkanFramebufferCreationParameters framebufferParameters;
+
+	framebufferParameters.renderPass = vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].renderPass->Get();
+
+	StaticArray<VkImageView, 1> attachments
+	{
+		renderTargets[INDEX(RenderTarget::Scene)]->GetImageView()
+	};
+
+	framebufferParameters.attachmentCount = static_cast<uint32>(attachments.Size());
+	framebufferParameters.attachments = attachments.Data();
+	framebufferParameters.extent = { RenderingSystem::Instance->GetScaledResolution().width, RenderingSystem::Instance->GetScaledResolution().height };
+
+	vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].frameBuffers.Reserve(1);
+	vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].frameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+	vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].numberOfAttachments = 1;
+	vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].shouldClear = false;
+	}
+
 	//Initialize the post processing final render pass.
 	{
 		constexpr uint64 NUMBER_OF_POST_PROCESSING_FINAL_SUBPASSES{ 1 };
@@ -1477,6 +1544,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 	for (const RenderPass *const RESTRICT renderPass : RenderingSystem::Instance->GetRenderPasses())
 	{
+		//Wait for the render pass to finish it's render.
+		renderPass->WaitForRender();
+
 		//Begin a new render pass, if necessary.
 		if (currentStage != renderPass->GetMainStage())
 		{
@@ -1486,6 +1556,51 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 			}
 
 			currentStage = renderPass->GetMainStage();
+
+			//Specialization - Copy scene to scene intermediate for the ocean render pass.
+			if (currentStage == RenderPassMainStage::Ocean)
+			{
+				currentPrimaryCommandBuffer->CommandPipelineBarrier(	VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+																		VK_ACCESS_TRANSFER_READ_BIT,
+																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+																		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+																		renderTargets[INDEX(RenderTarget::Scene)]->GetImage(),
+																		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+																		VK_PIPELINE_STAGE_TRANSFER_BIT,
+																		VK_DEPENDENCY_BY_REGION_BIT);
+
+				currentPrimaryCommandBuffer->CommandPipelineBarrier(	0,
+																		VK_ACCESS_TRANSFER_WRITE_BIT,
+																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+																		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+																		renderTargets[INDEX(RenderTarget::SceneIntermediate)]->GetImage(),
+																		VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+																		VK_PIPELINE_STAGE_TRANSFER_BIT,
+																		VK_DEPENDENCY_BY_REGION_BIT);
+
+				const VkExtent2D sourceExtent{ renderTargets[INDEX(RenderTarget::Scene)]->GetExtent() };
+				const VkExtent3D extent{ sourceExtent.width, sourceExtent.height, 0 };
+
+				currentPrimaryCommandBuffer->CommandCopyImage(renderTargets[INDEX(RenderTarget::Scene)]->GetImage(), renderTargets[INDEX(RenderTarget::SceneIntermediate)]->GetImage(), extent);
+
+				currentPrimaryCommandBuffer->CommandPipelineBarrier(	VK_ACCESS_TRANSFER_WRITE_BIT,
+																		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+																		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+																		renderTargets[INDEX(RenderTarget::Scene)]->GetImage(),
+																		VK_PIPELINE_STAGE_TRANSFER_BIT,
+																		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+																		VK_DEPENDENCY_BY_REGION_BIT);
+
+				currentPrimaryCommandBuffer->CommandPipelineBarrier(	VK_ACCESS_TRANSFER_WRITE_BIT,
+																		VK_ACCESS_SHADER_READ_BIT,
+																		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+																		renderTargets[INDEX(RenderTarget::SceneIntermediate)]->GetImage(),
+																		VK_PIPELINE_STAGE_TRANSFER_BIT,
+																		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+																		VK_DEPENDENCY_BY_REGION_BIT);
+			}
 
 			if (vulkanRenderPassMainStageData[INDEX(currentStage)].shouldClear)
 			{
@@ -1508,9 +1623,6 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		{
 			currentPrimaryCommandBuffer->CommandNextSubpass();
 		}
-
-		//Wait for the render pass to finish it's render.
-		renderPass->WaitForRender();
 
 		//Record the execute commands.
 		if (renderPass->IncludeInRender())

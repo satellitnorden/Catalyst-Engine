@@ -10,6 +10,7 @@
 #include <Rendering/Engine/RenderPasses/DirectionalTerrainShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/InstancedPhysicalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
+#include <Rendering/Engine/RenderPasses/OceanRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>

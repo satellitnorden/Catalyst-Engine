@@ -132,6 +132,28 @@ void VulkanCommandBuffer::CommandBindVertexBuffers(const uint32 vertexBufferCoun
 }
 
 /*
+*	Records a copy image command.
+*/
+void VulkanCommandBuffer::CommandCopyImage(VkImage source, VkImage destination, const VkExtent3D extent) NOEXCEPT
+{
+	VkImageCopy imageCopy;
+
+	imageCopy.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	imageCopy.srcSubresource.mipLevel = 0;
+	imageCopy.srcSubresource.baseArrayLayer = 0;
+	imageCopy.srcSubresource.layerCount = 1;
+	imageCopy.srcOffset = { 0, 0, 0 };
+	imageCopy.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	imageCopy.dstSubresource.mipLevel = 0;
+	imageCopy.dstSubresource.baseArrayLayer = 0;
+	imageCopy.dstSubresource.layerCount = 1;
+	imageCopy.dstOffset = { 0, 0, 0 };
+	imageCopy.extent = extent;
+
+	vkCmdCopyImage(vulkanCommandBuffer, source, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, destination, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
+}
+
+/*
 *	Records a draw command.
 */
 void VulkanCommandBuffer::CommandDraw(const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT
@@ -174,9 +196,26 @@ void VulkanCommandBuffer::CommandNextSubpass() NOEXCEPT
 /*
 *	Records a pipeline barrier command.
 */
-void VulkanCommandBuffer::CommandPipelineBarrer(const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, const VkDependencyFlags dependencyFlags) NOEXCEPT
+void VulkanCommandBuffer::CommandPipelineBarrier(const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, VkImage image, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, const VkDependencyFlags dependencyFlags) NOEXCEPT
 {
-	//vkCmdPipelineBarrier(vulkanCommandBuffer, sourceStageMask, destinationStageMask, dependencyFlags)
+	VkImageMemoryBarrier imageMemoryBarrier;
+
+	imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	imageMemoryBarrier.pNext = nullptr;
+	imageMemoryBarrier.srcAccessMask = sourceAccessMask;
+	imageMemoryBarrier.dstAccessMask = destinationAccessMask;
+	imageMemoryBarrier.oldLayout = oldLayout;
+	imageMemoryBarrier.newLayout = newLayout;
+	imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	imageMemoryBarrier.image = image;
+	imageMemoryBarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	imageMemoryBarrier.subresourceRange.baseMipLevel = 0;
+	imageMemoryBarrier.subresourceRange.levelCount = 1;
+	imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
+	imageMemoryBarrier.subresourceRange.layerCount = 1;
+
+	vkCmdPipelineBarrier(vulkanCommandBuffer, sourceStageMask, destinationStageMask, dependencyFlags, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
 }
 
 /*

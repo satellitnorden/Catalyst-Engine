@@ -55,9 +55,6 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
-//Preprocessor defines.
-#define NUMBER_OF_SCREEN_SPACE_REFLECTION_ITERATIONS 100
-
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
@@ -79,12 +76,10 @@ layout (location = 0) out vec4 fragment;
 
 //Globals.
 float depth;
-float screenSpaceReflectionWeight;
 vec3 intersectionPoint;
 vec3 normalDirection;
 vec3 reflectionDirection;
 vec3 sceneWorldPosition;
-vec3 screenSpaceReflection;
 vec3 viewDirection;
 
 /*
@@ -105,47 +100,11 @@ void CalculateReflectionDirection()
 }
 
 /*
-*   Calculates the screen space reflection.
-*/
-void CalculateScreenSpaceReflection()
-{
-    //Disabled for now.
-    screenSpaceReflectionWeight = 0.0f;
-
-    /*
-    //Set the preliminary screen space reflection weight.
-    screenSpaceReflectionWeight = 0.0f;
-
-    //Iterate N times and see if there's a hit.
-    vec3 currentPosition = intersectionPoint + reflectionDirection;
-
-    for (int i = 0; i < NUMBER_OF_SCREEN_SPACE_REFLECTION_ITERATIONS; ++i)
-    {
-        vec4 screenSpacePosition = viewMatrix * vec4(currentPosition, 1.0f);
-        screenSpacePosition.xyz /= screenSpacePosition.w;
-        screenSpacePosition.xy = screenSpacePosition.xy * 0.5f + 0.5f;
-
-        float sceneDepth = texture(sceneNormalDepthTexture, screenSpacePosition.xy).a;
-
-        if (sceneDepth < screenSpacePosition.z)
-        {
-            screenSpaceReflectionWeight = 1.0f;
-            screenSpaceReflection = texture(sceneTexture, screenSpacePosition.xy).rgb;
-
-            break;
-        }
-
-        currentPosition += reflectionDirection;
-    }
-    */
-}
-
-/*
 *   Calculates the reflection.
 */
 vec3 CalculateReflection()
 {
-    return mix(mix(texture(nightTexture, reflectionDirection).rgb, texture(dayTexture, reflectionDirection).rgb, environmentBlend), screenSpaceReflection, screenSpaceReflectionWeight);
+    return mix(texture(nightTexture, reflectionDirection).rgb, texture(dayTexture, reflectionDirection).rgb, environmentBlend);
 }
 
 /*
@@ -205,23 +164,18 @@ void main()
     //Calculate the reflection direction.
     CalculateReflectionDirection();
 
-    //Calculate the screen space reflection.
-    CalculateScreenSpaceReflection();
-
 	//Calculate the reflection.
     vec3 reflection = CalculateReflection();
 
     //Sample the scene texture.
     float deformationWeight = clamp(length(sceneWorldPosition - intersectionPoint) / 50.0f, 0.0f, 1.0f);
     vec2 sceneTextureCoordinate = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? fragmentTextureCoordinate : fragmentTextureCoordinate + (normalDirection.xz * deformationWeight);
-    float suggestedSceneDepth = texture(sceneNormalDepthTexture, sceneTextureCoordinate).w;
-	vec3 suggestedSceneWorldPosition = CalculateWorldPosition(sceneTextureCoordinate, suggestedSceneDepth);
 
-	sceneTextureCoordinate = suggestedSceneWorldPosition.y > 0.0f ? fragmentTextureCoordinate : sceneTextureCoordinate;
+	sceneTextureCoordinate = sceneWorldPosition.y > 0.0f ? fragmentTextureCoordinate : sceneTextureCoordinate;
     vec4 sceneTextureSampler = texture(sceneTexture, sceneTextureCoordinate);
 
 	//Calculate the underwater weight.
-    float underwaterWeight = clamp(length(suggestedSceneWorldPosition - intersectionPoint) / 50.0f, 0.0f, 1.0f);
+    float underwaterWeight = clamp(length(sceneWorldPosition - intersectionPoint) / 50.0f, 0.0f, 1.0f);
 
     //Calculate the underwater color.
     vec3 underwaterColor = vec3(0.0f, 0.375f, 0.5f) * (CalculateAverage(reflection) + directionalLightIntensity * 0.5f);
@@ -237,11 +191,6 @@ void main()
     {
         finalOceanColor += CalculateDirectionalLight();
     }
-
-    //Calculate the depth.
-    vec4 projectedPosition = viewMatrix * vec4(intersectionPoint, 1.0f);
-    projectedPosition.xyz /= projectedPosition.w;
-    float depth = projectedPosition.z;
 
     //Write the fragment
     fragment = vec4(finalOceanColor, 1.0f);

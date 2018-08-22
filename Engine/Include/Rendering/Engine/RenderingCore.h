@@ -35,6 +35,7 @@ enum class RenderPassMainStage : uint8
 	None, //This will be removed once all the main stages are in place.
 	DirectionalShadow,
 	Scene,
+	Ocean,
 	PostProcessingFinal,
 
 	NumberOfRenderPassMainStages
@@ -60,6 +61,7 @@ enum class RenderPassSubStage : uint8
 	Lighting,
 	Sky,
 	ParticleSystem,
+	Ocean,
 
 	//Post processing final main stage.
 	PostProcessing,

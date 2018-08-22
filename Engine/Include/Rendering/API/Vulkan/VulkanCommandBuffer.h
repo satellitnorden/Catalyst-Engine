@@ -70,6 +70,11 @@ public:
 	void CommandBindVertexBuffers(const uint32 vertexBufferCount, const VkBuffer *RESTRICT vertexBuffers, const uint64 *RESTRICT offsets) NOEXCEPT;
 
 	/*
+	*	Records a copy image command.
+	*/
+	void CommandCopyImage(VkImage source, VkImage destination, const VkExtent3D extent) NOEXCEPT;
+
+	/*
 	*	Records a draw command.
 	*/
 	void CommandDraw(const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT;
@@ -97,7 +102,7 @@ public:
 	/*
 	*	Records a pipeline barrier command.
 	*/
-	void CommandPipelineBarrer(const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, const VkDependencyFlags dependencyFlags) NOEXCEPT;
+	void CommandPipelineBarrier(const VkAccessFlags sourceAccessMask, const VkAccessFlags destinationAccessMask, const VkImageLayout oldLayout, const VkImageLayout newLayout, VkImage image, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask, const VkDependencyFlags dependencyFlags) NOEXCEPT;
 
 	/*
 	*	Records a push constants command.
