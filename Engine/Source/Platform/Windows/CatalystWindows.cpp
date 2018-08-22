@@ -66,6 +66,8 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	{
 		BREAKPOINT;
 	}
+#else
+	RegisterClassEx(&windowInfo);
 #endif
 
 	//Create the window.
