@@ -58,7 +58,8 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //In parameters.
 layout (location = 0) in float fragmentFadeFactor;
 layout (location = 1) in vec2 fragmentTextureCoordinate;
-layout (location = 2) in vec3 fragmentWorldPosition;
+layout (location = 2) in vec2 fragmentSceneTextureCoordinate;
+layout (location = 3) in vec3 fragmentWorldPosition;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
@@ -128,12 +129,6 @@ vec3 CalculateSpotLight(int index)
 
 void main()
 {
-    //If the fragment is under the water, just discard it.
-    if (fragmentWorldPosition.y < 0.0f)
-    {
-        discard;
-    }
-
     //Sample the albedo texture.
     vec4 albedoTextureSampler = pow(texture(albedoTexture, fragmentTextureCoordinate), vec4(2.2f));
 
@@ -159,9 +154,8 @@ void main()
     float blendFactor = albedoTextureSampler.a * fragmentFadeFactor;
 
     //Write the fragment and normal depth.
-    vec2 sceneTextureCoordinate = vec2(gl_FragCoord.x / 1920.0f, gl_FragCoord.y / 1080.0f);
-    vec4 sceneTextureSampler = texture(sceneTexture, sceneTextureCoordinate);
-    vec4 normalDepthTextureSampler = texture(normalDepthTexture, sceneTextureCoordinate);
+    vec4 sceneTextureSampler = texture(sceneTexture, fragmentSceneTextureCoordinate);
+    vec4 normalDepthTextureSampler = texture(normalDepthTexture, fragmentSceneTextureCoordinate);
 
     fragment = vec4(mix(sceneTextureSampler.rgb, finalFragment, blendFactor), 1.0f);
     normalDepth = vec4(normalDepthTextureSampler.xyz, mix(normalDepthTextureSampler.a, gl_FragCoord.z, blendFactor));

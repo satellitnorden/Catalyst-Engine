@@ -89,7 +89,8 @@ layout (location = 0) in int instanceIndex[];
 //Out parameters.
 layout (location = 0) out float fragmentFadeFactor;
 layout (location = 1) out vec2 fragmentTextureCoordinate;
-layout (location = 2) out vec3 fragmentWorldPosition;
+layout (location = 2) out vec2 fragmentSceneTextureCoordinate;
+layout (location = 3) out vec3 fragmentWorldPosition;
 
 //Globals.
 int particleIndex;
@@ -182,35 +183,49 @@ void main()
 		vec3 upVector = cross(forwardVector, rightVector);
 
 		//Construct all the vertices.
+		vec4 screenSpacePosition;
+
 		fragmentFadeFactor = fadeFactor;
 		fragmentTextureCoordinate = vec2(0.0f, 0.0f);
 		fragmentWorldPosition = vec3((-rightVector * scale.x) + (-upVector * scale.y) + position);
+		screenSpacePosition = viewMatrix * vec4(fragmentWorldPosition, 1.0f);
 
-		gl_Position = viewMatrix * vec4(fragmentWorldPosition, 1.0f);
+		gl_Position = screenSpacePosition;
+
+		fragmentSceneTextureCoordinate = vec2(screenSpacePosition.xy / screenSpacePosition.w * 0.5f + 0.5f);
 
 		EmitVertex();
 
 		fragmentFadeFactor = fadeFactor;
 		fragmentTextureCoordinate = vec2(0.0f, 1.0f);
 		fragmentWorldPosition = vec3((-rightVector * scale.x) + (upVector * scale.y) + position);
+		screenSpacePosition = viewMatrix * vec4(fragmentWorldPosition, 1.0f);
 
-		gl_Position = viewMatrix * vec4(fragmentWorldPosition, 1.0f);
+		gl_Position = screenSpacePosition;
+
+		fragmentSceneTextureCoordinate = vec2(screenSpacePosition.xy / screenSpacePosition.w * 0.5f + 0.5f);
 
 		EmitVertex();
 
 		fragmentFadeFactor = fadeFactor;
 		fragmentTextureCoordinate = vec2(1.0f, 0.0f);
 		fragmentWorldPosition = vec3((rightVector * scale.x) + (-upVector * scale.y) + position);
+		screenSpacePosition = viewMatrix * vec4(fragmentWorldPosition, 1.0f);
 
-		gl_Position = viewMatrix * vec4(fragmentWorldPosition, 1.0f);
+		gl_Position = screenSpacePosition;
+
+		fragmentSceneTextureCoordinate = vec2(screenSpacePosition.xy / screenSpacePosition.w * 0.5f + 0.5f);
 
 		EmitVertex();
 
 		fragmentFadeFactor = fadeFactor;
 		fragmentTextureCoordinate = vec2(1.0f, 1.0f);
 		fragmentWorldPosition = vec3((rightVector * scale.x) + (upVector * scale.y) + position);
+		screenSpacePosition = viewMatrix * vec4(fragmentWorldPosition, 1.0f);
 
-		gl_Position = viewMatrix * vec4(fragmentWorldPosition, 1.0f);
+		gl_Position = screenSpacePosition;
+
+		fragmentSceneTextureCoordinate = vec2(screenSpacePosition.xy / screenSpacePosition.w * 0.5f + 0.5f);
 
 		EmitVertex();
 
