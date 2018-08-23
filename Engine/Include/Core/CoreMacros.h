@@ -4,7 +4,7 @@
 *	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.
 */
 #if !defined(CATALYST_FINAL)
-	#define ASSERT(condition, message) if (!(condition)) { PRINT_TO_OUTPUT(message); BREAKPOINT(); }
+	#define ASSERT(condition, message) if (!(UNLIKELY(condition))) { PRINT_TO_OUTPUT(message); BREAKPOINT(); }
 #else
 	#define ASSERT(condition, message) 
 #endif
@@ -29,13 +29,13 @@
 #if !defined(CATALYST_FINAL)
 	#define CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE(message, function)																							\
 	{																																							\
-		static uint64 iterations = 0;																															\
-		static uint64 averageDuration = 0;																														\
-		auto timeBeforeFunction = std::chrono::high_resolution_clock::now();																					\
+		static uint64 iterations{ 0 };																															\
+		static uint64 averageDuration{ 0 };																														\
+		std::chrono::time_point<std::chrono::steady_clock> timeBeforeFunction{ std::chrono::high_resolution_clock::now() };										\
 		function;																																				\
 		averageDuration += std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - timeBeforeFunction).count(); 		\
 		++iterations;																																			\
-		float duration = static_cast<float>(averageDuration / iterations) / 1'000.0f;																			\
+		float duration{ static_cast<float>(averageDuration / iterations) / 1'000.0f };																			\
 		PRINT_TO_OUTPUT(message << " - " << duration << " milliseconds.");																						\
 	}
 #else
