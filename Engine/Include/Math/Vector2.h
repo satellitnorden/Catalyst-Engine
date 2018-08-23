@@ -169,14 +169,19 @@ public:
 	}
 
 	/*
-	*	Returns a pointer to this vector's data.
+	*	Returns a pointer to this vector's data, const.
 	*/
-	RESTRICTED constexpr float* Data() NOEXCEPT { return &X; }
+	RESTRICTED constexpr const float* const RESTRICT Data() const NOEXCEPT { return &X; }
+
+	/*
+	*	Returns a pointer to this vector's data, non-const.
+	*/
+	RESTRICTED constexpr float* RESTRICT Data() NOEXCEPT { return &X; }
 
 	/*
 	*	Returns the length of the vector.
 	*/
-	constexpr float Length() const NOEXCEPT { return CatalystMath::SquareRoot((X * X) + (Y * Y)); }
+	constexpr float Length() const NOEXCEPT { return CatalystMath::SquareRoot(LengthSquared()); }
 
 	/*
 	*	Returns the length of the vector squared.
@@ -206,7 +211,7 @@ public:
 		const float sine{ CatalystMath::SineDegrees(theta) };
 
 		const float newX{ X * cosine - Y * sine };
-		const float newY{ X * cosine - Y * sine };
+		const float newY{ X * cosine + Y * sine };
 
 		X = newX;
 		Y = newY;

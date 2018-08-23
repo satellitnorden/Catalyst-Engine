@@ -130,14 +130,12 @@ public:
 	/*
 	*	Vector4 by Vector4 addition assignment overload.
 	*/
-	constexpr const Vector4& operator+=(const Vector4 &otherVector) NOEXCEPT
+	constexpr void operator+=(const Vector4 &otherVector) NOEXCEPT
 	{
 		X += otherVector.X;
 		Y += otherVector.Y;
 		Z += otherVector.Z;
 		W += otherVector.W;
-
-		return *this;
 	}
 
 	/*
@@ -161,7 +159,15 @@ public:
 	*/
 	constexpr float Length() const NOEXCEPT
 	{
-		return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z * Z) + (W * W));
+		return CatalystMath::SquareRoot(LengthSquared());
+	}
+
+	/*
+	*	Returns the length of the vector squared.
+	*/
+	constexpr float LengthSquared() const NOEXCEPT
+	{
+		return (X * X) + (Y * Y) + (Z * Z) + (W * W);
 	}
 
 	/*
@@ -185,10 +191,5 @@ public:
 		Z *= inverseLength;
 		W *= inverseLength;
 	}
-
-	/*
-	*	Returns if all the components of the vector is zero.
-	*/
-	constexpr bool IsZero() const NOEXCEPT { return X == 0.0f && Y == 0.0f && Z == 0.0f && W == 0.0f; }
 
 };

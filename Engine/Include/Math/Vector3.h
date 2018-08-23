@@ -253,22 +253,22 @@ public:
 	/*
 	*	Returns a pointer to this vector's data, const.
 	*/
-	RESTRICTED constexpr const float* const Data() const NOEXCEPT { return &X; }
+	RESTRICTED constexpr const float* const RESTRICT Data() const NOEXCEPT { return &X; }
 
 	/*
 	*	Returns a pointer to this vector's data, non-const.
 	*/
-	RESTRICTED constexpr float* Data() NOEXCEPT { return &X; }
+	RESTRICTED constexpr float* RESTRICT Data() NOEXCEPT { return &X; }
 
 	/*
 	*	Returns true if the vector is a unit vector, false otherwise.
 	*/
-	constexpr bool IsUnitVector() const  NOEXCEPT { return LengthSquared() == 1.0f; }
+	constexpr bool IsUnitVector() const NOEXCEPT { return LengthSquared() == 1.0f; }
 
 	/*
 	*	Returns the length of the vector.
 	*/
-	constexpr float Length() const NOEXCEPT { return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z *Z)); }
+	constexpr float Length() const NOEXCEPT { return CatalystMath::SquareRoot(LengthSquared()); }
 
 	/*
 	*	Returns the length of the vector squared.
