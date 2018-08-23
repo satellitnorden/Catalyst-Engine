@@ -76,7 +76,7 @@ VkFormat VulkanDepthBuffer::FindMostDesirableDepthBufferFormat() const NOEXCEPT
 
 #if !defined(CATALYST_FINAL)
 	//If a desirable format could not be retrieved, panic!
-	BREAKPOINT;
+	BREAKPOINT();
 #endif
 
 	return VK_FORMAT_UNDEFINED;

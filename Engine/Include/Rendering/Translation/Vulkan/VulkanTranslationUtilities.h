@@ -34,7 +34,7 @@ public:
 			default:
 			{
 #if !defined(CATALYST_FINAL)
-				PRINT_TO_OUTPUT("Unknown address mode."); BREAKPOINT;
+				ASSERT(false, "Unknown address mode.");
 #endif
 				return VK_SAMPLER_ADDRESS_MODE_REPEAT;
 			}
@@ -88,7 +88,7 @@ public:
 			default:
 			{
 #if !defined(CATALYST_FINAL)
-				PRINT_TO_OUTPUT("Unknown texture format."); BREAKPOINT;
+				ASSERT(false, "Unknown texture format.");
 #endif
 				return VK_DESCRIPTOR_TYPE_SAMPLER;
 			}
@@ -117,7 +117,7 @@ public:
 			default:
 			{
 #if !defined(CATALYST_FINAL)
-				PRINT_TO_OUTPUT("Unknown texture format."); BREAKPOINT;
+				ASSERT(false, "Unknown texture format.");
 #endif
 				return VK_FORMAT_R8G8B8A8_UNORM;
 			}
@@ -152,7 +152,7 @@ public:
 			default:
 			{
 #if !defined(CATALYST_FINAL)
-				PRINT_TO_OUTPUT("Unknown mipmap mode."); BREAKPOINT;
+				ASSERT(false, "Unknown mipmap mode.");
 #endif
 				return VK_SAMPLER_MIPMAP_MODE_NEAREST;
 			}
@@ -199,7 +199,7 @@ public:
 			default:
 			{
 #if !defined(CATALYST_FINAL)
-				PRINT_TO_OUTPUT("Unknown texture filter."); BREAKPOINT;
+				ASSERT(false, "Unknown texture filter.");
 #endif
 				return VK_FILTER_NEAREST;
 			}

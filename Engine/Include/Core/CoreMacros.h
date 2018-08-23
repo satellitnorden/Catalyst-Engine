@@ -4,9 +4,22 @@
 *	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.
 */
 #if !defined(CATALYST_FINAL)
-	#define ASSERT(condition, message) if (!(condition)) { PRINT_TO_OUTPUT(message); BREAKPOINT; }
+	#define ASSERT(condition, message) if (!(condition)) { PRINT_TO_OUTPUT(message); BREAKPOINT(); }
 #else
 	#define ASSERT(condition, message) 
+#endif
+
+/*
+*	Sets a breakpoint in the code in non-final builds.
+*/
+#if !defined(CATALYST_FINAL)
+	#if defined(_MSC_VER)
+		#define BREAKPOINT() { __debugbreak(); }
+	#elif defined(__clang__)
+		#define BREAKPOINT() { __asm__ volatile("int3"); }
+	#endif
+#else
+	#define BREAKPOINT() #error "This should not be in final!"
 #endif
 
 /*
@@ -45,6 +58,20 @@
 #define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance = new SingletonClass;
 
 /*
+*	Casts a value to a uint64 so that it can be used as an index. Useful for enum classes.
+*/
+#define INDEX(value) static_cast<uint64>(value)
+
+/*
+*	Indicates to the branch predictor that an expression is expected to most times be true.
+*/
+#if defined(_MSC_VER)
+	#define LIKELY(expression) expression
+#elif defined(__clang__)
+	#define LIKELY(expression) __builtin_expect(expression, 1)
+#endif
+
+/*
 *	Prints a message to the output in non-final builds.
 */
 #if !defined(CATALYST_FINAL)
@@ -52,9 +79,13 @@
 #endif
 
 /*
-*	Casts a value to a uint64 so that it can be used as an index. Useful for enum classes.
+*	Indicates to the branch predictor that an expression is expected to most times not be true.
 */
-#define INDEX(value) static_cast<uint64>(value)
+#if defined(_MSC_VER)
+	#define UNLIKELY(expression) expression
+#elif defined(__clang__)
+	#define UNLIKELY(expression) __builtin_expect(expression, 0)
+#endif
 
 /*
 *	Puts the current thread to sleep.

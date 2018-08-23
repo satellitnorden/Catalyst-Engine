@@ -100,7 +100,7 @@ static void PrintResultAndBreak(const char *const RESTRICT function, const VkRes
 		}
 	}
 
-	BREAKPOINT;
+	BREAKPOINT();
 }
 #endif
 

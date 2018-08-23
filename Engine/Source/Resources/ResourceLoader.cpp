@@ -63,7 +63,7 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			{
 				PRINT_TO_OUTPUT("Undefined resource type.");
 
-				BREAKPOINT;
+				BREAKPOINT();
 			}
 #endif
 

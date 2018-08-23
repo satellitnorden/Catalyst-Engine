@@ -64,7 +64,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 #if !defined(CATALYST_FINAL)
 	if (!RegisterClassEx(&windowInfo))
 	{
-		BREAKPOINT;
+		BREAKPOINT();
 	}
 #else
 	RegisterClassEx(&windowInfo);
@@ -88,7 +88,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	{
 		const DWORD result{ GetLastError() };
 
-		BREAKPOINT;
+		BREAKPOINT();
 	}
 #endif
 

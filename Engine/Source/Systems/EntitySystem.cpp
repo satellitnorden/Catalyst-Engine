@@ -144,7 +144,7 @@ void EntitySystem::InitializeEntity(EntityInitializationData* const RESTRICT dat
 		{
 			PRINT_TO_OUTPUT("Invalid entity type!");
 
-			BREAKPOINT;
+			BREAKPOINT();
 		}
 #endif
 	}
@@ -227,7 +227,7 @@ void EntitySystem::TerminateEntity(EntityTerminationData* const RESTRICT data) N
 		{
 			PRINT_TO_OUTPUT("Invalid entity type!");
 
-			BREAKPOINT;
+			BREAKPOINT();
 		}
 #endif
 	}

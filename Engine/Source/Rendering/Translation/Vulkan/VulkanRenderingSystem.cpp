@@ -587,7 +587,7 @@ void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInf
 #if !defined(CATALYST_FINAL)
 		default:
 		{
-			BREAKPOINT;
+			BREAKPOINT();
 		}
 #endif
 	}

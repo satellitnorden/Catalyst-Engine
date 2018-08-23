@@ -6,9 +6,6 @@
 //Math.
 #include <Math/Vector3.h>
 
-//Forward declarations.
-class Vector3;
-
 class Vector4 final
 {
 
