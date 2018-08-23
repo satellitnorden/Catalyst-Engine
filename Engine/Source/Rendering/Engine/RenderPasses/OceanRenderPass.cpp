@@ -68,11 +68,7 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::DontCare);
-	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);
 	SetCullMode(CullMode::Back);
-	SetDepthAttachmentLoadOperator(AttachmentLoadOperator::DontCare);
-	SetDepthAttachmentStoreOperator(AttachmentStoreOperator::DontCare);
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);
 	SetDepthWriteEnabled(false);

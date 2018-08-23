@@ -134,29 +134,9 @@ public:
 	bool IsBlendEnabled() const NOEXCEPT { return blendEnabled; }
 
 	/*
-	*	Returns the color attachment load operator.
-	*/
-	AttachmentLoadOperator GetColorAttachmentLoadOperator() const NOEXCEPT { return colorAttachmentLoadOperator; }
-
-	/*
-	*	Returns the color attachment store operator.
-	*/
-	AttachmentStoreOperator GetColorAttachmentStoreOperator() const NOEXCEPT { return colorAttachmentStoreOperator; }
-
-	/*
 	*	Returns the cull mode.
 	*/
 	CullMode GetCullMode() const NOEXCEPT { return cullMode; }
-
-	/*
-	*	Returns the depth attachment load operator.
-	*/
-	AttachmentLoadOperator GetDepthAttachmentLoadOperator() const NOEXCEPT { return depthAttachmentLoadOperator; }
-
-	/*
-	*	Returns the depth attachment store operator.
-	*/
-	AttachmentStoreOperator GetDepthAttachmentStoreOperator() const NOEXCEPT { return depthAttachmentStoreOperator; }
 
 	/*
 	*	Returns the depth compare operator.
@@ -311,29 +291,9 @@ protected:
 	void SetBlendEnabled(const bool newBlendEnabled) NOEXCEPT { blendEnabled = newBlendEnabled; }
 
 	/*
-	*	Sets the color attachment load operator.
-	*/
-	void SetColorAttachmentLoadOperator(const AttachmentLoadOperator newColorAttachmentLoadOperator) NOEXCEPT { colorAttachmentLoadOperator = newColorAttachmentLoadOperator; }
-
-	/*
-	*	Sets the color attachment store operator.
-	*/
-	void SetColorAttachmentStoreOperator(const AttachmentStoreOperator newColorAttachmentStorOperator) NOEXCEPT { colorAttachmentStoreOperator = newColorAttachmentStorOperator; }
-
-	/*
 	*	Sets the cull mode.
 	*/
 	void SetCullMode(const CullMode newCullMode) NOEXCEPT { cullMode = newCullMode; }
-
-	/*
-	*	Sets the depth attachment load operator.
-	*/
-	void SetDepthAttachmentLoadOperator(const AttachmentLoadOperator newDepthAttachmentLoadOperator) NOEXCEPT { depthAttachmentLoadOperator = newDepthAttachmentLoadOperator; }
-
-	/*
-	*	Sets the depth attachment store operator.
-	*/
-	void SetDepthAttachmentStoreOperator(const AttachmentStoreOperator newDepthAttachmentStorOperator) NOEXCEPT { depthAttachmentStoreOperator = newDepthAttachmentStorOperator; }
 
 	/*
 	*	Sets the depth compare operator.
@@ -427,21 +387,9 @@ private:
 
 	//Denotes whether or not blend is enabled.
 	bool blendEnabled;
-
-	//The color attachment load operator.
-	AttachmentLoadOperator colorAttachmentLoadOperator;
-
-	//The color attachment store operator.
-	AttachmentStoreOperator colorAttachmentStoreOperator;
 	
 	//The cull mode.
 	CullMode cullMode;
-
-	//The depth attachment load operator.
-	AttachmentLoadOperator depthAttachmentLoadOperator;
-
-	//The depth attachment store operator.
-	AttachmentStoreOperator depthAttachmentStoreOperator;
 
 	//The depth compare operator.
 	CompareOperator depthCompareOperator;

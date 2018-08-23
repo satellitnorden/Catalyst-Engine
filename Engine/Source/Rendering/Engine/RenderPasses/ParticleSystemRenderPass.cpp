@@ -76,11 +76,7 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Load);
-	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);
 	SetCullMode(CullMode::Front);
-	SetDepthAttachmentLoadOperator(AttachmentLoadOperator::Load);
-	SetDepthAttachmentStoreOperator(AttachmentStoreOperator::DontCare);
 	SetDepthCompareOperator(CompareOperator::Less);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(false);

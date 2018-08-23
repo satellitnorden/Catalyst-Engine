@@ -42,33 +42,6 @@ public:
 	}
 
 	/*
-	*	Given an attachment load operator, return the corresponding Vulkan attachment load operator.
-	*/
-	static VkAttachmentLoadOp GetVulkanAttachmentLoadOperator(const AttachmentLoadOperator attachmentLoadOperator) NOEXCEPT
-	{
-		switch (attachmentLoadOperator)
-		{
-			default: return VK_ATTACHMENT_LOAD_OP_LOAD;
-			case AttachmentLoadOperator::Clear: return VK_ATTACHMENT_LOAD_OP_CLEAR;
-			case AttachmentLoadOperator::DontCare: return VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			case AttachmentLoadOperator::Load: return VK_ATTACHMENT_LOAD_OP_LOAD;
-		}
-	}
-
-	/*
-	*	Given an attachment store operator, return the corresponding Vulkan attachment load operator.
-	*/
-	static VkAttachmentStoreOp GetVulkanAttachmentStoreOperator(const AttachmentStoreOperator attachmentSstoreOperator) NOEXCEPT
-	{
-		switch (attachmentSstoreOperator)
-		{
-			default: return VK_ATTACHMENT_STORE_OP_STORE;
-			case AttachmentStoreOperator::DontCare: return VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			case AttachmentStoreOperator::Store: return VK_ATTACHMENT_STORE_OP_STORE;
-		}
-	}
-
-	/*
 	*	Given a compare operator, return the corresponding Vulkan compare operator.
 	*/
 	static VkCompareOp GetVulkanCompareOperator(const CompareOperator compareOperator) NOEXCEPT

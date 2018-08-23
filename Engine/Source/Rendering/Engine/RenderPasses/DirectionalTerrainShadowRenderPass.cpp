@@ -81,11 +81,7 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
-	SetColorAttachmentLoadOperator(AttachmentLoadOperator::Clear);
-	SetColorAttachmentStoreOperator(AttachmentStoreOperator::Store);
 	SetCullMode(CullMode::Back);
-	SetDepthAttachmentLoadOperator(AttachmentLoadOperator::Clear);
-	SetDepthAttachmentStoreOperator(AttachmentStoreOperator::Store);
 	SetDepthCompareOperator(CompareOperator::Less);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);

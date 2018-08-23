@@ -69,21 +69,6 @@ enum class RenderPassSubStage : uint8
 	NumberOfRenderPassSubStages
 };
 
-//Enumeration covering all attachment load operators.
-enum class AttachmentLoadOperator : uint8
-{
-	Clear,
-	DontCare,
-	Load
-};
-
-//Enumeration covering all attachment store operators.
-enum class AttachmentStoreOperator : uint8
-{
-	DontCare,
-	Store
-};
-
 //Enumeration covering all compare operators.
 enum class CompareOperator : uint8
 {
