@@ -10,6 +10,11 @@
 #endif
 
 /*
+*	Defines the bit at the specified index.
+*/
+#define BIT(index) (static_cast<uint64>(1) << index)
+
+/*
 *	Sets a breakpoint in the code in non-final builds.
 */
 #if !defined(CATALYST_FINAL)

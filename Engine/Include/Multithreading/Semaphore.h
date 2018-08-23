@@ -6,8 +6,8 @@
 //Enumeration covering all semaphore creation flags.
 enum SemaphoreCreationFlags : uint8
 {
-	Unsignalled = 1 << 0,
-	Signalled = 1 << 1
+	Unsignalled = BIT(0),
+	Signalled = BIT(1)
 };
 
 class Semaphore final
