@@ -29,7 +29,7 @@ public:
 	*/
 	void Lock() NOEXCEPT
 	{
-		while (!lock.test_and_set(std::memory_order_acquire));
+		while (lock.test_and_set(std::memory_order_acquire));
 	}
 
 	/*
@@ -43,6 +43,6 @@ public:
 private:
 
 	//The underlying atomic lock.
-	std::atomic_flag lock{ 0 };
+	std::atomic_flag lock{ ATOMIC_FLAG_INIT };
 
 };
