@@ -49,14 +49,14 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	WNDCLASSEX windowInfo;
 
 	windowInfo.cbSize = sizeof(WNDCLASSEX);
-	windowInfo.style = CS_HREDRAW | CS_VREDRAW;
+	windowInfo.style = 0;
 	windowInfo.lpfnWndProc = WindowProcedure;
 	windowInfo.cbClsExtra = 0;
 	windowInfo.cbWndExtra = 0;
 	windowInfo.hInstance = CatalystPlatform::instance;
 	windowInfo.hIcon = LoadIcon(CatalystPlatform::instance, IDI_APPLICATION);
 	windowInfo.hCursor = LoadCursor(NULL, IDC_ARROW);
-	windowInfo.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+	windowInfo.hbrBackground = 0;
 	windowInfo.lpszMenuName = NULL;
 	windowInfo.lpszClassName = _T("Catalyst Engine");
 	windowInfo.hIconSm = LoadIcon(windowInfo.hInstance, IDI_APPLICATION);
@@ -71,9 +71,9 @@ void CatalystPlatform::Initialize() NOEXCEPT
 #endif
 
 	//Create the window.
-	window = CreateWindow(	_T("Catalyst Engine"),
+	window = CreateWindow(	windowInfo.lpszClassName,
 							_T(EngineSystem::Instance->GetProjectConfiguration().generalConfiguration.projectName.CString()),
-							WS_OVERLAPPEDWINDOW,
+							WS_MAXIMIZE | WS_SYSMENU,
 							CW_USEDEFAULT,
 							CW_USEDEFAULT,
 							EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.resolution.width,
