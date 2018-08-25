@@ -31,7 +31,7 @@ public:
 	{
 		while (lock.test_and_set(std::memory_order_acquire))
 		{
-			THREAD_YIELD();
+			std::this_thread::yield();
 		}
 	}
 

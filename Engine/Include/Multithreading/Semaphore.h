@@ -43,7 +43,13 @@ public:
 	/*
 	*	Waits for this semaphore.
 	*/
-	void WaitFor() const NOEXCEPT { while (!signalled) THREAD_YIELD(); }
+	void WaitFor() const NOEXCEPT
+	{
+		while (!signalled)
+		{
+			std::this_thread::yield();
+		}
+	}
 
 private:
 

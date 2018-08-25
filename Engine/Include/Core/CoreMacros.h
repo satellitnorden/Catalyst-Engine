@@ -24,7 +24,7 @@
 		#define BREAKPOINT() { __asm__ volatile("int3"); }
 	#endif
 #else
-	#define BREAKPOINT() #error "This should not be in final!"
+	#define BREAKPOINT()
 #endif
 
 /*
@@ -60,7 +60,7 @@
 /*
 *	Defines a singleton class. Must be done in the source file.
 */
-#define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance = new SingletonClass;
+#define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance{ new SingletonClass };
 
 /*
 *	Casts a value to a uint64 so that it can be used as an index. Useful for enum classes.
@@ -91,13 +91,3 @@
 #elif defined(__clang__)
 	#define UNLIKELY(expression) __builtin_expect(expression, 0)
 #endif
-
-/*
-*	Puts the current thread to sleep.
-*/
-#define THREAD_SLEEP() std::this_thread::sleep_for(std::chrono::nanoseconds(1));
-
-/*
-*	Yields the current thread.
-*/
-#define THREAD_YIELD() std::this_thread::yield();

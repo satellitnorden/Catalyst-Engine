@@ -27,6 +27,7 @@
 #include <ThirdParty/android_native_app_glue.h>
 #include <android/log.h>
 
+#if !defined(CATALYST_FINAL)
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "threaded_app", __VA_ARGS__))
 #define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "threaded_app", __VA_ARGS__))
 
@@ -35,6 +36,11 @@
 #  define LOGV(...)  ((void)__android_log_print(ANDROID_LOG_VERBOSE, "threaded_app", __VA_ARGS__))
 #else
 #  define LOGV(...)  ((void)0)
+#endif
+#else
+	#define LOGI(...)  ((void)0)
+	#define LOGE(...)  ((void)0)
+	#define LOGV(...)  ((void)0)
 #endif
 
 static void free_saved_state(struct android_app* android_app) {
