@@ -4,6 +4,7 @@
 
 //Core.
 #include <Core/EngineCore.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Third party.
 #define VK_USE_PLATFORM_WIN32_KHR

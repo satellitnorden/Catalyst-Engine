@@ -1,6 +1,9 @@
 #pragma once
 
-template <class ObjectType, uint64 ArraySize>
+//Core.
+#include <Core/EngineCore.h>
+
+template <typename Type, uint64 ArraySize>
 class StaticArray final
 {
 
@@ -28,7 +31,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	constexpr const ObjectType& operator[](const uint64 index) const NOEXCEPT
+	constexpr const Type& operator[](const uint64 index) const NOEXCEPT
 	{
 		return array[index];
 	}
@@ -36,7 +39,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	constexpr ObjectType& operator[](const uint64 index) NOEXCEPT
+	constexpr Type& operator[](const uint64 index) NOEXCEPT
 	{
 		return array[index];
 	}
@@ -44,7 +47,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	RESTRICTED constexpr const ObjectType *const RESTRICT begin() const NOEXCEPT
+	RESTRICTED constexpr const Type *const RESTRICT begin() const NOEXCEPT
 	{
 		return array;
 	}
@@ -52,7 +55,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	RESTRICTED constexpr ObjectType *const RESTRICT begin()  NOEXCEPT
+	RESTRICTED constexpr Type *const RESTRICT begin()  NOEXCEPT
 	{
 		return array;
 	}
@@ -60,7 +63,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	RESTRICTED constexpr const ObjectType *const RESTRICT end() const NOEXCEPT
+	RESTRICTED constexpr const Type *const RESTRICT end() const NOEXCEPT
 	{
 		return array + ArraySize;
 	}
@@ -68,7 +71,7 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	RESTRICTED constexpr ObjectType *const RESTRICT end() NOEXCEPT
+	RESTRICTED constexpr Type *const RESTRICT end() NOEXCEPT
 	{
 		return array + ArraySize;
 	}
@@ -76,7 +79,7 @@ public:
 	/*
 	*	Returns a pointer to the data of the array, const.
 	*/
-	constexpr const ObjectType *const RESTRICT Data() const NOEXCEPT
+	RESTRICTED constexpr const Type *const RESTRICT Data() const NOEXCEPT
 	{
 		return array;
 	}
@@ -84,7 +87,7 @@ public:
 	/*
 	*	Returns a pointer to the data of the array, non-const.
 	*/
-	constexpr ObjectType *RESTRICT Data() NOEXCEPT
+	RESTRICTED constexpr Type *const RESTRICT Data() NOEXCEPT
 	{
 		return array;
 	}
@@ -100,6 +103,6 @@ public:
 private:
 
 	//The underlying array.
-	ObjectType array[ArraySize];
+	Type array[ArraySize];
 
 };

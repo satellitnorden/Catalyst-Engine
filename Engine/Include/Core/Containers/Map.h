@@ -1,5 +1,9 @@
 #pragma once
 
+//Core.
+#include <Core/EngineCore.h>
+#include <Core/Containers/DynamicArray.h>
+
 template <class KeyType, class ObjectType>
 class Map final
 {

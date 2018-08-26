@@ -3,6 +3,7 @@
 //Core.
 #include <Core/EngineCore.h>
 #include <Core/HashString.h>
+#include <Core/Containers/Map.h>
 
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>
