@@ -45,7 +45,7 @@ void PollEvents() NOEXCEPT
 	int32 events;
 	android_poll_source *RESTRICT source;
 
-	if (ALooper_pollAll(0, nullptr, &events, reinterpret_cast<void *RESTRICT *RESTRICT>(&source)) >= 0)
+	if (ALooper_pollAll(0, nullptr, &events, (void**) &source) >= 0)
 	{
 		if (source)
 		{

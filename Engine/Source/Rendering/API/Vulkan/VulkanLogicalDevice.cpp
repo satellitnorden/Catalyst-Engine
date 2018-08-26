@@ -167,7 +167,7 @@ void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreat
 	deviceCreateInfo.enabledLayerCount = 0;
 	deviceCreateInfo.ppEnabledLayerNames = nullptr;
 	deviceCreateInfo.enabledExtensionCount = static_cast<uint32>(requiredExtensions.Size());
-	deviceCreateInfo.ppEnabledExtensionNames = requiredExtensions.Data();
+	deviceCreateInfo.ppEnabledExtensionNames = (const char *const *) requiredExtensions.Data();
 	deviceCreateInfo.pEnabledFeatures = enabledFeatures;
 }
 

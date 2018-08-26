@@ -29,8 +29,7 @@
 #if defined(_MSC_VER)
 	#define RESTRICT __restrict
 #elif defined(__clang__)
-	//#define RESTRICT __restrict__
-	#define RESTRICT
+	#define RESTRICT __restrict__
 #endif
 
 /*

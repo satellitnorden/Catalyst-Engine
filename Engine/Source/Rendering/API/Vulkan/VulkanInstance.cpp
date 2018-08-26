@@ -11,12 +11,12 @@
 //Define the validation layers.
 namespace
 {
-	const DynamicArray<const char *RESTRICT> validationLayers{ "VK_LAYER_LUNARG_standard_validation", "VK_LAYER_LUNARG_assistant_layer" };
+	constexpr StaticArray<const char *const RESTRICT, 2> validationLayers{ "VK_LAYER_LUNARG_standard_validation", "VK_LAYER_LUNARG_assistant_layer" };
 }
 #endif
 
 //The instance extensions.
-DynamicArray<const char *RESTRICT> extensions;
+DynamicArray<const char *const RESTRICT> extensions;
 
 /*
 *	Initializes this Vulkan instance.
@@ -79,5 +79,5 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 	PlatformVulkan::GetRequiredInstanceExtensions(extensions);
 
 	createInstanceInfo.enabledExtensionCount = static_cast<uint32>(extensions.Size());
-	createInstanceInfo.ppEnabledExtensionNames = extensions.Data();
+	createInstanceInfo.ppEnabledExtensionNames = (const char *const *) extensions.Data();
 }

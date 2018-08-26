@@ -37,7 +37,7 @@ enum class IOMode : uint8;
 template <IOMode IoMode>
 class BinaryFile;
 
-template <class ObjectType, uint64 InitialCapacity>
+template <typename Type>
 class DynamicArray;
 
 class DynamicString;

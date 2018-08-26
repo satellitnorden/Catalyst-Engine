@@ -190,7 +190,7 @@ public:
 	/*
 	*	Returns the required Vulkan instance extensions.
 	*/
-	static void GetRequiredInstanceExtensions(DynamicArray<const char *RESTRICT> &extensions) NOEXCEPT
+	static void GetRequiredInstanceExtensions(DynamicArray<const char *const RESTRICT> &extensions) NOEXCEPT
 	{
 		extensions.Reserve(2);
 

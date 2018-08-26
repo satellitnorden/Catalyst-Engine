@@ -1,6 +1,6 @@
 #pragma once
 
-template <typename Type, uint64 InitialCapacity = 0>
+template <typename Type>
 class DynamicArray final
 {
 
@@ -11,18 +11,11 @@ public:
 	*/
 	DynamicArray() NOEXCEPT
 		:
-		size(0)
+		array(nullptr),
+		size(0),
+		capacity(0)
 	{
-		if (InitialCapacity > 0)
-		{
-			ReserveConstruct(InitialCapacity);
-		}
 
-		else
-		{
-			array = nullptr;
-			capacity = 0;
-		}
 	}
 
 	/*
@@ -78,7 +71,7 @@ public:
 			}
 
 			//Free the memory used by the array.
-			MemoryUtilities::FreeMemory(static_cast<void *RESTRICT>(array));
+			MemoryUtilities::FreeMemory(array);
 		}
 	}
 
@@ -124,7 +117,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	RESTRICTED const Type* begin() const  NOEXCEPT
+	RESTRICTED const Type *const RESTRICT begin() const  NOEXCEPT
 	{
 		return array;
 	}
@@ -132,7 +125,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	RESTRICTED Type* begin()  NOEXCEPT
+	RESTRICTED Type *const RESTRICT begin()  NOEXCEPT
 	{
 		return array;
 	}
@@ -140,7 +133,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	RESTRICTED const Type* end() const NOEXCEPT
+	RESTRICTED const Type *const RESTRICT end() const NOEXCEPT
 	{
 		return array + size;
 	}
@@ -148,7 +141,7 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	RESTRICTED Type* end() NOEXCEPT
+	RESTRICTED Type *const RESTRICT end() NOEXCEPT
 	{
 		return array + size;
 	}
@@ -171,7 +164,7 @@ public:
 	/*
 	*	Returns a pointer to the data of this dynamic array, const.
 	*/
-	RESTRICTED const Type* Data() const NOEXCEPT
+	RESTRICTED const Type *const RESTRICT Data() const NOEXCEPT
 	{
 		return array;
 	}
@@ -179,7 +172,7 @@ public:
 	/*
 	*	Returns a pointer to the data of this dynamic array, non-const.
 	*/
-	RESTRICTED Type* Data() NOEXCEPT
+	RESTRICTED Type *const RESTRICT Data() NOEXCEPT
 	{
 		return array;
 	}
@@ -189,7 +182,7 @@ public:
 	*/
 	const Type& Back() const NOEXCEPT
 	{
-		return array[size - 1];
+		return array[LastIndex()];
 	}
 
 	/*
@@ -197,7 +190,7 @@ public:
 	*/
 	Type& Back() NOEXCEPT
 	{
-		return array[size - 1];
+		return array[LastIndex()];
 	}
 
 	/*
@@ -237,7 +230,7 @@ public:
 			Reserve(size > 0 ? size * 3 : 16);
 		}
 
-		new (&array[size++]) Type(std::forward<Arguments>(arguments)...);
+		new ((void *const RESTRICT) &array[size++]) Type(std::forward<Arguments>(arguments)...);
 	}
 
 	/*
@@ -246,7 +239,7 @@ public:
 	template <class... Arguments>
 	void EmplaceFast(Arguments&&... arguments) NOEXCEPT
 	{
-		new (&array[size++]) Type(std::forward<Arguments>(arguments)...);
+		new ((void *const RESTRICT) &array[size++]) Type(std::forward<Arguments>(arguments)...);
 	}
 
 	/*
@@ -259,7 +252,7 @@ public:
 		object.~Type();
 		object = std::move(Back());
 
-		Pop();
+		PopFast();
 	}
 
 	/*
@@ -273,7 +266,7 @@ public:
 			{
 				object.~Type();
 				object = std::move(Back());
-				Pop();
+				PopFast();
 
 				return;
 			}
@@ -313,9 +306,9 @@ public:
 	}
 
 	/*
-	*	Pops an element from the back of this dynamic array.
+	*	Pops an element from the back of this dynamic array without calling the constructor first..
 	*/
-	void Pop() NOEXCEPT
+	void PopFast() NOEXCEPT
 	{
 		--size;
 	}
@@ -326,13 +319,13 @@ public:
 	void Reserve(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *RESTRICT newArray{ static_cast<Type*>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity)) };
+		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
 		MemoryUtilities::CopyMemory(newArray, array, sizeof(Type) * size);
 
 		//Free the old array.
-		MemoryUtilities::FreeMemory(static_cast<void*>(array));
+		MemoryUtilities::FreeMemory(array);
 
 		//Update the array and the capacity.
 		array = newArray;
@@ -345,13 +338,13 @@ public:
 	void UpsizeFast(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *RESTRICT newArray{ static_cast<Type *RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity)) };
+		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
 		MemoryUtilities::CopyMemory(newArray, array, sizeof(Type) * size);
 
 		//Free the old array.
-		MemoryUtilities::FreeMemory(static_cast<void *RESTRICT>(array));
+		MemoryUtilities::FreeMemory(array);
 
 		//Update the array and the capacity.
 		array = newArray;
@@ -365,7 +358,7 @@ public:
 	void UpsizeSlow(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		Type *RESTRICT newArray{ static_cast<Type *RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity)) };
+		Type *const RESTRICT newArray{ static_cast<Type *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity)) };
 
 		//Move over all objects from the old array to the new array.
 		MemoryUtilities::CopyMemory(newArray, array, sizeof(Type) * size);
@@ -377,7 +370,7 @@ public:
 		}
 
 		//Free the old array.
-		MemoryUtilities::FreeMemory(static_cast<void *RESTRICT>(array));
+		MemoryUtilities::FreeMemory(array);
 
 		//Update the array and the capacity.
 		array = newArray;
@@ -402,7 +395,7 @@ private:
 	void ReserveConstruct(const uint64 newCapacity) NOEXCEPT
 	{
 		//Allocate the new array.
-		array = static_cast<Type*>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity));
+		array = static_cast<Type *RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(Type) * newCapacity));
 
 		//Update the capacity.
 		capacity = newCapacity;

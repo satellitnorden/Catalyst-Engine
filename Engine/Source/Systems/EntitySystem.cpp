@@ -121,7 +121,7 @@ void EntitySystem::InitializeEntities() NOEXCEPT
 	{
 		EntityInitializationData *const RESTRICT data = &initializationQueue.Back();
 		InitializeEntity(data);
-		initializationQueue.Pop();
+		initializationQueue.PopFast();
 	}
 }
 
@@ -204,7 +204,7 @@ void EntitySystem::TerminateEntities() NOEXCEPT
 	{
 		EntityTerminationData *const RESTRICT data = &terminationQueue.Back();
 		TerminateEntity(data);
-		terminationQueue.Pop();
+		terminationQueue.PopFast();
 	}
 }
 

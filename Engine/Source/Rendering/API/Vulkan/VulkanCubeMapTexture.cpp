@@ -40,7 +40,7 @@ void VulkanCubeMapTexture::Initialize(const float *const RESTRICT data, const ui
 	VulkanUtilities::CreateVulkanBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferDeviceMemory);
 
 	void *RESTRICT mappedData;
-	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, &mappedData));
+	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, 0, imageSize, 0, (void**) &mappedData));
 
 	//Copy the data into the staging buffer.
 	MemoryUtilities::CopyMemory(mappedData, data, static_cast<uint64>(imageSize));
