@@ -1,6 +1,6 @@
 #pragma once
 
-template <class ObjectType>
+template <typename Type>
 class UniquePointer final
 {
 
@@ -14,7 +14,7 @@ public:
 	/*
 	*	Constructor taking the underlying pointer as the argument.
 	*/
-	UniquePointer(ObjectType *const RESTRICT newPointer) NOEXCEPT
+	UniquePointer(Type *const RESTRICT newPointer) NOEXCEPT
 		:
 		pointer(newPointer)
 	{
@@ -33,7 +33,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	RESTRICTED const ObjectType *const RESTRICT operator->() const NOEXCEPT
+	RESTRICTED const Type *const RESTRICT operator->() const NOEXCEPT
 	{
 		return pointer;
 	}
@@ -41,7 +41,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	RESTRICTED ObjectType* operator->() NOEXCEPT
+	RESTRICTED Type *const RESTRICT operator->() NOEXCEPT
 	{
 		return pointer;
 	}
@@ -49,7 +49,7 @@ public:
 	/*
 	*	Returns the underlying pointer, const.
 	*/
-	RESTRICTED const ObjectType *const RESTRICT Get() const NOEXCEPT
+	RESTRICTED const Type *const RESTRICT Get() const NOEXCEPT
 	{
 		return pointer;
 	}
@@ -57,7 +57,7 @@ public:
 	/*
 	*	Returns the underlying pointer, non-const.
 	*/
-	RESTRICTED ObjectType *const RESTRICT Get() NOEXCEPT
+	RESTRICTED Type *const RESTRICT Get() NOEXCEPT
 	{
 		return pointer;
 	}
@@ -65,6 +65,6 @@ public:
 private:
 
 	//The underlying pointer.
-	ObjectType *RESTRICT pointer;
+	Type *RESTRICT pointer;
 
 };

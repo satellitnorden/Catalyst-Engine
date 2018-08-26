@@ -19,17 +19,13 @@
 #include <unordered_map>
 
 //Core defines.
-#include <Core/CoreDefines.h>
+#include <Core/Core/CoreDefines.h>
 
 //Core macros.
-#include <Core/CoreMacros.h>
+#include <Core/Core/CoreMacros.h>
 
 //Core type aliases.
 #include <Core/CoreTypeAliases.h>
-
-//Utilities.
-#include <Core/Utilities/CompileTimeUtilities.h>
-#include <Core/Utilities/MemoryUtilities.h>
 
 //Core types, forward declarations.
 enum class IOMode : uint8;
@@ -48,9 +44,6 @@ class Padding;
 template <class FirstType, class SecondType>
 class Pair;
 
-template <class ObjectType>
-class UniquePointer;
-
 //Core types, implementations.
 #include <Core/BinaryFile.h>
 #include <Core/DeltaTimer.h>
@@ -58,10 +51,8 @@ class UniquePointer;
 #include <Core/Optional.h>
 #include <Core/Padding.h>
 #include <Core/Pair.h>
-#include <Core/UniquePointer.h>
+#include <Core/Pointers/SharedPointer.h>
+#include <Core/Pointers/UniquePointer.h>
 
 //Platform.
 #include <Platform/General/Platform.h>
-
-//The Catalyst project configuration.
-#include <Core/CatalystProjectConfiguration.h>

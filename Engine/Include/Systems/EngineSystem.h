@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/EngineCore.h>
+#include <Core/General/CatalystProjectConfiguration.h>
 
 class EngineSystem final
 {

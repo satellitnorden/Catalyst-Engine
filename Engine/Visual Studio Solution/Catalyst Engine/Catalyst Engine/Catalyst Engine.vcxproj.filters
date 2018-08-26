@@ -184,6 +184,15 @@
     <Filter Include="Platform\Source\Windows">
       <UniqueIdentifier>{e7808115-0193-40f6-a619-eef50e6af51c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Include\Pointers">
+      <UniqueIdentifier>{caaed6a2-14e5-4370-9f45-cdcee1679450}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Include\General">
+      <UniqueIdentifier>{2de41bd6-d32e-49fc-8a95-48c301aefab9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Include\Core">
+      <UniqueIdentifier>{b1b5a605-c227-4c17-aa40-132aee6e6b5d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\CameraComponent.h">
@@ -234,12 +243,6 @@
     <ClInclude Include="..\..\..\Include\Core\BinaryFile.h">
       <Filter>Core\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\CoreDefines.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\CoreMacros.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\CoreTypeAliases.h">
       <Filter>Core\Include</Filter>
     </ClInclude>
@@ -262,12 +265,6 @@
       <Filter>Core\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Pair.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\SharedPointer.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\UniquePointer.h">
       <Filter>Core\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -783,9 +780,6 @@
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h">
       <Filter>Managers\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\CatalystProjectConfiguration.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystWindows.h">
       <Filter>Platform\Include\Windows</Filter>
     </ClInclude>
@@ -803,6 +797,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\OceanRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Pointers\SharedPointer.h">
+      <Filter>Core\Include\Pointers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Pointers\UniquePointer.h">
+      <Filter>Core\Include\Pointers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\CatalystProjectConfiguration.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Core\CoreDefines.h">
+      <Filter>Core\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Core\CoreMacros.h">
+      <Filter>Core\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

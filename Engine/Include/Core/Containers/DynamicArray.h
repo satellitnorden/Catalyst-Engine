@@ -1,5 +1,8 @@
 #pragma once
 
+//Core.
+#include <Core/EngineCore.h>
+
 template <typename Type>
 class DynamicArray final
 {

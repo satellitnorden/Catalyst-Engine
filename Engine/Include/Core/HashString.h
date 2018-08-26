@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/EngineCore.h>
+#include <Core/Utilities/CompileTimeUtilities.h>
 
 //Algorithms.
 #include <Core/Algorithms/HashAlgorithms.h>

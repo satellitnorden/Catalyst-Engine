@@ -1,6 +1,6 @@
 #pragma once
 
-template <class ObjectType>
+template <typename Type>
 class SharedPointer final
 {
 
@@ -39,7 +39,7 @@ public:
 	/*
 	*	Constructor taking a raw pointer as it's argument.
 	*/
-	SharedPointer(ObjectType *const RESTRICT newPointer) RESTRICT
+	SharedPointer(Type *const RESTRICT newPointer) RESTRICT
 		:
 		pointer(newPointer),
 		referenceCount(new int8)
@@ -83,7 +83,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	RESTRICTED const ObjectType* const operator->() const NOEXCEPT
+	RESTRICTED const Type *const RESTRICT operator->() const NOEXCEPT
 	{
 		return pointer;
 	}
@@ -91,7 +91,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	RESTRICTED ObjectType* operator->() NOEXCEPT
+	RESTRICTED Type *const RESTRICT operator->() NOEXCEPT
 	{
 		return pointer;
 	}
@@ -99,7 +99,7 @@ public:
 private:
 
 	//The underlying pointer.
-	ObjectType *RESTRICT pointer;
+	Type *RESTRICT pointer;
 
 	//The reference count for this shared pointer.
 	int8 *RESTRICT referenceCount;

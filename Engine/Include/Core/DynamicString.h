@@ -1,5 +1,9 @@
 #pragma once
 
+//Core.
+#include <Core/EngineCore.h>
+#include <Core/Utilities/MemoryUtilities.h>
+
 class DynamicString final
 {
 

@@ -12,9 +12,11 @@
 #include <Rendering/Engine/ParticleMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Engine/Resolution.h>
 
 //Forward declarations.
 class CameraEntity;
+class CatalystProjectRenderingConfiguration;
 class CPUTexture2D;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
@@ -146,7 +148,6 @@ public:
 	*	Returns the render passes.
 	*/
 	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)>& GetRenderPasses() const { return renderPasses; }
-
 
 	/*
 	*	Returns the given render target.
