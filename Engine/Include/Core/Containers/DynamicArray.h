@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/EngineCore.h>
+#include <Core/Utilities/MemoryUtilities.h>
 
 template <typename Type>
 class DynamicArray final

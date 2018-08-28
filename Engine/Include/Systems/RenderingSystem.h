@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/EngineCore.h>
+#include <Core/Containers/StaticArray.h>
 
 //Math.
 #include <Math/Matrix4.h>

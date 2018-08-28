@@ -25,7 +25,7 @@
 #include <Core/Core/CoreMacros.h>
 
 //Core type aliases.
-#include <Core/CoreTypeAliases.h>
+#include <Core/Core/CoreTypeAliases.h>
 
 //Core types, forward declarations.
 enum class IOMode : uint8;
@@ -47,10 +47,6 @@ class Pair;
 //Core types, implementations.
 #include <Core/BinaryFile.h>
 #include <Core/DeltaTimer.h>
-#include <Core/DynamicString.h>
-#include <Core/Optional.h>
-#include <Core/Padding.h>
-#include <Core/Pair.h>
 #include <Core/Pointers/SharedPointer.h>
 #include <Core/Pointers/UniquePointer.h>
 

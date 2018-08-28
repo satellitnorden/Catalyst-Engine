@@ -3,6 +3,7 @@
 //Core.
 #include <Core/EngineCore.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/General/Pair.h>
 
 template <class KeyType, class ObjectType>
 class Map final

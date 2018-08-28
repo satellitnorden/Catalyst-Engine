@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/API/Vulkan/VulkanInstance.h>
 
+//Core.
+#include <Core/Containers/StaticArray.h>
+
 //Systems.
 #include <Systems/EngineSystem.h>
 

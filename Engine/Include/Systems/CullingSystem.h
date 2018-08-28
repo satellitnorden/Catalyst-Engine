@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/EngineCore.h>
+#include <Core/Containers/StaticArray.h>
 
 //Multithreading.
 #include <Multithreading/Task.h>

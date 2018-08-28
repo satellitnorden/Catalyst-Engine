@@ -243,28 +243,10 @@
     <ClInclude Include="..\..\..\Include\Core\BinaryFile.h">
       <Filter>Core\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\CoreTypeAliases.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\DeltaTimer.h">
       <Filter>Core\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\DynamicString.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\EngineCore.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\HashString.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Optional.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Padding.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Pair.h">
       <Filter>Core\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
@@ -812,6 +794,24 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Core\CoreMacros.h">
       <Filter>Core\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Core\CoreTypeAliases.h">
+      <Filter>Core\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\DynamicString.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\HashString.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\Optional.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\Padding.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\Pair.h">
+      <Filter>Core\Include\General</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

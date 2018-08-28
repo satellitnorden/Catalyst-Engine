@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/EngineCore.h>
+#include <Core/Containers/StaticArray.h>
 
 //Enumeration for all possible keyboard button states.
 enum class KeyboardButtonState : uint8

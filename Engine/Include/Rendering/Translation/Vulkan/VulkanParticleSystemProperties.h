@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/EngineCore.h>
+#include <Core/General/Padding.h>
 
 //Rendering.
 #include <Rendering/Engine/ParticleSystemProperties.h>

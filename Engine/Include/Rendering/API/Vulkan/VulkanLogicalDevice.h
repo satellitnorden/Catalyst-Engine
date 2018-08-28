@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/EngineCore.h>
+#include <Core/Containers/StaticArray.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>

@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/EngineCore.h>
+#include <Core/General/DynamicString.h>
 
 //Rendering.
 #include <Rendering/Engine/Resolution.h>
