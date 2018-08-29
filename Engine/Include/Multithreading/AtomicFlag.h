@@ -1,10 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
-
-//STL.
-#include <atomic>
+#include <Core/Core/CatalystCore.h>
 
 class AtomicFlag final
 {

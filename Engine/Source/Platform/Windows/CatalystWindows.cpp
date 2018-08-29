@@ -3,7 +3,7 @@
 #include <Platform/Windows/CatalystWindows.h>
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>

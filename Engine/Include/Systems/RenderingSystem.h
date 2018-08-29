@@ -1,8 +1,9 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
 #include <Core/Containers/StaticArray.h>
+#include <Core/Pointers/UniquePointer.h>
 
 //Math.
 #include <Math/Matrix4.h>

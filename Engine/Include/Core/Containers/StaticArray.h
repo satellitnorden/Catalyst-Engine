@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
 
 template <typename Type, uint64 ArraySize>
 class StaticArray final

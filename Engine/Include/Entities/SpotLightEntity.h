@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
 
 //Entities.
 #include <Entities/Entity.h>

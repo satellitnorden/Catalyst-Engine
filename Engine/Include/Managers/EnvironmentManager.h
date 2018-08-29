@@ -1,7 +1,8 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
+#include <Core/Pointers/UniquePointer.h>
 
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>

@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
 
 //Catalyst Math constants.
 namespace CatalystMathConstants

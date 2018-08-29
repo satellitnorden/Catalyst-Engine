@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
 #include <Core/Utilities/MemoryUtilities.h>
 
 template <typename Type>
@@ -275,38 +275,6 @@ public:
 				return;
 			}
 		}
-	}
-
-	/*
-	*	Finds an element and returns it, const.
-	*/
-	const Optional<Type> Find(const Type &objectToFind) const NOEXCEPT
-	{
-		for (auto object : *this)
-		{
-			if (object == objectToFind)
-			{
-				return Optional<Type>(object);
-			}
-		}
-
-		return Optional<Type>();
-	}
-
-	/*
-	*	Finds an element and returns it, non-const.
-	*/
-	Optional<Type> Find(const Type &objectToFind) NOEXCEPT
-	{
-		for (auto object : *this)
-		{
-			if (object == objectToFind)
-			{
-				return Optional<Type>(object);
-			}
-		}
-
-		return Optional<Type>();
 	}
 
 	/*

@@ -1,10 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
-
-//STL.
-#include <fstream>
+#include <Core/Core/CatalystCore.h>
 
 //Enumeration covering all I/O modes.
 enum class IOMode : uint8

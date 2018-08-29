@@ -4,7 +4,7 @@
 #pragma warning(disable : 4307) 
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
 
 namespace HashAlgorithms
 {

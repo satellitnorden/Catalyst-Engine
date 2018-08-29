@@ -1,11 +1,11 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/General/Pair.h>
 
-template <class KeyType, class ObjectType>
+template <typename KeyType, typename ObjectType>
 class Map final
 {
 
@@ -49,15 +49,47 @@ public:
 	}
 
 	/*
+	*	Begin iterator, const.
+	*/
+	RESTRICTED const Pair<KeyType, ObjectType> *const RESTRICT begin() const  NOEXCEPT
+	{
+		return map.begin();
+	}
+
+	/*
+	*	Begin iterator, non-const.
+	*/
+	RESTRICTED Pair<KeyType, ObjectType> *const RESTRICT begin()  NOEXCEPT
+	{
+		return map.begin();
+	}
+
+	/*
+	*	End iterator, const.
+	*/
+	RESTRICTED const Pair<KeyType, ObjectType> *const RESTRICT end() const NOEXCEPT
+	{
+		return map.end();
+	}
+
+	/*
+	*	End iterator, non-const.
+	*/
+	RESTRICTED Pair<KeyType, ObjectType> *const RESTRICT end() NOEXCEPT
+	{
+		return map.end();
+	}
+
+	/*
 	*	Finds the object associated with specific key and returns a pointer to that object. Returns nullptr if it can't find the object, const.
 	*/
-	const ObjectType* RESTRICT Find(const KeyType key) const NOEXCEPT
+	const ObjectType *const RESTRICT Find(const KeyType key) const NOEXCEPT
 	{
 		for (auto &mapEntry : map)
 		{
-			if (mapEntry.GetFirstValue() == key)
+			if (mapEntry.first == key)
 			{
-				return &mapEntry.GetSecondValue();
+				return &mapEntry.second;
 			}
 		}
 
@@ -67,13 +99,13 @@ public:
 	/*
 	*	Finds the object associated with specific key and returns a pointer to that object. Returns nullptr if it can't find the object, non-const.
 	*/
-	ObjectType* RESTRICT Find(const KeyType key) NOEXCEPT
+	ObjectType *const RESTRICT Find(const KeyType key) NOEXCEPT
 	{
 		for (auto &mapEntry : map)
 		{
-			if (mapEntry.GetFirstValue() == key)
+			if (mapEntry.first == key)
 			{
-				return &mapEntry.GetSecondValue();
+				return &mapEntry.second;
 			}
 		}
 

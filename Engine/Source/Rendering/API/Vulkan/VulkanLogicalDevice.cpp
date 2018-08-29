@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/API/Vulkan/VulkanLogicalDevice.h>
 
+//Core.
+#include <Core/Containers/Map.h>
+
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
@@ -69,14 +72,14 @@ void VulkanLogicalDevice::Release() NOEXCEPT
 void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueueCreateInfo> &deviceQueueCreateInfos, const float *const RESTRICT queuePriorities) const NOEXCEPT
 {
 	//Gather all unique indices and how many queues will be created from them.
-	std::map<uint32, uint8> uniqueQueueFamilyIndices;
+	Map<uint32, uint8> uniqueQueueFamilyIndices;
 
 	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Compute)];
 	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Graphics)];
 	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Present)];
 	++uniqueQueueFamilyIndices[VulkanInterface::Instance->GetLogicalDevice().GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Transfer)];
 
-	for (const auto &uniqueQueueFamilyIndex : uniqueQueueFamilyIndices)
+	for (const Pair<uint32, uint8> &uniqueQueueFamilyIndex : uniqueQueueFamilyIndices)
 	{
 		VkDeviceQueueCreateInfo newDeviceQueueCreateInfo;
 

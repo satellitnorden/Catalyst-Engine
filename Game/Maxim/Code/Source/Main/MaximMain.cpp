@@ -1,5 +1,6 @@
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/General/DeltaTimer.h>
+#include <Core/Core/CatalystCore.h>
 
 //Main.
 #include <Main/MaximGameSystem.h>

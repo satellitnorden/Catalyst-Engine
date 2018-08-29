@@ -1,8 +1,9 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
 #include <Core/General/CatalystProjectConfiguration.h>
+#include <Core/Pointers/UniquePointer.h>
 
 class EngineSystem final
 {

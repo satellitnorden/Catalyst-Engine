@@ -1,7 +1,7 @@
 #pragma once
 
-//STL.
-#include <chrono>
+//Core.
+#include <Core/Core/CatalystCore.h>
 
 class DeltaTimer final
 {

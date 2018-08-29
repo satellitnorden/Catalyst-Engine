@@ -3,7 +3,7 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
 #include <Core/Containers/DynamicArray.h>
 
 //Third party.

@@ -1,8 +1,9 @@
 #pragma once
 
 //Core.
-#include <Core/General/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
 #include <Core/Containers/Map.h>
+#include <Core/General/BinaryFile.h>
 #include <Core/General/HashString.h>
 
 //Rendering.

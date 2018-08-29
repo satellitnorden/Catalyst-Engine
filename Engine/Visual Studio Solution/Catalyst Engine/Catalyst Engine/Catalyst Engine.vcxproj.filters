@@ -780,15 +780,6 @@
     <ClInclude Include="..\..\..\Include\Core\General\CatalystProjectConfiguration.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Core\CoreDefines.h">
-      <Filter>Core\Include\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Core\CoreMacros.h">
-      <Filter>Core\Include\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\Core\CoreTypeAliases.h">
-      <Filter>Core\Include\Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\DynamicString.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
@@ -807,11 +798,20 @@
     <ClInclude Include="..\..\..\Include\Core\General\DeltaTimer.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\General\EngineCore.h">
-      <Filter>Core\Include\General</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\BinaryFile.h">
       <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Core\CatalystCore.h">
+      <Filter>Core\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Core\CatalystDefines.h">
+      <Filter>Core\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Core\CatalystMacros.h">
+      <Filter>Core\Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Core\CatalystTypes.h">
+      <Filter>Core\Include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
