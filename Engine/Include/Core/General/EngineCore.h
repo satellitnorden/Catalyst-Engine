@@ -45,8 +45,8 @@ template <class FirstType, class SecondType>
 class Pair;
 
 //Core types, implementations.
-#include <Core/BinaryFile.h>
-#include <Core/DeltaTimer.h>
+#include <Core/General/BinaryFile.h>
+#include <Core/General/DeltaTimer.h>
 #include <Core/Pointers/SharedPointer.h>
 #include <Core/Pointers/UniquePointer.h>
 

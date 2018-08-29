@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/EngineCore.h>
+#include <Core/General/EngineCore.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanShaderModule.h>

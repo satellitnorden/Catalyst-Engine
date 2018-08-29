@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/EngineCore.h>
+#include <Core/General/EngineCore.h>
 
 template <class LockType>
 class ScopedLock final

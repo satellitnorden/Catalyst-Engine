@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/EngineCore.h>
+#include <Core/General/EngineCore.h>
 #include <Core/Containers/Map.h>
 #include <Core/General/HashString.h>
 

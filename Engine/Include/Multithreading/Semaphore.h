@@ -1,7 +1,7 @@
 #pragma once
 
 //Core.
-#include <Core/EngineCore.h>
+#include <Core/General/EngineCore.h>
 
 //Enumeration covering all semaphore creation flags.
 enum SemaphoreCreationFlags : uint8

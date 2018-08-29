@@ -3,7 +3,7 @@
 #pragma once
 
 //Core.
-#include <Core/EngineCore.h>
+#include <Core/General/EngineCore.h>
 
 //Vulkan.
 #define VK_NO_PROTOTYPES

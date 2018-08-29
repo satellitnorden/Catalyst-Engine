@@ -240,15 +240,6 @@
     <ClInclude Include="..\..\..\Include\Components\VegetationCullingComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\BinaryFile.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\DeltaTimer.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\EngineCore.h">
-      <Filter>Core\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
       <Filter>Core\Include\Algorithms</Filter>
     </ClInclude>
@@ -811,6 +802,15 @@
       <Filter>Core\Include\General</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\Pair.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\DeltaTimer.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\EngineCore.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\BinaryFile.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
   </ItemGroup>

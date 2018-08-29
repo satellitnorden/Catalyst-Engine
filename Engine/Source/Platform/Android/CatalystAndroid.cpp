@@ -3,7 +3,7 @@
 #include <Platform/Android/CatalystAndroid.h>
 
 //Core.
-#include <Core/EngineCore.h>
+#include <Core/General/EngineCore.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>

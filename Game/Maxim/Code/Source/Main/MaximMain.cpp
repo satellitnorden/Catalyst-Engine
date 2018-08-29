@@ -1,5 +1,5 @@
 //Core.
-#include <Core/EngineCore.h>
+#include <Core/General/EngineCore.h>
 
 //Main.
 #include <Main/MaximGameSystem.h>

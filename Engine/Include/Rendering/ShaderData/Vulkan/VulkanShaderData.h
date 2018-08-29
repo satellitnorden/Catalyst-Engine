@@ -5,7 +5,7 @@
 #pragma once
 
 //Core.
-#include <Core/EngineCore.h>
+#include <Core/General/EngineCore.h>
 
 //Rendering.
 #include <Rendering/ShaderData/Vulkan/BloomFragmentShader.h>
