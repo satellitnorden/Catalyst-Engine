@@ -1,6 +1,6 @@
 #pragma once
 
-template <class ObjectType>
+template <typename Type>
 class Optional final
 {
 
@@ -19,7 +19,7 @@ public:
 	/*
 	*	Constructor taking the underlying object by lvalue as an argument.
 	*/
-	Optional(const ObjectType &newObject) NOEXCEPT
+	Optional(const Type &newObject) NOEXCEPT
 		:
 		object(newObject)
 	{
@@ -29,7 +29,7 @@ public:
 	/*
 	*	Constructor taking the underlying object by rvalue as an argument.
 	*/
-	Optional(ObjectType &&newObject) NOEXCEPT
+	Optional(Type &&newObject) NOEXCEPT
 		:
 		object(newObject)
 	{
@@ -39,7 +39,7 @@ public:
 	/*
 	*	Arrow operator overload, const.
 	*/
-	RESTRICTED const ObjectType* operator->() const NOEXCEPT
+	RESTRICTED const Type *const RESTRICT operator->() const NOEXCEPT
 	{
 		return object;
 	}
@@ -47,7 +47,7 @@ public:
 	/*
 	*	Arrow operator overload, non-const.
 	*/
-	RESTRICTED ObjectType* operator->() NOEXCEPT
+	RESTRICTED Type *const RESTRICT operator->() NOEXCEPT
 	{
 		return object;
 	}
@@ -63,7 +63,7 @@ public:
 	/*
 	*	Dereference operator overload, const.
 	*/
-	const ObjectType& operator*() const NOEXCEPT
+	const Type& operator*() const NOEXCEPT
 	{
 		return *object;
 	}
@@ -71,7 +71,7 @@ public:
 	/*
 	*	Dereference operator overload, non-const.
 	*/
-	ObjectType& operator*() NOEXCEPT
+	Type& operator*() NOEXCEPT
 	{
 		return *object;
 	}
@@ -79,7 +79,7 @@ public:
 	/*
 	*	Returns the underlying object, const.
 	*/
-	const ObjectType& Get() const NOEXCEPT
+	const Type& Get() const NOEXCEPT
 	{
 		return *object;
 	}
@@ -87,7 +87,7 @@ public:
 	/*
 	*	Returns the underlying object, non-const.
 	*/
-	ObjectType& Get() NOEXCEPT
+	Type& Get() NOEXCEPT
 	{
 		return *object;
 	}
@@ -95,6 +95,6 @@ public:
 private:
 
 	//The underlying object.
-	const ObjectType *RESTRICT const object;
+	const Type *const RESTRICT object;
 
 };
