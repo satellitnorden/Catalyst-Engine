@@ -12,4 +12,7 @@ private:
 	//The underlying padding.
 	StaticArray<byte, Bytes> padding;
 
+	//Make sure the object actually is N bytes big.
+	static_assert(sizeof(padding) == Bytes, "Padding object is not N bytes big as expected.");
+
 };
