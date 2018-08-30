@@ -9,6 +9,7 @@ namespace CatalystMathConstants
 	constexpr float SINE_PRECISION{ 0.1f };
 	constexpr float DEGREES_TO_RADIANS{ 0.017'453f };
 	constexpr float PI{ 3.141'592f };
+	constexpr float INVERSE_PI{ 1.0f / PI };
 	constexpr float RADIANS_TO_DEGREES{ 57.295'779f };
 }
 
@@ -195,17 +196,26 @@ public:
 
 	/*
 	*	Given a number and an exponent, returns the power of the exponent.
+	*	 Builds on the assumption that the exponent will always be non-zero.
 	*/
-	FORCE_INLINE NODISCARD constexpr static float PowerOf(float number, const uint8 exponent) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float PowerOf(const float number, const uint8 exponent) NOEXCEPT
 	{
-		const float originalNumber = number;
-
-		for (uint8 i = 1; i < exponent; ++i)
+		if (UNLIKELY(exponent == 0))
 		{
-			number *= originalNumber;
+			return 1.0f;
 		}
 
-		return number;
+		const float temporary{ PowerOf(number, exponent >> 1) };
+
+		if (IsEven(exponent))
+		{
+			return temporary * temporary;
+		}
+
+		else
+		{
+			return number * temporary * temporary;
+		}
 	}
 
 	/*
@@ -279,7 +289,7 @@ public:
 	/*
 	*	Given a degrees value, returns the sine of the angle.
 	*/
-	FORCE_INLINE NODISCARD constexpr static float SineDegrees(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float SineDegrees(const float number) NOEXCEPT
 	{
 		return SineRadians(DegreesToRadians(number));
 	}
@@ -287,9 +297,9 @@ public:
 	/*
 	*	Given a radians value, returns the sine of the angle.
 	*/
-	FORCE_INLINE NODISCARD constexpr static float SineRadians(float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float SineRadians(const float number) NOEXCEPT
 	{
-		return number - (PowerOf(number, 3) / Factorial(3)) + (PowerOf(number, 5) / Factorial(5)) - (PowerOf(number, 7) / Factorial(7));
+		return sin(number);
 	}
 
 	/*

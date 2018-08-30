@@ -132,7 +132,7 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++component)
 	{
-		const VkDeviceSize offset{ 0 };
+		const uint64 offset{ 0 };
 
 		commandBuffer->BindRenderDataTable(this, 1, component->renderDataTable);
 		commandBuffer->BindVertexBuffers(this, 1, &component->vertexAndIndexBuffer, &offset);

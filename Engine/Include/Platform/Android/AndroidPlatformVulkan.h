@@ -4,6 +4,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Vulkan.
 #define VK_NO_PROTOTYPES

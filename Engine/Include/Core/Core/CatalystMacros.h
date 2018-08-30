@@ -24,7 +24,8 @@
 	#if defined(CATALYST_MSVC)
 		#define BREAKPOINT() { __debugbreak(); }
 	#elif defined(CATALYST_CLANG)
-		#define BREAKPOINT() { __asm__ volatile("int3"); }
+		//#define BREAKPOINT() { __asm__ volatile("int3"); }
+		#define BREAKPOINT()
 	#endif
 #else
 	#define BREAKPOINT()

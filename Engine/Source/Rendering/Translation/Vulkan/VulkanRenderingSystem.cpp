@@ -161,7 +161,7 @@ UniformBufferHandle VulkanRenderingSystem::GetUniformBuffer(const UniformBuffer 
 */
 ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
 {
-	return reinterpret_cast<ConstantBufferHandle>(VulkanInterface::Instance->CreateConstantBuffer(data, dataSizes, dataChunks)->Get());
+	return reinterpret_cast<ConstantBufferHandle>(VulkanInterface::Instance->CreateConstantBuffer(data, reinterpret_cast<const VkDeviceSize *const RESTRICT>(dataSizes), dataChunks)->Get());
 }
 
 /*

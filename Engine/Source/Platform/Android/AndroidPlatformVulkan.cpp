@@ -15,8 +15,6 @@ void PlatformVulkan::LoadVulkan() NOEXCEPT
 {
 	void *const RESTRICT libvulkan{ dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL) };
 
-	ASSERT(libvulkan, "Failed to load the Vulkan library.");
-
 	vkCreateInstance = reinterpret_cast<PFN_vkCreateInstance>(dlsym(libvulkan, "vkCreateInstance"));
 	vkDestroyInstance = reinterpret_cast<PFN_vkDestroyInstance>(dlsym(libvulkan, "vkDestroyInstance"));
 	vkEnumeratePhysicalDevices = reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(dlsym(libvulkan, "vkEnumeratePhysicalDevices"));

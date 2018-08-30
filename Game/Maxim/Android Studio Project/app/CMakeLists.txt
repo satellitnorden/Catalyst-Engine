@@ -11,8 +11,8 @@ add_library(	catalyst-engine-lib
 include_directories( ../../../../Engine/Include/ ../../Code/Include/ )
 
 
-#target_link_libraries( catalyst-engine-lib android log vulkan )
-#add_definitions( -DCATALYST_ANDROID )
+target_link_libraries( catalyst-engine-lib android log vulkan )
+add_definitions( -DCATALYST_ANDROID )
 
-target_link_libraries( catalyst-engine-lib android vulkan )
-add_definitions( -DCATALYST_ANDROID -DCATALYST_FINAL -Ofast )
+#target_link_libraries( catalyst-engine-lib android vulkan )
+#add_definitions( -DCATALYST_ANDROID -DCATALYST_FINAL -Ofast )
