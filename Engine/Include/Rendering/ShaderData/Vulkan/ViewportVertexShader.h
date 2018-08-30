@@ -6,6 +6,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/DynamicArray.h>
 
 namespace VulkanShaderData
 {

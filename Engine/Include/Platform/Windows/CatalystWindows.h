@@ -2,6 +2,9 @@
 
 #pragma once
 
+//Core.
+#include <Core/Core/CatalystCore.h>
+
 /*
 *	Windows specific third party includes.
 */
@@ -15,11 +18,6 @@
 #undef max
 #undef min
 #undef PlaySound
-
-/*
-*	Windows specific includes.
-*/
-#include <Platform/Windows/WindowsPlatformVulkan.h>
 
 /*
 *	Main function.

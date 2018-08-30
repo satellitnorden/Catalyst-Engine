@@ -2,11 +2,11 @@
 
 #pragma once
 
+//Core.
+#include <Core/Core/CatalystCore.h>
+
 //Android specific third party includes.
 #include <ThirdParty/android_native_app_glue.h>
-
-//Android specific includes.
-#include <Platform/Android/AndroidPlatformVulkan.h>
 
 /*
 *	Main function.

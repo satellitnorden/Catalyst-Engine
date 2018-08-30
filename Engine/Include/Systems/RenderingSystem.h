@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
 #include <Core/Pointers/UniquePointer.h>
 

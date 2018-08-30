@@ -3,6 +3,13 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Platform.
+#if defined(CATALYST_WINDOWS)
+	#include <Platform/Windows/WindowsPlatformVulkan.h>
+#elif defined(CATALYST_ANDROID)
+	#include <Platform/Android/AndroidPlatformVulkan.h>
+#endif
+
 /*
 *	Turns Vulkan debugging on/off.
 */
