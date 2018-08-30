@@ -311,24 +311,12 @@ public:
 			number -= CatalystMathConstants::DOUBLE_PI;
 		}
 
-		float temporary{ number };
-
-		for (uint8 i = 0; i < 10; ++i)
-		{
-			const uint8 exponent{ static_cast<uint8>(1 + ((i + 1) * 2)) };
-
-			if (IsEven(i))
-			{
-				temporary -= PowerOf(number, exponent) / Factorial(exponent);
-			}
-
-			else
-			{
-				temporary += PowerOf(number, exponent) / Factorial(exponent);
-			}
-		}
-
-		return temporary;
+		return	number
+				- (PowerOf(number, 3) / Factorial(3))
+				+ (PowerOf(number, 5) / Factorial(5))
+				- (PowerOf(number, 7) / Factorial(7))
+				+ (PowerOf(number, 9) / Factorial(9))
+				- (PowerOf(number, 11) / Factorial(11));
 	}
 
 	/*
