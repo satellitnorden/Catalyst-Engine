@@ -28,23 +28,23 @@ RESTRICTED EntityClass *const RESTRICT EntitySystem::CreateChildEntity(Entity *R
 /*
 *	Creates initialization data for an entity.
 */
-template <class InitializationDataClass>
-RESTRICTED InitializationDataClass* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEPT
+template <typename Type>
+RESTRICTED Type* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEPT
 {
-	void* const RESTRICT memory{ MemoryUtilities::AllocateMemory(sizeof(InitializationDataClass)) };
+	void* const RESTRICT memory{ MemoryUtilities::AllocateMemory(sizeof(Type)) };
 
-	new (memory) InitializationDataClass();
+	new (memory) Type;
 
-	return static_cast<InitializationDataClass* const RESTRICT>(memory);
+	return static_cast<Type* const RESTRICT>(memory);
 }
 
 /*
 *	Destroys initialization data for an entity.
 */
-template <class InitializationDataClass>
+template <typename Type>
 void EntitySystem::DestroyInitializationData(void* const RESTRICT data) NOEXCEPT
 {
-	static_cast<InitializationDataClass* const RESTRICT>(data)->~InitializationDataClass();
+	static_cast<Type* const RESTRICT>(data)->~Type();
 
 	MemoryUtilities::FreeMemory(data);
 }

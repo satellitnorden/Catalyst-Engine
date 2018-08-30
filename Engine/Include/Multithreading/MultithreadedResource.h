@@ -7,7 +7,7 @@
 #include <Multithreading/ScopedLock.h>
 #include <Multithreading/SpinLock.h>
 
-template <class ResourceType>
+template <typename Type>
 class MultithreadedResource final
 {
 
@@ -43,7 +43,7 @@ public:
 	/*
 	*	Returns the underlying resource.
 	*/
-	const ResourceType GetSafe() const NOEXCEPT
+	const Type GetSafe() const NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ lock };
 
@@ -53,7 +53,7 @@ public:
 	/*
 	*	Returns the underlying resource without locking it.
 	*/
-	const ResourceType& GetUnsafe() const NOEXCEPT
+	const Type& GetUnsafe() const NOEXCEPT
 	{
 		return resource;
 	}
@@ -61,7 +61,7 @@ public:
 	/*
 	*	Sets the underlying resource.
 	*/
-	void Set(const ResourceType &newResource) NOEXCEPT
+	void Set(const Type &newResource) NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ lock };
 
@@ -71,7 +71,7 @@ public:
 private:
 
 	//The underlying resource.
-	ResourceType resource;
+	Type resource;
 
 	//The spin lock.
 	mutable Spinlock lock;

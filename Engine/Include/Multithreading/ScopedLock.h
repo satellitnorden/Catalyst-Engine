@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-template <class LockType>
+template <typename Type>
 class ScopedLock final
 {
 
@@ -17,7 +17,7 @@ public:
 	/*
 	*	Constructor taking the lock as it's argument.
 	*/
-	ScopedLock(LockType &newLock) NOEXCEPT
+	ScopedLock(Type &newLock) NOEXCEPT
 		:
 		lock(newLock)
 	{
@@ -37,6 +37,6 @@ public:
 private:
 
 	//The underlying lock for this scoped lock.
-	LockType &lock;
+	Type &lock;
 
 };

@@ -229,7 +229,7 @@ public:
 	template <class... Arguments>
 	void EmplaceSlow(Arguments&&... arguments) NOEXCEPT
 	{
-		if (size >= capacity)
+		if (UNLIKELY(size >= capacity))
 		{
 			Reserve(size > 0 ? size * 3 : 16);
 		}

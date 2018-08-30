@@ -72,8 +72,8 @@ public:
 	*	Returns a pointer to the newly created data.
 	*	The memory is freed after the entity system has finished initialization.
 	*/
-	template <class InitializationDataClass>
-	RESTRICTED InitializationDataClass* const RESTRICT CreateInitializationData() NOEXCEPT;
+	template <typename Type>
+	RESTRICTED Type* const RESTRICT CreateInitializationData() NOEXCEPT;
 
 private:
 
@@ -122,7 +122,7 @@ private:
 	/*
 	*	Destroys initialization data for an entity.
 	*/
-	template <class InitializationDataClass>
+	template <typename Type>
 	void DestroyInitializationData(void* const RESTRICT data) NOEXCEPT;
 
 };
