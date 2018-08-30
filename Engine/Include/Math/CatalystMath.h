@@ -77,7 +77,7 @@ public:
 	*	Rounds a number up to the nearest integer.
 	*/
 	template <typename Type>
-	FORCE_INLINE NODISCARD static constexpr Type Ceiling(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static Type Ceiling(const float number) NOEXCEPT
 	{
 		return static_cast<Type>(number + 1.0f);
 	}
@@ -118,7 +118,7 @@ public:
 	/*
 	*	Given an integral number, return the factorial of that number.
 	*/
-	FORCE_INLINE NODISCARD static constexpr uint64 Factorial(const uint8 number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static uint64 Factorial(const uint8 number) NOEXCEPT
 	{
 		return number != 0 ? number * Factorial(number - 1) : 1;
 	}
@@ -127,7 +127,7 @@ public:
 	*	Rounds a number down to the nearest integer.
 	*/
 	template <typename Type>
-	FORCE_INLINE NODISCARD static constexpr Type Floor(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static Type Floor(const float number) NOEXCEPT
 	{
 		return number > 0.0f ? static_cast<Type>(static_cast<int32>(number)) : static_cast<Type>(static_cast<int32>(number - 1.0f));
 	}
@@ -135,7 +135,7 @@ public:
 	/*
 	*	Given a float, return the fractional part of that float.
 	*/
-	FORCE_INLINE NODISCARD static constexpr float Fractional(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float Fractional(const float number) NOEXCEPT
 	{
 		return number - static_cast<float>(static_cast<int32>(number));
 	}
@@ -263,15 +263,15 @@ public:
 	/*
 	*	Given a value and an original range, scale the value to a range between 0.0f and 1.0f.
 	*/
-	FORCE_INLINE static void ScaleFloatToNormalizedRange(float &value, const float originalRangeMinimum, const float originalRangeMaximum) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float ScaleToNormalizedRange(const float value, const float originalRangeMinimum, const float originalRangeMaximum) NOEXCEPT
 	{
-		value = (value - originalRangeMinimum) / (originalRangeMaximum - originalRangeMinimum);
+		return (value - originalRangeMinimum) / (originalRangeMaximum - originalRangeMinimum);
 	}
 
 	/*
 	*	Given a number, returns the signum of that number.
 	*/
-	FORCE_INLINE NODISCARD static constexpr float Signum(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float Signum(const float number) NOEXCEPT
 	{
 		return static_cast<float>((number > 0.0f) - (number < 0.0f));
 	}
@@ -279,7 +279,7 @@ public:
 	/*
 	*	Given a degrees value, returns the sine of the angle.
 	*/
-	FORCE_INLINE NODISCARD static float SineDegrees(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float SineDegrees(const float number) NOEXCEPT
 	{
 		return SineRadians(DegreesToRadians(number));
 	}
@@ -287,16 +287,16 @@ public:
 	/*
 	*	Given a radians value, returns the sine of the angle.
 	*/
-	FORCE_INLINE NODISCARD static float SineRadians(float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float SineRadians(float number) NOEXCEPT
 	{
-		return sin(number);
+		return number - (PowerOf(number, 3) / Factorial(3)) + (PowerOf(number, 5) / Factorial(5)) - (PowerOf(number, 7) / Factorial(7));
 	}
 
 	/*
 	*	Given a number and a number of derivaties, generate a smooth number.
 	*/
 	template <uint64 Derivatives>
-	FORCE_INLINE NODISCARD static constexpr float SmoothStep(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float SmoothStep(const float number) NOEXCEPT
 	{
 		float smoothedNumber = number;
 
