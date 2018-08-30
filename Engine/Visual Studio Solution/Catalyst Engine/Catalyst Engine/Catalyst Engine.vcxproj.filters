@@ -813,6 +813,9 @@
     <ClInclude Include="..\..\..\Include\Core\Core\CatalystTypes.h">
       <Filter>Core\Include\Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Core\CatalystPreDefines.h">
+      <Filter>Core\Include\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

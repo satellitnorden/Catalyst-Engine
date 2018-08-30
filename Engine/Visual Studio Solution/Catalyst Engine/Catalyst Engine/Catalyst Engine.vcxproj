@@ -69,6 +69,7 @@
     <ClInclude Include="..\..\..\Include\Core\Core\CatalystCore.h" />
     <ClInclude Include="..\..\..\Include\Core\Core\CatalystDefines.h" />
     <ClInclude Include="..\..\..\Include\Core\Core\CatalystMacros.h" />
+    <ClInclude Include="..\..\..\Include\Core\Core\CatalystPreDefines.h" />
     <ClInclude Include="..\..\..\Include\Core\Core\CatalystTypes.h" />
     <ClInclude Include="..\..\..\Include\Core\General\BinaryFile.h" />
     <ClInclude Include="..\..\..\Include\Core\General\CatalystProjectConfiguration.h" />

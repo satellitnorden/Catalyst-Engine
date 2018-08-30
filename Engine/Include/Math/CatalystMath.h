@@ -20,7 +20,7 @@ public:
 	/*
 	*	Returns the absolute value of the floating point number passed in.
 	*/
-	FORCE_INLINE constexpr static float Absolute(const float value) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float Absolute(const float value) NOEXCEPT
 	{
 		return value >= 0.0f ? value : value * -1.0f;
 	}
@@ -28,7 +28,7 @@ public:
 	/*
 	*	Given a number, denoted in degrees, returns the arcsine of the number.
 	*/
-	FORCE_INLINE static float ArcsineDegrees(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float ArcsineDegrees(const float number) NOEXCEPT
 	{
 		return ArcsineRadians(DegreesToRadians(number));
 	}
@@ -36,7 +36,7 @@ public:
 	/*
 	*	Given a number, denoted in radians, returns the arcsine of the number.
 	*/
-	FORCE_INLINE static float ArcsineRadians(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float ArcsineRadians(const float number) NOEXCEPT
 	{
 		return asinf(number);
 	}
@@ -44,7 +44,7 @@ public:
 	/*
 	*	Given a number, denoted in degrees, returns the arctangent of the number.
 	*/
-	FORCE_INLINE static float ArctangentDegrees(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float ArctangentDegrees(const float number) NOEXCEPT
 	{
 		return ArctangentRadians(DegreesToRadians(number));
 	}
@@ -52,7 +52,7 @@ public:
 	/*
 	*	Given a number, denoted in radians, returns the arctangent of the number.
 	*/
-	FORCE_INLINE static float ArctangentRadians(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float ArctangentRadians(const float number) NOEXCEPT
 	{
 		return atanf(number);
 	}
@@ -60,7 +60,7 @@ public:
 	/*
 	*	Given two numbers, denoted in degrees, returns the arctangent of the number.
 	*/
-	FORCE_INLINE static float ArctangentDegrees(const float number1, const float number2) NOEXCEPT
+	FORCE_INLINE NODISCARD static float ArctangentDegrees(const float number1, const float number2) NOEXCEPT
 	{
 		return ArctangentRadians(DegreesToRadians(number1), DegreesToRadians(number2));
 	}
@@ -68,7 +68,7 @@ public:
 	/*
 	*	Given two numbers, denoted in radians, returns the arctangent of the number.
 	*/
-	FORCE_INLINE static float ArctangentRadians(const float number1, const float number2) NOEXCEPT
+	FORCE_INLINE NODISCARD static float ArctangentRadians(const float number1, const float number2) NOEXCEPT
 	{
 		return atan2f(number1, number2);
 	}
@@ -77,7 +77,7 @@ public:
 	*	Rounds a number up to the nearest integer.
 	*/
 	template <typename Type>
-	FORCE_INLINE static constexpr Type Ceiling(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static constexpr Type Ceiling(const float number) NOEXCEPT
 	{
 		return static_cast<Type>(number + 1.0f);
 	}
@@ -86,7 +86,7 @@ public:
 	*	Clamps a value between a lower and an upper limit and returns the clamped value.
 	*/
 	template <typename Type>
-	FORCE_INLINE constexpr static Type Clamp(const Type value, const Type lowerLimit, const Type upperLimit) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static Type Clamp(const Type value, const Type lowerLimit, const Type upperLimit) NOEXCEPT
 	{
 		return value < lowerLimit ? lowerLimit : value > upperLimit ? upperLimit : value;
 	}
@@ -94,7 +94,7 @@ public:
 	/*
 	*	Given a degrees value, returns the cosine of the angle.
 	*/
-	FORCE_INLINE static float CosineDegrees(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float CosineDegrees(const float number) NOEXCEPT
 	{
 		return CosineRadians(DegreesToRadians(number));
 	}
@@ -102,7 +102,7 @@ public:
 	/*
 	*	Given a radians value, returns the cosine of the angle.
 	*/
-	FORCE_INLINE static float CosineRadians(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float CosineRadians(const float number) NOEXCEPT
 	{
 		return cos(number);
 	}
@@ -110,7 +110,7 @@ public:
 	/*
 	*	Given a number in degrees, return it in radians.
 	*/
-	FORCE_INLINE constexpr static float DegreesToRadians(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float DegreesToRadians(const float number) NOEXCEPT
 	{
 		return number * CatalystMathConstants::DEGREES_TO_RADIANS;
 	}
@@ -118,7 +118,7 @@ public:
 	/*
 	*	Given an integral number, return the factorial of that number.
 	*/
-	FORCE_INLINE static constexpr uint64 Factorial(const uint8 number) NOEXCEPT
+	FORCE_INLINE NODISCARD static constexpr uint64 Factorial(const uint8 number) NOEXCEPT
 	{
 		return number != 0 ? number * Factorial(number - 1) : 1;
 	}
@@ -127,7 +127,7 @@ public:
 	*	Rounds a number down to the nearest integer.
 	*/
 	template <typename Type>
-	FORCE_INLINE static constexpr Type Floor(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static constexpr Type Floor(const float number) NOEXCEPT
 	{
 		return number > 0.0f ? static_cast<Type>(static_cast<int32>(number)) : static_cast<Type>(static_cast<int32>(number - 1.0f));
 	}
@@ -135,7 +135,7 @@ public:
 	/*
 	*	Given a float, return the fractional part of that float.
 	*/
-	FORCE_INLINE static constexpr float Fractional(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static constexpr float Fractional(const float number) NOEXCEPT
 	{
 		return number - static_cast<float>(static_cast<int32>(number));
 	}
@@ -144,7 +144,7 @@ public:
 	*	Returns whether or not an integer is even or not.
 	*/
 	template <typename Type>
-	FORCE_INLINE constexpr static Type IsEven(const Type number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static Type IsEven(const Type number) NOEXCEPT
 	{
 		return Modulo(number, 2) == 0;
 	}
@@ -153,7 +153,7 @@ public:
 	*	Returns whether or not an integer is odd or not.
 	*/
 	template <typename Type>
-	FORCE_INLINE constexpr static Type IsOdd(const Type number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static Type IsOdd(const Type number) NOEXCEPT
 	{
 		return Modulo(number, 2) != 0;
 	}
@@ -161,7 +161,7 @@ public:
 	/*
 	*	Linearly interpolate between two float values.
 	*/
-	FORCE_INLINE constexpr static float LinearlyInterpolate(const float valueA, const float valueB, const float alpha) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float LinearlyInterpolate(const float valueA, const float valueB, const float alpha) NOEXCEPT
 	{
 		return (valueA * (1.0f - alpha)) + (valueB * alpha);
 	}
@@ -170,7 +170,7 @@ public:
 	*	Returns the maximum of two numbers.
 	*/
 	template <typename Type>
-	FORCE_INLINE constexpr static Type Maximum(const Type firstNumber, const Type secondNumber) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static Type Maximum(const Type firstNumber, const Type secondNumber) NOEXCEPT
 	{
 		return LIKELY(firstNumber > secondNumber) ? firstNumber : secondNumber;
 	}
@@ -179,7 +179,7 @@ public:
 	*	Returns the minimum of two numbers.
 	*/
 	template <typename Type>
-	FORCE_INLINE constexpr static Type Minimum(const Type firstNumber, const Type secondNumber) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static Type Minimum(const Type firstNumber, const Type secondNumber) NOEXCEPT
 	{
 		return LIKELY(firstNumber < secondNumber) ? firstNumber : secondNumber;
 	}
@@ -188,7 +188,7 @@ public:
 	*	Returns the modulo of two integers.
 	*/
 	template <typename First, typename Second>
-	FORCE_INLINE constexpr static First Modulo(const First input, const Second ceiling) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static First Modulo(const First input, const Second ceiling) NOEXCEPT
 	{
 		return UNLIKELY(input >= ceiling) ? input % ceiling : input;
 	}
@@ -196,7 +196,7 @@ public:
 	/*
 	*	Given a number and an exponent, returns the power of the exponent.
 	*/
-	FORCE_INLINE constexpr static float PowerOf(float number, const uint8 exponent) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float PowerOf(float number, const uint8 exponent) NOEXCEPT
 	{
 		const float originalNumber = number;
 
@@ -211,7 +211,7 @@ public:
 	/*
 	*	Given a number in radians, return it in degrees.
 	*/
-	FORCE_INLINE constexpr static float RadiansToDegrees(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float RadiansToDegrees(const float number) NOEXCEPT
 	{
 		return number * CatalystMathConstants::RADIANS_TO_DEGREES;
 	}
@@ -219,7 +219,7 @@ public:
 	/*
 	*	Given a range, returns a floating point value in that range.
 	*/
-	FORCE_INLINE static float RandomFloatInRange(const float minimum, const float maximum) NOEXCEPT
+	FORCE_INLINE NODISCARD static float RandomFloatInRange(const float minimum, const float maximum) NOEXCEPT
 	{
 		static thread_local std::random_device randomDevice;
 		static thread_local std::mt19937 randomEngine{ randomDevice() };
@@ -233,7 +233,7 @@ public:
 	*	Given a range, returns an integer value in that range.
 	*/
 	template <typename Type>
-	FORCE_INLINE static Type RandomIntegerInRange(const Type minimum, const Type maximum) NOEXCEPT
+	FORCE_INLINE NODISCARD static Type RandomIntegerInRange(const Type minimum, const Type maximum) NOEXCEPT
 	{
 		static thread_local std::random_device randomDevice;
 		static thread_local std::mt19937 randomEngine{ randomDevice() };
@@ -246,7 +246,7 @@ public:
 	/*
 	*	Given a number between 0.0f and 1.0f, representing a chance in percent, return whether or not it succeeded.
 	*/
-	FORCE_INLINE static bool RandomChance(const float chance) NOEXCEPT
+	FORCE_INLINE NODISCARD static bool RandomChance(const float chance) NOEXCEPT
 	{
 		return chance > RandomFloatInRange(0.0f, 1.0f);
 	}
@@ -255,7 +255,7 @@ public:
 	*	Rounds a float to the nearest integral value, with halfway cases rounded away from zero.
 	*/
 	template <typename Type>
-	FORCE_INLINE constexpr static Type Round(const float value) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static Type Round(const float value) NOEXCEPT
 	{
 		return static_cast<Type>(static_cast<float>(value) + 0.5f);
 	}
@@ -271,7 +271,7 @@ public:
 	/*
 	*	Given a number, returns the signum of that number.
 	*/
-	FORCE_INLINE static constexpr float Signum(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static constexpr float Signum(const float number) NOEXCEPT
 	{
 		return static_cast<float>((number > 0.0f) - (number < 0.0f));
 	}
@@ -279,7 +279,7 @@ public:
 	/*
 	*	Given a degrees value, returns the sine of the angle.
 	*/
-	FORCE_INLINE static float SineDegrees(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float SineDegrees(const float number) NOEXCEPT
 	{
 		return SineRadians(DegreesToRadians(number));
 	}
@@ -287,7 +287,7 @@ public:
 	/*
 	*	Given a radians value, returns the sine of the angle.
 	*/
-	FORCE_INLINE static float SineRadians(float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float SineRadians(float number) NOEXCEPT
 	{
 		return sin(number);
 	}
@@ -296,7 +296,7 @@ public:
 	*	Given a number and a number of derivaties, generate a smooth number.
 	*/
 	template <uint64 Derivatives>
-	FORCE_INLINE static constexpr float SmoothStep(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static constexpr float SmoothStep(const float number) NOEXCEPT
 	{
 		float smoothedNumber = number;
 
@@ -311,7 +311,7 @@ public:
 	/*
 	*	Given a number, returns the square root.
 	*/
-	FORCE_INLINE constexpr static float SquareRoot(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float SquareRoot(const float number) NOEXCEPT
 	{
 		float squareRoot = number * 0.25f;
 
@@ -326,7 +326,7 @@ public:
 	/*
 	*	Given a number in degrees, return the tangent.
 	*/
-	FORCE_INLINE static float TangentDegrees(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float TangentDegrees(const float number) NOEXCEPT
 	{
 		return TangentRadians(DegreesToRadians(number));
 	}
@@ -334,7 +334,7 @@ public:
 	/*
 	*	Given a number in radians, return the tangent.
 	*/
-	FORCE_INLINE static float TangentRadians(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD static float TangentRadians(const float number) NOEXCEPT
 	{
 		return tan(number);
 	}

@@ -22,18 +22,18 @@
 /*
 *	Main function.
 */
-#define MAIN_FUNCTION(implementation) int32 CALLBACK WinMain(	_In_ HINSTANCE hInstance,		\
-																_In_ HINSTANCE hPrevInstance,	\
-																_In_ LPSTR lpCmdLine,			\
-																_In_ int32 nCmdShow) NOEXCEPT	\
-{																								\
-	CatalystPlatform::instance = hInstance;														\
-	CatalystPlatform::showCommand = nCmdShow;													\
-																								\
-	implementation;																				\
-																								\
-	return 0;																					\
-}																								\
+#define MAIN_FUNCTION(implementation) int32 WINAPI WinMain(	_In_ HINSTANCE hInstance,		\
+															_In_ HINSTANCE hPrevInstance,	\
+															_In_opt_ LPSTR lpCmdLine,		\
+															_In_ int32 nCmdShow)			\
+{																							\
+	CatalystPlatform::instance = hInstance;													\
+	CatalystPlatform::showCommand = nCmdShow;												\
+																							\
+	implementation;																			\
+																							\
+	return 0;																				\
+}																							\
 
 class CatalystPlatform final
 {

@@ -1,5 +1,17 @@
 #pragma once
 
+//Core.
+#include <Core/Core/CatalystPreDefines.h>
+
+/*
+*	Defines that a function's return value cannot be discarded by the caller.
+*/
+#if defined(CATALYST_CXX17)
+	#define NODISCARD [[nodiscard]]
+#else
+	#define NODISCARD
+#endif
+
 /*
 *	Declares that a function will never throw exception. Actually throwing an exception will result in immediate termination.
 */
@@ -8,16 +20,16 @@
 /*
 *	Stronger hint than the regular inline to inline a given function. Note that this does not guarantee it will actually be inlined.
 */
-#if defined(_MSC_VER)
+#if defined(CATALYST_MSVC)
 	#define FORCE_INLINE __forceinline
-#elif defined(__clang__)
+#elif defined(CATALYST_CLANG)
 	#define FORCE_INLINE __attribute__((always_inline))
 #endif
 
 /*
 *	Indicates to the compiler that a given function does not modify memory outside the first level of indirection from the function's parameters.
 */
-#if defined(_MSC_VER)
+#if defined(CATALYST_MSVC)
 	#define NOALIAS __declspec(noalias)
 #elif defined(__clang__)
 	#define NOALIAS 
@@ -26,18 +38,18 @@
 /*
 *	Indicates to the compiler that within the scope of the given pointer, it does not alias with other pointers of the same type in the same scope.
 */
-#if defined(_MSC_VER)
+#if defined(CATALYST_MSVC)
 	#define RESTRICT __restrict
-#elif defined(__clang__)
+#elif defined(CATALYST_CLANG)
 	#define RESTRICT __restrict__
 #endif
 
 /*
 *	Indicates to the compiler that the pointer returned by a given function does not alias with other pointers in the same scope.
 */
-#if defined(_MSC_VER)
+#if defined(CATALYST_MSVC)
 	#define RESTRICTED __declspec(restrict)
-#elif defined(__clang__)
+#elif defined(CATALYST_CLANG)
 	#define RESTRICTED
 #endif
 

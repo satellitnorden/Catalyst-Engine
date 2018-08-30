@@ -1,5 +1,8 @@
 #pragma once
 
+//Core.
+#include <Core/Core/CatalystPreDefines.h>
+
 /*
 *	Given a condition and a message, if the condition is false, the message will be printed and a breakpoint will be triggered.
 */
@@ -18,9 +21,9 @@
 *	Sets a breakpoint in the code in non-final builds.
 */
 #if !defined(CATALYST_FINAL)
-	#if defined(_MSC_VER)
+	#if defined(CATALYST_MSVC)
 		#define BREAKPOINT() { __debugbreak(); }
-	#elif defined(__clang__)
+	#elif defined(CATALYST_CLANG)
 		#define BREAKPOINT() { __asm__ volatile("int3"); }
 	#endif
 #else
@@ -70,9 +73,9 @@
 /*
 *	Indicates to the branch predictor that an expression is expected to most times be true.
 */
-#if defined(_MSC_VER)
+#if defined(CATALYST_MSVC)
 	#define LIKELY(expression) expression
-#elif defined(__clang__)
+#elif defined(CATALYST_CLANG)
 	#define LIKELY(expression) __builtin_expect(expression, 1)
 #endif
 
@@ -86,8 +89,8 @@
 /*
 *	Indicates to the branch predictor that an expression is expected to most times not be true.
 */
-#if defined(_MSC_VER)
+#if defined(CATALYST_MSVC)
 	#define UNLIKELY(expression) expression
-#elif defined(__clang__)
+#elif defined(CATALYST_CLANG)
 	#define UNLIKELY(expression) __builtin_expect(expression, 0)
 #endif
