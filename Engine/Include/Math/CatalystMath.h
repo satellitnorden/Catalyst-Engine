@@ -9,6 +9,7 @@ namespace CatalystMathConstants
 	constexpr float SINE_PRECISION{ 0.1f };
 	constexpr float DEGREES_TO_RADIANS{ 0.017'453f };
 	constexpr float PI{ 3.141'592f };
+	constexpr float DOUBLE_PI{ PI * 2.0f };
 	constexpr float INVERSE_PI{ 1.0f / PI };
 	constexpr float RADIANS_TO_DEGREES{ 57.295'779f };
 }
@@ -289,7 +290,7 @@ public:
 	/*
 	*	Given a degrees value, returns the sine of the angle.
 	*/
-	FORCE_INLINE NODISCARD static float SineDegrees(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float SineDegrees(const float number) NOEXCEPT
 	{
 		return SineRadians(DegreesToRadians(number));
 	}
@@ -297,9 +298,37 @@ public:
 	/*
 	*	Given a radians value, returns the sine of the angle.
 	*/
-	FORCE_INLINE NODISCARD static float SineRadians(const float number) NOEXCEPT
+	FORCE_INLINE NODISCARD constexpr static float SineRadians(float number) NOEXCEPT
 	{
-		return sin(number);
+		//Wrap-around.
+		while (number < -CatalystMathConstants::PI)
+		{
+			number += CatalystMathConstants::DOUBLE_PI;
+		}
+
+		while (number > CatalystMathConstants::PI)
+		{
+			number -= CatalystMathConstants::DOUBLE_PI;
+		}
+
+		float temporary{ number };
+
+		for (uint8 i = 0; i < 10; ++i)
+		{
+			const uint8 exponent{ static_cast<uint8>(1 + ((i + 1) * 2)) };
+
+			if (IsEven(i))
+			{
+				temporary -= PowerOf(number, exponent) / Factorial(exponent);
+			}
+
+			else
+			{
+				temporary += PowerOf(number, exponent) / Factorial(exponent);
+			}
+		}
+
+		return temporary;
 	}
 
 	/*

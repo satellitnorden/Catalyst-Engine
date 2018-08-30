@@ -120,7 +120,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	//Create, uh, sun.
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	sun->SetIntensity(25.0f);
-	sun->Rotate(Vector3(-2.5f, 135.0f, 0.0f));
+	sun->Rotate(Vector3(0.0f, 135.0f, 0.0f));
 
 	//Disable screen space ambient occlusion.
 	RenderingConfigurationManager::Instance->SetScreenSpaceAmbientOcclusionEnabled(false);
@@ -132,7 +132,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
 	//Eh. Rotate the "sun".
-	sun->Rotate(Vector3(0.0f, 2.5f * deltaTime, 0.0f));
+	sun->Rotate(Vector3(0.0f, 25.0f * deltaTime, 0.0f));
 
 	//Eh. Set bloom radius.
 	const KeyboardState *const RESTRICT keyboard{ InputSystem::Instance->GetCurrentKeyboardState() };
