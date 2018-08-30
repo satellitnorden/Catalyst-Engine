@@ -6,6 +6,9 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Math.
+#include <Math/CatalystMath.h>
+
 namespace HashAlgorithms
 {
 
@@ -304,9 +307,9 @@ namespace HashAlgorithms
 			//as an index into the table of randomly pregenerated 64-bit values,
 			//and use that value to flip certain bits of the hash.
 			hash ^= randomTable[input];
-			hash ^= randomTable[hash % UINT8_MAXIMUM];
+			hash ^= randomTable[CatalystMath::Modulo(hash, UINT8_MAXIMUM)];
 			hash ^= randomTable[input ^ UINT8_MAXIMUM];
-			hash ^= randomTable[hash % UINT8_MAXIMUM];
+			hash ^= randomTable[CatalystMath::Modulo(hash, UINT8_MAXIMUM)];
 		}
 
 		return hash;
