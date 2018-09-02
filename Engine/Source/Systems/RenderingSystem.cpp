@@ -4,6 +4,7 @@
 //Entities.
 #include <Entities/CameraEntity.h>
 #include <Entities/TerrainEntity.h>
+#include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
@@ -197,7 +198,7 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 /*
 *	Creates a render data table layout.
 */
-void RenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) NOEXCEPT
+void RenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the render data table layout via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->CreateRenderDataTableLayout(bindings, numberOfBindings, handle);
@@ -206,7 +207,7 @@ void RenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBin
 /*
 *	Creates a render data table.
 */
-void RenderingSystem::CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) NOEXCEPT
+void RenderingSystem::CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the render data table via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->CreateRenderDataTable(renderDataTableLayout, handle);
@@ -384,6 +385,35 @@ void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &veg
 
 	//Create the properties texture.
 	vegetationMaterial.propertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData.propertiesData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+}
+
+/*
+*	Initializes a dynamic physical entity.
+*/
+void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT
+{
+	//Cache the components.
+	DynamicPhysicalRenderComponent &renderComponent{ ComponentManager::GetDynamicPhysicalDynamicPhysicalRenderComponents()[entity->GetComponentsIndex()] };
+	FrustumCullingComponent &cullingComponent{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[entity->GetComponentsIndex()] };
+	TransformComponent &transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents()[entity->GetComponentsIndex()] };
+
+	//Initialize the render component.
+	renderComponent.isInViewFrustum = true;
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical), &renderComponent.renderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, data->model.GetMaterial().albedoTexture), renderComponent.renderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, data->model.GetMaterial().normalMapTexture), renderComponent.renderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, data->model.GetMaterial().materialPropertiesTexture), renderComponent.renderDataTable);
+	renderComponent.buffer = data->model.GetBuffer();
+	renderComponent.indexOffset = data->model.GetIndexOffset();
+	renderComponent.indexCount = data->model.GetIndexCount();
+
+	//Initialize the culling component.
+	cullingComponent.axisAlignedBoundingBox = data->model.GetAxisAlignedBoundingBox();
+
+	//Initialize the transform component.
+	transformComponent.position = data->position;
+	transformComponent.rotation = data->rotation;
+	transformComponent.scale = data->scale;
 }
 
 /*

@@ -167,7 +167,7 @@ void EntitySystem::InitializeDynamicPhysicalEntity(EntityInitializationData *con
 	data->entity->SetComponentsIndex(ComponentManager::GetNewDynamicPhysicalComponentsIndex(data->entity));
 
 	//Initialize the dynamic physical entity via the rendering system.
-	//RenderingSystem::Instance->InitializeDynamicPhysicalEntity(reinterpret_cast<const DynamicPhysicalEntity *const RESTRICT>(data->entity), static_cast<const DynamicPhysicalInitializationData *const RESTRICT>(data->data));
+	RenderingSystem::Instance->InitializeDynamicPhysicalEntity(data->entity, static_cast<const DynamicPhysicalInitializationData *const RESTRICT>(data->data));
 
 	//Destroy the initialization data.
 	DestroyInitializationData<DynamicPhysicalInitializationData>(data->data);

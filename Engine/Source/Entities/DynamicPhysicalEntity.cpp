@@ -9,8 +9,8 @@
 */
 DynamicPhysicalEntity::DynamicPhysicalEntity() NOEXCEPT
 {
-	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewDynamicPhysicalComponentsIndex(this);
+	//Set the entity type.
+	entityType = EntityType::DynamicPhysical;
 }
 
 /*

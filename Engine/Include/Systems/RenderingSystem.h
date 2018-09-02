@@ -21,7 +21,8 @@
 class CameraEntity;
 class CatalystProjectRenderingConfiguration;
 class CPUTexture2D;
-class DynamicPhysicalEntity;
+class DynamicPhysicalInitializationData;
+class Entity;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
 class OceanMaterialData;
@@ -191,12 +192,12 @@ public:
 	/*
 	*	Creates a render data table layout.
 	*/
-	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) NOEXCEPT;
+	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Creates a render data table.
 	*/
-	void CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) NOEXCEPT;
+	void CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Updates a render data table.
@@ -257,6 +258,11 @@ public:
 	*	Creates a vegetation material.
 	*/
 	void CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT;
+
+	/*
+	*	Initializes a dynamic physical entity.
+	*/
+	void InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT;
 
 	/*
 	*	Initializes a terrain entity.
