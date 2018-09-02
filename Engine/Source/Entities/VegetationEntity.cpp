@@ -7,28 +7,13 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Define the entity class.
-DEFINE_ENTITY_CLASS(VegetationEntity);
-
 /*
 *	Default constructor.
 */
 VegetationEntity::VegetationEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewVegetationComponentsIndex();
-
-	//Add this vegetation entity to the universal container.
-	Instances.EmplaceSlow(this);
-}
-
-/*
-*	Default destructor.
-*/
-VegetationEntity::~VegetationEntity() NOEXCEPT
-{
-	//Remove this vegetation entity from the universal container.
-	Instances.Erase(this);
+	componentsIndex = ComponentManager::GetNewVegetationComponentsIndex(this);
 }
 
 /*

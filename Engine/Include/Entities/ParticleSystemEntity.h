@@ -15,18 +15,10 @@ class ParticleSystemEntity : public Entity
 
 public:
 
-	//Declare the entity class.
-	DECLARE_ENTITY_CLASS(ParticleSystemEntity);
-
 	/*
 	*	Default constructor.
 	*/
 	ParticleSystemEntity() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	virtual ~ParticleSystemEntity() NOEXCEPT;
 
 	/*
 	*	Returns the position of this entity.

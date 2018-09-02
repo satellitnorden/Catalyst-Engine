@@ -6,7 +6,7 @@
 //Entities.
 #include <Entities/Entity.h>
 
-class PointLightEntity : public Entity
+class DynamicPhysicalEntity : public Entity
 {
 
 public:
@@ -14,7 +14,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	PointLightEntity() NOEXCEPT;
+	DynamicPhysicalEntity() NOEXCEPT;
 
 	/*
 	*	Returns the position of this entity.
@@ -45,25 +45,5 @@ public:
 	*	Scales this entity.
 	*/
 	void Scale(const Vector3 &scaleVector) NOEXCEPT final override;
-
-	/*
-	*	Sets whether or not this point light is enabled.
-	*/
-	void SetEnabled(const bool newEnabled) NOEXCEPT;
-
-	/*
-	*	Sets the attenuation distance.
-	*/
-	void SetAttenuationDistance(const float newAttenuationDistance) NOEXCEPT;
-
-	/*
-	*	Sets the intensity.
-	*/
-	void SetIntensity(const float newIntensity) NOEXCEPT;
-
-	/*
-	*	Sets the color.
-	*/
-	void SetColor(const Vector3 &newColor) NOEXCEPT;
 
 };

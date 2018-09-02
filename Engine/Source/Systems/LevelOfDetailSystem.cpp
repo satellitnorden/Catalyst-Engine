@@ -114,8 +114,8 @@ void LevelOfDetailSystem::CaltulateTerrainLevelOfDetail() NOEXCEPT
 
 	//Cache relevant data.
 	const Vector3 cameraWorldPosition{ RenderingSystem::Instance->GetActiveCamera()->GetPosition() };
-	const TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainComponents() };
-	TerrainRenderComponent *RESTRICT renderComponent{ ComponentManager::GetTerrainRenderComponents() };
+	const TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainTerrainComponents() };
+	TerrainRenderComponent *RESTRICT renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents() };
 
 	for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++component, ++renderComponent)
 	{

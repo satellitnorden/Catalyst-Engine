@@ -116,7 +116,7 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const TerrainRenderComponent *RESTRICT component{ ComponentManager::GetTerrainRenderComponents() };
+	const TerrainRenderComponent *RESTRICT component{ ComponentManager::GetTerrainTerrainRenderComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);

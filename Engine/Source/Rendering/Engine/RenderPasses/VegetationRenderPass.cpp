@@ -121,7 +121,7 @@ void VegetationRenderPass::RenderInternal() NOEXCEPT
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationComponents() };
+	const VegetationComponent *RESTRICT component{ ComponentManager::GetVegetationVegetationComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);

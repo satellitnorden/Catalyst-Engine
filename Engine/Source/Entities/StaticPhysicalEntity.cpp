@@ -7,28 +7,13 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Define the entity class.
-DEFINE_ENTITY_CLASS(StaticPhysicalEntity);
-
 /*
 *	Default constructor.
 */
 StaticPhysicalEntity::StaticPhysicalEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewStaticPhysicalComponentsIndex();
-
-	//Add this static physical entity to the universal container.
-	Instances.EmplaceSlow(this);
-}
-
-/*
-*	Default destructor.
-*/
-StaticPhysicalEntity::~StaticPhysicalEntity() NOEXCEPT
-{
-	//Remove this static physical entity from the universal container.
-	Instances.Erase(this);
+	componentsIndex = ComponentManager::GetNewStaticPhysicalComponentsIndex(this);
 }
 
 /*

@@ -191,8 +191,8 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 {
 	//Fill the terrain entity components with the relevant data.
 	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetTerrainFrustumCullingComponents()[entity->GetComponentsIndex()] };
-	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[entity->GetComponentsIndex()] };
-	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainRenderComponents()[entity->GetComponentsIndex()] };
+	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainTerrainComponents()[entity->GetComponentsIndex()] };
+	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->GetComponentsIndex()] };
 
 	frustumCullingComponent.axisAlignedBoundingBox = data->axisAlignedBoundingBox;
 
@@ -241,7 +241,7 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 	//Cache relevant data.
 	const PhysicalMaterial &material = model.GetMaterial();
 	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents()[staticPhysicalEntity.GetComponentsIndex()] };
-	StaticPhysicalRenderComponent &renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents()[staticPhysicalEntity.GetComponentsIndex()] };
+	StaticPhysicalRenderComponent &renderComponent{ ComponentManager::GetStaticPhysicalStaticPhysicalRenderComponents()[staticPhysicalEntity.GetComponentsIndex()] };
 	TransformComponent &transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents()[staticPhysicalEntity.GetComponentsIndex()] };
 
 	//Allocate the descriptor set.
@@ -276,7 +276,7 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 {
 	//Cache relevant data.
 	const PhysicalMaterial &material = model.GetMaterial();
-	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalRenderComponents()[entity.GetComponentsIndex()] };
+	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalInstancedPhysicalRenderComponents()[entity.GetComponentsIndex()] };
 
 	//Allocate the descriptor set.
 	renderComponent.renderDataTable = VulkanInterface::Instance->CreateDescriptorSet(descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Physical)]);
@@ -311,8 +311,8 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) const NOEXCEPT
 {
 	//Get the components.
-	VegetationComponent &renderComponent{ ComponentManager::GetVegetationComponents()[entity.GetComponentsIndex()] };
-	VegetationCullingComponent &cullingComponent{ ComponentManager::GetVegetationCullingComponents()[entity.GetComponentsIndex()] };
+	VegetationComponent &renderComponent{ ComponentManager::GetVegetationVegetationComponents()[entity.GetComponentsIndex()] };
+	VegetationCullingComponent &cullingComponent{ ComponentManager::GetVegetationVegetationCullingComponents()[entity.GetComponentsIndex()] };
 
 	//Calculate the vegetation grid.
 	DynamicArray<VegetationTransformation> sortedTransformations;
@@ -357,8 +357,8 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT
 {
 	//Cache relevant data.
-	ParticleSystemComponent &component{ ComponentManager::GetParticleSystemComponents()[entity.GetComponentsIndex()] };
-	ParticleSystemRenderComponent &renderComponent{ ComponentManager::GetParticleSystemRenderComponents()[entity.GetComponentsIndex()] };
+	ParticleSystemComponent &component{ ComponentManager::GetParticleSystemParticleSystemComponents()[entity.GetComponentsIndex()] };
+	ParticleSystemRenderComponent &renderComponent{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[entity.GetComponentsIndex()] };
 
 	//Create the uniform buffer.
 	VulkanUniformBuffer *const RESTRICT uniformBuffer{ VulkanInterface::Instance->CreateUniformBuffer(static_cast<VkDeviceSize>(sizeof(VulkanParticleSystemProperties))) };
@@ -1725,7 +1725,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 
 	if (numberOfDirectionalLightEntityComponents > 0)
 	{
-		const DirectionalLightComponent *RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightComponents() };
+		const DirectionalLightComponent *RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightDirectionalLightComponents() };
 
 		dynamicUniformData.directionalLightIntensity = directionalLightComponent->intensity;
 		dynamicUniformData.directionalLightViewMatrix = RenderingUtilities::CalculateDirectionalLightViewMatrix();
@@ -1754,7 +1754,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	uint64 counter = 0;
 
 	const uint64 numberOfPointLightEntityComponents{ ComponentManager::GetNumberOfPointLightComponents() };
-	const PointLightComponent *RESTRICT pointLightComponent{ ComponentManager::GetPointLightComponents() };
+	const PointLightComponent *RESTRICT pointLightComponent{ ComponentManager::GetPointLightPointLightComponents() };
 
 	dynamicUniformData.numberOfPointLights = static_cast<int32>(numberOfPointLightEntityComponents);
 
@@ -1778,7 +1778,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	counter = 0;
 
 	const uint64 numberOfSpotLightEntityComponents{ ComponentManager::GetNumberOfSpotLightComponents() };
-	const SpotLightComponent *RESTRICT spotLightComponent{ ComponentManager::GetSpotLightComponents() };
+	const SpotLightComponent *RESTRICT spotLightComponent{ ComponentManager::GetSpotLightSpotLightComponents() };
 
 	dynamicUniformData.numberOfSpotLights = static_cast<int32>(numberOfSpotLightEntityComponents);
 

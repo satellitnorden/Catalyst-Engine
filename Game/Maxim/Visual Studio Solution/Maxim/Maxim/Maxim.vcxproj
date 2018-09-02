@@ -38,6 +38,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\CameraEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\DirectionalLightEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\DynamicPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Entity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\InstancedPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\ParticleSystemEntity.cpp" />

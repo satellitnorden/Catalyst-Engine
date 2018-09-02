@@ -16,18 +16,10 @@ class InstancedPhysicalEntity : public Entity
 
 public:
 
-	//Declare the entity class.
-	DECLARE_ENTITY_CLASS(InstancedPhysicalEntity);
-
 	/*
 	*	Default constructor.
 	*/
 	InstancedPhysicalEntity() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	virtual ~InstancedPhysicalEntity() NOEXCEPT;
 
 	/*
 	*	Returns the position of this entity.

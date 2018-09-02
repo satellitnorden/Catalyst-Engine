@@ -7,37 +7,24 @@
 //Math.
 #include <Math/Vector3.h>
 
-//Declares an entity class.
-#define DECLARE_ENTITY_CLASS(EntityClass) static DynamicArray<EntityClass *RESTRICT> Instances;
-
-//Defines an entity class.
-#define DEFINE_ENTITY_CLASS(EntityClass) DynamicArray<EntityClass *RESTRICT> EntityClass::Instances;
-
 class Entity
 {
 
 public:
 
-	//Declare the entity class.
-	DECLARE_ENTITY_CLASS(Entity);
-
 	//Enumeration covering all entity types.
 	enum class EntityType : uint8
 	{
+		DynamicPhysical,
 		Terrain,
 
 		NumberOfEntityTypes
 	};
 
 	/*
-	*	Default constructor.
-	*/
-	Entity() NOEXCEPT;
-
-	/*
 	*	Default destructor.
 	*/
-	virtual ~Entity() NOEXCEPT;
+	virtual ~Entity() NOEXCEPT { }
 
 	/*
 	*	Returns the component index.
@@ -83,11 +70,6 @@ public:
 	*	Adds a child to this entity.
 	*/
 	void AddChild(Entity *RESTRICT newChildEntity) NOEXCEPT { children.EmplaceSlow(newChildEntity); }
-
-	/*
-	*	Marks this entitiy for destruction.
-	*/
-	void MarkForDestruction() NOEXCEPT;
 
 	/*
 	*	Returns the position of this entity.

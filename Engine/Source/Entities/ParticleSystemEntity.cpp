@@ -7,28 +7,13 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Define the entity class.
-DEFINE_ENTITY_CLASS(ParticleSystemEntity);
-
 /*
 *	Default constructor.
 */
 ParticleSystemEntity::ParticleSystemEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewParticleSystemComponentsIndex();
-
-	//Add this particle system entity to the universal container.
-	Instances.EmplaceSlow(this);
-}
-
-/*
-*	Default destructor.
-*/
-ParticleSystemEntity::~ParticleSystemEntity() NOEXCEPT
-{
-	//Remove this particle system entity from the universal container.
-	Instances.Erase(this);
+	componentsIndex = ComponentManager::GetNewParticleSystemComponentsIndex(this);
 }
 
 /*
@@ -64,7 +49,7 @@ const Vector3& ParticleSystemEntity::GetScale() const NOEXCEPT
 void ParticleSystemEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this particle system entity.
-	ComponentManager::GetParticleSystemComponents()[componentsIndex].properties.worldPosition += moveVector;
+	ComponentManager::GetParticleSystemParticleSystemComponents()[componentsIndex].properties.worldPosition += moveVector;
 
 	//Move all children.
 	for (auto child : children)

@@ -108,8 +108,8 @@ void CullingSystem::CullTerrain() NOEXCEPT
 	//Cache relevant data.
 	const Matrix4 &viewMatrix{ *RenderingSystem::Instance->GetViewMatrix() };
 	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetTerrainFrustumCullingComponents() };
-	const TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainComponents() };
-	TerrainRenderComponent *RESTRICT renderComponent{ ComponentManager::GetTerrainRenderComponents() };
+	const TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainTerrainComponents() };
+	TerrainRenderComponent *RESTRICT renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents() };
 
 	for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++frustumCullingComponent, ++component, ++renderComponent)
 	{
@@ -128,7 +128,7 @@ void CullingSystem::CullStaticPhysical() NOEXCEPT
 	//Iterate over all static physical components to check if they are in the view frustum.
 	const uint64 numberOfStaticPhysicalComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
 	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
-	StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents() };
+	StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalStaticPhysicalRenderComponents() };
 	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents() };
 
 	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++frustumCullingComponent, ++renderComponent, ++transformComponent)
@@ -180,8 +180,8 @@ void CullingSystem::CullVegetation() NOEXCEPT
 		return;
 	}
 
-	VegetationComponent *RESTRICT renderComponent{ ComponentManager::GetVegetationComponents() };
-	const VegetationCullingComponent *RESTRICT cullingComponent{ ComponentManager::GetVegetationCullingComponents() };
+	VegetationComponent *RESTRICT renderComponent{ ComponentManager::GetVegetationVegetationComponents() };
+	const VegetationCullingComponent *RESTRICT cullingComponent{ ComponentManager::GetVegetationVegetationCullingComponents() };
 
 	const Vector3 &cameraWorldPosition{ RenderingSystem::Instance->GetActiveCamera()->GetPosition() };
 

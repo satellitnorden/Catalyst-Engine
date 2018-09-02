@@ -49,6 +49,7 @@
     <ClInclude Include="..\..\..\Include\Components\CameraComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h" />
     <ClInclude Include="..\..\..\Include\Components\DirectionalLightComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\DynamicPhysicalRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\FrustumCullingComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\InstancedPhysicalRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\ParticleSystemComponent.h" />
@@ -86,9 +87,11 @@
     <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\CameraEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\DirectionalLightEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\DynamicPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Entity.h" />
     <ClInclude Include="..\..\..\Include\Entities\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\EntityTerminationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\InitializationData\DynamicPhysicalInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\TerrainInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InstancedPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\ParticleSystemEntity.h" />
@@ -258,6 +261,7 @@
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\CameraEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\DirectionalLightEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\DynamicPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Entity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\InstancedPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\ParticleSystemEntity.cpp" />

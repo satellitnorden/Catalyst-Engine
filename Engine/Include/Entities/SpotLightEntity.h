@@ -11,18 +11,10 @@ class SpotLightEntity : public Entity
 
 public:
 
-	//Declare the entity class.
-	DECLARE_ENTITY_CLASS(SpotLightEntity);
-
 	/*
 	*	Default constructor.
 	*/
 	SpotLightEntity() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	virtual ~SpotLightEntity() NOEXCEPT;
 
 	/*
 	*	Returns the position of this entity.

@@ -128,7 +128,7 @@ void DirectionalStaticPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalRenderComponents() };
+	const StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalStaticPhysicalRenderComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);

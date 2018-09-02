@@ -4,8 +4,10 @@
 //Entities.
 #include <Entities/CameraEntity.h>
 #include <Entities/DirectionalLightEntity.h>
+#include <Entities/DynamicPhysicalEntity.h>
 #include <Entities/ParticleSystemEntity.h>
 #include <Entities/StaticPhysicalEntity.h>
+#include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
@@ -22,6 +24,8 @@
 //Singleton definition.
 DEFINE_SINGLETON(MaximGameSystem);
 
+DynamicPhysicalEntity *RESTRICT spinner;
+
 /*
 *	Initializes the Maxim game system.
 */
@@ -37,6 +41,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	//Set it as the active camera.
 	RenderingSystem::Instance->SetActiveCamera(camera);
 
+	/*
 	//Create something to look at.
 	{
 		PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Octahedron) };
@@ -112,6 +117,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 			object->Initialize(model, Vector3(-25.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 100.0f, 10.0f));
 		}
 	}
+	*/
 
 	//Create some particles.
 	ParticleSystemEntity *const RESTRICT particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
@@ -124,6 +130,20 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	//Disable screen space ambient occlusion.
 	RenderingConfigurationManager::Instance->SetScreenSpaceAmbientOcclusionEnabled(false);
+
+	//Create a dynamic physcal cube that will spin around and stuff. (:
+	spinner = EntitySystem::Instance->CreateEntity<DynamicPhysicalEntity>();
+	DynamicPhysicalInitializationData  *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+
+	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Octahedron) };
+	model.SetMaterial(RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red));
+
+	data->model = model;
+	data->position = Vector3(0.0f, 0.0f, 0.0f);
+	data->rotation = Vector3(0.0f, 0.0f, 0.0f);
+	data->scale = Vector3(1.0f, 1.0f, 1.0f);
+
+	EntitySystem::Instance->RequestInitialization(spinner, data, false);
 }
 
 /*

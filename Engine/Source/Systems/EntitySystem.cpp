@@ -7,6 +7,7 @@
 //Entities.
 #include <Entities/EntityInitializationData.h>
 #include <Entities/EntityTerminationData.h>
+#include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 #include <Entities/InitializationData/TerrainInitializationData.h>
 
 //Multithreading.
@@ -27,18 +28,6 @@ EntitySystem::EntitySystem() NOEXCEPT
 }
 
 /*
-*	Releases the entity system.
-*/
-void EntitySystem::ReleaseSystem() NOEXCEPT
-{
-	//Destroy all remaining entities.
-	for (int64 i = Entity::Instances.Size() - 1; i >= 0; --i)
-	{
-		delete Entity::Instances[i];
-	}
-}
-
-/*
 *	Pre-updates the entity system synchronously.
 */
 void EntitySystem::PreUpdateSystemSynchronous() NOEXCEPT
@@ -48,6 +37,18 @@ void EntitySystem::PreUpdateSystemSynchronous() NOEXCEPT
 
 	//Terminate entities.
 	TerminateEntities();
+}
+
+/*
+*	Releases the entity system.
+*/
+void EntitySystem::ReleaseSystem() NOEXCEPT
+{
+	//Destroy all remaining entities.
+	for (int64 i = entities.Size() - 1; i >= 0; --i)
+	{
+		delete entities[i];
+	}
 }
 
 /*
@@ -132,6 +133,13 @@ void EntitySystem::InitializeEntity(EntityInitializationData* const RESTRICT dat
 {
 	switch (data->entity->GetEntityType())
 	{
+		case Entity::EntityType::DynamicPhysical:
+		{
+			InitializeDynamicPhysicalEntity(data);
+
+			break;
+		}
+
 		case Entity::EntityType::Terrain:
 		{
 			InitializeTerrainEntity(data);
@@ -148,6 +156,21 @@ void EntitySystem::InitializeEntity(EntityInitializationData* const RESTRICT dat
 		}
 #endif
 	}
+}
+
+/*
+*	Initializes a dynamic physical entity.
+*/
+void EntitySystem::InitializeDynamicPhysicalEntity(EntityInitializationData *const RESTRICT data) NOEXCEPT
+{
+	//Retrieve a new components index for the dynamic physical entity.
+	data->entity->SetComponentsIndex(ComponentManager::GetNewDynamicPhysicalComponentsIndex(data->entity));
+
+	//Initialize the dynamic physical entity via the rendering system.
+	//RenderingSystem::Instance->InitializeDynamicPhysicalEntity(reinterpret_cast<const DynamicPhysicalEntity *const RESTRICT>(data->entity), static_cast<const DynamicPhysicalInitializationData *const RESTRICT>(data->data));
+
+	//Destroy the initialization data.
+	DestroyInitializationData<DynamicPhysicalInitializationData>(data->data);
 }
 
 /*

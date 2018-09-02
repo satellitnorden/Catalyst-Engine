@@ -6,6 +6,7 @@
 //Components.
 #include <Components/CameraComponent.h>
 #include <Components/DirectionalLightComponent.h>
+#include <Components/DynamicPhysicalRenderComponent.h>
 #include <Components/FrustumCullingComponent.h>
 #include <Components/InstancedPhysicalRenderComponent.h>
 #include <Components/ParticleSystemComponent.h>
@@ -19,324 +20,66 @@
 #include <Components/VegetationComponent.h>
 #include <Components/VegetationCullingComponent.h>
 
+/*
+*	Declares an entity class with one component.
+*/
+#define DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(ENTITY_CLASS, FIRST_COMPONENT)												\
+public:																														\
+	NO_DISCARD static uint64 GetNumberOf ## ENTITY_CLASS ## Components() NOEXCEPT;											\
+	NO_DISCARD static uint64 GetNew ## ENTITY_CLASS ## ComponentsIndex(Entity *const RESTRICT entity) NOEXCEPT;				\
+	NO_DISCARD RESTRICTED static FIRST_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT;	\
+	static void Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT;							\
+private:																													\
+	static DynamicArray<Entity *RESTRICT> ENTITY_CLASS ## Entities;															\
+	static DynamicArray<FIRST_COMPONENT> ENTITY_CLASS ## FIRST_COMPONENT ## s;
+
+/*
+*	Declares an entity class with two components.
+*/
+#define DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ENTITY_CLASS, FIRST_COMPONENT, SECOND_COMPONENT)							\
+public:																														\
+	NO_DISCARD static uint64 GetNumberOf ## ENTITY_CLASS ## Components() NOEXCEPT;											\
+	NO_DISCARD static uint64 GetNew ## ENTITY_CLASS ## ComponentsIndex(Entity *const RESTRICT entity) NOEXCEPT;				\
+	NO_DISCARD RESTRICTED static FIRST_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT;	\
+	NO_DISCARD RESTRICTED static SECOND_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## SECOND_COMPONENT ## s() NOEXCEPT;	\
+	static void Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT;							\
+private:																													\
+	static DynamicArray<Entity *RESTRICT> ENTITY_CLASS ## Entities;															\
+	static DynamicArray<FIRST_COMPONENT> ENTITY_CLASS ## FIRST_COMPONENT ## s;												\
+	static DynamicArray<SECOND_COMPONENT> ENTITY_CLASS ## SECOND_COMPONENT ## s;
+
+/*
+*	Declares an entity class with three components.
+*/
+#define DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(ENTITY_CLASS, FIRST_COMPONENT, SECOND_COMPONENT, THIRD_COMPONENT)		\
+public:																														\
+	NO_DISCARD static uint64 GetNumberOf ## ENTITY_CLASS ## Components() NOEXCEPT;											\
+	NO_DISCARD static uint64 GetNew ## ENTITY_CLASS ## ComponentsIndex(Entity *const RESTRICT entity) NOEXCEPT;				\
+	NO_DISCARD RESTRICTED static FIRST_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT;	\
+	NO_DISCARD RESTRICTED static SECOND_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## SECOND_COMPONENT ## s() NOEXCEPT;	\
+	NO_DISCARD RESTRICTED static THIRD_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## THIRD_COMPONENT ## s() NOEXCEPT;	\
+	static void Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT;							\
+private:																													\
+	static DynamicArray<Entity *RESTRICT> ENTITY_CLASS ## Entities;															\
+	static DynamicArray<FIRST_COMPONENT> ENTITY_CLASS ## FIRST_COMPONENT ## s;												\
+	static DynamicArray<SECOND_COMPONENT> ENTITY_CLASS ## SECOND_COMPONENT ## s;											\
+	static DynamicArray<THIRD_COMPONENT> ENTITY_CLASS ## THIRD_COMPONENT ## s;
+
 //Forward declarations.
 class Entity;
 
 class ComponentManager final
 {
 
-public:
-
-	/*								*/
-	/*	Camera Entity Interface.	*/
-	/*								*/
-
-	/*
-	*	Returns a new components index for camera entities.
-	*/
-	static uint64 GetNewCameraComponentsIndex() NOEXCEPT;
-
-	/*
-	*	Returns the number of camera components.
-	*/
-	static uint64 GetNumberOfCameraComponents() NOEXCEPT;
-
-	/*
-	*	Returns the camera components.
-	*/
-	static CameraComponent *RESTRICT GetCameraComponents() NOEXCEPT;
-
-private:
-
-	//The number of camera components.
-	static std::atomic<uint64> numberOfCameraComponents;
-
-	//The camera components.
-	static DynamicArray<CameraComponent> cameraComponents;
-
-public:
-
-	/*										*/
-	/*	Directional Light Entity Interface.	*/
-	/*										*/
-
-	/*
-	*	Returns a new components index for directional light entities.
-	*/
-	static uint64 GetNewDirectionalLightComponentsIndex() NOEXCEPT;
-
-	/*
-	*	Returns the number of directional light components.
-	*/
-	static uint64 GetNumberOfDirectionalLightComponents() NOEXCEPT;
-
-	/*
-	*	Returns the directional light components.
-	*/
-	static DirectionalLightComponent *RESTRICT GetDirectionalLightComponents() NOEXCEPT;
-
-private:
-
-	//The number of directional light components.
-	static std::atomic<uint64> numberOfDirectionalLightComponents;
-
-	//The the directional light components.
-	static DynamicArray<DirectionalLightComponent> directionalLightComponents;
-
-public:
-
-	/*											*/
-	/*	Instanced Physical Entity Interface.	*/
-	/*											*/
-
-	/*
-	*	Returns a new components index for instanced physical entities.
-	*/
-	static uint64 GetNewInstancedPhysicalComponentsIndex() NOEXCEPT;
-
-	/*
-	*	Returns the number of instanced physical components.
-	*/
-	static uint64 GetNumberOfInstancedPhysicalComponents() NOEXCEPT;
-
-	/*
-	*	Returns the instanced physical render components.
-	*/
-	static InstancedPhysicalRenderComponent *RESTRICT GetInstancedPhysicalRenderComponents() NOEXCEPT;
-
-private:
-
-	//The number of instanced physical components.
-	static std::atomic<uint64> numberOfInstancedPhysicalComponents;
-
-	//The instanced physical render components.
-	static DynamicArray<InstancedPhysicalRenderComponent> instancedPhysicalRenderComponents;
-
-public:
-
-	/*										*/
-	/*	Static Physical Entity Interface.	*/
-	/*										*/						
-
-	/*
-	*	Returns a new components index for static physical entities.
-	*/
-	static uint64 GetNewStaticPhysicalComponentsIndex() NOEXCEPT;
-
-	/*
-	*	Returns the number of static physical components.
-	*/
-	static uint64 GetNumberOfStaticPhysicalComponents() NOEXCEPT;
-
-	/*
-	*	Returns the static physical frustum culling components.
-	*/
-	static FrustumCullingComponent *RESTRICT GetStaticPhysicalFrustumCullingComponents() NOEXCEPT;
-
-	/*
-	*	Returns the static physical render components.
-	*/
-	static StaticPhysicalRenderComponent *RESTRICT GetStaticPhysicalRenderComponents() NOEXCEPT;
-
-	/*
-	*	Returns the static physical transform components.
-	*/
-	static TransformComponent *RESTRICT GetStaticPhysicalTransformComponents() NOEXCEPT;
-
-private:
-
-	//The number of static physical components.
-	static std::atomic<uint64> numberOfStaticPhysicalComponents;
-
-	//The static physical frustum culling components.
-	static DynamicArray<FrustumCullingComponent> staticPhysicalFrustumCullingComponents;
-
-	//The static physical render components.
-	static DynamicArray<StaticPhysicalRenderComponent> staticPhysicalRenderComponents;
-
-	//The static physical transform components.
-	static DynamicArray<TransformComponent> staticPhysicalTransformComponents;
-
-public:
-
-	/*										*/
-	/*	Particle System Entity Interface.	*/
-	/*										*/
-
-	/*
-	*	Returns a new components index for particle system entities.
-	*/
-	static uint64 GetNewParticleSystemComponentsIndex() NOEXCEPT;
-
-	/*
-	*	Returns the number of particle system components.
-	*/
-	static uint64 GetNumberOfParticleSystemComponents() NOEXCEPT;
-
-	/*
-	*	Returns the particle system components.
-	*/
-	static ParticleSystemComponent *RESTRICT GetParticleSystemComponents() NOEXCEPT;
-
-	/*
-	*	Returns the particle system render components.
-	*/
-	static ParticleSystemRenderComponent *RESTRICT GetParticleSystemRenderComponents() NOEXCEPT;
-
-private:
-
-	//The number of particle system components.
-	static std::atomic<uint64> numberOfParticleSystemComponents;
-
-	//The particle system components.
-	static DynamicArray<ParticleSystemComponent> particleSystemComponents;
-	
-	//The particle system render components.
-	static DynamicArray<ParticleSystemRenderComponent> particleSystemRenderComponents;
-
-public:
-
-	/*									*/
-	/*	Point Light Entity Interface.	*/
-	/*									*/
-
-	/*
-	*	Returns a new components index for point light entities.
-	*/
-	static uint64 GetNewPointLightComponentsIndex() NOEXCEPT;
-
-	/*
-	*	Returns the number of point light components.
-	*/
-	static uint64 GetNumberOfPointLightComponents() NOEXCEPT;
-
-	/*
-	*	Returns the point light components.
-	*/
-	static PointLightComponent *RESTRICT GetPointLightComponents() NOEXCEPT;
-
-private:
-
-	//The number of point light components.
-	static std::atomic<uint64> numberOfPointLightComponents;
-
-	//The point light components.
-	static DynamicArray<PointLightComponent> pointLightComponents;
-
-public:
-
-	/*									*/
-	/*	Spot Light Entity Interface.	*/
-	/*									*/
-
-	/*
-	*	Returns a new components index for spot light entities.
-	*/
-	static uint64 GetNewSpotLightComponentsIndex() NOEXCEPT;
-
-	/*
-	*	Returns the number of spot light components.
-	*/
-	static uint64 GetNumberOfSpotLightComponents() NOEXCEPT;
-
-	/*
-	*	Returns the spot light components.
-	*/
-	static SpotLightComponent *RESTRICT GetSpotLightComponents() NOEXCEPT;
-
-private:
-
-	//The number of spot light components.
-	static std::atomic<uint64> numberOfSpotLightComponents;
-
-	//The spot light components.
-	static DynamicArray<SpotLightComponent> spotLightComponents;
-
-public:
-
-	/*								*/
-	/*	Terrain Entity Interface.	*/
-	/*								*/
-
-	/*
-	*	Returns a new components index for terrain entities.
-	*/
-	static uint64 GetNewTerrainComponentsIndex(Entity *const RESTRICT entity) NOEXCEPT;
-
-	/*
-	*	Returns the number of terrain components.
-	*/
-	static uint64 GetNumberOfTerrainComponents() NOEXCEPT;
-
-	/*
-	*	Returns the terrain components.
-	*/
-	static TerrainComponent *RESTRICT GetTerrainComponents() NOEXCEPT;
-
-	/*
-	*	Returns the terrain frustum culling components.
-	*/
-	static FrustumCullingComponent *const RESTRICT GetTerrainFrustumCullingComponents() NOEXCEPT;
-
-	/*
-	*	Returns the terrain render components.
-	*/
-	static TerrainRenderComponent *RESTRICT GetTerrainRenderComponents() NOEXCEPT;
-
-	/*
-	*	Returns a components index for terrain entities.
-	*/
-	static void ReturnTerrainComponentsIndex(const uint64 componentsIndex) NOEXCEPT;
-
-private:
-
-	//The terrain entities.
-	static DynamicArray<Entity *RESTRICT> terrainEntities;
-
-	//The terrain components.
-	static DynamicArray<TerrainComponent> terrainComponents;
-
-	//The terrain frustum culling components.
-	static DynamicArray<FrustumCullingComponent> terrainFrustumCullingComponents;
-
-	//The terrain render components.
-	static DynamicArray<TerrainRenderComponent> terrainRenderComponents;
-
-public:
-
-	/*									*/
-	/*	Vegetation Entity Interface.	*/
-	/*									*/
-
-	/*
-	*	Returns a new components index for vegetation entities.
-	*/
-	static uint64 GetNewVegetationComponentsIndex() NOEXCEPT;
-
-	/*
-	*	Returns the number of vegetation components.
-	*/
-	static uint64 GetNumberOfVegetationComponents() NOEXCEPT;
-
-	/*
-	*	Returns the vegetation components.
-	*/
-	static VegetationComponent *RESTRICT GetVegetationComponents() NOEXCEPT;
-
-	/*
-	*	Returns the vegetation culling components.
-	*/
-	static VegetationCullingComponent *RESTRICT GetVegetationCullingComponents() NOEXCEPT;
-
-private:
-
-	//The number of vegetation components.
-	static std::atomic<uint64> numberOfVegetationComponents;
-
-	//The vegetation components.
-	static DynamicArray<VegetationComponent> vegetationComponents;
-
-	//The vegetation culling components.
-	static DynamicArray<VegetationCullingComponent> vegetationCullingComponents;
+	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(Camera, CameraComponent);
+	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(DirectionalLight, DirectionalLightComponent);
+	DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicPhysicalRenderComponent, TransformComponent);
+	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedPhysical, InstancedPhysicalRenderComponent);
+	DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(StaticPhysical, FrustumCullingComponent, StaticPhysicalRenderComponent, TransformComponent);
+	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
+	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
+	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(SpotLight, SpotLightComponent);
+	DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(Terrain, TerrainComponent, FrustumCullingComponent, TerrainRenderComponent);
+	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(Vegetation, VegetationComponent, VegetationCullingComponent);
 
 };

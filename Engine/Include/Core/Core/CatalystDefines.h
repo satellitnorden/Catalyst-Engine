@@ -7,9 +7,9 @@
 *	Defines that a function's return value cannot be discarded by the caller.
 */
 #if defined(CATALYST_CXX17)
-	#define NODISCARD [[nodiscard]]
+	#define NO_DISCARD [[nodiscard]]
 #else
-	#define NODISCARD
+	#define NO_DISCARD
 #endif
 
 /*

@@ -401,8 +401,8 @@ void RenderingSystem::InitializeTerrainEntity(const TerrainEntity *const RESTRIC
 void RenderingSystem::TerminateTerrainEntity(const TerrainEntity *const RESTRICT entity) const NOEXCEPT
 {
 	//Retrieve the component.
-	TerrainComponent &component{ ComponentManager::GetTerrainComponents()[entity->GetComponentsIndex()] };
-	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainRenderComponents()[entity->GetComponentsIndex()] };
+	TerrainComponent &component{ ComponentManager::GetTerrainTerrainComponents()[entity->GetComponentsIndex()] };
+	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->GetComponentsIndex()] };
 
 	//Destroy the terrain entity's resources.
 	DestroyTexture2D(component.terrainPropertiesTexture);

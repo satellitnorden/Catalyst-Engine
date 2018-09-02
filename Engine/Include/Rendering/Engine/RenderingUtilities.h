@@ -29,8 +29,8 @@ namespace RenderingUtilities
 	{
 		static Matrix4 directionalLightProjectionMatrix{ Matrix4::Ortographic(-RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, -RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, 0.0f, RenderingConstants::SHADOW_VIEW_DISTANCE) };
 
-		const CameraComponent *const RESTRICT cameraComponent{ ComponentManager::GetCameraComponents() };
-		const DirectionalLightComponent *const RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightComponents() };
+		const CameraComponent *const RESTRICT cameraComponent{ ComponentManager::GetCameraCameraComponents() };
+		const DirectionalLightComponent *const RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightDirectionalLightComponents() };
 
 		const Vector3 cameraPosition{ cameraComponent->position };
 		const Vector3 directionalLightForwardVector{ Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->rotation) };

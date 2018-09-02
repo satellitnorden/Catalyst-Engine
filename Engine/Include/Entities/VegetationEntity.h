@@ -18,18 +18,10 @@ class VegetationEntity : public Entity
 
 public:
 
-	//Declare the entity class.
-	DECLARE_ENTITY_CLASS(VegetationEntity);
-
 	/*
 	*	Default constructor.
 	*/
 	VegetationEntity() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	virtual ~VegetationEntity() NOEXCEPT;
 
 	/*
 	*	Returns the position of this entity.

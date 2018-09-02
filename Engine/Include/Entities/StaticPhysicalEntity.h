@@ -15,18 +15,10 @@ class StaticPhysicalEntity : public Entity
 
 public:
 
-	//Declare the entity class.
-	DECLARE_ENTITY_CLASS(StaticPhysicalEntity);
-
 	/*
 	*	Default constructor.
 	*/
 	StaticPhysicalEntity() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	virtual ~StaticPhysicalEntity() NOEXCEPT;
 
 	/*
 	*	Initializes this static physical entity.

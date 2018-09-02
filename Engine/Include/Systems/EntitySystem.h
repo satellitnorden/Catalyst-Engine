@@ -38,6 +38,26 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
+	*	Creates a new entity.
+	*/
+	template <class EntityClass, class... Arguments>
+	RESTRICTED EntityClass* const RESTRICT CreateEntity(Arguments&&... arguments) NOEXCEPT;
+
+	/*
+	*	Creates a new child entity.
+	*/
+	template <class EntityClass, class... Arguments>
+	RESTRICTED EntityClass* const RESTRICT CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) NOEXCEPT;
+
+	/*
+	*	Creates initialization data for an entity.
+	*	Returns a pointer to the newly created data.
+	*	The memory is freed after the entity system has finished initialization.
+	*/
+	template <typename Type>
+	RESTRICTED Type* const RESTRICT CreateInitializationData() NOEXCEPT;
+
+	/*
 	*	Requests the initialization of en entity.
 	*	Initialization will happen at the next synchronous update of the entity system.
 	*	Usually only one entity is initialized at each update of the entity system.
@@ -55,27 +75,10 @@ public:
 	*/
 	void RequesTermination(Entity* const RESTRICT entity, const bool force) NOEXCEPT;
 
-	/*
-	*	Creates a new entity.
-	*/
-	template <class EntityClass, class... Arguments>
-	RESTRICTED EntityClass* const RESTRICT CreateEntity(Arguments&&... arguments) const NOEXCEPT;
-
-	/*
-	*	Creates a new child entity.
-	*/
-	template <class EntityClass, class... Arguments>
-	RESTRICTED EntityClass* const RESTRICT CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) const NOEXCEPT;
-
-	/*
-	*	Creates initialization data for an entity.
-	*	Returns a pointer to the newly created data.
-	*	The memory is freed after the entity system has finished initialization.
-	*/
-	template <typename Type>
-	RESTRICTED Type* const RESTRICT CreateInitializationData() NOEXCEPT;
-
 private:
+
+	//The list of entities.
+	DynamicArray<Entity *RESTRICT> entities;
 
 	//Lock for the initialization queue.
 	Spinlock initializationQueueLock;
@@ -98,6 +101,11 @@ private:
 	*	Initializes one entity.
 	*/
 	void InitializeEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Initializes a dynamic physical entity.
+	*/
+	void InitializeDynamicPhysicalEntity(EntityInitializationData *const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Initializes a terrain entity.

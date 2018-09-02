@@ -11,18 +11,10 @@ class DirectionalLightEntity : public Entity
 
 public:
 
-	//Declare the entity class.
-	DECLARE_ENTITY_CLASS(DirectionalLightEntity);
-
 	/*
 	*	Default constructor.
 	*/
 	DirectionalLightEntity() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	virtual ~DirectionalLightEntity() NOEXCEPT;
 
 	/*
 	*	Returns the position of this entity.

@@ -141,7 +141,7 @@ void InstancedPhysicalRenderPass::RenderInternal() NOEXCEPT
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const InstancedPhysicalRenderComponent *RESTRICT component{ ComponentManager::GetInstancedPhysicalRenderComponents() };
+	const InstancedPhysicalRenderComponent *RESTRICT component{ ComponentManager::GetInstancedPhysicalInstancedPhysicalRenderComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);

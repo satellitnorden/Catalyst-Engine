@@ -21,6 +21,7 @@
 class CameraEntity;
 class CatalystProjectRenderingConfiguration;
 class CPUTexture2D;
+class DynamicPhysicalEntity;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
 class OceanMaterialData;

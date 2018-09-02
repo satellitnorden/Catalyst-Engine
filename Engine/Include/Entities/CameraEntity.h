@@ -14,18 +14,10 @@ class CameraEntity : public Entity
 
 public:
 
-	//Declare the entity class.
-	DECLARE_ENTITY_CLASS(CameraEntity);
-
 	/*
 	*	Default constructor.
 	*/
 	CameraEntity() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	virtual ~CameraEntity() NOEXCEPT;
 
 	/*
 	*	Returns the position of this entity.

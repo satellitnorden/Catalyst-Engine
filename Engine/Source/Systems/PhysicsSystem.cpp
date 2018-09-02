@@ -31,7 +31,7 @@ void PhysicsSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 float PhysicsSystem::GetTerrainHeightAtPosition(const Vector3 &position) const NOEXCEPT
 {
 	//Calculate the nearest terrain.
-	const TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainComponents() };
+	const TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainTerrainComponents() };
 	const uint64 numberOfComponents{ ComponentManager::GetNumberOfTerrainComponents() };
 
 	const TerrainComponent *RESTRICT nearestComponent{ nullptr };
@@ -71,7 +71,7 @@ float PhysicsSystem::GetTerrainHeightAtPosition(const Vector3 &position) const N
 Vector3 PhysicsSystem::GetTerrainNormalAtPosition(const Vector3 &position) const NOEXCEPT
 {
 	//For now, just use the first terrain properties there is.
-	const TerrainComponent &terrainComponent{ ComponentManager::GetTerrainComponents()[0] };
+	const TerrainComponent &terrainComponent{ ComponentManager::GetTerrainTerrainComponents()[0] };
 	const CPUTexture2D &terrainProperties{ terrainComponent.terrainProperties };
 	const float terrainSize{ terrainComponent.terrainUniformData.terrainSize };
 	const float terrainHeight{ terrainComponent.terrainUniformData.terrainHeight };

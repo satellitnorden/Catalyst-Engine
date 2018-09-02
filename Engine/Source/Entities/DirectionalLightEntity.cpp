@@ -7,28 +7,13 @@
 //Math.
 #include <Math/Vector3.h>
 
-//Define the entity class.
-DEFINE_ENTITY_CLASS(DirectionalLightEntity);
-
 /*
 *	Default constructor.
 */
 DirectionalLightEntity::DirectionalLightEntity() NOEXCEPT
 {
 	//Get a new component index.
-	componentsIndex = ComponentManager::GetNewDirectionalLightComponentsIndex();
-
-	//Add this directional light entity to the universal container.
-	Instances.EmplaceSlow(this);
-}
-
-/*
-*	Default destructor.
-*/
-DirectionalLightEntity::~DirectionalLightEntity() NOEXCEPT
-{
-	//Remove this directional light entity from the universal container.
-	Instances.Erase(this);
+	componentsIndex = ComponentManager::GetNewDirectionalLightComponentsIndex(this);
 }
 
 /*
@@ -46,7 +31,7 @@ const Vector3& DirectionalLightEntity::GetPosition() const NOEXCEPT
 const Vector3& DirectionalLightEntity::GetRotation() const NOEXCEPT
 {
 	//Return the rotation of this entity.
-	return ComponentManager::GetDirectionalLightComponents()[componentsIndex].rotation;
+	return ComponentManager::GetDirectionalLightDirectionalLightComponents()[componentsIndex].rotation;
 }
 
 /*
@@ -76,7 +61,7 @@ void DirectionalLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void DirectionalLightEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate this entity.
-	ComponentManager::GetDirectionalLightComponents()[componentsIndex].rotation += rotateVector;
+	ComponentManager::GetDirectionalLightDirectionalLightComponents()[componentsIndex].rotation += rotateVector;
 
 	//Rotate all children.
 	for (auto child : children)
@@ -103,7 +88,7 @@ void DirectionalLightEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 void DirectionalLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 {
 	//Set the intensity of this directional light entity.
-	ComponentManager::GetDirectionalLightComponents()[componentsIndex].intensity = newIntensity;
+	ComponentManager::GetDirectionalLightDirectionalLightComponents()[componentsIndex].intensity = newIntensity;
 }
 
 /*

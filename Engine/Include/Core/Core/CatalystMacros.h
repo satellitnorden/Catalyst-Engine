@@ -57,6 +57,11 @@
 #define CATALYST_BENCHMARK_SECTION_AVERAGE(function) CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE(#function, function);
 
 /*
+*	Concatenates the arguments together.
+*/
+#define CONCATENATE(first, second) first##second
+
+/*
 *	Declares a singleton class. Must be done inside the class in the header file.
 */
 #define DECLARE_SINGLETON(SingletonClass) public: static UniquePointer<SingletonClass> Instance; SingletonClass(const SingletonClass &otherSingleton) = delete; SingletonClass(SingletonClass &&otherSingleton) = delete;

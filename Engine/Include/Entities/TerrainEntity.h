@@ -19,9 +19,6 @@ class TerrainEntity : public Entity
 
 public:
 
-	//Declare the entity class.
-	DECLARE_ENTITY_CLASS(TerrainEntity);
-
 	/*
 	*	Default constructor.
 	*/

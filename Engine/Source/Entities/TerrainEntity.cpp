@@ -7,9 +7,6 @@
 //Systems.
 #include <Systems/RenderingSystem.h>
 
-//Define the entity class.
-DEFINE_ENTITY_CLASS(TerrainEntity);
-
 /*
 *	Default constructor.
 */
@@ -25,7 +22,7 @@ TerrainEntity::TerrainEntity() NOEXCEPT
 const Vector3& TerrainEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetTerrainComponents()[componentsIndex].terrainUniformData.terrainPosition;
+	return ComponentManager::GetTerrainTerrainComponents()[componentsIndex].terrainUniformData.terrainPosition;
 }
 
 /*
@@ -52,7 +49,7 @@ const Vector3& TerrainEntity::GetScale() const NOEXCEPT
 void TerrainEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetTerrainComponents()[componentsIndex].terrainUniformData.terrainPosition += moveVector;
+	ComponentManager::GetTerrainTerrainComponents()[componentsIndex].terrainUniformData.terrainPosition += moveVector;
 
 	//Move all children.
 	for (auto child : children)
