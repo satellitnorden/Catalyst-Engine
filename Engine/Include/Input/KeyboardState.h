@@ -161,16 +161,16 @@ public:
 		//Set all keyboard button states to the default value.
 		for (uint8 i = 0; i < INDEX(KeyboardButton::NumberOfKeyboardButtons); ++i)
 		{
-			ButtonStates[i] = ButtonState::Released;
+			_ButtonStates[i] = ButtonState::Released;
 		}
 	}
 
 	/*
 	*	Subscript operator overload, const.
 	*/
-	const ButtonState& operator[](const KeyboardButton button) const NOEXCEPT
+	ButtonState operator[](const KeyboardButton button) const NOEXCEPT
 	{
-		return ButtonStates[INDEX(button)];
+		return _ButtonStates[INDEX(button)];
 	}
 
 	/*
@@ -178,20 +178,28 @@ public:
 	*/
 	ButtonState& operator[](const KeyboardButton button) NOEXCEPT
 	{
-		return ButtonStates[INDEX(button)];
+		return _ButtonStates[INDEX(button)];
 	}
 
 	/*
-	*	Returns the keyboard button state for the given keyboard button.
+	*	Returns the keyboard button state for the given keyboard button, const.
 	*/
 	ButtonState GetButtonState(const KeyboardButton button) const NOEXCEPT
 	{
-		return ButtonStates[INDEX(button)];
+		return _ButtonStates[INDEX(button)];
+	}
+
+	/*
+	*	Returns the keyboard button state for the given keyboard button, non-const.
+	*/
+	ButtonState& GetButtonState(const KeyboardButton button) NOEXCEPT
+	{
+		return _ButtonStates[INDEX(button)];
 	}
 
 private:
 
 	//The underlying keyboard button states.
-	StaticArray<ButtonState, INDEX(KeyboardButton::NumberOfKeyboardButtons)> ButtonStates{ };
+	StaticArray<ButtonState, INDEX(KeyboardButton::NumberOfKeyboardButtons)> _ButtonStates{ };
 
 };

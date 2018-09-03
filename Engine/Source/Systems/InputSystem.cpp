@@ -1,9 +1,6 @@
 //Header file.
 #include <Systems/InputSystem.h>
 
-//Input.
-#include <Input/InputUtilities.h>
-
 //Multithreading.
 #include <Multithreading/Task.h>
 
@@ -19,13 +16,13 @@ DEFINE_SINGLETON(InputSystem);
 void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
 	//Execute the update task.
-	inputUpdateTask.function = [](void *const RESTRICT arguments)
+	updateTask.function = [](void *const RESTRICT arguments)
 	{
 		static_cast<InputSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
 	};
-	inputUpdateTask.arguments = this;
+	updateTask.arguments = this;
 
-	TaskSystem::Instance->ExecuteTask(&inputUpdateTask);
+	TaskSystem::Instance->ExecuteTask(&updateTask);
 }
 
 /*
@@ -34,7 +31,7 @@ void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
 void InputSystem::PostUpdateSystemSynchronous() NOEXCEPT
 {
 	//Wait for the update task to finish.
-	inputUpdateTask.WaitFor();
+	updateTask.WaitFor();
 }
 
 /*
@@ -42,16 +39,14 @@ void InputSystem::PostUpdateSystemSynchronous() NOEXCEPT
 */
 void InputSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
-#if defined(CATALYST_WINDOWS)
 	//Update gamepad states.
 	for (uint8 i = 0; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)
 	{
-		InputUtilities::GetCurrentGamepadState(i, currentGamepadStates[i]);
+		CatalystPlatform::GetCurrentGamepadState(i, &currentGamepadStates[i]);
 	}
 
-	//Update the keyboard.
-	InputUtilities::GetCurrentKeyboardState(currentKeyboardState);
-#endif
+	//Update the keyboard state.
+	CatalystPlatform::GetCurrentKeyboardState(&currentKeyboardState);
 }
 
 /*

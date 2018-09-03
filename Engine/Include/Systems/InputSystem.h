@@ -5,7 +5,6 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Multithreading.
-#include <Multithreading/MultithreadedResource.h>
 #include <Multithreading/Task.h>
 
 //Input.
@@ -48,17 +47,20 @@ public:
 	/*
 	*	Returns the current gamepad state.
 	*/
-	const GamepadState& GetCurrentGamepadState(uint8 index = 0) const NOEXCEPT { return currentGamepadStates[index]; }
+	NO_DISCARD const GamepadState& GetCurrentGamepadState(const uint8 index = 0) const NOEXCEPT { return currentGamepadStates[index]; }
 
 	/*
 	*	Returns the current keyboard state.
 	*/
-	RESTRICTED const KeyboardState *const RESTRICT GetCurrentKeyboardState() const NOEXCEPT { return &currentKeyboardState; }
+	NO_DISCARD RESTRICTED const KeyboardState *const RESTRICT GetCurrentKeyboardState() const NOEXCEPT
+	{
+		return &currentKeyboardState;
+	}
 
 private:
 
 	//The update task.
-	Task inputUpdateTask;
+	Task updateTask;
 
 	//The current gamepad states.
 	StaticArray<GamepadState, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS> currentGamepadStates;

@@ -108,6 +108,30 @@ void CatalystPlatform::Release() NOEXCEPT
 
 }
 
+/*
+*	Retrieves the current gamepad state.
+*/
+void CatalystPlatform::GetCurrentGamepadState(const uint8 index, GamepadState *const RESTRICT state) NOEXCEPT
+{
+	//Not implemented on Android.
+}
+
+/*
+*	Retrieves the current keyboard state.
+*/
+void CatalystPlatform::GetCurrentKeyboardState(KeyboardState *const RESTRICT state) NOEXCEPT
+{
+	//Not implemented on Android.
+}
+
+/*
+*	Retrieves the current touch state.
+*/
+void CatalystPlatform::GetCurrentTouchState(TouchState *const RESTRICT state) NOEXCEPT
+{
+
+}
+
 #if !defined(CATALYST_FINAL)
 /*
 *	Prints a string to output.

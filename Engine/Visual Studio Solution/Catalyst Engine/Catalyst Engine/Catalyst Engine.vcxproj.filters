@@ -300,9 +300,6 @@
     <ClInclude Include="..\..\..\Include\Entities\VegetationEntity.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Input\InputUtilities.h">
-      <Filter>Input\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h">
       <Filter>Input\Include</Filter>
     </ClInclude>

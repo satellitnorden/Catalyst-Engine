@@ -103,7 +103,6 @@
     <ClInclude Include="..\..\..\Include\Entities\VegetationEntity.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\Include\Input\InputCore.h" />
-    <ClInclude Include="..\..\..\Include\Input\InputUtilities.h" />
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />
     <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h" />
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />

@@ -19,6 +19,11 @@ void android_main(android_app *app)																			\
 	implementation;																							\
 }																											\
 
+//Forward declarations.
+class GamepadState;
+class KeyboardState;
+class TouchState;
+
 class CatalystPlatform final
 {
 
@@ -54,6 +59,21 @@ public:
 	*	Releases the platform.
 	*/
 	static void Release() NOEXCEPT;
+
+	/*
+	*	Retrieves the current gamepad state.
+	*/
+	static void GetCurrentGamepadState(const uint8 index, GamepadState *const RESTRICT state) NOEXCEPT;
+
+	/*
+	*	Retrieves the current keyboard state.
+	*/
+	static void GetCurrentKeyboardState(KeyboardState *const RESTRICT state) NOEXCEPT;
+
+	/*
+	*	Retrieves the current touch state.
+	*/
+	static void GetCurrentTouchState(TouchState *const RESTRICT state) NOEXCEPT;
 
 #if !defined(CATALYST_FINAL)
 	/*
