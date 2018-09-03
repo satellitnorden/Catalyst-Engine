@@ -12,9 +12,9 @@ class VegetationCullingComponent final
 public:
 
 	//Container for all the grid cell center locations.
-	DynamicArray<Vector2> gridCellCenterLocations;
+	DynamicArray<Vector2> _GridCellCenterLocations;
 
 	//The squared cutoff distance to compare with.
-	float cutoffDistance;
+	float _CutoffDistance;
 
 };

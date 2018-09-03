@@ -14,11 +14,11 @@ PhysicalModel::PhysicalModel() NOEXCEPT
 */
 PhysicalModel::PhysicalModel(const PhysicalModel &otherPhysicalModel) NOEXCEPT
 	:
-	axisAlignedBoundingBox(otherPhysicalModel.axisAlignedBoundingBox),
-	buffer(otherPhysicalModel.buffer),
-	indexOffset(otherPhysicalModel.indexOffset),
-	material(otherPhysicalModel.material),
-	indexCount(otherPhysicalModel.indexCount)
+	_AxisAlignedBoundingBox(otherPhysicalModel._AxisAlignedBoundingBox),
+	_Buffer(otherPhysicalModel._Buffer),
+	_IndexOffset(otherPhysicalModel._IndexOffset),
+	_Material(otherPhysicalModel._Material),
+	_IndexCount(otherPhysicalModel._IndexCount)
 {
 
 }
@@ -36,11 +36,11 @@ PhysicalModel::~PhysicalModel() NOEXCEPT
 */
 PhysicalModel& PhysicalModel::operator=(const PhysicalModel &otherPhysicalModel) NOEXCEPT
 {
-	axisAlignedBoundingBox = otherPhysicalModel.axisAlignedBoundingBox;
-	buffer = otherPhysicalModel.buffer;
-	indexOffset = otherPhysicalModel.indexOffset;
-	material = otherPhysicalModel.material;
-	indexCount = otherPhysicalModel.indexCount;
+	_AxisAlignedBoundingBox = otherPhysicalModel._AxisAlignedBoundingBox;
+	_Buffer = otherPhysicalModel._Buffer;
+	_IndexOffset = otherPhysicalModel._IndexOffset;
+	_Material = otherPhysicalModel._Material;
+	_IndexCount = otherPhysicalModel._IndexCount;
 
 	return *this;
 }

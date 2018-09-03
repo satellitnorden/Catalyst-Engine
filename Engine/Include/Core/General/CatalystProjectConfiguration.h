@@ -13,7 +13,7 @@ class CatalystProjectGeneralConfiguration final
 public:
 
 	//The project name.
-	DynamicString projectName;
+	DynamicString _ProjectName;
 
 	/*
 	*	Default constructor.
@@ -28,7 +28,7 @@ public:
 	*/
 	CatalystProjectGeneralConfiguration(const char *const RESTRICT initialProjectName) NOEXCEPT
 		:
-		projectName(initialProjectName)
+		_ProjectName(initialProjectName)
 	{
 
 	}
@@ -41,13 +41,13 @@ class CatalystProjectRenderingConfiguration final
 public:
 
 	//The resolution.
-	Resolution resolution;
+	Resolution _Resolution;
 
 	//The resolution scale.
-	float resolutionScale;
+	float _ResolutionScale;
 
 	//The shadow map resolution.
-	uint32 shadowMapResolution;
+	uint32 _ShadowMapResolution;
 
 	/*
 	*	Default constructor.
@@ -65,9 +65,9 @@ class CatalystProjectConfiguration final
 public:
 
 	//The project general configuration.
-	CatalystProjectGeneralConfiguration generalConfiguration;
+	CatalystProjectGeneralConfiguration _GeneralConfiguration;
 
 	//The project rendering configuration.
-	CatalystProjectRenderingConfiguration renderingConfiguration;
+	CatalystProjectRenderingConfiguration _RenderingConfiguration;
 
 };

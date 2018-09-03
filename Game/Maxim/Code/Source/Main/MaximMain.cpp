@@ -13,16 +13,16 @@
 */
 void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const RESTRICT configuration) NOEXCEPT
 {
-	configuration->generalConfiguration.projectName = "Maxim";
+	configuration->_GeneralConfiguration._ProjectName = "Maxim";
 
-	configuration->renderingConfiguration.resolution = Resolution(1'920, 1'080);
+	configuration->_RenderingConfiguration._Resolution = Resolution(1'920, 1'080);
 
 #if defined(CATALYST_WINDOWS)
-	configuration->renderingConfiguration.resolutionScale = 1.0f;
-	configuration->renderingConfiguration.shadowMapResolution = 2'048;
+	configuration->_RenderingConfiguration._ResolutionScale = 1.0f;
+	configuration->_RenderingConfiguration._ShadowMapResolution = 2'048;
 #else
-	configuration->renderingConfiguration.resolutionScale = 0.75f;
-	configuration->renderingConfiguration.shadowMapResolution = 1'024;
+	configuration->_RenderingConfiguration._ResolutionScale = 0.75f;
+	configuration->_RenderingConfiguration._ShadowMapResolution = 1'024;
 #endif
 }
 
@@ -44,7 +44,7 @@ MAIN_FUNCTION
 	//Main game loop.
 	while (!EngineSystem::Instance->ShouldTerminate())
 	{
-		CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game Loop",
+		//CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game Loop",
 
 		//Calculate the delta time.
 		const float deltaTime{ deltaTimer.Update() };
@@ -55,7 +55,7 @@ MAIN_FUNCTION
 		//Update the engine system.
 		EngineSystem::Instance->UpdateSystemSynchronous(deltaTime);
 
-		);
+		//);
 	}
 
 	//Release the game system.

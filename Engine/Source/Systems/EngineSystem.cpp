@@ -20,23 +20,25 @@ DEFINE_SINGLETON(EngineSystem);
 void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialProjectConfiguration) NOEXCEPT
 {
 	//Set the project configuration.
-	projectConfiguration = initialProjectConfiguration;
+	_ProjectConfiguration = initialProjectConfiguration;
 
 	//Initialize the platform.
 	CatalystPlatform::Initialize();
 
 	//Initialize all systems.
-	TaskSystem::Instance->InitializeSystem();
 	CullingSystem::Instance->InitializeSystem();
+	InputSystem::Instance->InitializeSystem();
 	LevelOfDetailSystem::Instance->InitializeSystem();
-	RenderingSystem::Instance->InitializeSystem(projectConfiguration.renderingConfiguration);
+	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->InitializeSystem();
-
-	//Post-initialize the platform.
-	CatalystPlatform::PostInitialize();
+	TaskSystem::Instance->InitializeSystem();
 
 	//Post-initialize all systems.
 	LevelOfDetailSystem::Instance->PostInitializeSystem();
+	RenderingSystem::Instance->PostInitializeSystem();
+
+	//Post-initialize the platform.
+	CatalystPlatform::PostInitialize();
 }
 
 /*
@@ -45,10 +47,10 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 {
 	//Update the delta time.
-	deltaTime = newDeltaTime;
+	_DeltaTime = newDeltaTime;
 
 	//Update the total game time.
-	totalGameTime += deltaTime;
+	_TotalGameTime += _DeltaTime;
 
 	//Pre-update the platform.
 	CatalystPlatform::PreUpdate();
@@ -69,13 +71,13 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	LevelOfDetailSystem::Instance->UpdateSystemSynchronous();
 
 	//Update the physics system.
-	PhysicsSystem::Instance->UpdateSystemSynchronous(deltaTime);
+	PhysicsSystem::Instance->UpdateSystemSynchronous(_DeltaTime);
 
 	//Update the graphics system.
 	RenderingSystem::Instance->UpdateSystemSynchronous();
 
 	//Update the sound system.
-	SoundSystem::Instance->UpdateSystemSynchronous(deltaTime);
+	SoundSystem::Instance->UpdateSystemSynchronous(_DeltaTime);
 
 	//Post-update the input system.
 	InputSystem::Instance->PostUpdateSystemSynchronous();
@@ -90,13 +92,12 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 void EngineSystem::ReleaseSystem() NOEXCEPT
 {
 	//Signal to other systems that the game should terminate.
-	shouldTerminate = true;
+	_ShouldTerminate = true;
 
 	//Release the platform.
 	CatalystPlatform::Release();
 
 	//Release all systems.
-	InputSystem::Instance->ReleaseSystem();
 	EntitySystem::Instance->ReleaseSystem();
 	RenderingSystem::Instance->ReleaseSystem();
 	SoundSystem::Instance->ReleaseSystem();

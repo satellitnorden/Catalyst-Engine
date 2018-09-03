@@ -97,8 +97,8 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
 
-	swapExtent.width = CatalystMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.resolution.width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
-	swapExtent.height = CatalystMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.resolution.height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
+	swapExtent.width = CatalystMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
+	swapExtent.height = CatalystMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
 }
 
 /*

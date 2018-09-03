@@ -113,7 +113,7 @@ void CullingSystem::CullTerrain() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++frustumCullingComponent, ++component, ++renderComponent)
 	{
-		renderComponent->isInViewFrustum = RenderingUtilities::IsInViewFrustum(viewMatrix, frustumCullingComponent->axisAlignedBoundingBox);
+		renderComponent->_IsInViewFrustum = RenderingUtilities::IsInViewFrustum(viewMatrix, frustumCullingComponent->_AxisAlignedBoundingBox);
 	}
 }
 
@@ -134,10 +134,10 @@ void CullingSystem::CullStaticPhysical() NOEXCEPT
 	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++frustumCullingComponent, ++renderComponent, ++transformComponent)
 	{
 		//Cache relevant data.
-		const Vector3& position = transformComponent->position;
-		const Vector3& scale = transformComponent->scale;
+		const Vector3& position = transformComponent->_Position;
+		const Vector3& scale = transformComponent->_Scale;
 		const float biggestScale = CatalystMath::Maximum(scale.X, CatalystMath::Maximum(scale.Y, scale.Z));
-		const float scaledExtent = frustumCullingComponent->axisAlignedBoundingBox.maximum.X * biggestScale;
+		const float scaledExtent = frustumCullingComponent->_AxisAlignedBoundingBox.maximum.X * biggestScale;
 
 		StaticArray<Vector4, 8> corners;
 
@@ -162,7 +162,7 @@ void CullingSystem::CullStaticPhysical() NOEXCEPT
 			corners[i].Z /= corners[i].W;
 		}
 
-		renderComponent->isInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
+		renderComponent->_IsInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
 	}
 }
 
@@ -187,10 +187,10 @@ void CullingSystem::CullVegetation() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++renderComponent, ++cullingComponent)
 	{
-		for (uint64 i = 0, size = renderComponent->shouldDrawGridCell.Size(); i < size; ++i)
+		for (uint64 i = 0, size = renderComponent->_ShouldDrawGridCell.Size(); i < size; ++i)
 		{
-			renderComponent->shouldDrawGridCell[i] = CatalystMath::Absolute(cameraWorldPosition.X - cullingComponent->gridCellCenterLocations[i].X) <= cullingComponent->cutoffDistance &&
-				CatalystMath::Absolute(cameraWorldPosition.Z - cullingComponent->gridCellCenterLocations[i].Y) <= cullingComponent->cutoffDistance;
+			renderComponent->_ShouldDrawGridCell[i] = CatalystMath::Absolute(cameraWorldPosition.X - cullingComponent->_GridCellCenterLocations[i].X) <= cullingComponent->_CutoffDistance &&
+				CatalystMath::Absolute(cameraWorldPosition.Z - cullingComponent->_GridCellCenterLocations[i].Y) <= cullingComponent->_CutoffDistance;
 		}
 	}
 }

@@ -49,7 +49,7 @@ const Vector3& ParticleSystemEntity::GetScale() const NOEXCEPT
 void ParticleSystemEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this particle system entity.
-	ComponentManager::GetParticleSystemParticleSystemComponents()[componentsIndex].properties.worldPosition += moveVector;
+	ComponentManager::GetParticleSystemParticleSystemComponents()[componentsIndex]._Properties.worldPosition += moveVector;
 
 	//Move all children.
 	for (auto child : children)

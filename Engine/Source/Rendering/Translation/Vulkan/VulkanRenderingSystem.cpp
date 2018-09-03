@@ -194,23 +194,23 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainTerrainComponents()[entity->GetComponentsIndex()] };
 	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->GetComponentsIndex()] };
 
-	frustumCullingComponent.axisAlignedBoundingBox = data->axisAlignedBoundingBox;
+	frustumCullingComponent._AxisAlignedBoundingBox = data->axisAlignedBoundingBox;
 
 	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(data->terrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
 
-	terrainComponent.terrainUniformData = data->terrainUniformData;
-	terrainComponent.uniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));
-	static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->UploadData(&terrainComponent.terrainUniformData);
- 	terrainComponent.terrainProperties = data->terrainProperties;
-	terrainComponent.terrainPropertiesTexture = terrainPropertiesTexture;
+	terrainComponent._TerrainUniformData = data->terrainUniformData;
+	terrainComponent._UniformBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(TerrainUniformData));
+	static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent._UniformBuffer)->UploadData(&terrainComponent._TerrainUniformData);
+ 	terrainComponent._TerrainProperties = data->terrainProperties;
+	terrainComponent._TerrainPropertiesTexture = terrainPropertiesTexture;
 
 	//Create the descriptor set.
-	renderComponent.renderDataTable = VulkanInterface::Instance->CreateDescriptorSet(descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Terrain)]);
-	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent.renderDataTable) };
+	renderComponent._RenderDataTable = VulkanInterface::Instance->CreateDescriptorSet(descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Terrain)]);
+	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent._RenderDataTable) };
 
 	StaticArray<VkWriteDescriptorSet, 18> writeDescriptorSets
 	{
-		static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent.uniformBuffer)->GetWriteDescriptorSet(newDescriptorSet, 1),
+		static_cast<const VulkanUniformBuffer *RESTRICT>(terrainComponent._UniformBuffer)->GetWriteDescriptorSet(newDescriptorSet, 1),
 		static_cast<const Vulkan2DTexture *RESTRICT>(terrainPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
 		static_cast<const Vulkan2DTexture *RESTRICT>(data->layerWeightsTexture)->GetWriteDescriptorSet(newDescriptorSet, 3),
 		static_cast<const Vulkan2DTexture *RESTRICT>(data->terrainMaterial.firstLayerAlbedo)->GetWriteDescriptorSet(newDescriptorSet, 4),
@@ -239,14 +239,14 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity &staticPhysicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT
 {
 	//Cache relevant data.
-	const PhysicalMaterial &material = model.GetMaterial();
+	const PhysicalMaterial &material = model._Material;
 	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents()[staticPhysicalEntity.GetComponentsIndex()] };
 	StaticPhysicalRenderComponent &renderComponent{ ComponentManager::GetStaticPhysicalStaticPhysicalRenderComponents()[staticPhysicalEntity.GetComponentsIndex()] };
 	TransformComponent &transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents()[staticPhysicalEntity.GetComponentsIndex()] };
 
 	//Allocate the descriptor set.
-	renderComponent.renderDataTable = VulkanInterface::Instance->CreateDescriptorSet(descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Physical)]);
-	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent.renderDataTable) };
+	renderComponent._RenderDataTable = VulkanInterface::Instance->CreateDescriptorSet(descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Physical)]);
+	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent._RenderDataTable) };
 
 	//Update the write descriptor sets.
 	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
@@ -259,14 +259,14 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
 	//Fill the static physical entity components with the relevant data.
-	frustumCullingComponent.axisAlignedBoundingBox = model.GetAxisAlignedBoundingBox();
-	renderComponent.modelMatrix = Matrix4(position, rotation, scale);
-	renderComponent.buffer = model.GetBuffer();
-	renderComponent.indexOffset = model.GetIndexOffset();
-	renderComponent.indexCount = model.GetIndexCount();
-	transformComponent.position = position;
-	transformComponent.rotation = rotation;
-	transformComponent.scale = scale;
+	frustumCullingComponent._AxisAlignedBoundingBox = model._AxisAlignedBoundingBox;
+	renderComponent._ModelMatrix = Matrix4(position, rotation, scale);
+	renderComponent._Buffer = model._Buffer;
+	renderComponent._IndexOffset = model._IndexOffset;
+	renderComponent._IndexCount = model._IndexCount;
+	transformComponent._Position = position;
+	transformComponent._Rotation = rotation;
+	transformComponent._Scale = scale;
 }
 
 /*
@@ -275,12 +275,12 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT
 {
 	//Cache relevant data.
-	const PhysicalMaterial &material = model.GetMaterial();
+	const PhysicalMaterial &material = model._Material;
 	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalInstancedPhysicalRenderComponents()[entity.GetComponentsIndex()] };
 
 	//Allocate the descriptor set.
-	renderComponent.renderDataTable = VulkanInterface::Instance->CreateDescriptorSet(descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Physical)]);
-	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent.renderDataTable) };
+	renderComponent._RenderDataTable = VulkanInterface::Instance->CreateDescriptorSet(descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Physical)]);
+	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent._RenderDataTable) };
 
 	//Update the write descriptor sets.
 	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
@@ -298,11 +298,11 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 	VulkanConstantBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateConstantBuffer(transformationsData, transformationsDataSizes, 1);
 
 	//Fill the instanced physical entity components with the relevant data.
-	renderComponent.modelBuffer = model.GetBuffer();
-	renderComponent.transformationsBuffer = reinterpret_cast<ConstantBufferHandle>(transformationsBuffer->Get());
-	renderComponent.indexOffset = model.GetIndexOffset();
-	renderComponent.indexCount = model.GetIndexCount();
-	renderComponent.instanceCount = static_cast<uint32>(transformations.Size());
+	renderComponent._ModelBuffer = model._Buffer;
+	renderComponent._TransformationsBuffer = reinterpret_cast<ConstantBufferHandle>(transformationsBuffer->Get());
+	renderComponent._IndexOffset = model._IndexOffset;
+	renderComponent._IndexCount = model._IndexCount;
+	renderComponent._InstanceCount = static_cast<uint32>(transformations.Size());
 }
 
 /*
@@ -327,8 +327,8 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 	propertiesBuffer->UploadData(&shaderProperties);
 
 	//Create the descriptor set.
-	renderComponent.renderDataTable = VulkanInterface::Instance->CreateDescriptorSet(descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Vegetation)]);
-	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent.renderDataTable) };
+	renderComponent._RenderDataTable = VulkanInterface::Instance->CreateDescriptorSet(descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Vegetation)]);
+	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent._RenderDataTable) };
 
 	//Update the write descriptor sets.
 	StaticArray<VkWriteDescriptorSet, 5> writeDescriptorSets
@@ -348,7 +348,7 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 	VulkanConstantBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateConstantBuffer(transformationsData, transformationsDataSizes, 1);
 
 	//Fill the components with the relevant data.
-	renderComponent.transformationsBuffer = reinterpret_cast<ConstantBufferHandle>(transformationsBuffer->Get());
+	renderComponent._TransformationsBuffer = reinterpret_cast<ConstantBufferHandle>(transformationsBuffer->Get());
 }
 
 /*
@@ -366,8 +366,8 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 	uniformBuffer->UploadData(&vulkanParticleSystemProperties);
 
 	//Create the descriptor set.
-	renderComponent.renderDataTable = VulkanInterface::Instance->CreateDescriptorSet(descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::ParticleSystem)]);
-	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent.renderDataTable) };
+	renderComponent._RenderDataTable = VulkanInterface::Instance->CreateDescriptorSet(descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::ParticleSystem)]);
+	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent._RenderDataTable) };
 
 	StaticArray<VkWriteDescriptorSet, 2> particleSystemWriteDescriptorSets
 	{
@@ -378,11 +378,11 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(particleSystemWriteDescriptorSets.Size()), particleSystemWriteDescriptorSets.Data(), 0, nullptr);
 
 	//Set up the particle system's components.
-	component.properties = properties;
-	component.propertiesUniformBuffer = uniformBuffer;
-	renderComponent.particleSystemRandomSeed = CatalystMath::RandomFloatInRange(0.0f, 1.0f);
-	renderComponent.particleSystemStartingTime = EngineSystem::Instance->GetTotalGameTime();
-	renderComponent.instanceCount = CatalystMath::Round<uint32>(properties.lifetime / properties.spawnFrequency);
+	component._Properties = properties;
+	component._PropertiesUniformBuffer = uniformBuffer;
+	renderComponent._ParticleSystemRandomSeed = CatalystMath::RandomFloatInRange(0.0f, 1.0f);
+	renderComponent._ParticleSystemStartingTime = EngineSystem::Instance->GetTotalGameTime();
+	renderComponent._InstanceCount = CatalystMath::Round<uint32>(properties.lifetime / properties.spawnFrequency);
 }
 
 /*
@@ -637,11 +637,11 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 	const VkExtent2D scaledExtent{ VulkanTranslationUtilities::GetVulkanExtent(RenderingSystem::Instance->GetScaledResolution()) };
 
 	//Initialize all depth buffers.
-	depthBuffers[INDEX(DepthBuffer::DirectionalLight)] = VulkanInterface::Instance->CreateDepthBuffer({ EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution });
+	depthBuffers[INDEX(DepthBuffer::DirectionalLight)] = VulkanInterface::Instance->CreateDepthBuffer({ EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution });
 	depthBuffers[INDEX(DepthBuffer::SceneBuffer)] = VulkanInterface::Instance->CreateDepthBuffer(scaledExtent);
 
 	//Initialize all render targets.
-	renderTargets[INDEX(RenderTarget::DirectionalShadowMap)] = VulkanInterface::Instance->CreateRenderTarget({ EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution }, VK_FORMAT_R8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	renderTargets[INDEX(RenderTarget::DirectionalShadowMap)] = VulkanInterface::Instance->CreateRenderTarget({ EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution }, VK_FORMAT_R8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 	renderTargets[INDEX(RenderTarget::DirectionalShadow)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R8_UNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 	renderTargets[INDEX(RenderTarget::SceneBufferAlbedo)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R8G8B8A8_SNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 	renderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
@@ -1111,7 +1111,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		framebufferParameters.attachmentCount = static_cast<uint32>(attachments.Size());
 		framebufferParameters.attachments = attachments.Data();
-		framebufferParameters.extent = { EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution };
+		framebufferParameters.extent = { EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution };
 
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)].frameBuffers.Reserve(1);
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)].frameBuffers.EmplaceFast( VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
@@ -1743,10 +1743,10 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	{
 		const DirectionalLightComponent *RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightDirectionalLightComponents() };
 
-		dynamicUniformData.directionalLightIntensity = directionalLightComponent->intensity;
+		dynamicUniformData.directionalLightIntensity = directionalLightComponent->_Intensity;
 		dynamicUniformData.directionalLightViewMatrix = RenderingUtilities::CalculateDirectionalLightViewMatrix();
-		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->rotation);
-		dynamicUniformData.directionalLightColor = directionalLightComponent->color;
+		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->_Rotation);
+		dynamicUniformData.directionalLightColor = directionalLightComponent->_Color;
 		dynamicUniformData.directionalLightScreenSpacePosition = *viewMatrix * Vector4(-dynamicUniformData.directionalLightDirection.X * 100.0f + cameraWorldPosition.X, -dynamicUniformData.directionalLightDirection.Y * 100.0f + cameraWorldPosition.Y, -dynamicUniformData.directionalLightDirection.Z * 100.0f + cameraWorldPosition.Z, 1.0f);
 		dynamicUniformData.directionalLightScreenSpacePosition.X /= dynamicUniformData.directionalLightScreenSpacePosition.W;
 		dynamicUniformData.directionalLightScreenSpacePosition.Y /= dynamicUniformData.directionalLightScreenSpacePosition.W;
@@ -1776,17 +1776,17 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfPointLightEntityComponents; ++i, ++pointLightComponent)
 	{
-		if (!pointLightComponent->enabled)
+		if (!pointLightComponent->_Enabled)
 		{
 			--dynamicUniformData.numberOfPointLights;
 
 			continue;
 		}
 
-		dynamicUniformData.pointLightAttenuationDistances[counter] = pointLightComponent->attenuationDistance;
-		dynamicUniformData.pointLightIntensities[counter] = pointLightComponent->intensity;
-		dynamicUniformData.pointLightColors[counter] = pointLightComponent->color;
-		dynamicUniformData.pointLightWorldPositions[counter] = pointLightComponent->position;
+		dynamicUniformData.pointLightAttenuationDistances[counter] = pointLightComponent->_AttenuationDistance;
+		dynamicUniformData.pointLightIntensities[counter] = pointLightComponent->_Intensity;
+		dynamicUniformData.pointLightColors[counter] = pointLightComponent->_Color;
+		dynamicUniformData.pointLightWorldPositions[counter] = pointLightComponent->_Position;
 
 		++counter;
 	}
@@ -1800,21 +1800,21 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfSpotLightEntityComponents; ++i, ++spotLightComponent)
 	{
-		if (!spotLightComponent->enabled)
+		if (!spotLightComponent->_Enabled)
 		{
 			--dynamicUniformData.numberOfSpotLights;
 
 			continue;
 		}
 
-		dynamicUniformData.spotLightAttenuationDistances[counter] = spotLightComponent->attenuationDistance;
-		dynamicUniformData.spotLightIntensities[counter] = spotLightComponent->intensity;
-		dynamicUniformData.spotLightInnerCutoffAngles[counter] = CatalystMath::CosineDegrees(spotLightComponent->innerCutoffAngle);
-		dynamicUniformData.spotLightOuterCutoffAngles[counter] = CatalystMath::CosineDegrees(spotLightComponent->outerCutoffAngle);
-		dynamicUniformData.spotLightColors[counter] = spotLightComponent->color;
-		dynamicUniformData.spotLightDirections[counter] = Vector3(0.0f, -1.0f, 0.0f).Rotated(spotLightComponent->rotation);
+		dynamicUniformData.spotLightAttenuationDistances[counter] = spotLightComponent->_AttenuationDistance;
+		dynamicUniformData.spotLightIntensities[counter] = spotLightComponent->_Intensity;
+		dynamicUniformData.spotLightInnerCutoffAngles[counter] = CatalystMath::CosineDegrees(spotLightComponent->_InnerCutoffAngle);
+		dynamicUniformData.spotLightOuterCutoffAngles[counter] = CatalystMath::CosineDegrees(spotLightComponent->_OuterCutoffAngle);
+		dynamicUniformData.spotLightColors[counter] = spotLightComponent->_Color;
+		dynamicUniformData.spotLightDirections[counter] = Vector3(0.0f, -1.0f, 0.0f).Rotated(spotLightComponent->_Rotation);
 		dynamicUniformData.spotLightDirections[counter].Y *= -1.0f;
-		dynamicUniformData.spotLightWorldPositions[counter] = spotLightComponent->position;
+		dynamicUniformData.spotLightWorldPositions[counter] = spotLightComponent->_Position;
 
 		++counter;
 	}

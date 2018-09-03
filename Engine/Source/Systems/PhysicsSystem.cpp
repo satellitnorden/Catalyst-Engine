@@ -39,7 +39,7 @@ float PhysicsSystem::GetTerrainHeightAtPosition(const Vector3 &position) const N
 
 	for (uint64 i = 0; i < numberOfComponents; ++i, ++component)
 	{
-		const float distanceToTerrain{ Vector3::LengthSquaredXZ(position - component->terrainUniformData.terrainPosition) };
+		const float distanceToTerrain{ Vector3::LengthSquaredXZ(position - component->_TerrainUniformData.terrainPosition) };
 
 		if (distanceToTerrain < nearestDistance)
 		{
@@ -55,14 +55,14 @@ float PhysicsSystem::GetTerrainHeightAtPosition(const Vector3 &position) const N
 	}
 
 	const TerrainComponent &terrainComponent{ *nearestComponent };
-	const CPUTexture2D &terrainProperties{ terrainComponent.terrainProperties };
-	const float terrainSize{ terrainComponent.terrainUniformData.terrainSize };
-	const float terrainHeight{ terrainComponent.terrainUniformData.terrainHeight };
+	const CPUTexture2D &terrainProperties{ terrainComponent._TerrainProperties };
+	const float terrainSize{ terrainComponent._TerrainUniformData.terrainSize };
+	const float terrainHeight{ terrainComponent._TerrainUniformData.terrainHeight };
 
-	const float xIndex = (position.X - terrainComponent.terrainUniformData.terrainPosition.X + (terrainSize * 0.5f)) / terrainSize;
-	const float yIndex = (position.Z - terrainComponent.terrainUniformData.terrainPosition.Z + (terrainSize * 0.5f)) / terrainSize;
+	const float xIndex = (position.X - terrainComponent._TerrainUniformData.terrainPosition.X + (terrainSize * 0.5f)) / terrainSize;
+	const float yIndex = (position.Z - terrainComponent._TerrainUniformData.terrainPosition.Z + (terrainSize * 0.5f)) / terrainSize;
 
-	return terrainProperties.At(xIndex, yIndex).W * terrainHeight + terrainComponent.terrainUniformData.terrainPosition.Y;
+	return terrainProperties.At(xIndex, yIndex).W * terrainHeight + terrainComponent._TerrainUniformData.terrainPosition.Y;
 }
 
 /*
@@ -72,9 +72,9 @@ Vector3 PhysicsSystem::GetTerrainNormalAtPosition(const Vector3 &position) const
 {
 	//For now, just use the first terrain properties there is.
 	const TerrainComponent &terrainComponent{ ComponentManager::GetTerrainTerrainComponents()[0] };
-	const CPUTexture2D &terrainProperties{ terrainComponent.terrainProperties };
-	const float terrainSize{ terrainComponent.terrainUniformData.terrainSize };
-	const float terrainHeight{ terrainComponent.terrainUniformData.terrainHeight };
+	const CPUTexture2D &terrainProperties{ terrainComponent._TerrainProperties };
+	const float terrainSize{ terrainComponent._TerrainUniformData.terrainSize };
+	const float terrainHeight{ terrainComponent._TerrainUniformData.terrainHeight };
 
 	const float xIndex = (position.X + (terrainSize * 0.5f)) / terrainSize;
 	const float yIndex = (position.Z + (terrainSize * 0.5f)) / terrainSize;

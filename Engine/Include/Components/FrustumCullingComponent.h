@@ -12,6 +12,6 @@ class FrustumCullingComponent final
 public:
 
 	//The axis aligned bounding box.
-	AxisAlignedBoundingBox axisAlignedBoundingBox;
+	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
 
 };

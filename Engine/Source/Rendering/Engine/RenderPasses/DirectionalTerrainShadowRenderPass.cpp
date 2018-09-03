@@ -77,7 +77,7 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputBindingDescription(0, sizeof(float) * 5, VertexInputBindingDescription::InputRate::Vertex);
 
 	//Set the render resolution.
-	SetRenderResolution(Resolution(EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution));
+	SetRenderResolution(Resolution(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution));
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -134,10 +134,10 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 	{
 		const uint64 offset{ 0 };
 
-		commandBuffer->BindRenderDataTable(this, 1, component->renderDataTable);
-		commandBuffer->BindVertexBuffers(this, 1, &component->vertexAndIndexBuffer, &offset);
-		commandBuffer->BindIndexBuffer(this, component->vertexAndIndexBuffer, component->indexBufferOffset);
-		commandBuffer->DrawIndexed(this, component->indexCount, 1);
+		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);
+		commandBuffer->BindVertexBuffers(this, 1, &component->_Buffer, &offset);
+		commandBuffer->BindIndexBuffer(this, component->_Buffer, component->_IndexOffset);
+		commandBuffer->DrawIndexed(this, component->_IndexCount, 1);
 	}
 
 	//End the command buffer.

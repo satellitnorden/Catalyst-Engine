@@ -89,7 +89,7 @@ void DirectionalStaticPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputBindingDescription(0, sizeof(PhysicalVertex), VertexInputBindingDescription::InputRate::Vertex);
 
 	//Set the render resolution.
-	SetRenderResolution(Resolution(EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution));
+	SetRenderResolution(Resolution(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution));
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -144,24 +144,24 @@ void DirectionalStaticPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 	{
 		const uint64 offset{ 0 };
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &renderComponent->modelMatrix);
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &renderComponent->_ModelMatrix);
 
-		if (previousBuffer != renderComponent->buffer)
+		if (previousBuffer != renderComponent->_Buffer)
 		{
-			previousBuffer = renderComponent->buffer;
+			previousBuffer = renderComponent->_Buffer;
 
-			commandBuffer->BindVertexBuffers(this, 1, &renderComponent->buffer, &offset);
-			commandBuffer->BindIndexBuffer(this, renderComponent->buffer, renderComponent->indexOffset);
+			commandBuffer->BindVertexBuffers(this, 1, &renderComponent->_Buffer, &offset);
+			commandBuffer->BindIndexBuffer(this, renderComponent->_Buffer, renderComponent->_IndexOffset);
 		}
 
-		if (previousRenderDataTable != renderComponent->renderDataTable)
+		if (previousRenderDataTable != renderComponent->_RenderDataTable)
 		{
-			previousRenderDataTable = renderComponent->renderDataTable;
+			previousRenderDataTable = renderComponent->_RenderDataTable;
 
-			commandBuffer->BindRenderDataTable(this, 1, renderComponent->renderDataTable);
+			commandBuffer->BindRenderDataTable(this, 1, renderComponent->_RenderDataTable);
 		}
 
-		commandBuffer->DrawIndexed(this, renderComponent->indexCount, 1);
+		commandBuffer->DrawIndexed(this, renderComponent->_IndexCount, 1);
 	}
 
 	//End the command buffer.

@@ -101,7 +101,7 @@ void DirectionalInstancedPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputBindingDescription(1, sizeof(Matrix4), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
-	SetRenderResolution(Resolution(EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution, EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.shadowMapResolution));
+	SetRenderResolution(Resolution(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution));
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -158,14 +158,14 @@ void DirectionalInstancedPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 	{
 		StaticArray<ConstantBufferHandle, 2> buffers
 		{
-			component->modelBuffer,
-			component->transformationsBuffer
+			component->_ModelBuffer,
+			component->_TransformationsBuffer
 		};
 
-		commandBuffer->BindRenderDataTable(this, 1, component->renderDataTable);
+		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);
 		commandBuffer->BindVertexBuffers(this, 2, buffers.Data(), offsets.Data());
-		commandBuffer->BindIndexBuffer(this, component->modelBuffer, component->indexOffset);
-		commandBuffer->DrawIndexed(this, component->indexCount, component->instanceCount);
+		commandBuffer->BindIndexBuffer(this, component->_ModelBuffer, component->_IndexOffset);
+		commandBuffer->DrawIndexed(this, component->_IndexCount, component->_InstanceCount);
 	}
 
 	//End the command buffer.

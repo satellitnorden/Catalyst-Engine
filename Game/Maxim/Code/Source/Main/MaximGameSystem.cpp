@@ -57,13 +57,13 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	spinner = EntitySystem::Instance->CreateEntity<DynamicPhysicalEntity>();
 	DynamicPhysicalInitializationData  *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
 
-	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Octahedron) };
-	model.SetMaterial(RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red));
+	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
+	model._Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
 
 	data->model = model;
 	data->position = Vector3(0.0f, 0.0f, 0.0f);
 	data->rotation = Vector3(0.0f, 0.0f, 0.0f);
-	data->scale = Vector3(10.0f, 25.0f, 10.0f);
+	data->scale = Vector3(10.0f, 10.0f, 10.0f);
 
 	EntitySystem::Instance->RequestInitialization(spinner, data, false);
 }
@@ -77,7 +77,7 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	sun->Rotate(Vector3(0.0f, 2.5f * deltaTime, 0.0f));
 
 	//Eh. Set bloom radius.
-	const KeyboardState *const RESTRICT keyboard{ InputSystem::Instance->GetCurrentKeyboardState() };
+	const KeyboardState *const RESTRICT keyboard{ InputSystem::Instance->GetKeyboardState() };
 
 	if (keyboard->GetButtonState(KeyboardButton::UpArrow) == ButtonState::PressedHold)
 	{
@@ -92,8 +92,13 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	//Rotate the... Thing.
 	if (spinner->IsInitialized())
 	{
-		spinner->Move(Vector3(0.0f, 10.0f * CatalystMath::SineRadians(EngineSystem::Instance->GetTotalGameTime()) * deltaTime, 0.0f));
-		spinner->Rotate(Vector3(0.0f, -25.0f * deltaTime, 0.0f));
+		const TouchState *const RESTRICT state{ InputSystem::Instance->GetTouchState() };
+
+		if (state->_ButtonState == ButtonState::Pressed)
+		{
+			spinner->Move(Vector3(0.0f, 10.0f * CatalystMath::SineRadians(EngineSystem::Instance->GetTotalGameTime()) * deltaTime, 0.0f));
+			spinner->Rotate(Vector3(25.0f * deltaTime, 25.0f * deltaTime, 25.0f * deltaTime));
+		}
 	}
 }
 

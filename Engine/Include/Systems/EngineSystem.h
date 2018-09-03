@@ -36,40 +36,40 @@ public:
 	/*
 	*	Returns the project configuration.
 	*/
-	const CatalystProjectConfiguration& GetProjectConfiguration() const { return projectConfiguration; }
+	const CatalystProjectConfiguration& GetProjectConfiguration() const { return _ProjectConfiguration; }
 
 	/*
 	*	Returns whether or not the game should terminate.
 	*/
-	bool ShouldTerminate() const NOEXCEPT { return shouldTerminate; }
+	bool ShouldTerminate() const NOEXCEPT { return _ShouldTerminate; }
 
 	/*
 	*	Terminates the game.
 	*/
-	void Terminate() NOEXCEPT { shouldTerminate = true; }
+	void Terminate() NOEXCEPT { _ShouldTerminate = true; }
 
 	/*
 	*	Returns the delta time.
 	*/
-	float GetDeltaTime() const NOEXCEPT { return deltaTime; }
+	float GetDeltaTime() const NOEXCEPT { return _DeltaTime; }
 
 	/*
 	*	Returns the total game time.
 	*/
-	float GetTotalGameTime() const NOEXCEPT { return totalGameTime; }
+	float GetTotalGameTime() const NOEXCEPT { return _TotalGameTime; }
 
 private:
 
 	//The project configuration.
-	CatalystProjectConfiguration projectConfiguration;
+	CatalystProjectConfiguration _ProjectConfiguration;
 
 	//Denotes whether or not the game should terminate.
-	std::atomic<bool> shouldTerminate{ false };
+	std::atomic<bool> _ShouldTerminate{ false };
 
 	//Denotes the delta time.
-	float deltaTime{ 0.0f };
+	float _DeltaTime{ 0.0f };
 
 	//Denotes the total game time.
-	float totalGameTime{ 0.0f };
+	float _TotalGameTime{ 0.0f };
 
 };

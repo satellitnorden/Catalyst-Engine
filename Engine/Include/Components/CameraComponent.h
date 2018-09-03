@@ -15,18 +15,18 @@ class CameraComponent final
 public:
 
 	//The position.
-	Vector3 position{ 0.0f, 0.0f, 0.0f };
+	Vector3 _Position{ 0.0f, 0.0f, 0.0f };
 
 	//The rotation.
-	Vector3 rotation{ 0.0f, 0.0f, 0.0f };
+	Vector3 _Rotation{ 0.0f, 0.0f, 0.0f };
 
 	//The field of view.
-	float fieldOfView{ 60.0f };
+	float _FieldOfView{ 60.0f };
 
 	//The near plane.
-	float nearPlane{ 0.1f };
+	float _NearPlane{ 0.1f };
 
 	//The far plane.
-	float farPlane{ PHYSICAL_CONSTANT_VIEW_DISTANCE };
+	float _FarPlane{ PHYSICAL_CONSTANT_VIEW_DISTANCE };
 
 };

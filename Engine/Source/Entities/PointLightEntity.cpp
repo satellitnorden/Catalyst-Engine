@@ -22,7 +22,7 @@ PointLightEntity::PointLightEntity() NOEXCEPT
 const Vector3& PointLightEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetPointLightPointLightComponents()[componentsIndex].position;
+	return ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._Position;
 }
 
 /*
@@ -49,7 +49,7 @@ const Vector3& PointLightEntity::GetScale() const NOEXCEPT
 void PointLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetPointLightPointLightComponents()[componentsIndex].position += moveVector;
+	ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._Position += moveVector;
 
 	//Move all children.
 	for (auto child : children)
@@ -88,7 +88,7 @@ void PointLightEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 void PointLightEntity::SetEnabled(const bool newEnabled) NOEXCEPT
 {
 	//Set whether or not this point light is enabled.
-	ComponentManager::GetPointLightPointLightComponents()[componentsIndex].enabled = newEnabled;
+	ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._Enabled = newEnabled;
 }
 
 /*
@@ -97,7 +97,7 @@ void PointLightEntity::SetEnabled(const bool newEnabled) NOEXCEPT
 void PointLightEntity::SetAttenuationDistance(const float newAttenuationDistance) NOEXCEPT
 {
 	//Set the attenuation distance.
-	ComponentManager::GetPointLightPointLightComponents()[componentsIndex].attenuationDistance = newAttenuationDistance;
+	ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._AttenuationDistance = newAttenuationDistance;
 }
 
 /*
@@ -106,7 +106,7 @@ void PointLightEntity::SetAttenuationDistance(const float newAttenuationDistance
 void PointLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 {
 	//Set the intensity.
-	ComponentManager::GetPointLightPointLightComponents()[componentsIndex].intensity = newIntensity;
+	ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._Intensity = newIntensity;
 }
 
 /*
@@ -115,5 +115,5 @@ void PointLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 void PointLightEntity::SetColor(const Vector3 &newColor) NOEXCEPT
 {
 	//Set the color.
-	ComponentManager::GetPointLightPointLightComponents()[componentsIndex].color = newColor;
+	ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._Color = newColor;
 }

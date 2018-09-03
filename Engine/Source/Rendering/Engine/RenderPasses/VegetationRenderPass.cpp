@@ -134,14 +134,14 @@ void VegetationRenderPass::RenderInternal() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{
-		commandBuffer->BindRenderDataTable(this, 1, component->renderDataTable);
+		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);
 		
-		for (uint64 j = 0, size = component->shouldDrawGridCell.Size(); j < size; ++j)
+		for (uint64 j = 0, size = component->_ShouldDrawGridCell.Size(); j < size; ++j)
 		{
-			if (component->shouldDrawGridCell[j])
+			if (component->_ShouldDrawGridCell[j])
 			{
-				commandBuffer->BindVertexBuffers(this, 1, &component->transformationsBuffer, &component->transformationOffsets[j]);
-				commandBuffer->Draw(this, 1, component->instanceCounts[j]);
+				commandBuffer->BindVertexBuffers(this, 1, &component->_TransformationsBuffer, &component->_TransformationOffsets[j]);
+				commandBuffer->Draw(this, 1, component->_InstanceCounts[j]);
 			}
 		}
 	}

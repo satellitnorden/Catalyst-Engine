@@ -12,12 +12,12 @@ class DirectionalLightComponent final
 public:
 
 	//The intensity.
-	float intensity{ 1.0f };
+	float _Intensity{ 1.0f };
 
 	//The rotation.
-	Vector3 rotation{ 0.0f, 0.0f, 0.0f };
+	Vector3 _Rotation{ 0.0f, 0.0f, 0.0f };
 
 	//The color.
-	Vector3 color{ 1.0f, 1.0f, 1.0f };
+	Vector3 _Color{ 1.0f, 1.0f, 1.0f };
 
 };

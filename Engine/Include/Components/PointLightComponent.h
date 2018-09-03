@@ -12,18 +12,18 @@ class PointLightComponent final
 public:
 
 	//Whether or not this point light is enabled.
-	bool enabled{ true };
+	bool _Enabled{ true };
 
 	//The attenuation distance.
-	float attenuationDistance{ 25.0f };
+	float _AttenuationDistance{ 25.0f };
 
 	//The intensity.
-	float intensity{ 1.0f };
+	float _Intensity{ 1.0f };
 
 	//The color.
-	Vector3 color{ 1.0f, 1.0f, 1.0f };
+	Vector3 _Color{ 1.0f, 1.0f, 1.0f };
 
 	//The position.
-	Vector3 position{ 0.0f, 0.0f, 0.0f };
+	Vector3 _Position{ 0.0f, 0.0f, 0.0f };
 
 };

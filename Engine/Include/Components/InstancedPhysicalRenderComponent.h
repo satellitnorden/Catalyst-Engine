@@ -12,21 +12,21 @@ class InstancedPhysicalRenderComponent final
 public:
 
 	//The render data table.
-	RenderDataTableHandle renderDataTable;
+	RenderDataTableHandle _RenderDataTable;
 
 	//The model buffer.
-	ConstantBufferHandle modelBuffer;
+	ConstantBufferHandle _ModelBuffer;
 
 	//The transformations buffer.
-	ConstantBufferHandle transformationsBuffer;
+	ConstantBufferHandle _TransformationsBuffer;
 
 	//The offset for the indices in the buffer.
-	uint64 indexOffset;
+	uint64 _IndexOffset;
 
 	//The index count.
-	uint32 indexCount;
+	uint32 _IndexCount;
 
 	//The number of instances.
-	uint32 instanceCount;
+	uint32 _InstanceCount;
 
 };

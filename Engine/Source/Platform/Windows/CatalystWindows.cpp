@@ -167,12 +167,12 @@ void CatalystPlatform::Initialize() NOEXCEPT
 
 	//Create the window.
 	window = CreateWindow(	windowInfo.lpszClassName,
-							_T(EngineSystem::Instance->GetProjectConfiguration().generalConfiguration.projectName.CString()),
+							_T(EngineSystem::Instance->GetProjectConfiguration()._GeneralConfiguration._ProjectName.CString()),
 							WS_MAXIMIZE | WS_SYSMENU,
 							CW_USEDEFAULT,
 							CW_USEDEFAULT,
-							EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.resolution.width,
-							EngineSystem::Instance->GetProjectConfiguration().renderingConfiguration.resolution.height,
+							EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.width,
+							EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.height,
 							nullptr,
 							nullptr,
 							instance,

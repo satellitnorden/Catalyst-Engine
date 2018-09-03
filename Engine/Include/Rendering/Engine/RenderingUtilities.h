@@ -32,9 +32,9 @@ namespace RenderingUtilities
 		const CameraComponent *const RESTRICT cameraComponent{ ComponentManager::GetCameraCameraComponents() };
 		const DirectionalLightComponent *const RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightDirectionalLightComponents() };
 
-		const Vector3 cameraPosition{ cameraComponent->position };
-		const Vector3 directionalLightForwardVector{ Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->rotation) };
-		const Vector3 directionalLightUpVector{ Vector3(0.0f, 1.0f, 0.0f).Rotated(directionalLightComponent->rotation) };
+		const Vector3 cameraPosition{ cameraComponent->_Position };
+		const Vector3 directionalLightForwardVector{ Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->_Rotation) };
+		const Vector3 directionalLightUpVector{ Vector3(0.0f, 1.0f, 0.0f).Rotated(directionalLightComponent->_Rotation) };
 		const Vector3 directionalLightPosition{ cameraPosition + (directionalLightForwardVector * -1.0f) * (RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f) };
 
 		const Matrix4 directionalLightDirection{ Matrix4::LookAt(directionalLightPosition, directionalLightPosition + directionalLightForwardVector, directionalLightUpVector) };
@@ -72,7 +72,7 @@ namespace RenderingUtilities
 	static void CalculateVegetationGrid(const float cutoffDistance, const DynamicArray<VegetationTransformation> &transformations, VegetationComponent *const RESTRICT renderComponent, VegetationCullingComponent *const RESTRICT cullingComponent, DynamicArray<VegetationTransformation> &sortedTransformations) NOEXCEPT
 	{
 		//Set the squared cutoff distance.
-		cullingComponent->cutoffDistance = cutoffDistance * 2.0f;
+		cullingComponent->_CutoffDistance = cutoffDistance * 2.0f;
 
 		//Calculate the bounding box of all transformations.
 		Vector2 gridMinimum{ FLOAT_MAXIMUM, FLOAT_MAXIMUM };
@@ -98,10 +98,10 @@ namespace RenderingUtilities
 
 		//Resize all containers accordingly.
 		const uint64 containerSize{ rows * columns };
-		renderComponent->shouldDrawGridCell.UpsizeFast(containerSize);
-		renderComponent->instanceCounts.UpsizeFast(containerSize);
-		renderComponent->transformationOffsets.UpsizeFast(containerSize);
-		cullingComponent->gridCellCenterLocations.UpsizeFast(containerSize);
+		renderComponent->_ShouldDrawGridCell.UpsizeFast(containerSize);
+		renderComponent->_InstanceCounts.UpsizeFast(containerSize);
+		renderComponent->_TransformationOffsets.UpsizeFast(containerSize);
+		cullingComponent->_GridCellCenterLocations.UpsizeFast(containerSize);
 
 		//Calculate all cell center positions.
 		const float rowSize{ xExtent / static_cast<float>(rows) };
@@ -114,7 +114,7 @@ namespace RenderingUtilities
 		{
 			for (uint64 j = 0; j < columns; ++j)
 			{
-				cullingComponent->gridCellCenterLocations[(i * columns) + j] = Vector2(	gridMinimum.X + halfRowSize + (rowSize * i),
+				cullingComponent->_GridCellCenterLocations[(i * columns) + j] = Vector2(	gridMinimum.X + halfRowSize + (rowSize * i),
 																						gridMinimum.Y + halfRowSize + (columnSize * j));
 			}
 		}
@@ -153,8 +153,8 @@ namespace RenderingUtilities
 		{
 			for (uint64 j = 0; j < columns; ++j)
 			{
-				renderComponent->instanceCounts[(i * columns) + j] = static_cast<uint32>(temporaryTransformations[i][j].Size());
-				renderComponent->transformationOffsets[(i * columns) + j] = offset;
+				renderComponent->_InstanceCounts[(i * columns) + j] = static_cast<uint32>(temporaryTransformations[i][j].Size());
+				renderComponent->_TransformationOffsets[(i * columns) + j] = offset;
 
 				const uint64 dataSize{ sizeof(VegetationTransformation) * temporaryTransformations[i][j].Size() };
 

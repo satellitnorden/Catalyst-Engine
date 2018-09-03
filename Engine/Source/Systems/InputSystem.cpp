@@ -11,18 +11,25 @@
 DEFINE_SINGLETON(InputSystem);
 
 /*
+*	Initializes the input system.
+*/
+void InputSystem::InitializeSystem() NOEXCEPT
+{
+	//Initialize the update task.
+	_UpdateTask.function = [](void *const RESTRICT arguments)
+	{
+		static_cast<InputSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
+	};
+	_UpdateTask.arguments = this;
+}
+
+/*
 *	Pre-updates the input system synchronously.
 */
 void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
 	//Execute the update task.
-	updateTask.function = [](void *const RESTRICT arguments)
-	{
-		static_cast<InputSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
-	};
-	updateTask.arguments = this;
-
-	TaskSystem::Instance->ExecuteTask(&updateTask);
+	TaskSystem::Instance->ExecuteTask(&_UpdateTask);
 }
 
 /*
@@ -31,7 +38,7 @@ void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
 void InputSystem::PostUpdateSystemSynchronous() NOEXCEPT
 {
 	//Wait for the update task to finish.
-	updateTask.WaitFor();
+	_UpdateTask.WaitFor();
 }
 
 /*
@@ -39,20 +46,15 @@ void InputSystem::PostUpdateSystemSynchronous() NOEXCEPT
 */
 void InputSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
-	//Update gamepad states.
+	//Retrieve the current gamepad states.
 	for (uint8 i = 0; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)
 	{
-		CatalystPlatform::GetCurrentGamepadState(i, &currentGamepadStates[i]);
+		CatalystPlatform::GetCurrentGamepadState(i, &_GamepadStates[i]);
 	}
 
-	//Update the keyboard state.
-	CatalystPlatform::GetCurrentKeyboardState(&currentKeyboardState);
-}
+	//Retrieve the current keyboard state.
+	CatalystPlatform::GetCurrentKeyboardState(&_KeyboardState);
 
-/*
-*	Releases the input system.
-*/
-void InputSystem::ReleaseSystem() NOEXCEPT
-{
-	
+	//Retrieve the current touch state.
+	CatalystPlatform::GetCurrentTouchState(&_TouchState);
 }

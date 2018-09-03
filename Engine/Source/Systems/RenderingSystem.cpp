@@ -50,10 +50,10 @@ DEFINE_SINGLETON(RenderingSystem);
 void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT
 {
 	//Set the resolution.
-	resolution = configuration.resolution;
+	resolution = configuration._Resolution;
 
 	//Set the scaled resolution.
-	scaledResolution = Resolution(static_cast<uint32>(static_cast<float>(resolution.width) * configuration.resolutionScale), static_cast<uint32>(static_cast<float>(resolution.height) * configuration.resolutionScale));
+	scaledResolution = Resolution(static_cast<uint32>(static_cast<float>(resolution.width) * configuration._ResolutionScale), static_cast<uint32>(static_cast<float>(resolution.height) * configuration._ResolutionScale));
 
 	//Initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->InitializeSystem();
@@ -72,7 +72,13 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 
 	//Initialize all special textures.
 	InitializeSpecialTextures();
+}
 
+/*
+*	Post-initializes the rendering system.
+*/
+void RenderingSystem::PostInitializeSystem()
+{
 	//Register all render passes.
 	RegisterRenderPasses();
 
@@ -287,11 +293,11 @@ void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModel
 	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
 
 	//Set up the physical model.
-	physicalModel.GetAxisAlignedBoundingBox().minimum = Vector3(-physicalModelData.extent, -physicalModelData.extent, -physicalModelData.extent);
-	physicalModel.GetAxisAlignedBoundingBox().maximum = Vector3(physicalModelData.extent, physicalModelData.extent, physicalModelData.extent);
-	physicalModel.SetBuffer(buffer);
-	physicalModel.SetIndexOffset(modelDataSizes[0]);
-	physicalModel.SetIndexCount(static_cast<uint32>(physicalModelData.indices.Size()));
+	physicalModel._AxisAlignedBoundingBox.minimum = Vector3(-physicalModelData.extent, -physicalModelData.extent, -physicalModelData.extent);
+	physicalModel._AxisAlignedBoundingBox.maximum = Vector3(physicalModelData.extent, physicalModelData.extent, physicalModelData.extent);
+	physicalModel._Buffer = buffer;
+	physicalModel._IndexOffset = modelDataSizes[0];
+	physicalModel._IndexCount = static_cast<uint32>(physicalModelData.indices.Size());
 }
 
 /*
@@ -398,22 +404,22 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 	TransformComponent &transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents()[entity->GetComponentsIndex()] };
 
 	//Initialize the render component.
-	renderComponent.isInViewFrustum = true;
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical), &renderComponent.renderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, data->model.GetMaterial().albedoTexture), renderComponent.renderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, data->model.GetMaterial().normalMapTexture), renderComponent.renderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, data->model.GetMaterial().materialPropertiesTexture), renderComponent.renderDataTable);
-	renderComponent.buffer = data->model.GetBuffer();
-	renderComponent.indexOffset = data->model.GetIndexOffset();
-	renderComponent.indexCount = data->model.GetIndexCount();
+	renderComponent._IsInViewFrustum = true;
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical), &renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, data->model._Material.albedoTexture), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, data->model._Material.normalMapTexture), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, data->model._Material.materialPropertiesTexture), renderComponent._RenderDataTable);
+	renderComponent._Buffer = data->model._Buffer;
+	renderComponent._IndexOffset = data->model._IndexOffset;
+	renderComponent._IndexCount = data->model._IndexCount;
 
 	//Initialize the culling component.
-	cullingComponent.axisAlignedBoundingBox = data->model.GetAxisAlignedBoundingBox();
+	cullingComponent._AxisAlignedBoundingBox = data->model._AxisAlignedBoundingBox;
 
 	//Initialize the transform component.
-	transformComponent.position = data->position;
-	transformComponent.rotation = data->rotation;
-	transformComponent.scale = data->scale;
+	transformComponent._Position = data->position;
+	transformComponent._Rotation = data->rotation;
+	transformComponent._Scale = data->scale;
 }
 
 /*
@@ -435,8 +441,8 @@ void RenderingSystem::TerminateTerrainEntity(const TerrainEntity *const RESTRICT
 	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->GetComponentsIndex()] };
 
 	//Destroy the terrain entity's resources.
-	DestroyTexture2D(component.terrainPropertiesTexture);
-	DestroyRenderDataTable(renderComponent.renderDataTable);
+	DestroyTexture2D(component._TerrainPropertiesTexture);
+	DestroyRenderDataTable(renderComponent._RenderDataTable);
 }
 
 /*

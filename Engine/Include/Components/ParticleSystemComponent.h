@@ -13,9 +13,9 @@ class ParticleSystemComponent final
 public:
 
 	//The particle system properties.
-	ParticleSystemProperties properties;
+	ParticleSystemProperties _Properties;
 
 	//Handle to the uniform buffer that stores the properties.
-	ConstantBufferHandle propertiesUniformBuffer;
+	ConstantBufferHandle _PropertiesUniformBuffer;
 
 };

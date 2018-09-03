@@ -12,18 +12,18 @@ class VegetationComponent final
 public:
 
 	//The render data table.
-	RenderDataTableHandle renderDataTable;
+	RenderDataTableHandle _RenderDataTable;
 
 	//The transformations buffer.
-	ConstantBufferHandle transformationsBuffer;
+	ConstantBufferHandle _TransformationsBuffer;
 
 	//Whether or not to draw a particular grid cell.
-	DynamicArray<bool> shouldDrawGridCell;
+	DynamicArray<bool> _ShouldDrawGridCell;
 
 	//The offsets into the transformations buffer.
-	DynamicArray<uint64> transformationOffsets;
+	DynamicArray<uint64> _TransformationOffsets;
 
 	//The number of instances.
-	DynamicArray<uint32> instanceCounts;
+	DynamicArray<uint32> _InstanceCounts;
 
 };

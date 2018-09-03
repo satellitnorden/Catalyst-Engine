@@ -90,6 +90,11 @@ public:
 	void InitializeSystem(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT;
 
 	/*
+	*	Post-initializes the rendering system.
+	*/
+	void PostInitializeSystem();
+
+	/*
 	*	Pre-updates the rendering system synchronously.
 	*/
 	void PreUpdateSystemSynchronous() NOEXCEPT;

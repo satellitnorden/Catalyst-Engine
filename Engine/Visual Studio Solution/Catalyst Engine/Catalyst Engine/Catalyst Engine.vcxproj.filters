@@ -828,6 +828,9 @@
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h">
       <Filter>Input\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Input\TouchState.h">
+      <Filter>Input\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

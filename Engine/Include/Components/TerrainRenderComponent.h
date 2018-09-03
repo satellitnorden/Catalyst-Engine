@@ -12,18 +12,18 @@ class TerrainRenderComponent final
 public:
 
 	//Denotes whether or not the terrain is in the view frustum.
-	bool isInViewFrustum;
+	bool _IsInViewFrustum;
 
 	//The render data table.
-	RenderDataTableHandle renderDataTable{ };
+	RenderDataTableHandle _RenderDataTable;
 
 	//The vertex buffer.
-	ConstantBufferHandle vertexAndIndexBuffer{ };
+	ConstantBufferHandle _Buffer;
 
 	//The index buffer offset.
-	uint64 indexBufferOffset{ 0 };
+	uint64 _IndexOffset{ 0 };
 
 	//The index count.
-	uint32 indexCount{ 0 };
+	uint32 _IndexCount{ 0 };
 
 };

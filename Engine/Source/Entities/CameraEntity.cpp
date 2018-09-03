@@ -19,7 +19,7 @@ CameraEntity::CameraEntity() NOEXCEPT
 const Vector3& CameraEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetCameraCameraComponents()[componentsIndex].position;
+	return ComponentManager::GetCameraCameraComponents()[componentsIndex]._Position;
 }
 
 /*
@@ -28,7 +28,7 @@ const Vector3& CameraEntity::GetPosition() const NOEXCEPT
 const Vector3& CameraEntity::GetRotation() const NOEXCEPT
 {
 	//Return the rotation of this entity.
-	return ComponentManager::GetCameraCameraComponents()[componentsIndex].rotation;
+	return ComponentManager::GetCameraCameraComponents()[componentsIndex]._Rotation;
 }
 
 /*
@@ -46,7 +46,7 @@ const Vector3& CameraEntity::GetScale() const NOEXCEPT
 void CameraEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetCameraCameraComponents()[componentsIndex].position += moveVector;
+	ComponentManager::GetCameraCameraComponents()[componentsIndex]._Position += moveVector;
 
 	//Move all children.
 	for (auto child : children)
@@ -61,7 +61,7 @@ void CameraEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void CameraEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate this entity.
-	ComponentManager::GetCameraCameraComponents()[componentsIndex].rotation += rotateVector;
+	ComponentManager::GetCameraCameraComponents()[componentsIndex]._Rotation += rotateVector;
 
 	//Rotate all children.
 	for (auto child : children)
@@ -115,7 +115,7 @@ Vector3 CameraEntity::GetUpVector() const NOEXCEPT
 float CameraEntity::GetFieldOfView() const NOEXCEPT
 {
 	//Return the field of view for this camera entity.
-	return ComponentManager::GetCameraCameraComponents()[componentsIndex].fieldOfView;
+	return ComponentManager::GetCameraCameraComponents()[componentsIndex]._FieldOfView;
 }
 
 /*
@@ -124,7 +124,7 @@ float CameraEntity::GetFieldOfView() const NOEXCEPT
 float CameraEntity::GetNearPlane() const NOEXCEPT
 {
 	//Return the near plane of the frustum.
-	return ComponentManager::GetCameraCameraComponents()[componentsIndex].nearPlane;
+	return ComponentManager::GetCameraCameraComponents()[componentsIndex]._NearPlane;
 }
 
 /*
@@ -133,5 +133,5 @@ float CameraEntity::GetNearPlane() const NOEXCEPT
 float CameraEntity::GetFarPlane() const NOEXCEPT
 {
 	//Return the far plane of the frustum.
-	return ComponentManager::GetCameraCameraComponents()[componentsIndex].farPlane;
+	return ComponentManager::GetCameraCameraComponents()[componentsIndex]._FarPlane;
 }

@@ -12,21 +12,21 @@ class StaticPhysicalRenderComponent final
 public:
 
 	//Denotes whether or not this static physical model is in the view frustum.
-	bool isInViewFrustum;
+	bool _IsInViewFrustum;
 
 	//The model matrix.
-	Matrix4 modelMatrix;
+	Matrix4 _ModelMatrix;
 
 	//The render data table.
-	RenderDataTableHandle renderDataTable{ };
+	RenderDataTableHandle _RenderDataTable;
 
 	//The buffer.
-	ConstantBufferHandle buffer{ };
+	ConstantBufferHandle _Buffer;
 
 	//The offset for the indices in the buffer.
-	uint64 indexOffset{ 0 };
+	uint64 _IndexOffset{ 0 };
 
 	//The index count.
-	uint32 indexCount{ 0 };
+	uint32 _IndexCount{ 0 };
 
 };

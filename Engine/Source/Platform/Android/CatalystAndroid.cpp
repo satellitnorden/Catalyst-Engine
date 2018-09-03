@@ -5,14 +5,22 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Input.
+#include <Input/TouchState.h>
+
 //Systems.
 #include <Systems/EngineSystem.h>
 
+//Android.
+#include <android/input.h>
 #include <android/log.h>
 
 //Static variable definitions.
 android_app *RESTRICT CatalystPlatform::app = nullptr;
 ANativeWindow *RESTRICT CatalystPlatform::window = nullptr;
+
+//Globals.
+TouchState touchState;
 
 /*
 *	Handles android commands.
@@ -47,7 +55,7 @@ void PollEvents() NOEXCEPT
 
 	if (ALooper_pollAll(0, nullptr, &events, (void**) &source) >= 0)
 	{
-		if (source)
+		if (source && source->id == LOOPER_ID_MAIN)
 		{
 			source->process(CatalystPlatform::app, source);
 		}
@@ -59,7 +67,7 @@ void PollEvents() NOEXCEPT
 */
 void CatalystPlatform::Initialize() NOEXCEPT
 {
-	//The the handle command callback.
+	//Set callbacks.
 	app->onAppCmd = HandleCommand;
 
 	//Need to wait for the window to be set before proceeding.
@@ -129,7 +137,39 @@ void CatalystPlatform::GetCurrentKeyboardState(KeyboardState *const RESTRICT sta
 */
 void CatalystPlatform::GetCurrentTouchState(TouchState *const RESTRICT state) NOEXCEPT
 {
+	AInputEvent *event;
 
+	while (AInputQueue_getEvent(app->inputQueue, &event) >= 0)
+	{
+		if (AInputQueue_preDispatchEvent(app->inputQueue, event))
+		{
+			continue;
+		}
+
+		if (AInputEvent_getSource(event) == AINPUT_SOURCE_TOUCHSCREEN
+            && AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION)
+		{
+            if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN)
+            {
+                state->_ButtonState = ButtonState::Pressed;
+                state->_X = AMotionEvent_getRawX(event, 0) / static_cast<float>(ANativeWindow_getWidth(window));
+                state->_Y = 1.0f - AMotionEvent_getRawY(event, 0) / static_cast<float>(ANativeWindow_getHeight(window));
+            }
+
+            else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_MOVE)
+            {
+                state->_X = AMotionEvent_getRawX(event, 0) / static_cast<float>(ANativeWindow_getWidth(window));
+                state->_Y = 1.0f - AMotionEvent_getRawY(event, 0) / static_cast<float>(ANativeWindow_getHeight(window));
+            }
+
+            else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_UP)
+            {
+                state->_ButtonState = ButtonState::Released;
+            }
+		}
+
+		AInputQueue_finishEvent(app->inputQueue, event, 1);
+	}
 }
 
 #if !defined(CATALYST_FINAL)

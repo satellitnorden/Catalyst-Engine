@@ -30,8 +30,8 @@ public:																														\
 	NO_DISCARD RESTRICTED static FIRST_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT;	\
 	static void Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT;							\
 private:																													\
-	static DynamicArray<Entity *RESTRICT> ENTITY_CLASS ## Entities;															\
-	static DynamicArray<FIRST_COMPONENT> ENTITY_CLASS ## FIRST_COMPONENT ## s;
+	static DynamicArray<Entity *RESTRICT> _ ## ENTITY_CLASS ## Entities;													\
+	static DynamicArray<FIRST_COMPONENT> _ ## ENTITY_CLASS ## FIRST_COMPONENT ## s;
 
 /*
 *	Declares an entity class with two components.
@@ -44,9 +44,9 @@ public:																														\
 	NO_DISCARD RESTRICTED static SECOND_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## SECOND_COMPONENT ## s() NOEXCEPT;	\
 	static void Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT;							\
 private:																													\
-	static DynamicArray<Entity *RESTRICT> ENTITY_CLASS ## Entities;															\
-	static DynamicArray<FIRST_COMPONENT> ENTITY_CLASS ## FIRST_COMPONENT ## s;												\
-	static DynamicArray<SECOND_COMPONENT> ENTITY_CLASS ## SECOND_COMPONENT ## s;
+	static DynamicArray<Entity *RESTRICT> _ ## ENTITY_CLASS ## Entities;													\
+	static DynamicArray<FIRST_COMPONENT> _ ## ENTITY_CLASS ## FIRST_COMPONENT ## s;											\
+	static DynamicArray<SECOND_COMPONENT> _ ## ENTITY_CLASS ## SECOND_COMPONENT ## s;
 
 /*
 *	Declares an entity class with three components.
@@ -60,10 +60,10 @@ public:																														\
 	NO_DISCARD RESTRICTED static THIRD_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## THIRD_COMPONENT ## s() NOEXCEPT;	\
 	static void Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT;							\
 private:																													\
-	static DynamicArray<Entity *RESTRICT> ENTITY_CLASS ## Entities;															\
-	static DynamicArray<FIRST_COMPONENT> ENTITY_CLASS ## FIRST_COMPONENT ## s;												\
-	static DynamicArray<SECOND_COMPONENT> ENTITY_CLASS ## SECOND_COMPONENT ## s;											\
-	static DynamicArray<THIRD_COMPONENT> ENTITY_CLASS ## THIRD_COMPONENT ## s;
+	static DynamicArray<Entity *RESTRICT> _ ## ENTITY_CLASS ## Entities;													\
+	static DynamicArray<FIRST_COMPONENT> _ ## ENTITY_CLASS ## FIRST_COMPONENT ## s;											\
+	static DynamicArray<SECOND_COMPONENT> _ ## ENTITY_CLASS ## SECOND_COMPONENT ## s;										\
+	static DynamicArray<THIRD_COMPONENT> _ ## ENTITY_CLASS ## THIRD_COMPONENT ## s;
 
 //Forward declarations.
 class Entity;

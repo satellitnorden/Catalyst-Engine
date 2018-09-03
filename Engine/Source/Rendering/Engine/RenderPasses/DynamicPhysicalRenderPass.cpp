@@ -148,32 +148,32 @@ void DynamicPhysicalRenderPass::RenderInternal() NOEXCEPT
 	for (uint64 i = 0; i < numberOfDynamicPhysicalComponents; ++i, ++renderComponent, ++transformComponent)
 	{
 		//Don't draw this static physical entity if it isn't in the view frustum.
-		if (!renderComponent->isInViewFrustum)
+		if (!renderComponent->_IsInViewFrustum)
 		{
 			continue;
 		}
 
 		const uint64 offset{ 0 };
 
-		Matrix4 modelMatrix{ transformComponent->position, transformComponent->rotation, transformComponent->scale };
+		Matrix4 modelMatrix{ transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale };
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
 
-		if (previousBuffer != renderComponent->buffer)
+		if (previousBuffer != renderComponent->_Buffer)
 		{
-			previousBuffer = renderComponent->buffer;
+			previousBuffer = renderComponent->_Buffer;
 
-			commandBuffer->BindVertexBuffers(this, 1, &renderComponent->buffer, &offset);
-			commandBuffer->BindIndexBuffer(this, renderComponent->buffer, renderComponent->indexOffset);
+			commandBuffer->BindVertexBuffers(this, 1, &renderComponent->_Buffer, &offset);
+			commandBuffer->BindIndexBuffer(this, renderComponent->_Buffer, renderComponent->_IndexOffset);
 		}
 
-		if (previousRenderDataTable != renderComponent->renderDataTable)
+		if (previousRenderDataTable != renderComponent->_RenderDataTable)
 		{
-			previousRenderDataTable = renderComponent->renderDataTable;
+			previousRenderDataTable = renderComponent->_RenderDataTable;
 
-			commandBuffer->BindRenderDataTable(this, 1, renderComponent->renderDataTable);
+			commandBuffer->BindRenderDataTable(this, 1, renderComponent->_RenderDataTable);
 		}
 
-		commandBuffer->DrawIndexed(this, renderComponent->indexCount, 1);
+		commandBuffer->DrawIndexed(this, renderComponent->_IndexCount, 1);
 	}
 
 	//End the command buffer.

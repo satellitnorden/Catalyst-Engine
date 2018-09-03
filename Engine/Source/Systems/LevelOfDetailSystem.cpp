@@ -165,8 +165,8 @@ void LevelOfDetailSystem::CaltulateTerrainLevelOfDetail() NOEXCEPT
 		}
 		*/
 
-		renderComponent->vertexAndIndexBuffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
-		renderComponent->indexBufferOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
-		renderComponent->indexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
+		renderComponent->_Buffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
+		renderComponent->_IndexOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
+		renderComponent->_IndexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
 	}
 }

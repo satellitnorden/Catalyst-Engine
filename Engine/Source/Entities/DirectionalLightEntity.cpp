@@ -31,7 +31,7 @@ const Vector3& DirectionalLightEntity::GetPosition() const NOEXCEPT
 const Vector3& DirectionalLightEntity::GetRotation() const NOEXCEPT
 {
 	//Return the rotation of this entity.
-	return ComponentManager::GetDirectionalLightDirectionalLightComponents()[componentsIndex].rotation;
+	return ComponentManager::GetDirectionalLightDirectionalLightComponents()[componentsIndex]._Rotation;
 }
 
 /*
@@ -61,7 +61,7 @@ void DirectionalLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void DirectionalLightEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate this entity.
-	ComponentManager::GetDirectionalLightDirectionalLightComponents()[componentsIndex].rotation += rotateVector;
+	ComponentManager::GetDirectionalLightDirectionalLightComponents()[componentsIndex]._Rotation += rotateVector;
 
 	//Rotate all children.
 	for (auto child : children)
@@ -88,7 +88,7 @@ void DirectionalLightEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 void DirectionalLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 {
 	//Set the intensity of this directional light entity.
-	ComponentManager::GetDirectionalLightDirectionalLightComponents()[componentsIndex].intensity = newIntensity;
+	ComponentManager::GetDirectionalLightDirectionalLightComponents()[componentsIndex]._Intensity = newIntensity;
 }
 
 /*

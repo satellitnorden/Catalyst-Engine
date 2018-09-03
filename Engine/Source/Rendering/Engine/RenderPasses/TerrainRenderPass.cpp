@@ -133,17 +133,17 @@ void TerrainRenderPass::RenderInternal() NOEXCEPT
 
 	for (uint64 i = 0; i < numberOfTerrainEntityComponents; ++i, ++component)
 	{
-		if (!component->isInViewFrustum)
+		if (!component->_IsInViewFrustum)
 		{
 			continue;
 		}
 
 		const uint64 offset{ 0 };
 
-		commandBuffer->BindRenderDataTable(this, 1, component->renderDataTable);
-		commandBuffer->BindVertexBuffers(this, 1, &component->vertexAndIndexBuffer, &offset);
-		commandBuffer->BindIndexBuffer(this, component->vertexAndIndexBuffer, component->indexBufferOffset);
-		commandBuffer->DrawIndexed(this, component->indexCount, 1);
+		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);
+		commandBuffer->BindVertexBuffers(this, 1, &component->_Buffer, &offset);
+		commandBuffer->BindIndexBuffer(this, component->_Buffer, component->_IndexOffset);
+		commandBuffer->DrawIndexed(this, component->_IndexCount, 1);
 	}
 
 	//End the command buffer.

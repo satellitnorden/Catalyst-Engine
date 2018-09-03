@@ -17,15 +17,15 @@ class TerrainComponent final
 public:
 
 	//The terrain uniform data.
-	TerrainUniformData terrainUniformData;
+	TerrainUniformData _TerrainUniformData;
 
 	//The uniform buffer.
-	UniformBufferHandle uniformBuffer;
+	UniformBufferHandle _UniformBuffer;
 
 	//The height map.
-	CPUTexture2D terrainProperties;
+	CPUTexture2D _TerrainProperties;
 
 	//The terrain properties texture.
-	Texture2DHandle terrainPropertiesTexture;
+	Texture2DHandle _TerrainPropertiesTexture;
 
 };

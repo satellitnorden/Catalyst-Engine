@@ -10,6 +10,7 @@
 //Input.
 #include <Input/GamepadState.h>
 #include <Input/KeyboardState.h>
+#include <Input/TouchState.h>
 
 class InputSystem final
 {
@@ -23,6 +24,11 @@ public:
 	*	Default constructor.
 	*/
 	InputSystem() NOEXCEPT { }
+
+	/*
+	*	Initializes the input system.
+	*/
+	void InitializeSystem() NOEXCEPT;
 
 	/*
 	*	Pre-updates the input system synchronously.
@@ -40,32 +46,41 @@ public:
 	void UpdateSystemAsynchronous() NOEXCEPT;
 
 	/*
-	*	Releases the input system.
-	*/
-	void ReleaseSystem() NOEXCEPT;
-
-	/*
 	*	Returns the current gamepad state.
 	*/
-	NO_DISCARD const GamepadState& GetCurrentGamepadState(const uint8 index = 0) const NOEXCEPT { return currentGamepadStates[index]; }
+	NO_DISCARD RESTRICTED const GamepadState *const RESTRICT GetGamepadState(const uint8 index = 0) const NOEXCEPT
+	{
+		return &_GamepadStates[index];
+	}
 
 	/*
 	*	Returns the current keyboard state.
 	*/
-	NO_DISCARD RESTRICTED const KeyboardState *const RESTRICT GetCurrentKeyboardState() const NOEXCEPT
+	NO_DISCARD RESTRICTED const KeyboardState *const RESTRICT GetKeyboardState() const NOEXCEPT
 	{
-		return &currentKeyboardState;
+		return &_KeyboardState;
+	}
+
+	/*
+	*	Returns the current touch state.
+	*/
+	NO_DISCARD RESTRICTED const TouchState *const RESTRICT GetTouchState() const NOEXCEPT
+	{
+		return &_TouchState;
 	}
 
 private:
 
 	//The update task.
-	Task updateTask;
+	Task _UpdateTask;
 
 	//The current gamepad states.
-	StaticArray<GamepadState, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS> currentGamepadStates;
+	StaticArray<GamepadState, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS> _GamepadStates;
 
 	//The current keyboard state.
-	KeyboardState currentKeyboardState;
+	KeyboardState _KeyboardState;
+
+	//The touch state.
+	TouchState _TouchState;
 
 };
