@@ -19,13 +19,13 @@ public:
 	//The terrain uniform data.
 	TerrainUniformData _TerrainUniformData;
 
-	//The uniform buffer.
-	UniformBufferHandle _UniformBuffer;
-
 	//The height map.
 	CPUTexture2D _TerrainProperties;
 
 	//The terrain properties texture.
 	Texture2DHandle _TerrainPropertiesTexture;
+
+	//The uniform buffer.
+	UniformBufferHandle _UniformBuffer;
 
 };

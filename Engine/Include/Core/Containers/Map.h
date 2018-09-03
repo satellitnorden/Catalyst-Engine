@@ -53,7 +53,7 @@ public:
 	*/
 	RESTRICTED const Pair<KeyType, ObjectType> *const RESTRICT begin() const  NOEXCEPT
 	{
-		return map.begin();
+		return _Map.begin();
 	}
 
 	/*
@@ -61,7 +61,7 @@ public:
 	*/
 	RESTRICTED Pair<KeyType, ObjectType> *const RESTRICT begin()  NOEXCEPT
 	{
-		return map.begin();
+		return _Map.begin();
 	}
 
 	/*
@@ -69,7 +69,7 @@ public:
 	*/
 	RESTRICTED const Pair<KeyType, ObjectType> *const RESTRICT end() const NOEXCEPT
 	{
-		return map.end();
+		return _Map.end();
 	}
 
 	/*
@@ -77,7 +77,7 @@ public:
 	*/
 	RESTRICTED Pair<KeyType, ObjectType> *const RESTRICT end() NOEXCEPT
 	{
-		return map.end();
+		return _Map.end();
 	}
 
 	/*
@@ -85,7 +85,7 @@ public:
 	*/
 	const ObjectType *const RESTRICT Find(const KeyType key) const NOEXCEPT
 	{
-		for (auto &mapEntry : map)
+		for (auto &mapEntry : _Map)
 		{
 			if (mapEntry.first == key)
 			{
@@ -101,7 +101,7 @@ public:
 	*/
 	ObjectType *const RESTRICT Find(const KeyType key) NOEXCEPT
 	{
-		for (auto &mapEntry : map)
+		for (auto &mapEntry : _Map)
 		{
 			if (mapEntry.first == key)
 			{
@@ -117,12 +117,12 @@ public:
 	*/
 	void EmplaceSlow(const KeyType newKey, const ObjectType &newObject)
 	{
-		map.EmplaceSlow(newKey, newObject);
+		_Map.EmplaceSlow(newKey, newObject);
 	}
 
 private:
 
 	//The underlying dynamic array.
-	DynamicArray<Pair<KeyType, ObjectType>> map;
+	DynamicArray<Pair<KeyType, ObjectType>> _Map;
 
 };

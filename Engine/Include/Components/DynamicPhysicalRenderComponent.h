@@ -11,19 +11,19 @@ class DynamicPhysicalRenderComponent final
 
 public:
 
-	//Denotes whether or not this static physical model is in the view frustum.
-	bool _IsInViewFrustum;
-
-	//The render data table.
-	RenderDataTableHandle _RenderDataTable;
-
 	//The buffer.
 	ConstantBufferHandle _Buffer;
 
 	//The offset for the indices in the buffer.
 	uint64 _IndexOffset;
 
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
+
 	//The index count.
 	uint32 _IndexCount;
+
+	//Denotes whether or not this static physical model is in the view frustum.
+	bool _IsInViewFrustum;
 
 };

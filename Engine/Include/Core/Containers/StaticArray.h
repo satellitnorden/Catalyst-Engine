@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-template <typename Type, uint64 ArraySize>
+template <typename Type, uint64 SIZE>
 class StaticArray final
 {
 
@@ -23,7 +23,7 @@ public:
 	template <class... Arguments>
 	constexpr StaticArray(Arguments&&... arguments)
 		:
-		array{ arguments... }
+		_Array{ arguments... }
 	{
 
 	}
@@ -33,7 +33,7 @@ public:
 	*/
 	constexpr const Type& operator[](const uint64 index) const NOEXCEPT
 	{
-		return array[index];
+		return _Array[index];
 	}
 
 	/*
@@ -41,7 +41,7 @@ public:
 	*/
 	constexpr Type& operator[](const uint64 index) NOEXCEPT
 	{
-		return array[index];
+		return _Array[index];
 	}
 
 	/*
@@ -49,7 +49,7 @@ public:
 	*/
 	RESTRICTED constexpr const Type *const RESTRICT begin() const NOEXCEPT
 	{
-		return array;
+		return _Array;
 	}
 
 	/*
@@ -57,7 +57,7 @@ public:
 	*/
 	RESTRICTED constexpr Type *const RESTRICT begin()  NOEXCEPT
 	{
-		return array;
+		return _Array;
 	}
 
 	/*
@@ -65,7 +65,7 @@ public:
 	*/
 	RESTRICTED constexpr const Type *const RESTRICT end() const NOEXCEPT
 	{
-		return array + ArraySize;
+		return _Array + SIZE;
 	}
 
 	/*
@@ -73,7 +73,7 @@ public:
 	*/
 	RESTRICTED constexpr Type *const RESTRICT end() NOEXCEPT
 	{
-		return array + ArraySize;
+		return _Array + SIZE;
 	}
 
 	/*
@@ -81,7 +81,7 @@ public:
 	*/
 	RESTRICTED constexpr const Type *const RESTRICT Data() const NOEXCEPT
 	{
-		return array;
+		return _Array;
 	}
 
 	/*
@@ -89,7 +89,7 @@ public:
 	*/
 	RESTRICTED constexpr Type *const RESTRICT Data() NOEXCEPT
 	{
-		return array;
+		return _Array;
 	}
 
 	/*
@@ -97,12 +97,12 @@ public:
 	*/
 	constexpr uint64 Size() const NOEXCEPT
 	{
-		return ArraySize;
+		return SIZE;
 	}
 
 private:
 
 	//The underlying array.
-	Type array[ArraySize];
+	Type _Array[SIZE];
 
 };

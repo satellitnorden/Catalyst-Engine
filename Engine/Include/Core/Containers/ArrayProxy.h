@@ -11,10 +11,10 @@ class ArrayProxy final
 public:
 
 	//Pointer to the beginning of the array.
-	Type *const RESTRICT array;
+	Type *const RESTRICT _Array;
 
 	//The length of the array.
-	uint64 length;
+	uint64 _Length;
 
 	/*
 	*	Default constructor, prohibited - must be constructed with the proper arguments.
@@ -27,8 +27,8 @@ public:
 	template <uint64 LENGTH>
 	ArrayProxy(const StaticArray<Type, LENGTH> &staticArray) NOEXCEPT
 		:
-		array(staticArray.begin()),
-		length(staticArray.Size())
+		_Array(staticArray.begin()),
+		_Length(staticArray.Size())
 	{
 
 	}
