@@ -17,72 +17,72 @@ namespace InputUtilities
 	/*
 	*	Updates a single gamepad button.
 	*/
-	void UpdateGamepadButton(const WORD wButtons, const uint16 xInputButton, GamepadButtonState &gamepadButtonState) NOEXCEPT
+	void UpdateGamepadButton(const WORD wButtons, const uint16 xInputButton, ButtonState &ButtonState) NOEXCEPT
 	{
 		//The gamepad button is not pressed.
 		if (!(wButtons & xInputButton))
 		{
-			if (gamepadButtonState == GamepadButtonState::ReleasedHold)
+			if (ButtonState == ButtonState::ReleasedHold)
 			{
 				//Do nothing. This is here since this is the most common state, and it enables the forthcoming if statements to evade executing.
 			}
 
-			else if (gamepadButtonState == GamepadButtonState::PressedHold || gamepadButtonState == GamepadButtonState::Pressed)
-				gamepadButtonState = GamepadButtonState::Released;
+			else if (ButtonState == ButtonState::PressedHold || ButtonState == ButtonState::Pressed)
+				ButtonState = ButtonState::Released;
 
-			else if (gamepadButtonState == GamepadButtonState::Released)
-				gamepadButtonState = GamepadButtonState::ReleasedHold;
+			else if (ButtonState == ButtonState::Released)
+				ButtonState = ButtonState::ReleasedHold;
 		}
 
 		//The gamepad button is pressed.
 		else
 		{
-			if (gamepadButtonState == GamepadButtonState::PressedHold)
+			if (ButtonState == ButtonState::PressedHold)
 			{
 				//Do nothing. This is here since this is the most common state, and it enables the forthcoming if statements to evade executing.
 			}
 
-			else if (gamepadButtonState == GamepadButtonState::ReleasedHold || gamepadButtonState == GamepadButtonState::Released)
-				gamepadButtonState = GamepadButtonState::Pressed;
+			else if (ButtonState == ButtonState::ReleasedHold || ButtonState == ButtonState::Released)
+				ButtonState = ButtonState::Pressed;
 
-			else if (gamepadButtonState == GamepadButtonState::Pressed)
-				gamepadButtonState = GamepadButtonState::PressedHold;
+			else if (ButtonState == ButtonState::Pressed)
+				ButtonState = ButtonState::PressedHold;
 		}
 	}
 
 	/*
 	*	Updates a single keyboard button.
 	*/
-	void UpdateKeyboardButton(const uint16 button, KeyboardButtonState &keyboardButtonState) NOEXCEPT
+	void UpdateKeyboardButton(const uint16 button, ButtonState &ButtonState) NOEXCEPT
 	{
 		//The keyboard button is not pressed.
 		if (!static_cast<bool>(GetKeyState(button) & 0x8000))
 		{
-			if (keyboardButtonState == KeyboardButtonState::ReleasedHold)
+			if (ButtonState == ButtonState::ReleasedHold)
 			{
 				//Do nothing. This is here since this is the most common state, and it enables the forthcoming if statements to evade executing.
 			}
 
-			else if (keyboardButtonState == KeyboardButtonState::PressedHold || keyboardButtonState == KeyboardButtonState::Pressed)
-				keyboardButtonState = KeyboardButtonState::Released;
+			else if (ButtonState == ButtonState::PressedHold || ButtonState == ButtonState::Pressed)
+				ButtonState = ButtonState::Released;
 
-			else if (keyboardButtonState == KeyboardButtonState::Released)
-				keyboardButtonState = KeyboardButtonState::ReleasedHold;
+			else if (ButtonState == ButtonState::Released)
+				ButtonState = ButtonState::ReleasedHold;
 		}
 
 		//The keyboard button is pressed.
 		else
 		{
-			if (keyboardButtonState == KeyboardButtonState::PressedHold)
+			if (ButtonState == ButtonState::PressedHold)
 			{
 				//Do nothing. This is here since this is the most common state, and it enables the forthcoming if statements to evade executing.
 			}
 
-			else if (keyboardButtonState == KeyboardButtonState::ReleasedHold || keyboardButtonState == KeyboardButtonState::Released)
-				keyboardButtonState = KeyboardButtonState::Pressed;
+			else if (ButtonState == ButtonState::ReleasedHold || ButtonState == ButtonState::Released)
+				ButtonState = ButtonState::Pressed;
 
-			else if (keyboardButtonState == KeyboardButtonState::Pressed)
-				keyboardButtonState = KeyboardButtonState::PressedHold;
+			else if (ButtonState == ButtonState::Pressed)
+				ButtonState = ButtonState::PressedHold;
 		}
 	}
 
@@ -134,16 +134,16 @@ namespace InputUtilities
 		currentGamepadStates.rightThumbstickYValue = static_cast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
 
 		//Calculate if the thumbstick values are in the deadzone.If so, reset them.
-		if (CatalystMath::Absolute(currentGamepadStates.leftThumbstickXValue) <= GAMEPAD_DEADZONE)
+		if (CatalystMath::Absolute(currentGamepadStates.leftThumbstickXValue) <= InputConstants::GAMEPAD_DEADZONE)
 			currentGamepadStates.leftThumbstickXValue = 0.0f;
 
-		if (CatalystMath::Absolute(currentGamepadStates.leftThumbstickYValue) <= GAMEPAD_DEADZONE)
+		if (CatalystMath::Absolute(currentGamepadStates.leftThumbstickYValue) <= InputConstants::GAMEPAD_DEADZONE)
 			currentGamepadStates.leftThumbstickYValue = 0.0f;
 
-		if (CatalystMath::Absolute(currentGamepadStates.rightThumbstickXValue) <= GAMEPAD_DEADZONE)
+		if (CatalystMath::Absolute(currentGamepadStates.rightThumbstickXValue) <= InputConstants::GAMEPAD_DEADZONE)
 			currentGamepadStates.rightThumbstickXValue = 0.0f;
 
-		if (CatalystMath::Absolute(currentGamepadStates.rightThumbstickYValue) <= GAMEPAD_DEADZONE)
+		if (CatalystMath::Absolute(currentGamepadStates.rightThumbstickYValue) <= InputConstants::GAMEPAD_DEADZONE)
 			currentGamepadStates.rightThumbstickYValue = 0.0f;
 
 		//Return that the query succeeded.

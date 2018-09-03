@@ -3,17 +3,8 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-//Defines.
-#define GAMEPAD_DEADZONE 0.1f
-
-//Enumeration for all possible gamepad button states.
-enum class GamepadButtonState : uint8
-{
-	Pressed,
-	PressedHold,
-	Released,
-	ReleasedHold
-};
+//Input.
+#include <Input/InputCore.h>
 
 class GamepadState final
 {
@@ -22,40 +13,32 @@ public:
 
 	bool isConnected{ false };
 
-	GamepadButtonState dpadUpButtonState{ GamepadButtonState::Released };
-	GamepadButtonState dpadDownButtonState{ GamepadButtonState::Released };
-	GamepadButtonState dpadLeftButtonState{ GamepadButtonState::Released };
-	GamepadButtonState dpadRightButtonState{ GamepadButtonState::Released };
+	ButtonState dpadUpButtonState{ ButtonState::Released };
+	ButtonState dpadDownButtonState{ ButtonState::Released };
+	ButtonState dpadLeftButtonState{ ButtonState::Released };
+	ButtonState dpadRightButtonState{ ButtonState::Released };
 
-	GamepadButtonState startButtonState{ GamepadButtonState::Released };
-	GamepadButtonState backButtonState{ GamepadButtonState::Released };
+	ButtonState startButtonState{ ButtonState::Released };
+	ButtonState backButtonState{ ButtonState::Released };
 
-	GamepadButtonState leftThumbButtonState{ GamepadButtonState::Released };
-	GamepadButtonState rightThumbButtonState{ GamepadButtonState::Released };
+	ButtonState leftThumbButtonState{ ButtonState::Released };
+	ButtonState rightThumbButtonState{ ButtonState::Released };
 
-	GamepadButtonState leftShoulderButtonState{ GamepadButtonState::Released };
-	GamepadButtonState rightShoulderButtonState{ GamepadButtonState::Released };
+	ButtonState leftShoulderButtonState{ ButtonState::Released };
+	ButtonState rightShoulderButtonState{ ButtonState::Released };
 
-	GamepadButtonState aButtonState{ GamepadButtonState::Released };
-	GamepadButtonState bButtonState{ GamepadButtonState::Released };
-	GamepadButtonState xButtonState{ GamepadButtonState::Released };
-	GamepadButtonState yButtonState{ GamepadButtonState::Released };
+	ButtonState aButtonState{ ButtonState::Released };
+	ButtonState bButtonState{ ButtonState::Released };
+	ButtonState xButtonState{ ButtonState::Released };
+	ButtonState yButtonState{ ButtonState::Released };
 
-	float leftTriggerValue;
-	float rightTriggerValue;
+	float leftTriggerValue{ 0.0f };
+	float rightTriggerValue{ 0.0f };
 
-	float leftThumbstickXValue;
-	float leftThumbstickYValue;
+	float leftThumbstickXValue{ 0.0f };
+	float leftThumbstickYValue{ 0.0f };
 
-	float rightThumbstickXValue;
-	float rightThumbstickYValue;
-
-	/*
-	*	Default constructor.
-	*/
-	GamepadState() NOEXCEPT
-	{
-
-	}
+	float rightThumbstickXValue{ 0.0f };
+	float rightThumbstickYValue{ 0.0f };
 
 };

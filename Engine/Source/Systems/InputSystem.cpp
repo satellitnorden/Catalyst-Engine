@@ -44,7 +44,7 @@ void InputSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
 #if defined(CATALYST_WINDOWS)
 	//Update gamepad states.
-	for (uint8 i = 0; i < INPUT_MAXIMUM_GAMEPADS; ++i)
+	for (uint8 i = 0; i < InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS; ++i)
 	{
 		InputUtilities::GetCurrentGamepadState(i, currentGamepadStates[i]);
 	}

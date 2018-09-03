@@ -4,14 +4,8 @@
 #include <Core/Core/CatalystCore.h>
 #include <Core/Containers/StaticArray.h>
 
-//Enumeration for all possible keyboard button states.
-enum class KeyboardButtonState : uint8
-{
-	Pressed,
-	PressedHold,
-	Released,
-	ReleasedHold
-};
+//Input.
+#include <Input/InputCore.h>
 
 //Enumeration for all keyboard buttons.
 enum class KeyboardButton : uint8
@@ -167,45 +161,37 @@ public:
 		//Set all keyboard button states to the default value.
 		for (uint8 i = 0; i < INDEX(KeyboardButton::NumberOfKeyboardButtons); ++i)
 		{
-			keyboardButtonStates[i] = KeyboardButtonState::Released;
+			ButtonStates[i] = ButtonState::Released;
 		}
-	}
-
-	/*
-	*	Default destructor.
-	*/
-	~KeyboardState() NOEXCEPT
-	{
-
 	}
 
 	/*
 	*	Subscript operator overload, const.
 	*/
-	const KeyboardButtonState& operator[](const KeyboardButton button) const NOEXCEPT
+	const ButtonState& operator[](const KeyboardButton button) const NOEXCEPT
 	{
-		return keyboardButtonStates[INDEX(button)];
+		return ButtonStates[INDEX(button)];
 	}
 
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	KeyboardButtonState& operator[](const KeyboardButton button) NOEXCEPT
+	ButtonState& operator[](const KeyboardButton button) NOEXCEPT
 	{
-		return keyboardButtonStates[INDEX(button)];
+		return ButtonStates[INDEX(button)];
 	}
 
 	/*
 	*	Returns the keyboard button state for the given keyboard button.
 	*/
-	KeyboardButtonState GetKeyboardButtonState(const KeyboardButton button) const NOEXCEPT
+	ButtonState GetButtonState(const KeyboardButton button) const NOEXCEPT
 	{
-		return keyboardButtonStates[INDEX(button)];
+		return ButtonStates[INDEX(button)];
 	}
 
 private:
 
 	//The underlying keyboard button states.
-	StaticArray<KeyboardButtonState, INDEX(KeyboardButton::NumberOfKeyboardButtons)> keyboardButtonStates{ };
+	StaticArray<ButtonState, INDEX(KeyboardButton::NumberOfKeyboardButtons)> ButtonStates{ };
 
 };

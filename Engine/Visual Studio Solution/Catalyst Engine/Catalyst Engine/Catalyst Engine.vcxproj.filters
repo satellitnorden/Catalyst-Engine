@@ -300,12 +300,6 @@
     <ClInclude Include="..\..\..\Include\Entities\VegetationEntity.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Input\GamepadState.h">
-      <Filter>Input\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Input\InputConstants.h">
-      <Filter>Input\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Input\InputUtilities.h">
       <Filter>Input\Include</Filter>
     </ClInclude>
@@ -830,6 +824,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Containers\ArrayProxy.h">
       <Filter>Core\Include\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Input\InputCore.h">
+      <Filter>Input\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Input\GamepadState.h">
+      <Filter>Input\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

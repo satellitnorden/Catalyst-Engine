@@ -10,7 +10,6 @@
 
 //Input.
 #include <Input/GamepadState.h>
-#include <Input/InputConstants.h>
 #include <Input/KeyboardState.h>
 
 class InputSystem final
@@ -62,7 +61,7 @@ private:
 	Task inputUpdateTask;
 
 	//The current gamepad states.
-	StaticArray<GamepadState, INPUT_MAXIMUM_GAMEPADS> currentGamepadStates;
+	StaticArray<GamepadState, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS> currentGamepadStates;
 
 	//The current keyboard state.
 	KeyboardState currentKeyboardState;

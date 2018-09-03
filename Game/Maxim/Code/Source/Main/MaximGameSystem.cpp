@@ -79,12 +79,12 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	//Eh. Set bloom radius.
 	const KeyboardState *const RESTRICT keyboard{ InputSystem::Instance->GetCurrentKeyboardState() };
 
-	if (keyboard->GetKeyboardButtonState(KeyboardButton::UpArrow) == KeyboardButtonState::PressedHold)
+	if (keyboard->GetButtonState(KeyboardButton::UpArrow) == ButtonState::PressedHold)
 	{
 		RenderingConfigurationManager::Instance->SetBloomRadius(RenderingConfigurationManager::Instance->GetBloomRadius() + (deltaTime * 0.001f));
 	}
 
-	if (keyboard->GetKeyboardButtonState(KeyboardButton::DownArrow) == KeyboardButtonState::PressedHold)
+	if (keyboard->GetButtonState(KeyboardButton::DownArrow) == ButtonState::PressedHold)
 	{
 		RenderingConfigurationManager::Instance->SetBloomRadius(RenderingConfigurationManager::Instance->GetBloomRadius() - (deltaTime * 0.001f));
 	}
