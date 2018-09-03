@@ -55,6 +55,7 @@ enum class RenderPassSubStage : uint8
 	//Scene main stage.
 	Terrain,
 	StaticPhysical,
+	DynamicPhysical,
 	InstancedPhysical,
 	Vegetation,
 	DirectionalShadow,

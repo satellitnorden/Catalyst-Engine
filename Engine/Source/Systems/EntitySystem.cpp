@@ -150,12 +150,13 @@ void EntitySystem::InitializeEntity(EntityInitializationData* const RESTRICT dat
 #if !defined(CATALYST_FINAL)
 		default:
 		{
-			PRINT_TO_OUTPUT("Invalid entity type!");
-
-			BREAKPOINT();
+			ASSERT(false, "Invalid entity type!");
 		}
 #endif
 	}
+
+	//Set this entity to initialized.
+	data->entity->SetIsInitialized(true);
 }
 
 /*
@@ -248,12 +249,13 @@ void EntitySystem::TerminateEntity(EntityTerminationData* const RESTRICT data) N
 #if !defined(CATALYST_FINAL)
 		default:
 		{
-			PRINT_TO_OUTPUT("Invalid entity type!");
-
-			BREAKPOINT();
+			ASSERT(false, "Invalid entity type!");
 		}
 #endif
 	}
+
+	//Set this entity to un-initialized.
+	data->entity->SetIsInitialized(false);
 }
 
 /*

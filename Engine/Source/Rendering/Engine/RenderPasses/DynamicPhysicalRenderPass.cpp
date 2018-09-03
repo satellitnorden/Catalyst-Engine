@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/InstancedPhysicalRenderPass.h>
+#include <Rendering/Engine/RenderPasses/DynamicPhysicalRenderPass.h>
 
 //Components.
 #include <Components/ComponentManager.h>
@@ -9,39 +9,40 @@
 #include <Rendering/Engine/PhysicalVertex.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(InstancedPhysicalRenderPass);
+DEFINE_SINGLETON(DynamicPhysicalRenderPass);
 
 /*
 *	Default constructor.
 */
-InstancedPhysicalRenderPass::InstancedPhysicalRenderPass() NOEXCEPT
+DynamicPhysicalRenderPass::DynamicPhysicalRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		InstancedPhysicalRenderPass::Instance->InitializeInternal();
+		DynamicPhysicalRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the instanced physical render pass.
+*	Initializes the dynamic physical render pass.
 */
-void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
+void DynamicPhysicalRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::InstancedPhysical);
+	SetSubStage(RenderPassSubStage::DynamicPhysical);
 
 	//Set the sub stage index.
-	SetSubStageIndex(3);
+	SetSubStageIndex(2);
 
 	//Set the shaders.
-	SetVertexShader(Shader::InstancedPhysicalVertex);
+	SetVertexShader(Shader::PhysicalVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
@@ -61,8 +62,12 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical));
 
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(Matrix4));
+
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(8);
+	SetNumberOfVertexInputAttributeDescriptions(4);
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
@@ -79,27 +84,10 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
 										offsetof(PhysicalVertex, textureCoordinate));
-	AddVertexInputAttributeDescription(	4,
-										1,
-										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										0);
-	AddVertexInputAttributeDescription(	5,
-										1,
-										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										sizeof(Vector4));
-	AddVertexInputAttributeDescription(	6,
-										1,
-										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										sizeof(Vector4) * 2);
-	AddVertexInputAttributeDescription(	7,
-										1,
-										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										sizeof(Vector4) * 3);
 
 	//Add the vertex input binding descriptions.
-	SetNumberOfVertexInputBindingDescriptions(2);
+	SetNumberOfVertexInputBindingDescriptions(1);
 	AddVertexInputBindingDescription(0, sizeof(PhysicalVertex), VertexInputBindingDescription::InputRate::Vertex);
-	AddVertexInputBindingDescription(1, sizeof(Matrix4), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -115,7 +103,7 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		InstancedPhysicalRenderPass::Instance->RenderInternal();
+		DynamicPhysicalRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -123,15 +111,15 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the terrain.
+*	Renders the dynamic physical entities.
 */
-void InstancedPhysicalRenderPass::RenderInternal() NOEXCEPT
+void DynamicPhysicalRenderPass::RenderInternal() NOEXCEPT
 {
-	//Iterate over all instanced physical components and draw them all.
-	const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };
+	//Iterate over all dynamic physical components and draw them all.
+	const uint64 numberOfDynamicPhysicalComponents{ ComponentManager::GetNumberOfDynamicPhysicalComponents() };
 
 	//If there's none to render - render none.
-	if (numberOfInstancedPhysicalComponents == 0)
+	if (numberOfDynamicPhysicalComponents == 0)
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
@@ -141,7 +129,8 @@ void InstancedPhysicalRenderPass::RenderInternal() NOEXCEPT
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const InstancedPhysicalRenderComponent *RESTRICT component{ ComponentManager::GetInstancedPhysicalInstancedPhysicalRenderComponents() };
+	const DynamicPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetDynamicPhysicalDynamicPhysicalRenderComponents() };
+	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
@@ -149,24 +138,42 @@ void InstancedPhysicalRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
-	StaticArray<uint64, 2> offsets
-	{
-		static_cast<uint64>(0),
-		static_cast<uint64>(0)
-	};
+	//Wait for the static physical culling to finish.
+	CullingSystem::Instance->WaitForStaticPhysicalCulling();
 
-	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++component)
+	//Track the previous state, so if two static physical entities share the same state, it doesn't have to be rebound.
+	ConstantBufferHandle previousBuffer{ nullptr };
+	RenderDataTableHandle previousRenderDataTable{ nullptr };
+
+	for (uint64 i = 0; i < numberOfDynamicPhysicalComponents; ++i, ++renderComponent, ++transformComponent)
 	{
-		StaticArray<ConstantBufferHandle, 2> buffers
+		//Don't draw this static physical entity if it isn't in the view frustum.
+		if (!renderComponent->isInViewFrustum)
 		{
-			component->modelBuffer,
-			component->transformationsBuffer
-		};
+			continue;
+		}
 
-		commandBuffer->BindRenderDataTable(this, 1, component->renderDataTable);
-		commandBuffer->BindVertexBuffers(this, 2, buffers.Data(), offsets.Data());
-		commandBuffer->BindIndexBuffer(this, component->modelBuffer, component->indexOffset);
-		commandBuffer->DrawIndexed(this, component->indexCount, component->instanceCount);
+		const uint64 offset{ 0 };
+
+		Matrix4 modelMatrix{ transformComponent->position, transformComponent->rotation, transformComponent->scale };
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
+
+		if (previousBuffer != renderComponent->buffer)
+		{
+			previousBuffer = renderComponent->buffer;
+
+			commandBuffer->BindVertexBuffers(this, 1, &renderComponent->buffer, &offset);
+			commandBuffer->BindIndexBuffer(this, renderComponent->buffer, renderComponent->indexOffset);
+		}
+
+		if (previousRenderDataTable != renderComponent->renderDataTable)
+		{
+			previousRenderDataTable = renderComponent->renderDataTable;
+
+			commandBuffer->BindRenderDataTable(this, 1, renderComponent->renderDataTable);
+		}
+
+		commandBuffer->DrawIndexed(this, renderComponent->indexCount, 1);
 	}
 
 	//End the command buffer.

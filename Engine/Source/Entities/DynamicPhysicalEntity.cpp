@@ -45,6 +45,9 @@ const Vector3& DynamicPhysicalEntity::GetScale() const NOEXCEPT
 */
 void DynamicPhysicalEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
+	//Move this entity.
+	ComponentManager::GetDynamicPhysicalTransformComponents()[componentsIndex].position += moveVector;
+
 	//Move all children.
 	for (auto child : children)
 	{
@@ -57,6 +60,9 @@ void DynamicPhysicalEntity::Move(const Vector3 &moveVector) NOEXCEPT
 */
 void DynamicPhysicalEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
+	//Rotate this entity.
+	ComponentManager::GetDynamicPhysicalTransformComponents()[componentsIndex].rotation += rotateVector;
+
 	//Rotate all children.
 	for (auto child : children)
 	{
@@ -69,6 +75,9 @@ void DynamicPhysicalEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 */
 void DynamicPhysicalEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
+	//Scale this entity.
+	ComponentManager::GetDynamicPhysicalTransformComponents()[componentsIndex].scale *= scaleVector;
+
 	//Scale all children.
 	for (auto child : children)
 	{

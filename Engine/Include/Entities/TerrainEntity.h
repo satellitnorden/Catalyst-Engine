@@ -6,14 +6,6 @@
 //Entities.
 #include <Entities/Entity.h>
 
-//Rendering.
-#include <Rendering/Engine/RenderingCore.h>
-
-//Forward declarations.
-class CPUTexture2D;
-class TerrainMaterial;
-class TerrainUniformData;
-
 class TerrainEntity : public Entity
 {
 

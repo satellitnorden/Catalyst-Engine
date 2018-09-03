@@ -8,6 +8,7 @@
 #include <Rendering/Engine/RenderPasses/DirectionalStaticPhysicalShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalTerrainShadowRenderPass.h>
+#include <Rendering/Engine/RenderPasses/DynamicPhysicalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/InstancedPhysicalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/OceanRenderPass.h>

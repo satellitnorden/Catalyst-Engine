@@ -1121,7 +1121,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 	//Initialize the scene buffer render pass.
 	{
-		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 8 };
+		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 9 };
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 ALBEDO_INDEX{ 1 };
@@ -1235,11 +1235,19 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
+		subpassDescriptions[4] = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
+																			sceneBufferColorAttachmentReferences.Data(),
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
+
 		constexpr VkAttachmentReference normalDepthInputAttachmentReference{ VulkanUtilities::CreateAttachmentReference(NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) };
 
 		constexpr VkAttachmentReference directionalShadowColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(DIRECTIONAL_SHADOW_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) };
 
-		subpassDescriptions[4] = VulkanUtilities::CreateSubpassDescription(	1,
+		subpassDescriptions[5] = VulkanUtilities::CreateSubpassDescription(	1,
 																			&normalDepthInputAttachmentReference,
 																			1,
 																			&directionalShadowColorAttachmentReference,
@@ -1256,7 +1264,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		constexpr VkAttachmentReference sceneColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(SCENE_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) };
 
-		subpassDescriptions[5] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(lightingInputAttachmentReferences.Size()),
+		subpassDescriptions[6] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(lightingInputAttachmentReferences.Size()),
 																			lightingInputAttachmentReferences.Data(),
 																			1,
 																			&sceneColorAttachmentReference,
@@ -1264,7 +1272,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[6] = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[7] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			1,
 																			&sceneColorAttachmentReference,
@@ -1278,7 +1286,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL }
 		};
 
-		subpassDescriptions[7] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(particleSystemAttachmentReferences.Size()),
+		subpassDescriptions[8] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(particleSystemAttachmentReferences.Size()),
 																			particleSystemAttachmentReferences.Data(),
 																			static_cast<uint32>(particleSystemAttachmentReferences.Size()),
 																			particleSystemAttachmentReferences.Data(),
@@ -1317,10 +1325,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 			VulkanUtilities::CreateSubpassDependency(	3,
 														4,
-														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
 			VulkanUtilities::CreateSubpassDependency(	4,
@@ -1334,13 +1342,21 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			VulkanUtilities::CreateSubpassDependency(	5,
 														6,
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	6,
+														7,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-			VulkanUtilities::CreateSubpassDependency(	6,
-														7,
+			VulkanUtilities::CreateSubpassDependency(	7,
+														8,
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
@@ -1380,69 +1396,69 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 	//Initialize the ocean render pass.
 	{
-	constexpr uint64 NUMBER_OF_OCEAN_SUBPASSES{ 1 };
+		constexpr uint64 NUMBER_OF_OCEAN_SUBPASSES{ 1 };
 
-	constexpr uint32 SCENE_INDEX{ 0 };
+		constexpr uint32 SCENE_INDEX{ 0 };
 
-	VulkanRenderPassCreationParameters renderPassParameters;
+		VulkanRenderPassCreationParameters renderPassParameters;
 
-	StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
-	{
-		//Scene.
-		VulkanUtilities::CreateAttachmentDescription(renderTargets[INDEX(RenderTarget::Scene)]->GetFormat(),
-		VK_ATTACHMENT_LOAD_OP_LOAD,
-		VK_ATTACHMENT_STORE_OP_STORE,
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
-	};
+		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
+		{
+			//Scene.
+			VulkanUtilities::CreateAttachmentDescription(renderTargets[INDEX(RenderTarget::Scene)]->GetFormat(),
+			VK_ATTACHMENT_LOAD_OP_LOAD,
+			VK_ATTACHMENT_STORE_OP_STORE,
+			VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+			VK_ATTACHMENT_STORE_OP_DONT_CARE,
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+		};
 
-	renderPassParameters.attachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
-	renderPassParameters.attachmentDescriptions = attachmenDescriptions.Data();
+		renderPassParameters.attachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters.attachmentDescriptions = attachmenDescriptions.Data();
 
-	constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
-	{
-		VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
-	};
+		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
+		{
+			VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+		};
 
-	StaticArray<VkSubpassDescription, NUMBER_OF_OCEAN_SUBPASSES> subpassDescriptions
-	{
-		VulkanUtilities::CreateSubpassDescription(0,
-		nullptr,
-		1,
-		colorAttachmentReferences.Data(),
-		nullptr,
-		0,
-		nullptr)
-	};
+		StaticArray<VkSubpassDescription, NUMBER_OF_OCEAN_SUBPASSES> subpassDescriptions
+		{
+			VulkanUtilities::CreateSubpassDescription(0,
+			nullptr,
+			1,
+			colorAttachmentReferences.Data(),
+			nullptr,
+			0,
+			nullptr)
+		};
 
-	renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
-	renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
+		renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
 
-	renderPassParameters.subpassDependencyCount = 0;
-	renderPassParameters.subpassDependencies = nullptr;
+		renderPassParameters.subpassDependencyCount = 0;
+		renderPassParameters.subpassDependencies = nullptr;
 
-	vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].renderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].renderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
-	//Create the framebuffer.
-	VulkanFramebufferCreationParameters framebufferParameters;
+		//Create the framebuffer.
+		VulkanFramebufferCreationParameters framebufferParameters;
 
-	framebufferParameters.renderPass = vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].renderPass->Get();
+		framebufferParameters.renderPass = vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].renderPass->Get();
 
-	StaticArray<VkImageView, 1> attachments
-	{
-		renderTargets[INDEX(RenderTarget::Scene)]->GetImageView()
-	};
+		StaticArray<VkImageView, 1> attachments
+		{
+			renderTargets[INDEX(RenderTarget::Scene)]->GetImageView()
+		};
 
-	framebufferParameters.attachmentCount = static_cast<uint32>(attachments.Size());
-	framebufferParameters.attachments = attachments.Data();
-	framebufferParameters.extent = { RenderingSystem::Instance->GetScaledResolution().width, RenderingSystem::Instance->GetScaledResolution().height };
+		framebufferParameters.attachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters.attachments = attachments.Data();
+		framebufferParameters.extent = { RenderingSystem::Instance->GetScaledResolution().width, RenderingSystem::Instance->GetScaledResolution().height };
 
-	vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].frameBuffers.Reserve(1);
-	vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].frameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-	vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].numberOfAttachments = 1;
-	vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].shouldClear = false;
+		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].frameBuffers.Reserve(1);
+		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].frameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].numberOfAttachments = 1;
+		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].shouldClear = false;
 	}
 
 	//Initialize the post processing final render pass.

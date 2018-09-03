@@ -61,9 +61,7 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 #if !defined(CATALYST_FINAL)
 			default:
 			{
-				PRINT_TO_OUTPUT("Undefined resource type.");
-
-				BREAKPOINT();
+				ASSERT(false, "Undefined resource type.");
 			}
 #endif
 
