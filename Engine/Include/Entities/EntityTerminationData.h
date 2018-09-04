@@ -21,16 +21,16 @@ public:
 	*/
 	EntityTerminationData(Entity* const RESTRICT initialEntity, const bool initialForce) NOEXCEPT
 		:
-		entity(initialEntity),
-		force(initialForce)
+		_Entity(initialEntity),
+		_Force(initialForce)
 	{
 
 	}
 
 	//The entity to terminate.
-	Entity* RESTRICT entity;
+	Entity* RESTRICT _Entity;
 
 	//Denotes whether or not to force this termination.
-	bool force;
+	bool _Force;
 
 };

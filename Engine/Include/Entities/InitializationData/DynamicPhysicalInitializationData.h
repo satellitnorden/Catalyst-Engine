@@ -15,15 +15,15 @@ class DynamicPhysicalInitializationData final
 public:
 
 	//The model.
-	PhysicalModel model;
+	PhysicalModel _Model;
 
 	//The position.
-	Vector3 position;
+	Vector3 _Position;
 
 	//The rotation.
-	Vector3 rotation;
+	Vector3 _Rotation;
 
 	//The scale.
-	Vector3 scale;
+	Vector3 _Scale;
 
 };

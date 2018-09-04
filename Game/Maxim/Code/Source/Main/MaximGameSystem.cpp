@@ -60,10 +60,10 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
 	model._Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
 
-	data->model = model;
-	data->position = Vector3(0.0f, 0.0f, 0.0f);
-	data->rotation = Vector3(0.0f, 0.0f, 0.0f);
-	data->scale = Vector3(10.0f, 10.0f, 10.0f);
+	data->_Model = model;
+	data->_Position = Vector3(0.0f, 0.0f, 0.0f);
+	data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
+	data->_Scale = Vector3(10.0f, 10.0f, 10.0f);
 
 	EntitySystem::Instance->RequestInitialization(spinner, data, false);
 }

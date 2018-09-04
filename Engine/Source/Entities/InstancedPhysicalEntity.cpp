@@ -13,7 +13,7 @@
 InstancedPhysicalEntity::InstancedPhysicalEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewInstancedPhysicalComponentsIndex(this);
+	_ComponentsIndex = ComponentManager::GetNewInstancedPhysicalComponentsIndex(this);
 }
 
 /*
@@ -22,7 +22,7 @@ InstancedPhysicalEntity::InstancedPhysicalEntity() NOEXCEPT
 const Vector3& InstancedPhysicalEntity::GetPosition() const NOEXCEPT
 {
 	//Instanced physical entities has no position.
-	return Entity::defaultPosition;
+	return Entity::_DefaultPosition;
 }
 
 /*
@@ -31,7 +31,7 @@ const Vector3& InstancedPhysicalEntity::GetPosition() const NOEXCEPT
 const Vector3& InstancedPhysicalEntity::GetRotation() const NOEXCEPT
 {
 	//Instanced physical entities has no rotation.
-	return Entity::defaultRotation;
+	return Entity::_DefaultRotation;
 }
 
 /*
@@ -40,7 +40,7 @@ const Vector3& InstancedPhysicalEntity::GetRotation() const NOEXCEPT
 const Vector3& InstancedPhysicalEntity::GetScale() const NOEXCEPT
 {
 	//Instanced physical entities has no scale.
-	return Entity::defaultScale;
+	return Entity::_DefaultScale;
 }
 
 /*
@@ -49,7 +49,7 @@ const Vector3& InstancedPhysicalEntity::GetScale() const NOEXCEPT
 void InstancedPhysicalEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Move(moveVector);
 	}
@@ -61,7 +61,7 @@ void InstancedPhysicalEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void InstancedPhysicalEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Rotate(rotateVector);
 	}
@@ -73,7 +73,7 @@ void InstancedPhysicalEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 void InstancedPhysicalEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Scale(scaleVector);
 	}

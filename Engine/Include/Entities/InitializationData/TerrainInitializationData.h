@@ -16,18 +16,18 @@ class TerrainInitializationData final
 public:
 
 	//The axis aligned bounding box.
-	AxisAlignedBoundingBox axisAlignedBoundingBox;
+	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
 
 	//The terrain properties.
-	CPUTexture2D terrainProperties;
+	CPUTexture2D _TerrainProperties;
 
 	//The terrain uniform data.
-	TerrainUniformData terrainUniformData;
+	TerrainUniformData _TerrainUniformData;
 
 	//The layer weights texture.
-	Texture2DHandle layerWeightsTexture;
+	Texture2DHandle _LayerWeightsTexture;
 
 	//The terrain material.
-	TerrainMaterial terrainMaterial;
+	TerrainMaterial _TerrainMaterial;
 
 };

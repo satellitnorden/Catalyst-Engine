@@ -21,20 +21,20 @@ public:
 	*/
 	EntityInitializationData(Entity* const RESTRICT initialEntity, void* const RESTRICT initialData, const bool initialForce) NOEXCEPT
 		:
-		entity(initialEntity),
-		data(initialData),
-		force(initialForce)
+		_Entity(initialEntity),
+		_Data(initialData),
+		_Force(initialForce)
 	{
 
 	}
 
 	//The entity to initialize.
-	Entity* RESTRICT entity;
+	Entity* RESTRICT _Entity;
 
 	//The initialization data.
-	void* RESTRICT data;
+	void* RESTRICT _Data;
 
 	//Denotes whether or not to force this initialization.
-	bool force;
+	bool _Force;
 
 };

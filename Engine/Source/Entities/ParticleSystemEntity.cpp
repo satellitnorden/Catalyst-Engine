@@ -13,7 +13,7 @@
 ParticleSystemEntity::ParticleSystemEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewParticleSystemComponentsIndex(this);
+	_ComponentsIndex = ComponentManager::GetNewParticleSystemComponentsIndex(this);
 }
 
 /*
@@ -22,7 +22,7 @@ ParticleSystemEntity::ParticleSystemEntity() NOEXCEPT
 const Vector3& ParticleSystemEntity::GetPosition() const NOEXCEPT
 {
 	//Particle system entities has no position.
-	return Entity::defaultPosition;
+	return Entity::_DefaultPosition;
 }
 
 /*
@@ -31,7 +31,7 @@ const Vector3& ParticleSystemEntity::GetPosition() const NOEXCEPT
 const Vector3& ParticleSystemEntity::GetRotation() const NOEXCEPT
 {
 	//Particle system entities has no rotation.
-	return Entity::defaultRotation;
+	return Entity::_DefaultRotation;
 }
 
 /*
@@ -40,7 +40,7 @@ const Vector3& ParticleSystemEntity::GetRotation() const NOEXCEPT
 const Vector3& ParticleSystemEntity::GetScale() const NOEXCEPT
 {
 	//Particle system entities has no scale.
-	return Entity::defaultScale;
+	return Entity::_DefaultScale;
 }
 
 /*
@@ -49,10 +49,10 @@ const Vector3& ParticleSystemEntity::GetScale() const NOEXCEPT
 void ParticleSystemEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this particle system entity.
-	ComponentManager::GetParticleSystemParticleSystemComponents()[componentsIndex]._Properties.worldPosition += moveVector;
+	ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._Properties.worldPosition += moveVector;
 
 	//Move all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Move(moveVector);
 	}
@@ -64,7 +64,7 @@ void ParticleSystemEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void ParticleSystemEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Rotate(rotateVector);
 	}
@@ -76,7 +76,7 @@ void ParticleSystemEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 void ParticleSystemEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Scale(scaleVector);
 	}

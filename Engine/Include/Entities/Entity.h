@@ -29,12 +29,12 @@ public:
 	/*
 	*	Returns the component index.
 	*/
-	uint64 GetComponentsIndex() const NOEXCEPT { return componentsIndex; }
+	uint64 GetComponentsIndex() const NOEXCEPT { return _ComponentsIndex; }
 
 	/*
 	*	Sets the component index.
 	*/
-	void SetComponentsIndex(const uint64 newComponentsIndex) NOEXCEPT { componentsIndex = newComponentsIndex; }
+	void SetComponentsIndex(const uint64 newComponentsIndex) NOEXCEPT { _ComponentsIndex = newComponentsIndex; }
 
 	/*
 	*	Returns the entity type.
@@ -44,32 +44,32 @@ public:
 	/*
 	*	Returns whether or not this entity is initialized.
 	*/
-	bool IsInitialized() const NOEXCEPT { return isInitialized; }
+	bool IsInitialized() const NOEXCEPT { return _IsInitialized; }
 
 	/*
 	*	Sets whether or not this entity is initialized.
 	*/
-	void SetIsInitialized(const bool newIsInitialized) NOEXCEPT { isInitialized = newIsInitialized; }
+	void SetIsInitialized(const bool newIsInitialized) NOEXCEPT { _IsInitialized = newIsInitialized; }
 
 	/*
 	*	Returns a pointer to the parent of this entity.
 	*/
-	RESTRICTED const Entity* GetParent() const NOEXCEPT { return parent; }
+	RESTRICTED const Entity* GetParent() const NOEXCEPT { return _Parent; }
 
 	/*
 	*	Sets the parent of this entity.
 	*/
-	void SetParent(Entity *RESTRICT newParent) NOEXCEPT { parent = newParent; }
+	void SetParent(Entity *RESTRICT newParent) NOEXCEPT { _Parent = newParent; }
 
 	/*
 	*	Returns the children of this entity.
 	*/
-	const DynamicArray<Entity *RESTRICT>& GetChildren() const NOEXCEPT { return children; }
+	const DynamicArray<Entity *RESTRICT>& GetChildren() const NOEXCEPT { return _Children; }
 
 	/*
 	*	Adds a child to this entity.
 	*/
-	void AddChild(Entity *RESTRICT newChildEntity) NOEXCEPT { children.EmplaceSlow(newChildEntity); }
+	void AddChild(Entity *RESTRICT newChildEntity) NOEXCEPT { _Children.EmplaceSlow(newChildEntity); }
 
 	/*
 	*	Returns the position of this entity.
@@ -104,32 +104,27 @@ public:
 protected:
 
 	//The default position.
-	static constexpr Vector3 defaultPosition{ 0.0f, 0.0f, 0.0f };
+	static constexpr Vector3 _DefaultPosition{ 0.0f, 0.0f, 0.0f };
 
 	//The default rotation.
-	static constexpr Vector3 defaultRotation{ 0.0f, 0.0f, 0.0f };
+	static constexpr Vector3 _DefaultRotation{ 0.0f, 0.0f, 0.0f };
 
 	//The default scale.
-	static constexpr Vector3 defaultScale{ 1.0f, 1.0f, 1.0f };
+	static constexpr Vector3 _DefaultScale{ 1.0f, 1.0f, 1.0f };
 
 	//The entity type.
 	EntityType entityType{ EntityType::NumberOfEntityTypes };
 
 	//Denotes whether or not this entity is initialized.
-	bool isInitialized{ false };
+	bool _IsInitialized{ false };
 
 	//The components index for this entity.
-	uint64 componentsIndex;
+	uint64 _ComponentsIndex;
 
 	//Pointer to this entity's parent.
-	Entity *RESTRICT parent{ nullptr };
+	Entity *RESTRICT _Parent{ nullptr };
 
 	//Pointers to this entity's children.
-	DynamicArray<Entity *RESTRICT> children;
-
-private:
-
-	//Friend declarations.
-	friend class EntitySystem;
+	DynamicArray<Entity *RESTRICT> _Children;
 
 };

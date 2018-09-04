@@ -7,10 +7,10 @@ class Pair final
 public:
 
 	//The first value.
-	FirstType first;
+	FirstType _First;
 
 	//The second valuye.
-	SecondType second;
+	SecondType _Second;
 
 	/*
 	*	Default constructor.
@@ -25,8 +25,8 @@ public:
 	*/
 	Pair(const FirstType &initialFirst, const SecondType &initialSecond) NOEXCEPT
 		:
-		first(initialFirst),
-		second(initialSecond)
+		_First(initialFirst),
+		_Second(initialSecond)
 	{
 
 	}

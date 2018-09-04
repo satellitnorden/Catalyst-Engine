@@ -31,21 +31,23 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	PhysicalModel() NOEXCEPT;
+	PhysicalModel() NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Copy constructor.
 	*/
-	PhysicalModel(const PhysicalModel &otherPhysicalModel) NOEXCEPT;
+	PhysicalModel(const PhysicalModel &otherPhysicalModel) NOEXCEPT
+		:
+		_AxisAlignedBoundingBox(otherPhysicalModel._AxisAlignedBoundingBox),
+		_Buffer(otherPhysicalModel._Buffer),
+		_IndexOffset(otherPhysicalModel._IndexOffset),
+		_Material(otherPhysicalModel._Material),
+		_IndexCount(otherPhysicalModel._IndexCount)
+	{
 
-	/*
-	*	Default destructor.
-	*/
-	~PhysicalModel() NOEXCEPT;
-
-	/*
-	*	Copy assignment overload.
-	*/
-	PhysicalModel& operator=(const PhysicalModel &otherPhysicalModel) NOEXCEPT;
+	}
 
 };

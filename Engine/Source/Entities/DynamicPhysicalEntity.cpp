@@ -19,7 +19,7 @@ DynamicPhysicalEntity::DynamicPhysicalEntity() NOEXCEPT
 const Vector3& DynamicPhysicalEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetDynamicPhysicalTransformComponents()[componentsIndex]._Position;
+	return ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Position;
 }
 
 /*
@@ -28,7 +28,7 @@ const Vector3& DynamicPhysicalEntity::GetPosition() const NOEXCEPT
 const Vector3& DynamicPhysicalEntity::GetRotation() const NOEXCEPT
 {
 	//Return the rotation of this entity.
-	return ComponentManager::GetDynamicPhysicalTransformComponents()[componentsIndex]._Rotation;
+	return ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Rotation;
 }
 
 /*
@@ -37,7 +37,7 @@ const Vector3& DynamicPhysicalEntity::GetRotation() const NOEXCEPT
 const Vector3& DynamicPhysicalEntity::GetScale() const NOEXCEPT
 {
 	//Return the scale of this entity.
-	return ComponentManager::GetDynamicPhysicalTransformComponents()[componentsIndex]._Scale;
+	return ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Scale;
 }
 
 /*
@@ -46,10 +46,10 @@ const Vector3& DynamicPhysicalEntity::GetScale() const NOEXCEPT
 void DynamicPhysicalEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetDynamicPhysicalTransformComponents()[componentsIndex]._Position += moveVector;
+	ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Position += moveVector;
 
 	//Move all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Move(moveVector);
 	}
@@ -61,10 +61,10 @@ void DynamicPhysicalEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void DynamicPhysicalEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate this entity.
-	ComponentManager::GetDynamicPhysicalTransformComponents()[componentsIndex]._Rotation += rotateVector;
+	ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Rotation += rotateVector;
 
 	//Rotate all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Rotate(rotateVector);
 	}
@@ -76,10 +76,10 @@ void DynamicPhysicalEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 void DynamicPhysicalEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale this entity.
-	ComponentManager::GetDynamicPhysicalTransformComponents()[componentsIndex]._Scale *= scaleVector;
+	ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Scale *= scaleVector;
 
 	//Scale all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Scale(scaleVector);
 	}

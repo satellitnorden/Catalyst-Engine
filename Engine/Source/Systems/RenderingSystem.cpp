@@ -406,20 +406,20 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 	//Initialize the render component.
 	renderComponent._IsInViewFrustum = true;
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical), &renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, data->model._Material.albedoTexture), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, data->model._Material.normalMapTexture), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, data->model._Material.materialPropertiesTexture), renderComponent._RenderDataTable);
-	renderComponent._Buffer = data->model._Buffer;
-	renderComponent._IndexOffset = data->model._IndexOffset;
-	renderComponent._IndexCount = data->model._IndexCount;
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, data->_Model._Material.albedoTexture), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, data->_Model._Material.normalMapTexture), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, data->_Model._Material.materialPropertiesTexture), renderComponent._RenderDataTable);
+	renderComponent._Buffer = data->_Model._Buffer;
+	renderComponent._IndexOffset = data->_Model._IndexOffset;
+	renderComponent._IndexCount = data->_Model._IndexCount;
 
 	//Initialize the culling component.
-	cullingComponent._AxisAlignedBoundingBox = data->model._AxisAlignedBoundingBox;
+	cullingComponent._AxisAlignedBoundingBox = data->_Model._AxisAlignedBoundingBox;
 
 	//Initialize the transform component.
-	transformComponent._Position = data->position;
-	transformComponent._Rotation = data->rotation;
-	transformComponent._Scale = data->scale;
+	transformComponent._Position = data->_Position;
+	transformComponent._Rotation = data->_Rotation;
+	transformComponent._Scale = data->_Scale;
 }
 
 /*

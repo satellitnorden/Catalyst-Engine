@@ -243,63 +243,63 @@ void CatalystPlatform::GetCurrentGamepadState(const uint8 index, GamepadState *c
 
 	if (XInputGetState(index, &xInputState) != ERROR_SUCCESS)
 	{
-		state->isConnected = false;
+		state->_IsConnected = false;
 
 		return;
 	}
 
 	else
 	{
-		state->isConnected = true;
+		state->_IsConnected = true;
 	}
 
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_UP, state->dpadUpButtonState);
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_DOWN, state->dpadDownButtonState);
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_LEFT, state->dpadLeftButtonState);
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_RIGHT, state->dpadRightButtonState);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_UP, state->_DpadUp);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_DOWN, state->_DpadDown);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_LEFT, state->_DpadLeft);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_DPAD_RIGHT, state->_DpadRight);
 
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_START, state->startButtonState);
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_BACK, state->backButtonState);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_START, state->_Start);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_BACK, state->_Back);
 
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_THUMB, state->leftThumbButtonState);
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_THUMB, state->rightThumbButtonState);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_THUMB, state->_LeftThumb);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_THUMB, state->_RightThumb);
 
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_SHOULDER, state->leftShoulderButtonState);
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_SHOULDER, state->rightShoulderButtonState);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_LEFT_SHOULDER, state->_LeftShoulder);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_RIGHT_SHOULDER, state->_RightShoulder);
 
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_A, state->aButtonState);
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_B, state->bButtonState);
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_X, state->xButtonState);
-	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_Y, state->yButtonState);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_A, state->_A);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_B, state->_B);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_X, state->_X);
+	UpdateGamepadButton(xInputState.Gamepad.wButtons, XINPUT_GAMEPAD_Y, state->_Y);
 
-	state->leftTriggerValue = static_cast<float>(xInputState.Gamepad.bLeftTrigger) / 255;
-	state->rightTriggerValue = static_cast<float>(xInputState.Gamepad.bRightTrigger) / 255;
+	state->_LeftTrigger = static_cast<float>(xInputState.Gamepad.bLeftTrigger) / 255;
+	state->_RightTrigger = static_cast<float>(xInputState.Gamepad.bRightTrigger) / 255;
 
-	state->leftThumbstickXValue = static_cast<float>(xInputState.Gamepad.sThumbLX) / 32'768;
-	state->leftThumbstickYValue = static_cast<float>(xInputState.Gamepad.sThumbLY) / 32'768;
+	state->_LeftThumbstickX = static_cast<float>(xInputState.Gamepad.sThumbLX) / 32'768;
+	state->_LeftThumbstickY = static_cast<float>(xInputState.Gamepad.sThumbLY) / 32'768;
 
-	state->rightThumbstickXValue = static_cast<float>(xInputState.Gamepad.sThumbRX) / 32'768;
-	state->rightThumbstickYValue = static_cast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
+	state->_RightThumbstickX = static_cast<float>(xInputState.Gamepad.sThumbRX) / 32'768;
+	state->_RightThumbstickY = static_cast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
 
 	//Calculate if the thumbstick values are in the deadzone.If so, reset them.
-	if (CatalystMath::Absolute(state->leftThumbstickXValue) <= InputConstants::GAMEPAD_DEADZONE)
+	if (CatalystMath::Absolute(state->_LeftThumbstickX) <= InputConstants::GAMEPAD_DEADZONE)
 	{
-		state->leftThumbstickXValue = 0.0f;
+		state->_LeftThumbstickX = 0.0f;
 	}
 		
-	if (CatalystMath::Absolute(state->leftThumbstickYValue) <= InputConstants::GAMEPAD_DEADZONE)
+	if (CatalystMath::Absolute(state->_LeftThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
 	{
-		state->leftThumbstickYValue = 0.0f;
+		state->_LeftThumbstickY = 0.0f;
 	}
 
-	if (CatalystMath::Absolute(state->rightThumbstickXValue) <= InputConstants::GAMEPAD_DEADZONE)
+	if (CatalystMath::Absolute(state->_RightThumbstickX) <= InputConstants::GAMEPAD_DEADZONE)
 	{
-		state->rightThumbstickXValue = 0.0f;
+		state->_RightThumbstickX = 0.0f;
 	}
 
-	if (CatalystMath::Absolute(state->rightThumbstickYValue) <= InputConstants::GAMEPAD_DEADZONE)
+	if (CatalystMath::Absolute(state->_RightThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
 	{
-		state->rightThumbstickYValue = 0.0f;
+		state->_RightThumbstickY = 0.0f;
 	}
 }
 

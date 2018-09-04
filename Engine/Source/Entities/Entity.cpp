@@ -6,6 +6,6 @@
 #include <Systems/PhysicsSystem.h>
 
 //Static variable definitions.
-constexpr Vector3 Entity::defaultPosition;
-constexpr Vector3 Entity::defaultRotation;
-constexpr Vector3 Entity::defaultScale;
+constexpr Vector3 Entity::_DefaultPosition;
+constexpr Vector3 Entity::_DefaultRotation;
+constexpr Vector3 Entity::_DefaultScale;

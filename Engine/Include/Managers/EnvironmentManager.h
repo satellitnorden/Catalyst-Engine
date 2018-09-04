@@ -24,55 +24,55 @@ public:
 	/*
 	*	Returns the environment blend.
 	*/
-	float GetEnvironmentBlend() const NOEXCEPT { return environmentBlend; }
+	float GetEnvironmentBlend() const NOEXCEPT { return _EnvironmentBlend; }
 
 	/*
 	*	Sets the environment blend.
 	*/
-	void SetEnvironmentBlend(const float newEnvironmentBlend) NOEXCEPT { environmentBlend = newEnvironmentBlend; }
+	void SetEnvironmentBlend(const float newEnvironmentBlend) NOEXCEPT { _EnvironmentBlend = newEnvironmentBlend; }
 
 	/*
 	*	Returns the night environment material.
 	*/
-	const EnvironmentMaterial& GetNightEnvironmentMaterial() const NOEXCEPT { return nightEnvironmentMaterial; }
+	const EnvironmentMaterial& GetNightEnvironmentMaterial() const NOEXCEPT { return _NightEnvironmentMaterial; }
 
 	/*
 	*	Sets the night environment material.
 	*/
-	void SetNightEnvironmentMaterial(const EnvironmentMaterial& newNightEnvironmentMaterial) NOEXCEPT { nightEnvironmentMaterial = newNightEnvironmentMaterial; }
+	void SetNightEnvironmentMaterial(const EnvironmentMaterial& newNightEnvironmentMaterial) NOEXCEPT { _NightEnvironmentMaterial = newNightEnvironmentMaterial; }
 
 	/*
 	*	Returns the day environment material.
 	*/
-	const EnvironmentMaterial& GetDayEnvironmentMaterial() NOEXCEPT { return dayEnvironmentMaterial; }
+	const EnvironmentMaterial& GetDayEnvironmentMaterial() NOEXCEPT { return _DayEnvironmentMaterial; }
 
 	/*
 	*	Sets the day environment material.
 	*/
-	void SetDayEnvironmentMaterial(const EnvironmentMaterial& newDayEnvironmentMaterial) NOEXCEPT { dayEnvironmentMaterial = newDayEnvironmentMaterial; }
+	void SetDayEnvironmentMaterial(const EnvironmentMaterial& newDayEnvironmentMaterial) NOEXCEPT { _DayEnvironmentMaterial = newDayEnvironmentMaterial; }
 
 	/*
 	*	Returns the ocean material.
 	*/
-	const OceanMaterial& GetOceanMaterial() NOEXCEPT { return oceanMaterial; }
+	const OceanMaterial& GetOceanMaterial() NOEXCEPT { return _OceanMaterial; }
 
 	/*
 	*	Sets the ocean material.
 	*/
-	void SetOceanMaterial(const OceanMaterial &newOceanMaterial) NOEXCEPT { oceanMaterial = newOceanMaterial; }
+	void SetOceanMaterial(const OceanMaterial &newOceanMaterial) NOEXCEPT { _OceanMaterial = newOceanMaterial; }
 
 private:
 
-	//The current environment blend.
-	float environmentBlend;
+	//The environment blend.
+	float _EnvironmentBlend;
 
-	//The current night environment material.
-	EnvironmentMaterial nightEnvironmentMaterial;
+	//The night environment material.
+	EnvironmentMaterial _NightEnvironmentMaterial;
 
-	//The day night environment material.
-	EnvironmentMaterial dayEnvironmentMaterial;
+	//The day environment material.
+	EnvironmentMaterial _DayEnvironmentMaterial;
 
 	//The ocean material.
-	OceanMaterial oceanMaterial;
+	OceanMaterial _OceanMaterial;
 
 };

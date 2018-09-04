@@ -13,7 +13,7 @@
 PointLightEntity::PointLightEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewPointLightComponentsIndex(this);
+	_ComponentsIndex = ComponentManager::GetNewPointLightComponentsIndex(this);
 }
 
 /*
@@ -22,7 +22,7 @@ PointLightEntity::PointLightEntity() NOEXCEPT
 const Vector3& PointLightEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._Position;
+	return ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Position;
 }
 
 /*
@@ -31,7 +31,7 @@ const Vector3& PointLightEntity::GetPosition() const NOEXCEPT
 const Vector3& PointLightEntity::GetRotation() const NOEXCEPT
 {
 	//Point light entities has no rotation.
-	return Entity::defaultRotation;
+	return Entity::_DefaultRotation;
 }
 
 /*
@@ -40,7 +40,7 @@ const Vector3& PointLightEntity::GetRotation() const NOEXCEPT
 const Vector3& PointLightEntity::GetScale() const NOEXCEPT
 {
 	//Point light entities has no scale.
-	return Entity::defaultScale;
+	return Entity::_DefaultScale;
 }
 
 /*
@@ -49,10 +49,10 @@ const Vector3& PointLightEntity::GetScale() const NOEXCEPT
 void PointLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._Position += moveVector;
+	ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Position += moveVector;
 
 	//Move all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Move(moveVector);
 	}
@@ -64,7 +64,7 @@ void PointLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void PointLightEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Rotate(rotateVector);
 	}
@@ -76,7 +76,7 @@ void PointLightEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 void PointLightEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Scale(scaleVector);
 	}
@@ -88,7 +88,7 @@ void PointLightEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 void PointLightEntity::SetEnabled(const bool newEnabled) NOEXCEPT
 {
 	//Set whether or not this point light is enabled.
-	ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._Enabled = newEnabled;
+	ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Enabled = newEnabled;
 }
 
 /*
@@ -97,7 +97,7 @@ void PointLightEntity::SetEnabled(const bool newEnabled) NOEXCEPT
 void PointLightEntity::SetAttenuationDistance(const float newAttenuationDistance) NOEXCEPT
 {
 	//Set the attenuation distance.
-	ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._AttenuationDistance = newAttenuationDistance;
+	ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._AttenuationDistance = newAttenuationDistance;
 }
 
 /*
@@ -106,7 +106,7 @@ void PointLightEntity::SetAttenuationDistance(const float newAttenuationDistance
 void PointLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 {
 	//Set the intensity.
-	ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._Intensity = newIntensity;
+	ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Intensity = newIntensity;
 }
 
 /*
@@ -115,5 +115,5 @@ void PointLightEntity::SetIntensity(const float newIntensity) NOEXCEPT
 void PointLightEntity::SetColor(const Vector3 &newColor) NOEXCEPT
 {
 	//Set the color.
-	ComponentManager::GetPointLightPointLightComponents()[componentsIndex]._Color = newColor;
+	ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Color = newColor;
 }

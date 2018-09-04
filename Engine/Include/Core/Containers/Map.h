@@ -87,9 +87,9 @@ public:
 	{
 		for (auto &mapEntry : _Map)
 		{
-			if (mapEntry.first == key)
+			if (mapEntry._First == key)
 			{
-				return &mapEntry.second;
+				return &mapEntry._Second;
 			}
 		}
 
@@ -103,9 +103,9 @@ public:
 	{
 		for (auto &mapEntry : _Map)
 		{
-			if (mapEntry.first == key)
+			if (mapEntry._First == key)
 			{
-				return &mapEntry.second;
+				return &mapEntry._Second;
 			}
 		}
 

@@ -86,7 +86,7 @@ void VulkanLogicalDevice::CreateDeviceQueueCreateInfos(DynamicArray<VkDeviceQueu
 		newDeviceQueueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		newDeviceQueueCreateInfo.pNext = nullptr;
 		newDeviceQueueCreateInfo.flags = 0;
-		newDeviceQueueCreateInfo.queueFamilyIndex = uniqueQueueFamilyIndex.first;
+		newDeviceQueueCreateInfo.queueFamilyIndex = uniqueQueueFamilyIndex._First;
 		newDeviceQueueCreateInfo.queueCount = 1;
 		newDeviceQueueCreateInfo.pQueuePriorities = queuePriorities;
 

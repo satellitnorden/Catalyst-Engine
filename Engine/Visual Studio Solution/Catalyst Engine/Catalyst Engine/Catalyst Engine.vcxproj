@@ -78,7 +78,6 @@
     <ClInclude Include="..\..\..\Include\Core\General\DeltaTimer.h" />
     <ClInclude Include="..\..\..\Include\Core\General\DynamicString.h" />
     <ClInclude Include="..\..\..\Include\Core\General\HashString.h" />
-    <ClInclude Include="..\..\..\Include\Core\General\Optional.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Padding.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Pair.h" />
     <ClInclude Include="..\..\..\Include\Core\Pointers\SharedPointer.h" />
@@ -309,7 +308,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanSurface.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanSwapChain.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanUniformBuffer.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\PhysicalModel.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalInstancedPhysicalShadowRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalShadowRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalStaticPhysicalShadowRenderPass.cpp" />

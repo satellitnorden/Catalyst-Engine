@@ -10,7 +10,7 @@
 CameraEntity::CameraEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewCameraComponentsIndex(this);
+	_ComponentsIndex = ComponentManager::GetNewCameraComponentsIndex(this);
 }
 
 /*
@@ -19,7 +19,7 @@ CameraEntity::CameraEntity() NOEXCEPT
 const Vector3& CameraEntity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetCameraCameraComponents()[componentsIndex]._Position;
+	return ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._Position;
 }
 
 /*
@@ -28,7 +28,7 @@ const Vector3& CameraEntity::GetPosition() const NOEXCEPT
 const Vector3& CameraEntity::GetRotation() const NOEXCEPT
 {
 	//Return the rotation of this entity.
-	return ComponentManager::GetCameraCameraComponents()[componentsIndex]._Rotation;
+	return ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._Rotation;
 }
 
 /*
@@ -37,7 +37,7 @@ const Vector3& CameraEntity::GetRotation() const NOEXCEPT
 const Vector3& CameraEntity::GetScale() const NOEXCEPT
 {
 	//Camera entities has no scale.
-	return Entity::defaultScale;
+	return Entity::_DefaultScale;
 }
 
 /*
@@ -46,10 +46,10 @@ const Vector3& CameraEntity::GetScale() const NOEXCEPT
 void CameraEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move this entity.
-	ComponentManager::GetCameraCameraComponents()[componentsIndex]._Position += moveVector;
+	ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._Position += moveVector;
 
 	//Move all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Move(moveVector);
 	}
@@ -61,10 +61,10 @@ void CameraEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void CameraEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate this entity.
-	ComponentManager::GetCameraCameraComponents()[componentsIndex]._Rotation += rotateVector;
+	ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._Rotation += rotateVector;
 
 	//Rotate all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Rotate(rotateVector);
 	}
@@ -76,7 +76,7 @@ void CameraEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 void CameraEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Scale(scaleVector);
 	}
@@ -115,7 +115,7 @@ Vector3 CameraEntity::GetUpVector() const NOEXCEPT
 float CameraEntity::GetFieldOfView() const NOEXCEPT
 {
 	//Return the field of view for this camera entity.
-	return ComponentManager::GetCameraCameraComponents()[componentsIndex]._FieldOfView;
+	return ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._FieldOfView;
 }
 
 /*
@@ -124,7 +124,7 @@ float CameraEntity::GetFieldOfView() const NOEXCEPT
 float CameraEntity::GetNearPlane() const NOEXCEPT
 {
 	//Return the near plane of the frustum.
-	return ComponentManager::GetCameraCameraComponents()[componentsIndex]._NearPlane;
+	return ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._NearPlane;
 }
 
 /*
@@ -133,5 +133,5 @@ float CameraEntity::GetNearPlane() const NOEXCEPT
 float CameraEntity::GetFarPlane() const NOEXCEPT
 {
 	//Return the far plane of the frustum.
-	return ComponentManager::GetCameraCameraComponents()[componentsIndex]._FarPlane;
+	return ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._FarPlane;
 }

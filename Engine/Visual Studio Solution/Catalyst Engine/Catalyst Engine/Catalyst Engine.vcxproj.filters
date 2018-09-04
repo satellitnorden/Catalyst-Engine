@@ -777,9 +777,6 @@
     <ClInclude Include="..\..\..\Include\Core\General\HashString.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Core\General\Optional.h">
-      <Filter>Core\Include\General</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\General\Padding.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
@@ -1078,9 +1075,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanUniformBuffer.cpp">
       <Filter>Rendering\Source\API\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\PhysicalModel.cpp">
-      <Filter>Rendering\Source\Engine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp">
       <Filter>Rendering\Source\Translation\Vulkan</Filter>

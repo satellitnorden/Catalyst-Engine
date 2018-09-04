@@ -19,10 +19,10 @@ public:
 	*/
 	SharedPointer(const SharedPointer &otherPointer) NOEXCEPT
 		:
-		pointer(otherPointer.pointer),
-		referenceCount(otherPointer.referenceCount)
+		_Pointer(otherPointer.pointer),
+		_ReferenceCount(otherPointer._ReferenceCount)
 	{
-		++(*referenceCount);
+		++(*_ReferenceCount);
 	}
 
 	/*
@@ -30,10 +30,10 @@ public:
 	*/
 	SharedPointer(SharedPointer &&otherPointer) NOEXCEPT
 		:
-		pointer(otherPointer.pointer),
-		referenceCount(otherPointer.referenceCount)
+		_Pointer(otherPointer.pointer),
+		_ReferenceCount(otherPointer._ReferenceCount)
 	{
-		++(*referenceCount);
+		++(*_ReferenceCount);
 	}
 
 	/*
@@ -41,10 +41,10 @@ public:
 	*/
 	SharedPointer(Type *const RESTRICT newPointer) RESTRICT
 		:
-		pointer(newPointer),
-		referenceCount(new int8)
+		_Pointer(newPointer),
+			_ReferenceCount(new int8)
 	{
-		++(*referenceCount);
+		++(*_ReferenceCount);
 	}
 
 	/*
@@ -53,10 +53,10 @@ public:
 	~SharedPointer() NOEXCEPT
 	{
 		//Decrement the reference count and delete the pointer if it's reached 0.
-		if (--(*referenceCount) == 0)
+		if (--(*_ReferenceCount) == 0)
 		{
-			delete referenceCount;
-			delete pointer;
+			delete _ReferenceCount;
+			delete _Pointer;
 		}
 	}
 
@@ -65,10 +65,10 @@ public:
 	*/
 	void operator=(const SharedPointer &otherPointer) NOEXCEPT
 	{
-		pointer = otherPointer.pointer;
-		referenceCount = otherPointer.referenceCount;
+		_Pointer = otherPointer._Pointer;
+		_ReferenceCount = otherPointer._ReferenceCount;
 
-		++(*referenceCount);
+		++(*_ReferenceCount);
 	}
 
 	/*
@@ -76,8 +76,8 @@ public:
 	*/
 	void operator=(SharedPointer &&otherPointer) NOEXCEPT
 	{
-		pointer = otherPointer.pointer;
-		referenceCount = otherPointer.referenceCount;
+		_Pointer = otherPointer._Pointer;
+		_ReferenceCount = otherPointer._ReferenceCount;
 	}
 
 	/*
@@ -85,7 +85,7 @@ public:
 	*/
 	RESTRICTED const Type *const RESTRICT operator->() const NOEXCEPT
 	{
-		return pointer;
+		return _Pointer;
 	}
 
 	/*
@@ -93,15 +93,15 @@ public:
 	*/
 	RESTRICTED Type *const RESTRICT operator->() NOEXCEPT
 	{
-		return pointer;
+		return _Pointer;
 	}
 
 private:
 
 	//The underlying pointer.
-	Type *RESTRICT pointer;
+	Type *RESTRICT _Pointer;
 
 	//The reference count for this shared pointer.
-	int8 *RESTRICT referenceCount;
+	int8 *RESTRICT _ReferenceCount;
 
 };

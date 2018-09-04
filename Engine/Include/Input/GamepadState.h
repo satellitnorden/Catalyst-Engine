@@ -11,34 +11,34 @@ class GamepadState final
 
 public:
 
-	bool isConnected{ false };
+	bool _IsConnected{ false };
 
-	ButtonState dpadUpButtonState{ ButtonState::Released };
-	ButtonState dpadDownButtonState{ ButtonState::Released };
-	ButtonState dpadLeftButtonState{ ButtonState::Released };
-	ButtonState dpadRightButtonState{ ButtonState::Released };
+	ButtonState _DpadUp{ ButtonState::Released };
+	ButtonState _DpadDown{ ButtonState::Released };
+	ButtonState _DpadLeft{ ButtonState::Released };
+	ButtonState _DpadRight{ ButtonState::Released };
 
-	ButtonState startButtonState{ ButtonState::Released };
-	ButtonState backButtonState{ ButtonState::Released };
+	ButtonState _Start{ ButtonState::Released };
+	ButtonState _Back{ ButtonState::Released };
 
-	ButtonState leftThumbButtonState{ ButtonState::Released };
-	ButtonState rightThumbButtonState{ ButtonState::Released };
+	ButtonState _LeftThumb{ ButtonState::Released };
+	ButtonState _RightThumb{ ButtonState::Released };
 
-	ButtonState leftShoulderButtonState{ ButtonState::Released };
-	ButtonState rightShoulderButtonState{ ButtonState::Released };
+	ButtonState _LeftShoulder{ ButtonState::Released };
+	ButtonState _RightShoulder{ ButtonState::Released };
 
-	ButtonState aButtonState{ ButtonState::Released };
-	ButtonState bButtonState{ ButtonState::Released };
-	ButtonState xButtonState{ ButtonState::Released };
-	ButtonState yButtonState{ ButtonState::Released };
+	ButtonState _A{ ButtonState::Released };
+	ButtonState _B{ ButtonState::Released };
+	ButtonState _X{ ButtonState::Released };
+	ButtonState _Y{ ButtonState::Released };
 
-	float leftTriggerValue{ 0.0f };
-	float rightTriggerValue{ 0.0f };
+	float _LeftTrigger{ 0.0f };
+	float _RightTrigger{ 0.0f };
 
-	float leftThumbstickXValue{ 0.0f };
-	float leftThumbstickYValue{ 0.0f };
+	float _LeftThumbstickX{ 0.0f };
+	float _LeftThumbstickY{ 0.0f };
 
-	float rightThumbstickXValue{ 0.0f };
-	float rightThumbstickYValue{ 0.0f };
+	float _RightThumbstickX{ 0.0f };
+	float _RightThumbstickY{ 0.0f };
 
 };

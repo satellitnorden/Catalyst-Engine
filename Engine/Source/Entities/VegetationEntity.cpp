@@ -13,7 +13,7 @@
 VegetationEntity::VegetationEntity() NOEXCEPT
 {
 	//Get a new components index.
-	componentsIndex = ComponentManager::GetNewVegetationComponentsIndex(this);
+	_ComponentsIndex = ComponentManager::GetNewVegetationComponentsIndex(this);
 }
 
 /*
@@ -22,7 +22,7 @@ VegetationEntity::VegetationEntity() NOEXCEPT
 const Vector3& VegetationEntity::GetPosition() const NOEXCEPT
 {
 	//Vegetation entities has no position.
-	return Entity::defaultPosition;
+	return Entity::_DefaultPosition;
 }
 
 /*
@@ -31,7 +31,7 @@ const Vector3& VegetationEntity::GetPosition() const NOEXCEPT
 const Vector3& VegetationEntity::GetRotation() const NOEXCEPT
 {
 	//Vegetation entities has no rotation.
-	return Entity::defaultRotation;
+	return Entity::_DefaultRotation;
 }
 
 /*
@@ -40,7 +40,7 @@ const Vector3& VegetationEntity::GetRotation() const NOEXCEPT
 const Vector3& VegetationEntity::GetScale() const NOEXCEPT
 {
 	//Vegetation entities has no scale.
-	return Entity::defaultScale;
+	return Entity::_DefaultScale;
 }
 
 /*
@@ -49,7 +49,7 @@ const Vector3& VegetationEntity::GetScale() const NOEXCEPT
 void VegetationEntity::Move(const Vector3 &moveVector) NOEXCEPT
 {
 	//Move all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Move(moveVector);
 	}
@@ -61,7 +61,7 @@ void VegetationEntity::Move(const Vector3 &moveVector) NOEXCEPT
 void VegetationEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 {
 	//Rotate all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Rotate(rotateVector);
 	}
@@ -73,7 +73,7 @@ void VegetationEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
 void VegetationEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
 {
 	//Scale all children.
-	for (auto child : children)
+	for (auto child : _Children)
 	{
 		child->Scale(scaleVector);
 	}
