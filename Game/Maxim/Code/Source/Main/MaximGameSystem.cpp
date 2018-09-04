@@ -60,6 +60,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
 	model._Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
 
+	data->_PhysicalFlags = static_cast<uint8>(PhysicalFlag::Physical) | static_cast<uint8>(PhysicalFlag::Outline);
 	data->_Model = model;
 	data->_Position = Vector3(0.0f, 0.0f, 0.0f);
 	data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);

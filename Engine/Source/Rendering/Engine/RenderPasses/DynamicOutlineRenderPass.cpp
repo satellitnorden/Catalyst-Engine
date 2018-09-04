@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/DynamicPhysicalRenderPass.h>
+#include <Rendering/Engine/RenderPasses/DynamicOutlineRenderPass.h>
 
 //Components.
 #include <Components/ComponentManager.h>
@@ -13,49 +13,47 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(DynamicPhysicalRenderPass);
+DEFINE_SINGLETON(DynamicOutlineRenderPass);
 
 /*
 *	Default constructor.
 */
-DynamicPhysicalRenderPass::DynamicPhysicalRenderPass() NOEXCEPT
+DynamicOutlineRenderPass::DynamicOutlineRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		DynamicPhysicalRenderPass::Instance->InitializeInternal();
+		DynamicOutlineRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the dynamic physical render pass.
+*	Initializes the dynamic outline render pass.
 */
-void DynamicPhysicalRenderPass::InitializeInternal() NOEXCEPT
+void DynamicOutlineRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::DynamicPhysical);
+	SetSubStage(RenderPassSubStage::DynamicOutline);
 
 	//Set the sub stage index.
-	SetSubStageIndex(2);
+	SetSubStageIndex(8);
 
 	//Set the shaders.
 	SetVertexShader(Shader::PhysicalVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::PhysicalFragment);
+	SetFragmentShader(Shader::OutlineFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(3);
-	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
-	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
-	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
+	SetNumberOfRenderTargets(1);
+	AddRenderTarget(RenderTarget::Scene);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -63,8 +61,9 @@ void DynamicPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
+	SetNumberOfPushConstantRanges(2);
 	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(Matrix4));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector3));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -93,9 +92,9 @@ void DynamicPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
 
 	//Set the properties of the render pass.
-	SetBlendEnabled(false);
+	SetBlendEnabled(true);
 	SetCullMode(CullMode::Back);
-	SetDepthCompareOperator(CompareOperator::Less);
+	SetDepthCompareOperator(CompareOperator::Equal);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
 	SetTopology(Topology::TriangleList);
@@ -103,7 +102,7 @@ void DynamicPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		DynamicPhysicalRenderPass::Instance->RenderInternal();
+		DynamicOutlineRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -113,7 +112,7 @@ void DynamicPhysicalRenderPass::InitializeInternal() NOEXCEPT
 /*
 *	Renders the dynamic physical entities.
 */
-void DynamicPhysicalRenderPass::RenderInternal() NOEXCEPT
+void DynamicOutlineRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all dynamic physical components and draw them all.
 	const uint64 numberOfDynamicPhysicalComponents{ ComponentManager::GetNumberOfDynamicPhysicalComponents() };
@@ -148,15 +147,17 @@ void DynamicPhysicalRenderPass::RenderInternal() NOEXCEPT
 	for (uint64 i = 0; i < numberOfDynamicPhysicalComponents; ++i, ++renderComponent, ++transformComponent)
 	{
 		//Don't draw this dynamic physical entity if it isn't in the view frustum or if it's not supposed to be included in this render pass.
-		if (!renderComponent->_IsInViewFrustum || !(renderComponent->_PhysicalFlags & static_cast<uint8>(PhysicalFlag::Physical)))
+		if (!renderComponent->_IsInViewFrustum || !(renderComponent->_PhysicalFlags & static_cast<uint8>(PhysicalFlag::Outline)))
 		{
 			continue;
 		}
 
 		const uint64 offset{ 0 };
 
-		Matrix4 modelMatrix{ transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale };
+		const Matrix4 modelMatrix{ transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale };
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
+		const Vector3 color{ 1.0f, 0.0f, 0.0f };
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector3), &color);
 
 		if (previousBuffer != renderComponent->_Buffer)
 		{

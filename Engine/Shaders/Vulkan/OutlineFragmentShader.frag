@@ -55,34 +55,35 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Layout specification.
+layout (early_fragment_tests) in;
+
 //Push constant data.
-layout (push_constant) uniform ModelData
+layout (push_constant) uniform OutlineData
 {
-    layout (offset = 0) mat4 modelMatrix;
+    layout (offset = 64) vec3 color;
 };
 
 //In parameters.
-layout (location = 0) in vec3 vertexPosition;
-layout (location = 1) in vec3 vertexNormal;
-layout (location = 2) in vec3 vertexTangent;
-layout (location = 3) in vec2 vertexTextureCoordinate;
+layout (location = 0) in vec3 fragmentWorldPosition;
+layout (location = 1) in mat3 fragmentTangentSpaceMatrix;
+layout (location = 4) in vec2 fragmentTextureCoordinate;
+
+//Texture samplers.
+layout (set = 1, binding = 2) uniform sampler2D normalMapTexture;
 
 //Out parameters.
-layout (location = 0) out vec3 fragmentWorldPosition;
-layout (location = 1) out mat3 fragmentTangentSpaceMatrix;
-layout (location = 4) out vec2 fragmentTextureCoordinate;
+layout (location = 0) out vec4 fragment;
 
 void main()
 {
-  fragmentWorldPosition = vec3(modelMatrix * vec4(vertexPosition, 1.0));
-    
-  vec3 tangent = normalize(vec3(modelMatrix * vec4(vertexTangent, 0.0f)));
-  vec3 bitangent = normalize(vec3(modelMatrix * vec4(cross(vertexNormal, vertexTangent), 0.0f)));
-  vec3 normal = normalize(vec3(modelMatrix * vec4(vertexNormal, 0.0f)));
+    //Calculate the normal.
+    vec3 normal = texture(normalMapTexture, fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
+    normal = normalize(fragmentTangentSpaceMatrix * normal);
 
-  fragmentTangentSpaceMatrix = mat3(tangent, bitangent, normal);
+    //Calculate the outline weight.
+    float weight = (sin(fragmentWorldPosition.x * 0.25f + fragmentWorldPosition.y * 0.25f + fragmentWorldPosition.z * 0.25f + totalGameTime * 4.0f) * 0.5f + 0.5f) * (1.0f - max(dot(-normal, normalize(fragmentWorldPosition - cameraWorldPosition)), 0.0f));
 
-  fragmentTextureCoordinate = vertexTextureCoordinate;
-
-  gl_Position = viewMatrix * modelMatrix * vec4(vertexPosition, 1.0);
+    //Write the fragment.
+    fragment = vec4(color, weight);
 }

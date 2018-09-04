@@ -885,6 +885,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		VulkanShaderData::GetOceanFragmentShaderData(data);
 		shaderModules[INDEX(Shader::OceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
+
+	{
+		//Initialize the outline fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetOutlineFragmentShaderData(data);
+		shaderModules[INDEX(Shader::OutlineFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
 	
 	{
 		//Initialize the particle system fragment shader module.
@@ -1121,7 +1128,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 	//Initialize the scene buffer render pass.
 	{
-		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 9 };
+		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 10 };
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 ALBEDO_INDEX{ 1 };
@@ -1280,13 +1287,21 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
+		subpassDescriptions[8] = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			1,
+																			&sceneColorAttachmentReference,
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
+
 		constexpr StaticArray<const VkAttachmentReference, 2> particleSystemAttachmentReferences
 		{
 			VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_GENERAL },
 			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL }
 		};
 
-		subpassDescriptions[8] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(particleSystemAttachmentReferences.Size()),
+		subpassDescriptions[9] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(particleSystemAttachmentReferences.Size()),
 																			particleSystemAttachmentReferences.Data(),
 																			static_cast<uint32>(particleSystemAttachmentReferences.Size()),
 																			particleSystemAttachmentReferences.Data(),
@@ -1357,6 +1372,14 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 			VulkanUtilities::CreateSubpassDependency(	7,
 														8,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	8,
+														9,
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,

@@ -61,13 +61,23 @@ enum class RenderPassSubStage : uint8
 	DirectionalShadow,
 	Lighting,
 	Sky,
+	DynamicOutline,
 	ParticleSystem,
+
+	//Ocean main stage.
 	Ocean,
 
 	//Post processing final main stage.
 	PostProcessing,
 
 	NumberOfRenderPassSubStages
+};
+
+//Enumeration covering all physical flags.
+enum class PhysicalFlag : uint8
+{
+	Physical = BIT(0),
+	Outline = BIT(1)
 };
 
 //Enumeration covering all compare operators.
@@ -151,6 +161,7 @@ enum class Shader : uint8
 	InstancedPhysicalVertex,
 	LightingFragment,
 	OceanFragment,
+	OutlineFragment,
 	ParticleSystemFragment,
 	ParticleSystemGeometry,
 	ParticleSystemVertex,

@@ -404,6 +404,7 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 	TransformComponent &transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents()[entity->GetComponentsIndex()] };
 
 	//Initialize the render component.
+	renderComponent._PhysicalFlags = data->_PhysicalFlags;
 	renderComponent._IsInViewFrustum = true;
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical), &renderComponent._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, data->_Model._Material.albedoTexture), renderComponent._RenderDataTable);
@@ -507,6 +508,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[INDEX(RenderPassSubStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::DynamicOutline)] = DynamicOutlineRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::Ocean)] = OceanRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();

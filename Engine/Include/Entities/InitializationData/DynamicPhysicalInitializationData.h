@@ -14,6 +14,9 @@ class DynamicPhysicalInitializationData final
 
 public:
 
+	//The physical flags.
+	uint8 _PhysicalFlags;
+
 	//The model.
 	PhysicalModel _Model;
 
