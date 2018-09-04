@@ -14,8 +14,8 @@ public:
 	float Update() NOEXCEPT
 	{
 		const std::chrono::time_point<std::chrono::steady_clock> newTime{ std::chrono::high_resolution_clock::now() };
-		const float deltaTime{ std::chrono::duration<float>(newTime - currentTime).count() };
-		currentTime = newTime;
+		const float deltaTime{ std::chrono::duration<float>(newTime - _CurrentTime).count() };
+		_CurrentTime = newTime;
 
 		return deltaTime;
 	}
@@ -23,6 +23,6 @@ public:
 private:
 
 	//The underlying current time.
-	std::chrono::time_point<std::chrono::steady_clock> currentTime{ std::chrono::high_resolution_clock::now() };
+	std::chrono::time_point<std::chrono::steady_clock> _CurrentTime{ std::chrono::high_resolution_clock::now() };
 
 };

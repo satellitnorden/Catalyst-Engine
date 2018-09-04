@@ -35,11 +35,11 @@ public:
 	*/
 	BinaryFile(const char *RESTRICT filePath) NOEXCEPT
 		:
-		fileStream(filePath, std::ios::in | std::ios::binary | std::ios::ate)
+		_FileStream(filePath, std::ios::in | std::ios::binary | std::ios::ate)
 	{
 		//Save the size.
-		size = static_cast<uint64>(fileStream.tellg());
-		fileStream.seekg(0);
+		_Size = static_cast<uint64>(_FileStream.tellg());
+		_FileStream.seekg(0);
 	}
 
 	/*
@@ -47,7 +47,7 @@ public:
 	*/
 	uint64 Size() const
 	{
-		return size;
+		return _Size;
 	}
 
 	/*
@@ -55,7 +55,7 @@ public:
 	*/
 	void Read(void *RESTRICT output, const uint64 size) NOEXCEPT
 	{
-		fileStream.read(static_cast<char *RESTRICT>(output), size);
+		_FileStream.read(static_cast<char *RESTRICT>(output), size);
 	}
 
 	/*
@@ -63,16 +63,16 @@ public:
 	*/
 	void Close() NOEXCEPT
 	{
-		fileStream.close();
+		_FileStream.close();
 	}
 
 private:
 
 	//The underlying file stream.
-	std::ifstream fileStream;
+	std::ifstream _FileStream;
 
 	//The size of the file stream.
-	uint64 size;
+	uint64 _Size;
 
 };
 
@@ -95,7 +95,7 @@ public:
 	*/
 	BinaryFile(const char *RESTRICT filePath) NOEXCEPT
 		:
-		fileStream(filePath, std::ios::out | std::ios::binary)
+		_FileStream(filePath, std::ios::out | std::ios::binary)
 	{
 
 	}
@@ -105,7 +105,7 @@ public:
 	*/
 	void Write(const void *RESTRICT input, const uint64 size) NOEXCEPT
 	{
-		fileStream.write(static_cast<const char *RESTRICT>(input), size);
+		_FileStream.write(static_cast<const char *RESTRICT>(input), size);
 	}
 
 	/*
@@ -113,12 +113,12 @@ public:
 	*/
 	void Close() NOEXCEPT
 	{
-		fileStream.close();
+		_FileStream.close();
 	}
 
 private:
 
 	//The underlying file stream.
-	std::ofstream fileStream;
+	std::ofstream _FileStream;
 
 };

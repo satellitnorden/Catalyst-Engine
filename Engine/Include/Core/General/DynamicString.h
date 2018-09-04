@@ -14,8 +14,8 @@ public:
 	*/
 	DynamicString() NOEXCEPT
 		:
-		string(nullptr),
-		length(0)
+		_String(nullptr),
+		_Length(0)
 	{
 
 	}
@@ -26,13 +26,13 @@ public:
 	DynamicString(const DynamicString &otherString) NOEXCEPT
 	{
 		//Set the length of this string.
-		length = otherString.Length();
+		_Length = otherString.Length();
 
 		//Allocate sufficient memory for the underlying string.
-		string = static_cast<char *RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
+		_String = static_cast<char *RESTRICT>(MemoryUtilities::AllocateMemory(_Length + 1));
 
 		//Copy the contents of the other string.
-		MemoryUtilities::CopyMemory(string, otherString.string, length + 1);
+		MemoryUtilities::CopyMemory(_String, otherString._String, _Length + 1);
 	}
 
 	/*
@@ -41,11 +41,11 @@ public:
 	DynamicString(DynamicString &&otherString) NOEXCEPT
 	{
 		//Steal the other string's underlying string and set it to null!
-		string = otherString.string;
-		otherString.string = nullptr;
+		_String = otherString._String;
+		otherString._String = nullptr;
 
 		//Steal the other string's length!
-		length = otherString.length;
+		_Length = otherString._Length;
 	}
 
 	/*
@@ -54,13 +54,13 @@ public:
 	DynamicString(const char *const RESTRICT newString)
 	{
 		//Determine how long the C string is.
-		length = strlen(newString);
+		_Length = strlen(newString);
 
 		//Allocate sufficient memory to host the string.
-		string = static_cast<char *RESTRICT>(MemoryUtilities::AllocateMemory(length + 1));
+		_String = static_cast<char *RESTRICT>(MemoryUtilities::AllocateMemory(_Length + 1));
 
 		//Copy the string to the memory.
-		MemoryUtilities::CopyMemory(static_cast<void *RESTRICT>(string), static_cast<const void *const RESTRICT>(newString), length + 1);
+		MemoryUtilities::CopyMemory(static_cast<void *RESTRICT>(_String), static_cast<const void *const RESTRICT>(newString), _Length + 1);
 	}
 
 	/*
@@ -69,7 +69,7 @@ public:
 	~DynamicString() NOEXCEPT
 	{
 		//Free the underlying string.
-		MemoryUtilities::FreeMemory(string);
+		MemoryUtilities::FreeMemory(_String);
 	}
 
 	/*
@@ -78,13 +78,13 @@ public:
 	void operator=(const DynamicString &otherString) NOEXCEPT
 	{
 		//Update the length of this string.
-		length = otherString.Length();
+		_Length = otherString.Length();
 
 		//Reallocate sufficient memory for the underlying string.
-		string = static_cast<char *RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *RESTRICT>(string), length + 1));
+		_String = static_cast<char *RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *RESTRICT>(_String), _Length + 1));
 
 		//Copy the contents of the other string.
-		MemoryUtilities::CopyMemory(string, otherString.string, length + 1);
+		MemoryUtilities::CopyMemory(_String, otherString._String, _Length + 1);
 	}
 
 	/*
@@ -93,11 +93,11 @@ public:
 	void operator=(DynamicString &&otherString) NOEXCEPT
 	{
 		//Steal the other string's underlying string and set it to nullptr!
-		string = otherString.string;
-		otherString.string = nullptr;
+		_String = otherString._String;
+		otherString._String = nullptr;
 
 		//Steal the other string's length!
-		length = otherString.length;
+		_Length = otherString._Length;
 	}
 
 	/*
@@ -110,16 +110,16 @@ public:
 
 		//Determine how long the new dynamic string will be.
 		uint64 newStringLength{ strlen(newString) };
-		uint64 newLength{ this->length + newStringLength };
+		uint64 newLength{ this->_Length + newStringLength };
 
 		//Allocate sufficient memory to host the string.
-		newDynamicString.string = static_cast<char *RESTRICT>(MemoryUtilities::AllocateMemory(newLength + 1));
+		newDynamicString._String = static_cast<char *RESTRICT>(MemoryUtilities::AllocateMemory(newLength + 1));
 
 		//Copy the original string to the memory.
-		MemoryUtilities::CopyMemory(static_cast<void *RESTRICT>(newDynamicString.string), static_cast<const void *const RESTRICT>(this->string), this->length);
+		MemoryUtilities::CopyMemory(static_cast<void *RESTRICT>(newDynamicString._String), static_cast<const void *const RESTRICT>(this->_String), this->_Length);
 
 		//Copy the new string to the memory.
-		MemoryUtilities::CopyMemory(static_cast<void *RESTRICT>(newDynamicString.string + this->length), static_cast<const void *const RESTRICT>(newString), newStringLength + 1);
+		MemoryUtilities::CopyMemory(static_cast<void *RESTRICT>(newDynamicString._String + this->_Length), static_cast<const void *const RESTRICT>(newString), newStringLength + 1);
 
 		//Return the newly constructed dynamic string.
 		return newDynamicString;
@@ -132,16 +132,16 @@ public:
 	{
 		//Calculate the new length.
 		const uint64 newStringLength = strlen(newString) + 1;
-		const uint64 newLength = length + newStringLength - 1;
+		const uint64 newLength = _Length + newStringLength - 1;
 
 		//Allocate sufficient memory to host the concatenated string.
-		string = static_cast<char *RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *RESTRICT>(string), newLength + 1));
+		_String = static_cast<char *RESTRICT>(MemoryUtilities::ReallocateMemory(static_cast<void *RESTRICT>(_String), newLength + 1));
 
 		//Copy the new string.
-		MemoryUtilities::CopyMemory(string + length, newString, newStringLength);
+		MemoryUtilities::CopyMemory(_String + _Length, newString, newStringLength);
 
 		//Update the length of the string.
-		length = newLength;
+		_Length = newLength;
 	}
 
 	/*
@@ -149,7 +149,7 @@ public:
 	*/
 	bool operator<(const DynamicString &otherString) const NOEXCEPT
 	{
-		return strcmp(this->string, otherString.string) < 0;
+		return strcmp(this->_String, otherString._String) < 0;
 	}
 
 	/*
@@ -157,7 +157,7 @@ public:
 	*/
 	RESTRICTED const char *const CString() const NOEXCEPT
 	{
-		return string;
+		return _String;
 	}
 
 	/*
@@ -165,7 +165,7 @@ public:
 	*/
 	RESTRICTED char *const CString() NOEXCEPT
 	{
-		return string;
+		return _String;
 	}
 
 	/*
@@ -173,15 +173,15 @@ public:
 	*/
 	uint64 Length() const NOEXCEPT
 	{
-		return length;
+		return _Length;
 	}
 
 private:
 
 	//The underlying C string.
-	char *RESTRICT string;
+	char *RESTRICT _String;
 
 	//The length of the string.
-	uint64 length;
+	uint64 _Length;
 
 };

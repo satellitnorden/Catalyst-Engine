@@ -28,7 +28,7 @@ public:
 	*/
 	constexpr HashString() NOEXCEPT
 		:
-		hash(0)
+		_Hash(0)
 	{
 
 	}
@@ -39,11 +39,11 @@ public:
 	constexpr HashString(const char *const RESTRICT string) NOEXCEPT
 		:
 #if defined(HASHING_ALGORITHM_CATALYST)
-		hash(HashAlgorithms::CatalystHash(string, CompileTimeUtilities::StringLength(string)))
+		_Hash(HashAlgorithms::CatalystHash(string, CompileTimeUtilities::StringLength(string)))
 #elif defined(HASHING_ALGORITHM_DJB2)
-		hash(HashAlgorithms::DJB2Hash(string, CompileTimeUtilities::StringLength(string)))
+		_Hash(HashAlgorithms::DJB2Hash(string, CompileTimeUtilities::StringLength(string)))
 #elif defined(HASHING_ALGORITHM_JENKINS)
-		hash(HashAlgorithms::JenkinsHash(string, CompileTimeUtilities::StringLength(string)))
+		_Hash(HashAlgorithms::JenkinsHash(string, CompileTimeUtilities::StringLength(string)))
 #endif
 	{
 
@@ -54,7 +54,7 @@ public:
 	*/
 	constexpr HashString(const uint64 initialHash) NOEXCEPT
 		:
-		hash(initialHash)
+		_Hash(initialHash)
 	{
 
 	}
@@ -64,7 +64,7 @@ public:
 	*/
 	constexpr bool operator==(const HashString otherHashString) const NOEXCEPT
 	{
-		return this->hash == otherHashString.hash;
+		return this->_Hash == otherHashString._Hash;
 	}
 
 	/*
@@ -72,13 +72,13 @@ public:
 	*/
 	constexpr bool operator<(const HashString otherHashString) const NOEXCEPT
 	{
-		return this->hash < otherHashString.hash;
+		return this->_Hash < otherHashString._Hash;
 	}
 
 private:
 
 	//The underlying hash.
-	uint64 hash;
+	uint64 _Hash;
 
 };
 
