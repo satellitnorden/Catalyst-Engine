@@ -50,10 +50,10 @@ DEFINE_SINGLETON(RenderingSystem);
 void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfiguration &configuration) NOEXCEPT
 {
 	//Set the resolution.
-	resolution = configuration._Resolution;
+	_Resolution = configuration._Resolution;
 
 	//Set the scaled resolution.
-	scaledResolution = Resolution(static_cast<uint32>(static_cast<float>(resolution.width) * configuration._ResolutionScale), static_cast<uint32>(static_cast<float>(resolution.height) * configuration._ResolutionScale));
+	_ScaledResolution = Resolution(static_cast<uint32>(static_cast<float>(_Resolution.width) * configuration._ResolutionScale), static_cast<uint32>(static_cast<float>(_Resolution.height) * configuration._ResolutionScale));
 
 	//Initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->InitializeSystem();
@@ -104,7 +104,7 @@ void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
 	//Render all render passes.
-	for (RenderPass *const RESTRICT renderPass : renderPasses)
+	for (RenderPass *const RESTRICT renderPass : _RenderPasses)
 	{
 		renderPass->RenderAsynchronous();
 	}
@@ -145,7 +145,7 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget renderTar
 */
 Texture2DHandle RenderingSystem::GetSpecialTexture(const SpecialTexture specialTexture) NOEXCEPT
 {
-	return specialTextures[INDEX(specialTexture)];
+	return _SpecialTextures[INDEX(specialTexture)];
 }
 
 /*
@@ -279,7 +279,7 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &e
 void RenderingSystem::CreateOceanMaterial(const OceanMaterialData &oceanMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT
 {
 	//Create the normal map texture.
-	oceanMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(oceanMaterialData.normalMapData, oceanMaterialData.width, oceanMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	oceanMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(oceanMaterialData._NormalMapData, oceanMaterialData._Width, oceanMaterialData._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -288,16 +288,16 @@ void RenderingSystem::CreateOceanMaterial(const OceanMaterialData &oceanMaterial
 void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModelData, PhysicalModel &physicalModel) const NOEXCEPT
 {
 	//Create the vertex and index buffer.
-	const void *RESTRICT modelData[]{ physicalModelData.vertices.Data(), physicalModelData.indices.Data() };
-	const uint64 modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData.vertices.Size(), sizeof(uint32) * physicalModelData.indices.Size() };
+	const void *RESTRICT modelData[]{ physicalModelData._Vertices.Data(), physicalModelData._Indices.Data() };
+	const uint64 modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData._Vertices.Size(), sizeof(uint32) * physicalModelData._Indices.Size() };
 	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
 
 	//Set up the physical model.
-	physicalModel._AxisAlignedBoundingBox.minimum = Vector3(-physicalModelData.extent, -physicalModelData.extent, -physicalModelData.extent);
-	physicalModel._AxisAlignedBoundingBox.maximum = Vector3(physicalModelData.extent, physicalModelData.extent, physicalModelData.extent);
+	physicalModel._AxisAlignedBoundingBox.minimum = Vector3(-physicalModelData._Extent, -physicalModelData._Extent, -physicalModelData._Extent);
+	physicalModel._AxisAlignedBoundingBox.maximum = Vector3(physicalModelData._Extent, physicalModelData._Extent, physicalModelData._Extent);
 	physicalModel._Buffer = buffer;
 	physicalModel._IndexOffset = modelDataSizes[0];
-	physicalModel._IndexCount = static_cast<uint32>(physicalModelData.indices.Size());
+	physicalModel._IndexCount = static_cast<uint32>(physicalModelData._Indices.Size());
 }
 
 /*
@@ -306,7 +306,7 @@ void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModel
 void RenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particleMaterialData, ParticleMaterial &particleMaterial) const NOEXCEPT
 {
 	//Create the albedo texture
-	particleMaterial.albedoTexture = CreateTexture2D(TextureData(TextureDataContainer(particleMaterialData.albedoData, particleMaterialData.width, particleMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	particleMaterial.albedoTexture = CreateTexture2D(TextureData(TextureDataContainer(particleMaterialData._AlbedoData, particleMaterialData._Width, particleMaterialData._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -315,13 +315,13 @@ void RenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particl
 void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT
 {
 	//Create the albedo texture.
-	physicalMaterial.albedoTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData.albedoData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	physicalMaterial.albedoTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData._AlbedoData, physicalMaterialData._Width, physicalMaterialData._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the normal map texture.
-	physicalMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData.normalMapData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	physicalMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData._NormalMapData, physicalMaterialData._Width, physicalMaterialData._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the material properties texture.
-	physicalMaterial.materialPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData.materialPropertiesData, physicalMaterialData.width, physicalMaterialData.height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	physicalMaterial.materialPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData._MaterialPropertiesData, physicalMaterialData._Width, physicalMaterialData._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -330,49 +330,49 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT
 {
 	//Create the first layer albedo.
-	terrainMaterial.firstLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.firstLayerAlbedoData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.firstLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FirstLayerAlbedoData, terrainMaterialData._FirstLayerWidth, terrainMaterialData._FirstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the first layer normal map.
-	terrainMaterial.firstLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.firstLayerNormalMapData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.firstLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FirstLayerNormalMapData, terrainMaterialData._FirstLayerWidth, terrainMaterialData._FirstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the first layer material properties.
-	terrainMaterial.firstLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.firstLayerMaterialPropertiesData, terrainMaterialData.firstLayerWidth, terrainMaterialData.firstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.firstLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FirstLayerMaterialPropertiesData, terrainMaterialData._FirstLayerWidth, terrainMaterialData._FirstLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the second layer albedo.
-	terrainMaterial.secondLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.secondLayerAlbedoData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.secondLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._SecondLayerAlbedoData, terrainMaterialData._SecondLayerWidth, terrainMaterialData._SecondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the second layer normal map.
-	terrainMaterial.secondLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.secondLayerNormalMapData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.secondLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._SecondLayerNormalMapData, terrainMaterialData._SecondLayerWidth, terrainMaterialData._SecondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the second layer material properties.
-	terrainMaterial.secondLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.secondLayerMaterialPropertiesData, terrainMaterialData.secondLayerWidth, terrainMaterialData.secondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.secondLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._SecondLayerMaterialPropertiesData, terrainMaterialData._SecondLayerWidth, terrainMaterialData._SecondLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the third layer albedo.
-	terrainMaterial.thirdLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerAlbedoData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.thirdLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._ThirdLayerAlbedoData, terrainMaterialData._ThirdLayerWidth, terrainMaterialData._ThirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the third layer normal map.
-	terrainMaterial.thirdLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerNormalMapData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.thirdLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._ThirdLayerNormalMapData, terrainMaterialData._ThirdLayerWidth, terrainMaterialData._ThirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the third layer material properties.
-	terrainMaterial.thirdLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.thirdLayerMaterialPropertiesData, terrainMaterialData.thirdLayerWidth, terrainMaterialData.thirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.thirdLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._ThirdLayerMaterialPropertiesData, terrainMaterialData._ThirdLayerWidth, terrainMaterialData._ThirdLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fourth layer albedo.
-	terrainMaterial.fourthLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerAlbedoData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fourthLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FourthLayerAlbedoData, terrainMaterialData._FourthLayerWidth, terrainMaterialData._FourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fourth layer normal map.
-	terrainMaterial.fourthLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerNormalMapData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fourthLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FourthLayerNormalMapData, terrainMaterialData._FourthLayerWidth, terrainMaterialData._FourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fourth layer material properties.
-	terrainMaterial.fourthLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fourthLayerMaterialPropertiesData, terrainMaterialData.fourthLayerWidth, terrainMaterialData.fourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fourthLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FourthLayerMaterialPropertiesData, terrainMaterialData._FourthLayerWidth, terrainMaterialData._FourthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fifth layer albedo.
-	terrainMaterial.fifthLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerAlbedoData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fifthLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FifthLayerAlbedoData, terrainMaterialData._FifthLayerWidth, terrainMaterialData._FifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fifth layer normal map.
-	terrainMaterial.fifthLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerNormalMapData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fifthLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FifthLayerNormalMapData, terrainMaterialData._FifthLayerWidth, terrainMaterialData._FifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the fifth layer material properties.
-	terrainMaterial.fifthLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData.fifthLayerMaterialPropertiesData, terrainMaterialData.fifthLayerWidth, terrainMaterialData.fifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	terrainMaterial.fifthLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FifthLayerMaterialPropertiesData, terrainMaterialData._FifthLayerWidth, terrainMaterialData._FifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -381,16 +381,16 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT
 {
 	//Create the mask texture.
-	vegetationMaterial.maskTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData.maskData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	vegetationMaterial.maskTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData._MaskData, vegetationMaterialData._Width, vegetationMaterialData._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the albedo texture.
-	vegetationMaterial.albedoTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData.albedoData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	vegetationMaterial.albedoTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData._AlbedoData, vegetationMaterialData._Width, vegetationMaterialData._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the normal map texture.
-	vegetationMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData.normalMapData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	vegetationMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData._NormalMapData, vegetationMaterialData._Width, vegetationMaterialData._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the properties texture.
-	vegetationMaterial.propertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData.propertiesData, vegetationMaterialData.width, vegetationMaterialData.height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	vegetationMaterial.propertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData._PropertiesData, vegetationMaterialData._Width, vegetationMaterialData._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
 
 /*
@@ -496,20 +496,20 @@ UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBuf
 void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 {
 	//Register all render passes.
-	renderPasses[INDEX(RenderPassSubStage::DirectionalTerrainShadow)] = DirectionalTerrainShadowRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::DirectionalStaticPhysicalShadow)] = DirectionalStaticPhysicalShadowRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::DirectionalInstancedPhysicalShadow)] = DirectionalInstancedPhysicalShadowRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::Terrain)] = TerrainRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::StaticPhysical)] = StaticPhysicalRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::DynamicPhysical)] = DynamicPhysicalRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::InstancedPhysical)] = InstancedPhysicalRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::Vegetation)] = VegetationRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::Ocean)] = OceanRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
-	renderPasses[INDEX(RenderPassSubStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::DirectionalTerrainShadow)] = DirectionalTerrainShadowRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::DirectionalStaticPhysicalShadow)] = DirectionalStaticPhysicalShadowRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::DirectionalInstancedPhysicalShadow)] = DirectionalInstancedPhysicalShadowRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::Terrain)] = TerrainRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::StaticPhysical)] = StaticPhysicalRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::DynamicPhysical)] = DynamicPhysicalRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::InstancedPhysical)] = InstancedPhysicalRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::Vegetation)] = VegetationRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::Ocean)] = OceanRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
 }
 
 /*
@@ -518,13 +518,13 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 void RenderingSystem::InitializeRenderPasses() NOEXCEPT
 {
 	//Initialize all render passes.
-	for (RenderPass *const RESTRICT renderPass : renderPasses)
+	for (RenderPass *const RESTRICT renderPass : _RenderPasses)
 	{
 		renderPass->InitializeAsynchronous();
 	}
 
 	//Wait for all render passes to finish initialization.
-	for (RenderPass *const RESTRICT renderPass : renderPasses)
+	for (RenderPass *const RESTRICT renderPass : _RenderPasses)
 	{
 		renderPass->WaitForInitialization();
 	}
@@ -542,12 +542,12 @@ void RenderingSystem::InitializeCommonParticleMaterials() NOEXCEPT
 
 		ParticleMaterialData data;
 
-		data.mipmapLevels = 1;
-		data.width = RESOLUTION;
-		data.height = RESOLUTION;
+		data._MipmapLevels = 1;
+		data._Width = RESOLUTION;
+		data._Height = RESOLUTION;
 
-		data.albedoData.UpsizeSlow(1);
-		data.albedoData[0].Reserve(RESOLUTION * RESOLUTION * 4);
+		data._AlbedoData.UpsizeSlow(1);
+		data._AlbedoData[0].Reserve(RESOLUTION * RESOLUTION * 4);
 
 		for (uint8 i = 0; i < RESOLUTION; ++i)
 		{
@@ -559,14 +559,14 @@ void RenderingSystem::InitializeCommonParticleMaterials() NOEXCEPT
 				alpha *= alpha;
 				alpha *= alpha;
 
-				data.albedoData[0].EmplaceFast(255);
-				data.albedoData[0].EmplaceFast(255);
-				data.albedoData[0].EmplaceFast(255);
-				data.albedoData[0].EmplaceFast(static_cast<byte>(static_cast<float>(255) * alpha));
+				data._AlbedoData[0].EmplaceFast(255);
+				data._AlbedoData[0].EmplaceFast(255);
+				data._AlbedoData[0].EmplaceFast(255);
+				data._AlbedoData[0].EmplaceFast(static_cast<byte>(static_cast<float>(255) * alpha));
 			}
 		}
 
-		CreateParticleMaterial(data, commonParticleMaterials[INDEX(CommonParticleMaterial::WhiteCircle)]);
+		CreateParticleMaterial(data, _CommonParticleMaterials[INDEX(CommonParticleMaterial::WhiteCircle)]);
 	}
 }
 
@@ -579,29 +579,29 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		//Create the purple common physical material.
 		PhysicalMaterialData physicalMaterialData;
 		
-		physicalMaterialData.mipmapLevels = 1;
-		physicalMaterialData.width = 1;
-		physicalMaterialData.height = 1;
-		physicalMaterialData.albedoData.UpsizeSlow(1);
-		physicalMaterialData.albedoData[0].Reserve(4);
-		physicalMaterialData.albedoData[0].EmplaceFast(255);
-		physicalMaterialData.albedoData[0].EmplaceFast(0);
-		physicalMaterialData.albedoData[0].EmplaceFast(0);
-		physicalMaterialData.albedoData[0].EmplaceFast(255);
-		physicalMaterialData.normalMapData.UpsizeSlow(1);
-		physicalMaterialData.normalMapData[0].Reserve(4);
-		physicalMaterialData.normalMapData[0].EmplaceFast(127);
-		physicalMaterialData.normalMapData[0].EmplaceFast(127);
-		physicalMaterialData.normalMapData[0].EmplaceFast(255);
-		physicalMaterialData.normalMapData[0].EmplaceFast(255);
-		physicalMaterialData.materialPropertiesData.UpsizeSlow(1);
-		physicalMaterialData.materialPropertiesData[0].Reserve(4);
-		physicalMaterialData.materialPropertiesData[0].EmplaceFast(127);
-		physicalMaterialData.materialPropertiesData[0].EmplaceFast(255);
-		physicalMaterialData.materialPropertiesData[0].EmplaceFast(255);
-		physicalMaterialData.materialPropertiesData[0].EmplaceFast(0);
+		physicalMaterialData._MipmapLevels = 1;
+		physicalMaterialData._Width = 1;
+		physicalMaterialData._Height = 1;
+		physicalMaterialData._AlbedoData.UpsizeSlow(1);
+		physicalMaterialData._AlbedoData[0].Reserve(4);
+		physicalMaterialData._AlbedoData[0].EmplaceFast(255);
+		physicalMaterialData._AlbedoData[0].EmplaceFast(0);
+		physicalMaterialData._AlbedoData[0].EmplaceFast(0);
+		physicalMaterialData._AlbedoData[0].EmplaceFast(255);
+		physicalMaterialData._NormalMapData.UpsizeSlow(1);
+		physicalMaterialData._NormalMapData[0].Reserve(4);
+		physicalMaterialData._NormalMapData[0].EmplaceFast(127);
+		physicalMaterialData._NormalMapData[0].EmplaceFast(127);
+		physicalMaterialData._NormalMapData[0].EmplaceFast(255);
+		physicalMaterialData._NormalMapData[0].EmplaceFast(255);
+		physicalMaterialData._MaterialPropertiesData.UpsizeSlow(1);
+		physicalMaterialData._MaterialPropertiesData[0].Reserve(4);
+		physicalMaterialData._MaterialPropertiesData[0].EmplaceFast(127);
+		physicalMaterialData._MaterialPropertiesData[0].EmplaceFast(255);
+		physicalMaterialData._MaterialPropertiesData[0].EmplaceFast(255);
+		physicalMaterialData._MaterialPropertiesData[0].EmplaceFast(0);
 
-		CreatePhysicalMaterial(physicalMaterialData, commonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Red)]);
+		CreatePhysicalMaterial(physicalMaterialData, _CommonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Red)]);
 	}
 }
 
@@ -614,21 +614,21 @@ void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
 		//Create the cube common physical model.
 		PhysicalModelData data;
 		CommonPhysicalModelData::GetCubePhysicalModelData(data);
-		CreatePhysicalModel(data, commonPhysicalModels[INDEX(CommonPhysicalModel::Cube)]);
+		CreatePhysicalModel(data, _CommonPhysicalModels[INDEX(CommonPhysicalModel::Cube)]);
 	}
 
 	{
 		//Create the octahedron common physical model.
 		PhysicalModelData data;
 		CommonPhysicalModelData::GetOctahedronPhysicalModelData(data);
-		CreatePhysicalModel(data, commonPhysicalModels[INDEX(CommonPhysicalModel::Octahedron)]);
+		CreatePhysicalModel(data, _CommonPhysicalModels[INDEX(CommonPhysicalModel::Octahedron)]);
 	}
 
 	{
 		//Create the plane common physical model.
 		PhysicalModelData data;
 		CommonPhysicalModelData::GetPlanePhysicalModelData(data);
-		CreatePhysicalModel(data, commonPhysicalModels[INDEX(CommonPhysicalModel::Plane)]);
+		CreatePhysicalModel(data, _CommonPhysicalModels[INDEX(CommonPhysicalModel::Plane)]);
 	}
 }
 
@@ -644,146 +644,146 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 
 		EnvironmentMaterialData data;
 
-		data.diffuseResolution = 2;
-		data.diffuseData.Reserve(16 * 6);
-		data.diffuseIrradianceResolution = 2;
-		data.diffuseIrradianceData.Reserve(16 * 6);
+		data._DiffuseResolution = 2;
+		data._DiffuseData.Reserve(16 * 6);
+		data._DiffuseIrradianceResolution = 2;
+		data._DiffuseIrradianceData.Reserve(16 * 6);
 
 		for (uint8 i = 0; i < 6; ++i)
 		{
 			if (i == 2)
 			{
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 			}
 
 			else if (i == 3)
 			{
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 			}
 
 			else
 			{
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 			}
 		}
 
-		CreateEnvironmentMaterial(data, defaultNightEnvironmentMaterial);
+		CreateEnvironmentMaterial(data, _DefaultNightEnvironmentMaterial);
 
-		EnvironmentManager::Instance->SetNightEnvironmentMaterial(defaultNightEnvironmentMaterial);
+		EnvironmentManager::Instance->SetNightEnvironmentMaterial(_DefaultNightEnvironmentMaterial);
 	}
 
 	{
@@ -793,146 +793,146 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 
 		EnvironmentMaterialData data;
 
-		data.diffuseResolution = 2;
-		data.diffuseData.Reserve(16 * 6);
-		data.diffuseIrradianceResolution = 2;
-		data.diffuseIrradianceData.Reserve(16 * 6);
+		data._DiffuseResolution = 2;
+		data._DiffuseData.Reserve(16 * 6);
+		data._DiffuseIrradianceResolution = 2;
+		data._DiffuseIrradianceData.Reserve(16 * 6);
 
 		for (uint8 i = 0; i < 6; ++i)
 		{
 			if (i == 2)
 			{
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 			}
 
 			else if (i == 3)
 			{
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 			}
 
 			else
 			{
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseData.EmplaceFast(1.0f);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
-				data.diffuseIrradianceData.EmplaceFast(1.0f);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data._DiffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
+				data._DiffuseIrradianceData.EmplaceFast(1.0f);
 			}
 		}
 
-		CreateEnvironmentMaterial(data, defaultDayEnvironmentMaterial);
+		CreateEnvironmentMaterial(data, _DefaultDayEnvironmentMaterial);
 
-		EnvironmentManager::Instance->SetDayEnvironmentMaterial(defaultDayEnvironmentMaterial);
+		EnvironmentManager::Instance->SetDayEnvironmentMaterial(_DefaultDayEnvironmentMaterial);
 	}
 
 	//Set the environment blend to be day by default.
@@ -944,23 +944,23 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 
 		OceanMaterialData data;
 
-		data.mipmapLevels = 1;
-		data.width = RESOLUTION;
-		data.height = RESOLUTION;
-		data.normalMapData.UpsizeSlow(1);
-		data.normalMapData[0].Reserve(RESOLUTION * RESOLUTION * 4);
+		data._MipmapLevels = 1;
+		data._Width = RESOLUTION;
+		data._Height = RESOLUTION;
+		data._NormalMapData.UpsizeSlow(1);
+		data._NormalMapData[0].Reserve(RESOLUTION * RESOLUTION * 4);
 
 		for (uint16 i = 0; i < RESOLUTION * RESOLUTION; ++i)
 		{
-			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(126, 128)));
-			data.normalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(126, 128)));
-			data.normalMapData[0].EmplaceFast(255);
-			data.normalMapData[0].EmplaceFast(255);
+			data._NormalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(126, 128)));
+			data._NormalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(126, 128)));
+			data._NormalMapData[0].EmplaceFast(255);
+			data._NormalMapData[0].EmplaceFast(255);
 		}
 
-		CreateOceanMaterial(data, defaultOceanMaterial);
+		CreateOceanMaterial(data, _DefaultOceanMaterial);
 
-		EnvironmentManager::Instance->SetOceanMaterial(defaultOceanMaterial);
+		EnvironmentManager::Instance->SetOceanMaterial(_DefaultOceanMaterial);
 	}
 }
 
@@ -981,7 +981,7 @@ void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
 			sample._W = 0.0f;
 		}
 
-		specialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)] = CreateTexture2D(TextureData(TextureDataContainer(samples, 4, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
+		_SpecialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)] = CreateTexture2D(TextureData(TextureDataContainer(samples, 4, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
 	}
 }
 
@@ -990,16 +990,16 @@ void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
 */
 void RenderingSystem::UpdateMatrices() NOEXCEPT
 {
-	if (activeCamera)
+	if (_ActiveCamera)
 	{
 		//Calculate the projection matrix.
-		projectionMatrix = Matrix4::Perspective(CatalystMath::DegreesToRadians(activeCamera->GetFieldOfView()), static_cast<float>(GetResolution().width) / static_cast<float>(GetResolution().height), activeCamera->GetNearPlane(), activeCamera->GetFarPlane());
+		_ProjectionMatrix = Matrix4::Perspective(CatalystMath::DegreesToRadians(_ActiveCamera->GetFieldOfView()), static_cast<float>(GetResolution().width) / static_cast<float>(GetResolution().height), _ActiveCamera->GetNearPlane(), _ActiveCamera->GetFarPlane());
 	
 		//Calculate the camera matrix.
-		cameraMatrix = Matrix4::LookAt(activeCamera->GetPosition(), activeCamera->GetPosition() + activeCamera->GetForwardVector(), activeCamera->GetUpVector());
+		_CameraMatrix = Matrix4::LookAt(_ActiveCamera->GetPosition(), _ActiveCamera->GetPosition() + _ActiveCamera->GetForwardVector(), _ActiveCamera->GetUpVector());
 
 		//Calculate the view matrix.
-		viewMatrix = projectionMatrix * cameraMatrix;
+		_ViewMatrix = _ProjectionMatrix * _CameraMatrix;
 	}
 }
 

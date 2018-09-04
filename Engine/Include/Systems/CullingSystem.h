@@ -58,7 +58,7 @@ private:
 	};
 
 	//Container for all tasks.
-	StaticArray<Task, INDEX(CullingTask::NumberOfCullingTasks)> tasks;
+	StaticArray<Task, INDEX(CullingTask::NumberOfCullingTasks)> _Tasks;
 
 	/*
 	*	Initializes the culling tasks.

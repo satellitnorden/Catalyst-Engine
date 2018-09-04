@@ -66,16 +66,16 @@ private:
 	};
 
 	//Container for all tasks.
-	StaticArray<Task, INDEX(LevelOfDetailTask::NumberOfLevelOfDetailTasks)> tasks;
+	StaticArray<Task, INDEX(LevelOfDetailTask::NumberOfLevelOfDetailTasks)> _Tasks;
 
 	//Container for all terrain buffers.
-	StaticArray<ConstantBufferHandle, INDEX(TerrainBuffer::NumberOfTerrainBuffers)> terrainBuffers;
+	StaticArray<ConstantBufferHandle, INDEX(TerrainBuffer::NumberOfTerrainBuffers)> _TerrainBuffers;
 
 	//Container for all terrain buffer index offsets.
-	StaticArray<uint64, INDEX(TerrainBuffer::NumberOfTerrainBuffers)> terrainBufferIndexOffsets;
+	StaticArray<uint64, INDEX(TerrainBuffer::NumberOfTerrainBuffers)> _TerrainBufferIndexOffsets;
 
 	//Container for all terrain buffer index counts.
-	StaticArray<uint32, INDEX(TerrainBuffer::NumberOfTerrainBuffers)> terrainBufferIndexCounts;
+	StaticArray<uint32, INDEX(TerrainBuffer::NumberOfTerrainBuffers)> _TerrainBufferIndexCounts;
 
 	/*
 	*	Initializes the level of detail tasks.

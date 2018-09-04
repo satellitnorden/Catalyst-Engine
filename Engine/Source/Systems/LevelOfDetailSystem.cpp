@@ -41,7 +41,7 @@ void LevelOfDetailSystem::PostInitializeSystem() NOEXCEPT
 void LevelOfDetailSystem::UpdateSystemSynchronous() NOEXCEPT
 {
 	//Fire off the level of detail tasks.
-	TaskSystem::Instance->ExecuteTask(&tasks[INDEX(LevelOfDetailTask::Terrain)]);
+	TaskSystem::Instance->ExecuteTask(&_Tasks[INDEX(LevelOfDetailTask::Terrain)]);
 }
 
 /*
@@ -50,7 +50,7 @@ void LevelOfDetailSystem::UpdateSystemSynchronous() NOEXCEPT
 void LevelOfDetailSystem::WaitForTerrainLevelOfDetail() const NOEXCEPT
 {
 	//Wait for the terrain level of detail to finish.
-	tasks[INDEX(LevelOfDetailTask::Terrain)].WaitFor();
+	_Tasks[INDEX(LevelOfDetailTask::Terrain)].WaitFor();
 }
 
 /*
@@ -59,11 +59,11 @@ void LevelOfDetailSystem::WaitForTerrainLevelOfDetail() const NOEXCEPT
 void LevelOfDetailSystem::InitializeLevelOfDetailTasks() NOEXCEPT
 {
 	//Initialize the terrain level of detail task.
-	tasks[INDEX(LevelOfDetailTask::Terrain)]._Function = [](void *const RESTRICT)
+	_Tasks[INDEX(LevelOfDetailTask::Terrain)]._Function = [](void *const RESTRICT)
 	{
 		LevelOfDetailSystem::Instance->CaltulateTerrainLevelOfDetail();
 	};
-	tasks[INDEX(LevelOfDetailTask::Terrain)]._Arguments = nullptr;
+	_Tasks[INDEX(LevelOfDetailTask::Terrain)]._Arguments = nullptr;
 }
 
 /*
@@ -92,9 +92,9 @@ void LevelOfDetailSystem::InitializeTerrainBuffers() NOEXCEPT
 		const void *RESTRICT data[]{ vertices.Data(), indices.Data() };
 		const uint64 dataSizes[]{ sizeof(float) * vertices.Size(), sizeof(uint32) * indices.Size() };
 
-		terrainBuffers[i] = RenderingSystem::Instance->CreateConstantBuffer(data, dataSizes, 2);
-		terrainBufferIndexOffsets[i] = sizeof(float) * vertices.Size();
-		terrainBufferIndexCounts[i] = static_cast<uint32>(indices.Size());
+		_TerrainBuffers[i] = RenderingSystem::Instance->CreateConstantBuffer(data, dataSizes, 2);
+		_TerrainBufferIndexOffsets[i] = sizeof(float) * vertices.Size();
+		_TerrainBufferIndexCounts[i] = static_cast<uint32>(indices.Size());
 	}
 }
 
@@ -165,8 +165,8 @@ void LevelOfDetailSystem::CaltulateTerrainLevelOfDetail() NOEXCEPT
 		}
 		*/
 
-		renderComponent->_Buffer = terrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
-		renderComponent->_IndexOffset = terrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
-		renderComponent->_IndexCount = terrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
+		renderComponent->_Buffer = _TerrainBuffers[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
+		renderComponent->_IndexOffset = _TerrainBufferIndexOffsets[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
+		renderComponent->_IndexCount = _TerrainBufferIndexCounts[INDEX(TerrainBuffer::TerrainBuffer_16x16)];
 	}
 }

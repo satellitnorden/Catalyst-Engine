@@ -178,10 +178,10 @@ void VulkanRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderD
 void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT
 {
 	//Create the diffuse texture.
-	environmentMaterial.diffuseTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData.diffuseData.Data(), environmentMaterialData.diffuseResolution, environmentMaterialData.diffuseResolution));
+	environmentMaterial.diffuseTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData._DiffuseData.Data(), environmentMaterialData._DiffuseResolution, environmentMaterialData._DiffuseResolution));
 
 	//Create the diffuse irradiance texture.
-	environmentMaterial.diffuseIrradianceTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData.diffuseIrradianceData.Data(), environmentMaterialData.diffuseIrradianceResolution, environmentMaterialData.diffuseIrradianceResolution));
+	environmentMaterial.diffuseIrradianceTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData._DiffuseIrradianceData.Data(), environmentMaterialData._DiffuseIrradianceResolution, environmentMaterialData._DiffuseIrradianceResolution));
 }
 
 /*

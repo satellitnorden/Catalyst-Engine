@@ -37,7 +37,7 @@ public:
 	/*
 	*	Returns whether or not tasks should be executed.
 	*/
-	bool ExecuteTasks() const NOEXCEPT { return executeTasks; }
+	bool ExecuteTasks() const NOEXCEPT { return _ExecuteTasks; }
 
 	/*
 	*	Executes a task.
@@ -50,15 +50,15 @@ private:
 	static constexpr uint64 MAXIMUM_NUMBER_OF_TASKS{ 64 };
 
 	//Denotes whether or not tasks should be executed.
-	bool executeTasks{ true };
+	bool _ExecuteTasks{ true };
 
 	//The number of task executors.
-	uint32 numberOfTaskExecutors;
+	uint32 _NumberOfTaskExecutors;
 
 	//Container for all task executor threads.
-	DynamicArray<std::thread> taskExecutorThreads;
+	DynamicArray<std::thread> _TaskExecutorThreads;
 
 	//Container for all atomic queues in which to put tasks in.
-	DynamicArray<AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS>> taskQueues;
+	DynamicArray<AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS>> _TaskQueues;
 
 };

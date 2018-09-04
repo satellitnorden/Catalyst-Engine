@@ -32,9 +32,9 @@ void CullingSystem::InitializeSystem() NOEXCEPT
 void CullingSystem::UpdateSystemSynchronous() NOEXCEPT
 {
 	//Fire off the culling tasks.
-	TaskSystem::Instance->ExecuteTask(&tasks[INDEX(CullingTask::Terrain)]);
-	TaskSystem::Instance->ExecuteTask(&tasks[INDEX(CullingTask::StaticPhysical)]);
-	TaskSystem::Instance->ExecuteTask(&tasks[INDEX(CullingTask::Vegetation)]);
+	TaskSystem::Instance->ExecuteTask(&_Tasks[INDEX(CullingTask::Terrain)]);
+	TaskSystem::Instance->ExecuteTask(&_Tasks[INDEX(CullingTask::StaticPhysical)]);
+	TaskSystem::Instance->ExecuteTask(&_Tasks[INDEX(CullingTask::Vegetation)]);
 }
 
 /*
@@ -43,25 +43,25 @@ void CullingSystem::UpdateSystemSynchronous() NOEXCEPT
 void CullingSystem::InitializeCullingTasks() NOEXCEPT
 {
 	//Initialize the terrain culling task.
-	tasks[INDEX(CullingTask::Terrain)]._Function = [](void *const RESTRICT)
+	_Tasks[INDEX(CullingTask::Terrain)]._Function = [](void *const RESTRICT)
 	{
 		CullingSystem::Instance->CullTerrain();
 	};
-	tasks[INDEX(CullingTask::Terrain)]._Arguments = nullptr;
+	_Tasks[INDEX(CullingTask::Terrain)]._Arguments = nullptr;
 
 	//Initialize the static physical culling task.
-	tasks[INDEX(CullingTask::StaticPhysical)]._Function = [](void *const RESTRICT)
+	_Tasks[INDEX(CullingTask::StaticPhysical)]._Function = [](void *const RESTRICT)
 	{
 		CullingSystem::Instance->CullStaticPhysical();
 	};
-	tasks[INDEX(CullingTask::StaticPhysical)]._Arguments = nullptr;
+	_Tasks[INDEX(CullingTask::StaticPhysical)]._Arguments = nullptr;
 
 	//Initialize the vegetation culling task.
-	tasks[INDEX(CullingTask::Vegetation)]._Function = [](void *const RESTRICT)
+	_Tasks[INDEX(CullingTask::Vegetation)]._Function = [](void *const RESTRICT)
 	{
 		CullingSystem::Instance->CullVegetation();
 	};
-	tasks[INDEX(CullingTask::Vegetation)]._Arguments = nullptr;
+	_Tasks[INDEX(CullingTask::Vegetation)]._Arguments = nullptr;
 }
 
 /*
@@ -70,7 +70,7 @@ void CullingSystem::InitializeCullingTasks() NOEXCEPT
 void CullingSystem::WaitForTerrainCulling() const NOEXCEPT
 {
 	//Wait for the terrain culling to finish.
-	tasks[INDEX(CullingTask::Terrain)].WaitFor();
+	_Tasks[INDEX(CullingTask::Terrain)].WaitFor();
 }
 
 /*
@@ -79,7 +79,7 @@ void CullingSystem::WaitForTerrainCulling() const NOEXCEPT
 void CullingSystem::WaitForStaticPhysicalCulling() const NOEXCEPT
 {
 	//Wait for the static physical culling to finish.
-	tasks[INDEX(CullingTask::StaticPhysical)].WaitFor();
+	_Tasks[INDEX(CullingTask::StaticPhysical)].WaitFor();
 }
 
 /*
@@ -88,7 +88,7 @@ void CullingSystem::WaitForStaticPhysicalCulling() const NOEXCEPT
 void CullingSystem::WaitForVegetationCulling() const NOEXCEPT
 {
 	//Wait for the vegetation culling to finish.
-	tasks[INDEX(CullingTask::Vegetation)].WaitFor();
+	_Tasks[INDEX(CullingTask::Vegetation)].WaitFor();
 }
 
 /*

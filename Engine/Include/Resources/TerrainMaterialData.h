@@ -9,81 +9,81 @@ class TerrainMaterialData final
 public:
 
 	//The number of mipmap levels.
-	uint8 mipmapLevels;
+	uint8 _MipmapLevels;
 
 	//The width of the first layer.
-	uint32 firstLayerWidth;
+	uint32 _FirstLayerWidth;
 
 	//The height of the first layer.
-	uint32 firstLayerHeight;
+	uint32 _FirstLayerHeight;
 
 	//The first layer albedo data.
-	DynamicArray<DynamicArray<byte>> firstLayerAlbedoData;
+	DynamicArray<DynamicArray<byte>> _FirstLayerAlbedoData;
 
 	//The first layer normal map data.
-	DynamicArray<DynamicArray<byte>> firstLayerNormalMapData;
+	DynamicArray<DynamicArray<byte>> _FirstLayerNormalMapData;
 
 	//The first layer properties data.
-	DynamicArray<DynamicArray<byte>> firstLayerMaterialPropertiesData;
+	DynamicArray<DynamicArray<byte>> _FirstLayerMaterialPropertiesData;
 
 	//The width of the second layer.
-	uint32 secondLayerWidth;
+	uint32 _SecondLayerWidth;
 
 	//The height of the second layer.
-	uint32 secondLayerHeight;
+	uint32 _SecondLayerHeight;
 
 	//The second layer albedo data.
-	DynamicArray<DynamicArray<byte>> secondLayerAlbedoData;
+	DynamicArray<DynamicArray<byte>> _SecondLayerAlbedoData;
 
 	//The second layer normal map data.
-	DynamicArray<DynamicArray<byte>> secondLayerNormalMapData;
+	DynamicArray<DynamicArray<byte>> _SecondLayerNormalMapData;
 
 	//The second layer properties data.
-	DynamicArray<DynamicArray<byte>> secondLayerMaterialPropertiesData;
+	DynamicArray<DynamicArray<byte>> _SecondLayerMaterialPropertiesData;
 
 	//The width of the third layer.
-	uint32 thirdLayerWidth;
+	uint32 _ThirdLayerWidth;
 
 	//The height of the third layer.
-	uint32 thirdLayerHeight;
+	uint32 _ThirdLayerHeight;
 
 	//The third layer albedo data.
-	DynamicArray<DynamicArray<byte>> thirdLayerAlbedoData;
+	DynamicArray<DynamicArray<byte>> _ThirdLayerAlbedoData;
 
 	//The third layer normal map data.
-	DynamicArray<DynamicArray<byte>> thirdLayerNormalMapData;
+	DynamicArray<DynamicArray<byte>> _ThirdLayerNormalMapData;
 
 	//The third layer properties data.
-	DynamicArray<DynamicArray<byte>> thirdLayerMaterialPropertiesData;
+	DynamicArray<DynamicArray<byte>> _ThirdLayerMaterialPropertiesData;
 
 	//The width of the fourth layer.
-	uint32 fourthLayerWidth;
+	uint32 _FourthLayerWidth;
 
 	//The height of the fourth layer.
-	uint32 fourthLayerHeight;
+	uint32 _FourthLayerHeight;
 
 	//The fourth layer albedo data.
-	DynamicArray<DynamicArray<byte>> fourthLayerAlbedoData;
+	DynamicArray<DynamicArray<byte>> _FourthLayerAlbedoData;
 
 	//The fourth layer normal map data.
-	DynamicArray<DynamicArray<byte>> fourthLayerNormalMapData;
+	DynamicArray<DynamicArray<byte>> _FourthLayerNormalMapData;
 
 	//The fourth layer properties data.
-	DynamicArray<DynamicArray<byte>> fourthLayerMaterialPropertiesData;
+	DynamicArray<DynamicArray<byte>> _FourthLayerMaterialPropertiesData;
 
 	//The width of the fifth layer.
-	uint32 fifthLayerWidth;
+	uint32 _FifthLayerWidth;
 
 	//The height of the fifth layer.
-	uint32 fifthLayerHeight;
+	uint32 _FifthLayerHeight;
 
 	//The fifth layer albedo data.
-	DynamicArray<DynamicArray<byte>> fifthLayerAlbedoData;
+	DynamicArray<DynamicArray<byte>> _FifthLayerAlbedoData;
 
 	//The fifth layer normal map data.
-	DynamicArray<DynamicArray<byte>> fifthLayerNormalMapData;
+	DynamicArray<DynamicArray<byte>> _FifthLayerNormalMapData;
 
 	//The fifth layer properties data.
-	DynamicArray<DynamicArray<byte>> fifthLayerMaterialPropertiesData;
+	DynamicArray<DynamicArray<byte>> _FifthLayerMaterialPropertiesData;
 
 };

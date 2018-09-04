@@ -8,7 +8,7 @@ RESTRICTED EntityClass* const RESTRICT EntitySystem::CreateEntity(Arguments&&...
 {
 	EntityClass *const RESTRICT newEntity{ new EntityClass(std::forward<Arguments>(arguments)...) };
 
-	entities.EmplaceSlow(newEntity);
+	_Entities.EmplaceSlow(newEntity);
 
 	return newEntity;
 }
@@ -24,7 +24,7 @@ RESTRICTED EntityClass *const RESTRICT EntitySystem::CreateChildEntity(Entity *R
 	parentEntity->AddChild(newChild);
 	newChild->SetParent(parentEntity);
 
-	entities.EmplaceSlow(newChild);
+	_Entities.EmplaceSlow(newChild);
 
 	return newChild;
 }

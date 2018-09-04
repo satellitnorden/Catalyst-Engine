@@ -23,15 +23,15 @@ void TaskSystem::InitializeSystem() NOEXCEPT
 		numberOfHardwareThreads = 8;
 
 	//Set the number of task executors. Leave one slot open for the main thread and another slot open for the operating system.
-	numberOfTaskExecutors = numberOfHardwareThreads - 2;
+	_NumberOfTaskExecutors = numberOfHardwareThreads - 2;
 
 	//Kick off all task executor threads.
-	taskExecutorThreads.Reserve(numberOfTaskExecutors);
-	taskQueues.UpsizeSlow(numberOfTaskExecutors);
+	_TaskExecutorThreads.Reserve(_NumberOfTaskExecutors);
+	_TaskQueues.UpsizeSlow(_NumberOfTaskExecutors);
 
-	for (uint8 i = 0; i < numberOfTaskExecutors; ++i)
+	for (uint8 i = 0; i < _NumberOfTaskExecutors; ++i)
 	{
-		taskExecutorThreads.EmplaceFast(std::move(std::thread([](AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS> *const RESTRICT queue)
+		_TaskExecutorThreads.EmplaceFast(std::move(std::thread([](AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS> *const RESTRICT queue)
 		{
 			while (TaskSystem::Instance->ExecuteTasks())
 			{
@@ -41,7 +41,7 @@ void TaskSystem::InitializeSystem() NOEXCEPT
 					(*newTask)->Execute();
 				}
 			}
-		}, &taskQueues[i])));
+		}, &_TaskQueues[i])));
 	}
 }
 
@@ -51,10 +51,10 @@ void TaskSystem::InitializeSystem() NOEXCEPT
 void TaskSystem::ReleaseSystem() NOEXCEPT
 {
 	//Stop executing tasks.
-	executeTasks = false;
+	_ExecuteTasks = false;
 
 	//Join all adventurer threads.
-	for (std::thread &taskExecutorThread : taskExecutorThreads)
+	for (std::thread &taskExecutorThread : _TaskExecutorThreads)
 	{
 		taskExecutorThread.join();
 	}
@@ -67,11 +67,11 @@ void TaskSystem::ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT
 {
 	static uint64 currentTaskQueue{ 0 };
 
-	currentTaskQueue = currentTaskQueue == numberOfTaskExecutors - 1 ? 0 : currentTaskQueue + 1;
+	currentTaskQueue = currentTaskQueue == _NumberOfTaskExecutors - 1 ? 0 : currentTaskQueue + 1;
 
 	//Reset the semaphore.
 	newTask->_Semaphore.Reset();
 
 	//Put the task into the task queue.
-	taskQueues[currentTaskQueue].Push(newTask);
+	_TaskQueues[currentTaskQueue].Push(newTask);
 }

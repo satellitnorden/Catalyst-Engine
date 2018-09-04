@@ -7,10 +7,6 @@
 //Math.
 #include <Math/Vector3.h>
 
-//Forward declarations.
-class PhysicsComponent;
-class Vector3;
-
 class PhysicsSystem final
 {
 
@@ -32,12 +28,12 @@ public:
 	/*
 	*	Returns the wind strength.
 	*/
-	float GetWindStrength() const NOEXCEPT { return windStrength; }
+	float GetWindStrength() const NOEXCEPT { return _WindStrength; }
 
 	/*
 	*	Returns the wind direction.
 	*/
-	const Vector3& GetWindDirection() const NOEXCEPT { return windDirection; }
+	const Vector3& GetWindDirection() const NOEXCEPT { return _WindDirection; }
 
 	/*
 	*	Returns the ocean height.
@@ -57,9 +53,9 @@ public:
 private:
 
 	//The wind strength.
-	float windStrength{ 5.0f };
+	float _WindStrength{ 5.0f };
 
 	//The wind direction.
-	Vector3 windDirection{ -1.0f, 0.0f, -1.0f };
+	Vector3 _WindDirection{ -1.0f, 0.0f, -1.0f };
 
 };

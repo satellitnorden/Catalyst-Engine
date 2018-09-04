@@ -45,9 +45,9 @@ void EntitySystem::PreUpdateSystemSynchronous() NOEXCEPT
 void EntitySystem::ReleaseSystem() NOEXCEPT
 {
 	//Destroy all remaining entities.
-	for (int64 i = entities.Size() - 1; i >= 0; --i)
+	for (int64 i = _Entities.Size() - 1; i >= 0; --i)
 	{
-		delete entities[i];
+		delete _Entities[i];
 	}
 }
 
@@ -61,10 +61,10 @@ void EntitySystem::ReleaseSystem() NOEXCEPT
 void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, void* const RESTRICT data, const bool force) NOEXCEPT
 {
 	//Lock the queue.
-	ScopedLock<Spinlock> scopedLock{ initializationQueueLock };
+	ScopedLock<Spinlock> scopedLock{ _InitializationQueueLock };
 
 	//Add the data.
-	initializationQueue.EmplaceSlow(entity, data, force);
+	_InitializationQueue.EmplaceSlow(entity, data, force);
 }
 
 /*
@@ -77,10 +77,10 @@ void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, void* co
 void EntitySystem::RequesTermination(Entity* const RESTRICT entity, const bool force) NOEXCEPT
 {
 	//Lock the queue.
-	ScopedLock<Spinlock> scopedLock{ terminationQueueLock };
+	ScopedLock<Spinlock> scopedLock{ _TerminationQueueLock };
 
 	//Add the data.
-	terminationQueue.EmplaceSlow(entity, force);
+	_TerminationQueue.EmplaceSlow(entity, force);
 }
 
 /*
@@ -89,21 +89,21 @@ void EntitySystem::RequesTermination(Entity* const RESTRICT entity, const bool f
 void EntitySystem::InitializeEntities() NOEXCEPT
 {
 	//Lock the initialization queue.
-	ScopedLock<Spinlock> scopedLock{ initializationQueueLock };
+	ScopedLock<Spinlock> scopedLock{ _InitializationQueueLock };
 
 	//If there's none to initialize, initialize none.
-	if (initializationQueue.Empty())
+	if (_InitializationQueue.Empty())
 	{
 		return;
 	}
 
 	//Iterate through all initialization request and check for the force flag.
 	uint64 forceInitialized{ 0 };
-	uint64 counter{ initializationQueue.Size() - 1 };
+	uint64 counter{ _InitializationQueue.Size() - 1 };
 
-	for (uint64 i = 0, size = initializationQueue.Size(); i < size; ++i)
+	for (uint64 i = 0, size = _InitializationQueue.Size(); i < size; ++i)
 	{
-		EntityInitializationData& data{ initializationQueue[counter] };
+		EntityInitializationData& data{ _InitializationQueue[counter] };
 
 		if (data._Force)
 		{
@@ -111,7 +111,7 @@ void EntitySystem::InitializeEntities() NOEXCEPT
 
 			++forceInitialized;
 
-			initializationQueue.Erase(counter);
+			_InitializationQueue.Erase(counter);
 		}
 
 		--counter;
@@ -120,9 +120,9 @@ void EntitySystem::InitializeEntities() NOEXCEPT
 	//If none were force-initialized, just initialize one.
 	if (forceInitialized == 0)
 	{
-		EntityInitializationData *const RESTRICT data = &initializationQueue.Back();
+		EntityInitializationData *const RESTRICT data = &_InitializationQueue.Back();
 		InitializeEntity(data);
-		initializationQueue.PopFast();
+		_InitializationQueue.PopFast();
 	}
 }
 
@@ -195,21 +195,21 @@ void EntitySystem::InitializeTerrainEntity(EntityInitializationData* const RESTR
 void EntitySystem::TerminateEntities() NOEXCEPT
 {
 	//Lock the termination queue.
-	ScopedLock<Spinlock> scopedLock{ terminationQueueLock };
+	ScopedLock<Spinlock> scopedLock{ _TerminationQueueLock };
 
 	//If there's none to terminate, terminate none.
-	if (terminationQueue.Empty())
+	if (_TerminationQueue.Empty())
 	{
 		return;
 	}
 
 	//Iterate through all termination requests and check for the force flag.
 	uint64 forceTerminated{ 0 };
-	uint64 counter{ terminationQueue.Size() - 1 };
+	uint64 counter{ _TerminationQueue.Size() - 1 };
 
-	for (uint64 i = 0, size = terminationQueue.Size(); i < size; ++i)
+	for (uint64 i = 0, size = _TerminationQueue.Size(); i < size; ++i)
 	{
-		EntityTerminationData& data{ terminationQueue[counter] };
+		EntityTerminationData& data{ _TerminationQueue[counter] };
 
 		if (data._Force)
 		{
@@ -217,7 +217,7 @@ void EntitySystem::TerminateEntities() NOEXCEPT
 
 			++forceTerminated;
 
-			terminationQueue.Erase(counter);
+			_TerminationQueue.Erase(counter);
 		}
 
 		--counter;
@@ -226,9 +226,9 @@ void EntitySystem::TerminateEntities() NOEXCEPT
 	//If none were force-terminated, just terminate one.
 	if (forceTerminated == 0)
 	{
-		EntityTerminationData *const RESTRICT data = &terminationQueue.Back();
+		EntityTerminationData *const RESTRICT data = &_TerminationQueue.Back();
 		TerminateEntity(data);
-		terminationQueue.PopFast();
+		_TerminationQueue.PopFast();
 	}
 }
 

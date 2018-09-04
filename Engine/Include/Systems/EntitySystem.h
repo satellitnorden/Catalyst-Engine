@@ -78,19 +78,19 @@ public:
 private:
 
 	//The list of entities.
-	DynamicArray<Entity *RESTRICT> entities;
+	DynamicArray<Entity *RESTRICT> _Entities;
 
 	//Lock for the initialization queue.
-	Spinlock initializationQueueLock;
+	Spinlock _InitializationQueueLock;
 
 	//Container for all entities that have requested initialization.
-	DynamicArray<EntityInitializationData> initializationQueue;
+	DynamicArray<EntityInitializationData> _InitializationQueue;
 
 	//Lock for the termination queue.
-	Spinlock terminationQueueLock;
+	Spinlock _TerminationQueueLock;
 
 	//Container for all entities that have requested termination.
-	DynamicArray<EntityTerminationData> terminationQueue;
+	DynamicArray<EntityTerminationData> _TerminationQueue;
 
 	/*
 	*	Initializes entities.

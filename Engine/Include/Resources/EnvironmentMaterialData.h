@@ -9,15 +9,15 @@ class EnvironmentMaterialData final
 public:
 
 	//The resolution of the diffuse.
-	uint32 diffuseResolution;
+	uint32 _DiffuseResolution;
 
 	//The diffuse data.
-	DynamicArray<float> diffuseData;
+	DynamicArray<float> _DiffuseData;
 
 	//The resolution of the diffuse irradiance.
-	uint32 diffuseIrradianceResolution;
+	uint32 _DiffuseIrradianceResolution;
 
 	//The diffuse irradiance data.
-	DynamicArray<float> diffuseIrradianceData;
+	DynamicArray<float> _DiffuseIrradianceData;
 
 };

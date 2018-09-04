@@ -34,60 +34,60 @@ public:
 	/*
 	*	Given a resource ID, return the corresponding environment material.
 	*/
-	static const EnvironmentMaterial& GetEnvironmentMaterial(const HashString resourceID) { return environmentMaterials[resourceID]; }
+	static const EnvironmentMaterial& GetEnvironmentMaterial(const HashString resourceID) { return _EnvironmentMaterials[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding ocean material.
 	*/
-	static const OceanMaterial& GetOceanMaterial(const HashString resourceID) { return oceanMaterials[resourceID]; }
+	static const OceanMaterial& GetOceanMaterial(const HashString resourceID) { return _OceanMaterials[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding particle material.
 	*/
-	static const ParticleMaterial& GetParticleMaterial(const HashString resourceID) { return particleMaterials[resourceID]; }
+	static const ParticleMaterial& GetParticleMaterial(const HashString resourceID) { return _ParticleMaterials[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding physical material.
 	*/
-	static const PhysicalMaterial& GetPhysicalMaterial(const HashString resourceID) { return physicalMaterials[resourceID]; }
+	static const PhysicalMaterial& GetPhysicalMaterial(const HashString resourceID) { return _PhysicalMaterials[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding physical model.
 	*/
-	static const PhysicalModel& GetPhysicalModel(const HashString resourceID) { return physicalModels[resourceID]; }
+	static const PhysicalModel& GetPhysicalModel(const HashString resourceID) { return _PhysicalModels[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding terrain material.
 	*/
-	static const TerrainMaterial& GetTerrainMaterial(const HashString resourceID) { return terrainMaterials[resourceID]; }
+	static const TerrainMaterial& GetTerrainMaterial(const HashString resourceID) { return _TerrainMaterials[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding vegetation material.
 	*/
-	static const VegetationMaterial& GetVegetationMaterial(const HashString resourceID) { return vegetationMaterials[resourceID]; }
+	static const VegetationMaterial& GetVegetationMaterial(const HashString resourceID) { return _VegetationMaterials[resourceID]; }
 
 private:
 
 	//Container for all environment materials.
-	static Map<HashString, EnvironmentMaterial> environmentMaterials;
+	static Map<HashString, EnvironmentMaterial> _EnvironmentMaterials;
 
 	//Container for all ocean materials.
-	static Map<HashString, OceanMaterial> oceanMaterials;
+	static Map<HashString, OceanMaterial> _OceanMaterials;
 
 	//Container for all particle materials.
-	static Map<HashString, ParticleMaterial> particleMaterials;
+	static Map<HashString, ParticleMaterial> _ParticleMaterials;
 
 	//Container for all physical materials.
-	static Map<HashString, PhysicalMaterial> physicalMaterials;
+	static Map<HashString, PhysicalMaterial> _PhysicalMaterials;
 
 	//Container for all physical models.
-	static Map<HashString, PhysicalModel> physicalModels;
+	static Map<HashString, PhysicalModel> _PhysicalModels;
 
 	//Container for all terrain materials.
-	static Map<HashString, TerrainMaterial> terrainMaterials;
+	static Map<HashString, TerrainMaterial> _TerrainMaterials;
 
 	//Container for all vegetation materials.
-	static Map<HashString, VegetationMaterial> vegetationMaterials;
+	static Map<HashString, VegetationMaterial> _VegetationMaterials;
 
 	/*
 	*	Loads a resource collection, internal implementation.

@@ -14,95 +14,95 @@ namespace CommonPhysicalModelData
 	*/
 	static void GetCubePhysicalModelData(PhysicalModelData &data) NOEXCEPT
 	{
-		data.extent = 1.0f;
+		data._Extent = 1.0f;
 
-		data.vertices.Reserve(24);
-
-		//Left side.
-		data.vertices.EmplaceFast(Vector3(-0.5f, -0.5f, -0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.5f, -0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.5f, 0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, -0.5f, 0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f));
-
-		//Front side.
-		data.vertices.EmplaceFast(Vector3(-0.5f, -0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, -0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f));
-
-		//Right side.
-		data.vertices.EmplaceFast(Vector3(0.5f, -0.5f, 0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.5f, 0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.5f, -0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, -0.5f, -0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f));
-
-		//Back side.
-		data.vertices.EmplaceFast(Vector3(0.5f, -0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f));
-
-		//Down side.
-		data.vertices.EmplaceFast(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, -0.5f, 0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, -0.5f, 0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, -0.5f, -0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f));
-
-		//Up side.
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.5f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.5f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2(0.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.5f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2(1.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.5f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2(1.0f, 0.0f));
-
-		data.indices.Reserve(36);
+		data._Vertices.Reserve(24);
 
 		//Left side.
-		data.indices.EmplaceFast(0);
-		data.indices.EmplaceFast(2);
-		data.indices.EmplaceFast(1);
-		data.indices.EmplaceFast(0);
-		data.indices.EmplaceFast(3);
-		data.indices.EmplaceFast(2);
+		data._Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, -0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, -0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, 0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, 0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f));
 
 		//Front side.
-		data.indices.EmplaceFast(4);
-		data.indices.EmplaceFast(6);
-		data.indices.EmplaceFast(5);
-		data.indices.EmplaceFast(4);
-		data.indices.EmplaceFast(7);
-		data.indices.EmplaceFast(6);
+		data._Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, -0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f));
 
 		//Right side.
-		data.indices.EmplaceFast(8);
-		data.indices.EmplaceFast(10);
-		data.indices.EmplaceFast(9);
-		data.indices.EmplaceFast(8);
-		data.indices.EmplaceFast(11);
-		data.indices.EmplaceFast(10);
+		data._Vertices.EmplaceFast(Vector3(0.5f, -0.5f, 0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.5f, 0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.5f, -0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, -0.5f, -0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f));
 
 		//Back side.
-		data.indices.EmplaceFast(12);
-		data.indices.EmplaceFast(14);
-		data.indices.EmplaceFast(13);
-		data.indices.EmplaceFast(12);
-		data.indices.EmplaceFast(15);
-		data.indices.EmplaceFast(14);
+		data._Vertices.EmplaceFast(Vector3(0.5f, -0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(0.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2(1.0f, 0.0f));
 
 		//Down side.
-		data.indices.EmplaceFast(16);
-		data.indices.EmplaceFast(18);
-		data.indices.EmplaceFast(17);
-		data.indices.EmplaceFast(16);
-		data.indices.EmplaceFast(19);
-		data.indices.EmplaceFast(18);
+		data._Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, 0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2(0.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, -0.5f, 0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2(1.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, -0.5f, -0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2(1.0f, 0.0f));
 
 		//Up side.
-		data.indices.EmplaceFast(20);
-		data.indices.EmplaceFast(22);
-		data.indices.EmplaceFast(21);
-		data.indices.EmplaceFast(20);
-		data.indices.EmplaceFast(23);
-		data.indices.EmplaceFast(22);
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2(0.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.5f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2(1.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.5f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2(1.0f, 0.0f));
+
+		data._Indices.Reserve(36);
+
+		//Left side.
+		data._Indices.EmplaceFast(0);
+		data._Indices.EmplaceFast(2);
+		data._Indices.EmplaceFast(1);
+		data._Indices.EmplaceFast(0);
+		data._Indices.EmplaceFast(3);
+		data._Indices.EmplaceFast(2);
+
+		//Front side.
+		data._Indices.EmplaceFast(4);
+		data._Indices.EmplaceFast(6);
+		data._Indices.EmplaceFast(5);
+		data._Indices.EmplaceFast(4);
+		data._Indices.EmplaceFast(7);
+		data._Indices.EmplaceFast(6);
+
+		//Right side.
+		data._Indices.EmplaceFast(8);
+		data._Indices.EmplaceFast(10);
+		data._Indices.EmplaceFast(9);
+		data._Indices.EmplaceFast(8);
+		data._Indices.EmplaceFast(11);
+		data._Indices.EmplaceFast(10);
+
+		//Back side.
+		data._Indices.EmplaceFast(12);
+		data._Indices.EmplaceFast(14);
+		data._Indices.EmplaceFast(13);
+		data._Indices.EmplaceFast(12);
+		data._Indices.EmplaceFast(15);
+		data._Indices.EmplaceFast(14);
+
+		//Down side.
+		data._Indices.EmplaceFast(16);
+		data._Indices.EmplaceFast(18);
+		data._Indices.EmplaceFast(17);
+		data._Indices.EmplaceFast(16);
+		data._Indices.EmplaceFast(19);
+		data._Indices.EmplaceFast(18);
+
+		//Up side.
+		data._Indices.EmplaceFast(20);
+		data._Indices.EmplaceFast(22);
+		data._Indices.EmplaceFast(21);
+		data._Indices.EmplaceFast(20);
+		data._Indices.EmplaceFast(23);
+		data._Indices.EmplaceFast(22);
 	}
 
 	/*
@@ -110,83 +110,83 @@ namespace CommonPhysicalModelData
 	*/
 	static void GetOctahedronPhysicalModelData(PhysicalModelData &data) NOEXCEPT
 	{
-		data.extent = 1.0f;
+		data._Extent = 1.0f;
 
-		data.vertices.Reserve(24);
+		data._Vertices.Reserve(24);
 
 		//Bottom left side.
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(1.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(0.5f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(1.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(0.5f, 1.0f));
 
 		//Bottom front side.
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2(1.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2(0.5f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2(1.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2(0.5f, 1.0f));
 
 		//Bottom right side.
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(1.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(0.5f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(1.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2(0.5f, 1.0f));
 
 		//Bottom back side.
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2(1.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2(0.5f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2(1.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2(0.5f, 1.0f));
 
 		//Top left side.
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(0.5f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(1.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(0.5f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(1.0f, 0.0f));
 
 		//Top front side.
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2(0.5f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2(1.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2(0.5f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2(1.0f, 0.0f));
 
 		//Top right side.
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(0.5f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(1.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(0.5f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2(1.0f, 0.0f));
 
 		//Top back side.
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2(0.5f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2(1.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2(0.5f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2(1.0f, 0.0f));
 
-		data.indices.Reserve(24);
+		data._Indices.Reserve(24);
 
-		data.indices.EmplaceFast(0);
-		data.indices.EmplaceFast(2);
-		data.indices.EmplaceFast(1);
+		data._Indices.EmplaceFast(0);
+		data._Indices.EmplaceFast(2);
+		data._Indices.EmplaceFast(1);
 
-		data.indices.EmplaceFast(3);
-		data.indices.EmplaceFast(5);
-		data.indices.EmplaceFast(4);
+		data._Indices.EmplaceFast(3);
+		data._Indices.EmplaceFast(5);
+		data._Indices.EmplaceFast(4);
 
-		data.indices.EmplaceFast(6);
-		data.indices.EmplaceFast(8);
-		data.indices.EmplaceFast(7);
+		data._Indices.EmplaceFast(6);
+		data._Indices.EmplaceFast(8);
+		data._Indices.EmplaceFast(7);
 
-		data.indices.EmplaceFast(9);
-		data.indices.EmplaceFast(11);
-		data.indices.EmplaceFast(10);
+		data._Indices.EmplaceFast(9);
+		data._Indices.EmplaceFast(11);
+		data._Indices.EmplaceFast(10);
 
-		data.indices.EmplaceFast(12);
-		data.indices.EmplaceFast(14);
-		data.indices.EmplaceFast(13);
+		data._Indices.EmplaceFast(12);
+		data._Indices.EmplaceFast(14);
+		data._Indices.EmplaceFast(13);
 
-		data.indices.EmplaceFast(15);
-		data.indices.EmplaceFast(17);
-		data.indices.EmplaceFast(16);
+		data._Indices.EmplaceFast(15);
+		data._Indices.EmplaceFast(17);
+		data._Indices.EmplaceFast(16);
 
-		data.indices.EmplaceFast(18);
-		data.indices.EmplaceFast(20);
-		data.indices.EmplaceFast(19);
+		data._Indices.EmplaceFast(18);
+		data._Indices.EmplaceFast(20);
+		data._Indices.EmplaceFast(19);
 
-		data.indices.EmplaceFast(21);
-		data.indices.EmplaceFast(23);
-		data.indices.EmplaceFast(22);
+		data._Indices.EmplaceFast(21);
+		data._Indices.EmplaceFast(23);
+		data._Indices.EmplaceFast(22);
 	}
 
 	/*
@@ -194,21 +194,21 @@ namespace CommonPhysicalModelData
 	*/
 	static void GetPlanePhysicalModelData(PhysicalModelData &data) NOEXCEPT
 	{
-		data.extent = 1.0f;
+		data._Extent = 1.0f;
 
-		data.vertices.Reserve(4);
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.0f, 0.0f));
-		data.vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(1.0f, 1.0f));
-		data.vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(1.0f, 0.0f));
+		data._Vertices.Reserve(4);
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.0f, 0.0f));
+		data._Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(0.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(1.0f, 1.0f));
+		data._Vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2(1.0f, 0.0f));
 
-		data.indices.Reserve(6);
-		data.indices.EmplaceFast(0);
-		data.indices.EmplaceFast(2);
-		data.indices.EmplaceFast(1);
-		data.indices.EmplaceFast(0);
-		data.indices.EmplaceFast(3);
-		data.indices.EmplaceFast(2);
+		data._Indices.Reserve(6);
+		data._Indices.EmplaceFast(0);
+		data._Indices.EmplaceFast(2);
+		data._Indices.EmplaceFast(1);
+		data._Indices.EmplaceFast(0);
+		data._Indices.EmplaceFast(3);
+		data._Indices.EmplaceFast(2);
 	}
 
 }
