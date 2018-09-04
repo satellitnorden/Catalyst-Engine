@@ -110,8 +110,7 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 
 		if (state->_ButtonState == ButtonState::PressedHold)
 		{
-			spinner->Move(Vector3(50.0f * state->_DeltaX, 50.0f * state->_DeltaY, 0.0f));
-			spinner->Rotate(Vector3(-180.0f * state->_DeltaY, 180.0f * state->_DeltaX, 0.0f));
+			spinner->Move(Vector3(25.0f * state->_DeltaX, 25.0f * state->_DeltaY, 0.0f));
 		}
 #endif
 	}

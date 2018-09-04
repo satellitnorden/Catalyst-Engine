@@ -15,7 +15,7 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 {
 	configuration->_GeneralConfiguration._ProjectName = "Maxim";
 
-	configuration->_RenderingConfiguration._Resolution = Resolution(1'920, 1'080);
+	configuration->_RenderingConfiguration._Resolution = Resolution(1'080, 1'920);
 
 #if defined(CATALYST_WINDOWS)
 	configuration->_RenderingConfiguration._ResolutionScale = 1.0f;
