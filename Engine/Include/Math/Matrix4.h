@@ -16,7 +16,7 @@ class Matrix4 final
 public:
 
 	//The matrix.
-	Vector4 matrix[4];
+	Vector4 _Matrix[4];
 
 	/*
 	*	Calculates a look at matrix.
@@ -66,7 +66,7 @@ public:
 	/*
 	*	Returns a data to the pointer of this matrix.
 	*/
-	RESTRICTED float* Data() NOEXCEPT { return &(matrix[0].X); }
+	RESTRICTED float* Data() NOEXCEPT { return &(_Matrix[0]._X); }
 
 	/*
 	*	Returns the translation.

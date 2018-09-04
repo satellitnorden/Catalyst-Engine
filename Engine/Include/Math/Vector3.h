@@ -12,20 +12,20 @@ class Vector3 final
 public:
 
 	//The X component.
-	float X;
+	float _X;
 
 	//The Y component.
-	float Y;
+	float _Y;
 
 	//The Z component.
-	float Z;
+	float _Z;
 
 	/*
 	*	Returns the absolute value of the Vector3 passed in.
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static Vector3 Absolute(const Vector3 &vector) NOEXCEPT
 	{
-		return Vector3(CatalystMath::Absolute(vector.X), CatalystMath::Absolute(vector.Y), CatalystMath::Absolute(vector.Z));
+		return Vector3(CatalystMath::Absolute(vector._X), CatalystMath::Absolute(vector._Y), CatalystMath::Absolute(vector._Z));
 	}
 
 	/*
@@ -33,7 +33,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float DotProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
 	{
-		return firstVector.X * secondVector.X + firstVector.Y * secondVector.Y + firstVector.Z * secondVector.Z;
+		return firstVector._X * secondVector._X + firstVector._Y * secondVector._Y + firstVector._Z * secondVector._Z;
 	}
 
 	/*
@@ -41,7 +41,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static Vector3 CrossProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
 	{
-		return Vector3{ firstVector.Y * secondVector.Z - firstVector.Z * secondVector.Y, firstVector.Z * secondVector.X - firstVector.X * secondVector.Z, firstVector.X * secondVector.Y - firstVector.Y * secondVector.X };
+		return Vector3{ firstVector._Y * secondVector._Z - firstVector._Z * secondVector._Y, firstVector._Z * secondVector._X - firstVector._X * secondVector._Z, firstVector._X * secondVector._Y - firstVector._Y * secondVector._X };
 	}
 
 	/*
@@ -57,7 +57,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float LengthSquared(const Vector3 &vector) NOEXCEPT
 	{
-		return vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z;
+		return vector._X * vector._X + vector._Y * vector._Y + vector._Z * vector._Z;
 	}
 
 	/*
@@ -65,7 +65,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float LengthSquaredXY(const Vector3 &vector) NOEXCEPT
 	{
-		return vector.X * vector.X + vector.Y * vector.Y;
+		return vector._X * vector._X + vector._Y * vector._Y;
 	}
 
 	/*
@@ -73,7 +73,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float LengthSquaredXZ(const Vector3 &vector) NOEXCEPT
 	{
-		return vector.X * vector.X + vector.Z * vector.Z;
+		return vector._X * vector._X + vector._Z * vector._Z;
 	}
 
 	/*
@@ -81,7 +81,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float LengthSquaredYZ(const Vector3 &vector) NOEXCEPT
 	{
-		return vector.Y * vector.Y + vector.Z * vector.Z;
+		return vector._Y * vector._Y + vector._Z * vector._Z;
 	}
 
 	/*
@@ -97,9 +97,9 @@ public:
 	*/
 	FORCE_INLINE constexpr Vector3() NOEXCEPT
 		:
-		X(0.0f),
-		Y(0.0f),
-		Z(0.0f)
+		_X(0.0f),
+		_Y(0.0f),
+		_Z(0.0f)
 	{
 
 	}
@@ -109,9 +109,9 @@ public:
 	*/
 	FORCE_INLINE constexpr Vector3(const float scalar) NOEXCEPT
 		:
-		X(scalar),
-		Y(scalar),
-		Z(scalar)
+		_X(scalar),
+		_Y(scalar),
+		_Z(scalar)
 	{
 
 	}
@@ -121,9 +121,9 @@ public:
 	*/
 	FORCE_INLINE constexpr Vector3(const float newX, const float newY, const float newZ) NOEXCEPT
 		:
-		X(newX),
-		Y(newY),
-		Z(newZ)
+		_X(newX),
+		_Y(newY),
+		_Z(newZ)
 	{
 
 	}
@@ -133,9 +133,9 @@ public:
 	*/
 	FORCE_INLINE constexpr Vector3(const Vector3 &otherVector) NOEXCEPT
 		:
-		X(otherVector.X),
-		Y(otherVector.Y),
-		Z(otherVector.Z)
+		_X(otherVector._X),
+		_Y(otherVector._Y),
+		_Z(otherVector._Z)
 	{
 
 	}
@@ -145,9 +145,9 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator=(const Vector3 &otherVector) NOEXCEPT
 	{
-		X = otherVector.X;
-		Y = otherVector.Y;
-		Z = otherVector.Z;
+		_X = otherVector._X;
+		_Y = otherVector._Y;
+		_Z = otherVector._Z;
 	}
 
 	/*
@@ -155,7 +155,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector3 operator+(const float scalar) const NOEXCEPT
 	{
-		return Vector3{ X + scalar, Y + scalar, Z + scalar };
+		return Vector3{ _X + scalar, _Y + scalar, _Z + scalar };
 	}
 
 	/*
@@ -163,9 +163,9 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator+=(const float scalar) NOEXCEPT
 	{
-		X += scalar;
-		Y += scalar;
-		Z += scalar;
+		_X += scalar;
+		_Y += scalar;
+		_Z += scalar;
 	}
 
 	/*
@@ -173,7 +173,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector3 operator-(const float scalar) const NOEXCEPT
 	{
-		return Vector3{ X - scalar, Y - scalar, Z - scalar };
+		return Vector3{ _X - scalar, _Y - scalar, _Z - scalar };
 	}
 
 	/*
@@ -181,9 +181,9 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator-=(const float scalar) NOEXCEPT
 	{
-		X -= scalar;
-		Y -= scalar;
-		Z -= scalar;
+		_X -= scalar;
+		_Y -= scalar;
+		_Z -= scalar;
 	}
 
 	/*
@@ -191,7 +191,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector3 operator*(const float scalar) const NOEXCEPT
 	{
-		return Vector3{ X * scalar, Y * scalar, Z * scalar };
+		return Vector3{ _X * scalar, _Y * scalar, _Z * scalar };
 	}
 
 	/*
@@ -199,9 +199,9 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator*=(const float scalar) NOEXCEPT
 	{
-		X *= scalar;
-		Y *= scalar;
-		Z *= scalar;
+		_X *= scalar;
+		_Y *= scalar;
+		_Z *= scalar;
 	}
 
 	/*
@@ -211,7 +211,7 @@ public:
 	{
 		const float inverseScalar{ 1.0f / scalar };
 
-		return Vector3{ X * inverseScalar, Y * inverseScalar, Z * inverseScalar };
+		return Vector3{ _X * inverseScalar, _Y * inverseScalar, _Z * inverseScalar };
 	}
 
 	/*
@@ -221,9 +221,9 @@ public:
 	{
 		const float inverseScalar{ 1.0f / scalar };
 
-		X *= inverseScalar;
-		Y *= inverseScalar;
-		Z *= inverseScalar;
+		_X *= inverseScalar;
+		_Y *= inverseScalar;
+		_Z *= inverseScalar;
 	}
 
 	/*
@@ -231,7 +231,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector3 operator+(const Vector3 &otherVector) const NOEXCEPT
 	{
-		return Vector3{ X + otherVector.X, Y + otherVector.Y, Z + otherVector.Z };
+		return Vector3{ _X + otherVector._X, _Y + otherVector._Y, _Z + otherVector._Z };
 	}
 
 	/*
@@ -239,9 +239,9 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator+=(const Vector3 &otherVector) NOEXCEPT
 	{
-		X += otherVector.X;
-		Y += otherVector.Y;
-		Z += otherVector.Z;
+		_X += otherVector._X;
+		_Y += otherVector._Y;
+		_Z += otherVector._Z;
 	}
 
 	/*
@@ -249,7 +249,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector3 operator-(const Vector3 &otherVector) const NOEXCEPT
 	{
-		return Vector3{ X - otherVector.X, this->Y - otherVector.Y, this->Z - otherVector.Z };
+		return Vector3{ _X - otherVector._X, this->_Y - otherVector._Y, this->_Z - otherVector._Z };
 	}
 
 	/*
@@ -257,9 +257,9 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator-=(const Vector3 &otherVector) NOEXCEPT
 	{
-		X -= otherVector.X;
-		Y -= otherVector.Y;
-		Z -= otherVector.Z;
+		_X -= otherVector._X;
+		_Y -= otherVector._Y;
+		_Z -= otherVector._Z;
 	}
 
 	/*
@@ -267,7 +267,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector3 operator*(const Vector3 &otherVector) const NOEXCEPT
 	{
-		return Vector3{ this->X * otherVector.X, this->Y * otherVector.Y, this->Z * otherVector.Z };
+		return Vector3{ this->_X * otherVector._X, this->_Y * otherVector._Y, this->_Z * otherVector._Z };
 	}
 
 	/*
@@ -275,9 +275,9 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator*=(const Vector3 &otherVector) NOEXCEPT
 	{
-		X *= otherVector.X;
-		Y *= otherVector.Y;
-		Z *= otherVector.Z;
+		_X *= otherVector._X;
+		_Y *= otherVector._Y;
+		_Z *= otherVector._Z;
 	}
 
 	/*
@@ -285,7 +285,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector3 operator/(const Vector3 &otherVector) const NOEXCEPT
 	{ 
-		return Vector3{ X / otherVector.X, Y / otherVector.Y, Z / otherVector.Z };
+		return Vector3{ _X / otherVector._X, _Y / otherVector._Y, _Z / otherVector._Z };
 	}
 
 	/*
@@ -293,9 +293,9 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator/=(const Vector3 &otherVector) NOEXCEPT
 	{
-		X /= otherVector.X;
-		Y /= otherVector.Y;
-		Z /= otherVector.Z;
+		_X /= otherVector._X;
+		_Y /= otherVector._Y;
+		_Z /= otherVector._Z;
 	}
 
 	/*
@@ -303,7 +303,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD RESTRICTED constexpr const float* const RESTRICT Data() const NOEXCEPT
 	{
-		return &X;
+		return &_X;
 	}
 
 	/*
@@ -311,7 +311,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD RESTRICTED constexpr float* RESTRICT Data() NOEXCEPT
 	{
-		return &X;
+		return &_X;
 	}
 
 	/*
@@ -335,7 +335,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr float LengthSquared() const NOEXCEPT
 	{
-		return (X * X) + (Y * Y) + (Z * Z);
+		return (_X * _X) + (_Y * _Y) + (_Z * _Z);
 	}
 
 	/*
@@ -346,9 +346,9 @@ public:
 		const float length{ Length() };
 		const float inverseLength{ 1.0f / length };
 
-		X *= inverseLength;
-		Y *= inverseLength;
-		Z *= inverseLength;
+		_X *= inverseLength;
+		_Y *= inverseLength;
+		_Z *= inverseLength;
 	}
 
 	/*
@@ -367,9 +367,9 @@ public:
 	*/
 	constexpr void Rotate(const Vector3& rotationVector) NOEXCEPT
 	{
-		const float xRadians{ CatalystMath::DegreesToRadians(rotationVector.X) };
-		const float yRadians{ CatalystMath::DegreesToRadians(rotationVector.Y) };
-		const float zRadians{ CatalystMath::DegreesToRadians(rotationVector.Z) };
+		const float xRadians{ CatalystMath::DegreesToRadians(rotationVector._X) };
+		const float yRadians{ CatalystMath::DegreesToRadians(rotationVector._Y) };
+		const float zRadians{ CatalystMath::DegreesToRadians(rotationVector._Z) };
 
 		const float xCosine{ CatalystMath::CosineRadians(xRadians) };
 		const float xSine{ CatalystMath::SineRadians(xRadians) };
@@ -381,19 +381,19 @@ public:
 		const float zSine{ CatalystMath::SineRadians(zRadians) };
 
 		//Rotate the roll.
-		float tempY = Y * xCosine - Z * xSine;
-		Z = Y * xSine + Z * xCosine;
-		Y = tempY;
+		float tempY = _Y * xCosine - _Z * xSine;
+		_Z = _Y * xSine + _Z * xCosine;
+		_Y = tempY;
 
 		//Rotate the pitch
-		float tempX1 = X * yCosine + Z * ySine;
-		Z = -X * ySine + Z * yCosine;
-		X = tempX1;
+		float tempX1 = _X * yCosine + _Z * ySine;
+		_Z = -_X * ySine + _Z * yCosine;
+		_X = tempX1;
 
 		//Rotate the yaw.
-		float tempX2 = X * zCosine - Y * zSine;
-		Y = X * zSine + Y * zCosine;
-		X = tempX2;
+		float tempX2 = _X * zCosine - _Y * zSine;
+		_Y = _X * zSine + _Y * zCosine;
+		_X = tempX2;
 	}
 
 	/*

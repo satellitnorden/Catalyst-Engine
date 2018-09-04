@@ -27,8 +27,8 @@
 															_In_opt_ LPSTR lpCmdLine,		\
 															_In_ int32 nCmdShow)			\
 {																							\
-	CatalystPlatform::instance = hInstance;													\
-	CatalystPlatform::showCommand = nCmdShow;												\
+	CatalystPlatform::_Instance = hInstance;												\
+	CatalystPlatform::_ShowCommand = nCmdShow;												\
 																							\
 	implementation;																			\
 																							\
@@ -47,13 +47,13 @@ class CatalystPlatform final
 public:
 
 	//Handle to the instance.
-	static HINSTANCE instance;
+	static HINSTANCE _Instance;
 
 	//The command to show the window.
-	static int32 showCommand;
+	static int32 _ShowCommand;
 
 	//Handle to the window.
-	static HWND window;
+	static HWND _Window;
 
 	/*
 	*	Initializes the platform.

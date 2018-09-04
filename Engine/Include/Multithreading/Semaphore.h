@@ -20,7 +20,7 @@ public:
 	*/
 	Semaphore(const SemaphoreCreationFlags creationFlags = SemaphoreCreationFlags::Unsignalled) NOEXCEPT
 		:
-		signalled(creationFlags & SemaphoreCreationFlags::Signalled)
+		_Signalled(creationFlags & SemaphoreCreationFlags::Signalled)
 	{
 
 	}
@@ -28,24 +28,24 @@ public:
 	/*
 	*	Signals this semaphore.
 	*/
-	void Signal() NOEXCEPT { signalled.store(true); }
+	void Signal() NOEXCEPT { _Signalled.store(true); }
 
 	/*
 	*	Resets this semaphore.
 	*/
-	void Reset() NOEXCEPT { signalled.store(false); }
+	void Reset() NOEXCEPT { _Signalled.store(false); }
 
 	/*
 	*	Returns whether or not this semaphore is signalled.
 	*/
-	bool IsSignalled() const NOEXCEPT { return signalled.load(); }
+	bool IsSignalled() const NOEXCEPT { return _Signalled.load(); }
 
 	/*
 	*	Waits for this semaphore.
 	*/
 	void WaitFor() const NOEXCEPT
 	{
-		while (!signalled)
+		while (!_Signalled)
 		{
 			std::this_thread::yield();
 		}
@@ -54,6 +54,6 @@ public:
 private:
 
 	//Defines whether or not this semaphore is signalled.
-	std::atomic<bool> signalled{ false };
+	std::atomic<bool> _Signalled{ false };
 
 };

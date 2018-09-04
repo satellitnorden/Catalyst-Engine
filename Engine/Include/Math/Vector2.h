@@ -12,17 +12,17 @@ class Vector2 final
 public:
 
 	//The X component.
-	float X;
+	float _X;
 
 	//The Y component.
-	float Y;
+	float _Y;
 
 	/*
 	*	Given a vector, return it's length.
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float Length(const Vector2 &vector) NOEXCEPT
 	{
-		return CatalystMath::SquareRoot(vector.X * vector.X + vector.Y * vector.Y);
+		return CatalystMath::SquareRoot(vector._X * vector._X + vector._Y * vector._Y);
 	}
 
 	/*
@@ -30,7 +30,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float LengthSquared(const Vector2 &vector) NOEXCEPT 
 	{
-		return vector.X * vector.X + vector.Y * vector.Y;
+		return vector._X * vector._X + vector._Y * vector._Y;
 	}
 
 	/*
@@ -38,8 +38,8 @@ public:
 	*/
 	FORCE_INLINE constexpr Vector2() NOEXCEPT
 		:
-		X(0.0f),
-		Y(0.0f)
+		_X(0.0f),
+		_Y(0.0f)
 	{
 
 	}
@@ -49,8 +49,8 @@ public:
 	*/
 	FORCE_INLINE constexpr Vector2(const float newX, const float newY) NOEXCEPT
 		:
-		X(newX),
-		Y(newY)
+		_X(newX),
+		_Y(newY)
 	{
 
 	}
@@ -60,7 +60,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector2 operator+(const float scalar) const NOEXCEPT
 	{
-		return Vector2(X + scalar, Y + scalar);
+		return Vector2(_X + scalar, _Y + scalar);
 	}
 
 	/*
@@ -68,8 +68,8 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator+=(const float scalar) NOEXCEPT
 	{
-		X += scalar;
-		Y += scalar;
+		_X += scalar;
+		_Y += scalar;
 	}
 
 	/*
@@ -77,7 +77,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector2 operator-(const float scalar) const NOEXCEPT
 	{
-		return Vector2(X - scalar, Y - scalar);
+		return Vector2(_X - scalar, _Y - scalar);
 	}
 
 	/*
@@ -85,8 +85,8 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator-=(const float scalar) NOEXCEPT
 	{
-		X -= scalar;
-		Y -= scalar;
+		_X -= scalar;
+		_Y -= scalar;
 	}
 
 	/*
@@ -94,7 +94,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector2 operator*(const float scalar) const NOEXCEPT
 	{
-		return Vector2(X * scalar, Y * scalar);
+		return Vector2(_X * scalar, _Y * scalar);
 	}
 
 	/*
@@ -102,8 +102,8 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator*=(const float scalar) NOEXCEPT
 	{
-		X *= scalar;
-		Y *= scalar;
+		_X *= scalar;
+		_Y *= scalar;
 	}
 
 	/*
@@ -113,7 +113,7 @@ public:
 	{
 		const float inverseScalar{ 1.0f / scalar };
 
-		return Vector2(X * inverseScalar, Y * inverseScalar);
+		return Vector2(_X * inverseScalar, _Y * inverseScalar);
 	}
 
 	/*
@@ -123,8 +123,8 @@ public:
 	{
 		const float inverseScalar{ 1.0f / scalar };
 
-		X *= inverseScalar;
-		Y *= inverseScalar;
+		_X *= inverseScalar;
+		_Y *= inverseScalar;
 	}
 
 	/*
@@ -132,7 +132,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector2 operator+(const Vector2 &otherVector) const NOEXCEPT
 	{
-		return Vector2(X + otherVector.X, Y + otherVector.Y);
+		return Vector2(_X + otherVector._X, _Y + otherVector._Y);
 	}
 
 	/*
@@ -140,8 +140,8 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator+=(const Vector2 &otherVector) NOEXCEPT
 	{
-		X += otherVector.X;
-		Y += otherVector.Y;
+		_X += otherVector._X;
+		_Y += otherVector._Y;
 	}
 
 	/*
@@ -149,7 +149,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector2 operator-(const Vector2 &otherVector) const NOEXCEPT
 	{
-		return Vector2(X - otherVector.X, Y - otherVector.Y);
+		return Vector2(_X - otherVector._X, _Y - otherVector._Y);
 	}
 
 	/*
@@ -157,8 +157,8 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator-=(const Vector2 &otherVector) NOEXCEPT
 	{
-		X -= otherVector.X;
-		Y -= otherVector.Y;
+		_X -= otherVector._X;
+		_Y -= otherVector._Y;
 	}
 
 	/*
@@ -166,7 +166,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector2 operator*(const Vector2 &otherVector) const NOEXCEPT
 	{
-		return Vector2(X * otherVector.X, Y * otherVector.Y);
+		return Vector2(_X * otherVector._X, _Y * otherVector._Y);
 	}
 
 	/*
@@ -174,8 +174,8 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator*=(const Vector2 &otherVector) NOEXCEPT
 	{
-		X *= otherVector.X;
-		Y *= otherVector.Y;
+		_X *= otherVector._X;
+		_Y *= otherVector._Y;
 	}
 
 	/*
@@ -183,7 +183,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector2 operator/(const Vector2 &otherVector) const NOEXCEPT
 	{
-		return Vector2(X / otherVector.X, Y / otherVector.Y);
+		return Vector2(_X / otherVector._X, _Y / otherVector._Y);
 	}
 
 	/*
@@ -191,8 +191,8 @@ public:
 	*/
 	FORCE_INLINE constexpr void operator/=(const Vector2 &otherVector) NOEXCEPT
 	{
-		X /= otherVector.X;
-		Y /= otherVector.Y;
+		_X /= otherVector._X;
+		_Y /= otherVector._Y;
 	}
 
 	/*
@@ -200,7 +200,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD RESTRICTED constexpr const float* const RESTRICT Data() const NOEXCEPT
 	{
-		return &X;
+		return &_X;
 	}
 
 	/*
@@ -208,7 +208,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD RESTRICTED constexpr float* RESTRICT Data() NOEXCEPT
 	{
-		return &X;
+		return &_X;
 	}
 
 	/*
@@ -224,7 +224,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr float LengthSquared() const NOEXCEPT
 	{
-		return (X * X) + (Y * Y);
+		return (_X * _X) + (_Y * _Y);
 	}
 
 	/*
@@ -235,8 +235,8 @@ public:
 		const float length{ Length() };
 		const float inverseLength{ 1.0f / length };
 
-		X *= inverseLength;
-		Y *= inverseLength;
+		_X *= inverseLength;
+		_Y *= inverseLength;
 	}
 
 	/*
@@ -249,11 +249,11 @@ public:
 		const float cosine{ CatalystMath::CosineRadians(theta) };
 		const float sine{ CatalystMath::SineDegrees(theta) };
 
-		const float newX{ X * cosine - Y * sine };
-		const float newY{ X * cosine + Y * sine };
+		const float newX{ _X * cosine - _Y * sine };
+		const float newY{ _X * cosine + _Y * sine };
 
-		X = newX;
-		Y = newY;
+		_X = newX;
+		_Y = newY;
 	}
 
 };

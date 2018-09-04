@@ -16,11 +16,11 @@ DEFINE_SINGLETON(InputSystem);
 void InputSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize the update task.
-	_UpdateTask.function = [](void *const RESTRICT arguments)
+	_UpdateTask._Function = [](void *const RESTRICT arguments)
 	{
 		static_cast<InputSystem *const RESTRICT>(arguments)->UpdateSystemAsynchronous();
 	};
-	_UpdateTask.arguments = this;
+	_UpdateTask._Arguments = this;
 }
 
 /*

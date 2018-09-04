@@ -9,7 +9,7 @@
 */
 Matrix3::Matrix3() NOEXCEPT
 	:
-	matrix{ {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f} }
+	_Matrix{ {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f} }
 {
 
 }
@@ -19,7 +19,7 @@ Matrix3::Matrix3() NOEXCEPT
 */
 Matrix3::Matrix3(const Matrix4 &otherMatrix) NOEXCEPT
 	:
-	matrix{ { otherMatrix.matrix[0].X, otherMatrix.matrix[0].Y, otherMatrix.matrix[0].Z },{ otherMatrix.matrix[1].X, otherMatrix.matrix[1].Y, otherMatrix.matrix[1].Z },{ otherMatrix.matrix[2].X, otherMatrix.matrix[2].Y, otherMatrix.matrix[2].Z } }
+	_Matrix{ { otherMatrix._Matrix[0]._X, otherMatrix._Matrix[0]._Y, otherMatrix._Matrix[0]._Z },{ otherMatrix._Matrix[1]._X, otherMatrix._Matrix[1]._Y, otherMatrix._Matrix[1]._Z },{ otherMatrix._Matrix[2]._X, otherMatrix._Matrix[2]._Y, otherMatrix._Matrix[2]._Z } }
 {
 	
 }
@@ -31,9 +31,9 @@ Vector3 Matrix3::operator*(const Vector3 &vector) NOEXCEPT
 {
 	Vector3 multipliedVector{ vector };
 
-	multipliedVector.X = (matrix[0].X * vector.X) + (matrix[1].X * vector.Y) + (matrix[2].X * vector.Z);
-	multipliedVector.Y = (matrix[0].Y * vector.X) + (matrix[1].Y * vector.Y) + (matrix[2].Y * vector.Z);
-	multipliedVector.Z = (matrix[0].Z * vector.X) + (matrix[1].Z * vector.Y) + (matrix[2].Z * vector.Z);
+	multipliedVector._X = (_Matrix[0]._X * vector._X) + (_Matrix[1]._X * vector._Y) + (_Matrix[2]._X * vector._Z);
+	multipliedVector._Y = (_Matrix[0]._Y * vector._X) + (_Matrix[1]._Y * vector._Y) + (_Matrix[2]._Y * vector._Z);
+	multipliedVector._Z = (_Matrix[0]._Z * vector._X) + (_Matrix[1]._Z * vector._Y) + (_Matrix[2]._Z * vector._Z);
 
 	return multipliedVector;
 }

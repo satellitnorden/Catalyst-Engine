@@ -67,25 +67,25 @@ private:
 
 		float ma;
 
-		if (absoluteDirection.Z >= absoluteDirection.X && absoluteDirection.Z >= absoluteDirection.Y)
+		if (absoluteDirection._Z >= absoluteDirection._X && absoluteDirection._Z >= absoluteDirection._Y)
 		{
-			faceIndex = direction.Z < 0.0f ? 5 : 4;
-			ma = 0.5f / absoluteDirection.Z;
-			textureCoordinate = Vector2(direction.Z < 0.0f ? -direction.X : direction.X, -direction.Y);
+			faceIndex = direction._Z < 0.0f ? 5 : 4;
+			ma = 0.5f / absoluteDirection._Z;
+			textureCoordinate = Vector2(direction._Z < 0.0f ? -direction._X : direction._X, -direction._Y);
 		}
 
-		else if (absoluteDirection.Y >= absoluteDirection.X)
+		else if (absoluteDirection._Y >= absoluteDirection._X)
 		{
-			faceIndex = direction.Y < 0.0f ? 3 : 2;
-			ma = 0.5f / absoluteDirection.Y;
-			textureCoordinate = Vector2(direction.X, direction.Y < 0.0f ? -direction.Z : direction.Z);
+			faceIndex = direction._Y < 0.0f ? 3 : 2;
+			ma = 0.5f / absoluteDirection._Y;
+			textureCoordinate = Vector2(direction._X, direction._Y < 0.0f ? -direction._Z : direction._Z);
 		}
 
 		else
 		{
-			faceIndex = direction.X < 0.0f ? 1 : 0;
-			ma = 0.5f / absoluteDirection.X;
-			textureCoordinate = Vector2(direction.X < 0.0f ? direction.Z : -direction.Z, -direction.Y);
+			faceIndex = direction._X < 0.0f ? 1 : 0;
+			ma = 0.5f / absoluteDirection._X;
+			textureCoordinate = Vector2(direction._X < 0.0f ? direction._Z : -direction._Z, -direction._Y);
 		}
 
 		textureCoordinate = textureCoordinate * ma + 0.5f;

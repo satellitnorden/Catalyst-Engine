@@ -330,12 +330,12 @@ protected:
 	/*
 	*	Sets the initialization function.
 	*/
-	void SetInitializationFunction(const TaskFunction newInitializationFunction) NOEXCEPT { initializationTask.function = newInitializationFunction; }
+	void SetInitializationFunction(const TaskFunction newInitializationFunction) NOEXCEPT { initializationTask._Function = newInitializationFunction; }
 
 	/*
 	*	Sets the render function.
 	*/
-	void SetRenderFunction(const TaskFunction newRenderFunction) NOEXCEPT { renderTask.function = newRenderFunction; }
+	void SetRenderFunction(const TaskFunction newRenderFunction) NOEXCEPT { renderTask._Function = newRenderFunction; }
 
 private:
 

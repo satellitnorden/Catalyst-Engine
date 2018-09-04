@@ -671,10 +671,10 @@ void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 
 		for (Vector4& sample : samples)
 		{
-			sample.X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample.Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample.Z = CatalystMath::RandomFloatInRange(0.0f, 1.0f);
-			sample.W = 0.0f;
+			sample._X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample._Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample._Z = CatalystMath::RandomFloatInRange(0.0f, 1.0f);
+			sample._W = 0.0f;
 
 			sample.Normalize();
 
@@ -1747,10 +1747,10 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 		dynamicUniformData.directionalLightViewMatrix = RenderingUtilities::CalculateDirectionalLightViewMatrix();
 		dynamicUniformData.directionalLightDirection = Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->_Rotation);
 		dynamicUniformData.directionalLightColor = directionalLightComponent->_Color;
-		dynamicUniformData.directionalLightScreenSpacePosition = *viewMatrix * Vector4(-dynamicUniformData.directionalLightDirection.X * 100.0f + cameraWorldPosition.X, -dynamicUniformData.directionalLightDirection.Y * 100.0f + cameraWorldPosition.Y, -dynamicUniformData.directionalLightDirection.Z * 100.0f + cameraWorldPosition.Z, 1.0f);
-		dynamicUniformData.directionalLightScreenSpacePosition.X /= dynamicUniformData.directionalLightScreenSpacePosition.W;
-		dynamicUniformData.directionalLightScreenSpacePosition.Y /= dynamicUniformData.directionalLightScreenSpacePosition.W;
-		dynamicUniformData.directionalLightScreenSpacePosition.Z /= dynamicUniformData.directionalLightScreenSpacePosition.W;
+		dynamicUniformData.directionalLightScreenSpacePosition = *viewMatrix * Vector4(-dynamicUniformData.directionalLightDirection._X * 100.0f + cameraWorldPosition._X, -dynamicUniformData.directionalLightDirection._Y * 100.0f + cameraWorldPosition._Y, -dynamicUniformData.directionalLightDirection._Z * 100.0f + cameraWorldPosition._Z, 1.0f);
+		dynamicUniformData.directionalLightScreenSpacePosition._X /= dynamicUniformData.directionalLightScreenSpacePosition._W;
+		dynamicUniformData.directionalLightScreenSpacePosition._Y /= dynamicUniformData.directionalLightScreenSpacePosition._W;
+		dynamicUniformData.directionalLightScreenSpacePosition._Z /= dynamicUniformData.directionalLightScreenSpacePosition._W;
 	}
 
 	else
@@ -1813,7 +1813,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 		dynamicUniformData.spotLightOuterCutoffAngles[counter] = CatalystMath::CosineDegrees(spotLightComponent->_OuterCutoffAngle);
 		dynamicUniformData.spotLightColors[counter] = spotLightComponent->_Color;
 		dynamicUniformData.spotLightDirections[counter] = Vector3(0.0f, -1.0f, 0.0f).Rotated(spotLightComponent->_Rotation);
-		dynamicUniformData.spotLightDirections[counter].Y *= -1.0f;
+		dynamicUniformData.spotLightDirections[counter]._Y *= -1.0f;
 		dynamicUniformData.spotLightWorldPositions[counter] = spotLightComponent->_Position;
 
 		++counter;

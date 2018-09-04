@@ -9,27 +9,11 @@ class Spinlock final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	Spinlock() NOEXCEPT
-	{
-
-	}
-
-	/*
-	*	Default destructor.
-	*/
-	~Spinlock() NOEXCEPT
-	{
-
-	}
-
-	/*
 	*	Locks this spinlock.
 	*/
 	void Lock() NOEXCEPT
 	{
-		while (lock.test_and_set(std::memory_order_acquire));
+		while (_Lock.test_and_set(std::memory_order_acquire));
 	}
 
 	/*
@@ -37,12 +21,12 @@ public:
 	*/
 	void Unlock() NOEXCEPT
 	{
-		lock.clear(std::memory_order_release);
+		_Lock.clear(std::memory_order_release);
 	}
 
 private:
 
 	//The underlying atomic lock.
-	std::atomic_flag lock{ 0 };
+	std::atomic_flag _Lock{ 0 };
 
 };

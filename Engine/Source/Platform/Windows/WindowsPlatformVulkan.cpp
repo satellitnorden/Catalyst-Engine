@@ -21,8 +21,8 @@ namespace PlatformVulkan
 		surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
 		surfaceCreateInfo.pNext = nullptr;
 		surfaceCreateInfo.flags = 0;
-		surfaceCreateInfo.hinstance = CatalystPlatform::instance;
-		surfaceCreateInfo.hwnd = CatalystPlatform::window;
+		surfaceCreateInfo.hinstance = CatalystPlatform::_Instance;
+		surfaceCreateInfo.hwnd = CatalystPlatform::_Window;
 
 		const VkResult result{ vkCreateWin32SurfaceKHR(VulkanInterface::Instance->GetInstance().Get(), &surfaceCreateInfo, nullptr, vulkanSurface) };
 

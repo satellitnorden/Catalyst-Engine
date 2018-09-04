@@ -10,7 +10,7 @@
 *	This is to avoid reallocations when pushing/popping, so the atomic queue MUST be initialized with large enough storage to ensure that this never happens.
 */
 
-template <typename Type, uint64 Size>
+template <typename Type, uint64 SIZE>
 class AtomicQueue final
 {
 
@@ -26,17 +26,17 @@ public:
 
 		do
 		{
-			oldWriteIndex = writeIndex.load();
+			oldWriteIndex = _WriteIndex.load();
 
-			newWriteIndex = oldWriteIndex < (Size - 1) ? oldWriteIndex + 1 : 0;
-		} while (!writeIndex.compare_exchange_weak(oldWriteIndex, newWriteIndex));
+			newWriteIndex = oldWriteIndex < (SIZE - 1) ? oldWriteIndex + 1 : 0;
+		} while (!_WriteIndex.compare_exchange_weak(oldWriteIndex, newWriteIndex));
 
-		queue[oldWriteIndex] = newValue;
+		_Queue[oldWriteIndex] = newValue;
 
-		uint64 expectedLastIndex{ newWriteIndex > 0 ? newWriteIndex - 1 : Size - 1 };
-		uint64 newLastIndex{ expectedLastIndex < (Size - 1) ? expectedLastIndex + 1 : 0 };
+		uint64 expectedLastIndex{ newWriteIndex > 0 ? newWriteIndex - 1 : SIZE - 1 };
+		uint64 newLastIndex{ expectedLastIndex < (SIZE - 1) ? expectedLastIndex + 1 : 0 };
 
-		while (!lastIndex.compare_exchange_weak(expectedLastIndex, newLastIndex));
+		while (!_LastIndex.compare_exchange_weak(expectedLastIndex, newLastIndex));
 	}
 
 	/*
@@ -50,30 +50,30 @@ public:
 
 		do
 		{
-			oldFirstIndex = firstIndex.load();
-			oldLastIndex = lastIndex.load();
+			oldFirstIndex = _FirstIndex.load();
+			oldLastIndex = _LastIndex.load();
 
 			if (oldFirstIndex == oldLastIndex)
 				return nullptr;
 
-			newFirstIndex = oldFirstIndex < (Size - 1) ? oldFirstIndex + 1 : 0;
-		} while (!firstIndex.compare_exchange_weak(oldFirstIndex, newFirstIndex));
+			newFirstIndex = oldFirstIndex < (SIZE - 1) ? oldFirstIndex + 1 : 0;
+		} while (!_FirstIndex.compare_exchange_weak(oldFirstIndex, newFirstIndex));
 
-		return &queue[oldFirstIndex];
+		return &_Queue[oldFirstIndex];
 	}
 
 private:
 
 	//The underlying queue.
-	StaticArray<Type, Size> queue;
+	StaticArray<Type, SIZE> _Queue;
 
 	//The first index in the queue.
-	std::atomic<uint64> firstIndex{ 0 };
+	std::atomic<uint64> _FirstIndex{ 0 };
 
 	//The current write index.
-	std::atomic<uint64> writeIndex{ 0 };
+	std::atomic<uint64> _WriteIndex{ 0 };
 
 	//The last index in the queue.
-	std::atomic<uint64> lastIndex{ 0 };
+	std::atomic<uint64> _LastIndex{ 0 };
 
 };

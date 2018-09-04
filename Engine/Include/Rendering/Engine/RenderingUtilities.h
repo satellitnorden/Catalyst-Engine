@@ -56,8 +56,8 @@ namespace RenderingUtilities
 
 		for (const Vector4 &property : *properties)
 		{
-			lowest = CatalystMath::Minimum(lowest, property.W);
-			highest = CatalystMath::Maximum(highest, property.W);
+			lowest = CatalystMath::Minimum(lowest, property._W);
+			highest = CatalystMath::Maximum(highest, property._W);
 		}
 
 		const float halfExtent{ extent * 0.5f };
@@ -80,15 +80,15 @@ namespace RenderingUtilities
 
 		for (const VegetationTransformation &transformation : transformations)
 		{
-			gridMinimum.X = CatalystMath::Minimum<float>(gridMinimum.X, transformation.position.X);
-			gridMinimum.Y = CatalystMath::Minimum<float>(gridMinimum.Y, transformation.position.Z);
-			gridMaximum.X = CatalystMath::Maximum<float>(gridMaximum.X, transformation.position.X);
-			gridMaximum.Y = CatalystMath::Maximum<float>(gridMaximum.Y, transformation.position.Z);
+			gridMinimum._X = CatalystMath::Minimum<float>(gridMinimum._X, transformation.position._X);
+			gridMinimum._Y = CatalystMath::Minimum<float>(gridMinimum._Y, transformation.position._Z);
+			gridMaximum._X = CatalystMath::Maximum<float>(gridMaximum._X, transformation.position._X);
+			gridMaximum._Y = CatalystMath::Maximum<float>(gridMaximum._Y, transformation.position._Z);
 		}
 
 		//Now that the bounding box extent is known, calculate the number of rows/columns for the grid.
-		const float xExtent{ gridMaximum.X - gridMinimum.X };
-		const float yExtent{ gridMaximum.Y - gridMinimum.Y };
+		const float xExtent{ gridMaximum._X - gridMinimum._X };
+		const float yExtent{ gridMaximum._Y - gridMinimum._Y };
 
 		const float halfXExtent{ xExtent * 0.5f };
 		const float halfYExtent{ yExtent * 0.5f };
@@ -114,8 +114,8 @@ namespace RenderingUtilities
 		{
 			for (uint64 j = 0; j < columns; ++j)
 			{
-				cullingComponent->_GridCellCenterLocations[(i * columns) + j] = Vector2(	gridMinimum.X + halfRowSize + (rowSize * i),
-																						gridMinimum.Y + halfRowSize + (columnSize * j));
+				cullingComponent->_GridCellCenterLocations[(i * columns) + j] = Vector2(	gridMinimum._X + halfRowSize + (rowSize * i),
+																						gridMinimum._Y + halfRowSize + (columnSize * j));
 			}
 		}
 
@@ -136,8 +136,8 @@ namespace RenderingUtilities
 
 		for (const VegetationTransformation &transformation : transformations)
 		{
-			uint64 rowIndex{ CatalystMath::Floor<uint64>(((transformation.position.X + halfXExtent) * inverseXExtent) * static_cast<float>(rows)) };
-			uint64 columnIndex{ CatalystMath::Floor<uint64>(((transformation.position.Z + halfYExtent) * inverseYExtent) * static_cast<float>(columns)) };
+			uint64 rowIndex{ CatalystMath::Floor<uint64>(((transformation.position._X + halfXExtent) * inverseXExtent) * static_cast<float>(rows)) };
+			uint64 columnIndex{ CatalystMath::Floor<uint64>(((transformation.position._Z + halfYExtent) * inverseYExtent) * static_cast<float>(columns)) };
 
 			rowIndex = CatalystMath::Minimum<uint64>(rowIndex, rows - 1);
 			columnIndex = CatalystMath::Minimum<uint64>(columnIndex, columns - 1);
@@ -214,12 +214,12 @@ namespace RenderingUtilities
 
 		for (uint8 i = 0; i < 8; ++i)
 		{
-			highestX = CatalystMath::Maximum(highestX, corners[i].X);
-			lowestX = CatalystMath::Minimum(lowestX, corners[i].X);
-			highestY = CatalystMath::Maximum(highestY, corners[i].Y);
-			lowestY = CatalystMath::Minimum(lowestY, corners[i].Y);
-			highestZ = CatalystMath::Maximum(highestZ, corners[i].Z);
-			lowestZ = CatalystMath::Minimum(lowestZ, corners[i].Z);
+			highestX = CatalystMath::Maximum(highestX, corners[i]._X);
+			lowestX = CatalystMath::Minimum(lowestX, corners[i]._X);
+			highestY = CatalystMath::Maximum(highestY, corners[i]._Y);
+			lowestY = CatalystMath::Minimum(lowestY, corners[i]._Y);
+			highestZ = CatalystMath::Maximum(highestZ, corners[i]._Z);
+			lowestZ = CatalystMath::Minimum(lowestZ, corners[i]._Z);
 		}
 
 		if (((highestX > 1.0f && lowestX > 1.0f) || (highestX < -1.0f && lowestX < -1.0f))
@@ -244,25 +244,25 @@ namespace RenderingUtilities
 	{
 		StaticArray<Vector4, 8> corners;
 
-		corners[0] = Vector4(axisAlignedBoundingBox.minimum.X, axisAlignedBoundingBox.minimum.Y, axisAlignedBoundingBox.minimum.Z, 1.0f);
-		corners[1] = Vector4(axisAlignedBoundingBox.minimum.X, axisAlignedBoundingBox.maximum.Y, axisAlignedBoundingBox.minimum.Z, 1.0f);
-		corners[2] = Vector4(axisAlignedBoundingBox.maximum.X, axisAlignedBoundingBox.maximum.Y, axisAlignedBoundingBox.minimum.Z, 1.0f);
-		corners[3] = Vector4(axisAlignedBoundingBox.maximum.X, axisAlignedBoundingBox.minimum.Y, axisAlignedBoundingBox.minimum.Z, 1.0f);
+		corners[0] = Vector4(axisAlignedBoundingBox.minimum._X, axisAlignedBoundingBox.minimum._Y, axisAlignedBoundingBox.minimum._Z, 1.0f);
+		corners[1] = Vector4(axisAlignedBoundingBox.minimum._X, axisAlignedBoundingBox.maximum._Y, axisAlignedBoundingBox.minimum._Z, 1.0f);
+		corners[2] = Vector4(axisAlignedBoundingBox.maximum._X, axisAlignedBoundingBox.maximum._Y, axisAlignedBoundingBox.minimum._Z, 1.0f);
+		corners[3] = Vector4(axisAlignedBoundingBox.maximum._X, axisAlignedBoundingBox.minimum._Y, axisAlignedBoundingBox.minimum._Z, 1.0f);
 
-		corners[4] = Vector4(axisAlignedBoundingBox.minimum.X, axisAlignedBoundingBox.minimum.Y, axisAlignedBoundingBox.maximum.Z, 1.0f);
-		corners[5] = Vector4(axisAlignedBoundingBox.minimum.X, axisAlignedBoundingBox.maximum.Y, axisAlignedBoundingBox.maximum.Z, 1.0f);
-		corners[6] = Vector4(axisAlignedBoundingBox.maximum.X, axisAlignedBoundingBox.maximum.Y, axisAlignedBoundingBox.maximum.Z, 1.0f);
-		corners[7] = Vector4(axisAlignedBoundingBox.maximum.X, axisAlignedBoundingBox.minimum.Y, axisAlignedBoundingBox.maximum.Z, 1.0f);
+		corners[4] = Vector4(axisAlignedBoundingBox.minimum._X, axisAlignedBoundingBox.minimum._Y, axisAlignedBoundingBox.maximum._Z, 1.0f);
+		corners[5] = Vector4(axisAlignedBoundingBox.minimum._X, axisAlignedBoundingBox.maximum._Y, axisAlignedBoundingBox.maximum._Z, 1.0f);
+		corners[6] = Vector4(axisAlignedBoundingBox.maximum._X, axisAlignedBoundingBox.maximum._Y, axisAlignedBoundingBox.maximum._Z, 1.0f);
+		corners[7] = Vector4(axisAlignedBoundingBox.maximum._X, axisAlignedBoundingBox.minimum._Y, axisAlignedBoundingBox.maximum._Z, 1.0f);
 
 		for (uint8 i = 0; i < 8; ++i)
 		{
 			corners[i] = viewMatrix * corners[i];
 
-			const float inverseW{ 1.0f / corners[i].W };
+			const float inverseW{ 1.0f / corners[i]._W };
 
-			corners[i].X *= inverseW;
-			corners[i].Y *= inverseW;
-			corners[i].Z *= inverseW;
+			corners[i]._X *= inverseW;
+			corners[i]._Y *= inverseW;
+			corners[i]._Z *= inverseW;
 		}
 
 		float highestX{ -FLOAT_MAXIMUM };
@@ -274,12 +274,12 @@ namespace RenderingUtilities
 
 		for (uint8 i = 0; i < 8; ++i)
 		{
-			highestX = CatalystMath::Maximum(highestX, corners[i].X);
-			lowestX = CatalystMath::Minimum(lowestX, corners[i].X);
-			highestY = CatalystMath::Maximum(highestY, corners[i].Y);
-			lowestY = CatalystMath::Minimum(lowestY, corners[i].Y);
-			highestZ = CatalystMath::Maximum(highestZ, corners[i].Z);
-			lowestZ = CatalystMath::Minimum(lowestZ, corners[i].Z);
+			highestX = CatalystMath::Maximum(highestX, corners[i]._X);
+			lowestX = CatalystMath::Minimum(lowestX, corners[i]._X);
+			highestY = CatalystMath::Maximum(highestY, corners[i]._Y);
+			lowestY = CatalystMath::Minimum(lowestY, corners[i]._Y);
+			highestZ = CatalystMath::Maximum(highestZ, corners[i]._Z);
+			lowestZ = CatalystMath::Minimum(lowestZ, corners[i]._Z);
 		}
 
 		if (((highestX > 1.0f && lowestX > 1.0f) || (highestX < -1.0f && lowestX < -1.0f))

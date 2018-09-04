@@ -59,10 +59,10 @@ float PhysicsSystem::GetTerrainHeightAtPosition(const Vector3 &position) const N
 	const float terrainSize{ terrainComponent._TerrainUniformData.terrainSize };
 	const float terrainHeight{ terrainComponent._TerrainUniformData.terrainHeight };
 
-	const float xIndex = (position.X - terrainComponent._TerrainUniformData.terrainPosition.X + (terrainSize * 0.5f)) / terrainSize;
-	const float yIndex = (position.Z - terrainComponent._TerrainUniformData.terrainPosition.Z + (terrainSize * 0.5f)) / terrainSize;
+	const float xIndex = (position._X - terrainComponent._TerrainUniformData.terrainPosition._X + (terrainSize * 0.5f)) / terrainSize;
+	const float yIndex = (position._Z - terrainComponent._TerrainUniformData.terrainPosition._Z + (terrainSize * 0.5f)) / terrainSize;
 
-	return terrainProperties.At(xIndex, yIndex).W * terrainHeight + terrainComponent._TerrainUniformData.terrainPosition.Y;
+	return terrainProperties.At(xIndex, yIndex)._W * terrainHeight + terrainComponent._TerrainUniformData.terrainPosition._Y;
 }
 
 /*
@@ -76,10 +76,10 @@ Vector3 PhysicsSystem::GetTerrainNormalAtPosition(const Vector3 &position) const
 	const float terrainSize{ terrainComponent._TerrainUniformData.terrainSize };
 	const float terrainHeight{ terrainComponent._TerrainUniformData.terrainHeight };
 
-	const float xIndex = (position.X + (terrainSize * 0.5f)) / terrainSize;
-	const float yIndex = (position.Z + (terrainSize * 0.5f)) / terrainSize;
+	const float xIndex = (position._X + (terrainSize * 0.5f)) / terrainSize;
+	const float yIndex = (position._Z + (terrainSize * 0.5f)) / terrainSize;
 
 	const Vector4 &terrainProperty{ terrainProperties.At(xIndex, yIndex) };
 
-	return Vector3(terrainProperty.X, terrainProperty.Y, terrainProperty.Z);
+	return Vector3(terrainProperty._X, terrainProperty._Y, terrainProperty._Z);
 }

@@ -15,7 +15,7 @@ class Matrix3 final
 public:
 
 	//The matrix.
-	Vector3 matrix[3];
+	Vector3 _Matrix[3];
 
 	/*
 	*	Default constructor.
@@ -30,7 +30,7 @@ public:
 	/*
 	*	Returns a data to the pointer of this matrix.
 	*/
-	RESTRICTED float* Data() NOEXCEPT { return &(matrix[0].X); }
+	RESTRICTED float* Data() NOEXCEPT { return &(_Matrix[0]._X); }
 
 	/*
 	*	Matrix3 by vector3 multiplcation overload.

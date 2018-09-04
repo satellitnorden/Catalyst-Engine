@@ -125,7 +125,7 @@ public:
 	*/
 	const Vector4 At(const Vector2 &textureCoordinate) const NOEXCEPT
 	{
-		return At(textureCoordinate.X, textureCoordinate.Y);
+		return At(textureCoordinate._X, textureCoordinate._Y);
 	}
 
 	/*

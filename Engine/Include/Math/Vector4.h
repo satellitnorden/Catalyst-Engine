@@ -12,16 +12,16 @@ class Vector4 final
 public:
 
 	//The X component.
-	float X;
+	float _X;
 
 	//The Y component.
-	float Y;
+	float _Y;
 
 	//The Z component.
-	float Z;
+	float _Z;
 
 	//The W component.
-	float W;
+	float _W;
 
 	/*
 	*	Linearly interpolate between two Vector4 values.
@@ -36,10 +36,10 @@ public:
 	*/
 	constexpr Vector4() NOEXCEPT
 		:
-		X(0.0f),
-		Y(0.0f),
-		Z(0.0f),
-		W(0.0f)
+		_X(0.0f),
+		_Y(0.0f),
+		_Z(0.0f),
+		_W(0.0f)
 	{
 
 	}
@@ -49,10 +49,10 @@ public:
 	*/
 	constexpr Vector4(const float newValue) NOEXCEPT
 		:
-		X(newValue),
-		Y(newValue),
-		Z(newValue),
-		W(newValue)
+		_X(newValue),
+		_Y(newValue),
+		_Z(newValue),
+		_W(newValue)
 	{
 
 	}
@@ -63,10 +63,10 @@ public:
 	constexpr Vector4(const float newX, const float newY, const float newZ, const float newW) NOEXCEPT
 
 		:
-		X(newX),
-		Y(newY),
-		Z(newZ),
-		W(newW)
+		_X(newX),
+		_Y(newY),
+		_Z(newZ),
+		_W(newW)
 	{
 
 	}
@@ -76,10 +76,10 @@ public:
 	*/
 	constexpr Vector4(const Vector3 &otherVector) NOEXCEPT
 		:
-		X(otherVector.X),
-		Y(otherVector.Y),
-		Z(otherVector.Z),
-		W(1.0f)
+		_X(otherVector._X),
+		_Y(otherVector._Y),
+		_Z(otherVector._Z),
+		_W(1.0f)
 	{
 
 	}
@@ -89,10 +89,10 @@ public:
 	*/
 	constexpr Vector4(const Vector3 &otherVector, const float scalar) NOEXCEPT
 		:
-		X(otherVector.X),
-		Y(otherVector.Y),
-		Z(otherVector.Z),
-		W(scalar)
+		_X(otherVector._X),
+		_Y(otherVector._Y),
+		_Z(otherVector._Z),
+		_W(scalar)
 	{
 
 	}
@@ -102,7 +102,7 @@ public:
 	*/
 	constexpr Vector4 operator*(const float scalar) const NOEXCEPT
 	{
-		return Vector4(X * scalar, Y * scalar, Z * scalar, W * scalar);
+		return Vector4(_X * scalar, _Y * scalar, _Z * scalar, _W * scalar);
 	}
 
 	/*
@@ -110,10 +110,10 @@ public:
 	*/
 	constexpr void operator*=(const float scalar) NOEXCEPT
 	{
-		X *= scalar;
-		Y *= scalar;
-		Z *= scalar;
-		W *= scalar;
+		_X *= scalar;
+		_Y *= scalar;
+		_Z *= scalar;
+		_W *= scalar;
 	}
 
 	/*
@@ -121,7 +121,7 @@ public:
 	*/
 	constexpr Vector4 operator+(const Vector4 &vector) const NOEXCEPT
 	{
-		return Vector4(X + vector.X, Y + vector.Y, Z + vector.Z, W + vector.W);
+		return Vector4(_X + vector._X, _Y + vector._Y, _Z + vector._Z, _W + vector._W);
 	}
 
 	/*
@@ -129,10 +129,10 @@ public:
 	*/
 	constexpr void operator+=(const Vector4 &otherVector) NOEXCEPT
 	{
-		X += otherVector.X;
-		Y += otherVector.Y;
-		Z += otherVector.Z;
-		W += otherVector.W;
+		_X += otherVector._X;
+		_Y += otherVector._Y;
+		_Z += otherVector._Z;
+		_W += otherVector._W;
 	}
 
 	/*
@@ -140,7 +140,7 @@ public:
 	*/
 	constexpr Vector4 operator*(const Vector4 &vector) const NOEXCEPT
 	{
-		return Vector4(X * vector.X, Y * vector.Y, Z * vector.Z, W * vector.W);
+		return Vector4(_X * vector._X, _Y * vector._Y, _Z * vector._Z, _W * vector._W);
 	}
 
 	/*
@@ -148,7 +148,7 @@ public:
 	*/
 	constexpr Vector4 operator-(const Vector4 &vector) const NOEXCEPT
 	{
-		return Vector4(X - vector.X, Y - vector.Y, Z - vector.Z, W - vector.W);
+		return Vector4(_X - vector._X, _Y - vector._Y, _Z - vector._Z, _W - vector._W);
 	}
 
 	/*
@@ -164,7 +164,7 @@ public:
 	*/
 	constexpr float LengthSquared() const NOEXCEPT
 	{
-		return (X * X) + (Y * Y) + (Z * Z) + (W * W);
+		return (_X * _X) + (_Y * _Y) + (_Z * _Z) + (_W * _W);
 	}
 
 	/*
@@ -172,7 +172,7 @@ public:
 	*/
 	constexpr float LengthXYZ() const NOEXCEPT
 	{
-		return CatalystMath::SquareRoot((X * X) + (Y * Y) + (Z * Z));
+		return CatalystMath::SquareRoot((_X * _X) + (_Y * _Y) + (_Z * _Z));
 	}
 
 	/*
@@ -183,10 +183,10 @@ public:
 		const float length{ Length() };
 		const float inverseLength{ 1.0f / length };
 
-		X *= inverseLength;
-		Y *= inverseLength;
-		Z *= inverseLength;
-		W *= inverseLength;
+		_X *= inverseLength;
+		_Y *= inverseLength;
+		_Z *= inverseLength;
+		_W *= inverseLength;
 	}
 
 };

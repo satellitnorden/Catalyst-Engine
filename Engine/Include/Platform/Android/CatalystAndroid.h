@@ -14,7 +14,7 @@
 #define MAIN_FUNCTION(implementation)																		\
 void android_main(android_app *app)																			\
 {																											\
-	CatalystPlatform::app = app;																			\
+	CatalystPlatform::_App = app;																			\
 																											\
 	implementation;																							\
 }																											\
@@ -31,10 +31,10 @@ class CatalystPlatform final
 public:
 
 	//Handle to the app.
-	static android_app *RESTRICT app;
+	static android_app *RESTRICT _App;
 
 	//Handle to the window.
-	static ANativeWindow *RESTRICT window;
+	static ANativeWindow *RESTRICT _Window;
 
 	/*
 	*	Initializes the platform.

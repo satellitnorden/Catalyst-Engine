@@ -17,21 +17,21 @@ Matrix4 Matrix4::LookAt(const Vector3 &position, const Vector3 &direction, const
 
 	Matrix4 result;
 
-	result.matrix[0].X = S.X;
-	result.matrix[1].X = S.Y;
-	result.matrix[2].X = S.Z;
+	result._Matrix[0]._X = S._X;
+	result._Matrix[1]._X = S._Y;
+	result._Matrix[2]._X = S._Z;
 
-	result.matrix[0].Y = U.X;
-	result.matrix[1].Y = U.Y;
-	result.matrix[2].Y = U.Z;
+	result._Matrix[0]._Y = U._X;
+	result._Matrix[1]._Y = U._Y;
+	result._Matrix[2]._Y = U._Z;
 
-	result.matrix[0].Z = -F.X;
-	result.matrix[1].Z = -F.Y;
-	result.matrix[2].Z = -F.Z;
+	result._Matrix[0]._Z = -F._X;
+	result._Matrix[1]._Z = -F._Y;
+	result._Matrix[2]._Z = -F._Z;
 
-	result.matrix[3].X = -Vector3::DotProduct(S, position);
-	result.matrix[3].Y = -Vector3::DotProduct(U, position);
-	result.matrix[3].Z = Vector3::DotProduct(F, position);
+	result._Matrix[3]._X = -Vector3::DotProduct(S, position);
+	result._Matrix[3]._Y = -Vector3::DotProduct(U, position);
+	result._Matrix[3]._Z = Vector3::DotProduct(F, position);
 
 	return result;
 }
@@ -43,14 +43,14 @@ Matrix4 Matrix4::Ortographic(const float left, const float right, const float bo
 {
 	Matrix4 result;
 
-	result.matrix[0].X = 2.0f / (right - left);
-	result.matrix[1].Y = 2.0f / (top - bottom);
-	result.matrix[2].Z = -1.0f / (farPlane - nearPlane);
-	result.matrix[3].X = -(right + left) / (right - left);
-	result.matrix[3].Y = -(top + bottom) / (top - bottom);
-	result.matrix[3].Z = -nearPlane / (farPlane - nearPlane);
+	result._Matrix[0]._X = 2.0f / (right - left);
+	result._Matrix[1]._Y = 2.0f / (top - bottom);
+	result._Matrix[2]._Z = -1.0f / (farPlane - nearPlane);
+	result._Matrix[3]._X = -(right + left) / (right - left);
+	result._Matrix[3]._Y = -(top + bottom) / (top - bottom);
+	result._Matrix[3]._Z = -nearPlane / (farPlane - nearPlane);
 
-	result.matrix[1].Y *= -1.0f;
+	result._Matrix[1]._Y *= -1.0f;
 
 	return result;
 }
@@ -64,11 +64,11 @@ Matrix4 Matrix4::Perspective(const float fov, const float aspectRatio, const flo
 
 	Matrix4 result{ 0.0f };
 
-	result.matrix[0].X = 1.0f / (aspectRatio * halfFovTangent);
-	result.matrix[1].Y = -1.0f / (halfFovTangent);
-	result.matrix[2].Z = farPlane / (nearPlane - farPlane);
-	result.matrix[2].W = -1.0f;
-	result.matrix[3].Z = -(farPlane * nearPlane) / (farPlane - nearPlane);
+	result._Matrix[0]._X = 1.0f / (aspectRatio * halfFovTangent);
+	result._Matrix[1]._Y = -1.0f / (halfFovTangent);
+	result._Matrix[2]._Z = farPlane / (nearPlane - farPlane);
+	result._Matrix[2]._W = -1.0f;
+	result._Matrix[3]._Z = -(farPlane * nearPlane) / (farPlane - nearPlane);
 
 	return result;
 }
@@ -78,7 +78,7 @@ Matrix4 Matrix4::Perspective(const float fov, const float aspectRatio, const flo
 */
 Matrix4::Matrix4() NOEXCEPT
 	:
-	matrix{ { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } }
+	_Matrix{ { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } }
 {
 
 }
@@ -88,7 +88,7 @@ Matrix4::Matrix4() NOEXCEPT
 */
 Matrix4::Matrix4(const Matrix4 &otherMatrix) NOEXCEPT
 	:
-	matrix{ otherMatrix.matrix[0], otherMatrix.matrix[1], otherMatrix.matrix[2], otherMatrix.matrix[3] }
+	_Matrix{ otherMatrix._Matrix[0], otherMatrix._Matrix[1], otherMatrix._Matrix[2], otherMatrix._Matrix[3] }
 {
 
 }
@@ -98,7 +98,7 @@ Matrix4::Matrix4(const Matrix4 &otherMatrix) NOEXCEPT
 */
 Matrix4::Matrix4(const float scalar) NOEXCEPT
 	:
-	matrix{ { scalar, 0.0f, 0.0f, 0.0f }, { 0.0f, scalar, 0.0f, 0.0f }, { 0.0f, 0.0f, scalar, 0.0f }, { 0.0f, 0.0f, 0.0f, scalar } }
+	_Matrix{ { scalar, 0.0f, 0.0f, 0.0f }, { 0.0f, scalar, 0.0f, 0.0f }, { 0.0f, 0.0f, scalar, 0.0f }, { 0.0f, 0.0f, 0.0f, scalar } }
 {
 
 }
@@ -108,7 +108,7 @@ Matrix4::Matrix4(const float scalar) NOEXCEPT
 */
 Matrix4::Matrix4(const Matrix3 &otherMatrix) NOEXCEPT
 	:
-	matrix{ { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } }
+	_Matrix{ { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f, 1.0f } }
 {
 
 }
@@ -118,7 +118,7 @@ Matrix4::Matrix4(const Matrix3 &otherMatrix) NOEXCEPT
 */
 Matrix4::Matrix4(const Vector4 &vector1, const Vector4 &vector2, const Vector4 &vector3, const Vector4 &vector4) NOEXCEPT
 	:
-	matrix{ vector1, vector2, vector3, vector4 }
+	_Matrix{ vector1, vector2, vector3, vector4 }
 {
 
 }
@@ -128,12 +128,12 @@ Matrix4::Matrix4(const Vector4 &vector1, const Vector4 &vector2, const Vector4 &
 */
 Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) NOEXCEPT
 	:
-	matrix{ { scale.X, 0.0f, 0.0f, 0.0f },{ 0.0f, scale.Y, 0.0f, 0.0f },{ 0.0f, 0.0f, scale.Z, 0.0f },{ position.X, position.Y, position.Z, 1.0f } }
+	_Matrix{ { scale._X, 0.0f, 0.0f, 0.0f },{ 0.0f, scale._Y, 0.0f, 0.0f },{ 0.0f, 0.0f, scale._Z, 0.0f },{ position._X, position._Y, position._Z, 1.0f } }
 {
 	//Create a rotation matrix for the X axis.
-	if (rotation.X != 0.0f)
+	if (rotation._X != 0.0f)
 	{
-		const float xRadians = CatalystMath::DegreesToRadians(rotation.X);
+		const float xRadians = CatalystMath::DegreesToRadians(rotation._X);
 		const float xSine = CatalystMath::SineRadians(xRadians);
 		const float xCosine = CatalystMath::CosineRadians(xRadians);
 
@@ -143,9 +143,9 @@ Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3
 	}
 
 	//Create a rotation matrix for the Y axis.
-	if (rotation.Y != 0.0f)
+	if (rotation._Y != 0.0f)
 	{
-		const float yRadians = CatalystMath::DegreesToRadians(rotation.Y);
+		const float yRadians = CatalystMath::DegreesToRadians(rotation._Y);
 		const float ySine = CatalystMath::SineRadians(yRadians);
 		const float yCosine = CatalystMath::CosineRadians(yRadians);
 
@@ -155,9 +155,9 @@ Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3
 	}
 
 	//Create a rotation matrix for the Z axis.
-	if (rotation.Z != 0.0f)
+	if (rotation._Z != 0.0f)
 	{
-		const float zRadians = CatalystMath::DegreesToRadians(rotation.Z);
+		const float zRadians = CatalystMath::DegreesToRadians(rotation._Z);
 		const float zSine = CatalystMath::SineRadians(zRadians);
 		const float zCosine = CatalystMath::CosineRadians(zRadians);
 
@@ -172,7 +172,7 @@ Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3
 */
 Vector3 Matrix4::GetTranslation() const NOEXCEPT
 {
-	return Vector3(matrix[3].X, matrix[3].Y, matrix[3].Z);
+	return Vector3(_Matrix[3]._X, _Matrix[3]._Y, _Matrix[3]._Z);
 }
 
 /*
@@ -180,7 +180,7 @@ Vector3 Matrix4::GetTranslation() const NOEXCEPT
 */
 Vector3 Matrix4::GetScale() const NOEXCEPT
 {
-	return Vector3(matrix[0].X, matrix[1].Y, matrix[2].Z);
+	return Vector3(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
 }
 
 /*
@@ -188,9 +188,9 @@ Vector3 Matrix4::GetScale() const NOEXCEPT
 */
 void Matrix4::SetTranslation(const Vector3 &newTranslation) NOEXCEPT
 {
-	matrix[3].X = newTranslation.X;
-	matrix[3].Y = newTranslation.Y;
-	matrix[3].Z = newTranslation.Z;
+	_Matrix[3]._X = newTranslation._X;
+	_Matrix[3]._Y = newTranslation._Y;
+	_Matrix[3]._Z = newTranslation._Z;
 }
 
 /*
@@ -198,9 +198,9 @@ void Matrix4::SetTranslation(const Vector3 &newTranslation) NOEXCEPT
 */
 void Matrix4::SetScale(const Vector3 & newScale) NOEXCEPT
 {
-	matrix[0].X = newScale.X;
-	matrix[1].Y = newScale.Y;
-	matrix[2].Z = newScale.Z;
+	_Matrix[0]._X = newScale._X;
+	_Matrix[1]._Y = newScale._Y;
+	_Matrix[2]._Z = newScale._Z;
 }
 
 /*
@@ -208,29 +208,29 @@ void Matrix4::SetScale(const Vector3 & newScale) NOEXCEPT
 */
 float Matrix4::GetDeterminant() NOEXCEPT
 {
-	float X1 = matrix[1].Y * ((matrix[2].Z * matrix[3].W) - (matrix[3].Z * matrix[2].W));
-	float X2 = matrix[1].Z * -((matrix[2].Y * matrix[3].W) - (matrix[3].Y * matrix[2].W));
-	float X3 = matrix[1].W * ((matrix[2].Y * matrix[3].Z) - (matrix[3].Y * matrix[2].Z));
+	float X1 = _Matrix[1]._Y * ((_Matrix[2]._Z * _Matrix[3]._W) - (_Matrix[3]._Z * _Matrix[2]._W));
+	float X2 = _Matrix[1]._Z * -((_Matrix[2]._Y * _Matrix[3]._W) - (_Matrix[3]._Y * _Matrix[2]._W));
+	float X3 = _Matrix[1]._W * ((_Matrix[2]._Y * _Matrix[3]._Z) - (_Matrix[3]._Y * _Matrix[2]._Z));
 
-	float X = matrix[0].X * (X1 + X2 + X3);
+	float X = _Matrix[0]._X * (X1 + X2 + X3);
 
-	float Y1 = matrix[1].X * ((matrix[2].Z * matrix[3].W) - (matrix[3].Z * matrix[2].W));
-	float Y2 = matrix[1].Z * -((matrix[2].X * matrix[3].W) - (matrix[3].X * matrix[2].W));
-	float Y3 = matrix[1].W * ((matrix[2].X * matrix[3].Z) - (matrix[3].X * matrix[2].Z));
+	float Y1 = _Matrix[1]._X * ((_Matrix[2]._Z * _Matrix[3]._W) - (_Matrix[3]._Z * _Matrix[2]._W));
+	float Y2 = _Matrix[1]._Z * -((_Matrix[2]._X * _Matrix[3]._W) - (_Matrix[3]._X * _Matrix[2]._W));
+	float Y3 = _Matrix[1]._W * ((_Matrix[2]._X * _Matrix[3]._Z) - (_Matrix[3]._X * _Matrix[2]._Z));
 
-	float Y = matrix[0].Y * -(Y1 + Y2 + Y3);
+	float Y = _Matrix[0]._Y * -(Y1 + Y2 + Y3);
 
-	float Z1 = matrix[1].X * ((matrix[2].Y * matrix[3].W) - (matrix[3].Y * matrix[2].W));
-	float Z2 = matrix[1].Y * -((matrix[2].X * matrix[3].W) - (matrix[3].X * matrix[2].W));
-	float Z3 = matrix[1].W * ((matrix[2].X * matrix[3].Y) - (matrix[3].X * matrix[2].Y));
+	float Z1 = _Matrix[1]._X * ((_Matrix[2]._Y * _Matrix[3]._W) - (_Matrix[3]._Y * _Matrix[2]._W));
+	float Z2 = _Matrix[1]._Y * -((_Matrix[2]._X * _Matrix[3]._W) - (_Matrix[3]._X * _Matrix[2]._W));
+	float Z3 = _Matrix[1]._W * ((_Matrix[2]._X * _Matrix[3]._Y) - (_Matrix[3]._X * _Matrix[2]._Y));
 
-	float Z = matrix[0].Z * (Z1 + Z2 + Z3);
+	float Z = _Matrix[0]._Z * (Z1 + Z2 + Z3);
 
-	float W1 = matrix[1].X * ((matrix[2].Y * matrix[3].Z) - (matrix[3].Y * matrix[2].Z));
-	float W2 = matrix[1].Y * -((matrix[2].X * matrix[3].Z) - (matrix[3].X * matrix[2].Z));
-	float W3 = matrix[1].Z * ((matrix[2].X * matrix[3].Y) - (matrix[3].X * matrix[2].Y));
+	float W1 = _Matrix[1]._X * ((_Matrix[2]._Y * _Matrix[3]._Z) - (_Matrix[3]._Y * _Matrix[2]._Z));
+	float W2 = _Matrix[1]._Y * -((_Matrix[2]._X * _Matrix[3]._Z) - (_Matrix[3]._X * _Matrix[2]._Z));
+	float W3 = _Matrix[1]._Z * ((_Matrix[2]._X * _Matrix[3]._Y) - (_Matrix[3]._X * _Matrix[2]._Y));
 
-	float W = matrix[0].W * -(W1 + W2 + W3);
+	float W = _Matrix[0]._W * -(W1 + W2 + W3);
 
 	return X + Y + Z + W;
 }
@@ -240,29 +240,29 @@ float Matrix4::GetDeterminant() NOEXCEPT
 */
 void Matrix4::Inverse() NOEXCEPT
 {
-	float Coef00 = matrix[2].Z * matrix[3].W - matrix[3].Z * matrix[2].W;
-	float Coef02 = matrix[1].Z * matrix[3].W - matrix[3].Z * matrix[1].W;
-	float Coef03 = matrix[1].Z * matrix[2].W - matrix[2].Z * matrix[1].W;
+	float Coef00 = _Matrix[2]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[2]._W;
+	float Coef02 = _Matrix[1]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[1]._W;
+	float Coef03 = _Matrix[1]._Z * _Matrix[2]._W - _Matrix[2]._Z * _Matrix[1]._W;
 
-	float Coef04 = matrix[2].Y * matrix[3].W - matrix[3].Y * matrix[2].W;
-	float Coef06 = matrix[1].Y * matrix[3].W - matrix[3].Y * matrix[1].W;
-	float Coef07 = matrix[1].Y * matrix[2].W - matrix[2].Y * matrix[1].W;
+	float Coef04 = _Matrix[2]._Y * _Matrix[3]._W - _Matrix[3]._Y * _Matrix[2]._W;
+	float Coef06 = _Matrix[1]._Y * _Matrix[3]._W - _Matrix[3]._Y * _Matrix[1]._W;
+	float Coef07 = _Matrix[1]._Y * _Matrix[2]._W - _Matrix[2]._Y * _Matrix[1]._W;
 
-	float Coef08 = matrix[2].Y * matrix[3].Z - matrix[3].Y * matrix[2].Z;
-	float Coef10 = matrix[1].Y * matrix[3].Z - matrix[3].Y * matrix[1].Z;
-	float Coef11 = matrix[1].Y * matrix[2].Z - matrix[2].Y * matrix[1].Z;
+	float Coef08 = _Matrix[2]._Y * _Matrix[3]._Z - _Matrix[3]._Y * _Matrix[2]._Z;
+	float Coef10 = _Matrix[1]._Y * _Matrix[3]._Z - _Matrix[3]._Y * _Matrix[1]._Z;
+	float Coef11 = _Matrix[1]._Y * _Matrix[2]._Z - _Matrix[2]._Y * _Matrix[1]._Z;
 
-	float Coef12 = matrix[2].X * matrix[3].W - matrix[3].X * matrix[2].W;
-	float Coef14 = matrix[1].X * matrix[3].W - matrix[3].X * matrix[1].W;
-	float Coef15 = matrix[1].X * matrix[2].W - matrix[2].X * matrix[1].W;
+	float Coef12 = _Matrix[2]._X * _Matrix[3]._W - _Matrix[3]._X * _Matrix[2]._W;
+	float Coef14 = _Matrix[1]._X * _Matrix[3]._W - _Matrix[3]._X * _Matrix[1]._W;
+	float Coef15 = _Matrix[1]._X * _Matrix[2]._W - _Matrix[2]._X * _Matrix[1]._W;
 
-	float Coef16 = matrix[2].X * matrix[3].Z - matrix[3].X * matrix[2].Z;
-	float Coef18 = matrix[1].X * matrix[3].Z - matrix[3].X * matrix[1].Z;
-	float Coef19 = matrix[1].X * matrix[2].Z - matrix[2].X * matrix[1].Z;
+	float Coef16 = _Matrix[2]._X * _Matrix[3]._Z - _Matrix[3]._X * _Matrix[2]._Z;
+	float Coef18 = _Matrix[1]._X * _Matrix[3]._Z - _Matrix[3]._X * _Matrix[1]._Z;
+	float Coef19 = _Matrix[1]._X * _Matrix[2]._Z - _Matrix[2]._X * _Matrix[1]._Z;
 
-	float Coef20 = matrix[2].X * matrix[3].Y - matrix[3].X * matrix[2].Y;
-	float Coef22 = matrix[1].X * matrix[3].Y - matrix[3].X * matrix[1].Y;
-	float Coef23 = matrix[1].X * matrix[2].Y - matrix[2].X * matrix[1].Y;
+	float Coef20 = _Matrix[2]._X * _Matrix[3]._Y - _Matrix[3]._X * _Matrix[2]._Y;
+	float Coef22 = _Matrix[1]._X * _Matrix[3]._Y - _Matrix[3]._X * _Matrix[1]._Y;
+	float Coef23 = _Matrix[1]._X * _Matrix[2]._Y - _Matrix[2]._X * _Matrix[1]._Y;
 
 	Vector4 Fac0(Coef00, Coef00, Coef02, Coef03);
 	Vector4 Fac1(Coef04, Coef04, Coef06, Coef07);
@@ -271,10 +271,10 @@ void Matrix4::Inverse() NOEXCEPT
 	Vector4 Fac4(Coef16, Coef16, Coef18, Coef19);
 	Vector4 Fac5(Coef20, Coef20, Coef22, Coef23);
 
-	Vector4 Vec0(matrix[1].X, matrix[0].X, matrix[0].X, matrix[0].X);
-	Vector4 Vec1(matrix[1].Y, matrix[0].Y, matrix[0].Y, matrix[0].Y);
-	Vector4 Vec2(matrix[1].Z, matrix[0].Z, matrix[0].Z, matrix[0].Z);
-	Vector4 Vec3(matrix[1].W, matrix[0].W, matrix[0].W, matrix[0].W);
+	Vector4 Vec0(_Matrix[1]._X, _Matrix[0]._X, _Matrix[0]._X, _Matrix[0]._X);
+	Vector4 Vec1(_Matrix[1]._Y, _Matrix[0]._Y, _Matrix[0]._Y, _Matrix[0]._Y);
+	Vector4 Vec2(_Matrix[1]._Z, _Matrix[0]._Z, _Matrix[0]._Z, _Matrix[0]._Z);
+	Vector4 Vec3(_Matrix[1]._W, _Matrix[0]._W, _Matrix[0]._W, _Matrix[0]._W);
 
 	Vector4 Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
 	Vector4 Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
@@ -285,19 +285,19 @@ void Matrix4::Inverse() NOEXCEPT
 	Vector4 SignB(-1, +1, -1, +1);
 	Matrix4 Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
 
-	Vector4 Row0(Inverse.matrix[0].X, Inverse.matrix[1].X, Inverse.matrix[2].X, Inverse.matrix[3].X);
+	Vector4 Row0(Inverse._Matrix[0]._X, Inverse._Matrix[1]._X, Inverse._Matrix[2]._X, Inverse._Matrix[3]._X);
 
-	Vector4 Dot0(matrix[0] * Row0);
-	float Dot1 = (Dot0.X + Dot0.Y) + (Dot0.Z + Dot0.W);
+	Vector4 Dot0(_Matrix[0] * Row0);
+	float Dot1 = (Dot0._X + Dot0._Y) + (Dot0._Z + Dot0._W);
 
 	float OneOverDeterminant = 1.0f / Dot1;
 
 	Inverse *= OneOverDeterminant;
 
-	matrix[0] = Inverse.matrix[0];
-	matrix[1] = Inverse.matrix[1];
-	matrix[2] = Inverse.matrix[2];
-	matrix[3] = Inverse.matrix[3];
+	_Matrix[0] = Inverse._Matrix[0];
+	_Matrix[1] = Inverse._Matrix[1];
+	_Matrix[2] = Inverse._Matrix[2];
+	_Matrix[3] = Inverse._Matrix[3];
 }
 
 /*
@@ -307,30 +307,30 @@ void Matrix4::Transpose() NOEXCEPT
 {
 	Vector4 transposedMatrix[4];
 
-	transposedMatrix[0].X = matrix[0].X;
-	transposedMatrix[1].X = matrix[0].Y;
-	transposedMatrix[2].X = matrix[0].Z;
-	transposedMatrix[3].X = matrix[0].W;
+	transposedMatrix[0]._X = _Matrix[0]._X;
+	transposedMatrix[1]._X = _Matrix[0]._Y;
+	transposedMatrix[2]._X = _Matrix[0]._Z;
+	transposedMatrix[3]._X = _Matrix[0]._W;
 
-	transposedMatrix[0].Y = matrix[1].X;
-	transposedMatrix[1].Y = matrix[1].Y;
-	transposedMatrix[2].Y = matrix[1].Z;
-	transposedMatrix[3].Y = matrix[1].W;
+	transposedMatrix[0]._Y = _Matrix[1]._X;
+	transposedMatrix[1]._Y = _Matrix[1]._Y;
+	transposedMatrix[2]._Y = _Matrix[1]._Z;
+	transposedMatrix[3]._Y = _Matrix[1]._W;
 
-	transposedMatrix[0].Z = matrix[2].X;
-	transposedMatrix[1].Z = matrix[2].Y;
-	transposedMatrix[2].Z = matrix[2].Z;
-	transposedMatrix[3].Z = matrix[2].W;
+	transposedMatrix[0]._Z = _Matrix[2]._X;
+	transposedMatrix[1]._Z = _Matrix[2]._Y;
+	transposedMatrix[2]._Z = _Matrix[2]._Z;
+	transposedMatrix[3]._Z = _Matrix[2]._W;
 
-	transposedMatrix[0].W = matrix[3].X;
-	transposedMatrix[1].W = matrix[3].Y;
-	transposedMatrix[2].W = matrix[3].Z;
-	transposedMatrix[3].W = matrix[3].W;
+	transposedMatrix[0]._W = _Matrix[3]._X;
+	transposedMatrix[1]._W = _Matrix[3]._Y;
+	transposedMatrix[2]._W = _Matrix[3]._Z;
+	transposedMatrix[3]._W = _Matrix[3]._W;
 
-	matrix[0] = transposedMatrix[0];
-	matrix[1] = transposedMatrix[1];
-	matrix[2] = transposedMatrix[2];
-	matrix[3] = transposedMatrix[3];
+	_Matrix[0] = transposedMatrix[0];
+	_Matrix[1] = transposedMatrix[1];
+	_Matrix[2] = transposedMatrix[2];
+	_Matrix[3] = transposedMatrix[3];
 }
 
 /*
@@ -340,25 +340,25 @@ Matrix4 Matrix4::operator*(const Matrix4 &otherMatrix) const NOEXCEPT
 {
 	Matrix4 multipliedMatrix{ otherMatrix };
 
-	multipliedMatrix.matrix[0].X = (matrix[0].X * otherMatrix.matrix[0].X) + (matrix[1].X * otherMatrix.matrix[0].Y) + (matrix[2].X * otherMatrix.matrix[0].Z) + (matrix[3].X * otherMatrix.matrix[0].W);
-	multipliedMatrix.matrix[1].X = (matrix[0].X * otherMatrix.matrix[1].X) + (matrix[1].X * otherMatrix.matrix[1].Y) + (matrix[2].X * otherMatrix.matrix[1].Z) + (matrix[3].X * otherMatrix.matrix[1].W);
-	multipliedMatrix.matrix[2].X = (matrix[0].X * otherMatrix.matrix[2].X) + (matrix[1].X * otherMatrix.matrix[2].Y) + (matrix[2].X * otherMatrix.matrix[2].Z) + (matrix[3].X * otherMatrix.matrix[2].W);
-	multipliedMatrix.matrix[3].X = (matrix[0].X * otherMatrix.matrix[3].X) + (matrix[1].X * otherMatrix.matrix[3].Y) + (matrix[2].X * otherMatrix.matrix[3].Z) + (matrix[3].X * otherMatrix.matrix[3].W);
+	multipliedMatrix._Matrix[0]._X = (_Matrix[0]._X * otherMatrix._Matrix[0]._X) + (_Matrix[1]._X * otherMatrix._Matrix[0]._Y) + (_Matrix[2]._X * otherMatrix._Matrix[0]._Z) + (_Matrix[3]._X * otherMatrix._Matrix[0]._W);
+	multipliedMatrix._Matrix[1]._X = (_Matrix[0]._X * otherMatrix._Matrix[1]._X) + (_Matrix[1]._X * otherMatrix._Matrix[1]._Y) + (_Matrix[2]._X * otherMatrix._Matrix[1]._Z) + (_Matrix[3]._X * otherMatrix._Matrix[1]._W);
+	multipliedMatrix._Matrix[2]._X = (_Matrix[0]._X * otherMatrix._Matrix[2]._X) + (_Matrix[1]._X * otherMatrix._Matrix[2]._Y) + (_Matrix[2]._X * otherMatrix._Matrix[2]._Z) + (_Matrix[3]._X * otherMatrix._Matrix[2]._W);
+	multipliedMatrix._Matrix[3]._X = (_Matrix[0]._X * otherMatrix._Matrix[3]._X) + (_Matrix[1]._X * otherMatrix._Matrix[3]._Y) + (_Matrix[2]._X * otherMatrix._Matrix[3]._Z) + (_Matrix[3]._X * otherMatrix._Matrix[3]._W);
 
-	multipliedMatrix.matrix[0].Y = (matrix[0].Y * otherMatrix.matrix[0].X) + (matrix[1].Y * otherMatrix.matrix[0].Y) + (matrix[2].Y * otherMatrix.matrix[0].Z) + (matrix[3].Y * otherMatrix.matrix[0].W);
-	multipliedMatrix.matrix[1].Y = (matrix[0].Y * otherMatrix.matrix[1].X) + (matrix[1].Y * otherMatrix.matrix[1].Y) + (matrix[2].Y * otherMatrix.matrix[1].Z) + (matrix[3].Y * otherMatrix.matrix[1].W);
-	multipliedMatrix.matrix[2].Y = (matrix[0].Y * otherMatrix.matrix[2].X) + (matrix[1].Y * otherMatrix.matrix[2].Y) + (matrix[2].Y * otherMatrix.matrix[2].Z) + (matrix[3].Y * otherMatrix.matrix[2].W);
-	multipliedMatrix.matrix[3].Y = (matrix[0].Y * otherMatrix.matrix[3].X) + (matrix[1].Y * otherMatrix.matrix[3].Y) + (matrix[2].Y * otherMatrix.matrix[3].Z) + (matrix[3].Y * otherMatrix.matrix[3].W);
+	multipliedMatrix._Matrix[0]._Y = (_Matrix[0]._Y * otherMatrix._Matrix[0]._X) + (_Matrix[1]._Y * otherMatrix._Matrix[0]._Y) + (_Matrix[2]._Y * otherMatrix._Matrix[0]._Z) + (_Matrix[3]._Y * otherMatrix._Matrix[0]._W);
+	multipliedMatrix._Matrix[1]._Y = (_Matrix[0]._Y * otherMatrix._Matrix[1]._X) + (_Matrix[1]._Y * otherMatrix._Matrix[1]._Y) + (_Matrix[2]._Y * otherMatrix._Matrix[1]._Z) + (_Matrix[3]._Y * otherMatrix._Matrix[1]._W);
+	multipliedMatrix._Matrix[2]._Y = (_Matrix[0]._Y * otherMatrix._Matrix[2]._X) + (_Matrix[1]._Y * otherMatrix._Matrix[2]._Y) + (_Matrix[2]._Y * otherMatrix._Matrix[2]._Z) + (_Matrix[3]._Y * otherMatrix._Matrix[2]._W);
+	multipliedMatrix._Matrix[3]._Y = (_Matrix[0]._Y * otherMatrix._Matrix[3]._X) + (_Matrix[1]._Y * otherMatrix._Matrix[3]._Y) + (_Matrix[2]._Y * otherMatrix._Matrix[3]._Z) + (_Matrix[3]._Y * otherMatrix._Matrix[3]._W);
 
-	multipliedMatrix.matrix[0].Z = (matrix[0].Z * otherMatrix.matrix[0].X) + (matrix[1].Z * otherMatrix.matrix[0].Y) + (matrix[2].Z * otherMatrix.matrix[0].Z) + (matrix[3].Z * otherMatrix.matrix[0].W);
-	multipliedMatrix.matrix[1].Z = (matrix[0].Z * otherMatrix.matrix[1].X) + (matrix[1].Z * otherMatrix.matrix[1].Y) + (matrix[2].Z * otherMatrix.matrix[1].Z) + (matrix[3].Z * otherMatrix.matrix[1].W);
-	multipliedMatrix.matrix[2].Z = (matrix[0].Z * otherMatrix.matrix[2].X) + (matrix[1].Z * otherMatrix.matrix[2].Y) + (matrix[2].Z * otherMatrix.matrix[2].Z) + (matrix[3].Z * otherMatrix.matrix[2].W);
-	multipliedMatrix.matrix[3].Z = (matrix[0].Z * otherMatrix.matrix[3].X) + (matrix[1].Z * otherMatrix.matrix[3].Y) + (matrix[2].Z * otherMatrix.matrix[3].Z) + (matrix[3].Z * otherMatrix.matrix[3].W);
+	multipliedMatrix._Matrix[0]._Z = (_Matrix[0]._Z * otherMatrix._Matrix[0]._X) + (_Matrix[1]._Z * otherMatrix._Matrix[0]._Y) + (_Matrix[2]._Z * otherMatrix._Matrix[0]._Z) + (_Matrix[3]._Z * otherMatrix._Matrix[0]._W);
+	multipliedMatrix._Matrix[1]._Z = (_Matrix[0]._Z * otherMatrix._Matrix[1]._X) + (_Matrix[1]._Z * otherMatrix._Matrix[1]._Y) + (_Matrix[2]._Z * otherMatrix._Matrix[1]._Z) + (_Matrix[3]._Z * otherMatrix._Matrix[1]._W);
+	multipliedMatrix._Matrix[2]._Z = (_Matrix[0]._Z * otherMatrix._Matrix[2]._X) + (_Matrix[1]._Z * otherMatrix._Matrix[2]._Y) + (_Matrix[2]._Z * otherMatrix._Matrix[2]._Z) + (_Matrix[3]._Z * otherMatrix._Matrix[2]._W);
+	multipliedMatrix._Matrix[3]._Z = (_Matrix[0]._Z * otherMatrix._Matrix[3]._X) + (_Matrix[1]._Z * otherMatrix._Matrix[3]._Y) + (_Matrix[2]._Z * otherMatrix._Matrix[3]._Z) + (_Matrix[3]._Z * otherMatrix._Matrix[3]._W);
 
-	multipliedMatrix.matrix[0].W = (matrix[0].W * otherMatrix.matrix[0].X) + (matrix[1].W * otherMatrix.matrix[0].Y) + (matrix[2].W * otherMatrix.matrix[0].Z) + (matrix[3].W * otherMatrix.matrix[0].W);
-	multipliedMatrix.matrix[1].W = (matrix[0].W * otherMatrix.matrix[1].X) + (matrix[1].W * otherMatrix.matrix[1].Y) + (matrix[2].W * otherMatrix.matrix[1].Z) + (matrix[3].W * otherMatrix.matrix[1].W);
-	multipliedMatrix.matrix[2].W = (matrix[0].W * otherMatrix.matrix[2].X) + (matrix[1].W * otherMatrix.matrix[2].Y) + (matrix[2].W * otherMatrix.matrix[2].Z) + (matrix[3].W * otherMatrix.matrix[2].W);
-	multipliedMatrix.matrix[3].W = (matrix[0].W * otherMatrix.matrix[3].X) + (matrix[1].W * otherMatrix.matrix[3].Y) + (matrix[2].W * otherMatrix.matrix[3].Z) + (matrix[3].W * otherMatrix.matrix[3].W);
+	multipliedMatrix._Matrix[0]._W = (_Matrix[0]._W * otherMatrix._Matrix[0]._X) + (_Matrix[1]._W * otherMatrix._Matrix[0]._Y) + (_Matrix[2]._W * otherMatrix._Matrix[0]._Z) + (_Matrix[3]._W * otherMatrix._Matrix[0]._W);
+	multipliedMatrix._Matrix[1]._W = (_Matrix[0]._W * otherMatrix._Matrix[1]._X) + (_Matrix[1]._W * otherMatrix._Matrix[1]._Y) + (_Matrix[2]._W * otherMatrix._Matrix[1]._Z) + (_Matrix[3]._W * otherMatrix._Matrix[1]._W);
+	multipliedMatrix._Matrix[2]._W = (_Matrix[0]._W * otherMatrix._Matrix[2]._X) + (_Matrix[1]._W * otherMatrix._Matrix[2]._Y) + (_Matrix[2]._W * otherMatrix._Matrix[2]._Z) + (_Matrix[3]._W * otherMatrix._Matrix[2]._W);
+	multipliedMatrix._Matrix[3]._W = (_Matrix[0]._W * otherMatrix._Matrix[3]._X) + (_Matrix[1]._W * otherMatrix._Matrix[3]._Y) + (_Matrix[2]._W * otherMatrix._Matrix[3]._Z) + (_Matrix[3]._W * otherMatrix._Matrix[3]._W);
 
 	return multipliedMatrix;
 }
@@ -368,25 +368,25 @@ Matrix4 Matrix4::operator*(const Matrix4 &otherMatrix) const NOEXCEPT
 */
 void Matrix4::operator*=(const float scalar) NOEXCEPT
 {
-	matrix[0].X *= scalar;
-	matrix[0].Y *= scalar;
-	matrix[0].Z *= scalar;
-	matrix[0].W *= scalar;
+	_Matrix[0]._X *= scalar;
+	_Matrix[0]._Y *= scalar;
+	_Matrix[0]._Z *= scalar;
+	_Matrix[0]._W *= scalar;
 
-	matrix[1].X *= scalar;
-	matrix[1].Y *= scalar;
-	matrix[1].Z *= scalar;
-	matrix[1].W *= scalar;
+	_Matrix[1]._X *= scalar;
+	_Matrix[1]._Y *= scalar;
+	_Matrix[1]._Z *= scalar;
+	_Matrix[1]._W *= scalar;
 
-	matrix[2].X *= scalar;
-	matrix[2].Y *= scalar;
-	matrix[2].Z *= scalar;
-	matrix[2].W *= scalar;
+	_Matrix[2]._X *= scalar;
+	_Matrix[2]._Y *= scalar;
+	_Matrix[2]._Z *= scalar;
+	_Matrix[2]._W *= scalar;
 
-	matrix[3].X *= scalar;
-	matrix[3].Y *= scalar;
-	matrix[3].Z *= scalar;
-	matrix[3].W *= scalar;
+	_Matrix[3]._X *= scalar;
+	_Matrix[3]._Y *= scalar;
+	_Matrix[3]._Z *= scalar;
+	_Matrix[3]._W *= scalar;
 }
 
 /*
@@ -396,10 +396,10 @@ Vector4 Matrix4::operator*(const Vector4 &vector) const NOEXCEPT
 {
 	Vector4 multipliedVector{ };
 
-	multipliedVector.X = (matrix[0].X * vector.X) + (matrix[1].X * vector.Y) + (matrix[2].X * vector.Z) + (matrix[3].X * vector.W);
-	multipliedVector.Y = (matrix[0].Y * vector.X) + (matrix[1].Y * vector.Y) + (matrix[2].Y * vector.Z) + (matrix[3].Y * vector.W);
-	multipliedVector.Z = (matrix[0].Z * vector.X) + (matrix[1].Z * vector.Y) + (matrix[2].Z * vector.Z) + (matrix[3].Z * vector.W);
-	multipliedVector.W = (matrix[0].W * vector.X) + (matrix[1].W * vector.Y) + (matrix[2].W * vector.Z) + (matrix[3].W * vector.W);
+	multipliedVector._X = (_Matrix[0]._X * vector._X) + (_Matrix[1]._X * vector._Y) + (_Matrix[2]._X * vector._Z) + (_Matrix[3]._X * vector._W);
+	multipliedVector._Y = (_Matrix[0]._Y * vector._X) + (_Matrix[1]._Y * vector._Y) + (_Matrix[2]._Y * vector._Z) + (_Matrix[3]._Y * vector._W);
+	multipliedVector._Z = (_Matrix[0]._Z * vector._X) + (_Matrix[1]._Z * vector._Y) + (_Matrix[2]._Z * vector._Z) + (_Matrix[3]._Z * vector._W);
+	multipliedVector._W = (_Matrix[0]._W * vector._X) + (_Matrix[1]._W * vector._Y) + (_Matrix[2]._W * vector._Z) + (_Matrix[3]._W * vector._W);
 
 	return multipliedVector;
 }

@@ -70,7 +70,7 @@ void TaskSystem::ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT
 	currentTaskQueue = currentTaskQueue == numberOfTaskExecutors - 1 ? 0 : currentTaskQueue + 1;
 
 	//Reset the semaphore.
-	newTask->semaphore.Reset();
+	newTask->_Semaphore.Reset();
 
 	//Put the task into the task queue.
 	taskQueues[currentTaskQueue].Push(newTask);

@@ -16,8 +16,8 @@
 #include <android/log.h>
 
 //Static variable definitions.
-android_app *RESTRICT CatalystPlatform::app = nullptr;
-ANativeWindow *RESTRICT CatalystPlatform::window = nullptr;
+android_app *RESTRICT CatalystPlatform::_App = nullptr;
+ANativeWindow *RESTRICT CatalystPlatform::_Window = nullptr;
 
 //Globals.
 TouchState touchState;
@@ -31,7 +31,7 @@ void HandleCommand(android_app *RESTRICT app, int32 command) NOEXCEPT
 	{
 		case APP_CMD_INIT_WINDOW:
 		{
-			CatalystPlatform::window = app->window;
+			CatalystPlatform::_Window = app->window;
 
 			break;
 		}
@@ -57,7 +57,7 @@ void PollEvents() NOEXCEPT
 	{
 		if (source && source->id == LOOPER_ID_MAIN)
 		{
-			source->process(CatalystPlatform::app, source);
+			source->process(CatalystPlatform::_App, source);
 		}
 	}
 }
@@ -71,7 +71,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	app->onAppCmd = HandleCommand;
 
 	//Need to wait for the window to be set before proceeding.
-	while (CatalystPlatform::window == nullptr)
+	while (CatalystPlatform::_Window == nullptr)
 	{
 		PollEvents();
 	}
@@ -147,9 +147,9 @@ void CatalystPlatform::GetCurrentTouchState(TouchState *const RESTRICT state) NO
 {
 	AInputEvent *event;
 
-	while (AInputQueue_getEvent(app->inputQueue, &event) >= 0)
+	while (AInputQueue_getEvent(_App->inputQueue, &event) >= 0)
 	{
-		if (AInputQueue_preDispatchEvent(app->inputQueue, event))
+		if (AInputQueue_preDispatchEvent(_App->inputQueue, event))
 		{
 			continue;
 		}
@@ -160,14 +160,14 @@ void CatalystPlatform::GetCurrentTouchState(TouchState *const RESTRICT state) NO
             if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN)
             {
                 state->_ButtonState = ButtonState::Pressed;
-                state->_X = AMotionEvent_getRawX(event, 0) / static_cast<float>(ANativeWindow_getWidth(window));
-                state->_Y = 1.0f - AMotionEvent_getRawY(event, 0) / static_cast<float>(ANativeWindow_getHeight(window));
+                state->_X = AMotionEvent_getRawX(event, 0) / static_cast<float>(ANativeWindow_getWidth(_Window));
+                state->_Y = 1.0f - AMotionEvent_getRawY(event, 0) / static_cast<float>(ANativeWindow_getHeight(_Window));
             }
 
             else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_MOVE)
             {
-                state->_X = AMotionEvent_getRawX(event, 0) / static_cast<float>(ANativeWindow_getWidth(window));
-                state->_Y = 1.0f - AMotionEvent_getRawY(event, 0) / static_cast<float>(ANativeWindow_getHeight(window));
+                state->_X = AMotionEvent_getRawX(event, 0) / static_cast<float>(ANativeWindow_getWidth(_Window));
+                state->_Y = 1.0f - AMotionEvent_getRawY(event, 0) / static_cast<float>(ANativeWindow_getHeight(_Window));
             }
 
             else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_UP)
@@ -176,7 +176,7 @@ void CatalystPlatform::GetCurrentTouchState(TouchState *const RESTRICT state) NO
             }
 		}
 
-		AInputQueue_finishEvent(app->inputQueue, event, 1);
+		AInputQueue_finishEvent(_App->inputQueue, event, 1);
 	}
 }
 

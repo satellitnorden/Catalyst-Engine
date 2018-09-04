@@ -19,10 +19,10 @@ public:
 	*/
 	ScopedLock(Type &newLock) NOEXCEPT
 		:
-		lock(newLock)
+		_Lock(newLock)
 	{
 		//Lock the lock.
-		lock.Lock();
+		_Lock.Lock();
 	}
 
 	/*
@@ -31,12 +31,12 @@ public:
 	~ScopedLock() NOEXCEPT
 	{
 		//Unlock the lock.
-		lock.Unlock();
+		_Lock.Unlock();
 	}
 
 private:
 
 	//The underlying lock for this scoped lock.
-	Type &lock;
+	Type &_Lock;
 
 };

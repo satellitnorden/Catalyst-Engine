@@ -59,11 +59,11 @@ void LevelOfDetailSystem::WaitForTerrainLevelOfDetail() const NOEXCEPT
 void LevelOfDetailSystem::InitializeLevelOfDetailTasks() NOEXCEPT
 {
 	//Initialize the terrain level of detail task.
-	tasks[INDEX(LevelOfDetailTask::Terrain)].function = [](void *const RESTRICT)
+	tasks[INDEX(LevelOfDetailTask::Terrain)]._Function = [](void *const RESTRICT)
 	{
 		LevelOfDetailSystem::Instance->CaltulateTerrainLevelOfDetail();
 	};
-	tasks[INDEX(LevelOfDetailTask::Terrain)].arguments = nullptr;
+	tasks[INDEX(LevelOfDetailTask::Terrain)]._Arguments = nullptr;
 }
 
 /*

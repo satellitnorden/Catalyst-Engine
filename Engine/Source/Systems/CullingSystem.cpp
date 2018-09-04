@@ -43,25 +43,25 @@ void CullingSystem::UpdateSystemSynchronous() NOEXCEPT
 void CullingSystem::InitializeCullingTasks() NOEXCEPT
 {
 	//Initialize the terrain culling task.
-	tasks[INDEX(CullingTask::Terrain)].function = [](void *const RESTRICT)
+	tasks[INDEX(CullingTask::Terrain)]._Function = [](void *const RESTRICT)
 	{
 		CullingSystem::Instance->CullTerrain();
 	};
-	tasks[INDEX(CullingTask::Terrain)].arguments = nullptr;
+	tasks[INDEX(CullingTask::Terrain)]._Arguments = nullptr;
 
 	//Initialize the static physical culling task.
-	tasks[INDEX(CullingTask::StaticPhysical)].function = [](void *const RESTRICT)
+	tasks[INDEX(CullingTask::StaticPhysical)]._Function = [](void *const RESTRICT)
 	{
 		CullingSystem::Instance->CullStaticPhysical();
 	};
-	tasks[INDEX(CullingTask::StaticPhysical)].arguments = nullptr;
+	tasks[INDEX(CullingTask::StaticPhysical)]._Arguments = nullptr;
 
 	//Initialize the vegetation culling task.
-	tasks[INDEX(CullingTask::Vegetation)].function = [](void *const RESTRICT)
+	tasks[INDEX(CullingTask::Vegetation)]._Function = [](void *const RESTRICT)
 	{
 		CullingSystem::Instance->CullVegetation();
 	};
-	tasks[INDEX(CullingTask::Vegetation)].arguments = nullptr;
+	tasks[INDEX(CullingTask::Vegetation)]._Arguments = nullptr;
 }
 
 /*
@@ -136,8 +136,8 @@ void CullingSystem::CullStaticPhysical() NOEXCEPT
 		//Cache relevant data.
 		const Vector3& position = transformComponent->_Position;
 		const Vector3& scale = transformComponent->_Scale;
-		const float biggestScale = CatalystMath::Maximum(scale.X, CatalystMath::Maximum(scale.Y, scale.Z));
-		const float scaledExtent = frustumCullingComponent->_AxisAlignedBoundingBox.maximum.X * biggestScale;
+		const float biggestScale = CatalystMath::Maximum(scale._X, CatalystMath::Maximum(scale._Y, scale._Z));
+		const float scaledExtent = frustumCullingComponent->_AxisAlignedBoundingBox.maximum._X * biggestScale;
 
 		StaticArray<Vector4, 8> corners;
 
@@ -153,13 +153,13 @@ void CullingSystem::CullStaticPhysical() NOEXCEPT
 
 		for (uint8 i = 0; i < 8; ++i)
 		{
-			corners[i] += Vector4(position.X, position.Y, position.Z, 0.0f);
+			corners[i] += Vector4(position._X, position._Y, position._Z, 0.0f);
 
 			corners[i] = viewMatrix * corners[i];
 
-			corners[i].X /= corners[i].W;
-			corners[i].Y /= corners[i].W;
-			corners[i].Z /= corners[i].W;
+			corners[i]._X /= corners[i]._W;
+			corners[i]._Y /= corners[i]._W;
+			corners[i]._Z /= corners[i]._W;
 		}
 
 		renderComponent->_IsInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
@@ -189,8 +189,8 @@ void CullingSystem::CullVegetation() NOEXCEPT
 	{
 		for (uint64 i = 0, size = renderComponent->_ShouldDrawGridCell.Size(); i < size; ++i)
 		{
-			renderComponent->_ShouldDrawGridCell[i] = CatalystMath::Absolute(cameraWorldPosition.X - cullingComponent->_GridCellCenterLocations[i].X) <= cullingComponent->_CutoffDistance &&
-				CatalystMath::Absolute(cameraWorldPosition.Z - cullingComponent->_GridCellCenterLocations[i].Y) <= cullingComponent->_CutoffDistance;
+			renderComponent->_ShouldDrawGridCell[i] = CatalystMath::Absolute(cameraWorldPosition._X - cullingComponent->_GridCellCenterLocations[i]._X) <= cullingComponent->_CutoffDistance &&
+				CatalystMath::Absolute(cameraWorldPosition._Z - cullingComponent->_GridCellCenterLocations[i]._Y) <= cullingComponent->_CutoffDistance;
 		}
 	}
 }

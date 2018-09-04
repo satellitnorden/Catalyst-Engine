@@ -27,7 +27,7 @@ public:
 	template<class... Arguments>
 	MultithreadedResource(Arguments&&... arguments) NOEXCEPT
 		:
-		resource(std::forward<Arguments>(arguments)...)
+		_Resource(std::forward<Arguments>(arguments)...)
 	{
 
 	}
@@ -45,9 +45,9 @@ public:
 	*/
 	const Type GetSafe() const NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ lock };
+		ScopedLock<Spinlock> scopedLock{ _Lock };
 
-		return resource;
+		return _Resource;
 	}
 
 	/*
@@ -55,7 +55,7 @@ public:
 	*/
 	const Type& GetUnsafe() const NOEXCEPT
 	{
-		return resource;
+		return _Resource;
 	}
 
 	/*
@@ -63,17 +63,17 @@ public:
 	*/
 	void Set(const Type &newResource) NOEXCEPT
 	{
-		ScopedLock<Spinlock> scopedLock{ lock };
+		ScopedLock<Spinlock> scopedLock{ _Lock };
 
-		resource = newResource;
+		_Resource = newResource;
 	}
 
 private:
 
 	//The underlying resource.
-	Type resource;
+	Type _Resource;
 
 	//The spin lock.
-	mutable Spinlock lock;
+	mutable Spinlock _Lock;
 
 };

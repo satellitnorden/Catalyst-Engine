@@ -11,8 +11,8 @@
 RenderPass::RenderPass() NOEXCEPT
 {
 	//Set up the tasks.
-	initializationTask.arguments = nullptr;
-	renderTask.arguments = nullptr;
+	initializationTask._Arguments = nullptr;
+	renderTask._Arguments = nullptr;
 }
 
 /*

@@ -20,9 +20,9 @@
 #include <tchar.h>
 
 //Static variable definitions.
-HINSTANCE CatalystPlatform::instance;
-int32 CatalystPlatform::showCommand;
-HWND CatalystPlatform::window;
+HINSTANCE CatalystPlatform::_Instance;
+int32 CatalystPlatform::_ShowCommand;
+HWND CatalystPlatform::_Window;
 
 /*
 *	Window procedure handling.
@@ -149,8 +149,8 @@ void CatalystPlatform::Initialize() NOEXCEPT
 	windowInfo.lpfnWndProc = WindowProcedure;
 	windowInfo.cbClsExtra = 0;
 	windowInfo.cbWndExtra = 0;
-	windowInfo.hInstance = CatalystPlatform::instance;
-	windowInfo.hIcon = LoadIcon(CatalystPlatform::instance, IDI_APPLICATION);
+	windowInfo.hInstance = CatalystPlatform::_Instance;
+	windowInfo.hIcon = LoadIcon(CatalystPlatform::_Instance, IDI_APPLICATION);
 	windowInfo.hCursor = LoadCursor(NULL, IDC_ARROW);
 	windowInfo.hbrBackground = 0;
 	windowInfo.lpszMenuName = NULL;
@@ -167,7 +167,7 @@ void CatalystPlatform::Initialize() NOEXCEPT
 #endif
 
 	//Create the window.
-	window = CreateWindow(	windowInfo.lpszClassName,
+	_Window = CreateWindow(	windowInfo.lpszClassName,
 							_T(EngineSystem::Instance->GetProjectConfiguration()._GeneralConfiguration._ProjectName.CString()),
 							WS_MAXIMIZE | WS_SYSMENU,
 							CW_USEDEFAULT,
@@ -176,11 +176,11 @@ void CatalystPlatform::Initialize() NOEXCEPT
 							EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.height,
 							nullptr,
 							nullptr,
-							instance,
+							_Instance,
 							nullptr);
 
 #if !defined(CATALYST_FINAL)
-	if (!window)
+	if (!_Window)
 	{
 		const DWORD result{ GetLastError() };
 
@@ -189,10 +189,10 @@ void CatalystPlatform::Initialize() NOEXCEPT
 #endif
 
 	//Show the window.
-	ShowWindow(window, showCommand);
+	ShowWindow(_Window, _ShowCommand);
 
 	//Update the window.
-	UpdateWindow(window);
+	UpdateWindow(_Window);
 }
 
 /*
@@ -219,7 +219,7 @@ void CatalystPlatform::PostUpdate() NOEXCEPT
 	//Process messages.
 	MSG message;
 
-	while (PeekMessage(&message, window, 0, 0, PM_REMOVE) > 0)
+	while (PeekMessage(&message, _Window, 0, 0, PM_REMOVE) > 0)
 	{
 		TranslateMessage(&message);
 		DispatchMessage(&message);
@@ -458,11 +458,11 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 
 	if (GetCursorPos(&point))
 	{
-		if (ScreenToClient(window, &point))
+		if (ScreenToClient(_Window, &point))
 		{
 			RECT rectangle;
 
-			if (GetWindowRect(window, &rectangle))
+			if (GetWindowRect(_Window, &rectangle))
 			{
 				state->_CurrentX = CatalystMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right), 0.0f, 1.0f);
 				state->_CurrentY = CatalystMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom), 0.0f, 1.0f);

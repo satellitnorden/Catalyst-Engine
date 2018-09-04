@@ -653,130 +653,130 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 		{
 			if (i == 2)
 			{
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 			}
 
 			else if (i == 3)
 			{
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 			}
 
 			else
 			{
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 			}
 		}
@@ -802,130 +802,130 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 		{
 			if (i == 2)
 			{
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 			}
 
 			else if (i == 3)
 			{
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 			}
 
 			else
 			{
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(TOP_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.X);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Y);
-				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR.Z);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._X);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Y);
+				data.diffuseIrradianceData.EmplaceFast(BOTTOM_COLOR._Z);
 				data.diffuseIrradianceData.EmplaceFast(1.0f);
 			}
 		}
@@ -975,10 +975,10 @@ void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
 
 		for (Vector4& sample : samples)
 		{
-			sample.X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample.Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample.Z = 0.0f;
-			sample.W = 0.0f;
+			sample._X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample._Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample._Z = 0.0f;
+			sample._W = 0.0f;
 		}
 
 		specialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)] = CreateTexture2D(TextureData(TextureDataContainer(samples, 4, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
