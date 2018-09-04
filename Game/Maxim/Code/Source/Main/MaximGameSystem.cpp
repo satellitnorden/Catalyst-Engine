@@ -94,7 +94,7 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	{
 		const MouseState *const RESTRICT state{ InputSystem::Instance->GetMouseState() };
 
-		if (state->_Left == ButtonState::Pressed || state->_Left == ButtonState::PressedHold)
+		if (state->_Scroll == ButtonState::Pressed || state->_Scroll == ButtonState::PressedHold)
 		{
 			spinner->Move(Vector3(50.0f * state->_DeltaX, 50.0f * state->_DeltaY, 0.0f));
 		}

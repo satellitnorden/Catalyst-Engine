@@ -469,9 +469,6 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 
 				state->_DeltaX = state->_CurrentX - state->_PreviousX;
 				state->_DeltaY = state->_CurrentY - state->_PreviousY;
-
-				PRINT_TO_OUTPUT("X: " << state->_CurrentX);
-				PRINT_TO_OUTPUT("Y: " << state->_CurrentY);
 			}
 
 			else
@@ -493,6 +490,7 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 
 	//Update the button states.
 	UpdateWindowsButton(VK_LBUTTON, state->_Left);
+	UpdateWindowsButton(VK_MBUTTON, state->_Scroll);
 	UpdateWindowsButton(VK_RBUTTON, state->_Right);
 }
 
