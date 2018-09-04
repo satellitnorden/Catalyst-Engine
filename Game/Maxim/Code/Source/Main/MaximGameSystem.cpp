@@ -93,6 +93,7 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	//Rotate the... Thing.
 	if (spinner->IsInitialized())
 	{
+#if defined(CATALYST_WINDOWS)
 		const MouseState *const RESTRICT state{ InputSystem::Instance->GetMouseState() };
 
 		if (state->_Scroll == ButtonState::Pressed || state->_Scroll == ButtonState::PressedHold)
@@ -104,6 +105,15 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 		{
 			spinner->Rotate(Vector3(-180.0f * state->_DeltaY, 180.0f * state->_DeltaX, 0.0f));
 		}
+#elif defined(CATALYST_ANDROID)
+		const TouchState *const RESTRICT state{ InputSystem::Instance->GetTouchState() };
+
+		if (state->_ButtonState == ButtonState::PressedHold)
+		{
+			spinner->Move(Vector3(50.0f * state->_DeltaX, 50.0f * state->_DeltaY, 0.0f));
+			spinner->Rotate(Vector3(-180.0f * state->_DeltaY, 180.0f * state->_DeltaX, 0.0f));
+		}
+#endif
 	}
 }
 

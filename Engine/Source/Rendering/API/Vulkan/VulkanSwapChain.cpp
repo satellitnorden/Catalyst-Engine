@@ -115,7 +115,7 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapCh
 	const auto &surfaceFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat();
 	const auto &presentMode = VulkanInterface::Instance->GetPhysicalDevice().GetPresentMode();
 
-	uint32 minimumImageCount = CatalystMath::Maximum<uint32>(3, surfaceCapabilities.minImageCount);
+	uint32 minimumImageCount = CatalystMath::Maximum<uint32>(2, surfaceCapabilities.minImageCount);
 
 	if (surfaceCapabilities.maxImageCount > 0 && minimumImageCount > surfaceCapabilities.maxImageCount)
 		minimumImageCount = surfaceCapabilities.maxImageCount;

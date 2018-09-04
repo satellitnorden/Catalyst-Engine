@@ -68,7 +68,7 @@ void PollEvents() NOEXCEPT
 void CatalystPlatform::Initialize() NOEXCEPT
 {
 	//Set callbacks.
-	app->onAppCmd = HandleCommand;
+	_App->onAppCmd = HandleCommand;
 
 	//Need to wait for the window to be set before proceeding.
 	while (CatalystPlatform::_Window == nullptr)
@@ -102,7 +102,7 @@ void CatalystPlatform::PostUpdate() NOEXCEPT
 	PollEvents();
 
 	//If the app has received a destroy request, oblige.
-	if (app->destroyRequested != 0)
+	if (_App->destroyRequested != 0)
 	{
 		EngineSystem::Instance->Terminate();
 	}
@@ -145,6 +145,14 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 */
 void CatalystPlatform::GetCurrentTouchState(TouchState *const RESTRICT state) NOEXCEPT
 {
+	//Copy the previous X and Y positions.
+	state->_PreviousX = state->_CurrentX;
+	state->_PreviousY = state->_CurrentY;
+
+    //Keep track if the screen was touched or released this update.
+    bool touched{ false };
+    bool released{ false };
+
 	AInputEvent *event;
 
 	while (AInputQueue_getEvent(_App->inputQueue, &event) >= 0)
@@ -160,24 +168,43 @@ void CatalystPlatform::GetCurrentTouchState(TouchState *const RESTRICT state) NO
             if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_DOWN)
             {
                 state->_ButtonState = ButtonState::Pressed;
-                state->_X = AMotionEvent_getRawX(event, 0) / static_cast<float>(ANativeWindow_getWidth(_Window));
-                state->_Y = 1.0f - AMotionEvent_getRawY(event, 0) / static_cast<float>(ANativeWindow_getHeight(_Window));
+                state->_CurrentX = AMotionEvent_getRawX(event, 0) / static_cast<float>(ANativeWindow_getWidth(_Window));
+                state->_CurrentY = 1.0f - AMotionEvent_getRawY(event, 0) / static_cast<float>(ANativeWindow_getHeight(_Window));
+
+                touched = true;
             }
 
             else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_MOVE)
             {
-                state->_X = AMotionEvent_getRawX(event, 0) / static_cast<float>(ANativeWindow_getWidth(_Window));
-                state->_Y = 1.0f - AMotionEvent_getRawY(event, 0) / static_cast<float>(ANativeWindow_getHeight(_Window));
+                state->_CurrentX = AMotionEvent_getRawX(event, 0) / static_cast<float>(ANativeWindow_getWidth(_Window));
+                state->_CurrentY = 1.0f - AMotionEvent_getRawY(event, 0) / static_cast<float>(ANativeWindow_getHeight(_Window));
             }
 
             else if (AMotionEvent_getAction(event) == AMOTION_EVENT_ACTION_UP)
             {
                 state->_ButtonState = ButtonState::Released;
+
+                released = true;
             }
 		}
 
 		AInputQueue_finishEvent(_App->inputQueue, event, 1);
 	}
+
+    //Update the button state.
+    if (state->_ButtonState == ButtonState::Pressed && !touched)
+    {
+        state->_ButtonState = ButtonState::PressedHold;
+    }
+
+    if (state->_ButtonState == ButtonState::Released && !released)
+    {
+        state->_ButtonState = ButtonState::ReleasedHold;
+    }
+
+	//Calculate the delta positions.
+	state->_DeltaX = state->_CurrentX - state->_PreviousX;
+	state->_DeltaY = state->_CurrentY - state->_PreviousY;
 }
 
 #if !defined(CATALYST_FINAL)
