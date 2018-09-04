@@ -8,6 +8,7 @@
 //Input.
 #include <Input/GamepadState.h>
 #include <Input/KeyboardState.h>
+#include <Input/MouseState.h>
 
 //Math.
 #include <Math/CatalystMath.h>
@@ -92,11 +93,11 @@ void UpdateGamepadButton(const WORD wButtons, const uint16 xInputButton, ButtonS
 }
 
 /*
-	*	Updates a single keyboard button.
+	*	Updates a single Windows button.
 	*/
-void UpdateKeyboardButton(const uint16 button, ButtonState &ButtonState) NOEXCEPT
+void UpdateWindowsButton(const uint16 button, ButtonState &ButtonState) NOEXCEPT
 {
-	//The keyboard button is not pressed.
+	//The Windows button is not pressed.
 	if (!static_cast<bool>(GetKeyState(button) & 0x8000))
 	{
 		if (ButtonState == ButtonState::ReleasedHold)
@@ -115,7 +116,7 @@ void UpdateKeyboardButton(const uint16 button, ButtonState &ButtonState) NOEXCEP
 		}
 	}
 
-	//The keyboard button is pressed.
+	//The Windows button is pressed.
 	else
 	{
 		if (ButtonState == ButtonState::PressedHold)
@@ -307,140 +308,192 @@ void CatalystPlatform::GetCurrentGamepadState(const uint8 index, GamepadState *c
 */
 void CatalystPlatform::GetCurrentKeyboardState(KeyboardState *const RESTRICT state) NOEXCEPT
 {
-	UpdateKeyboardButton(VK_BACK, (*state)[KeyboardButton::Backspace]);
-	UpdateKeyboardButton(VK_TAB, (*state)[KeyboardButton::Tab]);
-	UpdateKeyboardButton(VK_CLEAR, (*state)[KeyboardButton::Clear]);
-	UpdateKeyboardButton(VK_RETURN, (*state)[KeyboardButton::Enter]);
-	UpdateKeyboardButton(VK_PAUSE, (*state)[KeyboardButton::Pause]);
-	UpdateKeyboardButton(VK_CAPITAL, (*state)[KeyboardButton::CapsLock]);
-	UpdateKeyboardButton(VK_ESCAPE, (*state)[KeyboardButton::Escape]);
-	UpdateKeyboardButton(VK_SPACE, (*state)[KeyboardButton::Spacebar]);
-	UpdateKeyboardButton(VK_PRIOR, (*state)[KeyboardButton::PageUp]);
-	UpdateKeyboardButton(VK_NEXT, (*state)[KeyboardButton::PageDown]);
-	UpdateKeyboardButton(VK_HOME, (*state)[KeyboardButton::Home]);
-	UpdateKeyboardButton(VK_LEFT, (*state)[KeyboardButton::LeftArrow]);
-	UpdateKeyboardButton(VK_UP, (*state)[KeyboardButton::UpArrow]);
-	UpdateKeyboardButton(VK_RIGHT, (*state)[KeyboardButton::RightArrow]);
-	UpdateKeyboardButton(VK_DOWN, (*state)[KeyboardButton::DownArrow]);
-	UpdateKeyboardButton(VK_SELECT, (*state)[KeyboardButton::Select]);
-	UpdateKeyboardButton(VK_PRINT, (*state)[KeyboardButton::Print]);
-	UpdateKeyboardButton(VK_EXECUTE, (*state)[KeyboardButton::Execute]);
-	UpdateKeyboardButton(VK_SNAPSHOT, (*state)[KeyboardButton::PrintScreen]);
-	UpdateKeyboardButton(VK_INSERT, (*state)[KeyboardButton::Insert]);
-	UpdateKeyboardButton(VK_DELETE, (*state)[KeyboardButton::Delete]);
-	UpdateKeyboardButton(VK_HELP, (*state)[KeyboardButton::Help]);
+	UpdateWindowsButton(VK_BACK, (*state)[KeyboardButton::Backspace]);
+	UpdateWindowsButton(VK_TAB, (*state)[KeyboardButton::Tab]);
+	UpdateWindowsButton(VK_CLEAR, (*state)[KeyboardButton::Clear]);
+	UpdateWindowsButton(VK_RETURN, (*state)[KeyboardButton::Enter]);
+	UpdateWindowsButton(VK_PAUSE, (*state)[KeyboardButton::Pause]);
+	UpdateWindowsButton(VK_CAPITAL, (*state)[KeyboardButton::CapsLock]);
+	UpdateWindowsButton(VK_ESCAPE, (*state)[KeyboardButton::Escape]);
+	UpdateWindowsButton(VK_SPACE, (*state)[KeyboardButton::Spacebar]);
+	UpdateWindowsButton(VK_PRIOR, (*state)[KeyboardButton::PageUp]);
+	UpdateWindowsButton(VK_NEXT, (*state)[KeyboardButton::PageDown]);
+	UpdateWindowsButton(VK_HOME, (*state)[KeyboardButton::Home]);
+	UpdateWindowsButton(VK_LEFT, (*state)[KeyboardButton::LeftArrow]);
+	UpdateWindowsButton(VK_UP, (*state)[KeyboardButton::UpArrow]);
+	UpdateWindowsButton(VK_RIGHT, (*state)[KeyboardButton::RightArrow]);
+	UpdateWindowsButton(VK_DOWN, (*state)[KeyboardButton::DownArrow]);
+	UpdateWindowsButton(VK_SELECT, (*state)[KeyboardButton::Select]);
+	UpdateWindowsButton(VK_PRINT, (*state)[KeyboardButton::Print]);
+	UpdateWindowsButton(VK_EXECUTE, (*state)[KeyboardButton::Execute]);
+	UpdateWindowsButton(VK_SNAPSHOT, (*state)[KeyboardButton::PrintScreen]);
+	UpdateWindowsButton(VK_INSERT, (*state)[KeyboardButton::Insert]);
+	UpdateWindowsButton(VK_DELETE, (*state)[KeyboardButton::Delete]);
+	UpdateWindowsButton(VK_HELP, (*state)[KeyboardButton::Help]);
 
-	UpdateKeyboardButton(0x30, (*state)[KeyboardButton::Zero]);
-	UpdateKeyboardButton(0x31, (*state)[KeyboardButton::One]);
-	UpdateKeyboardButton(0x32, (*state)[KeyboardButton::Two]);
-	UpdateKeyboardButton(0x33, (*state)[KeyboardButton::Three]);
-	UpdateKeyboardButton(0x34, (*state)[KeyboardButton::Four]);
-	UpdateKeyboardButton(0x35, (*state)[KeyboardButton::Five]);
-	UpdateKeyboardButton(0x36, (*state)[KeyboardButton::Six]);
-	UpdateKeyboardButton(0x37, (*state)[KeyboardButton::Seven]);
-	UpdateKeyboardButton(0x38, (*state)[KeyboardButton::Eight]);
-	UpdateKeyboardButton(0x39, (*state)[KeyboardButton::Nine]);
+	UpdateWindowsButton(0x30, (*state)[KeyboardButton::Zero]);
+	UpdateWindowsButton(0x31, (*state)[KeyboardButton::One]);
+	UpdateWindowsButton(0x32, (*state)[KeyboardButton::Two]);
+	UpdateWindowsButton(0x33, (*state)[KeyboardButton::Three]);
+	UpdateWindowsButton(0x34, (*state)[KeyboardButton::Four]);
+	UpdateWindowsButton(0x35, (*state)[KeyboardButton::Five]);
+	UpdateWindowsButton(0x36, (*state)[KeyboardButton::Six]);
+	UpdateWindowsButton(0x37, (*state)[KeyboardButton::Seven]);
+	UpdateWindowsButton(0x38, (*state)[KeyboardButton::Eight]);
+	UpdateWindowsButton(0x39, (*state)[KeyboardButton::Nine]);
 
-	UpdateKeyboardButton(0x41, (*state)[KeyboardButton::A]);
-	UpdateKeyboardButton(0x42, (*state)[KeyboardButton::B]);
-	UpdateKeyboardButton(0x43, (*state)[KeyboardButton::C]);
-	UpdateKeyboardButton(0x44, (*state)[KeyboardButton::D]);
-	UpdateKeyboardButton(0x45, (*state)[KeyboardButton::E]);
-	UpdateKeyboardButton(0x46, (*state)[KeyboardButton::F]);
-	UpdateKeyboardButton(0x47, (*state)[KeyboardButton::G]);
-	UpdateKeyboardButton(0x48, (*state)[KeyboardButton::H]);
-	UpdateKeyboardButton(0x49, (*state)[KeyboardButton::I]);
-	UpdateKeyboardButton(0x4A, (*state)[KeyboardButton::J]);
-	UpdateKeyboardButton(0x4B, (*state)[KeyboardButton::K]);
-	UpdateKeyboardButton(0x4C, (*state)[KeyboardButton::L]);
-	UpdateKeyboardButton(0x4D, (*state)[KeyboardButton::M]);
-	UpdateKeyboardButton(0x4E, (*state)[KeyboardButton::N]);
-	UpdateKeyboardButton(0x4F, (*state)[KeyboardButton::O]);
-	UpdateKeyboardButton(0x50, (*state)[KeyboardButton::P]);
-	UpdateKeyboardButton(0x51, (*state)[KeyboardButton::Q]);
-	UpdateKeyboardButton(0x52, (*state)[KeyboardButton::R]);
-	UpdateKeyboardButton(0x53, (*state)[KeyboardButton::S]);
-	UpdateKeyboardButton(0x54, (*state)[KeyboardButton::T]);
-	UpdateKeyboardButton(0x55, (*state)[KeyboardButton::U]);
-	UpdateKeyboardButton(0x56, (*state)[KeyboardButton::V]);
-	UpdateKeyboardButton(0x57, (*state)[KeyboardButton::W]);
-	UpdateKeyboardButton(0x58, (*state)[KeyboardButton::X]);
-	UpdateKeyboardButton(0x59, (*state)[KeyboardButton::Y]);
-	UpdateKeyboardButton(0x5A, (*state)[KeyboardButton::Z]);
+	UpdateWindowsButton(0x41, (*state)[KeyboardButton::A]);
+	UpdateWindowsButton(0x42, (*state)[KeyboardButton::B]);
+	UpdateWindowsButton(0x43, (*state)[KeyboardButton::C]);
+	UpdateWindowsButton(0x44, (*state)[KeyboardButton::D]);
+	UpdateWindowsButton(0x45, (*state)[KeyboardButton::E]);
+	UpdateWindowsButton(0x46, (*state)[KeyboardButton::F]);
+	UpdateWindowsButton(0x47, (*state)[KeyboardButton::G]);
+	UpdateWindowsButton(0x48, (*state)[KeyboardButton::H]);
+	UpdateWindowsButton(0x49, (*state)[KeyboardButton::I]);
+	UpdateWindowsButton(0x4A, (*state)[KeyboardButton::J]);
+	UpdateWindowsButton(0x4B, (*state)[KeyboardButton::K]);
+	UpdateWindowsButton(0x4C, (*state)[KeyboardButton::L]);
+	UpdateWindowsButton(0x4D, (*state)[KeyboardButton::M]);
+	UpdateWindowsButton(0x4E, (*state)[KeyboardButton::N]);
+	UpdateWindowsButton(0x4F, (*state)[KeyboardButton::O]);
+	UpdateWindowsButton(0x50, (*state)[KeyboardButton::P]);
+	UpdateWindowsButton(0x51, (*state)[KeyboardButton::Q]);
+	UpdateWindowsButton(0x52, (*state)[KeyboardButton::R]);
+	UpdateWindowsButton(0x53, (*state)[KeyboardButton::S]);
+	UpdateWindowsButton(0x54, (*state)[KeyboardButton::T]);
+	UpdateWindowsButton(0x55, (*state)[KeyboardButton::U]);
+	UpdateWindowsButton(0x56, (*state)[KeyboardButton::V]);
+	UpdateWindowsButton(0x57, (*state)[KeyboardButton::W]);
+	UpdateWindowsButton(0x58, (*state)[KeyboardButton::X]);
+	UpdateWindowsButton(0x59, (*state)[KeyboardButton::Y]);
+	UpdateWindowsButton(0x5A, (*state)[KeyboardButton::Z]);
 
-	UpdateKeyboardButton(VK_LWIN, (*state)[KeyboardButton::LeftWindows]);
-	UpdateKeyboardButton(VK_RWIN, (*state)[KeyboardButton::RightWindows]);
-	UpdateKeyboardButton(VK_APPS, (*state)[KeyboardButton::Applications]);
-	UpdateKeyboardButton(VK_SLEEP, (*state)[KeyboardButton::Sleep]);
+	UpdateWindowsButton(VK_LWIN, (*state)[KeyboardButton::LeftWindows]);
+	UpdateWindowsButton(VK_RWIN, (*state)[KeyboardButton::RightWindows]);
+	UpdateWindowsButton(VK_APPS, (*state)[KeyboardButton::Applications]);
+	UpdateWindowsButton(VK_SLEEP, (*state)[KeyboardButton::Sleep]);
 
-	UpdateKeyboardButton(VK_NUMPAD0, (*state)[KeyboardButton::NumpadZero]);
-	UpdateKeyboardButton(VK_NUMPAD1, (*state)[KeyboardButton::NumpadOne]);
-	UpdateKeyboardButton(VK_NUMPAD2, (*state)[KeyboardButton::NumpadTwo]);
-	UpdateKeyboardButton(VK_NUMPAD3, (*state)[KeyboardButton::NumpadThree]);
-	UpdateKeyboardButton(VK_NUMPAD4, (*state)[KeyboardButton::NumpadFour]);
-	UpdateKeyboardButton(VK_NUMPAD5, (*state)[KeyboardButton::NumpadFive]);
-	UpdateKeyboardButton(VK_NUMPAD6, (*state)[KeyboardButton::NumpadSix]);
-	UpdateKeyboardButton(VK_NUMPAD7, (*state)[KeyboardButton::NumpadSeven]);
-	UpdateKeyboardButton(VK_NUMPAD8, (*state)[KeyboardButton::NumpadEight]);
-	UpdateKeyboardButton(VK_NUMPAD9, (*state)[KeyboardButton::NumpadNine]);
+	UpdateWindowsButton(VK_NUMPAD0, (*state)[KeyboardButton::NumpadZero]);
+	UpdateWindowsButton(VK_NUMPAD1, (*state)[KeyboardButton::NumpadOne]);
+	UpdateWindowsButton(VK_NUMPAD2, (*state)[KeyboardButton::NumpadTwo]);
+	UpdateWindowsButton(VK_NUMPAD3, (*state)[KeyboardButton::NumpadThree]);
+	UpdateWindowsButton(VK_NUMPAD4, (*state)[KeyboardButton::NumpadFour]);
+	UpdateWindowsButton(VK_NUMPAD5, (*state)[KeyboardButton::NumpadFive]);
+	UpdateWindowsButton(VK_NUMPAD6, (*state)[KeyboardButton::NumpadSix]);
+	UpdateWindowsButton(VK_NUMPAD7, (*state)[KeyboardButton::NumpadSeven]);
+	UpdateWindowsButton(VK_NUMPAD8, (*state)[KeyboardButton::NumpadEight]);
+	UpdateWindowsButton(VK_NUMPAD9, (*state)[KeyboardButton::NumpadNine]);
 
-	UpdateKeyboardButton(VK_MULTIPLY, (*state)[KeyboardButton::NumpadMultiply]);
-	UpdateKeyboardButton(VK_ADD, (*state)[KeyboardButton::NumpadAdd]);
-	UpdateKeyboardButton(VK_SEPARATOR, (*state)[KeyboardButton::NumpadSeparator]);
-	UpdateKeyboardButton(VK_SUBTRACT, (*state)[KeyboardButton::NumpadSubtract]);
-	UpdateKeyboardButton(VK_DECIMAL, (*state)[KeyboardButton::NumpadDecimal]);
-	UpdateKeyboardButton(VK_DIVIDE, (*state)[KeyboardButton::NumpadDivide]);
+	UpdateWindowsButton(VK_MULTIPLY, (*state)[KeyboardButton::NumpadMultiply]);
+	UpdateWindowsButton(VK_ADD, (*state)[KeyboardButton::NumpadAdd]);
+	UpdateWindowsButton(VK_SEPARATOR, (*state)[KeyboardButton::NumpadSeparator]);
+	UpdateWindowsButton(VK_SUBTRACT, (*state)[KeyboardButton::NumpadSubtract]);
+	UpdateWindowsButton(VK_DECIMAL, (*state)[KeyboardButton::NumpadDecimal]);
+	UpdateWindowsButton(VK_DIVIDE, (*state)[KeyboardButton::NumpadDivide]);
 
-	UpdateKeyboardButton(VK_F1, (*state)[KeyboardButton::F1]);
-	UpdateKeyboardButton(VK_F2, (*state)[KeyboardButton::F2]);
-	UpdateKeyboardButton(VK_F3, (*state)[KeyboardButton::F3]);
-	UpdateKeyboardButton(VK_F4, (*state)[KeyboardButton::F4]);
-	UpdateKeyboardButton(VK_F5, (*state)[KeyboardButton::F5]);
-	UpdateKeyboardButton(VK_F6, (*state)[KeyboardButton::F6]);
-	UpdateKeyboardButton(VK_F7, (*state)[KeyboardButton::F7]);
-	UpdateKeyboardButton(VK_F8, (*state)[KeyboardButton::F8]);
-	UpdateKeyboardButton(VK_F9, (*state)[KeyboardButton::F9]);
-	UpdateKeyboardButton(VK_F10, (*state)[KeyboardButton::F10]);
-	UpdateKeyboardButton(VK_F11, (*state)[KeyboardButton::F11]);
-	UpdateKeyboardButton(VK_F12, (*state)[KeyboardButton::F12]);
-	UpdateKeyboardButton(VK_F13, (*state)[KeyboardButton::F13]);
-	UpdateKeyboardButton(VK_F14, (*state)[KeyboardButton::F14]);
-	UpdateKeyboardButton(VK_F15, (*state)[KeyboardButton::F15]);
-	UpdateKeyboardButton(VK_F16, (*state)[KeyboardButton::F16]);
-	UpdateKeyboardButton(VK_F17, (*state)[KeyboardButton::F17]);
-	UpdateKeyboardButton(VK_F18, (*state)[KeyboardButton::F18]);
-	UpdateKeyboardButton(VK_F19, (*state)[KeyboardButton::F19]);
-	UpdateKeyboardButton(VK_F20, (*state)[KeyboardButton::F20]);
-	UpdateKeyboardButton(VK_F21, (*state)[KeyboardButton::F21]);
-	UpdateKeyboardButton(VK_F22, (*state)[KeyboardButton::F22]);
-	UpdateKeyboardButton(VK_F23, (*state)[KeyboardButton::F23]);
-	UpdateKeyboardButton(VK_F24, (*state)[KeyboardButton::F24]);
+	UpdateWindowsButton(VK_F1, (*state)[KeyboardButton::F1]);
+	UpdateWindowsButton(VK_F2, (*state)[KeyboardButton::F2]);
+	UpdateWindowsButton(VK_F3, (*state)[KeyboardButton::F3]);
+	UpdateWindowsButton(VK_F4, (*state)[KeyboardButton::F4]);
+	UpdateWindowsButton(VK_F5, (*state)[KeyboardButton::F5]);
+	UpdateWindowsButton(VK_F6, (*state)[KeyboardButton::F6]);
+	UpdateWindowsButton(VK_F7, (*state)[KeyboardButton::F7]);
+	UpdateWindowsButton(VK_F8, (*state)[KeyboardButton::F8]);
+	UpdateWindowsButton(VK_F9, (*state)[KeyboardButton::F9]);
+	UpdateWindowsButton(VK_F10, (*state)[KeyboardButton::F10]);
+	UpdateWindowsButton(VK_F11, (*state)[KeyboardButton::F11]);
+	UpdateWindowsButton(VK_F12, (*state)[KeyboardButton::F12]);
+	UpdateWindowsButton(VK_F13, (*state)[KeyboardButton::F13]);
+	UpdateWindowsButton(VK_F14, (*state)[KeyboardButton::F14]);
+	UpdateWindowsButton(VK_F15, (*state)[KeyboardButton::F15]);
+	UpdateWindowsButton(VK_F16, (*state)[KeyboardButton::F16]);
+	UpdateWindowsButton(VK_F17, (*state)[KeyboardButton::F17]);
+	UpdateWindowsButton(VK_F18, (*state)[KeyboardButton::F18]);
+	UpdateWindowsButton(VK_F19, (*state)[KeyboardButton::F19]);
+	UpdateWindowsButton(VK_F20, (*state)[KeyboardButton::F20]);
+	UpdateWindowsButton(VK_F21, (*state)[KeyboardButton::F21]);
+	UpdateWindowsButton(VK_F22, (*state)[KeyboardButton::F22]);
+	UpdateWindowsButton(VK_F23, (*state)[KeyboardButton::F23]);
+	UpdateWindowsButton(VK_F24, (*state)[KeyboardButton::F24]);
 
-	UpdateKeyboardButton(VK_NUMLOCK, (*state)[KeyboardButton::NumLock]);
-	UpdateKeyboardButton(VK_SCROLL, (*state)[KeyboardButton::ScrollLock]);
-	UpdateKeyboardButton(VK_LSHIFT, (*state)[KeyboardButton::LeftShift]);
-	UpdateKeyboardButton(VK_RSHIFT, (*state)[KeyboardButton::RightShift]);
-	UpdateKeyboardButton(VK_LCONTROL, (*state)[KeyboardButton::LeftControl]);
-	UpdateKeyboardButton(VK_RCONTROL, (*state)[KeyboardButton::RightControl]);
-	UpdateKeyboardButton(VK_LMENU, (*state)[KeyboardButton::LeftAlt]);
-	UpdateKeyboardButton(VK_RMENU, (*state)[KeyboardButton::RightAlt]);
+	UpdateWindowsButton(VK_NUMLOCK, (*state)[KeyboardButton::NumLock]);
+	UpdateWindowsButton(VK_SCROLL, (*state)[KeyboardButton::ScrollLock]);
+	UpdateWindowsButton(VK_LSHIFT, (*state)[KeyboardButton::LeftShift]);
+	UpdateWindowsButton(VK_RSHIFT, (*state)[KeyboardButton::RightShift]);
+	UpdateWindowsButton(VK_LCONTROL, (*state)[KeyboardButton::LeftControl]);
+	UpdateWindowsButton(VK_RCONTROL, (*state)[KeyboardButton::RightControl]);
+	UpdateWindowsButton(VK_LMENU, (*state)[KeyboardButton::LeftAlt]);
+	UpdateWindowsButton(VK_RMENU, (*state)[KeyboardButton::RightAlt]);
 
-	UpdateKeyboardButton(VK_BROWSER_BACK, (*state)[KeyboardButton::BrowserBack]);
-	UpdateKeyboardButton(VK_BROWSER_FORWARD, (*state)[KeyboardButton::BrowserForward]);
-	UpdateKeyboardButton(VK_BROWSER_REFRESH, (*state)[KeyboardButton::BrowserRefresh]);
-	UpdateKeyboardButton(VK_BROWSER_STOP, (*state)[KeyboardButton::BrowserStop]);
-	UpdateKeyboardButton(VK_BROWSER_SEARCH, (*state)[KeyboardButton::BrowserSearch]);
-	UpdateKeyboardButton(VK_BROWSER_FAVORITES, (*state)[KeyboardButton::BrowserFavorites]);
-	UpdateKeyboardButton(VK_BROWSER_HOME, (*state)[KeyboardButton::BrowserStartAndHome]);
+	UpdateWindowsButton(VK_BROWSER_BACK, (*state)[KeyboardButton::BrowserBack]);
+	UpdateWindowsButton(VK_BROWSER_FORWARD, (*state)[KeyboardButton::BrowserForward]);
+	UpdateWindowsButton(VK_BROWSER_REFRESH, (*state)[KeyboardButton::BrowserRefresh]);
+	UpdateWindowsButton(VK_BROWSER_STOP, (*state)[KeyboardButton::BrowserStop]);
+	UpdateWindowsButton(VK_BROWSER_SEARCH, (*state)[KeyboardButton::BrowserSearch]);
+	UpdateWindowsButton(VK_BROWSER_FAVORITES, (*state)[KeyboardButton::BrowserFavorites]);
+	UpdateWindowsButton(VK_BROWSER_HOME, (*state)[KeyboardButton::BrowserStartAndHome]);
 
-	UpdateKeyboardButton(VK_VOLUME_MUTE, (*state)[KeyboardButton::VolumeMute]);
-	UpdateKeyboardButton(VK_VOLUME_DOWN, (*state)[KeyboardButton::VolumeDown]);
-	UpdateKeyboardButton(VK_VOLUME_UP, (*state)[KeyboardButton::VolumeUp]);
+	UpdateWindowsButton(VK_VOLUME_MUTE, (*state)[KeyboardButton::VolumeMute]);
+	UpdateWindowsButton(VK_VOLUME_DOWN, (*state)[KeyboardButton::VolumeDown]);
+	UpdateWindowsButton(VK_VOLUME_UP, (*state)[KeyboardButton::VolumeUp]);
 
-	UpdateKeyboardButton(VK_MEDIA_NEXT_TRACK, (*state)[KeyboardButton::NextTrack]);
-	UpdateKeyboardButton(VK_MEDIA_PREV_TRACK, (*state)[KeyboardButton::PreviousTrack]);
-	UpdateKeyboardButton(VK_MEDIA_STOP, (*state)[KeyboardButton::StopMedia]);
-	UpdateKeyboardButton(VK_MEDIA_PLAY_PAUSE, (*state)[KeyboardButton::PlayPause]);
+	UpdateWindowsButton(VK_MEDIA_NEXT_TRACK, (*state)[KeyboardButton::NextTrack]);
+	UpdateWindowsButton(VK_MEDIA_PREV_TRACK, (*state)[KeyboardButton::PreviousTrack]);
+	UpdateWindowsButton(VK_MEDIA_STOP, (*state)[KeyboardButton::StopMedia]);
+	UpdateWindowsButton(VK_MEDIA_PLAY_PAUSE, (*state)[KeyboardButton::PlayPause]);
+}
+
+/*
+*	Retrieves the current mouse state.
+*/
+void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NOEXCEPT
+{
+	//Copy the previous X and Y positions.
+	state->_PreviousX = state->_CurrentX;
+	state->_PreviousY = state->_CurrentY;
+
+	//Get the current cursor position.
+	POINT point;
+
+	if (GetCursorPos(&point))
+	{
+		if (ScreenToClient(window, &point))
+		{
+			RECT rectangle;
+
+			if (GetWindowRect(window, &rectangle))
+			{
+				state->_CurrentX = CatalystMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right), 0.0f, 1.0f);
+				state->_CurrentY = CatalystMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom), 0.0f, 1.0f);
+
+				state->_DeltaX = state->_CurrentX - state->_PreviousX;
+				state->_DeltaY = state->_CurrentY - state->_PreviousY;
+
+				PRINT_TO_OUTPUT("X: " << state->_CurrentX);
+				PRINT_TO_OUTPUT("Y: " << state->_CurrentY);
+			}
+
+			else
+			{
+				ASSERT(false, "Could not retrieve window rectangle. ):");
+			}
+		}
+
+		else
+		{
+			ASSERT(false, "Could not convert cursor position to window coordinates. ):");
+		}
+	}
+
+	else
+	{
+		ASSERT(false, "Could not retrieve the current cursor position. ):");
+	}
+
+	//Update the button states.
+	UpdateWindowsButton(VK_LBUTTON, state->_Left);
+	UpdateWindowsButton(VK_RBUTTON, state->_Right);
 }
 
 /*

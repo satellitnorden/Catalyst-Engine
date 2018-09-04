@@ -10,6 +10,7 @@
 //Input.
 #include <Input/GamepadState.h>
 #include <Input/KeyboardState.h>
+#include <Input/MouseState.h>
 #include <Input/TouchState.h>
 
 class InputSystem final
@@ -62,6 +63,14 @@ public:
 	}
 
 	/*
+	*	Returns the current mouse state.
+	*/
+	NO_DISCARD RESTRICTED const MouseState *const RESTRICT GetMouseState() const NOEXCEPT
+	{
+		return &_MouseState;
+	}
+
+	/*
 	*	Returns the current touch state.
 	*/
 	NO_DISCARD RESTRICTED const TouchState *const RESTRICT GetTouchState() const NOEXCEPT
@@ -74,11 +83,14 @@ private:
 	//The update task.
 	Task _UpdateTask;
 
-	//The current gamepad states.
+	//The gamepad states.
 	StaticArray<GamepadState, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS> _GamepadStates;
 
-	//The current keyboard state.
+	//The keyboard state.
 	KeyboardState _KeyboardState;
+
+	//The mouse state.
+	MouseState _MouseState;
 
 	//The touch state.
 	TouchState _TouchState;

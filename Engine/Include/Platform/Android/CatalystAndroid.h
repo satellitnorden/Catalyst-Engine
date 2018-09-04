@@ -22,6 +22,7 @@ void android_main(android_app *app)																			\
 //Forward declarations.
 class GamepadState;
 class KeyboardState;
+class MouseState;
 class TouchState;
 
 class CatalystPlatform final
@@ -69,6 +70,11 @@ public:
 	*	Retrieves the current keyboard state.
 	*/
 	static void GetCurrentKeyboardState(KeyboardState *const RESTRICT state) NOEXCEPT;
+
+	/*
+	*	Retrieves the current mouse state.
+	*/
+	static void GetCurrentMouseState(MouseState *const RESTRICT state) NOEXCEPT;
 
 	/*
 	*	Retrieves the current touch state.

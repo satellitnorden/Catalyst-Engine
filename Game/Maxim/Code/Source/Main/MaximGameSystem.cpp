@@ -43,7 +43,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	//Create some particles.
 	ParticleSystemEntity *const RESTRICT particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
-	particles->Initialize(RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle), ParticleSystemProperties(10.0f, 60.0f, 0.01f, Vector2(0.025f, 0.025f), Vector2(0.05f, 0.05f), Vector3(-25.0f, 0.0f, -25.0f), Vector3(25.0f, 25.0f, 25.0f), Vector3(-0.25f, -0.25f, -0.25f), Vector3(0.25f, 0.25f, 0.25f), Vector3(0.0f, 0.0f, 0.0f)));
+	particles->Initialize(RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle), ParticleSystemProperties(10.0f, 60.0f, 0.1f, Vector2(0.025f, 0.025f), Vector2(0.05f, 0.05f), Vector3(-25.0f, 0.0f, -25.0f), Vector3(25.0f, 25.0f, 25.0f), Vector3(-0.25f, -0.25f, -0.25f), Vector3(0.25f, 0.25f, 0.25f), Vector3(0.0f, 0.0f, 0.0f)));
 
 	//Create, uh, sun.
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
@@ -92,12 +92,16 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	//Rotate the... Thing.
 	if (spinner->IsInitialized())
 	{
-		const TouchState *const RESTRICT state{ InputSystem::Instance->GetTouchState() };
+		const MouseState *const RESTRICT state{ InputSystem::Instance->GetMouseState() };
 
-		if (state->_ButtonState == ButtonState::Pressed)
+		if (state->_Left == ButtonState::Pressed || state->_Left == ButtonState::PressedHold)
 		{
-			spinner->Move(Vector3(0.0f, 10.0f * CatalystMath::SineRadians(EngineSystem::Instance->GetTotalGameTime()) * deltaTime, 0.0f));
-			spinner->Rotate(Vector3(25.0f * deltaTime, 25.0f * deltaTime, 25.0f * deltaTime));
+			spinner->Move(Vector3(50.0f * state->_DeltaX, 50.0f * state->_DeltaY, 0.0f));
+		}
+
+		if (state->_Right == ButtonState::Pressed || state->_Right == ButtonState::PressedHold)
+		{
+			spinner->Rotate(Vector3(-180.0f * state->_DeltaY, 180.0f * state->_DeltaX, 0.0f));
 		}
 	}
 }

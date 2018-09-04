@@ -133,6 +133,14 @@ void CatalystPlatform::GetCurrentKeyboardState(KeyboardState *const RESTRICT sta
 }
 
 /*
+*	Retrieves the current mouse state.
+*/
+void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NOEXCEPT
+{
+	//Not implemented on Android.
+}
+
+/*
 *	Retrieves the current touch state.
 */
 void CatalystPlatform::GetCurrentTouchState(TouchState *const RESTRICT state) NOEXCEPT

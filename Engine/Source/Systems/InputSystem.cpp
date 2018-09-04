@@ -55,6 +55,9 @@ void InputSystem::UpdateSystemAsynchronous() NOEXCEPT
 	//Retrieve the current keyboard state.
 	CatalystPlatform::GetCurrentKeyboardState(&_KeyboardState);
 
+	//Retrieve the current mouse state.
+	CatalystPlatform::GetCurrentMouseState(&_MouseState);
+
 	//Retrieve the current touch state.
 	CatalystPlatform::GetCurrentTouchState(&_TouchState);
 }
