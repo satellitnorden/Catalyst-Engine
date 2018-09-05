@@ -10,7 +10,7 @@
 #include <Managers/EnvironmentManager.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 
 //Rendering.
 #include <Rendering/Engine/CommonPhysicalModelData.h>
@@ -978,8 +978,8 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 
 		for (uint16 i = 0; i < RESOLUTION * RESOLUTION; ++i)
 		{
-			data._NormalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(126, 128)));
-			data._NormalMapData[0].EmplaceFast(static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(126, 128)));
+			data._NormalMapData[0].EmplaceFast(static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(126, 128)));
+			data._NormalMapData[0].EmplaceFast(static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(126, 128)));
 			data._NormalMapData[0].EmplaceFast(255);
 			data._NormalMapData[0].EmplaceFast(255);
 		}
@@ -1001,8 +1001,8 @@ void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
 
 		for (Vector4& sample : samples)
 		{
-			sample._X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample._Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample._X = CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample._Y = CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f);
 			sample._Z = 0.0f;
 			sample._W = 0.0f;
 		}
@@ -1019,7 +1019,7 @@ void RenderingSystem::UpdateMatrices() NOEXCEPT
 	if (_ActiveCamera)
 	{
 		//Calculate the projection matrix.
-		_ProjectionMatrix = Matrix4::Perspective(CatalystMath::DegreesToRadians(_ActiveCamera->GetFieldOfView()), static_cast<float>(GetResolution().width) / static_cast<float>(GetResolution().height), _ActiveCamera->GetNearPlane(), _ActiveCamera->GetFarPlane());
+		_ProjectionMatrix = Matrix4::Perspective(CatalystBaseMath::DegreesToRadians(_ActiveCamera->GetFieldOfView()), static_cast<float>(GetResolution().width) / static_cast<float>(GetResolution().height), _ActiveCamera->GetNearPlane(), _ActiveCamera->GetFarPlane());
 	
 		//Calculate the camera matrix.
 		_CameraMatrix = Matrix4::LookAt(_ActiveCamera->GetPosition(), _ActiveCamera->GetPosition() + _ActiveCamera->GetForwardVector(), _ActiveCamera->GetUpVector());

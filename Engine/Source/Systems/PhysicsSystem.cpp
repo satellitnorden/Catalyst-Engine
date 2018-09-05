@@ -8,7 +8,7 @@
 #include <Entities/Entity.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 #include <Math/Vector3.h>
 
 //Physics.

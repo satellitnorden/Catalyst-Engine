@@ -19,7 +19,7 @@
 #include <Managers/EnvironmentManager.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 #include <Math/Matrix3.h>
 
 //Multithreading.
@@ -380,9 +380,9 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 	//Set up the particle system's components.
 	component._Properties = properties;
 	component._PropertiesUniformBuffer = uniformBuffer;
-	renderComponent._ParticleSystemRandomSeed = CatalystMath::RandomFloatInRange(0.0f, 1.0f);
+	renderComponent._ParticleSystemRandomSeed = CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f);
 	renderComponent._ParticleSystemStartingTime = EngineSystem::Instance->GetTotalGameTime();
-	renderComponent._InstanceCount = CatalystMath::Round<uint32>(properties.lifetime / properties.spawnFrequency);
+	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(properties.lifetime / properties.spawnFrequency);
 }
 
 /*
@@ -671,15 +671,15 @@ void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 
 		for (Vector4& sample : samples)
 		{
-			sample._X = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample._Y = CatalystMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample._Z = CatalystMath::RandomFloatInRange(0.0f, 1.0f);
+			sample._X = CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample._Y = CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f);
+			sample._Z = CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f);
 			sample._W = 0.0f;
 
 			sample.Normalize();
 
-			float scale{ CatalystMath::RandomFloatInRange(0.0f, 1.0f) };
-			scale = CatalystMath::LinearlyInterpolate(0.1f, 1.0f, scale * scale);
+			float scale{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+			scale = CatalystBaseMath::LinearlyInterpolate(0.1f, 1.0f, scale * scale);
 
 			sample *= scale;
 		}
@@ -1748,7 +1748,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	Matrix4 cameraOriginMatrix{ *cameraMatrix };
 	cameraOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
 
-	dynamicUniformData.cameraFieldOfViewCosine = CatalystMath::CosineDegrees(activeCamera->GetFieldOfView()) - 0.2f;
+	dynamicUniformData.cameraFieldOfViewCosine = CatalystBaseMath::CosineDegrees(activeCamera->GetFieldOfView()) - 0.2f;
 	dynamicUniformData.inverseCameraMatrix = *inverseCameraMatrix;
 	dynamicUniformData.inverseProjectionMatrix = *inverseProjectionMatrix;
 	dynamicUniformData.originViewMatrix = *projectionMatrix * cameraOriginMatrix;
@@ -1828,8 +1828,8 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 
 		dynamicUniformData.spotLightAttenuationDistances[counter] = spotLightComponent->_AttenuationDistance;
 		dynamicUniformData.spotLightIntensities[counter] = spotLightComponent->_Intensity;
-		dynamicUniformData.spotLightInnerCutoffAngles[counter] = CatalystMath::CosineDegrees(spotLightComponent->_InnerCutoffAngle);
-		dynamicUniformData.spotLightOuterCutoffAngles[counter] = CatalystMath::CosineDegrees(spotLightComponent->_OuterCutoffAngle);
+		dynamicUniformData.spotLightInnerCutoffAngles[counter] = CatalystBaseMath::CosineDegrees(spotLightComponent->_InnerCutoffAngle);
+		dynamicUniformData.spotLightOuterCutoffAngles[counter] = CatalystBaseMath::CosineDegrees(spotLightComponent->_OuterCutoffAngle);
 		dynamicUniformData.spotLightColors[counter] = spotLightComponent->_Color;
 		dynamicUniformData.spotLightDirections[counter] = Vector3(0.0f, -1.0f, 0.0f).Rotated(spotLightComponent->_Rotation);
 		dynamicUniformData.spotLightDirections[counter]._Y *= -1.0f;

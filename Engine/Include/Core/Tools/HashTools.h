@@ -6,7 +6,7 @@
 #include <Core/HashString.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 
 class HashTools final
 {
@@ -71,7 +71,7 @@ public:
 		for (uint64 i = 0; i < iterations;)
 		{
 			//Generate the length of the string.
-			const uint8 stringLength{ static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(0, UINT8_MAXIMUM)) };
+			const uint8 stringLength{ static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(0, UINT8_MAXIMUM)) };
 
 			//Create a dynamic array to hold the string.
 			DynamicArray<uint8> string;
@@ -79,7 +79,7 @@ public:
 
 			for (uint8 i = 0; i < stringLength; ++i)
 			{
-				string[i] = static_cast<uint8>(CatalystMath::RandomIntegerInRange<uint16>(0, UINT8_MAXIMUM));
+				string[i] = static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(0, UINT8_MAXIMUM));
 			}
 
 			//And insert the terminating character.

@@ -136,7 +136,7 @@ void CullingSystem::CullStaticPhysical() NOEXCEPT
 		//Cache relevant data.
 		const Vector3& position = transformComponent->_Position;
 		const Vector3& scale = transformComponent->_Scale;
-		const float biggestScale = CatalystMath::Maximum(scale._X, CatalystMath::Maximum(scale._Y, scale._Z));
+		const float biggestScale = CatalystBaseMath::Maximum(scale._X, CatalystBaseMath::Maximum(scale._Y, scale._Z));
 		const float scaledExtent = frustumCullingComponent->_AxisAlignedBoundingBox.maximum._X * biggestScale;
 
 		StaticArray<Vector4, 8> corners;
@@ -189,8 +189,8 @@ void CullingSystem::CullVegetation() NOEXCEPT
 	{
 		for (uint64 i = 0, size = renderComponent->_ShouldDrawGridCell.Size(); i < size; ++i)
 		{
-			renderComponent->_ShouldDrawGridCell[i] = CatalystMath::Absolute(cameraWorldPosition._X - cullingComponent->_GridCellCenterLocations[i]._X) <= cullingComponent->_CutoffDistance &&
-				CatalystMath::Absolute(cameraWorldPosition._Z - cullingComponent->_GridCellCenterLocations[i]._Y) <= cullingComponent->_CutoffDistance;
+			renderComponent->_ShouldDrawGridCell[i] = CatalystBaseMath::Absolute(cameraWorldPosition._X - cullingComponent->_GridCellCenterLocations[i]._X) <= cullingComponent->_CutoffDistance &&
+				CatalystBaseMath::Absolute(cameraWorldPosition._Z - cullingComponent->_GridCellCenterLocations[i]._Y) <= cullingComponent->_CutoffDistance;
 		}
 	}
 }

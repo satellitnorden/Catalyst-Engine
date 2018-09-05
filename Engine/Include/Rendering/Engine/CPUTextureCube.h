@@ -4,7 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 #include <Math/Vector2.h>
 #include <Math/Vector3.h>
 #include <Math/Vector4.h>

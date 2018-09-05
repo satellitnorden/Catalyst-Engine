@@ -13,7 +13,7 @@
 #include <Managers/RenderingConfigurationManager.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>

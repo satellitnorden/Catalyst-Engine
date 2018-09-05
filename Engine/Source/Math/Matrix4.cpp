@@ -2,7 +2,7 @@
 #include <Math/Matrix4.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 #include <Math/Matrix3.h>
 #include <Math/Vector3.h>
 
@@ -60,7 +60,7 @@ Matrix4 Matrix4::Ortographic(const float left, const float right, const float bo
 */
 Matrix4 Matrix4::Perspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT
 {
-	const float halfFovTangent = CatalystMath::TangentRadians(fov * 0.5f);
+	const float halfFovTangent = CatalystBaseMath::TangentRadians(fov * 0.5f);
 
 	Matrix4 result{ 0.0f };
 
@@ -133,9 +133,9 @@ Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3
 	//Create a rotation matrix for the X axis.
 	if (rotation._X != 0.0f)
 	{
-		const float xRadians = CatalystMath::DegreesToRadians(rotation._X);
-		const float xSine = CatalystMath::SineRadians(xRadians);
-		const float xCosine = CatalystMath::CosineRadians(xRadians);
+		const float xRadians = CatalystBaseMath::DegreesToRadians(rotation._X);
+		const float xSine = CatalystBaseMath::SineRadians(xRadians);
+		const float xCosine = CatalystBaseMath::CosineRadians(xRadians);
 
 		const Matrix4 xRotationMatrix{ Vector4(1.0f, 0.0f, 0.0f, 0.0f), Vector4(0.0f, xCosine, xSine, 0.0f), Vector4(0.0f, -xSine, xCosine, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
 
@@ -145,9 +145,9 @@ Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3
 	//Create a rotation matrix for the Y axis.
 	if (rotation._Y != 0.0f)
 	{
-		const float yRadians = CatalystMath::DegreesToRadians(rotation._Y);
-		const float ySine = CatalystMath::SineRadians(yRadians);
-		const float yCosine = CatalystMath::CosineRadians(yRadians);
+		const float yRadians = CatalystBaseMath::DegreesToRadians(rotation._Y);
+		const float ySine = CatalystBaseMath::SineRadians(yRadians);
+		const float yCosine = CatalystBaseMath::CosineRadians(yRadians);
 
 		const Matrix4 yRotationMatrix{ Vector4(yCosine, 0.0f, -ySine, 0.0f), Vector4(0.0f, 1.0f, 0.0f, 0.0f), Vector4(ySine, 0.0f, yCosine, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
 
@@ -157,9 +157,9 @@ Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3
 	//Create a rotation matrix for the Z axis.
 	if (rotation._Z != 0.0f)
 	{
-		const float zRadians = CatalystMath::DegreesToRadians(rotation._Z);
-		const float zSine = CatalystMath::SineRadians(zRadians);
-		const float zCosine = CatalystMath::CosineRadians(zRadians);
+		const float zRadians = CatalystBaseMath::DegreesToRadians(rotation._Z);
+		const float zSine = CatalystBaseMath::SineRadians(zRadians);
+		const float zCosine = CatalystBaseMath::CosineRadians(zRadians);
 
 		const Matrix4 zRotationMatrix{ Vector4(zCosine, zSine, 0.0f, 0.0f), Vector4(-zSine, zCosine, 0.0f, 0.0f), Vector4(0.0f, 0.0f, 1.0f, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
 

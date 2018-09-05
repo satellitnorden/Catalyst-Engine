@@ -2,7 +2,7 @@
 #include <Rendering/API/Vulkan/VulkanSwapChain.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -97,8 +97,8 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
 
-	swapExtent.width = CatalystMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
-	swapExtent.height = CatalystMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
+	swapExtent.width = CatalystBaseMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
+	swapExtent.height = CatalystBaseMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
 }
 
 /*
@@ -115,7 +115,7 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapCh
 	const auto &surfaceFormat = VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat();
 	const auto &presentMode = VulkanInterface::Instance->GetPhysicalDevice().GetPresentMode();
 
-	uint32 minimumImageCount = CatalystMath::Maximum<uint32>(2, surfaceCapabilities.minImageCount);
+	uint32 minimumImageCount = CatalystBaseMath::Maximum<uint32>(2, surfaceCapabilities.minImageCount);
 
 	if (surfaceCapabilities.maxImageCount > 0 && minimumImageCount > surfaceCapabilities.maxImageCount)
 		minimumImageCount = surfaceCapabilities.maxImageCount;

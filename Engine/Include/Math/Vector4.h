@@ -258,7 +258,7 @@ public:
 	*/
 	constexpr float Length() const NOEXCEPT
 	{
-		return CatalystMath::SquareRoot(LengthSquared());
+		return CatalystBaseMath::SquareRoot(LengthSquared());
 	}
 
 	/*
@@ -274,7 +274,7 @@ public:
 	*/
 	constexpr float LengthXYZ() const NOEXCEPT
 	{
-		return CatalystMath::SquareRoot((_X * _X) + (_Y * _Y) + (_Z * _Z));
+		return CatalystBaseMath::SquareRoot((_X * _X) + (_Y * _Y) + (_Z * _Z));
 	}
 
 	/*

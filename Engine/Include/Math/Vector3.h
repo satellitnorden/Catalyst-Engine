@@ -4,7 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 #include <Math/Vector2.h>
 
 class Vector3 final
@@ -26,7 +26,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static Vector3 Absolute(const Vector3 &vector) NOEXCEPT
 	{
-		return Vector3(CatalystMath::Absolute(vector._X), CatalystMath::Absolute(vector._Y), CatalystMath::Absolute(vector._Z));
+		return Vector3(CatalystBaseMath::Absolute(vector._X), CatalystBaseMath::Absolute(vector._Y), CatalystBaseMath::Absolute(vector._Z));
 	}
 
 	/*
@@ -50,7 +50,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float Length(const Vector3 &vector) NOEXCEPT
 	{
-		return CatalystMath::SquareRoot(LengthSquared(vector));
+		return CatalystBaseMath::SquareRoot(LengthSquared(vector));
 	}
 
 	/*
@@ -340,7 +340,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr float Length() const NOEXCEPT
 	{
-		return CatalystMath::SquareRoot(LengthSquared());
+		return CatalystBaseMath::SquareRoot(LengthSquared());
 	}
 
 	/*
@@ -380,18 +380,18 @@ public:
 	*/
 	constexpr void Rotate(const Vector3& rotationVector) NOEXCEPT
 	{
-		const float xRadians{ CatalystMath::DegreesToRadians(rotationVector._X) };
-		const float yRadians{ CatalystMath::DegreesToRadians(rotationVector._Y) };
-		const float zRadians{ CatalystMath::DegreesToRadians(rotationVector._Z) };
+		const float xRadians{ CatalystBaseMath::DegreesToRadians(rotationVector._X) };
+		const float yRadians{ CatalystBaseMath::DegreesToRadians(rotationVector._Y) };
+		const float zRadians{ CatalystBaseMath::DegreesToRadians(rotationVector._Z) };
 
-		const float xCosine{ CatalystMath::CosineRadians(xRadians) };
-		const float xSine{ CatalystMath::SineRadians(xRadians) };
+		const float xCosine{ CatalystBaseMath::CosineRadians(xRadians) };
+		const float xSine{ CatalystBaseMath::SineRadians(xRadians) };
 
-		const float yCosine{ CatalystMath::CosineRadians(yRadians) };
-		const float ySine{ CatalystMath::SineRadians(yRadians) };
+		const float yCosine{ CatalystBaseMath::CosineRadians(yRadians) };
+		const float ySine{ CatalystBaseMath::SineRadians(yRadians) };
 
-		const float zCosine{ CatalystMath::CosineRadians(zRadians) };
-		const float zSine{ CatalystMath::SineRadians(zRadians) };
+		const float zCosine{ CatalystBaseMath::CosineRadians(zRadians) };
+		const float zSine{ CatalystBaseMath::SineRadians(zRadians) };
 
 		//Rotate the roll.
 		float tempY = _Y * xCosine - _Z * xSine;

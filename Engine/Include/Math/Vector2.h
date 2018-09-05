@@ -4,7 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 
 class Vector2 final
 {
@@ -22,7 +22,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float Length(const Vector2 &vector) NOEXCEPT
 	{
-		return CatalystMath::SquareRoot(vector._X * vector._X + vector._Y * vector._Y);
+		return CatalystBaseMath::SquareRoot(vector._X * vector._X + vector._Y * vector._Y);
 	}
 
 	/*
@@ -216,7 +216,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr float Length() const NOEXCEPT 
 	{
-		return CatalystMath::SquareRoot(LengthSquared());
+		return CatalystBaseMath::SquareRoot(LengthSquared());
 	}
 
 	/*
@@ -244,10 +244,10 @@ public:
 	*/
 	FORCE_INLINE constexpr void Rotate(const float degrees) NOEXCEPT
 	{
-		const float theta{ CatalystMath::DegreesToRadians(degrees) };
+		const float theta{ CatalystBaseMath::DegreesToRadians(degrees) };
 
-		const float cosine{ CatalystMath::CosineRadians(theta) };
-		const float sine{ CatalystMath::SineDegrees(theta) };
+		const float cosine{ CatalystBaseMath::CosineRadians(theta) };
+		const float sine{ CatalystBaseMath::SineDegrees(theta) };
 
 		const float newX{ _X * cosine - _Y * sine };
 		const float newY{ _X * cosine + _Y * sine };

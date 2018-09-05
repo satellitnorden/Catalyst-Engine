@@ -4,7 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 
 class PerlinNoiseGenerator
 {
@@ -51,13 +51,13 @@ public:
 		Y += randomOffset;
 		Z += randomOffset;
 
-		int32 xInt = static_cast<int32>(CatalystMath::Floor<float>(X)) & 255;
-		int32 yInt = static_cast<int32>(CatalystMath::Floor<float>(Y)) & 255;
-		int32 zInt = static_cast<int32>(CatalystMath::Floor<float>(Z)) & 255;
+		int32 xInt = static_cast<int32>(CatalystBaseMath::Floor<float>(X)) & 255;
+		int32 yInt = static_cast<int32>(CatalystBaseMath::Floor<float>(Y)) & 255;
+		int32 zInt = static_cast<int32>(CatalystBaseMath::Floor<float>(Z)) & 255;
 
-		float xFloat = X - CatalystMath::Floor<float>(X);
-		float yFloat = Y - CatalystMath::Floor<float>(Y);
-		float zFloat = Z - CatalystMath::Floor<float>(Z);
+		float xFloat = X - CatalystBaseMath::Floor<float>(X);
+		float yFloat = Y - CatalystBaseMath::Floor<float>(Y);
+		float zFloat = Z - CatalystBaseMath::Floor<float>(Z);
 
 		float u = Fade(xFloat);
 		float v = Fade(yFloat);
@@ -72,19 +72,19 @@ public:
 		int32 bab = permutations[permutations[permutations[Increment(xInt)] + yInt] + Increment(zInt)];
 		int32 bbb = permutations[permutations[permutations[Increment(xInt)] + Increment(yInt)] + Increment(zInt)];
 
-		float x1 = CatalystMath::LinearlyInterpolate(Gradient(aaa, xFloat, yFloat, zFloat), Gradient(baa, xFloat - 1.0f, yFloat, zFloat), u);
+		float x1 = CatalystBaseMath::LinearlyInterpolate(Gradient(aaa, xFloat, yFloat, zFloat), Gradient(baa, xFloat - 1.0f, yFloat, zFloat), u);
 
-		float x2 = CatalystMath::LinearlyInterpolate(Gradient(aba, xFloat, yFloat - 1.0f, zFloat), Gradient(bba, xFloat - 1.0f, yFloat - 1.0f, zFloat), u);
+		float x2 = CatalystBaseMath::LinearlyInterpolate(Gradient(aba, xFloat, yFloat - 1.0f, zFloat), Gradient(bba, xFloat - 1.0f, yFloat - 1.0f, zFloat), u);
 
-		float y1 = CatalystMath::LinearlyInterpolate(x1, x2, v);
+		float y1 = CatalystBaseMath::LinearlyInterpolate(x1, x2, v);
 
-		x1 = CatalystMath::LinearlyInterpolate(Gradient(aab, xFloat, yFloat, zFloat - 1.0f), Gradient(bab, xFloat - 1.0f, yFloat, zFloat - 1.0f), u);
+		x1 = CatalystBaseMath::LinearlyInterpolate(Gradient(aab, xFloat, yFloat, zFloat - 1.0f), Gradient(bab, xFloat - 1.0f, yFloat, zFloat - 1.0f), u);
 
-		x2 = CatalystMath::LinearlyInterpolate(Gradient(abb, xFloat, yFloat - 1.0f, zFloat - 1.0f), Gradient(bbb, xFloat - 1.0f, yFloat - 1.0f, zFloat - 1.0f), u);
+		x2 = CatalystBaseMath::LinearlyInterpolate(Gradient(abb, xFloat, yFloat - 1.0f, zFloat - 1.0f), Gradient(bbb, xFloat - 1.0f, yFloat - 1.0f, zFloat - 1.0f), u);
 
-		float y2 = CatalystMath::LinearlyInterpolate(x1, x2, v);
+		float y2 = CatalystBaseMath::LinearlyInterpolate(x1, x2, v);
 
-		return CatalystMath::LinearlyInterpolate(y1, y2, w);
+		return CatalystBaseMath::LinearlyInterpolate(y1, y2, w);
 	}
 
 	/*

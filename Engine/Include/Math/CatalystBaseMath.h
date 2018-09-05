@@ -4,7 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Catalyst Math constants.
-namespace CatalystMathConstants
+namespace CatalystBaseMathConstants
 {
 	constexpr float DEGREES_TO_RADIANS{ 0.017'453f };
 	constexpr float PI{ 3.141'592f };
@@ -14,7 +14,7 @@ namespace CatalystMathConstants
 	constexpr float RADIANS_TO_DEGREES{ 57.295'779f };
 }
 
-class CatalystMath final
+class CatalystBaseMath final
 {
 
 public:
@@ -106,7 +106,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float CosineRadians(const float number) NOEXCEPT
 	{
-		float temporary{ WrapAround(number, -CatalystMathConstants::PI, CatalystMathConstants::PI) };
+		float temporary{ WrapAround(number, -CatalystBaseMathConstants::PI, CatalystBaseMathConstants::PI) };
 
 		return	1.0f
 				- PowerOf(temporary, 2) * InverseFactorial(2)
@@ -123,7 +123,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float DegreesToRadians(const float number) NOEXCEPT
 	{
-		return number * CatalystMathConstants::DEGREES_TO_RADIANS;
+		return number * CatalystBaseMathConstants::DEGREES_TO_RADIANS;
 	}
 
 	/*
@@ -241,7 +241,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float RadiansToDegrees(const float number) NOEXCEPT
 	{
-		return number * CatalystMathConstants::RADIANS_TO_DEGREES;
+		return number * CatalystBaseMathConstants::RADIANS_TO_DEGREES;
 	}
 
 	/*
@@ -317,7 +317,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static float SineRadians(const float number) NOEXCEPT
 	{
-		return CosineRadians(number - CatalystMathConstants::HALF_PI);
+		return CosineRadians(number - CatalystBaseMathConstants::HALF_PI);
 	}
 
 	/*

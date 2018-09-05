@@ -107,7 +107,8 @@
     <ClInclude Include="..\..\..\Include\Input\TouchState.h" />
     <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h" />
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
-    <ClInclude Include="..\..\..\Include\Math\CatalystMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\CatalystBaseMath.h" />
+    <ClInclude Include="..\..\..\Include\Math\CatalystVectorMath.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix3.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix4.h" />
     <ClInclude Include="..\..\..\Include\Math\PerlinNoiseGenerator.h" />

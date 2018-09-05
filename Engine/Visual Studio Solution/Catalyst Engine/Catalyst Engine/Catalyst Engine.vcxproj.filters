@@ -306,9 +306,6 @@
     <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h">
       <Filter>Managers\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\CatalystMath.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\Matrix3.h">
       <Filter>Math\Include</Filter>
     </ClInclude>
@@ -836,6 +833,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DynamicOutlineRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\CatalystVectorMath.h">
+      <Filter>Math\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\CatalystBaseMath.h">
+      <Filter>Math\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

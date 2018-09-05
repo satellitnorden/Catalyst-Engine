@@ -5,7 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 #include <Math/Vector2.h>
 #include <Math/Vector4.h>
 
@@ -139,8 +139,8 @@ public:
 		const float xPixelPosition{ xIndex / xTexelSize + 0.5f };
 		const float yPixelPosition{ yIndex / yTexelSize + 0.5f };
 
-		const float xFractional{ CatalystMath::Fractional(xPixelPosition) };
-		const float yFractional{ CatalystMath::Fractional(yPixelPosition) };
+		const float xFractional{ CatalystBaseMath::Fractional(xPixelPosition) };
+		const float yFractional{ CatalystBaseMath::Fractional(yPixelPosition) };
 
 		const float xStartTexel{ (xPixelPosition - xFractional) * xTexelSize };
 		const float yStartTexel{ (yPixelPosition - yFractional) * yTexelSize };
@@ -149,16 +149,16 @@ public:
 		constexpr uint64 xModifier{ static_cast<uint64>(-1) };
 		constexpr uint64 yModifier{ static_cast<uint64>(-1) };
 
-		const uint64 xBottomLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(width)) + xModifier, 0, width - 1) };
-		const uint64 yBottomLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(height)) + yModifier, 0, height - 1) };
+		const uint64 xBottomLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(width)) + xModifier, 0, width - 1) };
+		const uint64 yBottomLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(height)) + yModifier, 0, height - 1) };
 
-		const uint64 xBottomRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(width)) + xModifier, 0, width - 1) };
-		const uint64 yBottomRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(height)) + yModifier, 0, height - 1) };
+		const uint64 xBottomRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(width)) + xModifier, 0, width - 1) };
+		const uint64 yBottomRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(height)) + yModifier, 0, height - 1) };
 
-		const uint64 xTopLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(width)) + xModifier, 0, width - 1) };
-		const uint64 yTopLeftCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(height)) + yModifier, 0, height - 1) };
-		const uint64 xTopRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(width)) + xModifier, 0, width - 1) };
-		const uint64 yTopRightCoordinate{ CatalystMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(height)) + yModifier, 0, height - 1) };
+		const uint64 xTopLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(width)) + xModifier, 0, width - 1) };
+		const uint64 yTopLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(height)) + yModifier, 0, height - 1) };
+		const uint64 xTopRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(width)) + xModifier, 0, width - 1) };
+		const uint64 yTopRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(height)) + yModifier, 0, height - 1) };
 
 		const Vector4 &bottomLeftValue{ data[(yBottomLeftCoordinate * width) + xBottomLeftCoordinate] };
 		const Vector4 &bottomRightValue{ data[(yBottomRightCoordinate * width) + xBottomRightCoordinate] };

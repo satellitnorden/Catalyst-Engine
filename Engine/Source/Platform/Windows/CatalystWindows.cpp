@@ -11,7 +11,7 @@
 #include <Input/MouseState.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -283,22 +283,22 @@ void CatalystPlatform::GetCurrentGamepadState(const uint8 index, GamepadState *c
 	state->_RightThumbstickY = static_cast<float>(xInputState.Gamepad.sThumbRY) / 32'768;
 
 	//Calculate if the thumbstick values are in the deadzone.If so, reset them.
-	if (CatalystMath::Absolute(state->_LeftThumbstickX) <= InputConstants::GAMEPAD_DEADZONE)
+	if (CatalystBaseMath::Absolute(state->_LeftThumbstickX) <= InputConstants::GAMEPAD_DEADZONE)
 	{
 		state->_LeftThumbstickX = 0.0f;
 	}
 		
-	if (CatalystMath::Absolute(state->_LeftThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
+	if (CatalystBaseMath::Absolute(state->_LeftThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
 	{
 		state->_LeftThumbstickY = 0.0f;
 	}
 
-	if (CatalystMath::Absolute(state->_RightThumbstickX) <= InputConstants::GAMEPAD_DEADZONE)
+	if (CatalystBaseMath::Absolute(state->_RightThumbstickX) <= InputConstants::GAMEPAD_DEADZONE)
 	{
 		state->_RightThumbstickX = 0.0f;
 	}
 
-	if (CatalystMath::Absolute(state->_RightThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
+	if (CatalystBaseMath::Absolute(state->_RightThumbstickY) <= InputConstants::GAMEPAD_DEADZONE)
 	{
 		state->_RightThumbstickY = 0.0f;
 	}
@@ -465,8 +465,8 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 
 			if (GetWindowRect(_Window, &rectangle))
 			{
-				state->_CurrentX = CatalystMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right), 0.0f, 1.0f);
-				state->_CurrentY = CatalystMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom), 0.0f, 1.0f);
+				state->_CurrentX = CatalystBaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right), 0.0f, 1.0f);
+				state->_CurrentY = CatalystBaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom), 0.0f, 1.0f);
 
 				state->_DeltaX = state->_CurrentX - state->_PreviousX;
 				state->_DeltaY = state->_CurrentY - state->_PreviousY;

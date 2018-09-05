@@ -7,7 +7,7 @@
 #include <Components/ComponentManager.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 #include <Math/Vector4.h>
 
 //Rendering.
@@ -56,8 +56,8 @@ namespace RenderingUtilities
 
 		for (const Vector4 &property : *properties)
 		{
-			lowest = CatalystMath::Minimum(lowest, property._W);
-			highest = CatalystMath::Maximum(highest, property._W);
+			lowest = CatalystBaseMath::Minimum(lowest, property._W);
+			highest = CatalystBaseMath::Maximum(highest, property._W);
 		}
 
 		const float halfExtent{ extent * 0.5f };
@@ -80,10 +80,10 @@ namespace RenderingUtilities
 
 		for (const VegetationTransformation &transformation : transformations)
 		{
-			gridMinimum._X = CatalystMath::Minimum<float>(gridMinimum._X, transformation.position._X);
-			gridMinimum._Y = CatalystMath::Minimum<float>(gridMinimum._Y, transformation.position._Z);
-			gridMaximum._X = CatalystMath::Maximum<float>(gridMaximum._X, transformation.position._X);
-			gridMaximum._Y = CatalystMath::Maximum<float>(gridMaximum._Y, transformation.position._Z);
+			gridMinimum._X = CatalystBaseMath::Minimum<float>(gridMinimum._X, transformation.position._X);
+			gridMinimum._Y = CatalystBaseMath::Minimum<float>(gridMinimum._Y, transformation.position._Z);
+			gridMaximum._X = CatalystBaseMath::Maximum<float>(gridMaximum._X, transformation.position._X);
+			gridMaximum._Y = CatalystBaseMath::Maximum<float>(gridMaximum._Y, transformation.position._Z);
 		}
 
 		//Now that the bounding box extent is known, calculate the number of rows/columns for the grid.
@@ -93,8 +93,8 @@ namespace RenderingUtilities
 		const float halfXExtent{ xExtent * 0.5f };
 		const float halfYExtent{ yExtent * 0.5f };
 
-		const uint64 rows{ CatalystMath::Round<uint64>(xExtent / cutoffDistance) };
-		const uint64 columns{ CatalystMath::Round<uint64>(yExtent / cutoffDistance) };
+		const uint64 rows{ CatalystBaseMath::Round<uint64>(xExtent / cutoffDistance) };
+		const uint64 columns{ CatalystBaseMath::Round<uint64>(yExtent / cutoffDistance) };
 
 		//Resize all containers accordingly.
 		const uint64 containerSize{ rows * columns };
@@ -136,11 +136,11 @@ namespace RenderingUtilities
 
 		for (const VegetationTransformation &transformation : transformations)
 		{
-			uint64 rowIndex{ CatalystMath::Floor<uint64>(((transformation.position._X + halfXExtent) * inverseXExtent) * static_cast<float>(rows)) };
-			uint64 columnIndex{ CatalystMath::Floor<uint64>(((transformation.position._Z + halfYExtent) * inverseYExtent) * static_cast<float>(columns)) };
+			uint64 rowIndex{ CatalystBaseMath::Floor<uint64>(((transformation.position._X + halfXExtent) * inverseXExtent) * static_cast<float>(rows)) };
+			uint64 columnIndex{ CatalystBaseMath::Floor<uint64>(((transformation.position._Z + halfYExtent) * inverseYExtent) * static_cast<float>(columns)) };
 
-			rowIndex = CatalystMath::Minimum<uint64>(rowIndex, rows - 1);
-			columnIndex = CatalystMath::Minimum<uint64>(columnIndex, columns - 1);
+			rowIndex = CatalystBaseMath::Minimum<uint64>(rowIndex, rows - 1);
+			columnIndex = CatalystBaseMath::Minimum<uint64>(columnIndex, columns - 1);
 
 			temporaryTransformations[rowIndex][columnIndex].EmplaceSlow(transformation);
 		}
@@ -214,12 +214,12 @@ namespace RenderingUtilities
 
 		for (uint8 i = 0; i < 8; ++i)
 		{
-			highestX = CatalystMath::Maximum(highestX, corners[i]._X);
-			lowestX = CatalystMath::Minimum(lowestX, corners[i]._X);
-			highestY = CatalystMath::Maximum(highestY, corners[i]._Y);
-			lowestY = CatalystMath::Minimum(lowestY, corners[i]._Y);
-			highestZ = CatalystMath::Maximum(highestZ, corners[i]._Z);
-			lowestZ = CatalystMath::Minimum(lowestZ, corners[i]._Z);
+			highestX = CatalystBaseMath::Maximum(highestX, corners[i]._X);
+			lowestX = CatalystBaseMath::Minimum(lowestX, corners[i]._X);
+			highestY = CatalystBaseMath::Maximum(highestY, corners[i]._Y);
+			lowestY = CatalystBaseMath::Minimum(lowestY, corners[i]._Y);
+			highestZ = CatalystBaseMath::Maximum(highestZ, corners[i]._Z);
+			lowestZ = CatalystBaseMath::Minimum(lowestZ, corners[i]._Z);
 		}
 
 		if (((highestX > 1.0f && lowestX > 1.0f) || (highestX < -1.0f && lowestX < -1.0f))
@@ -274,12 +274,12 @@ namespace RenderingUtilities
 
 		for (uint8 i = 0; i < 8; ++i)
 		{
-			highestX = CatalystMath::Maximum(highestX, corners[i]._X);
-			lowestX = CatalystMath::Minimum(lowestX, corners[i]._X);
-			highestY = CatalystMath::Maximum(highestY, corners[i]._Y);
-			lowestY = CatalystMath::Minimum(lowestY, corners[i]._Y);
-			highestZ = CatalystMath::Maximum(highestZ, corners[i]._Z);
-			lowestZ = CatalystMath::Minimum(lowestZ, corners[i]._Z);
+			highestX = CatalystBaseMath::Maximum(highestX, corners[i]._X);
+			lowestX = CatalystBaseMath::Minimum(lowestX, corners[i]._X);
+			highestY = CatalystBaseMath::Maximum(highestY, corners[i]._Y);
+			lowestY = CatalystBaseMath::Minimum(lowestY, corners[i]._Y);
+			highestZ = CatalystBaseMath::Maximum(highestZ, corners[i]._Z);
+			lowestZ = CatalystBaseMath::Minimum(lowestZ, corners[i]._Z);
 		}
 
 		if (((highestX > 1.0f && lowestX > 1.0f) || (highestX < -1.0f && lowestX < -1.0f))
