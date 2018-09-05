@@ -1742,19 +1742,15 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	const Matrix4 *const RESTRICT projectionMatrix{ RenderingSystem::Instance->GetProjectionMatrix() };
 	const Matrix4 *const RESTRICT cameraMatrix{ RenderingSystem::Instance->GetCameraMatrix() };
 	const Matrix4 *const RESTRICT viewMatrix{ RenderingSystem::Instance->GetViewMatrix() };
-
-	Matrix4 inverseCameraMatrix{ *cameraMatrix };
-	inverseCameraMatrix.Inverse();
+	const Matrix4 *const RESTRICT inverseProjectionMatrix{ RenderingSystem::Instance->GetInverseProjectionMatrix() };
+	const Matrix4 *const RESTRICT inverseCameraMatrix{ RenderingSystem::Instance->GetInverseCameraMatrix() };
 
 	Matrix4 cameraOriginMatrix{ *cameraMatrix };
 	cameraOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
 
-	Matrix4 inverseProjectionMatrix{ *projectionMatrix };
-	inverseProjectionMatrix.Inverse();
-
 	dynamicUniformData.cameraFieldOfViewCosine = CatalystMath::CosineDegrees(activeCamera->GetFieldOfView()) - 0.2f;
-	dynamicUniformData.inverseCameraMatrix = inverseCameraMatrix;
-	dynamicUniformData.inverseProjectionMatrix = inverseProjectionMatrix;
+	dynamicUniformData.inverseCameraMatrix = *inverseCameraMatrix;
+	dynamicUniformData.inverseProjectionMatrix = *inverseProjectionMatrix;
 	dynamicUniformData.originViewMatrix = *projectionMatrix * cameraOriginMatrix;
 	dynamicUniformData.viewMatrix = *viewMatrix;
 	dynamicUniformData.cameraForwardVector = forwardVector;

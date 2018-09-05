@@ -5,6 +5,7 @@
 
 //Math.
 #include <Math/CatalystMath.h>
+#include <Math/Vector2.h>
 
 class Vector3 final
 {
@@ -124,6 +125,18 @@ public:
 		_X(newX),
 		_Y(newY),
 		_Z(newZ)
+	{
+
+	}
+
+	/*
+	*	Constructor taking a Vector2 and a float.
+	*/
+	FORCE_INLINE constexpr Vector3(const Vector2 &initialXY, const float initialZ) NOEXCEPT
+		:
+		_X(initialXY._X),
+		_Y(initialXY._Y),
+		_Z(initialZ)
 	{
 
 	}
@@ -249,7 +262,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector3 operator-(const Vector3 &otherVector) const NOEXCEPT
 	{
-		return Vector3{ _X - otherVector._X, this->_Y - otherVector._Y, this->_Z - otherVector._Z };
+		return Vector3{ _X - otherVector._X, _Y - otherVector._Y, _Z - otherVector._Z };
 	}
 
 	/*
@@ -267,7 +280,7 @@ public:
 	*/
 	FORCE_INLINE NO_DISCARD constexpr Vector3 operator*(const Vector3 &otherVector) const NOEXCEPT
 	{
-		return Vector3{ this->_X * otherVector._X, this->_Y * otherVector._Y, this->_Z * otherVector._Z };
+		return Vector3{ _X * otherVector._X, _Y * otherVector._Y, _Z * otherVector._Z };
 	}
 
 	/*

@@ -140,6 +140,16 @@ public:
 	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() const NOEXCEPT { return &_ViewMatrix; }
 
 	/*
+*	Returns the inverse projection matrix.
+*/
+	RESTRICTED const Matrix4 *const RESTRICT GetInverseProjectionMatrix() const NOEXCEPT { return &_InverseProjectionMatrix; }
+
+	/*
+	*	Returns the inverse camera matrix.
+	*/
+	RESTRICTED const Matrix4 *const RESTRICT GetInverseCameraMatrix() const NOEXCEPT { return &_InverseCameraMatrix; }
+
+	/*
 	*	Returns the active camera, const.
 	*/
 	RESTRICTED const CameraEntity *const RESTRICT GetActiveCamera() const NOEXCEPT { return _ActiveCamera; }
@@ -153,6 +163,11 @@ public:
 	*	Sets the active camera.
 	*/
 	void SetActiveCamera(CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT { _ActiveCamera = newActiveCamera; }
+
+	/*
+	*	Given screen coordinates, returns the world direction from the camera to where the screen coordinates are pointing.
+	*/
+	Vector3 GetWorldDirectionFromScreenCoordinate(const Vector2 &coordinates) const NOEXCEPT;
 
 	/*
 	*	Returns the render passes.
@@ -190,9 +205,9 @@ public:
 	const PhysicalModel& GetCommonPhysicalModel(const CommonPhysicalModel commonPhysicalModel) const NOEXCEPT { return _CommonPhysicalModels[INDEX(commonPhysicalModel)]; }
 
 	/*
-	*	Finalizes the initialization of a render pass.
+	*	Creates a constant buffer.
 	*/
-	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
+	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
 
 	/*
 	*	Creates a render data table layout.
@@ -208,6 +223,26 @@ public:
 	*	Updates a render data table.
 	*/
 	void UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT;
+
+	/*
+*	Destroys a render data table.
+*/
+	void DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT;
+
+	/*
+*	Creates and returns a texture 2D given the texture data.
+*/
+	Texture2DHandle CreateTexture2D(const TextureData &textureData) const NOEXCEPT;
+
+	/*
+	*	Destroys a texture 2D
+	*/
+	void DestroyTexture2D(Texture2DHandle texture) const NOEXCEPT;
+
+	/*
+	*	Creates and returns a uniform buffer.
+	*/
+	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;
 
 	/*
 	*	Returns the current dynamic uniform data render data table.
@@ -300,29 +335,9 @@ public:
 	void InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT;
 
 	/*
-	*	Creates a constant buffer.
+	*	Finalizes the initialization of a render pass.
 	*/
-	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
-
-	/*
-	*	Creates and returns a texture 2D given the texture data.
-	*/
-	Texture2DHandle CreateTexture2D(const TextureData &textureData) const NOEXCEPT;
-
-	/*
-	*	Destroys a texture 2D
-	*/
-	void DestroyTexture2D(Texture2DHandle texture) const NOEXCEPT;
-
-	/*
-	*	Destroys a render data table.
-	*/
-	void DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT;
-
-	/*
-	*	Creates and returns a uniform buffer.
-	*/
-	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;
+	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
 
 private:
 
@@ -340,6 +355,12 @@ private:
 
 	//The view matrix.
 	Matrix4 _ViewMatrix;
+
+	//The inverse projection matrix.
+	Matrix4 _InverseProjectionMatrix;
+
+	//The inverse camera matrix.
+	Matrix4 _InverseCameraMatrix;
 
 	//The active camera.
 	CameraEntity *RESTRICT _ActiveCamera{ nullptr };

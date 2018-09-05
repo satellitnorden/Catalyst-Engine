@@ -5,11 +5,8 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-/*
-*	Windows specific third party includes.
-*/
+//Windows.
 #include <Windows.h>
-#include <Xinput.h>
 
 //Undefine annoying Windows defines. Fuck Windows. I hate everything.
 #undef CopyMemory

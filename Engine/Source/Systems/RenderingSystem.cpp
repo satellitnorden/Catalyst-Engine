@@ -132,6 +132,30 @@ uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 }
 
 /*
+*	Given screen coordinates, returns the world direction from the camera to where the screen coordinates are pointing.
+*/
+Vector3 RenderingSystem::GetWorldDirectionFromScreenCoordinate(const Vector2 &coordinates) const NOEXCEPT
+{
+	if (_ActiveCamera)
+	{
+		const Vector2 nearPlaneCoordinate{ coordinates._X * 2.0f - 1.0f, 1.0f - (coordinates._Y * 2.0f - 1.0f) };
+		const Vector3 screenSpacePosition{ nearPlaneCoordinate, 1.0f };
+		Vector4 viewSpacePosition{ _InverseProjectionMatrix * Vector4(screenSpacePosition, 1.0f) };
+		viewSpacePosition._X /= viewSpacePosition._W;
+		viewSpacePosition._Y /= viewSpacePosition._W;
+		viewSpacePosition._Z /= viewSpacePosition._W;
+		Vector4 worldSpacePosition{ _InverseCameraMatrix * viewSpacePosition };
+
+		return Vector3::Normalize(Vector3(worldSpacePosition._X, worldSpacePosition._Y, worldSpacePosition._Z) - _ActiveCamera->GetPosition());
+	}
+	
+	else
+	{
+		return Vector3{ 0.0f, 0.0f, -1.0f };
+	}
+}
+
+/*
 *	Returns the given render target.
 */
 RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget renderTarget) const NOEXCEPT
@@ -166,42 +190,6 @@ ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *RESTRICT 
 }
 
 /*
-*	Creates and returns a texture 2D given the texture data.
-*/
-Texture2DHandle RenderingSystem::CreateTexture2D(const TextureData &textureData) const NOEXCEPT
-{
-	//Create the texture 2D via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->Create2DTexture(textureData);
-}
-
-/*
-*	Destroys a texture 2D
-*/
-void RenderingSystem::DestroyTexture2D(Texture2DHandle texture) const NOEXCEPT
-{
-	//Destroy the texture 2D via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->DestroyTexture2D(texture);
-}
-
-/*
-*	Destroys a render data table.
-*/
-void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT
-{
-	//Destroy the render data table via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->DestroyRenderDataTable(renderDataTable);
-}
-
-/*
-*	Finalizes the initialization of a render pass.
-*/
-void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT
-{
-	//Finalize the initialization of this render pass via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->FinalizeRenderPassInitialization(renderPass);
-}
-
-/*
 *	Creates a render data table layout.
 */
 void RenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT
@@ -226,6 +214,42 @@ void RenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInformati
 {
 	//Update the render data table via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->UpdateRenderDataTable(information, handle);
+}
+
+/*
+*	Destroys a render data table.
+*/
+void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT
+{
+	//Destroy the render data table via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->DestroyRenderDataTable(renderDataTable);
+}
+
+/*
+*	Creates and returns a texture 2D given the texture data.
+*/
+Texture2DHandle RenderingSystem::CreateTexture2D(const TextureData &textureData) const NOEXCEPT
+{
+	//Create the texture 2D via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->Create2DTexture(textureData);
+}
+
+/*
+*	Destroys a texture 2D
+*/
+void RenderingSystem::DestroyTexture2D(Texture2DHandle texture) const NOEXCEPT
+{
+	//Destroy the texture 2D via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->DestroyTexture2D(texture);
+}
+
+/*
+*	Creates and returns a uniform buffer.
+*/
+UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT
+{
+	//Create the uniform buffer via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->CreateUniformBuffer(uniformBufferSize);
 }
 
 /*
@@ -483,12 +507,12 @@ void RenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity 
 }
 
 /*
-*	Creates and returns a uniform buffer.
+*	Finalizes the initialization of a render pass.
 */
-UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT
+void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT
 {
-	//Create the uniform buffer via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->CreateUniformBuffer(uniformBufferSize);
+	//Finalize the initialization of this render pass via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->FinalizeRenderPassInitialization(renderPass);
 }
 
 /*
@@ -1002,6 +1026,14 @@ void RenderingSystem::UpdateMatrices() NOEXCEPT
 
 		//Calculate the view matrix.
 		_ViewMatrix = _ProjectionMatrix * _CameraMatrix;
+
+		//Calculate the inverse projection matrix.
+		_InverseProjectionMatrix = _ProjectionMatrix;
+		_InverseProjectionMatrix.Inverse();
+
+		//Calculate the inverse camera matrix.
+		_InverseCameraMatrix = _CameraMatrix;
+		_InverseCameraMatrix.Inverse();
 	}
 }
 

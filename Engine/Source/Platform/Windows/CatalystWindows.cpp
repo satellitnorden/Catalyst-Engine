@@ -18,6 +18,7 @@
 
 //Windows.
 #include <tchar.h>
+#include <Xinput.h>
 
 //Static variable definitions.
 HINSTANCE CatalystPlatform::_Instance;
@@ -93,8 +94,8 @@ void UpdateGamepadButton(const WORD wButtons, const uint16 xInputButton, ButtonS
 }
 
 /*
-	*	Updates a single Windows button.
-	*/
+*	Updates a single Windows button.
+*/
 void UpdateWindowsButton(const uint16 button, ButtonState &ButtonState) NOEXCEPT
 {
 	//The Windows button is not pressed.

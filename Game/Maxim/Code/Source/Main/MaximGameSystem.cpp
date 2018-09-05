@@ -96,9 +96,13 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 #if defined(CATALYST_WINDOWS)
 		const MouseState *const RESTRICT state{ InputSystem::Instance->GetMouseState() };
 
-		if (state->_Scroll == ButtonState::Pressed || state->_Scroll == ButtonState::PressedHold)
+		if (state->_Left == ButtonState::Pressed || state->_Left == ButtonState::PressedHold)
 		{
-			spinner->Move(Vector3(50.0f * state->_DeltaX, 50.0f * state->_DeltaY, 0.0f));
+			const Vector3 direction{ RenderingSystem::Instance->GetWorldDirectionFromScreenCoordinate(Vector2(state->_CurrentX, state->_CurrentY)) };
+			const Vector3 newPosition{ direction * 200.0f };
+			const Vector3 currentPosition{ spinner->GetPosition() };
+
+			spinner->Move(newPosition - currentPosition);
 		}
 
 		if (state->_Right == ButtonState::Pressed || state->_Right == ButtonState::PressedHold)
