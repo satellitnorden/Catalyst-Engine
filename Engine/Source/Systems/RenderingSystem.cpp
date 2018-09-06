@@ -138,7 +138,7 @@ Vector3 RenderingSystem::GetWorldDirectionFromScreenCoordinate(const Vector2 &co
 {
 	if (_ActiveCamera)
 	{
-		const Vector2 nearPlaneCoordinate{ coordinates._X * 2.0f - 1.0f, 1.0f - (coordinates._Y * 2.0f - 1.0f) };
+		const Vector2 nearPlaneCoordinate{ coordinates._X * 2.0f - 1.0f, (1.0f - coordinates._Y) * 2.0f - 1.0f };
 		const Vector3 screenSpacePosition{ nearPlaneCoordinate, 1.0f };
 		Vector4 viewSpacePosition{ _InverseProjectionMatrix * Vector4(screenSpacePosition, 1.0f) };
 		viewSpacePosition._X /= viewSpacePosition._W;

@@ -17,9 +17,9 @@ public:
 	/*
 	*	Performs a line-plane intersection and returns the intersection point.
 	*/
-	NO_DISCARD constexpr static Vector3 LinePlaneIntersection(const Vector3 &line, const Vector4 &plane) NOEXCEPT
+	NO_DISCARD constexpr static Vector3 LinePlaneIntersection(const Vector3 &pointOnPlane, const Vector3 pointOnLine, const Vector3 &normal, const Vector3 &line) NOEXCEPT
 	{
-
+		return Vector3::DotProduct(pointOnPlane - pointOnLine, normal) / Vector3::DotProduct(line, normal) * line + pointOnLine;
 	}
 
 };
