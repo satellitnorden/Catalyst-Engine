@@ -19,65 +19,8 @@ TerrainEntity::TerrainEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-const Vector3& TerrainEntity::GetPosition() const NOEXCEPT
+NO_DISCARD RESTRICTED Vector3 *const RESTRICT TerrainEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetTerrainTerrainComponents()[_ComponentsIndex]._TerrainUniformData.terrainPosition;
-}
-
-/*
-*	Returns the rotation of this entity.
-*/
-const Vector3& TerrainEntity::GetRotation() const NOEXCEPT
-{
-	//Terrain entities has no rotation.
-	return Entity::_DefaultRotation;
-}
-
-/*
-*	Returns the scale of this entity.
-*/
-const Vector3& TerrainEntity::GetScale() const NOEXCEPT
-{
-	//Terrain entities has no scale.
-	return Entity::_DefaultScale;
-}
-
-/*
-*	Moves this entity.
-*/
-void TerrainEntity::Move(const Vector3 &moveVector) NOEXCEPT
-{
-	//Move this entity.
-	ComponentManager::GetTerrainTerrainComponents()[_ComponentsIndex]._TerrainUniformData.terrainPosition += moveVector;
-
-	//Move all children.
-	for (auto child : _Children)
-	{
-		child->Move(moveVector);
-	}
-}
-
-/*
-*	Rotates this entity.
-*/
-void TerrainEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
-{
-	//Rotate all children.
-	for (auto child : _Children)
-	{
-		child->Rotate(rotateVector);
-	}
-}
-
-/*
-*	Scales this entity.
-*/
-void TerrainEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
-{
-	//Scale all children.
-	for (auto child : _Children)
-	{
-		child->Scale(scaleVector);
-	}
+	return &ComponentManager::GetTerrainTerrainComponents()[_ComponentsIndex]._TerrainUniformData.terrainPosition;
 }

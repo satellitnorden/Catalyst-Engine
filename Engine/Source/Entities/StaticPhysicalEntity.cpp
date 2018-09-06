@@ -28,62 +28,26 @@ void StaticPhysicalEntity::Initialize(const PhysicalModel &newModel, const Vecto
 /*
 *	Returns the position of this entity.
 */
-const Vector3& StaticPhysicalEntity::GetPosition() const NOEXCEPT
+NO_DISCARD RESTRICTED Vector3 *const RESTRICT StaticPhysicalEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetStaticPhysicalTransformComponents()[_ComponentsIndex]._Position;
+	return &ComponentManager::GetStaticPhysicalTransformComponents()[_ComponentsIndex]._Position;
 }
 
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& StaticPhysicalEntity::GetRotation() const NOEXCEPT
+NO_DISCARD RESTRICTED Vector3 *const RESTRICT StaticPhysicalEntity::GetRotationInternal() NOEXCEPT
 {
 	//Return the rotation of this entity.
-	return ComponentManager::GetStaticPhysicalTransformComponents()[_ComponentsIndex]._Rotation;
+	return &ComponentManager::GetStaticPhysicalTransformComponents()[_ComponentsIndex]._Rotation;
 }
 
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& StaticPhysicalEntity::GetScale() const NOEXCEPT
+NO_DISCARD RESTRICTED Vector3 *const RESTRICT StaticPhysicalEntity::GetScaleInternal() NOEXCEPT
 {
 	//Return the scale of this entity.
-	return ComponentManager::GetStaticPhysicalTransformComponents()[_ComponentsIndex]._Scale;
-}
-
-/*
-*	Moves this entity.
-*/
-void StaticPhysicalEntity::Move(const Vector3 &moveVector) NOEXCEPT
-{
-	//Move all children.
-	for (auto child : _Children)
-	{
-		child->Move(moveVector);
-	}
-}
-
-/*
-*	Rotates this entity.
-*/
-void StaticPhysicalEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
-{
-	//Rotate all children.
-	for (auto child : _Children)
-	{
-		child->Rotate(rotateVector);
-	}
-}
-
-/*
-*	Scales this entity.
-*/
-void StaticPhysicalEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
-{
-	//Scale all children.
-	for (auto child : _Children)
-	{
-		child->Scale(scaleVector);
-	}
+	return &ComponentManager::GetStaticPhysicalTransformComponents()[_ComponentsIndex]._Scale;
 }

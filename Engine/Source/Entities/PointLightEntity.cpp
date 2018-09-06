@@ -17,72 +17,6 @@ PointLightEntity::PointLightEntity() NOEXCEPT
 }
 
 /*
-*	Returns the position of this entity.
-*/
-const Vector3& PointLightEntity::GetPosition() const NOEXCEPT
-{
-	//Return the position of this entity.
-	return ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Position;
-}
-
-/*
-*	Returns the rotation of this entity.
-*/
-const Vector3& PointLightEntity::GetRotation() const NOEXCEPT
-{
-	//Point light entities has no rotation.
-	return Entity::_DefaultRotation;
-}
-
-/*
-*	Returns the scale of this entity.
-*/
-const Vector3& PointLightEntity::GetScale() const NOEXCEPT
-{
-	//Point light entities has no scale.
-	return Entity::_DefaultScale;
-}
-
-/*
-*	Moves this entity.
-*/
-void PointLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
-{
-	//Move this entity.
-	ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Position += moveVector;
-
-	//Move all children.
-	for (auto child : _Children)
-	{
-		child->Move(moveVector);
-	}
-}
-
-/*
-*	Rotates this entity.
-*/
-void PointLightEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
-{
-	//Rotate all children.
-	for (auto child : _Children)
-	{
-		child->Rotate(rotateVector);
-	}
-}
-
-/*
-*	Scales this entity.
-*/
-void PointLightEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
-{
-	//Scale all children.
-	for (auto child : _Children)
-	{
-		child->Scale(scaleVector);
-	}
-}
-
-/*
 *	Sets whether or not this point light is enabled.
 */
 void PointLightEntity::SetEnabled(const bool newEnabled) NOEXCEPT
@@ -116,4 +50,13 @@ void PointLightEntity::SetColor(const Vector3 &newColor) NOEXCEPT
 {
 	//Set the color.
 	ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Color = newColor;
+}
+
+/*
+*	Returns the position of this entity.
+*/
+NO_DISCARD RESTRICTED Vector3 *const RESTRICT PointLightEntity::GetPositionInternal() NOEXCEPT
+{
+	//Return the position of this entity.
+	return &ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Position;
 }

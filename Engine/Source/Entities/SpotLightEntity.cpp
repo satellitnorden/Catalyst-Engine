@@ -16,70 +16,19 @@ SpotLightEntity::SpotLightEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-const Vector3& SpotLightEntity::GetPosition() const NOEXCEPT
+NO_DISCARD RESTRICTED Vector3 *const RESTRICT SpotLightEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
-	return ComponentManager::GetSpotLightSpotLightComponents()[_ComponentsIndex]._Position;
+	return &ComponentManager::GetSpotLightSpotLightComponents()[_ComponentsIndex]._Position;
 }
 
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& SpotLightEntity::GetRotation() const NOEXCEPT
+NO_DISCARD RESTRICTED Vector3 *const RESTRICT SpotLightEntity::GetRotationInternal() NOEXCEPT
 {
 	//Return the rotation of this entity.
-	return ComponentManager::GetSpotLightSpotLightComponents()[_ComponentsIndex]._Rotation;
-}
-
-/*
-*	Returns the scale of this entity.
-*/
-const Vector3& SpotLightEntity::GetScale() const NOEXCEPT
-{
-	//Spot light entities has no scale.
-	return Entity::_DefaultScale;
-}
-
-/*
-*	Moves this entity.
-*/
-void SpotLightEntity::Move(const Vector3 &moveVector) NOEXCEPT
-{
-	//Move this entity.
-	ComponentManager::GetSpotLightSpotLightComponents()[_ComponentsIndex]._Position += moveVector;
-
-	//Move all children.
-	for (auto child : _Children)
-	{
-		child->Move(moveVector);
-	}
-}
-
-/*
-*	Rotates this entity.
-*/
-void SpotLightEntity::Rotate(const Vector3 &rotateVector) NOEXCEPT
-{
-	//Rotate this entity.
-	ComponentManager::GetSpotLightSpotLightComponents()[_ComponentsIndex]._Rotation += rotateVector;
-
-	//Rotate all children.
-	for (auto child : _Children)
-	{
-		child->Rotate(rotateVector);
-	}
-}
-
-/*
-*	Scales this entity.
-*/
-void SpotLightEntity::Scale(const Vector3 &scaleVector) NOEXCEPT
-{
-	//Scale all children.
-	for (auto child : _Children)
-	{
-		child->Scale(scaleVector);
-	}
+	return &ComponentManager::GetSpotLightSpotLightComponents()[_ComponentsIndex]._Rotation;
 }
 
 /*

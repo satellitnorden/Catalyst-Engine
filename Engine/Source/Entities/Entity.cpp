@@ -9,3 +9,144 @@
 constexpr Vector3 Entity::_DefaultPosition;
 constexpr Vector3 Entity::_DefaultRotation;
 constexpr Vector3 Entity::_DefaultScale;
+
+/*
+*	Returns the position of this entity.
+*/
+const Vector3& Entity::GetPosition() const NOEXCEPT
+{
+	//Return the position of this entity.
+	if (const Vector3 *const RESTRICT position{ const_cast<Entity *const RESTRICT>(this)->GetPositionInternal() })
+	{
+		return *position;
+	}
+
+	else
+	{
+		return _DefaultPosition;
+	}
+}
+
+/*
+*	Returns the rotation of this entity.
+*/
+const Vector3& Entity::GetRotation() const NOEXCEPT
+{
+	//Return the rotation of this entity.
+	if (const Vector3 *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
+	{
+		return *rotation;
+	}
+
+	else
+	{
+		return _DefaultRotation;
+	}
+}
+
+/*
+*	Returns the scale of this entity.
+*/
+const Vector3& Entity::GetScale() const NOEXCEPT
+{
+	//Return the scale of this entity.
+	if (const Vector3 *const RESTRICT scale{ const_cast<Entity *const RESTRICT>(this)->GetScaleInternal() })
+	{
+		return *scale;
+	}
+
+	else
+	{
+		return _DefaultScale;
+	}
+}
+
+/*
+*	Sets the position of this entity.
+*/
+void Entity::SetPosition(const Vector3 &newPosition) NOEXCEPT
+{
+	//Set the position of this entity.
+	if (Vector3 *const RESTRICT position{ GetPositionInternal() })
+	{
+		*position = newPosition;
+	}
+}
+
+/*
+*	Sets the rotation of this entity.
+*/
+void Entity::SetRotation(const Vector3 &newRotation) NOEXCEPT
+{
+	//Set the rotation of this entity.
+	if (Vector3 *const RESTRICT rotation{ GetRotationInternal() })
+	{
+		*rotation = newRotation;
+	}
+}
+
+/*
+*	Sets the scale of this entity.
+*/
+void Entity::SetScale(const Vector3 &newScale) NOEXCEPT
+{
+	//Set the scale of this entity.
+	if (Vector3 *const RESTRICT scale{ GetScaleInternal() })
+	{
+		*scale = newScale;
+	}
+}
+
+/*
+*	Moves this entity.
+*/
+void Entity::Move(const Vector3 &amount) NOEXCEPT
+{
+	//Move this entity.
+	if (Vector3 *const RESTRICT position{ GetPositionInternal() })
+	{
+		*position += amount;
+	}
+
+	//Move all children.
+	for (Entity *const RESTRICT child : _Children)
+	{
+		child->Move(amount);
+	}
+}
+
+/*
+*	Rotates this entity.
+*/
+void Entity::Rotate(const Vector3 &amount) NOEXCEPT
+{
+	//Rotate this entity.
+	if (Vector3 *const RESTRICT rotation{ GetRotationInternal() })
+	{
+		*rotation += amount;
+	}
+
+	//Rotate all children.
+	for (Entity *const RESTRICT child : _Children)
+	{
+		child->Rotate(amount);
+	}
+}
+
+/*
+*	Scales this entity.
+*/
+void Entity::Scale(const Vector3 &amount) NOEXCEPT
+{
+	//Scale this entity.
+	if (Vector3 *const RESTRICT scale{ GetScaleInternal() })
+	{
+		*scale *= amount;
+	}
+
+	//Scale all children.
+	for (Entity *const RESTRICT child : _Children)
+	{
+		child->Scale(amount);
+	}
+}

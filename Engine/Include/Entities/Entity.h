@@ -74,32 +74,47 @@ public:
 	/*
 	*	Returns the position of this entity.
 	*/
-	virtual const Vector3& GetPosition() const NOEXCEPT = 0;
+	const Vector3& GetPosition() const NOEXCEPT;
 
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	virtual const Vector3& GetRotation() const NOEXCEPT = 0;
+	const Vector3& GetRotation() const NOEXCEPT;
 
 	/*
 	*	Returns the scale of this entity.
 	*/
-	virtual const Vector3& GetScale() const NOEXCEPT = 0;
+	const Vector3& GetScale() const NOEXCEPT;
+
+	/*
+	*	Sets the position of this entity.
+	*/
+	void SetPosition(const Vector3 &newPosition) NOEXCEPT;
+
+	/*
+	*	Sets the rotation of this entity.
+	*/
+	void SetRotation(const Vector3 &newRotation) NOEXCEPT;
+
+	/*
+	*	Sets the scale of this entity.
+	*/
+	void SetScale(const Vector3 &newScale) NOEXCEPT;
 
 	/*
 	*	Moves this entity.
 	*/
-	virtual void Move(const Vector3 &moveVector) NOEXCEPT = 0;
+	void Move(const Vector3 &amount) NOEXCEPT;
 
 	/*
 	*	Rotates this entity.
 	*/
-	virtual void Rotate(const Vector3 &rotateVector) NOEXCEPT = 0;
+	void Rotate(const Vector3 &amount) NOEXCEPT;
 
 	/*
 	*	Scales this entity.
 	*/
-	virtual void Scale(const Vector3 &scaleVector) NOEXCEPT = 0;
+	void Scale(const Vector3 &amount) NOEXCEPT;
 
 protected:
 
@@ -126,5 +141,29 @@ protected:
 
 	//Pointers to this entity's children.
 	DynamicArray<Entity *RESTRICT> _Children;
+
+	/*
+	*	Returns the position of this entity.
+	*/
+	NO_DISCARD RESTRICTED virtual Vector3 *const RESTRICT GetPositionInternal() NOEXCEPT
+	{
+		return nullptr;
+	}
+
+	/*
+	*	Returns the rotation of this entity.
+	*/
+	NO_DISCARD RESTRICTED virtual Vector3 *const RESTRICT GetRotationInternal() NOEXCEPT
+	{
+		return nullptr;
+	}
+
+	/*
+	*	Returns the scale of this entity.
+	*/
+	NO_DISCARD RESTRICTED virtual Vector3 *const RESTRICT GetScaleInternal() NOEXCEPT
+	{
+		return nullptr;
+	}
 
 };

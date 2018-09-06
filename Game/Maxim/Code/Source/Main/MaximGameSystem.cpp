@@ -101,9 +101,8 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 		{
 			const Vector3 direction{ RenderingSystem::Instance->GetWorldDirectionFromScreenCoordinate(Vector2(state->_CurrentX, state->_CurrentY)) };
 			const Vector3 newPosition{ CatalystVectorMath::LinePlaneIntersection(Vector3(0.0f, 0.0f, 0.0f), camera->GetPosition(), Vector3(0.0f, 0.0f, 1.0f), direction) };
-			const Vector3 currentPosition{ spinner->GetPosition() };
 
-			spinner->Move(newPosition - currentPosition);
+			spinner->SetPosition(newPosition);
 		}
 
 		if (state->_Right == ButtonState::Pressed || state->_Right == ButtonState::PressedHold)
