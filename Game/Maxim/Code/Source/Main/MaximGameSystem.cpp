@@ -58,7 +58,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	DynamicPhysicalInitializationData  *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
 
 	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
-	model._Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
+	model._Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Teal);
 
 	data->_PhysicalFlags = static_cast<uint8>(PhysicalFlag::Physical) | static_cast<uint8>(PhysicalFlag::Outline);
 	data->_Model = model;
@@ -113,7 +113,10 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 
 		if (state->_ButtonState == ButtonState::PressedHold)
 		{
-			spinner->Move(Vector3(25.0f * state->_DeltaX, 25.0f * state->_DeltaY, 0.0f));
+			const Vector3 direction{ RenderingSystem::Instance->GetWorldDirectionFromScreenCoordinate(Vector2(state->_CurrentX, state->_CurrentY)) };
+			const Vector3 newPosition{ CatalystVectorMath::LinePlaneIntersection(Vector3(0.0f, 0.0f, 0.0f), camera->GetPosition(), Vector3(0.0f, 0.0f, 1.0f), direction) };
+
+			spinner->SetPosition(newPosition);
 		}
 #endif
 	}

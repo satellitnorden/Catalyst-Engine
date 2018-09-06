@@ -71,6 +71,7 @@ public:
 	enum class CommonPhysicalMaterial : uint8
 	{
 		Red,
+		Teal,
 		NumberOfCommonPhysicalMaterials
 	};
 

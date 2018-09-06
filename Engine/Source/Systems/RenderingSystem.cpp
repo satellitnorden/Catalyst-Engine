@@ -612,32 +612,61 @@ void RenderingSystem::InitializeCommonParticleMaterials() NOEXCEPT
 void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 {
 	{
-		//Create the purple common physical material.
-		PhysicalMaterialData physicalMaterialData;
+		//Create the red common physical material.
+		PhysicalMaterialData data;
 		
-		physicalMaterialData._MipmapLevels = 1;
-		physicalMaterialData._Width = 1;
-		physicalMaterialData._Height = 1;
-		physicalMaterialData._AlbedoData.UpsizeSlow(1);
-		physicalMaterialData._AlbedoData[0].Reserve(4);
-		physicalMaterialData._AlbedoData[0].EmplaceFast(255);
-		physicalMaterialData._AlbedoData[0].EmplaceFast(0);
-		physicalMaterialData._AlbedoData[0].EmplaceFast(0);
-		physicalMaterialData._AlbedoData[0].EmplaceFast(255);
-		physicalMaterialData._NormalMapData.UpsizeSlow(1);
-		physicalMaterialData._NormalMapData[0].Reserve(4);
-		physicalMaterialData._NormalMapData[0].EmplaceFast(127);
-		physicalMaterialData._NormalMapData[0].EmplaceFast(127);
-		physicalMaterialData._NormalMapData[0].EmplaceFast(255);
-		physicalMaterialData._NormalMapData[0].EmplaceFast(255);
-		physicalMaterialData._MaterialPropertiesData.UpsizeSlow(1);
-		physicalMaterialData._MaterialPropertiesData[0].Reserve(4);
-		physicalMaterialData._MaterialPropertiesData[0].EmplaceFast(127);
-		physicalMaterialData._MaterialPropertiesData[0].EmplaceFast(255);
-		physicalMaterialData._MaterialPropertiesData[0].EmplaceFast(255);
-		physicalMaterialData._MaterialPropertiesData[0].EmplaceFast(0);
+		data._MipmapLevels = 1;
+		data._Width = 1;
+		data._Height = 1;
+		data._AlbedoData.UpsizeSlow(1);
+		data._AlbedoData[0].Reserve(4);
+		data._AlbedoData[0].EmplaceFast(255);
+		data._AlbedoData[0].EmplaceFast(0);
+		data._AlbedoData[0].EmplaceFast(0);
+		data._AlbedoData[0].EmplaceFast(255);
+		data._NormalMapData.UpsizeSlow(1);
+		data._NormalMapData[0].Reserve(4);
+		data._NormalMapData[0].EmplaceFast(127);
+		data._NormalMapData[0].EmplaceFast(127);
+		data._NormalMapData[0].EmplaceFast(255);
+		data._NormalMapData[0].EmplaceFast(255);
+		data._MaterialPropertiesData.UpsizeSlow(1);
+		data._MaterialPropertiesData[0].Reserve(4);
+		data._MaterialPropertiesData[0].EmplaceFast(127);
+		data._MaterialPropertiesData[0].EmplaceFast(255);
+		data._MaterialPropertiesData[0].EmplaceFast(255);
+		data._MaterialPropertiesData[0].EmplaceFast(0);
 
 		CreatePhysicalMaterial(physicalMaterialData, _CommonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Red)]);
+	}
+
+	{
+		//Create the teal common physical material.
+		PhysicalMaterialData data;
+
+		data._MipmapLevels = 1;
+		data._Width = 1;
+		data._Height = 1;
+		data._AlbedoData.UpsizeSlow(1);
+		data._AlbedoData[0].Reserve(4);
+		data._AlbedoData[0].EmplaceFast(0);
+		data._AlbedoData[0].EmplaceFast(255);
+		data._AlbedoData[0].EmplaceFast(255);
+		data._AlbedoData[0].EmplaceFast(255);
+		data._NormalMapData.UpsizeSlow(1);
+		data._NormalMapData[0].Reserve(4);
+		data._NormalMapData[0].EmplaceFast(127);
+		data._NormalMapData[0].EmplaceFast(127);
+		data._NormalMapData[0].EmplaceFast(255);
+		data._NormalMapData[0].EmplaceFast(255);
+		data._MaterialPropertiesData.UpsizeSlow(1);
+		data._MaterialPropertiesData[0].Reserve(4);
+		data._MaterialPropertiesData[0].EmplaceFast(127);
+		data._MaterialPropertiesData[0].EmplaceFast(255);
+		data._MaterialPropertiesData[0].EmplaceFast(255);
+		data._MaterialPropertiesData[0].EmplaceFast(0);
+
+		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Teal)]);
 	}
 }
 

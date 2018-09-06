@@ -26,7 +26,7 @@ public:
 	/*
 	*	Linearly interpolate between two Vector4 values.
 	*/
-	constexpr static Vector4 LinearlyInterpolate(const Vector4 &valueA, const Vector4 &valueB, const float alpha) NOEXCEPT
+	NO_DISCARD constexpr static Vector4 LinearlyInterpolate(const Vector4 &valueA, const Vector4 &valueB, const float alpha) NOEXCEPT
 	{
 		return (valueA * (1.0f - alpha)) + (valueB * alpha);
 	}
@@ -97,161 +97,161 @@ public:
 
 	}
 
-		/*
-		*	Vector4 by scalar addition operator overload.
-		*/
-		FORCE_INLINE NO_DISCARD constexpr Vector4 operator+(const float scalar) const NOEXCEPT
-		{
-			return Vector4{ _X + scalar, _Y + scalar, _Z + scalar, _W + scalar };
-		}
+	/*
+	*	Vector4 by scalar addition operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD constexpr Vector4 operator+(const float scalar) const NOEXCEPT
+	{
+		return Vector4{ _X + scalar, _Y + scalar, _Z + scalar, _W + scalar };
+	}
 
-		/*
-		*	Vector4 by scalar addition assignment operator overload.
-		*/
-		FORCE_INLINE constexpr void operator+=(const float scalar) NOEXCEPT
-		{
-			_X += scalar;
-			_Y += scalar;
-			_Z += scalar;
-			_W += scalar;
-		}
+	/*
+	*	Vector4 by scalar addition assignment operator overload.
+	*/
+	FORCE_INLINE constexpr void operator+=(const float scalar) NOEXCEPT
+	{
+		_X += scalar;
+		_Y += scalar;
+		_Z += scalar;
+		_W += scalar;
+	}
 
-		/*
-		*	Vector4 by scalar subtraction operator overload.
-		*/
-		FORCE_INLINE NO_DISCARD constexpr Vector4 operator-(const float scalar) const NOEXCEPT
-		{
-			return Vector4{ _X - scalar, _Y - scalar, _Z - scalar, _W - scalar };
-		}
+	/*
+	*	Vector4 by scalar subtraction operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD constexpr Vector4 operator-(const float scalar) const NOEXCEPT
+	{
+		return Vector4{ _X - scalar, _Y - scalar, _Z - scalar, _W - scalar };
+	}
 
-		/*
-		*	Vector4 by scalar subtraction assignment operator overload.
-		*/
-		FORCE_INLINE constexpr void operator-=(const float scalar) NOEXCEPT
-		{
-			_X -= scalar;
-			_Y -= scalar;
-			_Z -= scalar;
-			_W -= scalar;
-		}
+	/*
+	*	Vector4 by scalar subtraction assignment operator overload.
+	*/
+	FORCE_INLINE constexpr void operator-=(const float scalar) NOEXCEPT
+	{
+		_X -= scalar;
+		_Y -= scalar;
+		_Z -= scalar;
+		_W -= scalar;
+	}
 
-		/*
-		*	Vector4 by scalar multiplication operator overload.
-		*/
-		FORCE_INLINE NO_DISCARD constexpr Vector4 operator*(const float scalar) const NOEXCEPT
-		{
-			return Vector4{ _X * scalar, _Y * scalar, _Z * scalar, _W * scalar };
-		}
+	/*
+	*	Vector4 by scalar multiplication operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD constexpr Vector4 operator*(const float scalar) const NOEXCEPT
+	{
+		return Vector4{ _X * scalar, _Y * scalar, _Z * scalar, _W * scalar };
+	}
 
-		/*
-		*	Vector4 by scalar multiplication assignment operator overload.
-		*/
-		FORCE_INLINE constexpr void operator*=(const float scalar) NOEXCEPT
-		{
-			_X *= scalar;
-			_Y *= scalar;
-			_Z *= scalar;
-			_W *= scalar;
-		}
+	/*
+	*	Vector4 by scalar multiplication assignment operator overload.
+	*/
+	FORCE_INLINE constexpr void operator*=(const float scalar) NOEXCEPT
+	{
+		_X *= scalar;
+		_Y *= scalar;
+		_Z *= scalar;
+		_W *= scalar;
+	}
 
-		/*
-		*	Vector4 by scalar division operator overload.
-		*/
-		FORCE_INLINE NO_DISCARD constexpr Vector4 operator/(const float scalar) const NOEXCEPT
-		{
-			const float inverseScalar{ 1.0f / scalar };
+	/*
+	*	Vector4 by scalar division operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD constexpr Vector4 operator/(const float scalar) const NOEXCEPT
+	{
+		const float inverseScalar{ 1.0f / scalar };
 
-			return Vector4{ _X * inverseScalar, _Y * inverseScalar, _Z * inverseScalar, _W * inverseScalar };
-		}
+		return Vector4{ _X * inverseScalar, _Y * inverseScalar, _Z * inverseScalar, _W * inverseScalar };
+	}
 
-		/*
-		*	Vector4 by scalar division assignment operator overload.
-		*/
-		FORCE_INLINE constexpr void operator/=(const float scalar) NOEXCEPT
-		{
-			const float inverseScalar{ 1.0f / scalar };
+	/*
+	*	Vector4 by scalar division assignment operator overload.
+	*/
+	FORCE_INLINE constexpr void operator/=(const float scalar) NOEXCEPT
+	{
+		const float inverseScalar{ 1.0f / scalar };
 
-			_X *= inverseScalar;
-			_Y *= inverseScalar;
-			_Z *= inverseScalar;
-			_W *= inverseScalar;
-		}
+		_X *= inverseScalar;
+		_Y *= inverseScalar;
+		_Z *= inverseScalar;
+		_W *= inverseScalar;
+	}
 
-		/*
-		*	Vector4 by Vector4 addition operator overload.
-		*/
-		FORCE_INLINE NO_DISCARD constexpr Vector4 operator+(const Vector4 &otherVector) const NOEXCEPT
-		{
-			return Vector4{ _X + otherVector._X, _Y + otherVector._Y, _Z + otherVector._Z, _W + otherVector._W };
-		}
+	/*
+	*	Vector4 by Vector4 addition operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD constexpr Vector4 operator+(const Vector4 &otherVector) const NOEXCEPT
+	{
+		return Vector4{ _X + otherVector._X, _Y + otherVector._Y, _Z + otherVector._Z, _W + otherVector._W };
+	}
 
-		/*
-		*	Vector4 by Vector4 addition assignment operator overload.
-		*/
-		FORCE_INLINE constexpr void operator+=(const Vector4 &otherVector) NOEXCEPT
-		{
-			_X += otherVector._X;
-			_Y += otherVector._Y;
-			_Z += otherVector._Z;
-			_W += otherVector._W;
-		}
+	/*
+	*	Vector4 by Vector4 addition assignment operator overload.
+	*/
+	FORCE_INLINE constexpr void operator+=(const Vector4 &otherVector) NOEXCEPT
+	{
+		_X += otherVector._X;
+		_Y += otherVector._Y;
+		_Z += otherVector._Z;
+		_W += otherVector._W;
+	}
 
-		/*
-		*	Vector4 by Vector4 subtraction operator overload.
-		*/
-		FORCE_INLINE NO_DISCARD constexpr Vector4 operator-(const Vector4 &otherVector) const NOEXCEPT
-		{
-			return Vector4{ _X - otherVector._X, _Y - otherVector._Y, _Z - otherVector._Z, _W - otherVector._W };
-		}
+	/*
+	*	Vector4 by Vector4 subtraction operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD constexpr Vector4 operator-(const Vector4 &otherVector) const NOEXCEPT
+	{
+		return Vector4{ _X - otherVector._X, _Y - otherVector._Y, _Z - otherVector._Z, _W - otherVector._W };
+	}
 
-		/*
-		*	Vector4 by Vector4 subtraction assignment operator overload.
-		*/
-		FORCE_INLINE constexpr void operator-=(const Vector4 &otherVector) NOEXCEPT
-		{
-			_X -= otherVector._X;
-			_Y -= otherVector._Y;
-			_Z -= otherVector._Z;
-			_W -= otherVector._W;
-		}
+	/*
+	*	Vector4 by Vector4 subtraction assignment operator overload.
+	*/
+	FORCE_INLINE constexpr void operator-=(const Vector4 &otherVector) NOEXCEPT
+	{
+		_X -= otherVector._X;
+		_Y -= otherVector._Y;
+		_Z -= otherVector._Z;
+		_W -= otherVector._W;
+	}
 
-		/*
-		*	Vector4 by Vector4 multiplication operator overload.
-		*/
-		FORCE_INLINE NO_DISCARD constexpr Vector4 operator*(const Vector4 &otherVector) const NOEXCEPT
-		{
-			return Vector4{ _X * otherVector._X, _Y * otherVector._Y, _Z * otherVector._Z, _W * otherVector._W };
-		}
+	/*
+	*	Vector4 by Vector4 multiplication operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD constexpr Vector4 operator*(const Vector4 &otherVector) const NOEXCEPT
+	{
+		return Vector4{ _X * otherVector._X, _Y * otherVector._Y, _Z * otherVector._Z, _W * otherVector._W };
+	}
 
-		/*
-		*	Vector4 by Vector4 multiplication assignment operator overload.
-		*/
-		FORCE_INLINE constexpr void operator*=(const Vector4 &otherVector) NOEXCEPT
-		{
-			_X *= otherVector._X;
-			_Y *= otherVector._Y;
-			_Z *= otherVector._Z;
-			_W *= otherVector._W;
-		}
+	/*
+	*	Vector4 by Vector4 multiplication assignment operator overload.
+	*/
+	FORCE_INLINE constexpr void operator*=(const Vector4 &otherVector) NOEXCEPT
+	{
+		_X *= otherVector._X;
+		_Y *= otherVector._Y;
+		_Z *= otherVector._Z;
+		_W *= otherVector._W;
+	}
 
-		/*
-		*	Vector4 by Vector4 division operator overload.
-		*/
-		FORCE_INLINE NO_DISCARD constexpr Vector4 operator/(const Vector4 &otherVector) const NOEXCEPT
-		{
-			return Vector4{ _X / otherVector._X, _Y / otherVector._Y, _Z / otherVector._Z, _W / otherVector._W };
-		}
+	/*
+	*	Vector4 by Vector4 division operator overload.
+	*/
+	FORCE_INLINE NO_DISCARD constexpr Vector4 operator/(const Vector4 &otherVector) const NOEXCEPT
+	{
+		return Vector4{ _X / otherVector._X, _Y / otherVector._Y, _Z / otherVector._Z, _W / otherVector._W };
+	}
 
-		/*
-		*	Vector4 by Vector4 division assignment operator overload.
-		*/
-		FORCE_INLINE constexpr void operator/=(const Vector4 &otherVector) NOEXCEPT
-		{
-			_X /= otherVector._X;
-			_Y /= otherVector._Y;
-			_Z /= otherVector._Z;
-			_W /= otherVector._W;
-		}
+	/*
+	*	Vector4 by Vector4 division assignment operator overload.
+	*/
+	FORCE_INLINE constexpr void operator/=(const Vector4 &otherVector) NOEXCEPT
+	{
+		_X /= otherVector._X;
+		_Y /= otherVector._Y;
+		_Z /= otherVector._Z;
+		_W /= otherVector._W;
+	}
 
 	/*
 	*	Returns the length of the vector.
