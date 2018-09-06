@@ -18,7 +18,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan descriptor set.
 	*/
-	const VkDescriptorSet& Get() const NOEXCEPT { return vulkanDescriptorSet; }
+	const VkDescriptorSet& Get() const NOEXCEPT { return _VulkanDescriptorSet; }
 
 	/*
 	*	Initializes this Vulkan descriptor set.
@@ -28,7 +28,7 @@ public:
 private:
 
 	//The underlying Vulkan descriptor set.
-	VkDescriptorSet vulkanDescriptorSet;
+	VkDescriptorSet _VulkanDescriptorSet;
 
 	/*
 	*	Creates a descriptor set allocate info.

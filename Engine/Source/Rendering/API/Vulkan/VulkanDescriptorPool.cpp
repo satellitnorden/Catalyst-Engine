@@ -32,7 +32,7 @@ void VulkanDescriptorPool::Initialize() NOEXCEPT
 	CreateDescriptorPoolCreateInfo(descriptorPoolCreateInfo, descriptorPoolSizes);
 
 	//Create the Vulkan descriptor pool!
-	VULKAN_ERROR_CHECK(vkCreateDescriptorPool(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorPoolCreateInfo, nullptr, &vulkanDescriptorPool));
+	VULKAN_ERROR_CHECK(vkCreateDescriptorPool(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorPoolCreateInfo, nullptr, &_VulkanDescriptorPool));
 }
 
 /*
@@ -41,7 +41,7 @@ void VulkanDescriptorPool::Initialize() NOEXCEPT
 void VulkanDescriptorPool::Release() NOEXCEPT
 {
 	//Destroy this Vulkan descriptor pool.
-	vkDestroyDescriptorPool(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDescriptorPool, nullptr);
+	vkDestroyDescriptorPool(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDescriptorPool, nullptr);
 }
 
 /*
@@ -50,7 +50,7 @@ void VulkanDescriptorPool::Release() NOEXCEPT
 void VulkanDescriptorPool::AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescriptorSet, const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) const NOEXCEPT
 {
 	//Lock the descriptor pool.
-	ScopedLock<Spinlock> scopedLock{ lock };
+	ScopedLock<Spinlock> scopedLock{ _Lock };
 
 	//Initialize the Vulkan descriptor set.
 	vulkaDescriptorSet.Initialize(*this, vulkanDescriptorSetLayout);
@@ -62,10 +62,10 @@ void VulkanDescriptorPool::AllocateDescriptorSet(VulkanDescriptorSet &vulkaDescr
 void VulkanDescriptorPool::FreeDescriptorSet(VkDescriptorSet descriptorSet) const NOEXCEPT
 {
 	//Lock the descriptor pool.
-	ScopedLock<Spinlock> scopedLock{ lock };
+	ScopedLock<Spinlock> scopedLock{ _Lock };
 
 	//Free the Vulkan descriptor set.
-	vkFreeDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDescriptorPool, 1, &descriptorSet);
+	vkFreeDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDescriptorPool, 1, &descriptorSet);
 }
 
 /*

@@ -30,7 +30,7 @@ void VulkanDescriptorSetLayout::Initialize(const uint32 descriptorSetLayoutBindi
 	CreateDescriptorSetLayoutCreateInfo(descriptorSetLayoutCreateInfo, descriptorSetLayoutBindingCount, descriptorSetLayoutBindings);
 
 	//Create the descriptor set layout!
-	VULKAN_ERROR_CHECK(vkCreateDescriptorSetLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorSetLayoutCreateInfo, nullptr, &vulkanDescriptorSetLayout));
+	VULKAN_ERROR_CHECK(vkCreateDescriptorSetLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorSetLayoutCreateInfo, nullptr, &_VulkanDescriptorSetLayout));
 }
 
 /*
@@ -39,7 +39,7 @@ void VulkanDescriptorSetLayout::Initialize(const uint32 descriptorSetLayoutBindi
 void VulkanDescriptorSetLayout::Release() NOEXCEPT
 {
 	//Destroy the descriptor set layout.
-	vkDestroyDescriptorSetLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDescriptorSetLayout, nullptr);
+	vkDestroyDescriptorSetLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDescriptorSetLayout, nullptr);
 }
 
 /*

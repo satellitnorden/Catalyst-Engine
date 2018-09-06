@@ -30,7 +30,7 @@ void VulkanFence::Initialize(const VkFenceCreateFlags flags) NOEXCEPT
 	CreateFenceCreateInfo(fenceCreateInfo, flags);
 
 	//Create the Vulkan fence!
-	VULKAN_ERROR_CHECK(vkCreateFence(VulkanInterface::Instance->GetLogicalDevice().Get(), &fenceCreateInfo, nullptr, &vulkanFence));
+	VULKAN_ERROR_CHECK(vkCreateFence(VulkanInterface::Instance->GetLogicalDevice().Get(), &fenceCreateInfo, nullptr, &_VulkanFence));
 }
 
 /*
@@ -49,7 +49,7 @@ void VulkanFence::CreateFenceCreateInfo(VkFenceCreateInfo &fenceCreateInfo, cons
 void VulkanFence::Release() NOEXCEPT
 {
 	//Destroy the Vulkan fence.
-	vkDestroyFence(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanFence, nullptr);
+	vkDestroyFence(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanFence, nullptr);
 }
 
 /*
@@ -58,7 +58,7 @@ void VulkanFence::Release() NOEXCEPT
 bool VulkanFence::IsSignaled() const NOEXCEPT
 {
 	//Return whether or not this fence is signaled.
-	return vkGetFenceStatus(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanFence) == VK_SUCCESS;
+	return vkGetFenceStatus(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanFence) == VK_SUCCESS;
 }
 
 /*
@@ -67,7 +67,7 @@ bool VulkanFence::IsSignaled() const NOEXCEPT
 void VulkanFence::Reset() NOEXCEPT
 {
 	//Reset this Vulkan fence.
-	VULKAN_ERROR_CHECK(vkResetFences(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &vulkanFence));
+	VULKAN_ERROR_CHECK(vkResetFences(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &_VulkanFence));
 }
 
 /*
@@ -76,5 +76,5 @@ void VulkanFence::Reset() NOEXCEPT
 void VulkanFence::WaitFor() const NOEXCEPT
 {
 	//Wait for this Vulkan fence.
-	while (vkWaitForFences(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &vulkanFence, VK_TRUE, 0) == VK_TIMEOUT);
+	while (vkWaitForFences(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &_VulkanFence, VK_TRUE, 0) == VK_TIMEOUT);
 }

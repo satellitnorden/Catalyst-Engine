@@ -14,10 +14,10 @@ void VulkanShaderModule::Initialize(const void* const shaderData, const uint64 s
 	CreateShaderModuleCreateInfo(shaderModuleCreateInfo, shaderData, shaderDataSize);
 
 	//Create the shader module!
-	VULKAN_ERROR_CHECK(vkCreateShaderModule(VulkanInterface::Instance->GetLogicalDevice().Get(), &shaderModuleCreateInfo, nullptr, &vulkanShaderModule));
+	VULKAN_ERROR_CHECK(vkCreateShaderModule(VulkanInterface::Instance->GetLogicalDevice().Get(), &shaderModuleCreateInfo, nullptr, &_VulkanShaderModule));
 
 	//Set the stage.
-	stage = newStage;
+	_Stage = newStage;
 }
 
 /*
@@ -26,7 +26,7 @@ void VulkanShaderModule::Initialize(const void* const shaderData, const uint64 s
 void VulkanShaderModule::Release() NOEXCEPT
 {
 	//Destroy the shader module.
-	vkDestroyShaderModule(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanShaderModule, nullptr);
+	vkDestroyShaderModule(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanShaderModule, nullptr);
 }
 
 /*

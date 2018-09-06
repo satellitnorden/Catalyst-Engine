@@ -27,16 +27,16 @@ VulkanDepthBuffer::~VulkanDepthBuffer() NOEXCEPT
 void VulkanDepthBuffer::Initialize(const VkExtent2D imageExtent) NOEXCEPT
 {
 	//Find the most desirable depth buffer format.
-	format = FindMostDesirableDepthBufferFormat();
+	_Format = FindMostDesirableDepthBufferFormat();
 
 	//Create the depth buffer image!
-	VulkanUtilities::CreateVulkanImage(0, format, imageExtent.width, imageExtent.height, 1, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vulkanImage, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanImage(0, _Format, imageExtent.width, imageExtent.height, 1, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _VulkanImage, _VulkanDeviceMemory);
 
 	//Create the depth buffer image view!
-	VulkanUtilities::CreateVulkanImageView(vulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_DEPTH_BIT, 1, 1, vulkanImageView);
+	VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_2D, _Format, VK_IMAGE_ASPECT_DEPTH_BIT, 1, 1, _VulkanImageView);
 
 	//Transition the image layout to a more appropriate layout.
-	VulkanUtilities::TransitionImageToLayout(format, 0, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1, 1, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, vulkanImage);
+	VulkanUtilities::TransitionImageToLayout(_Format, 0, VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1, 1, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT, _VulkanImage);
 }
 
 /*
@@ -45,13 +45,13 @@ void VulkanDepthBuffer::Initialize(const VkExtent2D imageExtent) NOEXCEPT
 void VulkanDepthBuffer::Release() NOEXCEPT
 {
 	//Destroy the Vulkan image.
-	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImage, nullptr);
+	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImage, nullptr);
 
 	//Free the device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, nullptr);
 
 	//Destroy the Vulkan image view.
-	vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanImageView, nullptr);
+	vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImageView, nullptr);
 }
 
 /*

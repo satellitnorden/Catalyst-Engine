@@ -27,7 +27,7 @@ VulkanStorageBuffer::~VulkanStorageBuffer() NOEXCEPT
 void VulkanStorageBuffer::Initialize(const VkDeviceSize initialStorageBufferSize) NOEXCEPT
 {
 	//Set the storage buffer size.
-	storageBufferSize = initialStorageBufferSize;
+	_StorageBufferSize = initialStorageBufferSize;
 
 	//Set up the staging buffer.
 	VkBuffer stagingBuffer;
@@ -46,10 +46,10 @@ void VulkanStorageBuffer::Initialize(const VkDeviceSize initialStorageBufferSize
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory);
 
 	//Create the Vulkan buffer.
-	VulkanUtilities::CreateVulkanBuffer(storageBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vulkanBuffer, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanBuffer(_StorageBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _VulkanBuffer, _VulkanDeviceMemory);
 
 	//Copy the staging buffer into the storage buffer.
-	VulkanUtilities::CopyBufferToBuffer(initialStorageBufferSize, stagingBuffer, vulkanBuffer);
+	VulkanUtilities::CopyBufferToBuffer(initialStorageBufferSize, stagingBuffer, _VulkanBuffer);
 
 	//Release the staging buffer.
 	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBufferDeviceMemory, nullptr);
@@ -68,10 +68,10 @@ void VulkanStorageBuffer::Initialize(const VkDeviceSize initialStorageBufferSize
 void VulkanStorageBuffer::Release() NOEXCEPT
 {
 	//Free the Vulkan device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, nullptr);
 
 	//Destroy the Vulkan vertex buffer.
-	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, nullptr);
+	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanBuffer, nullptr);
 }
 
 /*
@@ -79,11 +79,11 @@ void VulkanStorageBuffer::Release() NOEXCEPT
 */
 VkWriteDescriptorSet VulkanStorageBuffer::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT
 {
-	VkWriteDescriptorSet vulkanWriteDescriptorSetCopy{ vulkanWriteDescriptorSet };
+	VkWriteDescriptorSet vulkanWriteDescriptorSetCopy{ _VulkanWriteDescriptorSet };
 
 	vulkanWriteDescriptorSetCopy.dstSet = vulkanDescriptorSet.Get();
 	vulkanWriteDescriptorSetCopy.dstBinding = binding;
-	vulkanWriteDescriptorSetCopy.pBufferInfo = &vulkanDescriptorBufferInfo;
+	vulkanWriteDescriptorSetCopy.pBufferInfo = &_VulkanDescriptorBufferInfo;
 
 	return vulkanWriteDescriptorSetCopy;
 }
@@ -93,9 +93,9 @@ VkWriteDescriptorSet VulkanStorageBuffer::GetWriteDescriptorSet(const VulkanDesc
 */
 void VulkanStorageBuffer::CreateDescriptorBufferInfo() NOEXCEPT
 {
-	vulkanDescriptorBufferInfo.buffer = vulkanBuffer;
-	vulkanDescriptorBufferInfo.offset = 0;
-	vulkanDescriptorBufferInfo.range = storageBufferSize;
+	_VulkanDescriptorBufferInfo.buffer = _VulkanBuffer;
+	_VulkanDescriptorBufferInfo.offset = 0;
+	_VulkanDescriptorBufferInfo.range = _StorageBufferSize;
 }
 
 /*
@@ -103,14 +103,14 @@ void VulkanStorageBuffer::CreateDescriptorBufferInfo() NOEXCEPT
 */
 void VulkanStorageBuffer::CreateWriteDescriptorSet() NOEXCEPT
 {
-	vulkanWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	vulkanWriteDescriptorSet.pNext = nullptr;
-	vulkanWriteDescriptorSet.dstSet = VK_NULL_HANDLE;
-	vulkanWriteDescriptorSet.dstBinding = 0;
-	vulkanWriteDescriptorSet.dstArrayElement = 0;
-	vulkanWriteDescriptorSet.descriptorCount = 1;
-	vulkanWriteDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	vulkanWriteDescriptorSet.pImageInfo = nullptr;
-	vulkanWriteDescriptorSet.pBufferInfo = &vulkanDescriptorBufferInfo;
-	vulkanWriteDescriptorSet.pTexelBufferView = nullptr;
+	_VulkanWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	_VulkanWriteDescriptorSet.pNext = nullptr;
+	_VulkanWriteDescriptorSet.dstSet = VK_NULL_HANDLE;
+	_VulkanWriteDescriptorSet.dstBinding = 0;
+	_VulkanWriteDescriptorSet.dstArrayElement = 0;
+	_VulkanWriteDescriptorSet.descriptorCount = 1;
+	_VulkanWriteDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	_VulkanWriteDescriptorSet.pImageInfo = nullptr;
+	_VulkanWriteDescriptorSet.pBufferInfo = &_VulkanDescriptorBufferInfo;
+	_VulkanWriteDescriptorSet.pTexelBufferView = nullptr;
 }

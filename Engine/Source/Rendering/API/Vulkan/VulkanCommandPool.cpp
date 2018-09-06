@@ -16,7 +16,7 @@ void VulkanCommandPool::Initialize(const VkCommandPoolCreateFlags flags, const u
 	CreateCommandPoolCreateInfo(commandPoolCreateInfo, flags, queueFamilyIndex);
 
 	//Create the command pool!
-	VULKAN_ERROR_CHECK(vkCreateCommandPool(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandPoolCreateInfo, nullptr, &vulkanCommandPool));
+	VULKAN_ERROR_CHECK(vkCreateCommandPool(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandPoolCreateInfo, nullptr, &_VulkanCommandPool));
 }
 
 /*
@@ -25,7 +25,7 @@ void VulkanCommandPool::Initialize(const VkCommandPoolCreateFlags flags, const u
 void VulkanCommandPool::Release() NOEXCEPT
 {
 	//Destroy the Vulkan command pool.
-	vkDestroyCommandPool(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanCommandPool, nullptr);
+	vkDestroyCommandPool(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanCommandPool, nullptr);
 }
 
 /*
@@ -52,7 +52,7 @@ void VulkanCommandPool::AllocateSecondaryCommandBuffer(VulkanCommandBuffer &vulk
 void VulkanCommandPool::FreeCommandBuffer(VulkanCommandBuffer &vulkanCommandBuffer) const NOEXCEPT
 {
 	//Free the command buffer.
-	vkFreeCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanCommandPool, 1, &vulkanCommandBuffer.Get());
+	vkFreeCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanCommandPool, 1, &vulkanCommandBuffer.Get());
 }
 
 /*

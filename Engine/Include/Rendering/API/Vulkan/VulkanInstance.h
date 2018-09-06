@@ -14,7 +14,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan instance.
 	*/
-	const VkInstance& Get() const NOEXCEPT { return vulkanInstance; }
+	const VkInstance& Get() const NOEXCEPT { return _VulkanInstance; }
 
 	/*
 	*	Initializes this Vulkan instance.
@@ -29,7 +29,7 @@ public:
 private:
 
 	//The underlying Vulkan instance.
-	VkInstance vulkanInstance;
+	VkInstance _VulkanInstance;
 
 	/*
 	*	Creates the application info.

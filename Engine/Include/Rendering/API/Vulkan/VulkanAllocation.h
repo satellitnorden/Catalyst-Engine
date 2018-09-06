@@ -21,16 +21,16 @@ public:
 	*/
 	VulkanAllocation(const VkDeviceMemory newVulkanDeviceMemory, const uint32 newOffset) NOEXCEPT
 		:
-		vulkanDeviceMemory(newVulkanDeviceMemory),
-		offset(newOffset)
+		_VulkanDeviceMemory(newVulkanDeviceMemory),
+		_Offset(newOffset)
 	{
 
 	}
 
 	//The device memory associated with this allocation.
-	VkDeviceMemory vulkanDeviceMemory;
+	VkDeviceMemory _VulkanDeviceMemory;
 
 	//The offset into the device memory associated with this allocation.
-	uint32 offset;
+	uint32 _Offset;
 
 };

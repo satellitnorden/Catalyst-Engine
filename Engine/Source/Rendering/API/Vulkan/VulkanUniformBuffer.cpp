@@ -27,10 +27,10 @@ VulkanUniformBuffer::~VulkanUniformBuffer() NOEXCEPT
 void VulkanUniformBuffer::Initialize(const VkDeviceSize newUniformBufferSize) NOEXCEPT
 {
 	//Set the uniform buffer properties.
-	uniformBufferSize = newUniformBufferSize;
+	_VniformBufferSize = newUniformBufferSize;
 
 	//Create the Vulkan buffer.
-	VulkanUtilities::CreateVulkanBuffer(uniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, vulkanBuffer, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanBuffer(_VniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _VulkanBuffer, _VulkanDeviceMemory);
 
 	//Create the descriptor buffer info.
 	CreateDescriptorBufferInfo();
@@ -45,10 +45,10 @@ void VulkanUniformBuffer::Initialize(const VkDeviceSize newUniformBufferSize) NO
 void VulkanUniformBuffer::Release() NOEXCEPT
 {
 	//Free the Vulkan device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, nullptr);
 
 	//Destroy the Vulkan vertex buffer.
-	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, nullptr);
+	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanBuffer, nullptr);
 }
 
 /*
@@ -58,9 +58,9 @@ void VulkanUniformBuffer::UploadData(const void *RESTRICT newData) const NOEXCEP
 {
 	void *mappedMemory;
 
-	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, 0, uniformBufferSize, 0, &mappedMemory));
-	MemoryUtilities::CopyMemory(mappedMemory, newData, static_cast<uint64>(uniformBufferSize));
-	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory);
+	VULKAN_ERROR_CHECK(vkMapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, 0, _VniformBufferSize, 0, &mappedMemory));
+	MemoryUtilities::CopyMemory(mappedMemory, newData, static_cast<uint64>(_VniformBufferSize));
+	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory);
 }
 
 /*
@@ -68,11 +68,11 @@ void VulkanUniformBuffer::UploadData(const void *RESTRICT newData) const NOEXCEP
 */
 VkWriteDescriptorSet VulkanUniformBuffer::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT
 {
-	VkWriteDescriptorSet vulkanWriteDescriptorSetCopy{ vulkanWriteDescriptorSet };
+	VkWriteDescriptorSet vulkanWriteDescriptorSetCopy{ _VulkanWriteDescriptorSet };
 
 	vulkanWriteDescriptorSetCopy.dstSet = vulkanDescriptorSet.Get();
 	vulkanWriteDescriptorSetCopy.dstBinding = binding;
-	vulkanWriteDescriptorSetCopy.pBufferInfo = &vulkanDescriptorBufferInfo;
+	vulkanWriteDescriptorSetCopy.pBufferInfo = &_VulkanDescriptorBufferInfo;
 
 	return vulkanWriteDescriptorSetCopy;
 }
@@ -82,9 +82,9 @@ VkWriteDescriptorSet VulkanUniformBuffer::GetWriteDescriptorSet(const VulkanDesc
 */
 void VulkanUniformBuffer::CreateDescriptorBufferInfo() NOEXCEPT
 {
-	vulkanDescriptorBufferInfo.buffer = vulkanBuffer;
-	vulkanDescriptorBufferInfo.offset = 0;
-	vulkanDescriptorBufferInfo.range = uniformBufferSize;
+	_VulkanDescriptorBufferInfo.buffer = _VulkanBuffer;
+	_VulkanDescriptorBufferInfo.offset = 0;
+	_VulkanDescriptorBufferInfo.range = _VniformBufferSize;
 }
 
 /*
@@ -92,14 +92,14 @@ void VulkanUniformBuffer::CreateDescriptorBufferInfo() NOEXCEPT
 */
 void VulkanUniformBuffer::CreateWriteDescriptorSet() NOEXCEPT
 {
-	vulkanWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	vulkanWriteDescriptorSet.pNext = nullptr;
-	vulkanWriteDescriptorSet.dstSet = VK_NULL_HANDLE;
-	vulkanWriteDescriptorSet.dstBinding = 0;
-	vulkanWriteDescriptorSet.dstArrayElement = 0;
-	vulkanWriteDescriptorSet.descriptorCount = 1;
-	vulkanWriteDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	vulkanWriteDescriptorSet.pImageInfo = nullptr;
-	vulkanWriteDescriptorSet.pBufferInfo = &vulkanDescriptorBufferInfo;
-	vulkanWriteDescriptorSet.pTexelBufferView = nullptr;
+	_VulkanWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	_VulkanWriteDescriptorSet.pNext = nullptr;
+	_VulkanWriteDescriptorSet.dstSet = VK_NULL_HANDLE;
+	_VulkanWriteDescriptorSet.dstBinding = 0;
+	_VulkanWriteDescriptorSet.dstArrayElement = 0;
+	_VulkanWriteDescriptorSet.descriptorCount = 1;
+	_VulkanWriteDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	_VulkanWriteDescriptorSet.pImageInfo = nullptr;
+	_VulkanWriteDescriptorSet.pBufferInfo = &_VulkanDescriptorBufferInfo;
+	_VulkanWriteDescriptorSet.pTexelBufferView = nullptr;
 }

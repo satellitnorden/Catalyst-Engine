@@ -14,7 +14,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan physical device object.
 	*/
-	const VkPhysicalDevice& Get() const NOEXCEPT { return vulkanPhysicalDevice; }
+	const VkPhysicalDevice& Get() const NOEXCEPT { return _VulkanPhysicalDevice; }
 
 	/*
 	*	Initializes this Vulkan physical device.
@@ -24,55 +24,55 @@ public:
 	/*
 	*	Returns the physical device features.
 	*/
-	const VkPhysicalDeviceFeatures& GetPhysicalDeviceFeatures() const NOEXCEPT { return physicalDeviceFeatures; }
+	const VkPhysicalDeviceFeatures& GetPhysicalDeviceFeatures() const NOEXCEPT { return _PhysicalDeviceFeatures; }
 
 	/*
 	*	Returns the physical device memory properties.
 	*/
-	const VkPhysicalDeviceMemoryProperties& GetPhysicalDeviceMemoryProperties() const NOEXCEPT { return physicalDeviceMemoryProperties; }
+	const VkPhysicalDeviceMemoryProperties& GetPhysicalDeviceMemoryProperties() const NOEXCEPT { return _PhysicalDeviceMemoryProperties; }
 
 	/*
 	*	Returns the physical device properties.
 	*/
-	const VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() const NOEXCEPT { return physicalDeviceProperties; }
+	const VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() const NOEXCEPT { return _PhysicalDeviceProperties; }
 
 	/*
 	*	Returns the surface format.
 	*/
-	const VkPresentModeKHR& GetPresentMode() const NOEXCEPT { return presentMode; }
+	const VkPresentModeKHR& GetPresentMode() const NOEXCEPT { return _PresentMode; }
 
 	/*
 	*	Returns the surface capabilities.
 	*/
-	const VkSurfaceCapabilitiesKHR& GetSurfaceCapabilities() const NOEXCEPT { return surfaceCapabilities; }
+	const VkSurfaceCapabilitiesKHR& GetSurfaceCapabilities() const NOEXCEPT { return _SurfaceCapabilities; }
 
 	/*
 	*	Returns the surface format.
 	*/
-	const VkSurfaceFormatKHR& GetSurfaceFormat() const NOEXCEPT { return surfaceFormat; }
+	const VkSurfaceFormatKHR& GetSurfaceFormat() const NOEXCEPT { return _SurfaceFormat; }
 
 private:
 
 	//The underlying Vulkan physical device.
-	VkPhysicalDevice vulkanPhysicalDevice;
+	VkPhysicalDevice _VulkanPhysicalDevice;
 
 	//The physical device features.
-	VkPhysicalDeviceFeatures physicalDeviceFeatures;
+	VkPhysicalDeviceFeatures _PhysicalDeviceFeatures;
 
 	//The physical device memory properties.
-	VkPhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
+	VkPhysicalDeviceMemoryProperties _PhysicalDeviceMemoryProperties;
 
 	//The physical device properties.
-	VkPhysicalDeviceProperties physicalDeviceProperties;
+	VkPhysicalDeviceProperties _PhysicalDeviceProperties;
 
 	//The present mode.
-	VkPresentModeKHR presentMode;
+	VkPresentModeKHR _PresentMode;
 
 	//The surface capabilities.
-	VkSurfaceCapabilitiesKHR surfaceCapabilities;
+	VkSurfaceCapabilitiesKHR _SurfaceCapabilities;
 
 	//The surface format.
-	VkSurfaceFormatKHR surfaceFormat;
+	VkSurfaceFormatKHR _SurfaceFormat;
 
 	/*
 	*	Given a Vulkan physical device, return if it is suitable for this game.

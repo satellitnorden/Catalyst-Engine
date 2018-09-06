@@ -14,7 +14,7 @@ void VulkanFramebuffer::Initialize(const VulkanFramebufferCreationParameters &pa
 	CreateFramebufferCreateInfo(framebufferCreateInfo, parameters);
 
 	//Create the Vulkan framebuffer!
-	VULKAN_ERROR_CHECK(vkCreateFramebuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), &framebufferCreateInfo, nullptr, &vulkanFramebuffer));
+	VULKAN_ERROR_CHECK(vkCreateFramebuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), &framebufferCreateInfo, nullptr, &_VulkanFramebuffer));
 }
 
 /*
@@ -23,7 +23,7 @@ void VulkanFramebuffer::Initialize(const VulkanFramebufferCreationParameters &pa
 void VulkanFramebuffer::Release() NOEXCEPT
 {
 	//Destroy the Vulkan framebuffer.
-	vkDestroyFramebuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanFramebuffer, nullptr);
+	vkDestroyFramebuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanFramebuffer, nullptr);
 }
 
 /*
@@ -34,10 +34,10 @@ void VulkanFramebuffer::CreateFramebufferCreateInfo(VkFramebufferCreateInfo &fra
 	framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 	framebufferCreateInfo.pNext = nullptr;
 	framebufferCreateInfo.flags = 0;
-	framebufferCreateInfo.renderPass = parameters.renderPass;
-	framebufferCreateInfo.attachmentCount = parameters.attachmentCount;
-	framebufferCreateInfo.pAttachments = parameters.attachments;
-	framebufferCreateInfo.width = parameters.extent.width;
-	framebufferCreateInfo.height = parameters.extent.height;
+	framebufferCreateInfo.renderPass = parameters._RenderPass;
+	framebufferCreateInfo.attachmentCount = parameters._AttachmentCount;
+	framebufferCreateInfo.pAttachments = parameters._Attachments;
+	framebufferCreateInfo.width = parameters._Extent.width;
+	framebufferCreateInfo.height = parameters._Extent.height;
 	framebufferCreateInfo.layers = 1;
 }

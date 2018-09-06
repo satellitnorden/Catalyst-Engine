@@ -17,7 +17,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan command pool.
 	*/
-	const VkCommandPool& Get() const NOEXCEPT { return vulkanCommandPool; }
+	const VkCommandPool& Get() const NOEXCEPT { return _VulkanCommandPool; }
 
 	/*
 	*	Initializes this Vulkan command pool.
@@ -47,7 +47,7 @@ public:
 private:
 
 	//The underlying Vulkan command pool.
-	VkCommandPool vulkanCommandPool;
+	VkCommandPool _VulkanCommandPool;
 
 	/*
 	*	Creates a command pool create info.

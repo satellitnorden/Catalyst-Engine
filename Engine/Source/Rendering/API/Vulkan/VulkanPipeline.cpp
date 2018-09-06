@@ -12,15 +12,15 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &paramete
 {
 	//Create the pipeline shader stage create infos for both shaders.
 	DynamicArray<VkPipelineShaderStageCreateInfo> pipelineShaderStageCreateInfos;
-	pipelineShaderStageCreateInfos.UpsizeFast(parameters.shaderModules.Size());
+	pipelineShaderStageCreateInfos.UpsizeFast(parameters._ShaderModules.Size());
 
 	bool useTessellationStage{ false };
 
-	for (uint64 i = 0, size = parameters.shaderModules.Size(); i < size; ++i)
+	for (uint64 i = 0, size = parameters._ShaderModules.Size(); i < size; ++i)
 	{
-		CreatePipelineShaderStageCreateInfo(pipelineShaderStageCreateInfos[i], parameters.shaderModules[i]);
+		CreatePipelineShaderStageCreateInfo(pipelineShaderStageCreateInfos[i], parameters._ShaderModules[i]);
 
-		if (parameters.shaderModules[i]->GetStage() == VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT || parameters.shaderModules[i]->GetStage() == VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT)
+		if (parameters._ShaderModules[i]->GetStage() == VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT || parameters._ShaderModules[i]->GetStage() == VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT)
 		{
 			useTessellationStage = true;
 		}
@@ -69,14 +69,14 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &paramete
 	CreatePipelineLayoutCreateInfo(pipelineLayoutCreateInfo, parameters);
 
 	//Create the Vulkan pipeline layout!
-	VULKAN_ERROR_CHECK(vkCreatePipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &pipelineLayoutCreateInfo, nullptr, &vulkanPipelineLayout));
+	VULKAN_ERROR_CHECK(vkCreatePipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), &pipelineLayoutCreateInfo, nullptr, &_VulkanPipelineLayout));
 
 	//Create the graphics pipeline create info.
 	VkGraphicsPipelineCreateInfo graphicsPipelineCreateInfo;
-	CreateGraphicsPipelineCreateInfo(graphicsPipelineCreateInfo, pipelineShaderStageCreateInfos, pipelineVertexInputStateCreateInfo, pipelineInputAssemblyStateCreateInfo, useTessellationStage ? &pipelineTessellationStateCreateInfo : nullptr, pipelineViewportStateCreateInfo, pipelineRasterizationStateCreateInfo, pipelineMultisampleStateCreateInfo, pipelineDepthStencilStateCreateInfo, pipelineColorBlendStateCreateInfo, vulkanPipelineLayout, parameters.subpass, parameters);
+	CreateGraphicsPipelineCreateInfo(graphicsPipelineCreateInfo, pipelineShaderStageCreateInfos, pipelineVertexInputStateCreateInfo, pipelineInputAssemblyStateCreateInfo, useTessellationStage ? &pipelineTessellationStateCreateInfo : nullptr, pipelineViewportStateCreateInfo, pipelineRasterizationStateCreateInfo, pipelineMultisampleStateCreateInfo, pipelineDepthStencilStateCreateInfo, pipelineColorBlendStateCreateInfo, _VulkanPipelineLayout, parameters._Subpass, parameters);
 
 	//Create the Vulkan pipeline!
-	VULKAN_ERROR_CHECK(vkCreateGraphicsPipelines(VulkanInterface::Instance->GetLogicalDevice().Get(), VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &vulkanPipeline));
+	VULKAN_ERROR_CHECK(vkCreateGraphicsPipelines(VulkanInterface::Instance->GetLogicalDevice().Get(), VK_NULL_HANDLE, 1, &graphicsPipelineCreateInfo, nullptr, &_VulkanPipeline));
 }
 
 /*
@@ -85,10 +85,10 @@ void VulkanPipeline::Initialize(const VulkanPipelineCreationParameters &paramete
 void VulkanPipeline::Release() NOEXCEPT
 {
 	//Destroy the Vulkan pipeline.
-	vkDestroyPipeline(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanPipeline, nullptr);
+	vkDestroyPipeline(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanPipeline, nullptr);
 
 	//Destroy the Vulkan pipeline layout.
-	vkDestroyPipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanPipelineLayout, nullptr);
+	vkDestroyPipelineLayout(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanPipelineLayout, nullptr);
 }
 
 /*
@@ -113,10 +113,10 @@ void VulkanPipeline::CreatePipelineVertexInputStateCreateInfo(VkPipelineVertexIn
 	pipelineVertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	pipelineVertexInputStateCreateInfo.pNext = nullptr;
 	pipelineVertexInputStateCreateInfo.flags = 0;
-	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = vulkanPipelineCreationParameters.vertexInputBindingDescriptionCount;
-	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = vulkanPipelineCreationParameters.vertexInputBindingDescriptions;
-	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = vulkanPipelineCreationParameters.vertexInputAttributeDescriptionCount;
-	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = vulkanPipelineCreationParameters.vertexInputAttributeDescriptions;
+	pipelineVertexInputStateCreateInfo.vertexBindingDescriptionCount = vulkanPipelineCreationParameters._VertexInputBindingDescriptionCount;
+	pipelineVertexInputStateCreateInfo.pVertexBindingDescriptions = vulkanPipelineCreationParameters._VertexInputBindingDescriptions;
+	pipelineVertexInputStateCreateInfo.vertexAttributeDescriptionCount = vulkanPipelineCreationParameters._VertexInputAttributeDescriptionCount;
+	pipelineVertexInputStateCreateInfo.pVertexAttributeDescriptions = vulkanPipelineCreationParameters._VertexInputAttributeDescriptions;
 }
 
 /*
@@ -127,7 +127,7 @@ void VulkanPipeline::CreatePipelineInputAssemblyStateCreateInfo(VkPipelineInputA
 	pipelineInputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	pipelineInputAssemblyStateCreateInfo.pNext = nullptr;
 	pipelineInputAssemblyStateCreateInfo.flags = 0;
-	pipelineInputAssemblyStateCreateInfo.topology = vulkanPipelineCreationParameters.topology;
+	pipelineInputAssemblyStateCreateInfo.topology = vulkanPipelineCreationParameters._Topology;
 	pipelineInputAssemblyStateCreateInfo.primitiveRestartEnable = VK_FALSE;
 }
 
@@ -149,13 +149,13 @@ void VulkanPipeline::CreatePipelineViewportStateCreateInfo(VkPipelineViewportSta
 {
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = static_cast<float>(vulkanPipelineCreationParameters.viewportExtent.width);
-	viewport.height = static_cast<float>(vulkanPipelineCreationParameters.viewportExtent.height);
+	viewport.width = static_cast<float>(vulkanPipelineCreationParameters._ViewportExtent.width);
+	viewport.height = static_cast<float>(vulkanPipelineCreationParameters._ViewportExtent.height);
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
 	scissors.offset = { 0, 0 };
-	scissors.extent = vulkanPipelineCreationParameters.viewportExtent;
+	scissors.extent = vulkanPipelineCreationParameters._ViewportExtent;
 
 	pipelineViewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 	pipelineViewportStateCreateInfo.pNext = nullptr;
@@ -177,7 +177,7 @@ void VulkanPipeline::CreatePipelineRasterizationStateCreateInfo(VkPipelineRaster
 	pipelineRasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;
-	pipelineRasterizationStateCreateInfo.cullMode = vulkanPipelineCreationParameters.cullMode;
+	pipelineRasterizationStateCreateInfo.cullMode = vulkanPipelineCreationParameters._CullMode;
 	pipelineRasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	pipelineRasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;
 	pipelineRasterizationStateCreateInfo.depthBiasConstantFactor = 0.0f;
@@ -210,9 +210,9 @@ void VulkanPipeline::CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthSt
 	pipelineDepthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 	pipelineDepthStencilStateCreateInfo.pNext = nullptr;
 	pipelineDepthStencilStateCreateInfo.flags = 0;
-	pipelineDepthStencilStateCreateInfo.depthTestEnable = vulkanPipelineCreationParameters.depthTestEnable;
-	pipelineDepthStencilStateCreateInfo.depthWriteEnable = vulkanPipelineCreationParameters.depthWriteEnable;
-	pipelineDepthStencilStateCreateInfo.depthCompareOp = vulkanPipelineCreationParameters.depthCompareOp;
+	pipelineDepthStencilStateCreateInfo.depthTestEnable = vulkanPipelineCreationParameters._DepthTestEnable;
+	pipelineDepthStencilStateCreateInfo.depthWriteEnable = vulkanPipelineCreationParameters._DepthWriteEnable;
+	pipelineDepthStencilStateCreateInfo.depthCompareOp = vulkanPipelineCreationParameters._DepthCompareOp;
 	pipelineDepthStencilStateCreateInfo.depthBoundsTestEnable = VK_FALSE;
 	pipelineDepthStencilStateCreateInfo.stencilTestEnable = VK_FALSE;
 	pipelineDepthStencilStateCreateInfo.front = { };
@@ -226,13 +226,13 @@ void VulkanPipeline::CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthSt
 */
 void VulkanPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
 {
-	pipelineColorBlendAttachmentStates.Reserve(vulkanPipelineCreationParameters.colorAttachmentCount);
+	pipelineColorBlendAttachmentStates.Reserve(vulkanPipelineCreationParameters._ColorAttachmentCount);
 
-	for (uint32 i = 0; i < vulkanPipelineCreationParameters.colorAttachmentCount; ++i)
+	for (uint32 i = 0; i < vulkanPipelineCreationParameters._ColorAttachmentCount; ++i)
 	{
 		VkPipelineColorBlendAttachmentState newPipelineColorBlendAttachmentState;
 
-		newPipelineColorBlendAttachmentState.blendEnable = vulkanPipelineCreationParameters.blendEnable ? VK_TRUE : VK_FALSE;
+		newPipelineColorBlendAttachmentState.blendEnable = vulkanPipelineCreationParameters._BlendEnable ? VK_TRUE : VK_FALSE;
 		newPipelineColorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
 		newPipelineColorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
 		newPipelineColorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
@@ -271,10 +271,10 @@ void VulkanPipeline::CreatePipelineLayoutCreateInfo(VkPipelineLayoutCreateInfo &
 	pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutCreateInfo.pNext = nullptr;
 	pipelineLayoutCreateInfo.flags = 0;
-	pipelineLayoutCreateInfo.setLayoutCount = vulkanPipelineCreationParameters.descriptorSetLayoutCount;
-	pipelineLayoutCreateInfo.pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout *RESTRICT>(vulkanPipelineCreationParameters.descriptorSetLayouts);
-	pipelineLayoutCreateInfo.pushConstantRangeCount = vulkanPipelineCreationParameters.pushConstantRangeCount;
-	pipelineLayoutCreateInfo.pPushConstantRanges = vulkanPipelineCreationParameters.pushConstantRanges;
+	pipelineLayoutCreateInfo.setLayoutCount = vulkanPipelineCreationParameters._DescriptorSetLayoutCount;
+	pipelineLayoutCreateInfo.pSetLayouts = reinterpret_cast<const VkDescriptorSetLayout *RESTRICT>(vulkanPipelineCreationParameters._DescriptorSetLayouts);
+	pipelineLayoutCreateInfo.pushConstantRangeCount = vulkanPipelineCreationParameters._PushConstantRangeCount;
+	pipelineLayoutCreateInfo.pPushConstantRanges = vulkanPipelineCreationParameters._PushConstantRanges;
 }
 
 /*
@@ -297,7 +297,7 @@ void VulkanPipeline::CreateGraphicsPipelineCreateInfo(VkGraphicsPipelineCreateIn
 	graphicsPipelineCreateInfo.pColorBlendState = &pipelineColorBlendStateCreateInfo;
 	graphicsPipelineCreateInfo.pDynamicState = nullptr;
 	graphicsPipelineCreateInfo.layout = pipelineLayout;
-	graphicsPipelineCreateInfo.renderPass = vulkanPipelineCreationParameters.renderPass->Get();
+	graphicsPipelineCreateInfo.renderPass = vulkanPipelineCreationParameters._RenderPass->Get();
 	graphicsPipelineCreateInfo.subpass = subpass;
 	graphicsPipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 	graphicsPipelineCreateInfo.basePipelineIndex = -1;

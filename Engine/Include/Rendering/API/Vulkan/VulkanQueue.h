@@ -21,7 +21,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan queue.
 	*/
-	const VkQueue& Get() const NOEXCEPT { return vulkanQueue; }
+	const VkQueue& Get() const NOEXCEPT { return _VulkanQueue; }
 
 	/*
 	*	Initializes this Vulkan queue.
@@ -46,12 +46,10 @@ public:
 private:
 
 	//The underlying Vulkan queue.
-	VkQueue vulkanQueue;
+	VkQueue _VulkanQueue;
 
 	//The lock for the queue.
-	mutable Spinlock lock;
-
-	mutable std::atomic<uint8> useCount{ 0 };
+	mutable Spinlock _Lock;
 
 	/*
 	*	Creates a submit info for a single command buffer.

@@ -37,7 +37,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan logical device.
 	*/
-	const VkDevice& Get() const NOEXCEPT { return vulkanLogicalDevice; }
+	const VkDevice& Get() const NOEXCEPT { return _VulkanLogicalDevice; }
 
 	/*
 	*	Initializes this Vulkan logical device.
@@ -52,23 +52,23 @@ public:
 	/*
 	*	Returns the queue family index of a queue type.
 	*/
-	uint32 GetQueueFamilyIndex(const QueueType queueType) const NOEXCEPT { return queueFamilyIndices[INDEX(queueType)]; }
+	uint32 GetQueueFamilyIndex(const QueueType queueType) const NOEXCEPT { return _QueueFamilyIndices[INDEX(queueType)]; }
 
 	/*
 	*	Returns the queue of a queue type.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetQueue(const QueueType queueType) NOEXCEPT { return queues[INDEX(queueType)]; }
+	RESTRICTED VulkanQueue *const RESTRICT GetQueue(const QueueType queueType) NOEXCEPT { return _Queues[INDEX(queueType)]; }
 
 private:
 
 	//The underlying Vulkan logical device.
-	VkDevice vulkanLogicalDevice;
+	VkDevice _VulkanLogicalDevice;
 
 	//The queue family indices.
-	StaticArray<uint32, INDEX(QueueType::NumberOfQueueTypes)> queueFamilyIndices;
+	StaticArray<uint32, INDEX(QueueType::NumberOfQueueTypes)> _QueueFamilyIndices;
 
 	//The queues.
-	StaticArray<VulkanQueue *RESTRICT, INDEX(QueueType::NumberOfQueueTypes)> queues;
+	StaticArray<VulkanQueue *RESTRICT, INDEX(QueueType::NumberOfQueueTypes)> _Queues;
 
 	/*
 	*	Creates the device queue create infos.

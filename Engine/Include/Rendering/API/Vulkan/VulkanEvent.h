@@ -14,7 +14,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan event.
 	*/
-	const VkEvent& Get() const NOEXCEPT { return vulkanEvent; }
+	const VkEvent& Get() const NOEXCEPT { return _VulkanEvent; }
 
 	/*
 	*	Initializes this Vulkan event.
@@ -39,7 +39,7 @@ public:
 private:
 
 	//The underlying Vulkan event.
-	VkEvent vulkanEvent;
+	VkEvent _VulkanEvent;
 
 	/*
 	*	Creates an event create info.

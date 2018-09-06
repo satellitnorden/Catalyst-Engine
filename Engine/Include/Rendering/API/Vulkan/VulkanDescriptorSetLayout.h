@@ -24,7 +24,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan descriptor set layout.
 	*/
-	const VkDescriptorSetLayout& Get() const NOEXCEPT { return vulkanDescriptorSetLayout; }
+	const VkDescriptorSetLayout& Get() const NOEXCEPT { return _VulkanDescriptorSetLayout; }
 
 	/*
 	*	Initializes this Vulkan descriptor set layout.
@@ -39,7 +39,7 @@ public:
 private:
 
 	//The underlying Vulkan descriptor set layout.
-	VkDescriptorSetLayout vulkanDescriptorSetLayout;
+	VkDescriptorSetLayout _VulkanDescriptorSetLayout;
 
 	/*
 	*	Creates a descriptor set layout create info.

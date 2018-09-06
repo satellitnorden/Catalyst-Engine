@@ -34,26 +34,26 @@ public:
 	/*
 	*	Returns the image view for this Vulkan depth buffer.
 	*/
-	const VkImageView& GetImageView() const NOEXCEPT { return vulkanImageView; }
+	const VkImageView& GetImageView() const NOEXCEPT { return _VulkanImageView; }
 
 	/*
 	*	Returns the format of this Vulkan depth buffer.
 	*/
-	const VkFormat& GetFormat() const NOEXCEPT { return format; }
+	const VkFormat& GetFormat() const NOEXCEPT { return _Format; }
 
 private:
 
 	//The Vulkan image.
-	VkImage vulkanImage;
+	VkImage _VulkanImage;
 
 	//The Vulkan device memory.
-	VkDeviceMemory vulkanDeviceMemory;
+	VkDeviceMemory _VulkanDeviceMemory;
 
 	//The Vulkan image view.
-	VkImageView vulkanImageView;
+	VkImageView _VulkanImageView;
 
 	//The format of this depth buffer.
-	VkFormat format;
+	VkFormat _Format;
 
 	/*
 	*	Finds and returns the most desirable format for the depth buffer.

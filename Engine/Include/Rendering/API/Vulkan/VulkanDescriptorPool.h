@@ -22,7 +22,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan descriptor pool.
 	*/
-	const VkDescriptorPool& Get() const NOEXCEPT { return vulkanDescriptorPool; }
+	const VkDescriptorPool& Get() const NOEXCEPT { return _VulkanDescriptorPool; }
 
 	/*
 	*	Initializes this Vulkan descriptor pool.
@@ -47,10 +47,10 @@ public:
 private:
 
 	//The underlying Vulkan descriptor pool.
-	VkDescriptorPool vulkanDescriptorPool;
+	VkDescriptorPool _VulkanDescriptorPool;
 
 	//The lock for the descriptor pool.
-	mutable Spinlock lock;
+	mutable Spinlock _Lock;
 
 	/*
 	*	Creates a descriptor pool size.

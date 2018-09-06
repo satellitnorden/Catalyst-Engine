@@ -35,7 +35,7 @@ void VulkanInstance::Initialize() NOEXCEPT
 	CreateInstanceCreateInfo(instanceCreateInfo, applicationInfo);
 
 	//Create the instance!
-	VULKAN_ERROR_CHECK(vkCreateInstance(&instanceCreateInfo, nullptr, &vulkanInstance));
+	VULKAN_ERROR_CHECK(vkCreateInstance(&instanceCreateInfo, nullptr, &_VulkanInstance));
 }
 
 /*
@@ -44,7 +44,7 @@ void VulkanInstance::Initialize() NOEXCEPT
 void VulkanInstance::Release() NOEXCEPT
 {
 	//Destroy the Vulkan instance.
-	vkDestroyInstance(vulkanInstance, nullptr);
+	vkDestroyInstance(_VulkanInstance, nullptr);
 }
 
 /*

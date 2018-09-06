@@ -21,7 +21,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan pipeline.
 	*/
-	const VkPipeline Get() const NOEXCEPT { return vulkanPipeline; }
+	const VkPipeline Get() const NOEXCEPT { return _VulkanPipeline; }
 
 	/*
 	*	Initializes this Vulkan pipeline.
@@ -36,15 +36,15 @@ public:
 	/*
 	*	Returns the Vulkan pipeline layout.
 	*/
-	const VkPipelineLayout& GetPipelineLayout() const NOEXCEPT { return vulkanPipelineLayout; }
+	const VkPipelineLayout& GetPipelineLayout() const NOEXCEPT { return _VulkanPipelineLayout; }
 
 private:
 
 	//The underlying Vulkan pipeline.
-	VkPipeline vulkanPipeline;
+	VkPipeline _VulkanPipeline;
 
 	//The underlying Vulkan pipeline layout.
-	VkPipelineLayout vulkanPipelineLayout;
+	VkPipelineLayout _VulkanPipelineLayout;
 
 	/*
 	*	Creates a vertex pipeline shader stage create info.

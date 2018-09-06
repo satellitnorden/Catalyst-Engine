@@ -22,7 +22,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan swap chain.
 	*/
-	const VkSwapchainKHR Get() const NOEXCEPT { return vulkanSwapChain; }
+	const VkSwapchainKHR Get() const NOEXCEPT { return _VulkanSwapChain; }
 
 	/*
 	*	Initializes this Vulkan swap chain.
@@ -37,32 +37,32 @@ public:
 	/*
 	*	Returns the number of swapchain images.
 	*/
-	uint32 GetNumberOfSwapChainImages() const NOEXCEPT { return numberOfSwapChainImages; }
+	uint32 GetNumberOfSwapChainImages() const NOEXCEPT { return _NumberOfSwapChainImages; }
 
 	/*
 	*	Returns the swap chain images.
 	*/
-	const DynamicArray<VkImage>& GetSwapChainImages() const NOEXCEPT { return swapChainImages; }
+	const DynamicArray<VkImage>& GetSwapChainImages() const NOEXCEPT { return _SwapChainImages; }
 
 	/*
 	*	Returns the swap chain image views.
 	*/
-	const DynamicArray<VkImageView>& GetSwapChainImageViews() const NOEXCEPT { return swapChainImageViews; }
+	const DynamicArray<VkImageView>& GetSwapChainImageViews() const NOEXCEPT { return _SwapChainImageViews; }
 
 	/*
 	*	Returns the Vulkan depth buffer.
 	*/
-	const VulkanDepthBuffer& GetDepthBuffer() const NOEXCEPT { return vulkanDepthBuffer; }
+	const VulkanDepthBuffer& GetDepthBuffer() const NOEXCEPT { return _VulkanDepthBuffer; }
 
 	/*
 	*	Returns the swap extent.
 	*/
-	VkExtent2D GetSwapExtent() const NOEXCEPT { return swapExtent; }
+	VkExtent2D GetSwapExtent() const NOEXCEPT { return _SwapExtent; }
 
 	/*
 	*	Returns the current image index.
 	*/
-	uint32 GetCurrentImageIndex() const NOEXCEPT { return currentImageIndex; }
+	uint32 GetCurrentImageIndex() const NOEXCEPT { return _CurrentImageIndex; }
 
 	/*
 	*	Updates the next image index in the swap chain.
@@ -77,25 +77,25 @@ public:
 private:
 
 	//The underlying Vulkan swap chain.
-	VkSwapchainKHR vulkanSwapChain;
+	VkSwapchainKHR _VulkanSwapChain;
 
 	//The number of swap chain images.
-	uint32 numberOfSwapChainImages;
+	uint32 _NumberOfSwapChainImages;
 
 	//The swap chain images.
-	DynamicArray<VkImage> swapChainImages;
+	DynamicArray<VkImage> _SwapChainImages;
 
 	//The swap chain image views.
-	DynamicArray<VkImageView> swapChainImageViews;
+	DynamicArray<VkImageView> _SwapChainImageViews;
 
 	//The Vulkan depth buffer.
-	VulkanDepthBuffer vulkanDepthBuffer;
+	VulkanDepthBuffer _VulkanDepthBuffer;
 
 	//The extent of the swap chain.
-	VkExtent2D swapExtent;
+	VkExtent2D _SwapExtent;
 
 	//The current image index.
-	uint32 currentImageIndex;
+	uint32 _CurrentImageIndex;
 
 	/*
 	*	Finds the most optimal swap extent.

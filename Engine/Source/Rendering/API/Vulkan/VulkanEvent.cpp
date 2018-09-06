@@ -14,7 +14,7 @@ void VulkanEvent::Initialize() NOEXCEPT
 	CreateEventCreateInfo(eventCreateInfo);
 
 	//Create the event!
-	VULKAN_ERROR_CHECK(vkCreateEvent(VulkanInterface::Instance->GetLogicalDevice().Get(), &eventCreateInfo, nullptr, &vulkanEvent));
+	VULKAN_ERROR_CHECK(vkCreateEvent(VulkanInterface::Instance->GetLogicalDevice().Get(), &eventCreateInfo, nullptr, &_VulkanEvent));
 }
 
 /*
@@ -23,7 +23,7 @@ void VulkanEvent::Initialize() NOEXCEPT
 void VulkanEvent::Release() NOEXCEPT
 {
 	//Destroy the event!
-	vkDestroyEvent(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanEvent, nullptr);
+	vkDestroyEvent(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanEvent, nullptr);
 }
 
 /*
@@ -32,7 +32,7 @@ void VulkanEvent::Release() NOEXCEPT
 void VulkanEvent::Reset() NOEXCEPT
 {
 	//Reset the event!
-	VULKAN_ERROR_CHECK(vkResetEvent(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanEvent));
+	VULKAN_ERROR_CHECK(vkResetEvent(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanEvent));
 }
 
 /*
@@ -41,7 +41,7 @@ void VulkanEvent::Reset() NOEXCEPT
 void VulkanEvent::Set() NOEXCEPT
 {
 	//Set the event!
-	VULKAN_ERROR_CHECK(vkSetEvent(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanEvent));
+	VULKAN_ERROR_CHECK(vkSetEvent(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanEvent));
 }
 
 /*

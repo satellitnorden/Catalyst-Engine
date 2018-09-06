@@ -22,7 +22,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan command buffer.
 	*/
-	const VkCommandBuffer& Get() const NOEXCEPT { return vulkanCommandBuffer; }
+	const VkCommandBuffer& Get() const NOEXCEPT { return _VulkanCommandBuffer; }
 
 	/*
 	*	Initializes this Vulkan command buffer.
@@ -137,7 +137,7 @@ public:
 private:
 
 	//The underlying Vulkan command buffer.
-	VkCommandBuffer vulkanCommandBuffer;
+	VkCommandBuffer _VulkanCommandBuffer;
 
 	/*
 	*	Creates a command buffer allocate info.

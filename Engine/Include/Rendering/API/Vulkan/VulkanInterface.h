@@ -70,52 +70,52 @@ public:
 	/*
 	*	Returns the instance.
 	*/
-	const VulkanInstance& GetInstance() const NOEXCEPT { return vulkanInstance; }
+	const VulkanInstance& GetInstance() const NOEXCEPT { return _VulkanInstance; }
 
 	/*
 	*	Returns the surface.
 	*/
-	const VulkanSurface& GetSurface() const NOEXCEPT { return vulkanSurface; }
+	const VulkanSurface& GetSurface() const NOEXCEPT { return _VulkanSurface; }
 
 	/*
 	*	Returns the physical device.
 	*/
-	const VulkanPhysicalDevice& GetPhysicalDevice() const NOEXCEPT { return vulkanPhysicalDevice; }
+	const VulkanPhysicalDevice& GetPhysicalDevice() const NOEXCEPT { return _VulkanPhysicalDevice; }
 
 	/*
 	*	Returns the logical device.
 	*/
-	const VulkanLogicalDevice& GetLogicalDevice() const NOEXCEPT { return vulkanLogicalDevice; }
+	const VulkanLogicalDevice& GetLogicalDevice() const NOEXCEPT { return _VulkanLogicalDevice; }
 
 	/*
 	*	Returns the swapchain.
 	*/
-	const VulkanSwapchain& GetSwapchain() const NOEXCEPT { return vulkanSwapchain; }
+	const VulkanSwapchain& GetSwapchain() const NOEXCEPT { return _VulkanSwapchain; }
 
 	/*
 	*	Returns the compute queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetQueue() NOEXCEPT { return vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Compute); }
+	RESTRICTED VulkanQueue *const RESTRICT GetQueue() NOEXCEPT { return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Compute); }
 
 	/*
 	*	Returns the graphics queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT { return vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Graphics); }
+	RESTRICTED VulkanQueue *const RESTRICT GetGraphicsQueue() NOEXCEPT { return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Graphics); }
 
 	/*
 	*	Returns the present queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT { return vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Present); }
+	RESTRICTED VulkanQueue *const RESTRICT GetPresentQueue() NOEXCEPT { return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Present); }
 
 	/*
 	*	Returns the transfer queue.
 	*/
-	RESTRICTED VulkanQueue *const RESTRICT GetTransferQueue() NOEXCEPT { return vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Transfer); }
+	RESTRICTED VulkanQueue *const RESTRICT GetTransferQueue() NOEXCEPT { return _VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Transfer); }
 
 	/*
 	*	Returns the descriptor pool.
 	*/
-	const VulkanDescriptorPool& GetDescriptorPool() const NOEXCEPT { return vulkanDescriptorPool; }
+	const VulkanDescriptorPool& GetDescriptorPool() const NOEXCEPT { return _VulkanDescriptorPool; }
 
 	/*
 	*	Creates and returns a 2D texture.
@@ -220,76 +220,76 @@ public:
 private:
 
 	//The Vulkan instance.
-	VulkanInstance vulkanInstance;
+	VulkanInstance _VulkanInstance;
 
 	//The Vulkan surface.
-	VulkanSurface vulkanSurface;
+	VulkanSurface _VulkanSurface;
 
 	//The Vulkan physical device.
-	VulkanPhysicalDevice vulkanPhysicalDevice;
+	VulkanPhysicalDevice _VulkanPhysicalDevice;
 
 	//The Vulkan logical device.
-	VulkanLogicalDevice vulkanLogicalDevice;
+	VulkanLogicalDevice _VulkanLogicalDevice;
 
 	//The Vulkan swap chain.
-	VulkanSwapchain vulkanSwapchain;
+	VulkanSwapchain _VulkanSwapchain;
 
 	//The Vulkan descriptor pool.
-	VulkanDescriptorPool vulkanDescriptorPool;
+	VulkanDescriptorPool _VulkanDescriptorPool;
 
 	//Container for all Vulkan 2D textures.
-	DynamicArray<Vulkan2DTexture *RESTRICT> vulkan2DTextures;
+	DynamicArray<Vulkan2DTexture *RESTRICT> _Vulkan2DTextures;
 
 	//The lock for all Vulkan command pools.
-	Spinlock vulkanCommandPoolsLock;
+	Spinlock _VulkanCommandPoolsLock;
 
 	//Container for all Vulkan command pools.
-	DynamicArray<VulkanCommandPool *RESTRICT> vulkanCommandPools;
+	DynamicArray<VulkanCommandPool *RESTRICT> _VulkanCommandPools;
 
 	//Container for all Vulkan constant buffers.
-	DynamicArray<VulkanConstantBuffer *RESTRICT> vulkanConstantBuffers;
+	DynamicArray<VulkanConstantBuffer *RESTRICT> _VulkanConstantBuffers;
 
 	//Container for all Vulkan cube map textures.
-	DynamicArray<VulkanCubeMapTexture *RESTRICT> vulkanCubeMapTextures;
+	DynamicArray<VulkanCubeMapTexture *RESTRICT> _VulkanCubeMapTextures;
 
 	//Container for all Vulkan depth buffers.
-	DynamicArray<VulkanDepthBuffer *RESTRICT> vulkanDepthBuffers;
+	DynamicArray<VulkanDepthBuffer *RESTRICT> _VulkanDepthBuffers;
 
 	//Container for all Vulkan descriptor set layouts.
-	DynamicArray<VulkanDescriptorSetLayout *RESTRICT> vulkanDescriptorSetLayouts;
+	DynamicArray<VulkanDescriptorSetLayout *RESTRICT> _VulkanDescriptorSetLayouts;
 
 	//Container for all Vulkan descriptor sets.
-	DynamicArray<VulkanDescriptorSet *RESTRICT> vulkanDescriptorSets;
+	DynamicArray<VulkanDescriptorSet *RESTRICT> _VulkanDescriptorSets;
 
 	//Container for all Vulkan events.
-	DynamicArray<VulkanEvent *RESTRICT> vulkanEvents;
+	DynamicArray<VulkanEvent *RESTRICT> _VulkanEvents;
 
 	//Container for all Vulkan fences.
-	DynamicArray<VulkanFence *RESTRICT> vulkanFences;
+	DynamicArray<VulkanFence *RESTRICT> _VulkanFences;
 
 	//Container for all Vulkan framebuffers.
-	DynamicArray<VulkanFramebuffer *RESTRICT> vulkanFramebuffers;
+	DynamicArray<VulkanFramebuffer *RESTRICT> _VulkanFramebuffers;
 
 	//Container for all Vulkan pipelines.
-	DynamicArray<VulkanPipeline *RESTRICT> vulkanPipelines;
+	DynamicArray<VulkanPipeline *RESTRICT> _VulkanPipelines;
 
 	//Container for all Vulkan render passes.
-	DynamicArray<VulkanRenderPass *RESTRICT> vulkanRenderPasses;
+	DynamicArray<VulkanRenderPass *RESTRICT> _VulkanRenderPasses;
 
 	//Container for all Vulkan render targets.
-	DynamicArray<VulkanRenderTarget *RESTRICT> vulkanRenderTargets;
+	DynamicArray<VulkanRenderTarget *RESTRICT> _VulkanRenderTargets;
 
 	//Container for all Vulkan semaphores.
-	DynamicArray<VulkanSemaphore *RESTRICT> vulkanSemaphores;
+	DynamicArray<VulkanSemaphore *RESTRICT> _VulkanSemaphores;
 
 	//Container for all Vulkan shader modules.
-	DynamicArray<VulkanShaderModule *RESTRICT> vulkanShaderModules;
+	DynamicArray<VulkanShaderModule *RESTRICT> _VulkanShaderModules;
 
 	//Container for all Vulkan storage buffers.
-	DynamicArray<VulkanStorageBuffer *RESTRICT> vulkanStorageBuffers;
+	DynamicArray<VulkanStorageBuffer *RESTRICT> _VulkanStorageBuffers;
 
 	//Container for all Vulkan uniform buffers.
-	DynamicArray<VulkanUniformBuffer *RESTRICT> vulkanUniformBuffers;
+	DynamicArray<VulkanUniformBuffer *RESTRICT> _VulkanUniformBuffers;
 
 	/*
 	*	Returns a new command pool.

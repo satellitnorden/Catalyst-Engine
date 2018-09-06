@@ -22,7 +22,7 @@ void VulkanRenderPass::Initialize(const VulkanRenderPassCreationParameters &para
 	CreateRenderPassCreateInfo(renderPassCreateInfo, parameters);
 
 	//Create the render pass!
-	VULKAN_ERROR_CHECK(vkCreateRenderPass(VulkanInterface::Instance->GetLogicalDevice().Get(), &renderPassCreateInfo, nullptr, &vulkanRenderPass));
+	VULKAN_ERROR_CHECK(vkCreateRenderPass(VulkanInterface::Instance->GetLogicalDevice().Get(), &renderPassCreateInfo, nullptr, &_VulkanRenderPass));
 }
 
 /*
@@ -31,7 +31,7 @@ void VulkanRenderPass::Initialize(const VulkanRenderPassCreationParameters &para
 void VulkanRenderPass::Release() NOEXCEPT
 {
 	//Destroy the Vulkan render pass.
-	vkDestroyRenderPass(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanRenderPass, nullptr);
+	vkDestroyRenderPass(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanRenderPass, nullptr);
 }
 
 /*
@@ -42,10 +42,10 @@ void VulkanRenderPass::CreateRenderPassCreateInfo(VkRenderPassCreateInfo &render
 	renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassCreateInfo.pNext = nullptr;
 	renderPassCreateInfo.flags = 0;
-	renderPassCreateInfo.attachmentCount = parameters.attachmentCount;
-	renderPassCreateInfo.pAttachments = parameters.attachmentDescriptions;
-	renderPassCreateInfo.subpassCount = parameters.subpassDescriptionCount;
-	renderPassCreateInfo.pSubpasses = parameters.subpassDescriptions;
-	renderPassCreateInfo.dependencyCount = parameters.subpassDependencyCount;
-	renderPassCreateInfo.pDependencies = parameters.subpassDependencies;
+	renderPassCreateInfo.attachmentCount = parameters._AttachmentCount;
+	renderPassCreateInfo.pAttachments = parameters._AttachmentDescriptions;
+	renderPassCreateInfo.subpassCount = parameters._SubpassDescriptionCount;
+	renderPassCreateInfo.pSubpasses = parameters._SubpassDescriptions;
+	renderPassCreateInfo.dependencyCount = parameters._SubpassDependencyCount;
+	renderPassCreateInfo.pDependencies = parameters._SubpassDependencies;
 }

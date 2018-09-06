@@ -48,7 +48,7 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 	CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, requiredExtensions, &physicalDeviceFeatures);
 
 	//Create the logical device!
-	VULKAN_ERROR_CHECK(vkCreateDevice(VulkanInterface::Instance->GetPhysicalDevice().Get(), &deviceCreateInfo, nullptr, &vulkanLogicalDevice));
+	VULKAN_ERROR_CHECK(vkCreateDevice(VulkanInterface::Instance->GetPhysicalDevice().Get(), &deviceCreateInfo, nullptr, &_VulkanLogicalDevice));
 
 	//Retrieve the queues.
 	RetrieveQueues();
@@ -63,7 +63,7 @@ void VulkanLogicalDevice::Release() NOEXCEPT
 	ReleaseQueues();
 
 	//Destroy the Vulkan logical device.
-	vkDestroyDevice(vulkanLogicalDevice, nullptr);
+	vkDestroyDevice(_VulkanLogicalDevice, nullptr);
 }
 
 /*
@@ -180,7 +180,7 @@ void VulkanLogicalDevice::CreateDeviceCreateInfo(VkDeviceCreateInfo &deviceCreat
 void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 {
 	//Reset all queue family indices.
-	for (uint32 &queueFamilyIndex : queueFamilyIndices)
+	for (uint32 &queueFamilyIndex : _QueueFamilyIndices)
 	{
 		queueFamilyIndex = UINT32_MAXIMUM;
 	}
@@ -208,10 +208,10 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 		VkBool32 hasPresentSupport{ false };
 		VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &hasPresentSupport));
 
-		if (hasPresentSupport && queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && queueFamilyIndices[INDEX(QueueType::Graphics)] == UINT32_MAXIMUM)
+		if (hasPresentSupport && queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && _QueueFamilyIndices[INDEX(QueueType::Graphics)] == UINT32_MAXIMUM)
 		{
-			queueFamilyIndices[INDEX(QueueType::Graphics)] = queueFamilyCounter++;
-			queueFamilyIndices[INDEX(QueueType::Present)] = queueFamilyIndices[INDEX(QueueType::Graphics)];
+			_QueueFamilyIndices[INDEX(QueueType::Graphics)] = queueFamilyCounter++;
+			_QueueFamilyIndices[INDEX(QueueType::Present)] = _QueueFamilyIndices[INDEX(QueueType::Graphics)];
 
 			continue;
 		}
@@ -219,12 +219,12 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 		//We want a lone transfer queue.
 		if (	queueFamilyProperty.queueCount > 0 &&
 				queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT &&
-				queueFamilyIndices[INDEX(QueueType::Transfer)] == UINT32_MAXIMUM &&
+				_QueueFamilyIndices[INDEX(QueueType::Transfer)] == UINT32_MAXIMUM &&
 				!hasPresentSupport &&
 				!(queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT) &&
 				!(queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT))
 		{
-			queueFamilyIndices[INDEX(QueueType::Transfer)] = queueFamilyCounter++;
+			_QueueFamilyIndices[INDEX(QueueType::Transfer)] = queueFamilyCounter++;
 
 			continue;
 		}
@@ -234,16 +234,16 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 
 	for (int64 i = queueFamilyProperties.LastIndex(); i >= 0; --i)
 	{
-		if (queueFamilyProperties[i].queueCount > 0 && queueFamilyProperties[i].queueFlags & VK_QUEUE_COMPUTE_BIT && queueFamilyIndices[INDEX(QueueType::Compute)] == UINT32_MAXIMUM)
+		if (queueFamilyProperties[i].queueCount > 0 && queueFamilyProperties[i].queueFlags & VK_QUEUE_COMPUTE_BIT && _QueueFamilyIndices[INDEX(QueueType::Compute)] == UINT32_MAXIMUM)
 		{
-			queueFamilyIndices[INDEX(QueueType::Compute)] = static_cast<uint32>(i);
+			_QueueFamilyIndices[INDEX(QueueType::Compute)] = static_cast<uint32>(i);
 
 			continue;
 		}
 
-		if (queueFamilyProperties[i].queueCount > 0 && queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT && queueFamilyIndices[INDEX(QueueType::Graphics)] == UINT32_MAXIMUM)
+		if (queueFamilyProperties[i].queueCount > 0 && queueFamilyProperties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT && _QueueFamilyIndices[INDEX(QueueType::Graphics)] == UINT32_MAXIMUM)
 		{
-			queueFamilyIndices[INDEX(QueueType::Graphics)] = static_cast<uint32>(i);
+			_QueueFamilyIndices[INDEX(QueueType::Graphics)] = static_cast<uint32>(i);
 
 			continue;
 		}
@@ -251,52 +251,52 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 		VkBool32 hasPresentSupport{ false };
 		VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), static_cast<uint32>(i), VulkanInterface::Instance->GetSurface().Get(), &hasPresentSupport));
 
-		if (queueFamilyProperties[i].queueCount > 0 && hasPresentSupport && queueFamilyIndices[INDEX(QueueType::Present)] == UINT32_MAXIMUM)
+		if (queueFamilyProperties[i].queueCount > 0 && hasPresentSupport && _QueueFamilyIndices[INDEX(QueueType::Present)] == UINT32_MAXIMUM)
 		{
-			queueFamilyIndices[INDEX(QueueType::Present)] = static_cast<uint32>(i);
+			_QueueFamilyIndices[INDEX(QueueType::Present)] = static_cast<uint32>(i);
 
 			continue;
 		}
 
-		if (queueFamilyProperties[i].queueCount > 0 && queueFamilyProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT && queueFamilyIndices[INDEX(QueueType::Transfer)] == UINT32_MAXIMUM)
+		if (queueFamilyProperties[i].queueCount > 0 && queueFamilyProperties[i].queueFlags & VK_QUEUE_TRANSFER_BIT && _QueueFamilyIndices[INDEX(QueueType::Transfer)] == UINT32_MAXIMUM)
 		{
-			queueFamilyIndices[INDEX(QueueType::Transfer)] = static_cast<uint32>(i);
+			_QueueFamilyIndices[INDEX(QueueType::Transfer)] = static_cast<uint32>(i);
 
 			continue;
 		}
 	}
 
-	if (	queueFamilyIndices[INDEX(QueueType::Compute)] == UINT32_MAXIMUM ||
-			queueFamilyIndices[INDEX(QueueType::Graphics)] == UINT32_MAXIMUM ||
-			queueFamilyIndices[INDEX(QueueType::Present)] == UINT32_MAXIMUM ||
-			queueFamilyIndices[INDEX(QueueType::Transfer)] == UINT32_MAXIMUM)
+	if (	_QueueFamilyIndices[INDEX(QueueType::Compute)] == UINT32_MAXIMUM ||
+			_QueueFamilyIndices[INDEX(QueueType::Graphics)] == UINT32_MAXIMUM ||
+			_QueueFamilyIndices[INDEX(QueueType::Present)] == UINT32_MAXIMUM ||
+			_QueueFamilyIndices[INDEX(QueueType::Transfer)] == UINT32_MAXIMUM)
 	{
 		queueFamilyCounter = 0;
 
 		for (auto &queueFamilyProperty : queueFamilyProperties)
 		{
-			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT && queueFamilyIndices[INDEX(QueueType::Compute)] == UINT32_MAXIMUM)
+			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT && _QueueFamilyIndices[INDEX(QueueType::Compute)] == UINT32_MAXIMUM)
 			{
-				queueFamilyIndices[INDEX(QueueType::Compute)] = queueFamilyCounter;
+				_QueueFamilyIndices[INDEX(QueueType::Compute)] = queueFamilyCounter;
 			}
 
-			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && queueFamilyIndices[INDEX(QueueType::Graphics)] == UINT32_MAXIMUM)
+			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT && _QueueFamilyIndices[INDEX(QueueType::Graphics)] == UINT32_MAXIMUM)
 			{
-				queueFamilyIndices[INDEX(QueueType::Graphics)] = queueFamilyCounter;
+				_QueueFamilyIndices[INDEX(QueueType::Graphics)] = queueFamilyCounter;
 			}
 
 			VkBool32 presentSupport = false;
 
 			VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceSupportKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), queueFamilyCounter, VulkanInterface::Instance->GetSurface().Get(), &presentSupport));
 
-			if (queueFamilyProperty.queueCount > 0 && presentSupport && queueFamilyIndices[INDEX(QueueType::Present)] == UINT32_MAXIMUM)
+			if (queueFamilyProperty.queueCount > 0 && presentSupport && _QueueFamilyIndices[INDEX(QueueType::Present)] == UINT32_MAXIMUM)
 			{
-				queueFamilyIndices[INDEX(QueueType::Present)] = queueFamilyCounter;
+				_QueueFamilyIndices[INDEX(QueueType::Present)] = queueFamilyCounter;
 			}
 
-			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT && queueFamilyIndices[INDEX(QueueType::Transfer)] == UINT32_MAXIMUM)
+			if (queueFamilyProperty.queueCount > 0 && queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT && _QueueFamilyIndices[INDEX(QueueType::Transfer)] == UINT32_MAXIMUM)
 			{
-				queueFamilyIndices[INDEX(QueueType::Transfer)] = queueFamilyCounter;
+				_QueueFamilyIndices[INDEX(QueueType::Transfer)] = queueFamilyCounter;
 			}
 
 			++queueFamilyCounter;
@@ -310,64 +310,64 @@ void VulkanLogicalDevice::FindQueueFamilyIndices() NOEXCEPT
 void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 {
 	//Store the queue family indices.
-	const uint32 computeQueueFamilyIndex{ queueFamilyIndices[INDEX(QueueType::Compute)] };
-	const uint32 graphicsQueueFamilyIndex{ queueFamilyIndices[INDEX(QueueType::Graphics)] };
-	const uint32 presentQueueFamilyIndex{ queueFamilyIndices[INDEX(QueueType::Present)] };
-	const uint32 transferQueueFamilyIndex{ queueFamilyIndices[INDEX(QueueType::Transfer)] };
+	const uint32 computeQueueFamilyIndex{ _QueueFamilyIndices[INDEX(QueueType::Compute)] };
+	const uint32 graphicsQueueFamilyIndex{ _QueueFamilyIndices[INDEX(QueueType::Graphics)] };
+	const uint32 presentQueueFamilyIndex{ _QueueFamilyIndices[INDEX(QueueType::Present)] };
+	const uint32 transferQueueFamilyIndex{ _QueueFamilyIndices[INDEX(QueueType::Transfer)] };
 
 	//Retrieve the compute queue.
-	queues[INDEX(QueueType::Compute)] = new VulkanQueue();
-	queues[INDEX(QueueType::Compute)]->Initialize(computeQueueFamilyIndex);
+	_Queues[INDEX(QueueType::Compute)] = new VulkanQueue();
+	_Queues[INDEX(QueueType::Compute)]->Initialize(computeQueueFamilyIndex);
 
 	//Retrieve the graphics queue.
 	if (graphicsQueueFamilyIndex == computeQueueFamilyIndex)
 	{
-		queues[INDEX(QueueType::Graphics)] = queues[INDEX(QueueType::Compute)];
+		_Queues[INDEX(QueueType::Graphics)] = _Queues[INDEX(QueueType::Compute)];
 	}
 
 	else
 	{
-		queues[INDEX(QueueType::Graphics)] = new VulkanQueue();
-		queues[INDEX(QueueType::Graphics)]->Initialize(graphicsQueueFamilyIndex);
+		_Queues[INDEX(QueueType::Graphics)] = new VulkanQueue();
+		_Queues[INDEX(QueueType::Graphics)]->Initialize(graphicsQueueFamilyIndex);
 	}
 
 	//Retrieve the present queue.
 	if (presentQueueFamilyIndex == computeQueueFamilyIndex)
 	{
-		queues[INDEX(QueueType::Present)] = queues[INDEX(QueueType::Compute)];
+		_Queues[INDEX(QueueType::Present)] = _Queues[INDEX(QueueType::Compute)];
 	}
 
 	else if (presentQueueFamilyIndex == graphicsQueueFamilyIndex)
 	{
-		queues[INDEX(QueueType::Present)] = queues[INDEX(QueueType::Graphics)];
+		_Queues[INDEX(QueueType::Present)] = _Queues[INDEX(QueueType::Graphics)];
 	}
 
 	else
 	{
-		queues[INDEX(QueueType::Present)] = new VulkanQueue();
-		queues[INDEX(QueueType::Present)]->Initialize(presentQueueFamilyIndex);
+		_Queues[INDEX(QueueType::Present)] = new VulkanQueue();
+		_Queues[INDEX(QueueType::Present)]->Initialize(presentQueueFamilyIndex);
 	}
 
 	//Retrieve the transfer queue.
 	if (transferQueueFamilyIndex == computeQueueFamilyIndex)
 	{
-		queues[INDEX(QueueType::Transfer)] = queues[INDEX(QueueType::Compute)];
+		_Queues[INDEX(QueueType::Transfer)] = _Queues[INDEX(QueueType::Compute)];
 	}
 
 	else if (transferQueueFamilyIndex == graphicsQueueFamilyIndex)
 	{
-		queues[INDEX(QueueType::Transfer)] = queues[INDEX(QueueType::Graphics)];
+		_Queues[INDEX(QueueType::Transfer)] = _Queues[INDEX(QueueType::Graphics)];
 	}
 
 	else if (transferQueueFamilyIndex == presentQueueFamilyIndex)
 	{
-		queues[INDEX(QueueType::Transfer)] = queues[INDEX(QueueType::Present)];
+		_Queues[INDEX(QueueType::Transfer)] = _Queues[INDEX(QueueType::Present)];
 	}
 
 	else
 	{
-		queues[INDEX(QueueType::Transfer)] = new VulkanQueue();
-		queues[INDEX(QueueType::Transfer)]->Initialize(transferQueueFamilyIndex);
+		_Queues[INDEX(QueueType::Transfer)] = new VulkanQueue();
+		_Queues[INDEX(QueueType::Transfer)]->Initialize(transferQueueFamilyIndex);
 	}
 }
 
@@ -377,25 +377,25 @@ void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 void VulkanLogicalDevice::ReleaseQueues() NOEXCEPT
 {
 	//Store the queue family indices.
-	const uint32 computeQueueFamilyIndex{ queueFamilyIndices[INDEX(QueueType::Compute)] };
-	const uint32 graphicsQueueFamilyIndex{ queueFamilyIndices[INDEX(QueueType::Graphics)] };
-	const uint32 presentQueueFamilyIndex{ queueFamilyIndices[INDEX(QueueType::Present)] };
-	const uint32 transferQueueFamilyIndex{ queueFamilyIndices[INDEX(QueueType::Transfer)] };
+	const uint32 computeQueueFamilyIndex{ _QueueFamilyIndices[INDEX(QueueType::Compute)] };
+	const uint32 graphicsQueueFamilyIndex{ _QueueFamilyIndices[INDEX(QueueType::Graphics)] };
+	const uint32 presentQueueFamilyIndex{ _QueueFamilyIndices[INDEX(QueueType::Present)] };
+	const uint32 transferQueueFamilyIndex{ _QueueFamilyIndices[INDEX(QueueType::Transfer)] };
 
 	//Destroy the compute queue.
-	delete queues[INDEX(QueueType::Compute)];
+	delete _Queues[INDEX(QueueType::Compute)];
 
 	//Destroy the graphics queue.
 	if (graphicsQueueFamilyIndex != computeQueueFamilyIndex)
 	{
-		delete queues[INDEX(QueueType::Graphics)];
+		delete _Queues[INDEX(QueueType::Graphics)];
 	}
 
 	//Destroy the present queue.
 	if (	presentQueueFamilyIndex != computeQueueFamilyIndex &&
 			presentQueueFamilyIndex != graphicsQueueFamilyIndex)
 	{
-		delete queues[INDEX(QueueType::Present)];
+		delete _Queues[INDEX(QueueType::Present)];
 	}
 
 	//Destroy the transfer queue.
@@ -403,6 +403,6 @@ void VulkanLogicalDevice::ReleaseQueues() NOEXCEPT
 			transferQueueFamilyIndex != graphicsQueueFamilyIndex &&
 			transferQueueFamilyIndex != presentQueueFamilyIndex)
 	{
-		delete queues[INDEX(QueueType::Transfer)];
+		delete _Queues[INDEX(QueueType::Transfer)];
 	}
 }

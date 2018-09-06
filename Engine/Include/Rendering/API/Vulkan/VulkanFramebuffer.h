@@ -15,7 +15,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan framebuffer.
 	*/
-	const VkFramebuffer& Get() const NOEXCEPT { return vulkanFramebuffer; }
+	const VkFramebuffer& Get() const NOEXCEPT { return _VulkanFramebuffer; }
 
 	/*
 	*	Initializes this Vulkan framebuffer.
@@ -30,7 +30,7 @@ public:
 private:
 
 	//The underlying Vulkan framebuffer.
-	VkFramebuffer vulkanFramebuffer;
+	VkFramebuffer _VulkanFramebuffer;
 
 	/*
 	*	Creates a framebuffer create info.

@@ -13,7 +13,7 @@
 void VulkanQueue::Initialize(const uint32 queueFamilyIndex) NOEXCEPT
 {
 	//Get the Vulkan queue.
-	vkGetDeviceQueue(VulkanInterface::Instance->GetLogicalDevice().Get(), queueFamilyIndex, 0, &vulkanQueue);
+	vkGetDeviceQueue(VulkanInterface::Instance->GetLogicalDevice().Get(), queueFamilyIndex, 0, &_VulkanQueue);
 }
 
 /*
@@ -26,10 +26,10 @@ void VulkanQueue::Submit(const VulkanCommandBuffer &vulkanCommandBuffer, const u
 	CreateSubmitInfo(submitInfo, waitSemaphoreCount, waitSemaphores, waitStages, vulkanCommandBuffer, signalSemaphoreCount, signalSemaphores);
 
 	//Lock the queue.
-	ScopedLock<Spinlock> scopedLock{ lock };
+	ScopedLock<Spinlock> scopedLock{ _Lock };
 
 	//Submit the command buffer!
-	VULKAN_ERROR_CHECK(vkQueueSubmit(vulkanQueue, 1, &submitInfo, fence));
+	VULKAN_ERROR_CHECK(vkQueueSubmit(_VulkanQueue, 1, &submitInfo, fence));
 }
 
 /*
@@ -42,10 +42,10 @@ void VulkanQueue::Present(const VulkanSemaphore *const RESTRICT renderFinishedSe
 	CreatePresentInfo(presentInfo, renderFinishedSemaphore, swapchain, imageIndex);
 
 	//Lock the queue.
-	ScopedLock<Spinlock> scopedLock{ lock };
+	ScopedLock<Spinlock> scopedLock{ _Lock };
 
 	//Present!
-	VULKAN_ERROR_CHECK(vkQueuePresentKHR(vulkanQueue, &presentInfo));
+	VULKAN_ERROR_CHECK(vkQueuePresentKHR(_VulkanQueue, &presentInfo));
 }
 
 /*
@@ -54,7 +54,7 @@ void VulkanQueue::Present(const VulkanSemaphore *const RESTRICT renderFinishedSe
 void VulkanQueue::WaitIdle() const NOEXCEPT
 {
 	//Wait idle for this Vulkan queue.
-	VULKAN_ERROR_CHECK(vkQueueWaitIdle(vulkanQueue));
+	VULKAN_ERROR_CHECK(vkQueueWaitIdle(_VulkanQueue));
 }
 
 /*

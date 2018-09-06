@@ -17,22 +17,22 @@ void VulkanInterface::Initialize() NOEXCEPT
 	PlatformVulkan::LoadVulkan();
 
 	//Initialize the Vulkan instance.
-	vulkanInstance.Initialize();
+	_VulkanInstance.Initialize();
 
 	//Initialize the Vulkan surface.
-	vulkanSurface.Initialize();
+	_VulkanSurface.Initialize();
 
 	//Initialize the Vulkan physical device.
-	vulkanPhysicalDevice.Initialize();
+	_VulkanPhysicalDevice.Initialize();
 
 	//Initialize the Vulkan logical device.
-	vulkanLogicalDevice.Initialize();
+	_VulkanLogicalDevice.Initialize();
 
 	//Initialize the Vulkan swap chain.
-	vulkanSwapchain.Initialize();
+	_VulkanSwapchain.Initialize();
 
 	//Initialize the Vulkan descriptor pool.
-	vulkanDescriptorPool.Initialize();
+	_VulkanDescriptorPool.Initialize();
 }
 
 /*
@@ -41,7 +41,7 @@ void VulkanInterface::Initialize() NOEXCEPT
 void VulkanInterface::PreUpdate(const VulkanSemaphore *const RESTRICT imageAvailableSemaphore) NOEXCEPT
 {
 	//Update the next image index in the Vulkan swap chain.
-	vulkanSwapchain.UpdateNextImageIndex(imageAvailableSemaphore);
+	_VulkanSwapchain.UpdateNextImageIndex(imageAvailableSemaphore);
 }
 
 /*
@@ -50,7 +50,7 @@ void VulkanInterface::PreUpdate(const VulkanSemaphore *const RESTRICT imageAvail
 void VulkanInterface::PostUpdate(const VulkanSemaphore *const RESTRICT renderFinishedSemaphore) NOEXCEPT
 {
 	//Present the final image!
-	vulkanSwapchain.Present(renderFinishedSemaphore);
+	_VulkanSwapchain.Present(renderFinishedSemaphore);
 }
 
 /*
@@ -59,143 +59,143 @@ void VulkanInterface::PostUpdate(const VulkanSemaphore *const RESTRICT renderFin
 void VulkanInterface::Release() NOEXCEPT
 {
 	//Wait for all queues to finish.
-	vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Compute)->WaitIdle();
-	vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Graphics)->WaitIdle();
-	vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Present)->WaitIdle();
-	vulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Transfer)->WaitIdle();
+	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Compute)->WaitIdle();
+	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Graphics)->WaitIdle();
+	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Present)->WaitIdle();
+	_VulkanLogicalDevice.GetQueue(VulkanLogicalDevice::QueueType::Transfer)->WaitIdle();
 
 	//Release all Vulkan 2D textures.
-	for (Vulkan2DTexture *const RESTRICT vulkan2DTexture : vulkan2DTextures)
+	for (Vulkan2DTexture *const RESTRICT vulkan2DTexture : _Vulkan2DTextures)
 	{
 		vulkan2DTexture->Release();
 		delete vulkan2DTexture;
 	}
 
 	//Release all Vulkan command pools.
-	for (VulkanCommandPool *const RESTRICT vulkanCommandPool : vulkanCommandPools)
+	for (VulkanCommandPool *const RESTRICT vulkanCommandPool : _VulkanCommandPools)
 	{
 		vulkanCommandPool->Release();
 		delete vulkanCommandPool;
 	}
 
 	//Release all Vulkan bufferrs.
-	for (VulkanConstantBuffer *const RESTRICT vulkanConstantBuffer : vulkanConstantBuffers)
+	for (VulkanConstantBuffer *const RESTRICT vulkanConstantBuffer : _VulkanConstantBuffers)
 	{
 		vulkanConstantBuffer->Release();
 		delete vulkanConstantBuffer;
 	}
 
 	//Release all Vulkan cube map textures.
-	for (VulkanCubeMapTexture *const RESTRICT vulkanCubeMapTexture : vulkanCubeMapTextures)
+	for (VulkanCubeMapTexture *const RESTRICT vulkanCubeMapTexture : _VulkanCubeMapTextures)
 	{
 		vulkanCubeMapTexture->Release();
 		delete vulkanCubeMapTexture;
 	}
 
 	//Release all Vulkan depth buffers.
-	for (VulkanDepthBuffer *const RESTRICT vulkanDepthBuffer : vulkanDepthBuffers)
+	for (VulkanDepthBuffer *const RESTRICT vulkanDepthBuffer : _VulkanDepthBuffers)
 	{
 		vulkanDepthBuffer->Release();
 		delete vulkanDepthBuffer;
 	}
 
 	//Release all Vulkan descriptor set layouts.
-	for (VulkanDescriptorSetLayout *const RESTRICT vulkanDescriptorSetLayout : vulkanDescriptorSetLayouts)
+	for (VulkanDescriptorSetLayout *const RESTRICT vulkanDescriptorSetLayout : _VulkanDescriptorSetLayouts)
 	{
 		vulkanDescriptorSetLayout->Release();
 		delete vulkanDescriptorSetLayout;
 	}
 
 	//Release all Vulkan descriptor sets.
-	for (VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet : vulkanDescriptorSets)
+	for (VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet : _VulkanDescriptorSets)
 	{
 		delete vulkanDescriptorSet;
 	}
 
 	//Release all Vulkan events.
-	for (VulkanEvent *const RESTRICT vulkanEvent : vulkanEvents)
+	for (VulkanEvent *const RESTRICT vulkanEvent : _VulkanEvents)
 	{
 		vulkanEvent->Release();
 		delete vulkanEvent;
 	}
 
 	//Release all Vulkan fences.
-	for (VulkanFence *const RESTRICT vulkanFence : vulkanFences)
+	for (VulkanFence *const RESTRICT vulkanFence : _VulkanFences)
 	{
 		vulkanFence->Release();
 		delete vulkanFence;
 	}
 
 	//Release all Vulkan framebuffers.
-	for (VulkanFramebuffer *const RESTRICT vulkanFramebuffer : vulkanFramebuffers)
+	for (VulkanFramebuffer *const RESTRICT vulkanFramebuffer : _VulkanFramebuffers)
 	{
 		vulkanFramebuffer->Release();
 		delete vulkanFramebuffer;
 	}
 
 	//Release all Vulkan render targets.
-	for (VulkanRenderTarget *const RESTRICT vulkanRenderTarget : vulkanRenderTargets)
+	for (VulkanRenderTarget *const RESTRICT vulkanRenderTarget : _VulkanRenderTargets)
 	{
 		vulkanRenderTarget->Release();
 		delete vulkanRenderTarget;
 	}
 
 	//Release all Vulkan pipelines.
-	for (VulkanPipeline *const RESTRICT vulkanPipeline : vulkanPipelines)
+	for (VulkanPipeline *const RESTRICT vulkanPipeline : _VulkanPipelines)
 	{
 		vulkanPipeline->Release();
 		delete vulkanPipeline;
 	}
 
 	//Release all Vulkan render passes.
-	for (VulkanRenderPass *const RESTRICT vulkanRenderPass : vulkanRenderPasses)
+	for (VulkanRenderPass *const RESTRICT vulkanRenderPass : _VulkanRenderPasses)
 	{
 		vulkanRenderPass->Release();
 		delete vulkanRenderPass;
 	}
 
 	//Release all Vulkan semaphores.
-	for (VulkanSemaphore *const RESTRICT vulkanSemaphore : vulkanSemaphores)
+	for (VulkanSemaphore *const RESTRICT vulkanSemaphore : _VulkanSemaphores)
 	{
 		vulkanSemaphore->Release();
 		delete vulkanSemaphore;
 	}
 
 	//Release all Vulkan shader modules.
-	for (VulkanShaderModule *const RESTRICT vulkanShaderModule : vulkanShaderModules)
+	for (VulkanShaderModule *const RESTRICT vulkanShaderModule : _VulkanShaderModules)
 	{
 		vulkanShaderModule->Release();
 		delete vulkanShaderModule;
 	}
 
 	//Release all Vulkan storage buffers.
-	for (VulkanStorageBuffer *const RESTRICT vulkanStorageBuffer : vulkanStorageBuffers)
+	for (VulkanStorageBuffer *const RESTRICT vulkanStorageBuffer : _VulkanStorageBuffers)
 	{
 		vulkanStorageBuffer->Release();
 		delete vulkanStorageBuffer;
 	}
 
 	//Release all Vulkan uniform buffers.
-	for (VulkanUniformBuffer *const RESTRICT vulkanUniformBuffer : vulkanUniformBuffers)
+	for (VulkanUniformBuffer *const RESTRICT vulkanUniformBuffer : _VulkanUniformBuffers)
 	{
 		vulkanUniformBuffer->Release();
 		delete vulkanUniformBuffer;
 	}
 
 	//Release the Vulkan descriptor pool.
-	vulkanDescriptorPool.Release();
+	_VulkanDescriptorPool.Release();
 
 	//Release the Vulkan swap chain.
-	vulkanSwapchain.Release();
+	_VulkanSwapchain.Release();
 
 	//Release the Vulkan logical device.
-	vulkanLogicalDevice.Release();
+	_VulkanLogicalDevice.Release();
 
 	//Release the Vulkan surface.
-	vulkanSurface.Release();
+	_VulkanSurface.Release();
 
 	//Release the Vulkan instance.
-	vulkanInstance.Release();
+	_VulkanInstance.Release();
 }
 
 /*
@@ -210,7 +210,7 @@ RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(cons
 	ScopedLock<Spinlock> scopedLock{ lock };
 
 
-	vulkan2DTextures.EmplaceSlow(new2DTexture);
+	_Vulkan2DTextures.EmplaceSlow(new2DTexture);
 
 	return new2DTexture;
 }
@@ -221,7 +221,7 @@ RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(cons
 void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) NOEXCEPT
 {
 	texture->Release();
-	vulkan2DTextures.Erase(texture);
+	_Vulkan2DTextures.Erase(texture);
 }
 
 /*
@@ -230,11 +230,11 @@ void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) 
 RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateGraphicsCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
 	VulkanCommandPool *const RESTRICT newCommandPool = new VulkanCommandPool;
-	newCommandPool->Initialize(flags, vulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Graphics));
+	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Graphics));
 
-	vulkanCommandPoolsLock.Lock();
-	vulkanCommandPools.EmplaceSlow(newCommandPool);
-	vulkanCommandPoolsLock.Unlock();
+	_VulkanCommandPoolsLock.Lock();
+	_VulkanCommandPools.EmplaceSlow(newCommandPool);
+	_VulkanCommandPoolsLock.Unlock();
 
 	return newCommandPool;
 }
@@ -245,11 +245,11 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateGraphicsComm
 RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT
 {
 	VulkanCommandPool *const RESTRICT newCommandPool = new VulkanCommandPool;
-	newCommandPool->Initialize(flags, vulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Transfer));
+	newCommandPool->Initialize(flags, _VulkanLogicalDevice.GetQueueFamilyIndex(VulkanLogicalDevice::QueueType::Transfer));
 
-	vulkanCommandPoolsLock.Lock();
-	vulkanCommandPools.EmplaceSlow(newCommandPool);
-	vulkanCommandPoolsLock.Unlock();
+	_VulkanCommandPoolsLock.Lock();
+	_VulkanCommandPools.EmplaceSlow(newCommandPool);
+	_VulkanCommandPoolsLock.Unlock();
 
 	return newCommandPool;
 }
@@ -265,7 +265,7 @@ RESTRICTED VulkanConstantBuffer *const RESTRICT VulkanInterface::CreateConstantB
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanConstantBuffers.EmplaceSlow(newBuffer);
+	_VulkanConstantBuffers.EmplaceSlow(newBuffer);
 
 	return newBuffer;
 }
@@ -281,7 +281,7 @@ RESTRICTED VulkanCubeMapTexture *const RESTRICT VulkanInterface::CreateCubeMapTe
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanCubeMapTextures.EmplaceSlow(newCubeMapTexture);
+	_VulkanCubeMapTextures.EmplaceSlow(newCubeMapTexture);
 
 	return newCubeMapTexture;
 }
@@ -297,7 +297,7 @@ RESTRICTED VulkanDepthBuffer *const RESTRICT VulkanInterface::CreateDepthBuffer(
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanDepthBuffers.EmplaceSlow(newDepthBuffer);
+	_VulkanDepthBuffers.EmplaceSlow(newDepthBuffer);
 
 	return newDepthBuffer;
 }
@@ -313,7 +313,7 @@ RESTRICTED VulkanDescriptorSetLayout *const RESTRICT VulkanInterface::CreateDesc
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanDescriptorSetLayouts.EmplaceSlow(newDescriptorSetLayout);
+	_VulkanDescriptorSetLayouts.EmplaceSlow(newDescriptorSetLayout);
 
 	return newDescriptorSetLayout;
 }
@@ -324,12 +324,12 @@ RESTRICTED VulkanDescriptorSetLayout *const RESTRICT VulkanInterface::CreateDesc
 RESTRICTED VulkanDescriptorSet *const RESTRICT VulkanInterface::CreateDescriptorSet(const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) NOEXCEPT
 {
 	VulkanDescriptorSet *const RESTRICT newDescriptorSet = new VulkanDescriptorSet;
-	newDescriptorSet->Initialize(vulkanDescriptorPool, vulkanDescriptorSetLayout);
+	newDescriptorSet->Initialize(_VulkanDescriptorPool, vulkanDescriptorSetLayout);
 
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanDescriptorSets.EmplaceSlow(newDescriptorSet);
+	_VulkanDescriptorSets.EmplaceSlow(newDescriptorSet);
 
 	return newDescriptorSet;
 }
@@ -340,7 +340,7 @@ RESTRICTED VulkanDescriptorSet *const RESTRICT VulkanInterface::CreateDescriptor
 void VulkanInterface::DestroyDescriptorSet(VkDescriptorSet descriptorSet) const NOEXCEPT
 {
 	//Destroy the descriptor set.
-	vulkanDescriptorPool.FreeDescriptorSet(descriptorSet);
+	_VulkanDescriptorPool.FreeDescriptorSet(descriptorSet);
 }
 
 /*
@@ -354,7 +354,7 @@ RESTRICTED VulkanEvent *const RESTRICT VulkanInterface::CreateEvent() NOEXCEPT
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanEvents.EmplaceSlow(newEvent);
+	_VulkanEvents.EmplaceSlow(newEvent);
 
 	return newEvent;
 }
@@ -370,7 +370,7 @@ RESTRICTED VulkanFence *const RESTRICT VulkanInterface::CreateFence(const VkFenc
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanFences.EmplaceSlow(newFence);
+	_VulkanFences.EmplaceSlow(newFence);
 
 	return newFence;
 }
@@ -386,7 +386,7 @@ RESTRICTED VulkanFramebuffer *const RESTRICT VulkanInterface::CreateFramebuffer(
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanFramebuffers.EmplaceSlow(newFramebuffer);
+	_VulkanFramebuffers.EmplaceSlow(newFramebuffer);
 
 	return newFramebuffer;
 }
@@ -402,7 +402,7 @@ RESTRICTED VulkanPipeline *const RESTRICT VulkanInterface::CreatePipeline(const 
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanPipelines.EmplaceSlow(newPipeline);
+	_VulkanPipelines.EmplaceSlow(newPipeline);
 
 	return newPipeline;
 }
@@ -418,7 +418,7 @@ RESTRICTED VulkanRenderPass *const RESTRICT VulkanInterface::CreateRenderPass(co
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanRenderPasses.EmplaceSlow(newRenderPass);
+	_VulkanRenderPasses.EmplaceSlow(newRenderPass);
 
 	return newRenderPass;
 }
@@ -434,7 +434,7 @@ RESTRICTED VulkanRenderTarget *const RESTRICT VulkanInterface::CreateRenderTarge
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanRenderTargets.EmplaceSlow(newRenderTarget);
+	_VulkanRenderTargets.EmplaceSlow(newRenderTarget);
 
 	return newRenderTarget;
 }
@@ -450,7 +450,7 @@ RESTRICTED VulkanSemaphore *const RESTRICT VulkanInterface::CreateSemaphore() NO
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanSemaphores.EmplaceSlow(newSemaphore);
+	_VulkanSemaphores.EmplaceSlow(newSemaphore);
 
 	return newSemaphore;
 }
@@ -466,7 +466,7 @@ RESTRICTED VulkanShaderModule *const RESTRICT VulkanInterface::CreateShaderModul
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanShaderModules.EmplaceSlow(newShaderModule);
+	_VulkanShaderModules.EmplaceSlow(newShaderModule);
 
 	return newShaderModule;
 }
@@ -482,7 +482,7 @@ RESTRICTED VulkanStorageBuffer *const RESTRICT VulkanInterface::CreateStorageBuf
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanStorageBuffers.EmplaceSlow(newStorageBuffer);
+	_VulkanStorageBuffers.EmplaceSlow(newStorageBuffer);
 
 	return newStorageBuffer;
 }
@@ -498,7 +498,7 @@ RESTRICTED VulkanUniformBuffer *const RESTRICT VulkanInterface::CreateUniformBuf
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-	vulkanUniformBuffers.EmplaceSlow(newUniformBuffer);
+	_VulkanUniformBuffers.EmplaceSlow(newUniformBuffer);
 
 	return newUniformBuffer;
 }

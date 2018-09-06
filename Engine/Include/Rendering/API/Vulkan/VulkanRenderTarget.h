@@ -27,17 +27,17 @@ public:
 	/*
 	*	Returns the Vulkan image.
 	*/
-	const VkImage GetImage() const NOEXCEPT { return vulkanImage; }
+	const VkImage GetImage() const NOEXCEPT { return _VulkanImage; }
 
 	/*
 	*	Returns the Vulkan image view.
 	*/
-	const VkImageView GetImageView() const NOEXCEPT { return vulkanImageView; }
+	const VkImageView GetImageView() const NOEXCEPT { return _VulkanImageView; }
 
 	/*
 	*	Returns the Vulkan sampler.
 	*/
-	const VkSampler GetSampler() const NOEXCEPT { return vulkanSampler; }
+	const VkSampler GetSampler() const NOEXCEPT { return _VulkanSampler; }
 
 	/*
 	*	Returns the write descriptor set for this texture.
@@ -47,38 +47,38 @@ public:
 	/*
 	*	Returns the extent of the render target.
 	*/
-	VkExtent2D GetExtent() const NOEXCEPT { return extent; }
+	VkExtent2D GetExtent() const NOEXCEPT { return _Extent; }
 
 	/*
 	*	Returns the format of the render target.
 	*/
-	VkFormat GetFormat() const NOEXCEPT { return format; }
+	VkFormat GetFormat() const NOEXCEPT { return _Format; }
 
 private:
 
 	//The Vulkan image.
-	VkImage vulkanImage;
+	VkImage _VulkanImage;
 
 	//The Vulkan device memory.
-	VkDeviceMemory vulkanDeviceMemory;
+	VkDeviceMemory _VulkanDeviceMemory;
 
 	//The Vulkan image view.
-	VkImageView vulkanImageView;
+	VkImageView _VulkanImageView;
 
 	//The Vulkan sampler.
-	VkSampler vulkanSampler;
+	VkSampler _VulkanSampler;
 
 	//The descriptor image info for this texture.
-	VkDescriptorImageInfo vulkanDescriptorImageInfo;
+	VkDescriptorImageInfo _VulkanDescriptorImageInfo;
 
 	//The write descriptor set for this texture.
-	VkWriteDescriptorSet vulkanWriteDescriptorSet;
+	VkWriteDescriptorSet _VulkanWriteDescriptorSet;
 
 	//The extent of the image.
-	VkExtent2D extent;
+	VkExtent2D _Extent;
 
 	//The format of the image.
-	VkFormat format;
+	VkFormat _Format;
 
 	/*
 	*	Creates the descriptor image info.

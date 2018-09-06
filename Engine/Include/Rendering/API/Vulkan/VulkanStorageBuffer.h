@@ -25,7 +25,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan buffer.
 	*/
-	const VkBuffer& Get() const NOEXCEPT { return vulkanBuffer; }
+	const VkBuffer& Get() const NOEXCEPT { return _VulkanBuffer; }
 
 	/*
 	*	Initializes this Vulkan storage buffer.
@@ -40,7 +40,7 @@ public:
 	/*
 	*	Returns the size of this storage buffer.
 	*/
-	const VkDeviceSize& GetSize() const NOEXCEPT { return storageBufferSize; }
+	const VkDeviceSize& GetSize() const NOEXCEPT { return _StorageBufferSize; }
 
 	/*
 	*	Returns the write descriptor set for this uniform buffer.
@@ -50,19 +50,19 @@ public:
 private:
 
 	//The underlying Vulkan buffer.
-	VkBuffer vulkanBuffer;
+	VkBuffer _VulkanBuffer;
 
 	//The Vulkan device memory.
-	VkDeviceMemory vulkanDeviceMemory;
+	VkDeviceMemory _VulkanDeviceMemory;
 
 	//The size of this storage buffer.
-	VkDeviceSize storageBufferSize;
+	VkDeviceSize _StorageBufferSize;
 
 	//The descriptor buffer info for this storage buffer.
-	VkDescriptorBufferInfo vulkanDescriptorBufferInfo;
+	VkDescriptorBufferInfo _VulkanDescriptorBufferInfo;
 
 	//The write descriptor set for this storage buffer.
-	VkWriteDescriptorSet vulkanWriteDescriptorSet;
+	VkWriteDescriptorSet _VulkanWriteDescriptorSet;
 
 	/*
 	*	Creates the descriptor buffer info.

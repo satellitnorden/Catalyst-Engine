@@ -24,7 +24,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan fence.
 	*/
-	const VkFence& Get() const NOEXCEPT { return vulkanFence; }
+	const VkFence& Get() const NOEXCEPT { return _VulkanFence; }
 
 	/*
 	*	Initializes this Vulkan fence.
@@ -54,7 +54,7 @@ public:
 private:
 
 	//The underlying Vulkan fence.
-	VkFence vulkanFence;
+	VkFence _VulkanFence;
 
 	/*
 	*	Creates a fence create info.

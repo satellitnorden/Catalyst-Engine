@@ -17,7 +17,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan shader module.
 	*/
-	const VkShaderModule Get() const NOEXCEPT { return vulkanShaderModule; }
+	const VkShaderModule Get() const NOEXCEPT { return _VulkanShaderModule; }
 
 	/*
 	*	Initializes this Vulkan shader module.
@@ -32,15 +32,15 @@ public:
 	/*
 	*	Returns the stage where this shader module will be used.
 	*/
-	const VkShaderStageFlagBits GetStage() const NOEXCEPT { return stage; }
+	const VkShaderStageFlagBits GetStage() const NOEXCEPT { return _Stage; }
 
 private:
 
 	//The underlying Vulkan shader module.
-	VkShaderModule vulkanShaderModule;
+	VkShaderModule _VulkanShaderModule;
 
 	//The stage where this shader module will be used.
-	VkShaderStageFlagBits stage;
+	VkShaderStageFlagBits _Stage;
 
 	/*
 	*	Creates a shader module create info

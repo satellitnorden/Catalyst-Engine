@@ -61,10 +61,10 @@ void VulkanConstantBuffer::Initialize(const void *RESTRICT data[], const VkDevic
 	vkUnmapMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory);
 
 	//Create the buffer.
-	VulkanUtilities::CreateVulkanBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vulkanBuffer, vulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _VulkanBuffer, _VulkanDeviceMemory);
 
 	//Copy the staging buffer data to the buffer.
-	VulkanUtilities::CopyBufferToBuffer(bufferSize, stagingBuffer, vulkanBuffer);
+	VulkanUtilities::CopyBufferToBuffer(bufferSize, stagingBuffer, _VulkanBuffer);
 
 	//Free the staging device memory.
 	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, nullptr);
@@ -79,8 +79,8 @@ void VulkanConstantBuffer::Initialize(const void *RESTRICT data[], const VkDevic
 void VulkanConstantBuffer::Release() NOEXCEPT
 {
 	//Free the Vulkan device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanDeviceMemory, nullptr);
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanDeviceMemory, nullptr);
 
 	//Destroy the Vulkan vertex buffer.
-	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanBuffer, nullptr);
+	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanBuffer, nullptr);
 }

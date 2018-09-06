@@ -27,7 +27,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan image.
 	*/
-	const VkImage& Get() const NOEXCEPT { return vulkanImage; }
+	const VkImage& Get() const NOEXCEPT { return _VulkanImage; }
 
 	/*
 	*	Initializes this texture.
@@ -42,12 +42,12 @@ public:
 	/*
 	*	Returns the Vulkan image view.
 	*/
-	const VkImageView& GetImageView() const NOEXCEPT { return vulkanImageView; }
+	const VkImageView& GetImageView() const NOEXCEPT { return _VulkanImageView; }
 
 	/*
 	*	Returns the Vulkan sampler.
 	*/
-	const VkSampler& GetSampler() const NOEXCEPT { return vulkanSampler; }
+	const VkSampler& GetSampler() const NOEXCEPT { return _VulkanSampler; }
 
 	/*
 	*	Returns the write descriptor set for this texture.
@@ -57,22 +57,22 @@ public:
 private:
 
 	//The underlying Vulkan image.
-	VkImage vulkanImage;
+	VkImage _VulkanImage;
 
 	//The Vulkan device memory.
-	VkDeviceMemory vulkanDeviceMemory;
+	VkDeviceMemory _VulkanDeviceMemory;
 
 	//The Vulkan image view.
-	VkImageView vulkanImageView;
+	VkImageView _VulkanImageView;
 
 	//The Vulkan sampler.
-	VkSampler vulkanSampler;
+	VkSampler _VulkanSampler;
 
 	//The descriptor image info for this texture.
-	VkDescriptorImageInfo vulkanDescriptorImageInfo;
+	VkDescriptorImageInfo _VulkanDescriptorImageInfo;
 
 	//The write descriptor set for this texture.
-	VkWriteDescriptorSet vulkanWriteDescriptorSet;
+	VkWriteDescriptorSet _VulkanWriteDescriptorSet;
 
 	/*
 	*	Creates the descriptor image info.

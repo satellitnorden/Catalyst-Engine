@@ -422,12 +422,12 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	//Create the pipeline.
 	VulkanPipelineCreationParameters parameters;
 
-	parameters.blendEnable = renderPass->IsBlendEnabled();
-	parameters.colorAttachmentCount = static_cast<uint32>(renderPass->GetRenderTargets().Size());
-	parameters.cullMode = VulkanTranslationUtilities::GetVulkanCullMode(renderPass->GetCullMode());
-	parameters.depthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(renderPass->GetDepthCompareOperator());
-	parameters.depthTestEnable = renderPass->IsDepthTestEnabled();
-	parameters.depthWriteEnable = renderPass->IsDepthWriteEnabled();
+	parameters._BlendEnable = renderPass->IsBlendEnabled();
+	parameters._ColorAttachmentCount = static_cast<uint32>(renderPass->GetRenderTargets().Size());
+	parameters._CullMode = VulkanTranslationUtilities::GetVulkanCullMode(renderPass->GetCullMode());
+	parameters._DepthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(renderPass->GetDepthCompareOperator());
+	parameters._DepthTestEnable = renderPass->IsDepthTestEnabled();
+	parameters._DepthWriteEnable = renderPass->IsDepthWriteEnabled();
 
 	DynamicArray<VulkanDescriptorSetLayout> pipelineDescriptorSetLayouts;
 	pipelineDescriptorSetLayouts.Reserve(renderPass->GetRenderDataTableLayouts().Size());
@@ -437,15 +437,15 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 		pipelineDescriptorSetLayouts.EmplaceFast(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(renderDataTableLayout));
 	}
 
-	parameters.descriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());
-	parameters.descriptorSetLayouts = pipelineDescriptorSetLayouts.Data();
+	parameters._DescriptorSetLayoutCount = static_cast<uint32>(pipelineDescriptorSetLayouts.Size());
+	parameters._DescriptorSetLayouts = pipelineDescriptorSetLayouts.Data();
 
 	DynamicArray<VkPushConstantRange> pushConstantRanges;
 
 	if (renderPass->GetPushConstantRanges().Empty())
 	{
-		parameters.pushConstantRangeCount = 0;
-		parameters.pushConstantRanges = nullptr;
+		parameters._PushConstantRangeCount = 0;
+		parameters._PushConstantRanges = nullptr;
 	}
 
 	else
@@ -457,18 +457,18 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 			pushConstantRanges.EmplaceFast(VulkanTranslationUtilities::GetVulkanPushConstantRange(pushConstantRange));
 		}
 
-		parameters.pushConstantRangeCount = static_cast<uint32>(pushConstantRanges.Size());
-		parameters.pushConstantRanges = pushConstantRanges.Data();
+		parameters._PushConstantRangeCount = static_cast<uint32>(pushConstantRanges.Size());
+		parameters._PushConstantRanges = pushConstantRanges.Data();
 	}
 	
-	parameters.shaderModules.Reserve(5);
-	if (renderPass->GetVertexShader() != Shader::None) parameters.shaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetVertexShader())]);
-	if (renderPass->GetTessellationControlShader() != Shader::None) parameters.shaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetTessellationControlShader())]);
-	if (renderPass->GetTessellationEvaluationShader() != Shader::None) parameters.shaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetTessellationEvaluationShader())]);
-	if (renderPass->GetGeometryShader() != Shader::None) parameters.shaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetGeometryShader())]);
-	if (renderPass->GetFragmentShader() != Shader::None) parameters.shaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetFragmentShader())]);
-	parameters.subpass = renderPass->GetSubStageIndex();
-	parameters.topology = VulkanTranslationUtilities::GetVulkanTopology(renderPass->GetTopology());
+	parameters._ShaderModules.Reserve(5);
+	if (renderPass->GetVertexShader() != Shader::None) parameters._ShaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetVertexShader())]);
+	if (renderPass->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetTessellationControlShader())]);
+	if (renderPass->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetTessellationEvaluationShader())]);
+	if (renderPass->GetGeometryShader() != Shader::None) parameters._ShaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetGeometryShader())]);
+	if (renderPass->GetFragmentShader() != Shader::None) parameters._ShaderModules.EmplaceFast(shaderModules[INDEX(renderPass->GetFragmentShader())]);
+	parameters._Subpass = renderPass->GetSubStageIndex();
+	parameters._Topology = VulkanTranslationUtilities::GetVulkanTopology(renderPass->GetTopology());
 
 	DynamicArray<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
 	vertexInputAttributeDescriptions.Reserve(renderPass->GetVertexInputAttributeDescriptions().Size());
@@ -478,8 +478,8 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 		vertexInputAttributeDescriptions.EmplaceFast(VulkanTranslationUtilities::GetVulkanVertexInputAttributeDescription(vertexInputAttributeDescription));
 	}
 
-	parameters.vertexInputAttributeDescriptionCount = static_cast<uint32>(vertexInputAttributeDescriptions.Size());
-	parameters.vertexInputAttributeDescriptions = vertexInputAttributeDescriptions.Data();
+	parameters._VertexInputAttributeDescriptionCount = static_cast<uint32>(vertexInputAttributeDescriptions.Size());
+	parameters._VertexInputAttributeDescriptions = vertexInputAttributeDescriptions.Data();
 
 	DynamicArray<VkVertexInputBindingDescription> vertexInputBindingDescriptions;
 	vertexInputBindingDescriptions.Reserve(renderPass->GetVertexInputBindingDescriptions().Size());
@@ -489,11 +489,11 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 		vertexInputBindingDescriptions.EmplaceFast(VulkanTranslationUtilities::GetVulkanVertexInputBindingDescription(vertexInputBindingDescription));
 	}
 
-	parameters.vertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
-	parameters.vertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
-	parameters.viewportExtent = renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height };
+	parameters._VertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
+	parameters._VertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
+	parameters._ViewportExtent = renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution().width, renderPass->GetRenderResolution().height };
 
-	parameters.renderPass = vulkanRenderPassMainStageData[INDEX(renderPass->GetMainStage())].renderPass;
+	parameters._RenderPass = vulkanRenderPassMainStageData[INDEX(renderPass->GetMainStage())].renderPass;
 
 	//Create the pipeline!
 	pipelines[INDEX(renderPass->GetSubStage())] = VulkanInterface::Instance->CreatePipeline(parameters);
@@ -1055,8 +1055,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
 		};
 
-		renderPassParameters.attachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
-		renderPassParameters.attachmentDescriptions = attachmenDescriptions.Data();
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
 
 		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
 		{
@@ -1078,8 +1078,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			nullptr);
 		}
 
-		renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
-		renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
+		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
 
 		StaticArray<VkSubpassDependency, 2> subpassDependencies
 		{
@@ -1100,15 +1100,15 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 														VK_DEPENDENCY_BY_REGION_BIT)
 		};
 
-		renderPassParameters.subpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
-		renderPassParameters.subpassDependencies = subpassDependencies.Data();
+		renderPassParameters._SubpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
+		renderPassParameters._SubpassDependencies = subpassDependencies.Data();
 
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)].renderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters.renderPass = vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)].renderPass->Get();
+		framebufferParameters._RenderPass = vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)].renderPass->Get();
 		
 		StaticArray<VkImageView, 2> attachments
 		{
@@ -1116,9 +1116,9 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			renderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetImageView()
 		};
 
-		framebufferParameters.attachmentCount = static_cast<uint32>(attachments.Size());
-		framebufferParameters.attachments = attachments.Data();
-		framebufferParameters.extent = { EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution };
+		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters._Attachments = attachments.Data();
+		framebufferParameters._Extent = { EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution };
 
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)].frameBuffers.Reserve(1);
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)].frameBuffers.EmplaceFast( VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
@@ -1196,8 +1196,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
 		};
 
-		renderPassParameters.attachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
-		renderPassParameters.attachmentDescriptions = attachmenDescriptions.Data();
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
 
 		constexpr StaticArray<const VkAttachmentReference, 3> sceneBufferColorAttachmentReferences
 		{
@@ -1309,8 +1309,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
-		renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
+		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
 
 		StaticArray<VkSubpassDependency, NUMBER_OF_SCENE_BUFFER_SUBPASSES - 1> subpassDependencies
 		{
@@ -1387,15 +1387,15 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 														VK_DEPENDENCY_BY_REGION_BIT)
 		};
 
-		renderPassParameters.subpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
-		renderPassParameters.subpassDependencies = subpassDependencies.Data();
+		renderPassParameters._SubpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
+		renderPassParameters._SubpassDependencies = subpassDependencies.Data();
 
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)].renderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters.renderPass = vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)].renderPass->Get();
+		framebufferParameters._RenderPass = vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)].renderPass->Get();
 
 		StaticArray<VkImageView, 6> attachments
 		{
@@ -1407,9 +1407,9 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			renderTargets[INDEX(RenderTarget::Scene)]->GetImageView()
 		};
 
-		framebufferParameters.attachmentCount = static_cast<uint32>(attachments.Size());
-		framebufferParameters.attachments = attachments.Data();
-		framebufferParameters.extent = { RenderingSystem::Instance->GetScaledResolution().width, RenderingSystem::Instance->GetScaledResolution().height };
+		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters._Attachments = attachments.Data();
+		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution().width, RenderingSystem::Instance->GetScaledResolution().height };
 
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)].frameBuffers.Reserve(1);
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)].frameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
@@ -1437,8 +1437,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
 		};
 
-		renderPassParameters.attachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
-		renderPassParameters.attachmentDescriptions = attachmenDescriptions.Data();
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
 
 		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
 		{
@@ -1456,27 +1456,27 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			nullptr)
 		};
 
-		renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
-		renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
+		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
 
-		renderPassParameters.subpassDependencyCount = 0;
-		renderPassParameters.subpassDependencies = nullptr;
+		renderPassParameters._SubpassDependencyCount = 0;
+		renderPassParameters._SubpassDependencies = nullptr;
 
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].renderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters.renderPass = vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].renderPass->Get();
+		framebufferParameters._RenderPass = vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].renderPass->Get();
 
 		StaticArray<VkImageView, 1> attachments
 		{
 			renderTargets[INDEX(RenderTarget::Scene)]->GetImageView()
 		};
 
-		framebufferParameters.attachmentCount = static_cast<uint32>(attachments.Size());
-		framebufferParameters.attachments = attachments.Data();
-		framebufferParameters.extent = { RenderingSystem::Instance->GetScaledResolution().width, RenderingSystem::Instance->GetScaledResolution().height };
+		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters._Attachments = attachments.Data();
+		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution().width, RenderingSystem::Instance->GetScaledResolution().height };
 
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].frameBuffers.Reserve(1);
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].frameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
@@ -1504,8 +1504,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
 		};
 
-		renderPassParameters.attachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
-		renderPassParameters.attachmentDescriptions = attachmenDescriptions.Data();
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
 
 		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
 		{
@@ -1525,11 +1525,11 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			nullptr);
 		}
 
-		renderPassParameters.subpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
-		renderPassParameters.subpassDescriptions = subpassDescriptions.Data();
+		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
 
-		renderPassParameters.subpassDependencyCount = 0;
-		renderPassParameters.subpassDependencies = nullptr;
+		renderPassParameters._SubpassDependencyCount = 0;
+		renderPassParameters._SubpassDependencies = nullptr;
 
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)].renderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
@@ -1541,11 +1541,11 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		{
 			VulkanFramebufferCreationParameters framebufferParameters;
 
-			framebufferParameters.renderPass = vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)].renderPass->Get();
+			framebufferParameters._RenderPass = vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)].renderPass->Get();
 
-			framebufferParameters.attachmentCount = 1;
-			framebufferParameters.attachments = &swapchainImage;
-			framebufferParameters.extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
+			framebufferParameters._AttachmentCount = 1;
+			framebufferParameters._Attachments = &swapchainImage;
+			framebufferParameters._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
 			vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)].frameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		}

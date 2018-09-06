@@ -16,7 +16,7 @@ void VulkanDescriptorSet::Initialize(const VulkanDescriptorPool &vulkanDescripto
 	CreateDescriptorSetAllocateInfo(descriptorSetAllocateInfo, vulkanDescriptorPool, vulkanDescriptorSetLayout);
 
 	//Allocate the descriptor set!
-	VULKAN_ERROR_CHECK(vkAllocateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorSetAllocateInfo, &vulkanDescriptorSet));
+	VULKAN_ERROR_CHECK(vkAllocateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), &descriptorSetAllocateInfo, &_VulkanDescriptorSet));
 }
 
 /*

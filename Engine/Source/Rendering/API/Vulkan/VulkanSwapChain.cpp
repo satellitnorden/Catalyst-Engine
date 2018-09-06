@@ -34,24 +34,24 @@ void VulkanSwapchain::Initialize() NOEXCEPT
 	CreateSwapChainCreateInfo(swapChainCreateInfo, queueFamilyIndices, graphicsQueueFamilyIndex, presentQueueFamilyIndex);
 
 	//Create the swap chain!
-	VULKAN_ERROR_CHECK(vkCreateSwapchainKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), &swapChainCreateInfo, nullptr, &vulkanSwapChain));
+	VULKAN_ERROR_CHECK(vkCreateSwapchainKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), &swapChainCreateInfo, nullptr, &_VulkanSwapChain));
 
 	//Query the swap chain images.
-	VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &numberOfSwapChainImages, nullptr));
+	VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapChain, &_NumberOfSwapChainImages, nullptr));
 
-	swapChainImages.UpsizeFast(numberOfSwapChainImages);
-	VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, &numberOfSwapChainImages, swapChainImages.Data()));
+	_SwapChainImages.UpsizeFast(_NumberOfSwapChainImages);
+	VULKAN_ERROR_CHECK(vkGetSwapchainImagesKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapChain, &_NumberOfSwapChainImages, _SwapChainImages.Data()));
 
 	//Create the image views.
-	swapChainImageViews.UpsizeFast(numberOfSwapChainImages);
+	_SwapChainImageViews.UpsizeFast(_NumberOfSwapChainImages);
 
-	for (uint32 i = 0; i < numberOfSwapChainImages; ++i)
+	for (uint32 i = 0; i < _NumberOfSwapChainImages; ++i)
 	{
-		VulkanUtilities::CreateVulkanImageView(swapChainImages[i], VK_IMAGE_VIEW_TYPE_2D, VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1, swapChainImageViews[i]);
+		VulkanUtilities::CreateVulkanImageView(_SwapChainImages[i], VK_IMAGE_VIEW_TYPE_2D, VulkanInterface::Instance->GetPhysicalDevice().GetSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1, _SwapChainImageViews[i]);
 	}
 
 	//Initialize the depth buffer.
-	vulkanDepthBuffer.Initialize(swapExtent);
+	_VulkanDepthBuffer.Initialize(_SwapExtent);
 }
 
 /*
@@ -60,16 +60,16 @@ void VulkanSwapchain::Initialize() NOEXCEPT
 void VulkanSwapchain::Release() NOEXCEPT
 {
 	//Release the depth buffer.
-	vulkanDepthBuffer.Release();
+	_VulkanDepthBuffer.Release();
 
 	//Destroy all image views.
-	for (auto &swapChainImageView : swapChainImageViews)
+	for (auto &swapChainImageView : _SwapChainImageViews)
 	{
 		vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), swapChainImageView, nullptr);
 	}
 
 	//Destroy the Vulkan swap chain.
-	vkDestroySwapchainKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, nullptr);
+	vkDestroySwapchainKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapChain, nullptr);
 }
 
 /*
@@ -77,7 +77,7 @@ void VulkanSwapchain::Release() NOEXCEPT
 */
 void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const RESTRICT imageAvailableSemaphore) NOEXCEPT
 {
-	VULKAN_ERROR_CHECK(vkAcquireNextImageKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), vulkanSwapChain, UINT64_MAXIMUM, imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &currentImageIndex));
+	VULKAN_ERROR_CHECK(vkAcquireNextImageKHR(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSwapChain, UINT64_MAXIMUM, imageAvailableSemaphore->Get(), VK_NULL_HANDLE, &_CurrentImageIndex));
 }
 
 /*
@@ -86,7 +86,7 @@ void VulkanSwapchain::UpdateNextImageIndex(const VulkanSemaphore *const RESTRICT
 void VulkanSwapchain::Present(const VulkanSemaphore *const RESTRICT renderFinishedSemaphore) NOEXCEPT
 {
 	//Present on the present queue!
-	VulkanInterface::Instance->GetPresentQueue()->Present(renderFinishedSemaphore, &vulkanSwapChain, &currentImageIndex);
+	VulkanInterface::Instance->GetPresentQueue()->Present(renderFinishedSemaphore, &_VulkanSwapChain, &_CurrentImageIndex);
 }
 
 /*
@@ -97,8 +97,8 @@ void VulkanSwapchain::FindMostOptimalSwapExtent() NOEXCEPT
 	VkSurfaceCapabilitiesKHR surfaceCapabilities;
 	VULKAN_ERROR_CHECK(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(VulkanInterface::Instance->GetPhysicalDevice().Get(), VulkanInterface::Instance->GetSurface().Get(), &surfaceCapabilities));
 
-	swapExtent.width = CatalystBaseMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
-	swapExtent.height = CatalystBaseMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
+	_SwapExtent.width = CatalystBaseMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.width, surfaceCapabilities.minImageExtent.width, surfaceCapabilities.maxImageExtent.width);
+	_SwapExtent.height = CatalystBaseMath::Clamp<uint32>(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._Resolution.height, surfaceCapabilities.minImageExtent.height, surfaceCapabilities.maxImageExtent.height);
 }
 
 /*
@@ -123,7 +123,7 @@ void VulkanSwapchain::CreateSwapChainCreateInfo(VkSwapchainCreateInfoKHR &swapCh
 	swapChainCreateInfo.minImageCount = minimumImageCount;
 	swapChainCreateInfo.imageFormat = surfaceFormat.format;
 	swapChainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
-	swapChainCreateInfo.imageExtent = swapExtent;
+	swapChainCreateInfo.imageExtent = _SwapExtent;
 	swapChainCreateInfo.imageArrayLayers = 1;
 	swapChainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 

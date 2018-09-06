@@ -24,7 +24,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan buffer.
 	*/
-	const VkBuffer& Get() const NOEXCEPT { return vulkanBuffer; }
+	const VkBuffer& Get() const NOEXCEPT { return _VulkanBuffer; }
 
 	/*
 	*	Initializes this Vulkan buffer.
@@ -43,9 +43,9 @@ public:
 private:
 
 	//The underlying Vulkan buffer.
-	VkBuffer vulkanBuffer;
+	VkBuffer _VulkanBuffer;
 
 	//The Vulkan device memory.
-	VkDeviceMemory vulkanDeviceMemory;
+	VkDeviceMemory _VulkanDeviceMemory;
 
 };

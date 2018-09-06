@@ -20,7 +20,7 @@ void VulkanCommandBuffer::Initialize(const VulkanCommandPool &vulkanCommandPool,
 	CreateCommandBufferAllocateInfo(commandBufferAllocateInfo, vulkanCommandPool, level);
 
 	//Allocate the command buffer!
-	VULKAN_ERROR_CHECK(vkAllocateCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandBufferAllocateInfo, &vulkanCommandBuffer));
+	VULKAN_ERROR_CHECK(vkAllocateCommandBuffers(VulkanInterface::Instance->GetLogicalDevice().Get(), &commandBufferAllocateInfo, &_VulkanCommandBuffer));
 }
 
 /*
@@ -33,7 +33,7 @@ void VulkanCommandBuffer::BeginPrimary(const VkCommandBufferUsageFlags commandBu
 	CreatePrimaryCommandBufferBeginInfo(commandBufferBeginInfo, commandBufferUsageFlags);
 
 	//Begin the command buffer!
-	VULKAN_ERROR_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer, &commandBufferBeginInfo));
+	VULKAN_ERROR_CHECK(vkBeginCommandBuffer(_VulkanCommandBuffer, &commandBufferBeginInfo));
 }
 
 /*
@@ -50,7 +50,7 @@ void VulkanCommandBuffer::BeginSecondary(const VkCommandBufferUsageFlags command
 	CreateSecondaryCommandBufferBeginInfo(commandBufferBeginInfo, commandBufferUsageFlags, &commandBufferInheritanceInfo);
 
 	//Begin the command buffer!
-	VULKAN_ERROR_CHECK(vkBeginCommandBuffer(vulkanCommandBuffer, &commandBufferBeginInfo));
+	VULKAN_ERROR_CHECK(vkBeginCommandBuffer(_VulkanCommandBuffer, &commandBufferBeginInfo));
 }
 
 /*
@@ -69,7 +69,7 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VkRenderPass renderPass, 
 	renderPassBeginInfo.clearValueCount = 0;
 	renderPassBeginInfo.pClearValues = nullptr;
 
-	vkCmdBeginRenderPass(vulkanCommandBuffer, &renderPassBeginInfo, contents);
+	vkCmdBeginRenderPass(_VulkanCommandBuffer, &renderPassBeginInfo, contents);
 }
 
 /*
@@ -96,7 +96,7 @@ void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VkRenderPass rend
 	renderPassBeginInfo.clearValueCount = numberOfClearValues;
 	renderPassBeginInfo.pClearValues = clearValues.Data();
 
-	vkCmdBeginRenderPass(vulkanCommandBuffer, &renderPassBeginInfo, contents);
+	vkCmdBeginRenderPass(_VulkanCommandBuffer, &renderPassBeginInfo, contents);
 }
 
 /*
@@ -104,7 +104,7 @@ void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VkRenderPass rend
 */
 void VulkanCommandBuffer::CommandBindDescriptorSets(const VkPipelineLayout pipelineLayout, const uint32 firstBinding, const uint32 descriptorSetCount, const VkDescriptorSet *RESTRICT descriptorSets) NOEXCEPT
 {
-	vkCmdBindDescriptorSets(vulkanCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, firstBinding, descriptorSetCount, descriptorSets, 0, nullptr);
+	vkCmdBindDescriptorSets(_VulkanCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, firstBinding, descriptorSetCount, descriptorSets, 0, nullptr);
 }
 
 /*
@@ -112,7 +112,7 @@ void VulkanCommandBuffer::CommandBindDescriptorSets(const VkPipelineLayout pipel
 */
 void VulkanCommandBuffer::CommandBindIndexBuffer(const VkBuffer vulkanIndexBuffer, const VkDeviceSize offset) NOEXCEPT
 {
-	vkCmdBindIndexBuffer(vulkanCommandBuffer, vulkanIndexBuffer, offset, VK_INDEX_TYPE_UINT32);
+	vkCmdBindIndexBuffer(_VulkanCommandBuffer, vulkanIndexBuffer, offset, VK_INDEX_TYPE_UINT32);
 }
 
 /*
@@ -120,7 +120,7 @@ void VulkanCommandBuffer::CommandBindIndexBuffer(const VkBuffer vulkanIndexBuffe
 */
 void VulkanCommandBuffer::CommandBindPipeline(const VkPipeline vulkanPipeline) NOEXCEPT
 {
-	vkCmdBindPipeline(vulkanCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline);
+	vkCmdBindPipeline(_VulkanCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanPipeline);
 }
 
 /*
@@ -128,7 +128,7 @@ void VulkanCommandBuffer::CommandBindPipeline(const VkPipeline vulkanPipeline) N
 */
 void VulkanCommandBuffer::CommandBindVertexBuffers(const uint32 vertexBufferCount, const VkBuffer *RESTRICT vertexBuffers, const VkDeviceSize *RESTRICT offsets) NOEXCEPT
 {
-	vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, vertexBufferCount, vertexBuffers, offsets);
+	vkCmdBindVertexBuffers(_VulkanCommandBuffer, 0, vertexBufferCount, vertexBuffers, offsets);
 }
 
 /*
@@ -150,7 +150,7 @@ void VulkanCommandBuffer::CommandCopyImage(VkImage source, VkImage destination, 
 	imageCopy.dstOffset = { 0, 0, 0 };
 	imageCopy.extent = extent;
 
-	vkCmdCopyImage(vulkanCommandBuffer, source, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, destination, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
+	vkCmdCopyImage(_VulkanCommandBuffer, source, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, destination, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopy);
 }
 
 /*
@@ -158,7 +158,7 @@ void VulkanCommandBuffer::CommandCopyImage(VkImage source, VkImage destination, 
 */
 void VulkanCommandBuffer::CommandDraw(const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT
 {
-	vkCmdDraw(vulkanCommandBuffer, vertexCount, instanceCount, 0, 0);
+	vkCmdDraw(_VulkanCommandBuffer, vertexCount, instanceCount, 0, 0);
 }
 
 /*
@@ -166,7 +166,7 @@ void VulkanCommandBuffer::CommandDraw(const uint32 vertexCount, const uint32 ins
 */
 void VulkanCommandBuffer::CommandDrawIndexed(const uint32 indexCount, const uint32 instanceCount) NOEXCEPT
 {
-	vkCmdDrawIndexed(vulkanCommandBuffer, indexCount, instanceCount, 0, 0, 0);
+	vkCmdDrawIndexed(_VulkanCommandBuffer, indexCount, instanceCount, 0, 0, 0);
 }
 
 /*
@@ -174,7 +174,7 @@ void VulkanCommandBuffer::CommandDrawIndexed(const uint32 indexCount, const uint
 */
 void VulkanCommandBuffer::CommandEndRenderPass() NOEXCEPT
 {
-	vkCmdEndRenderPass(vulkanCommandBuffer);
+	vkCmdEndRenderPass(_VulkanCommandBuffer);
 }
 
 /*
@@ -182,7 +182,7 @@ void VulkanCommandBuffer::CommandEndRenderPass() NOEXCEPT
 */
 void VulkanCommandBuffer::CommandExecuteCommands(const VkCommandBuffer commandBuffer) NOEXCEPT
 {
-	vkCmdExecuteCommands(vulkanCommandBuffer, 1, &commandBuffer);
+	vkCmdExecuteCommands(_VulkanCommandBuffer, 1, &commandBuffer);
 }
 
 /*
@@ -190,7 +190,7 @@ void VulkanCommandBuffer::CommandExecuteCommands(const VkCommandBuffer commandBu
 */
 void VulkanCommandBuffer::CommandNextSubpass() NOEXCEPT
 {
-	vkCmdNextSubpass(vulkanCommandBuffer, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+	vkCmdNextSubpass(_VulkanCommandBuffer, VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 }
 
 /*
@@ -215,7 +215,7 @@ void VulkanCommandBuffer::CommandPipelineBarrier(const VkAccessFlags sourceAcces
 	imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
 	imageMemoryBarrier.subresourceRange.layerCount = 1;
 
-	vkCmdPipelineBarrier(vulkanCommandBuffer, sourceStageMask, destinationStageMask, dependencyFlags, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
+	vkCmdPipelineBarrier(_VulkanCommandBuffer, sourceStageMask, destinationStageMask, dependencyFlags, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
 }
 
 /*
@@ -223,7 +223,7 @@ void VulkanCommandBuffer::CommandPipelineBarrier(const VkAccessFlags sourceAcces
 */
 void VulkanCommandBuffer::CommandPushConstants(const VkPipelineLayout layout, const VkShaderStageFlags stageFlags, const uint32 offset, const uint32 size, const void *RESTRICT data) NOEXCEPT
 {
-	vkCmdPushConstants(vulkanCommandBuffer, layout, stageFlags, offset, size, data);
+	vkCmdPushConstants(_VulkanCommandBuffer, layout, stageFlags, offset, size, data);
 }
 
 /*
@@ -231,7 +231,7 @@ void VulkanCommandBuffer::CommandPushConstants(const VkPipelineLayout layout, co
 */
 void VulkanCommandBuffer::CommandResetEvent(const VkEvent event, const VkPipelineStageFlags stageMask) NOEXCEPT
 {
-	vkCmdResetEvent(vulkanCommandBuffer, event, stageMask);
+	vkCmdResetEvent(_VulkanCommandBuffer, event, stageMask);
 }
 
 /*
@@ -239,7 +239,7 @@ void VulkanCommandBuffer::CommandResetEvent(const VkEvent event, const VkPipelin
 */
 void VulkanCommandBuffer::CommandSetEvent(const VkEvent event, const VkPipelineStageFlags stageMask) NOEXCEPT
 {
-	vkCmdSetEvent(vulkanCommandBuffer, event, stageMask);
+	vkCmdSetEvent(_VulkanCommandBuffer, event, stageMask);
 }
 
 /*
@@ -247,7 +247,7 @@ void VulkanCommandBuffer::CommandSetEvent(const VkEvent event, const VkPipelineS
 */
 void VulkanCommandBuffer::CommandWaitEvents(const uint32 eventCount, const VkEvent *const RESTRICT events, const VkPipelineStageFlags sourceStageMask, const VkPipelineStageFlags destinationStageMask) NOEXCEPT
 {
-	vkCmdWaitEvents(vulkanCommandBuffer, eventCount, events, sourceStageMask, destinationStageMask, 0, nullptr, 0, nullptr, 0, nullptr);
+	vkCmdWaitEvents(_VulkanCommandBuffer, eventCount, events, sourceStageMask, destinationStageMask, 0, nullptr, 0, nullptr, 0, nullptr);
 }
 
 /*
@@ -256,7 +256,7 @@ void VulkanCommandBuffer::CommandWaitEvents(const uint32 eventCount, const VkEve
 void VulkanCommandBuffer::End() NOEXCEPT
 {
 	//End this Vulkan command buffer.
-	VULKAN_ERROR_CHECK(vkEndCommandBuffer(vulkanCommandBuffer));
+	VULKAN_ERROR_CHECK(vkEndCommandBuffer(_VulkanCommandBuffer));
 }
 
 /*
@@ -264,7 +264,7 @@ void VulkanCommandBuffer::End() NOEXCEPT
 */
 void VulkanCommandBuffer::Reset() NOEXCEPT
 {
-	VULKAN_ERROR_CHECK(vkResetCommandBuffer(vulkanCommandBuffer, 0));
+	VULKAN_ERROR_CHECK(vkResetCommandBuffer(_VulkanCommandBuffer, 0));
 }
 
 /*

@@ -3,21 +3,24 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Vulkan.
+#include <Rendering/API/Vulkan/VulkanCore.h>
+
 class VulkanFramebufferCreationParameters final
 {
 
 public:
 
 	//The render pass.
-	VkRenderPass renderPass;
+	VkRenderPass _RenderPass;
 
 	//The attachment count.
-	uint32 attachmentCount;
+	uint32 _AttachmentCount;
 
 	//The attachments.
-	const VkImageView *RESTRICT attachments;
+	const VkImageView *RESTRICT _Attachments;
 
 	//The extent.
-	VkExtent2D extent;
+	VkExtent2D _Extent;
 
 };

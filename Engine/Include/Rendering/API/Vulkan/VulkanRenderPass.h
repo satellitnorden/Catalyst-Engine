@@ -18,7 +18,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan render pass.
 	*/
-	const VkRenderPass& Get() const NOEXCEPT { return vulkanRenderPass; }
+	const VkRenderPass& Get() const NOEXCEPT { return _VulkanRenderPass; }
 
 	/*
 	*	Initializes this Vulkan render pass.
@@ -33,7 +33,7 @@ public:
 private:
 
 	//The underlying Vulkan render pass.
-	VkRenderPass vulkanRenderPass;
+	VkRenderPass _VulkanRenderPass;
 
 	/*
 	*	Creates a render pass create info.

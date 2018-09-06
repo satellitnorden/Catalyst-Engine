@@ -9,21 +9,21 @@ class VulkanRenderPassCreationParameters final
 public:
 
 	//The attachment count.
-	uint32 attachmentCount;
+	uint32 _AttachmentCount;
 
 	//The attachment descriptions.
-	const VkAttachmentDescription *RESTRICT attachmentDescriptions;
+	const VkAttachmentDescription *RESTRICT _AttachmentDescriptions;
 
 	//The subpass description count.
-	uint32 subpassDescriptionCount;
+	uint32 _SubpassDescriptionCount;
 
 	//The subpass descriptions.
-	const VkSubpassDescription *RESTRICT subpassDescriptions;
+	const VkSubpassDescription *RESTRICT _SubpassDescriptions;
 
 	//The subpass dependency count.
-	uint32 subpassDependencyCount;
+	uint32 _SubpassDependencyCount;
 
 	//The subpass dependencies.
-	const VkSubpassDependency *RESTRICT subpassDependencies;
+	const VkSubpassDependency *RESTRICT _SubpassDependencies;
 
 };
