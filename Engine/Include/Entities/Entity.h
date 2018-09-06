@@ -116,6 +116,21 @@ public:
 	*/
 	void Scale(const Vector3 &amount) NOEXCEPT;
 
+	/*
+	*	Returns the forward vector of this entity.
+	*/
+	NO_DISCARD Vector3 GetForwardVector() const NOEXCEPT;
+
+	/*
+*	Returns the up vector of this entity.
+*/
+	NO_DISCARD Vector3 GetUpVector() const NOEXCEPT;
+
+	/*
+	*	Returns the right vector of this entity.
+	*/
+	NO_DISCARD Vector3 GetRightVector() const NOEXCEPT;
+
 protected:
 
 	//The default position.

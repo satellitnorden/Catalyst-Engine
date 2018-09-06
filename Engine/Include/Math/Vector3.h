@@ -12,6 +12,11 @@ class Vector3 final
 
 public:
 
+	//Constant vectors.
+	const static Vector3 FORWARD;
+	const static Vector3 UP;
+	const static Vector3 RIGHT;
+
 	//The X component.
 	float _X;
 

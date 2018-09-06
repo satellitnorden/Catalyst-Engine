@@ -20,21 +20,6 @@ public:
 	CameraEntity() NOEXCEPT;
 
 	/*
-	*	Returns the forward vector of this entity.
-	*/
-	Vector3 GetForwardVector() const NOEXCEPT;
-
-	/*
-	*	Returns the right vector of this entity.
-	*/
-	Vector3 GetRightVector() const NOEXCEPT;
-
-	/*
-	*	Returns the up vector of this entity.
-	*/
-	Vector3 GetUpVector() const NOEXCEPT;
-
-	/*
 	*	Returns the field of view for this camera entity.
 	*/
 	float GetFieldOfView() const NOEXCEPT;

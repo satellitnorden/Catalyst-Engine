@@ -150,3 +150,63 @@ void Entity::Scale(const Vector3 &amount) NOEXCEPT
 		child->Scale(amount);
 	}
 }
+
+/*
+*	Returns the forward vector of this entity.
+*/
+NO_DISCARD Vector3 Entity::GetForwardVector() const NOEXCEPT
+{
+	//Return the forward vector of this entity.
+	if (const Vector3 *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
+	{
+		Vector3 forward{ Vector3::FORWARD };
+		forward.Rotate(*rotation);
+
+		return forward;
+	}
+
+	else
+	{
+		return Vector3::FORWARD;
+	}
+}
+
+/*
+*	Returns the up vector of this entity.
+*/
+NO_DISCARD Vector3 Entity::GetUpVector() const NOEXCEPT
+{
+	//Return the up vector of this entity.
+	if (const Vector3 *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
+	{
+		Vector3 up{ Vector3::UP };
+		up.Rotate(*rotation);
+
+		return up;
+	}
+
+	else
+	{
+		return Vector3::UP;
+	}
+}
+
+/*
+*	Returns the right vector of this entity.
+*/
+NO_DISCARD Vector3 Entity::GetRightVector() const NOEXCEPT
+{
+	//Return the right vector of this entity.
+	if (const Vector3 *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
+	{
+		Vector3 right{ Vector3::RIGHT };
+		right.Rotate(*rotation);
+
+		return right;
+	}
+
+	else
+	{
+		return Vector3::RIGHT;
+	}
+}
