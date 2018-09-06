@@ -637,7 +637,7 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		data._MaterialPropertiesData[0].EmplaceFast(255);
 		data._MaterialPropertiesData[0].EmplaceFast(0);
 
-		CreatePhysicalMaterial(physicalMaterialData, _CommonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Red)]);
+		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Red)]);
 	}
 
 	{
