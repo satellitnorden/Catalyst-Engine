@@ -35,7 +35,9 @@ enum class RenderPassMainStage : uint8
 	None, //This will be removed once all the main stages are in place.
 	DirectionalShadow,
 	Scene,
+#if !defined(CATALYST_DISABLE_OCEAN)
 	Ocean,
+#endif
 	PostProcessingFinal,
 
 	NumberOfRenderPassMainStages
@@ -64,8 +66,10 @@ enum class RenderPassSubStage : uint8
 	DynamicOutline,
 	ParticleSystem,
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	//Ocean main stage.
 	Ocean,
+#endif
 
 	//Post processing final main stage.
 	PostProcessing,
@@ -121,7 +125,9 @@ enum class CommonRenderDataTableLayout : uint8
 	Terrain,
 	Physical,
 	Vegetation,
+#if !defined(CATALYST_DISABLE_OCEAN)
 	Ocean,
+#endif
 	ParticleSystem,
 	GaussianBlur,
 	NumberOfCommonRenderDataTableLayouts
@@ -160,7 +166,9 @@ enum class Shader : uint8
 	GaussianBlurFragment,
 	InstancedPhysicalVertex,
 	LightingFragment,
+#if !defined(CATALYST_DISABLE_OCEAN)
 	OceanFragment,
+#endif
 	OutlineFragment,
 	ParticleSystemFragment,
 	ParticleSystemGeometry,

@@ -36,15 +36,14 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	camera = EntitySystem::Instance->CreateEntity<CameraEntity>();
 
 	//Move the camera into position.
-	camera->Move(Vector3(0.0f, 1.0f + 8.0f, 32.0f));
-	camera->Rotate(Vector3(-20.0f, 0.0f, 0.0f));
+	camera->Move(Vector3(0.0f, 0.0f, 10.0f));
 
 	//Set it as the active camera.
 	RenderingSystem::Instance->SetActiveCamera(camera);
 
 	//Create some particles.
 	ParticleSystemEntity *const RESTRICT particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
-	particles->Initialize(RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle), ParticleSystemProperties(10.0f, 60.0f, 0.1f, Vector2(0.025f, 0.025f), Vector2(0.05f, 0.05f), Vector3(-25.0f, 0.0f, -25.0f), Vector3(25.0f, 25.0f, 25.0f), Vector3(-0.25f, -0.25f, -0.25f), Vector3(0.25f, 0.25f, 0.25f), Vector3(0.0f, 0.0f, 0.0f)));
+	particles->Initialize(RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle), ParticleSystemProperties(10.0f, 60.0f, 0.01f, Vector2(0.025f, 0.025f), Vector2(0.05f, 0.05f), Vector3(-25.0f, 0.0f, -25.0f), Vector3(25.0f, 25.0f, 25.0f), Vector3(-0.25f, -0.25f, -0.25f), Vector3(0.25f, 0.25f, 0.25f), Vector3(0.0f, 0.0f, 0.0f)));
 
 	//Create, uh, sun.
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
@@ -65,7 +64,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	data->_Model = model;
 	data->_Position = Vector3(0.0f, 0.0f, 0.0f);
 	data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
-	data->_Scale = Vector3(10.0f, 10.0f, 10.0f);
+	data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
 
 	EntitySystem::Instance->RequestInitialization(spinner, data, false);
 }

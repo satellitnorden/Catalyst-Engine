@@ -14,7 +14,11 @@ public:
 	/*
 	*	Initializes the Vulkan frame data.
 	*/
-	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout, const VulkanDescriptorSetLayout environmentDescriptorSetLayout, const VulkanDescriptorSetLayout oceanDescriptorSetLayout) NOEXCEPT
+	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout, const VulkanDescriptorSetLayout environmentDescriptorSetLayout
+#if !defined(CATALYST_DISABLE_OCEAN)
+		, const VulkanDescriptorSetLayout oceanDescriptorSetLayout
+#endif
+	) NOEXCEPT
 	{
 		//Create the primary command pool.
 		primaryCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
@@ -67,6 +71,7 @@ public:
 			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(environmentDescriptorSets[i], environmentDescriptorSetLayout);
 		}
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 		//Create the ocean descriptor sets.
 		oceanDescriptorSets.UpsizeFast(frameDataCount);
 
@@ -74,6 +79,7 @@ public:
 		{
 			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(oceanDescriptorSets[i], oceanDescriptorSetLayout);
 		}
+#endif
 	}
 
 	/*
@@ -133,10 +139,12 @@ public:
 		return &environmentDescriptorSets[currentFrame];
 	}
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	/*
 	*	Returns the current ocean descriptor set.
 	*/
 	VulkanDescriptorSet *RESTRICT GetCurrentOceanRenderDataTable() NOEXCEPT { return &oceanDescriptorSets[currentFrame]; }
+#endif
 
 private:
 
@@ -161,7 +169,9 @@ private:
 	//The environment descriptor sets.
 	DynamicArray<VulkanDescriptorSet> environmentDescriptorSets;
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	//The ocean descriptor sets.
 	DynamicArray<VulkanDescriptorSet> oceanDescriptorSets;
+#endif
 
 };

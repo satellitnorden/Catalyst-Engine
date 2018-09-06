@@ -6,7 +6,9 @@
 
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>
-#include <Rendering/Engine/OceanMaterial.h>
+#if !defined(CATALYST_DISABLE_OCEAN)
+	#include <Rendering/Engine/OceanMaterial.h>
+#endif
 
 class EnvironmentManager final
 {
@@ -51,6 +53,7 @@ public:
 	*/
 	void SetDayEnvironmentMaterial(const EnvironmentMaterial& newDayEnvironmentMaterial) NOEXCEPT { _DayEnvironmentMaterial = newDayEnvironmentMaterial; }
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	/*
 	*	Returns the ocean material.
 	*/
@@ -60,6 +63,7 @@ public:
 	*	Sets the ocean material.
 	*/
 	void SetOceanMaterial(const OceanMaterial &newOceanMaterial) NOEXCEPT { _OceanMaterial = newOceanMaterial; }
+#endif
 
 private:
 
@@ -72,7 +76,9 @@ private:
 	//The day environment material.
 	EnvironmentMaterial _DayEnvironmentMaterial;
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	//The ocean material.
 	OceanMaterial _OceanMaterial;
+#endif
 
 };

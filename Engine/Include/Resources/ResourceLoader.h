@@ -13,7 +13,9 @@
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/TerrainMaterial.h>
 #include <Rendering/Engine/VegetationMaterial.h>
+#if !defined(CATALYST_DISABLE_OCEAN)
 #include <Rendering/Engine/OceanMaterial.h>
+#endif
 
 //Resources.
 #include <Resources/ResourcesCore.h>
@@ -36,10 +38,12 @@ public:
 	*/
 	static const EnvironmentMaterial& GetEnvironmentMaterial(const HashString resourceID) { return _EnvironmentMaterials[resourceID]; }
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	/*
 	*	Given a resource ID, return the corresponding ocean material.
 	*/
 	static const OceanMaterial& GetOceanMaterial(const HashString resourceID) { return _OceanMaterials[resourceID]; }
+#endif
 
 	/*
 	*	Given a resource ID, return the corresponding particle material.
@@ -71,8 +75,10 @@ private:
 	//Container for all environment materials.
 	static Map<HashString, EnvironmentMaterial> _EnvironmentMaterials;
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	//Container for all ocean materials.
 	static Map<HashString, OceanMaterial> _OceanMaterials;
+#endif
 
 	//Container for all particle materials.
 	static Map<HashString, ParticleMaterial> _ParticleMaterials;
@@ -99,10 +105,12 @@ private:
 	*/
 	static void LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	/*
 	*	Given a file, load an ocean material.
 	*/
 	static void LoadOceanMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
+#endif
 
 	/*
 	*	Given a file, load a particle material.

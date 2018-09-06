@@ -1,3 +1,4 @@
+#if !defined(CATALYST_DISABLE_OCEAN)
 #pragma once
 
 //Core.
@@ -15,3 +16,4 @@ public:
 	Texture2DHandle normalMapTexture;
 
 };
+#endif

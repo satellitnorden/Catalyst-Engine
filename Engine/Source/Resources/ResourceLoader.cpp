@@ -6,7 +6,9 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
+#if !defined(CATALYST_DISABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
+#endif
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/PhysicalModelData.h>
@@ -21,7 +23,9 @@
 
 //Static variable definitions.
 Map<HashString, EnvironmentMaterial> ResourceLoader::_EnvironmentMaterials;
+#if !defined(CATALYST_DISABLE_OCEAN)
 Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
+#endif
 Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::_PhysicalModels;
@@ -107,12 +111,14 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 				break;
 			}
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 			case ResourceType::OceanMaterial:
 			{
 				LoadOceanMaterial(file);
 
 				break;
 			}
+#endif
 		}
 	}
 }
@@ -157,6 +163,7 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 	RenderingSystem::Instance->CreateEnvironmentMaterial(environmentMaterialData, _EnvironmentMaterials[resourceID]);
 }
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 /*
 *	Given a file, load an ocean material.
 */
@@ -193,6 +200,7 @@ void ResourceLoader::LoadOceanMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	//Create the ocean material via the rendering system.
 	RenderingSystem::Instance->CreateOceanMaterial(oceanMaterialData, _OceanMaterials[resourceID]);
 }
+#endif
 
 /*
 *	Given a file, load a particle material.

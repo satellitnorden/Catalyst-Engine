@@ -12,7 +12,9 @@
 #include <Rendering/Engine/RenderPasses/DynamicPhysicalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/InstancedPhysicalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
+#if !defined(CATALYST_DISABLE_OCEAN)
 #include <Rendering/Engine/RenderPasses/OceanRenderPass.h>
+#endif
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>

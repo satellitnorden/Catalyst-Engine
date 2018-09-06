@@ -1,3 +1,4 @@
+#if !defined(CATALYST_DISABLE_OCEAN)
 #pragma once
 
 //Core.
@@ -21,3 +22,4 @@ public:
 	DynamicArray<DynamicArray<byte>> _NormalMapData;
 
 };
+#endif

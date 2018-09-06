@@ -14,7 +14,9 @@
 
 //Rendering.
 #include <Rendering/Engine/CommonPhysicalModelData.h>
+#if !defined(CATALYST_DISABLE_OCEAN)
 #include <Rendering/Engine/OceanMaterial.h>
+#endif
 #include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/RenderingUtilities.h>
@@ -27,7 +29,9 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
+#if !defined(CATALYST_DISABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
+#endif
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/TerrainMaterialData.h>
@@ -270,6 +274,7 @@ RenderDataTableHandle RenderingSystem::GetCurrentEnvironmentRenderDataTable() co
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentEnvironmentRenderDataTable();
 }
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 /*
 *	Returns the current ocean render data table.
 */
@@ -278,6 +283,7 @@ RenderDataTableHandle RenderingSystem::GetCurrentOceanRenderDataTable() const NO
 	//Return the current ocean render data table via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentOceanRenderDataTable();
 }
+#endif
 
 /*
 *	Returns the given common render data table layout.
@@ -297,6 +303,7 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &e
 	CURRENT_RENDERING_SYSTEM::Instance->CreateEnvironmentMaterial(environmentMaterialData, environmentMaterial);
 }
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 /*
 *	Creates an ocean material.
 */
@@ -305,6 +312,7 @@ void RenderingSystem::CreateOceanMaterial(const OceanMaterialData &oceanMaterial
 	//Create the normal map texture.
 	oceanMaterial.normalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(oceanMaterialData._NormalMapData, oceanMaterialData._Width, oceanMaterialData._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 }
+#endif
 
 /*
 *	Creates a physical model.
@@ -533,7 +541,9 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[INDEX(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::DynamicOutline)] = DynamicOutlineRenderPass::Instance.Get();
+#if !defined(CATALYST_DISABLE_OCEAN)
 	_RenderPasses[INDEX(RenderPassSubStage::Ocean)] = OceanRenderPass::Instance.Get();
+#endif
 	_RenderPasses[INDEX(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
 }
@@ -964,6 +974,7 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 	//Set the environment blend to be day by default.
 	EnvironmentManager::Instance->SetEnvironmentBlend(1.0f);
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	{
 		//Initialize the default ocean material.
 		constexpr uint8 RESOLUTION{ 32 };
@@ -988,6 +999,7 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 
 		EnvironmentManager::Instance->SetOceanMaterial(_DefaultOceanMaterial);
 	}
+#endif
 }
 
 /*

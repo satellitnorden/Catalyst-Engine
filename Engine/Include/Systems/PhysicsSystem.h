@@ -35,10 +35,12 @@ public:
 	*/
 	const Vector3& GetWindDirection() const NOEXCEPT { return _WindDirection; }
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	/*
 	*	Returns the ocean height.
 	*/
 	constexpr float GetOceanHeight() const NOEXCEPT { return 0.0f; }
+#endif
 
 	/*
 	*	Given a world position, returns the height of the terrain at that point.

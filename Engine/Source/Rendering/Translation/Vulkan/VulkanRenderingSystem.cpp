@@ -81,7 +81,11 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 	InitializeVulkanRenderPasses();
 
 	//Initialize the Vulkan frame data.
-	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::DynamicUniformData)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Environment)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Ocean)]);
+	frameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::DynamicUniformData)], descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Environment)]
+#if !defined(CATALYST_DISABLE_OCEAN)
+		, descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Ocean)]
+#endif
+	);
 }
 
 /*
@@ -612,6 +616,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentEnvironmentRenderDataTabl
 	return reinterpret_cast<RenderDataTableHandle>(frameData.GetCurrentEnvironmentDescriptorSet());
 }
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 /*
 *	Returns the current ocean descriptor set.
 */
@@ -619,6 +624,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanRenderDataTable() NO
 {
 	return reinterpret_cast<RenderDataTableHandle>(frameData.GetCurrentOceanRenderDataTable());
 }
+#endif
 
 /*
 *	Returns the given common render data table layout.
@@ -770,6 +776,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 		descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Vegetation)].Initialize(static_cast<uint32>(vegetationDescriptorSetLayoutBindings.Size()), vegetationDescriptorSetLayoutBindings.Data());
 	}
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	{
 		//Initialize the ocean descriptor set layout.
 		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> oceanDescriptorSetLayoutBindings
@@ -781,6 +788,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 
 		descriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Ocean)].Initialize(static_cast<uint32>(oceanDescriptorSetLayoutBindings.Size()), oceanDescriptorSetLayoutBindings.Data());
 	}
+#endif
 
 	{
 		//Initialize the particle system descriptor set layout.
@@ -879,12 +887,14 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		shaderModules[INDEX(Shader::LightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	{
 		//Initialize the ocean fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetOceanFragmentShaderData(data);
 		shaderModules[INDEX(Shader::OceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
+#endif
 
 	{
 		//Initialize the outline fragment shader module.
@@ -1417,6 +1427,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)].shouldClear = true;
 	}
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	//Initialize the ocean render pass.
 	{
 		constexpr uint64 NUMBER_OF_OCEAN_SUBPASSES{ 1 };
@@ -1483,6 +1494,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].numberOfAttachments = 1;
 		vulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)].shouldClear = false;
 	}
+#endif
 
 	//Initialize the post processing final render pass.
 	{
@@ -1603,6 +1615,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 			currentStage = renderPass->GetMainStage();
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 			//Specialization - Copy scene to scene intermediate for the ocean render pass.
 			if (currentStage == RenderPassMainStage::Ocean)
 			{
@@ -1647,6 +1660,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 																		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);
 			}
+#endif
 
 			if (vulkanRenderPassMainStageData[INDEX(currentStage)].shouldClear)
 			{
@@ -1713,6 +1727,7 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(environmentWriteDescriptorSets.Size()), environmentWriteDescriptorSets.Data(), 0, nullptr);
 	}
 
+#if !defined(CATALYST_DISABLE_OCEAN)
 	{
 		//Update the ocean descriptor set.
 		VulkanDescriptorSet &oceanDescriptorSet{ *frameData.GetCurrentOceanRenderDataTable() };
@@ -1726,6 +1741,7 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(oceanWriteDescriptorSets.Size()), oceanWriteDescriptorSets.Data(), 0, nullptr);
 	}
+#endif
 }
 
 /*
