@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
 
 //Multithreading.
@@ -34,12 +35,12 @@ public:
 	/*
 	*	Pre-updates the input system synchronously.
 	*/
-	void PreUpdateSystemSynchronous() NOEXCEPT;
+	void PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Post-updates the input system synchronously.
 	*/
-	void PostUpdateSystemSynchronous() NOEXCEPT;
+	void PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Updates the input system asynchronously.

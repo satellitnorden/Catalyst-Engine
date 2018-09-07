@@ -4,6 +4,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/General/UpdateContext.h>
 
 //Android specific third party includes.
 #include <ThirdParty/android_native_app_glue.h>
@@ -49,12 +50,12 @@ public:
 	/*
 	*	Pre-updates the platform.
 	*/
-	static void PreUpdate() NOEXCEPT;
+	static void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Post-updates the platform.
 	*/
-	static void PostUpdate() NOEXCEPT;
+	static void PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Releases the platform.

@@ -93,7 +93,7 @@ void RenderingSystem::PostInitializeSystem()
 /*
 *	Pre-updates the rendering system synchronously.
 */
-void RenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
+void RenderingSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Update the matrices.
 	UpdateMatrices();
@@ -102,7 +102,7 @@ void RenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
 /*
 *	Updates the rendering system synchronously.
 */
-void RenderingSystem::UpdateSystemSynchronous() NOEXCEPT
+void RenderingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Pre-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();

@@ -88,7 +88,7 @@ void CatalystPlatform::PostInitialize() NOEXCEPT
 /*
 *	Pre-updates the platform.
 */
-void CatalystPlatform::PreUpdate() NOEXCEPT
+void CatalystPlatform::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 
 }
@@ -96,7 +96,7 @@ void CatalystPlatform::PreUpdate() NOEXCEPT
 /*
 *	Post-updates the platform.
 */
-void CatalystPlatform::PostUpdate() NOEXCEPT
+void CatalystPlatform::PostUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Poll events.
 	PollEvents();

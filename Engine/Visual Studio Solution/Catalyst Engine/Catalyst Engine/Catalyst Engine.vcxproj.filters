@@ -840,6 +840,15 @@
     <ClInclude Include="..\..\..\Include\Math\CatalystBaseMath.h">
       <Filter>Math\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\UpdateSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\General\UpdateFunctionContext.h">
+      <Filter>Core\Include\General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1165,6 +1174,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Math\Vector3.cpp">
       <Filter>Math\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\UpdateSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

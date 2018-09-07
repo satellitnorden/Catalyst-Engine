@@ -142,6 +142,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TaskSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\UpdateSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\android_native_app_glue.c" />
     <ClCompile Include="..\..\..\Code\Source\Main\MaximGameSystem.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Main\MaximMain.cpp" />

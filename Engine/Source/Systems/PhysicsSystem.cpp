@@ -20,7 +20,7 @@ DEFINE_SINGLETON(PhysicsSystem);
 /*
 *	Updates the physics system synchronously.
 */
-void PhysicsSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
+void PhysicsSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	
 }

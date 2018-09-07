@@ -154,7 +154,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 		} particleSystemData;
 
 		particleSystemData.particleSystemRandomSeed = component->_ParticleSystemRandomSeed;
-		particleSystemData.particleSystemTotalTime = EngineSystem::Instance->GetTotalGameTime() - component->_ParticleSystemStartingTime;
+		particleSystemData.particleSystemTotalTime = EngineSystem::Instance->GetTotalTime() - component->_ParticleSystemStartingTime;
 
 		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(float) * 2, &particleSystemData);
 		commandBuffer->BindRenderDataTable(this, 2, component->_RenderDataTable);

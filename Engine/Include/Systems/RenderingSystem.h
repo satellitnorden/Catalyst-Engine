@@ -4,6 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 #include <Core/Containers/DynamicArray.h>
 #include <Core/Containers/StaticArray.h>
+#include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
 
 //Math.
@@ -102,12 +103,12 @@ public:
 	/*
 	*	Pre-updates the rendering system synchronously.
 	*/
-	void PreUpdateSystemSynchronous() NOEXCEPT;
+	void PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Updates the rendering system synchronously.
 	*/
-	void UpdateSystemSynchronous() NOEXCEPT;
+	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Releases the rendering system.

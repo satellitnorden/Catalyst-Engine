@@ -38,7 +38,7 @@ void LevelOfDetailSystem::PostInitializeSystem() NOEXCEPT
 /*
 *	Updates the level of detail system synchronously.
 */
-void LevelOfDetailSystem::UpdateSystemSynchronous() NOEXCEPT
+void LevelOfDetailSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Fire off the level of detail tasks.
 	TaskSystem::Instance->ExecuteTask(&_Tasks[INDEX(LevelOfDetailTask::Terrain)]);

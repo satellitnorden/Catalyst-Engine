@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
 
 //Math.
@@ -23,7 +24,7 @@ public:
 	/*
 	*	Updates the physics system synchronously.
 	*/
-	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
+	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Returns the wind strength.

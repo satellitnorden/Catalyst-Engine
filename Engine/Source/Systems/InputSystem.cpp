@@ -6,6 +6,7 @@
 
 //Systems.
 #include <Systems/TaskSystem.h>
+#include <Systems/UpdateSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(InputSystem);
@@ -26,7 +27,7 @@ void InputSystem::InitializeSystem() NOEXCEPT
 /*
 *	Pre-updates the input system synchronously.
 */
-void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
+void InputSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Execute the update task.
 	TaskSystem::Instance->ExecuteTask(&_UpdateTask);
@@ -35,7 +36,7 @@ void InputSystem::PreUpdateSystemSynchronous() NOEXCEPT
 /*
 *	Post-updates the input system synchronously.
 */
-void InputSystem::PostUpdateSystemSynchronous() NOEXCEPT
+void InputSystem::PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Wait for the update task to finish.
 	_UpdateTask.WaitFor();

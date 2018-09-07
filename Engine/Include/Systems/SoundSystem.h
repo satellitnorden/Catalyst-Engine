@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
 
 //Math.
@@ -31,7 +32,7 @@ public:
 	/*
 	*	Updates the sound system synschronously.
 	*/
-	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
+	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Releases the sound system.

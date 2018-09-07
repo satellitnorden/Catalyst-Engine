@@ -7,7 +7,7 @@
 #include <Multithreading/Semaphore.h>
 
 //Type aliases.
-using TaskFunction = void(*)(void *const RESTRICT);
+using TaskFunction = void(*)(void *const RESTRICT /*arguments*/);
 
 class Task final
 {

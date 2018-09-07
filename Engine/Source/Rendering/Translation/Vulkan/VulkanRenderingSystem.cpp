@@ -385,7 +385,7 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 	component._Properties = properties;
 	component._PropertiesUniformBuffer = uniformBuffer;
 	renderComponent._ParticleSystemRandomSeed = CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f);
-	renderComponent._ParticleSystemStartingTime = EngineSystem::Instance->GetTotalGameTime();
+	renderComponent._ParticleSystemStartingTime = EngineSystem::Instance->GetTotalTime();
 	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(properties.lifetime / properties.spawnFrequency);
 }
 
@@ -1800,7 +1800,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	dynamicUniformData.environmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
 
 	dynamicUniformData.deltaTime = EngineSystem::Instance->GetDeltaTime();
-	dynamicUniformData.totalGameTime = EngineSystem::Instance->GetTotalGameTime();
+	dynamicUniformData.totalGameTime = EngineSystem::Instance->GetTotalTime();
 
 	uint64 counter = 0;
 

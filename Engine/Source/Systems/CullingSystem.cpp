@@ -29,7 +29,7 @@ void CullingSystem::InitializeSystem() NOEXCEPT
 /*
 *	Updates the culling system synchronously.
 */
-void CullingSystem::UpdateSystemSynchronous() NOEXCEPT
+void CullingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Fire off the culling tasks.
 	TaskSystem::Instance->ExecuteTask(&_Tasks[INDEX(CullingTask::Terrain)]);

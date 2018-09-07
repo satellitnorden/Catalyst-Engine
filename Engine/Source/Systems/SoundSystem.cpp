@@ -15,7 +15,7 @@ void SoundSystem::InitializeSystem() NOEXCEPT
 /*
 *	Updates the sound system synschronously.
 */
-void SoundSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
+void SoundSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 
 }

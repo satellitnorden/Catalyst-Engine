@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 #include <Core/Containers/StaticArray.h>
+#include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
 
 //Multithreading.
@@ -37,7 +38,7 @@ public:
 	/*
 	*	Updates the level of detail system synchronously.
 	*/
-	void UpdateSystemSynchronous() NOEXCEPT;
+	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Waits for the terrain level of detail to finish.

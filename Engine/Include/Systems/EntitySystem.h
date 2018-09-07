@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
 
 //Entities.
@@ -30,7 +31,7 @@ public:
 	/*
 	*	Pre-updates the entity system synchronously.
 	*/
-	void PreUpdateSystemSynchronous() NOEXCEPT;
+	void PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Releases the entity system.

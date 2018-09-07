@@ -80,6 +80,8 @@
     <ClInclude Include="..\..\..\Include\Core\General\HashString.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Padding.h" />
     <ClInclude Include="..\..\..\Include\Core\General\Pair.h" />
+    <ClInclude Include="..\..\..\Include\Core\General\UpdateContext.h" />
+    <ClInclude Include="..\..\..\Include\Core\General\UpdateFunctionContext.h" />
     <ClInclude Include="..\..\..\Include\Core\Pointers\SharedPointer.h" />
     <ClInclude Include="..\..\..\Include\Core\Pointers\UniquePointer.h" />
     <ClInclude Include="..\..\..\Include\Core\Tools\HashTools.h" />
@@ -261,6 +263,7 @@
     <ClInclude Include="..\..\..\Include\Systems\RenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\SoundSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\TaskSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\UpdateSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
@@ -371,6 +374,7 @@
     <ClCompile Include="..\..\..\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\SoundSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\TaskSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\UpdateSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Math\Vector3.inl" />

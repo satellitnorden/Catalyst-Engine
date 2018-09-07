@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/EngineSystem.h>
 
+//Core.
+#include <Core/General/UpdateContext.h>
+
 //Systems.
 #include <Systems/CullingSystem.h>
 #include <Systems/EntitySystem.h>
@@ -10,6 +13,7 @@
 #include <Systems/PhysicsSystem.h>
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
+#include <Systems/UpdateSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(EngineSystem);
@@ -49,41 +53,37 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	//Update the delta time.
 	_DeltaTime = newDeltaTime;
 
-	//Update the total game time.
-	_TotalGameTime += _DeltaTime;
+	//Update the total time.
+	_TotalTime += _DeltaTime;
 
-	//Pre-update the platform.
-	CatalystPlatform::PreUpdate();
+	//Construct the update context.
+	UpdateContext context;
+	context._DeltaTime = _DeltaTime;
+	context._TotalTime = _TotalTime;
 
-	//Pre-update the input system.
-	InputSystem::Instance->PreUpdateSystemSynchronous();
+	/*
+	*	Pre-update phase.
+	*/
+	CatalystPlatform::PreUpdate(&context);
+	UpdateSystem::Instance->PreUpdateSystemSynchronous(&context);
+	InputSystem::Instance->PreUpdateSystemSynchronous(&context);
+	EntitySystem::Instance->PreUpdateSystemSynchronous(&context);
+	RenderingSystem::Instance->PreUpdateSystemSynchronous(&context);
 
-	//Pre-update the entity system.
-	EntitySystem::Instance->PreUpdateSystemSynchronous();
+	/*
+	*	Update phase.
+	*/
+	CullingSystem::Instance->UpdateSystemSynchronous(&context);
+	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
+	PhysicsSystem::Instance->UpdateSystemSynchronous(&context);
+	RenderingSystem::Instance->UpdateSystemSynchronous(&context);
+	SoundSystem::Instance->UpdateSystemSynchronous(&context);
 
-	//Pre-update the rendering system.
-	RenderingSystem::Instance->PreUpdateSystemSynchronous();
-
-	//Update the culling system.
-	CullingSystem::Instance->UpdateSystemSynchronous();
-
-	//Update the level of detail system.
-	LevelOfDetailSystem::Instance->UpdateSystemSynchronous();
-
-	//Update the physics system.
-	PhysicsSystem::Instance->UpdateSystemSynchronous(_DeltaTime);
-
-	//Update the graphics system.
-	RenderingSystem::Instance->UpdateSystemSynchronous();
-
-	//Update the sound system.
-	SoundSystem::Instance->UpdateSystemSynchronous(_DeltaTime);
-
-	//Post-update the input system.
-	InputSystem::Instance->PostUpdateSystemSynchronous();
-
-	//Post-update the platform.
-	CatalystPlatform::PostUpdate();
+	/*
+	*	Post-update phase.
+	*/
+	InputSystem::Instance->PostUpdateSystemSynchronous(&context);
+	CatalystPlatform::PostUpdate(&context);
 }
 
 /*

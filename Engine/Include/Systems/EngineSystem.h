@@ -54,9 +54,9 @@ public:
 	float GetDeltaTime() const NOEXCEPT { return _DeltaTime; }
 
 	/*
-	*	Returns the total game time.
+	*	Returns the total time.
 	*/
-	float GetTotalGameTime() const NOEXCEPT { return _TotalGameTime; }
+	float GetTotalTime() const NOEXCEPT { return _TotalTime; }
 
 private:
 
@@ -70,6 +70,6 @@ private:
 	float _DeltaTime{ 0.0f };
 
 	//Denotes the total game time.
-	float _TotalGameTime{ 0.0f };
+	float _TotalTime{ 0.0f };
 
 };
