@@ -13,7 +13,7 @@ class OceanMaterial final
 public:
 
 	//The normal map texture.
-	Texture2DHandle normalMapTexture;
+	Texture2DHandle _NormalMapTexture;
 
 };
 #endif

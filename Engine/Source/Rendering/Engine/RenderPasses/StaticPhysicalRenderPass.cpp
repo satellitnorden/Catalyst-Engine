@@ -71,19 +71,19 @@ void StaticPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(PhysicalVertex, position));
+										offsetof(PhysicalVertex, _Position));
 	AddVertexInputAttributeDescription(	1,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(PhysicalVertex, normal));
+										offsetof(PhysicalVertex, _Normal));
 	AddVertexInputAttributeDescription(	2,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(PhysicalVertex, tangent));
+										offsetof(PhysicalVertex, _Tangent));
 	AddVertexInputAttributeDescription(	3,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
-										offsetof(PhysicalVertex, textureCoordinate));
+										offsetof(PhysicalVertex, _TextureCoordinate));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);

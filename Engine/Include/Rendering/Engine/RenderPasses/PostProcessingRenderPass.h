@@ -22,10 +22,10 @@ public:
 private:
 
 	//The render data table layout.
-	RenderDataTableLayoutHandle renderDataTableLayout;
+	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
 	//The render data table.
-	RenderDataTableHandle renderDataTable;
+	RenderDataTableHandle _RenderDataTable;
 
 	/*
 	*	Initializes the post processing render pass.

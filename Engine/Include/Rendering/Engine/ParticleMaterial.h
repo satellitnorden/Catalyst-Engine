@@ -12,6 +12,6 @@ class ParticleMaterial final
 public:
 
 	//The albedo texture.
-	Texture2DHandle albedoTexture;
+	Texture2DHandle _AlbedoTexture;
 
 };

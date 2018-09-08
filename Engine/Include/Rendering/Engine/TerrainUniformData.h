@@ -11,6 +11,33 @@ class TerrainUniformData final
 
 public:
 
+	//The terrain first layer displacement height.
+	float _TerrainFirstLayerDisplacementHeight;
+
+	//The terrain second layer displacement height.
+	float _TerrainSecondLayerDisplacementHeight;
+
+	//The terrain third layer displacement height.
+	float _TerrainThirdLayerDisplacementHeight;
+
+	//The terrain fourth layer displacement height.
+	float _TerrainFourthLayerDisplacementHeight;
+
+	//The terrain fifth layer displacement height.
+	float _TerrainFifthLayerDisplacementHeight;
+
+	//The terrain height.
+	float _TerrainHeight;
+
+	//The terrain size.
+	float _TerrainSize;
+
+	//The terrain texture tiling factor.
+	float _TerrainTextureTilingFactor;
+
+	//The terrain position.
+	Vector3 _TerrainPosition;
+
 	/*
 	*	Default constructor.
 	*/
@@ -24,44 +51,17 @@ public:
 	*/
 	TerrainUniformData(const float initialTerrainFirstLayerDisplacementHeight, const float initialTerrainSecondLayerDisplacementHeight, const float initialTerrainThirdLayerDisplacementHeight, const float initialTerrainFourthLayerDisplacementHeight, const float initialTerrainFifthLayerDisplacementHeight, const float initialTerrainHeight, const float initialTerrainSize, const float initialTerrainTextureTilingFactor, const Vector3 &initialTerrainPosition) NOEXCEPT
 		:
-		terrainFirstLayerDisplacementHeight(initialTerrainFirstLayerDisplacementHeight),
-		terrainSecondLayerDisplacementHeight(initialTerrainSecondLayerDisplacementHeight),
-		terrainThirdLayerDisplacementHeight(initialTerrainThirdLayerDisplacementHeight),
-		terrainFourthLayerDisplacementHeight(initialTerrainFourthLayerDisplacementHeight),
-		terrainFifthLayerDisplacementHeight(initialTerrainFifthLayerDisplacementHeight),
-		terrainHeight(initialTerrainHeight),
-		terrainSize(initialTerrainSize),
-		terrainTextureTilingFactor(initialTerrainTextureTilingFactor),
-		terrainPosition(initialTerrainPosition)
+		_TerrainFirstLayerDisplacementHeight(initialTerrainFirstLayerDisplacementHeight),
+		_TerrainSecondLayerDisplacementHeight(initialTerrainSecondLayerDisplacementHeight),
+		_TerrainThirdLayerDisplacementHeight(initialTerrainThirdLayerDisplacementHeight),
+		_TerrainFourthLayerDisplacementHeight(initialTerrainFourthLayerDisplacementHeight),
+		_TerrainFifthLayerDisplacementHeight(initialTerrainFifthLayerDisplacementHeight),
+		_TerrainHeight(initialTerrainHeight),
+		_TerrainSize(initialTerrainSize),
+		_TerrainTextureTilingFactor(initialTerrainTextureTilingFactor),
+		_TerrainPosition(initialTerrainPosition)
 	{
 
 	}
-
-	//The terrain first layer displacement height.
-	float terrainFirstLayerDisplacementHeight;
-
-	//The terrain second layer displacement height.
-	float terrainSecondLayerDisplacementHeight;
-
-	//The terrain third layer displacement height.
-	float terrainThirdLayerDisplacementHeight;
-
-	//The terrain fourth layer displacement height.
-	float terrainFourthLayerDisplacementHeight;
-
-	//The terrain fifth layer displacement height.
-	float terrainFifthLayerDisplacementHeight;
-
-	//The terrain height.
-	float terrainHeight;
-
-	//The terrain size.
-	float terrainSize;
-
-	//The terrain texture tiling factor.
-	float terrainTextureTilingFactor;
-
-	//The terrain position.
-	Vector3 terrainPosition;
 
 };

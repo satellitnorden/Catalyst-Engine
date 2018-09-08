@@ -65,16 +65,16 @@ public:
 	*/
 	VulkanParticleSystemProperties(const ParticleSystemProperties &otherProperties) NOEXCEPT
 		:
-		fadeTime(otherProperties.fadeTime),
-		lifetime(otherProperties.lifetime),
-		spawnFrequency(otherProperties.spawnFrequency),
-		minimumScale(otherProperties.minimumScale),
-		maximumScale(otherProperties.maximumScale),
-		minimumPosition(otherProperties.minimumPosition),
-		maximumPosition(otherProperties.maximumPosition),
-		minimumVelocity(otherProperties.minimumVelocity),
-		maximumVelocity(otherProperties.maximumVelocity),
-		worldPosition(otherProperties.worldPosition)
+		fadeTime(otherProperties._FadeTime),
+		lifetime(otherProperties._Lifetime),
+		spawnFrequency(otherProperties._SpawnFrequency),
+		minimumScale(otherProperties._MinimumScale),
+		maximumScale(otherProperties._MaximumScale),
+		minimumPosition(otherProperties._MinimumPosition),
+		maximumPosition(otherProperties._MaximumPosition),
+		minimumVelocity(otherProperties._MinimumVelocity),
+		maximumVelocity(otherProperties._MaximumVelocity),
+		worldPosition(otherProperties._WorldPosition)
 	{
 
 	}

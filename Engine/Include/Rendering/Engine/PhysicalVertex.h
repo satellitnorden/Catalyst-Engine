@@ -13,16 +13,16 @@ class PhysicalVertex final
 public:
 
 	//The position of this PhysicalVertex.
-	Vector3 position;
+	Vector3 _Position;
 
 	//The normal of this PhysicalVertex.
-	Vector3 normal;
+	Vector3 _Normal;
 
 	//The tangent of this PhysicalVertex.
-	Vector3 tangent;
+	Vector3 _Tangent;
 
 	//The texture coordinate of this PhysicalVertex.
-	Vector2 textureCoordinate;
+	Vector2 _TextureCoordinate;
 
 	/*
 	*	Default constructor - prohibited, must be constructed with the proper arguments.
@@ -34,10 +34,10 @@ public:
 	*/
 	PhysicalVertex(const Vector3 &newPosition, const Vector3 &newNormal, const Vector3 &newTangent, const Vector2 &newTextureCoordinate) NOEXCEPT
 		:
-		position(newPosition),
-		normal(newNormal),
-		tangent(newTangent),
-		textureCoordinate(newTextureCoordinate)
+		_Position(newPosition),
+		_Normal(newNormal),
+		_Tangent(newTangent),
+		_TextureCoordinate(newTextureCoordinate)
 	{
 
 	}
@@ -47,10 +47,10 @@ public:
 	*/
 		PhysicalVertex(const float newPositionX, const float newPositionY, const float newPositionZ, const float newNormalX, const float newNormalY, const float newNormalZ, const float newTangentX, const float newTangentY, const float newTangentZ, const float newTextureCoordinateX, const float newTextureCoordinateY) NOEXCEPT
 			:
-			position(newPositionX, newPositionY, newPositionZ),
-			normal(newNormalX, newNormalY, newNormalZ),
-			tangent(newTangentX, newTangentY, newTangentZ),
-			textureCoordinate(newTextureCoordinateX, newTextureCoordinateY)
+			_Position(newPositionX, newPositionY, newPositionZ),
+			_Normal(newNormalX, newNormalY, newNormalZ),
+			_Tangent(newTangentX, newTangentY, newTangentZ),
+			_TextureCoordinate(newTextureCoordinateX, newTextureCoordinateY)
 		{
 
 		}

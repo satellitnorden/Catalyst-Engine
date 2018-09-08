@@ -12,12 +12,12 @@ class PhysicalMaterial final
 public:
 
 	//The albedo texture.
-	Texture2DHandle albedoTexture;
+	Texture2DHandle _AlbedoTexture;
 
 	//The normal map texture.
-	Texture2DHandle normalMapTexture;
+	Texture2DHandle _NormalMapTexture;
 
 	//The material properties texture.
-	Texture2DHandle materialPropertiesTexture;
+	Texture2DHandle _MaterialPropertiesTexture;
 
 };

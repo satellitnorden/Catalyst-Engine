@@ -336,22 +336,22 @@ public:
 	};
 
 	//The binding.
-	uint32 binding;
+	uint32 _Binding;
 
 	//The type.
-	Type type;
+	Type _Type;
 
 	//The shader stage.
-	ShaderStage shaderStage;
+	ShaderStage _ShaderStage;
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
 	RenderDataTableLayoutBinding(const uint32 initialBinding, const Type initialType, const ShaderStage initialShaderStage) NOEXCEPT
 		:
-		binding(initialBinding),
-		type(initialType),
-		shaderStage(initialShaderStage)
+		_Binding(initialBinding),
+		_Type(initialType),
+		_ShaderStage(initialShaderStage)
 	{
 
 	}
@@ -374,22 +374,22 @@ public:
 	};
 
 	//The binding.
-	uint32 binding;
+	uint32 _Binding;
 
 	//The type.
-	Type type;
+	Type _Type;
 
 	//The handle.
-	OpaqueHandle handle;
+	OpaqueHandle _Handle;
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
 	RenderDataTableUpdateInformation(const uint32 initialBinding, const Type initialType, OpaqueHandle initialHandle) NOEXCEPT
 		:
-		binding(initialBinding),
-		type(initialType),
-		handle(initialHandle)
+		_Binding(initialBinding),
+		_Type(initialType),
+		_Handle(initialHandle)
 	{
 
 	}
@@ -413,16 +413,16 @@ public:
 	};
 
 	//The location.
-	uint32 location;
+	uint32 _Location;
 
 	//The binding.
-	uint32 binding;
+	uint32 _Binding;
 
 	//The format.
-	Format format;
+	Format _Format;
 
 	//The offset.
-	uint32 offset;
+	uint32 _Offset;
 
 	/*
 	*	Default constructor, prohibited - must be constructed with the proper arguments.
@@ -434,10 +434,10 @@ public:
 	*/
 	VertexInputAttributeDescription(const uint32 initialLocation, const uint32 initialBinding, const Format initialFormat, const uint32 initialOffset)
 		:
-		location(initialLocation),
-		binding(initialBinding),
-		format(initialFormat),
-		offset(initialOffset)
+		_Location(initialLocation),
+		_Binding(initialBinding),
+		_Format(initialFormat),
+		_Offset(initialOffset)
 	{
 
 	}
@@ -460,13 +460,13 @@ public:
 	};
 
 	//The binding.
-	uint32 binding;
+	uint32 _Binding;
 
 	//The stride.
-	uint32 stride;
+	uint32 _Stride;
 
 	//The input rate.
-	InputRate inputRate;
+	InputRate _InputRate;
 
 	/*
 	*	Default constructor, prohibited - must be constructed with the proper arguments.
@@ -478,9 +478,9 @@ public:
 	*/
 	VertexInputBindingDescription(const uint32 initialBinding, const uint32 initialStride, const InputRate initialInputRate)
 		:
-		binding(initialBinding),
-		stride(initialStride),
-		inputRate(initialInputRate)
+		_Binding(initialBinding),
+		_Stride(initialStride),
+		_InputRate(initialInputRate)
 	{
 
 	}

@@ -22,8 +22,8 @@ public:
 	*/
 	CPUTexture2D() NOEXCEPT
 		:
-		width(0),
-		height(0)
+		_Width(0),
+		_Height(0)
 	{
 
 	}
@@ -33,9 +33,9 @@ public:
 	*/
 	CPUTexture2D(const CPUTexture2D &otherTexture) NOEXCEPT
 		:
-		width(otherTexture.width),
-		height(otherTexture.width),
-		data(otherTexture.data)
+		_Width(otherTexture._Width),
+		_Height(otherTexture._Width),
+		_Data(otherTexture._Data)
 	{
 
 	}
@@ -45,11 +45,11 @@ public:
 	*/
 	CPUTexture2D(const uint64 initialResolution) NOEXCEPT
 		:
-		width(initialResolution),
-		height(initialResolution)
+		_Width(initialResolution),
+		_Height(initialResolution)
 	{
 		//Resize the underlying texture data to be able to hold all the data.
-		data.UpsizeFast(width * height);
+		_Data.UpsizeFast(_Width * _Height);
 	}
 
 	/*
@@ -57,11 +57,11 @@ public:
 	*/
 	CPUTexture2D(const uint64 initialWidth, const uint64 initialHeight) NOEXCEPT
 		:
-		width(initialWidth),
-		height(initialHeight)
+		_Width(initialWidth),
+		_Height(initialHeight)
 	{
 		//Resize the underlying texture data to be able to hold all the data.
-		data.UpsizeFast(width * height);
+		_Data.UpsizeFast(_Width * _Height);
 	}
 
 	/*
@@ -69,47 +69,47 @@ public:
 	*/
 	void operator=(const CPUTexture2D &otherTexture) NOEXCEPT
 	{
-		width = otherTexture.width;
-		height = otherTexture.height;
-		data = otherTexture.data;
+		_Width = otherTexture._Width;
+		_Height = otherTexture._Height;
+		_Data = otherTexture._Data;
 	}
 
 	/*
 	*	Begin iterator, const.
 	*/
-	RESTRICTED const Vector4 *const RESTRICT begin() const NOEXCEPT { return data.begin(); }
+	RESTRICTED const Vector4 *const RESTRICT begin() const NOEXCEPT { return _Data.begin(); }
 
 	/*
 	*	Begin iterator, non-const.
 	*/
-	RESTRICTED Vector4 *const RESTRICT begin() NOEXCEPT { return data.begin(); }
+	RESTRICTED Vector4 *const RESTRICT begin() NOEXCEPT { return _Data.begin(); }
 
 	/*
 	*	End iterator, const.
 	*/
-	RESTRICTED const Vector4 *const RESTRICT end() const NOEXCEPT { return data.end(); }
+	RESTRICTED const Vector4 *const RESTRICT end() const NOEXCEPT { return _Data.end(); }
 
 	/*
 	*	End iterator, non-const.
 	*/
-	RESTRICTED Vector4 *const RESTRICT end() NOEXCEPT { return data.end(); }
+	RESTRICTED Vector4 *const RESTRICT end() NOEXCEPT { return _Data.end(); }
 
 	/*
 	*	Returns the texture data, const.
 	*/
-	RESTRICTED const Vector4* Data() const NOEXCEPT { return data.Data(); }
+	RESTRICTED const Vector4* Data() const NOEXCEPT { return _Data.Data(); }
 
 	/*
 	*	Returns the texture data, non-const.
 	*/
-	RESTRICTED Vector4* Data() NOEXCEPT { return data.Data(); }
+	RESTRICTED Vector4* Data() NOEXCEPT { return _Data.Data(); }
 
 	/*
 	*	Returns the texture value at the specified indices, const.
 	*/
 	const Vector4& At(const uint64 xIndex, const uint64 yIndex) const NOEXCEPT
 	{
-		return data[(yIndex * width) + xIndex];
+		return _Data[(yIndex * _Width) + xIndex];
 	}
 
 	/*
@@ -117,7 +117,7 @@ public:
 	*/
 	Vector4& At(const uint64 xIndex, const uint64 yIndex) NOEXCEPT
 	{
-		return data[(yIndex * width) + xIndex];
+		return _Data[(yIndex * _Width) + xIndex];
 	}
 
 	/*
@@ -133,8 +133,8 @@ public:
 	*/
 	const Vector4 At(const float xIndex, const float yIndex) const NOEXCEPT
 	{
-		const float xTexelSize{ 1.0f / static_cast<float>(width) };
-		const float yTexelSize{ 1.0f / static_cast<float>(height) };
+		const float xTexelSize{ 1.0f / static_cast<float>(_Width) };
+		const float yTexelSize{ 1.0f / static_cast<float>(_Height) };
 
 		const float xPixelPosition{ xIndex / xTexelSize + 0.5f };
 		const float yPixelPosition{ yIndex / yTexelSize + 0.5f };
@@ -149,21 +149,21 @@ public:
 		constexpr uint64 xModifier{ static_cast<uint64>(-1) };
 		constexpr uint64 yModifier{ static_cast<uint64>(-1) };
 
-		const uint64 xBottomLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(width)) + xModifier, 0, width - 1) };
-		const uint64 yBottomLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(height)) + yModifier, 0, height - 1) };
+		const uint64 xBottomLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(_Width)) + xModifier, 0, _Width - 1) };
+		const uint64 yBottomLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(_Height)) + yModifier, 0, _Height - 1) };
 
-		const uint64 xBottomRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(width)) + xModifier, 0, width - 1) };
-		const uint64 yBottomRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(height)) + yModifier, 0, height - 1) };
+		const uint64 xBottomRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(_Width)) + xModifier, 0, _Width - 1) };
+		const uint64 yBottomRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(yStartTexel * static_cast<float>(_Height)) + yModifier, 0, _Height - 1) };
 
-		const uint64 xTopLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(width)) + xModifier, 0, width - 1) };
-		const uint64 yTopLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(height)) + yModifier, 0, height - 1) };
-		const uint64 xTopRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(width)) + xModifier, 0, width - 1) };
-		const uint64 yTopRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(height)) + yModifier, 0, height - 1) };
+		const uint64 xTopLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>(xStartTexel * static_cast<float>(_Width)) + xModifier, 0, _Width - 1) };
+		const uint64 yTopLeftCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(_Height)) + yModifier, 0, _Height - 1) };
+		const uint64 xTopRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(_Width)) + xModifier, 0, _Width - 1) };
+		const uint64 yTopRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(_Height)) + yModifier, 0, _Height - 1) };
 
-		const Vector4 &bottomLeftValue{ data[(yBottomLeftCoordinate * width) + xBottomLeftCoordinate] };
-		const Vector4 &bottomRightValue{ data[(yBottomRightCoordinate * width) + xBottomRightCoordinate] };
-		const Vector4 &topLeftValue{ data[(yTopLeftCoordinate * width) + xTopLeftCoordinate ] };
-		const Vector4 &topRightValue{ data[(yTopRightCoordinate * width) + xTopRightCoordinate] };
+		const Vector4 &bottomLeftValue{ _Data[(yBottomLeftCoordinate * _Width) + xBottomLeftCoordinate] };
+		const Vector4 &bottomRightValue{ _Data[(yBottomRightCoordinate * _Width) + xBottomRightCoordinate] };
+		const Vector4 &topLeftValue{ _Data[(yTopLeftCoordinate * _Width) + xTopLeftCoordinate ] };
+		const Vector4 &topRightValue{ _Data[(yTopRightCoordinate * _Width) + xTopRightCoordinate] };
 
 		const Vector4 mixA{ Vector4::LinearlyInterpolate(bottomLeftValue, topLeftValue, yFractional) };
 		const Vector4 mixB{ Vector4::LinearlyInterpolate(bottomRightValue, topRightValue, yFractional) };
@@ -174,22 +174,22 @@ public:
 	/*
 	*	Returns the width of the texture.
 	*/
-	uint64 GetWidth() const NOEXCEPT { return width; }
+	uint64 GetWidth() const NOEXCEPT { return _Width; }
 
 	/*
 	*	Returns the height of the texture.
 	*/
-	uint64 GetHeight() const NOEXCEPT { return height; }
+	uint64 GetHeight() const NOEXCEPT { return _Height; }
 
 private:
 
 	//The underlying texture data.
-	DynamicArray<Vector4> data;
+	DynamicArray<Vector4> _Data;
 
 	//The width of the texture.
-	uint64 width;
+	uint64 _Width;
 
 	//The height of the texture.
-	uint64 height;
+	uint64 _Height;
 
 };

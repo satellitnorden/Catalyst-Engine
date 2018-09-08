@@ -12,6 +12,21 @@ class TextureData final
 
 public:
 
+	//The texture data container.
+	TextureDataContainer _TextureDataContainer;
+
+	//Defines the address mode.
+	AddressMode _AddressMode;
+
+	//Defines the magnification filter.
+	TextureFilter _MagnificationFilter;
+
+	//Defines the mipmap mode.
+	MipmapMode _MipmapMode;
+
+	//The texture format.
+	TextureFormat _TextureFormat;
+
 	/*
 	*	Default constructor, prohibited - must be constructed with the proper arguments.
 	*/
@@ -22,28 +37,13 @@ public:
 	*/
 	TextureData(const TextureDataContainer &initialTextureDataContainer, const AddressMode initialAddressMode, const TextureFilter initialMagnificationFilter, const MipmapMode initialMipmapMode, const TextureFormat initialTextureFormat) NOEXCEPT
 		:
-		textureDataContainer(initialTextureDataContainer),
-		addressMode(initialAddressMode),
-		magnificationFilter(initialMagnificationFilter),
-		mipmapMode(initialMipmapMode),
-		textureFormat(initialTextureFormat)
+		_TextureDataContainer(initialTextureDataContainer),
+		_AddressMode(initialAddressMode),
+		_MagnificationFilter(initialMagnificationFilter),
+		_MipmapMode(initialMipmapMode),
+		_TextureFormat(initialTextureFormat)
 	{
 
 	}
-
-	//The texture data container.
-	TextureDataContainer textureDataContainer;
-
-	//Defines the address mode.
-	AddressMode addressMode;
-
-	//Defines the magnification filter.
-	TextureFilter magnificationFilter;
-
-	//Defines the mipmap mode.
-	MipmapMode mipmapMode;
-
-	//The texture format.
-	TextureFormat textureFormat;
 
 };

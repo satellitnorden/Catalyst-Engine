@@ -62,8 +62,8 @@ namespace RenderingUtilities
 
 		const float halfExtent{ extent * 0.5f };
 
-		box->minimum = *worldPosition + Vector3(-halfExtent, lowest * height, -halfExtent);
-		box->maximum = *worldPosition + Vector3(halfExtent, highest * height, halfExtent);
+		box->_Minimum = *worldPosition + Vector3(-halfExtent, lowest * height, -halfExtent);
+		box->_Maximum = *worldPosition + Vector3(halfExtent, highest * height, halfExtent);
 	}
 
 	/*
@@ -80,10 +80,10 @@ namespace RenderingUtilities
 
 		for (const VegetationTransformation &transformation : transformations)
 		{
-			gridMinimum._X = CatalystBaseMath::Minimum<float>(gridMinimum._X, transformation.position._X);
-			gridMinimum._Y = CatalystBaseMath::Minimum<float>(gridMinimum._Y, transformation.position._Z);
-			gridMaximum._X = CatalystBaseMath::Maximum<float>(gridMaximum._X, transformation.position._X);
-			gridMaximum._Y = CatalystBaseMath::Maximum<float>(gridMaximum._Y, transformation.position._Z);
+			gridMinimum._X = CatalystBaseMath::Minimum<float>(gridMinimum._X, transformation._Position._X);
+			gridMinimum._Y = CatalystBaseMath::Minimum<float>(gridMinimum._Y, transformation._Position._Z);
+			gridMaximum._X = CatalystBaseMath::Maximum<float>(gridMaximum._X, transformation._Position._X);
+			gridMaximum._Y = CatalystBaseMath::Maximum<float>(gridMaximum._Y, transformation._Position._Z);
 		}
 
 		//Now that the bounding box extent is known, calculate the number of rows/columns for the grid.
@@ -136,8 +136,8 @@ namespace RenderingUtilities
 
 		for (const VegetationTransformation &transformation : transformations)
 		{
-			uint64 rowIndex{ CatalystBaseMath::Floor<uint64>(((transformation.position._X + halfXExtent) * inverseXExtent) * static_cast<float>(rows)) };
-			uint64 columnIndex{ CatalystBaseMath::Floor<uint64>(((transformation.position._Z + halfYExtent) * inverseYExtent) * static_cast<float>(columns)) };
+			uint64 rowIndex{ CatalystBaseMath::Floor<uint64>(((transformation._Position._X + halfXExtent) * inverseXExtent) * static_cast<float>(rows)) };
+			uint64 columnIndex{ CatalystBaseMath::Floor<uint64>(((transformation._Position._Z + halfYExtent) * inverseYExtent) * static_cast<float>(columns)) };
 
 			rowIndex = CatalystBaseMath::Minimum<uint64>(rowIndex, rows - 1);
 			columnIndex = CatalystBaseMath::Minimum<uint64>(columnIndex, columns - 1);
@@ -244,15 +244,15 @@ namespace RenderingUtilities
 	{
 		StaticArray<Vector4, 8> corners;
 
-		corners[0] = Vector4(axisAlignedBoundingBox.minimum._X, axisAlignedBoundingBox.minimum._Y, axisAlignedBoundingBox.minimum._Z, 1.0f);
-		corners[1] = Vector4(axisAlignedBoundingBox.minimum._X, axisAlignedBoundingBox.maximum._Y, axisAlignedBoundingBox.minimum._Z, 1.0f);
-		corners[2] = Vector4(axisAlignedBoundingBox.maximum._X, axisAlignedBoundingBox.maximum._Y, axisAlignedBoundingBox.minimum._Z, 1.0f);
-		corners[3] = Vector4(axisAlignedBoundingBox.maximum._X, axisAlignedBoundingBox.minimum._Y, axisAlignedBoundingBox.minimum._Z, 1.0f);
+		corners[0] = Vector4(axisAlignedBoundingBox._Minimum._X, axisAlignedBoundingBox._Minimum._Y, axisAlignedBoundingBox._Minimum._Z, 1.0f);
+		corners[1] = Vector4(axisAlignedBoundingBox._Minimum._X, axisAlignedBoundingBox._Maximum._Y, axisAlignedBoundingBox._Minimum._Z, 1.0f);
+		corners[2] = Vector4(axisAlignedBoundingBox._Maximum._X, axisAlignedBoundingBox._Maximum._Y, axisAlignedBoundingBox._Minimum._Z, 1.0f);
+		corners[3] = Vector4(axisAlignedBoundingBox._Maximum._X, axisAlignedBoundingBox._Minimum._Y, axisAlignedBoundingBox._Minimum._Z, 1.0f);
 
-		corners[4] = Vector4(axisAlignedBoundingBox.minimum._X, axisAlignedBoundingBox.minimum._Y, axisAlignedBoundingBox.maximum._Z, 1.0f);
-		corners[5] = Vector4(axisAlignedBoundingBox.minimum._X, axisAlignedBoundingBox.maximum._Y, axisAlignedBoundingBox.maximum._Z, 1.0f);
-		corners[6] = Vector4(axisAlignedBoundingBox.maximum._X, axisAlignedBoundingBox.maximum._Y, axisAlignedBoundingBox.maximum._Z, 1.0f);
-		corners[7] = Vector4(axisAlignedBoundingBox.maximum._X, axisAlignedBoundingBox.minimum._Y, axisAlignedBoundingBox.maximum._Z, 1.0f);
+		corners[4] = Vector4(axisAlignedBoundingBox._Minimum._X, axisAlignedBoundingBox._Minimum._Y, axisAlignedBoundingBox._Maximum._Z, 1.0f);
+		corners[5] = Vector4(axisAlignedBoundingBox._Minimum._X, axisAlignedBoundingBox._Maximum._Y, axisAlignedBoundingBox._Maximum._Z, 1.0f);
+		corners[6] = Vector4(axisAlignedBoundingBox._Maximum._X, axisAlignedBoundingBox._Maximum._Y, axisAlignedBoundingBox._Maximum._Z, 1.0f);
+		corners[7] = Vector4(axisAlignedBoundingBox._Maximum._X, axisAlignedBoundingBox._Minimum._Y, axisAlignedBoundingBox._Maximum._Z, 1.0f);
 
 		for (uint8 i = 0; i < 8; ++i)
 		{

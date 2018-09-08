@@ -12,9 +12,9 @@ class AxisAlignedBoundingBox final
 public:
 
 	//The minimum corner.
-	Vector3 minimum;
+	Vector3 _Minimum;
 
 	//The maximum corner.
-	Vector3 maximum;
+	Vector3 _Maximum;
 
 };

@@ -9,14 +9,14 @@ class VegetationProperties final
 public:
 
 	//The cutoff distance.
-	float cutoffDistance;
+	float _CutoffDistance;
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
 	VegetationProperties(const float initialCutoffDistance) NOEXCEPT
 		:
-		cutoffDistance(initialCutoffDistance)
+		_CutoffDistance(initialCutoffDistance)
 	{
 
 	}

@@ -137,7 +137,7 @@ void CullingSystem::CullStaticPhysical() NOEXCEPT
 		const Vector3& position = transformComponent->_Position;
 		const Vector3& scale = transformComponent->_Scale;
 		const float biggestScale = CatalystBaseMath::Maximum(scale._X, CatalystBaseMath::Maximum(scale._Y, scale._Z));
-		const float scaledExtent = frustumCullingComponent->_AxisAlignedBoundingBox.maximum._X * biggestScale;
+		const float scaledExtent = frustumCullingComponent->_AxisAlignedBoundingBox._Maximum._X * biggestScale;
 
 		StaticArray<Vector4, 8> corners;
 

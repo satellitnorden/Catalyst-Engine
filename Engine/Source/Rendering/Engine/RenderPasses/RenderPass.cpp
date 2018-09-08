@@ -11,8 +11,8 @@
 RenderPass::RenderPass() NOEXCEPT
 {
 	//Set up the tasks.
-	initializationTask._Arguments = nullptr;
-	renderTask._Arguments = nullptr;
+	_InitializationTask._Arguments = nullptr;
+	_RenderTask._Arguments = nullptr;
 }
 
 /*
@@ -21,7 +21,7 @@ RenderPass::RenderPass() NOEXCEPT
 void RenderPass::InitializeAsynchronous() NOEXCEPT
 {
 	//Fire off the initialization task.
-	TaskSystem::Instance->ExecuteTask(&initializationTask);
+	TaskSystem::Instance->ExecuteTask(&_InitializationTask);
 }
 
 /*
@@ -30,7 +30,7 @@ void RenderPass::InitializeAsynchronous() NOEXCEPT
 void RenderPass::WaitForInitialization() const NOEXCEPT
 {
 	//Wait for the initialization this render pass to finish.
-	initializationTask.WaitFor();
+	_InitializationTask.WaitFor();
 }
 
 /*
@@ -39,7 +39,7 @@ void RenderPass::WaitForInitialization() const NOEXCEPT
 void RenderPass::RenderAsynchronous() NOEXCEPT
 {
 	//Fire off the render task.
-	TaskSystem::Instance->ExecuteTask(&renderTask);
+	TaskSystem::Instance->ExecuteTask(&_RenderTask);
 }
 
 /*
@@ -48,7 +48,7 @@ void RenderPass::RenderAsynchronous() NOEXCEPT
 void RenderPass::WaitForRender() const NOEXCEPT
 {
 	//Wait for the render this render pass to finish.
-	renderTask.WaitFor();
+	_RenderTask.WaitFor();
 }
 
 /*
@@ -65,7 +65,7 @@ void RenderPass::FinalizeInitialization() NOEXCEPT
 */
 RESTRICTED const CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuffer() const NOEXCEPT
 {
-	return commandBuffers[RenderingSystem::Instance->GetCurrentFrameIndex()];
+	return _CommandBuffers[RenderingSystem::Instance->GetCurrentFrameIndex()];
 }
 
 /*
@@ -73,5 +73,5 @@ RESTRICTED const CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuff
 */
 CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuffer() NOEXCEPT
 {
-	return commandBuffers[RenderingSystem::Instance->GetCurrentFrameIndex()];
+	return _CommandBuffers[RenderingSystem::Instance->GetCurrentFrameIndex()];
 }

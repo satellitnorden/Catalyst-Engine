@@ -13,34 +13,34 @@ class ParticleSystemProperties final
 public:
 
 	//The fade time, for fade-ins/fade-outs.
-	float fadeTime;
+	float _FadeTime;
 
 	//The lifetime of the particles.
-	float lifetime;
+	float _Lifetime;
 
 	//The spawn frequency.
-	float spawnFrequency;
+	float _SpawnFrequency;
 
 	//The minimum scale.
-	Vector2 minimumScale;
+	Vector2 _MinimumScale;
 
 	//The maximum scale.
-	Vector2 maximumScale;
+	Vector2 _MaximumScale;
 
 	//The minimum position.
-	Vector3 minimumPosition;
+	Vector3 _MinimumPosition;
 
 	//The maximum position.
-	Vector3 maximumPosition;
+	Vector3 _MaximumPosition;
 
 	//The minimum velocity.
-	Vector3 minimumVelocity;
+	Vector3 _MinimumVelocity;
 
 	//The maximum velocity.
-	Vector3 maximumVelocity;
+	Vector3 _MaximumVelocity;
 
 	//The world position.
-	Vector3 worldPosition;
+	Vector3 _WorldPosition;
 
 	/*
 	*	Default constructor.
@@ -64,16 +64,16 @@ public:
 								const Vector3 &initialMaximumVelocity,
 								const Vector3 &initialWorldPosition) NOEXCEPT
 		:
-		fadeTime(initialFadeTime),
-		lifetime(initialLifetime),
-		spawnFrequency(initialSpawnFrequency),
-		minimumScale(initialMinimumScale),
-		maximumScale(initialMaximumScale),
-		minimumPosition(initialMinimumPosition),
-		maximumPosition(initialMaximumPosition),
-		minimumVelocity(initialMinimumVelocity),
-		maximumVelocity(initialMaximumVelocity),
-		worldPosition(initialWorldPosition)
+		_FadeTime(initialFadeTime),
+		_Lifetime(initialLifetime),
+		_SpawnFrequency(initialSpawnFrequency),
+		_MinimumScale(initialMinimumScale),
+		_MaximumScale(initialMaximumScale),
+		_MinimumPosition(initialMinimumPosition),
+		_MaximumPosition(initialMaximumPosition),
+		_MinimumVelocity(initialMinimumVelocity),
+		_MaximumVelocity(initialMaximumVelocity),
+		_WorldPosition(initialWorldPosition)
 	{
 
 	}

@@ -48,132 +48,132 @@ public:
 	/*
 	*	Returns the data for this render pass.
 	*/
-	const void *const RESTRICT GetData() const NOEXCEPT { return data; }
+	const void *const RESTRICT GetData() const NOEXCEPT { return _Data; }
 
 	/*
 	*	Sets the data for this render pass.
 	*/
-	void SetData(const void *const RESTRICT newData) NOEXCEPT { data = newData; }
+	void SetData(const void *const RESTRICT newData) NOEXCEPT { _Data = newData; }
 
 	/*
 	*	Returns the main stage.
 	*/
-	RenderPassMainStage GetMainStage() const NOEXCEPT { return mainStage; }
+	RenderPassMainStage GetMainStage() const NOEXCEPT { return _MainStage; }
 
 	/*
 	*	Returns the sub stage.
 	*/
-	RenderPassSubStage GetSubStage() const NOEXCEPT { return subStage; }
+	RenderPassSubStage GetSubStage() const NOEXCEPT { return _SubStage; }
 
 	/*
 	*	Returns the sub stage index.
 	*/
-	uint32 GetSubStageIndex() const NOEXCEPT { return subStageIndex; }
+	uint32 GetSubStageIndex() const NOEXCEPT { return _SubStageIndex; }
 
 	/*
 	*	Returns the vertex shader.
 	*/
-	Shader GetVertexShader() const NOEXCEPT { return vertexShader; }
+	Shader GetVertexShader() const NOEXCEPT { return _VertexShader; }
 
 	/*
 	*	Returns the tessellation control shader.
 	*/
-	Shader GetTessellationControlShader() const NOEXCEPT { return tessellationControlShader; }
+	Shader GetTessellationControlShader() const NOEXCEPT { return _TessellationControlShader; }
 
 	/*
 	*	Returns the tessellation evaluation shader.
 	*/
-	Shader GetTessellationEvaluationShader() const NOEXCEPT { return tessellationEvaluationShader; }
+	Shader GetTessellationEvaluationShader() const NOEXCEPT { return _TessellationEvaluationShader; }
 
 	/*
 	*	Returns the geometry shader.
 	*/
-	Shader GetGeometryShader() const NOEXCEPT { return geometryShader; }
+	Shader GetGeometryShader() const NOEXCEPT { return _GeometryShader; }
 
 	/*
 	*	Returns the fragment shader.
 	*/
-	Shader GetFragmentShader() const NOEXCEPT { return fragmentShader; }
+	Shader GetFragmentShader() const NOEXCEPT { return _FragmentShader; }
 
 	/*
 	*	Returns the depth buffer.
 	*/
-	DepthBuffer GetDepthBuffer() const NOEXCEPT { return depthBuffer; }
+	DepthBuffer GetDepthBuffer() const NOEXCEPT { return _DepthBuffer; }
 
 	/*
 	*	Returns the render targets.
 	*/
-	const DynamicArray<RenderTarget>& GetRenderTargets() const NOEXCEPT { return renderTargets; }
+	const DynamicArray<RenderTarget>& GetRenderTargets() const NOEXCEPT { return _RenderTargets; }
 
 	/*
 	*	Returns the render data table layouts.
 	*/
-	const DynamicArray<RenderDataTableLayoutHandle>& GetRenderDataTableLayouts() const NOEXCEPT { return renderDataTableLayouts; }
+	const DynamicArray<RenderDataTableLayoutHandle>& GetRenderDataTableLayouts() const NOEXCEPT { return _RenderDataTableLayouts; }
 
 	/*
 	*	Returns the push constant ranges.
 	*/
-	const DynamicArray<PushConstantRange>& GetPushConstantRanges() const NOEXCEPT { return pushConstantRanges; }
+	const DynamicArray<PushConstantRange>& GetPushConstantRanges() const NOEXCEPT { return _PushConstantRanges; }
 
 	/*
 	*	Returns the vertex input attribute descriptions.
 	*/
-	const DynamicArray<VertexInputAttributeDescription>& GetVertexInputAttributeDescriptions() const NOEXCEPT { return vertexInputAttributeDescriptions; }
+	const DynamicArray<VertexInputAttributeDescription>& GetVertexInputAttributeDescriptions() const NOEXCEPT { return _VertexInputAttributeDescriptions; }
 
 	/*
 	*	Returns the vertex input binding descriptions.
 	*/
-	const DynamicArray<VertexInputBindingDescription>& GetVertexInputBindingDescriptions() const NOEXCEPT { return vertexInputBindingDescriptions; }
+	const DynamicArray<VertexInputBindingDescription>& GetVertexInputBindingDescriptions() const NOEXCEPT { return _VertexInputBindingDescriptions; }
 
 	/*
 	*	Returns the render resolution.
 	*/
-	Resolution GetRenderResolution() const NOEXCEPT { return renderResolution; }
+	Resolution GetRenderResolution() const NOEXCEPT { return _RenderResolution; }
 
 	/*
 	*	Returns whether or not blend is enabled.
 	*/
-	bool IsBlendEnabled() const NOEXCEPT { return blendEnabled; }
+	bool IsBlendEnabled() const NOEXCEPT { return _BlendEnabled; }
 
 	/*
 	*	Returns the cull mode.
 	*/
-	CullMode GetCullMode() const NOEXCEPT { return cullMode; }
+	CullMode GetCullMode() const NOEXCEPT { return _CullMode; }
 
 	/*
 	*	Returns the depth compare operator.
 	*/
-	CompareOperator GetDepthCompareOperator() const NOEXCEPT { return depthCompareOperator; }
+	CompareOperator GetDepthCompareOperator() const NOEXCEPT { return _DepthCompareOperator; }
 
 	/*
 	*	Returns whether or not depth test is enabled.
 	*/
-	bool IsDepthTestEnabled() const NOEXCEPT { return depthTestEnabled; }
+	bool IsDepthTestEnabled() const NOEXCEPT { return _DepthTestEnabled; }
 
 	/*
 	*	Returns whether or not depth write is enabled.
 	*/
-	bool IsDepthWriteEnabled() const NOEXCEPT { return depthWriteEnabled; }
+	bool IsDepthWriteEnabled() const NOEXCEPT { return _DepthWriteEnabled; }
 
 	/*
 	*	Returns the topology.
 	*/
-	Topology GetTopology() const NOEXCEPT { return topology; }
+	Topology GetTopology() const NOEXCEPT { return _Topology; }
 
 	/*
 	*	Sets the number of command buffers.
 	*/
-	void SetNumberOfCommandBuffers(const uint64 numberOfCommandBuffers) NOEXCEPT { commandBuffers.Reserve(numberOfCommandBuffers); }
+	void SetNumberOfCommandBuffers(const uint64 numberOfCommandBuffers) NOEXCEPT { _CommandBuffers.Reserve(numberOfCommandBuffers); }
 
 	/*
 	*	Adds a command buffer.
 	*/
-	void AddCommandBuffer(CommandBuffer *const RESTRICT newCommandBuffer) NOEXCEPT { commandBuffers.EmplaceFast(newCommandBuffer); }
+	void AddCommandBuffer(CommandBuffer *const RESTRICT newCommandBuffer) NOEXCEPT { _CommandBuffers.EmplaceFast(newCommandBuffer); }
 
 	/*
 	*	Returns whether or not this render pass should be included in the final render.
 	*/
-	bool IncludeInRender() const NOEXCEPT { return includeInRender; }
+	bool IncludeInRender() const NOEXCEPT { return _IncludeInRender; }
 
 	/*
 	*	Returns the current command buffer, non-const.
@@ -190,132 +190,132 @@ protected:
 	/*
 	*	Sets the main stage.
 	*/
-	void SetMainStage(const RenderPassMainStage newMainStage) NOEXCEPT { mainStage = newMainStage; }
+	void SetMainStage(const RenderPassMainStage newMainStage) NOEXCEPT { _MainStage = newMainStage; }
 
 	/*
 	*	Sets the sub stage.
 	*/
-	void SetSubStage(const RenderPassSubStage newSubStage) NOEXCEPT { subStage = newSubStage; }
+	void SetSubStage(const RenderPassSubStage newSubStage) NOEXCEPT { _SubStage = newSubStage; }
 
 	/*
 	*	Sets the sub stage index.
 	*/
-	void SetSubStageIndex(const uint32 newSubStageIndex) NOEXCEPT { subStageIndex = newSubStageIndex; }
+	void SetSubStageIndex(const uint32 newSubStageIndex) NOEXCEPT { _SubStageIndex = newSubStageIndex; }
 
 	/*
 	*	Sets the vertex shader.
 	*/
-	void SetVertexShader(const Shader newVertexShader) NOEXCEPT { vertexShader = newVertexShader; }
+	void SetVertexShader(const Shader newVertexShader) NOEXCEPT { _VertexShader = newVertexShader; }
 
 	/*
 	*	Sets the tessellation control shader.
 	*/
-	void SetTessellationControlShader(const Shader newTessellationControlShader) NOEXCEPT { tessellationControlShader = newTessellationControlShader; }
+	void SetTessellationControlShader(const Shader newTessellationControlShader) NOEXCEPT { _TessellationControlShader = newTessellationControlShader; }
 
 	/*
 	*	Sets the tessellation evaluation shader.
 	*/
-	void SetTessellationEvaluationShader(const Shader newTessellationEvaluationShader) NOEXCEPT { tessellationEvaluationShader = newTessellationEvaluationShader; }
+	void SetTessellationEvaluationShader(const Shader newTessellationEvaluationShader) NOEXCEPT { _TessellationEvaluationShader = newTessellationEvaluationShader; }
 
 	/*
 	*	Sets the geometry shader.
 	*/
-	void SetGeometryShader(const Shader newGeometryShader) NOEXCEPT { geometryShader = newGeometryShader; }
+	void SetGeometryShader(const Shader newGeometryShader) NOEXCEPT { _GeometryShader = newGeometryShader; }
 
 	/*
 	*	Sets the fragment shader.
 	*/
-	void SetFragmentShader(const Shader newFragmentShader) NOEXCEPT { fragmentShader = newFragmentShader; }
+	void SetFragmentShader(const Shader newFragmentShader) NOEXCEPT { _FragmentShader = newFragmentShader; }
 
 	/*
 	*	Sets the depth buffer.
 	*/
-	void SetDepthBuffer(const DepthBuffer newDepthBuffer) NOEXCEPT { depthBuffer = newDepthBuffer; }
+	void SetDepthBuffer(const DepthBuffer newDepthBuffer) NOEXCEPT { _DepthBuffer = newDepthBuffer; }
 
 	/*
 	*	Sets the number of render targets.
 	*/
-	void SetNumberOfRenderTargets(const uint64 numberOfRenderTargets) NOEXCEPT { renderTargets.Reserve(numberOfRenderTargets); }
+	void SetNumberOfRenderTargets(const uint64 numberOfRenderTargets) NOEXCEPT { _RenderTargets.Reserve(numberOfRenderTargets); }
 
 	/*
 	*	Adds a render target.
 	*/
-	void AddRenderTarget(const RenderTarget newRenderTarget) NOEXCEPT { renderTargets.EmplaceFast(newRenderTarget); }
+	void AddRenderTarget(const RenderTarget newRenderTarget) NOEXCEPT { _RenderTargets.EmplaceFast(newRenderTarget); }
 
 	/*
 	*	Sets the number of render data table layouts.
 	*/
-	void SetNumberOfRenderDataTableLayouts(const uint64 numberOfRenderDataTableLayouts) NOEXCEPT { renderDataTableLayouts.Reserve(numberOfRenderDataTableLayouts); }
+	void SetNumberOfRenderDataTableLayouts(const uint64 numberOfRenderDataTableLayouts) NOEXCEPT { _RenderDataTableLayouts.Reserve(numberOfRenderDataTableLayouts); }
 
 	/*
 	*	Adds a render data table layout.
 	*/
-	void AddRenderDataTableLayout(RenderDataTableLayoutHandle newRenderDataTableLayout) NOEXCEPT { renderDataTableLayouts.EmplaceFast(newRenderDataTableLayout); }
+	void AddRenderDataTableLayout(RenderDataTableLayoutHandle newRenderDataTableLayout) NOEXCEPT { _RenderDataTableLayouts.EmplaceFast(newRenderDataTableLayout); }
 
 	/*
 	*	Sets the number of push constant ranges.
 	*/
-	void SetNumberOfPushConstantRanges(const uint64 numberOfPushConstantRanges) NOEXCEPT { pushConstantRanges.Reserve(numberOfPushConstantRanges); }
+	void SetNumberOfPushConstantRanges(const uint64 numberOfPushConstantRanges) NOEXCEPT { _PushConstantRanges.Reserve(numberOfPushConstantRanges); }
 
 	/*
 	*	Adds a push constant range.
 	*/
-	void AddPushConstantRange(const ShaderStage shaderStage, const uint32 offset, const uint32 size) NOEXCEPT { pushConstantRanges.EmplaceFast(shaderStage, offset, size); }
+	void AddPushConstantRange(const ShaderStage shaderStage, const uint32 offset, const uint32 size) NOEXCEPT { _PushConstantRanges.EmplaceFast(shaderStage, offset, size); }
 
 	/*
 	*	Sets the number of vertex input attribute descriptions.
 	*/
-	void SetNumberOfVertexInputAttributeDescriptions(const uint64 numberOfVertexInputAttributeDescriptions) NOEXCEPT { vertexInputAttributeDescriptions.Reserve(numberOfVertexInputAttributeDescriptions); }
+	void SetNumberOfVertexInputAttributeDescriptions(const uint64 numberOfVertexInputAttributeDescriptions) NOEXCEPT { _VertexInputAttributeDescriptions.Reserve(numberOfVertexInputAttributeDescriptions); }
 
 	/*
 	*	Adds a vertex input attribute description.
 	*/
-	void AddVertexInputAttributeDescription(const uint32 location, const uint32 binding, const VertexInputAttributeDescription::Format format, const uint32 offset) NOEXCEPT { vertexInputAttributeDescriptions.EmplaceFast(location, binding, format, offset); }
+	void AddVertexInputAttributeDescription(const uint32 location, const uint32 binding, const VertexInputAttributeDescription::Format format, const uint32 offset) NOEXCEPT { _VertexInputAttributeDescriptions.EmplaceFast(location, binding, format, offset); }
 
 	/*
 	*	Sets the number of vertex input binding descriptions.
 	*/
-	void SetNumberOfVertexInputBindingDescriptions(const uint64 numberOfVertexInputBindingDescriptions) NOEXCEPT { vertexInputBindingDescriptions.Reserve(numberOfVertexInputBindingDescriptions); }
+	void SetNumberOfVertexInputBindingDescriptions(const uint64 numberOfVertexInputBindingDescriptions) NOEXCEPT { _VertexInputBindingDescriptions.Reserve(numberOfVertexInputBindingDescriptions); }
 
 	/*
 	*	Adds a vertex input binding description.
 	*/
-	void AddVertexInputBindingDescription(const uint32 binding, const uint32 stride, const VertexInputBindingDescription::InputRate inputRate) NOEXCEPT { vertexInputBindingDescriptions.EmplaceFast(binding, stride, inputRate); }
+	void AddVertexInputBindingDescription(const uint32 binding, const uint32 stride, const VertexInputBindingDescription::InputRate inputRate) NOEXCEPT { _VertexInputBindingDescriptions.EmplaceFast(binding, stride, inputRate); }
 
 	/*
 	*	Sets the render resolution.
 	*/
-	void SetRenderResolution(const Resolution &newRenderResolution) NOEXCEPT { renderResolution = newRenderResolution; }
+	void SetRenderResolution(const Resolution &newRenderResolution) NOEXCEPT { _RenderResolution = newRenderResolution; }
 
 	/*
 	*	Sets whether or not blend is enabled.
 	*/
-	void SetBlendEnabled(const bool newBlendEnabled) NOEXCEPT { blendEnabled = newBlendEnabled; }
+	void SetBlendEnabled(const bool newBlendEnabled) NOEXCEPT { _BlendEnabled = newBlendEnabled; }
 
 	/*
 	*	Sets the cull mode.
 	*/
-	void SetCullMode(const CullMode newCullMode) NOEXCEPT { cullMode = newCullMode; }
+	void SetCullMode(const CullMode newCullMode) NOEXCEPT { _CullMode = newCullMode; }
 
 	/*
 	*	Sets the depth compare operator.
 	*/
-	void SetDepthCompareOperator(const CompareOperator newDepthCompareOperator) NOEXCEPT { depthCompareOperator = newDepthCompareOperator; }
+	void SetDepthCompareOperator(const CompareOperator newDepthCompareOperator) NOEXCEPT { _DepthCompareOperator = newDepthCompareOperator; }
 
 	/*
 	*	Sets whether or not depth test is enabled.
 	*/
-	void SetDepthTestEnabled(const bool newDepthTestEnabled) NOEXCEPT { depthTestEnabled = newDepthTestEnabled; }
+	void SetDepthTestEnabled(const bool newDepthTestEnabled) NOEXCEPT { _DepthTestEnabled = newDepthTestEnabled; }
 
 	/*
 	*	Sets whether or not depth write is enabled.
 	*/
-	void SetDepthWriteEnabled(const bool newDepthWriteEnabled) NOEXCEPT { depthWriteEnabled = newDepthWriteEnabled; }
+	void SetDepthWriteEnabled(const bool newDepthWriteEnabled) NOEXCEPT { _DepthWriteEnabled = newDepthWriteEnabled; }
 
 	/*
 	*	Sets the topology.
 	*/
-	void SetTopology(const Topology newTopology) NOEXCEPT { topology = newTopology; }
+	void SetTopology(const Topology newTopology) NOEXCEPT { _Topology = newTopology; }
 
 	/*
 	*	Finalizes the initialization of a render pass.
@@ -325,96 +325,96 @@ protected:
 	/*
 	*	Sets whether or not this render pass should be included in the final render.
 	*/
-	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { includeInRender = newIncludeInRender; }
+	void SetIncludeInRender(const bool newIncludeInRender) NOEXCEPT { _IncludeInRender = newIncludeInRender; }
 
 	/*
 	*	Sets the initialization function.
 	*/
-	void SetInitializationFunction(const TaskFunction newInitializationFunction) NOEXCEPT { initializationTask._Function = newInitializationFunction; }
+	void SetInitializationFunction(const TaskFunction newInitializationFunction) NOEXCEPT { _InitializationTask._Function = newInitializationFunction; }
 
 	/*
 	*	Sets the render function.
 	*/
-	void SetRenderFunction(const TaskFunction newRenderFunction) NOEXCEPT { renderTask._Function = newRenderFunction; }
+	void SetRenderFunction(const TaskFunction newRenderFunction) NOEXCEPT { _RenderTask._Function = newRenderFunction; }
 
 private:
 
 	//The data for this render pass.
-	const void *RESTRICT data;
+	const void *RESTRICT _Data;
 
 	//The main stage.
-	RenderPassMainStage mainStage;
+	RenderPassMainStage _MainStage;
 
 	//The sub stage.
-	RenderPassSubStage subStage;
+	RenderPassSubStage _SubStage;
 
 	//The sub stage index.
-	uint32 subStageIndex;
+	uint32 _SubStageIndex;
 
 	//The vertex shader.
-	Shader vertexShader;
+	Shader _VertexShader;
 
 	//The tessellation control shader.
-	Shader tessellationControlShader;
+	Shader _TessellationControlShader;
 
 	//The tessellation evaluation shader.
-	Shader tessellationEvaluationShader;
+	Shader _TessellationEvaluationShader;
 
 	//The geometry shader.
-	Shader geometryShader;
+	Shader _GeometryShader;
 
 	//The fragment shader.
-	Shader fragmentShader;
+	Shader _FragmentShader;
 
 	//The depth buffer.
-	DepthBuffer depthBuffer;
+	DepthBuffer _DepthBuffer;
 
 	//The render targets.
-	DynamicArray<RenderTarget> renderTargets;
+	DynamicArray<RenderTarget> _RenderTargets;
 
 	//The render data table layouts.
-	DynamicArray<RenderDataTableLayoutHandle> renderDataTableLayouts;
+	DynamicArray<RenderDataTableLayoutHandle> _RenderDataTableLayouts;
 
 	//The push constant ranges.
-	DynamicArray<PushConstantRange> pushConstantRanges;
+	DynamicArray<PushConstantRange> _PushConstantRanges;
 
 	//The vertex input attribute descriptions.
-	DynamicArray<VertexInputAttributeDescription> vertexInputAttributeDescriptions;
+	DynamicArray<VertexInputAttributeDescription> _VertexInputAttributeDescriptions;
 
 	//The vertex input binding descriptions.
-	DynamicArray<VertexInputBindingDescription> vertexInputBindingDescriptions;
+	DynamicArray<VertexInputBindingDescription> _VertexInputBindingDescriptions;
 
 	//The render resolution.
-	Resolution renderResolution;
+	Resolution _RenderResolution;
 
 	//Denotes whether or not blend is enabled.
-	bool blendEnabled;
+	bool _BlendEnabled;
 	
 	//The cull mode.
-	CullMode cullMode;
+	CullMode _CullMode;
 
 	//The depth compare operator.
-	CompareOperator depthCompareOperator;
+	CompareOperator _DepthCompareOperator;
 
 	//Denotes whether or not depth test is enabled.
-	bool depthTestEnabled;
+	bool _DepthTestEnabled;
 
 	//Denotes whether or not depth write is enabled.
-	bool depthWriteEnabled;
+	bool _DepthWriteEnabled;
 
 	//The topology.
-	Topology topology;
+	Topology _Topology;
 
 	//Denotes whether or not this render pass should be included in the final render.
-	bool includeInRender;
+	bool _IncludeInRender;
 
 	//The command buffers.
-	DynamicArray<CommandBuffer *RESTRICT> commandBuffers;
+	DynamicArray<CommandBuffer *RESTRICT> _CommandBuffers;
 
 	//The initialization task.
-	Task initializationTask;
+	Task _InitializationTask;
 
 	//The render task.
-	Task renderTask;
+	Task _RenderTask;
 
 };

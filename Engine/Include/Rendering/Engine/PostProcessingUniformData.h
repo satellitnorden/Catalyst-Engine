@@ -9,12 +9,12 @@ class PostProcessingUniformData final
 public:
 
 	//The bloom strength.
-	float bloomStrength;
+	float _BloomStrength;
 
 	//The blur strength.
-	float blurStrength;
+	float _BlurStrength;
 
 	//The saturation strength.
-	float saturationStrength;
+	float _SaturationStrength;
 
 };

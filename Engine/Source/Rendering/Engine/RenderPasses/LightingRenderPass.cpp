@@ -63,7 +63,7 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Environment));
-	AddRenderDataTableLayout(renderDataTableLayout);
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -103,7 +103,7 @@ void LightingRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 		RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
 	};
 
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &renderDataTableLayout);
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
 }
 
 /*
@@ -111,12 +111,12 @@ void LightingRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 */
 void LightingRenderPass::CreateRenderDataTable() NOEXCEPT
 {
-	RenderingSystem::Instance->CreateRenderDataTable(renderDataTableLayout, &renderDataTable);
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferAlbedo)), renderDataTable);
-	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), renderDataTable);
-	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferMaterialProperties)), renderDataTable);
-	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadow)), renderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferAlbedo)), _RenderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), _RenderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferMaterialProperties)), _RenderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadow)), _RenderDataTable);
 }
 
 /*
@@ -133,7 +133,7 @@ void LightingRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetCurrentEnvironmentRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 2, renderDataTable);
+	commandBuffer->BindRenderDataTable(this, 2, _RenderDataTable);
 
 	//Pust constants.
 	const int32 screenSpaceAmbientOcclusionEnabled{ static_cast<bool>(RenderingConfigurationManager::Instance->GetScreenSpaceAmbientOcclusionEnabled()) };

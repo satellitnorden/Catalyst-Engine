@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/StaticArray.h>
 
 //Math.
 #include <Math/CatalystBaseMath.h>
@@ -33,7 +34,7 @@ public:
 	*/
 	CPUTextureCube(const StaticArray<CPUTexture2D, 6> &initialData) NOEXCEPT
 		:
-		data(initialData)
+		_Data(initialData)
 	{
 
 	}
@@ -50,13 +51,13 @@ public:
 		CubeSampling(direction, faceIndex, textureCoordinate);
 
 		//Return the sampled texture.
-		return data[faceIndex].At(textureCoordinate);
+		return _Data[faceIndex].At(textureCoordinate);
 	}
 
 private:
 
 	//The underlying data.
-	StaticArray<CPUTexture2D, 6> data;
+	StaticArray<CPUTexture2D, 6> _Data;
 
 	/*
 	*	Function to determine the face index as well as the texture coordinate from a direction vector.

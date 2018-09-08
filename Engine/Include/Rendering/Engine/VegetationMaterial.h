@@ -12,15 +12,15 @@ class VegetationMaterial final
 public:
 
 	//The mask texture.
-	Texture2DHandle maskTexture;
+	Texture2DHandle _MaskTexture;
 
 	//The albedo texture.
-	Texture2DHandle albedoTexture;
+	Texture2DHandle _AlbedoTexture;
 
 	//The normal map texture.
-	Texture2DHandle normalMapTexture;
+	Texture2DHandle _NormalMapTexture;
 
 	//The properties texture.
-	Texture2DHandle propertiesTexture;
+	Texture2DHandle _PropertiesTexture;
 
 };

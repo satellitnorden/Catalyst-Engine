@@ -21,63 +21,63 @@ public:
 	) NOEXCEPT
 	{
 		//Create the primary command pool.
-		primaryCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+		_PrimaryCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
 		//Create the primary command buffers.
-		primaryCommandBuffers.UpsizeFast(frameDataCount);
+		_PrimaryCommandBuffers.UpsizeFast(frameDataCount);
 
-		for (VulkanCommandBuffer &primaryCommandBuffer : primaryCommandBuffers)
+		for (VulkanCommandBuffer &primaryCommandBuffer : _PrimaryCommandBuffers)
 		{
-			primaryCommandPool->AllocatePrimaryCommandBuffer(primaryCommandBuffer);
+			_PrimaryCommandPool->AllocatePrimaryCommandBuffer(primaryCommandBuffer);
 		}
 
 		//Create the fences.
-		fences.UpsizeFast(frameDataCount);
+		_Fences.UpsizeFast(frameDataCount);
 
-		for (VulkanFence *RESTRICT &fence : fences)
+		for (VulkanFence *RESTRICT &fence : _Fences)
 		{
 			fence = VulkanInterface::Instance->CreateFence(VK_FENCE_CREATE_SIGNALED_BIT);
 		}
 
 		//Create the dynamic uniform data buffers.
-		dynamicUniformDataBuffers.UpsizeFast(frameDataCount);
+		_DynamicUniformDataBuffers.UpsizeFast(frameDataCount);
 
-		for (VulkanUniformBuffer *RESTRICT &dynamicUniformDataBuffer : dynamicUniformDataBuffers)
+		for (VulkanUniformBuffer *RESTRICT &dynamicUniformDataBuffer : _DynamicUniformDataBuffers)
 		{
 			dynamicUniformDataBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(VulkanDynamicUniformData));
 		}
 
 		//Create the dynamic uniform data descriptor sets.
-		dynamicUniformDataDescriptorSets.UpsizeFast(frameDataCount);
+		_DynamicUniformDataDescriptorSets.UpsizeFast(frameDataCount);
 
-		for (uint64 i = 0, size = dynamicUniformDataDescriptorSets.Size(); i < size; ++i)
+		for (uint64 i = 0, size = _DynamicUniformDataDescriptorSets.Size(); i < size; ++i)
 		{
-			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(dynamicUniformDataDescriptorSets[i], dynamicUniformDataDescriptorSetLayout);
+			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(_DynamicUniformDataDescriptorSets[i], dynamicUniformDataDescriptorSetLayout);
 
 			//Update the write descriptor sets.
 			StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
 			{
-				dynamicUniformDataBuffers[i]->GetWriteDescriptorSet(dynamicUniformDataDescriptorSets[i], 0)
+				_DynamicUniformDataBuffers[i]->GetWriteDescriptorSet(_DynamicUniformDataDescriptorSets[i], 0)
 			};
 
 			vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 		}
 
 		//Create the environment descriptor sets.
-		environmentDescriptorSets.UpsizeFast(frameDataCount);
+		_EnvironmentDescriptorSets.UpsizeFast(frameDataCount);
 
-		for (uint64 i = 0, size = environmentDescriptorSets.Size(); i < size; ++i)
+		for (uint64 i = 0, size = _EnvironmentDescriptorSets.Size(); i < size; ++i)
 		{
-			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(environmentDescriptorSets[i], environmentDescriptorSetLayout);
+			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(_EnvironmentDescriptorSets[i], environmentDescriptorSetLayout);
 		}
 
 #if !defined(CATALYST_DISABLE_OCEAN)
 		//Create the ocean descriptor sets.
-		oceanDescriptorSets.UpsizeFast(frameDataCount);
+		_OceanDescriptorSets.UpsizeFast(frameDataCount);
 
-		for (uint64 i = 0, size = oceanDescriptorSets.Size(); i < size; ++i)
+		for (uint64 i = 0, size = _OceanDescriptorSets.Size(); i < size; ++i)
 		{
-			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(oceanDescriptorSets[i], oceanDescriptorSetLayout);
+			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(_OceanDescriptorSets[i], oceanDescriptorSetLayout);
 		}
 #endif
 	}
@@ -87,7 +87,7 @@ public:
 	*/
 	uint32 GetCurrentFrame() const NOEXCEPT
 	{
-		return currentFrame;
+		return _CurrentFrame;
 	}
 
 	/*
@@ -95,13 +95,13 @@ public:
 	*/
 	void SetCurrentFrame(const uint32 newCurrentFrame) NOEXCEPT
 	{
-		currentFrame = newCurrentFrame;
+		_CurrentFrame = newCurrentFrame;
 	}
 
 	/*
 	*	Returns the current primary command buffer.
 	*/
-	VulkanCommandBuffer *RESTRICT GetCurrentPrimaryCommandBuffer() NOEXCEPT { return &primaryCommandBuffers[currentFrame]; }
+	VulkanCommandBuffer *RESTRICT GetCurrentPrimaryCommandBuffer() NOEXCEPT { return &_PrimaryCommandBuffers[_CurrentFrame]; }
 
 	/*
 	*	Returns the current fence.
@@ -109,7 +109,7 @@ public:
 	VulkanFence *RESTRICT GetCurrentFence() NOEXCEPT
 	{
 		//Return the current fence.
-		return fences[currentFrame];
+		return _Fences[_CurrentFrame];
 	}
 
 	/*
@@ -118,7 +118,7 @@ public:
 	VulkanUniformBuffer *RESTRICT GetCurrentDynamicUniformDataBuffer() NOEXCEPT
 	{
 		//Return the current dynamic uniform data buffer.
-		return dynamicUniformDataBuffers[currentFrame];
+		return _DynamicUniformDataBuffers[_CurrentFrame];
 	}
 
 	/*
@@ -127,7 +127,7 @@ public:
 	VulkanDescriptorSet *RESTRICT GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT
 	{
 		//Return the current dynamic uniform data buffer.
-		return &dynamicUniformDataDescriptorSets[currentFrame];
+		return &_DynamicUniformDataDescriptorSets[_CurrentFrame];
 	}
 
 	/*
@@ -136,42 +136,42 @@ public:
 	VulkanDescriptorSet *RESTRICT GetCurrentEnvironmentDescriptorSet() NOEXCEPT
 	{
 		//Return the current environment descriptor set.
-		return &environmentDescriptorSets[currentFrame];
+		return &_EnvironmentDescriptorSets[_CurrentFrame];
 	}
 
 #if !defined(CATALYST_DISABLE_OCEAN)
 	/*
 	*	Returns the current ocean descriptor set.
 	*/
-	VulkanDescriptorSet *RESTRICT GetCurrentOceanRenderDataTable() NOEXCEPT { return &oceanDescriptorSets[currentFrame]; }
+	VulkanDescriptorSet *RESTRICT GetCurrentOceanRenderDataTable() NOEXCEPT { return &_OceanDescriptorSets[_CurrentFrame]; }
 #endif
 
 private:
 
 	//Keeps track of the current frame.
-	uint32 currentFrame;
+	uint32 _CurrentFrame;
 
 	//The primary command pool.
-	VulkanCommandPool *RESTRICT primaryCommandPool;
+	VulkanCommandPool *RESTRICT _PrimaryCommandPool;
 
 	//The primary command buffers.
-	DynamicArray<VulkanCommandBuffer> primaryCommandBuffers;
+	DynamicArray<VulkanCommandBuffer> _PrimaryCommandBuffers;
 
 	//The fences.
-	DynamicArray<VulkanFence *RESTRICT> fences;
+	DynamicArray<VulkanFence *RESTRICT> _Fences;
 
 	//The dynamic uniform data buffers.
-	DynamicArray<VulkanUniformBuffer *RESTRICT> dynamicUniformDataBuffers;
+	DynamicArray<VulkanUniformBuffer *RESTRICT> _DynamicUniformDataBuffers;
 
 	//The dynamic uniform data descriptor sets.
-	DynamicArray<VulkanDescriptorSet> dynamicUniformDataDescriptorSets;
+	DynamicArray<VulkanDescriptorSet> _DynamicUniformDataDescriptorSets;
 
 	//The environment descriptor sets.
-	DynamicArray<VulkanDescriptorSet> environmentDescriptorSets;
+	DynamicArray<VulkanDescriptorSet> _EnvironmentDescriptorSets;
 
 #if !defined(CATALYST_DISABLE_OCEAN)
 	//The ocean descriptor sets.
-	DynamicArray<VulkanDescriptorSet> oceanDescriptorSets;
+	DynamicArray<VulkanDescriptorSet> _OceanDescriptorSets;
 #endif
 
 };

@@ -59,7 +59,7 @@ void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(renderDataTableLayout);
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -93,7 +93,7 @@ void DirectionalShadowRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
 	};
 
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &renderDataTableLayout);
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
 }
 
 /*
@@ -101,10 +101,10 @@ void DirectionalShadowRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 */
 void DirectionalShadowRenderPass::CreateRenderDataTable() NOEXCEPT
 {
-	RenderingSystem::Instance->CreateRenderDataTable(renderDataTableLayout, &renderDataTable);
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), renderDataTable);
-	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadowMap)), renderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), _RenderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadowMap)), _RenderDataTable);
 }
 
 /*
@@ -120,7 +120,7 @@ void DirectionalShadowRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
+	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

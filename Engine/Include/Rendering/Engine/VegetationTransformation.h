@@ -13,22 +13,22 @@ class VegetationTransformation final
 public:
 
 	//The position.
-	Vector3 position;
+	Vector3 _Position;
 
 	//The scale.
-	Vector2 scale;
+	Vector2 _Scale;
 
 	//The rotation.
-	float rotation;
+	float _Rotation;
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
 	VegetationTransformation(const Vector3 &initialPosition, const Vector2 &initialScale, const float initialRotation) NOEXCEPT
 		:
-		position(initialPosition),
-		scale(initialScale),
-		rotation(initialRotation)
+		_Position(initialPosition),
+		_Scale(initialScale),
+		_Rotation(initialRotation)
 	{
 
 	}

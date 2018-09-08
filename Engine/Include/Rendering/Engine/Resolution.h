@@ -9,10 +9,10 @@ class Resolution final
 public:
 
 	//The width.
-	uint32 width;
+	uint32 _Width;
 
 	//The height.
-	uint32 height;
+	uint32 _Height;
 
 	/*
 	*	Default constructor.
@@ -24,8 +24,8 @@ public:
 	*/
 	Resolution(const uint32 initialWidth, const uint32 initialHeight) NOEXCEPT
 		:
-		width(initialWidth),
-		height(initialHeight)
+		_Width(initialWidth),
+		_Height(initialHeight)
 	{
 
 	}
@@ -35,7 +35,7 @@ public:
 	*/
 	Resolution operator/(const uint32 scalar) NOEXCEPT
 	{
-		return Resolution(width / scalar, height / scalar);
+		return Resolution(_Width / scalar, _Height / scalar);
 	}
 
 };

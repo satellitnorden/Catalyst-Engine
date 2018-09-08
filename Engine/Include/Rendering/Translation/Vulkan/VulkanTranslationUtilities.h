@@ -100,7 +100,7 @@ public:
 	*/
 	static VkExtent2D GetVulkanExtent(const Resolution resolution) NOEXCEPT
 	{
-		return VkExtent2D{ resolution.width, resolution.height };
+		return VkExtent2D{ resolution._Width, resolution._Height };
 	}
 
 	/*
@@ -233,10 +233,10 @@ public:
 	*/
 	static VkVertexInputAttributeDescription GetVulkanVertexInputAttributeDescription(const VertexInputAttributeDescription &vertexInputAttributeDescription) NOEXCEPT
 	{
-		return VkVertexInputAttributeDescription{	vertexInputAttributeDescription.location,
-													vertexInputAttributeDescription.binding,
-													GetVulkanFormat(vertexInputAttributeDescription.format),
-													vertexInputAttributeDescription.offset };
+		return VkVertexInputAttributeDescription{	vertexInputAttributeDescription._Location,
+													vertexInputAttributeDescription._Binding,
+													GetVulkanFormat(vertexInputAttributeDescription._Format),
+													vertexInputAttributeDescription._Offset };
 	}
 
 	/*
@@ -244,9 +244,9 @@ public:
 	*/
 	static VkVertexInputBindingDescription GetVulkanVertexInputBindingDescription(const VertexInputBindingDescription &vertexInputBindingDescription) NOEXCEPT
 	{
-		return VkVertexInputBindingDescription{	vertexInputBindingDescription.binding,
-												vertexInputBindingDescription.stride,
-												GetVulkanInputRate(vertexInputBindingDescription.inputRate) };
+		return VkVertexInputBindingDescription{	vertexInputBindingDescription._Binding,
+												vertexInputBindingDescription._Stride,
+												GetVulkanInputRate(vertexInputBindingDescription._InputRate) };
 	}
 
 	/*

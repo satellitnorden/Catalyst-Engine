@@ -64,7 +64,7 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(renderDataTableLayout);
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem));
 
 	//Add the push constant ranges.
@@ -103,7 +103,7 @@ void ParticleSystemRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
 	};
 
-	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &renderDataTableLayout);
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
 }
 
 /*
@@ -111,10 +111,10 @@ void ParticleSystemRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 */
 void ParticleSystemRenderPass::CreateRenderDataTable() NOEXCEPT
 {
-	RenderingSystem::Instance->CreateRenderDataTable(renderDataTableLayout, &renderDataTable);
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene)), renderDataTable);
-	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), renderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene)), _RenderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), _RenderDataTable);
 }
 
 /*
@@ -143,7 +143,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, renderDataTable);
+	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{

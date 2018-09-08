@@ -12,9 +12,9 @@ class EnvironmentMaterial final
 public:
 
 	//The diffuse texture.
-	TextureCubeMapHandle diffuseTexture;
+	TextureCubeMapHandle _DiffuseTexture;
 
 	//The diffuse irradiance texture.
-	TextureCubeMapHandle diffuseIrradianceTexture;
+	TextureCubeMapHandle _DiffuseIrradianceTexture;
 
 };
