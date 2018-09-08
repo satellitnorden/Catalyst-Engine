@@ -13,83 +13,83 @@ class VulkanParticleSystemProperties final
 public:
 
 	//The fade time.
-	float fadeTime;
+	float _FadeTime;
 
 	//The lifetime of the particles.
-	float lifetime;
+	float _Lifetime;
 
 	//The spawn frequency.
-	float spawnFrequency;
+	float _SpawnFrequency;
 
 	//Some padding.
-	Padding<4> padding1;
+	Padding<4> _Padding1;
 
 	//The minimum scale.
-	Vector2 minimumScale;
+	Vector2 _MinimumScale;
 
 	//The maximum scale.
-	Vector2 maximumScale;
+	Vector2 _MaximumScale;
 
 	//The minimum position.
-	Vector3 minimumPosition;
+	Vector3 _MinimumPosition;
 
 	//Some padding.
-	Padding<1> padding2;
+	Padding<1> _Padding2;
 
 	//The maximum position.
-	Vector3 maximumPosition;
+	Vector3 _MaximumPosition;
 
 	//Some padding.
-	Padding<1> padding3;
+	Padding<1> _Padding3;
 
 	//The minimum velocity.
-	Vector3 minimumVelocity;
+	Vector3 _MinimumVelocity;
 
 	//Some padding.
-	Padding<1> padding4;
+	Padding<1> _Padding4;
 
 	//The maximum velocity.
-	Vector3 maximumVelocity;
+	Vector3 _MaximumVelocity;
 
 	//Some padding.
-	Padding<1> padding5;
+	Padding<1> _Padding5;
 
 	//The world position.
-	Vector3 worldPosition;
+	Vector3 _WorldPosition;
 
 	//Some padding.
-	Padding<1> padding6;
+	Padding<1> _Padding6;
 
 	/*
 	*	Constructor taking the regular particle system properties.
 	*/
 	VulkanParticleSystemProperties(const ParticleSystemProperties &otherProperties) NOEXCEPT
 		:
-		fadeTime(otherProperties._FadeTime),
-		lifetime(otherProperties._Lifetime),
-		spawnFrequency(otherProperties._SpawnFrequency),
-		minimumScale(otherProperties._MinimumScale),
-		maximumScale(otherProperties._MaximumScale),
-		minimumPosition(otherProperties._MinimumPosition),
-		maximumPosition(otherProperties._MaximumPosition),
-		minimumVelocity(otherProperties._MinimumVelocity),
-		maximumVelocity(otherProperties._MaximumVelocity),
-		worldPosition(otherProperties._WorldPosition)
+		_FadeTime(otherProperties._FadeTime),
+		_Lifetime(otherProperties._Lifetime),
+		_SpawnFrequency(otherProperties._SpawnFrequency),
+		_MinimumScale(otherProperties._MinimumScale),
+		_MaximumScale(otherProperties._MaximumScale),
+		_MinimumPosition(otherProperties._MinimumPosition),
+		_MaximumPosition(otherProperties._MaximumPosition),
+		_MinimumVelocity(otherProperties._MinimumVelocity),
+		_MaximumVelocity(otherProperties._MaximumVelocity),
+		_WorldPosition(otherProperties._WorldPosition)
 	{
 
 	}
 
 };
 
-static_assert(offsetof(VulkanParticleSystemProperties, fadeTime) == 0, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, lifetime) == 4, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, spawnFrequency) == 8, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, minimumScale) == 16, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, maximumScale) == 24, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, minimumPosition) == 32, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, maximumPosition) == 48, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, minimumVelocity) == 64, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, maximumVelocity) == 80, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, worldPosition) == 96, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _FadeTime) == 0, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _Lifetime) == 4, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _SpawnFrequency) == 8, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _MinimumScale) == 16, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _MaximumScale) == 24, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _MinimumPosition) == 32, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _MaximumPosition) == 48, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _MinimumVelocity) == 64, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _MaximumVelocity) == 80, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _WorldPosition) == 96, "Member of VulkanParticleSystemProperties is not layout correctly.");
 
 static_assert(sizeof(VulkanParticleSystemProperties) == 112, "VulkanParticleSystemProperties has incorrect size.");

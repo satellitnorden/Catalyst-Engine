@@ -49,7 +49,7 @@ namespace RenderingUtilities
 	/*
 	*	Calculates an axis-aligned bounding box for a terrain.
 	*/
-	static void CalculateTerrainAxisAlignedBoundingBox(const CPUTexture2D *const RESTRICT properties, const float extent, const Vector3 *const RESTRICT worldPosition, const float height, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	static void CalculateTerrainAxisAlignedBoundingBox(const CPUTexture2D *const RESTRICT properties, const float extent, const Vector3 *const RESTRICT _WorldPosition, const float height, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
 	{
 		float lowest{ FLOAT_MAXIMUM };
 		float highest{ -FLOAT_MAXIMUM };
@@ -62,8 +62,8 @@ namespace RenderingUtilities
 
 		const float halfExtent{ extent * 0.5f };
 
-		box->_Minimum = *worldPosition + Vector3(-halfExtent, lowest * height, -halfExtent);
-		box->_Maximum = *worldPosition + Vector3(halfExtent, highest * height, halfExtent);
+		box->_Minimum = *_WorldPosition + Vector3(-halfExtent, lowest * height, -halfExtent);
+		box->_Maximum = *_WorldPosition + Vector3(halfExtent, highest * height, halfExtent);
 	}
 
 	/*

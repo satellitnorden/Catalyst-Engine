@@ -153,7 +153,7 @@ private:
 	/*
 	*	Finalizes the initialization of a render pass.
 	*/
-	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
+	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT _RenderPass) NOEXCEPT;
 
 	/*
 	*	Creates a render data table layout.
@@ -206,60 +206,60 @@ private:
 	public:
 
 		//The render pass.
-		VulkanRenderPass *RESTRICT renderPass;
+		VulkanRenderPass *RESTRICT _RenderPass;
 
 		//The framebuffers.
-		DynamicArray<VulkanFramebuffer *RESTRICT> frameBuffers;
+		DynamicArray<VulkanFramebuffer *RESTRICT> _FrameBuffers;
 
 		//Defines whether or not to clear the framebuffers.
-		bool shouldClear;
+		bool _ShouldClear;
 
 		//The number of attachments.
-		uint32 numberOfAttachments;
+		uint32 _NumberOfAttachments;
 
 	};
 
 	//The dynamic uniform data.
-	VulkanDynamicUniformData dynamicUniformData;
+	VulkanDynamicUniformData _DynamicUniformData;
 
 	//Container for all depth buffers.
-	StaticArray<VulkanDepthBuffer *RESTRICT, INDEX(DepthBuffer::NumberOfDepthBuffers)> depthBuffers;
+	StaticArray<VulkanDepthBuffer *RESTRICT, INDEX(DepthBuffer::NumberOfDepthBuffers)> _DepthBuffers;
 
 	//Container for all descriptor set layouts.
-	StaticArray<VulkanDescriptorSetLayout, INDEX(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> descriptorSetLayouts;
+	StaticArray<VulkanDescriptorSetLayout, INDEX(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _DescriptorSetLayouts;
 
 	//Container for all render targets.
-	StaticArray<VulkanRenderTarget *RESTRICT, INDEX(RenderTarget::NumberOfRenderTargets)> renderTargets;
+	StaticArray<VulkanRenderTarget *RESTRICT, INDEX(RenderTarget::NumberOfRenderTargets)> _RenderTargets;
 
 	//Container for all temporary pipelines.
-	StaticArray<VulkanPipeline *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> pipelines;
+	StaticArray<VulkanPipeline *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> _Pipelines;
 
 	//Container for all semaphores.
-	StaticArray<VulkanSemaphore *RESTRICT, INDEX(GraphicsSemaphore::NumberOfSemaphores)> semaphores;
+	StaticArray<VulkanSemaphore *RESTRICT, INDEX(GraphicsSemaphore::NumberOfSemaphores)> _Semaphores;
 
 	//Container for all shader modules.
-	StaticArray<VulkanShaderModule *RESTRICT, INDEX(Shader::NumberOfShaders)> shaderModules;
+	StaticArray<VulkanShaderModule *RESTRICT, INDEX(Shader::NumberOfShaders)> _ShaderModules;
 
 	//Container for all uniform buffers.
-	StaticArray<VulkanUniformBuffer *RESTRICT, INDEX(UniformBuffer::NumberOfUniformBuffers)> uniformBuffers;
+	StaticArray<VulkanUniformBuffer *RESTRICT, INDEX(UniformBuffer::NumberOfUniformBuffers)> _UniformBuffers;
 
 	//Container for all special textures.
-	StaticArray<Vulkan2DTexture* RESTRICT, INDEX(SpecialTexture::NumberOfSpecialTextures)> specialTextures;
+	StaticArray<Vulkan2DTexture* RESTRICT, INDEX(SpecialTexture::NumberOfSpecialTextures)> _SpecialTextures;
 
 	//Container for all Vulkan render pass main stage data.
-	StaticArray<VulkanRenderPassMainStageData, INDEX(RenderPassMainStage::NumberOfRenderPassMainStages)> vulkanRenderPassMainStageData;
+	StaticArray<VulkanRenderPassMainStageData, INDEX(RenderPassMainStage::NumberOfRenderPassMainStages)> _VulkanRenderPassMainStageData;
 
 	//Container for all Vulkan render pass data.
-	StaticArray<VulkanRenderPassData, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> vulkanRenderPassData;
+	StaticArray<VulkanRenderPassData, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> _VulkanRenderPassData;
 
 	//The Vulkan frame data.
-	VulkanFrameData frameData;
+	VulkanFrameData _FrameData;
 
 	//The current dynamic uniform data descriptor set.
-	VulkanDescriptorSet *RESTRICT currentDynamicUniformDataDescriptorSet;
+	VulkanDescriptorSet *RESTRICT _CurrentDynamicUniformDataDescriptorSet;
 
 	//The current environment descriptor set.
-	VulkanDescriptorSet *RESTRICT currentEnvironmentDataDescriptorSet;
+	VulkanDescriptorSet *RESTRICT _CurrentEnvironmentDataDescriptorSet;
 
 	/*
 	*	Initializes all render targets.
@@ -305,10 +305,6 @@ private:
 	*	Ends the frame.
 	*/
 	void EndFrame() NOEXCEPT;
-
-	/****************************/
-	/*	Asynchronous functions. */
-	/****************************/
 
 	/*
 	*	Updates the descriptor sets.

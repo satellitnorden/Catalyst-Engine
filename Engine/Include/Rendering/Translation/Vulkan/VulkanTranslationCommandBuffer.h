@@ -22,7 +22,7 @@ public:
 	*/
 	VulkanTranslationCommandBuffer(VulkanCommandBuffer initialCommandBuffer) NOEXCEPT
 		:
-		commandBuffer(initialCommandBuffer)
+		_CommandBuffer(initialCommandBuffer)
 	{
 
 	}
@@ -30,7 +30,7 @@ public:
 	/*
 	*	Returns the underlying Vulkan command buffer.
 	*/
-	VulkanCommandBuffer GetVulkanCommandBuffer() const NOEXCEPT { return commandBuffer; }
+	VulkanCommandBuffer GetVulkanCommandBuffer() const NOEXCEPT { return _CommandBuffer; }
 
 	/*
 	*	Begins the command buffer.
@@ -75,6 +75,6 @@ public:
 private:
 
 	//The underlying Vulkan command buffer.
-	VulkanCommandBuffer commandBuffer;
+	VulkanCommandBuffer _CommandBuffer;
 
 };

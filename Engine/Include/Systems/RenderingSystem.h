@@ -347,7 +347,7 @@ public:
 	/*
 	*	Finalizes the initialization of a render pass.
 	*/
-	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT;
+	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT _RenderPass) NOEXCEPT;
 
 private:
 

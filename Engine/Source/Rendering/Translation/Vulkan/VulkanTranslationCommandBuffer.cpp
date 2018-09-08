@@ -16,10 +16,10 @@ void VulkanTranslationCommandBuffer::Begin(const RenderPass *const RESTRICT rend
 	const VulkanRenderPassData *const RESTRICT renderPassData{ static_cast<const VulkanRenderPassData *const RESTRICT>(renderPass->GetData()) };
 
 	//Begin the command buffer.
-	commandBuffer.BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, renderPassData->renderPass, renderPass->GetSubStageIndex(), renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? renderPassData->framebuffers[VulkanRenderingSystem::Instance->GetCurrentFrameIndex()] : renderPassData->framebuffers[0]);
+	_CommandBuffer.BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, renderPassData->_RenderPass, renderPass->GetSubStageIndex(), renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? renderPassData->_Framebuffers[VulkanRenderingSystem::Instance->GetCurrentFrameIndex()] : renderPassData->_Framebuffers[0]);
 	
 	//Bind the pipeline.
-	commandBuffer.CommandBindPipeline(renderPassData->pipeline);
+	_CommandBuffer.CommandBindPipeline(renderPassData->_Pipeline);
 }
 
 /*
@@ -28,7 +28,7 @@ void VulkanTranslationCommandBuffer::Begin(const RenderPass *const RESTRICT rend
 void VulkanTranslationCommandBuffer::BindIndexBuffer(const RenderPass *const RESTRICT renderPass, const ConstantBufferHandle indexBuffer, const uint64 offset) NOEXCEPT
 {
 	//Bind the index buffer.
-	commandBuffer.CommandBindIndexBuffer(reinterpret_cast<const VkBuffer>(indexBuffer), offset);
+	_CommandBuffer.CommandBindIndexBuffer(reinterpret_cast<const VkBuffer>(indexBuffer), offset);
 }
 
 /*
@@ -40,7 +40,7 @@ void VulkanTranslationCommandBuffer::BindRenderDataTable(const RenderPass *const
 	const VulkanRenderPassData *const RESTRICT renderPassData{ static_cast<const VulkanRenderPassData *const RESTRICT>(renderPass->GetData()) };
 
 	//Bind the render data tables.
-	commandBuffer.CommandBindDescriptorSets(renderPassData->pipelineLayout, binding, 1, &static_cast<const VulkanDescriptorSet *const RESTRICT>(renderDataTable)->Get());
+	_CommandBuffer.CommandBindDescriptorSets(renderPassData->_PipelineLayout, binding, 1, &static_cast<const VulkanDescriptorSet *const RESTRICT>(renderDataTable)->Get());
 }
 
 /*
@@ -49,7 +49,7 @@ void VulkanTranslationCommandBuffer::BindRenderDataTable(const RenderPass *const
 void VulkanTranslationCommandBuffer::BindVertexBuffers(const RenderPass *const RESTRICT renderPass, const uint32 numberOfVertexBuffers, const ConstantBufferHandle *const RESTRICT vertexBuffers, const uint64 *const RESTRICT offsets) NOEXCEPT
 {
 	//Bind the vertex buffers.
-	commandBuffer.CommandBindVertexBuffers(numberOfVertexBuffers, (const VkBuffer *const RESTRICT) vertexBuffers, reinterpret_cast<const VkDeviceSize *const RESTRICT>(offsets));
+	_CommandBuffer.CommandBindVertexBuffers(numberOfVertexBuffers, (const VkBuffer *const RESTRICT) vertexBuffers, reinterpret_cast<const VkDeviceSize *const RESTRICT>(offsets));
 }
 
 /*
@@ -58,7 +58,7 @@ void VulkanTranslationCommandBuffer::BindVertexBuffers(const RenderPass *const R
 void VulkanTranslationCommandBuffer::Draw(const RenderPass *const RESTRICT renderPass, const uint32 vertexCount, const uint32 instanceCount) NOEXCEPT
 {
 	//Draw.
-	commandBuffer.CommandDraw(vertexCount, instanceCount);
+	_CommandBuffer.CommandDraw(vertexCount, instanceCount);
 }
 
 /*
@@ -67,7 +67,7 @@ void VulkanTranslationCommandBuffer::Draw(const RenderPass *const RESTRICT rende
 void VulkanTranslationCommandBuffer::DrawIndexed(const RenderPass *const RESTRICT renderPass, const uint32 indexCount, const uint32 instanceCount) NOEXCEPT
 {
 	//Draw indexed.
-	commandBuffer.CommandDrawIndexed(indexCount, instanceCount);
+	_CommandBuffer.CommandDrawIndexed(indexCount, instanceCount);
 }
 
 /*
@@ -79,7 +79,7 @@ void VulkanTranslationCommandBuffer::PushConstants(const RenderPass *const RESTR
 	const VulkanRenderPassData *const RESTRICT renderPassData{ static_cast<const VulkanRenderPassData *const RESTRICT>(renderPass->GetData()) };
 
 	//Push the constants.
-	commandBuffer.CommandPushConstants(renderPassData->pipelineLayout, VulkanTranslationUtilities::GetVulkanShaderStage(shaderStage), offset, size, data);
+	_CommandBuffer.CommandPushConstants(renderPassData->_PipelineLayout, VulkanTranslationUtilities::GetVulkanShaderStage(shaderStage), offset, size, data);
 }
 
 /*
@@ -88,5 +88,5 @@ void VulkanTranslationCommandBuffer::PushConstants(const RenderPass *const RESTR
 void VulkanTranslationCommandBuffer::End(const RenderPass *const RESTRICT) NOEXCEPT
 {
 	//End the command buffer.
-	commandBuffer.End();
+	_CommandBuffer.End();
 }

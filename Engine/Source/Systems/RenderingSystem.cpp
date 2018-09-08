@@ -108,9 +108,9 @@ void RenderingSystem::PostUpdateSystemSynchronous(const UpdateContext *const RES
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
 	//Render all render passes.
-	for (RenderPass *const RESTRICT renderPass : _RenderPasses)
+	for (RenderPass *const RESTRICT _RenderPass : _RenderPasses)
 	{
-		renderPass->RenderAsynchronous();
+		_RenderPass->RenderAsynchronous();
 	}
 
 	//Post-update the current rendering system synchronously.
@@ -517,10 +517,10 @@ void RenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity 
 /*
 *	Finalizes the initialization of a render pass.
 */
-void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT renderPass) NOEXCEPT
+void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRICT _RenderPass) NOEXCEPT
 {
 	//Finalize the initialization of this render pass via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->FinalizeRenderPassInitialization(renderPass);
+	CURRENT_RENDERING_SYSTEM::Instance->FinalizeRenderPassInitialization(_RenderPass);
 }
 
 /*
@@ -554,15 +554,15 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 void RenderingSystem::InitializeRenderPasses() NOEXCEPT
 {
 	//Initialize all render passes.
-	for (RenderPass *const RESTRICT renderPass : _RenderPasses)
+	for (RenderPass *const RESTRICT _RenderPass : _RenderPasses)
 	{
-		renderPass->InitializeAsynchronous();
+		_RenderPass->InitializeAsynchronous();
 	}
 
 	//Wait for all render passes to finish initialization.
-	for (RenderPass *const RESTRICT renderPass : _RenderPasses)
+	for (RenderPass *const RESTRICT _RenderPass : _RenderPasses)
 	{
-		renderPass->WaitForInitialization();
+		_RenderPass->WaitForInitialization();
 	}
 }
 
