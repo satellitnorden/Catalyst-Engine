@@ -101,14 +101,14 @@ public:
 	void PostInitializeSystem();
 
 	/*
-	*	Pre-updates the rendering system synchronously.
-	*/
-	void PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
-
-	/*
 	*	Updates the rendering system synchronously.
 	*/
 	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+
+	/*
+	*	Post-updates the rendering system synchronously.
+	*/
+	void PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Releases the rendering system.

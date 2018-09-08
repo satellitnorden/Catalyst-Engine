@@ -28,24 +28,9 @@ public:
 	InputSystem() NOEXCEPT { }
 
 	/*
-	*	Initializes the input system.
-	*/
-	void InitializeSystem() NOEXCEPT;
-
-	/*
 	*	Pre-updates the input system synchronously.
 	*/
 	void PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
-
-	/*
-	*	Post-updates the input system synchronously.
-	*/
-	void PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
-
-	/*
-	*	Updates the input system asynchronously.
-	*/
-	void UpdateSystemAsynchronous() NOEXCEPT;
 
 	/*
 	*	Returns the current gamepad state.
@@ -80,9 +65,6 @@ public:
 	}
 
 private:
-
-	//The update task.
-	Task _UpdateTask;
 
 	//The gamepad states.
 	StaticArray<GamepadState, InputConstants::MAXIMUM_NUMBER_OF_GAMEPADS> _GamepadStates;

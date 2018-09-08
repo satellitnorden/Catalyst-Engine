@@ -29,9 +29,9 @@ public:
 	EntitySystem() NOEXCEPT;
 
 	/*
-	*	Pre-updates the entity system synchronously.
+	*	Updates the entity system synchronously.
 	*/
-	void PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Releases the entity system.

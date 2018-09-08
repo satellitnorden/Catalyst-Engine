@@ -30,9 +30,9 @@ public:
 	void InitializeSystem() NOEXCEPT;
 
 	/*
-	*	Updates the sound system synschronously.
+	*	Post-updates the sound system synschronously.
 	*/
-	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Releases the sound system.

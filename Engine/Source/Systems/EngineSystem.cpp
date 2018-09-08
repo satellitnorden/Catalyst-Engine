@@ -31,7 +31,6 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 
 	//Initialize all systems.
 	CullingSystem::Instance->InitializeSystem();
-	InputSystem::Instance->InitializeSystem();
 	LevelOfDetailSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
 	SoundSystem::Instance->InitializeSystem();
@@ -67,22 +66,23 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	CatalystPlatform::PreUpdate(&context);
 	UpdateSystem::Instance->PreUpdateSystemSynchronous(&context);
 	InputSystem::Instance->PreUpdateSystemSynchronous(&context);
-	EntitySystem::Instance->PreUpdateSystemSynchronous(&context);
-	RenderingSystem::Instance->PreUpdateSystemSynchronous(&context);
 
 	/*
 	*	Update phase.
 	*/
+	UpdateSystem::Instance->UpdateSystemSynchronous(&context);
+	EntitySystem::Instance->UpdateSystemSynchronous(&context);
+	PhysicsSystem::Instance->UpdateSystemSynchronous(&context);
 	CullingSystem::Instance->UpdateSystemSynchronous(&context);
 	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
-	PhysicsSystem::Instance->UpdateSystemSynchronous(&context);
 	RenderingSystem::Instance->UpdateSystemSynchronous(&context);
-	SoundSystem::Instance->UpdateSystemSynchronous(&context);
 
 	/*
 	*	Post-update phase.
 	*/
-	InputSystem::Instance->PostUpdateSystemSynchronous(&context);
+	UpdateSystem::Instance->PostUpdateSystemSynchronous(&context);
+	RenderingSystem::Instance->PostUpdateSystemSynchronous(&context);
+	SoundSystem::Instance->PostUpdateSystemSynchronous(&context);
 	CatalystPlatform::PostUpdate(&context);
 }
 

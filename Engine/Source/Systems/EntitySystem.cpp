@@ -28,9 +28,9 @@ EntitySystem::EntitySystem() NOEXCEPT
 }
 
 /*
-*	Pre-updates the entity system synchronously.
+*	Updates the entity system synchronously.
 */
-void EntitySystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void EntitySystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Initialize entities.
 	InitializeEntities();

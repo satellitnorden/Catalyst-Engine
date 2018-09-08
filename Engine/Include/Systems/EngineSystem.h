@@ -13,6 +13,7 @@ public:
 	//Singleton declaration.
 	DECLARE_SINGLETON(EngineSystem);
 
+
 	/*
 	*	Default constructor.
 	*/
