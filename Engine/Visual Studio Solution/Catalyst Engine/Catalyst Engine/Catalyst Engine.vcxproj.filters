@@ -849,6 +849,9 @@
     <ClInclude Include="..\..\..\Include\Core\General\UpdateFunctionContext.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Containers\Collection.h">
+      <Filter>Core\Include\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

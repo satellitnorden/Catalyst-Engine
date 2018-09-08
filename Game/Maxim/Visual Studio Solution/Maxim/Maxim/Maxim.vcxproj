@@ -148,6 +148,7 @@
     <ClCompile Include="..\..\..\Code\Source\Main\MaximMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Code\Include\Main\MaximEnemy.h" />
     <ClInclude Include="..\..\..\Code\Include\Main\MaximGameSystem.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
