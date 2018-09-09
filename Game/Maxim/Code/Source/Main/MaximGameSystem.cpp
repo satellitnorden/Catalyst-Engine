@@ -73,6 +73,12 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	StaticPhysicalEntity *const RESTRICT plane{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
 	plane->Initialize(planeModel, Vector3(0.0f, -0.5f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(10.0f, 10.0f, 10.0f));
+
+	for (uint8 i = 0; i < 5; ++i)
+	{
+		StaticPhysicalEntity *const RESTRICT cube{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+		cube->Initialize(model, Vector3(CatalystBaseMath::RandomFloatInRange(-2.5f, 2.5f), CatalystBaseMath::RandomFloatInRange(0.0f, 2.5f), CatalystBaseMath::RandomFloatInRange(-2.5f, 2.5f)), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f));
+	}
 }
 
 /*
