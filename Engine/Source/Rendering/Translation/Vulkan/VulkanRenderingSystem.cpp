@@ -358,7 +358,7 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 /*
 *	Initializes a particle system entity.
 */
-void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT
+void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties, const Vector3 &worldPosition) const NOEXCEPT
 {
 	//Cache relevant data.
 	ParticleSystemComponent &component{ ComponentManager::GetParticleSystemParticleSystemComponents()[entity.GetComponentsIndex()] };
@@ -387,6 +387,7 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 	renderComponent._ParticleSystemRandomSeed = CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f);
 	renderComponent._ParticleSystemStartingTime = EngineSystem::Instance->GetTotalTime();
 	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(properties._Lifetime / properties._SpawnFrequency);
+	renderComponent._WorldPosition = worldPosition;
 }
 
 /*

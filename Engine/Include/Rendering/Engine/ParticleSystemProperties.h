@@ -39,9 +39,6 @@ public:
 	//The maximum velocity.
 	Vector3 _MaximumVelocity;
 
-	//The world position.
-	Vector3 _WorldPosition;
-
 	/*
 	*	Default constructor.
 	*/
@@ -61,8 +58,7 @@ public:
 								const Vector3 &initialMinimumPosition,
 								const Vector3 &initialMaximumPosition,
 								const Vector3 &initialMinimumVelocity,
-								const Vector3 &initialMaximumVelocity,
-								const Vector3 &initialWorldPosition) NOEXCEPT
+								const Vector3 &initialMaximumVelocity) NOEXCEPT
 		:
 		_FadeTime(initialFadeTime),
 		_Lifetime(initialLifetime),
@@ -72,8 +68,7 @@ public:
 		_MinimumPosition(initialMinimumPosition),
 		_MaximumPosition(initialMaximumPosition),
 		_MinimumVelocity(initialMinimumVelocity),
-		_MaximumVelocity(initialMaximumVelocity),
-		_WorldPosition(initialWorldPosition)
+		_MaximumVelocity(initialMaximumVelocity)
 	{
 
 	}

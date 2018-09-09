@@ -17,6 +17,9 @@ public:
 	//The instance count.
 	uint32 _InstanceCount;
 
+	//The world position.
+	Vector3 _WorldPosition;
+
 	//The random seed of the particle system.
 	float _ParticleSystemRandomSeed;
 

@@ -58,8 +58,9 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    float particleSystemRandomSeed;
-    float particleSystemTotalTime;
+	layout (offset = 0) vec3 particleSystemWorldPosition;
+    layout (offset = 16) float particleSystemRandomSeed;
+    layout (offset = 20) float particleSystemTotalTime;
 };
 
 //Layout specification.
@@ -78,9 +79,6 @@ layout (std140, set = 2, binding = 0) uniform ParticleSystemUniformData
 	layout (offset = 48) vec3 particleSystemInitialMaximumPosition;
 	layout (offset = 64) vec3 particleSystemInitialMinimumVelocity;
 	layout (offset = 80) vec3 particleSystemInitialMaximumVelocity;
-	layout (offset = 96) vec3 particleSystemWorldPosition;
-
-	//Total size; 112
 };
 
 //In parameters.

@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 
+//Core.
+#include <Core/General/Padding.h>
+
 //Components.
 #include <Components/ComponentManager.h>
 
@@ -69,7 +72,7 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Geometry, 0, sizeof(float) * 2);
+	AddPushConstantRange(ShaderStage::Geometry, 0, 24);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -149,14 +152,17 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 	{
 		struct ParticleSystemData
 		{
-			float particleSystemRandomSeed;
-			float particleSystemTotalTime;
+			Vector3 _WorldPosition;
+			Padding<4> _Padding;
+			float _ParticleSystemRandomSeed;
+			float _ParticleSystemTotalTime;
 		} particleSystemData;
 
-		particleSystemData.particleSystemRandomSeed = component->_ParticleSystemRandomSeed;
-		particleSystemData.particleSystemTotalTime = EngineSystem::Instance->GetTotalTime() - component->_ParticleSystemStartingTime;
+		particleSystemData._WorldPosition = component->_WorldPosition;
+		particleSystemData._ParticleSystemRandomSeed = component->_ParticleSystemRandomSeed;
+		particleSystemData._ParticleSystemTotalTime = EngineSystem::Instance->GetTotalTime() - component->_ParticleSystemStartingTime;
 
-		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(float) * 2, &particleSystemData);
+		commandBuffer->PushConstants(this, ShaderStage::Geometry, 0, sizeof(ParticleSystemData), &particleSystemData);
 		commandBuffer->BindRenderDataTable(this, 2, component->_RenderDataTable);
 		commandBuffer->Draw(this, 1, component->_InstanceCount);
 	}

@@ -54,12 +54,6 @@ public:
 	//Some padding.
 	Padding<1> _Padding5;
 
-	//The world position.
-	Vector3 _WorldPosition;
-
-	//Some padding.
-	Padding<1> _Padding6;
-
 	/*
 	*	Constructor taking the regular particle system properties.
 	*/
@@ -73,8 +67,7 @@ public:
 		_MinimumPosition(otherProperties._MinimumPosition),
 		_MaximumPosition(otherProperties._MaximumPosition),
 		_MinimumVelocity(otherProperties._MinimumVelocity),
-		_MaximumVelocity(otherProperties._MaximumVelocity),
-		_WorldPosition(otherProperties._WorldPosition)
+		_MaximumVelocity(otherProperties._MaximumVelocity)
 	{
 
 	}
@@ -90,6 +83,5 @@ static_assert(offsetof(VulkanParticleSystemProperties, _MinimumPosition) == 32, 
 static_assert(offsetof(VulkanParticleSystemProperties, _MaximumPosition) == 48, "Member of VulkanParticleSystemProperties is not layout correctly.");
 static_assert(offsetof(VulkanParticleSystemProperties, _MinimumVelocity) == 64, "Member of VulkanParticleSystemProperties is not layout correctly.");
 static_assert(offsetof(VulkanParticleSystemProperties, _MaximumVelocity) == 80, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, _WorldPosition) == 96, "Member of VulkanParticleSystemProperties is not layout correctly.");
 
-static_assert(sizeof(VulkanParticleSystemProperties) == 112, "VulkanParticleSystemProperties has incorrect size.");
+static_assert(sizeof(VulkanParticleSystemProperties) == 96, "VulkanParticleSystemProperties has incorrect size.");

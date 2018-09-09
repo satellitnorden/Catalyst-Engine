@@ -23,7 +23,7 @@ public:
 	/*
 	*	Initializes this particle system entity.
 	*/
-	void Initialize(const ParticleMaterial &material, const ParticleSystemProperties &properties) NOEXCEPT;
+	void Initialize(const ParticleMaterial &material, const ParticleSystemProperties &properties, const Vector3 &worldPosition) NOEXCEPT;
 
 protected:
 

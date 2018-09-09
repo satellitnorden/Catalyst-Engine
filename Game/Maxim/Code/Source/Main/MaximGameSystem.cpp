@@ -35,20 +35,26 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	RenderingSystem::Instance->SetActiveCamera(_Camera);
 
 	//Create the particles.
-	for (ParticleSystemEntity *RESTRICT &particles : _Particles)
+	StaticArray<Vector3, 2> positions
 	{
-		particles = EntitySystem::Instance->CreateEntity<ParticleSystemEntity>();
-		particles->Initialize(	RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle),
+		Vector3(0.0f, 0.0f, 0.0f),
+		Vector3(0.0f, 25.0f, 0.0f)
+	};
+
+	for (uint64 i = 0, size = _Particles.Size(); i < size; ++i)
+	{
+		_Particles[i] = EntitySystem::Instance->CreateEntity<ParticleSystemEntity>();
+		_Particles[i]->Initialize(	RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle),
 								ParticleSystemProperties(	10.0f,
 															60.0f,
-															0.1f,
+															0.01f,
 															Vector2(0.01f, 0.01f),
 															Vector2(0.02f, 0.02f),
-															Vector3(-5.0f, -7.5f, -5.0f),
-															Vector3(5.0f, 7.5f, 5.0f),
+															Vector3(-5.0f, -12.5f, -5.0f),
+															Vector3(5.0f, 12.5f, 5.0f),
 															Vector3(-0.2f, -0.2f, -0.2f),
-															Vector3(0.2f, 0.2f, 0.2f),
-															Vector3(0.0f, 0.0f, 0.0f)));
+															Vector3(0.2f, 0.2f, 0.2f)),
+															positions[i]);
 	}
 
 	//Create the sun.
@@ -85,6 +91,17 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 		}, newEnemy);
 
 		_SpawnTimer -= _SpawnTime;
+	}
+
+	//Update the positions of the particles.
+	for (ParticleSystemEntity *const RESTRICT particles : _Particles)
+	{
+		particles->Move(Vector3(0.0f, -_Speed * deltaTime, 0.0f));
+
+		while (particles->GetPosition()._Y <= -25.0f)
+		{
+			particles->Move(Vector3(0.0f, 50.0f, 0.0f));
+		}
 	}
 }
 

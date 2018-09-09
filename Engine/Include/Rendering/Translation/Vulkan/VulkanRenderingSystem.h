@@ -139,7 +139,7 @@ public:
 	/*
 	*	Initializes a particle system entity.
 	*/
-	void InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT;
+	void InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties, const Vector3 &worldPosition) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.

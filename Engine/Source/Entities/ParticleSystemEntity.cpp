@@ -19,10 +19,10 @@ ParticleSystemEntity::ParticleSystemEntity() NOEXCEPT
 /*
 *	Initializes this particle system entity.
 */
-void ParticleSystemEntity::Initialize(const ParticleMaterial &material, const ParticleSystemProperties &properties) NOEXCEPT
+void ParticleSystemEntity::Initialize(const ParticleMaterial &material, const ParticleSystemProperties &properties, const Vector3 &worldPosition) NOEXCEPT
 {
 	//Initialize this particle system entity via the rendering system.
-	RenderingSystem::Instance->InitializeParticleSystemEntity(*this, material, properties);
+	RenderingSystem::Instance->InitializeParticleSystemEntity(*this, material, properties, worldPosition);
 }
 
 /*
@@ -31,5 +31,5 @@ void ParticleSystemEntity::Initialize(const ParticleMaterial &material, const Pa
 NO_DISCARD RESTRICTED Vector3 *const RESTRICT ParticleSystemEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
-	return &ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._Properties._WorldPosition;
+	return &ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex]._WorldPosition;
 }

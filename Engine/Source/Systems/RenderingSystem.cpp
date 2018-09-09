@@ -508,10 +508,10 @@ void RenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity,
 /*
 *	Initializes a particle system entity.
 */
-void RenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties) const NOEXCEPT
+void RenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties, const Vector3 &worldPosition) const NOEXCEPT
 {
 	//Initialize the particle system entity via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->InitializeParticleSystemEntity(entity, material, properties);
+	CURRENT_RENDERING_SYSTEM::Instance->InitializeParticleSystemEntity(entity, material, properties, worldPosition);
 }
 
 /*
