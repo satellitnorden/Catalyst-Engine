@@ -6,7 +6,7 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
 #endif
 #include <Resources/ParticleMaterialData.h>
@@ -23,7 +23,7 @@
 
 //Static variable definitions.
 Map<HashString, EnvironmentMaterial> ResourceLoader::_EnvironmentMaterials;
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
 #endif
 Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
@@ -111,7 +111,7 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 				break;
 			}
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 			case ResourceType::OceanMaterial:
 			{
 				LoadOceanMaterial(file);
@@ -163,7 +163,7 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 	RenderingSystem::Instance->CreateEnvironmentMaterial(environmentMaterialData, _EnvironmentMaterials[resourceID]);
 }
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 /*
 *	Given a file, load an ocean material.
 */

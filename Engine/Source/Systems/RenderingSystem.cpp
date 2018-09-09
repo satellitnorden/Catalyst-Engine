@@ -14,7 +14,7 @@
 
 //Rendering.
 #include <Rendering/Engine/CommonPhysicalModelData.h>
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/OceanMaterial.h>
 #endif
 #include <Rendering/Engine/PhysicalMaterial.h>
@@ -29,7 +29,7 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
 #endif
 #include <Resources/ParticleMaterialData.h>
@@ -274,7 +274,7 @@ RenderDataTableHandle RenderingSystem::GetCurrentEnvironmentRenderDataTable() co
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentEnvironmentRenderDataTable();
 }
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 /*
 *	Returns the current ocean render data table.
 */
@@ -303,7 +303,7 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &e
 	CURRENT_RENDERING_SYSTEM::Instance->CreateEnvironmentMaterial(environmentMaterialData, environmentMaterial);
 }
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 /*
 *	Creates an ocean material.
 */
@@ -531,6 +531,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	//Register all render passes.
 	_RenderPasses[INDEX(RenderPassSubStage::DirectionalTerrainShadow)] = DirectionalTerrainShadowRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::DirectionalStaticPhysicalShadow)] = DirectionalStaticPhysicalShadowRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::DirectionalDynamicPhysicalShadow)] = DirectionalDynamicPhysicalShadowRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::DirectionalInstancedPhysicalShadow)] = DirectionalInstancedPhysicalShadowRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::Terrain)] = TerrainRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::StaticPhysical)] = StaticPhysicalRenderPass::Instance.Get();
@@ -541,10 +542,13 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[INDEX(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::DynamicOutline)] = DynamicOutlineRenderPass::Instance.Get();
-#if !defined(CATALYST_DISABLE_OCEAN)
+	_RenderPasses[INDEX(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
+#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
+	_RenderPasses[INDEX(RenderPassSubStage::VolumetricFog)] = VolumetricFogRenderPass::Instance.Get();
+#endif
+#if defined(CATALYST_ENABLE_OCEAN)
 	_RenderPasses[INDEX(RenderPassSubStage::Ocean)] = OceanRenderPass::Instance.Get();
 #endif
-	_RenderPasses[INDEX(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
 }
 
@@ -1003,7 +1007,7 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 	//Set the environment blend to be day by default.
 	EnvironmentManager::Instance->SetEnvironmentBlend(1.0f);
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	{
 		//Initialize the default ocean material.
 		constexpr uint8 RESOLUTION{ 32 };

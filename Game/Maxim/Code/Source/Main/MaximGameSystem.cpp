@@ -36,19 +36,19 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	camera = EntitySystem::Instance->CreateEntity<CameraEntity>();
 
 	//Move the camera into position.
-	camera->Move(Vector3(0.0f, 0.0f, 10.0f));
+	camera->Move(Vector3(0.0f, 0.0f, 5.0f));
 
 	//Set it as the active camera.
 	RenderingSystem::Instance->SetActiveCamera(camera);
 
 	//Create some particles.
 	ParticleSystemEntity *const RESTRICT particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
-	particles->Initialize(RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle), ParticleSystemProperties(10.0f, 60.0f, 0.01f, Vector2(0.025f, 0.025f), Vector2(0.05f, 0.05f), Vector3(-25.0f, 0.0f, -25.0f), Vector3(25.0f, 25.0f, 25.0f), Vector3(-0.25f, -0.25f, -0.25f), Vector3(0.25f, 0.25f, 0.25f), Vector3(0.0f, 0.0f, 0.0f)));
+	particles->Initialize(RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle), ParticleSystemProperties(10.0f, 60.0f, 0.01f, Vector2(0.025f, 0.025f), Vector2(0.05f, 0.05f), Vector3(-25.0f, -25.0f, -25.0f), Vector3(25.0f, 25.0f, 25.0f), Vector3(-0.25f, -0.25f, -0.25f), Vector3(0.25f, 0.25f, 0.25f), Vector3(0.0f, 0.0f, 0.0f)));
 
 	//Create, uh, sun.
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
-	sun->SetIntensity(25.0f);
-	sun->Rotate(Vector3(-2.5f, 135.0f, 0.0f));
+	sun->SetIntensity(1.0f);
+	sun->Rotate(Vector3(-10.0f, 135.0f, 0.0f));
 
 	//Disable screen space ambient occlusion.
 	RenderingConfigurationManager::Instance->SetScreenSpaceAmbientOcclusionEnabled(false);
@@ -67,6 +67,12 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
 
 	EntitySystem::Instance->RequestInitialization(spinner, data, false);
+
+	PhysicalModel planeModel{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Plane) };
+	planeModel._Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
+
+	StaticPhysicalEntity *const RESTRICT plane{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
+	plane->Initialize(planeModel, Vector3(0.0f, -0.5f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(10.0f, 10.0f, 10.0f));
 }
 
 /*

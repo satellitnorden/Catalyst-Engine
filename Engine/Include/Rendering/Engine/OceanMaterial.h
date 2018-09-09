@@ -1,4 +1,4 @@
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 #pragma once
 
 //Core.

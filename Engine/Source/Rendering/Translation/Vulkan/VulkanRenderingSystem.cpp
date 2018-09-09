@@ -82,7 +82,7 @@ void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize the Vulkan frame data.
 	_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), _DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::DynamicUniformData)], _DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Environment)]
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 		, _DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Ocean)]
 #endif
 	);
@@ -616,7 +616,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentEnvironmentRenderDataTabl
 	return reinterpret_cast<RenderDataTableHandle>(_FrameData.GetCurrentEnvironmentDescriptorSet());
 }
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 /*
 *	Returns the current ocean descriptor set.
 */
@@ -776,7 +776,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 		_DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Vegetation)].Initialize(static_cast<uint32>(vegetationDescriptorSetLayoutBindings.Size()), vegetationDescriptorSetLayoutBindings.Data());
 	}
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	{
 		//Initialize the ocean descriptor set layout.
 		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> oceanDescriptorSetLayoutBindings
@@ -887,7 +887,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		_ShaderModules[INDEX(Shader::LightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	{
 		//Initialize the ocean fragment shader module.
 		DynamicArray<byte> data;
@@ -1028,6 +1028,15 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		VulkanShaderData::GetViewportVertexShaderData(data);
 		_ShaderModules[INDEX(Shader::ViewportVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
+
+#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
+	{
+		//Initialize the volumetric fog fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetVolumetricFogFragmentShaderData(data);
+		_ShaderModules[INDEX(Shader::VolumetricFogFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+#endif
 }
 
 /*
@@ -1037,7 +1046,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 {
 	//Initialize the directional shadow render pass.
 	{
-		constexpr uint64 NUMBER_OF_DIRECTIONAL_SHADOW_SUBPASSES{ 3 };
+		constexpr uint64 NUMBER_OF_DIRECTIONAL_SHADOW_SUBPASSES{ 4 };
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 SHADOW_MAP_INDEX{ 1 };
@@ -1091,7 +1100,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
 		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
 
-		StaticArray<VkSubpassDependency, 2> subpassDependencies
+		StaticArray<VkSubpassDependency, NUMBER_OF_DIRECTIONAL_SHADOW_SUBPASSES - 1> subpassDependencies
 		{
 			VulkanUtilities::CreateSubpassDependency(	0,
 														1,
@@ -1103,6 +1112,14 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 			VulkanUtilities::CreateSubpassDependency(	1,
 														2,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+			VulkanUtilities::CreateSubpassDependency(	2,
+														3,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
@@ -1138,7 +1155,11 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 	//Initialize the scene buffer render pass.
 	{
-		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 10 };
+		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 10
+#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
+		+ 1
+#endif
+		};
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 ALBEDO_INDEX{ 1 };
@@ -1319,6 +1340,16 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
+#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
+		subpassDescriptions[10] = VulkanUtilities::CreateSubpassDescription(	1,
+																				&normalDepthInputAttachmentReference,
+																				1,
+																				&sceneColorAttachmentReference,
+																				nullptr,
+																				0,
+																				nullptr);
+#endif
+
 		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
 		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
 
@@ -1394,7 +1425,17 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-														VK_DEPENDENCY_BY_REGION_BIT)
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
+			VulkanUtilities::CreateSubpassDependency(	9,
+														10,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+#endif
 		};
 
 		renderPassParameters._SubpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
@@ -1427,7 +1468,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)]._ShouldClear = true;
 	}
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	//Initialize the ocean render pass.
 	{
 		constexpr uint64 NUMBER_OF_OCEAN_SUBPASSES{ 1 };
@@ -1600,22 +1641,22 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 	//Iterate over all render passes and concatenate their command buffers into the primary command buffer.
 	RenderPassMainStage currentStage{ RenderPassMainStage::None };
 
-	for (const RenderPass *const RESTRICT _RenderPass : RenderingSystem::Instance->GetRenderPasses())
+	for (const RenderPass *const RESTRICT renderPass : RenderingSystem::Instance->GetRenderPasses())
 	{
 		//Wait for the render pass to finish it's render.
-		_RenderPass->WaitForRender();
+		renderPass->WaitForRender();
 
 		//Begin a new render pass, if necessary.
-		if (currentStage != _RenderPass->GetMainStage())
+		if (currentStage != renderPass->GetMainStage())
 		{
 			if (currentStage != RenderPassMainStage::None)
 			{
 				currentPrimaryCommandBuffer->CommandEndRenderPass();
 			}
 
-			currentStage = _RenderPass->GetMainStage();
+			currentStage = renderPass->GetMainStage();
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 			//Specialization - Copy scene to scene intermediate for the ocean render pass.
 			if (currentStage == RenderPassMainStage::Ocean)
 			{
@@ -1665,16 +1706,16 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 			if (_VulkanRenderPassMainStageData[INDEX(currentStage)]._ShouldClear)
 			{
 				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(	_VulkanRenderPassMainStageData[INDEX(currentStage)]._RenderPass->Get(),
-																				_VulkanRenderPassMainStageData[INDEX(currentStage)]._FrameBuffers[_RenderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
-																				_RenderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ _RenderPass->GetRenderResolution()._Width, _RenderPass->GetRenderResolution()._Height },
+																				_VulkanRenderPassMainStageData[INDEX(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
+																				renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
 																				VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, _VulkanRenderPassMainStageData[INDEX(currentStage)]._NumberOfAttachments);
 			}
 
 			else
 			{
 				currentPrimaryCommandBuffer->CommandBeginRenderPass(	_VulkanRenderPassMainStageData[INDEX(currentStage)]._RenderPass->Get(),
-																		_VulkanRenderPassMainStageData[INDEX(currentStage)]._FrameBuffers[_RenderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
-																		_RenderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ _RenderPass->GetRenderResolution()._Width, _RenderPass->GetRenderResolution()._Height },
+																		_VulkanRenderPassMainStageData[INDEX(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
+																		renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
 																		VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 			}
 		}
@@ -1685,9 +1726,9 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 		}
 
 		//Record the execute commands.
-		if (_RenderPass->IncludeInRender())
+		if (renderPass->IncludeInRender())
 		{
-			currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<const VulkanTranslationCommandBuffer *const RESTRICT>(_RenderPass->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
+			currentPrimaryCommandBuffer->CommandExecuteCommands(static_cast<const VulkanTranslationCommandBuffer *const RESTRICT>(renderPass->GetCurrentCommandBuffer())->GetVulkanCommandBuffer().Get());
 		}
 	}
 
@@ -1727,7 +1768,7 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(environmentWriteDescriptorSets.Size()), environmentWriteDescriptorSets.Data(), 0, nullptr);
 	}
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	{
 		//Update the ocean descriptor set.
 		VulkanDescriptorSet &oceanDescriptorSet{ *_FrameData.GetCurrentOceanRenderDataTable() };

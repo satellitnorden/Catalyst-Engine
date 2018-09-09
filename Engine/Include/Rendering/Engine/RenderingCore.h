@@ -11,7 +11,7 @@ namespace RenderingConstants
 {
 	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE{ 16 };
 	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE{ 8 };
-	constexpr float SHADOW_VIEW_DISTANCE{ 100.0f };
+	constexpr float SHADOW_VIEW_DISTANCE{ 25.0f };
 }
 
 /*
@@ -35,7 +35,7 @@ enum class RenderPassMainStage : uint8
 	None, //This will be removed once all the main stages are in place.
 	DirectionalShadow,
 	Scene,
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	Ocean,
 #endif
 	PostProcessingFinal,
@@ -52,6 +52,7 @@ enum class RenderPassSubStage : uint8
 	//Directional shadow main stage.
 	DirectionalTerrainShadow,
 	DirectionalStaticPhysicalShadow,
+	DirectionalDynamicPhysicalShadow,
 	DirectionalInstancedPhysicalShadow,
 
 	//Scene main stage.
@@ -65,8 +66,11 @@ enum class RenderPassSubStage : uint8
 	Sky,
 	DynamicOutline,
 	ParticleSystem,
+#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
+	VolumetricFog,
+#endif
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	//Ocean main stage.
 	Ocean,
 #endif
@@ -125,7 +129,7 @@ enum class CommonRenderDataTableLayout : uint8
 	Terrain,
 	Physical,
 	Vegetation,
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	Ocean,
 #endif
 	ParticleSystem,
@@ -166,7 +170,7 @@ enum class Shader : uint8
 	GaussianBlurFragment,
 	InstancedPhysicalVertex,
 	LightingFragment,
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	OceanFragment,
 #endif
 	OutlineFragment,
@@ -188,6 +192,9 @@ enum class Shader : uint8
 	VegetationGeometry,
 	VegetationVertex,
 	ViewportVertex,
+#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
+	VolumetricFogFragment,
+#endif
 
 	NumberOfShaders,
 

@@ -28,6 +28,7 @@ glslangValidator.exe -V VegetationFragmentShader.frag -o 				VegetationFragmentS
 glslangValidator.exe -V VegetationGeometryShader.geom -o 				VegetationGeometryShader.spv
 glslangValidator.exe -V VegetationVertexShader.vert -o 					VegetationVertexShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
+glslangValidator.exe -V VolumetricFogFragmentShader.frag -o 				VolumetricFogFragmentShader.spv
 
 VulkanShaderBuilder.exe
 

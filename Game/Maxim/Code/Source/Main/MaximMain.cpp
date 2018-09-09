@@ -16,9 +16,9 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 	configuration->_GeneralConfiguration._ProjectName = "Maxim";
 
 #if defined(CATALYST_WINDOWS)
-	configuration->_RenderingConfiguration._Resolution = Resolution(1'080 / 2, 1'920 / 2);
+	configuration->_RenderingConfiguration._Resolution = Resolution(1'920, 1'080);
 	configuration->_RenderingConfiguration._ResolutionScale = 1.0f;
-	configuration->_RenderingConfiguration._ShadowMapResolution = 2'048;
+	configuration->_RenderingConfiguration._ShadowMapResolution = 4'096;
 #elif defined(CATALYST_ANDROID)
 	configuration->_RenderingConfiguration._Resolution = Resolution(1'080, 1'920);
 	configuration->_RenderingConfiguration._ResolutionScale = 0.75f;

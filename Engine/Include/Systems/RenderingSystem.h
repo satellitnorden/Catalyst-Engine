@@ -12,7 +12,7 @@
 
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/OceanMaterial.h>
 #endif
 #include <Rendering/Engine/ParticleMaterial.h>
@@ -28,7 +28,7 @@ class DynamicPhysicalInitializationData;
 class Entity;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 class OceanMaterialData;
 #endif
 class ParticleMaterialData;
@@ -260,7 +260,7 @@ public:
 	*/
 	RenderDataTableHandle GetCurrentEnvironmentRenderDataTable() const NOEXCEPT;
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Returns the current ocean render data table.
 	*/
@@ -277,7 +277,7 @@ public:
 	*/
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Creates an ocean material.
 	*/
@@ -396,7 +396,7 @@ private:
 	//The default day environment material.
 	EnvironmentMaterial _DefaultDayEnvironmentMaterial;
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	//The default ocean material.
 	OceanMaterial _DefaultOceanMaterial;
 #endif

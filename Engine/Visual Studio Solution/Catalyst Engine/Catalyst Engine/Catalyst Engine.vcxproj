@@ -180,6 +180,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\PostProcessingUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingCore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalDynamicPhysicalShadowRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalInstancedPhysicalShadowRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalShadowRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalStaticPhysicalShadowRenderPass.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\StaticPhysicalRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TerrainRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VegetationRenderPass.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainUniformData.h" />
@@ -236,6 +238,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VegetationGeometryShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VegetationVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\ViewportVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VolumetricFogFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VulkanShaderData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanDynamicUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanFrameData.h" />
@@ -316,6 +319,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanSurface.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanSwapChain.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanUniformBuffer.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalDynamicPhysicalShadowRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalInstancedPhysicalShadowRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalShadowRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalStaticPhysicalShadowRenderPass.cpp" />
@@ -332,6 +336,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\StaticPhysicalRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TerrainRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\VegetationRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BoxBlurFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\CubeMapVertexShader.cpp" />
@@ -363,6 +368,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\VegetationGeometryShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\VegetationVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\ViewportVertexShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\VolumetricFogFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.cpp" />
     <ClCompile Include="..\..\..\Source\Resources\ResourceLoader.cpp" />

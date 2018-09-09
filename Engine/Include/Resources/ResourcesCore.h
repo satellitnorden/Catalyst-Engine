@@ -12,7 +12,7 @@ enum class ResourceType : uint8
 	PhysicalModel,
 	TerrainMaterial,
 	VegetationMaterial,
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	OceanMaterial,
 #endif
 	NumberOfResourceTypes

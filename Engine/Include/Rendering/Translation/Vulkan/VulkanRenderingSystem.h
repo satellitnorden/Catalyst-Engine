@@ -180,7 +180,7 @@ private:
 	*/
 	RenderDataTableHandle GetCurrentEnvironmentRenderDataTable() NOEXCEPT;
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Returns the current ocean descriptor set.
 	*/

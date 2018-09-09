@@ -36,7 +36,7 @@ public:
 	*/
 	const Vector3& GetWindDirection() const NOEXCEPT { return _WindDirection; }
 
-#if !defined(CATALYST_DISABLE_OCEAN)
+#if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Returns the ocean height.
 	*/

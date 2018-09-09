@@ -38,3 +38,4 @@
 #include <Rendering/ShaderData/Vulkan/VegetationGeometryShader.h>
 #include <Rendering/ShaderData/Vulkan/VegetationVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/ViewportVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/VolumetricFogFragmentShader.h>
