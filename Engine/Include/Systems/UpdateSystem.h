@@ -3,18 +3,11 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 #include <Core/Containers/DynamicArray.h>
-#include <Core/General/UpdateContext.h>
-#include <Core/General/UpdateFunctionContext.h>
+#include <Core/General/Updateable.h>
 #include <Core/Pointers/UniquePointer.h>
 
 //Multithreading.
 #include <Multithreading/Task.h>
-
-/*
-*	Definition for an update function.
-*	An update function receives an update function context containing this frame's update context as well as optional arguments.
-*/
-using UpdateFunction = void(*)(const UpdateFunctionContext *const RESTRICT context);
 
 class UpdateSystem final
 {
@@ -45,96 +38,76 @@ public:
 	void PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Registers a synchronous pre-update function.
+	*	Registers a synchronous pre-update.
 	*/
-	void RegisterSynchronousPreUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments = nullptr);
+	void RegisterSynchronousPreUpdate(Updateable *const RESTRICT newUpdate);
 
 	/*
-	*	Registers an asynchronous pre-update function.
+	*	De-registers a synchronous pre-update.
 	*/
-	void RegisterAsynchronousPreUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments = nullptr);
+	void DeRegisterSynchronousPreUpdate(Updateable *const RESTRICT update);
 
 	/*
-	*	Registers a synchronous update function.
+	*	Registers a synchronous update.
 	*/
-	void RegisterSynchronousUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments = nullptr);
+	void RegisterSynchronousUpdate(Updateable *const RESTRICT newUpdate);
 
 	/*
-	*	Registers an asynchronous update function.
+	*	De-registers a synchronous update.
 	*/
-	void RegisterAsynchronousUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments = nullptr);
+	void DeRegisterSynchronousUpdate(Updateable *const RESTRICT update);
 
 	/*
-	*	Registers a synchronous post-update function.
+	*	Registers a synchronous post-update.
 	*/
-	void RegisterSynchronousPostUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments = nullptr);
+	void RegisterSynchronousPostUpdate(Updateable *const RESTRICT newUpdate);
 
 	/*
-	*	Registers an asynchronous post-update function.
+	*	De-registers a synchronous post-update.
 	*/
-	void RegisterAsynchronousPostUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments = nullptr);
+	void DeRegisterSynchronousPostUpdate(Updateable *const RESTRICT update);
+
+	/*
+	*	Registers an asynchronous pre-update.
+	*/
+	void RegisterAsynchronousPreUpdate(Updateable *const RESTRICT newUpdate);
+
+	/*
+	*	De-registers an asynchronous pre-update.
+	*/
+	void DeRegisterAsynchronousPreUpdate(Updateable *const RESTRICT update);
 
 private:
-
-	/*
-	*	Synchronous update data definition.
-	*/
-	class SynchronousUpdateData final
-	{
-
-	public:
-
-		//The function.
-		const UpdateFunction _Function;
-
-		//The arguments.
-		void *RESTRICT _Arguments;
-
-		/*
-		*	Constructor taking all values as arguments.
-		*/
-		SynchronousUpdateData(const UpdateFunction function, void *const RESTRICT arguments) NOEXCEPT
-			:
-			_Function(function),
-			_Arguments(arguments)
-		{
-
-		}
-
-	};
 
 	/*
 	*	Asynchronous update data definition.
 	*/
 	class AsynchronousUpdateData final
 	{
-
+		
 	public:
 
 		//The task.
 		Task _Task;
 
-		//The context.
-		UpdateFunctionContext _Context;
+		//The update context.
+		const UpdateContext *RESTRICT _Context;
+
+		//The updateable.
+		Updateable *RESTRICT _UpdateAble;
 
 	};
 
-	//Container for all synchronous pre-update data.
-	DynamicArray<SynchronousUpdateData> _SynchronousPreUpdateData;
+	//Container for all synchronous pre-updates.
+	DynamicArray<Updateable *RESTRICT> _SynchronousPreUpdates;
 
-	//Container for all asynchronous pre-update data.
-	DynamicArray<AsynchronousUpdateData> _AsynchronousPreUpdateData;
+	//Container for all synchronous updates.
+	DynamicArray<Updateable *RESTRICT> _SynchronousUpdates;
 
-	//Container for all synchronous update data.
-	DynamicArray<SynchronousUpdateData> _SynchronousUpdateData;
+	//Container for all synchronous post-updates.
+	DynamicArray<Updateable *RESTRICT> _SynchronousPostUpdates;
 
-	//Container for all asynchronous update data.
-	DynamicArray<AsynchronousUpdateData> _AsynchronousUpdateData;
-
-	//Container for all synchronous post-update data.
-	DynamicArray<SynchronousUpdateData> _SynchronousPostUpdateData;
-
-	//Container for all asynchronous post-update data.
-	DynamicArray<AsynchronousUpdateData> _AsynchronousPostUpdateData;
+	//Container for all asynchronous pre-updates.
+	DynamicArray<AsynchronousUpdateData> _AsynchronousPreUpdates;
 
 };

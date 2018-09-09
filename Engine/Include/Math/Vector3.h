@@ -91,6 +91,14 @@ public:
 	}
 
 	/*
+	*	Linearly interpolate between two float vectors.
+	*/
+	FORCE_INLINE NO_DISCARD constexpr static Vector3 LinearlyInterpolate(const Vector3 &first, const Vector3 &second, const float alpha) NOEXCEPT
+	{
+		return Vector3(CatalystBaseMath::LinearlyInterpolate(first._X, second._X, alpha), CatalystBaseMath::LinearlyInterpolate(first._Y, second._Y, alpha), CatalystBaseMath::LinearlyInterpolate(first._Z, second._Z, alpha));
+	}
+
+	/*
 	*	Given a vector, return it's unit vector counterpart.
 	*/
 	FORCE_INLINE NO_DISCARD constexpr static Vector3 Normalize(const Vector3 &vector) NOEXCEPT

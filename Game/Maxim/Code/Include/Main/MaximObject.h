@@ -3,12 +3,12 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 #include <Core/Containers/Collection.h>
-#include <Core/General/UpdateContext.h>
+#include <Core/General/Updateable.h>
 
 //Entities.
 #include <Entities/DynamicPhysicalEntity.h>
 
-class MaximObject final : public Collection<MaximObject>
+class MaximObject final : public Collection<MaximObject>, public Updateable
 {
 
 public:
@@ -19,9 +19,9 @@ public:
 	void Initialize(const float initialSpeed) NOEXCEPT;
 
 	/*
-	*	Pre-updates this Maxim object.
+	*	Pre-updates this Maxim object asynchronously.
 	*/
-	void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	bool PreUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 private:
 

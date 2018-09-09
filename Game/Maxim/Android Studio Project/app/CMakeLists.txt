@@ -11,7 +11,7 @@ add_library(	catalyst-engine-lib
 include_directories( ../../../../Engine/Include/ ../../Code/Include/ )
 
 target_link_libraries( catalyst-engine-lib android log vulkan )
-add_definitions( -DCATALYST_ANDROID )
+add_definitions( -DCATALYST_ANDROID -DCATALYST_ENABLE_VOLUMETRIC_FOG )
 
 #target_link_libraries( catalyst-engine-lib android input vulkan )
-#add_definitions( -DCATALYST_ANDROID -DCATALYST_FINAL  -Ofast )
+#add_definitions( -DCATALYST_ANDROID -DCATALYST_FINAL -DCATALYST_ENABLE_VOLUMETRIC_FOG  -Ofast )

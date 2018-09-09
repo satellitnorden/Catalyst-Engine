@@ -636,8 +636,8 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		data._NormalMapData[0].EmplaceFast(255);
 		data._MaterialPropertiesData.UpsizeSlow(1);
 		data._MaterialPropertiesData[0].Reserve(4);
-		data._MaterialPropertiesData[0].EmplaceFast(0);
 		data._MaterialPropertiesData[0].EmplaceFast(255);
+		data._MaterialPropertiesData[0].EmplaceFast(0);
 		data._MaterialPropertiesData[0].EmplaceFast(255);
 		data._MaterialPropertiesData[0].EmplaceFast(0);
 
@@ -665,8 +665,8 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		data._NormalMapData[0].EmplaceFast(255);
 		data._MaterialPropertiesData.UpsizeSlow(1);
 		data._MaterialPropertiesData[0].Reserve(4);
-		data._MaterialPropertiesData[0].EmplaceFast(0);
 		data._MaterialPropertiesData[0].EmplaceFast(255);
+		data._MaterialPropertiesData[0].EmplaceFast(0);
 		data._MaterialPropertiesData[0].EmplaceFast(255);
 		data._MaterialPropertiesData[0].EmplaceFast(0);
 
@@ -694,8 +694,8 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		data._NormalMapData[0].EmplaceFast(255);
 		data._MaterialPropertiesData.UpsizeSlow(1);
 		data._MaterialPropertiesData[0].Reserve(4);
-		data._MaterialPropertiesData[0].EmplaceFast(0);
 		data._MaterialPropertiesData[0].EmplaceFast(255);
+		data._MaterialPropertiesData[0].EmplaceFast(0);
 		data._MaterialPropertiesData[0].EmplaceFast(255);
 		data._MaterialPropertiesData[0].EmplaceFast(0);
 
@@ -886,8 +886,11 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 
 	{
 		//Initialize the default day environment material.
-		constexpr Vector3 BOTTOM_COLOR{ 0.25f, 0.25f, 0.25f };
-		constexpr Vector3 TOP_COLOR{ 0.0f, 0.75f, 1.0f };
+		//constexpr Vector3 BOTTOM_COLOR{ 0.25f, 0.25f, 0.25f };
+		//constexpr Vector3 TOP_COLOR{ 0.0f, 0.75f, 1.0f };
+
+		constexpr Vector3 BOTTOM_COLOR{ 0.0f, 0.0f, 0.0f };
+		constexpr Vector3 TOP_COLOR{ 0.0f, 0.0f, 0.0f };
 
 		EnvironmentMaterialData data;
 

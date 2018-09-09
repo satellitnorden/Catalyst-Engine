@@ -70,7 +70,7 @@ void MaximObject::Initialize(const float initialSpeed) NOEXCEPT
 	}
 
 	data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
-	data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
+	data->_Scale = Vector3(0.75f, 1.0f, 0.75f);
 
 	_Entity = EntitySystem::Instance->CreateEntity<DynamicPhysicalEntity>();
 
@@ -78,16 +78,23 @@ void MaximObject::Initialize(const float initialSpeed) NOEXCEPT
 }
 
 /*
-*	Pre-updates this Maxim object.
+*	Pre-updates this Maxim object asynchronously.
 */
-void MaximObject::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
+bool MaximObject::PreUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	if (_Entity->IsInitialized())
 	{
 		//Move the entity.
 		_Entity->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
-
+		
 		//Rotate it a bit.
-		_Entity->Rotate(Vector3(0.0f, 45.0f * context->_DeltaTime, 0.0f));
+		_Entity->Rotate(Vector3(0.0f, _Rotation * context->_DeltaTime, 0.0f));
+
+		if (_Entity->GetPosition()._Y <= -2.5f)
+		{
+			return false;
+		}
 	}
+
+	return true;
 }

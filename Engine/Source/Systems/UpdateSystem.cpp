@@ -12,25 +12,25 @@ DEFINE_SINGLETON(UpdateSystem);
 */
 void UpdateSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Kick off all asynchronous pre-update functions.
-	for (AsynchronousUpdateData &data : _AsynchronousPreUpdateData)
+	//Kick off all asynchronous pre-updates.
+	for (AsynchronousUpdateData &data : _AsynchronousPreUpdates)
 	{
-		data._Context._Context = context;
+		data._Context = context;
+
 		TaskSystem::Instance->ExecuteTask(&data._Task);
 	}
 
-	//Execute all synchronous pre-update functions.
-	UpdateFunctionContext functionContext;
-	functionContext._Context = context;
-
-	for (const SynchronousUpdateData &data : _SynchronousPreUpdateData)
+	//Execute the synchronous pre-updates.
+	for (uint64 i = 0; i < _SynchronousPreUpdates.Size(); ++i)
 	{
-		functionContext._Arguments = data._Arguments;
-		data._Function(&functionContext);
+		if (!_SynchronousPreUpdates[i]->PreUpdateSynchronous(context))
+		{
+			DeRegisterSynchronousPreUpdate(_SynchronousPreUpdates[i]);
+		}
 	}
 
-	//Wait for all asynchronous pre-update functions to finish.
-	for (AsynchronousUpdateData &data : _AsynchronousPreUpdateData)
+	//Wait for all asynchronous pre-updates to finish.
+	for (AsynchronousUpdateData &data : _AsynchronousPreUpdates)
 	{
 		data._Task.WaitFor();
 	}
@@ -41,36 +41,13 @@ void UpdateSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRIC
 */
 void UpdateSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	static bool once = false;
-
-	if (!once)
+	//Execute the synchronous updates.
+	for (uint64 i = 0; i < _SynchronousUpdates.Size(); ++i)
 	{
-		once = true;
-
-		_AsynchronousPreUpdateData.Reserve(100);
-	}
-
-	//Kick off all asynchronous update functions.
-	for (AsynchronousUpdateData &data : _AsynchronousUpdateData)
-	{
-		data._Context._Context = context;
-		TaskSystem::Instance->ExecuteTask(&data._Task);
-	}
-
-	//Execute all synchronous update functions.
-	UpdateFunctionContext functionContext;
-	functionContext._Context = context;
-
-	for (const SynchronousUpdateData &data : _SynchronousUpdateData)
-	{
-		functionContext._Arguments = data._Arguments;
-		data._Function(&functionContext);
-	}
-
-	//Wait for all asynchronous update functions to finish.
-	for (AsynchronousUpdateData &data : _AsynchronousUpdateData)
-	{
-		data._Task.WaitFor();
+		if (!_SynchronousUpdates[i]->UpdateSynchronous(context))
+		{
+			DeRegisterSynchronousUpdate(_SynchronousUpdates[i]);
+		}
 	}
 }
 
@@ -79,95 +56,105 @@ void UpdateSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT c
 */
 void UpdateSystem::PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Kick off all asynchronous post-update functions.
-	for (AsynchronousUpdateData &data : _AsynchronousPostUpdateData)
+	//Execute the synchronous post-updates.
+	for (uint64 i = 0; i < _SynchronousPostUpdates.Size(); ++i)
 	{
-		data._Context._Context = context;
-		TaskSystem::Instance->ExecuteTask(&data._Task);
-	}
-
-	//Execute all synchronous post-update functions.
-	UpdateFunctionContext functionContext;
-	functionContext._Context = context;
-
-	for (const SynchronousUpdateData &data : _SynchronousPostUpdateData)
-	{
-		functionContext._Arguments = data._Arguments;
-		data._Function(&functionContext);
-	}
-
-	//Wait for all asynchronous post-update functions to finish.
-	for (AsynchronousUpdateData &data : _AsynchronousPostUpdateData)
-	{
-		data._Task.WaitFor();
+		if (!_SynchronousPostUpdates[i]->PostUpdateSynchronous(context))
+		{
+			DeRegisterSynchronousPostUpdate(_SynchronousPostUpdates[i]);
+		}
 	}
 }
 
 /*
-*	Registers a synchronous pre-update function.
+*	Registers a synchronous pre-update.
 */
-void UpdateSystem::RegisterSynchronousPreUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments)
+void UpdateSystem::RegisterSynchronousPreUpdate(Updateable *const RESTRICT newUpdate)
 {
-	//Add the update function to the synchronous pre-update data.
-	_SynchronousPreUpdateData.EmplaceSlow(function, arguments);
+	//Add the update to the synchronous pre-updates.
+	_SynchronousPreUpdates.EmplaceSlow(newUpdate);
 }
 
 /*
-*	Registers an asynchronous pre-update function.
+*	De-registers a synchronous pre-update.
 */
-void UpdateSystem::RegisterAsynchronousPreUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments)
+void UpdateSystem::DeRegisterSynchronousPreUpdate(Updateable *const RESTRICT update)
 {
-	//Add the update function to the asynchronous pre-update data.
-	_AsynchronousPreUpdateData.EmplaceSlow();
-
-	AsynchronousUpdateData &data{ _AsynchronousPreUpdateData.Back() };
-	data._Context._Arguments = arguments;
-	data._Task._Function = reinterpret_cast<void(*)(void *const RESTRICT)>(function);
-	data._Task._Arguments = &data._Context;
+	//Remove the update from the synchronous pre-updates.
+	_SynchronousPreUpdates.Erase(update);
 }
 
 /*
-*	Registers a synchronous update function.
+*	Registers a synchronous update.
 */
-void UpdateSystem::RegisterSynchronousUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments)
+void UpdateSystem::RegisterSynchronousUpdate(Updateable *const RESTRICT newUpdate)
 {
-	//Add the update function to the synchronous update data.
-	_SynchronousUpdateData.EmplaceSlow(function, arguments);
+	//Add the update to the synchronous updates.
+	_SynchronousUpdates.EmplaceSlow(newUpdate);
 }
 
 /*
-*	Registers an asynchronous update function.
+*	De-registers a synchronous update.
 */
-void UpdateSystem::RegisterAsynchronousUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments)
+void UpdateSystem::DeRegisterSynchronousUpdate(Updateable *const RESTRICT update)
 {
-	//Add the update function to the asynchronous update data.
-	_AsynchronousUpdateData.EmplaceSlow();
-
-	AsynchronousUpdateData &data{ _AsynchronousUpdateData.Back() };
-	data._Context._Arguments = arguments;
-	data._Task._Function = reinterpret_cast<void(*)(void *const RESTRICT)>(function);
-	data._Task._Arguments = &data._Context;
+	//Remove the update from the synchronous updates.
+	_SynchronousUpdates.Erase(update);
 }
 
 /*
-*	Registers a synchronous post-update function.
+*	Registers a synchronous post-update.
 */
-void UpdateSystem::RegisterSynchronousPostUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments)
+void UpdateSystem::RegisterSynchronousPostUpdate(Updateable *const RESTRICT newUpdate)
 {
-	//Add the update function to the synchronous post-update data.
-	_SynchronousPostUpdateData.EmplaceSlow(function, arguments);
+	//Add the update to the synchronous post-updates.
+	_SynchronousPostUpdates.EmplaceSlow(newUpdate);
 }
 
 /*
-*	Registers an asynchronous post-update function.
+*	De-registers a synchronous post-update.
 */
-void UpdateSystem::RegisterAsynchronousPostUpdateFunction(const UpdateFunction function, void *const RESTRICT arguments)
+void UpdateSystem::DeRegisterSynchronousPostUpdate(Updateable *const RESTRICT update)
 {
-	//Add the update function to the asynchronous post-update data.
-	_AsynchronousPostUpdateData.EmplaceSlow();
+	//Remove the update from the synchronous post-updates.
+	_SynchronousPostUpdates.Erase(update);
+}
 
-	AsynchronousUpdateData &data{ _AsynchronousPostUpdateData.Back() };
-	data._Context._Arguments = arguments;
-	data._Task._Function = reinterpret_cast<void(*)(void *const RESTRICT)>(function);
-	data._Task._Arguments = &data._Context;
+/*
+*	Registers an asynchronous pre-update.
+*/
+void UpdateSystem::RegisterAsynchronousPreUpdate(Updateable *const RESTRICT newUpdate)
+{
+	//Add the update to the asynchronous pre-updates.
+	_AsynchronousPreUpdates.EmplaceSlow();
+
+	//Set up the asynchronous update data.
+	_AsynchronousPreUpdates.Back()._Task._Function = [](void *const RESTRICT arguments)
+	{
+		AsynchronousUpdateData *const RESTRICT data{ static_cast<AsynchronousUpdateData *const RESTRICT>(arguments) };
+
+		if (!data->_UpdateAble->PreUpdateAsynchronous(data->_Context))
+		{
+			UpdateSystem::Instance->DeRegisterAsynchronousPreUpdate(data->_UpdateAble);
+		}
+	};
+	_AsynchronousPreUpdates.Back()._Task._Arguments = &_AsynchronousPreUpdates.Back();
+	_AsynchronousPreUpdates.Back()._UpdateAble = newUpdate;
+}
+
+/*
+*	De-registers an asynchronous pre-update.
+*/
+void UpdateSystem::DeRegisterAsynchronousPreUpdate(Updateable *const RESTRICT update)
+{
+	//Remove the update from the asynchronous pre-updates.
+	for (uint64 i = 0, size = _AsynchronousPreUpdates.Size(); i < size; ++i)
+	{
+		if (_AsynchronousPreUpdates[i]._UpdateAble == update)
+		{
+			_AsynchronousPreUpdates.EraseAt(i);
+
+			return;
+		}
+	}
 }

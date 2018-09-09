@@ -26,6 +26,14 @@ public:
 	}
 
 	/*
+	*	Copy assignment operator overload.
+	*/
+	void operator=(const Semaphore &other) NOEXCEPT
+	{
+		_Signalled.store(other._Signalled.load());
+	}
+
+	/*
 	*	Signals this semaphore.
 	*/
 	void Signal() NOEXCEPT { _Signalled.store(true); }

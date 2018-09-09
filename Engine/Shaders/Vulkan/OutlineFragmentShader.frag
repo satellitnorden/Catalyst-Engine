@@ -75,7 +75,7 @@ layout (location = 0) out vec4 fragment;
 void main()
 {
     //Calculate the outline weight.
-    float weight = sin(totalGameTime * 4.0f) * 0.5f + 0.5f;
+    float weight = sin(totalGameTime * 5.0f) * 0.5f + 0.5f;
 
     //Write the fragment.
     fragment = vec4(color, weight);

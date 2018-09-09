@@ -21,7 +21,7 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 	configuration->_RenderingConfiguration._ShadowMapResolution = 2'048;
 #elif defined(CATALYST_ANDROID)
 	configuration->_RenderingConfiguration._Resolution = Resolution(1'080, 1'920);
-	configuration->_RenderingConfiguration._ResolutionScale = 0.75f;
+	configuration->_RenderingConfiguration._ResolutionScale = 0.5f;
 	configuration->_RenderingConfiguration._ShadowMapResolution = 1'024;
 #else
 	#error "wat"
