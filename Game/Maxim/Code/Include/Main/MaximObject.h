@@ -14,9 +14,9 @@ class MaximObject final : public Collection<MaximObject>
 public:
 
 	/*
-	*	Default constructor.
+	*	Initializes this Maxim object.
 	*/
-	MaximObject() NOEXCEPT;
+	void Initialize(const float initialSpeed) NOEXCEPT;
 
 	/*
 	*	Pre-updates this Maxim object.
@@ -24,6 +24,9 @@ public:
 	void PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 private:
+
+	//The speed.
+	float _Speed;
 
 	//The entity.
 	DynamicPhysicalEntity *RESTRICT _Entity;

@@ -4,9 +4,12 @@
 #include <Core/Core/CatalystCore.h>
 #include <Core/Pointers/UniquePointer.h>
 
-//Forward declarations.
-class CameraEntity;
-class DirectionalLightEntity;
+//Entities.
+#include <Entities/CameraEntity.h>
+#include <Entities/DirectionalLightEntity.h>
+
+//Maxim.
+#include <Main/MaximObject.h>
 
 class MaximGameSystem final
 {
@@ -38,10 +41,22 @@ public:
 
 private:
 
+	//The speed.
+	float _Speed{ 1.0f };
+
+	//The spawn timer.
+	float _SpawnTimer{ 0.0f };
+
+	//The spawn time.
+	float _SpawnTime{ 1.25f };
+
 	//The camera.
 	CameraEntity * RESTRICT camera;
 
 	//The sun.
 	DirectionalLightEntity *RESTRICT sun;
+
+	//Container for all enemies.
+	DynamicArray<MaximObject *RESTRICT> _Enemies;
 
 };

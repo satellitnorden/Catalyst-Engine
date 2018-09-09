@@ -2,12 +2,7 @@
 #include <Main/MaximGameSystem.h>
 
 //Entities.
-#include <Entities/CameraEntity.h>
-#include <Entities/DirectionalLightEntity.h>
-#include <Entities/DynamicPhysicalEntity.h>
 #include <Entities/ParticleSystemEntity.h>
-#include <Entities/StaticPhysicalEntity.h>
-#include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
@@ -22,9 +17,6 @@
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/UpdateSystem.h>
-
-//Maxim.
-#include <Main/MaximObject.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(MaximGameSystem);
@@ -49,13 +41,10 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	ParticleSystemEntity *const RESTRICT particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
 	particles->Initialize(RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle), ParticleSystemProperties(10.0f, 60.0f, 0.01f, Vector2(0.025f, 0.025f), Vector2(0.05f, 0.05f), Vector3(-25.0f, -25.0f, -25.0f), Vector3(25.0f, 25.0f, 25.0f), Vector3(-0.25f, -0.25f, -0.25f), Vector3(0.25f, 0.25f, 0.25f), Vector3(0.0f, 0.0f, 0.0f)));
 
-	//Create, uh, sun.
+	//Create the sun.
 	sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	sun->SetIntensity(25.0f);
 	sun->Rotate(Vector3(-22.5f, 170.0f, 0.0f));
-
-	//Disable screen space ambient occlusion.
-	RenderingConfigurationManager::Instance->SetScreenSpaceAmbientOcclusionEnabled(false);
 }
 
 /*
@@ -63,25 +52,30 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 */
 void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
-	//Spawn some objects.
-	static DynamicArray<MaximObject> objects;
-	static float timer{ 0.0f };
+	//Update the spawn timer.
+	_SpawnTimer += deltaTime;
 
-	timer += deltaTime;
-
-	constexpr float SPAWN{ 1.25f };
-
-	while (timer >= SPAWN)
+	while (_SpawnTimer >= _SpawnTime)
 	{
-		objects.EmplaceSlow();
+		MaximObject *const RESTRICT newEnemy{ new MaximObject };
+
+		newEnemy->Initialize(_Speed);
+
+		_Enemies.EmplaceSlow(newEnemy);
 
 		UpdateSystem::Instance->RegisterAsynchronousPreUpdateFunction([](const UpdateFunctionContext *const RESTRICT context)
 		{
 			static_cast<MaximObject *const RESTRICT>(context->_Arguments)->PreUpdate(context->_Context);
-		}, &objects.Back());
+		}, newEnemy);
 
-		timer -= SPAWN;
+		_SpawnTimer -= _SpawnTime;
 	}
+
+	//Update the speed.
+	_Speed += deltaTime * 0.01f;
+
+	//Update the spawn time.
+	_SpawnTime -= deltaTime * 0.01f;
 }
 
 /*

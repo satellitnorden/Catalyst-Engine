@@ -41,6 +41,15 @@ void UpdateSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRIC
 */
 void UpdateSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	static bool once = false;
+
+	if (!once)
+	{
+		once = true;
+
+		_AsynchronousPreUpdateData.Reserve(100);
+	}
+
 	//Kick off all asynchronous update functions.
 	for (AsynchronousUpdateData &data : _AsynchronousUpdateData)
 	{
