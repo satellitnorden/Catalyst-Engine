@@ -56,9 +56,8 @@ void DynamicOutlineRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::Scene);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
@@ -142,7 +141,6 @@ void DynamicOutlineRenderPass::RenderInternal() NOEXCEPT
 
 	//Track the previous state, so if two static physical entities share the same state, it doesn't have to be rebound.
 	ConstantBufferHandle previousBuffer{ nullptr };
-	RenderDataTableHandle previousRenderDataTable{ nullptr };
 
 	for (uint64 i = 0; i < numberOfDynamicPhysicalComponents; ++i, ++renderComponent, ++transformComponent)
 	{
@@ -165,13 +163,6 @@ void DynamicOutlineRenderPass::RenderInternal() NOEXCEPT
 
 			commandBuffer->BindVertexBuffers(this, 1, &renderComponent->_Buffer, &offset);
 			commandBuffer->BindIndexBuffer(this, renderComponent->_Buffer, renderComponent->_IndexOffset);
-		}
-
-		if (previousRenderDataTable != renderComponent->_RenderDataTable)
-		{
-			previousRenderDataTable = renderComponent->_RenderDataTable;
-
-			commandBuffer->BindRenderDataTable(this, 1, renderComponent->_RenderDataTable);
 		}
 
 		commandBuffer->DrawIndexed(this, renderComponent->_IndexCount, 1);

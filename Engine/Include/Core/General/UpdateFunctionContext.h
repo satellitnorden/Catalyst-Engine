@@ -13,7 +13,7 @@ public:
 	const UpdateContext *RESTRICT _Context;
 
 	//The arguments.
-	const void *RESTRICT _Arguments;
+	void *RESTRICT _Arguments;
 
 	/*
 	*	Default constructor.
@@ -23,7 +23,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	UpdateFunctionContext(const UpdateContext *const RESTRICT context, const void *const RESTRICT arguments) NOEXCEPT
+	UpdateFunctionContext(const UpdateContext *const RESTRICT context, void *const RESTRICT arguments) NOEXCEPT
 		:
 		_Context(context),
 		_Arguments(arguments)

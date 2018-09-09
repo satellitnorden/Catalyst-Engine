@@ -21,6 +21,10 @@
 #include <Systems/EntitySystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/UpdateSystem.h>
+
+//Maxim.
+#include <Main/MaximObject.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(MaximGameSystem);
@@ -52,33 +56,6 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	//Disable screen space ambient occlusion.
 	RenderingConfigurationManager::Instance->SetScreenSpaceAmbientOcclusionEnabled(false);
-
-	//Create a dynamic physcal cube that will spin around and stuff. (:
-	spinner = EntitySystem::Instance->CreateEntity<DynamicPhysicalEntity>();
-	DynamicPhysicalInitializationData  *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
-
-	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
-	model._Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Teal);
-
-	data->_PhysicalFlags = static_cast<uint8>(PhysicalFlag::Physical) | static_cast<uint8>(PhysicalFlag::Outline);
-	data->_Model = model;
-	data->_Position = Vector3(0.0f, 0.0f, 0.0f);
-	data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
-	data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
-
-	EntitySystem::Instance->RequestInitialization(spinner, data, false);
-
-	PhysicalModel planeModel{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Plane) };
-	planeModel._Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
-
-	StaticPhysicalEntity *const RESTRICT plane{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-	plane->Initialize(planeModel, Vector3(0.0f, -0.5f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(10.0f, 10.0f, 10.0f));
-
-	for (uint8 i = 0; i < 5; ++i)
-	{
-		StaticPhysicalEntity *const RESTRICT cube{ EntitySystem::Instance->CreateEntity<StaticPhysicalEntity>() };
-		cube->Initialize(model, Vector3(CatalystBaseMath::RandomFloatInRange(-2.5f, 2.5f), CatalystBaseMath::RandomFloatInRange(0.0f, 2.5f), CatalystBaseMath::RandomFloatInRange(-2.5f, 2.5f)), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f));
-	}
 }
 
 /*
@@ -89,48 +66,24 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	//Eh. Rotate the "sun".
 	sun->Rotate(Vector3(0.0f, 2.5f * deltaTime, 0.0f));
 
-	//Eh. Set bloom radius.
-	const KeyboardState *const RESTRICT keyboard{ InputSystem::Instance->GetKeyboardState() };
+	//Spawn some objects.
+	static DynamicArray<MaximObject> objects;
+	static float timer{ 0.0f };
 
-	if (keyboard->GetButtonState(KeyboardButton::UpArrow) == ButtonState::PressedHold)
+	timer += deltaTime;
+
+	constexpr float SPAWN{ 5.0f };
+
+	while (timer >= SPAWN)
 	{
-		RenderingConfigurationManager::Instance->SetBloomRadius(RenderingConfigurationManager::Instance->GetBloomRadius() + (deltaTime * 0.001f));
-	}
+		objects.EmplaceSlow();
 
-	if (keyboard->GetButtonState(KeyboardButton::DownArrow) == ButtonState::PressedHold)
-	{
-		RenderingConfigurationManager::Instance->SetBloomRadius(RenderingConfigurationManager::Instance->GetBloomRadius() - (deltaTime * 0.001f));
-	}
-
-	//Rotate the... Thing.
-	if (spinner->IsInitialized())
-	{
-#if defined(CATALYST_WINDOWS)
-		const MouseState *const RESTRICT state{ InputSystem::Instance->GetMouseState() };
-
-		if (state->_Left == ButtonState::Pressed || state->_Left == ButtonState::PressedHold)
+		UpdateSystem::Instance->RegisterAsynchronousPreUpdateFunction([](const UpdateFunctionContext *const RESTRICT context)
 		{
-			const Vector3 direction{ RenderingSystem::Instance->GetWorldDirectionFromScreenCoordinate(Vector2(state->_CurrentX, state->_CurrentY)) };
-			const Vector3 newPosition{ CatalystVectorMath::LinePlaneIntersection(Vector3(0.0f, 0.0f, 0.0f), camera->GetPosition(), Vector3(0.0f, 0.0f, 1.0f), direction) };
+			static_cast<MaximObject *const RESTRICT>(context->_Arguments)->PreUpdate(context->_Context);
+		}, &objects.Back());
 
-			spinner->SetPosition(newPosition);
-		}
-
-		if (state->_Right == ButtonState::Pressed || state->_Right == ButtonState::PressedHold)
-		{
-			spinner->Rotate(Vector3(-180.0f * state->_DeltaY, 180.0f * state->_DeltaX, 0.0f));
-		}
-#elif defined(CATALYST_ANDROID)
-		const TouchState *const RESTRICT state{ InputSystem::Instance->GetTouchState() };
-
-		if (state->_ButtonState == ButtonState::PressedHold)
-		{
-			const Vector3 direction{ RenderingSystem::Instance->GetWorldDirectionFromScreenCoordinate(Vector2(state->_CurrentX, state->_CurrentY)) };
-			const Vector3 newPosition{ CatalystVectorMath::LinePlaneIntersection(Vector3(0.0f, 0.0f, 0.0f), camera->GetPosition(), Vector3(0.0f, 0.0f, 1.0f), direction) };
-
-			spinner->SetPosition(newPosition);
-		}
-#endif
+		timer -= SPAWN;
 	}
 }
 

@@ -4,6 +4,9 @@
 //Entities.
 #include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 
+//Math.
+#include <Math/CatalystBaseMath.h>
+
 //Systems.
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
@@ -21,7 +24,7 @@ MaximObject::MaximObject() NOEXCEPT
 
 	data->_PhysicalFlags = static_cast<uint8>(PhysicalFlag::Physical) | static_cast<uint8>(PhysicalFlag::Outline);
 	data->_Model = model;
-	data->_Position = Vector3(0.0f, 1.0f, 0.0f);
+	data->_Position = Vector3(CatalystBaseMath::RandomFloatInRange(-2.5f, 2.5f), 5.0f, 0.0f);
 	data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
 	data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
 
@@ -35,5 +38,6 @@ MaximObject::MaximObject() NOEXCEPT
 */
 void MaximObject::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-
+	//Move the entity.
+	_Entity->Move(Vector3(0.0f, -1.0f * context->_DeltaTime, 0.0f));
 }

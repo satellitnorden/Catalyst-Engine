@@ -69,20 +69,13 @@ layout (location = 0) in vec3 fragmentWorldPosition;
 layout (location = 1) in mat3 fragmentTangentSpaceMatrix;
 layout (location = 4) in vec2 fragmentTextureCoordinate;
 
-//Texture samplers.
-layout (set = 1, binding = 2) uniform sampler2D normalMapTexture;
-
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
 void main()
 {
-    //Calculate the normal.
-    vec3 normal = texture(normalMapTexture, fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
-    normal = normalize(fragmentTangentSpaceMatrix * normal);
-
     //Calculate the outline weight.
-    float weight = (sin(fragmentWorldPosition.x * 0.25f + fragmentWorldPosition.y * 0.25f + fragmentWorldPosition.z * 0.25f + totalGameTime * 4.0f) * 0.5f + 0.5f) * (1.0f - max(dot(-normal, normalize(fragmentWorldPosition - cameraWorldPosition)), 0.0f));
+    float weight = sin(totalGameTime * 4.0f) * 0.5f + 0.5f;
 
     //Write the fragment.
     fragment = vec4(color, weight);
