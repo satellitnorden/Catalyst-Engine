@@ -52,8 +52,8 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 															Vector2(0.02f, 0.02f),
 															Vector3(-5.0f, -12.5f, -5.0f),
 															Vector3(5.0f, 12.5f, 5.0f),
-															Vector3(-0.2f, -0.2f, -0.2f),
-															Vector3(0.2f, 0.2f, 0.2f)),
+															Vector3(-0.1f, -0.1f, -0.1f),
+															Vector3(0.1f, 0.1f, 0.1f)),
 															positions[i]);
 	}
 

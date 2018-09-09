@@ -616,6 +616,35 @@ void RenderingSystem::InitializeCommonParticleMaterials() NOEXCEPT
 void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 {
 	{
+		//Create the black common physical material.
+		PhysicalMaterialData data;
+
+		data._MipmapLevels = 1;
+		data._Width = 1;
+		data._Height = 1;
+		data._AlbedoData.UpsizeSlow(1);
+		data._AlbedoData[0].Reserve(4);
+		data._AlbedoData[0].EmplaceFast(0);
+		data._AlbedoData[0].EmplaceFast(0);
+		data._AlbedoData[0].EmplaceFast(0);
+		data._AlbedoData[0].EmplaceFast(255);
+		data._NormalMapData.UpsizeSlow(1);
+		data._NormalMapData[0].Reserve(4);
+		data._NormalMapData[0].EmplaceFast(127);
+		data._NormalMapData[0].EmplaceFast(127);
+		data._NormalMapData[0].EmplaceFast(255);
+		data._NormalMapData[0].EmplaceFast(255);
+		data._MaterialPropertiesData.UpsizeSlow(1);
+		data._MaterialPropertiesData[0].Reserve(4);
+		data._MaterialPropertiesData[0].EmplaceFast(0);
+		data._MaterialPropertiesData[0].EmplaceFast(255);
+		data._MaterialPropertiesData[0].EmplaceFast(255);
+		data._MaterialPropertiesData[0].EmplaceFast(0);
+
+		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Black)]);
+	}
+
+	{
 		//Create the red common physical material.
 		PhysicalMaterialData data;
 		
@@ -636,7 +665,7 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		data._NormalMapData[0].EmplaceFast(255);
 		data._MaterialPropertiesData.UpsizeSlow(1);
 		data._MaterialPropertiesData[0].Reserve(4);
-		data._MaterialPropertiesData[0].EmplaceFast(127);
+		data._MaterialPropertiesData[0].EmplaceFast(0);
 		data._MaterialPropertiesData[0].EmplaceFast(255);
 		data._MaterialPropertiesData[0].EmplaceFast(255);
 		data._MaterialPropertiesData[0].EmplaceFast(0);
@@ -665,7 +694,7 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		data._NormalMapData[0].EmplaceFast(255);
 		data._MaterialPropertiesData.UpsizeSlow(1);
 		data._MaterialPropertiesData[0].Reserve(4);
-		data._MaterialPropertiesData[0].EmplaceFast(127);
+		data._MaterialPropertiesData[0].EmplaceFast(0);
 		data._MaterialPropertiesData[0].EmplaceFast(255);
 		data._MaterialPropertiesData[0].EmplaceFast(255);
 		data._MaterialPropertiesData[0].EmplaceFast(0);

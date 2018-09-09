@@ -28,6 +28,9 @@ private:
 	//The speed.
 	float _Speed;
 
+	//The rotation.
+	float _Rotation;
+
 	//The entity.
 	DynamicPhysicalEntity *RESTRICT _Entity;
 

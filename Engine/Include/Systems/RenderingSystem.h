@@ -71,6 +71,7 @@ public:
 	//Enumeration covering all common physical materials.
 	enum class CommonPhysicalMaterial : uint8
 	{
+		Black,
 		Red,
 		Teal,
 		NumberOfCommonPhysicalMaterials

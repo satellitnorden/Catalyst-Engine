@@ -19,9 +19,12 @@ void MaximObject::Initialize(const float initialSpeed) NOEXCEPT
 	//Set the speed.
 	_Speed = initialSpeed;
 
+	//Randomize the rotation.
+	_Rotation = CatalystBaseMath::RandomFloatInRange(-45.0f, 45.0f);
+
 	//Create the entity.
 	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Octahedron) };
-	model._Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Teal);
+	model._Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Black);
 
 	DynamicPhysicalInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
 
@@ -30,40 +33,40 @@ void MaximObject::Initialize(const float initialSpeed) NOEXCEPT
 
 	switch (CatalystBaseMath::RandomIntegerInRange(0, 4))
 	{
-	case 0:
-	{
-		data->_Position = Vector3(-2.5f, 10.0f, 0.0f);
+		case 0:
+		{
+			data->_Position = Vector3(-2.5f, 10.0f, 0.0f);
 
-		break;
-	}
+			break;
+		}
 
-	case 1:
-	{
-		data->_Position = Vector3(-1.25f, 10.0f, 0.0f);
+		case 1:
+		{
+			data->_Position = Vector3(-1.25f, 10.0f, 0.0f);
 
-		break;
-	}
+			break;
+		}
 
-	case 2:
-	{
-		data->_Position = Vector3(0.0f, 10.0f, 0.0f);
+		case 2:
+		{
+			data->_Position = Vector3(0.0f, 10.0f, 0.0f);
 
-		break;
-	}
+			break;
+		}
 
-	case 3:
-	{
-		data->_Position = Vector3(1.25f, 10.0f, 0.0f);
+		case 3:
+		{
+			data->_Position = Vector3(1.25f, 10.0f, 0.0f);
 
-		break;
-	}
+			break;
+		}
 
-	case 4:
-	{
-		data->_Position = Vector3(2.5f, 10.0f, 0.0f);
+		case 4:
+		{
+			data->_Position = Vector3(2.5f, 10.0f, 0.0f);
 
-		break;
-	}
+			break;
+		}
 	}
 
 	data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
@@ -79,6 +82,12 @@ void MaximObject::Initialize(const float initialSpeed) NOEXCEPT
 */
 void MaximObject::PreUpdate(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Move the entity.
-	_Entity->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
+	if (_Entity->IsInitialized())
+	{
+		//Move the entity.
+		_Entity->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
+
+		//Rotate it a bit.
+		_Entity->Rotate(Vector3(0.0f, 45.0f * context->_DeltaTime, 0.0f));
+	}
 }
