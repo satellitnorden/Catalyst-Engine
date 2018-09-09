@@ -131,9 +131,9 @@ void VolumetricFogRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Pust constants.
-	_Data._Density = 0.01f;
+	_Data._Density = 0.0025f;
 	_Data._RayDistanceSquared = 20.0f * 20.0f;
-	_Data._NumberOfRaySteps = 64;
+	_Data._NumberOfRaySteps = 128;
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(VolumetricFogData), &_Data);
 
 	//Draw!

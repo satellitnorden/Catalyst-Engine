@@ -76,7 +76,7 @@ void main()
     float sunDirection = dot(normalize(fragmentTextureCoordinate), -directionalLightDirection);
     float sunWeight = sunDirection < 0.9985f ? 0.0f : sunDirection > 0.9995f ? 1.0f : (sunDirection - 0.9985f) * 1000.0f;
     sunWeight *= min(directionalLightIntensity, 1.0f);
-    sunweight *= sunWeight;
+    sunWeight *= sunWeight;
 
     //Calculate the sun color.
     vec3 sunColor = directionalLightColor * directionalLightIntensity;

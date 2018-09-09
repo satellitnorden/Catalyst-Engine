@@ -2,11 +2,13 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/StaticArray.h>
 #include <Core/Pointers/UniquePointer.h>
 
 //Entities.
 #include <Entities/CameraEntity.h>
 #include <Entities/DirectionalLightEntity.h>
+#include <Entities/ParticleSystemEntity.h>
 
 //Maxim.
 #include <Main/MaximObject.h>
@@ -48,13 +50,16 @@ private:
 	float _SpawnTimer{ 0.0f };
 
 	//The spawn time.
-	float _SpawnTime{ 1.25f };
+	float _SpawnTime{ 5.0f };
 
 	//The camera.
-	CameraEntity * RESTRICT camera;
+	CameraEntity * RESTRICT _Camera;
 
 	//The sun.
-	DirectionalLightEntity *RESTRICT sun;
+	DirectionalLightEntity *RESTRICT _Sun;
+
+	//Container for the particles.
+	StaticArray<ParticleSystemEntity *RESTRICT, 2> _Particles;
 
 	//Container for all enemies.
 	DynamicArray<MaximObject *RESTRICT> _Enemies;
