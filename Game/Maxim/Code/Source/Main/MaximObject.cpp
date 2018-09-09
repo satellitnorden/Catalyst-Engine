@@ -24,13 +24,51 @@ MaximObject::MaximObject() NOEXCEPT
 
 	data->_PhysicalFlags = static_cast<uint8>(PhysicalFlag::Physical) | static_cast<uint8>(PhysicalFlag::Outline);
 	data->_Model = model;
-	data->_Position = Vector3(CatalystBaseMath::RandomFloatInRange(-2.5f, 2.5f), 5.0f, 0.0f);
+
+	switch (CatalystBaseMath::RandomIntegerInRange(0, 4))
+	{
+		case 0:
+		{
+			data->_Position = Vector3(-2.5f, 5.0f, 0.0f);
+
+			break;
+		}
+
+		case 1:
+		{
+			data->_Position = Vector3(-1.25f, 5.0f, 0.0f);
+
+			break;
+		}
+
+		case 2:
+		{
+			data->_Position = Vector3(0.0f, 5.0f, 0.0f);
+
+			break;
+		}
+
+		case 3:
+		{
+			data->_Position = Vector3(1.25f, 5.0f, 0.0f);
+
+			break;
+		}
+
+		case 4:
+		{
+			data->_Position = Vector3(2.5f, 5.0f, 0.0f);
+
+			break;
+		}
+	}
+
 	data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
 	data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
 
 	_Entity = EntitySystem::Instance->CreateEntity<DynamicPhysicalEntity>();
 
-	EntitySystem::Instance->RequestInitialization(_Entity, data, false);
+	EntitySystem::Instance->RequestInitialization(_Entity, data, true);
 }
 
 /*
