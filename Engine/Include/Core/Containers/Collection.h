@@ -16,16 +16,16 @@ public:
 	Collection() NOEXCEPT
 	{
 		//Add this instance to the container for all instances of this type.
-		_Instances.EmplaceSlow(this);
+		_Instances.EmplaceSlow(static_cast<Type *RESTRICT>(this));
 	}
 
 	/*
 	*	Default destructor.
 	*/
-	~Collection() NOEXCEPT
+	virtual ~Collection() NOEXCEPT
 	{
 		//Remove this instance from the container for all instances of this type.
-		_Instances.Erase(this);
+		_Instances.Erase(static_cast<Type *RESTRICT>(this));
 	}
 
 	/*
@@ -50,3 +50,7 @@ private:
 	static DynamicArray<Type *RESTRICT> _Instances;
 
 };
+
+//Static variable definitions.
+template <typename Type>
+DynamicArray<Type *RESTRICT> Collection<Type>::_Instances;

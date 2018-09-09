@@ -149,10 +149,11 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\android_native_app_glue.c" />
     <ClCompile Include="..\..\..\Code\Source\Main\MaximGameSystem.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Main\MaximMain.cpp" />
+    <ClCompile Include="..\..\..\Code\Source\Main\MaximObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Code\Include\Main\MaximEnemy.h" />
     <ClInclude Include="..\..\..\Code\Include\Main\MaximGameSystem.h" />
+    <ClInclude Include="..\..\..\Code\Include\Main\MaximObject.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

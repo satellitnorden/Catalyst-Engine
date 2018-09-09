@@ -29,8 +29,8 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 {																																\
 	_ ## ENTITY_CLASS ## Entities.Back()->SetComponentsIndex(componentsIndex);													\
 																																\
-	_ ## ENTITY_CLASS ## Entities.Erase(componentsIndex);																		\
-	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.Erase(componentsIndex);															\
+	_ ## ENTITY_CLASS ## Entities.EraseAt(componentsIndex);																		\
+	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EraseAt(componentsIndex);															\
 }
 
 
@@ -65,9 +65,9 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 {																																	\
 	_ ## ENTITY_CLASS ## Entities.Back()->SetComponentsIndex(componentsIndex);														\
 																																	\
-	_ ## ENTITY_CLASS ## Entities.Erase(componentsIndex);																			\
-	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.Erase(componentsIndex);																\
-	_ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.Erase(componentsIndex);																\
+	_ ## ENTITY_CLASS ## Entities.EraseAt(componentsIndex);																			\
+	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EraseAt(componentsIndex);																\
+	_ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.EraseAt(componentsIndex);															\
 }
 
 /*
@@ -107,10 +107,10 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 {																																	\
 	_ ## ENTITY_CLASS ## Entities.Back()->SetComponentsIndex(componentsIndex);														\
 																																	\
-	_ ## ENTITY_CLASS ## Entities.Erase(componentsIndex);																			\
-	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.Erase(componentsIndex);																\
-	_ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.Erase(componentsIndex);																\
-	_ ## ENTITY_CLASS ## THIRD_COMPONENT ## s.Erase(componentsIndex);																\
+	_ ## ENTITY_CLASS ## Entities.EraseAt(componentsIndex);																			\
+	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EraseAt(componentsIndex);																\
+	_ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.EraseAt(componentsIndex);															\
+	_ ## ENTITY_CLASS ## THIRD_COMPONENT ## s.EraseAt(componentsIndex);																\
 }
 
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Camera, CameraComponent);

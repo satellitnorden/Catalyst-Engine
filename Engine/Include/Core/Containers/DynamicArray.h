@@ -249,7 +249,7 @@ public:
 	/*
 	*	Erases the element at the specified index in the array. Does not respect order of elements.
 	*/
-	void Erase(const uint64 index) NOEXCEPT
+	void EraseAt(const uint64 index) NOEXCEPT
 	{
 		Type &object{ _Array[index] };
 

@@ -78,7 +78,7 @@ layout (set = 1, binding = 1) uniform sampler2D directionalShadowMap;
 layout (location = 0) out vec4 fragment;
 
 /*
-*   Calculates the world position.
+*   Calculates the world position given a texture coordinate and depth.
 */
 vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
 {
@@ -135,5 +135,4 @@ void main()
 
     //Write the fragment
     fragment = vec4(accumulatedFog, 1.0f);
-    //fragment = texture(directionalShadowMap, fragmentTextureCoordinate);
 }

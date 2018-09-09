@@ -111,7 +111,7 @@ void EntitySystem::InitializeEntities() NOEXCEPT
 
 			++forceInitialized;
 
-			_InitializationQueue.Erase(counter);
+			_InitializationQueue.EraseAt(counter);
 		}
 
 		--counter;
@@ -217,7 +217,7 @@ void EntitySystem::TerminateEntities() NOEXCEPT
 
 			++forceTerminated;
 
-			_TerminationQueue.Erase(counter);
+			_TerminationQueue.EraseAt(counter);
 		}
 
 		--counter;
