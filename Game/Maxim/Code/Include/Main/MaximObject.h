@@ -23,6 +23,14 @@ public:
 	*/
 	bool PreUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
+	/*
+	*	Returns the entity.
+	*/
+	RESTRICTED DynamicPhysicalEntity *const RESTRICT GetEntity()
+	{
+		return _Entity;
+	}
+
 private:
 
 	//The speed.

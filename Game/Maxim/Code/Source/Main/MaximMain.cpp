@@ -56,9 +56,6 @@ MAIN_FUNCTION
 		EngineSystem::Instance->UpdateSystemSynchronous(deltaTime);
 	}
 
-	//Release the game system.
-	MaximGameSystem::Instance->ReleaseSystem();
-
 	//Release the engine system.
 	EngineSystem::Instance->ReleaseSystem();
 )

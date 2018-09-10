@@ -106,9 +106,13 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 }
 
 /*
-*	Releases the Maxim game system.
+*	Destroys a Maxim object.
 */
-void MaximGameSystem::ReleaseSystem() NOEXCEPT
+void MaximGameSystem::DestroyMaximObject(MaximObject *const RESTRICT object) NOEXCEPT
 {
+	//Terminate the entity.
+	EntitySystem::Instance->RequesTermination(object->GetEntity(), false);
 
+	//Destroy the entity.
+	EntitySystem::Instance->RequestDestruction(object->GetEntity(), false);
 }

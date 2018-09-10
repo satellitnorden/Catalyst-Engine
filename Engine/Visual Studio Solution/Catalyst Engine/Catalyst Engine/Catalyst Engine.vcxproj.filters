@@ -864,6 +864,9 @@
     <ClInclude Include="..\..\..\Include\Core\General\Updateable.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\EntityDestructionData.h">
+      <Filter>Entities\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

@@ -37,9 +37,9 @@ public:
 	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
 
 	/*
-	*	Releases the Maxim game system.
+	*	Destroys a Maxim object.
 	*/
-	void ReleaseSystem() NOEXCEPT;
+	void DestroyMaximObject(MaximObject *const RESTRICT object) NOEXCEPT;
 
 private:
 

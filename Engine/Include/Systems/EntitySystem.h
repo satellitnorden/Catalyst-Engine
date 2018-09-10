@@ -7,6 +7,9 @@
 
 //Entities.
 #include <Entities/Entity.h>
+#include <Entities/EntityInitializationData.h>
+#include <Entities/EntityTerminationData.h>
+#include <Entities/EntityDestructionData.h>
 
 //Multithreading.
 #include <Multithreading/Spinlock.h>
@@ -14,6 +17,7 @@
 //Forward declarations.
 class EntityInitializationData;
 class EntityTerminationData;
+class EntityDestructionData;
 
 class EntitySystem final
 {
@@ -26,7 +30,10 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	EntitySystem() NOEXCEPT;
+	EntitySystem() NOEXCEPT
+	{
+
+	}
 
 	/*
 	*	Updates the entity system synchronously.
@@ -76,6 +83,15 @@ public:
 	*/
 	void RequesTermination(Entity* const RESTRICT entity, const bool force) NOEXCEPT;
 
+	/*
+	*	Requests the destruction of an entity.
+	*	Destruction will happen at the next synchronous update of the entity system.
+	*	Usually only one entity is destroyed at each update of the entity system.
+	*	But if the destruction is forced, it will take priority and will be destroyed on the next update.
+	*	So if N entities are forced for the next entity system update, all of them will be destroyed.
+	*/
+	void RequestDestruction(Entity *const RESTRICT entity, const bool force) NOEXCEPT;
+
 private:
 
 	//The list of entities.
@@ -92,6 +108,12 @@ private:
 
 	//Container for all entities that have requested termination.
 	DynamicArray<EntityTerminationData> _TerminationQueue;
+
+	//Lock for the destruction queue.
+	Spinlock _DestructionQueueLock;
+
+	//Container for all entities that have requested destruction.
+	DynamicArray<EntityDestructionData> _DestructionQueue;
 
 	/*
 	*	Initializes entities.
@@ -133,6 +155,16 @@ private:
 	*/
 	template <typename Type>
 	void DestroyInitializationData(void* const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Destroys entities.
+	*/
+	void DestroyEntities() NOEXCEPT;
+
+	/*
+	*	Destroys one entity.
+	*/
+	void DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT;
 
 };
 

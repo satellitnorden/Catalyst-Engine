@@ -5,8 +5,6 @@
 #include <Components/ComponentManager.h>
 
 //Entities.
-#include <Entities/EntityInitializationData.h>
-#include <Entities/EntityTerminationData.h>
 #include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 #include <Entities/InitializationData/TerrainInitializationData.h>
 
@@ -20,14 +18,6 @@
 DEFINE_SINGLETON(EntitySystem);
 
 /*
-*	Default constructor.
-*/
-EntitySystem::EntitySystem() NOEXCEPT
-{
-
-}
-
-/*
 *	Updates the entity system synchronously.
 */
 void EntitySystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
@@ -37,6 +27,9 @@ void EntitySystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT c
 
 	//Terminate entities.
 	TerminateEntities();
+
+	//Destroy entities.
+	DestroyEntities();
 }
 
 /*
@@ -81,6 +74,22 @@ void EntitySystem::RequesTermination(Entity* const RESTRICT entity, const bool f
 
 	//Add the data.
 	_TerminationQueue.EmplaceSlow(entity, force);
+}
+
+/*
+*	Requests the destruction of an entity.
+*	Destruction will happen at the next synchronous update of the entity system.
+*	Usually only one entity is destroyed at each update of the entity system.
+*	But if the destruction is forced, it will take priority and will be destroyed on the next update.
+*	So if N entities are forced for the next entity system update, all of them will be destroyed.
+*/
+void EntitySystem::RequestDestruction(Entity *const RESTRICT entity, const bool force) NOEXCEPT
+{
+	//Lock the queue.
+	ScopedLock<Spinlock> scopedLock{ _DestructionQueueLock };
+
+	//Add the data.
+	_DestructionQueue.EmplaceSlow(entity, force);
 }
 
 /*
@@ -268,4 +277,56 @@ void EntitySystem::TerminateTerrainEntity(EntityTerminationData* const RESTRICT 
 
 	//Return this entities components index.
 	ComponentManager::ReturnTerrainComponentsIndex(data->_Entity->GetComponentsIndex());
+}
+
+/*
+*	Destroys entities.
+*/
+void EntitySystem::DestroyEntities() NOEXCEPT
+{
+	//Lock the destruction queue.
+	ScopedLock<Spinlock> scopedLock{ _DestructionQueueLock };
+
+	//If there's none to destroy, destroy none.
+	if (_DestructionQueue.Empty())
+	{
+		return;
+	}
+
+	//Iterate through all destruction requests and check for the force flag.
+	uint64 forceDestroyed{ 0 };
+	uint64 counter{ _DestructionQueue.Size() - 1 };
+
+	for (uint64 i = 0, size = _DestructionQueue.Size(); i < size; ++i)
+	{
+		EntityDestructionData& data{ _DestructionQueue[counter] };
+
+		if (data._Force)
+		{
+			DestroyEntity(data._Entity);
+
+			++forceDestroyed;
+
+			_DestructionQueue.EraseAt(counter);
+		}
+
+		--counter;
+	}
+
+	//If none were force-destroyed, just destroy one.
+	if (forceDestroyed == 0)
+	{
+		EntityDestructionData &data = _DestructionQueue.Back();
+		DestroyEntity(data._Entity);
+		_DestructionQueue.PopFast();
+	}
+}
+
+/*
+*	Destroys one entity.
+*/
+void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//The entity should already be terminated, so just deallocate the entity.
+	delete entity;
 }
