@@ -11,6 +11,9 @@
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 
+//Maxim.
+#include <Main/MaximGameSystem.h>
+
 /*
 *	Initializes this Maxim object.
 */
@@ -92,6 +95,9 @@ bool MaximObject::PreUpdateAsynchronous(const UpdateContext *const RESTRICT cont
 
 		if (_Entity->GetPosition()._Y <= -2.5f)
 		{
+			//Destroy this object.
+			MaximGameSystem::Instance->DestroyMaximObject(this);
+
 			return false;
 		}
 	}

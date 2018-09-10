@@ -115,4 +115,7 @@ void MaximGameSystem::DestroyMaximObject(MaximObject *const RESTRICT object) NOE
 
 	//Destroy the entity.
 	EntitySystem::Instance->RequestDestruction(object->GetEntity(), false);
+
+	//Remove this Maxim object from the internal list.
+	_Enemies.Erase(*object);
 }

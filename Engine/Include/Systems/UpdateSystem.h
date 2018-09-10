@@ -7,6 +7,7 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Multithreading.
+#include <Multithreading/Spinlock.h>
 #include <Multithreading/Task.h>
 
 class UpdateSystem final
@@ -106,6 +107,9 @@ private:
 
 	//Container for all synchronous post-updates.
 	DynamicArray<Updateable *RESTRICT> _SynchronousPostUpdates;
+
+	//The lock for the asynchronous updates.
+	Spinlock _AsynchronousPreUpdateLock;
 
 	//Container for all asynchronous pre-updates.
 	DynamicArray<AsynchronousUpdateData> _AsynchronousPreUpdates;

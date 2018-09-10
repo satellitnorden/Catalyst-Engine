@@ -146,6 +146,11 @@ private:
 	void TerminateEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT;
 
 	/*
+	*	Terminates a dynamic physical entity.
+	*/
+	void TerminateDynamicPhysicalEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT;
+
+	/*
 	*	Terminates a terrain entity.
 	*/
 	void TerminateTerrainEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT;

@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/UpdateSystem.h>
 
+//Multithreading.
+#include <Multithreading/ScopedLock.h>
+
 //Systems.
 #include <Systems/TaskSystem.h>
 
@@ -12,6 +15,9 @@ DEFINE_SINGLETON(UpdateSystem);
 */
 void UpdateSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	//Lock the asynchronous pre-updates.
+	_AsynchronousPreUpdateLock.Lock();
+
 	//Kick off all asynchronous pre-updates.
 	for (AsynchronousUpdateData &data : _AsynchronousPreUpdates)
 	{
@@ -19,6 +25,9 @@ void UpdateSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRIC
 
 		TaskSystem::Instance->ExecuteTask(&data._Task);
 	}
+
+	//Unlock the asynchronous pre-updates.
+	_AsynchronousPreUpdateLock.Unlock();
 
 	//Execute the synchronous pre-updates.
 	for (uint64 i = 0; i < _SynchronousPreUpdates.Size(); ++i)
@@ -30,9 +39,27 @@ void UpdateSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRIC
 	}
 
 	//Wait for all asynchronous pre-updates to finish.
-	for (AsynchronousUpdateData &data : _AsynchronousPreUpdates)
+	bool allDone{ false };
+
+	while (true)
 	{
-		data._Task.WaitFor();
+		//Lock the asynchronous pre-updates.
+		_AsynchronousPreUpdateLock.Lock();
+
+		//Check if all tasks has finished executing.
+		for (AsynchronousUpdateData &data : _AsynchronousPreUpdates)
+		{
+			if (!data._Task.IsExecuted())
+			{
+				continue;
+			}
+		}
+
+		//Unlock the asynchronous pre-updates.
+		_AsynchronousPreUpdateLock.Unlock();
+
+		//Break out of the loop.
+		break;
 	}
 }
 
@@ -125,6 +152,9 @@ void UpdateSystem::DeRegisterSynchronousPostUpdate(Updateable *const RESTRICT up
 */
 void UpdateSystem::RegisterAsynchronousPreUpdate(Updateable *const RESTRICT newUpdate)
 {
+	//Lock the asynchronous pre-updates.
+	ScopedLock<Spinlock> scopedLock{ _AsynchronousPreUpdateLock };
+
 	//Add the update to the asynchronous pre-updates.
 	_AsynchronousPreUpdates.EmplaceSlow();
 
@@ -147,6 +177,9 @@ void UpdateSystem::RegisterAsynchronousPreUpdate(Updateable *const RESTRICT newU
 */
 void UpdateSystem::DeRegisterAsynchronousPreUpdate(Updateable *const RESTRICT update)
 {
+	//Lock the asynchronous pre-updates.
+	ScopedLock<Spinlock> scopedLock{ _AsynchronousPreUpdateLock };
+
 	//Remove the update from the asynchronous pre-updates.
 	for (uint64 i = 0, size = _AsynchronousPreUpdates.Size(); i < size; ++i)
 	{

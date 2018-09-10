@@ -248,6 +248,13 @@ void EntitySystem::TerminateEntity(EntityTerminationData* const RESTRICT data) N
 {
 	switch (data->_Entity->GetEntityType())
 	{
+		case Entity::EntityType::DynamicPhysical:
+		{
+			TerminateDynamicPhysicalEntity(data);
+
+			break;
+		}
+
 		case Entity::EntityType::Terrain:
 		{
 			TerminateTerrainEntity(data);
@@ -268,6 +275,15 @@ void EntitySystem::TerminateEntity(EntityTerminationData* const RESTRICT data) N
 }
 
 /*
+*	Terminates a dynamic physical entity.
+*/
+void EntitySystem::TerminateDynamicPhysicalEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT
+{
+	//Return this entitiy's components index.
+	ComponentManager::ReturnDynamicPhysicalComponentsIndex(data->_Entity->GetComponentsIndex());
+}
+
+/*
 *	Terminates a terrain entity.
 */
 void EntitySystem::TerminateTerrainEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT
@@ -275,7 +291,7 @@ void EntitySystem::TerminateTerrainEntity(EntityTerminationData* const RESTRICT 
 	//Terminate the terrain entity via the rendering system.
 	RenderingSystem::Instance->TerminateTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(data->_Entity));
 
-	//Return this entities components index.
+	//Return this entitiy's components index.
 	ComponentManager::ReturnTerrainComponentsIndex(data->_Entity->GetComponentsIndex());
 }
 
@@ -329,4 +345,7 @@ void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//The entity should already be terminated, so just deallocate the entity.
 	delete entity;
+
+	//Remove the entity from the list of entities.
+	_Entities.Erase(entity);
 }

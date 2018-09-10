@@ -14,6 +14,16 @@ class MaximObject final : public Collection<MaximObject>, public Updateable
 public:
 
 	/*
+	*	Equal operator overload.
+	*/
+	bool operator==(const MaximObject &other)
+	{
+		return	_Speed == other._Speed
+				&& _Rotation == other._Rotation
+				&& _Entity == other._Entity;
+	}
+
+	/*
 	*	Initializes this Maxim object.
 	*/
 	void Initialize(const float initialSpeed) NOEXCEPT;
