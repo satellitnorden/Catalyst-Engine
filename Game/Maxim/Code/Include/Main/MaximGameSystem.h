@@ -64,4 +64,9 @@ private:
 	//Container for all enemies.
 	DynamicArray<MaximObject *RESTRICT> _Enemies;
 
+	/*
+	*	Returns a random color.
+	*/
+	Vector3 GetRandomColor() const NOEXCEPT;
+
 };

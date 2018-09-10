@@ -64,7 +64,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	_Sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	_Sun->SetIntensity(1.0f);
 	_Sun->Rotate(Vector3(-22.5f, 170.0f, 0.0f));
-	_Sun->SetColor(Vector3(0.0f, 1.0f, 1.0f));
+	_Sun->SetColor(GetRandomColor());
 }
 
 /*
@@ -123,4 +123,19 @@ void MaximGameSystem::DestroyMaximObject(MaximObject *const RESTRICT object) NOE
 
 	//Delete the object.
 	delete object;
+}
+
+/*
+*	Returns a random color.
+*/
+Vector3 MaximGameSystem::GetRandomColor() const NOEXCEPT
+{
+	switch (CatalystBaseMath::RandomIntegerInRange(0, 3))
+	{
+		case 0: return Vector3(1.0f, 0.0f, 0.0f);
+		case 1: return Vector3(0.0f, 1.0f, 1.0f);
+		case 2: return Vector3(0.5f, 0.0f, 1.0f);
+		case 3: return Vector3(0.0f, 1.0f, 0.0f);
+		default: return Vector3(1.0f, 0.0f, 0.0f);
+	}
 }
