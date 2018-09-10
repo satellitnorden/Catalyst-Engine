@@ -30,11 +30,16 @@ void UpdateSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRIC
 	_AsynchronousPreUpdateLock.Unlock();
 
 	//Execute the synchronous pre-updates.
-	for (uint64 i = 0; i < _SynchronousPreUpdates.Size(); ++i)
+	for (uint64 i = 0; i < _SynchronousPreUpdates.Size();)
 	{
 		if (!_SynchronousPreUpdates[i]->PreUpdateSynchronous(context))
 		{
 			DeRegisterSynchronousPreUpdate(_SynchronousPreUpdates[i]);
+		}
+
+		else
+		{
+			++i;
 		}
 	}
 

@@ -84,11 +84,13 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	//Spawn new objects, if necessary.
 	while (_SpawnTimer >= _SpawnTime)
 	{
-		_Enemies.EmplaceSlow();
+		MaximObject *const RESTRICT newObject{ new MaximObject };
 
-		_Enemies.Back().Initialize(_Speed);
+		_Enemies.EmplaceSlow(newObject);
 
-		UpdateSystem::Instance->RegisterAsynchronousPreUpdate(&_Enemies.Back());
+		newObject->Initialize(_Speed);
+
+		UpdateSystem::Instance->RegisterSynchronousPreUpdate(newObject);
 
 		_SpawnTimer -= _SpawnTime;
 	}
@@ -117,5 +119,8 @@ void MaximGameSystem::DestroyMaximObject(MaximObject *const RESTRICT object) NOE
 	EntitySystem::Instance->RequestDestruction(object->GetEntity(), false);
 
 	//Remove this Maxim object from the internal list.
-	_Enemies.Erase(*object);
+	_Enemies.Erase(object);
+
+	//Delete the object.
+	delete object;
 }

@@ -83,7 +83,7 @@ void MaximObject::Initialize(const float initialSpeed) NOEXCEPT
 /*
 *	Pre-updates this Maxim object asynchronously.
 */
-bool MaximObject::PreUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+bool MaximObject::PreUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	if (_Entity->IsInitialized())
 	{

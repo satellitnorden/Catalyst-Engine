@@ -62,6 +62,6 @@ private:
 	StaticArray<ParticleSystemEntity *RESTRICT, 2> _Particles;
 
 	//Container for all enemies.
-	DynamicArray<MaximObject> _Enemies;
+	DynamicArray<MaximObject *RESTRICT> _Enemies;
 
 };
