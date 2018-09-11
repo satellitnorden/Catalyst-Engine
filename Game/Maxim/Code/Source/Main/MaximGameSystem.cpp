@@ -28,6 +28,12 @@ DynamicPhysicalEntity *RESTRICT spinner;
 */
 void MaximGameSystem::InitializeSystem() NOEXCEPT
 {
+	//Randomize the current color.
+	_CurrentColor = GetRandomColor();
+
+	//Randomize the next color.
+	_NextColor = GetRandomColor();
+
 	//Create the camera.
 	_Camera = EntitySystem::Instance->CreateEntity<CameraEntity>();
 
@@ -64,7 +70,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	_Sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	_Sun->SetIntensity(1.0f);
 	_Sun->Rotate(Vector3(-22.5f, 170.0f, 0.0f));
-	_Sun->SetColor(GetRandomColor());
+	_Sun->SetColor(GetColor(_CurrentColor));
 }
 
 /*
@@ -72,6 +78,9 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 */
 void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 {
+	//Update the color.
+	UpdateColor(deltaTime);
+
 	//Update the speed.
 	_Speed += deltaTime * 0.01f;
 
@@ -126,16 +135,48 @@ void MaximGameSystem::DestroyMaximObject(MaximObject *const RESTRICT object) NOE
 }
 
 /*
+*	Updates the color.
+*/
+void MaximGameSystem::UpdateColor(const float deltaTime) NOEXCEPT
+{
+	_ColorTimer += deltaTime;
+
+	if (_ColorTimer >= 5.0f)
+	{
+		if (_ColorTimer >= 10.0f)
+		{
+			_ColorTimer -= 10.0f;
+			_CurrentColor = _NextColor;
+			_NextColor = GetRandomColor();
+		}
+
+		else
+		{
+			_Sun->SetColor(Vector3::LinearlyInterpolate(GetColor(_CurrentColor), GetColor(_NextColor), (_ColorTimer - 5.0f) / 5.0f));
+		}
+	}
+}
+
+/*
 *	Returns a random color.
 */
-Vector3 MaximGameSystem::GetRandomColor() const NOEXCEPT
+MaximGameSystem::MaximColor MaximGameSystem::GetRandomColor() const NOEXCEPT
 {
-	switch (CatalystBaseMath::RandomIntegerInRange(0, 3))
+	return static_cast<MaximColor>(CatalystBaseMath::RandomIntegerInRange<uint16>(0, static_cast<uint16>(MaximColor::NumberOfMaximColors)));
+}
+
+/*
+*	Returns the corresponding color.
+*/
+Vector3 MaximGameSystem::GetColor(const MaximGameSystem::MaximColor color) const NOEXCEPT
+{
+	switch (color)
 	{
-		case 0: return Vector3(1.0f, 0.0f, 0.0f);
-		case 1: return Vector3(0.0f, 1.0f, 1.0f);
-		case 2: return Vector3(0.5f, 0.0f, 1.0f);
-		case 3: return Vector3(0.0f, 1.0f, 0.0f);
-		default: return Vector3(1.0f, 0.0f, 0.0f);
+		case MaximGameSystem::MaximColor::Green: return Vector3(0.0f, 1.0f, 0.0f);
+		case MaximGameSystem::MaximColor::Purple: return Vector3(0.5f, 0.0f, 1.0f);
+		case MaximGameSystem::MaximColor::Red: return Vector3(1.0f, 0.0f, 0.0f);
+		case MaximGameSystem::MaximColor::Teal: return Vector3(0.0f, 1.0f, 1.0f);
+
+		default: return GetColor(MaximGameSystem::MaximColor::Teal);
 	}
 }

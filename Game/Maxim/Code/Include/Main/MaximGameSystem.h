@@ -21,6 +21,17 @@ public:
 	//Singleton declaration.
 	DECLARE_SINGLETON(MaximGameSystem);
 
+	//Enumeration covering all different colors.
+	enum class MaximColor : uint8
+	{
+		Green,
+		Purple,
+		Red,
+		Teal,
+
+		NumberOfMaximColors
+	};
+
 	/*
 	*	Default constructor.
 	*/
@@ -42,6 +53,15 @@ public:
 	void DestroyMaximObject(MaximObject *const RESTRICT object) NOEXCEPT;
 
 private:
+
+	//The current color.
+	MaximColor _CurrentColor;
+
+	//The next color.
+	MaximColor _NextColor;
+
+	//The color timer.
+	float _ColorTimer{ 0.0f };
 
 	//The speed.
 	float _Speed{ 1.0f };
@@ -65,8 +85,18 @@ private:
 	DynamicArray<MaximObject *RESTRICT> _Enemies;
 
 	/*
+	*	Updates the color.
+	*/
+	void UpdateColor(const float deltaTime) NOEXCEPT;
+
+	/*
 	*	Returns a random color.
 	*/
-	Vector3 GetRandomColor() const NOEXCEPT;
+	MaximColor GetRandomColor() const NOEXCEPT;
+
+	/*
+	*	Returns the corresponding color.
+	*/
+	Vector3 GetColor(const MaximColor color) const NOEXCEPT;
 
 };
