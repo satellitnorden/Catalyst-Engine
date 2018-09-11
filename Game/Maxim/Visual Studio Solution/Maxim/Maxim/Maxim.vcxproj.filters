@@ -368,5 +368,8 @@
     <ClInclude Include="..\..\..\Code\Include\Main\MaximObject.h">
       <Filter>Main\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\Main\MaximCore.h">
+      <Filter>Main\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

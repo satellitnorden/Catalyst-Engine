@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 #include <Core/Containers/StaticArray.h>
+#include <Core/General/Updateable.h>
 #include <Core/Pointers/UniquePointer.h>
 
 //Entities.
@@ -11,26 +12,16 @@
 #include <Entities/ParticleSystemEntity.h>
 
 //Maxim.
+#include <Main/MaximCore.h>
 #include <Main/MaximObject.h>
 
-class MaximGameSystem final
+class MaximGameSystem final : public Updateable
 {
 
 public:
 
 	//Singleton declaration.
 	DECLARE_SINGLETON(MaximGameSystem);
-
-	//Enumeration covering all different colors.
-	enum class MaximColor : uint8
-	{
-		Green,
-		Purple,
-		Red,
-		Teal,
-
-		NumberOfMaximColors
-	};
 
 	/*
 	*	Default constructor.
@@ -43,9 +34,14 @@ public:
 	void InitializeSystem() NOEXCEPT;
 
 	/*
-	*	Updates the Maxim game system synchronously.
+	*	Pre-updates the Maxim game system synchronously.
 	*/
-	void UpdateSystemSynchronous(const float deltaTime) NOEXCEPT;
+	bool PreUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
+
+	/*
+	*	Post-updates the Maxim game system synchronously.
+	*/
+	bool PostUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 	/*
 	*	Destroys a Maxim object.
@@ -70,7 +66,7 @@ private:
 	float _SpawnTimer{ 0.0f };
 
 	//The spawn time.
-	float _SpawnTime{ 5.0f };
+	float _SpawnTime{ 1.25f };
 
 	//The camera.
 	CameraEntity * RESTRICT _Camera;
@@ -81,8 +77,11 @@ private:
 	//Container for the particles.
 	StaticArray<ParticleSystemEntity *RESTRICT, 2> _Particles;
 
-	//Container for all enemies.
-	DynamicArray<MaximObject *RESTRICT> _Enemies;
+	//Container for all object.
+	DynamicArray<MaximObject *RESTRICT> _Objects;
+
+	//Container for all objects wishing to be destroyed.
+	DynamicArray<MaximObject *RESTRICT> _DestructionQueue;
 
 	/*
 	*	Updates the color.

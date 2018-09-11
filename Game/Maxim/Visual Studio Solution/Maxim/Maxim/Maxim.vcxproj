@@ -152,6 +152,7 @@
     <ClCompile Include="..\..\..\Code\Source\Main\MaximObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Code\Include\Main\MaximCore.h" />
     <ClInclude Include="..\..\..\Code\Include\Main\MaximGameSystem.h" />
     <ClInclude Include="..\..\..\Code\Include\Main\MaximObject.h" />
   </ItemGroup>

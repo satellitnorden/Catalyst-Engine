@@ -29,4 +29,7 @@ public:
 	//The scale.
 	Vector3 _Scale;
 
+	//The outline color.
+	Vector3 _OutlineColor;
+
 };

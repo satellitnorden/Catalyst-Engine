@@ -867,6 +867,9 @@
     <ClInclude Include="..\..\..\Include\Entities\EntityDestructionData.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Components\DynamicOutlineRenderComponent.h">
+      <Filter>Components\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

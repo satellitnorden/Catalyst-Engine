@@ -116,8 +116,6 @@ void main()
     //Calculate the ray properties.
     float densityPerStep = density / numberOfRaySteps;
     vec3 currentPosition = cameraWorldPosition;
-    float shadowMultiplier = 1.0f;
-    float shadowMultiplerDecreasePerRay = 1.0f / numberOfRaySteps;
 
     //Perform the ray.
     vec3 accumulatedFog = vec3(0.0f);
@@ -131,14 +129,11 @@ void main()
 	    float compare = directionalLightShadowMapCoordinate.z - SHADOW_BIAS;
 
         bool isNotInShadow = compare >= 1.0f || compare < directionalDepth;
-        shadowMultiplier -= isNotInShadow ? 0.0f : shadowMultiplerDecreasePerRay;
 
 	    accumulatedFog += isNotInShadow ? directionalLightColor * directionalLightIntensity * densityPerStep : vec3(0.0f);
 
 	    currentPosition += rayStep;
     }
-
-    accumulatedFog *= shadowMultiplier;
 
     //Write the fragment
     fragment = vec4(accumulatedFog, 1.0f);

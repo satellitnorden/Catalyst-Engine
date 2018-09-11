@@ -49,9 +49,6 @@ MAIN_FUNCTION
 		//Calculate the delta time.
 		const float deltaTime{ deltaTimer.Update() };
 
-		//Update the game system.
-		MaximGameSystem::Instance->UpdateSystemSynchronous(deltaTime);
-
 		//Update the engine system.
 		EngineSystem::Instance->UpdateSystemSynchronous(deltaTime);
 	}

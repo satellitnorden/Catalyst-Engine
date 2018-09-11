@@ -127,7 +127,7 @@ void DynamicOutlineRenderPass::RenderInternal() NOEXCEPT
 
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const DynamicPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetDynamicPhysicalDynamicPhysicalRenderComponents() };
+	const DynamicOutlineRenderComponent *RESTRICT renderComponent{ ComponentManager::GetDynamicPhysicalDynamicOutlineRenderComponents() };
 	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents() };
 
 	//Begin the command buffer.
@@ -154,8 +154,7 @@ void DynamicOutlineRenderPass::RenderInternal() NOEXCEPT
 
 		const Matrix4 modelMatrix{ transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale };
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
-		const Vector3 color{ 1.0f, 0.0f, 0.0f };
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector3), &color);
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector3), &renderComponent->_Color);
 
 		if (previousBuffer != renderComponent->_Buffer)
 		{

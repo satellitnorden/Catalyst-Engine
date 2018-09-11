@@ -8,6 +8,9 @@
 //Entities.
 #include <Entities/DynamicPhysicalEntity.h>
 
+//Maxim.
+#include <Main/MaximCore.h>
+
 class MaximObject final : public Collection<MaximObject>, public Updateable
 {
 
@@ -19,19 +22,23 @@ public:
 	bool operator==(const MaximObject &other)
 	{
 		return	_Speed == other._Speed
-				&& _Rotation == other._Rotation
 				&& _Entity == other._Entity;
 	}
 
 	/*
 	*	Initializes this Maxim object.
 	*/
-	void Initialize(const float initialSpeed) NOEXCEPT;
+	void Initialize(const MaximColor initialColor, const Vector3& initialOutlineColor, const float initialSpeed) NOEXCEPT;
 
 	/*
 	*	Pre-updates this Maxim object asynchronously.
 	*/
 	bool PreUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
+
+	/*
+	*	Updates this Maxim object asynchronously.
+	*/
+	bool UpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 	/*
 	*	Returns the entity.
@@ -43,11 +50,14 @@ public:
 
 private:
 
+	//Denotes whether or not this Maxim object is destroyed.
+	bool _IsDestroyed;
+
+	//The color.
+	MaximColor _Color;
+
 	//The speed.
 	float _Speed;
-
-	//The rotation.
-	float _Rotation;
 
 	//The entity.
 	DynamicPhysicalEntity *RESTRICT _Entity;

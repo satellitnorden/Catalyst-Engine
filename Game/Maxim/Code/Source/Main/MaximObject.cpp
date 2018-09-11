@@ -17,13 +17,13 @@
 /*
 *	Initializes this Maxim object.
 */
-void MaximObject::Initialize(const float initialSpeed) NOEXCEPT
+void MaximObject::Initialize(const MaximColor initialColor, const Vector3& initialOutlineColor, const float initialSpeed) NOEXCEPT
 {
+	//Set the color.
+	_Color = initialColor;
+
 	//Set the speed.
 	_Speed = initialSpeed;
-
-	//Randomize the rotation.
-	_Rotation = CatalystBaseMath::RandomFloatInRange(-45.0f, 45.0f);
 
 	//Create the entity.
 	PhysicalModel model{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Octahedron) };
@@ -74,6 +74,7 @@ void MaximObject::Initialize(const float initialSpeed) NOEXCEPT
 
 	data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
 	data->_Scale = Vector3(0.75f, 1.0f, 0.75f);
+	data->_OutlineColor = initialOutlineColor;
 
 	_Entity = EntitySystem::Instance->CreateEntity<DynamicPhysicalEntity>();
 
@@ -89,18 +90,23 @@ bool MaximObject::PreUpdateAsynchronous(const UpdateContext *const RESTRICT cont
 	{
 		//Move the entity.
 		_Entity->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
-		
-		//Rotate it a bit.
-		_Entity->Rotate(Vector3(0.0f, _Rotation * context->_DeltaTime, 0.0f));
 
 		if (_Entity->GetPosition()._Y <= -2.5f)
 		{
 			//Destroy this object.
 			MaximGameSystem::Instance->DestroyMaximObject(this);
 
-			return false;
+			_IsDestroyed = true;
 		}
 	}
 
-	return true;
+	return !_IsDestroyed;
+}
+
+/*
+*	Updates this Maxim object asynchronously.
+*/
+bool MaximObject::UpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+{
+	return !_IsDestroyed;
 }

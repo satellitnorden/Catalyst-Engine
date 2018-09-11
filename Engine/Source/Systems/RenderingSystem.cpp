@@ -437,17 +437,26 @@ void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &veg
 void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT
 {
 	//Cache the components.
-	DynamicPhysicalRenderComponent &renderComponent{ ComponentManager::GetDynamicPhysicalDynamicPhysicalRenderComponents()[entity->GetComponentsIndex()] };
+	DynamicOutlineRenderComponent &outlineRenderComponent{ ComponentManager::GetDynamicPhysicalDynamicOutlineRenderComponents()[entity->GetComponentsIndex()] };
+	DynamicPhysicalRenderComponent &physicalRenderComponent{ ComponentManager::GetDynamicPhysicalDynamicPhysicalRenderComponents()[entity->GetComponentsIndex()] };
 	FrustumCullingComponent &cullingComponent{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[entity->GetComponentsIndex()] };
 	TransformComponent &transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents()[entity->GetComponentsIndex()] };
 
-	//Initialize the render component.
-	renderComponent._PhysicalFlags = data->_PhysicalFlags;
-	renderComponent._IsInViewFrustum = true;
-	renderComponent._RenderDataTable = data->_Model._Material._RenderDataTable;
-	renderComponent._Buffer = data->_Model._Buffer;
-	renderComponent._IndexOffset = data->_Model._IndexOffset;
-	renderComponent._IndexCount = data->_Model._IndexCount;
+	//Initialize the outline render component.
+	outlineRenderComponent._PhysicalFlags = data->_PhysicalFlags;
+	outlineRenderComponent._IsInViewFrustum = true;
+	outlineRenderComponent._Buffer = data->_Model._Buffer;
+	outlineRenderComponent._IndexOffset = data->_Model._IndexOffset;
+	outlineRenderComponent._IndexCount = data->_Model._IndexCount;
+	outlineRenderComponent._Color = data->_OutlineColor;
+
+	//Initialize the physical render component.
+	physicalRenderComponent._PhysicalFlags = data->_PhysicalFlags;
+	physicalRenderComponent._IsInViewFrustum = true;
+	physicalRenderComponent._RenderDataTable = data->_Model._Material._RenderDataTable;
+	physicalRenderComponent._Buffer = data->_Model._Buffer;
+	physicalRenderComponent._IndexOffset = data->_Model._IndexOffset;
+	physicalRenderComponent._IndexCount = data->_Model._IndexCount;
 
 	//Initialize the culling component.
 	cullingComponent._AxisAlignedBoundingBox = data->_Model._AxisAlignedBoundingBox;

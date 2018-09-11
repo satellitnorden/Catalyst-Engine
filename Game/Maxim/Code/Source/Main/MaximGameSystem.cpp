@@ -71,35 +71,42 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	_Sun->SetIntensity(1.0f);
 	_Sun->Rotate(Vector3(-22.5f, 180.0f, 0.0f));
 	_Sun->SetColor(GetColor(_CurrentColor));
+
+	//Register the Maxim game system for updates.
+	UpdateSystem::Instance->RegisterSynchronousPreUpdate(this);
+	UpdateSystem::Instance->RegisterSynchronousPostUpdate(this);
 }
 
 /*
-*	Updates the Maxim game system synchronously.
+*	Pre-updates the Maxim game system synchronously.
 */
-void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
+bool MaximGameSystem::PreUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Update the color.
-	UpdateColor(deltaTime);
+	UpdateColor(context->_DeltaTime);
 
 	//Update the speed.
-	_Speed += deltaTime * 0.01f;
+	_Speed += context->_DeltaTime * 0.01f;
 
 	//Update the spawn time.
-	_SpawnTime = CatalystBaseMath::Maximum<float>(_SpawnTime - deltaTime * 0.01f, 0.1f);
+	_SpawnTime = 1.25f / _Speed;
 
 	//Update the spawn timer.
-	_SpawnTimer += deltaTime;
+	_SpawnTimer += context->_DeltaTime;
 
 	//Spawn new objects, if necessary.
 	while (_SpawnTimer >= _SpawnTime)
 	{
 		MaximObject *const RESTRICT newObject{ new MaximObject };
 
-		_Enemies.EmplaceSlow(newObject);
+		_Objects.EmplaceSlow(newObject);
 
-		newObject->Initialize(_Speed);
+		MaximColor newObjectColor{ GetRandomColor() };
+
+		newObject->Initialize(newObjectColor, GetColor(newObjectColor), _Speed);
 
 		UpdateSystem::Instance->RegisterAsynchronousPreUpdate(newObject);
+		UpdateSystem::Instance->RegisterAsynchronousUpdate(newObject);
 
 		_SpawnTimer -= _SpawnTime;
 	}
@@ -107,13 +114,43 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	//Update the positions of the particles.
 	for (ParticleSystemEntity *const RESTRICT particles : _Particles)
 	{
-		particles->Move(Vector3(0.0f, -_Speed * deltaTime, 0.0f));
+		particles->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
 
 		while (particles->GetPosition()._Y <= -25.0f)
 		{
 			particles->Move(Vector3(0.0f, 50.0f, 0.0f));
 		}
 	}
+
+	//Return true.
+	return true;
+}
+
+/*
+*	Post-updates the Maxim game system synchronously.
+*/
+bool MaximGameSystem::PostUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+{
+	//Destroy objects.
+	for (MaximObject *const RESTRICT object : _DestructionQueue)
+	{
+		//Terminate the entity.
+		EntitySystem::Instance->RequesTermination(object->GetEntity(), false);
+
+		//Destroy the entity.
+		EntitySystem::Instance->RequestDestruction(object->GetEntity(), false);
+
+		//Remove this Maxim object from the internal list.
+		_Objects.Erase(object);
+
+		//Delete the object.
+		delete object;
+	}
+
+	_DestructionQueue.ClearFast();
+
+	//Return true.
+	return true;
 }
 
 /*
@@ -121,17 +158,8 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 */
 void MaximGameSystem::DestroyMaximObject(MaximObject *const RESTRICT object) NOEXCEPT
 {
-	//Terminate the entity.
-	EntitySystem::Instance->RequesTermination(object->GetEntity(), false);
-
-	//Destroy the entity.
-	EntitySystem::Instance->RequestDestruction(object->GetEntity(), false);
-
-	//Remove this Maxim object from the internal list.
-	_Enemies.Erase(object);
-
-	//Delete the object.
-	delete object;
+	//Add this object to the destruction queue.
+	_DestructionQueue.EmplaceSlow(object);
 }
 
 /*
@@ -160,7 +188,7 @@ void MaximGameSystem::UpdateColor(const float deltaTime) NOEXCEPT
 /*
 *	Returns a random color.
 */
-MaximGameSystem::MaximColor MaximGameSystem::GetRandomColor() const NOEXCEPT
+MaximColor MaximGameSystem::GetRandomColor() const NOEXCEPT
 {
 	return static_cast<MaximColor>(CatalystBaseMath::RandomIntegerInRange<uint16>(0, static_cast<uint16>(MaximColor::NumberOfMaximColors)));
 }
@@ -168,15 +196,15 @@ MaximGameSystem::MaximColor MaximGameSystem::GetRandomColor() const NOEXCEPT
 /*
 *	Returns the corresponding color.
 */
-Vector3 MaximGameSystem::GetColor(const MaximGameSystem::MaximColor color) const NOEXCEPT
+Vector3 MaximGameSystem::GetColor(const MaximColor color) const NOEXCEPT
 {
 	switch (color)
 	{
-		case MaximGameSystem::MaximColor::Green: return Vector3(0.0f, 1.0f, 0.0f);
-		case MaximGameSystem::MaximColor::Purple: return Vector3(0.5f, 0.0f, 1.0f);
-		case MaximGameSystem::MaximColor::Red: return Vector3(1.0f, 0.0f, 0.0f);
-		case MaximGameSystem::MaximColor::Teal: return Vector3(0.0f, 1.0f, 1.0f);
+		case MaximColor::Lime: return Vector3(0.25f, 1.0f, 0.0f);
+		case MaximColor::Purple: return Vector3(0.25f, 0.0f, 1.0f);
+		case MaximColor::Red: return Vector3(1.0f, 0.0f, 0.0f);
+		case MaximColor::Teal: return Vector3(0.0f, 1.0f, 1.0f);
 
-		default: return GetColor(MaximGameSystem::MaximColor::Teal);
+		default: return GetColor(MaximColor::Teal);
 	}
 }

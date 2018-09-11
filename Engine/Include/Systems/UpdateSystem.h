@@ -39,6 +39,11 @@ public:
 	void PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
+	*	Releases the update system.
+	*/
+	void ReleaseSystem() NOEXCEPT;
+
+	/*
 	*	Registers a synchronous pre-update.
 	*/
 	void RegisterSynchronousPreUpdate(Updateable *const RESTRICT newUpdate);
@@ -47,6 +52,26 @@ public:
 	*	Registers an asynchronous pre-update.
 	*/
 	void RegisterAsynchronousPreUpdate(Updateable *const RESTRICT newUpdate);
+
+	/*
+	*	Registers a synchronous update.
+	*/
+	void RegisterSynchronousUpdate(Updateable *const RESTRICT newUpdate);
+
+	/*
+	*	Registers an asynchronous update.
+	*/
+	void RegisterAsynchronousUpdate(Updateable *const RESTRICT newUpdate);
+
+	/*
+	*	Registers a synchronous post-update.
+	*/
+	void RegisterSynchronousPostUpdate(Updateable *const RESTRICT newUpdate);
+
+	/*
+	*	Registers an asynchronous post-update.
+	*/
+	void RegisterAsynchronousPostUpdate(Updateable *const RESTRICT newUpdate);
 
 private:
 
@@ -76,5 +101,17 @@ private:
 
 	//Container for all asynchronous pre-updates.
 	DynamicArray<AsynchronousUpdateData *RESTRICT> _AsynchronousPreUpdates;
+
+	//Container for all synchronous updates.
+	DynamicArray<Updateable *RESTRICT> _SynchronousUpdates;
+
+	//Container for all asynchronous updates.
+	DynamicArray<AsynchronousUpdateData *RESTRICT> _AsynchronousUpdates;
+
+	//Container for all synchronous post-updates.
+	DynamicArray<Updateable *RESTRICT> _SynchronousPostUpdates;
+
+	//Container for all asynchronous post-updates.
+	DynamicArray<AsynchronousUpdateData *RESTRICT> _AsynchronousPostUpdates;
 
 };

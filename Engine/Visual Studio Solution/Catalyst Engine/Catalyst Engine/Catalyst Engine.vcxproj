@@ -49,6 +49,7 @@
     <ClInclude Include="..\..\..\Include\Components\CameraComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h" />
     <ClInclude Include="..\..\..\Include\Components\DirectionalLightComponent.h" />
+    <ClInclude Include="..\..\..\Include\Components\DynamicOutlineRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\DynamicPhysicalRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\FrustumCullingComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\InstancedPhysicalRenderComponent.h" />
