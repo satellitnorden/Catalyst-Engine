@@ -69,7 +69,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	//Create the sun.
 	_Sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 	_Sun->SetIntensity(1.0f);
-	_Sun->Rotate(Vector3(-22.5f, 170.0f, 0.0f));
+	_Sun->Rotate(Vector3(-22.5f, 180.0f, 0.0f));
 	_Sun->SetColor(GetColor(_CurrentColor));
 }
 
@@ -85,7 +85,7 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 	_Speed += deltaTime * 0.01f;
 
 	//Update the spawn time.
-	_SpawnTime -= deltaTime * 0.01f;
+	_SpawnTime = CatalystBaseMath::Maximum<float>(_SpawnTime - deltaTime * 0.01f, 0.1f);
 
 	//Update the spawn timer.
 	_SpawnTimer += deltaTime;
@@ -99,7 +99,7 @@ void MaximGameSystem::UpdateSystemSynchronous(const float deltaTime) NOEXCEPT
 
 		newObject->Initialize(_Speed);
 
-		UpdateSystem::Instance->RegisterSynchronousPreUpdate(newObject);
+		UpdateSystem::Instance->RegisterAsynchronousPreUpdate(newObject);
 
 		_SpawnTimer -= _SpawnTime;
 	}

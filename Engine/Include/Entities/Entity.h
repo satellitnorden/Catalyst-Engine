@@ -39,7 +39,7 @@ public:
 	/*
 	*	Returns the entity type.
 	*/
-	EntityType GetEntityType() const NOEXCEPT { return entityType; }
+	EntityType GetEntityType() const NOEXCEPT { return _EntityType; }
 
 	/*
 	*	Returns whether or not this entity is initialized.
@@ -143,7 +143,7 @@ protected:
 	static constexpr Vector3 _DefaultScale{ 1.0f, 1.0f, 1.0f };
 
 	//The entity type.
-	EntityType entityType{ EntityType::NumberOfEntityTypes };
+	EntityType _EntityType{ EntityType::NumberOfEntityTypes };
 
 	//Denotes whether or not this entity is initialized.
 	bool _IsInitialized{ false };

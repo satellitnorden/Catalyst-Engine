@@ -31,7 +31,7 @@ public:
 	/*
 	*	Pre-updates this Maxim object asynchronously.
 	*/
-	bool PreUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
+	bool PreUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 	/*
 	*	Returns the entity.

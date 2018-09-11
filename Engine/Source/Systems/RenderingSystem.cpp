@@ -354,6 +354,12 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 
 	//Create the material properties texture.
 	physicalMaterial._MaterialPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData._MaterialPropertiesData, physicalMaterialData._Width, physicalMaterialData._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the render data table.
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical), &physicalMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, physicalMaterial._AlbedoTexture), physicalMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, physicalMaterial._NormalMapTexture), physicalMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, physicalMaterial._MaterialPropertiesTexture), physicalMaterial._RenderDataTable);
 }
 
 /*
@@ -438,10 +444,7 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 	//Initialize the render component.
 	renderComponent._PhysicalFlags = data->_PhysicalFlags;
 	renderComponent._IsInViewFrustum = true;
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical), &renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, data->_Model._Material._AlbedoTexture), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, data->_Model._Material._NormalMapTexture), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, data->_Model._Material._MaterialPropertiesTexture), renderComponent._RenderDataTable);
+	renderComponent._RenderDataTable = data->_Model._Material._RenderDataTable;
 	renderComponent._Buffer = data->_Model._Buffer;
 	renderComponent._IndexOffset = data->_Model._IndexOffset;
 	renderComponent._IndexCount = data->_Model._IndexCount;

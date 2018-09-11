@@ -20,4 +20,7 @@ public:
 	//The material properties texture.
 	Texture2DHandle _MaterialPropertiesTexture;
 
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
+
 };

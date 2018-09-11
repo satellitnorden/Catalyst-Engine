@@ -44,39 +44,9 @@ public:
 	void RegisterSynchronousPreUpdate(Updateable *const RESTRICT newUpdate);
 
 	/*
-	*	De-registers a synchronous pre-update.
-	*/
-	void DeRegisterSynchronousPreUpdate(Updateable *const RESTRICT update);
-
-	/*
-	*	Registers a synchronous update.
-	*/
-	void RegisterSynchronousUpdate(Updateable *const RESTRICT newUpdate);
-
-	/*
-	*	De-registers a synchronous update.
-	*/
-	void DeRegisterSynchronousUpdate(Updateable *const RESTRICT update);
-
-	/*
-	*	Registers a synchronous post-update.
-	*/
-	void RegisterSynchronousPostUpdate(Updateable *const RESTRICT newUpdate);
-
-	/*
-	*	De-registers a synchronous post-update.
-	*/
-	void DeRegisterSynchronousPostUpdate(Updateable *const RESTRICT update);
-
-	/*
 	*	Registers an asynchronous pre-update.
 	*/
 	void RegisterAsynchronousPreUpdate(Updateable *const RESTRICT newUpdate);
-
-	/*
-	*	De-registers an asynchronous pre-update.
-	*/
-	void DeRegisterAsynchronousPreUpdate(Updateable *const RESTRICT update);
 
 private:
 
@@ -97,21 +67,14 @@ private:
 		//The updateable.
 		Updateable *RESTRICT _UpdateAble;
 
+		//Denotes whether or not this asynchronous update should be de-registered.
+		bool _ShouldDeRegister{ false };
 	};
 
 	//Container for all synchronous pre-updates.
 	DynamicArray<Updateable *RESTRICT> _SynchronousPreUpdates;
 
-	//Container for all synchronous updates.
-	DynamicArray<Updateable *RESTRICT> _SynchronousUpdates;
-
-	//Container for all synchronous post-updates.
-	DynamicArray<Updateable *RESTRICT> _SynchronousPostUpdates;
-
-	//The lock for the asynchronous updates.
-	Spinlock _AsynchronousPreUpdateLock;
-
 	//Container for all asynchronous pre-updates.
-	DynamicArray<AsynchronousUpdateData> _AsynchronousPreUpdates;
+	DynamicArray<AsynchronousUpdateData *RESTRICT> _AsynchronousPreUpdates;
 
 };
