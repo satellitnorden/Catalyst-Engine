@@ -11,6 +11,9 @@
 #include <Entities/DirectionalLightEntity.h>
 #include <Entities/ParticleSystemEntity.h>
 
+//Multithreading.
+#include <Multithreading/Spinlock.h>
+
 //Maxim.
 #include <Main/MaximCore.h>
 #include <Main/MaximObject.h>
@@ -79,6 +82,9 @@ private:
 
 	//Container for all object.
 	DynamicArray<MaximObject *RESTRICT> _Objects;
+
+	//Lock for the destruction queue.
+	Spinlock _DestructionQueueLock;
 
 	//Container for all objects wishing to be destroyed.
 	DynamicArray<MaximObject *RESTRICT> _DestructionQueue;

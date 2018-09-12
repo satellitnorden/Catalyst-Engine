@@ -11,6 +11,9 @@
 #include <Math/CatalystBaseMath.h>
 #include <Math/CatalystVectorMath.h>
 
+//Multithreading.
+#include <Multithreading/ScopedLock.h>
+
 //Systems.
 #include <Systems/EngineSystem.h>
 #include <Systems/EntitySystem.h>
@@ -158,6 +161,9 @@ bool MaximGameSystem::PostUpdateSynchronous(const UpdateContext *const RESTRICT 
 */
 void MaximGameSystem::DestroyMaximObject(MaximObject *const RESTRICT object) NOEXCEPT
 {
+	//Lock the destruction queue.
+	ScopedLock<Spinlock> scopedLock{ _DestructionQueueLock };
+
 	//Add this object to the destruction queue.
 	_DestructionQueue.EmplaceSlow(object);
 }
