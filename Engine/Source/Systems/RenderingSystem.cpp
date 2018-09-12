@@ -381,8 +381,8 @@ void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModel
 	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
 
 	//Set up the physical model.
-	physicalModel._AxisAlignedBoundingBox._Minimum = Vector3(-physicalModelData._Extent, -physicalModelData._Extent, -physicalModelData._Extent);
-	physicalModel._AxisAlignedBoundingBox._Maximum = Vector3(physicalModelData._Extent, physicalModelData._Extent, physicalModelData._Extent);
+	physicalModel._AxisAlignedBoundingBox._Minimum = Vector3(-physicalModelData._Extent * 0.5f, -physicalModelData._Extent * 0.5f, -physicalModelData._Extent * 0.5f);
+	physicalModel._AxisAlignedBoundingBox._Maximum = Vector3(physicalModelData._Extent * 0.5f, physicalModelData._Extent * 0.5f, physicalModelData._Extent * 0.5f);
 	physicalModel._Buffer = buffer;
 	physicalModel._IndexOffset = modelDataSizes[0];
 	physicalModel._IndexCount = static_cast<uint32>(physicalModelData._Indices.Size());

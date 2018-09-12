@@ -110,7 +110,7 @@ namespace CommonPhysicalModelData
 	*/
 	static void GetOctahedronPhysicalModelData(PhysicalModelData &data) NOEXCEPT
 	{
-		data._Extent = 0.5f;
+		data._Extent = 1.0f;
 
 		data._Vertices.Reserve(24);
 
