@@ -21,6 +21,7 @@
 #include <Rendering/Engine/Resolution.h>
 
 //Forward declarations.
+class AxisAlignedBoundingBox;
 class CameraEntity;
 class CatalystProjectRenderingConfiguration;
 class CPUTexture2D;
@@ -157,6 +158,21 @@ public:
 	RESTRICTED const Matrix4 *const RESTRICT GetInverseCameraMatrix() const NOEXCEPT { return &_InverseCameraMatrix; }
 
 	/*
+	*	Given screen coordinates, returns the world direction from the camera to where the screen coordinates are pointing.
+	*/
+	Vector3 GetWorldDirectionFromScreenCoordinate(const Vector2 &coordinates) const NOEXCEPT;
+
+	/*
+	*	Returns whether an axis-aligned bounding box is clicked or touched.
+	*/
+	bool IsClockedOrTouched(const AxisAlignedBoundingBox &box) const NOEXCEPT;
+
+	/*
+	*	Converts a world position to screen coordinates.
+	*/
+	void ToScreenCoordinate(const Vector3 &worldPosition, Vector2 *const RESTRICT screenCoordinates) const NOEXCEPT;
+
+	/*
 	*	Returns the active camera, const.
 	*/
 	RESTRICTED const CameraEntity *const RESTRICT GetActiveCamera() const NOEXCEPT { return _ActiveCamera; }
@@ -171,10 +187,6 @@ public:
 	*/
 	void SetActiveCamera(CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT { _ActiveCamera = newActiveCamera; }
 
-	/*
-	*	Given screen coordinates, returns the world direction from the camera to where the screen coordinates are pointing.
-	*/
-	Vector3 GetWorldDirectionFromScreenCoordinate(const Vector2 &coordinates) const NOEXCEPT;
 
 	/*
 	*	Returns the render passes.

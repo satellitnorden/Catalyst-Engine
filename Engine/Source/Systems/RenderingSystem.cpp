@@ -13,6 +13,7 @@
 #include <Math/CatalystBaseMath.h>
 
 //Rendering.
+#include <Rendering/Engine/AxisAlignedBoundingBox.h>
 #include <Rendering/Engine/CommonPhysicalModelData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/OceanMaterial.h>
@@ -39,6 +40,7 @@
 
 //Systems.
 #include <Systems/EngineSystem.h>
+#include <Systems/InputSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
@@ -157,6 +159,60 @@ Vector3 RenderingSystem::GetWorldDirectionFromScreenCoordinate(const Vector2 &co
 	{
 		return Vector3{ 0.0f, 0.0f, -1.0f };
 	}
+}
+
+/*
+*	Returns whether an axis-aligned bounding box is clicked or touched.
+*/
+bool RenderingSystem::IsClockedOrTouched(const AxisAlignedBoundingBox &box) const NOEXCEPT
+{
+	//Retrieve the state.
+#if defined(CATALYST_WINDOWS)
+	const MouseState *const RESTRICT state{ InputSystem::Instance->GetMouseState() };
+	const ButtonState buttonState{ state->_Left };
+#elif defined(CATALYST_ANDROID)
+	const TouchState *const RESTRICT state{ InputSystem::Instance->GetTouchState() };
+	const ButtonState buttonState{ state->_ButtonState };
+#else
+	#error "Function not implemented for platform."
+#endif
+
+	//If nothing is clicked or touched, just return false.
+	if (buttonState == ButtonState::Pressed || buttonState == ButtonState::PressedHold)
+	{
+		//Convert the world positions to screen coordinates.
+		Vector2 minimumScreenCoordinate;
+		Vector2 maximumScreenCoordinate;
+
+		ToScreenCoordinate(box._Minimum, &minimumScreenCoordinate);
+		ToScreenCoordinate(box._Maximum, &maximumScreenCoordinate);
+
+		return	state->_CurrentX >= minimumScreenCoordinate._X
+				&& state->_CurrentX <= maximumScreenCoordinate._X
+				&& state->_CurrentY >= minimumScreenCoordinate._Y
+				&& state->_CurrentY <= maximumScreenCoordinate._Y;
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+/*
+*	Converts a world position to screen coordinates.
+*/
+void RenderingSystem::ToScreenCoordinate(const Vector3 &worldPosition, Vector2 *const RESTRICT screenCoordinates) const NOEXCEPT
+{
+	Vector4 viewSpacePosition{ _ViewMatrix * Vector4(worldPosition, 1.0f) };
+
+	const float inverseW{ 1.0f / viewSpacePosition._W };
+
+	viewSpacePosition._X *= inverseW;
+	viewSpacePosition._Y *= inverseW;
+
+	screenCoordinates->_X = viewSpacePosition._X;
+	screenCoordinates->_Y = 1.0f - viewSpacePosition._Y;
 }
 
 /*

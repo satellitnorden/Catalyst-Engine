@@ -1,6 +1,9 @@
 //Header file.
 #include <Main/MaximObject.h>
 
+//Components.
+#include <Components/ComponentManager.h>
+
 //Entities.
 #include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 
@@ -108,5 +111,20 @@ bool MaximObject::PreUpdateAsynchronous(const UpdateContext *const RESTRICT cont
 */
 bool MaximObject::UpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	if (_Entity->IsInitialized())
+	{
+		const FrustumCullingComponent &cullingComponent{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[_Entity->GetComponentsIndex()] };
+		const TransformComponent &transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents()[_Entity->GetComponentsIndex()] };
+
+		AxisAlignedBoundingBox box{ cullingComponent._AxisAlignedBoundingBox };
+		box._Minimum += transformComponent._Position;
+		box._Maximum += transformComponent._Position;
+
+		if (RenderingSystem::Instance->IsClockedOrTouched(box))
+		{
+			_Entity->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+		}
+	}
+
 	return !_IsDestroyed;
 }
