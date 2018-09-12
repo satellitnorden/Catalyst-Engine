@@ -63,6 +63,7 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	/*
 	*	Pre-update phase.
 	*/
+	_CurrentUpdatePhase = UpdatePhase::PreUpdate;
 	CatalystPlatform::PreUpdate(&context);
 	UpdateSystem::Instance->PreUpdateSystemSynchronous(&context);
 	InputSystem::Instance->PreUpdateSystemSynchronous(&context);
@@ -70,6 +71,7 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	/*
 	*	Update phase.
 	*/
+	_CurrentUpdatePhase = UpdatePhase::Update;
 	UpdateSystem::Instance->UpdateSystemSynchronous(&context);
 	EntitySystem::Instance->UpdateSystemSynchronous(&context);
 	PhysicsSystem::Instance->UpdateSystemSynchronous(&context);
@@ -80,6 +82,7 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	/*
 	*	Post-update phase.
 	*/
+	_CurrentUpdatePhase = UpdatePhase::PostUpdate;
 	UpdateSystem::Instance->PostUpdateSystemSynchronous(&context);
 	RenderingSystem::Instance->PostUpdateSystemSynchronous(&context);
 	SoundSystem::Instance->PostUpdateSystemSynchronous(&context);

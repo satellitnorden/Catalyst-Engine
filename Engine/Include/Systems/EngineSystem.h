@@ -16,7 +16,10 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	EngineSystem() NOEXCEPT { }
+	EngineSystem() NOEXCEPT
+	{
+	
+	}
 
 	/*
 	*	Initializes the engine system.
@@ -36,40 +39,66 @@ public:
 	/*
 	*	Returns the project configuration.
 	*/
-	const CatalystProjectConfiguration& GetProjectConfiguration() const { return _ProjectConfiguration; }
+	const CatalystProjectConfiguration& GetProjectConfiguration() const NOEXCEPT
+	{
+		return _ProjectConfiguration;
+	}
 
 	/*
-	*	Returns whether or not the game should terminate.
+	*	Returns the current update phase.
 	*/
-	bool ShouldTerminate() const NOEXCEPT { return _ShouldTerminate; }
-
-	/*
-	*	Terminates the game.
-	*/
-	void Terminate() NOEXCEPT { _ShouldTerminate = true; }
+	UpdatePhase GetCurrentUpdatePhase() const NOEXCEPT
+	{
+		return _CurrentUpdatePhase;
+	}
 
 	/*
 	*	Returns the delta time.
 	*/
-	float GetDeltaTime() const NOEXCEPT { return _DeltaTime; }
+	float GetDeltaTime() const NOEXCEPT
+	{
+		return _DeltaTime;
+	}
 
 	/*
 	*	Returns the total time.
 	*/
-	float GetTotalTime() const NOEXCEPT { return _TotalTime; }
+	float GetTotalTime() const NOEXCEPT
+	{
+		return _TotalTime;
+	}
+
+	/*
+	*	Terminates the game.
+	*/
+	void Terminate() NOEXCEPT
+	{
+		_ShouldTerminate = true;
+	}
+
+	/*
+	*	Returns whether or not the game should terminate.
+	*/
+	bool ShouldTerminate() const NOEXCEPT
+	{
+		return _ShouldTerminate;
+	}
 
 private:
 
 	//The project configuration.
 	CatalystProjectConfiguration _ProjectConfiguration;
 
-	//Denotes whether or not the game should terminate.
-	std::atomic<bool> _ShouldTerminate{ false };
+	//Denotes the current update phase.
+	UpdatePhase _CurrentUpdatePhase;
 
 	//Denotes the delta time.
 	float _DeltaTime{ 0.0f };
 
 	//Denotes the total game time.
 	float _TotalTime{ 0.0f };
+
+	//Denotes whether or not the game should terminate.
+	std::atomic<bool> _ShouldTerminate{ false };
 
 };
