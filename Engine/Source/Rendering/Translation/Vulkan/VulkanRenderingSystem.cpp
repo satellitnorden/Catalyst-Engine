@@ -839,6 +839,22 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		_ShaderModules[INDEX(Shader::CubeMapVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
+#if !defined(CATALYST_FINAL)
+	{
+		//Initialize the debug axis-aligned bounding box fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetDebugAxisAlignedBoundingBoxFragmentShaderData(data);
+		_ShaderModules[INDEX(Shader::DebugAxisAlignedBoundingBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize the debug axis-aligned bounding box vertex shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetDebugAxisAlignedBoundingBoxVertexShaderData(data);
+		_ShaderModules[INDEX(Shader::DebugAxisAlignedBoundingBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+#endif
+
 	{
 		//Initialize the directional physical shadow vertex shader module.
 		DynamicArray<byte> data;
@@ -1176,7 +1192,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			//Depth buffer.
 			VulkanUtilities::CreateAttachmentDescription(	_DepthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
-															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
 															VK_IMAGE_LAYOUT_UNDEFINED,
@@ -1468,6 +1484,90 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)]._NumberOfAttachments = 6;
 		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)]._ShouldClear = true;
 	}
+
+#if !defined(CATALYST_FINAL)
+	//Initialize the debug render pass.
+	{
+		constexpr uint64 NUMBER_OF_DEBUG_SUBPASSES{ 1 };
+
+		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
+		constexpr uint32 SCENE_INDEX{ 1 };
+
+		VulkanRenderPassCreationParameters renderPassParameters;
+
+		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
+		{
+			//Depth buffer.
+			VulkanUtilities::CreateAttachmentDescription(	_DepthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_LOAD,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
+
+			//Scene.
+			VulkanUtilities::CreateAttachmentDescription(	_RenderTargets[INDEX(RenderTarget::Scene)]->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_LOAD,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+		};
+
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
+
+		constexpr VkAttachmentReference depthAttachmentReference{ DEPTH_BUFFER_INDEX, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
+
+		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
+		{
+			VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+		};
+
+		StaticArray<VkSubpassDescription, NUMBER_OF_DEBUG_SUBPASSES> subpassDescriptions;
+
+		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
+		{
+			subpassDescription = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			1,
+																			colorAttachmentReferences.Data(),
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
+		}
+
+		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
+
+		renderPassParameters._SubpassDependencyCount = 0;
+		renderPassParameters._SubpassDependencies = nullptr;
+
+		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+
+		//Create the framebuffer.
+		VulkanFramebufferCreationParameters framebufferParameters;
+
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._RenderPass->Get();
+
+		StaticArray<VkImageView, 2> attachments
+		{
+			_DepthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetImageView(),
+			_RenderTargets[INDEX(RenderTarget::Scene)]->GetImageView()
+		};
+
+		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters._Attachments = attachments.Data();
+		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
+
+		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._ShouldClear = false;
+	}
+#endif
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	//Initialize the ocean render pass.

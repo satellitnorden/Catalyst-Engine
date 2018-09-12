@@ -21,6 +21,9 @@
     <ClCompile Include="..\..\..\Code\Source\Main\MaximGameSystem.cpp">
       <Filter>Main\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\Main\MaximObject.cpp">
+      <Filter>Main\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -70,6 +73,9 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\PerlinNoiseGenerator.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Vector3.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\AndroidPlatformVulkan.cpp">
@@ -165,6 +171,12 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanUniformBuffer.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalDynamicPhysicalShadowRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalInstancedPhysicalShadowRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -175,6 +187,9 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalTerrainShadowRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DynamicOutlineRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DynamicPhysicalRenderPass.cpp">
@@ -210,6 +225,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\VegetationRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -217,6 +235,12 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\CubeMapVertexShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugAxisAlignedBoundingBoxFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugAxisAlignedBoundingBoxVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.cpp">
@@ -241,6 +265,9 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\OceanFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\OutlineFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\ParticleSystemFragmentShader.cpp">
@@ -297,6 +324,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\ViewportVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\VolumetricFogFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\VulkanRenderingSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -307,6 +337,9 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\CullingSystem.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\DebugRenderingSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EngineSystem.cpp">
@@ -333,32 +366,11 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TaskSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\android_native_app_glue.c">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\OutlineFragmentShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DynamicOutlineRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Vector3.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\UpdateSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\VolumetricFogFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\android_native_app_glue.c">
       <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalDynamicPhysicalShadowRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Code\Source\Main\MaximObject.cpp">
-      <Filter>Main\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

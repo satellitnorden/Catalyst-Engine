@@ -6,6 +6,9 @@
 
 //Systems.
 #include <Systems/CullingSystem.h>
+#if !defined(CATALYST_FINAL)
+#include <Systems/DebugRenderingSystem.h>
+#endif
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/InputSystem.h>
@@ -67,6 +70,9 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	CatalystPlatform::PreUpdate(&context);
 	UpdateSystem::Instance->PreUpdateSystemSynchronous(&context);
 	CullingSystem::Instance->PreUpdateSystemSynchronous(&context);
+#if !defined(CATALYST_FINAL)
+	DebugRenderingSystem::Instance->PreUpdateSystemSynchronous(&context);
+#endif
 	InputSystem::Instance->PreUpdateSystemSynchronous(&context);
 
 	/*
@@ -84,6 +90,9 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	*/
 	_CurrentUpdatePhase = UpdatePhase::PostUpdate;
 	UpdateSystem::Instance->PostUpdateSystemSynchronous(&context);
+#if !defined(CATALYST_FINAL)
+	DebugRenderingSystem::Instance->PostUpdateSystemSynchronous(&context);
+#endif
 	RenderingSystem::Instance->PostUpdateSystemSynchronous(&context);
 	SoundSystem::Instance->PostUpdateSystemSynchronous(&context);
 	CatalystPlatform::PostUpdate(&context);

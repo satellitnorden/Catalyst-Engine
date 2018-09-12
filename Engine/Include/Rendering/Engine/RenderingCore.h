@@ -35,6 +35,9 @@ enum class RenderPassMainStage : uint8
 	None, //This will be removed once all the main stages are in place.
 	DirectionalShadow,
 	Scene,
+#if !defined(CATALYST_FINAL)
+	Debug,
+#endif
 #if defined(CATALYST_ENABLE_OCEAN)
 	Ocean,
 #endif
@@ -68,6 +71,11 @@ enum class RenderPassSubStage : uint8
 	ParticleSystem,
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFog,
+#endif
+
+#if !defined(CATALYST_FINAL)
+	//Debug.
+	DebugAxisAlignedBoundingBox,
 #endif
 
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -163,6 +171,10 @@ enum class Shader : uint8
 	BloomFragment,
 	BoxBlurFragment,
 	CubeMapVertex,
+#if !defined(CATALYST_FINAL)
+	DebugAxisAlignedBoundingBoxFragment,
+	DebugAxisAlignedBoundingBoxVertex,
+#endif
 	DirectionalPhysicalShadowVertex,
 	DirectionalShadowFragment,
 	DirectionalInstancedPhysicalShadowVertex,

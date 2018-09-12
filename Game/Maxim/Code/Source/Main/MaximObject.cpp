@@ -11,6 +11,9 @@
 #include <Math/CatalystBaseMath.h>
 
 //Systems.
+#if !defined(CATALYST_FINAL)
+#include <Systems/DebugRenderingSystem.h>
+#endif
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 
@@ -113,6 +116,10 @@ bool MaximObject::UpdateAsynchronous(const UpdateContext *const RESTRICT context
 {
 	if (_Entity->IsInitialized())
 	{
+#if !defined(CATALYST_FINAL)
+		//Debug render the axis-aligned bounding box.
+		DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData(*_Entity->GetWorldSpaceAxisAlignedBoundingBox(), Vector4(1.0f, 0.0f, 0.0f, 0.5f)));
+#endif
 		if (RenderingSystem::Instance->IsClockedOrTouched(*_Entity->GetWorldSpaceAxisAlignedBoundingBox()))
 		{
 			_Entity->Move(Vector3(0.0f, 2.5f, 0.0f));

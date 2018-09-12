@@ -614,6 +614,9 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	_RenderPasses[INDEX(RenderPassSubStage::VolumetricFog)] = VolumetricFogRenderPass::Instance.Get();
 #endif
+#if !defined(CATALYST_FINAL)
+	_RenderPasses[INDEX(RenderPassSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxRenderPass::Instance.Get();
+#endif
 #if defined(CATALYST_ENABLE_OCEAN)
 	_RenderPasses[INDEX(RenderPassSubStage::Ocean)] = OceanRenderPass::Instance.Get();
 #endif

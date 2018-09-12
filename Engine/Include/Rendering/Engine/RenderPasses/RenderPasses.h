@@ -4,6 +4,9 @@
 #include <Core/Core/CatalystCore.h>
 
 //Rendering.
+#if !defined(CATALYST_FINAL)
+#include <Rendering/Engine/RenderPasses/DebugAxisAlignedBoundingBoxRenderPass.h>
+#endif
 #include <Rendering/Engine/RenderPasses/DirectionalDynamicPhysicalShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalInstancedPhysicalShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalStaticPhysicalShadowRenderPass.h>

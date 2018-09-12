@@ -1,6 +1,8 @@
 glslangValidator.exe -V BloomFragmentShader.frag -o 					BloomFragmentShader.spv
 glslangValidator.exe -V BoxBlurFragmentShader.frag -o 					BoxBlurFragmentShader.spv
 glslangValidator.exe -V CubeMapVertexShader.vert -o 					CubeMapVertexShader.spv
+glslangValidator.exe -V DebugAxisAlignedBoundingBoxFragmentShader.frag -o 		DebugAxisAlignedBoundingBoxFragmentShader.spv
+glslangValidator.exe -V DebugAxisAlignedBoundingBoxVertexShader.vert -o 		DebugAxisAlignedBoundingBoxVertexShader.spv
 glslangValidator.exe -V DirectionalPhysicalShadowVertexShader.vert -o			DirectionalPhysicalShadowVertexShader.spv
 glslangValidator.exe -V DirectionalShadowFragmentShader.frag -o				DirectionalShadowFragmentShader.spv
 glslangValidator.exe -V DirectionalShadowInstancedPhysicalVertexShader.vert -o		DirectionalShadowInstancedPhysicalVertexShader.spv

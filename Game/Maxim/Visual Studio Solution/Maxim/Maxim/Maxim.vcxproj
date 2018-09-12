@@ -84,6 +84,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanSurface.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanSwapChain.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanUniformBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalDynamicPhysicalShadowRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalInstancedPhysicalShadowRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DirectionalShadowRenderPass.cpp" />
@@ -105,6 +106,8 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BoxBlurFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\CubeMapVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugAxisAlignedBoundingBoxFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugAxisAlignedBoundingBoxVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalShadowFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalShadowInstancedPhysicalVertexShader.cpp" />
@@ -137,6 +140,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Resources\ResourceLoader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\CullingSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\DebugRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EngineSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntitySystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\InputSystem.cpp" />

@@ -121,7 +121,7 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	RESTRICTED const Type *const RESTRICT begin() const  NOEXCEPT
+	RESTRICTED const Type *const RESTRICT Begin() const  NOEXCEPT
 	{
 		return _Array;
 	}
@@ -129,7 +129,7 @@ public:
 	/*
 	*	Begin iterator, non-const.
 	*/
-	RESTRICTED Type *const RESTRICT begin()  NOEXCEPT
+	RESTRICTED Type *const RESTRICT Begin()  NOEXCEPT
 	{
 		return _Array;
 	}
@@ -137,7 +137,7 @@ public:
 	/*
 	*	End iterator, const.
 	*/
-	RESTRICTED const Type *const RESTRICT end() const NOEXCEPT
+	RESTRICTED const Type *const RESTRICT End() const NOEXCEPT
 	{
 		return _Array + _Size;
 	}
@@ -145,9 +145,41 @@ public:
 	/*
 	*	End iterator, non-const.
 	*/
-	RESTRICTED Type *const RESTRICT end() NOEXCEPT
+	RESTRICTED Type *const RESTRICT End() NOEXCEPT
 	{
 		return _Array + _Size;
+	}
+
+	/*
+	*	Begin iterator, const.
+	*/
+	RESTRICTED const Type *const RESTRICT begin() const  NOEXCEPT
+	{
+		return Begin();
+	}
+
+	/*
+	*	Begin iterator, non-const.
+	*/
+	RESTRICTED Type *const RESTRICT begin()  NOEXCEPT
+	{
+		return Begin();
+	}
+
+	/*
+	*	End iterator, const.
+	*/
+	RESTRICTED const Type *const RESTRICT end() const NOEXCEPT
+	{
+		return End();
+	}
+
+	/*
+	*	End iterator, non-const.
+	*/
+	RESTRICTED Type *const RESTRICT end() NOEXCEPT
+	{
+		return End();
 	}
 
 	/*

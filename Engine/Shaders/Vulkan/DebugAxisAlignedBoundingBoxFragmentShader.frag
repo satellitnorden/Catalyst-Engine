@@ -55,34 +55,21 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Layout specification.
 layout (early_fragment_tests) in;
 
-//In parameters.
-layout (location = 0) in vec3 fragmentTextureCoordinate;
-
-//Texture samplers.
-layout (set = 1, binding = 0) uniform samplerCube nightTexture;
-layout (set = 1, binding = 2) uniform samplerCube dayTexture;
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 64) vec4 color;
+};
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentColor;
+layout (location = 0) out vec4 fragment;
 
 void main()
 {
-    //Sample the cube map texture.
-    vec3 cubeMapTextureSampler = mix(texture(nightTexture, fragmentTextureCoordinate).rgb, texture(dayTexture, fragmentTextureCoordinate).rgb, environmentBlend);
 
-    //Calculate the sun weight.
-    float sunDirection = dot(normalize(fragmentTextureCoordinate), -directionalLightDirection);
-    float sunWeight = sunDirection < 0.9985f ? 0.0f : sunDirection > 0.9995f ? 1.0f : (sunDirection - 0.9985f) * 1000.0f;
-    sunWeight *= min(directionalLightIntensity, 1.0f);
-
-    //Calculate the sun color.
-    vec3 sunColor = directionalLightColor * directionalLightIntensity;
-
-    //Calculate the final sky color.
-    vec3 skyColor = mix(cubeMapTextureSampler, sunColor, sunWeight);
-
-    //Set the fragment color.
-    fragmentColor = vec4(skyColor, 1.0f);
+    //Write the fragment.
+    fragment = color;
 }
