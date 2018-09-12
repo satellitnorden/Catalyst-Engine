@@ -28,38 +28,23 @@ public:
 	void InitializeSystem() NOEXCEPT;
 
 	/*
-	*	Updates the culling system synchronously.
+	*	Pre-updates the culling system synchronously.
 	*/
-	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
-	/*
-	*	Waits for the terrain culling to finish.
-	*/
-	void WaitForTerrainCulling() const NOEXCEPT;
-
-	/*
-	*	Waits for the static physical culling to finish.
-	*/
-	void WaitForStaticPhysicalCulling() const NOEXCEPT;
-
-	/*
-	*	Waits for the vegetation culling to finish.
-	*/
-	void WaitForVegetationCulling() const NOEXCEPT;
 
 private:
 
 	//Enumeration covering all culling tasks.
 	enum class CullingTask : uint8
 	{
-		Terrain,
-		StaticPhysical,
-		Vegetation,
+		UpdateDynamicPhysicalWorldSpaceAxisAlignedBoundingBoxes,
+
 		NumberOfCullingTasks
 	};
 
-	//Container for all tasks.
-	StaticArray<Task, INDEX(CullingTask::NumberOfCullingTasks)> _Tasks;
+	//Container for all culling tasks.
+	StaticArray<Task, INDEX(CullingTask::NumberOfCullingTasks)> _CullingTasks;
 
 	/*
 	*	Initializes the culling tasks.
@@ -67,18 +52,8 @@ private:
 	void InitializeCullingTasks() NOEXCEPT;
 
 	/*
-	*	Culls terrain.
+	*	Update the world space axis-aligned bounding boxes of dynamic physical entities.
 	*/
-	void CullTerrain() NOEXCEPT;
-
-	/*
-	*	Culls static physical.
-	*/
-	void CullStaticPhysical() NOEXCEPT;
-
-	/*
-	*	Culls vegetation.
-	*/
-	void CullVegetation() NOEXCEPT;
+	void UpdateDynamicPhysicalWorldSpaceAxisAlignedBoundingBoxes() const NOEXCEPT;
 
 };

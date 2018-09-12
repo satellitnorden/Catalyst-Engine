@@ -211,8 +211,8 @@ void RenderingSystem::ToScreenCoordinate(const Vector3 &worldPosition, Vector2 *
 	viewSpacePosition._X *= inverseW;
 	viewSpacePosition._Y *= inverseW;
 
-	screenCoordinates->_X = viewSpacePosition._X;
-	screenCoordinates->_Y = 1.0f - viewSpacePosition._Y;
+	screenCoordinates->_X = (viewSpacePosition._X + 1.0f) * 0.5f;
+	screenCoordinates->_Y = 1.0f - ((viewSpacePosition._Y + 1.0f) * 0.5f);
 }
 
 /*
@@ -515,7 +515,7 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 	physicalRenderComponent._IndexCount = data->_Model._IndexCount;
 
 	//Initialize the culling component.
-	cullingComponent._AxisAlignedBoundingBox = data->_Model._AxisAlignedBoundingBox;
+	cullingComponent._ModelSpaceAxisAlignedBoundingBox = data->_Model._AxisAlignedBoundingBox;
 
 	//Initialize the transform component.
 	transformComponent._Position = data->_Position;

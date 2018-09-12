@@ -27,14 +27,15 @@ void CullingSystem::InitializeSystem() NOEXCEPT
 }
 
 /*
-*	Updates the culling system synchronously.
+*	Pre-updates the culling system synchronously.
 */
-void CullingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void CullingSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Fire off the culling tasks.
-	TaskSystem::Instance->ExecuteTask(&_Tasks[INDEX(CullingTask::Terrain)]);
-	TaskSystem::Instance->ExecuteTask(&_Tasks[INDEX(CullingTask::StaticPhysical)]);
-	TaskSystem::Instance->ExecuteTask(&_Tasks[INDEX(CullingTask::Vegetation)]);
+	//Execute the relevant tasks.
+	TaskSystem::Instance->ExecuteTask(&_CullingTasks[INDEX(CullingTask::UpdateDynamicPhysicalWorldSpaceAxisAlignedBoundingBoxes)]);
+
+	//Wait for the relevant tasks to finish.
+	_CullingTasks[INDEX(CullingTask::UpdateDynamicPhysicalWorldSpaceAxisAlignedBoundingBoxes)].WaitFor();
 }
 
 /*
@@ -42,155 +43,27 @@ void CullingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT 
 */
 void CullingSystem::InitializeCullingTasks() NOEXCEPT
 {
-	//Initialize the terrain culling task.
-	_Tasks[INDEX(CullingTask::Terrain)]._Function = [](void *const RESTRICT)
+	//Initialize the update dynamic physical world space axis-aligned bounding boxes task.
+	_CullingTasks[INDEX(CullingTask::UpdateDynamicPhysicalWorldSpaceAxisAlignedBoundingBoxes)]._Function = [](void *const RESTRICT)
 	{
-		CullingSystem::Instance->CullTerrain();
+		CullingSystem::Instance->UpdateDynamicPhysicalWorldSpaceAxisAlignedBoundingBoxes();
 	};
-	_Tasks[INDEX(CullingTask::Terrain)]._Arguments = nullptr;
-
-	//Initialize the static physical culling task.
-	_Tasks[INDEX(CullingTask::StaticPhysical)]._Function = [](void *const RESTRICT)
-	{
-		CullingSystem::Instance->CullStaticPhysical();
-	};
-	_Tasks[INDEX(CullingTask::StaticPhysical)]._Arguments = nullptr;
-
-	//Initialize the vegetation culling task.
-	_Tasks[INDEX(CullingTask::Vegetation)]._Function = [](void *const RESTRICT)
-	{
-		CullingSystem::Instance->CullVegetation();
-	};
-	_Tasks[INDEX(CullingTask::Vegetation)]._Arguments = nullptr;
+	_CullingTasks[INDEX(CullingTask::UpdateDynamicPhysicalWorldSpaceAxisAlignedBoundingBoxes)]._Arguments = nullptr;
 }
 
 /*
-*	Waits for the terrain culling to finish.
+*	Update the world space axis-aligned bounding boxes of dynamic physical entities.
 */
-void CullingSystem::WaitForTerrainCulling() const NOEXCEPT
+void CullingSystem::UpdateDynamicPhysicalWorldSpaceAxisAlignedBoundingBoxes() const NOEXCEPT
 {
-	//Wait for the terrain culling to finish.
-	_Tasks[INDEX(CullingTask::Terrain)].WaitFor();
-}
+	//Iterate over all dynamic physical components and update theior world space axis-aligned bounding boxes.
+	const uint64 numberOfDynamicPhysicalComponents{ ComponentManager::GetNumberOfDynamicPhysicalComponents() };
+	FrustumCullingComponent *RESTRICT cullingComponent{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents() };
+	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents() };
 
-/*
-*	Waits for the static physical culling to finish.
-*/
-void CullingSystem::WaitForStaticPhysicalCulling() const NOEXCEPT
-{
-	//Wait for the static physical culling to finish.
-	_Tasks[INDEX(CullingTask::StaticPhysical)].WaitFor();
-}
-
-/*
-*	Waits for the vegetation culling to finish.
-*/
-void CullingSystem::WaitForVegetationCulling() const NOEXCEPT
-{
-	//Wait for the vegetation culling to finish.
-	_Tasks[INDEX(CullingTask::Vegetation)].WaitFor();
-}
-
-/*
-*	Culls terrain.
-*/
-void CullingSystem::CullTerrain() NOEXCEPT
-{
-	//Iterate over all terrain components and cull them.
-	const uint64 numberOfTerrainComponents{ ComponentManager::GetNumberOfTerrainComponents() };
-
-	//If there's none to cull., just return.
-	if (numberOfTerrainComponents == 0)
+	for (uint64 i = 0; i < numberOfDynamicPhysicalComponents; ++i, ++cullingComponent, ++transformComponent)
 	{
-		return;
-	}
-
-	//Cache relevant data.
-	const Matrix4 &viewMatrix{ *RenderingSystem::Instance->GetViewMatrix() };
-	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetTerrainFrustumCullingComponents() };
-	const TerrainComponent *RESTRICT component{ ComponentManager::GetTerrainTerrainComponents() };
-	TerrainRenderComponent *RESTRICT renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents() };
-
-	for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++frustumCullingComponent, ++component, ++renderComponent)
-	{
-		renderComponent->_IsInViewFrustum = RenderingUtilities::IsInViewFrustum(viewMatrix, frustumCullingComponent->_AxisAlignedBoundingBox);
-	}
-}
-
-/*
-*	Culls static physical.
-*/
-void CullingSystem::CullStaticPhysical() NOEXCEPT
-{
-	//Get the view matrix.
-	const Matrix4& viewMatrix{ *RenderingSystem::Instance->GetViewMatrix() };
-
-	//Iterate over all static physical components to check if they are in the view frustum.
-	const uint64 numberOfStaticPhysicalComponents{ ComponentManager::GetNumberOfStaticPhysicalComponents() };
-	const FrustumCullingComponent *RESTRICT frustumCullingComponent{ ComponentManager::GetStaticPhysicalFrustumCullingComponents() };
-	StaticPhysicalRenderComponent *RESTRICT renderComponent{ ComponentManager::GetStaticPhysicalStaticPhysicalRenderComponents() };
-	const TransformComponent *RESTRICT transformComponent{ ComponentManager::GetStaticPhysicalTransformComponents() };
-
-	for (uint64 i = 0; i < numberOfStaticPhysicalComponents; ++i, ++frustumCullingComponent, ++renderComponent, ++transformComponent)
-	{
-		//Cache relevant data.
-		const Vector3& position = transformComponent->_Position;
-		const Vector3& scale = transformComponent->_Scale;
-		const float biggestScale = CatalystBaseMath::Maximum(scale._X, CatalystBaseMath::Maximum(scale._Y, scale._Z));
-		const float scaledExtent = frustumCullingComponent->_AxisAlignedBoundingBox._Maximum._X * biggestScale;
-
-		StaticArray<Vector4, 8> corners;
-
-		corners[0] = Vector4(-scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
-		corners[1] = Vector4(-scaledExtent, scaledExtent, -scaledExtent, 1.0f);
-		corners[2] = Vector4(scaledExtent, scaledExtent, -scaledExtent, 1.0f);
-		corners[3] = Vector4(scaledExtent, -scaledExtent, -scaledExtent, 1.0f);
-
-		corners[4] = Vector4(-scaledExtent, -scaledExtent, scaledExtent, 1.0f);
-		corners[5] = Vector4(-scaledExtent, scaledExtent, scaledExtent, 1.0f);
-		corners[6] = Vector4(scaledExtent, scaledExtent, scaledExtent, 1.0f);
-		corners[7] = Vector4(scaledExtent, -scaledExtent, scaledExtent, 1.0f);
-
-		for (uint8 i = 0; i < 8; ++i)
-		{
-			corners[i] += Vector4(position._X, position._Y, position._Z, 0.0f);
-
-			corners[i] = viewMatrix * corners[i];
-
-			corners[i]._X /= corners[i]._W;
-			corners[i]._Y /= corners[i]._W;
-			corners[i]._Z /= corners[i]._W;
-		}
-
-		renderComponent->_IsInViewFrustum = RenderingUtilities::IsCubeWithinViewFrustum(corners);
-	}
-}
-
-/*
-*	Culls vegetation.
-*/
-void CullingSystem::CullVegetation() NOEXCEPT
-{
-	//Go through all vegetation components and update their culling
-	const uint64 numberOfVegetationComponents{ ComponentManager::GetNumberOfVegetationComponents() };
-
-	//If there are none, just return.
-	if (numberOfVegetationComponents == 0)
-	{
-		return;
-	}
-
-	VegetationComponent *RESTRICT renderComponent{ ComponentManager::GetVegetationVegetationComponents() };
-	const VegetationCullingComponent *RESTRICT cullingComponent{ ComponentManager::GetVegetationVegetationCullingComponents() };
-
-	const Vector3 &cameraWorldPosition{ RenderingSystem::Instance->GetActiveCamera()->GetPosition() };
-
-	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++renderComponent, ++cullingComponent)
-	{
-		for (uint64 i = 0, size = renderComponent->_ShouldDrawGridCell.Size(); i < size; ++i)
-		{
-			renderComponent->_ShouldDrawGridCell[i] = CatalystBaseMath::Absolute(cameraWorldPosition._X - cullingComponent->_GridCellCenterLocations[i]._X) <= cullingComponent->_CutoffDistance &&
-				CatalystBaseMath::Absolute(cameraWorldPosition._Z - cullingComponent->_GridCellCenterLocations[i]._Y) <= cullingComponent->_CutoffDistance;
-		}
+		cullingComponent->_WorldSpaceAxisAlignedBoundingBox._Minimum = cullingComponent->_ModelSpaceAxisAlignedBoundingBox._Minimum + transformComponent->_Position;
+		cullingComponent->_WorldSpaceAxisAlignedBoundingBox._Maximum = cullingComponent->_ModelSpaceAxisAlignedBoundingBox._Maximum + transformComponent->_Position;
 	}
 }

@@ -198,7 +198,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainTerrainComponents()[entity->GetComponentsIndex()] };
 	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->GetComponentsIndex()] };
 
-	frustumCullingComponent._AxisAlignedBoundingBox = data->_AxisAlignedBoundingBox;
+	frustumCullingComponent._ModelSpaceAxisAlignedBoundingBox = data->_AxisAlignedBoundingBox;
 
 	Texture2DHandle terrainPropertiesTexture = Create2DTexture(TextureData(TextureDataContainer(data->_TerrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
 
@@ -263,7 +263,7 @@ void VulkanRenderingSystem::InitializeStaticPhysicalEntity(StaticPhysicalEntity 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
 	//Fill the static physical entity components with the relevant data.
-	frustumCullingComponent._AxisAlignedBoundingBox = model._AxisAlignedBoundingBox;
+	frustumCullingComponent._ModelSpaceAxisAlignedBoundingBox = model._AxisAlignedBoundingBox;
 	renderComponent._ModelMatrix = Matrix4(position, rotation, scale);
 	renderComponent._Buffer = model._Buffer;
 	renderComponent._IndexOffset = model._IndexOffset;

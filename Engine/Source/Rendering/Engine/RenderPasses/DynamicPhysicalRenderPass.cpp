@@ -138,9 +138,6 @@ void DynamicPhysicalRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
-	//Wait for the static physical culling to finish.
-	CullingSystem::Instance->WaitForStaticPhysicalCulling();
-
 	//Track the previous state, so if two static physical entities share the same state, it doesn't have to be rebound.
 	ConstantBufferHandle previousBuffer{ nullptr };
 	RenderDataTableHandle previousRenderDataTable{ nullptr };

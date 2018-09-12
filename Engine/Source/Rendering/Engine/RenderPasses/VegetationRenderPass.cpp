@@ -129,9 +129,6 @@ void VegetationRenderPass::RenderInternal() NOEXCEPT
 	//Bind the current dynamic uniform data render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
-	//Wait for the vegetation culling to finish.
-	CullingSystem::Instance->WaitForVegetationCulling();
-
 	for (uint64 i = 0; i < numberOfVegetationComponents; ++i, ++component)
 	{
 		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);

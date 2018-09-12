@@ -113,16 +113,9 @@ bool MaximObject::UpdateAsynchronous(const UpdateContext *const RESTRICT context
 {
 	if (_Entity->IsInitialized())
 	{
-		const FrustumCullingComponent &cullingComponent{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[_Entity->GetComponentsIndex()] };
-		const TransformComponent &transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents()[_Entity->GetComponentsIndex()] };
-
-		AxisAlignedBoundingBox box{ cullingComponent._AxisAlignedBoundingBox };
-		box._Minimum += transformComponent._Position;
-		box._Maximum += transformComponent._Position;
-
-		if (RenderingSystem::Instance->IsClockedOrTouched(box))
+		if (RenderingSystem::Instance->IsClockedOrTouched(*_Entity->GetWorldSpaceAxisAlignedBoundingBox()))
 		{
-			_Entity->SetPosition(Vector3(0.0f, 0.0f, 0.0f));
+			_Entity->Move(Vector3(0.0f, 2.5f, 0.0f));
 		}
 	}
 
