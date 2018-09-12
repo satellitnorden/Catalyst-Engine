@@ -100,18 +100,18 @@ private:
 	DynamicArray<Updateable *RESTRICT> _SynchronousPreUpdates;
 
 	//Container for all asynchronous pre-updates.
-	DynamicArray<AsynchronousUpdateData *RESTRICT> _AsynchronousPreUpdates;
+	DynamicArray<AsynchronousUpdateData> _AsynchronousPreUpdates;
 
 	//Container for all synchronous updates.
 	DynamicArray<Updateable *RESTRICT> _SynchronousUpdates;
 
 	//Container for all asynchronous updates.
-	DynamicArray<AsynchronousUpdateData *RESTRICT> _AsynchronousUpdates;
+	DynamicArray<AsynchronousUpdateData> _AsynchronousUpdates;
 
 	//Container for all synchronous post-updates.
 	DynamicArray<Updateable *RESTRICT> _SynchronousPostUpdates;
 
 	//Container for all asynchronous post-updates.
-	DynamicArray<AsynchronousUpdateData *RESTRICT> _AsynchronousPostUpdates;
+	DynamicArray<AsynchronousUpdateData> _AsynchronousPostUpdates;
 
 };

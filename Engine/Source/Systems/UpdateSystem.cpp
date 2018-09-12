@@ -16,11 +16,12 @@ DEFINE_SINGLETON(UpdateSystem);
 void UpdateSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Kick off all asynchronous pre-updates.
-	for (AsynchronousUpdateData *const RESTRICT data : _AsynchronousPreUpdates)
+	for (AsynchronousUpdateData &data : _AsynchronousPreUpdates)
 	{
-		data->_Context = context;
+		data._Context = context;
+		data._Task._Arguments = &data;
 
-		TaskSystem::Instance->ExecuteTask(&data->_Task);
+		TaskSystem::Instance->ExecuteTask(&data._Task);
 	}
 
 	//Execute the synchronous pre-updates.
@@ -38,19 +39,17 @@ void UpdateSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRIC
 	}
 
 	//Wait for all asynchronous pre-updates to finish.
-	for (AsynchronousUpdateData *const RESTRICT data : _AsynchronousPreUpdates)
+	for (AsynchronousUpdateData &data : _AsynchronousPreUpdates)
 	{
-		data->_Task.WaitFor();
+		data._Task.WaitFor();
 	}
 
 	//De-register all asynchronous pre-updates that should be de-registered.
 	for (uint64 i = 0; i < _AsynchronousPreUpdates.Size();)
 	{
-		if (_AsynchronousPreUpdates[i]->_ShouldDeRegister)
+		if (_AsynchronousPreUpdates[i]._ShouldDeRegister)
 		{
-			AsynchronousUpdateData *const RESTRICT data{ _AsynchronousPreUpdates[i] };
 			_AsynchronousPreUpdates.EraseAt(i);
-			delete data;
 		}
 
 		else
@@ -66,11 +65,12 @@ void UpdateSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRIC
 void UpdateSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Kick off all asynchronous updates.
-	for (AsynchronousUpdateData *const RESTRICT data : _AsynchronousUpdates)
+	for (AsynchronousUpdateData &data : _AsynchronousUpdates)
 	{
-		data->_Context = context;
+		data._Context = context;
+		data._Task._Arguments = &data;
 
-		TaskSystem::Instance->ExecuteTask(&data->_Task);
+		TaskSystem::Instance->ExecuteTask(&data._Task);
 	}
 
 	//Execute the synchronous updates.
@@ -88,19 +88,17 @@ void UpdateSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT c
 	}
 
 	//Wait for all asynchronous updates to finish.
-	for (AsynchronousUpdateData *const RESTRICT data : _AsynchronousUpdates)
+	for (AsynchronousUpdateData &data : _AsynchronousUpdates)
 	{
-		data->_Task.WaitFor();
+		data._Task.WaitFor();
 	}
 
 	//De-register all asynchronous updates that should be de-registered.
 	for (uint64 i = 0; i < _AsynchronousUpdates.Size();)
 	{
-		if (_AsynchronousUpdates[i]->_ShouldDeRegister)
+		if (_AsynchronousUpdates[i]._ShouldDeRegister)
 		{
-			AsynchronousUpdateData *const RESTRICT data{ _AsynchronousUpdates[i] };
 			_AsynchronousUpdates.EraseAt(i);
-			delete data;
 		}
 
 		else
@@ -116,11 +114,12 @@ void UpdateSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT c
 void UpdateSystem::PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Kick off all asynchronous post-updates.
-	for (AsynchronousUpdateData *const RESTRICT data : _AsynchronousPostUpdates)
+	for (AsynchronousUpdateData &data : _AsynchronousPostUpdates)
 	{
-		data->_Context = context;
+		data._Context = context;
+		data._Task._Arguments = &data;
 
-		TaskSystem::Instance->ExecuteTask(&data->_Task);
+		TaskSystem::Instance->ExecuteTask(&data._Task);
 	}
 
 	//Execute the synchronous post-updates.
@@ -138,19 +137,17 @@ void UpdateSystem::PostUpdateSystemSynchronous(const UpdateContext *const RESTRI
 	}
 
 	//Wait for all asynchronous post-updates to finish.
-	for (AsynchronousUpdateData *const RESTRICT data : _AsynchronousPostUpdates)
+	for (AsynchronousUpdateData &data : _AsynchronousPostUpdates)
 	{
-		data->_Task.WaitFor();
+		data._Task.WaitFor();
 	}
 
 	//De-register all asynchronous post-updates that should be de-registered.
 	for (uint64 i = 0; i < _AsynchronousPostUpdates.Size();)
 	{
-		if (_AsynchronousPostUpdates[i]->_ShouldDeRegister)
+		if (_AsynchronousPostUpdates[i]._ShouldDeRegister)
 		{
-			AsynchronousUpdateData *const RESTRICT data{ _AsynchronousPostUpdates[i] };
 			_AsynchronousPostUpdates.EraseAt(i);
-			delete data;
 		}
 
 		else
@@ -183,10 +180,10 @@ void UpdateSystem::RegisterSynchronousPreUpdate(Updateable *const RESTRICT newUp
 void UpdateSystem::RegisterAsynchronousPreUpdate(Updateable *const RESTRICT newUpdate)
 {
 	//Add the update to the asynchronous pre-updates.
-	_AsynchronousPreUpdates.EmplaceSlow(new AsynchronousUpdateData);
+	_AsynchronousPreUpdates.EmplaceSlow();
 
 	//Set up the asynchronous update data.
-	_AsynchronousPreUpdates.Back()->_Task._Function = [](void *const RESTRICT arguments)
+	_AsynchronousPreUpdates.Back()._Task._Function = [](void *const RESTRICT arguments)
 	{
 		AsynchronousUpdateData *const RESTRICT data{ static_cast<AsynchronousUpdateData *const RESTRICT>(arguments) };
 
@@ -195,8 +192,7 @@ void UpdateSystem::RegisterAsynchronousPreUpdate(Updateable *const RESTRICT newU
 			data->_ShouldDeRegister = true;
 		}
 	};
-	_AsynchronousPreUpdates.Back()->_Task._Arguments = _AsynchronousPreUpdates.Back();
-	_AsynchronousPreUpdates.Back()->_UpdateAble = newUpdate;
+	_AsynchronousPreUpdates.Back()._UpdateAble = newUpdate;
 }
 
 /*
@@ -214,10 +210,10 @@ void UpdateSystem::RegisterSynchronousUpdate(Updateable *const RESTRICT newUpdat
 void UpdateSystem::RegisterAsynchronousUpdate(Updateable *const RESTRICT newUpdate)
 {
 	//Add the update to the asynchronous updates.
-	_AsynchronousUpdates.EmplaceSlow(new AsynchronousUpdateData);
+	_AsynchronousUpdates.EmplaceSlow();
 
 	//Set up the asynchronous update data.
-	_AsynchronousUpdates.Back()->_Task._Function = [](void *const RESTRICT arguments)
+	_AsynchronousUpdates.Back()._Task._Function = [](void *const RESTRICT arguments)
 	{
 		AsynchronousUpdateData *const RESTRICT data{ static_cast<AsynchronousUpdateData *const RESTRICT>(arguments) };
 
@@ -226,8 +222,7 @@ void UpdateSystem::RegisterAsynchronousUpdate(Updateable *const RESTRICT newUpda
 			data->_ShouldDeRegister = true;
 		}
 	};
-	_AsynchronousUpdates.Back()->_Task._Arguments = _AsynchronousUpdates.Back();
-	_AsynchronousUpdates.Back()->_UpdateAble = newUpdate;
+	_AsynchronousUpdates.Back()._UpdateAble = newUpdate;
 }
 
 /*
@@ -245,10 +240,10 @@ void UpdateSystem::RegisterSynchronousPostUpdate(Updateable *const RESTRICT newU
 void UpdateSystem::RegisterAsynchronousPostUpdate(Updateable *const RESTRICT newUpdate)
 {
 	//Add the update to the asynchronous post-updates.
-	_AsynchronousPostUpdates.EmplaceSlow(new AsynchronousUpdateData);
+	_AsynchronousPostUpdates.EmplaceSlow();
 
 	//Set up the asynchronous update data.
-	_AsynchronousPostUpdates.Back()->_Task._Function = [](void *const RESTRICT arguments)
+	_AsynchronousPostUpdates.Back()._Task._Function = [](void *const RESTRICT arguments)
 	{
 		AsynchronousUpdateData *const RESTRICT data{ static_cast<AsynchronousUpdateData *const RESTRICT>(arguments) };
 
@@ -257,6 +252,5 @@ void UpdateSystem::RegisterAsynchronousPostUpdate(Updateable *const RESTRICT new
 			data->_ShouldDeRegister = true;
 		}
 	};
-	_AsynchronousPostUpdates.Back()->_Task._Arguments = _AsynchronousPostUpdates.Back();
-	_AsynchronousPostUpdates.Back()->_UpdateAble = newUpdate;
+	_AsynchronousPostUpdates.Back()._UpdateAble = newUpdate;
 }
