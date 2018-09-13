@@ -86,31 +86,9 @@ void MaximObject::Initialize(const MaximColor initialColor, const Vector3& initi
 }
 
 /*
-*	Pre-updates this Maxim object asynchronously.
+*	Logic updates this Maxim object asynchronously.
 */
-bool MaximObject::PreUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
-{
-	if (_Entity->IsInitialized())
-	{
-		//Move the entity.
-		_Entity->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
-
-		if (_Entity->GetPosition()._Y <= -2.5f)
-		{
-			//Destroy this object.
-			MaximGameSystem::Instance->DestroyMaximObject(this);
-
-			_IsDestroyed = true;
-		}
-	}
-
-	return !_IsDestroyed;
-}
-
-/*
-*	Updates this Maxim object asynchronously.
-*/
-bool MaximObject::UpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+bool MaximObject::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	if (_Entity->IsInitialized())
 	{
@@ -121,6 +99,20 @@ bool MaximObject::UpdateAsynchronous(const UpdateContext *const RESTRICT context
 		if (RenderingSystem::Instance->IsClockedOrTouched(*_Entity->GetWorldSpaceAxisAlignedBoundingBox()))
 		{
 			_Entity->Move(Vector3(0.0f, 2.5f, 0.0f));
+		}
+
+		else
+		{
+			//Move the entity.
+			_Entity->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
+
+			if (_Entity->GetPosition()._Y <= -5.0f)
+			{
+				//Destroy this object.
+				MaximGameSystem::Instance->DestroyMaximObject(this);
+
+				_IsDestroyed = true;
+			}
 		}
 	}
 

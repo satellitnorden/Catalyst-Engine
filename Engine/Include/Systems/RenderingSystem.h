@@ -108,9 +108,9 @@ public:
 	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Post-updates the rendering system synchronously.
+	*	Updates the rendering system synchronously during the render update phase.
 	*/
-	void PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void RenderUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Releases the rendering system.

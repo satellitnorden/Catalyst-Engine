@@ -102,11 +102,11 @@ void RenderingSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRIC
 }
 
 /*
-*	Post-updates the rendering system synchronously.
+*	Updates the rendering system synchronously during the render update phase.
 */
-void RenderingSystem::PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void RenderingSystem::RenderUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Pre-update the current rendering system synchronously.
+	//Render-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
 	//Render all render passes.

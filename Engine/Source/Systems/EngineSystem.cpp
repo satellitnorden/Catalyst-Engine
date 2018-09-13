@@ -33,10 +33,9 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 	CatalystPlatform::Initialize();
 
 	//Initialize all systems.
-	CullingSystem::Instance->InitializeSystem();
+	InputSystem::Instance->InitializeSystem();
 	LevelOfDetailSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
-	SoundSystem::Instance->InitializeSystem();
 	TaskSystem::Instance->InitializeSystem();
 
 	//Post-initialize all systems.
@@ -63,38 +62,51 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	context._DeltaTime = _DeltaTime;
 	context._TotalTime = _TotalTime;
 
-	/*
-	*	Pre-update phase.
-	*/
-	_CurrentUpdatePhase = UpdatePhase::PreUpdate;
+	//Pre-update the platform.
 	CatalystPlatform::PreUpdate(&context);
-	UpdateSystem::Instance->PreUpdateSystemSynchronous(&context);
-	CullingSystem::Instance->PreUpdateSystemSynchronous(&context);
-#if !defined(CATALYST_FINAL)
-	DebugRenderingSystem::Instance->PreUpdateSystemSynchronous(&context);
-#endif
-	InputSystem::Instance->PreUpdateSystemSynchronous(&context);
 
 	/*
-	*	Update phase.
+	*	Opening update phase.
 	*/
-	_CurrentUpdatePhase = UpdatePhase::Update;
-	UpdateSystem::Instance->UpdateSystemSynchronous(&context);
+	_CurrentUpdatePhase = UpdatePhase::OpeningUpdate;
+	UpdateSystem::Instance->PreOpeningUpdateSystemSynchronous(&context);
+	InputSystem::Instance->PreOpeningUpdateSystemSynchronous(&context);
+	UpdateSystem::Instance->PostOpeningUpdateSystemSynchronous(&context);
+	InputSystem::Instance->PostOpeningUpdateSystemSynchronous(&context);
+
+	/*
+	*	Logic update phase.
+	*/
+	_CurrentUpdatePhase = UpdatePhase::LogicUpdate;
+	UpdateSystem::Instance->PreLogicUpdateSystemSynchronous(&context);
 	EntitySystem::Instance->UpdateSystemSynchronous(&context);
 	PhysicsSystem::Instance->UpdateSystemSynchronous(&context);
 	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
 	RenderingSystem::Instance->UpdateSystemSynchronous(&context);
+	UpdateSystem::Instance->PostLogicUpdateSystemSynchronous(&context);
 
 	/*
-	*	Post-update phase.
+	*	Render update phase.
 	*/
-	_CurrentUpdatePhase = UpdatePhase::PostUpdate;
-	UpdateSystem::Instance->PostUpdateSystemSynchronous(&context);
+	_CurrentUpdatePhase = UpdatePhase::RenderUpdate;
+	UpdateSystem::Instance->PreRenderUpdateSystemSynchronous(&context);
 #if !defined(CATALYST_FINAL)
-	DebugRenderingSystem::Instance->PostUpdateSystemSynchronous(&context);
+	DebugRenderingSystem::Instance->RenderUpdateSystemSynchronous(&context);
 #endif
-	RenderingSystem::Instance->PostUpdateSystemSynchronous(&context);
-	SoundSystem::Instance->PostUpdateSystemSynchronous(&context);
+	RenderingSystem::Instance->RenderUpdateSystemSynchronous(&context);
+	UpdateSystem::Instance->PostRenderUpdateSystemSynchronous(&context);
+
+	/*
+	*	Closing update phase.
+	*/
+	_CurrentUpdatePhase = UpdatePhase::ClosingUpdate;
+	UpdateSystem::Instance->PreClosingUpdateSystemSynchronous(&context);
+#if !defined(CATALYST_FINAL)
+	DebugRenderingSystem::Instance->ClosingUpdateSystemSynchronous(&context);
+#endif
+	UpdateSystem::Instance->PostClosingUpdateSystemSynchronous(&context);
+
+	//Post-update the platform.
 	CatalystPlatform::PostUpdate(&context);
 }
 
@@ -112,6 +124,5 @@ void EngineSystem::ReleaseSystem() NOEXCEPT
 	//Release all systems.
 	EntitySystem::Instance->ReleaseSystem();
 	RenderingSystem::Instance->ReleaseSystem();
-	SoundSystem::Instance->ReleaseSystem();
 	TaskSystem::Instance->ReleaseSystem();
 }

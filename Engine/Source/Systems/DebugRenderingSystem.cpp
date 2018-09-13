@@ -18,18 +18,9 @@
 DEFINE_SINGLETON(DebugRenderingSystem);
 
 /*
-*	Pre-updates the debug rendering system synchronously.
+*	Updates the debug rendering system synchronously during the opening update phase.
 */
-void DebugRenderingSystem::PreUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
-{
-	//Clear all data.
-	_AxisAlignedBoundingBoxDebugRenderData.ClearFast();
-}
-
-/*
-*	Post-updates the debug rendering system synchronously.
-*/
-void DebugRenderingSystem::PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void DebugRenderingSystem::RenderUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Sort the axis-aligned bounding box debug rendering data.
 	if (_AxisAlignedBoundingBoxDebugRenderData.Size() > 1)
@@ -49,6 +40,15 @@ void DebugRenderingSystem::PostUpdateSystemSynchronous(const UpdateContext *cons
 			}
 		});
 	}
+}
+
+/*
+*	Updates the debug rendering system synchronously during the closing update phase.
+*/
+void DebugRenderingSystem::ClosingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+{
+	//Clear all data.
+	_AxisAlignedBoundingBoxDebugRenderData.ClearFast();
 }
 
 /*

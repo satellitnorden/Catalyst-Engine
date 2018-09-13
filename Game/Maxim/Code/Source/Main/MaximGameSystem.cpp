@@ -73,14 +73,14 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	_Sun->SetColor(GetColor(_CurrentColor));
 
 	//Register the Maxim game system for updates.
-	UpdateSystem::Instance->RegisterSynchronousPreUpdate(this);
-	UpdateSystem::Instance->RegisterSynchronousPostUpdate(this);
+	UpdateSystem::Instance->RegisterAsynchronousOpeningUpdate(this);
+	UpdateSystem::Instance->RegisterAsynchronousClosingUpdate(this);
 }
 
 /*
-*	Pre-updates the Maxim game system synchronously.
+*	Updates the Maxim game system asynchronously during the opening update phase.
 */
-bool MaximGameSystem::PreUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+bool MaximGameSystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Update the color.
 	UpdateColor(context->_DeltaTime);
@@ -105,8 +105,7 @@ bool MaximGameSystem::PreUpdateSynchronous(const UpdateContext *const RESTRICT c
 
 		newObject->Initialize(newObjectColor, GetColor(newObjectColor), _Speed);
 
-		UpdateSystem::Instance->RegisterAsynchronousPreUpdate(newObject);
-		UpdateSystem::Instance->RegisterAsynchronousUpdate(newObject);
+		UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(newObject);
 
 		_SpawnTimer -= _SpawnTime;
 	}
@@ -127,9 +126,9 @@ bool MaximGameSystem::PreUpdateSynchronous(const UpdateContext *const RESTRICT c
 }
 
 /*
-*	Post-updates the Maxim game system synchronously.
+*	Updates the Maxim game system asynchronously during the closing update phase.
 */
-bool MaximGameSystem::PostUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+bool MaximGameSystem::ClosingUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Destroy objects.
 	for (MaximObject *const RESTRICT object : _DestructionQueue)

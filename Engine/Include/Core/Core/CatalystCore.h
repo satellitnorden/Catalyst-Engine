@@ -24,7 +24,8 @@
 //Enumeration covering all update phases.
 enum class UpdatePhase : uint8
 {
-	PreUpdate,
-	Update,
-	PostUpdate
+	OpeningUpdate,
+	LogicUpdate,
+	RenderUpdate,
+	ClosingUpdate
 };

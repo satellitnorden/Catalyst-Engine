@@ -14,7 +14,7 @@ DEFINE_SINGLETON(UpdateSystem);
 *	Defines an update system phase.
 */
 #define DEFINE_UPDATE_SYSTEM_PHASE(PHASE)																				\
-void UpdateSystem:: ## PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT					\
+void UpdateSystem::Pre ## PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT				\
 {																														\
 	for (AsynchronousUpdateData &data : _Asynchronous ## PHASE ## s)													\
 	{																													\
@@ -22,7 +22,10 @@ void UpdateSystem:: ## PHASE ## SystemSynchronous(const UpdateContext *const RES
 		data._Task._Arguments = &data;																					\
 		TaskSystem::Instance->ExecuteTask(&data._Task);																	\
 	}																													\
+}																														\
 																														\
+void UpdateSystem::Post ## PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT				\
+{																														\
 	for (uint64 i = 0; i < _Synchronous ## PHASE ## s.Size();)															\
 	{																													\
 		if (!_Synchronous ## PHASE ## s[i]-> ## PHASE ## Synchronous(context))											\
@@ -45,7 +48,7 @@ void UpdateSystem:: ## PHASE ## SystemSynchronous(const UpdateContext *const RES
 	{																													\
 		if (_Asynchronous ## PHASE ## s[i]._ShouldDeRegister)															\
 		{																												\
-			_AsynchronousPreUpdates.EraseAt(i);																			\
+			_Asynchronous ## PHASE ## s.EraseAt(i);																		\
 		}																												\
 																														\
 		else																											\
@@ -76,6 +79,7 @@ void UpdateSystem::RegisterAsynchronous ## PHASE ## (Updateable *const RESTRICT 
 }
 
 //Define the update system phases.
-DEFINE_UPDATE_SYSTEM_PHASE(PreUpdate);
-DEFINE_UPDATE_SYSTEM_PHASE(Update);
-DEFINE_UPDATE_SYSTEM_PHASE(PostUpdate);
+DEFINE_UPDATE_SYSTEM_PHASE(OpeningUpdate);
+DEFINE_UPDATE_SYSTEM_PHASE(LogicUpdate);
+DEFINE_UPDATE_SYSTEM_PHASE(RenderUpdate);
+DEFINE_UPDATE_SYSTEM_PHASE(ClosingUpdate);

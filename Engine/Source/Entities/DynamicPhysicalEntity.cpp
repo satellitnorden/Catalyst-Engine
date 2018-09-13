@@ -16,7 +16,7 @@ DynamicPhysicalEntity::DynamicPhysicalEntity() NOEXCEPT
 /*
 *	Returns the axis aligned bounding box for this dynamic physical entity in model space.
 */
-NO_DISCARD RESTRICTED const AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEntity::GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT
+NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
 	//Return the axis aligned bounding box for this dynamic physical entity in model space.
 	return &ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[_ComponentsIndex]._ModelSpaceAxisAlignedBoundingBox;
@@ -25,7 +25,7 @@ NO_DISCARD RESTRICTED const AxisAlignedBoundingBox *const RESTRICT DynamicPhysic
 /*
 *	Returns the axis aligned bounding box for this dynamic physical entity in world space.
 */
-NO_DISCARD RESTRICTED const AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEntity::GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT
+NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
 	//Returns the axis aligned bounding box for this dynamic physical entity in world space.
 	return &ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;

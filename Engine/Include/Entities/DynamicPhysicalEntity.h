@@ -21,12 +21,12 @@ public:
 	/*
 	*	Returns the axis aligned bounding box for this dynamic physical entity in model space.
 	*/
-	NO_DISCARD RESTRICTED const AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() const NOEXCEPT;
+	NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT final override;
 
 	/*
 	*	Returns the axis aligned bounding box for this dynamic physical entity in world space.
 	*/
-	NO_DISCARD RESTRICTED const AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() const NOEXCEPT;
+	NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT final override;
 
 protected:
 

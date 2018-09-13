@@ -26,67 +26,89 @@ public:
 	}
 
 	/*
-	*	Pre-updates this updateable synchronously.
+	*	Updates this updateable synchronously during the opening update phase.
 	*	Should return whether or not this updateable should continue to be updated.
 	*/
-	virtual bool PreUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	virtual bool OpeningUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 	{
-		ASSERT(false, "PreUpdateSynchronous called on updateable that has not overriden this function.");
+		ASSERT(false, "OpeningUpdateSynchronous called on updateable that has not overriden this function.");
 
 		return false;
 	}
 
 	/*
-	*	Updates this updateable synchronously.
+	*	Updates this updateable synchronously during the logic update phase.
 	*	Should return whether or not this updateable should continue to be updated.
 	*/
-	virtual bool UpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	virtual bool LogicUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 	{
-		ASSERT(false, "UpdateSynchronous called on updateable that has not overriden this function.");
+		ASSERT(false, "LogicUpdateSynchronous called on updateable that has not overriden this function.");
 
 		return false;
 	}
 
 	/*
-	*	Post-updates this updateable synchronously.
+	*	Updates this updateable synchronously during the opening render update phase.
 	*	Should return whether or not this updateable should continue to be updated.
 	*/
-	virtual bool PostUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	virtual bool RenderUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 	{
-		ASSERT(false, "PostUpdateSynchronous called on updateable that has not overriden this function.");
+		ASSERT(false, "RenderUpdateSynchronous called on updateable that has not overriden this function.");
 
 		return false;
 	}
 
 	/*
-	*	Pre-updates this updateable asynchronously.
+	*	Updates this updateable synchronously during the opening closing update phase.
 	*	Should return whether or not this updateable should continue to be updated.
 	*/
-	virtual bool PreUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	virtual bool ClosingUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 	{
-		ASSERT(false, "PreUpdateAsynchronous called on updateable that has not overriden this function.");
+		ASSERT(false, "ClosingUpdateSynchronous called on updateable that has not overriden this function.");
 
 		return false;
 	}
 
 	/*
-	*	Updates this updateable asynchronously.
+	*	Updates this updateable asynchronously during the opening update phase.
 	*	Should return whether or not this updateable should continue to be updated.
 	*/
-	virtual bool UpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	virtual bool OpeningUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 	{
-		ASSERT(false, "UpdateAsynchronous called on updateable that has not overriden this function.");
+		ASSERT(false, "OpeningUpdateAsynchronous called on updateable that has not overriden this function.");
 
 		return false;
 	}
 
 	/*
-	*	Post-updates this updateable asynchronously.
+	*	Updates this updateable asynchronously during the logic update phase.
 	*	Should return whether or not this updateable should continue to be updated.
 	*/
-	virtual bool PostUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	virtual bool LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 	{
-		ASSERT(false, "PostUpdateAsynchronous called on updateable that has not overriden this function.");
+		ASSERT(false, "LogicUpdateAsynchronous called on updateable that has not overriden this function.");
+
+		return false;
+	}
+
+	/*
+	*	Updates this updateable asynchronously during the render update phase.
+	*	Should return whether or not this updateable should continue to be updated.
+	*/
+	virtual bool RenderUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	{
+		ASSERT(false, "RenderUpdateAsynchronous called on updateable that has not overriden this function.");
+
+		return false;
+	}
+
+	/*
+	*	Updates this updateable asynchronously during the closing update phase.
+	*	Should return whether or not this updateable should continue to be updated.
+	*/
+	virtual bool ClosingUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	{
+		ASSERT(false, "ClosingUpdateAsynchronous called on updateable that has not overriden this function.");
 
 		return false;
 	}

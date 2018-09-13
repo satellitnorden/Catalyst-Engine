@@ -13,13 +13,14 @@
 /*
 *	Declares an update system phase.
 */
-#define DECLARE_UPDATE_SYSTEM_PHASE(PHASE)													\
-public:																						\
-	void PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;	\
-	void RegisterSynchronous ## PHASE ## (Updateable *const RESTRICT newUpdate);			\
-	void RegisterAsynchronous ## PHASE ## (Updateable *const RESTRICT newUpdate);			\
-private:																					\
-	DynamicArray<Updateable *RESTRICT> _Synchronous ## PHASE ## s;							\
+#define DECLARE_UPDATE_SYSTEM_PHASE(PHASE)															\
+public:																								\
+	void Pre ## PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;	\
+	void Post ## PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;	\
+	void RegisterSynchronous ## PHASE ## (Updateable *const RESTRICT newUpdate);					\
+	void RegisterAsynchronous ## PHASE ## (Updateable *const RESTRICT newUpdate);					\
+private:																							\
+	DynamicArray<Updateable *RESTRICT> _Synchronous ## PHASE ## s;									\
 	DynamicArray<AsynchronousUpdateData> _Asynchronous ## PHASE ## s;
 
 /*
@@ -58,8 +59,9 @@ public:
 	UpdateSystem() NOEXCEPT { }
 
 	//Declare the update system phases.
-	DECLARE_UPDATE_SYSTEM_PHASE(PreUpdate);
-	DECLARE_UPDATE_SYSTEM_PHASE(Update);
-	DECLARE_UPDATE_SYSTEM_PHASE(PostUpdate);
+	DECLARE_UPDATE_SYSTEM_PHASE(OpeningUpdate);
+	DECLARE_UPDATE_SYSTEM_PHASE(LogicUpdate);
+	DECLARE_UPDATE_SYSTEM_PHASE(RenderUpdate);
+	DECLARE_UPDATE_SYSTEM_PHASE(ClosingUpdate);
 
 };

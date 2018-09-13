@@ -7,6 +7,9 @@
 //Math.
 #include <Math/Vector3.h>
 
+//Rendering.
+#include <Rendering/Engine/AxisAlignedBoundingBox.h>
+
 class Entity
 {
 
@@ -131,6 +134,22 @@ public:
 	*/
 	NO_DISCARD Vector3 GetRightVector() const NOEXCEPT;
 
+	/*
+	*	Returns the axis aligned bounding box for this entity in model space.
+	*/
+	virtual NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
+	{
+		return nullptr;
+	}
+
+	/*
+	*	Returns the axis aligned bounding box for this entity in world space.
+	*/
+	virtual NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+	{
+		return nullptr;
+	}
+
 protected:
 
 	//The default position.
@@ -180,5 +199,12 @@ protected:
 	{
 		return nullptr;
 	}
+
+private:
+
+	/*
+	*	Updates the world space axis-aligned bounding box.
+	*/
+	void UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
 
 };

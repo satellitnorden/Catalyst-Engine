@@ -24,19 +24,4 @@ public:
 	*/
 	SoundSystem() NOEXCEPT { }
 
-	/*
-	*	Initializes the sound system.
-	*/
-	void InitializeSystem() NOEXCEPT;
-
-	/*
-	*	Post-updates the sound system synschronously.
-	*/
-	void PostUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
-
-	/*
-	*	Releases the sound system.
-	*/
-	void ReleaseSystem() NOEXCEPT;
-
 };

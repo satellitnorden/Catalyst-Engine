@@ -71,6 +71,9 @@ void Entity::SetPosition(const Vector3 &newPosition) NOEXCEPT
 	{
 		*position = newPosition;
 	}
+
+	//Update the world space axis-aligned bounding box.
+	UpdateWorldSpaceAxisAlignedBoundingBox();
 }
 
 /*
@@ -113,6 +116,9 @@ void Entity::Move(const Vector3 &amount) NOEXCEPT
 	{
 		child->Move(amount);
 	}
+
+	//Update the world space axis-aligned bounding box.
+	UpdateWorldSpaceAxisAlignedBoundingBox();
 }
 
 /*
@@ -209,4 +215,29 @@ NO_DISCARD Vector3 Entity::GetRightVector() const NOEXCEPT
 	{
 		return Vector3::RIGHT;
 	}
+}
+
+/*
+*	Updates the world space axis-aligned bounding box.
+*/
+void Entity::UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+{
+	AxisAlignedBoundingBox *const RESTRICT modelSpaceAxisAlignedBoundingBox{ GetModelSpaceAxisAlignedBoundingBox() };
+
+	if (!modelSpaceAxisAlignedBoundingBox)
+	{
+		return;
+	}
+
+	AxisAlignedBoundingBox *const RESTRICT worldSpaceAxisAlignedBoundingBox{ GetWorldSpaceAxisAlignedBoundingBox() };
+
+	if (!worldSpaceAxisAlignedBoundingBox)
+	{
+		return;
+	}
+
+	const Vector3 *const RESTRICT position{ GetPositionInternal() };
+
+	worldSpaceAxisAlignedBoundingBox->_Minimum = modelSpaceAxisAlignedBoundingBox->_Minimum + *position;
+	worldSpaceAxisAlignedBoundingBox->_Maximum = modelSpaceAxisAlignedBoundingBox->_Maximum + *position;
 }

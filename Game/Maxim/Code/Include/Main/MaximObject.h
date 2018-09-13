@@ -31,14 +31,9 @@ public:
 	void Initialize(const MaximColor initialColor, const Vector3& initialOutlineColor, const float initialSpeed) NOEXCEPT;
 
 	/*
-	*	Pre-updates this Maxim object asynchronously.
+	*	Logic updates this Maxim object asynchronously.
 	*/
-	bool PreUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
-
-	/*
-	*	Updates this Maxim object asynchronously.
-	*/
-	bool UpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
+	bool LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 	/*
 	*	Returns the entity.

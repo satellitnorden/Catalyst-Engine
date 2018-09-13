@@ -37,14 +37,14 @@ public:
 	void InitializeSystem() NOEXCEPT;
 
 	/*
-	*	Pre-updates the Maxim game system synchronously.
+	*	Updates the Maxim game system asynchronously during the opening update phase.
 	*/
-	bool PreUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
+	bool OpeningUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 	/*
-	*	Post-updates the Maxim game system synchronously.
+	*	Updates the Maxim game system asynchronously during the closing update phase.
 	*/
-	bool PostUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
+	bool ClosingUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 	/*
 	*	Destroys a Maxim object.
