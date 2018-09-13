@@ -40,7 +40,6 @@ class PhysicalMaterialData;
 class PhysicalModelData;
 class RenderPass;
 class Resolution;
-class StaticPhysicalEntity;
 class TerrainEntity;
 class TerrainInitializationData;
 class TerrainMaterial;
@@ -336,11 +335,6 @@ public:
 	*	Terminates a terrain entity.
 	*/
 	void TerminateTerrainEntity(const TerrainEntity *const RESTRICT entity) const NOEXCEPT;
-
-	/*
-	*	Initializes a static physical entity.
-	*/
-	void InitializeStaticPhysicalEntity(StaticPhysicalEntity &staticPhysicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT;
 
 	/*
 	*	Initializes an instanced physical entity.

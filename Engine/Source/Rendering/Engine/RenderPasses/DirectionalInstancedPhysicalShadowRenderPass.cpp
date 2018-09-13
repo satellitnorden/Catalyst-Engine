@@ -39,7 +39,7 @@ void DirectionalInstancedPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::DirectionalInstancedPhysicalShadow);
 
 	//Set the sub stage index.
-	SetSubStageIndex(3);
+	SetSubStageIndex(2);
 
 	//Set the shaders.
 	SetVertexShader(Shader::DirectionalInstancedPhysicalShadowVertex);

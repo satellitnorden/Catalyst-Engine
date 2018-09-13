@@ -118,7 +118,7 @@ bool MaximObject::UpdateAsynchronous(const UpdateContext *const RESTRICT context
 	{
 #if !defined(CATALYST_FINAL)
 		//Debug render the axis-aligned bounding box.
-		DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData(*_Entity->GetWorldSpaceAxisAlignedBoundingBox(), Vector4(1.0f, 0.0f, 0.0f, 0.5f)));
+		//DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData(*_Entity->GetWorldSpaceAxisAlignedBoundingBox(), Vector4(1.0f, 0.0f, 0.0f, 0.5f)));
 #endif
 		if (RenderingSystem::Instance->IsClockedOrTouched(*_Entity->GetWorldSpaceAxisAlignedBoundingBox()))
 		{

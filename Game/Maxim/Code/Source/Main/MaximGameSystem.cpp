@@ -1,9 +1,6 @@
 //Header file.
 #include <Main/MaximGameSystem.h>
 
-//Entities.
-#include <Entities/StaticPhysicalEntity.h>
-
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
 

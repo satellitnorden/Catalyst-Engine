@@ -32,7 +32,6 @@ class ParticleSystemProperties;
 class PhysicalModel;
 class RenderPass;
 class Resolution;
-class StaticPhysicalEntity;
 class TerrainEntity;
 class TerrainInitializationData;
 class TerrainMaterial;
@@ -120,11 +119,6 @@ public:
 	*	Initializes a terrain entity.
 	*/
 	void InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT;
-
-	/*
-	*	Initializes a static physical entity.
-	*/
-	void InitializeStaticPhysicalEntity(StaticPhysicalEntity &staticPhysicalEntity, const PhysicalModel &model, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) const NOEXCEPT;
 
 	/*
 	*	Initializes an instanced physical entity.

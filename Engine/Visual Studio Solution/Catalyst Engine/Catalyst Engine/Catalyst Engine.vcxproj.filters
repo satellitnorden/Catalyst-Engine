@@ -222,9 +222,6 @@
     <ClInclude Include="..\..\..\Include\Components\SpotLightComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\StaticPhysicalRenderComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\TerrainComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
@@ -289,9 +286,6 @@
       <Filter>Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\SpotLightEntity.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\StaticPhysicalEntity.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\TerrainEntity.h">
@@ -513,9 +507,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalShadowRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalStaticPhysicalShadowRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DirectionalTerrainShadowRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
@@ -538,9 +529,6 @@
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\SkyRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\StaticPhysicalRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TerrainRenderPass.h">
@@ -1151,9 +1139,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalShadowRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalStaticPhysicalShadowRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DirectionalTerrainShadowRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
@@ -1173,9 +1158,6 @@
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\SkyRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\StaticPhysicalRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TerrainRenderPass.cpp">

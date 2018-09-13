@@ -44,7 +44,7 @@ void VolumetricFogRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::VolumetricFog);
 
 	//Set the sub stage index.
-	SetSubStageIndex(10);
+	SetSubStageIndex(9);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);

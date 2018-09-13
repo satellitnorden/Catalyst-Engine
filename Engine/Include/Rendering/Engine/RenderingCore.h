@@ -54,13 +54,11 @@ enum class RenderPassSubStage : uint8
 {
 	//Directional shadow main stage.
 	DirectionalTerrainShadow,
-	DirectionalStaticPhysicalShadow,
 	DirectionalDynamicPhysicalShadow,
 	DirectionalInstancedPhysicalShadow,
 
 	//Scene main stage.
 	Terrain,
-	StaticPhysical,
 	DynamicPhysical,
 	InstancedPhysical,
 	Vegetation,

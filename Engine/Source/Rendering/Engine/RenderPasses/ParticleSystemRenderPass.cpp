@@ -47,7 +47,7 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::ParticleSystem);
 
 	//Set the sub stage index.
-	SetSubStageIndex(9);
+	SetSubStageIndex(8);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ParticleSystemVertex);

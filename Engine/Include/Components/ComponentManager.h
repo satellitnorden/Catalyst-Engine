@@ -14,7 +14,6 @@
 #include <Components/ParticleSystemRenderComponent.h>
 #include <Components/PointLightComponent.h>
 #include <Components/SpotLightComponent.h>
-#include <Components/StaticPhysicalRenderComponent.h>
 #include <Components/TerrainComponent.h>
 #include <Components/TerrainRenderComponent.h>
 #include <Components/TransformComponent.h>
@@ -74,7 +73,6 @@ class ComponentManager final
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(DirectionalLight, DirectionalLightComponent);
 	DECLARE_ENTITY_CLASS_WITH_FOUR_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicOutlineRenderComponent, DynamicPhysicalRenderComponent, TransformComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedPhysical, InstancedPhysicalRenderComponent);
-	DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(StaticPhysical, FrustumCullingComponent, StaticPhysicalRenderComponent, TransformComponent);
 	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(SpotLight, SpotLightComponent);

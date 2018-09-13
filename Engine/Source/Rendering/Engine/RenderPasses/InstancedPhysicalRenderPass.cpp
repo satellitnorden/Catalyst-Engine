@@ -38,7 +38,7 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::InstancedPhysical);
 
 	//Set the sub stage index.
-	SetSubStageIndex(3);
+	SetSubStageIndex(2);
 
 	//Set the shaders.
 	SetVertexShader(Shader::InstancedPhysicalVertex);

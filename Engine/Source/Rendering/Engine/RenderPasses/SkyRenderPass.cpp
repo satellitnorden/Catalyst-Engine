@@ -34,7 +34,7 @@ void SkyRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::Sky);
 
 	//Set the sub stage index.
-	SetSubStageIndex(7);
+	SetSubStageIndex(6);
 
 	//Set the shaders.
 	SetVertexShader(Shader::CubeMapVertex);

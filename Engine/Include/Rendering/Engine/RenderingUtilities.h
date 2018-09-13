@@ -8,6 +8,7 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
+#include <Math/Matrix4.h>
 #include <Math/Vector4.h>
 
 //Rendering.

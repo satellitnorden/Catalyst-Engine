@@ -39,7 +39,7 @@ void DynamicPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::DynamicPhysical);
 
 	//Set the sub stage index.
-	SetSubStageIndex(2);
+	SetSubStageIndex(1);
 
 	//Set the shaders.
 	SetVertexShader(Shader::PhysicalVertex);
