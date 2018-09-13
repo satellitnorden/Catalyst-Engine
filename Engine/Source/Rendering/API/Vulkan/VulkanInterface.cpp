@@ -324,7 +324,7 @@ RESTRICTED VulkanDescriptorSetLayout *const RESTRICT VulkanInterface::CreateDesc
 RESTRICTED VulkanDescriptorSet *const RESTRICT VulkanInterface::CreateDescriptorSet(const VulkanDescriptorSetLayout &vulkanDescriptorSetLayout) NOEXCEPT
 {
 	VulkanDescriptorSet *const RESTRICT newDescriptorSet = new VulkanDescriptorSet;
-	newDescriptorSet->Initialize(_VulkanDescriptorPool, vulkanDescriptorSetLayout);
+	_VulkanDescriptorPool.AllocateDescriptorSet(*newDescriptorSet, vulkanDescriptorSetLayout);
 
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
