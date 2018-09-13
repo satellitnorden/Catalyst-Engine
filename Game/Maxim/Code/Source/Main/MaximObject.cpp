@@ -44,35 +44,35 @@ void MaximObject::Initialize(const MaximColor initialColor, const Vector3& initi
 	{
 		case 0:
 		{
-			data->_Position = Vector3(-2.5f, 10.0f, 0.0f);
+			data->_Position = Vector3(-2.5f, 7.5f, 0.0f);
 
 			break;
 		}
 
 		case 1:
 		{
-			data->_Position = Vector3(-1.25f, 10.0f, 0.0f);
+			data->_Position = Vector3(-1.25f, 7.5f, 0.0f);
 
 			break;
 		}
 
 		case 2:
 		{
-			data->_Position = Vector3(0.0f, 10.0f, 0.0f);
+			data->_Position = Vector3(0.0f, 7.5f, 0.0f);
 
 			break;
 		}
 
 		case 3:
 		{
-			data->_Position = Vector3(1.25f, 10.0f, 0.0f);
+			data->_Position = Vector3(1.25f, 7.5f, 0.0f);
 
 			break;
 		}
 
 		case 4:
 		{
-			data->_Position = Vector3(2.5f, 10.0f, 0.0f);
+			data->_Position = Vector3(2.5f, 7.5f, 0.0f);
 
 			break;
 		}
