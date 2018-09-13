@@ -62,9 +62,6 @@ private:
 	//The color timer.
 	float _ColorTimer{ 0.0f };
 
-	//The speed.
-	float _Speed{ 1.0f };
-
 	//The spawn timer.
 	float _SpawnTimer{ 0.0f };
 

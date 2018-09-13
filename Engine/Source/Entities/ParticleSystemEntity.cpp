@@ -28,7 +28,7 @@ void ParticleSystemEntity::Initialize(const ParticleMaterial &material, const Pa
 /*
 *	Returns the position of this entity.
 */
-NO_DISCARD RESTRICTED Vector3 *const RESTRICT ParticleSystemEntity::GetPositionInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3 *const RESTRICT ParticleSystemEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
 	return &ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex]._WorldPosition;

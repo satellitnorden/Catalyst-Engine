@@ -21,28 +21,28 @@ public:
 	/*
 	*	Returns the axis aligned bounding box for this dynamic physical entity in model space.
 	*/
-	NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT final override;
+	RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT final override;
 
 	/*
 	*	Returns the axis aligned bounding box for this dynamic physical entity in world space.
 	*/
-	NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT final override;
+	RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT final override;
 
 protected:
 
 	/*
 	*	Returns the position of this entity.
 	*/
-	NO_DISCARD RESTRICTED Vector3 *const RESTRICT GetPositionInternal() NOEXCEPT final override;
+	RESTRICTED NO_DISCARD Vector3 *const RESTRICT GetPositionInternal() NOEXCEPT final override;
 
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	NO_DISCARD RESTRICTED Vector3 *const RESTRICT GetRotationInternal() NOEXCEPT final override;
+	RESTRICTED NO_DISCARD Vector3 *const RESTRICT GetRotationInternal() NOEXCEPT final override;
 
 	/*
 	*	Returns the scale of this entity.
 	*/
-	NO_DISCARD RESTRICTED Vector3 *const RESTRICT GetScaleInternal() NOEXCEPT final override;
+	RESTRICTED NO_DISCARD Vector3 *const RESTRICT GetScaleInternal() NOEXCEPT final override;
 
 };

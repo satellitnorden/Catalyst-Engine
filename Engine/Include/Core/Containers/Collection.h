@@ -31,7 +31,7 @@ public:
 	/*
 	*	Returns the first instance of this type.
 	*/
-	NO_DISCARD RESTRICTED static Type *const RESTRICT First() NOEXCEPT
+	RESTRICTED static NO_DISCARD Type *const RESTRICT First() NOEXCEPT
 	{
 		return _Instances.Begin();
 	}
@@ -39,7 +39,7 @@ public:
 	/*
 	*	Returns the last instance of this type.
 	*/
-	NO_DISCARD RESTRICTED static Type *const RESTRICT Last() NOEXCEPT
+	RESTRICTED static NO_DISCARD Type *const RESTRICT Last() NOEXCEPT
 	{
 		return _Instances.End();
 	}

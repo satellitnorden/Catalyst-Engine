@@ -25,9 +25,9 @@
 */
 #define DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(ENTITY_CLASS, FIRST_COMPONENT)												\
 public:																														\
-	NO_DISCARD static uint64 GetNumberOf ## ENTITY_CLASS ## Components() NOEXCEPT;											\
-	NO_DISCARD static uint64 GetNew ## ENTITY_CLASS ## ComponentsIndex(Entity *const RESTRICT entity) NOEXCEPT;				\
-	NO_DISCARD RESTRICTED static FIRST_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT;	\
+	static NO_DISCARD uint64 GetNumberOf ## ENTITY_CLASS ## Components() NOEXCEPT;											\
+	static NO_DISCARD uint64 GetNew ## ENTITY_CLASS ## ComponentsIndex(Entity *const RESTRICT entity) NOEXCEPT;				\
+	RESTRICTED static NO_DISCARD FIRST_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT;	\
 	static void Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT;							\
 private:																													\
 	static DynamicArray<Entity *RESTRICT> _ ## ENTITY_CLASS ## Entities;													\
@@ -39,7 +39,7 @@ private:																													\
 #define DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ENTITY_CLASS, FIRST_COMPONENT, SECOND_COMPONENT)							\
 DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(ENTITY_CLASS, FIRST_COMPONENT)														\
 public:																														\
-	NO_DISCARD RESTRICTED static SECOND_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## SECOND_COMPONENT ## s() NOEXCEPT;	\
+	RESTRICTED static NO_DISCARD SECOND_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## SECOND_COMPONENT ## s() NOEXCEPT;	\
 private:																													\
 	static DynamicArray<SECOND_COMPONENT> _ ## ENTITY_CLASS ## SECOND_COMPONENT ## s;
 
@@ -49,7 +49,7 @@ private:																													\
 #define DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(ENTITY_CLASS, FIRST_COMPONENT, SECOND_COMPONENT, THIRD_COMPONENT)		\
 DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ENTITY_CLASS, FIRST_COMPONENT, SECOND_COMPONENT)									\
 public:																														\
-	NO_DISCARD RESTRICTED static THIRD_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## THIRD_COMPONENT ## s() NOEXCEPT;	\
+	RESTRICTED static NO_DISCARD THIRD_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## THIRD_COMPONENT ## s() NOEXCEPT;	\
 private:																													\
 	static DynamicArray<THIRD_COMPONENT> _ ## ENTITY_CLASS ## THIRD_COMPONENT ## s;
 
@@ -59,7 +59,7 @@ private:																													\
 #define DECLARE_ENTITY_CLASS_WITH_FOUR_COMPONENTS(ENTITY_CLASS, FIRST_COMPONENT, SECOND_COMPONENT, THIRD_COMPONENT, FOURTH_COMPONENT)	\
 DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(ENTITY_CLASS, FIRST_COMPONENT, SECOND_COMPONENT, THIRD_COMPONENT)							\
 public:																																	\
-	NO_DISCARD RESTRICTED static FOURTH_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## FOURTH_COMPONENT ## s() NOEXCEPT;				\
+	RESTRICTED static NO_DISCARD FOURTH_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## FOURTH_COMPONENT ## s() NOEXCEPT;				\
 private:																																\
 	static DynamicArray<FOURTH_COMPONENT> _ ## ENTITY_CLASS ## FOURTH_COMPONENT ## s;
 

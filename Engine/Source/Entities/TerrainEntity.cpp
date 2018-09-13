@@ -19,7 +19,7 @@ TerrainEntity::TerrainEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-NO_DISCARD RESTRICTED Vector3 *const RESTRICT TerrainEntity::GetPositionInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3 *const RESTRICT TerrainEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
 	return &ComponentManager::GetTerrainTerrainComponents()[_ComponentsIndex]._TerrainUniformData._TerrainPosition;

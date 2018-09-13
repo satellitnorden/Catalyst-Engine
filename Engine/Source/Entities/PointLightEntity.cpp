@@ -55,7 +55,7 @@ void PointLightEntity::SetColor(const Vector3 &newColor) NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-NO_DISCARD RESTRICTED Vector3 *const RESTRICT PointLightEntity::GetPositionInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3 *const RESTRICT PointLightEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
 	return &ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Position;

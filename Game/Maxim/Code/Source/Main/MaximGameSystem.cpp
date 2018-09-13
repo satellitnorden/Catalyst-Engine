@@ -86,10 +86,10 @@ bool MaximGameSystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTR
 	UpdateColor(context->_DeltaTime);
 
 	//Update the speed.
-	_Speed += context->_DeltaTime * 0.01f;
+	MaximObject::_Speed += context->_DeltaTime * 0.1f;
 
 	//Update the spawn time.
-	_SpawnTime = 1.25f / _Speed;
+	_SpawnTime = 1.25f / MaximObject::_Speed;
 
 	//Update the spawn timer.
 	_SpawnTimer += context->_DeltaTime;
@@ -103,7 +103,7 @@ bool MaximGameSystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTR
 
 		MaximColor newObjectColor{ GetRandomColor() };
 
-		newObject->Initialize(newObjectColor, GetColor(newObjectColor), _Speed);
+		newObject->Initialize(newObjectColor, GetColor(newObjectColor), MaximObject::_Speed);
 
 		UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(newObject);
 
@@ -113,7 +113,7 @@ bool MaximGameSystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTR
 	//Update the positions of the particles.
 	for (ParticleSystemEntity *const RESTRICT particles : _Particles)
 	{
-		particles->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
+		particles->Move(Vector3(0.0f, -MaximObject::_Speed * context->_DeltaTime, 0.0f));
 
 		while (particles->GetPosition()._Y <= -25.0f)
 		{

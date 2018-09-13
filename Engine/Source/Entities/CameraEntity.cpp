@@ -43,7 +43,7 @@ float CameraEntity::GetFarPlane() const NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-NO_DISCARD RESTRICTED Vector3 *const RESTRICT CameraEntity::GetPositionInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3 *const RESTRICT CameraEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
 	return &ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._Position;
@@ -52,7 +52,7 @@ NO_DISCARD RESTRICTED Vector3 *const RESTRICT CameraEntity::GetPositionInternal(
 /*
 *	Returns the rotation of this entity.
 */
-NO_DISCARD RESTRICTED Vector3 *const RESTRICT CameraEntity::GetRotationInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3 *const RESTRICT CameraEntity::GetRotationInternal() NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return &ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._Rotation;

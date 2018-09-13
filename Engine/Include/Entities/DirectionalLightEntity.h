@@ -31,6 +31,6 @@ protected:
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	NO_DISCARD RESTRICTED Vector3 *const RESTRICT GetRotationInternal() NOEXCEPT final override;
+	RESTRICTED NO_DISCARD Vector3 *const RESTRICT GetRotationInternal() NOEXCEPT final override;
 
 };

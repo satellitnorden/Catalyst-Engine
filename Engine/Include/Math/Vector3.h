@@ -29,7 +29,7 @@ public:
 	/*
 	*	Returns the absolute value of the Vector3 passed in.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static Vector3 Absolute(const Vector3 &vector) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 Absolute(const Vector3 &vector) NOEXCEPT
 	{
 		return Vector3(CatalystBaseMath::Absolute(vector._X), CatalystBaseMath::Absolute(vector._Y), CatalystBaseMath::Absolute(vector._Z));
 	}
@@ -37,7 +37,7 @@ public:
 	/*
 	*	Returns the dot product of two vectors.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static float DotProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float DotProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
 	{
 		return firstVector._X * secondVector._X + firstVector._Y * secondVector._Y + firstVector._Z * secondVector._Z;
 	}
@@ -45,7 +45,7 @@ public:
 	/*
 	*	Returns the cross product of two vectors.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static Vector3 CrossProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 CrossProduct(const Vector3 &firstVector, const Vector3 &secondVector) NOEXCEPT
 	{
 		return Vector3{ firstVector._Y * secondVector._Z - firstVector._Z * secondVector._Y, firstVector._Z * secondVector._X - firstVector._X * secondVector._Z, firstVector._X * secondVector._Y - firstVector._Y * secondVector._X };
 	}
@@ -53,7 +53,7 @@ public:
 	/*
 	*	Given a vector, return it's length.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static float Length(const Vector3 &vector) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float Length(const Vector3 &vector) NOEXCEPT
 	{
 		return CatalystBaseMath::SquareRoot(LengthSquared(vector));
 	}
@@ -61,7 +61,7 @@ public:
 	/*
 	*	Given a vector, return it's length squared.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static float LengthSquared(const Vector3 &vector) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float LengthSquared(const Vector3 &vector) NOEXCEPT
 	{
 		return vector._X * vector._X + vector._Y * vector._Y + vector._Z * vector._Z;
 	}
@@ -69,7 +69,7 @@ public:
 	/*
 	*	Given a vector, return it's length squared only taking into account the X and Y axis.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static float LengthSquaredXY(const Vector3 &vector) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float LengthSquaredXY(const Vector3 &vector) NOEXCEPT
 	{
 		return vector._X * vector._X + vector._Y * vector._Y;
 	}
@@ -77,7 +77,7 @@ public:
 	/*
 	*	Given a vector, return it's length squared only taking into account the X and Y axis.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static float LengthSquaredXZ(const Vector3 &vector) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float LengthSquaredXZ(const Vector3 &vector) NOEXCEPT
 	{
 		return vector._X * vector._X + vector._Z * vector._Z;
 	}
@@ -85,7 +85,7 @@ public:
 	/*
 	*	Given a vector, return it's length squared only taking into account the X and Y axis.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static float LengthSquaredYZ(const Vector3 &vector) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float LengthSquaredYZ(const Vector3 &vector) NOEXCEPT
 	{
 		return vector._Y * vector._Y + vector._Z * vector._Z;
 	}
@@ -93,7 +93,7 @@ public:
 	/*
 	*	Linearly interpolate between two float vectors.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static Vector3 LinearlyInterpolate(const Vector3 &first, const Vector3 &second, const float alpha) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 LinearlyInterpolate(const Vector3 &first, const Vector3 &second, const float alpha) NOEXCEPT
 	{
 		return Vector3(CatalystBaseMath::LinearlyInterpolate(first._X, second._X, alpha), CatalystBaseMath::LinearlyInterpolate(first._Y, second._Y, alpha), CatalystBaseMath::LinearlyInterpolate(first._Z, second._Z, alpha));
 	}
@@ -101,7 +101,7 @@ public:
 	/*
 	*	Given a vector, return it's unit vector counterpart.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static Vector3 Normalize(const Vector3 &vector) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector3 Normalize(const Vector3 &vector) NOEXCEPT
 	{
 		return vector.Normalized();
 	}
@@ -179,7 +179,7 @@ public:
 	/*
 	*	Vector3 by scalar addition operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector3 operator+(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 operator+(const float scalar) const NOEXCEPT
 	{
 		return Vector3{ _X + scalar, _Y + scalar, _Z + scalar };
 	}
@@ -197,7 +197,7 @@ public:
 	/*
 	*	Vector3 by scalar subtraction operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector3 operator-(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 operator-(const float scalar) const NOEXCEPT
 	{
 		return Vector3{ _X - scalar, _Y - scalar, _Z - scalar };
 	}
@@ -215,7 +215,7 @@ public:
 	/*
 	*	Vector3 by scalar multiplication operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector3 operator*(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 operator*(const float scalar) const NOEXCEPT
 	{
 		return Vector3{ _X * scalar, _Y * scalar, _Z * scalar };
 	}
@@ -233,7 +233,7 @@ public:
 	/*
 	*	Vector3 by scalar division operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector3 operator/(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 operator/(const float scalar) const NOEXCEPT
 	{
 		const float inverseScalar{ 1.0f / scalar };
 
@@ -255,7 +255,7 @@ public:
 	/*
 	*	Vector3 by Vector3 addition operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector3 operator+(const Vector3 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 operator+(const Vector3 &otherVector) const NOEXCEPT
 	{
 		return Vector3{ _X + otherVector._X, _Y + otherVector._Y, _Z + otherVector._Z };
 	}
@@ -273,7 +273,7 @@ public:
 	/*
 	*	Vector3 by Vector3 subtraction operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector3 operator-(const Vector3 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 operator-(const Vector3 &otherVector) const NOEXCEPT
 	{
 		return Vector3{ _X - otherVector._X, _Y - otherVector._Y, _Z - otherVector._Z };
 	}
@@ -291,7 +291,7 @@ public:
 	/*
 	*	Vector3 by Vector3 multiplication operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector3 operator*(const Vector3 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 operator*(const Vector3 &otherVector) const NOEXCEPT
 	{
 		return Vector3{ _X * otherVector._X, _Y * otherVector._Y, _Z * otherVector._Z };
 	}
@@ -309,7 +309,7 @@ public:
 	/*
 	*	Vector3 by Vector3 division operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector3 operator/(const Vector3 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 operator/(const Vector3 &otherVector) const NOEXCEPT
 	{ 
 		return Vector3{ _X / otherVector._X, _Y / otherVector._Y, _Z / otherVector._Z };
 	}
@@ -327,7 +327,7 @@ public:
 	/*
 	*	Returns a pointer to this vector's data, const.
 	*/
-	FORCE_INLINE NO_DISCARD RESTRICTED constexpr const float* const RESTRICT Data() const NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const float* const RESTRICT Data() const NOEXCEPT
 	{
 		return &_X;
 	}
@@ -335,7 +335,7 @@ public:
 	/*
 	*	Returns a pointer to this vector's data, non-const.
 	*/
-	FORCE_INLINE NO_DISCARD RESTRICTED constexpr float* RESTRICT Data() NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD float* RESTRICT Data() NOEXCEPT
 	{
 		return &_X;
 	}
@@ -343,7 +343,7 @@ public:
 	/*
 	*	Returns true if the vector is a unit vector, false otherwise.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr bool IsUnitVector() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD bool IsUnitVector() const NOEXCEPT
 	{
 		return LengthSquared() == 1.0f;
 	}
@@ -351,7 +351,7 @@ public:
 	/*
 	*	Returns the length of the vector.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr float Length() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD float Length() const NOEXCEPT
 	{
 		return CatalystBaseMath::SquareRoot(LengthSquared());
 	}
@@ -359,7 +359,7 @@ public:
 	/*
 	*	Returns the length of the vector squared.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr float LengthSquared() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD float LengthSquared() const NOEXCEPT
 	{
 		return (_X * _X) + (_Y * _Y) + (_Z * _Z);
 	}
@@ -380,7 +380,7 @@ public:
 	/*
 	*	Returns a normalized version of this vector.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector3 Normalized() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 Normalized() const NOEXCEPT
 	{
 		Vector3 copy{ *this };
 		copy.Normalize();
@@ -425,7 +425,7 @@ public:
 	/*
 	*	Returns a rotate copy of this vector.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector3 Rotated(const Vector3& rotationVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector3 Rotated(const Vector3& rotationVector) const NOEXCEPT
 	{
 		Vector3 copy{ *this };
 		copy.Rotate(rotationVector);

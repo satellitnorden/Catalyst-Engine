@@ -16,7 +16,7 @@ DynamicPhysicalEntity::DynamicPhysicalEntity() NOEXCEPT
 /*
 *	Returns the axis aligned bounding box for this dynamic physical entity in model space.
 */
-NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEntity::GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
 	//Return the axis aligned bounding box for this dynamic physical entity in model space.
 	return &ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[_ComponentsIndex]._ModelSpaceAxisAlignedBoundingBox;
@@ -25,7 +25,7 @@ NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEnti
 /*
 *	Returns the axis aligned bounding box for this dynamic physical entity in world space.
 */
-NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEntity::GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
 {
 	//Returns the axis aligned bounding box for this dynamic physical entity in world space.
 	return &ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[_ComponentsIndex]._WorldSpaceAxisAlignedBoundingBox;
@@ -34,7 +34,7 @@ NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEnti
 /*
 *	Returns the position of this entity.
 */
-NO_DISCARD RESTRICTED Vector3 *const RESTRICT DynamicPhysicalEntity::GetPositionInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3 *const RESTRICT DynamicPhysicalEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
 	return &ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Position;
@@ -43,7 +43,7 @@ NO_DISCARD RESTRICTED Vector3 *const RESTRICT DynamicPhysicalEntity::GetPosition
 /*
 *	Returns the rotation of this entity.
 */
-NO_DISCARD RESTRICTED Vector3 *const RESTRICT DynamicPhysicalEntity::GetRotationInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3 *const RESTRICT DynamicPhysicalEntity::GetRotationInternal() NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return &ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Rotation;
@@ -52,7 +52,7 @@ NO_DISCARD RESTRICTED Vector3 *const RESTRICT DynamicPhysicalEntity::GetRotation
 /*
 *	Returns the scale of this entity.
 */
-NO_DISCARD RESTRICTED Vector3 *const RESTRICT DynamicPhysicalEntity::GetScaleInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3 *const RESTRICT DynamicPhysicalEntity::GetScaleInternal() NOEXCEPT
 {
 	//Return the scale of this entity.
 	return &ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Scale;

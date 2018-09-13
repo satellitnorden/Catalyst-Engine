@@ -19,7 +19,7 @@ DirectionalLightEntity::DirectionalLightEntity() NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-NO_DISCARD RESTRICTED Vector3 *const RESTRICT DirectionalLightEntity::GetRotationInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3 *const RESTRICT DirectionalLightEntity::GetRotationInternal() NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return &ComponentManager::GetDirectionalLightDirectionalLightComponents()[_ComponentsIndex]._Rotation;

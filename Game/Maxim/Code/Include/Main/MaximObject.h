@@ -16,13 +16,15 @@ class MaximObject final : public Collection<MaximObject>, public Updateable
 
 public:
 
+	//The speed.
+	static float _Speed;
+
 	/*
 	*	Equal operator overload.
 	*/
 	bool operator==(const MaximObject &other)
 	{
-		return	_Speed == other._Speed
-				&& _Entity == other._Entity;
+		return _Entity == other._Entity;
 	}
 
 	/*
@@ -50,9 +52,6 @@ private:
 
 	//The color.
 	MaximColor _Color;
-
-	//The speed.
-	float _Speed;
 
 	//The entity.
 	DynamicPhysicalEntity *RESTRICT _Entity;

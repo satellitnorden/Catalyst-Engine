@@ -45,7 +45,7 @@ public:
 	/*
 	*	Returns the current gamepad state.
 	*/
-	NO_DISCARD RESTRICTED const GamepadState *const RESTRICT GetGamepadState(const uint8 index = 0) const NOEXCEPT
+	RESTRICTED NO_DISCARD const GamepadState *const RESTRICT GetGamepadState(const uint8 index = 0) const NOEXCEPT
 	{
 		return &_GamepadStates[index];
 	}
@@ -53,7 +53,7 @@ public:
 	/*
 	*	Returns the current keyboard state.
 	*/
-	NO_DISCARD RESTRICTED const KeyboardState *const RESTRICT GetKeyboardState() const NOEXCEPT
+	RESTRICTED NO_DISCARD const KeyboardState *const RESTRICT GetKeyboardState() const NOEXCEPT
 	{
 		return &_KeyboardState;
 	}

@@ -21,7 +21,7 @@ NO_DISCARD uint64 ComponentManager::GetNew ## ENTITY_CLASS ## ComponentsIndex(En
 																																\
 	return _ ## ENTITY_CLASS ## Entities.LastIndex();																			\
 }																																\
-NO_DISCARD RESTRICTED FIRST_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT	\
+RESTRICTED NO_DISCARD FIRST_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT	\
 {																																\
 	return _ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.Data();																	\
 }																																\
@@ -53,11 +53,11 @@ NO_DISCARD uint64 ComponentManager::GetNew ## ENTITY_CLASS ## ComponentsIndex(En
 																																	\
 	return _ ## ENTITY_CLASS ## Entities.LastIndex();																				\
 }																																	\
-NO_DISCARD RESTRICTED FIRST_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT		\
+RESTRICTED NO_DISCARD FIRST_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT		\
 {																																	\
 	return _ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.Data();																		\
 }																																	\
-NO_DISCARD RESTRICTED SECOND_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## SECOND_COMPONENT ## s() NOEXCEPT	\
+RESTRICTED NO_DISCARD SECOND_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## SECOND_COMPONENT ## s() NOEXCEPT	\
 {																																	\
 	return _ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.Data();																		\
 }																																	\
@@ -91,15 +91,15 @@ NO_DISCARD uint64 ComponentManager::GetNew ## ENTITY_CLASS ## ComponentsIndex(En
 																																	\
 	return _ ## ENTITY_CLASS ## Entities.LastIndex();																				\
 }																																	\
-NO_DISCARD RESTRICTED FIRST_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT		\
+RESTRICTED NO_DISCARD FIRST_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT		\
 {																																	\
 	return _ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.Data();																		\
 }																																	\
-NO_DISCARD RESTRICTED SECOND_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## SECOND_COMPONENT ## s() NOEXCEPT	\
+RESTRICTED NO_DISCARD SECOND_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## SECOND_COMPONENT ## s() NOEXCEPT	\
 {																																	\
 	return _ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.Data();																		\
 }																																	\
-NO_DISCARD RESTRICTED THIRD_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## THIRD_COMPONENT ## s() NOEXCEPT		\
+RESTRICTED NO_DISCARD THIRD_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## THIRD_COMPONENT ## s() NOEXCEPT		\
 {																																	\
 	return _ ## ENTITY_CLASS ## THIRD_COMPONENT ## s.Data();																		\
 }																																	\
@@ -136,19 +136,19 @@ NO_DISCARD uint64 ComponentManager::GetNew ## ENTITY_CLASS ## ComponentsIndex(En
 																																		\
 	return _ ## ENTITY_CLASS ## Entities.LastIndex();																					\
 }																																		\
-NO_DISCARD RESTRICTED FIRST_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT			\
+RESTRICTED NO_DISCARD FIRST_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT			\
 {																																		\
 	return _ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.Data();																			\
 }																																		\
-NO_DISCARD RESTRICTED SECOND_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## SECOND_COMPONENT ## s() NOEXCEPT		\
+RESTRICTED NO_DISCARD SECOND_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## SECOND_COMPONENT ## s() NOEXCEPT		\
 {																																		\
 	return _ ## ENTITY_CLASS ## SECOND_COMPONENT ## s.Data();																			\
 }																																		\
-NO_DISCARD RESTRICTED THIRD_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## THIRD_COMPONENT ## s() NOEXCEPT			\
+RESTRICTED NO_DISCARD THIRD_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## THIRD_COMPONENT ## s() NOEXCEPT			\
 {																																		\
 	return _ ## ENTITY_CLASS ## THIRD_COMPONENT ## s.Data();																			\
 }																																		\
-NO_DISCARD RESTRICTED FOURTH_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## FOURTH_COMPONENT ## s() NOEXCEPT		\
+RESTRICTED NO_DISCARD FOURTH_COMPONENT *const RESTRICT ComponentManager::Get ## ENTITY_CLASS ## FOURTH_COMPONENT ## s() NOEXCEPT		\
 {																																		\
 	return _ ## ENTITY_CLASS ## FOURTH_COMPONENT ## s.Data();																			\
 }																																		\

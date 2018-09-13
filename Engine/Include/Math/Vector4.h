@@ -26,7 +26,7 @@ public:
 	/*
 	*	Linearly interpolate between two Vector4 values.
 	*/
-	NO_DISCARD constexpr static Vector4 LinearlyInterpolate(const Vector4 &valueA, const Vector4 &valueB, const float alpha) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD Vector4 LinearlyInterpolate(const Vector4 &valueA, const Vector4 &valueB, const float alpha) NOEXCEPT
 	{
 		return (valueA * (1.0f - alpha)) + (valueB * alpha);
 	}
@@ -100,7 +100,7 @@ public:
 	/*
 	*	Vector4 by scalar addition operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector4 operator+(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector4 operator+(const float scalar) const NOEXCEPT
 	{
 		return Vector4{ _X + scalar, _Y + scalar, _Z + scalar, _W + scalar };
 	}
@@ -119,7 +119,7 @@ public:
 	/*
 	*	Vector4 by scalar subtraction operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector4 operator-(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector4 operator-(const float scalar) const NOEXCEPT
 	{
 		return Vector4{ _X - scalar, _Y - scalar, _Z - scalar, _W - scalar };
 	}
@@ -138,7 +138,7 @@ public:
 	/*
 	*	Vector4 by scalar multiplication operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector4 operator*(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector4 operator*(const float scalar) const NOEXCEPT
 	{
 		return Vector4{ _X * scalar, _Y * scalar, _Z * scalar, _W * scalar };
 	}
@@ -157,7 +157,7 @@ public:
 	/*
 	*	Vector4 by scalar division operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector4 operator/(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector4 operator/(const float scalar) const NOEXCEPT
 	{
 		const float inverseScalar{ 1.0f / scalar };
 
@@ -180,7 +180,7 @@ public:
 	/*
 	*	Vector4 by Vector4 addition operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector4 operator+(const Vector4 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector4 operator+(const Vector4 &otherVector) const NOEXCEPT
 	{
 		return Vector4{ _X + otherVector._X, _Y + otherVector._Y, _Z + otherVector._Z, _W + otherVector._W };
 	}
@@ -199,7 +199,7 @@ public:
 	/*
 	*	Vector4 by Vector4 subtraction operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector4 operator-(const Vector4 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector4 operator-(const Vector4 &otherVector) const NOEXCEPT
 	{
 		return Vector4{ _X - otherVector._X, _Y - otherVector._Y, _Z - otherVector._Z, _W - otherVector._W };
 	}
@@ -218,7 +218,7 @@ public:
 	/*
 	*	Vector4 by Vector4 multiplication operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector4 operator*(const Vector4 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector4 operator*(const Vector4 &otherVector) const NOEXCEPT
 	{
 		return Vector4{ _X * otherVector._X, _Y * otherVector._Y, _Z * otherVector._Z, _W * otherVector._W };
 	}
@@ -237,7 +237,7 @@ public:
 	/*
 	*	Vector4 by Vector4 division operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector4 operator/(const Vector4 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector4 operator/(const Vector4 &otherVector) const NOEXCEPT
 	{
 		return Vector4{ _X / otherVector._X, _Y / otherVector._Y, _Z / otherVector._Z, _W / otherVector._W };
 	}
@@ -256,7 +256,7 @@ public:
 	/*
 	*	Returns the length of the vector.
 	*/
-	constexpr float Length() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD float Length() const NOEXCEPT
 	{
 		return CatalystBaseMath::SquareRoot(LengthSquared());
 	}
@@ -264,7 +264,7 @@ public:
 	/*
 	*	Returns the length of the vector squared.
 	*/
-	constexpr float LengthSquared() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD float LengthSquared() const NOEXCEPT
 	{
 		return (_X * _X) + (_Y * _Y) + (_Z * _Z) + (_W * _W);
 	}
@@ -272,7 +272,7 @@ public:
 	/*
 	*	Returns the length of the X, Y and Z components of the vector.
 	*/
-	constexpr float LengthXYZ() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD float LengthXYZ() const NOEXCEPT
 	{
 		return CatalystBaseMath::SquareRoot((_X * _X) + (_Y * _Y) + (_Z * _Z));
 	}
@@ -280,7 +280,7 @@ public:
 	/*
 	*	Normalizes the vector.
 	*/
-	constexpr void Normalize() NOEXCEPT
+	FORCE_INLINE constexpr void Normalize() NOEXCEPT
 	{
 		const float length{ Length() };
 		const float inverseLength{ 1.0f / length };

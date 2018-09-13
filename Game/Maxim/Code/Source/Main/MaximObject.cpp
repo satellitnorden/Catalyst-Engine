@@ -20,6 +20,9 @@
 //Maxim.
 #include <Main/MaximGameSystem.h>
 
+//Static variable definitions.
+float MaximObject::_Speed = 1.0f;
+
 /*
 *	Initializes this Maxim object.
 */

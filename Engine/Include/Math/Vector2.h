@@ -20,7 +20,7 @@ public:
 	/*
 	*	Given a vector, return it's length.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static float Length(const Vector2 &vector) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float Length(const Vector2 &vector) NOEXCEPT
 	{
 		return CatalystBaseMath::SquareRoot(vector._X * vector._X + vector._Y * vector._Y);
 	}
@@ -28,7 +28,7 @@ public:
 	/*
 	*	Given a vector, return it's length squared.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr static float LengthSquared(const Vector2 &vector) NOEXCEPT 
+	FORCE_INLINE constexpr static NO_DISCARD float LengthSquared(const Vector2 &vector) NOEXCEPT
 	{
 		return vector._X * vector._X + vector._Y * vector._Y;
 	}
@@ -58,7 +58,7 @@ public:
 	/*
 	*	Vector2 by scalar addition operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector2 operator+(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector2 operator+(const float scalar) const NOEXCEPT
 	{
 		return Vector2(_X + scalar, _Y + scalar);
 	}
@@ -75,7 +75,7 @@ public:
 	/*
 	*	Vector2 by scalar subtraction operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector2 operator-(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector2 operator-(const float scalar) const NOEXCEPT
 	{
 		return Vector2(_X - scalar, _Y - scalar);
 	}
@@ -92,7 +92,7 @@ public:
 	/*
 	*	Vector2 by scalar multiplication operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector2 operator*(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector2 operator*(const float scalar) const NOEXCEPT
 	{
 		return Vector2(_X * scalar, _Y * scalar);
 	}
@@ -109,7 +109,7 @@ public:
 	/*
 	*	Vector2 by scalar division operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector2 operator/(const float scalar) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector2 operator/(const float scalar) const NOEXCEPT
 	{
 		const float inverseScalar{ 1.0f / scalar };
 
@@ -130,7 +130,7 @@ public:
 	/*
 	*	Vector2 by Vector2 addition operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector2 operator+(const Vector2 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector2 operator+(const Vector2 &otherVector) const NOEXCEPT
 	{
 		return Vector2(_X + otherVector._X, _Y + otherVector._Y);
 	}
@@ -147,7 +147,7 @@ public:
 	/*
 	*	Vector2 by Vector2 subtraction operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector2 operator-(const Vector2 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector2 operator-(const Vector2 &otherVector) const NOEXCEPT
 	{
 		return Vector2(_X - otherVector._X, _Y - otherVector._Y);
 	}
@@ -164,7 +164,7 @@ public:
 	/*
 	*	Vector2 by Vector2 multiplication operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector2 operator*(const Vector2 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector2 operator*(const Vector2 &otherVector) const NOEXCEPT
 	{
 		return Vector2(_X * otherVector._X, _Y * otherVector._Y);
 	}
@@ -181,7 +181,7 @@ public:
 	/*
 	*	Vector2 by Vector2 division operator overload.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr Vector2 operator/(const Vector2 &otherVector) const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD Vector2 operator/(const Vector2 &otherVector) const NOEXCEPT
 	{
 		return Vector2(_X / otherVector._X, _Y / otherVector._Y);
 	}
@@ -198,7 +198,7 @@ public:
 	/*
 	*	Returns a pointer to this vector's data, const.
 	*/
-	FORCE_INLINE NO_DISCARD RESTRICTED constexpr const float* const RESTRICT Data() const NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const float* const RESTRICT Data() const NOEXCEPT
 	{
 		return &_X;
 	}
@@ -206,7 +206,7 @@ public:
 	/*
 	*	Returns a pointer to this vector's data, non-const.
 	*/
-	FORCE_INLINE NO_DISCARD RESTRICTED constexpr float* RESTRICT Data() NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD float* RESTRICT Data() NOEXCEPT
 	{
 		return &_X;
 	}
@@ -214,7 +214,7 @@ public:
 	/*
 	*	Returns the length of the vector.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr float Length() const NOEXCEPT 
+	FORCE_INLINE constexpr NO_DISCARD float Length() const NOEXCEPT
 	{
 		return CatalystBaseMath::SquareRoot(LengthSquared());
 	}
@@ -222,7 +222,7 @@ public:
 	/*
 	*	Returns the length of the vector squared.
 	*/
-	FORCE_INLINE NO_DISCARD constexpr float LengthSquared() const NOEXCEPT
+	FORCE_INLINE constexpr NO_DISCARD float LengthSquared() const NOEXCEPT
 	{
 		return (_X * _X) + (_Y * _Y);
 	}

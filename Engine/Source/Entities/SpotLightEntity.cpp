@@ -16,7 +16,7 @@ SpotLightEntity::SpotLightEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-NO_DISCARD RESTRICTED Vector3 *const RESTRICT SpotLightEntity::GetPositionInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3 *const RESTRICT SpotLightEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
 	return &ComponentManager::GetSpotLightSpotLightComponents()[_ComponentsIndex]._Position;
@@ -25,7 +25,7 @@ NO_DISCARD RESTRICTED Vector3 *const RESTRICT SpotLightEntity::GetPositionIntern
 /*
 *	Returns the rotation of this entity.
 */
-NO_DISCARD RESTRICTED Vector3 *const RESTRICT SpotLightEntity::GetRotationInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3 *const RESTRICT SpotLightEntity::GetRotationInternal() NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return &ComponentManager::GetSpotLightSpotLightComponents()[_ComponentsIndex]._Rotation;

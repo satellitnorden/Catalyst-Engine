@@ -137,7 +137,7 @@ public:
 	/*
 	*	Returns the axis aligned bounding box for this entity in model space.
 	*/
-	virtual NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
+	virtual RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
 	{
 		return nullptr;
 	}
@@ -145,7 +145,7 @@ public:
 	/*
 	*	Returns the axis aligned bounding box for this entity in world space.
 	*/
-	virtual NO_DISCARD RESTRICTED AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+	virtual RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
 	{
 		return nullptr;
 	}
@@ -179,7 +179,7 @@ protected:
 	/*
 	*	Returns the position of this entity.
 	*/
-	NO_DISCARD RESTRICTED virtual Vector3 *const RESTRICT GetPositionInternal() NOEXCEPT
+	RESTRICTED virtual NO_DISCARD Vector3 *const RESTRICT GetPositionInternal() NOEXCEPT
 	{
 		return nullptr;
 	}
@@ -187,7 +187,7 @@ protected:
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	NO_DISCARD RESTRICTED virtual Vector3 *const RESTRICT GetRotationInternal() NOEXCEPT
+	RESTRICTED virtual NO_DISCARD Vector3 *const RESTRICT GetRotationInternal() NOEXCEPT
 	{
 		return nullptr;
 	}
@@ -195,7 +195,7 @@ protected:
 	/*
 	*	Returns the scale of this entity.
 	*/
-	NO_DISCARD RESTRICTED virtual Vector3 *const RESTRICT GetScaleInternal() NOEXCEPT
+	RESTRICTED virtual NO_DISCARD Vector3 *const RESTRICT GetScaleInternal() NOEXCEPT
 	{
 		return nullptr;
 	}
