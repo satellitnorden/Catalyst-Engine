@@ -7,6 +7,7 @@
 #include <Math/Vector3.h>
 
 //Rendering.
+#include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 
 class DynamicPhysicalInitializationData final
@@ -19,6 +20,9 @@ public:
 
 	//The model.
 	PhysicalModel _Model;
+
+	//The model.
+	PhysicalMaterial _Material;
 
 	//The position.
 	Vector3 _Position;

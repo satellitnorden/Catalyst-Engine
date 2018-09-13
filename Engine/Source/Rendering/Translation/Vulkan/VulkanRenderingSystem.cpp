@@ -242,22 +242,8 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT
 {
 	//Cache relevant data.
-	const PhysicalMaterial &material = model._Material;
+	const PhysicalMaterial material{ RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red) };
 	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalInstancedPhysicalRenderComponents()[entity.GetComponentsIndex()] };
-
-	//Allocate the descriptor set.
-	renderComponent._RenderDataTable = VulkanInterface::Instance->CreateDescriptorSet(_DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Physical)]);
-	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent._RenderDataTable) };
-
-	//Update the write descriptor sets.
-	StaticArray<VkWriteDescriptorSet, 3> writeDescriptorSets
-	{
-		static_cast<const Vulkan2DTexture *RESTRICT>(material._AlbedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1),
-		static_cast<const Vulkan2DTexture *RESTRICT>(material._NormalMapTexture)->GetWriteDescriptorSet(newDescriptorSet, 2),
-		static_cast<const Vulkan2DTexture *RESTRICT>(material._MaterialPropertiesTexture)->GetWriteDescriptorSet(newDescriptorSet, 3)
-	};
-
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 
 	//Create the transformations buffer.
 	const void *RESTRICT transformationsData[]{ transformations.Data() };
@@ -266,6 +252,7 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 
 	//Fill the instanced physical entity components with the relevant data.
 	renderComponent._ModelBuffer = model._Buffer;
+	renderComponent._RenderDataTable = material._RenderDataTable;
 	renderComponent._TransformationsBuffer = reinterpret_cast<ConstantBufferHandle>(transformationsBuffer->Get());
 	renderComponent._IndexOffset = model._IndexOffset;
 	renderComponent._IndexCount = model._IndexCount;

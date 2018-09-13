@@ -509,7 +509,7 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 	//Initialize the physical render component.
 	physicalRenderComponent._PhysicalFlags = data->_PhysicalFlags;
 	physicalRenderComponent._IsInViewFrustum = true;
-	physicalRenderComponent._RenderDataTable = data->_Model._Material._RenderDataTable;
+	physicalRenderComponent._RenderDataTable = data->_Material._RenderDataTable;
 	physicalRenderComponent._Buffer = data->_Model._Buffer;
 	physicalRenderComponent._IndexOffset = data->_Model._IndexOffset;
 	physicalRenderComponent._IndexCount = data->_Model._IndexCount;

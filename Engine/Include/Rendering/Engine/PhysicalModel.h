@@ -5,7 +5,6 @@
 
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>
-#include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/RenderingCore.h>
 
 class PhysicalModel final
@@ -13,10 +12,7 @@ class PhysicalModel final
 
 public:
 
-	//The material.
-	PhysicalMaterial _Material;
-
-	//The axis aligned bounding box of this physical model.
+	//The model space axis-aligned bounding box of this physical model.
 	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
 
 	//The buffer.
@@ -44,7 +40,6 @@ public:
 		_AxisAlignedBoundingBox(otherPhysicalModel._AxisAlignedBoundingBox),
 		_Buffer(otherPhysicalModel._Buffer),
 		_IndexOffset(otherPhysicalModel._IndexOffset),
-		_Material(otherPhysicalModel._Material),
 		_IndexCount(otherPhysicalModel._IndexCount)
 	{
 

@@ -16,6 +16,7 @@
 #include <Rendering/Engine/OceanMaterial.h>
 #endif
 #include <Rendering/Engine/ParticleMaterial.h>
+#include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/RenderingCore.h>
 #include <Rendering/Engine/Resolution.h>
