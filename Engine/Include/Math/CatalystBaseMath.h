@@ -131,7 +131,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD uint64 Factorial(const uint8 number) NOEXCEPT
 	{
-		return number != 0 ? number * Factorial(number - 1) : 1;
+		return number != static_cast<uint8>(0) ? number * Factorial(number - static_cast<uint8>(1)) : static_cast<uint8>(1);
 	}
 
 	/*
