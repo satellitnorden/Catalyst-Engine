@@ -18,9 +18,9 @@
 DEFINE_SINGLETON(EntitySystem);
 
 /*
-*	Updates the entity system synchronously.
+*	Updates the entity system synchronously during the closing update phase.
 */
-void EntitySystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void EntitySystem::ClosingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Initialize entities.
 	InitializeEntities();

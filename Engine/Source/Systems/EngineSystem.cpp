@@ -79,7 +79,6 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	*/
 	_CurrentUpdatePhase = UpdatePhase::LogicUpdate;
 	UpdateSystem::Instance->PreLogicUpdateSystemSynchronous(&context);
-	EntitySystem::Instance->UpdateSystemSynchronous(&context);
 	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
 	UpdateSystem::Instance->PostLogicUpdateSystemSynchronous(&context);
 
@@ -107,6 +106,7 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	*/
 	_CurrentUpdatePhase = UpdatePhase::ClosingUpdate;
 	UpdateSystem::Instance->PreClosingUpdateSystemSynchronous(&context);
+	EntitySystem::Instance->ClosingUpdateSystemSynchronous(&context);
 #if !defined(CATALYST_FINAL)
 	DebugRenderingSystem::Instance->ClosingUpdateSystemSynchronous(&context);
 #endif

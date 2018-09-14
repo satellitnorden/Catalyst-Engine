@@ -36,9 +36,9 @@ public:
 	}
 
 	/*
-	*	Updates the entity system synchronously.
+	*	Updates the entity system synchronously during the closing update phase.
 	*/
-	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void ClosingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Releases the entity system.
