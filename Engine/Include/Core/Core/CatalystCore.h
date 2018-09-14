@@ -26,6 +26,7 @@ enum class UpdatePhase : uint8
 {
 	OpeningUpdate,
 	LogicUpdate,
-	RenderUpdate,
+	PhysicsUpdate,
+	RenderingUpdate,
 	ClosingUpdate
 };

@@ -61,7 +61,8 @@ public:
 	//Declare the update system phases.
 	DECLARE_UPDATE_SYSTEM_PHASE(OpeningUpdate);
 	DECLARE_UPDATE_SYSTEM_PHASE(LogicUpdate);
-	DECLARE_UPDATE_SYSTEM_PHASE(RenderUpdate);
+	DECLARE_UPDATE_SYSTEM_PHASE(PhysicsUpdate);
+	DECLARE_UPDATE_SYSTEM_PHASE(RenderingUpdate);
 	DECLARE_UPDATE_SYSTEM_PHASE(ClosingUpdate);
 
 };

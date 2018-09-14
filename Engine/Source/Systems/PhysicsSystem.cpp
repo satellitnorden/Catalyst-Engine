@@ -18,9 +18,9 @@
 DEFINE_SINGLETON(PhysicsSystem);
 
 /*
-*	Updates the physics system synchronously.
+*	Updates the physics system synchronously during the physics update phase.
 */
-void PhysicsSystem::UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void PhysicsSystem::PhysicsUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	
 }

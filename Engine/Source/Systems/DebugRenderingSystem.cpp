@@ -18,9 +18,9 @@
 DEFINE_SINGLETON(DebugRenderingSystem);
 
 /*
-*	Updates the debug rendering system synchronously during the opening update phase.
+*	Updates the debug rendering system synchronously during the rendering update phase.
 */
-void DebugRenderingSystem::RenderUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void DebugRenderingSystem::RenderingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Sort the axis-aligned bounding box debug rendering data.
 	if (_AxisAlignedBoundingBoxDebugRenderData.Size() > 1)

@@ -22,9 +22,9 @@ public:
 	PhysicsSystem() NOEXCEPT { }
 
 	/*
-	*	Updates the physics system synchronously.
+	*	Updates the physics system synchronously during the physics update phase.
 	*/
-	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void PhysicsUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Returns the wind strength.

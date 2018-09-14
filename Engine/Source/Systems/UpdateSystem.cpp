@@ -81,5 +81,6 @@ void UpdateSystem::RegisterAsynchronous ## PHASE ## (Updateable *const RESTRICT 
 //Define the update system phases.
 DEFINE_UPDATE_SYSTEM_PHASE(OpeningUpdate);
 DEFINE_UPDATE_SYSTEM_PHASE(LogicUpdate);
-DEFINE_UPDATE_SYSTEM_PHASE(RenderUpdate);
+DEFINE_UPDATE_SYSTEM_PHASE(PhysicsUpdate);
+DEFINE_UPDATE_SYSTEM_PHASE(RenderingUpdate);
 DEFINE_UPDATE_SYSTEM_PHASE(ClosingUpdate);

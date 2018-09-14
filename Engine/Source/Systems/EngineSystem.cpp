@@ -80,21 +80,27 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	_CurrentUpdatePhase = UpdatePhase::LogicUpdate;
 	UpdateSystem::Instance->PreLogicUpdateSystemSynchronous(&context);
 	EntitySystem::Instance->UpdateSystemSynchronous(&context);
-	PhysicsSystem::Instance->UpdateSystemSynchronous(&context);
 	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
-	RenderingSystem::Instance->UpdateSystemSynchronous(&context);
 	UpdateSystem::Instance->PostLogicUpdateSystemSynchronous(&context);
 
 	/*
-	*	Render update phase.
+	*	Physics update phase.
 	*/
-	_CurrentUpdatePhase = UpdatePhase::RenderUpdate;
-	UpdateSystem::Instance->PreRenderUpdateSystemSynchronous(&context);
+	_CurrentUpdatePhase = UpdatePhase::PhysicsUpdate;
+	UpdateSystem::Instance->PrePhysicsUpdateSystemSynchronous(&context);
+	PhysicsSystem::Instance->PhysicsUpdateSystemSynchronous(&context);
+	UpdateSystem::Instance->PostPhysicsUpdateSystemSynchronous(&context);
+
+	/*
+	*	Rendering update phase.
+	*/
+	_CurrentUpdatePhase = UpdatePhase::RenderingUpdate;
+	UpdateSystem::Instance->PreRenderingUpdateSystemSynchronous(&context);
 #if !defined(CATALYST_FINAL)
-	DebugRenderingSystem::Instance->RenderUpdateSystemSynchronous(&context);
+	DebugRenderingSystem::Instance->RenderingUpdateSystemSynchronous(&context);
 #endif
-	RenderingSystem::Instance->RenderUpdateSystemSynchronous(&context);
-	UpdateSystem::Instance->PostRenderUpdateSystemSynchronous(&context);
+	RenderingSystem::Instance->RenderingUpdateSystemSynchronous(&context);
+	UpdateSystem::Instance->PostRenderingUpdateSystemSynchronous(&context);
 
 	/*
 	*	Closing update phase.

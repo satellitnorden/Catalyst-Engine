@@ -67,9 +67,9 @@ public:
 	}
 
 	/*
-	*	Updates the debug rendering system synchronously during the render update phase.
+	*	Updates the debug rendering system synchronously during the rendering update phase.
 	*/
-	void RenderUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void RenderingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Updates the debug rendering system synchronously during the closing update phase.

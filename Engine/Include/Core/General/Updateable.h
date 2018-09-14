@@ -48,12 +48,23 @@ public:
 	}
 
 	/*
-	*	Updates this updateable synchronously during the opening render update phase.
+	*	Updates this updateable synchronously during the opening physics update phase.
 	*	Should return whether or not this updateable should continue to be updated.
 	*/
-	virtual bool RenderUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	virtual bool PhysicsUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 	{
-		ASSERT(false, "RenderUpdateSynchronous called on updateable that has not overriden this function.");
+		ASSERT(false, "PhysicsUpdateSynchronous called on updateable that has not overriden this function.");
+
+		return false;
+	}
+
+	/*
+	*	Updates this updateable synchronously during the opening rendering update phase.
+	*	Should return whether or not this updateable should continue to be updated.
+	*/
+	virtual bool RenderingUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	{
+		ASSERT(false, "RenderingUpdateSynchronous called on updateable that has not overriden this function.");
 
 		return false;
 	}
@@ -92,12 +103,23 @@ public:
 	}
 
 	/*
-	*	Updates this updateable asynchronously during the render update phase.
+	*	Updates this updateable asynchronously during the physics update phase.
 	*	Should return whether or not this updateable should continue to be updated.
 	*/
-	virtual bool RenderUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	virtual bool PhysicsUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 	{
-		ASSERT(false, "RenderUpdateAsynchronous called on updateable that has not overriden this function.");
+		ASSERT(false, "PhysicsUpdateAsynchronous called on updateable that has not overriden this function.");
+
+		return false;
+	}
+
+	/*
+	*	Updates this updateable asynchronously during the rendering update phase.
+	*	Should return whether or not this updateable should continue to be updated.
+	*/
+	virtual bool RenderingUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	{
+		ASSERT(false, "RenderingUpdateAsynchronous called on updateable that has not overriden this function.");
 
 		return false;
 	}
