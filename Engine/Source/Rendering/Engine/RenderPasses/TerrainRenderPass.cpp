@@ -125,9 +125,6 @@ void TerrainRenderPass::RenderInternal() NOEXCEPT
 	//Bind the current dynamic uniform data render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
-	//Wait for the terrain level of detail to finish.
-	LevelOfDetailSystem::Instance->WaitForTerrainLevelOfDetail();
-
 	for (uint64 i = 0; i < numberOfTerrainEntityComponents; ++i, ++component)
 	{
 		if (!component->_IsInViewFrustum)

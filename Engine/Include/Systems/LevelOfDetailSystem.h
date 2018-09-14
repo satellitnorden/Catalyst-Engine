@@ -2,15 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
-#include <Core/Containers/StaticArray.h>
-#include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
-
-//Multithreading.
-#include <Multithreading/Task.h>
-
-//Rendering.
-#include <Rendering/Engine/RenderingCore.h>
 
 class LevelOfDetailSystem final
 {
@@ -24,73 +16,5 @@ public:
 	*	Default constructor.
 	*/
 	LevelOfDetailSystem() NOEXCEPT { }
-
-	/*
-	*	Initializes the level of detail system.
-	*/
-	void InitializeSystem() NOEXCEPT;
-
-	/*
-	*	Post-initializes the level of detail system.
-	*/
-	void PostInitializeSystem() NOEXCEPT;
-
-	/*
-	*	Updates the level of detail system synchronously.
-	*/
-	void UpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
-
-	/*
-	*	Waits for the terrain level of detail to finish.
-	*/
-	void WaitForTerrainLevelOfDetail() const NOEXCEPT;
-
-private:
-
-	//Enumeration covering all level of detail tasks.
-	enum class LevelOfDetailTask : uint8
-	{
-		Terrain,
-		NumberOfLevelOfDetailTasks
-	};
-
-	//Enumeration covering all terrain buffers.
-	enum class TerrainBuffer : uint8
-	{
-		TerrainBuffer_256x256,
-		TerrainBuffer_128x128,
-		TerrainBuffer_64x64,
-		TerrainBuffer_32x32,
-		TerrainBuffer_16x16,
-		TerrainBuffer_8x8,
-		NumberOfTerrainBuffers
-	};
-
-	//Container for all tasks.
-	StaticArray<Task, INDEX(LevelOfDetailTask::NumberOfLevelOfDetailTasks)> _Tasks;
-
-	//Container for all terrain buffers.
-	StaticArray<ConstantBufferHandle, INDEX(TerrainBuffer::NumberOfTerrainBuffers)> _TerrainBuffers;
-
-	//Container for all terrain buffer index offsets.
-	StaticArray<uint64, INDEX(TerrainBuffer::NumberOfTerrainBuffers)> _TerrainBufferIndexOffsets;
-
-	//Container for all terrain buffer index counts.
-	StaticArray<uint32, INDEX(TerrainBuffer::NumberOfTerrainBuffers)> _TerrainBufferIndexCounts;
-
-	/*
-	*	Initializes the level of detail tasks.
-	*/
-	void InitializeLevelOfDetailTasks() NOEXCEPT;
-
-	/*
-	*	Initializes the terrain buffers.
-	*/
-	void InitializeTerrainBuffers() NOEXCEPT;
-
-	/*
-	*	Calculates the level of detail for the terrain.
-	*/
-	void CaltulateTerrainLevelOfDetail() NOEXCEPT;
 
 };

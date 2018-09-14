@@ -34,12 +34,10 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 
 	//Initialize all systems.
 	InputSystem::Instance->InitializeSystem();
-	LevelOfDetailSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
 	TaskSystem::Instance->InitializeSystem();
 
 	//Post-initialize all systems.
-	LevelOfDetailSystem::Instance->PostInitializeSystem();
 	RenderingSystem::Instance->PostInitializeSystem();
 
 	//Post-initialize the platform.
@@ -79,7 +77,6 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	*/
 	_CurrentUpdatePhase = UpdatePhase::LogicUpdate;
 	UpdateSystem::Instance->PreLogicUpdateSystemSynchronous(&context);
-	LevelOfDetailSystem::Instance->UpdateSystemSynchronous(&context);
 	UpdateSystem::Instance->PostLogicUpdateSystemSynchronous(&context);
 
 	/*
