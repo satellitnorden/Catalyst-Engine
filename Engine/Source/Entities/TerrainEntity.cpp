@@ -13,7 +13,7 @@
 TerrainEntity::TerrainEntity() NOEXCEPT
 {
 	//Set the entity type.
-	_EntityType = EntityType::Terrain;
+	_Type = EntityType::Terrain;
 }
 
 /*

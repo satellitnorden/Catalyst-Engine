@@ -487,10 +487,10 @@ void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &veg
 void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT
 {
 	//Cache the components.
-	DynamicOutlineRenderComponent &outlineRenderComponent{ ComponentManager::GetDynamicPhysicalDynamicOutlineRenderComponents()[entity->GetComponentsIndex()] };
-	DynamicPhysicalRenderComponent &physicalRenderComponent{ ComponentManager::GetDynamicPhysicalDynamicPhysicalRenderComponents()[entity->GetComponentsIndex()] };
-	FrustumCullingComponent &cullingComponent{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[entity->GetComponentsIndex()] };
-	TransformComponent &transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents()[entity->GetComponentsIndex()] };
+	DynamicOutlineRenderComponent &outlineRenderComponent{ ComponentManager::GetDynamicPhysicalDynamicOutlineRenderComponents()[entity->_ComponentsIndex] };
+	DynamicPhysicalRenderComponent &physicalRenderComponent{ ComponentManager::GetDynamicPhysicalDynamicPhysicalRenderComponents()[entity->_ComponentsIndex] };
+	FrustumCullingComponent &cullingComponent{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents()[entity->_ComponentsIndex] };
+	TransformComponent &transformComponent{ ComponentManager::GetDynamicPhysicalTransformComponents()[entity->_ComponentsIndex] };
 
 	//Initialize the outline render component.
 	outlineRenderComponent._PhysicalFlags = data->_PhysicalFlags;
@@ -532,8 +532,8 @@ void RenderingSystem::InitializeTerrainEntity(const TerrainEntity *const RESTRIC
 void RenderingSystem::TerminateTerrainEntity(const TerrainEntity *const RESTRICT entity) const NOEXCEPT
 {
 	//Retrieve the component.
-	TerrainComponent &component{ ComponentManager::GetTerrainTerrainComponents()[entity->GetComponentsIndex()] };
-	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->GetComponentsIndex()] };
+	TerrainComponent &component{ ComponentManager::GetTerrainTerrainComponents()[entity->_ComponentsIndex] };
+	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->_ComponentsIndex] };
 
 	//Destroy the terrain entity's resources.
 	DestroyTexture2D(component._TerrainPropertiesTexture);

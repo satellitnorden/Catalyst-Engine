@@ -10,7 +10,7 @@
 DynamicPhysicalEntity::DynamicPhysicalEntity() NOEXCEPT
 {
 	//Set the entity type.
-	_EntityType = EntityType::DynamicPhysical;
+	_Type = EntityType::DynamicPhysical;
 }
 
 /*

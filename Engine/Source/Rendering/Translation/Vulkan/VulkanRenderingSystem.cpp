@@ -193,9 +193,9 @@ void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialD
 void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT
 {
 	//Fill the terrain entity components with the relevant data.
-	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetTerrainFrustumCullingComponents()[entity->GetComponentsIndex()] };
-	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainTerrainComponents()[entity->GetComponentsIndex()] };
-	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->GetComponentsIndex()] };
+	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetTerrainFrustumCullingComponents()[entity->_ComponentsIndex] };
+	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainTerrainComponents()[entity->_ComponentsIndex] };
+	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->_ComponentsIndex] };
 
 	frustumCullingComponent._ModelSpaceAxisAlignedBoundingBox = data->_AxisAlignedBoundingBox;
 
@@ -243,7 +243,7 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 {
 	//Cache relevant data.
 	const PhysicalMaterial material{ RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red) };
-	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalInstancedPhysicalRenderComponents()[entity.GetComponentsIndex()] };
+	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalInstancedPhysicalRenderComponents()[entity._ComponentsIndex] };
 
 	//Create the transformations buffer.
 	const void *RESTRICT transformationsData[]{ transformations.Data() };
@@ -265,8 +265,8 @@ void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhy
 void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) const NOEXCEPT
 {
 	//Get the components.
-	VegetationComponent &renderComponent{ ComponentManager::GetVegetationVegetationComponents()[entity.GetComponentsIndex()] };
-	VegetationCullingComponent &cullingComponent{ ComponentManager::GetVegetationVegetationCullingComponents()[entity.GetComponentsIndex()] };
+	VegetationComponent &renderComponent{ ComponentManager::GetVegetationVegetationComponents()[entity._ComponentsIndex] };
+	VegetationCullingComponent &cullingComponent{ ComponentManager::GetVegetationVegetationCullingComponents()[entity._ComponentsIndex] };
 
 	//Calculate the vegetation grid.
 	DynamicArray<VegetationTransformation> sortedTransformations;
@@ -311,8 +311,8 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties, const Vector3 &worldPosition) const NOEXCEPT
 {
 	//Cache relevant data.
-	ParticleSystemComponent &component{ ComponentManager::GetParticleSystemParticleSystemComponents()[entity.GetComponentsIndex()] };
-	ParticleSystemRenderComponent &renderComponent{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[entity.GetComponentsIndex()] };
+	ParticleSystemComponent &component{ ComponentManager::GetParticleSystemParticleSystemComponents()[entity._ComponentsIndex] };
+	ParticleSystemRenderComponent &renderComponent{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[entity._ComponentsIndex] };
 
 	//Create the uniform buffer.
 	VulkanUniformBuffer *const RESTRICT uniformBuffer{ VulkanInterface::Instance->CreateUniformBuffer(static_cast<VkDeviceSize>(sizeof(VulkanParticleSystemProperties))) };

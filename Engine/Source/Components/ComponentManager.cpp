@@ -27,7 +27,7 @@ RESTRICTED NO_DISCARD FIRST_COMPONENT *const RESTRICT ComponentManager::Get ## E
 }																																\
 void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT							\
 {																																\
-	_ ## ENTITY_CLASS ## Entities.Back()->SetComponentsIndex(componentsIndex);													\
+	_ ## ENTITY_CLASS ## Entities.Back()->_ComponentsIndex = componentsIndex;													\
 																																\
 	_ ## ENTITY_CLASS ## Entities.EraseAt(componentsIndex);																		\
 	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EraseAt(componentsIndex);															\
@@ -63,7 +63,7 @@ RESTRICTED NO_DISCARD SECOND_COMPONENT *const RESTRICT ComponentManager::Get ## 
 }																																	\
 void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT								\
 {																																	\
-	_ ## ENTITY_CLASS ## Entities.Back()->SetComponentsIndex(componentsIndex);														\
+	_ ## ENTITY_CLASS ## Entities.Back()->_ComponentsIndex = componentsIndex;														\
 																																	\
 	_ ## ENTITY_CLASS ## Entities.EraseAt(componentsIndex);																			\
 	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EraseAt(componentsIndex);																\
@@ -105,7 +105,7 @@ RESTRICTED NO_DISCARD THIRD_COMPONENT *const RESTRICT ComponentManager::Get ## E
 }																																	\
 void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT								\
 {																																	\
-	_ ## ENTITY_CLASS ## Entities.Back()->SetComponentsIndex(componentsIndex);														\
+	_ ## ENTITY_CLASS ## Entities.Back()->_ComponentsIndex = componentsIndex;														\
 																																	\
 	_ ## ENTITY_CLASS ## Entities.EraseAt(componentsIndex);																			\
 	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EraseAt(componentsIndex);																\
@@ -154,7 +154,7 @@ RESTRICTED NO_DISCARD FOURTH_COMPONENT *const RESTRICT ComponentManager::Get ## 
 }																																		\
 void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT									\
 {																																		\
-	_ ## ENTITY_CLASS ## Entities.Back()->SetComponentsIndex(componentsIndex);															\
+	_ ## ENTITY_CLASS ## Entities.Back()->_ComponentsIndex = componentsIndex;															\
 																																		\
 	_ ## ENTITY_CLASS ## Entities.EraseAt(componentsIndex);																				\
 	_ ## ENTITY_CLASS ## FIRST_COMPONENT ## s.EraseAt(componentsIndex);																	\

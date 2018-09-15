@@ -93,7 +93,7 @@ void MaximObject::Initialize(const MaximColor initialColor, const Vector3& initi
 */
 bool MaximObject::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	if (_Entity->IsInitialized())
+	if (_Entity->_Initialized)
 	{
 #if !defined(CATALYST_FINAL)
 		//Debug render the axis-aligned bounding box.

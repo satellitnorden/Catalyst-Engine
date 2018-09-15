@@ -140,7 +140,7 @@ void EntitySystem::InitializeEntities() NOEXCEPT
 */
 void EntitySystem::InitializeEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
-	switch (data->_Entity->GetEntityType())
+	switch (data->_Entity->_Type)
 	{
 		case Entity::EntityType::DynamicPhysical:
 		{
@@ -165,7 +165,7 @@ void EntitySystem::InitializeEntity(EntityInitializationData* const RESTRICT dat
 	}
 
 	//Set this entity to initialized.
-	data->_Entity->SetIsInitialized(true);
+	data->_Entity->_Initialized = true;
 }
 
 /*
@@ -174,7 +174,7 @@ void EntitySystem::InitializeEntity(EntityInitializationData* const RESTRICT dat
 void EntitySystem::InitializeDynamicPhysicalEntity(EntityInitializationData *const RESTRICT data) NOEXCEPT
 {
 	//Retrieve a new components index for the dynamic physical entity.
-	data->_Entity->SetComponentsIndex(ComponentManager::GetNewDynamicPhysicalComponentsIndex(data->_Entity));
+	data->_Entity->_ComponentsIndex = ComponentManager::GetNewDynamicPhysicalComponentsIndex(data->_Entity);
 
 	//Initialize the dynamic physical entity via the rendering system.
 	RenderingSystem::Instance->InitializeDynamicPhysicalEntity(data->_Entity, static_cast<const DynamicPhysicalInitializationData *const RESTRICT>(data->_Data));
@@ -189,7 +189,7 @@ void EntitySystem::InitializeDynamicPhysicalEntity(EntityInitializationData *con
 void EntitySystem::InitializeTerrainEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
 	//Retrieve a new components index for the terrain entity.
-	data->_Entity->SetComponentsIndex(ComponentManager::GetNewTerrainComponentsIndex(data->_Entity));
+	data->_Entity->_ComponentsIndex = ComponentManager::GetNewTerrainComponentsIndex(data->_Entity);
 
 	//Initialize the terrain entity via the rendering system.
 	RenderingSystem::Instance->InitializeTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(data->_Entity), static_cast<const TerrainInitializationData *const RESTRICT>(data->_Data));
@@ -246,7 +246,7 @@ void EntitySystem::TerminateEntities() NOEXCEPT
 */
 void EntitySystem::TerminateEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT
 {
-	switch (data->_Entity->GetEntityType())
+	switch (data->_Entity->_Type)
 	{
 		case Entity::EntityType::DynamicPhysical:
 		{
@@ -271,7 +271,7 @@ void EntitySystem::TerminateEntity(EntityTerminationData* const RESTRICT data) N
 	}
 
 	//Set this entity to un-initialized.
-	data->_Entity->SetIsInitialized(false);
+	data->_Entity->_Initialized = false;
 }
 
 /*
@@ -280,7 +280,7 @@ void EntitySystem::TerminateEntity(EntityTerminationData* const RESTRICT data) N
 void EntitySystem::TerminateDynamicPhysicalEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT
 {
 	//Return this entitiy's components index.
-	ComponentManager::ReturnDynamicPhysicalComponentsIndex(data->_Entity->GetComponentsIndex());
+	ComponentManager::ReturnDynamicPhysicalComponentsIndex(data->_Entity->_ComponentsIndex);
 }
 
 /*
@@ -292,7 +292,7 @@ void EntitySystem::TerminateTerrainEntity(EntityTerminationData* const RESTRICT 
 	RenderingSystem::Instance->TerminateTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(data->_Entity));
 
 	//Return this entitiy's components index.
-	ComponentManager::ReturnTerrainComponentsIndex(data->_Entity->GetComponentsIndex());
+	ComponentManager::ReturnTerrainComponentsIndex(data->_Entity->_ComponentsIndex);
 }
 
 /*
