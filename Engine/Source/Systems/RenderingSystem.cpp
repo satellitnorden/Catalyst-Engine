@@ -97,9 +97,6 @@ void RenderingSystem::PostInitializeSystem()
 */
 void RenderingSystem::RenderingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Update the matrices.
-	UpdateMatrices();
-
 	//Render-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
@@ -129,6 +126,32 @@ uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 {
 	//Return the current frame index via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentFrameIndex();
+}
+
+/*
+*	Updates the matrices.
+*/
+void RenderingSystem::UpdateMatrices() NOEXCEPT
+{
+	if (_ActiveCamera)
+	{
+		//Calculate the projection matrix.
+		_ProjectionMatrix = Matrix4::Perspective(CatalystBaseMath::DegreesToRadians(_ActiveCamera->GetFieldOfView()), static_cast<float>(GetResolution()._Width) / static_cast<float>(GetResolution()._Height), _ActiveCamera->GetNearPlane(), _ActiveCamera->GetFarPlane());
+
+		//Calculate the camera matrix.
+		_CameraMatrix = Matrix4::LookAt(_ActiveCamera->GetPosition(), _ActiveCamera->GetPosition() + _ActiveCamera->GetForwardVector(), _ActiveCamera->GetUpVector());
+
+		//Calculate the view matrix.
+		_ViewMatrix = _ProjectionMatrix * _CameraMatrix;
+
+		//Calculate the inverse projection matrix.
+		_InverseProjectionMatrix = _ProjectionMatrix;
+		_InverseProjectionMatrix.Inverse();
+
+		//Calculate the inverse camera matrix.
+		_InverseCameraMatrix = _CameraMatrix;
+		_InverseCameraMatrix.Inverse();
+	}
 }
 
 /*
@@ -207,6 +230,18 @@ void RenderingSystem::ToScreenCoordinate(const Vector3 &worldPosition, Vector2 *
 
 	screenCoordinates->_X = (viewSpacePosition._X + 1.0f) * 0.5f;
 	screenCoordinates->_Y = 1.0f - ((viewSpacePosition._Y + 1.0f) * 0.5f);
+}
+
+/*
+*	Sets the active camera.
+*/
+void RenderingSystem::SetActiveCamera(CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT
+{
+	//Set the active camera.
+	_ActiveCamera = newActiveCamera;
+
+	//Update the matrices.
+	UpdateMatrices();
 }
 
 /*
@@ -1139,32 +1174,6 @@ void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
 		}
 
 		_SpecialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)] = CreateTexture2D(TextureData(TextureDataContainer(samples, 4, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
-	}
-}
-
-/*
-*	Updates the matrices.
-*/
-void RenderingSystem::UpdateMatrices() NOEXCEPT
-{
-	if (_ActiveCamera)
-	{
-		//Calculate the projection matrix.
-		_ProjectionMatrix = Matrix4::Perspective(CatalystBaseMath::DegreesToRadians(_ActiveCamera->GetFieldOfView()), static_cast<float>(GetResolution()._Width) / static_cast<float>(GetResolution()._Height), _ActiveCamera->GetNearPlane(), _ActiveCamera->GetFarPlane());
-	
-		//Calculate the camera matrix.
-		_CameraMatrix = Matrix4::LookAt(_ActiveCamera->GetPosition(), _ActiveCamera->GetPosition() + _ActiveCamera->GetForwardVector(), _ActiveCamera->GetUpVector());
-
-		//Calculate the view matrix.
-		_ViewMatrix = _ProjectionMatrix * _CameraMatrix;
-
-		//Calculate the inverse projection matrix.
-		_InverseProjectionMatrix = _ProjectionMatrix;
-		_InverseProjectionMatrix.Inverse();
-
-		//Calculate the inverse camera matrix.
-		_InverseCameraMatrix = _CameraMatrix;
-		_InverseCameraMatrix.Inverse();
 	}
 }
 

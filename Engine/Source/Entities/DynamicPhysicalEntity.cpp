@@ -57,3 +57,28 @@ RESTRICTED NO_DISCARD Vector3 *const RESTRICT DynamicPhysicalEntity::GetScaleInt
 	//Return the scale of this entity.
 	return &ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Scale;
 }
+
+/*
+*	Updates the world space axis-aligned bounding box.
+*/
+void DynamicPhysicalEntity::UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
+{
+	AxisAlignedBoundingBox *const RESTRICT modelSpaceAxisAlignedBoundingBox{ GetModelSpaceAxisAlignedBoundingBox() };
+
+	if (!modelSpaceAxisAlignedBoundingBox)
+	{
+		return;
+	}
+
+	AxisAlignedBoundingBox *const RESTRICT worldSpaceAxisAlignedBoundingBox{ GetWorldSpaceAxisAlignedBoundingBox() };
+
+	if (!worldSpaceAxisAlignedBoundingBox)
+	{
+		return;
+	}
+
+	const Vector3 *const RESTRICT position{ GetPositionInternal() };
+
+	worldSpaceAxisAlignedBoundingBox->_Minimum = modelSpaceAxisAlignedBoundingBox->_Minimum + *position;
+	worldSpaceAxisAlignedBoundingBox->_Maximum = modelSpaceAxisAlignedBoundingBox->_Maximum + *position;
+}

@@ -21,12 +21,21 @@ public:
 	/*
 	*	Returns the axis aligned bounding box for this dynamic physical entity in model space.
 	*/
-	RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT final override;
+	RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT;
 
 	/*
 	*	Returns the axis aligned bounding box for this dynamic physical entity in world space.
 	*/
-	RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT final override;
+	RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
+
+	/*
+	*	Callback for when this entity is moved.
+	*/
+	void OnMove() NOEXCEPT final override
+	{
+		//Update the world space axis - aligned bounding box.
+		UpdateWorldSpaceAxisAlignedBoundingBox();
+	}
 
 protected:
 
@@ -44,5 +53,12 @@ protected:
 	*	Returns the scale of this entity.
 	*/
 	RESTRICTED NO_DISCARD Vector3 *const RESTRICT GetScaleInternal() NOEXCEPT final override;
+
+private:
+
+	/*
+	*	Updates the world space axis-aligned bounding box.
+	*/
+	void UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
 
 };

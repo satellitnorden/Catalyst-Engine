@@ -128,6 +128,11 @@ public:
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
 
 	/*
+	*	Updates the matrices.
+	*/
+	void UpdateMatrices() NOEXCEPT;
+
+	/*
 	*	Returns the projection matrix.
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() const NOEXCEPT { return &_ProjectionMatrix; }
@@ -180,7 +185,7 @@ public:
 	/*
 	*	Sets the active camera.
 	*/
-	void SetActiveCamera(CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT { _ActiveCamera = newActiveCamera; }
+	void SetActiveCamera(CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT;
 
 
 	/*
@@ -438,10 +443,5 @@ private:
 	*	Initializes all special textures.
 	*/
 	void InitializeSpecialTextures() NOEXCEPT;
-
-	/*
-	*	Updates the matrices.
-	*/
-	void UpdateMatrices() NOEXCEPT;
 
 };

@@ -46,4 +46,14 @@ protected:
 	*/
 	RESTRICTED NO_DISCARD Vector3 *const RESTRICT GetRotationInternal() NOEXCEPT final override;
 
+	/*
+	*	Callback for when this entity is moved.
+	*/
+	void OnMove() NOEXCEPT final override;
+
+	/*
+	*	Callback for when this entity is rotated.
+	*/
+	void OnRotate() NOEXCEPT final override;
+
 };

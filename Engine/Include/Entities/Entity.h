@@ -104,22 +104,6 @@ public:
 	*/
 	NO_DISCARD Vector3 GetRightVector() const NOEXCEPT;
 
-	/*
-	*	Returns the axis aligned bounding box for this entity in model space.
-	*/
-	virtual RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT GetModelSpaceAxisAlignedBoundingBox() NOEXCEPT
-	{
-		return nullptr;
-	}
-
-	/*
-	*	Returns the axis aligned bounding box for this entity in world space.
-	*/
-	virtual RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT GetWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
-	{
-		return nullptr;
-	}
-
 protected:
 
 	/*
@@ -146,6 +130,30 @@ protected:
 		return nullptr;
 	}
 
+	/*
+	*	Callback for when this entity is moved.
+	*/
+	virtual void OnMove() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Callback for when this entity is rotated.
+	*/
+	virtual void OnRotate() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Callback for when this entity is scaled.
+	*/
+	virtual void OnScale() NOEXCEPT
+	{
+
+	}
+
 private:
 
 	//The default position.
@@ -156,10 +164,5 @@ private:
 
 	//The default scale.
 	static constexpr Vector3 _DefaultScale{ 1.0f, 1.0f, 1.0f };
-
-	/*
-	*	Updates the world space axis-aligned bounding box.
-	*/
-	void UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT;
 
 };

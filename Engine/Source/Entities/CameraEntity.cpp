@@ -4,6 +4,9 @@
 //Components.
 #include <Components/ComponentManager.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 /*
 *	Default constructor.
 */
@@ -56,4 +59,22 @@ RESTRICTED NO_DISCARD Vector3 *const RESTRICT CameraEntity::GetRotationInternal(
 {
 	//Return the rotation of this entity.
 	return &ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._Rotation;
+}
+
+/*
+*	Callback for when this entity is moved.
+*/
+void CameraEntity::OnMove() NOEXCEPT
+{
+	//Tell the rendering system to update it's matrices.
+	RenderingSystem::Instance->UpdateMatrices();
+}
+
+/*
+*	Callback for when this entity is rotated.
+*/
+void CameraEntity::OnRotate() NOEXCEPT
+{
+	//Tell the rendering system to update it's matrices.
+	RenderingSystem::Instance->UpdateMatrices();
 }
