@@ -78,7 +78,8 @@ void DynamicPhysicalEntity::UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
 	}
 
 	const Vector3 *const RESTRICT position{ GetPositionInternal() };
+	const Vector3 *const RESTRICT scale{ GetScaleInternal() };
 
-	worldSpaceAxisAlignedBoundingBox->_Minimum = modelSpaceAxisAlignedBoundingBox->_Minimum + *position;
-	worldSpaceAxisAlignedBoundingBox->_Maximum = modelSpaceAxisAlignedBoundingBox->_Maximum + *position;
+	worldSpaceAxisAlignedBoundingBox->_Minimum = modelSpaceAxisAlignedBoundingBox->_Minimum * *scale + *position;
+	worldSpaceAxisAlignedBoundingBox->_Maximum = modelSpaceAxisAlignedBoundingBox->_Maximum * *scale + *position;
 }
