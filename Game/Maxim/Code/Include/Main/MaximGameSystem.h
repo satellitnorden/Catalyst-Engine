@@ -71,7 +71,7 @@ private:
 	float _SpawnTimer{ 0.0f };
 
 	//The spawn time.
-	float _SpawnTime{ 1.25f };
+	float _SpawnTime{ 2.5f };
 
 	//The camera.
 	CameraEntity * RESTRICT _Camera;

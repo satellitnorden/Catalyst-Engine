@@ -463,7 +463,7 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 		{
 			RECT rectangle;
 
-			if (GetWindowRect(_Window, &rectangle))
+			if (GetClientRect(_Window, &rectangle))
 			{
 				state->_CurrentX = CatalystBaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f);
 				state->_CurrentY = CatalystBaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f);

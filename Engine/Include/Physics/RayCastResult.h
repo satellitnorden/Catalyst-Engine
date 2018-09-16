@@ -18,6 +18,6 @@ public:
 	bool _HasHit;
 
 	//The hit entity.
-	Entity *RESTRICT _Entity;
+	Entity *RESTRICT _HitEntity;
 
 };

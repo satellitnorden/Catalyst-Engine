@@ -14,8 +14,11 @@ public:
 
 	//Constant vectors.
 	const static Vector3 FORWARD;
+	const static Vector3 BACKWARD;
 	const static Vector3 UP;
+	const static Vector3 DOWN;
 	const static Vector3 RIGHT;
+	const static Vector3 LEFT;
 
 	//The X component.
 	float _X;

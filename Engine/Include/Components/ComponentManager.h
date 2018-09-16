@@ -25,8 +25,9 @@
 */
 #define DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(ENTITY_CLASS, FIRST_COMPONENT)												\
 public:																														\
-	static NO_DISCARD uint64 GetNumberOf ## ENTITY_CLASS ## Components() NOEXCEPT;											\
 	static NO_DISCARD uint64 GetNew ## ENTITY_CLASS ## ComponentsIndex(Entity *const RESTRICT entity) NOEXCEPT;				\
+	RESTRICTED static NO_DISCARD DynamicArray<Entity *RESTRICT> *const RESTRICT Get ## ENTITY_CLASS ## Entities() NOEXCEPT;	\
+	static NO_DISCARD uint64 GetNumberOf ## ENTITY_CLASS ## Components() NOEXCEPT;											\
 	RESTRICTED static NO_DISCARD FIRST_COMPONENT *const RESTRICT Get ## ENTITY_CLASS ## FIRST_COMPONENT ## s() NOEXCEPT;	\
 	static void Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 componentsIndex) NOEXCEPT;							\
 private:																													\

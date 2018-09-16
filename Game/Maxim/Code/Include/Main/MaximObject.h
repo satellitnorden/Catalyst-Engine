@@ -19,6 +19,18 @@ public:
 	//The speed.
 	static float _Speed;
 
+	//Denotes whether or not this Maxim object is destroyed.
+	bool _IsDestroyed{ false };
+
+	//Denotes whether or not this Maxim object is the one currentlly selected.
+	bool _IsSelected{ false };
+
+	//The color.
+	MaximColor _Color;
+
+	//The entity.
+	DynamicPhysicalEntity *RESTRICT _Entity;
+
 	/*
 	*	Equal operator overload.
 	*/
@@ -45,15 +57,9 @@ public:
 		return _Entity;
 	}
 
-private:
-
-	//Denotes whether or not this Maxim object is destroyed.
-	bool _IsDestroyed;
-
-	//The color.
-	MaximColor _Color;
-
-	//The entity.
-	DynamicPhysicalEntity *RESTRICT _Entity;
+	/*
+	*	Returns the position for a selected Maxim object.
+	*/
+	void UpdateSelectedPosition() NOEXCEPT;
 
 };

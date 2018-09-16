@@ -31,9 +31,6 @@ void PhysicsSystem::PhysicsUpdateSystemSynchronous(const UpdateContext *const RE
 */
 void PhysicsSystem::CastRay(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT
 {
-	//Pre-calculate the inverse direction of the ray to avoid costly divisions.
-	const Vector3 inverseDirection{ Vector3(1.0f) / ray._Direction };
-
 	//Do a simple ray-box intersection test to determine which dynamic physical entity was hit.
 	const uint64 numberOfDynamicPhysicalComponents{ ComponentManager::GetNumberOfDynamicPhysicalComponents() };
 	const FrustumCullingComponent *RESTRICT component{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents() };
@@ -45,6 +42,7 @@ void PhysicsSystem::CastRay(const Ray &ray, RayCastResult *const RESTRICT result
 		if (CatalystVectorMath::LineBoxIntersection(box, ray))
 		{
 			result->_HasHit = true;
+			result->_HitEntity = ComponentManager::GetDynamicPhysicalEntities()->At(i);
 
 			return;
 		}
@@ -52,6 +50,7 @@ void PhysicsSystem::CastRay(const Ray &ray, RayCastResult *const RESTRICT result
 
 	//If there was not hit, update the result.
 	result->_HasHit = false;
+	result->_HitEntity = nullptr;
 }
 
 /*

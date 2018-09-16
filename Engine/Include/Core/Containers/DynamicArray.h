@@ -183,6 +183,22 @@ public:
 	}
 
 	/*
+	*	Returns the element at the specified index, const
+	*/
+	const Type& At(const uint64 index) const NOEXCEPT
+	{
+		return _Array[index];
+	}
+
+	/*
+	*	Returns the element at the specified index, non-const
+	*/
+	Type& At(const uint64 index) NOEXCEPT
+	{
+		return _Array[index];
+	}
+
+	/*
 	*	Returns the capacity of this dynamic array.
 	*/
 	uint64 Capacity() const NOEXCEPT { return _Capacity; }

@@ -9,12 +9,14 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
+#include <Math/CatalystVectorMath.h>
 
 //Systems.
 #if !defined(CATALYST_FINAL)
 #include <Systems/DebugRenderingSystem.h>
 #endif
 #include <Systems/EntitySystem.h>
+#include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Maxim.
@@ -95,21 +97,53 @@ bool MaximObject::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT co
 {
 	if (_Entity->_Initialized)
 	{
-#if !defined(CATALYST_FINAL)
-		//Debug render the axis-aligned bounding box.
-		DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData(*_Entity->GetWorldSpaceAxisAlignedBoundingBox(), Vector4(1.0f, 0.0f, 0.0f, 0.5f)));
-#endif
-		//Move the entity.
-		_Entity->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
-
-		if (_Entity->GetPosition()._Y <= -5.0f)
+		if (_IsSelected)
 		{
-			//Destroy this object.
-			MaximGameSystem::Instance->DestroyMaximObject(this);
+			UpdateSelectedPosition();
+		}
 
-			_IsDestroyed = true;
+		if (!_IsSelected)
+		{
+			//Move the entity.
+			_Entity->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
+
+			if (_Entity->GetPosition()._Y <= -5.0f)
+			{
+				//Destroy this object.
+				MaximGameSystem::Instance->DestroyMaximObject(this);
+
+				_IsDestroyed = true;
+			}
 		}
 	}
 
 	return !_IsDestroyed;
+}
+
+/*
+*	Returns the position for a selected Maxim object.
+*/
+void MaximObject::UpdateSelectedPosition() NOEXCEPT
+{
+#if defined(CATALYST_WINDOWS)
+	const MouseState *const RESTRICT state{ InputSystem::Instance->GetMouseState() };
+	const ButtonState buttonState{ state->_Left };
+#elif defined(CATALYST_ANDROID)
+	const TouchState *const RESTRICT state{ InputSystem::Instance->GetTouchState() };
+	const ButtonState buttonState{ state->_ButtonState };
+#endif
+	if (buttonState == ButtonState::Pressed || buttonState == ButtonState::PressedHold)
+	{
+		const Vector3 newPosition{ CatalystVectorMath::LinePlaneIntersection(	Vector3(0.0f, 0.0f, 0.0f),
+																				RenderingSystem::Instance->GetActiveCamera()->GetPosition(),
+																				Vector3::BACKWARD,
+																				RenderingSystem::Instance->GetWorldDirectionFromScreenCoordinate(Vector2(state->_CurrentX, state->_CurrentY))) };
+
+		_Entity->SetPosition(newPosition);
+	}
+
+	else
+	{
+		_IsSelected = false;
+	}
 }

@@ -89,10 +89,10 @@ bool MaximGameSystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTR
 	UpdateColor(context->_DeltaTime);
 
 	//Update the speed.
-	MaximObject::_Speed += context->_DeltaTime * 0.1f;
+	MaximObject::_Speed += context->_DeltaTime * 0.01f;
 
 	//Update the spawn time.
-	_SpawnTime = 1.25f / MaximObject::_Speed;
+	_SpawnTime = 2.5f / MaximObject::_Speed;
 
 	//Update the spawn timer.
 	_SpawnTimer += context->_DeltaTime;
@@ -155,18 +155,19 @@ bool MaximGameSystem::PhysicsUpdateAsynchronous(const UpdateContext *const RESTR
 
 		if (result._HasHit)
 		{
-			BREAKPOINT();
+			//Find the maxim object with the hit entity.
+			for (MaximObject *const RESTRICT object : _Objects)
+			{
+				if (object->_Entity == result._HitEntity)
+				{
+					object->_IsSelected = true;
+					object->UpdateSelectedPosition();
+
+					break;
+				}
+			}
 		}
 	}
-
-#if !defined(CATALYST_FINAL)
-	DebugRenderingSystem::ScreenBoxDebugRenderData data;
-	data._Minimum = Vector2(state->_CurrentX - 0.01f, state->_CurrentY - 0.005f);
-	data._Maximum = Vector2(state->_CurrentX + 0.01f, state->_CurrentY + 0.005f);
-	data._Color = Vector4(0.0f, 1.0f, 1.0f, 0.1f);
-
-	DebugRenderingSystem::Instance->DebugRenderScreenBox(data);
-#endif
 
 	//Return true.
 	return true;
