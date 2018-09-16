@@ -17,8 +17,8 @@
 public:																								\
 	void Pre ## PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;	\
 	void Post ## PHASE ## SystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;	\
-	void RegisterSynchronous ## PHASE ## (Updateable *const RESTRICT newUpdate);					\
-	void RegisterAsynchronous ## PHASE ## (Updateable *const RESTRICT newUpdate);					\
+	void RegisterSynchronous ## PHASE(Updateable *const RESTRICT newUpdate);						\
+	void RegisterAsynchronous ## PHASE(Updateable *const RESTRICT newUpdate);						\
 private:																							\
 	DynamicArray<Updateable *RESTRICT> _Synchronous ## PHASE ## s;									\
 	DynamicArray<AsynchronousUpdateData> _Asynchronous ## PHASE ## s;
@@ -62,6 +62,7 @@ public:
 	DECLARE_UPDATE_SYSTEM_PHASE(OpeningUpdate);
 	DECLARE_UPDATE_SYSTEM_PHASE(LogicUpdate);
 	DECLARE_UPDATE_SYSTEM_PHASE(PhysicsUpdate);
+	DECLARE_UPDATE_SYSTEM_PHASE(CullingUpdate);
 	DECLARE_UPDATE_SYSTEM_PHASE(RenderingUpdate);
 	DECLARE_UPDATE_SYSTEM_PHASE(ClosingUpdate);
 

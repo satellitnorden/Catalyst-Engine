@@ -88,6 +88,13 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	UpdateSystem::Instance->PostPhysicsUpdateSystemSynchronous(&context);
 
 	/*
+	*	Culling update phase.
+	*/
+	_CurrentUpdatePhase = UpdatePhase::CullingUpdate;
+	UpdateSystem::Instance->PreCullingUpdateSystemSynchronous(&context);
+	UpdateSystem::Instance->PostCullingUpdateSystemSynchronous(&context);
+
+	/*
 	*	Rendering update phase.
 	*/
 	_CurrentUpdatePhase = UpdatePhase::RenderingUpdate;

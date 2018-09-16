@@ -28,7 +28,7 @@ void UpdateSystem::Post ## PHASE ## SystemSynchronous(const UpdateContext *const
 {																														\
 	for (uint64 i = 0; i < _Synchronous ## PHASE ## s.Size();)															\
 	{																													\
-		if (!_Synchronous ## PHASE ## s[i]-> ## PHASE ## Synchronous(context))											\
+		if (!_Synchronous ## PHASE ## s[i]->PHASE ## Synchronous(context))												\
 		{																												\
 			_Synchronous ## PHASE ## s.EraseAt(i);																		\
 		}																												\
@@ -58,19 +58,19 @@ void UpdateSystem::Post ## PHASE ## SystemSynchronous(const UpdateContext *const
 	}																													\
 }																														\
 																														\
-void UpdateSystem::RegisterSynchronous ## PHASE ## (Updateable *const RESTRICT newUpdate)								\
+void UpdateSystem::RegisterSynchronous ## PHASE(Updateable *const RESTRICT newUpdate)									\
 {																														\
 	_Synchronous ## PHASE ## s.EmplaceSlow(newUpdate);																	\
 }																														\
 																														\
-void UpdateSystem::RegisterAsynchronous ## PHASE ## (Updateable *const RESTRICT newUpdate)								\
+void UpdateSystem::RegisterAsynchronous ## PHASE(Updateable *const RESTRICT newUpdate)									\
 {																														\
 	_Asynchronous ## PHASE ## s.EmplaceSlow();																			\
 	_Asynchronous ## PHASE ## s.Back()._Task._Function = [](void *const RESTRICT arguments)								\
 	{																													\
 		AsynchronousUpdateData *const RESTRICT data{ static_cast<AsynchronousUpdateData *const RESTRICT>(arguments) };	\
 																														\
-		if (!data->_UpdateAble-> ## PHASE ## Asynchronous(data->_Context))												\
+		if (!data->_UpdateAble->PHASE ## Asynchronous(data->_Context))													\
 		{																												\
 			data->_ShouldDeRegister = true;																				\
 		}																												\
@@ -82,5 +82,6 @@ void UpdateSystem::RegisterAsynchronous ## PHASE ## (Updateable *const RESTRICT 
 DEFINE_UPDATE_SYSTEM_PHASE(OpeningUpdate);
 DEFINE_UPDATE_SYSTEM_PHASE(LogicUpdate);
 DEFINE_UPDATE_SYSTEM_PHASE(PhysicsUpdate);
+DEFINE_UPDATE_SYSTEM_PHASE(CullingUpdate);
 DEFINE_UPDATE_SYSTEM_PHASE(RenderingUpdate);
 DEFINE_UPDATE_SYSTEM_PHASE(ClosingUpdate);

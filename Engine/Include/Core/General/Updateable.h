@@ -59,6 +59,17 @@ public:
 	}
 
 	/*
+	*	Updates this updateable synchronously during the opening culling update phase.
+	*	Should return whether or not this updateable should continue to be updated.
+	*/
+	virtual bool CullingUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	{
+		ASSERT(false, "CullingUpdateSynchronous called on updateable that has not overriden this function.");
+
+		return false;
+	}
+
+	/*
 	*	Updates this updateable synchronously during the opening rendering update phase.
 	*	Should return whether or not this updateable should continue to be updated.
 	*/
@@ -109,6 +120,17 @@ public:
 	virtual bool PhysicsUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 	{
 		ASSERT(false, "PhysicsUpdateAsynchronous called on updateable that has not overriden this function.");
+
+		return false;
+	}
+
+	/*
+	*	Updates this updateable asynchronously during the culling update phase.
+	*	Should return whether or not this updateable should continue to be updated.
+	*/
+	virtual bool CullingUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+	{
+		ASSERT(false, "CullingUpdateAsynchronous called on updateable that has not overriden this function.");
 
 		return false;
 	}
