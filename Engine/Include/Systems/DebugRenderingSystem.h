@@ -55,6 +55,45 @@ public:
 
 	};
 
+	/*
+	*	Screen box render data definition.
+	*/
+	class ScreenBoxDebugRenderData final
+	{
+
+	public:
+
+		//The minimum of the box.
+		Vector2 _Minimum;
+
+		//The maximum of the box.
+		Vector2 _Maximum;
+
+		//The color.
+		Vector4 _Color;
+
+		/*
+		*	Default constructor.
+		*/
+		ScreenBoxDebugRenderData() NOEXCEPT
+		{
+
+		}
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		ScreenBoxDebugRenderData(const Vector2 &initialMinimum, const Vector2 &initialMaximum, const Vector4 &initialColor) NOEXCEPT
+			:
+			_Minimum(initialMinimum),
+			_Maximum(initialMaximum),
+			_Color(initialColor)
+		{
+
+		}
+
+	};
+
 	//Singleton declaration.
 	DECLARE_SINGLETON(DebugRenderingSystem);
 
@@ -85,9 +124,22 @@ public:
 	}
 
 	/*
+	*	Returns the screen box debug render data.
+	*/
+	RESTRICTED const DynamicArray<ScreenBoxDebugRenderData> *const RESTRICT GetScreenBoxDebugRenderData() const NOEXCEPT
+	{
+		return &_ScreenBoxDebugRenderData;
+	}
+
+	/*
 	*	Debug renders an axis-aligned bounding box.
 	*/
 	void DebugRenderAxisAlignedBoundingBox(const AxisAlignedBoundingBoxDebugRenderData &data) NOEXCEPT;
+
+	/*
+	*	Debug renders a screen box.
+	*/
+	void DebugRenderScreenBox(const ScreenBoxDebugRenderData &data) NOEXCEPT;
 
 private:
 
@@ -96,6 +148,12 @@ private:
 
 	//Container for all axis-aligned bounding box debug render data.
 	DynamicArray<AxisAlignedBoundingBoxDebugRenderData> _AxisAlignedBoundingBoxDebugRenderData;
+
+	//The screen box debug render data lock.
+	Spinlock _ScreenBoxDebugRenderDataLock;
+
+	//Container for all screen box debug render data.
+	DynamicArray<ScreenBoxDebugRenderData> _ScreenBoxDebugRenderData;
 
 };
 

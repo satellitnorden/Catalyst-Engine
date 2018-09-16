@@ -5,8 +5,9 @@
 #include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
 
-//Math.
-#include <Math/Vector3.h>
+//Physics.
+#include <Physics/Ray.h>
+#include <Physics/RayCastResult.h>
 
 class PhysicsSystem final
 {
@@ -27,14 +28,19 @@ public:
 	void PhysicsUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Returns the wind strength.
+	*	Casts a ray.
 	*/
-	float GetWindStrength() const NOEXCEPT { return _WindStrength; }
+	void CastRay(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT;
 
 	/*
 	*	Returns the wind direction.
 	*/
 	const Vector3& GetWindDirection() const NOEXCEPT { return _WindDirection; }
+
+	/*
+	*	Returns the wind strength.
+	*/
+	float GetWindStrength() const NOEXCEPT { return _WindStrength; }
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*
@@ -55,10 +61,10 @@ public:
 
 private:
 
-	//The wind strength.
-	float _WindStrength{ 5.0f };
-
 	//The wind direction.
 	Vector3 _WindDirection{ -1.0f, 0.0f, -1.0f };
+
+	//The wind strength.
+	float _WindStrength{ 5.0f };
 
 };

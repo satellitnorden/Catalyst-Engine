@@ -93,7 +93,7 @@ void DebugAxisAlignedBoundingBoxRenderPass::InitializeInternal() NOEXCEPT
 	SetCullMode(CullMode::None);
 	SetDepthCompareOperator(CompareOperator::Less);
 	SetDepthTestEnabled(true);
-	SetDepthWriteEnabled(true);
+	SetDepthWriteEnabled(false);
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.

@@ -74,6 +74,7 @@ enum class RenderPassSubStage : uint8
 #if !defined(CATALYST_FINAL)
 	//Debug.
 	DebugAxisAlignedBoundingBox,
+	DebugScreenBox,
 #endif
 
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -172,6 +173,8 @@ enum class Shader : uint8
 #if !defined(CATALYST_FINAL)
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,
+	DebugScreenBoxFragment,
+	DebugScreenBoxVertex,
 #endif
 	DirectionalPhysicalShadowVertex,
 	DirectionalShadowFragment,

@@ -12,9 +12,11 @@
 #include <Multithreading/ScopedLock.h>
 
 //Systems.
+#include <Systems/DebugRenderingSystem.h>
 #include <Systems/EngineSystem.h>
 #include <Systems/EntitySystem.h>
 #include <Systems/InputSystem.h>
+#include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/UpdateSystem.h>
 
@@ -74,6 +76,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	//Register the Maxim game system for updates.
 	UpdateSystem::Instance->RegisterAsynchronousOpeningUpdate(this);
+	UpdateSystem::Instance->RegisterAsynchronousPhysicsUpdate(this);
 	UpdateSystem::Instance->RegisterAsynchronousClosingUpdate(this);
 }
 
@@ -120,6 +123,50 @@ bool MaximGameSystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTR
 			particles->Move(Vector3(0.0f, 50.0f, 0.0f));
 		}
 	}
+
+	//Return true.
+	return true;
+}
+
+/*
+*	Updates the Maxim game system asynchronously during the physics update phase.
+*/
+bool MaximGameSystem::PhysicsUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+{
+	//Do a ray cast from the camera and towards the mouse/touch and see if any Maxim objects were clicked/touched.
+#if defined(CATALYST_WINDOWS)
+	const MouseState *const RESTRICT state{ InputSystem::Instance->GetMouseState() };
+	const ButtonState buttonState{ state->_Left };
+#elif defined(CATALYST_ANDROID)
+	const TouchState *const RESTRICT state{ InputSystem::Instance->GetTouchState() };
+	const ButtonState buttonState{ state->_ButtonState };
+#endif
+
+	if (buttonState == ButtonState::Pressed)
+	{
+		Ray ray;
+		ray._Origin = RenderingSystem::Instance->GetActiveCamera()->GetPosition();
+		ray._Direction = RenderingSystem::Instance->GetWorldDirectionFromScreenCoordinate(Vector2(state->_CurrentX, state->_CurrentY));
+		ray._Distance = FLOAT_MAXIMUM;
+
+		RayCastResult result;
+
+		PhysicsSystem::Instance->CastRay(ray, &result);
+
+		if (result._HasHit)
+		{
+			BREAKPOINT();
+		}
+	}
+
+#if !defined(CATALYST_FINAL)
+	DebugRenderingSystem::ScreenBoxDebugRenderData data;
+	data._Minimum = Vector2(state->_CurrentX - 0.01f, state->_CurrentY - 0.005f);
+	data._Maximum = Vector2(state->_CurrentX + 0.01f, state->_CurrentY + 0.005f);
+	data._Color = Vector4(0.0f, 1.0f, 1.0f, 0.1f);
+
+	DebugRenderingSystem::Instance->DebugRenderScreenBox(data);
+#endif
 
 	//Return true.
 	return true;

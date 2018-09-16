@@ -99,23 +99,15 @@ bool MaximObject::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT co
 		//Debug render the axis-aligned bounding box.
 		DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData(*_Entity->GetWorldSpaceAxisAlignedBoundingBox(), Vector4(1.0f, 0.0f, 0.0f, 0.5f)));
 #endif
-		if (RenderingSystem::Instance->IsClockedOrTouched(*_Entity->GetWorldSpaceAxisAlignedBoundingBox()))
+		//Move the entity.
+		_Entity->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
+
+		if (_Entity->GetPosition()._Y <= -5.0f)
 		{
-			_Entity->Move(Vector3(0.0f, 2.5f, 0.0f));
-		}
+			//Destroy this object.
+			MaximGameSystem::Instance->DestroyMaximObject(this);
 
-		else
-		{
-			//Move the entity.
-			_Entity->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
-
-			if (_Entity->GetPosition()._Y <= -5.0f)
-			{
-				//Destroy this object.
-				MaximGameSystem::Instance->DestroyMaximObject(this);
-
-				_IsDestroyed = true;
-			}
+			_IsDestroyed = true;
 		}
 	}
 

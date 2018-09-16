@@ -803,6 +803,20 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		VulkanShaderData::GetDebugAxisAlignedBoundingBoxVertexShaderData(data);
 		_ShaderModules[INDEX(Shader::DebugAxisAlignedBoundingBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
+
+	{
+		//Initialize the debug screen box fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetDebugScreenBoxFragmentShaderData(data);
+		_ShaderModules[INDEX(Shader::DebugScreenBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize the debug screen box vertex shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetDebugScreenBoxVertexShaderData(data);
+		_ShaderModules[INDEX(Shader::DebugScreenBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
 #endif
 
 	{
@@ -1414,7 +1428,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 #if !defined(CATALYST_FINAL)
 	//Initialize the debug render pass.
 	{
-		constexpr uint64 NUMBER_OF_DEBUG_SUBPASSES{ 1 };
+		constexpr uint64 NUMBER_OF_DEBUG_SUBPASSES{ 2 };
 
 		constexpr uint32 DEPTH_BUFFER_INDEX{ 0 };
 		constexpr uint32 SCENE_INDEX{ 1 };
@@ -1454,22 +1468,38 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkSubpassDescription, NUMBER_OF_DEBUG_SUBPASSES> subpassDescriptions;
 
-		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
-		{
-			subpassDescription = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[0] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			1,
 																			colorAttachmentReferences.Data(),
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
-		}
+
+		subpassDescriptions[1] = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			1,
+																			colorAttachmentReferences.Data(),
+																			nullptr,
+																			0,
+																			nullptr);
 
 		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
 		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
 
-		renderPassParameters._SubpassDependencyCount = 0;
-		renderPassParameters._SubpassDependencies = nullptr;
+		StaticArray<VkSubpassDependency, NUMBER_OF_DEBUG_SUBPASSES - 1> subpassDependencies
+		{
+			VulkanUtilities::CreateSubpassDependency(	0,
+														1,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT)
+		};
+
+		renderPassParameters._SubpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
+		renderPassParameters._SubpassDependencies = subpassDependencies.Data();;
 
 		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 

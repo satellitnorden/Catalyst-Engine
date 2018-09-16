@@ -6,6 +6,7 @@
 //Rendering.
 #if !defined(CATALYST_FINAL)
 #include <Rendering/Engine/RenderPasses/DebugAxisAlignedBoundingBoxRenderPass.h>
+#include <Rendering/Engine/RenderPasses/DebugScreenBoxRenderPass.h>
 #endif
 #include <Rendering/Engine/RenderPasses/DirectionalDynamicPhysicalShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalInstancedPhysicalShadowRenderPass.h>

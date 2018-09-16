@@ -9,6 +9,7 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
+#include <Math/CatalystVectorMath.h>
 #include <Math/Vector3.h>
 
 //Physics.
@@ -23,6 +24,34 @@ DEFINE_SINGLETON(PhysicsSystem);
 void PhysicsSystem::PhysicsUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	
+}
+
+/*
+*	Casts a ray.
+*/
+void PhysicsSystem::CastRay(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT
+{
+	//Pre-calculate the inverse direction of the ray to avoid costly divisions.
+	const Vector3 inverseDirection{ Vector3(1.0f) / ray._Direction };
+
+	//Do a simple ray-box intersection test to determine which dynamic physical entity was hit.
+	const uint64 numberOfDynamicPhysicalComponents{ ComponentManager::GetNumberOfDynamicPhysicalComponents() };
+	const FrustumCullingComponent *RESTRICT component{ ComponentManager::GetDynamicPhysicalFrustumCullingComponents() };
+
+	for (uint64 i = 0; i < numberOfDynamicPhysicalComponents; ++i, ++component)
+	{
+		const AxisAlignedBoundingBox &box{ component->_WorldSpaceAxisAlignedBoundingBox };
+
+		if (CatalystVectorMath::LineBoxIntersection(box, ray))
+		{
+			result->_HasHit = true;
+
+			return;
+		}
+	}
+
+	//If there was not hit, update the result.
+	result->_HasHit = false;
 }
 
 /*

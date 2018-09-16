@@ -389,6 +389,14 @@ public:
 	}
 
 	/*
+	*	Returns whether or not this vector is normalized.
+	*/
+	FORCE_INLINE NO_DISCARD bool IsNormalized() const NOEXCEPT
+	{
+		return LengthSquared() == 1.0f;
+	}
+
+	/*
 	*	Given a rotation vector, rotate this vector.
 	*/
 	constexpr void Rotate(const Vector3& rotationVector) NOEXCEPT

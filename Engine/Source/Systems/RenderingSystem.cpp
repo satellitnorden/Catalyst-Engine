@@ -634,6 +634,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 #endif
 #if !defined(CATALYST_FINAL)
 	_RenderPasses[INDEX(RenderPassSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxRenderPass::Instance.Get();
+	_RenderPasses[INDEX(RenderPassSubStage::DebugScreenBox)] = DebugScreenBoxRenderPass::Instance.Get();
 #endif
 #if defined(CATALYST_ENABLE_OCEAN)
 	_RenderPasses[INDEX(RenderPassSubStage::Ocean)] = OceanRenderPass::Instance.Get();

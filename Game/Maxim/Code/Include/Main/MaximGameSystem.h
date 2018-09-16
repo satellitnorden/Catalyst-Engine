@@ -42,6 +42,11 @@ public:
 	bool OpeningUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 	/*
+	*	Updates the Maxim game system asynchronously during the physics update phase.
+	*/
+	bool PhysicsUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
+
+	/*
 	*	Updates the Maxim game system asynchronously during the closing update phase.
 	*/
 	bool ClosingUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;

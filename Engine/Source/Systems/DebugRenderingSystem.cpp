@@ -49,6 +49,7 @@ void DebugRenderingSystem::ClosingUpdateSystemSynchronous(const UpdateContext *c
 {
 	//Clear all data.
 	_AxisAlignedBoundingBoxDebugRenderData.ClearFast();
+	_ScreenBoxDebugRenderData.ClearFast();
 }
 
 /*
@@ -61,5 +62,17 @@ void DebugRenderingSystem::DebugRenderAxisAlignedBoundingBox(const AxisAlignedBo
 
 	//Add the data to the axis-aligned bounding box debug render data.
 	_AxisAlignedBoundingBoxDebugRenderData.EmplaceSlow(data);
+}
+
+/*
+*	Debug renders a screen box.
+*/
+void DebugRenderingSystem::DebugRenderScreenBox(const ScreenBoxDebugRenderData &data) NOEXCEPT
+{
+	//Lock the screen box debug render data.
+	ScopedLock<Spinlock> scopedLock{ _ScreenBoxDebugRenderDataLock };
+
+	//Add the data to the screen box debug render data.
+	_ScreenBoxDebugRenderData.EmplaceSlow(data);
 }
 #endif

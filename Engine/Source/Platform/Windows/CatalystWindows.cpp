@@ -465,8 +465,8 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 
 			if (GetWindowRect(_Window, &rectangle))
 			{
-				state->_CurrentX = CatalystBaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right), 0.0f, 1.0f);
-				state->_CurrentY = CatalystBaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom), 0.0f, 1.0f);
+				state->_CurrentX = CatalystBaseMath::Clamp<float>(static_cast<float>(point.x) / static_cast<float>(rectangle.right - rectangle.left), 0.0f, 1.0f);
+				state->_CurrentY = CatalystBaseMath::Clamp<float>(1.0f - static_cast<float>(point.y) / static_cast<float>(rectangle.bottom - rectangle.top), 0.0f, 1.0f);
 
 				state->_DeltaX = state->_CurrentX - state->_PreviousX;
 				state->_DeltaY = state->_CurrentY - state->_PreviousY;
@@ -474,19 +474,19 @@ void CatalystPlatform::GetCurrentMouseState(MouseState *const RESTRICT state) NO
 
 			else
 			{
-				ASSERT(false, "Could not retrieve window rectangle. ):");
+				ASSERT(false, "Could not retrieve window rectangle.");
 			}
 		}
 
 		else
 		{
-			ASSERT(false, "Could not convert cursor position to window coordinates. ):");
+			ASSERT(false, "Could not convert cursor position to window coordinates.");
 		}
 	}
 
 	else
 	{
-		ASSERT(false, "Could not retrieve the current cursor position. ):");
+		ASSERT(false, "Could not retrieve the current cursor position.");
 	}
 
 	//Update the button states.
