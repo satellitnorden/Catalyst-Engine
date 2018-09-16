@@ -21,6 +21,19 @@ class CatalystVectorMath final
 public:
 
 	/*
+	*	Performs a box-box intersection and return whether or not there was an intersection.
+	*/
+	constexpr static NO_DISCARD bool BoxIntersection(const AxisAlignedBoundingBox &box1, const AxisAlignedBoundingBox &box2) NOEXCEPT
+	{
+		return	box1._Minimum._X <= box2._Maximum._X
+				&& box1._Maximum._X >= box2._Minimum._X
+				&& box1._Minimum._Y <= box2._Maximum._Y
+				&& box1._Maximum._Y >= box2._Minimum._Y
+				&& box1._Minimum._Z <= box2._Maximum._Z
+				&& box1._Maximum._Z >= box2._Minimum._Z;
+	}
+
+	/*
 	*	Performs a line-box intersection and returns whether or not there was an intersection.
 	*/
 	constexpr static NO_DISCARD bool LineBoxIntersection(const AxisAlignedBoundingBox &box, const Ray &ray) NOEXCEPT

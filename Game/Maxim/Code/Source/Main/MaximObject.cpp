@@ -97,16 +97,22 @@ bool MaximObject::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT co
 {
 	if (_Entity->_Initialized)
 	{
+		//If this Maxim object is selected, it is updated by the Maxim game system.
 		if (_IsSelected)
 		{
-			UpdateSelectedPosition();
+#if !defined(CATALYST_FINAL)
+			DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData(*_Entity->GetWorldSpaceAxisAlignedBoundingBox(), Vector4(0.0f, 0.0f, 1.0f, 0.25f)));
+#endif
+			return true;
 		}
 
-		if (!_IsSelected)
+		else
 		{
 			//Move the entity.
 			_Entity->Move(Vector3(0.0f, -_Speed * context->_DeltaTime, 0.0f));
-
+#if !defined(CATALYST_FINAL)
+			DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData(*_Entity->GetWorldSpaceAxisAlignedBoundingBox(), Vector4(0.0f, 0.0f, 1.0f, 0.25f)));
+#endif
 			if (_Entity->GetPosition()._Y <= -5.0f)
 			{
 				//Destroy this object.

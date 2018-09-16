@@ -89,7 +89,7 @@ bool MaximGameSystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTR
 	UpdateColor(context->_DeltaTime);
 
 	//Update the speed.
-	MaximObject::_Speed += context->_DeltaTime * 0.01f;
+	MaximObject::_Speed += context->_DeltaTime * 0.1f;
 
 	//Update the spawn time.
 	_SpawnTime = 2.5f / MaximObject::_Speed;
@@ -133,41 +133,11 @@ bool MaximGameSystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTR
 */
 bool MaximGameSystem::PhysicsUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Do a ray cast from the camera and towards the mouse/touch and see if any Maxim objects were clicked/touched.
-#if defined(CATALYST_WINDOWS)
-	const MouseState *const RESTRICT state{ InputSystem::Instance->GetMouseState() };
-	const ButtonState buttonState{ state->_Left };
-#elif defined(CATALYST_ANDROID)
-	const TouchState *const RESTRICT state{ InputSystem::Instance->GetTouchState() };
-	const ButtonState buttonState{ state->_ButtonState };
-#endif
+	//Update whch Maxim object is selected.
+	UpdateSelected();
 
-	if (buttonState == ButtonState::Pressed)
-	{
-		Ray ray;
-		ray._Origin = RenderingSystem::Instance->GetActiveCamera()->GetPosition();
-		ray._Direction = RenderingSystem::Instance->GetWorldDirectionFromScreenCoordinate(Vector2(state->_CurrentX, state->_CurrentY));
-		ray._Distance = FLOAT_MAXIMUM;
-
-		RayCastResult result;
-
-		PhysicsSystem::Instance->CastRay(ray, &result);
-
-		if (result._HasHit)
-		{
-			//Find the maxim object with the hit entity.
-			for (MaximObject *const RESTRICT object : _Objects)
-			{
-				if (object->_Entity == result._HitEntity)
-				{
-					object->_IsSelected = true;
-					object->UpdateSelectedPosition();
-
-					break;
-				}
-			}
-		}
-	}
+	//Update the position of the selected Maxim object.
+	UpdateSelectedPosition();
 
 	//Return true.
 	return true;
@@ -182,10 +152,10 @@ bool MaximGameSystem::ClosingUpdateAsynchronous(const UpdateContext *const RESTR
 	for (MaximObject *const RESTRICT object : _DestructionQueue)
 	{
 		//Terminate the entity.
-		EntitySystem::Instance->RequesTermination(object->GetEntity(), false);
+		EntitySystem::Instance->RequesTermination(object->_Entity, false);
 
 		//Destroy the entity.
-		EntitySystem::Instance->RequestDestruction(object->GetEntity(), false);
+		EntitySystem::Instance->RequestDestruction(object->_Entity, false);
 
 		//Remove this Maxim object from the internal list.
 		_Objects.Erase(object);
@@ -256,5 +226,100 @@ Vector3 MaximGameSystem::GetColor(const MaximColor color) const NOEXCEPT
 		case MaximColor::Teal: return Vector3(0.0f, 1.0f, 1.0f);
 
 		default: return GetColor(MaximColor::Teal);
+	}
+}
+
+/*
+*	Updates which Maxim object is selected
+*/
+void MaximGameSystem::UpdateSelected() NOEXCEPT
+{
+	//Do a ray cast from the camera and towards the mouse/touch and see if any Maxim objects were clicked/touched.
+#if defined(CATALYST_WINDOWS)
+	const MouseState *const RESTRICT state{ InputSystem::Instance->GetMouseState() };
+	const ButtonState buttonState{ state->_Left };
+#elif defined(CATALYST_ANDROID)
+	const TouchState *const RESTRICT state{ InputSystem::Instance->GetTouchState() };
+	const ButtonState buttonState{ state->_ButtonState };
+#endif
+
+	if (buttonState == ButtonState::Pressed)
+	{
+		Ray ray;
+		ray._Origin = RenderingSystem::Instance->GetActiveCamera()->GetPosition();
+		ray._Direction = RenderingSystem::Instance->GetWorldDirectionFromScreenCoordinate(Vector2(state->_CurrentX, state->_CurrentY));
+		ray._Distance = FLOAT_MAXIMUM;
+
+		RayCastResult result;
+
+		PhysicsSystem::Instance->CastRay(ray, &result);
+
+		if (result._HasHit)
+		{
+			//Find the maxim object with the hit entity.
+			for (MaximObject *const RESTRICT object : _Objects)
+			{
+				if (object->_Entity == result._HitEntity)
+				{
+					_SelectedObject = object;
+					object->_IsSelected = true;
+					object->UpdateSelectedPosition();
+
+					return;
+				}
+			}
+		}
+	}
+}
+
+/*
+*	Updates the position of the selected Maxim object.
+*/
+void MaximGameSystem::UpdateSelectedPosition() NOEXCEPT
+{
+	if (_SelectedObject && _SelectedObject->_Entity->_Initialized)
+	{
+#if defined(CATALYST_WINDOWS)
+		const MouseState *const RESTRICT state{ InputSystem::Instance->GetMouseState() };
+		const ButtonState buttonState{ state->_Left };
+#elif defined(CATALYST_ANDROID)
+		const TouchState *const RESTRICT state{ InputSystem::Instance->GetTouchState() };
+		const ButtonState buttonState{ state->_ButtonState };
+#endif
+		if (buttonState == ButtonState::Pressed || buttonState == ButtonState::PressedHold)
+		{
+			const Vector3 newPosition{ CatalystVectorMath::LinePlaneIntersection(	Vector3(0.0f, 0.0f, 0.0f),
+																					RenderingSystem::Instance->GetActiveCamera()->GetPosition(),
+																					Vector3::BACKWARD,
+																					RenderingSystem::Instance->GetWorldDirectionFromScreenCoordinate(Vector2(state->_CurrentX, state->_CurrentY))) };
+
+			_SelectedObject->_Entity->SetPosition(newPosition);
+
+			//Check collision against otheer Maxim objects.
+			for (MaximObject *const RESTRICT object : _Objects)
+			{
+				if (object == _SelectedObject)
+				{
+					continue;
+				}
+
+				if (!object->_Entity->_Initialized)
+				{
+					continue;
+				}
+
+				if (CatalystVectorMath::BoxIntersection(	*_SelectedObject->_Entity->GetWorldSpaceAxisAlignedBoundingBox(),
+															*object->_Entity->GetWorldSpaceAxisAlignedBoundingBox()))
+				{
+					object->_IsDestroyed = true;
+				}
+			}
+		}
+
+		else
+		{
+			_SelectedObject->_IsSelected = false;
+			_SelectedObject = nullptr;
+		}
 	}
 }

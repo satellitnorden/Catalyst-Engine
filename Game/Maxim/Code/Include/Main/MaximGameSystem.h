@@ -91,6 +91,9 @@ private:
 	//Container for all objects wishing to be destroyed.
 	DynamicArray<MaximObject *RESTRICT> _DestructionQueue;
 
+	//The selected Maxim object.
+	MaximObject *RESTRICT _SelectedObject{ nullptr };
+
 	/*
 	*	Updates the color.
 	*/
@@ -105,5 +108,15 @@ private:
 	*	Returns the corresponding color.
 	*/
 	Vector3 GetColor(const MaximColor color) const NOEXCEPT;
+
+	/*
+	*	Updates which Maxim object is selected
+	*/
+	void UpdateSelected() NOEXCEPT;
+
+	/*
+	*	Updates the position of the selected Maxim object.
+	*/
+	void UpdateSelectedPosition() NOEXCEPT;
 
 };

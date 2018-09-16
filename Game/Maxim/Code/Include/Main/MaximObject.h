@@ -25,6 +25,9 @@ public:
 	//Denotes whether or not this Maxim object is the one currentlly selected.
 	bool _IsSelected{ false };
 
+	//Denotes whether or not this Maxim object is currently chained.
+	bool _IsChained{ false };
+
 	//The color.
 	MaximColor _Color;
 
@@ -48,14 +51,6 @@ public:
 	*	Logic updates this Maxim object asynchronously.
 	*/
 	bool LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
-
-	/*
-	*	Returns the entity.
-	*/
-	RESTRICTED DynamicPhysicalEntity *const RESTRICT GetEntity()
-	{
-		return _Entity;
-	}
 
 	/*
 	*	Returns the position for a selected Maxim object.
