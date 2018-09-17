@@ -33,7 +33,6 @@
 #include <Rendering/Engine/TextureData.h>
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/ShaderData/Vulkan/VulkanShaderData.h>
-#include <Rendering/Translation/Vulkan/VulkanParticleSystemProperties.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationCommandBuffer.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 

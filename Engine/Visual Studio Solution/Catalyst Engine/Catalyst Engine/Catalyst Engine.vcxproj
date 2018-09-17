@@ -239,7 +239,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VulkanShaderData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanDynamicUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanFrameData.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanParticleSystemProperties.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.h" />

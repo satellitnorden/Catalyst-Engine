@@ -669,9 +669,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanFrameData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanParticleSystemProperties.h">
-      <Filter>Rendering\Include\Translation\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderingSystem.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
