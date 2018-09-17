@@ -23,7 +23,6 @@
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/RenderingUtilities.h>
 #include <Rendering/Engine/Resolution.h>
-#include <Rendering/Engine/VegetationMaterial.h>
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/Engine/TerrainMaterial.h>
 #include <Rendering/Engine/TextureData.h>
@@ -37,7 +36,6 @@
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/TerrainMaterialData.h>
-#include <Resources/VegetationMaterialData.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -518,24 +516,6 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 }
 
 /*
-*	Creates a vegetation material.
-*/
-void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT
-{
-	//Create the mask texture.
-	vegetationMaterial._MaskTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData._MaskData, vegetationMaterialData._Width, vegetationMaterialData._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-
-	//Create the albedo texture.
-	vegetationMaterial._AlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData._AlbedoData, vegetationMaterialData._Width, vegetationMaterialData._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-
-	//Create the normal map texture.
-	vegetationMaterial._NormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData._NormalMapData, vegetationMaterialData._Width, vegetationMaterialData._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-
-	//Create the properties texture.
-	vegetationMaterial._PropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(vegetationMaterialData._PropertiesData, vegetationMaterialData._Width, vegetationMaterialData._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-}
-
-/*
 *	Initializes a dynamic physical entity.
 */
 void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT
@@ -604,15 +584,6 @@ void RenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhysicalE
 }
 
 /*
-*	Initializes a vegetation entity.
-*/
-void RenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) const NOEXCEPT
-{
-	//Initialize the vegetation entity via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->InitializeVegetationEntity(entity, material, transformations, properties);
-}
-
-/*
 *	Initializes a particle system entity.
 */
 void RenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRICT entity, const ParticleSystemInitializationData *const RESTRICT data) const NOEXCEPT
@@ -667,7 +638,6 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[INDEX(RenderPassSubStage::Terrain)] = TerrainRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::DynamicPhysical)] = DynamicPhysicalRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::InstancedPhysical)] = InstancedPhysicalRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::Vegetation)] = VegetationRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
 	_RenderPasses[INDEX(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();

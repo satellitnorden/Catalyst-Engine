@@ -49,11 +49,6 @@ class TerrainMaterialData;
 class TerrainUniformData;
 class TextureData;
 class Vector3;
-class VegetationEntity;
-class VegetationMaterial;
-class VegetationMaterialData;
-class VegetationProperties;
-class VegetationTransformation;
 
 class RenderingSystem final
 {
@@ -329,11 +324,6 @@ public:
 	void CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT;
 
 	/*
-	*	Creates a vegetation material.
-	*/
-	void CreateVegetationMaterial(const VegetationMaterialData &vegetationMaterialData, VegetationMaterial &vegetationMaterial) const NOEXCEPT;
-
-	/*
 	*	Initializes a dynamic physical entity.
 	*/
 	void InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT;
@@ -352,11 +342,6 @@ public:
 	*	Initializes an instanced physical entity.
 	*/
 	void InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT;
-
-	/*
-	*	Initializes a vegetation entity.
-	*/
-	void InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) const NOEXCEPT;
 
 	/*
 	*	Initializes a particle system entity.

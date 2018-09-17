@@ -39,10 +39,6 @@ class TerrainInitializationData;
 class TerrainMaterial;
 class TerrainUniformData;
 class TextureData;
-class VegetationEntity;
-class VegetationMaterial;
-class VegetationProperties;
-class VegetationTransformation;
 
 class VulkanRenderingSystem final
 {
@@ -126,11 +122,6 @@ public:
 	*	Initializes an instanced physical entity.
 	*/
 	void InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT;
-
-	/*
-	*	Initializes a vegetation entity.
-	*/
-	void InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.

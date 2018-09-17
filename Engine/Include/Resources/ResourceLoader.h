@@ -12,7 +12,6 @@
 #include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/TerrainMaterial.h>
-#include <Rendering/Engine/VegetationMaterial.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/OceanMaterial.h>
 #endif
@@ -65,11 +64,6 @@ public:
 	*/
 	static const TerrainMaterial& GetTerrainMaterial(const HashString resourceID) { return _TerrainMaterials[resourceID]; }
 
-	/*
-	*	Given a resource ID, return the corresponding vegetation material.
-	*/
-	static const VegetationMaterial& GetVegetationMaterial(const HashString resourceID) { return _VegetationMaterials[resourceID]; }
-
 private:
 
 	//Container for all environment materials.
@@ -91,9 +85,6 @@ private:
 
 	//Container for all terrain materials.
 	static Map<HashString, TerrainMaterial> _TerrainMaterials;
-
-	//Container for all vegetation materials.
-	static Map<HashString, VegetationMaterial> _VegetationMaterials;
 
 	/*
 	*	Loads a resource collection, internal implementation.
@@ -131,10 +122,5 @@ private:
 	*	Given a file, load a terrain material.
 	*/
 	static void LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
-
-	/*
-	*	Given a file, load a vegetation material.
-	*/
-	static void LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 };

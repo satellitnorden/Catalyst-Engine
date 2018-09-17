@@ -61,7 +61,6 @@ enum class RenderPassSubStage : uint8
 	Terrain,
 	DynamicPhysical,
 	InstancedPhysical,
-	Vegetation,
 	DirectionalShadow,
 	Lighting,
 	Sky,
@@ -135,7 +134,6 @@ enum class CommonRenderDataTableLayout : uint8
 	Environment,
 	Terrain,
 	Physical,
-	Vegetation,
 #if defined(CATALYST_ENABLE_OCEAN)
 	Ocean,
 #endif
@@ -201,9 +199,6 @@ enum class Shader : uint8
 	TerrainTessellationControl,
 	TerrainTessellationEvaluation,
 	TerrainVertex,
-	VegetationFragment,
-	VegetationGeometry,
-	VegetationVertex,
 	ViewportVertex,
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFogFragment,

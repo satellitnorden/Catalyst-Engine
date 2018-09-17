@@ -39,7 +39,7 @@ void DynamicOutlineRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::DynamicOutline);
 
 	//Set the sub stage index.
-	SetSubStageIndex(7);
+	SetSubStageIndex(6);
 
 	//Set the shaders.
 	SetVertexShader(Shader::PhysicalVertex);

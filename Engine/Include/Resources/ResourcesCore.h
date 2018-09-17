@@ -11,7 +11,6 @@ enum class ResourceType : uint8
 	PhysicalMaterial,
 	PhysicalModel,
 	TerrainMaterial,
-	VegetationMaterial,
 #if defined(CATALYST_ENABLE_OCEAN)
 	OceanMaterial,
 #endif

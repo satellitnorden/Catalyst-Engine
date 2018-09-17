@@ -231,12 +231,6 @@
     <ClInclude Include="..\..\..\Include\Components\TransformComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\VegetationComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\VegetationCullingComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h">
       <Filter>Core\Include\Algorithms</Filter>
     </ClInclude>
@@ -283,9 +277,6 @@
       <Filter>Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\TerrainEntity.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\VegetationEntity.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h">
@@ -361,9 +352,6 @@
       <Filter>Resources\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\TerrainMaterialData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\VegetationMaterialData.h">
       <Filter>Resources\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h">
@@ -528,9 +516,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\TerrainRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VegetationRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\AxisAlignedBoundingBox.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
@@ -586,15 +571,6 @@
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationMaterial.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationProperties.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationTransformation.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BloomFragmentShader.h">
@@ -908,9 +884,6 @@
     <ClCompile Include="..\..\..\Source\Entities\TerrainEntity.cpp">
       <Filter>Entities\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\VegetationEntity.cpp">
-      <Filter>Entities\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp">
       <Filter>Managers\Source</Filter>
     </ClCompile>
@@ -1173,9 +1146,6 @@
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\TerrainRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\VegetationRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\OceanRenderPass.cpp">

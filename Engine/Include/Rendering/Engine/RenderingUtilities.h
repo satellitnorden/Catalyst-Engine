@@ -15,7 +15,6 @@
 #include <Rendering/Engine/PhysicalVertex.h>
 #include <Rendering/Engine/RenderingCore.h>
 #include <Rendering/Engine/TerrainUniformData.h>
-#include <Rendering/Engine/VegetationTransformation.h>
 
 //Resources.
 #include <Resources/PhysicalModelData.h>
@@ -65,105 +64,6 @@ namespace RenderingUtilities
 
 		box->_Minimum = *_WorldPosition + Vector3(-halfExtent, lowest * height, -halfExtent);
 		box->_Maximum = *_WorldPosition + Vector3(halfExtent, highest * height, halfExtent);
-	}
-
-	/*
-	*	Calculates the vegetation grid. Outputs a new container for the sorted transformations.
-	*/
-	static void CalculateVegetationGrid(const float cutoffDistance, const DynamicArray<VegetationTransformation> &transformations, VegetationComponent *const RESTRICT renderComponent, VegetationCullingComponent *const RESTRICT cullingComponent, DynamicArray<VegetationTransformation> &sortedTransformations) NOEXCEPT
-	{
-		//Set the squared cutoff distance.
-		cullingComponent->_CutoffDistance = cutoffDistance * 2.0f;
-
-		//Calculate the bounding box of all transformations.
-		Vector2 gridMinimum{ FLOAT_MAXIMUM, FLOAT_MAXIMUM };
-		Vector2 gridMaximum{ -FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
-
-		for (const VegetationTransformation &transformation : transformations)
-		{
-			gridMinimum._X = CatalystBaseMath::Minimum<float>(gridMinimum._X, transformation._Position._X);
-			gridMinimum._Y = CatalystBaseMath::Minimum<float>(gridMinimum._Y, transformation._Position._Z);
-			gridMaximum._X = CatalystBaseMath::Maximum<float>(gridMaximum._X, transformation._Position._X);
-			gridMaximum._Y = CatalystBaseMath::Maximum<float>(gridMaximum._Y, transformation._Position._Z);
-		}
-
-		//Now that the bounding box extent is known, calculate the number of rows/columns for the grid.
-		const float xExtent{ gridMaximum._X - gridMinimum._X };
-		const float yExtent{ gridMaximum._Y - gridMinimum._Y };
-
-		const float halfXExtent{ xExtent * 0.5f };
-		const float halfYExtent{ yExtent * 0.5f };
-
-		const uint64 rows{ CatalystBaseMath::Round<uint64>(xExtent / cutoffDistance) };
-		const uint64 columns{ CatalystBaseMath::Round<uint64>(yExtent / cutoffDistance) };
-
-		//Resize all containers accordingly.
-		const uint64 containerSize{ rows * columns };
-		renderComponent->_ShouldDrawGridCell.UpsizeFast(containerSize);
-		renderComponent->_InstanceCounts.UpsizeFast(containerSize);
-		renderComponent->_TransformationOffsets.UpsizeFast(containerSize);
-		cullingComponent->_GridCellCenterLocations.UpsizeFast(containerSize);
-
-		//Calculate all cell center positions.
-		const float rowSize{ xExtent / static_cast<float>(rows) };
-		const float columnSize{ yExtent / static_cast<float>(columns) };
-
-		const float halfRowSize{ rowSize * 0.5f };
-		const float halfColumnSize{ columnSize * 0.5f };
-
-		for (uint64 i = 0; i < rows; ++i)
-		{
-			for (uint64 j = 0; j < columns; ++j)
-			{
-				cullingComponent->_GridCellCenterLocations[(i * columns) + j] = Vector2(	gridMinimum._X + halfRowSize + (rowSize * i),
-																						gridMinimum._Y + halfRowSize + (columnSize * j));
-			}
-		}
-
-		//Fill the new, sorted transformations array.
-		DynamicArray<DynamicArray<DynamicArray<VegetationTransformation>>> temporaryTransformations;
-
-		temporaryTransformations.UpsizeSlow(rows);
-
-		const uint64 approximatedTransformationsPerGridCell{ transformations.Size() / containerSize };
-
-		for (DynamicArray<DynamicArray<VegetationTransformation>> & temporaryTransformation : temporaryTransformations)
-		{
-			temporaryTransformation.UpsizeSlow(columns);
-		}
-
-		const float inverseXExtent{ 1.0f / xExtent };
-		const float inverseYExtent{ 1.0f / yExtent };
-
-		for (const VegetationTransformation &transformation : transformations)
-		{
-			uint64 rowIndex{ CatalystBaseMath::Floor<uint64>(((transformation._Position._X + halfXExtent) * inverseXExtent) * static_cast<float>(rows)) };
-			uint64 columnIndex{ CatalystBaseMath::Floor<uint64>(((transformation._Position._Z + halfYExtent) * inverseYExtent) * static_cast<float>(columns)) };
-
-			rowIndex = CatalystBaseMath::Minimum<uint64>(rowIndex, rows - 1);
-			columnIndex = CatalystBaseMath::Minimum<uint64>(columnIndex, columns - 1);
-
-			temporaryTransformations[rowIndex][columnIndex].EmplaceSlow(transformation);
-		}
-
-		sortedTransformations.UpsizeFast(transformations.Size());
-
-		uint64 offset{ 0 };
-
-		for (uint64 i = 0; i < rows; ++i)
-		{
-			for (uint64 j = 0; j < columns; ++j)
-			{
-				renderComponent->_InstanceCounts[(i * columns) + j] = static_cast<uint32>(temporaryTransformations[i][j].Size());
-				renderComponent->_TransformationOffsets[(i * columns) + j] = offset;
-
-				const uint64 dataSize{ sizeof(VegetationTransformation) * temporaryTransformations[i][j].Size() };
-
-				MemoryUtilities::CopyMemory(reinterpret_cast<byte *const RESTRICT>(sortedTransformations.Data()) + offset, temporaryTransformations[i][j].Data(), dataSize);
-
-				offset += dataSize;
-			}
-		}
 	}
 
 	/*

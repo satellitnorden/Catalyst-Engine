@@ -15,7 +15,6 @@
 #include <Resources/ResourceLoaderUtilities.h>
 #include <Resources/ResourcesCore.h>
 #include <Resources/TerrainMaterialData.h>
-#include <Resources/VegetationMaterialData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -30,7 +29,6 @@ Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::_PhysicalModels;
 Map<HashString, TerrainMaterial> ResourceLoader::_TerrainMaterials;
-Map<HashString, VegetationMaterial> ResourceLoader::_VegetationMaterials;
 
 /*
 *	Given a file path, load a resource collection.
@@ -100,13 +98,6 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			case ResourceType::TerrainMaterial:
 			{
 				LoadTerrainMaterial(file);
-
-				break;
-			}
-
-			case ResourceType::VegetationMaterial:
-			{
-				LoadVegetationMaterial(file);
 
 				break;
 			}
@@ -367,80 +358,4 @@ void ResourceLoader::LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the terrain material via the rendering system.
 	RenderingSystem::Instance->CreateTerrainMaterial(terrainMaterialData, _TerrainMaterials[resourceID]);
-}
-
-/*
-*	Given a file, load a vegetation material.
-*/
-void ResourceLoader::LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
-{
-	//Store the vegetation material data in the vegetation material data structure.
-	VegetationMaterialData vegetationMaterialData;
-
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
-
-	//Read the mask mipmap levels.
-	file.Read(&vegetationMaterialData._MaskMipmapLevels, sizeof(uint8));
-
-	//Read the remaining mipmap levels.
-	file.Read(&vegetationMaterialData._RemainingMipmapLevels, sizeof(uint8));
-
-	//Read the width.
-	file.Read(&vegetationMaterialData._Width, sizeof(uint32));
-
-	//Read the height.
-	file.Read(&vegetationMaterialData._Height, sizeof(uint32));
-
-	//Read the mask data.
-	vegetationMaterialData._MaskData.UpsizeSlow(vegetationMaterialData._MaskMipmapLevels);
-
-	for (uint8 i = 0; i < vegetationMaterialData._MaskMipmapLevels; ++i)
-	{
-		const uint64 textureSize{ (vegetationMaterialData._Width >> i) * (vegetationMaterialData._Height >> i) * 4 };
-
-		vegetationMaterialData._MaskData[i].Reserve(textureSize);
-
-		file.Read(vegetationMaterialData._MaskData[i].Data(), textureSize);
-	}
-
-	//Read the albedo.
-	vegetationMaterialData._AlbedoData.UpsizeSlow(vegetationMaterialData._RemainingMipmapLevels);
-
-	for (uint8 i = 0; i < vegetationMaterialData._RemainingMipmapLevels; ++i)
-	{
-		const uint64 textureSize{ (vegetationMaterialData._Width >> i) * (vegetationMaterialData._Height >> i) * 4 };
-
-		vegetationMaterialData._AlbedoData[i].Reserve(textureSize);
-
-		file.Read(vegetationMaterialData._AlbedoData[i].Data(), textureSize);
-	}
-
-	//Read the normal map.
-	vegetationMaterialData._NormalMapData.UpsizeSlow(vegetationMaterialData._RemainingMipmapLevels);
-
-	for (uint8 i = 0; i < vegetationMaterialData._RemainingMipmapLevels; ++i)
-	{
-		const uint64 textureSize{ (vegetationMaterialData._Width >> i) * (vegetationMaterialData._Height >> i) * 4 };
-
-		vegetationMaterialData._NormalMapData[i].Reserve(textureSize);
-
-		file.Read(vegetationMaterialData._NormalMapData[i].Data(), textureSize);
-	}
-
-	//Read the properties.
-	vegetationMaterialData._PropertiesData.UpsizeSlow(vegetationMaterialData._RemainingMipmapLevels);
-
-	for (uint8 i = 0; i < vegetationMaterialData._RemainingMipmapLevels; ++i)
-	{
-		const uint64 textureSize{ (vegetationMaterialData._Width >> i) * (vegetationMaterialData._Height >> i) * 4 };
-
-		vegetationMaterialData._PropertiesData[i].Reserve(textureSize);
-
-		file.Read(vegetationMaterialData._PropertiesData[i].Data(), textureSize);
-	}
-
-	//Create the vegetation material via the rendering system.
-	RenderingSystem::Instance->CreateVegetationMaterial(vegetationMaterialData, _VegetationMaterials[resourceID]);
 }

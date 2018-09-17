@@ -17,8 +17,6 @@
 #include <Components/TerrainComponent.h>
 #include <Components/TerrainRenderComponent.h>
 #include <Components/TransformComponent.h>
-#include <Components/VegetationComponent.h>
-#include <Components/VegetationCullingComponent.h>
 
 /*
 *	Declares an entity class with one component.
@@ -78,6 +76,5 @@ class ComponentManager final
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(SpotLight, SpotLightComponent);
 	DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(Terrain, TerrainComponent, FrustumCullingComponent, TerrainRenderComponent);
-	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(Vegetation, VegetationComponent, VegetationCullingComponent);
 
 };
