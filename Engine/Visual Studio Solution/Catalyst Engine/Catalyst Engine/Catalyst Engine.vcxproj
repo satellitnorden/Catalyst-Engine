@@ -93,10 +93,8 @@
     <ClInclude Include="..\..\..\Include\Entities\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\DynamicPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Entity.h" />
-    <ClInclude Include="..\..\..\Include\Entities\EntityDestructionData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\EntityInitializationData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\EntityTerminationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\DynamicPhysicalInitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\InitializationData\ParticleSystemInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\TerrainInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InstancedPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\ParticleSystemEntity.h" />

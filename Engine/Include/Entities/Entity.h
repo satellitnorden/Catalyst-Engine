@@ -19,6 +19,7 @@ public:
 	enum class EntityType : uint8
 	{
 		DynamicPhysical,
+		ParticleSystem,
 		Terrain,
 
 		NumberOfEntityTypes

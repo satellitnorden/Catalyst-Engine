@@ -23,11 +23,13 @@
 //Forward declarations.
 class CameraEntity;
 class CPUTexture2D;
+class Entity;
 class EnvironmentMaterial;
 class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
 class ParticleMaterial;
 class ParticleSystemEntity;
+class ParticleSystemInitializationData;
 class ParticleSystemProperties;
 class PhysicalModel;
 class RenderPass;
@@ -133,7 +135,7 @@ public:
 	/*
 	*	Initializes a particle system entity.
 	*/
-	void InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties, const Vector3 &worldPosition) const NOEXCEPT;
+	void InitializeParticleSystemEntity(const Entity *const RESTRICT entity, const ParticleSystemInitializationData *const RESTRICT data) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.

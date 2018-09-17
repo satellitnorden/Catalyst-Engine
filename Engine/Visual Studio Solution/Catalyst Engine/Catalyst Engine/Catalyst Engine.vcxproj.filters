@@ -270,12 +270,6 @@
     <ClInclude Include="..\..\..\Include\Entities\Entity.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\EntityInitializationData.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\EntityTerminationData.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\InstancedPhysicalEntity.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
@@ -852,9 +846,6 @@
     <ClInclude Include="..\..\..\Include\Core\General\Updateable.h">
       <Filter>Core\Include\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\EntityDestructionData.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\DynamicOutlineRenderComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
@@ -878,6 +869,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h">
       <Filter>Physics\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\InitializationData\ParticleSystemInitializationData.h">
+      <Filter>Entities\Include\InitializationData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,7 @@
 #include <Entities/SpotLightEntity.h>
 #include <Entities/TerrainEntity.h>
 #include <Entities/VegetationEntity.h>
+#include <Entities/InitializationData/ParticleSystemInitializationData.h>
 #include <Entities/InitializationData/TerrainInitializationData.h>
 
 //Managers.
@@ -308,15 +309,15 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 /*
 *	Initializes a particle system entity.
 */
-void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties, const Vector3 &worldPosition) const NOEXCEPT
+void VulkanRenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRICT entity, const ParticleSystemInitializationData *const RESTRICT data) const NOEXCEPT
 {
 	//Cache relevant data.
-	ParticleSystemComponent &component{ ComponentManager::GetParticleSystemParticleSystemComponents()[entity._ComponentsIndex] };
-	ParticleSystemRenderComponent &renderComponent{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[entity._ComponentsIndex] };
+	ParticleSystemComponent &component{ ComponentManager::GetParticleSystemParticleSystemComponents()[entity->_ComponentsIndex] };
+	ParticleSystemRenderComponent &renderComponent{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[entity->_ComponentsIndex] };
 
 	//Create the uniform buffer.
 	VulkanUniformBuffer *const RESTRICT uniformBuffer{ VulkanInterface::Instance->CreateUniformBuffer(static_cast<VkDeviceSize>(sizeof(VulkanParticleSystemProperties))) };
-	const VulkanParticleSystemProperties vulkanParticleSystemProperties{ properties };
+	const VulkanParticleSystemProperties vulkanParticleSystemProperties{ data->_Properties };
 	uniformBuffer->UploadData(&vulkanParticleSystemProperties);
 
 	//Create the descriptor set.
@@ -326,18 +327,18 @@ void VulkanRenderingSystem::InitializeParticleSystemEntity(const ParticleSystemE
 	StaticArray<VkWriteDescriptorSet, 2> particleSystemWriteDescriptorSets
 	{
 		uniformBuffer->GetWriteDescriptorSet(newDescriptorSet, 0),
-		static_cast<const Vulkan2DTexture *RESTRICT>(material._AlbedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1)
+		static_cast<const Vulkan2DTexture *RESTRICT>(data->_Material._AlbedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1)
 	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(particleSystemWriteDescriptorSets.Size()), particleSystemWriteDescriptorSets.Data(), 0, nullptr);
 
 	//Set up the particle system's components.
-	component._Properties = properties;
+	component._Properties = data->_Properties;
 	component._PropertiesUniformBuffer = uniformBuffer;
 	renderComponent._ParticleSystemRandomSeed = CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f);
 	renderComponent._ParticleSystemStartingTime = EngineSystem::Instance->GetTotalTime();
-	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(properties._Lifetime / properties._SpawnFrequency);
-	renderComponent._WorldPosition = worldPosition;
+	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(data->_Properties._Lifetime / data->_Properties._SpawnFrequency);
+	renderComponent._WorldPosition = data->_Position;
 }
 
 /*

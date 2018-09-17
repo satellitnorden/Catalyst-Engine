@@ -1,6 +1,9 @@
 //Header file.
 #include <Main/MaximGameSystem.h>
 
+//Entities.
+#include <Entities/InitializationData/ParticleSystemInitializationData.h>
+
 //Managers.
 #include <Managers/RenderingConfigurationManager.h>
 
@@ -54,18 +57,23 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 
 	for (uint64 i = 0, size = _Particles.Size(); i < size; ++i)
 	{
+		ParticleSystemInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
+
+		data->_Material = RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle);
+		data->_Properties._FadeTime = 10.0f;
+		data->_Properties._Lifetime = 60.0f;
+		data->_Properties._SpawnFrequency = 0.01f;
+		data->_Properties._MinimumScale = Vector2(0.01f, 0.01f);
+		data->_Properties._MaximumScale = Vector2(0.02f, 0.02f);
+		data->_Properties._MinimumPosition = Vector3(-5.0f, -12.5f, -5.0f);
+		data->_Properties._MaximumPosition = Vector3(5.0f, 12.5f, 5.0f);
+		data->_Properties._MinimumVelocity = Vector3(-0.1f, -0.1f, -0.1f);
+		data->_Properties._MaximumVelocity = Vector3(0.1f, 0.1f, 0.1f);
+		data->_Position = positions[i];
+
 		_Particles[i] = EntitySystem::Instance->CreateEntity<ParticleSystemEntity>();
-		_Particles[i]->Initialize(	RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle),
-								ParticleSystemProperties(	10.0f,
-															60.0f,
-															0.1f,
-															Vector2(0.01f, 0.01f),
-															Vector2(0.02f, 0.02f),
-															Vector3(-5.0f, -12.5f, -5.0f),
-															Vector3(5.0f, 12.5f, 5.0f),
-															Vector3(-0.1f, -0.1f, -0.1f),
-															Vector3(0.1f, 0.1f, 0.1f)),
-															positions[i]);
+
+		EntitySystem::Instance->InitializeEntity(_Particles[i], data);
 	}
 
 	//Create the sun.

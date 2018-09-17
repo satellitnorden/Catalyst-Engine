@@ -12,17 +12,8 @@
 */
 ParticleSystemEntity::ParticleSystemEntity() NOEXCEPT
 {
-	//Get a new components index.
-	_ComponentsIndex = ComponentManager::GetNewParticleSystemComponentsIndex(this);
-}
-
-/*
-*	Initializes this particle system entity.
-*/
-void ParticleSystemEntity::Initialize(const ParticleMaterial &material, const ParticleSystemProperties &properties, const Vector3 &worldPosition) NOEXCEPT
-{
-	//Initialize this particle system entity via the rendering system.
-	RenderingSystem::Instance->InitializeParticleSystemEntity(*this, material, properties, worldPosition);
+	//Set the entity type.
+	_Type = EntityType::ParticleSystem;
 }
 
 /*

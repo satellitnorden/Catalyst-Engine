@@ -35,6 +35,7 @@ class OceanMaterialData;
 #endif
 class ParticleMaterialData;
 class ParticleSystemEntity;
+class ParticleSystemInitializationData;
 class ParticleSystemProperties;
 class PhysicalMaterial;
 class PhysicalMaterialData;
@@ -350,7 +351,7 @@ public:
 	/*
 	*	Initializes a particle system entity.
 	*/
-	void InitializeParticleSystemEntity(const ParticleSystemEntity &entity, const ParticleMaterial &material, const ParticleSystemProperties &properties, const Vector3 &worldPosition) const NOEXCEPT;
+	void InitializeParticleSystemEntity(const Entity *const RESTRICT entity, const ParticleSystemInitializationData *const RESTRICT data) const NOEXCEPT;
 
 	/*
 	*	Finalizes the initialization of a render pass.

@@ -7,9 +7,6 @@
 
 //Entities.
 #include <Entities/Entity.h>
-#include <Entities/EntityInitializationData.h>
-#include <Entities/EntityTerminationData.h>
-#include <Entities/EntityDestructionData.h>
 
 //Multithreading.
 #include <Multithreading/Spinlock.h>
@@ -92,7 +89,122 @@ public:
 	*/
 	void RequestDestruction(Entity *const RESTRICT entity, const bool force) NOEXCEPT;
 
+	/*
+	*	Initializes one entity.
+	*/
+	void InitializeEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Terminates one entity.
+	*/
+	void TerminateEntity(Entity* const RESTRICT entity) NOEXCEPT;
+
+	/*
+	*	Destroys one entity.
+	*/
+	void DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT;
+
 private:
+
+	/*
+	*	Entity initialization data definition.
+	*/
+	class EntityInitializationData final
+	{
+
+	public:
+
+		/*
+		*	Default constructor, prohibited - must be constructed with the proper arguments.
+		*/
+		EntityInitializationData() NOEXCEPT = delete;
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		EntityInitializationData(Entity* const RESTRICT initialEntity, void* const RESTRICT initialData, const bool initialForce) NOEXCEPT
+			:
+			_Entity(initialEntity),
+			_Data(initialData),
+			_Force(initialForce)
+		{
+
+		}
+
+		//The entity to initialize.
+		Entity* RESTRICT _Entity;
+
+		//The initialization data.
+		void* RESTRICT _Data;
+
+		//Denotes whether or not to force this initialization.
+		bool _Force;
+
+	};
+
+	/*
+	*	Entity termination data definition.
+	*/
+	class EntityTerminationData final
+	{
+
+	public:
+
+		/*
+		*	Default constructor, prohibited - must be constructed with the proper arguments.
+		*/
+		EntityTerminationData() NOEXCEPT = delete;
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		EntityTerminationData(Entity* const RESTRICT initialEntity, const bool initialForce) NOEXCEPT
+			:
+			_Entity(initialEntity),
+			_Force(initialForce)
+		{
+
+		}
+
+		//The entity to terminate.
+		Entity* RESTRICT _Entity;
+
+		//Denotes whether or not to force this termination.
+		bool _Force;
+
+	};
+
+	/*
+	*	Entity destruction data definition.
+	*/
+	class EntityDestructionData final
+	{
+
+	public:
+
+		/*
+		*	Default constructor, prohibited - must be constructed with the proper arguments.
+		*/
+		EntityDestructionData() NOEXCEPT = delete;
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		EntityDestructionData(Entity* const RESTRICT initialEntity, const bool initialForce) NOEXCEPT
+			:
+			_Entity(initialEntity),
+			_Force(initialForce)
+		{
+
+		}
+
+		//The entity to destroy.
+		Entity* RESTRICT _Entity;
+
+		//Denotes whether or not to force this destruction.
+		bool _Force;
+
+	};
 
 	//The list of entities.
 	DynamicArray<Entity *RESTRICT> _Entities;
@@ -116,44 +228,39 @@ private:
 	DynamicArray<EntityDestructionData> _DestructionQueue;
 
 	/*
-	*	Initializes entities.
+	*	Processes the initialization queue.
 	*/
-	void InitializeEntities() NOEXCEPT;
-
-	/*
-	*	Initializes one entity.
-	*/
-	void InitializeEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT;
+	void ProcessInitializationQueue() NOEXCEPT;
 
 	/*
 	*	Initializes a dynamic physical entity.
 	*/
-	void InitializeDynamicPhysicalEntity(EntityInitializationData *const RESTRICT data) NOEXCEPT;
+	void InitializeDynamicPhysicalEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Initializes a particle system physical entity.
+	*/
+	void InitializeParticleSystemEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Initializes a terrain entity.
 	*/
-	void InitializeTerrainEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT;
+	void InitializeTerrainEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT;
 
 	/*
-	*	Terminates entities.
+	*	Processes the termination queue.
 	*/
-	void TerminateEntities() NOEXCEPT;
-
-	/*
-	*	Terminates one entity.
-	*/
-	void TerminateEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT;
+	void ProcessTerminationQueue() NOEXCEPT;
 
 	/*
 	*	Terminates a dynamic physical entity.
 	*/
-	void TerminateDynamicPhysicalEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT;
+	void TerminateDynamicPhysicalEntity(Entity* const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Terminates a terrain entity.
 	*/
-	void TerminateTerrainEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT;
+	void TerminateTerrainEntity(Entity* const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Destroys initialization data for an entity.
@@ -162,14 +269,9 @@ private:
 	void DestroyInitializationData(void* const RESTRICT data) NOEXCEPT;
 
 	/*
-	*	Destroys entities.
+	*	Processes the destruction queue.
 	*/
-	void DestroyEntities() NOEXCEPT;
-
-	/*
-	*	Destroys one entity.
-	*/
-	void DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT;
+	void ProcessDestructionQueue() NOEXCEPT;
 
 };
 

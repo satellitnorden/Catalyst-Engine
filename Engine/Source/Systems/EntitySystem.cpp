@@ -6,6 +6,7 @@
 
 //Entities.
 #include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
+#include <Entities/InitializationData/ParticleSystemInitializationData.h>
 #include <Entities/InitializationData/TerrainInitializationData.h>
 
 //Multithreading.
@@ -22,14 +23,14 @@ DEFINE_SINGLETON(EntitySystem);
 */
 void EntitySystem::ClosingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Initialize entities.
-	InitializeEntities();
+	//Process the initialization queue.
+	ProcessInitializationQueue();
 
-	//Terminate entities.
-	TerminateEntities();
+	//Process the termination queue.
+	ProcessTerminationQueue();
 
-	//Destroy entities.
-	DestroyEntities();
+	//Process the destruction queue.
+	ProcessDestructionQueue();
 }
 
 /*
@@ -93,9 +94,94 @@ void EntitySystem::RequestDestruction(Entity *const RESTRICT entity, const bool 
 }
 
 /*
-*	Initializes entities.
+*	Initializes one entity.
 */
-void EntitySystem::InitializeEntities() NOEXCEPT
+void EntitySystem::InitializeEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT
+{
+	switch (entity->_Type)
+	{
+		case Entity::EntityType::DynamicPhysical:
+		{
+			InitializeDynamicPhysicalEntity(entity, data);
+
+			break;
+		}
+
+		case Entity::EntityType::ParticleSystem:
+		{
+			InitializeParticleSystemEntity(entity, data);
+
+			break;
+		}
+
+		case Entity::EntityType::Terrain:
+		{
+			InitializeTerrainEntity(entity, data);
+
+			break;
+		}
+
+#if !defined(CATALYST_FINAL)
+		default:
+		{
+			ASSERT(false, "Invalid entity type!");
+		}
+#endif
+	}
+
+	//Set this entity to initialized.
+	entity->_Initialized = true;
+}
+
+/*
+*	Terminates one entity.
+*/
+void EntitySystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCEPT
+{
+	switch (entity->_Type)
+	{
+		case Entity::EntityType::DynamicPhysical:
+		{
+			TerminateDynamicPhysicalEntity(entity);
+
+			break;
+		}
+
+		case Entity::EntityType::Terrain:
+		{
+			TerminateTerrainEntity(entity);
+
+			break;
+		}
+
+#if !defined(CATALYST_FINAL)
+		default:
+		{
+			ASSERT(false, "Invalid entity type!");
+		}
+#endif
+	}
+
+	//Set this entity to un-initialized.
+	entity->_Initialized = false;
+}
+
+/*
+*	Destroys one entity.
+*/
+void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//The entity should already be terminated, so just deallocate the entity.
+	delete entity;
+
+	//Remove the entity from the list of entities.
+	_Entities.Erase(entity);
+}
+
+/*
+*	Processes the initialization queue.
+*/
+void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 {
 	//Lock the initialization queue.
 	ScopedLock<Spinlock> scopedLock{ _InitializationQueueLock };
@@ -116,7 +202,7 @@ void EntitySystem::InitializeEntities() NOEXCEPT
 
 		if (data._Force)
 		{
-			InitializeEntity(&data);
+			InitializeEntity(data._Entity, data._Data);
 
 			++forceInitialized;
 
@@ -130,78 +216,60 @@ void EntitySystem::InitializeEntities() NOEXCEPT
 	if (forceInitialized == 0)
 	{
 		EntityInitializationData *const RESTRICT data = &_InitializationQueue.Back();
-		InitializeEntity(data);
+		InitializeEntity(data->_Entity, data->_Data);
 		_InitializationQueue.PopFast();
 	}
 }
 
 /*
-*	Initializes one entity.
+*	Initializes a dynamic physical entity.
 */
-void EntitySystem::InitializeEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT
+void EntitySystem::InitializeDynamicPhysicalEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT
 {
-	switch (data->_Entity->_Type)
-	{
-		case Entity::EntityType::DynamicPhysical:
-		{
-			InitializeDynamicPhysicalEntity(data);
+	//Retrieve a new components index for this dynamic physical entity.
+	entity->_ComponentsIndex = ComponentManager::GetNewDynamicPhysicalComponentsIndex(entity);
 
-			break;
-		}
+	//Initialize the dynamic physical entity via the rendering system.
+	RenderingSystem::Instance->InitializeDynamicPhysicalEntity(entity, static_cast<const DynamicPhysicalInitializationData *const RESTRICT>(data));
 
-		case Entity::EntityType::Terrain:
-		{
-			InitializeTerrainEntity(data);
-
-			break;
-		}
-
-#if !defined(CATALYST_FINAL)
-		default:
-		{
-			ASSERT(false, "Invalid entity type!");
-		}
-#endif
-	}
-
-	//Set this entity to initialized.
-	data->_Entity->_Initialized = true;
+	//Destroy the initialization data.
+	DestroyInitializationData<DynamicPhysicalInitializationData>(data);
 }
 
 /*
-*	Initializes a dynamic physical entity.
+*	Initializes a particle system physical entity.
 */
-void EntitySystem::InitializeDynamicPhysicalEntity(EntityInitializationData *const RESTRICT data) NOEXCEPT
+void EntitySystem::InitializeParticleSystemEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT
 {
-	//Retrieve a new components index for the dynamic physical entity.
-	data->_Entity->_ComponentsIndex = ComponentManager::GetNewDynamicPhysicalComponentsIndex(data->_Entity);
+	//Retrieve a new components index for this particle system entity.
+	entity->_ComponentsIndex = ComponentManager::GetNewParticleSystemComponentsIndex(entity);
 
-	//Initialize the dynamic physical entity via the rendering system.
-	RenderingSystem::Instance->InitializeDynamicPhysicalEntity(data->_Entity, static_cast<const DynamicPhysicalInitializationData *const RESTRICT>(data->_Data));
+	//Initialize the particle system entity via the rendering system.
+	RenderingSystem::Instance->InitializeParticleSystemEntity(entity, static_cast<const ParticleSystemInitializationData *const RESTRICT>(data));
 
 	//Destroy the initialization data.
-	DestroyInitializationData<DynamicPhysicalInitializationData>(data->_Data);
+	DestroyInitializationData<ParticleSystemInitializationData>(data);
 }
 
 /*
 *	Initializes a terrain entity.
 */
-void EntitySystem::InitializeTerrainEntity(EntityInitializationData* const RESTRICT data) NOEXCEPT
+void EntitySystem::InitializeTerrainEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT
 {
 	//Retrieve a new components index for the terrain entity.
-	data->_Entity->_ComponentsIndex = ComponentManager::GetNewTerrainComponentsIndex(data->_Entity);
+	entity->_ComponentsIndex = ComponentManager::GetNewTerrainComponentsIndex(entity);
 
 	//Initialize the terrain entity via the rendering system.
-	RenderingSystem::Instance->InitializeTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(data->_Entity), static_cast<const TerrainInitializationData *const RESTRICT>(data->_Data));
+	RenderingSystem::Instance->InitializeTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(entity), static_cast<const TerrainInitializationData *const RESTRICT>(data));
 
 	//Destroy the initialization data.
-	DestroyInitializationData<TerrainInitializationData>(data->_Data);
+	DestroyInitializationData<TerrainInitializationData>(data);
 }
 
 /*
-*	Terminates entities.
+*	Processes the termination queue.
 */
-void EntitySystem::TerminateEntities() NOEXCEPT
+void EntitySystem::ProcessTerminationQueue() NOEXCEPT
 {
 	//Lock the termination queue.
 	ScopedLock<Spinlock> scopedLock{ _TerminationQueueLock };
@@ -222,7 +290,7 @@ void EntitySystem::TerminateEntities() NOEXCEPT
 
 		if (data._Force)
 		{
-			TerminateEntity(&data);
+			TerminateEntity(data._Entity);
 
 			++forceTerminated;
 
@@ -236,69 +304,36 @@ void EntitySystem::TerminateEntities() NOEXCEPT
 	if (forceTerminated == 0)
 	{
 		EntityTerminationData *const RESTRICT data = &_TerminationQueue.Back();
-		TerminateEntity(data);
+		TerminateEntity(data->_Entity);
 		_TerminationQueue.PopFast();
 	}
 }
 
 /*
-*	Terminates one entity.
-*/
-void EntitySystem::TerminateEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT
-{
-	switch (data->_Entity->_Type)
-	{
-		case Entity::EntityType::DynamicPhysical:
-		{
-			TerminateDynamicPhysicalEntity(data);
-
-			break;
-		}
-
-		case Entity::EntityType::Terrain:
-		{
-			TerminateTerrainEntity(data);
-
-			break;
-		}
-
-#if !defined(CATALYST_FINAL)
-		default:
-		{
-			ASSERT(false, "Invalid entity type!");
-		}
-#endif
-	}
-
-	//Set this entity to un-initialized.
-	data->_Entity->_Initialized = false;
-}
-
-/*
 *	Terminates a dynamic physical entity.
 */
-void EntitySystem::TerminateDynamicPhysicalEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT
+void EntitySystem::TerminateDynamicPhysicalEntity(Entity* const RESTRICT entity) NOEXCEPT
 {
 	//Return this entitiy's components index.
-	ComponentManager::ReturnDynamicPhysicalComponentsIndex(data->_Entity->_ComponentsIndex);
+	ComponentManager::ReturnDynamicPhysicalComponentsIndex(entity->_ComponentsIndex);
 }
 
 /*
 *	Terminates a terrain entity.
 */
-void EntitySystem::TerminateTerrainEntity(EntityTerminationData* const RESTRICT data) NOEXCEPT
+void EntitySystem::TerminateTerrainEntity(Entity* const RESTRICT entity) NOEXCEPT
 {
 	//Terminate the terrain entity via the rendering system.
-	RenderingSystem::Instance->TerminateTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(data->_Entity));
+	RenderingSystem::Instance->TerminateTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(entity));
 
 	//Return this entitiy's components index.
-	ComponentManager::ReturnTerrainComponentsIndex(data->_Entity->_ComponentsIndex);
+	ComponentManager::ReturnTerrainComponentsIndex(entity->_ComponentsIndex);
 }
 
 /*
-*	Destroys entities.
+*	Processes the destruction queue.
 */
-void EntitySystem::DestroyEntities() NOEXCEPT
+void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 {
 	//Lock the destruction queue.
 	ScopedLock<Spinlock> scopedLock{ _DestructionQueueLock };
@@ -336,16 +371,4 @@ void EntitySystem::DestroyEntities() NOEXCEPT
 		DestroyEntity(data._Entity);
 		_DestructionQueue.PopFast();
 	}
-}
-
-/*
-*	Destroys one entity.
-*/
-void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
-{
-	//The entity should already be terminated, so just deallocate the entity.
-	delete entity;
-
-	//Remove the entity from the list of entities.
-	_Entities.Erase(entity);
 }
