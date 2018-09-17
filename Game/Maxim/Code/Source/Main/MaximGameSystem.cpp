@@ -60,6 +60,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 		ParticleSystemInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
 
 		data->_Material = RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle);
+		data->_Properties._Properties = static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::Looping);
 		data->_Properties._FadeTime = 10.0f;
 		data->_Properties._Lifetime = 60.0f;
 		data->_Properties._SpawnFrequency = 0.01f;

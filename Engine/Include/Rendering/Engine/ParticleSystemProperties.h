@@ -12,6 +12,16 @@ class ParticleSystemProperties final
 
 public:
 
+	//Enumeration covering all different particle system properties.
+	enum class ParticleSystemProperty : uint32
+	{
+		AffectedByWind = BIT(0),
+		Looping = BIT(1)
+	};
+
+	//The properties of this particle system.
+	uint32 _Properties;
+
 	//The fade time, for fade-ins/fade-outs.
 	float _FadeTime;
 
