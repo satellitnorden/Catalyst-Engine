@@ -12,6 +12,9 @@ class VulkanParticleSystemProperties final
 
 public:
 
+	//The properties.
+	int32 _Properties;
+
 	//The fade time.
 	float _FadeTime;
 
@@ -20,9 +23,6 @@ public:
 
 	//The spawn frequency.
 	float _SpawnFrequency;
-
-	//Some padding.
-	Padding<4> _Padding1;
 
 	//The minimum scale.
 	Vector2 _MinimumScale;
@@ -59,6 +59,7 @@ public:
 	*/
 	VulkanParticleSystemProperties(const ParticleSystemProperties &otherProperties) NOEXCEPT
 		:
+		_Properties(otherProperties._Properties),
 		_FadeTime(otherProperties._FadeTime),
 		_Lifetime(otherProperties._Lifetime),
 		_SpawnFrequency(otherProperties._SpawnFrequency),
@@ -74,9 +75,10 @@ public:
 
 };
 
-static_assert(offsetof(VulkanParticleSystemProperties, _FadeTime) == 0, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, _Lifetime) == 4, "Member of VulkanParticleSystemProperties is not layout correctly.");
-static_assert(offsetof(VulkanParticleSystemProperties, _SpawnFrequency) == 8, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _Properties) == 0, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _FadeTime) == 4, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _Lifetime) == 8, "Member of VulkanParticleSystemProperties is not layout correctly.");
+static_assert(offsetof(VulkanParticleSystemProperties, _SpawnFrequency) == 12, "Member of VulkanParticleSystemProperties is not layout correctly.");
 static_assert(offsetof(VulkanParticleSystemProperties, _MinimumScale) == 16, "Member of VulkanParticleSystemProperties is not layout correctly.");
 static_assert(offsetof(VulkanParticleSystemProperties, _MaximumScale) == 24, "Member of VulkanParticleSystemProperties is not layout correctly.");
 static_assert(offsetof(VulkanParticleSystemProperties, _MinimumPosition) == 32, "Member of VulkanParticleSystemProperties is not layout correctly.");

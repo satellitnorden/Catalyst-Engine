@@ -873,6 +873,9 @@
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\ParticleSystemInitializationData.h">
       <Filter>Entities\Include\InitializationData</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\InitializationData\EntityInitializationData.h">
+      <Filter>Entities\Include\InitializationData</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

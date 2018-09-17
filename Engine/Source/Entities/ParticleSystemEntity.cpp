@@ -5,6 +5,7 @@
 #include <Components/ComponentManager.h>
 
 //Systems.
+#include <Systems/EngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
 /*
@@ -14,6 +15,30 @@ ParticleSystemEntity::ParticleSystemEntity() NOEXCEPT
 {
 	//Set the entity type.
 	_Type = EntityType::ParticleSystem;
+}
+
+/*
+*	Returns whether or not this entity should automatically terminate.
+*/
+bool ParticleSystemEntity::ShouldAutomaticallyTerminate() const NOEXCEPT
+{
+	//Return whether or not this entity should automatically terminate.
+	const ParticleSystemProperties &properties{ ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._Properties };
+	const bool isLooping{ (properties._Properties & static_cast<uint8>(ParticleSystemProperties::ParticleSystemProperty::Looping)) == static_cast<uint8>(ParticleSystemProperties::ParticleSystemProperty::Looping) };
+
+	if (isLooping)
+	{
+		return false;
+	}
+
+	else
+	{
+		const float startingTime{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex]._ParticleSystemStartingTime };
+		const float totalTime{ EngineSystem::Instance->GetTotalTime() };
+		const float elapsedTime{ totalTime - startingTime };
+
+		return elapsedTime >= properties._Lifetime - properties._SpawnFrequency + properties._Lifetime;
+	}
 }
 
 /*

@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Entities.
+#include <Entities/InitializationData/EntityInitializationData.h>
+
 //Math.
 #include <Math/Vector3.h>
 
@@ -10,7 +13,7 @@
 #include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 
-class DynamicPhysicalInitializationData final
+class DynamicPhysicalInitializationData final : public EntityInitializationData
 {
 
 public:

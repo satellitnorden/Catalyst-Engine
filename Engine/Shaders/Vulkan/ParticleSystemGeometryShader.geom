@@ -70,9 +70,10 @@ layout (triangle_strip, max_vertices = 4) out;
 //The particle system uniform data.
 layout (std140, set = 2, binding = 0) uniform ParticleSystemUniformData
 { 
-	layout (offset = 0) float fadeTime;
-	layout (offset = 4) float lifetime;
-	layout (offset = 8) float spawnFrequency;
+	layout (offset = 0) int properties;
+	layout (offset = 4) float fadeTime;
+	layout (offset = 8) float lifetime;
+	layout (offset = 12) float spawnFrequency;
 	layout (offset = 16) vec2 particleSystemInitialMinimumScale;
 	layout (offset = 24) vec2 particleSystemInitialMaximumScale;
 	layout (offset = 32) vec3 particleSystemInitialMinimumPosition;
@@ -92,6 +93,22 @@ layout (location = 3) out vec3 fragmentWorldPosition;
 
 //Globals.
 int particleIndex;
+
+/*
+*	Returns whether or not this particle system is affected by wind.
+*/
+bool IsAffectedByWind()
+{
+	return (properties & (1 << 0)) == (1 << 0);
+}
+
+/*
+*	Returns whether or not this particle system is looping.
+*/
+bool IsLooping()
+{
+	return (properties & (1 << 1)) == (1 << 1);
+}
 
 /*
 *	Given a seed, generate a random float in the 0.0f to 1.0f range.
@@ -135,7 +152,7 @@ vec3 GenerateRandomVelocity()
 	float randomY = mix(particleSystemInitialMinimumVelocity.y, particleSystemInitialMaximumVelocity.y, RandomFloat(float(particleIndex) * 0.4f + particleSystemRandomSeed * 0.6f));
 	float randomZ = mix(particleSystemInitialMinimumVelocity.z, particleSystemInitialMaximumVelocity.z, RandomFloat(float(particleIndex) * 0.3f + particleSystemRandomSeed * 0.7f));
 
-	return vec3(randomX, randomY, randomZ);
+	return vec3(randomX, randomY, randomZ) + (IsAffectedByWind() ? windDirection * windStrength : vec3(0.0f));
 }
 
 /*
@@ -161,7 +178,7 @@ void main()
 	particleSpawnTime = particleSpawnTime + lifetime * iteration;
 
 	//Is this particle spawned?
-	if (particleSystemTotalTime >= particleSpawnTime)
+	if (particleSystemTotalTime >= particleSpawnTime && (IsLooping() || iteration == 0))
 	{
 		//Calculate the current lifetime.
 		float currentLifetime = particleSystemTotalTime - particleSpawnTime;

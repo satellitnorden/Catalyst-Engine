@@ -265,6 +265,16 @@ public:
 	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;
 
 	/*
+	*	Uploads data to a uniform buffer.
+	*/
+	void UploadDataToUniformBuffer(UniformBufferHandle handle, const void *const RESTRICT data) const NOEXCEPT;
+
+	/*
+	*	Destroys a uniform buffer.
+	*/
+	void DestroyUniformBuffer(UniformBufferHandle handle) const NOEXCEPT;
+
+	/*
 	*	Returns the current dynamic uniform data render data table.
 	*/
 	RenderDataTableHandle GetCurrentDynamicUniformDataRenderDataTable() const NOEXCEPT;
@@ -352,6 +362,11 @@ public:
 	*	Initializes a particle system entity.
 	*/
 	void InitializeParticleSystemEntity(const Entity *const RESTRICT entity, const ParticleSystemInitializationData *const RESTRICT data) const NOEXCEPT;
+
+	/*
+	*	Terminates a particle system entity.
+	*/
+	void TerminateParticleSystemEntity(const Entity *const RESTRICT entity) const NOEXCEPT;
 
 	/*
 	*	Finalizes the initialization of a render pass.

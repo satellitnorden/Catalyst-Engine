@@ -31,6 +31,12 @@ void EntitySystem::ClosingUpdateSystemSynchronous(const UpdateContext *const RES
 
 	//Process the destruction queue.
 	ProcessDestructionQueue();
+
+	//Process the automatic termination queue.
+	ProcessAutomaticTerminationQueue();
+
+	//Process the automatic destruction queue.
+	ProcessAutomaticDestructionQueue();
 }
 
 /*
@@ -46,58 +52,27 @@ void EntitySystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
-*	Requests the initialization of en entity.
-*	Initialization will happen at the next synchronous update of the entity system.
-*	Usually only one entity is initialized at each update of the entity system.
-*	But if the initialization is forced, it will take priority and will be initialized on the next update.
-*	So if N entities are forced for the next entity system update, all of them will be initialized.
-*/
-void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, void* const RESTRICT data, const bool force) NOEXCEPT
-{
-	//Lock the queue.
-	ScopedLock<Spinlock> scopedLock{ _InitializationQueueLock };
-
-	//Add the data.
-	_InitializationQueue.EmplaceSlow(entity, data, force);
-}
-
-/*
-*	Requests the termination of en entity.
-*	Termination will happen at the next synchronous update of the entity system.
-*	Usually only one entity is terminated at each update of the entity system.
-*	But if the termination is forced, it will take priority and will be terminated on the next update.
-*	So if N entities are forced for the next entity system update, all of them will be terminated.
-*/
-void EntitySystem::RequesTermination(Entity* const RESTRICT entity, const bool force) NOEXCEPT
-{
-	//Lock the queue.
-	ScopedLock<Spinlock> scopedLock{ _TerminationQueueLock };
-
-	//Add the data.
-	_TerminationQueue.EmplaceSlow(entity, force);
-}
-
-/*
-*	Requests the destruction of an entity.
-*	Destruction will happen at the next synchronous update of the entity system.
-*	Usually only one entity is destroyed at each update of the entity system.
-*	But if the destruction is forced, it will take priority and will be destroyed on the next update.
-*	So if N entities are forced for the next entity system update, all of them will be destroyed.
-*/
-void EntitySystem::RequestDestruction(Entity *const RESTRICT entity, const bool force) NOEXCEPT
-{
-	//Lock the queue.
-	ScopedLock<Spinlock> scopedLock{ _DestructionQueueLock };
-
-	//Add the data.
-	_DestructionQueue.EmplaceSlow(entity, force);
-}
-
-/*
 *	Initializes one entity.
 */
-void EntitySystem::InitializeEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT
+void EntitySystem::InitializeEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
+	//If this entity is intialized with the automatic destruction property, add it to the automatic destruction queue.
+	if (IS_BIT_SET(data->_Properties, static_cast<uint8>(EntityInitializationData::EntityProperty::AutomaticDestruction)))
+	{
+		ScopedLock<Spinlock> scopedLock{ _AutomaticDestructionQueueLock };
+
+		_AutomaticDestructionQueue.EmplaceSlow(entity);
+	}
+
+	//If this entity is intialized with the automatic termination property, add it to the automatic termination queue.
+	if (IS_BIT_SET(data->_Properties, static_cast<uint8>(EntityInitializationData::EntityProperty::AutomaticTermination)))
+	{
+		ScopedLock<Spinlock> scopedLock{ _AutomaticTerminationQueueLock };
+
+		_AutomaticTerminationQueue.EmplaceSlow(entity);
+	}
+
+	//Initialize this entity in different ways depending on the entity type.
 	switch (entity->_Type)
 	{
 		case Entity::EntityType::DynamicPhysical:
@@ -147,6 +122,13 @@ void EntitySystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCEPT
 			break;
 		}
 
+		case Entity::EntityType::ParticleSystem:
+		{
+			TerminateParticleSystemEntity(entity);
+
+			break;
+		}
+
 		case Entity::EntityType::Terrain:
 		{
 			TerminateTerrainEntity(entity);
@@ -179,6 +161,48 @@ void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 }
 
 /*
+*	Requests the initialization of en entity.
+*	Initialization will happen at the next synchronous update of the entity system.
+*	Usually only one entity is initialized at each update of the entity system.
+*	But if the initialization is forced, it will take priority and will be initialized on the next update.
+*	So if N entities are forced for the next entity system update, all of them will be initialized.
+*/
+void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data, const bool force) NOEXCEPT
+{
+	//Lock the queue.
+	ScopedLock<Spinlock> scopedLock{ _InitializationQueueLock };
+
+	//Add the data.
+	_InitializationQueue.EmplaceSlow(entity, data, force);
+}
+
+/*
+*	Requests the termination of en entity.
+*	Termination will happen at the next synchronous update of the entity system.
+*/
+void EntitySystem::RequesTermination(Entity* const RESTRICT entity) NOEXCEPT
+{
+	//Lock the queue.
+	ScopedLock<Spinlock> scopedLock{ _TerminationQueueLock };
+
+	//Add the data.
+	_TerminationQueue.EmplaceSlow(entity);
+}
+
+/*
+*	Requests the destruction of an entity.
+*	Destruction will happen at the next synchronous update of the entity system.
+*/
+void EntitySystem::RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT
+{
+	//Lock the queue.
+	ScopedLock<Spinlock> scopedLock{ _DestructionQueueLock };
+
+	//Add the data.
+	_DestructionQueue.EmplaceSlow(entity);
+}
+
+/*
 *	Processes the initialization queue.
 */
 void EntitySystem::ProcessInitializationQueue() NOEXCEPT
@@ -198,7 +222,7 @@ void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 
 	for (uint64 i = 0, size = _InitializationQueue.Size(); i < size; ++i)
 	{
-		EntityInitializationData& data{ _InitializationQueue[counter] };
+		InitializationData& data{ _InitializationQueue[counter] };
 
 		if (data._Force)
 		{
@@ -215,7 +239,7 @@ void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 	//If none were force-initialized, just initialize one.
 	if (forceInitialized == 0)
 	{
-		EntityInitializationData *const RESTRICT data = &_InitializationQueue.Back();
+		InitializationData *const RESTRICT data = &_InitializationQueue.Back();
 		InitializeEntity(data->_Entity, data->_Data);
 		_InitializationQueue.PopFast();
 	}
@@ -224,7 +248,7 @@ void EntitySystem::ProcessInitializationQueue() NOEXCEPT
 /*
 *	Initializes a dynamic physical entity.
 */
-void EntitySystem::InitializeDynamicPhysicalEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT
+void EntitySystem::InitializeDynamicPhysicalEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
 	//Retrieve a new components index for this dynamic physical entity.
 	entity->_ComponentsIndex = ComponentManager::GetNewDynamicPhysicalComponentsIndex(entity);
@@ -239,7 +263,7 @@ void EntitySystem::InitializeDynamicPhysicalEntity(Entity* const RESTRICT entity
 /*
 *	Initializes a particle system physical entity.
 */
-void EntitySystem::InitializeParticleSystemEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT
+void EntitySystem::InitializeParticleSystemEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
 	//Retrieve a new components index for this particle system entity.
 	entity->_ComponentsIndex = ComponentManager::GetNewParticleSystemComponentsIndex(entity);
@@ -254,7 +278,7 @@ void EntitySystem::InitializeParticleSystemEntity(Entity* const RESTRICT entity,
 /*
 *	Initializes a terrain entity.
 */
-void EntitySystem::InitializeTerrainEntity(Entity* const RESTRICT entity, void* const RESTRICT data) NOEXCEPT
+void EntitySystem::InitializeTerrainEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
 	//Retrieve a new components index for the terrain entity.
 	entity->_ComponentsIndex = ComponentManager::GetNewTerrainComponentsIndex(entity);
@@ -274,38 +298,10 @@ void EntitySystem::ProcessTerminationQueue() NOEXCEPT
 	//Lock the termination queue.
 	ScopedLock<Spinlock> scopedLock{ _TerminationQueueLock };
 
-	//If there's none to terminate, terminate none.
-	if (_TerminationQueue.Empty())
+	//Terminate all entities.
+	for (Entity *const RESTRICT entity : _TerminationQueue)
 	{
-		return;
-	}
-
-	//Iterate through all termination requests and check for the force flag.
-	uint64 forceTerminated{ 0 };
-	uint64 counter{ _TerminationQueue.Size() - 1 };
-
-	for (uint64 i = 0, size = _TerminationQueue.Size(); i < size; ++i)
-	{
-		EntityTerminationData& data{ _TerminationQueue[counter] };
-
-		if (data._Force)
-		{
-			TerminateEntity(data._Entity);
-
-			++forceTerminated;
-
-			_TerminationQueue.EraseAt(counter);
-		}
-
-		--counter;
-	}
-
-	//If none were force-terminated, just terminate one.
-	if (forceTerminated == 0)
-	{
-		EntityTerminationData *const RESTRICT data = &_TerminationQueue.Back();
-		TerminateEntity(data->_Entity);
-		_TerminationQueue.PopFast();
+		TerminateEntity(entity);
 	}
 }
 
@@ -316,6 +312,18 @@ void EntitySystem::TerminateDynamicPhysicalEntity(Entity* const RESTRICT entity)
 {
 	//Return this entitiy's components index.
 	ComponentManager::ReturnDynamicPhysicalComponentsIndex(entity->_ComponentsIndex);
+}
+
+/*
+*	Terminates a particle system entity.
+*/
+void EntitySystem::TerminateParticleSystemEntity(Entity* const RESTRICT entity) NOEXCEPT
+{
+	//Terminate the particle system entity via the rendering system.
+	RenderingSystem::Instance->TerminateParticleSystemEntity(entity);
+
+	//Return this entitiy's components index.
+	ComponentManager::ReturnParticleSystemComponentsIndex(entity->_ComponentsIndex);
 }
 
 /*
@@ -338,37 +346,55 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 	//Lock the destruction queue.
 	ScopedLock<Spinlock> scopedLock{ _DestructionQueueLock };
 
-	//If there's none to destroy, destroy none.
-	if (_DestructionQueue.Empty())
+	//Destroy all entities.
+	for (Entity *const RESTRICT entity : _DestructionQueue)
 	{
-		return;
+		DestroyEntity(entity);
 	}
+}
 
-	//Iterate through all destruction requests and check for the force flag.
-	uint64 forceDestroyed{ 0 };
-	uint64 counter{ _DestructionQueue.Size() - 1 };
-
-	for (uint64 i = 0, size = _DestructionQueue.Size(); i < size; ++i)
+/*
+*	Processes the automatic termination queue.
+*/
+void EntitySystem::ProcessAutomaticTerminationQueue() NOEXCEPT
+{
+	for (uint64 i = 0; i < _AutomaticTerminationQueue.Size();)
 	{
-		EntityDestructionData& data{ _DestructionQueue[counter] };
+		Entity *const RESTRICT entity{ _AutomaticTerminationQueue[i] };
 
-		if (data._Force)
+		if (entity->ShouldAutomaticallyTerminate())
 		{
-			DestroyEntity(data._Entity);
+			TerminateEntity(entity);
 
-			++forceDestroyed;
-
-			_DestructionQueue.EraseAt(counter);
+			_AutomaticTerminationQueue.EraseAt(i);
 		}
 
-		--counter;
+		else
+		{
+			++i;
+		}
 	}
+}
 
-	//If none were force-destroyed, just destroy one.
-	if (forceDestroyed == 0)
+/*
+*	Processes the automatic destruction queue.
+*/
+void EntitySystem::ProcessAutomaticDestructionQueue() NOEXCEPT
+{
+	for (uint64 i = 0; i < _AutomaticDestructionQueue.Size();)
 	{
-		EntityDestructionData &data = _DestructionQueue.Back();
-		DestroyEntity(data._Entity);
-		_DestructionQueue.PopFast();
+		Entity *const RESTRICT entity{ _AutomaticDestructionQueue[i] };
+
+		if (!entity->_Initialized)
+		{
+			DestroyEntity(entity);
+
+			_AutomaticDestructionQueue.EraseAt(i);
+		}
+
+		else
+		{
+			++i;
+		}
 	}
 }

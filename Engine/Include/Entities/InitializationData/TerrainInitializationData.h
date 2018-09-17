@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Entities.
+#include <Entities/InitializationData/EntityInitializationData.h>
+
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>
 #include <Rendering/Engine/CPUTexture2D.h>
@@ -10,7 +13,7 @@
 #include <Rendering/Engine/TerrainMaterial.h>
 #include <Rendering/Engine/TerrainUniformData.h>
 
-class TerrainInitializationData final
+class TerrainInitializationData final : public EntityInitializationData
 {
 
 public:

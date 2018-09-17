@@ -15,7 +15,7 @@
 /*
 *	Defines the bit at the specified index.
 */
-#define BIT(index) (static_cast<uint64>(1) << index)
+#define BIT(index) (1 << index)
 
 /*
 *	Sets a breakpoint in the code in non-final builds.
@@ -75,6 +75,11 @@
 *	Casts a value to a uint64 so that it can be used as an index. Useful for enum classes.
 */
 #define INDEX(value) static_cast<uint64>(value)
+
+/*
+*	Returns whether or not a bit is set.
+*/
+#define IS_BIT_SET(bitfield, bit) ((bitfield & bit) == bit)
 
 /*
 *	Indicates to the branch predictor that an expression is expected to most times be true.

@@ -46,7 +46,7 @@ RESTRICTED Type* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEP
 *	Destroys initialization data for an entity.
 */
 template <typename Type>
-void EntitySystem::DestroyInitializationData(void* const RESTRICT data) NOEXCEPT
+void EntitySystem::DestroyInitializationData(EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
 	static_cast<Type* const RESTRICT>(data)->~Type();
 

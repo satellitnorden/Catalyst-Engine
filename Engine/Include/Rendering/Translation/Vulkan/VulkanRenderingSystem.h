@@ -133,14 +133,19 @@ public:
 	void InitializeVegetationEntity(const VegetationEntity &entity, const VegetationMaterial &material, const DynamicArray<VegetationTransformation> &transformations, const VegetationProperties &properties) const NOEXCEPT;
 
 	/*
-	*	Initializes a particle system entity.
-	*/
-	void InitializeParticleSystemEntity(const Entity *const RESTRICT entity, const ParticleSystemInitializationData *const RESTRICT data) const NOEXCEPT;
-
-	/*
 	*	Creates and returns a uniform buffer.
 	*/
 	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;
+
+	/*
+	*	Uploads data to a uniform buffer.
+	*/
+	void UploadDataToUniformBuffer(UniformBufferHandle handle, const void *const RESTRICT data) const NOEXCEPT;
+
+	/*
+	*	Destroys a uniform buffer.
+	*/
+	void DestroyUniformBuffer(UniformBufferHandle handle) const NOEXCEPT;
 
 private:
 

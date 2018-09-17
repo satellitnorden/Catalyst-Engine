@@ -5,6 +5,7 @@
 #include <Entities/CameraEntity.h>
 #include <Entities/TerrainEntity.h>
 #include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
+#include <Entities/InitializationData/ParticleSystemInitializationData.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
@@ -342,6 +343,24 @@ UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBuf
 }
 
 /*
+*	Uploads data to a uniform buffer.
+*/
+void RenderingSystem::UploadDataToUniformBuffer(UniformBufferHandle handle, const void *const RESTRICT data) const NOEXCEPT
+{
+	//Upload the data to the uniform buffer via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->UploadDataToUniformBuffer(handle, data);
+}
+
+/*
+*	Destroys a uniform buffer.
+*/
+void RenderingSystem::DestroyUniformBuffer(UniformBufferHandle handle) const NOEXCEPT
+{
+	//Destroy the uniform buffer via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->DestroyUniformBuffer(handle);
+}
+
+/*
 *	Returns the current dynamic uniform data render data table.
 */
 RenderDataTableHandle RenderingSystem::GetCurrentDynamicUniformDataRenderDataTable() const NOEXCEPT
@@ -598,8 +617,33 @@ void RenderingSystem::InitializeVegetationEntity(const VegetationEntity &entity,
 */
 void RenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRICT entity, const ParticleSystemInitializationData *const RESTRICT data) const NOEXCEPT
 {
-	//Initialize the particle system entity via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->InitializeParticleSystemEntity(entity, data);
+	//Cache the components.
+	ParticleSystemComponent &component{ ComponentManager::GetParticleSystemParticleSystemComponents()[entity->_ComponentsIndex] };
+	ParticleSystemRenderComponent &renderComponent{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[entity->_ComponentsIndex] };
+
+	//Fill in the components.
+	component._Properties = data->_ParticleSystemProperties;
+	component._PropertiesUniformBuffer = CreateUniformBuffer(sizeof(ParticleSystemProperties));
+	UploadDataToUniformBuffer(component._PropertiesUniformBuffer, &component._Properties);
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem), &renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::UniformBuffer, component._PropertiesUniformBuffer), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, data->_Material._AlbedoTexture), renderComponent._RenderDataTable);
+	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(data->_ParticleSystemProperties._Lifetime / data->_ParticleSystemProperties._SpawnFrequency);
+	renderComponent._WorldPosition = data->_Position;
+	renderComponent._ParticleSystemRandomSeed = CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f);
+	renderComponent._ParticleSystemStartingTime = EngineSystem::Instance->GetTotalTime();
+}
+
+/*
+*	Terminates a particle system entity.
+*/
+void RenderingSystem::TerminateParticleSystemEntity(const Entity *const RESTRICT entity) const NOEXCEPT
+{
+	//Destroy the uniform buffer.
+	DestroyUniformBuffer(ComponentManager::GetParticleSystemParticleSystemComponents()[entity->_ComponentsIndex]._PropertiesUniformBuffer);
+
+	//Destroy the render data table.
+	DestroyRenderDataTable(ComponentManager::GetParticleSystemParticleSystemRenderComponents()[entity->_ComponentsIndex]._RenderDataTable);
 }
 
 /*

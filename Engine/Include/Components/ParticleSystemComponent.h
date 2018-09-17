@@ -16,6 +16,6 @@ public:
 	ParticleSystemProperties _Properties;
 
 	//Handle to the uniform buffer that stores the properties.
-	ConstantBufferHandle _PropertiesUniformBuffer;
+	UniformBufferHandle _PropertiesUniformBuffer;
 
 };

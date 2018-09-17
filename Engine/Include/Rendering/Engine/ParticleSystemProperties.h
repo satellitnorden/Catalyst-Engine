@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/General/Padding.h>
 
 //Math.
 #include <Math/Vector2.h>
@@ -13,16 +14,16 @@ class ParticleSystemProperties final
 public:
 
 	//Enumeration covering all different particle system properties.
-	enum class ParticleSystemProperty : uint32
+	enum class ParticleSystemProperty : int32
 	{
 		AffectedByWind = BIT(0),
 		Looping = BIT(1)
 	};
 
-	//The properties of this particle system.
-	uint32 _Properties;
+	//The properties.
+	int32 _Properties;
 
-	//The fade time, for fade-ins/fade-outs.
+	//The fade time.
 	float _FadeTime;
 
 	//The lifetime of the particles.
@@ -40,47 +41,25 @@ public:
 	//The minimum position.
 	Vector3 _MinimumPosition;
 
+	//Some padding.
+	Padding<1> _Padding2;
+
 	//The maximum position.
 	Vector3 _MaximumPosition;
+
+	//Some padding.
+	Padding<1> _Padding3;
 
 	//The minimum velocity.
 	Vector3 _MinimumVelocity;
 
+	//Some padding.
+	Padding<1> _Padding4;
+
 	//The maximum velocity.
 	Vector3 _MaximumVelocity;
 
-	/*
-	*	Default constructor.
-	*/
-	ParticleSystemProperties() NOEXCEPT
-	{
-
-	}
-
-	/*
-	*	Constructor taking all properties as arguments.
-	*/
-	ParticleSystemProperties(	const float initialFadeTime,
-								const float initialLifetime,
-								const float initialSpawnFrequency,
-								const Vector2 &initialMinimumScale,
-								const Vector2 &initialMaximumScale,
-								const Vector3 &initialMinimumPosition,
-								const Vector3 &initialMaximumPosition,
-								const Vector3 &initialMinimumVelocity,
-								const Vector3 &initialMaximumVelocity) NOEXCEPT
-		:
-		_FadeTime(initialFadeTime),
-		_Lifetime(initialLifetime),
-		_SpawnFrequency(initialSpawnFrequency),
-		_MinimumScale(initialMinimumScale),
-		_MaximumScale(initialMaximumScale),
-		_MinimumPosition(initialMinimumPosition),
-		_MaximumPosition(initialMaximumPosition),
-		_MinimumVelocity(initialMinimumVelocity),
-		_MaximumVelocity(initialMaximumVelocity)
-	{
-
-	}
+	//Some padding.
+	Padding<1> _Padding5;
 
 };

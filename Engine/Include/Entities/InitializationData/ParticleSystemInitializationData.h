@@ -3,11 +3,14 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Entities.
+#include <Entities/InitializationData/EntityInitializationData.h>
+
 //Rendering.
 #include <Rendering/Engine/ParticleMaterial.h>
 #include <Rendering/Engine/ParticleSystemProperties.h>
 
-class ParticleSystemInitializationData final
+class ParticleSystemInitializationData final : public EntityInitializationData
 {
 
 public:
@@ -16,7 +19,7 @@ public:
 	ParticleMaterial _Material;
 
 	//The properties.
-	ParticleSystemProperties _Properties;
+	ParticleSystemProperties _ParticleSystemProperties;
 
 	//The position.
 	Vector3 _Position;

@@ -173,7 +173,7 @@ ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *RES
 */
 void VulkanRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT
 {
-	VulkanInterface::Instance->DestroyDescriptorSet(reinterpret_cast<VkDescriptorSet>(renderDataTable));
+	//Put in a queue, destroy when no command buffer uses it anymore.
 }
 
 /*
@@ -307,41 +307,6 @@ void VulkanRenderingSystem::InitializeVegetationEntity(const VegetationEntity &e
 }
 
 /*
-*	Initializes a particle system entity.
-*/
-void VulkanRenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRICT entity, const ParticleSystemInitializationData *const RESTRICT data) const NOEXCEPT
-{
-	//Cache relevant data.
-	ParticleSystemComponent &component{ ComponentManager::GetParticleSystemParticleSystemComponents()[entity->_ComponentsIndex] };
-	ParticleSystemRenderComponent &renderComponent{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[entity->_ComponentsIndex] };
-
-	//Create the uniform buffer.
-	VulkanUniformBuffer *const RESTRICT uniformBuffer{ VulkanInterface::Instance->CreateUniformBuffer(static_cast<VkDeviceSize>(sizeof(VulkanParticleSystemProperties))) };
-	const VulkanParticleSystemProperties vulkanParticleSystemProperties{ data->_Properties };
-	uniformBuffer->UploadData(&vulkanParticleSystemProperties);
-
-	//Create the descriptor set.
-	renderComponent._RenderDataTable = VulkanInterface::Instance->CreateDescriptorSet(_DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::ParticleSystem)]);
-	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent._RenderDataTable) };
-
-	StaticArray<VkWriteDescriptorSet, 2> particleSystemWriteDescriptorSets
-	{
-		uniformBuffer->GetWriteDescriptorSet(newDescriptorSet, 0),
-		static_cast<const Vulkan2DTexture *RESTRICT>(data->_Material._AlbedoTexture)->GetWriteDescriptorSet(newDescriptorSet, 1)
-	};
-
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(particleSystemWriteDescriptorSets.Size()), particleSystemWriteDescriptorSets.Data(), 0, nullptr);
-
-	//Set up the particle system's components.
-	component._Properties = data->_Properties;
-	component._PropertiesUniformBuffer = uniformBuffer;
-	renderComponent._ParticleSystemRandomSeed = CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f);
-	renderComponent._ParticleSystemStartingTime = EngineSystem::Instance->GetTotalTime();
-	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(data->_Properties._Lifetime / data->_Properties._SpawnFrequency);
-	renderComponent._WorldPosition = data->_Position;
-}
-
-/*
 *	Creates and returns a 2D texture given the texture data.
 */
 Texture2DHandle VulkanRenderingSystem::Create2DTexture(const TextureData &textureData) const NOEXCEPT
@@ -368,6 +333,22 @@ void VulkanRenderingSystem::DestroyTexture2D(Texture2DHandle texture) const NOEX
 UniformBufferHandle VulkanRenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT
 {
 	return VulkanInterface::Instance->CreateUniformBuffer(uniformBufferSize);
+}
+
+/*
+*	Uploads data to a uniform buffer.
+*/
+void VulkanRenderingSystem::UploadDataToUniformBuffer(UniformBufferHandle handle, const void *const RESTRICT data) const NOEXCEPT
+{
+	static_cast<VulkanUniformBuffer *const RESTRICT>(handle)->UploadData(data);
+}
+
+/*
+*	Destroys a uniform buffer.
+*/
+void VulkanRenderingSystem::DestroyUniformBuffer(UniformBufferHandle handle) const NOEXCEPT
+{
+	//Put in a queue, destroy when no command buffer uses it anymore.
 }
 
 /*

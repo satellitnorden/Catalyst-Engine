@@ -108,6 +108,14 @@ public:
 protected:
 
 	/*
+	*	Returns whether or not this entity should automatically terminate.
+	*/
+	virtual bool ShouldAutomaticallyTerminate() const NOEXCEPT
+	{
+		return false;
+	}
+
+	/*
 	*	Returns the position of this entity.
 	*/
 	RESTRICTED virtual NO_DISCARD Vector3 *const RESTRICT GetPositionInternal() NOEXCEPT
@@ -156,6 +164,9 @@ protected:
 	}
 
 private:
+
+	//Friend declaration.
+	friend class EntitySystem;
 
 	//The default position.
 	static constexpr Vector3 _DefaultPosition{ 0.0f, 0.0f, 0.0f };

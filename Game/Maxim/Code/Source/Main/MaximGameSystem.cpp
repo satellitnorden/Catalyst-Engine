@@ -59,17 +59,18 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	{
 		ParticleSystemInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
 
+		data->_Properties = 0;
 		data->_Material = RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle);
-		data->_Properties._Properties = static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::Looping);
-		data->_Properties._FadeTime = 10.0f;
-		data->_Properties._Lifetime = 60.0f;
-		data->_Properties._SpawnFrequency = 0.01f;
-		data->_Properties._MinimumScale = Vector2(0.01f, 0.01f);
-		data->_Properties._MaximumScale = Vector2(0.02f, 0.02f);
-		data->_Properties._MinimumPosition = Vector3(-5.0f, -12.5f, -5.0f);
-		data->_Properties._MaximumPosition = Vector3(5.0f, 12.5f, 5.0f);
-		data->_Properties._MinimumVelocity = Vector3(-0.1f, -0.1f, -0.1f);
-		data->_Properties._MaximumVelocity = Vector3(0.1f, 0.1f, 0.1f);
+		data->_ParticleSystemProperties._Properties = static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::AffectedByWind) | static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::Looping);
+		data->_ParticleSystemProperties._FadeTime = 10.0f;
+		data->_ParticleSystemProperties._Lifetime = 60.0f;
+		data->_ParticleSystemProperties._SpawnFrequency = 0.01f;
+		data->_ParticleSystemProperties._MinimumScale = Vector2(0.01f, 0.01f);
+		data->_ParticleSystemProperties._MaximumScale = Vector2(0.02f, 0.02f);
+		data->_ParticleSystemProperties._MinimumPosition = Vector3(-5.0f, -12.5f, -5.0f);
+		data->_ParticleSystemProperties._MaximumPosition = Vector3(5.0f, 12.5f, 5.0f);
+		data->_ParticleSystemProperties._MinimumVelocity = Vector3(-0.1f, -0.1f, -0.1f);
+		data->_ParticleSystemProperties._MaximumVelocity = Vector3(0.1f, 0.1f, 0.1f);
 		data->_Position = positions[i];
 
 		_Particles[i] = EntitySystem::Instance->CreateEntity<ParticleSystemEntity>();
@@ -161,10 +162,10 @@ bool MaximGameSystem::ClosingUpdateAsynchronous(const UpdateContext *const RESTR
 	for (MaximObject *const RESTRICT object : _DestructionQueue)
 	{
 		//Terminate the entity.
-		EntitySystem::Instance->RequesTermination(object->_Entity, false);
+		EntitySystem::Instance->TerminateEntity(object->_Entity);
 
 		//Destroy the entity.
-		EntitySystem::Instance->RequestDestruction(object->_Entity, false);
+		EntitySystem::Instance->DestroyEntity(object->_Entity);
 
 		//Remove this Maxim object from the internal list.
 		_Objects.Erase(object);
@@ -317,10 +318,35 @@ void MaximGameSystem::UpdateSelectedPosition() NOEXCEPT
 					continue;
 				}
 
+				if (object->_IsDestroyed)
+				{
+					continue;
+				}
+
 				if (CatalystVectorMath::BoxIntersection(	*_SelectedObject->_Entity->GetWorldSpaceAxisAlignedBoundingBox(),
 															*object->_Entity->GetWorldSpaceAxisAlignedBoundingBox()))
 				{
 					object->_IsDestroyed = true;
+
+					ParticleSystemInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
+
+					data->_Properties = static_cast<uint8>(EntityInitializationData::EntityProperty::AutomaticDestruction) | static_cast<uint8>(EntityInitializationData::EntityProperty::AutomaticTermination);
+					data->_Material = RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle);
+					data->_ParticleSystemProperties._Properties = static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::AffectedByWind);
+					data->_ParticleSystemProperties._FadeTime = 0.5f;
+					data->_ParticleSystemProperties._Lifetime = 1.0f;
+					data->_ParticleSystemProperties._SpawnFrequency = 0.001f;
+					data->_ParticleSystemProperties._MinimumScale = Vector2(0.015f, 0.015f);
+					data->_ParticleSystemProperties._MaximumScale = Vector2(0.03f, 0.03f);
+					data->_ParticleSystemProperties._MinimumPosition = Vector3(-0.1f, -0.1f, -0.1f);
+					data->_ParticleSystemProperties._MaximumPosition = Vector3(0.1f, 0.1f, 0.1f);
+					data->_ParticleSystemProperties._MinimumVelocity = Vector3::Normalize(Vector3(1.0f, 1.0f, 0.0f)) * -10.0f;
+					data->_ParticleSystemProperties._MaximumVelocity = Vector3::Normalize(Vector3(1.0f, 1.0f, 1.0f)) * 10.0f;
+					data->_Position = object->_Entity->GetPosition();
+
+					ParticleSystemEntity *const RESTRICT particles{ EntitySystem::Instance->CreateEntity<ParticleSystemEntity>() };
+
+					EntitySystem::Instance->InitializeEntity(particles, data);
 				}
 			}
 		}

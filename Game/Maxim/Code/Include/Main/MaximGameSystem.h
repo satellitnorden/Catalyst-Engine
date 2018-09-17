@@ -74,7 +74,7 @@ private:
 	float _SpawnTime{ 2.5f };
 
 	//The camera.
-	CameraEntity * RESTRICT _Camera;
+	CameraEntity *RESTRICT _Camera;
 
 	//The sun.
 	DirectionalLightEntity *RESTRICT _Sun;
