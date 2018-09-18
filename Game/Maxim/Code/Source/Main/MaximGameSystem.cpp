@@ -87,7 +87,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	//Register the Maxim game system for updates.
 	UpdateSystem::Instance->RegisterAsynchronousOpeningUpdate(this);
 	UpdateSystem::Instance->RegisterAsynchronousPhysicsUpdate(this);
-	UpdateSystem::Instance->RegisterAsynchronousClosingUpdate(this);
+	UpdateSystem::Instance->RegisterSynchronousClosingUpdate(this);
 }
 
 /*
@@ -154,9 +154,9 @@ bool MaximGameSystem::PhysicsUpdateAsynchronous(const UpdateContext *const RESTR
 }
 
 /*
-*	Updates the Maxim game system asynchronously during the closing update phase.
+*	Updates the Maxim game system synchronously during the closing update phase.
 */
-bool MaximGameSystem::ClosingUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+bool MaximGameSystem::ClosingUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Destroy objects.
 	for (MaximObject *const RESTRICT object : _DestructionQueue)

@@ -47,9 +47,9 @@ public:
 	bool PhysicsUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 	/*
-	*	Updates the Maxim game system asynchronously during the closing update phase.
+	*	Updates the Maxim game system synchronously during the closing update phase.
 	*/
-	bool ClosingUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
+	bool ClosingUpdateSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 	/*
 	*	Destroys a Maxim object.
