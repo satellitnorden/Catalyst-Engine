@@ -42,7 +42,7 @@ public:
 	SharedPointer(Type *const RESTRICT newPointer) RESTRICT
 		:
 		_Pointer(newPointer),
-			_ReferenceCount(new int8)
+		_ReferenceCount(new (MemoryUtilities::ThreadSafePoolAllocate<sizeof(int8)>()) int8)
 	{
 		++(*_ReferenceCount);
 	}
@@ -55,7 +55,7 @@ public:
 		//Decrement the reference count and delete the pointer if it's reached 0.
 		if (--(*_ReferenceCount) == 0)
 		{
-			delete _ReferenceCount;
+			MemoryUtilities::ThreadSafePoolDeAllocate<sizeof(int8)>(_ReferenceCount);
 			delete _Pointer;
 		}
 	}

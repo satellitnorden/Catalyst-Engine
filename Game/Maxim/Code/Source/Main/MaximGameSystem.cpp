@@ -110,7 +110,7 @@ bool MaximGameSystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTR
 	//Spawn new objects, if necessary.
 	while (_SpawnTimer >= _SpawnTime)
 	{
-		MaximObject *const RESTRICT newObject{ new MaximObject };
+		MaximObject *const RESTRICT newObject{ new (MemoryUtilities::ThreadSafePoolAllocate<sizeof(MaximObject)>()) MaximObject };
 
 		_Objects.EmplaceSlow(newObject);
 
@@ -170,8 +170,8 @@ bool MaximGameSystem::ClosingUpdateSynchronous(const UpdateContext *const RESTRI
 		//Remove this Maxim object from the internal list.
 		_Objects.Erase(object);
 
-		//Delete the object.
-		delete object;
+		//De-allocate the object.
+		MemoryUtilities::ThreadSafePoolDeAllocate<sizeof(MaximObject)>(object);
 	}
 
 	_DestructionQueue.ClearFast();
