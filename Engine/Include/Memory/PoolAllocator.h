@@ -91,13 +91,6 @@ public:
 				{
 					CLEAR_BIT(current->_Active, BIT(i));
 
-					if (current != _Root && current->_Active == 0)
-					{
-						previous->_Next = nullptr;
-
-						MemoryUtilities::FreeMemory(current);
-					}
-
 					return;
 				}
 
