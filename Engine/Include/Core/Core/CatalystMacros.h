@@ -15,7 +15,7 @@
 /*
 *	Defines the bit at the specified index.
 */
-#define BIT(index) (1 << index)
+#define BIT(index) (static_cast<uint64>(1) << static_cast<uint64>(index))
 
 /*
 *	Sets a breakpoint in the code in non-final builds.
@@ -57,6 +57,11 @@
 #define CATALYST_BENCHMARK_SECTION_AVERAGE(function) CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE(#function, function);
 
 /*
+*	Clears the bit at the specified index.
+*/
+#define CLEAR_BIT(bitfield, bit) (bitfield &= ~(bit))
+
+/*
 *	Concatenates the arguments together.
 */
 #define CONCATENATE(first, second) first##second
@@ -96,6 +101,11 @@
 #if !defined(CATALYST_FINAL)
 	#define PRINT_TO_OUTPUT(message) { std::ostringstream output; output << message << std::endl; CatalystPlatform::PrintToOutput(output.str().c_str()); }
 #endif
+
+/*
+*	Sets the bit at the specified index.
+*/
+#define SET_BIT(bitfield, bit) (bitfield |= (bit))
 
 /*
 *	Indicates to the branch predictor that an expression is expected to most times not be true.

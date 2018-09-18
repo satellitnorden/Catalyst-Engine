@@ -40,18 +40,6 @@ void EntitySystem::ClosingUpdateSystemSynchronous(const UpdateContext *const RES
 }
 
 /*
-*	Releases the entity system.
-*/
-void EntitySystem::ReleaseSystem() NOEXCEPT
-{
-	//Destroy all remaining entities.
-	for (int64 i = _Entities.Size() - 1; i >= 0; --i)
-	{
-		delete _Entities[i];
-	}
-}
-
-/*
 *	Initializes one entity.
 */
 void EntitySystem::InitializeEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
@@ -154,7 +142,8 @@ void EntitySystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCEPT
 void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//The entity should already be terminated, so just deallocate the entity.
-	delete entity;
+	entity->~Entity();
+	MemoryUtilities::ThreadSafePoolDeAllocate<sizeof(Entity)>(entity);
 
 	//Remove the entity from the list of entities.
 	_Entities.Erase(entity);

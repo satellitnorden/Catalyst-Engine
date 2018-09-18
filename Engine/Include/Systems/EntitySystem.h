@@ -36,11 +36,6 @@ public:
 	void ClosingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Releases the entity system.
-	*/
-	void ReleaseSystem() NOEXCEPT;
-
-	/*
 	*	Creates a new entity.
 	*/
 	template <class EntityClass, class... Arguments>

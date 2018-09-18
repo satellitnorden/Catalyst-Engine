@@ -1,7 +1,17 @@
 #pragma once
 
-namespace MemoryUtilities
+//Memory.
+#include <Memory/PoolAllocator.h>
+
+//Multithreading.
+#include <Multithreading/ScopedLock.h>
+#include <Multithreading/Spinlock.h>
+
+class MemoryUtilities
 {
+
+public:
+
 	/*
 	*	Allocates a chunk of memory.
 	*/
@@ -46,4 +56,50 @@ namespace MemoryUtilities
 		memset((void *const RESTRICT) destination, value, size);
 	}
 
-}
+	/*
+	*	Returns a thread safe pool allocation with the given size from the global pool allocator.
+	*/
+	template <uint64 SIZE>
+	RESTRICTED static void *const RESTRICT ThreadSafePoolAllocate() NOEXCEPT
+	{
+		ScopedLock<Spinlock> scopedLock{ *GlobalPoolAllocatorLock<SIZE>() };
+
+		return GlobalPoolAllocator<SIZE>()->Allocate();
+	}
+
+	/*
+	*	Returns a thread safe pool allocation with the given size from the global pool allocator.
+	*/
+	template <uint64 SIZE>
+	static void ThreadSafePoolDeAllocate(void *const RESTRICT memory) NOEXCEPT
+	{
+		ScopedLock<Spinlock> scopedLock{ *GlobalPoolAllocatorLock<SIZE>() };
+
+		GlobalPoolAllocator<SIZE>()->DeAllocate(memory);
+	}
+
+private:
+
+	/*
+	*	Returns the global pool allocator lock with the given size.
+	*/
+	template <uint64 SIZE>
+	RESTRICTED static Spinlock *const RESTRICT GlobalPoolAllocatorLock() NOEXCEPT
+	{
+		static Spinlock lock;
+
+		return &lock;
+	}
+
+	/*
+	*	Returns the global pool allocator with the given size.
+	*/
+	template <uint64 SIZE>
+	RESTRICTED static PoolAllocator<SIZE> *const RESTRICT GlobalPoolAllocator() NOEXCEPT
+	{
+		static PoolAllocator<SIZE> allocator;
+
+		return &allocator;
+	}
+
+};

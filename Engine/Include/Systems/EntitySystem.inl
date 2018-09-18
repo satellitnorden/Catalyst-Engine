@@ -6,7 +6,9 @@
 template <class EntityClass, class... Arguments>
 RESTRICTED EntityClass* const RESTRICT EntitySystem::CreateEntity(Arguments&&... arguments) NOEXCEPT
 {
-	EntityClass *const RESTRICT newEntity{ new EntityClass(std::forward<Arguments>(arguments)...) };
+	void *const RESTRICT memory{ MemoryUtilities::ThreadSafePoolAllocate<sizeof(Entity)>() };
+
+	EntityClass *const RESTRICT newEntity{ new (memory) EntityClass(std::forward<Arguments>(arguments)...) };
 
 	_Entities.EmplaceSlow(newEntity);
 
@@ -19,7 +21,9 @@ RESTRICTED EntityClass* const RESTRICT EntitySystem::CreateEntity(Arguments&&...
 template <class EntityClass, class... Arguments>
 RESTRICTED EntityClass *const RESTRICT EntitySystem::CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) NOEXCEPT
 {
-	EntityClass *const RESTRICT newChild{ new EntityClass(std::forward<Arguments>(arguments)...) };
+	void *const RESTRICT memory{ MemoryUtilities::ThreadSafePoolAllocate<sizeof(Entity)>() };
+
+	EntityClass *const RESTRICT newChild{ new (memory) EntityClass(std::forward<Arguments>(arguments)...) };
 
 	parentEntity->_Children.EmplaceSlow(newChild);
 	newChild->SetParent(parentEntity);
@@ -35,7 +39,7 @@ RESTRICTED EntityClass *const RESTRICT EntitySystem::CreateChildEntity(Entity *R
 template <typename Type>
 RESTRICTED Type* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEPT
 {
-	void* const RESTRICT memory{ MemoryUtilities::AllocateMemory(sizeof(Type)) };
+	void* const RESTRICT memory{ MemoryUtilities::ThreadSafePoolAllocate<sizeof(Type)>() };
 
 	new (memory) Type;
 
@@ -50,5 +54,5 @@ void EntitySystem::DestroyInitializationData(EntityInitializationData* const RES
 {
 	static_cast<Type* const RESTRICT>(data)->~Type();
 
-	MemoryUtilities::FreeMemory(data);
+	MemoryUtilities::ThreadSafePoolDeAllocate<sizeof(Type)>(data);
 }

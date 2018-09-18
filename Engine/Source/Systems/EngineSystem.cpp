@@ -132,7 +132,6 @@ void EngineSystem::ReleaseSystem() NOEXCEPT
 	CatalystPlatform::Release();
 
 	//Release all systems.
-	EntitySystem::Instance->ReleaseSystem();
 	RenderingSystem::Instance->ReleaseSystem();
 	TaskSystem::Instance->ReleaseSystem();
 }

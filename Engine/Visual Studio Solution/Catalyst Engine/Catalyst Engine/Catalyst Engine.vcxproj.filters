@@ -193,6 +193,12 @@
     <Filter Include="Core\Include\Core">
       <UniqueIdentifier>{b1b5a605-c227-4c17-aa40-132aee6e6b5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Memory">
+      <UniqueIdentifier>{4831142b-2330-47b4-aa83-a4bcf1582cb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memory\Include">
+      <UniqueIdentifier>{83913965-7fc3-492b-8c0c-e7272dff93c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\CameraComponent.h">
@@ -848,6 +854,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\EntityInitializationData.h">
       <Filter>Entities\Include\InitializationData</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h">
+      <Filter>Memory\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
