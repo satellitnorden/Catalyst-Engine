@@ -52,24 +52,30 @@
 DEFINE_SINGLETON(VulkanRenderingSystem);
 
 /*
-*	Initializes the Vulkan rendering system.
+*	Pre-initializes the Vulkan rendering system.
 */
-void VulkanRenderingSystem::InitializeSystem() NOEXCEPT
+void VulkanRenderingSystem::PreInitializeSystem() NOEXCEPT
 {
 	//Initialize the Vulkan interface.
 	VulkanInterface::Instance->Initialize();
 
-	//Initialize all render targets.
-	InitializeRenderTargets();
+	//Initialize all descriptor set layouts.
+	InitializeDescriptorSetLayouts();
+}
+
+/*
+*	Post-initializes the Vulkan rendering system.
+*/
+void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
+{
+	//Initialize all depth buffers.
+	InitializeDepthBuffers();
 
 	//Initialize all semaphores.
 	InitializeSemaphores();
 
 	//Initialize all uniform buffers.
 	InitializeUniformBuffers();
-
-	//Initialize all descriptor set layouts.
-	InitializeDescriptorSetLayouts();
 
 	//Initialize all shader modules.
 	InitializeShaderModules();
@@ -142,14 +148,6 @@ uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 }
 
 /*
-*	Returns the given render target.
-*/
-RenderTargetHandle VulkanRenderingSystem::GetRenderTarget(const RenderTarget renderTarget) NOEXCEPT
-{
-	return _RenderTargets[INDEX(renderTarget)];
-}
-
-/*
 *	Returns the given uniform buffer.
 */
 UniformBufferHandle VulkanRenderingSystem::GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT
@@ -171,6 +169,18 @@ ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *RES
 void VulkanRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
+}
+
+/*
+*	Creates a render target.
+*/
+void VulkanRenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, const TextureFilter filter, const AddressMode addressMode, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
+{
+	//Create the render target.
+	*handle = static_cast<RenderTargetHandle>(VulkanInterface::Instance->CreateRenderTarget(	VulkanTranslationUtilities::GetVulkanExtent(resolution),
+																								VulkanTranslationUtilities::GetVulkanFormat(format),
+																								VulkanTranslationUtilities::GetVulkanTextureFilter(filter),
+																								VulkanTranslationUtilities::GetVulkanAddressMode(addressMode)));
 }
 
 /*
@@ -521,7 +531,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetCommonRenderDataTableLayout(cons
 /*
 *	Initializes all render targets.
 */
-void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
+void VulkanRenderingSystem::InitializeDepthBuffers() NOEXCEPT
 {
 	//Get the scaled extent.
 	const VkExtent2D scaledExtent{ VulkanTranslationUtilities::GetVulkanExtent(RenderingSystem::Instance->GetScaledResolution()) };
@@ -529,15 +539,6 @@ void VulkanRenderingSystem::InitializeRenderTargets() NOEXCEPT
 	//Initialize all depth buffers.
 	_DepthBuffers[INDEX(DepthBuffer::DirectionalLight)] = VulkanInterface::Instance->CreateDepthBuffer({ EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution });
 	_DepthBuffers[INDEX(DepthBuffer::SceneBuffer)] = VulkanInterface::Instance->CreateDepthBuffer(scaledExtent);
-
-	//Initialize all render targets.
-	_RenderTargets[INDEX(RenderTarget::DirectionalShadowMap)] = VulkanInterface::Instance->CreateRenderTarget({ EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution }, VK_FORMAT_R8_UNORM, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
-	_RenderTargets[INDEX(RenderTarget::DirectionalShadow)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R8_UNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
-	_RenderTargets[INDEX(RenderTarget::SceneBufferAlbedo)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R8G8B8A8_SNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	_RenderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	_RenderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R8G8B8A8_SNORM, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	_RenderTargets[INDEX(RenderTarget::SceneIntermediate)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_NEAREST, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-	_RenderTargets[INDEX(RenderTarget::Scene)] = VulkanInterface::Instance->CreateRenderTarget(scaledExtent, VK_FORMAT_R32G32B32A32_SFLOAT, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 }
 
 /*
@@ -944,7 +945,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
 
 			//Shadow map.
-			VulkanUtilities::CreateAttachmentDescription(	_RenderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadowMap))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1011,7 +1012,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkImageView, 2> attachments
 		{
 			_DepthBuffers[INDEX(DepthBuffer::DirectionalLight)]->GetImageView(),
-			_RenderTargets[INDEX(RenderTarget::DirectionalShadowMap)]->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadowMap))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -1053,7 +1054,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
 			
 			//Albedo.
-			VulkanUtilities::CreateAttachmentDescription(	_RenderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferAlbedo))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1062,7 +1063,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
 
 			//Normal depth.
-			VulkanUtilities::CreateAttachmentDescription(	_RenderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1071,7 +1072,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
 
 			//Material properties.
-			VulkanUtilities::CreateAttachmentDescription(	_RenderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferMaterialProperties))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1080,7 +1081,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
 
 			//Directional shadow.
-			VulkanUtilities::CreateAttachmentDescription(	_RenderTargets[INDEX(RenderTarget::DirectionalShadow)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadow))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1089,7 +1090,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
 
 			//Scene.
-			VulkanUtilities::CreateAttachmentDescription(	_RenderTargets[INDEX(RenderTarget::Scene)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1290,11 +1291,11 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkImageView, 6> attachments
 		{
 			_DepthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetImageView(),
-			_RenderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]->GetImageView(),
-			_RenderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetImageView(),
-			_RenderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]->GetImageView(),
-			_RenderTargets[INDEX(RenderTarget::DirectionalShadow)]->GetImageView(),
-			_RenderTargets[INDEX(RenderTarget::Scene)]->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferAlbedo))->GetImageView(),
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth))->GetImageView(),
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferMaterialProperties))->GetImageView(),
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadow))->GetImageView(),
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -1329,7 +1330,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL),
 
 			//Scene.
-			VulkanUtilities::CreateAttachmentDescription(	_RenderTargets[INDEX(RenderTarget::Scene)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_LOAD,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1393,7 +1394,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkImageView, 2> attachments
 		{
 			_DepthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetImageView(),
-			_RenderTargets[INDEX(RenderTarget::Scene)]->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());

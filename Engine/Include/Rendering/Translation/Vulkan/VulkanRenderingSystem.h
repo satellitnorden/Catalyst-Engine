@@ -54,9 +54,14 @@ public:
 	VulkanRenderingSystem() NOEXCEPT { }
 
 	/*
-	*	Initializes the Vulkan rendering system.
+	*	Pre-initializes the Vulkan rendering system.
 	*/
-	void InitializeSystem() NOEXCEPT;
+	void PreInitializeSystem() NOEXCEPT;
+
+	/*
+	*	Post-initializes the Vulkan rendering system.
+	*/
+	void PostInitializeSystem() NOEXCEPT;
 
 	/*
 	*	Pre-updates the Vulkan rendering system synchronously.
@@ -79,11 +84,6 @@ public:
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
 
 	/*
-	*	Returns the given render target.
-	*/
-	RenderTargetHandle GetRenderTarget(const RenderTarget renderTarget) NOEXCEPT;
-
-	/*
 	*	Returns the given uniform buffer.
 	*/
 	UniformBufferHandle GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT;
@@ -104,9 +104,29 @@ public:
 	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
 
 	/*
+	*	Creates a render data table layout.
+	*/
+	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT;
+
+	/*
+	*	Creates a render data table.
+	*/
+	void CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT;
+
+	/*
+	*	Updates a render data table.
+	*/
+	void UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT;
+
+	/*
 	*	Destroys a render data table.
 	*/
 	void DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT;
+
+	/*
+	*	Creates a render target.
+	*/
+	void CreateRenderTarget(const Resolution resolution, const TextureFormat format, const TextureFilter filter, const AddressMode addressMode, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Creates an environment material.
@@ -138,33 +158,9 @@ public:
 	*/
 	void DestroyUniformBuffer(UniformBufferHandle handle) const NOEXCEPT;
 
-private:
-
-	friend class RenderingSystem;
-
 	/*
-	*	Finalizes the initialization of a render pass.
-	*/
-	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT _RenderPass) NOEXCEPT;
-
-	/*
-	*	Creates a render data table layout.
-	*/
-	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT;
-
-	/*
-	*	Creates a render data table.
-	*/
-	void CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT;
-
-	/*
-	*	Updates a render data table.
-	*/
-	void UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT;
-
-	/*
-	*	Returns the current dynamic uniform data descriptor set.
-	*/
+*	Returns the current dynamic uniform data descriptor set.
+*/
 	RenderDataTableHandle GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT;
 
 	/*
@@ -183,6 +179,13 @@ private:
 	*	Returns the given common render data table layout.
 	*/
 	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) NOEXCEPT;
+
+	/*
+	*	Finalizes the initialization of a render pass.
+	*/
+	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT _RenderPass) NOEXCEPT;
+
+private:
 
 	//Enumeration covering all semaphores.
 	enum class GraphicsSemaphore : uint8
@@ -220,9 +223,6 @@ private:
 	//Container for all descriptor set layouts.
 	StaticArray<VulkanDescriptorSetLayout, INDEX(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _DescriptorSetLayouts;
 
-	//Container for all render targets.
-	StaticArray<VulkanRenderTarget *RESTRICT, INDEX(RenderTarget::NumberOfRenderTargets)> _RenderTargets;
-
 	//Container for all temporary pipelines.
 	StaticArray<VulkanPipeline *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> _Pipelines;
 
@@ -254,9 +254,9 @@ private:
 	VulkanDescriptorSet *RESTRICT _CurrentEnvironmentDataDescriptorSet;
 
 	/*
-	*	Initializes all render targets.
+	*	Initializes all depth buffers.
 	*/
-	void InitializeRenderTargets() NOEXCEPT;
+	void InitializeDepthBuffers() NOEXCEPT;
 
 	/*
 	*	Initializes all semaphores.

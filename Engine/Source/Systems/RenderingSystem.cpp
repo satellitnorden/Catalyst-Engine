@@ -60,8 +60,14 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 	//Set the scaled resolution.
 	_ScaledResolution = Resolution(static_cast<uint32>(static_cast<float>(_Resolution._Width) * configuration._ResolutionScale), static_cast<uint32>(static_cast<float>(_Resolution._Height) * configuration._ResolutionScale));
 
-	//Initialize the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->InitializeSystem();
+	//Set the directional shadow map resolution.
+	_DirectionalShadowMapResolution = Resolution(configuration._ShadowMapResolution, configuration._ShadowMapResolution);
+
+	//Pre-initialize the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->PreInitializeSystem();
+
+	//Initialize all render targets.
+	InitializeRenderTargets();
 
 	//Initialize the common particle materials.
 	InitializeCommonParticleMaterials();
@@ -77,6 +83,9 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 
 	//Initialize all special textures.
 	InitializeSpecialTextures();
+
+	//Post-initialize the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->PostInitializeSystem();
 }
 
 /*
@@ -125,6 +134,18 @@ uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 {
 	//Return the current frame index via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentFrameIndex();
+}
+
+/*
+*	Sets the active camera.
+*/
+void RenderingSystem::SetActiveCamera(CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT
+{
+	//Set the active camera.
+	_ActiveCamera = newActiveCamera;
+
+	//Update the matrices.
+	UpdateMatrices();
 }
 
 /*
@@ -232,24 +253,12 @@ void RenderingSystem::ToScreenCoordinate(const Vector3 &worldPosition, Vector2 *
 }
 
 /*
-*	Sets the active camera.
-*/
-void RenderingSystem::SetActiveCamera(CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT
-{
-	//Set the active camera.
-	_ActiveCamera = newActiveCamera;
-
-	//Update the matrices.
-	UpdateMatrices();
-}
-
-/*
 *	Returns the given render target.
 */
 RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget renderTarget) const NOEXCEPT
 {
-	//Return the given render target via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetRenderTarget(renderTarget);
+	//Return the given render target.
+	return _RenderTargets[INDEX(renderTarget)];
 }
 
 /*
@@ -311,6 +320,15 @@ void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderDataTab
 {
 	//Destroy the render data table via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->DestroyRenderDataTable(renderDataTable);
+}
+
+/*
+*	Creates a render target.
+*/
+void RenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, const TextureFilter filter, const AddressMode addressMode, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
+{
+	//Create the render target via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->CreateRenderTarget(resolution, format, filter, addressMode, handle);
 }
 
 /*
@@ -624,6 +642,21 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 {
 	//Finalize the initialization of this render pass via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->FinalizeRenderPassInitialization(_RenderPass);
+}
+
+/*
+*	Initializes all render targets.
+*/
+void RenderingSystem::InitializeRenderTargets() NOEXCEPT
+{
+	//Initialize all render targets.
+	CreateRenderTarget(GetDirectionalShadowMapResolution(), TextureFormat::R8_Byte, TextureFilter::Linear, AddressMode::ClampToBorder, &_RenderTargets[INDEX(RenderTarget::DirectionalShadowMap)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8_Byte, TextureFilter::Nearest, AddressMode::ClampToBorder, &_RenderTargets[INDEX(RenderTarget::DirectionalShadow)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, TextureFilter::Linear, AddressMode::ClampToEdge, &_RenderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[INDEX(RenderTarget::SceneIntermediate)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Linear, AddressMode::ClampToEdge, &_RenderTargets[INDEX(RenderTarget::Scene)]);
 }
 
 /*
