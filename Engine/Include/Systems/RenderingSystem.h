@@ -221,7 +221,7 @@ public:
 	/*
 	*	Returns the render passes.
 	*/
-	const StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)>& GetRenderPasses() const
+	const StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)>& GetRenderPasses() const
 	{
 		return _RenderPasses;
 	}
@@ -246,7 +246,7 @@ public:
 	*/
 	const ParticleMaterial& GetCommonParticleMaterial(const CommonParticleMaterial commonParticlelMaterial) const NOEXCEPT
 	{
-		return _CommonParticleMaterials[INDEX(commonParticlelMaterial)];
+		return _CommonParticleMaterials[UNDERLYING(commonParticlelMaterial)];
 	}
 
 	/*
@@ -254,7 +254,7 @@ public:
 	*/
 	const PhysicalMaterial& GetCommonPhysicalMaterial(const CommonPhysicalMaterial commonPhysicalMaterial) const NOEXCEPT
 	{
-		return _CommonPhysicalMaterials[INDEX(commonPhysicalMaterial)];
+		return _CommonPhysicalMaterials[UNDERLYING(commonPhysicalMaterial)];
 	}
 
 	/*
@@ -262,7 +262,7 @@ public:
 	*/
 	const PhysicalModel& GetCommonPhysicalModel(const CommonPhysicalModel commonPhysicalModel) const NOEXCEPT
 	{
-		return _CommonPhysicalModels[INDEX(commonPhysicalModel)];
+		return _CommonPhysicalModels[UNDERLYING(commonPhysicalModel)];
 	}
 
 	/*
@@ -439,22 +439,22 @@ private:
 	Matrix4 _InverseCameraMatrix;
 
 	//Container for all render targets.
-	StaticArray<RenderTargetHandle, INDEX(RenderTarget::NumberOfRenderTargets)> _RenderTargets;
+	StaticArray<RenderTargetHandle, UNDERLYING(RenderTarget::NumberOfRenderTargets)> _RenderTargets;
 
 	//Container for all render passes.
-	StaticArray<RenderPass *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> _RenderPasses;
+	StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _RenderPasses;
 
 	//Container for all common particle materials.
-	StaticArray<ParticleMaterial, INDEX(CommonParticleMaterial::NumberOfCommonParticleMaterials)> _CommonParticleMaterials;
+	StaticArray<ParticleMaterial, UNDERLYING(CommonParticleMaterial::NumberOfCommonParticleMaterials)> _CommonParticleMaterials;
 
 	//Container for all common physical materials.
-	StaticArray<PhysicalMaterial, INDEX(CommonPhysicalMaterial::NumberOfCommonPhysicalMaterials)> _CommonPhysicalMaterials;
+	StaticArray<PhysicalMaterial, UNDERLYING(CommonPhysicalMaterial::NumberOfCommonPhysicalMaterials)> _CommonPhysicalMaterials;
 
 	//Container for all common physical models.
-	StaticArray<PhysicalModel, INDEX(CommonPhysicalModel::NumberOfCommonPhysicalModels)> _CommonPhysicalModels;
+	StaticArray<PhysicalModel, UNDERLYING(CommonPhysicalModel::NumberOfCommonPhysicalModels)> _CommonPhysicalModels;
 
 	//Container for all special textures.
-	StaticArray<Texture2DHandle, INDEX(SpecialTexture::NumberOfSpecialTextures)> _SpecialTextures;
+	StaticArray<Texture2DHandle, UNDERLYING(SpecialTexture::NumberOfSpecialTextures)> _SpecialTextures;
 
 	//The default night environment material.
 	EnvironmentMaterial _DefaultNightEnvironmentMaterial;

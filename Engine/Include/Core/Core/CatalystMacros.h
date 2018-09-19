@@ -77,11 +77,6 @@
 #define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance{ new SingletonClass };
 
 /*
-*	Casts a value to a uint64 so that it can be used as an index. Useful for enum classes.
-*/
-#define INDEX(value) static_cast<uint64>(value)
-
-/*
 *	Returns whether or not a bit is set.
 */
 #define IS_BIT_SET(bitfield, bit) ((bitfield & bit) == bit)
@@ -106,6 +101,11 @@
 *	Sets the bit at the specified index.
 */
 #define SET_BIT(bitfield, bit) (bitfield |= (bit))
+
+/*
+*	Casts a value to it's underlying type.
+*/
+#define UNDERLYING(value) (static_cast<std::underlying_type<decltype(value)>::type>(value))
 
 /*
 *	Indicates to the branch predictor that an expression is expected to most times not be true.

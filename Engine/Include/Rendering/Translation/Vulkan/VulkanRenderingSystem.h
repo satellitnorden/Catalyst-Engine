@@ -218,31 +218,31 @@ private:
 	VulkanDynamicUniformData _DynamicUniformData;
 
 	//Container for all depth buffers.
-	StaticArray<VulkanDepthBuffer *RESTRICT, INDEX(DepthBuffer::NumberOfDepthBuffers)> _DepthBuffers;
+	StaticArray<VulkanDepthBuffer *RESTRICT, UNDERLYING(DepthBuffer::NumberOfDepthBuffers)> _DepthBuffers;
 
 	//Container for all descriptor set layouts.
-	StaticArray<VulkanDescriptorSetLayout, INDEX(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _DescriptorSetLayouts;
+	StaticArray<VulkanDescriptorSetLayout, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _DescriptorSetLayouts;
 
 	//Container for all temporary pipelines.
-	StaticArray<VulkanPipeline *RESTRICT, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> _Pipelines;
+	StaticArray<VulkanPipeline *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _Pipelines;
 
 	//Container for all semaphores.
-	StaticArray<VulkanSemaphore *RESTRICT, INDEX(GraphicsSemaphore::NumberOfSemaphores)> _Semaphores;
+	StaticArray<VulkanSemaphore *RESTRICT, UNDERLYING(GraphicsSemaphore::NumberOfSemaphores)> _Semaphores;
 
 	//Container for all shader modules.
-	StaticArray<VulkanShaderModule *RESTRICT, INDEX(Shader::NumberOfShaders)> _ShaderModules;
+	StaticArray<VulkanShaderModule *RESTRICT, UNDERLYING(Shader::NumberOfShaders)> _ShaderModules;
 
 	//Container for all uniform buffers.
-	StaticArray<VulkanUniformBuffer *RESTRICT, INDEX(UniformBuffer::NumberOfUniformBuffers)> _UniformBuffers;
+	StaticArray<VulkanUniformBuffer *RESTRICT, UNDERLYING(UniformBuffer::NumberOfUniformBuffers)> _UniformBuffers;
 
 	//Container for all special textures.
-	StaticArray<Vulkan2DTexture* RESTRICT, INDEX(SpecialTexture::NumberOfSpecialTextures)> _SpecialTextures;
+	StaticArray<Vulkan2DTexture* RESTRICT, UNDERLYING(SpecialTexture::NumberOfSpecialTextures)> _SpecialTextures;
 
 	//Container for all Vulkan render pass main stage data.
-	StaticArray<VulkanRenderPassMainStageData, INDEX(RenderPassMainStage::NumberOfRenderPassMainStages)> _VulkanRenderPassMainStageData;
+	StaticArray<VulkanRenderPassMainStageData, UNDERLYING(RenderPassMainStage::NumberOfRenderPassMainStages)> _VulkanRenderPassMainStageData;
 
 	//Container for all Vulkan render pass data.
-	StaticArray<VulkanRenderPassData, INDEX(RenderPassSubStage::NumberOfRenderPassSubStages)> _VulkanRenderPassData;
+	StaticArray<VulkanRenderPassData, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _VulkanRenderPassData;
 
 	//The Vulkan frame data.
 	VulkanFrameData _FrameData;

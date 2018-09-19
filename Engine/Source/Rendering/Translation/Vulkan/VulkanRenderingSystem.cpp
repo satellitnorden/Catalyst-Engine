@@ -84,9 +84,9 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 	InitializeVulkanRenderPasses();
 
 	//Initialize the Vulkan frame data.
-	_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), _DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::DynamicUniformData)], _DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Environment)]
+	_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), _DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::DynamicUniformData)], _DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Environment)]
 #if defined(CATALYST_ENABLE_OCEAN)
-		, _DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Ocean)]
+		, _DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Ocean)]
 #endif
 	);
 }
@@ -97,7 +97,7 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 void VulkanRenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
 {
 	//Pre-update the Vulkan interface.
-	VulkanInterface::Instance->PreUpdate(_Semaphores[INDEX(GraphicsSemaphore::ImageAvailable)]);
+	VulkanInterface::Instance->PreUpdate(_Semaphores[UNDERLYING(GraphicsSemaphore::ImageAvailable)]);
 
 	//Begin the frame.
 	BeginFrame();
@@ -121,7 +121,7 @@ void VulkanRenderingSystem::PostUpdateSystemSynchronous() NOEXCEPT
 	EndFrame();
 
 	//Post-update the Vulkan interface.
-	VulkanInterface::Instance->PostUpdate(_Semaphores[INDEX(GraphicsSemaphore::RenderFinished)]);
+	VulkanInterface::Instance->PostUpdate(_Semaphores[UNDERLYING(GraphicsSemaphore::RenderFinished)]);
 }
 
 /*
@@ -130,7 +130,7 @@ void VulkanRenderingSystem::PostUpdateSystemSynchronous() NOEXCEPT
 void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 {
 	//Release all descriptor set layouts.
-	for (uint32 i = 0; i < INDEX(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts); ++i)
+	for (uint32 i = 0; i < UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts); ++i)
 	{
 		_DescriptorSetLayouts[i].Release();
 	}
@@ -152,7 +152,7 @@ uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 */
 UniformBufferHandle VulkanRenderingSystem::GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT
 {
-	return _UniformBuffers[INDEX(uniformBuffer)];
+	return _UniformBuffers[UNDERLYING(uniformBuffer)];
 }
 
 /*
@@ -216,7 +216,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 	terrainComponent._TerrainPropertiesTexture = terrainPropertiesTexture;
 
 	//Create the descriptor set.
-	renderComponent._RenderDataTable = VulkanInterface::Instance->CreateDescriptorSet(_DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Terrain)]);
+	renderComponent._RenderDataTable = VulkanInterface::Instance->CreateDescriptorSet(_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Terrain)]);
 	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent._RenderDataTable) };
 
 	StaticArray<VkWriteDescriptorSet, 18> writeDescriptorSets
@@ -360,11 +360,11 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	}
 	
 	parameters._ShaderModules.Reserve(5);
-	if (_RenderPass->GetVertexShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[INDEX(_RenderPass->GetVertexShader())]);
-	if (_RenderPass->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[INDEX(_RenderPass->GetTessellationControlShader())]);
-	if (_RenderPass->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[INDEX(_RenderPass->GetTessellationEvaluationShader())]);
-	if (_RenderPass->GetGeometryShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[INDEX(_RenderPass->GetGeometryShader())]);
-	if (_RenderPass->GetFragmentShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[INDEX(_RenderPass->GetFragmentShader())]);
+	if (_RenderPass->GetVertexShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(_RenderPass->GetVertexShader())]);
+	if (_RenderPass->GetTessellationControlShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(_RenderPass->GetTessellationControlShader())]);
+	if (_RenderPass->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(_RenderPass->GetTessellationEvaluationShader())]);
+	if (_RenderPass->GetGeometryShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(_RenderPass->GetGeometryShader())]);
+	if (_RenderPass->GetFragmentShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(_RenderPass->GetFragmentShader())]);
 	parameters._Subpass = _RenderPass->GetSubStageIndex();
 	parameters._Topology = VulkanTranslationUtilities::GetVulkanTopology(_RenderPass->GetTopology());
 
@@ -391,24 +391,24 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	parameters._VertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
 	parameters._ViewportExtent = _RenderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ _RenderPass->GetRenderResolution()._Width, _RenderPass->GetRenderResolution()._Height };
 
-	parameters._RenderPass = _VulkanRenderPassMainStageData[INDEX(_RenderPass->GetMainStage())]._RenderPass;
+	parameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._RenderPass;
 
 	//Create the pipeline!
-	_Pipelines[INDEX(_RenderPass->GetSubStage())] = VulkanInterface::Instance->CreatePipeline(parameters);
+	_Pipelines[UNDERLYING(_RenderPass->GetSubStage())] = VulkanInterface::Instance->CreatePipeline(parameters);
 
 	//Update the Vulkan render pass data.
-	_VulkanRenderPassData[INDEX(_RenderPass->GetSubStage())]._Framebuffers.Reserve(_VulkanRenderPassMainStageData[INDEX(_RenderPass->GetMainStage())]._FrameBuffers.Size());
+	_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]._Framebuffers.Reserve(_VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._FrameBuffers.Size());
 
-	for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : _VulkanRenderPassMainStageData[INDEX(_RenderPass->GetMainStage())]._FrameBuffers)
+	for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : _VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._FrameBuffers)
 	{
-		_VulkanRenderPassData[INDEX(_RenderPass->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
+		_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
 	}
 
-	_VulkanRenderPassData[INDEX(_RenderPass->GetSubStage())]._Pipeline = _Pipelines[INDEX(_RenderPass->GetSubStage())]->Get();
-	_VulkanRenderPassData[INDEX(_RenderPass->GetSubStage())]._PipelineLayout = _Pipelines[INDEX(_RenderPass->GetSubStage())]->GetPipelineLayout();
-	_VulkanRenderPassData[INDEX(_RenderPass->GetSubStage())]._RenderPass = _VulkanRenderPassMainStageData[INDEX(_RenderPass->GetMainStage())]._RenderPass->Get();
+	_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]._Pipeline = _Pipelines[UNDERLYING(_RenderPass->GetSubStage())]->Get();
+	_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]._PipelineLayout = _Pipelines[UNDERLYING(_RenderPass->GetSubStage())]->GetPipelineLayout();
+	_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._RenderPass->Get();
 
-	_RenderPass->SetData(&_VulkanRenderPassData[INDEX(_RenderPass->GetSubStage())]);
+	_RenderPass->SetData(&_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]);
 
 	//Add the command buffers.
 	const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };
@@ -525,7 +525,7 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanRenderDataTable() NO
 */
 RenderDataTableHandle VulkanRenderingSystem::GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) NOEXCEPT
 {
-	return reinterpret_cast<RenderDataTableHandle>(&_DescriptorSetLayouts[INDEX(commonRenderDataTableLayout)]);
+	return reinterpret_cast<RenderDataTableHandle>(&_DescriptorSetLayouts[UNDERLYING(commonRenderDataTableLayout)]);
 }
 
 /*
@@ -537,8 +537,8 @@ void VulkanRenderingSystem::InitializeDepthBuffers() NOEXCEPT
 	const VkExtent2D scaledExtent{ VulkanTranslationUtilities::GetVulkanExtent(RenderingSystem::Instance->GetScaledResolution()) };
 
 	//Initialize all depth buffers.
-	_DepthBuffers[INDEX(DepthBuffer::DirectionalLight)] = VulkanInterface::Instance->CreateDepthBuffer({ EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution });
-	_DepthBuffers[INDEX(DepthBuffer::SceneBuffer)] = VulkanInterface::Instance->CreateDepthBuffer(scaledExtent);
+	_DepthBuffers[UNDERLYING(DepthBuffer::DirectionalLight)] = VulkanInterface::Instance->CreateDepthBuffer({ EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution });
+	_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)] = VulkanInterface::Instance->CreateDepthBuffer(scaledExtent);
 }
 
 /*
@@ -547,8 +547,8 @@ void VulkanRenderingSystem::InitializeDepthBuffers() NOEXCEPT
 void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
 {
 	//Initialize all semaphores.
-	_Semaphores[INDEX(GraphicsSemaphore::ImageAvailable)] = VulkanInterface::Instance->CreateSemaphore();
-	_Semaphores[INDEX(GraphicsSemaphore::RenderFinished)] = VulkanInterface::Instance->CreateSemaphore();
+	_Semaphores[UNDERLYING(GraphicsSemaphore::ImageAvailable)] = VulkanInterface::Instance->CreateSemaphore();
+	_Semaphores[UNDERLYING(GraphicsSemaphore::RenderFinished)] = VulkanInterface::Instance->CreateSemaphore();
 }
 
 /*
@@ -575,8 +575,8 @@ void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 			sample *= scale;
 		}
 
-		_UniformBuffers[INDEX(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(Vector4) * RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE);
-		_UniformBuffers[INDEX(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)]->UploadData(samples.Data());
+		_UniformBuffers[UNDERLYING(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(Vector4) * RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE);
+		_UniformBuffers[UNDERLYING(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)]->UploadData(samples.Data());
 	}
 }
 
@@ -592,7 +592,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
 		};
 
-		_DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::DynamicUniformData)].Initialize(1, dynamicUniformDataDescriptorSetLayoutBindings.Data());
+		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::DynamicUniformData)].Initialize(1, dynamicUniformDataDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -605,7 +605,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		_DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Environment)].Initialize(static_cast<uint32>(environmentDescriptorSetLayoutBindings.Size()), environmentDescriptorSetLayoutBindings.Data());
+		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Environment)].Initialize(static_cast<uint32>(environmentDescriptorSetLayoutBindings.Size()), environmentDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -632,7 +632,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(18, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		_DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Terrain)].Initialize(18, terrainDescriptorSetLayoutBindings.Data());
+		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Terrain)].Initialize(18, terrainDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -644,7 +644,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		_DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Physical)].Initialize(static_cast<uint32>(physicalDescriptorSetLayoutBindings.Size()), physicalDescriptorSetLayoutBindings.Data());
+		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Physical)].Initialize(static_cast<uint32>(physicalDescriptorSetLayoutBindings.Size()), physicalDescriptorSetLayoutBindings.Data());
 	}
 
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -657,7 +657,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		_DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::Ocean)].Initialize(static_cast<uint32>(oceanDescriptorSetLayoutBindings.Size()), oceanDescriptorSetLayoutBindings.Data());
+		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Ocean)].Initialize(static_cast<uint32>(oceanDescriptorSetLayoutBindings.Size()), oceanDescriptorSetLayoutBindings.Data());
 	}
 #endif
 
@@ -669,7 +669,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 		};
 
-		_DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::ParticleSystem)].Initialize(static_cast<uint32>(particleSystemDescriptorSetLayoutBindings.Size()), particleSystemDescriptorSetLayoutBindings.Data());
+		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::ParticleSystem)].Initialize(static_cast<uint32>(particleSystemDescriptorSetLayoutBindings.Size()), particleSystemDescriptorSetLayoutBindings.Data());
 	}
 
 	{
@@ -679,7 +679,7 @@ void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
 			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
 		};
 
-		_DescriptorSetLayouts[INDEX(CommonRenderDataTableLayout::GaussianBlur)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
+		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::GaussianBlur)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
 	}
 }
 
@@ -692,21 +692,21 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		//Initialize the bloom fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetBloomFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::BloomFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::BloomFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the box blur shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetBoxBlurFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::BoxBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::BoxBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the cube map vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetCubeMapVertexShaderData(data);
-		_ShaderModules[INDEX(Shader::CubeMapVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		_ShaderModules[UNDERLYING(Shader::CubeMapVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 #if !defined(CATALYST_FINAL)
@@ -714,28 +714,28 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		//Initialize the debug axis-aligned bounding box fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDebugAxisAlignedBoundingBoxFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::DebugAxisAlignedBoundingBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::DebugAxisAlignedBoundingBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the debug axis-aligned bounding box vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDebugAxisAlignedBoundingBoxVertexShaderData(data);
-		_ShaderModules[INDEX(Shader::DebugAxisAlignedBoundingBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		_ShaderModules[UNDERLYING(Shader::DebugAxisAlignedBoundingBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the debug screen box fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDebugScreenBoxFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::DebugScreenBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::DebugScreenBoxFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the debug screen box vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDebugScreenBoxVertexShaderData(data);
-		_ShaderModules[INDEX(Shader::DebugScreenBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		_ShaderModules[UNDERLYING(Shader::DebugScreenBoxVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 #endif
 
@@ -743,49 +743,49 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		//Initialize the directional physical shadow vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDirectionalPhysicalShadowVertexShaderData(data);
-		_ShaderModules[INDEX(Shader::DirectionalPhysicalShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		_ShaderModules[UNDERLYING(Shader::DirectionalPhysicalShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the directional shadow fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDirectionalShadowFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::DirectionalShadowFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::DirectionalShadowFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize directional shadow instanced physical vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDirectionalShadowInstancedPhysicalVertexShaderData(data);
-		_ShaderModules[INDEX(Shader::DirectionalInstancedPhysicalShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		_ShaderModules[UNDERLYING(Shader::DirectionalInstancedPhysicalShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize directional shadow terrain tesselation evaluation shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetDirectionalShadowTerrainTessellationEvaluationShaderData(data);
-		_ShaderModules[INDEX(Shader::DirectionalTerrainShadowTessellationEvaluation)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+		_ShaderModules[UNDERLYING(Shader::DirectionalTerrainShadowTessellationEvaluation)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 	}
 
 	{
 		//Initialize directional shadow terrain tesselation evaluation shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetGaussianBlurFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::GaussianBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::GaussianBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the instanced physical vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetInstancedPhysicalVertexShaderData(data);
-		_ShaderModules[INDEX(Shader::InstancedPhysicalVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		_ShaderModules[UNDERLYING(Shader::InstancedPhysicalVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the lighting fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetLightingFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::LightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::LightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -793,7 +793,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		//Initialize the ocean fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetOceanFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::OceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::OceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 #endif
 
@@ -801,112 +801,112 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		//Initialize the outline fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetOutlineFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::OutlineFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::OutlineFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the particle system fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetParticleSystemFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::ParticleSystemFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::ParticleSystemFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the particle system geometry shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetParticleSystemGeometryShaderData(data);
-		_ShaderModules[INDEX(Shader::ParticleSystemGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
+		_ShaderModules[UNDERLYING(Shader::ParticleSystemGeometry)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_GEOMETRY_BIT);
 	}
 
 	{
 		//Initialize the particle system vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetParticleSystemVertexShaderData(data);
-		_ShaderModules[INDEX(Shader::ParticleSystemVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		_ShaderModules[UNDERLYING(Shader::ParticleSystemVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
 		//Initialize the post processing bloom fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetPostProcessingBloomFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::PostProcessingBloomFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::PostProcessingBloomFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the post processing fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetPostProcessingFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::PostProcessingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::PostProcessingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the physical fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetPhysicalFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::PhysicalFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::PhysicalFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the physical vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetPhysicalVertexShaderData(data);
-		_ShaderModules[INDEX(Shader::PhysicalVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		_ShaderModules[UNDERLYING(Shader::PhysicalVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 	
 	{
 		//Initialize the screen space ambient occlusion fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetScreenSpaceAmbientOcclusionFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::ScreenSpaceAmbientOcclusionFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::ScreenSpaceAmbientOcclusionFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the shadow map fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetShadowMapFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::ShadowMapFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::ShadowMapFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the sky fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetSkyFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::SkyFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::SkyFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
 		//Initialize the terrain scene buffer fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetTerrainSceneBufferFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::TerrainFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::TerrainFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the terrain scene buffer tessellation control shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetTerrainSceneBufferTessellationControlShaderData(data);
-		_ShaderModules[INDEX(Shader::TerrainTessellationControl)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
+		_ShaderModules[UNDERLYING(Shader::TerrainTessellationControl)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
 	}
 	
 	{
 		//Initialize the terrain scene buffer tessellation evaluation shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetTerrainSceneBufferTessellationEvaluationShaderData(data);
-		_ShaderModules[INDEX(Shader::TerrainTessellationEvaluation)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+		_ShaderModules[UNDERLYING(Shader::TerrainTessellationEvaluation)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 	}
 	
 	{
 		//Initialize the terrain scene buffer vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetTerrainVertexShaderData(data);
-		_ShaderModules[INDEX(Shader::TerrainVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		_ShaderModules[UNDERLYING(Shader::TerrainVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 	
 	{
 		//Initialize the viewport vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetViewportVertexShaderData(data);
-		_ShaderModules[INDEX(Shader::ViewportVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		_ShaderModules[UNDERLYING(Shader::ViewportVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
@@ -914,7 +914,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		//Initialize the volumetric fog fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetVolumetricFogFragmentShaderData(data);
-		_ShaderModules[INDEX(Shader::VolumetricFogFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		_ShaderModules[UNDERLYING(Shader::VolumetricFogFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 #endif
 }
@@ -936,7 +936,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
 		{
 			//Depth buffer.
-			VulkanUtilities::CreateAttachmentDescription(	_DepthBuffers[INDEX(DepthBuffer::DirectionalLight)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	_DepthBuffers[UNDERLYING(DepthBuffer::DirectionalLight)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1002,16 +1002,16 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
 		renderPassParameters._SubpassDependencies = subpassDependencies.Data();
 
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DirectionalShadow)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)]._RenderPass->Get();
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DirectionalShadow)]._RenderPass->Get();
 		
 		StaticArray<VkImageView, 2> attachments
 		{
-			_DepthBuffers[INDEX(DepthBuffer::DirectionalLight)]->GetImageView(),
+			_DepthBuffers[UNDERLYING(DepthBuffer::DirectionalLight)]->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadowMap))->GetImageView()
 		};
 
@@ -1019,10 +1019,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution };
 
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)]._FrameBuffers.EmplaceFast( VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)]._NumberOfAttachments = 2;
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::DirectionalShadow)]._ShouldClear = true;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DirectionalShadow)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DirectionalShadow)]._FrameBuffers.EmplaceFast( VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DirectionalShadow)]._NumberOfAttachments = 2;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DirectionalShadow)]._ShouldClear = true;
 	}
 
 	//Initialize the scene buffer render pass.
@@ -1045,7 +1045,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 6> attachmenDescriptions
 		{
 			//Depth buffer.
-			VulkanUtilities::CreateAttachmentDescription(	_DepthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1281,16 +1281,16 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
 		renderPassParameters._SubpassDependencies = subpassDependencies.Data();
 
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)]._RenderPass->Get();
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 6> attachments
 		{
-			_DepthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetImageView(),
+			_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)]->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferAlbedo))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferMaterialProperties))->GetImageView(),
@@ -1302,10 +1302,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
 
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)]._NumberOfAttachments = 6;
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Scene)]._ShouldClear = true;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._NumberOfAttachments = 6;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._ShouldClear = true;
 	}
 
 #if !defined(CATALYST_FINAL)
@@ -1321,7 +1321,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
 		{
 			//Depth buffer.
-			VulkanUtilities::CreateAttachmentDescription(	_DepthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)]->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_LOAD,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1384,16 +1384,16 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
 		renderPassParameters._SubpassDependencies = subpassDependencies.Data();;
 
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._RenderPass->Get();
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 2> attachments
 		{
-			_DepthBuffers[INDEX(DepthBuffer::SceneBuffer)]->GetImageView(),
+			_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)]->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
 		};
 
@@ -1401,10 +1401,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
 
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Debug)]._ShouldClear = false;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Debug)]._ShouldClear = false;
 	}
 #endif
 
@@ -1420,7 +1420,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
 		{
 			//Scene.
-			VulkanUtilities::CreateAttachmentDescription(_RenderTargets[INDEX(RenderTarget::Scene)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(_RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetFormat(),
 			VK_ATTACHMENT_LOAD_OP_LOAD,
 			VK_ATTACHMENT_STORE_OP_STORE,
 			VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1454,26 +1454,26 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffer.
 		VulkanFramebufferCreationParameters framebufferParameters;
 
-		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)]._RenderPass->Get();
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._RenderPass->Get();
 
 		StaticArray<VkImageView, 1> attachments
 		{
-			_RenderTargets[INDEX(RenderTarget::Scene)]->GetImageView()
+			_RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
 		framebufferParameters._Attachments = attachments.Data();
 		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
 
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)]._FrameBuffers.Reserve(1);
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::Ocean)]._ShouldClear = false;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._ShouldClear = false;
 	}
 #endif
 
@@ -1524,27 +1524,27 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffers.
 		const DynamicArray<VkImageView> &swapchainImages{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)]._FrameBuffers.Reserve(swapchainImages.Size());
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._FrameBuffers.Reserve(swapchainImages.Size());
 
 		for (VkImageView swapchainImage : swapchainImages)
 		{
 			VulkanFramebufferCreationParameters framebufferParameters;
 
-			framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)]._RenderPass->Get();
+			framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._RenderPass->Get();
 
 			framebufferParameters._AttachmentCount = 1;
 			framebufferParameters._Attachments = &swapchainImage;
 			framebufferParameters._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-			_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+			_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		}
 
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[INDEX(RenderPassMainStage::PostProcessingFinal)]._ShouldClear = false;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._ShouldClear = false;
 	}
 }
 
@@ -1604,7 +1604,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 																		VK_ACCESS_TRANSFER_READ_BIT,
 																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 																		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-																		_RenderTargets[INDEX(RenderTarget::Scene)]->GetImage(),
+																		_RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetImage(),
 																		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 																		VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);
@@ -1613,21 +1613,21 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 																		VK_ACCESS_TRANSFER_WRITE_BIT,
 																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 																		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-																		_RenderTargets[INDEX(RenderTarget::SceneIntermediate)]->GetImage(),
+																		_RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]->GetImage(),
 																		VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 																		VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);
 
-				const VkExtent2D sourceExtent{ _RenderTargets[INDEX(RenderTarget::Scene)]->GetExtent() };
+				const VkExtent2D sourceExtent{ _RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetExtent() };
 				const VkExtent3D extent{ sourceExtent.width, sourceExtent.height, 0 };
 
-				currentPrimaryCommandBuffer->CommandCopyImage(_RenderTargets[INDEX(RenderTarget::Scene)]->GetImage(), _RenderTargets[INDEX(RenderTarget::SceneIntermediate)]->GetImage(), extent);
+				currentPrimaryCommandBuffer->CommandCopyImage(_RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetImage(), _RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]->GetImage(), extent);
 
 				currentPrimaryCommandBuffer->CommandPipelineBarrier(	VK_ACCESS_TRANSFER_WRITE_BIT,
 																		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
 																		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-																		_RenderTargets[INDEX(RenderTarget::Scene)]->GetImage(),
+																		_RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetImage(),
 																		VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);
@@ -1636,25 +1636,25 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 																		VK_ACCESS_SHADER_READ_BIT,
 																		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-																		_RenderTargets[INDEX(RenderTarget::SceneIntermediate)]->GetImage(),
+																		_RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]->GetImage(),
 																		VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);
 			}
 #endif
 
-			if (_VulkanRenderPassMainStageData[INDEX(currentStage)]._ShouldClear)
+			if (_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._ShouldClear)
 			{
-				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(	_VulkanRenderPassMainStageData[INDEX(currentStage)]._RenderPass->Get(),
-																				_VulkanRenderPassMainStageData[INDEX(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
+				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(	_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
+																				_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
 																				renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
-																				VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, _VulkanRenderPassMainStageData[INDEX(currentStage)]._NumberOfAttachments);
+																				VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, _VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._NumberOfAttachments);
 			}
 
 			else
 			{
-				currentPrimaryCommandBuffer->CommandBeginRenderPass(	_VulkanRenderPassMainStageData[INDEX(currentStage)]._RenderPass->Get(),
-																		_VulkanRenderPassMainStageData[INDEX(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
+				currentPrimaryCommandBuffer->CommandBeginRenderPass(	_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
+																		_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
 																		renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
 																		VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 			}
@@ -1685,7 +1685,7 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 	_FrameData.GetCurrentPrimaryCommandBuffer()->End();
 
 	//Submit current command buffer.
-	VulkanInterface::Instance->GetGraphicsQueue()->Submit(*_FrameData.GetCurrentPrimaryCommandBuffer(), 1, _Semaphores[INDEX(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, _Semaphores[INDEX(GraphicsSemaphore::RenderFinished)], _FrameData.GetCurrentFence()->Get());
+	VulkanInterface::Instance->GetGraphicsQueue()->Submit(*_FrameData.GetCurrentPrimaryCommandBuffer(), 1, _Semaphores[UNDERLYING(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, _Semaphores[UNDERLYING(GraphicsSemaphore::RenderFinished)], _FrameData.GetCurrentFence()->Get());
 }
 
 /*
@@ -1715,8 +1715,8 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 
 		StaticArray<VkWriteDescriptorSet, 3> oceanWriteDescriptorSets
 		{
-			_RenderTargets[INDEX(RenderTarget::SceneIntermediate)]->GetWriteDescriptorSet(oceanDescriptorSet, 0),
-			_RenderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(oceanDescriptorSet, 1),
+			_RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]->GetWriteDescriptorSet(oceanDescriptorSet, 0),
+			_RenderTargets[UNDERLYING(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(oceanDescriptorSet, 1),
 			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetOceanMaterial()._NormalMapTexture)->GetWriteDescriptorSet(oceanDescriptorSet, 2)
 		};
 

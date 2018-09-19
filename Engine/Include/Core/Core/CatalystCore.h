@@ -12,6 +12,7 @@
 #include <set>
 #include <sstream>
 #include <thread>
+#include <type_traits>
 
 //Catalyst core.
 #include <Core/Core/CatalystDefines.h>

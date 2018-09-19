@@ -258,7 +258,7 @@ void RenderingSystem::ToScreenCoordinate(const Vector3 &worldPosition, Vector2 *
 RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget renderTarget) const NOEXCEPT
 {
 	//Return the given render target.
-	return _RenderTargets[INDEX(renderTarget)];
+	return _RenderTargets[UNDERLYING(renderTarget)];
 }
 
 /*
@@ -266,7 +266,7 @@ RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget renderTar
 */
 Texture2DHandle RenderingSystem::GetSpecialTexture(const SpecialTexture specialTexture) NOEXCEPT
 {
-	return _SpecialTextures[INDEX(specialTexture)];
+	return _SpecialTextures[UNDERLYING(specialTexture)];
 }
 
 /*
@@ -650,13 +650,13 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 {
 	//Initialize all render targets.
-	CreateRenderTarget(GetDirectionalShadowMapResolution(), TextureFormat::R8_Byte, TextureFilter::Linear, AddressMode::ClampToBorder, &_RenderTargets[INDEX(RenderTarget::DirectionalShadowMap)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8_Byte, TextureFilter::Nearest, AddressMode::ClampToBorder, &_RenderTargets[INDEX(RenderTarget::DirectionalShadow)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, TextureFilter::Linear, AddressMode::ClampToEdge, &_RenderTargets[INDEX(RenderTarget::SceneBufferAlbedo)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[INDEX(RenderTarget::SceneBufferNormalDepth)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[INDEX(RenderTarget::SceneBufferMaterialProperties)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[INDEX(RenderTarget::SceneIntermediate)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Linear, AddressMode::ClampToEdge, &_RenderTargets[INDEX(RenderTarget::Scene)]);
+	CreateRenderTarget(GetDirectionalShadowMapResolution(), TextureFormat::R8_Byte, TextureFilter::Linear, AddressMode::ClampToBorder, &_RenderTargets[UNDERLYING(RenderTarget::DirectionalShadowMap)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8_Byte, TextureFilter::Nearest, AddressMode::ClampToBorder, &_RenderTargets[UNDERLYING(RenderTarget::DirectionalShadow)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, TextureFilter::Linear, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferAlbedo)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferNormalDepth)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferMaterialProperties)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Linear, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::Scene)]);
 }
 
 /*
@@ -665,28 +665,28 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 {
 	//Register all render passes.
-	_RenderPasses[INDEX(RenderPassSubStage::DirectionalTerrainShadow)] = DirectionalTerrainShadowRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::DirectionalDynamicPhysicalShadow)] = DirectionalDynamicPhysicalShadowRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::DirectionalInstancedPhysicalShadow)] = DirectionalInstancedPhysicalShadowRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::Terrain)] = TerrainRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::DynamicPhysical)] = DynamicPhysicalRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::InstancedPhysical)] = InstancedPhysicalRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::DynamicOutline)] = DynamicOutlineRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalTerrainShadow)] = DirectionalTerrainShadowRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalDynamicPhysicalShadow)] = DirectionalDynamicPhysicalShadowRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalInstancedPhysicalShadow)] = DirectionalInstancedPhysicalShadowRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::Terrain)] = TerrainRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::DynamicPhysical)] = DynamicPhysicalRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::InstancedPhysical)] = InstancedPhysicalRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::DynamicOutline)] = DynamicOutlineRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::ParticleSystem)] = ParticleSystemRenderPass::Instance.Get();
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
-	_RenderPasses[INDEX(RenderPassSubStage::VolumetricFog)] = VolumetricFogRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::VolumetricFog)] = VolumetricFogRenderPass::Instance.Get();
 #endif
 #if !defined(CATALYST_FINAL)
-	_RenderPasses[INDEX(RenderPassSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxRenderPass::Instance.Get();
-	_RenderPasses[INDEX(RenderPassSubStage::DebugScreenBox)] = DebugScreenBoxRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox)] = DebugAxisAlignedBoundingBoxRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::DebugScreenBox)] = DebugScreenBoxRenderPass::Instance.Get();
 #endif
 #if defined(CATALYST_ENABLE_OCEAN)
-	_RenderPasses[INDEX(RenderPassSubStage::Ocean)] = OceanRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::Ocean)] = OceanRenderPass::Instance.Get();
 #endif
-	_RenderPasses[INDEX(RenderPassSubStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
 }
 
 /*
@@ -743,7 +743,7 @@ void RenderingSystem::InitializeCommonParticleMaterials() NOEXCEPT
 			}
 		}
 
-		CreateParticleMaterial(data, _CommonParticleMaterials[INDEX(CommonParticleMaterial::WhiteCircle)]);
+		CreateParticleMaterial(data, _CommonParticleMaterials[UNDERLYING(CommonParticleMaterial::WhiteCircle)]);
 	}
 }
 
@@ -778,7 +778,7 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		data._MaterialPropertiesData[0].EmplaceFast(255);
 		data._MaterialPropertiesData[0].EmplaceFast(0);
 
-		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Black)]);
+		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[UNDERLYING(CommonPhysicalMaterial::Black)]);
 	}
 
 	{
@@ -807,7 +807,7 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		data._MaterialPropertiesData[0].EmplaceFast(255);
 		data._MaterialPropertiesData[0].EmplaceFast(0);
 
-		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Red)]);
+		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[UNDERLYING(CommonPhysicalMaterial::Red)]);
 	}
 
 	{
@@ -836,7 +836,7 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 		data._MaterialPropertiesData[0].EmplaceFast(255);
 		data._MaterialPropertiesData[0].EmplaceFast(0);
 
-		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[INDEX(CommonPhysicalMaterial::Teal)]);
+		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[UNDERLYING(CommonPhysicalMaterial::Teal)]);
 	}
 }
 
@@ -849,21 +849,21 @@ void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
 		//Create the cube common physical model.
 		PhysicalModelData data;
 		CommonPhysicalModelData::GetCubePhysicalModelData(data);
-		CreatePhysicalModel(data, _CommonPhysicalModels[INDEX(CommonPhysicalModel::Cube)]);
+		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Cube)]);
 	}
 
 	{
 		//Create the octahedron common physical model.
 		PhysicalModelData data;
 		CommonPhysicalModelData::GetOctahedronPhysicalModelData(data);
-		CreatePhysicalModel(data, _CommonPhysicalModels[INDEX(CommonPhysicalModel::Octahedron)]);
+		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Octahedron)]);
 	}
 
 	{
 		//Create the plane common physical model.
 		PhysicalModelData data;
 		CommonPhysicalModelData::GetPlanePhysicalModelData(data);
-		CreatePhysicalModel(data, _CommonPhysicalModels[INDEX(CommonPhysicalModel::Plane)]);
+		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Plane)]);
 	}
 }
 
@@ -1221,7 +1221,7 @@ void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
 			sample._W = 0.0f;
 		}
 
-		_SpecialTextures[INDEX(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)] = CreateTexture2D(TextureData(TextureDataContainer(samples, 4, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
+		_SpecialTextures[UNDERLYING(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)] = CreateTexture2D(TextureData(TextureDataContainer(samples, 4, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
 	}
 }
 
