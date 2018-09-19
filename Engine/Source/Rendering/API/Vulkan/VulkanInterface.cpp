@@ -222,6 +222,7 @@ void VulkanInterface::Destroy2DTexture(Vulkan2DTexture *const RESTRICT texture) 
 {
 	texture->Release();
 	_Vulkan2DTextures.Erase(texture);
+	MemoryUtilities::GlobalPoolDeAllocate<sizeof(Vulkan2DTexture)>(texture);
 }
 
 /*

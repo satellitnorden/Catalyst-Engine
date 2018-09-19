@@ -319,10 +319,10 @@ void RenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInformati
 /*
 *	Destroys a render data table.
 */
-void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT
+void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle handle) const NOEXCEPT
 {
 	//Destroy the render data table via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->DestroyRenderDataTable(renderDataTable);
+	CURRENT_RENDERING_SYSTEM::Instance->DestroyRenderDataTable(handle);
 }
 
 /*
@@ -346,10 +346,10 @@ Texture2DHandle RenderingSystem::CreateTexture2D(const TextureData &textureData)
 /*
 *	Destroys a texture 2D
 */
-void RenderingSystem::DestroyTexture2D(Texture2DHandle texture) const NOEXCEPT
+void RenderingSystem::DestroyTexture2D(Texture2DHandle handle) const NOEXCEPT
 {
 	//Destroy the texture 2D via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->DestroyTexture2D(texture);
+	CURRENT_RENDERING_SYSTEM::Instance->DestroyTexture2D(handle);
 }
 
 /*

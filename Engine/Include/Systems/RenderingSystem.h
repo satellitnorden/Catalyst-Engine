@@ -288,7 +288,7 @@ public:
 	/*
 	*	Destroys a render data table.
 	*/
-	void DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT;
+	void DestroyRenderDataTable(RenderDataTableHandle handle) const NOEXCEPT;
 
 	/*
 	*	Creates a render target.
@@ -303,7 +303,7 @@ public:
 	/*
 	*	Destroys a texture 2D
 	*/
-	void DestroyTexture2D(Texture2DHandle texture) const NOEXCEPT;
+	void DestroyTexture2D(Texture2DHandle handle) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.

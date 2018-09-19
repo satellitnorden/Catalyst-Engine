@@ -279,10 +279,10 @@ Texture2DHandle VulkanRenderingSystem::Create2DTexture(const TextureData &textur
 /*
 *	Destroys a texture 2D
 */
-void VulkanRenderingSystem::DestroyTexture2D(Texture2DHandle texture) const NOEXCEPT
+void VulkanRenderingSystem::DestroyTexture2D(Texture2DHandle handle) NOEXCEPT
 {
-	//Destroy the texture.
-	VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture *const RESTRICT>(texture));
+	//Put in a queue, destroy when no command buffer uses it anymore.
+	_DestructionQueue.EmplaceSlow(VulkanDestructionData::Type::Texture2D, handle);
 }
 
 /*
@@ -1451,6 +1451,13 @@ void VulkanRenderingSystem::ProcessDestructionQueue() NOEXCEPT
 				case VulkanDestructionData::Type::RenderDataTable:
 				{
 					VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VulkanDescriptorSet *const RESTRICT>(_DestructionQueue[i]._Handle));
+
+					break;
+				}
+
+				case VulkanDestructionData::Type::Texture2D:
+				{
+					VulkanInterface::Instance->Destroy2DTexture(static_cast<Vulkan2DTexture *const RESTRICT>(_DestructionQueue[i]._Handle));
 
 					break;
 				}

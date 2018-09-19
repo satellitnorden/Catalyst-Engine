@@ -96,7 +96,7 @@ public:
 	/*
 	*	Destroys a texture 2D
 	*/
-	void DestroyTexture2D(Texture2DHandle texture) const NOEXCEPT;
+	void DestroyTexture2D(Texture2DHandle handle) NOEXCEPT;
 
 	/*
 	*	Creates a constant buffer.
@@ -248,6 +248,7 @@ private:
 		enum class Type : uint8
 		{
 			RenderDataTable,
+			Texture2D,
 			UniformBuffer
 		};
 
