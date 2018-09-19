@@ -9,8 +9,6 @@
 //Rendering constants.
 namespace RenderingConstants
 {
-	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE{ 16 };
-	constexpr uint8 SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE{ 8 };
 	constexpr float SHADOW_VIEW_DISTANCE{ 40.0f };
 }
 
@@ -254,14 +252,6 @@ enum class MipmapMode : uint8
 {
 	Linear,
 	Nearest
-};
-
-//Enumeration covering all uniform buffers.
-enum class UniformBuffer : uint8
-{
-	ScreenSpaceAmbientOcclusionSamples,
-
-	NumberOfUniformBuffers
 };
 
 //Enumeration covering all texture filters.

@@ -84,11 +84,6 @@ public:
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
 
 	/*
-	*	Returns the given uniform buffer.
-	*/
-	UniformBufferHandle GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT;
-
-	/*
 	*	Creates and returns a 2D texture given the texture data.
 	*/
 	Texture2DHandle Create2DTexture(const TextureData &textureData) const NOEXCEPT;
@@ -226,9 +221,6 @@ private:
 	//Container for all shader modules.
 	StaticArray<VulkanShaderModule *RESTRICT, UNDERLYING(Shader::NumberOfShaders)> _ShaderModules;
 
-	//Container for all uniform buffers.
-	StaticArray<VulkanUniformBuffer *RESTRICT, UNDERLYING(UniformBuffer::NumberOfUniformBuffers)> _UniformBuffers;
-
 	//Container for all Vulkan render pass main stage data.
 	StaticArray<VulkanRenderPassMainStageData, UNDERLYING(RenderPassMainStage::NumberOfRenderPassMainStages)> _VulkanRenderPassMainStageData;
 
@@ -283,11 +275,6 @@ private:
 	*	Initializes all semaphores.
 	*/
 	void InitializeSemaphores() NOEXCEPT;
-
-	/*
-	*	Initializes all uniform buffers.
-	*/
-	void InitializeUniformBuffers() NOEXCEPT;
 
 	/*
 	*	Initializes all shader modules.

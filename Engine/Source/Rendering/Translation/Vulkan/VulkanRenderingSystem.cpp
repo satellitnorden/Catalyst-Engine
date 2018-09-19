@@ -68,9 +68,6 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 	//Initialize all semaphores.
 	InitializeSemaphores();
 
-	//Initialize all uniform buffers.
-	InitializeUniformBuffers();
-
 	//Initialize all shader modules.
 	InitializeShaderModules();
 
@@ -138,14 +135,6 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 {
 	return VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
-}
-
-/*
-*	Returns the given uniform buffer.
-*/
-UniformBufferHandle VulkanRenderingSystem::GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT
-{
-	return _UniformBuffers[UNDERLYING(uniformBuffer)];
 }
 
 /*
@@ -531,35 +520,6 @@ void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
 	//Initialize all semaphores.
 	_Semaphores[UNDERLYING(GraphicsSemaphore::ImageAvailable)] = VulkanInterface::Instance->CreateSemaphore();
 	_Semaphores[UNDERLYING(GraphicsSemaphore::RenderFinished)] = VulkanInterface::Instance->CreateSemaphore();
-}
-
-/*
-*	Initializes all uniform buffers.
-*/
-void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
-{
-	{
-		//Initialize the screen space ambient occlusion sample kernel texture.
-		StaticArray<Vector4, RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE> samples;
-
-		for (Vector4& sample : samples)
-		{
-			sample._X = CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample._Y = CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample._Z = CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f);
-			sample._W = 0.0f;
-
-			sample.Normalize();
-
-			float scale{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
-			scale = CatalystBaseMath::LinearlyInterpolate(0.1f, 1.0f, scale * scale);
-
-			sample *= scale;
-		}
-
-		_UniformBuffers[UNDERLYING(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(Vector4) * RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE);
-		_UniformBuffers[UNDERLYING(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)]->UploadData(samples.Data());
-	}
 }
 
 /*

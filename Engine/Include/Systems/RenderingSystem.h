@@ -243,11 +243,6 @@ public:
 	}
 
 	/*
-	*	Returns the given uniform buffer.
-	*/
-	UniformBufferHandle GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT;
-
-	/*
 	*	Returns the given common particle material.
 	*/
 	const ParticleMaterial& GetCommonParticleMaterial(const CommonParticleMaterial commonParticlelMaterial) const NOEXCEPT

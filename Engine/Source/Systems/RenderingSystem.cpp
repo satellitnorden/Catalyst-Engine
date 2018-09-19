@@ -256,14 +256,6 @@ void RenderingSystem::ToScreenCoordinate(const Vector3 &worldPosition, Vector2 *
 }
 
 /*
-*	Returns the given uniform buffer.
-*/
-UniformBufferHandle RenderingSystem::GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT
-{
-	return CURRENT_RENDERING_SYSTEM::Instance->GetUniformBuffer(uniformBuffer);
-}
-
-/*
 *	Creates a constant buffer.
 */
 ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
