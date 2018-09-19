@@ -473,7 +473,7 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 	physicalMaterial._MaterialPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData._MaterialPropertiesData, physicalMaterialData._Width, physicalMaterialData._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the render data table.
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Physical), &physicalMaterial._RenderDataTable);
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::PhysicalMaterial), &physicalMaterial._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, physicalMaterial._AlbedoTexture), physicalMaterial._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, physicalMaterial._NormalMapTexture), physicalMaterial._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, physicalMaterial._MaterialPropertiesTexture), physicalMaterial._RenderDataTable);
@@ -935,7 +935,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
 		};
 
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Physical)]);
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::PhysicalMaterial)]);
 	}
 
 #if defined(CATALYST_ENABLE_OCEAN)
