@@ -389,18 +389,18 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	_Pipelines[UNDERLYING(_RenderPass->GetSubStage())] = VulkanInterface::Instance->CreatePipeline(parameters);
 
 	//Update the Vulkan render pass data.
-	_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]._Framebuffers.Reserve(_VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._FrameBuffers.Size());
+	_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]._Framebuffers.Reserve(_VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._FrameBuffers.Size());
 
 	for (VulkanFramebuffer *RESTRICT vulkanFrameBuffer : _VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._FrameBuffers)
 	{
-		_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
+		_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
 	}
 
-	_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]._Pipeline = _Pipelines[UNDERLYING(_RenderPass->GetSubStage())]->Get();
-	_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]._PipelineLayout = _Pipelines[UNDERLYING(_RenderPass->GetSubStage())]->GetPipelineLayout();
-	_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._RenderPass->Get();
+	_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]._Pipeline = _Pipelines[UNDERLYING(_RenderPass->GetSubStage())]->Get();
+	_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]._PipelineLayout = _Pipelines[UNDERLYING(_RenderPass->GetSubStage())]->GetPipelineLayout();
+	_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._RenderPass->Get();
 
-	_RenderPass->SetData(&_VulkanRenderPassData[UNDERLYING(_RenderPass->GetSubStage())]);
+	_RenderPass->SetData(&_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]);
 
 	//Add the command buffers.
 	const uint64 numberOfCommandBuffers{ VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() };

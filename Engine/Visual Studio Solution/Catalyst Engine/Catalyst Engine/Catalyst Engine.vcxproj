@@ -241,7 +241,8 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanDynamicUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanFrameData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderingSystem.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassMainStageData.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassSubStageData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\EnvironmentMaterialData.h" />

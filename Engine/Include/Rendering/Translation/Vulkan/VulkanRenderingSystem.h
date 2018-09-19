@@ -15,7 +15,8 @@
 #include <Rendering/Engine/RenderingCore.h>
 #include <Rendering/Translation/Vulkan/VulkanDynamicUniformData.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
-#include <Rendering/Translation/Vulkan/VulkanRenderPassData.h>
+#include <Rendering/Translation/Vulkan/VulkanRenderPassMainStageData.h>
+#include <Rendering/Translation/Vulkan/VulkanRenderPassSubStageData.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanInterface.h>
@@ -190,46 +191,6 @@ private:
 		NumberOfSemaphores
 	};
 
-	class VulkanRenderPassMainStageData final
-	{
-
-	public:
-
-		//The render pass.
-		VulkanRenderPass *RESTRICT _RenderPass;
-
-		//The framebuffers.
-		DynamicArray<VulkanFramebuffer *RESTRICT> _FrameBuffers;
-
-		//Defines whether or not to clear the framebuffers.
-		bool _ShouldClear;
-
-		//The number of attachments.
-		uint32 _NumberOfAttachments;
-
-	};
-
-	//The dynamic uniform data.
-	VulkanDynamicUniformData _DynamicUniformData;
-
-	//Container for all temporary pipelines.
-	StaticArray<VulkanPipeline *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _Pipelines;
-
-	//Container for all semaphores.
-	StaticArray<VulkanSemaphore *RESTRICT, UNDERLYING(GraphicsSemaphore::NumberOfSemaphores)> _Semaphores;
-
-	//Container for all shader modules.
-	StaticArray<VulkanShaderModule *RESTRICT, UNDERLYING(Shader::NumberOfShaders)> _ShaderModules;
-
-	//Container for all Vulkan render pass main stage data.
-	StaticArray<VulkanRenderPassMainStageData, UNDERLYING(RenderPassMainStage::NumberOfRenderPassMainStages)> _VulkanRenderPassMainStageData;
-
-	//Container for all Vulkan render pass data.
-	StaticArray<VulkanRenderPassData, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _VulkanRenderPassData;
-
-	//The Vulkan frame data.
-	VulkanFrameData _FrameData;
-
 	/*
 	*	Vulkan destruction data definition.
 	*/
@@ -260,13 +221,34 @@ private:
 		*/
 		VulkanDestructionData(const Type type, OpaqueHandle handle) NOEXCEPT
 			:
-			_Type(type),
+		_Type(type),
 			_Handle(handle)
 		{
 
 		}
 
 	};
+
+	//The dynamic uniform data.
+	VulkanDynamicUniformData _DynamicUniformData;
+
+	//Container for all temporary pipelines.
+	StaticArray<VulkanPipeline *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _Pipelines;
+
+	//Container for all semaphores.
+	StaticArray<VulkanSemaphore *RESTRICT, UNDERLYING(GraphicsSemaphore::NumberOfSemaphores)> _Semaphores;
+
+	//Container for all shader modules.
+	StaticArray<VulkanShaderModule *RESTRICT, UNDERLYING(Shader::NumberOfShaders)> _ShaderModules;
+
+	//Container for all Vulkan render pass main stage data.
+	StaticArray<VulkanRenderPassMainStageData, UNDERLYING(RenderPassMainStage::NumberOfRenderPassMainStages)> _VulkanRenderPassMainStageData;
+
+	//Container for all Vulkan render pass data.
+	StaticArray<VulkanRenderPassSubStageData, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _VulkanRenderPassSubStageData;
+
+	//The Vulkan frame data.
+	VulkanFrameData _FrameData;
 
 	//The destruction queue.
 	DynamicArray<VulkanDestructionData> _DestructionQueue;

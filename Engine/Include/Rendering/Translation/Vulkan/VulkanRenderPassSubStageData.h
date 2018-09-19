@@ -3,10 +3,10 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-//Rendering.
+//Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>
 
-class VulkanRenderPassData final
+class VulkanRenderPassSubStageData final
 {
 
 public:
