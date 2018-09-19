@@ -165,7 +165,7 @@ public:
 	/*
 	*	Destroys a descriptor set.
 	*/
-	void DestroyDescriptorSet(VkDescriptorSet descriptorSet) const NOEXCEPT;
+	void DestroyDescriptorSet(VulkanDescriptorSet *const RESTRICT descriptorSet) NOEXCEPT;
 
 	/*
 	*	Creates and returns an event.
@@ -216,6 +216,11 @@ public:
 	*	Creates and returns a uniform buffer.
 	*/
 	RESTRICTED VulkanUniformBuffer *const RESTRICT CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT;
+
+	/*
+	*	Destroys a uniform buffer.
+	*/
+	void DestroyUniformBuffer(VulkanUniformBuffer *const RESTRICT uniformBuffer) NOEXCEPT;
 
 private:
 

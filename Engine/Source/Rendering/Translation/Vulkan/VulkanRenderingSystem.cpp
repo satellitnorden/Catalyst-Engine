@@ -98,6 +98,9 @@ void VulkanRenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
 	//Pre-update the Vulkan interface.
 	VulkanInterface::Instance->PreUpdate(_Semaphores[UNDERLYING(GraphicsSemaphore::ImageAvailable)]);
 
+	//Process the destruction queue.
+	ProcessDestructionQueue();
+
 	//Begin the frame.
 	BeginFrame();
 
@@ -159,9 +162,10 @@ ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *RES
 /*
 *	Destroys a render data table.
 */
-void VulkanRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT
+void VulkanRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
+	_DestructionQueue.EmplaceSlow(VulkanDestructionData::Type::RenderDataTable, handle);
 }
 
 /*
@@ -300,9 +304,10 @@ void VulkanRenderingSystem::UploadDataToUniformBuffer(UniformBufferHandle handle
 /*
 *	Destroys a uniform buffer.
 */
-void VulkanRenderingSystem::DestroyUniformBuffer(UniformBufferHandle handle) const NOEXCEPT
+void VulkanRenderingSystem::DestroyUniformBuffer(UniformBufferHandle handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
+	_DestructionQueue.EmplaceSlow(VulkanDestructionData::Type::UniformBuffer, handle);
 }
 
 /*
@@ -1431,18 +1436,58 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 }
 
 /*
+*	Processes the destruction queue.
+*/
+void VulkanRenderingSystem::ProcessDestructionQueue() NOEXCEPT
+{
+	for (uint64 i = 0; i < _DestructionQueue.Size();)
+	{
+		++_DestructionQueue[i]._Frames;
+
+		if (_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages())
+		{
+			switch (_DestructionQueue[i]._Type)
+			{
+				case VulkanDestructionData::Type::RenderDataTable:
+				{
+					VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VulkanDescriptorSet *const RESTRICT>(_DestructionQueue[i]._Handle));
+
+					break;
+				}
+
+				case VulkanDestructionData::Type::UniformBuffer:
+				{
+					VulkanInterface::Instance->DestroyUniformBuffer(static_cast<VulkanUniformBuffer *const RESTRICT>(_DestructionQueue[i]._Handle));
+
+					break;
+				}
+#if !defined(CATALYST_FINAL)
+				default:
+				{
+					ASSERT(false, "Unhandled case!");
+
+					break;
+				}
+#endif
+			}
+
+			_DestructionQueue.EraseAt(i);
+		}
+
+		else
+		{
+			++i;
+		}
+	}
+}
+
+/*
 *	Begins the frame.
 */
 void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 {
 	//Set the current frame.
 	_FrameData.SetCurrentFrame(VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex());
-
-	//Set the current dynamic uniform data descriptor set.
-	_CurrentDynamicUniformDataDescriptorSet = _FrameData.GetCurrentDynamicUniformDataRenderDataTable();
-
-	//Set the current environment descriptor set.
-	_CurrentEnvironmentDataDescriptorSet = _FrameData.GetCurrentEnvironmentDescriptorSet();
 
 	//Wait for the current fence to finish.
 	_FrameData.GetCurrentFence()->WaitFor();
@@ -1577,7 +1622,7 @@ void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 {
 	{
 		//Update the environment descriptor set.
-		VulkanDescriptorSet &environmentDescriptorSet{ *_CurrentEnvironmentDataDescriptorSet };
+		VulkanDescriptorSet &environmentDescriptorSet{ *_FrameData.GetCurrentEnvironmentDescriptorSet() };
 
 		StaticArray<VkWriteDescriptorSet, 4> environmentWriteDescriptorSets
 		{

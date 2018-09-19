@@ -121,7 +121,7 @@ public:
 	/*
 	*	Destroys a render data table.
 	*/
-	void DestroyRenderDataTable(RenderDataTableHandle renderDataTable) const NOEXCEPT;
+	void DestroyRenderDataTable(RenderDataTableHandle handle) NOEXCEPT;
 
 	/*
 	*	Creates a render target.
@@ -156,7 +156,7 @@ public:
 	/*
 	*	Destroys a uniform buffer.
 	*/
-	void DestroyUniformBuffer(UniformBufferHandle handle) const NOEXCEPT;
+	void DestroyUniformBuffer(UniformBufferHandle handle) NOEXCEPT;
 
 	/*
 *	Returns the current dynamic uniform data descriptor set.
@@ -236,11 +236,45 @@ private:
 	//The Vulkan frame data.
 	VulkanFrameData _FrameData;
 
-	//The current dynamic uniform data descriptor set.
-	VulkanDescriptorSet *RESTRICT _CurrentDynamicUniformDataDescriptorSet;
+	/*
+	*	Vulkan destruction data definition.
+	*/
+	class VulkanDestructionData final
+	{
 
-	//The current environment descriptor set.
-	VulkanDescriptorSet *RESTRICT _CurrentEnvironmentDataDescriptorSet;
+	public:
+
+		//Enumeration covering all types.
+		enum class Type : uint8
+		{
+			RenderDataTable,
+			UniformBuffer
+		};
+
+		//The number of frames since destruction was requested.
+		uint8 _Frames{ 0 };
+
+		//The type.
+		Type _Type;
+
+		//The handle.
+		OpaqueHandle _Handle;
+
+		/*
+		*	Constructor taking all values as arguments.
+		*/
+		VulkanDestructionData(const Type type, OpaqueHandle handle) NOEXCEPT
+			:
+			_Type(type),
+			_Handle(handle)
+		{
+
+		}
+
+	};
+
+	//The destruction queue.
+	DynamicArray<VulkanDestructionData> _DestructionQueue;
 
 	/*
 	*	Initializes all depth buffers.
@@ -266,6 +300,11 @@ private:
 	*	Initializes all Vulkan render passes.
 	*/
 	void InitializeVulkanRenderPasses() NOEXCEPT;
+
+	/*
+	*	Processes the destruction queue.
+	*/
+	void ProcessDestructionQueue() NOEXCEPT;
 
 	/*
 	*	Begins the frame.

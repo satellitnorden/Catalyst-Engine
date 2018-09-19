@@ -337,10 +337,11 @@ RESTRICTED VulkanDescriptorSet *const RESTRICT VulkanInterface::CreateDescriptor
 /*
 *	Destroys a descriptor set.
 */
-void VulkanInterface::DestroyDescriptorSet(VkDescriptorSet descriptorSet) const NOEXCEPT
+void VulkanInterface::DestroyDescriptorSet(VulkanDescriptorSet *const RESTRICT descriptorSet) NOEXCEPT
 {
-	//Destroy the descriptor set.
-	_VulkanDescriptorPool.FreeDescriptorSet(descriptorSet);
+	_VulkanDescriptorPool.FreeDescriptorSet(descriptorSet->Get());
+	_VulkanDescriptorSets.Erase(descriptorSet);
+	MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanDescriptorSet)>(descriptorSet);
 }
 
 /*
@@ -501,4 +502,14 @@ RESTRICTED VulkanUniformBuffer *const RESTRICT VulkanInterface::CreateUniformBuf
 	_VulkanUniformBuffers.EmplaceSlow(newUniformBuffer);
 
 	return newUniformBuffer;
+}
+
+/*
+*	Destroys a uniform buffer.
+*/
+void VulkanInterface::DestroyUniformBuffer(VulkanUniformBuffer *const RESTRICT uniformBuffer) NOEXCEPT
+{
+	uniformBuffer->Release();
+	_VulkanUniformBuffers.Erase(uniformBuffer);
+	MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanUniformBuffer)>(uniformBuffer);
 }
