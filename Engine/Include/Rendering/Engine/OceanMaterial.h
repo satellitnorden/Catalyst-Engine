@@ -15,5 +15,8 @@ public:
 	//The normal map texture.
 	Texture2DHandle _NormalMapTexture;
 
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
+
 };
 #endif

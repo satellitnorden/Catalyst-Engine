@@ -6,6 +6,7 @@
 #include <Rendering/Engine/CommandBuffer.h>
 
 //Managers.
+#include <Managers/EnvironmentManager.h>
 #include <Managers/RenderingConfigurationManager.h>
 
 //Systems.
@@ -31,6 +32,12 @@ OceanRenderPass::OceanRenderPass() NOEXCEPT
 */
 void OceanRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Ocean);
 
@@ -55,10 +62,12 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::Scene);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(3);
+	SetNumberOfRenderDataTableLayouts(5);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Environment));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Ocean));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::EnvironmentMaterial));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::EnvironmentMaterial));
+	AddRenderDataTableLayout(_RenderDataTableLayout);
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::OceanMaterial));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -86,6 +95,31 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
+*	Creates the render data table layout.
+*/
+void OceanRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void OceanRenderPass::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate)), _RenderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), _RenderDataTable);
+}
+
+/*
 *	Renders the ocean.
 */
 void OceanRenderPass::RenderInternal() NOEXCEPT
@@ -98,8 +132,10 @@ void OceanRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetCurrentEnvironmentRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 2, RenderingSystem::Instance->GetCurrentOceanRenderDataTable());
+	commandBuffer->BindRenderDataTable(this, 1, EnvironmentManager::Instance->GetNightEnvironmentMaterial()._RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 2, EnvironmentManager::Instance->GetDayEnvironmentMaterial()._RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 3, _RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 4, EnvironmentManager::Instance->GetOceanMaterial()._RenderDataTable);
 
 	//Pust constants.
 	constexpr float oceanScaling{ 0.25f };

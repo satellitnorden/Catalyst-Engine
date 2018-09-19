@@ -381,17 +381,6 @@ RenderDataTableHandle RenderingSystem::GetCurrentDynamicUniformDataRenderDataTab
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentDynamicUniformDataRenderDataTable();
 }
 
-#if defined(CATALYST_ENABLE_OCEAN)
-/*
-*	Returns the current ocean render data table.
-*/
-RenderDataTableHandle RenderingSystem::GetCurrentOceanRenderDataTable() const NOEXCEPT
-{
-	//Return the current ocean render data table via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentOceanRenderDataTable();
-}
-#endif
-
 /*
 *	Returns the given common render data table layout.
 */
@@ -424,10 +413,16 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &d
 /*
 *	Creates an ocean material.
 */
-void RenderingSystem::CreateOceanMaterial(const OceanMaterialData &oceanMaterialData, OceanMaterial &oceanMaterial) const NOEXCEPT
+void RenderingSystem::CreateOceanMaterial(const OceanMaterialData &data, OceanMaterial &material) const NOEXCEPT
 {
 	//Create the normal map texture.
-	oceanMaterial._NormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(oceanMaterialData._NormalMapData, oceanMaterialData._Width, oceanMaterialData._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	material._NormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._NormalMapData, data._Width, data._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the render data table.
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::OceanMaterial), &material._RenderDataTable);
+
+	//Update the render data table.
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::Texture2D, material._NormalMapTexture), material._RenderDataTable);
 }
 #endif
 
@@ -941,14 +936,12 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 #if defined(CATALYST_ENABLE_OCEAN)
 	{
 		//Initialize the ocean render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
 		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
 		};
 
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Ocean)]);
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::OceanMaterial)]);
 	}
 #endif
 
@@ -1130,11 +1123,11 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 
 	{
 		//Initialize the default day environment material.
-		constexpr Vector3 BOTTOM_COLOR{ 0.25f, 0.25f, 0.25f };
-		constexpr Vector3 TOP_COLOR{ 0.0f, 0.75f, 1.0f };
+		//constexpr Vector3 BOTTOM_COLOR{ 0.25f, 0.25f, 0.25f };
+		//constexpr Vector3 TOP_COLOR{ 0.0f, 0.75f, 1.0f };
 
-		//constexpr Vector3 BOTTOM_COLOR{ 0.0f, 0.0f, 0.0f };
-		//constexpr Vector3 TOP_COLOR{ 0.0f, 0.0f, 0.0f };
+		constexpr Vector3 BOTTOM_COLOR{ 0.0f, 0.0f, 0.0f };
+		constexpr Vector3 TOP_COLOR{ 0.0f, 0.0f, 0.0f };
 
 		EnvironmentMaterialData data;
 

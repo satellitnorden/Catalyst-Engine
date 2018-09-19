@@ -134,7 +134,7 @@ enum class CommonRenderDataTableLayout : uint8
 	Terrain,
 	PhysicalMaterial,
 #if defined(CATALYST_ENABLE_OCEAN)
-	Ocean,
+	OceanMaterial,
 #endif
 	ParticleSystem,
 	GaussianBlur,

@@ -147,13 +147,6 @@ public:
 	*/
 	RenderDataTableHandle GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT;
 
-#if defined(CATALYST_ENABLE_OCEAN)
-	/*
-	*	Returns the current ocean descriptor set.
-	*/
-	RenderDataTableHandle GetCurrentOceanRenderDataTable() NOEXCEPT;
-#endif
-
 	/*
 	*	Finalizes the initialization of a render pass.
 	*/
@@ -265,11 +258,6 @@ private:
 	*	Ends the frame.
 	*/
 	void EndFrame() NOEXCEPT;
-
-	/*
-	*	Updates the descriptor sets.
-	*/
-	void UpdateDescriptorSets() NOEXCEPT;
 
 	/*
 	*	Updates the dynamic uniform data.

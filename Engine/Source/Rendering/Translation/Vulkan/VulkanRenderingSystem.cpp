@@ -63,11 +63,7 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 
 	//Initialize the Vulkan frame data.
 	_FrameData.Initialize(	VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(),
-							*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData))
-#if defined(CATALYST_ENABLE_OCEAN)
-							, *static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Ocean))
-#endif
-	);
+							*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData)));
 }
 
 /*
@@ -86,9 +82,6 @@ void VulkanRenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
 
 	//Update the dynamic uniform data.
 	UpdateDynamicUniformData();
-
-	//Update the descriptor sets.
-	UpdateDescriptorSets();
 }
 
 /*
@@ -482,16 +475,6 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataRenderD
 {
 	return reinterpret_cast<RenderDataTableHandle>(_FrameData.GetCurrentDynamicUniformDataRenderDataTable());
 }
-
-#if defined(CATALYST_ENABLE_OCEAN)
-/*
-*	Returns the current ocean descriptor set.
-*/
-RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanRenderDataTable() NOEXCEPT
-{
-	return reinterpret_cast<RenderDataTableHandle>(_FrameData.GetCurrentOceanRenderDataTable());
-}
-#endif
 
 /*
 *	Initializes all semaphores.
@@ -1240,13 +1223,13 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
 		{
 			//Scene.
-			VulkanUtilities::CreateAttachmentDescription(_RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetFormat(),
-			VK_ATTACHMENT_LOAD_OP_LOAD,
-			VK_ATTACHMENT_STORE_OP_STORE,
-			VK_ATTACHMENT_LOAD_OP_DONT_CARE,
-			VK_ATTACHMENT_STORE_OP_DONT_CARE,
-			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_LOAD,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
 		};
 
 		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
@@ -1259,13 +1242,13 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkSubpassDescription, NUMBER_OF_OCEAN_SUBPASSES> subpassDescriptions
 		{
-			VulkanUtilities::CreateSubpassDescription(0,
-			nullptr,
-			1,
-			colorAttachmentReferences.Data(),
-			nullptr,
-			0,
-			nullptr)
+			VulkanUtilities::CreateSubpassDescription(	0,
+														nullptr,
+														1,
+														colorAttachmentReferences.Data(),
+														nullptr,
+														0,
+														nullptr)
 		};
 
 		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
@@ -1283,7 +1266,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkImageView, 1> attachments
 		{
-			_RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -1471,7 +1454,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 																		VK_ACCESS_TRANSFER_READ_BIT,
 																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 																		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-																		_RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetImage(),
+																		static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImage(),
 																		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 																		VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);
@@ -1480,21 +1463,21 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 																		VK_ACCESS_TRANSFER_WRITE_BIT,
 																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 																		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-																		_RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]->GetImage(),
+																		static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImage(),
 																		VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 																		VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);
 
-				const VkExtent2D sourceExtent{ _RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetExtent() };
+				const VkExtent2D sourceExtent{ static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetExtent() };
 				const VkExtent3D extent{ sourceExtent.width, sourceExtent.height, 0 };
 
-				currentPrimaryCommandBuffer->CommandCopyImage(_RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetImage(), _RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]->GetImage(), extent);
+				currentPrimaryCommandBuffer->CommandCopyImage(static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImage(), static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImage(), extent);
 
 				currentPrimaryCommandBuffer->CommandPipelineBarrier(	VK_ACCESS_TRANSFER_WRITE_BIT,
 																		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
 																		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-																		_RenderTargets[UNDERLYING(RenderTarget::Scene)]->GetImage(),
+																		static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImage(),
 																		VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);
@@ -1503,7 +1486,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 																		VK_ACCESS_SHADER_READ_BIT,
 																		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 																		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-																		_RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]->GetImage(),
+																		static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImage(),
 																		VK_PIPELINE_STAGE_TRANSFER_BIT,
 																		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 																		VK_DEPENDENCY_BY_REGION_BIT);
@@ -1553,28 +1536,6 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue()->Submit(*_FrameData.GetCurrentPrimaryCommandBuffer(), 1, _Semaphores[UNDERLYING(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, _Semaphores[UNDERLYING(GraphicsSemaphore::RenderFinished)], _FrameData.GetCurrentFence()->Get());
-}
-
-/*
-*	Updates the descriptor sets.
-*/
-void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
-{
-#if defined(CATALYST_ENABLE_OCEAN)
-	{
-		//Update the ocean descriptor set.
-		VulkanDescriptorSet &oceanDescriptorSet{ *_FrameData.GetCurrentOceanRenderDataTable() };
-
-		StaticArray<VkWriteDescriptorSet, 3> oceanWriteDescriptorSets
-		{
-			_RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]->GetWriteDescriptorSet(oceanDescriptorSet, 0),
-			_RenderTargets[UNDERLYING(RenderTarget::SceneBufferNormalDepth)]->GetWriteDescriptorSet(oceanDescriptorSet, 1),
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetOceanMaterial()._NormalMapTexture)->GetWriteDescriptorSet(oceanDescriptorSet, 2)
-		};
-
-		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(oceanWriteDescriptorSets.Size()), oceanWriteDescriptorSets.Data(), 0, nullptr);
-	}
-#endif
 }
 
 /*
