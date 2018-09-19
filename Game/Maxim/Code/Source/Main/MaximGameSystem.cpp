@@ -59,7 +59,7 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	{
 		ParticleSystemInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
 
-		data->_Properties = 0;
+		data->_Properties = EntityInitializationData::EntityProperty::None;
 		data->_Material = RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle);
 		data->_ParticleSystemProperties._Properties = static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::AffectedByWind) | static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::Looping);
 		data->_ParticleSystemProperties._FadeTime = 10.0f;
@@ -330,7 +330,7 @@ void MaximGameSystem::UpdateSelectedPosition() NOEXCEPT
 
 					ParticleSystemInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
 
-					data->_Properties = static_cast<uint8>(EntityInitializationData::EntityProperty::AutomaticDestruction) | static_cast<uint8>(EntityInitializationData::EntityProperty::AutomaticTermination);
+					data->_Properties = EntityInitializationData::EntityProperty::AutomaticDestruction | EntityInitializationData::EntityProperty::AutomaticTermination;
 					data->_Material = RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle);
 					data->_ParticleSystemProperties._Properties = static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::AffectedByWind);
 					data->_ParticleSystemProperties._FadeTime = 0.5f;

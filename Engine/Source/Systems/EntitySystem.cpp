@@ -45,7 +45,7 @@ void EntitySystem::ClosingUpdateSystemSynchronous(const UpdateContext *const RES
 void EntitySystem::InitializeEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
 	//If this entity is intialized with the automatic destruction property, add it to the automatic destruction queue.
-	if (IS_BIT_SET(data->_Properties, static_cast<uint8>(EntityInitializationData::EntityProperty::AutomaticDestruction)))
+	if (IS_BIT_SET(data->_Properties, EntityInitializationData::EntityProperty::AutomaticDestruction))
 	{
 		ScopedLock<Spinlock> scopedLock{ _AutomaticDestructionQueueLock };
 
@@ -53,7 +53,7 @@ void EntitySystem::InitializeEntity(Entity* const RESTRICT entity, EntityInitial
 	}
 
 	//If this entity is intialized with the automatic termination property, add it to the automatic termination queue.
-	if (IS_BIT_SET(data->_Properties, static_cast<uint8>(EntityInitializationData::EntityProperty::AutomaticTermination)))
+	if (IS_BIT_SET(data->_Properties, EntityInitializationData::EntityProperty::AutomaticTermination))
 	{
 		ScopedLock<Spinlock> scopedLock{ _AutomaticTerminationQueueLock };
 

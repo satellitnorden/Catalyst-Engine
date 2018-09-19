@@ -39,7 +39,7 @@ void MaximObject::Initialize(const MaximColor initialColor, const Vector3& initi
 	//Create the entity.
 	DynamicPhysicalInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
 
-	data->_Properties = 0;
+	data->_Properties = EntityInitializationData::EntityProperty::None;
 	data->_PhysicalFlags = static_cast<uint8>(PhysicalFlag::Physical) | static_cast<uint8>(PhysicalFlag::Outline);
 	data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Octahedron);
 	data->_Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Black);

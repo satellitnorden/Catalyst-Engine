@@ -77,6 +77,19 @@
 #define DEFINE_SINGLETON(SingletonClass) UniquePointer<SingletonClass> SingletonClass::Instance{ new SingletonClass };
 
 /*
+*	Defines bit operations for an enumeration. Must be placed in the global namespace.
+*/
+#define ENUMERATION_BIT_OPERATIONS(ENUMERATION)												\
+static ENUMERATION operator|(const ENUMERATION first, const ENUMERATION second) NOEXCEPT	\
+{																							\
+	return static_cast<ENUMERATION>(UNDERLYING(first) | UNDERLYING(second));				\
+}																							\
+static ENUMERATION operator&(const ENUMERATION first, const ENUMERATION second) NOEXCEPT	\
+{																							\
+	return static_cast<ENUMERATION>(UNDERLYING(first) & UNDERLYING(second));				\
+}
+
+/*
 *	Returns whether or not a bit is set.
 */
 #define IS_BIT_SET(bitfield, bit) ((bitfield & bit) == bit)
