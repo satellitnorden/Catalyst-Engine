@@ -82,6 +82,9 @@ private:
 	//Container for the particles.
 	StaticArray<ParticleSystemEntity *RESTRICT, 2> _Particles;
 
+	//The allocator for the Maxim object.
+	PoolAllocator<sizeof(MaximObject)> _Allocator;
+
 	//Container for all object.
 	DynamicArray<MaximObject *RESTRICT> _Objects;
 
