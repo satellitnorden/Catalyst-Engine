@@ -381,15 +381,6 @@ RenderDataTableHandle RenderingSystem::GetCurrentDynamicUniformDataRenderDataTab
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentDynamicUniformDataRenderDataTable();
 }
 
-/*
-*	Returns the current environment render data table.
-*/
-RenderDataTableHandle RenderingSystem::GetCurrentEnvironmentRenderDataTable() const NOEXCEPT
-{
-	//Return the current environment render data table via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentEnvironmentRenderDataTable();
-}
-
 #if defined(CATALYST_ENABLE_OCEAN)
 /*
 *	Returns the current ocean render data table.
@@ -413,13 +404,20 @@ RenderDataTableHandle RenderingSystem::GetCommonRenderDataTableLayout(const Comm
 /*
 *	Creates an environment material.
 */
-void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT
+void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &data, EnvironmentMaterial &material) NOEXCEPT
 {
 	//Create the diffuse texture.
-	environmentMaterial._DiffuseTexture = CreateTextureCube(environmentMaterialData._DiffuseData.Data(), Resolution(environmentMaterialData._DiffuseResolution, environmentMaterialData._DiffuseResolution));
+	material._DiffuseTexture = CreateTextureCube(data._DiffuseData.Data(), Resolution(data._DiffuseResolution, data._DiffuseResolution));
 
 	//Create the diffuse irradiance texture.
-	environmentMaterial._DiffuseIrradianceTexture = CreateTextureCube(environmentMaterialData._DiffuseIrradianceData.Data(), Resolution(environmentMaterialData._DiffuseIrradianceResolution, environmentMaterialData._DiffuseIrradianceResolution));
+	material._DiffuseIrradianceTexture = CreateTextureCube(data._DiffuseIrradianceData.Data(), Resolution(data._DiffuseIrradianceResolution, data._DiffuseIrradianceResolution));
+
+	//Create the render data table.
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::EnvironmentMaterial), &material._RenderDataTable);
+
+	//Update the render data table.
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::TextureCube, material._DiffuseTexture), material._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::TextureCube, material._DiffuseIrradianceTexture), material._RenderDataTable);
 }
 
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -891,16 +889,14 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 	}
 
 	{
-		//Initialize the environment render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 4> bindings
+		//Initialize the environment material render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
 		};
 
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Environment)]);
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::EnvironmentMaterial)]);
 	}
 
 	{

@@ -5,6 +5,7 @@
 #include <Rendering/Engine/CommandBuffer.h>
 
 //Managers.
+#include <Managers/EnvironmentManager.h>
 #include <Managers/RenderingConfigurationManager.h>
 
 //Systems.
@@ -60,9 +61,10 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::Scene);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(3);
+	SetNumberOfRenderDataTableLayouts(4);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Environment));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::EnvironmentMaterial));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::EnvironmentMaterial));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Add the push constant ranges.
@@ -132,8 +134,9 @@ void LightingRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, RenderingSystem::Instance->GetCurrentEnvironmentRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 2, _RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 1, EnvironmentManager::Instance->GetNightEnvironmentMaterial()._RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 2, EnvironmentManager::Instance->GetDayEnvironmentMaterial()._RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 3, _RenderDataTable);
 
 	//Pust constants.
 	const int32 screenSpaceAmbientOcclusionEnabled{ static_cast<bool>(RenderingConfigurationManager::Instance->GetScreenSpaceAmbientOcclusionEnabled()) };

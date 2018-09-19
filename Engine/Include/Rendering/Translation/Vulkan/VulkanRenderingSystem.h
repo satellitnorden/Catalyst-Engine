@@ -147,11 +147,6 @@ public:
 	*/
 	RenderDataTableHandle GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT;
 
-	/*
-	*	Returns the current environment data descriptor set.
-	*/
-	RenderDataTableHandle GetCurrentEnvironmentRenderDataTable() NOEXCEPT;
-
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Returns the current ocean descriptor set.

@@ -130,7 +130,7 @@ enum class DepthBuffer : uint8
 enum class CommonRenderDataTableLayout : uint8
 {
 	DynamicUniformData,
-	Environment,
+	EnvironmentMaterial,
 	Terrain,
 	Physical,
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -371,6 +371,7 @@ public:
 	{
 		RenderTarget,
 		Texture2D,
+		TextureCube,
 		UniformBuffer
 	};
 

@@ -73,12 +73,12 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 //Texture samplers.
 layout (set = 1, binding = 0) uniform samplerCube nightDiffuseTexture;
 layout (set = 1, binding = 1) uniform samplerCube nightDiffuseIrradianceTexture;
-layout (set = 1, binding = 2) uniform samplerCube dayDiffuseTexture;
-layout (set = 1, binding = 3) uniform samplerCube dayDiffuseIrradianceTexture;
-layout (set = 2, binding = 0) uniform sampler2D albedoTexture;
-layout (set = 2, binding = 1) uniform sampler2D normalDirectionDepthTexture;
-layout (set = 2, binding = 2) uniform sampler2D roughnessMetallicAmbientOcclusionTexture;
-layout (set = 2, binding = 3) uniform sampler2D directionalShadow;
+layout (set = 2, binding = 0) uniform samplerCube dayDiffuseTexture;
+layout (set = 2, binding = 1) uniform samplerCube dayDiffuseIrradianceTexture;
+layout (set = 3, binding = 0) uniform sampler2D albedoTexture;
+layout (set = 3, binding = 1) uniform sampler2D normalDirectionDepthTexture;
+layout (set = 3, binding = 2) uniform sampler2D roughnessMetallicAmbientOcclusionTexture;
+layout (set = 3, binding = 3) uniform sampler2D directionalShadow;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;

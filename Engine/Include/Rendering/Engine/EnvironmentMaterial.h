@@ -17,4 +17,7 @@ public:
 	//The diffuse irradiance texture.
 	TextureCubeHandle _DiffuseIrradianceTexture;
 
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
+
 };

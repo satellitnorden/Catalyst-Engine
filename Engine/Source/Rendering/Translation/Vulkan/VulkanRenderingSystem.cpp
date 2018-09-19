@@ -63,8 +63,7 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 
 	//Initialize the Vulkan frame data.
 	_FrameData.Initialize(	VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(),
-							*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData)),
-							*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Environment))
+							*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData))
 #if defined(CATALYST_ENABLE_OCEAN)
 							, *static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Ocean))
 #endif
@@ -451,6 +450,13 @@ void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInf
 			break;
 		}
 
+		case RenderDataTableUpdateInformation::Type::TextureCube:
+		{
+			writeDescriptorSet = static_cast<VulkanCubeMapTexture *const RESTRICT>(information._Handle)->GetWriteDescriptorSet(*descriptorSet, information._Binding);
+
+			break;
+		}
+
 		case RenderDataTableUpdateInformation::Type::UniformBuffer:
 		{
 			writeDescriptorSet = static_cast<VulkanUniformBuffer *const RESTRICT>(information._Handle)->GetWriteDescriptorSet(*descriptorSet, information._Binding);
@@ -475,14 +481,6 @@ void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInf
 RenderDataTableHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT
 {
 	return reinterpret_cast<RenderDataTableHandle>(_FrameData.GetCurrentDynamicUniformDataRenderDataTable());
-}
-
-/*
-*	Returns the current environment data descriptor set.
-*/
-RenderDataTableHandle VulkanRenderingSystem::GetCurrentEnvironmentRenderDataTable() NOEXCEPT
-{
-	return reinterpret_cast<RenderDataTableHandle>(_FrameData.GetCurrentEnvironmentDescriptorSet());
 }
 
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -1562,21 +1560,6 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 */
 void VulkanRenderingSystem::UpdateDescriptorSets() NOEXCEPT
 {
-	{
-		//Update the environment descriptor set.
-		VulkanDescriptorSet &environmentDescriptorSet{ *_FrameData.GetCurrentEnvironmentDescriptorSet() };
-
-		StaticArray<VkWriteDescriptorSet, 4> environmentWriteDescriptorSets
-		{
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetNightEnvironmentMaterial()._DiffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 0),
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetNightEnvironmentMaterial()._DiffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 1),
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetDayEnvironmentMaterial()._DiffuseTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 2),
-			static_cast<const VulkanCubeMapTexture *const RESTRICT>(EnvironmentManager::Instance->GetDayEnvironmentMaterial()._DiffuseIrradianceTexture)->GetWriteDescriptorSet(environmentDescriptorSet, 3)
-		};
-
-		vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(environmentWriteDescriptorSets.Size()), environmentWriteDescriptorSets.Data(), 0, nullptr);
-	}
-
 #if defined(CATALYST_ENABLE_OCEAN)
 	{
 		//Update the ocean descriptor set.

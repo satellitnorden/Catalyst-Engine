@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes the Vulkan frame data.
 	*/
-	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout, const VulkanDescriptorSetLayout environmentDescriptorSetLayout
+	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout
 #if defined(CATALYST_ENABLE_OCEAN)
 		, const VulkanDescriptorSetLayout oceanDescriptorSetLayout
 #endif
@@ -61,14 +61,6 @@ public:
 			};
 
 			vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-		}
-
-		//Create the environment descriptor sets.
-		_EnvironmentDescriptorSets.UpsizeFast(frameDataCount);
-
-		for (uint64 i = 0, size = _EnvironmentDescriptorSets.Size(); i < size; ++i)
-		{
-			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(_EnvironmentDescriptorSets[i], environmentDescriptorSetLayout);
 		}
 
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -130,15 +122,6 @@ public:
 		return &_DynamicUniformDataDescriptorSets[_CurrentFrame];
 	}
 
-	/*
-	*	Returns the current environment descriptor set.
-	*/
-	VulkanDescriptorSet *RESTRICT GetCurrentEnvironmentDescriptorSet() NOEXCEPT
-	{
-		//Return the current environment descriptor set.
-		return &_EnvironmentDescriptorSets[_CurrentFrame];
-	}
-
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Returns the current ocean descriptor set.
@@ -165,9 +148,6 @@ private:
 
 	//The dynamic uniform data descriptor sets.
 	DynamicArray<VulkanDescriptorSet> _DynamicUniformDataDescriptorSets;
-
-	//The environment descriptor sets.
-	DynamicArray<VulkanDescriptorSet> _EnvironmentDescriptorSets;
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	//The ocean descriptor sets.

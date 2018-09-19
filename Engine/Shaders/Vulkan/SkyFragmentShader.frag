@@ -62,7 +62,7 @@ layout (location = 0) in vec3 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform samplerCube nightTexture;
-layout (set = 1, binding = 2) uniform samplerCube dayTexture;
+layout (set = 2, binding = 0) uniform samplerCube dayTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragmentColor;

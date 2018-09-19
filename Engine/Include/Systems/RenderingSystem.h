@@ -335,11 +335,6 @@ public:
 	*/
 	RenderDataTableHandle GetCurrentDynamicUniformDataRenderDataTable() const NOEXCEPT;
 
-	/*
-	*	Returns the current environment render data table.
-	*/
-	RenderDataTableHandle GetCurrentEnvironmentRenderDataTable() const NOEXCEPT;
-
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Returns the current ocean render data table.
@@ -355,7 +350,7 @@ public:
 	/*
 	*	Creates an environment material.
 	*/
-	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;
+	void CreateEnvironmentMaterial(const EnvironmentMaterialData &data, EnvironmentMaterial &material) NOEXCEPT;
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*
