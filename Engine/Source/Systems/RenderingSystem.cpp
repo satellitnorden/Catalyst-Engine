@@ -87,9 +87,6 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 	//Initialize all default assets.
 	InitializeDefaultAssets();
 
-	//Initialize all special textures.
-	InitializeSpecialTextures();
-
 	//Post-initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->PostInitializeSystem();
 }
@@ -256,14 +253,6 @@ void RenderingSystem::ToScreenCoordinate(const Vector3 &worldPosition, Vector2 *
 
 	screenCoordinates->_X = (viewSpacePosition._X + 1.0f) * 0.5f;
 	screenCoordinates->_Y = 1.0f - ((viewSpacePosition._Y + 1.0f) * 0.5f);
-}
-
-/*
-*	Returns the given special texture.
-*/
-Texture2DHandle RenderingSystem::GetSpecialTexture(const SpecialTexture specialTexture) NOEXCEPT
-{
-	return _SpecialTextures[UNDERLYING(specialTexture)];
 }
 
 /*
@@ -1320,27 +1309,6 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 		EnvironmentManager::Instance->SetOceanMaterial(_DefaultOceanMaterial);
 	}
 #endif
-}
-
-/*
-*	Initializes all special textures.
-*/
-void RenderingSystem::InitializeSpecialTextures() NOEXCEPT
-{
-	{
-		//Initialize the screen space ambient occlusion random kernel texture.
-		StaticArray<Vector4, RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_RANDOM_KERNEL_SIZE> samples;
-
-		for (Vector4& sample : samples)
-		{
-			sample._X = CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample._Y = CatalystBaseMath::RandomFloatInRange(-1.0f, 1.0f);
-			sample._Z = 0.0f;
-			sample._W = 0.0f;
-		}
-
-		_SpecialTextures[UNDERLYING(SpecialTexture::ScreenSpaceAmbientOcclusionRandomNoise)] = CreateTexture2D(TextureData(TextureDataContainer(samples, 4, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
-	}
 }
 
 //Undefine defines to keep them from leaking into other scopes.

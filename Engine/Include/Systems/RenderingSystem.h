@@ -243,11 +243,6 @@ public:
 	}
 
 	/*
-	*	Returns the given special texture.
-	*/
-	Texture2DHandle GetSpecialTexture(const SpecialTexture specialTexture) NOEXCEPT;
-
-	/*
 	*	Returns the given uniform buffer.
 	*/
 	UniformBufferHandle GetUniformBuffer(const UniformBuffer uniformBuffer) NOEXCEPT;
@@ -475,9 +470,6 @@ private:
 	//Container for all common physical models.
 	StaticArray<PhysicalModel, UNDERLYING(CommonPhysicalModel::NumberOfCommonPhysicalModels)> _CommonPhysicalModels;
 
-	//Container for all special textures.
-	StaticArray<Texture2DHandle, UNDERLYING(SpecialTexture::NumberOfSpecialTextures)> _SpecialTextures;
-
 	//The default night environment material.
 	EnvironmentMaterial _DefaultNightEnvironmentMaterial;
 
@@ -533,10 +525,5 @@ private:
 	*	Initializes all default assets.
 	*/
 	void InitializeDefaultAssets() NOEXCEPT;
-
-	/*
-	*	Initializes all special textures.
-	*/
-	void InitializeSpecialTextures() NOEXCEPT;
 
 };

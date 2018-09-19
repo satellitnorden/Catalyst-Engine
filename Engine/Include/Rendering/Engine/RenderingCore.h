@@ -223,14 +223,6 @@ enum class ShaderStage : uint8
 
 ENUMERATION_BIT_OPERATIONS(ShaderStage);
 
-//Enumeration covering all special textures.
-enum class SpecialTexture : uint8
-{
-	ScreenSpaceAmbientOcclusionRandomNoise,
-
-	NumberOfSpecialTextures
-};
-
 //Enumeration covering all topologies.
 enum class Topology : uint8
 {
