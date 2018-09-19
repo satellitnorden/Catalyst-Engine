@@ -316,7 +316,7 @@ void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 	const uint32 transferQueueFamilyIndex{ _QueueFamilyIndices[UNDERLYING(QueueType::Transfer)] };
 
 	//Retrieve the compute queue.
-	_Queues[UNDERLYING(QueueType::Compute)] = new (MemoryUtilities::ThreadSafePoolAllocate<sizeof(VulkanQueue)>()) VulkanQueue;
+	_Queues[UNDERLYING(QueueType::Compute)] = new (MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanQueue)>()) VulkanQueue;
 	_Queues[UNDERLYING(QueueType::Compute)]->Initialize(computeQueueFamilyIndex);
 
 	//Retrieve the graphics queue.
@@ -327,7 +327,7 @@ void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 
 	else
 	{
-		_Queues[UNDERLYING(QueueType::Graphics)] = new (MemoryUtilities::ThreadSafePoolAllocate<sizeof(VulkanQueue)>()) VulkanQueue;
+		_Queues[UNDERLYING(QueueType::Graphics)] = new (MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanQueue)>()) VulkanQueue;
 		_Queues[UNDERLYING(QueueType::Graphics)]->Initialize(graphicsQueueFamilyIndex);
 	}
 
@@ -344,7 +344,7 @@ void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 
 	else
 	{
-		_Queues[UNDERLYING(QueueType::Present)] = new (MemoryUtilities::ThreadSafePoolAllocate<sizeof(VulkanQueue)>()) VulkanQueue;
+		_Queues[UNDERLYING(QueueType::Present)] = new (MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanQueue)>()) VulkanQueue;
 		_Queues[UNDERLYING(QueueType::Present)]->Initialize(presentQueueFamilyIndex);
 	}
 
@@ -366,7 +366,7 @@ void VulkanLogicalDevice::RetrieveQueues() NOEXCEPT
 
 	else
 	{
-		_Queues[UNDERLYING(QueueType::Transfer)] = new (MemoryUtilities::ThreadSafePoolAllocate<sizeof(VulkanQueue)>()) VulkanQueue;
+		_Queues[UNDERLYING(QueueType::Transfer)] = new (MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanQueue)>()) VulkanQueue;
 		_Queues[UNDERLYING(QueueType::Transfer)]->Initialize(transferQueueFamilyIndex);
 	}
 }
@@ -383,19 +383,19 @@ void VulkanLogicalDevice::ReleaseQueues() NOEXCEPT
 	const uint32 transferQueueFamilyIndex{ _QueueFamilyIndices[UNDERLYING(QueueType::Transfer)] };
 
 	//Destroy the compute queue.
-	MemoryUtilities::ThreadSafePoolDeAllocate<sizeof(VulkanQueue)>(_Queues[UNDERLYING(QueueType::Compute)]);
+	MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanQueue)>(_Queues[UNDERLYING(QueueType::Compute)]);
 
 	//Destroy the graphics queue.
 	if (graphicsQueueFamilyIndex != computeQueueFamilyIndex)
 	{
-		MemoryUtilities::ThreadSafePoolDeAllocate<sizeof(VulkanQueue)>(_Queues[UNDERLYING(QueueType::Graphics)]);
+		MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanQueue)>(_Queues[UNDERLYING(QueueType::Graphics)]);
 	}
 
 	//Destroy the present queue.
 	if (	presentQueueFamilyIndex != computeQueueFamilyIndex &&
 			presentQueueFamilyIndex != graphicsQueueFamilyIndex)
 	{
-		MemoryUtilities::ThreadSafePoolDeAllocate<sizeof(VulkanQueue)>(_Queues[UNDERLYING(QueueType::Present)]);
+		MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanQueue)>(_Queues[UNDERLYING(QueueType::Present)]);
 	}
 
 	//Destroy the transfer queue.
@@ -403,6 +403,6 @@ void VulkanLogicalDevice::ReleaseQueues() NOEXCEPT
 			transferQueueFamilyIndex != graphicsQueueFamilyIndex &&
 			transferQueueFamilyIndex != presentQueueFamilyIndex)
 	{
-		MemoryUtilities::ThreadSafePoolDeAllocate<sizeof(VulkanQueue)>(_Queues[UNDERLYING(QueueType::Transfer)]);
+		MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanQueue)>(_Queues[UNDERLYING(QueueType::Transfer)]);
 	}
 }

@@ -129,6 +129,12 @@ private:
 
 	};
 
+	//The allocator lock.
+	Spinlock _AllocatorLock;
+
+	//The allocator.
+	PoolAllocator<sizeof(Entity)> _Allocator;
+
 	//The list of entities.
 	DynamicArray<Entity *RESTRICT> _Entities;
 

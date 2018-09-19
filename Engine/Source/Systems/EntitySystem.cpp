@@ -143,7 +143,7 @@ void EntitySystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//The entity should already be terminated, so just deallocate the entity.
 	entity->~Entity();
-	MemoryUtilities::ThreadSafePoolDeAllocate<sizeof(Entity)>(entity);
+	_Allocator.DeAllocate(entity);
 
 	//Remove the entity from the list of entities.
 	_Entities.Erase(entity);

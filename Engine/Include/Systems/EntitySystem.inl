@@ -6,7 +6,9 @@
 template <class EntityClass, class... Arguments>
 RESTRICTED EntityClass* const RESTRICT EntitySystem::CreateEntity(Arguments&&... arguments) NOEXCEPT
 {
-	void *const RESTRICT memory{ MemoryUtilities::ThreadSafePoolAllocate<sizeof(Entity)>() };
+	_AllocatorLock.Lock();
+	void *const RESTRICT memory{ _Allocator.Allocate() };
+	_AllocatorLock.Unlock();
 
 	EntityClass *const RESTRICT newEntity{ new (memory) EntityClass(std::forward<Arguments>(arguments)...) };
 
@@ -21,7 +23,9 @@ RESTRICTED EntityClass* const RESTRICT EntitySystem::CreateEntity(Arguments&&...
 template <class EntityClass, class... Arguments>
 RESTRICTED EntityClass *const RESTRICT EntitySystem::CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) NOEXCEPT
 {
-	void *const RESTRICT memory{ MemoryUtilities::ThreadSafePoolAllocate<sizeof(Entity)>() };
+	_AllocatorLock.Lock();
+	void *const RESTRICT memory{ _Allocator.Allocate() };
+	_AllocatorLock.Unlock();
 
 	EntityClass *const RESTRICT newChild{ new (memory) EntityClass(std::forward<Arguments>(arguments)...) };
 
@@ -39,7 +43,7 @@ RESTRICTED EntityClass *const RESTRICT EntitySystem::CreateChildEntity(Entity *R
 template <typename Type>
 RESTRICTED Type* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEPT
 {
-	void* const RESTRICT memory{ MemoryUtilities::ThreadSafePoolAllocate<sizeof(Type)>() };
+	void* const RESTRICT memory{ MemoryUtilities::GlobalPoolAllocate<sizeof(Type)>() };
 
 	new (memory) Type;
 
@@ -54,5 +58,5 @@ void EntitySystem::DestroyInitializationData(EntityInitializationData* const RES
 {
 	static_cast<Type* const RESTRICT>(data)->~Type();
 
-	MemoryUtilities::ThreadSafePoolDeAllocate<sizeof(Type)>(data);
+	MemoryUtilities::GlobalPoolDeAllocate<sizeof(Type)>(data);
 }

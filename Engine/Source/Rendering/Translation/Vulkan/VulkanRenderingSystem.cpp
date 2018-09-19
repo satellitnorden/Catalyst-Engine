@@ -421,7 +421,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	{
 		VulkanCommandBuffer pipelineCommandBuffer;
 		pipelineCommandPool->AllocateSecondaryCommandBuffer(pipelineCommandBuffer);
-		_RenderPass->AddCommandBuffer(new (MemoryUtilities::ThreadSafePoolAllocate<sizeof(VulkanTranslationCommandBuffer)>()) VulkanTranslationCommandBuffer(pipelineCommandBuffer));
+		_RenderPass->AddCommandBuffer(new (MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanTranslationCommandBuffer)>()) VulkanTranslationCommandBuffer(pipelineCommandBuffer));
 	}
 }
 

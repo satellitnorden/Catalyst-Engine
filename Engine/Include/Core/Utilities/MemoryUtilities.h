@@ -60,7 +60,7 @@ public:
 	*	Returns a thread safe pool allocation with the given size from the global pool allocator.
 	*/
 	template <uint64 SIZE>
-	RESTRICTED static void *const RESTRICT ThreadSafePoolAllocate() NOEXCEPT
+	RESTRICTED static void *const RESTRICT GlobalPoolAllocate() NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ *GlobalPoolAllocatorLock<SIZE>() };
 
@@ -71,7 +71,7 @@ public:
 	*	Returns a thread safe pool allocation with the given size from the global pool allocator.
 	*/
 	template <uint64 SIZE>
-	static void ThreadSafePoolDeAllocate(void *const RESTRICT memory) NOEXCEPT
+	static void GlobalPoolDeAllocate(void *const RESTRICT memory) NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ *GlobalPoolAllocatorLock<SIZE>() };
 
