@@ -79,7 +79,7 @@ void VulkanTranslationCommandBuffer::PushConstants(const RenderPass *const RESTR
 	const VulkanRenderPassData *const RESTRICT renderPassData{ static_cast<const VulkanRenderPassData *const RESTRICT>(renderPass->GetData()) };
 
 	//Push the constants.
-	_CommandBuffer.CommandPushConstants(renderPassData->_PipelineLayout, VulkanTranslationUtilities::GetVulkanShaderStage(shaderStage), offset, size, data);
+	_CommandBuffer.CommandPushConstants(renderPassData->_PipelineLayout, VulkanTranslationUtilities::GetVulkanShaderStages(shaderStage), offset, size, data);
 }
 
 /*

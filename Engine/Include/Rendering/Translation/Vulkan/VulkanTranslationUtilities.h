@@ -164,7 +164,7 @@ public:
 	*/
 	static VkPushConstantRange GetVulkanPushConstantRange(const PushConstantRange &pushConstantRange) NOEXCEPT
 	{
-		return VkPushConstantRange{ GetVulkanShaderStage(pushConstantRange.shaderStage),
+		return VkPushConstantRange{ GetVulkanShaderStages(pushConstantRange.shaderStage),
 									pushConstantRange.offset,
 									pushConstantRange.size };
 	}
@@ -172,18 +172,41 @@ public:
 	/*
 	*	Given a shader stage, returns the corresponding Vulkan shader stage.
 	*/
-	static VkShaderStageFlags GetVulkanShaderStage(const ShaderStage shaderStage) NOEXCEPT
+	static VkShaderStageFlags GetVulkanShaderStages(const ShaderStage shaderStage) NOEXCEPT
 	{
-		switch (shaderStage)
+		VkShaderStageFlags flags{ 0 };
+
+		if (IS_BIT_SET(shaderStage, ShaderStage::Vertex))
 		{
-			default: return VK_SHADER_STAGE_VERTEX_BIT;
-			case ShaderStage::Vertex: return VK_SHADER_STAGE_VERTEX_BIT;
-			case ShaderStage::TessellationControl: return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-			case ShaderStage::TessellationEvaluation: return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-			case ShaderStage::Geometry: return VK_SHADER_STAGE_GEOMETRY_BIT;
-			case ShaderStage::Fragment: return VK_SHADER_STAGE_FRAGMENT_BIT;
-			case ShaderStage::Compute: return VK_SHADER_STAGE_COMPUTE_BIT;
+			flags |= VK_SHADER_STAGE_VERTEX_BIT;
 		}
+
+		if (IS_BIT_SET(shaderStage, ShaderStage::TessellationControl))
+		{
+			flags |= VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+		}
+
+		if (IS_BIT_SET(shaderStage, ShaderStage::TessellationEvaluation))
+		{
+			flags |= VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+		}
+
+		if (IS_BIT_SET(shaderStage, ShaderStage::Geometry))
+		{
+			flags |= VK_SHADER_STAGE_GEOMETRY_BIT;
+		}
+
+		if (IS_BIT_SET(shaderStage, ShaderStage::Fragment))
+		{
+			flags |= VK_SHADER_STAGE_FRAGMENT_BIT;
+		}
+
+		if (IS_BIT_SET(shaderStage, ShaderStage::Compute))
+		{
+			flags |= VK_SHADER_STAGE_COMPUTE_BIT;
+		}
+
+		return flags;
 	}
 
 	/*

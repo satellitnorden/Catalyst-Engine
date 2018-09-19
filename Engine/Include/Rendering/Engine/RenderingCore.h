@@ -212,13 +212,15 @@ enum class Shader : uint8
 //Enumeration covering all shader stages.
 enum class ShaderStage : uint8
 {
-	Vertex,
-	TessellationControl,
-	TessellationEvaluation,
-	Geometry,
-	Fragment,
-	Compute
+	Vertex = BIT(0),
+	TessellationControl = BIT(1),
+	TessellationEvaluation = BIT(2),
+	Geometry = BIT(3),
+	Fragment = BIT(4),
+	Compute = BIT(5)
 };
+
+ENUMERATION_BIT_OPERATIONS(ShaderStage);
 
 //Enumeration covering all special textures.
 enum class SpecialTexture : uint8
@@ -362,7 +364,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	RenderDataTableLayoutBinding(const uint32 initialBinding, const Type initialType, const ShaderStage initialShaderStage) NOEXCEPT
+	constexpr RenderDataTableLayoutBinding(const uint32 initialBinding, const Type initialType, const ShaderStage initialShaderStage) NOEXCEPT
 		:
 		_Binding(initialBinding),
 		_Type(initialType),
@@ -370,6 +372,7 @@ public:
 	{
 
 	}
+
 };
 
 /*

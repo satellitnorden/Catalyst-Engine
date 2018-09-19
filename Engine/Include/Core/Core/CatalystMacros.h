@@ -79,14 +79,14 @@
 /*
 *	Defines bit operations for an enumeration. Must be placed in the global namespace.
 */
-#define ENUMERATION_BIT_OPERATIONS(ENUMERATION)												\
-static ENUMERATION operator|(const ENUMERATION first, const ENUMERATION second) NOEXCEPT	\
-{																							\
-	return static_cast<ENUMERATION>(UNDERLYING(first) | UNDERLYING(second));				\
-}																							\
-static ENUMERATION operator&(const ENUMERATION first, const ENUMERATION second) NOEXCEPT	\
-{																							\
-	return static_cast<ENUMERATION>(UNDERLYING(first) & UNDERLYING(second));				\
+#define ENUMERATION_BIT_OPERATIONS(ENUMERATION)														\
+constexpr static ENUMERATION operator|(const ENUMERATION first, const ENUMERATION second) NOEXCEPT	\
+{																									\
+	return static_cast<ENUMERATION>(UNDERLYING(first) | UNDERLYING(second));						\
+}																									\
+constexpr static ENUMERATION operator&(const ENUMERATION first, const ENUMERATION second) NOEXCEPT	\
+{																									\
+	return static_cast<ENUMERATION>(UNDERLYING(first) & UNDERLYING(second));						\
 }
 
 /*

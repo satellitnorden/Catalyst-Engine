@@ -58,9 +58,6 @@ void VulkanRenderingSystem::PreInitializeSystem() NOEXCEPT
 {
 	//Initialize the Vulkan interface.
 	VulkanInterface::Instance->Initialize();
-
-	//Initialize all descriptor set layouts.
-	InitializeDescriptorSetLayouts();
 }
 
 /*
@@ -84,9 +81,11 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 	InitializeVulkanRenderPasses();
 
 	//Initialize the Vulkan frame data.
-	_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(), _DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::DynamicUniformData)], _DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Environment)]
+	_FrameData.Initialize(	VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(),
+							*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData)),
+							*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Environment))
 #if defined(CATALYST_ENABLE_OCEAN)
-		, _DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Ocean)]
+							, *static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Ocean))
 #endif
 	);
 }
@@ -129,12 +128,6 @@ void VulkanRenderingSystem::PostUpdateSystemSynchronous() NOEXCEPT
 */
 void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 {
-	//Release all descriptor set layouts.
-	for (uint32 i = 0; i < UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts); ++i)
-	{
-		_DescriptorSetLayouts[i].Release();
-	}
-
 	//Release the Vulkan interface.
 	VulkanInterface::Instance->Release();
 }
@@ -216,7 +209,7 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 	terrainComponent._TerrainPropertiesTexture = terrainPropertiesTexture;
 
 	//Create the descriptor set.
-	renderComponent._RenderDataTable = VulkanInterface::Instance->CreateDescriptorSet(_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Terrain)]);
+	renderComponent._RenderDataTable = VulkanInterface::Instance->CreateDescriptorSet(*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain)));
 	VulkanDescriptorSet& newDescriptorSet{ *static_cast<VulkanDescriptorSet *const RESTRICT>(renderComponent._RenderDataTable) };
 
 	StaticArray<VkWriteDescriptorSet, 18> writeDescriptorSets
@@ -438,7 +431,7 @@ void VulkanRenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLay
 	{
 		const RenderDataTableLayoutBinding &binding{ bindings[i] };
 
-		vulkanBindings.EmplaceFast(VulkanUtilities::CreateDescriptorSetLayoutBinding(binding._Binding, VulkanTranslationUtilities::GetVulkanDescriptorType(binding._Type), VulkanTranslationUtilities::GetVulkanShaderStage(binding._ShaderStage)));
+		vulkanBindings.EmplaceFast(VulkanUtilities::CreateDescriptorSetLayoutBinding(binding._Binding, VulkanTranslationUtilities::GetVulkanDescriptorType(binding._Type), VulkanTranslationUtilities::GetVulkanShaderStages(binding._ShaderStage)));
 	}
 
 	*handle = VulkanInterface::Instance->CreateDescriptorSetLayout(vulkanBindings.Data(), numberOfBindings);
@@ -521,14 +514,6 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanRenderDataTable() NO
 #endif
 
 /*
-*	Returns the given common render data table layout.
-*/
-RenderDataTableHandle VulkanRenderingSystem::GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) NOEXCEPT
-{
-	return reinterpret_cast<RenderDataTableHandle>(&_DescriptorSetLayouts[UNDERLYING(commonRenderDataTableLayout)]);
-}
-
-/*
 *	Initializes all render targets.
 */
 void VulkanRenderingSystem::InitializeDepthBuffers() NOEXCEPT
@@ -577,109 +562,6 @@ void VulkanRenderingSystem::InitializeUniformBuffers() NOEXCEPT
 
 		_UniformBuffers[UNDERLYING(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)] = VulkanInterface::Instance->CreateUniformBuffer(sizeof(Vector4) * RenderingConstants::SCREEN_SPACE_AMBIENT_OCCLUSION_SAMPLE_KERNEL_SIZE);
 		_UniformBuffers[UNDERLYING(UniformBuffer::ScreenSpaceAmbientOcclusionSamples)]->UploadData(samples.Data());
-	}
-}
-
-/*
-*	Initializes all descriptor set layouts.
-*/
-void VulkanRenderingSystem::InitializeDescriptorSetLayouts() NOEXCEPT
-{
-	{
-		//Initialize the dynamic uniform data descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> dynamicUniformDataDescriptorSetLayoutBindings
-		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
-		};
-
-		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::DynamicUniformData)].Initialize(1, dynamicUniformDataDescriptorSetLayoutBindings.Data());
-	}
-
-	{
-		//Initialize the environment descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> environmentDescriptorSetLayoutBindings
-		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-		};
-
-		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Environment)].Initialize(static_cast<uint32>(environmentDescriptorSetLayoutBindings.Size()), environmentDescriptorSetLayoutBindings.Data());
-	}
-
-	{
-		//Initialize the terrain descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 18> terrainDescriptorSetLayoutBindings
-		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(4, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(5, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(6, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(7, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(8, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(9, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(10, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(11, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(12, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(13, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(14, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(15, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(16, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(17, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(18, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
-		};
-
-		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Terrain)].Initialize(18, terrainDescriptorSetLayoutBindings.Data());
-	}
-
-	{
-		//Initialize the physical descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 4> physicalDescriptorSetLayoutBindings
-		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-		};
-
-		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Physical)].Initialize(static_cast<uint32>(physicalDescriptorSetLayoutBindings.Size()), physicalDescriptorSetLayoutBindings.Data());
-	}
-
-#if defined(CATALYST_ENABLE_OCEAN)
-	{
-		//Initialize the ocean descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 3> oceanDescriptorSetLayoutBindings
-		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-		};
-
-		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::Ocean)].Initialize(static_cast<uint32>(oceanDescriptorSetLayoutBindings.Size()), oceanDescriptorSetLayoutBindings.Data());
-	}
-#endif
-
-	{
-		//Initialize the particle system descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 2> particleSystemDescriptorSetLayoutBindings
-		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_GEOMETRY_BIT),
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
-		};
-
-		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::ParticleSystem)].Initialize(static_cast<uint32>(particleSystemDescriptorSetLayoutBindings.Size()), particleSystemDescriptorSetLayoutBindings.Data());
-	}
-
-	{
-		//Initialize the bloom descriptor set layout.
-		constexpr StaticArray<VkDescriptorSetLayoutBinding, 1> descriptorSetLayoutBindings
-		{
-			VulkanUtilities::CreateDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT),
-		};
-
-		_DescriptorSetLayouts[UNDERLYING(CommonRenderDataTableLayout::GaussianBlur)].Initialize(static_cast<uint32>(descriptorSetLayoutBindings.Size()), descriptorSetLayoutBindings.Data());
 	}
 }
 

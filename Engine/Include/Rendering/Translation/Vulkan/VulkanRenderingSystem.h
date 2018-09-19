@@ -176,11 +176,6 @@ public:
 #endif
 
 	/*
-	*	Returns the given common render data table layout.
-	*/
-	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) NOEXCEPT;
-
-	/*
 	*	Finalizes the initialization of a render pass.
 	*/
 	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT _RenderPass) NOEXCEPT;
@@ -220,9 +215,6 @@ private:
 	//Container for all depth buffers.
 	StaticArray<VulkanDepthBuffer *RESTRICT, UNDERLYING(DepthBuffer::NumberOfDepthBuffers)> _DepthBuffers;
 
-	//Container for all descriptor set layouts.
-	StaticArray<VulkanDescriptorSetLayout, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _DescriptorSetLayouts;
-
 	//Container for all temporary pipelines.
 	StaticArray<VulkanPipeline *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _Pipelines;
 
@@ -234,9 +226,6 @@ private:
 
 	//Container for all uniform buffers.
 	StaticArray<VulkanUniformBuffer *RESTRICT, UNDERLYING(UniformBuffer::NumberOfUniformBuffers)> _UniformBuffers;
-
-	//Container for all special textures.
-	StaticArray<Vulkan2DTexture* RESTRICT, UNDERLYING(SpecialTexture::NumberOfSpecialTextures)> _SpecialTextures;
 
 	//Container for all Vulkan render pass main stage data.
 	StaticArray<VulkanRenderPassMainStageData, UNDERLYING(RenderPassMainStage::NumberOfRenderPassMainStages)> _VulkanRenderPassMainStageData;
@@ -267,11 +256,6 @@ private:
 	*	Initializes all uniform buffers.
 	*/
 	void InitializeUniformBuffers() NOEXCEPT;
-
-	/*
-	*	Initializes all descriptor set layouts.
-	*/
-	void InitializeDescriptorSetLayouts() NOEXCEPT;
 
 	/*
 	*	Initializes all shader modules.

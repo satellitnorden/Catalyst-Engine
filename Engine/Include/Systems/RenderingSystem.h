@@ -438,11 +438,14 @@ private:
 	//The inverse camera matrix.
 	Matrix4 _InverseCameraMatrix;
 
-	//Container for all render targets.
-	StaticArray<RenderTargetHandle, UNDERLYING(RenderTarget::NumberOfRenderTargets)> _RenderTargets;
-
 	//Container for all render passes.
 	StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _RenderPasses;
+
+	//Container for all common render data table layouts.
+	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;
+
+	//Container for all render targets.
+	StaticArray<RenderTargetHandle, UNDERLYING(RenderTarget::NumberOfRenderTargets)> _RenderTargets;
 
 	//Container for all common particle materials.
 	StaticArray<ParticleMaterial, UNDERLYING(CommonParticleMaterial::NumberOfCommonParticleMaterials)> _CommonParticleMaterials;
@@ -466,6 +469,11 @@ private:
 	//The default ocean material.
 	OceanMaterial _DefaultOceanMaterial;
 #endif
+
+	/*
+	*	Initializes all common render data table layouts.
+	*/
+	void InitializeCommonRenderDataTableLayouts() NOEXCEPT;
 
 	/*
 	*	Initializes all render targets.
