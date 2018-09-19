@@ -48,7 +48,6 @@ class TerrainMaterial;
 class TerrainMaterialData;
 class TerrainUniformData;
 class TextureData;
-class Vector3;
 
 class RenderingSystem final
 {
@@ -310,6 +309,11 @@ public:
 	*	Destroys a texture 2D
 	*/
 	void DestroyTexture2D(Texture2DHandle handle) const NOEXCEPT;
+
+	/*
+	*	Creates a texture cube.
+	*/
+	TextureCubeHandle CreateTextureCube(const float *const RESTRICT data, const Resolution resolution) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.

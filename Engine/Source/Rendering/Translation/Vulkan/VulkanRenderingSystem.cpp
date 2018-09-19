@@ -7,11 +7,9 @@
 //Entities.
 #include <Entities/CameraEntity.h>
 #include <Entities/InstancedPhysicalEntity.h>
-#include <Entities/ParticleSystemEntity.h>
 #include <Entities/PointLightEntity.h>
 #include <Entities/SpotLightEntity.h>
 #include <Entities/TerrainEntity.h>
-#include <Entities/InitializationData/ParticleSystemInitializationData.h>
 #include <Entities/InitializationData/TerrainInitializationData.h>
 
 //Managers.
@@ -19,15 +17,8 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
-#include <Math/Matrix3.h>
-
-//Multithreading.
-#include <Multithreading/Task.h>
 
 //Rendering.
-#include <Rendering/Engine/CPUTexture2D.h>
-#include <Rendering/Engine/ParticleMaterial.h>
-#include <Rendering/Engine/PostProcessingUniformData.h>
 #include <Rendering/Engine/RenderingUtilities.h>
 #include <Rendering/Engine/TerrainMaterial.h>
 #include <Rendering/Engine/TextureData.h>
@@ -36,14 +27,10 @@
 #include <Rendering/Translation/Vulkan/VulkanTranslationCommandBuffer.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationUtilities.h>
 
-//Resources.
-#include <Resources/EnvironmentMaterialData.h>
-
 //Systems.
 #include <Systems/EngineSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
-#include <Systems/TaskSystem.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanUtilities.h>
@@ -175,18 +162,6 @@ void VulkanRenderingSystem::CreateRenderTarget(const Resolution resolution, cons
 }
 
 /*
-*	Creates an environment material.
-*/
-void VulkanRenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT
-{
-	//Create the diffuse texture.
-	environmentMaterial._DiffuseTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData._DiffuseData.Data(), environmentMaterialData._DiffuseResolution, environmentMaterialData._DiffuseResolution));
-
-	//Create the diffuse irradiance texture.
-	environmentMaterial._DiffuseIrradianceTexture = static_cast<TextureCubeMapHandle>(VulkanInterface::Instance->CreateCubeMapTexture(environmentMaterialData._DiffuseIrradianceData.Data(), environmentMaterialData._DiffuseIrradianceResolution, environmentMaterialData._DiffuseIrradianceResolution));
-}
-
-/*
 *	Initializes a terrain entity.
 */
 void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT
@@ -277,6 +252,14 @@ void VulkanRenderingSystem::DestroyTexture2D(Texture2DHandle handle) NOEXCEPT
 {
 	//Put in a queue, destroy when no command buffer uses it anymore.
 	_DestructionQueue.EmplaceSlow(VulkanDestructionData::Type::Texture2D, handle);
+}
+
+/*
+*	Creates a texture cube.
+*/
+TextureCubeHandle VulkanRenderingSystem::CreateTextureCube(const float *const RESTRICT data, const Resolution resolution) const NOEXCEPT
+{
+	return static_cast<TextureCubeHandle>(VulkanInterface::Instance->CreateCubeMapTexture(data, resolution._Width, resolution._Height));
 }
 
 /*

@@ -3,15 +3,7 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-//Math.
-#include <Math/Matrix4.h>
-
-//Multithreading.
-#include <Multithreading/MultithreadedResource.h>
-#include <Multithreading/Task.h>
-
 //Rendering.
-#include <Rendering/Engine/EnvironmentMaterial.h>
 #include <Rendering/Engine/RenderingCore.h>
 #include <Rendering/Translation/Vulkan/VulkanDynamicUniformData.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
@@ -22,16 +14,7 @@
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
 //Forward declarations.
-class CameraEntity;
-class CPUTexture2D;
-class Entity;
-class EnvironmentMaterial;
-class EnvironmentMaterialData;
 class InstancedPhysicalEntity;
-class ParticleMaterial;
-class ParticleSystemEntity;
-class ParticleSystemInitializationData;
-class ParticleSystemProperties;
 class PhysicalModel;
 class RenderPass;
 class Resolution;
@@ -95,6 +78,11 @@ public:
 	void DestroyTexture2D(Texture2DHandle handle) NOEXCEPT;
 
 	/*
+	*	Creates a texture cube.
+	*/
+	TextureCubeHandle CreateTextureCube(const float *const RESTRICT data, const Resolution resolution) const NOEXCEPT;
+
+	/*
 	*	Creates a constant buffer.
 	*/
 	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
@@ -130,11 +118,6 @@ public:
 	void CreateRenderTarget(const Resolution resolution, const TextureFormat format, const TextureFilter filter, const AddressMode addressMode, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
-	*	Creates an environment material.
-	*/
-	void CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT;
-
-	/*
 	*	Initializes a terrain entity.
 	*/
 	void InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT;
@@ -160,8 +143,8 @@ public:
 	void DestroyUniformBuffer(UniformBufferHandle handle) NOEXCEPT;
 
 	/*
-*	Returns the current dynamic uniform data descriptor set.
-*/
+	*	Returns the current dynamic uniform data descriptor set.
+	*/
 	RenderDataTableHandle GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT;
 
 	/*

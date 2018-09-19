@@ -23,7 +23,7 @@ using RenderDataTableHandle = void *RESTRICT;
 using RenderDataTableLayoutHandle = void *RESTRICT;
 using RenderTargetHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;
-using TextureCubeMapHandle = void *RESTRICT;
+using TextureCubeHandle = void *RESTRICT;
 using UniformBufferHandle = void *RESTRICT;
 
 /*

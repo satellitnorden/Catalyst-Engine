@@ -177,7 +177,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\PhysicalMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\PhysicalModel.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\PhysicalVertex.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\PostProcessingUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingCore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingUtilities.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.h" />

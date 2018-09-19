@@ -337,6 +337,15 @@ void RenderingSystem::DestroyTexture2D(Texture2DHandle handle) const NOEXCEPT
 }
 
 /*
+*	Creates a texture cube.
+*/
+TextureCubeHandle RenderingSystem::CreateTextureCube(const float *const RESTRICT data, const Resolution resolution) const NOEXCEPT
+{
+	//Create the texture cube via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->CreateTextureCube(data, resolution);
+}
+
+/*
 *	Creates and returns a uniform buffer.
 */
 UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT
@@ -406,8 +415,11 @@ RenderDataTableHandle RenderingSystem::GetCommonRenderDataTableLayout(const Comm
 */
 void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &environmentMaterialData, EnvironmentMaterial &environmentMaterial) NOEXCEPT
 {
-	//Create the environment material via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreateEnvironmentMaterial(environmentMaterialData, environmentMaterial);
+	//Create the diffuse texture.
+	environmentMaterial._DiffuseTexture = CreateTextureCube(environmentMaterialData._DiffuseData.Data(), Resolution(environmentMaterialData._DiffuseResolution, environmentMaterialData._DiffuseResolution));
+
+	//Create the diffuse irradiance texture.
+	environmentMaterial._DiffuseIrradianceTexture = CreateTextureCube(environmentMaterialData._DiffuseIrradianceData.Data(), Resolution(environmentMaterialData._DiffuseIrradianceResolution, environmentMaterialData._DiffuseIrradianceResolution));
 }
 
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -1122,11 +1134,11 @@ void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
 
 	{
 		//Initialize the default day environment material.
-		//constexpr Vector3 BOTTOM_COLOR{ 0.25f, 0.25f, 0.25f };
-		//constexpr Vector3 TOP_COLOR{ 0.0f, 0.75f, 1.0f };
+		constexpr Vector3 BOTTOM_COLOR{ 0.25f, 0.25f, 0.25f };
+		constexpr Vector3 TOP_COLOR{ 0.0f, 0.75f, 1.0f };
 
-		constexpr Vector3 BOTTOM_COLOR{ 0.0f, 0.0f, 0.0f };
-		constexpr Vector3 TOP_COLOR{ 0.0f, 0.0f, 0.0f };
+		//constexpr Vector3 BOTTOM_COLOR{ 0.0f, 0.0f, 0.0f };
+		//constexpr Vector3 TOP_COLOR{ 0.0f, 0.0f, 0.0f };
 
 		EnvironmentMaterialData data;
 

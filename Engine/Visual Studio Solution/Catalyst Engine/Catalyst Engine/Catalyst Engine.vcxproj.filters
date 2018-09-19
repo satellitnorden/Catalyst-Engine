@@ -555,9 +555,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\PhysicalVertex.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\PostProcessingUniformData.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderingCore.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
