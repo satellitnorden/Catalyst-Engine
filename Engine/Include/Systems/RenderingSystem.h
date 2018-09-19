@@ -227,9 +227,20 @@ public:
 	}
 
 	/*
+	*	Returns the given depth buffer.
+	*/
+	DepthBufferHandle GetDepthBuffer(const DepthBuffer depthBuffer) const NOEXCEPT
+	{
+		return _DepthBuffers[UNDERLYING(depthBuffer)];
+	}
+
+	/*
 	*	Returns the given render target.
 	*/
-	RenderTargetHandle GetRenderTarget(const RenderTarget renderTarget) const NOEXCEPT;
+	RenderTargetHandle GetRenderTarget(const RenderTarget renderTarget) const NOEXCEPT
+	{
+		return _RenderTargets[UNDERLYING(renderTarget)];
+	}
 
 	/*
 	*	Returns the given special texture.
@@ -269,6 +280,11 @@ public:
 	*	Creates a constant buffer.
 	*/
 	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
+
+	/*
+	*	Creates a depth buffer.
+	*/
+	DepthBufferHandle CreateDepthBuffer(const Resolution resolution) const NOEXCEPT;
 
 	/*
 	*	Creates a render data table layout.
@@ -441,11 +457,14 @@ private:
 	//Container for all render passes.
 	StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _RenderPasses;
 
-	//Container for all common render data table layouts.
-	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;
+	//Container for all depth buffers.
+	StaticArray<DepthBufferHandle, UNDERLYING(DepthBuffer::NumberOfDepthBuffers)> _DepthBuffers;
 
 	//Container for all render targets.
 	StaticArray<RenderTargetHandle, UNDERLYING(RenderTarget::NumberOfRenderTargets)> _RenderTargets;
+
+	//Container for all common render data table layouts.
+	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;
 
 	//Container for all common particle materials.
 	StaticArray<ParticleMaterial, UNDERLYING(CommonParticleMaterial::NumberOfCommonParticleMaterials)> _CommonParticleMaterials;
@@ -471,9 +490,9 @@ private:
 #endif
 
 	/*
-	*	Initializes all common render data table layouts.
+	*	Initializes all depth buffers.
 	*/
-	void InitializeCommonRenderDataTableLayouts() NOEXCEPT;
+	void InitializeDepthBuffers() NOEXCEPT;
 
 	/*
 	*	Initializes all render targets.
@@ -504,6 +523,11 @@ private:
 	*	Initializes the common physical models.
 	*/
 	void InitializeCommonPhysicalModels() NOEXCEPT;
+
+	/*
+	*	Initializes all common render data table layouts.
+	*/
+	void InitializeCommonRenderDataTableLayouts() NOEXCEPT;
 
 	/*
 	*	Initializes all default assets.

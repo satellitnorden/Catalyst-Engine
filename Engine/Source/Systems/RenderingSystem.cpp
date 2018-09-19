@@ -66,11 +66,14 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 	//Pre-initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->PreInitializeSystem();
 
-	//Initialize all common render data table layouts.
-	InitializeCommonRenderDataTableLayouts();
+	//Initialize all depth buffers.
+	InitializeDepthBuffers();
 
 	//Initialize all render targets.
 	InitializeRenderTargets();
+
+	//Initialize all common render data table layouts.
+	InitializeCommonRenderDataTableLayouts();
 
 	//Initialize the common particle materials.
 	InitializeCommonParticleMaterials();
@@ -256,15 +259,6 @@ void RenderingSystem::ToScreenCoordinate(const Vector3 &worldPosition, Vector2 *
 }
 
 /*
-*	Returns the given render target.
-*/
-RenderTargetHandle RenderingSystem::GetRenderTarget(const RenderTarget renderTarget) const NOEXCEPT
-{
-	//Return the given render target.
-	return _RenderTargets[UNDERLYING(renderTarget)];
-}
-
-/*
 *	Returns the given special texture.
 */
 Texture2DHandle RenderingSystem::GetSpecialTexture(const SpecialTexture specialTexture) NOEXCEPT
@@ -287,6 +281,15 @@ ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *RESTRICT 
 {
 	//Create the constant buffer via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->CreateConstantBuffer(data, dataSizes, dataChunks);
+}
+
+/*
+*	Creates a depth buffer.
+*/
+DepthBufferHandle RenderingSystem::CreateDepthBuffer(const Resolution resolution) const NOEXCEPT
+{
+	//Create the depth buffer via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->CreateDepthBuffer(resolution);
 }
 
 /*
@@ -648,106 +651,12 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 }
 
 /*
-*	Initializes all common render data table layouts.
+*	Initializes all depth buffers.
 */
-void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
+void RenderingSystem::InitializeDepthBuffers() NOEXCEPT
 {
-	{
-		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Geometry | ShaderStage::Fragment),
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::DynamicUniformData)]);
-	}
-
-	{
-		//Initialize the environment render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 4> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Environment)]);
-	}
-
-	{
-		//Initialize the terrain render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 18> bindings
-		{
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::UniformBuffer, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Vertex | ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(9, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(10, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(11, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(12, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(13, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(14, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(15, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(16, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(17, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(18, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Terrain)]);
-	}
-
-	{
-		//Initialize the physical render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
-		{
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Physical)]);
-	}
-	
-#if defined(CATALYST_ENABLE_OCEAN)
-	{
-		//Initialize the ocean render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Ocean)]);
-	}
-#endif
-	
-	{
-		//Initialize the particle system render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, ShaderStage::Geometry),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::ParticleSystem)]);
-	}
-
-	{
-		//Initialize the bloom render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GaussianBlur)]);
-	}
+	_DepthBuffers[UNDERLYING(DepthBuffer::DirectionalLight)] = CreateDepthBuffer(GetDirectionalShadowMapResolution());
+	_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)] = CreateDepthBuffer(GetScaledResolution());
 }
 
 /*
@@ -970,6 +879,109 @@ void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
 		PhysicalModelData data;
 		CommonPhysicalModelData::GetPlanePhysicalModelData(data);
 		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Plane)]);
+	}
+}
+
+/*
+*	Initializes all common render data table layouts.
+*/
+void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
+{
+	{
+		//Initialize the dynamic uniform data render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Geometry | ShaderStage::Fragment),
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::DynamicUniformData)]);
+	}
+
+	{
+		//Initialize the environment render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 4> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Environment)]);
+	}
+
+	{
+		//Initialize the terrain render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 18> bindings
+		{
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::UniformBuffer, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Vertex | ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(9, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(10, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(11, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(12, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(13, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(14, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(15, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(16, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(17, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(18, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment)
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Terrain)]);
+	}
+
+	{
+		//Initialize the physical render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
+		{
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Physical)]);
+	}
+
+#if defined(CATALYST_ENABLE_OCEAN)
+	{
+		//Initialize the ocean render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Ocean)]);
+	}
+#endif
+
+	{
+		//Initialize the particle system render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, ShaderStage::Geometry),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::ParticleSystem)]);
+	}
+
+	{
+		//Initialize the bloom render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GaussianBlur)]);
 	}
 }
 

@@ -65,9 +65,6 @@ void VulkanRenderingSystem::PreInitializeSystem() NOEXCEPT
 */
 void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 {
-	//Initialize all depth buffers.
-	InitializeDepthBuffers();
-
 	//Initialize all semaphores.
 	InitializeSemaphores();
 
@@ -157,6 +154,14 @@ UniformBufferHandle VulkanRenderingSystem::GetUniformBuffer(const UniformBuffer 
 ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
 {
 	return reinterpret_cast<ConstantBufferHandle>(VulkanInterface::Instance->CreateConstantBuffer(data, reinterpret_cast<const VkDeviceSize *const RESTRICT>(dataSizes), dataChunks)->Get());
+}
+
+/*
+*	Creates a depth buffer.
+*/
+DepthBufferHandle VulkanRenderingSystem::CreateDepthBuffer(const Resolution resolution) const NOEXCEPT
+{
+	return static_cast<DepthBufferHandle>(VulkanInterface::Instance->CreateDepthBuffer(VulkanTranslationUtilities::GetVulkanExtent(resolution)));
 }
 
 /*
@@ -519,19 +524,6 @@ RenderDataTableHandle VulkanRenderingSystem::GetCurrentOceanRenderDataTable() NO
 #endif
 
 /*
-*	Initializes all render targets.
-*/
-void VulkanRenderingSystem::InitializeDepthBuffers() NOEXCEPT
-{
-	//Get the scaled extent.
-	const VkExtent2D scaledExtent{ VulkanTranslationUtilities::GetVulkanExtent(RenderingSystem::Instance->GetScaledResolution()) };
-
-	//Initialize all depth buffers.
-	_DepthBuffers[UNDERLYING(DepthBuffer::DirectionalLight)] = VulkanInterface::Instance->CreateDepthBuffer({ EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution });
-	_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)] = VulkanInterface::Instance->CreateDepthBuffer(scaledExtent);
-}
-
-/*
 *	Initializes all semaphores.
 */
 void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
@@ -823,7 +815,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
 		{
 			//Depth buffer.
-			VulkanUtilities::CreateAttachmentDescription(	_DepthBuffers[UNDERLYING(DepthBuffer::DirectionalLight)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::DirectionalLight))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -898,7 +890,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		
 		StaticArray<VkImageView, 2> attachments
 		{
-			_DepthBuffers[UNDERLYING(DepthBuffer::DirectionalLight)]->GetImageView(),
+			static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::DirectionalLight))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadowMap))->GetImageView()
 		};
 
@@ -932,7 +924,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 6> attachmenDescriptions
 		{
 			//Depth buffer.
-			VulkanUtilities::CreateAttachmentDescription(	_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_CLEAR,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1177,7 +1169,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkImageView, 6> attachments
 		{
-			_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)]->GetImageView(),
+			static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferAlbedo))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferMaterialProperties))->GetImageView(),
@@ -1208,7 +1200,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		StaticArray<VkAttachmentDescription, 2> attachmenDescriptions
 		{
 			//Depth buffer.
-			VulkanUtilities::CreateAttachmentDescription(	_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)]->GetFormat(),
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetFormat(),
 															VK_ATTACHMENT_LOAD_OP_LOAD,
 															VK_ATTACHMENT_STORE_OP_STORE,
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -1280,7 +1272,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		StaticArray<VkImageView, 2> attachments
 		{
-			_DepthBuffers[UNDERLYING(DepthBuffer::SceneBuffer)]->GetImageView(),
+			static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
 		};
 

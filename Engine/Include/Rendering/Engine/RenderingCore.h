@@ -20,6 +20,7 @@ namespace RenderingConstants
 using OpaqueHandle = void *RESTRICT;
 
 using ConstantBufferHandle = void *RESTRICT;
+using DepthBufferHandle = void *RESTRICT;
 using RenderDataTableHandle = void *RESTRICT;
 using RenderDataTableLayoutHandle = void *RESTRICT;
 using RenderTargetHandle = void *RESTRICT;

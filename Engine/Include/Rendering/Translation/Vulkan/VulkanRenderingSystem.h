@@ -104,6 +104,11 @@ public:
 	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
 
 	/*
+	*	Creates a depth buffer.
+	*/
+	DepthBufferHandle CreateDepthBuffer(const Resolution resolution) const NOEXCEPT;
+
+	/*
 	*	Creates a render data table layout.
 	*/
 	void CreateRenderDataTableLayout(const RenderDataTableLayoutBinding *const RESTRICT bindings, const uint32 numberOfBindings, RenderDataTableLayoutHandle *const RESTRICT handle) const NOEXCEPT;
@@ -212,9 +217,6 @@ private:
 	//The dynamic uniform data.
 	VulkanDynamicUniformData _DynamicUniformData;
 
-	//Container for all depth buffers.
-	StaticArray<VulkanDepthBuffer *RESTRICT, UNDERLYING(DepthBuffer::NumberOfDepthBuffers)> _DepthBuffers;
-
 	//Container for all temporary pipelines.
 	StaticArray<VulkanPipeline *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _Pipelines;
 
@@ -276,11 +278,6 @@ private:
 
 	//The destruction queue.
 	DynamicArray<VulkanDestructionData> _DestructionQueue;
-
-	/*
-	*	Initializes all depth buffers.
-	*/
-	void InitializeDepthBuffers() NOEXCEPT;
 
 	/*
 	*	Initializes all semaphores.
