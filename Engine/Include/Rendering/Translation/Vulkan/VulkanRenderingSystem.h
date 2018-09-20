@@ -17,10 +17,6 @@
 class PhysicalModel;
 class RenderPass;
 class Resolution;
-class TerrainEntity;
-class TerrainInitializationData;
-class TerrainMaterial;
-class TerrainUniformData;
 class TextureData;
 
 class VulkanRenderingSystem final
@@ -115,11 +111,6 @@ public:
 	*	Creates a render target.
 	*/
 	void CreateRenderTarget(const Resolution resolution, const TextureFormat format, const TextureFilter filter, const AddressMode addressMode, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT;
-
-	/*
-	*	Initializes a terrain entity.
-	*/
-	void InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.

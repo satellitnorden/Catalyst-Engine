@@ -6,6 +6,7 @@
 #include <Entities/TerrainEntity.h>
 #include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 #include <Entities/InitializationData/ParticleSystemInitializationData.h>
+#include <Entities/InitializationData/TerrainInitializationData.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
@@ -564,16 +565,50 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 /*
 *	Initializes a terrain entity.
 */
-void RenderingSystem::InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT
+void RenderingSystem::InitializeTerrainEntity(const Entity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT
 {
-	//Initialize the terrain entity via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->InitializeTerrainEntity(entity, data);
+	//Fill the terrain entity components with the relevant data.
+	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetTerrainFrustumCullingComponents()[entity->_ComponentsIndex] };
+	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainTerrainComponents()[entity->_ComponentsIndex] };
+	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->_ComponentsIndex] };
+
+	frustumCullingComponent._ModelSpaceAxisAlignedBoundingBox = data->_AxisAlignedBoundingBox;
+
+	Texture2DHandle terrainPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(data->_TerrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
+
+	terrainComponent._TerrainUniformData = data->_TerrainUniformData;
+	terrainComponent._UniformBuffer = CreateUniformBuffer(sizeof(TerrainUniformData));
+	UploadDataToUniformBuffer(terrainComponent._UniformBuffer, &terrainComponent._TerrainUniformData);
+	terrainComponent._TerrainProperties = data->_TerrainProperties;
+	terrainComponent._TerrainPropertiesTexture = terrainPropertiesTexture;
+
+	//Create the render data table.
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain), &renderComponent._RenderDataTable);
+
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::UniformBuffer, terrainComponent._UniformBuffer), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, terrainPropertiesTexture), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, data->_LayerWeightsTexture), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(4, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FirstLayerAlbedo), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(5, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FirstLayerNormalMap), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(6, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FirstLayerMaterialProperties), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(7, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._SecondLayerAlbedo), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(8, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._SecondLayerNormalMap), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(9, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._SecondLayerMaterialProperties), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(10, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._ThirdLayerAlbedo), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(11, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._ThirdLayerNormalMap), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(12, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._ThirdLayerMaterialProperties), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(13, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FourthLayerAlbedo), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(14, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FourthLayerNormalMap), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(15, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FourthLayerMaterialProperties), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(16, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FifthLayerAlbedo), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(17, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FifthLayerNormalMap), renderComponent._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(18, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FifthLayerMaterialProperties), renderComponent._RenderDataTable);
 }
 
 /*
 *	Terminates a terrain entity.
 */
-void RenderingSystem::TerminateTerrainEntity(const TerrainEntity *const RESTRICT entity) const NOEXCEPT
+void RenderingSystem::TerminateTerrainEntity(const Entity *const RESTRICT entity) const NOEXCEPT
 {
 	//Retrieve the component.
 	TerrainComponent &component{ ComponentManager::GetTerrainTerrainComponents()[entity->_ComponentsIndex] };
@@ -587,7 +622,7 @@ void RenderingSystem::TerminateTerrainEntity(const TerrainEntity *const RESTRICT
 /*
 *	Initializes an instanced physical entity.
 */
-void RenderingSystem::InitializeInstancedPhysicalEntity(Entity *const RESTRICT entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT
+void RenderingSystem::InitializeInstancedPhysicalEntity(const Entity *const RESTRICT entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT
 {
 	//Cache relevant data.
 	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalInstancedPhysicalRenderComponents()[entity->_ComponentsIndex] };

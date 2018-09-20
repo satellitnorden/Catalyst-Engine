@@ -380,17 +380,17 @@ public:
 	/*
 	*	Initializes a terrain entity.
 	*/
-	void InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT;
+	void InitializeTerrainEntity(const Entity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT;
 
 	/*
 	*	Terminates a terrain entity.
 	*/
-	void TerminateTerrainEntity(const TerrainEntity *const RESTRICT entity) const NOEXCEPT;
+	void TerminateTerrainEntity(const Entity *const RESTRICT entity) const NOEXCEPT;
 
 	/*
 	*	Initializes an instanced physical entity.
 	*/
-	void InitializeInstancedPhysicalEntity(Entity *const RESTRICT entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT;
+	void InitializeInstancedPhysicalEntity(const Entity *const RESTRICT entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT;
 
 	/*
 	*	Initializes a particle system entity.

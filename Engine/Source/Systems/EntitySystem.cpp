@@ -272,7 +272,7 @@ void EntitySystem::InitializeTerrainEntity(Entity* const RESTRICT entity, Entity
 	entity->_ComponentsIndex = ComponentManager::GetNewTerrainComponentsIndex(entity);
 
 	//Initialize the terrain entity via the rendering system.
-	RenderingSystem::Instance->InitializeTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(entity), static_cast<const TerrainInitializationData *const RESTRICT>(data));
+	RenderingSystem::Instance->InitializeTerrainEntity(entity, static_cast<const TerrainInitializationData *const RESTRICT>(data));
 
 	//Destroy the initialization data.
 	DestroyInitializationData<TerrainInitializationData>(data);
@@ -320,7 +320,7 @@ void EntitySystem::TerminateParticleSystemEntity(Entity* const RESTRICT entity) 
 void EntitySystem::TerminateTerrainEntity(Entity* const RESTRICT entity) NOEXCEPT
 {
 	//Terminate the terrain entity via the rendering system.
-	RenderingSystem::Instance->TerminateTerrainEntity(reinterpret_cast<const TerrainEntity *const RESTRICT>(entity));
+	RenderingSystem::Instance->TerminateTerrainEntity(entity);
 
 	//Return this entitiy's components index.
 	ComponentManager::ReturnTerrainComponentsIndex(entity->_ComponentsIndex);
