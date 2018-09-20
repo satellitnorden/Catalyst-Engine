@@ -6,7 +6,7 @@
 //Resources.
 #include <Resources/PhysicalMaterialData.h>
 
-class CommonPhysicalMaterialData
+class CommonPhysicalMaterialData final
 {
 
 public:

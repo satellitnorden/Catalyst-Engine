@@ -16,6 +16,7 @@
 
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>
+#include <Rendering/Engine/CommonParticleMaterialData.h>
 #include <Rendering/Engine/CommonPhysicalMaterialData.h>
 #include <Rendering/Engine/CommonPhysicalModelData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -763,35 +764,8 @@ void RenderingSystem::InitializeCommonParticleMaterials() NOEXCEPT
 {
 	{
 		//Create the white circle common particle material.
-		constexpr uint8 RESOLUTION{ 7 };
-		constexpr Vector2 MIDDLE_POINT{ 0.5f, 0.5f };
-
 		ParticleMaterialData data;
-
-		data._MipmapLevels = 1;
-		data._Width = RESOLUTION;
-		data._Height = RESOLUTION;
-
-		data._AlbedoData.UpsizeSlow(1);
-		data._AlbedoData[0].Reserve(RESOLUTION * RESOLUTION * 4);
-
-		for (uint8 i = 0; i < RESOLUTION; ++i)
-		{
-			for (uint8 j = 0; j < RESOLUTION; ++j)
-			{
-				const Vector2 point{ static_cast<float>(i) / static_cast<float>(RESOLUTION - 1), static_cast<float>(j) / static_cast<float>(RESOLUTION - 1) };
-				const float distance{ Vector2::LengthSquared(MIDDLE_POINT - point) * 2.0f };
-				float alpha{ 1.0f - distance };
-				alpha *= alpha;
-				alpha *= alpha;
-
-				data._AlbedoData[0].EmplaceFast(255);
-				data._AlbedoData[0].EmplaceFast(255);
-				data._AlbedoData[0].EmplaceFast(255);
-				data._AlbedoData[0].EmplaceFast(static_cast<byte>(static_cast<float>(255) * alpha));
-			}
-		}
-
+		CommonParticleMaterialData::GetWhiteCircleParticleMaterialData(&data);
 		CreateParticleMaterial(data, _CommonParticleMaterials[UNDERLYING(CommonParticleMaterial::WhiteCircle)]);
 	}
 }
@@ -831,21 +805,21 @@ void RenderingSystem::InitializeCommonPhysicalModels() NOEXCEPT
 	{
 		//Create the cube common physical model.
 		PhysicalModelData data;
-		CommonPhysicalModelData::GetCubePhysicalModelData(data);
+		CommonPhysicalModelData::GetCubePhysicalModelData(&data);
 		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Cube)]);
 	}
 
 	{
 		//Create the octahedron common physical model.
 		PhysicalModelData data;
-		CommonPhysicalModelData::GetOctahedronPhysicalModelData(data);
+		CommonPhysicalModelData::GetOctahedronPhysicalModelData(&data);
 		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Octahedron)]);
 	}
 
 	{
 		//Create the plane common physical model.
 		PhysicalModelData data;
-		CommonPhysicalModelData::GetPlanePhysicalModelData(data);
+		CommonPhysicalModelData::GetPlanePhysicalModelData(&data);
 		CreatePhysicalModel(data, _CommonPhysicalModels[UNDERLYING(CommonPhysicalModel::Plane)]);
 	}
 }
