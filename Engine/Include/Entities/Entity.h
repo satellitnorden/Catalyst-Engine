@@ -43,7 +43,9 @@ public:
 	/*
 	*	Default destructor.
 	*/
-	virtual ~Entity() NOEXCEPT { }
+	virtual ~Entity() NOEXCEPT
+	{
+	}
 
 	/*
 	*	Returns the position of this entity.

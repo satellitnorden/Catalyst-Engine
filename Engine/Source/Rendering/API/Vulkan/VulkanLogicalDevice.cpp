@@ -8,22 +8,6 @@
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
 /*
-*	Default constructor.
-*/
-VulkanLogicalDevice::VulkanLogicalDevice() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanLogicalDevice::~VulkanLogicalDevice() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan logical device.
 */
 void VulkanLogicalDevice::Initialize() NOEXCEPT

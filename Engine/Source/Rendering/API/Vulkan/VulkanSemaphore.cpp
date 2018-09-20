@@ -5,22 +5,6 @@
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
 /*
-*	Default constructor.
-*/
-VulkanSemaphore::VulkanSemaphore() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanSemaphore::~VulkanSemaphore() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan semaphore.
 */
 void VulkanSemaphore::Initialize() NOEXCEPT

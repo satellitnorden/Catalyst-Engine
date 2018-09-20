@@ -13,16 +13,6 @@ class VulkanUniformBuffer final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanUniformBuffer() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanUniformBuffer() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan buffer.
 	*/
 	const VkBuffer& Get() const NOEXCEPT { return _VulkanBuffer; }

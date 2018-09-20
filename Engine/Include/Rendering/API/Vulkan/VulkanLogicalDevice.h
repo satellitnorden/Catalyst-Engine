@@ -25,16 +25,6 @@ public:
 	};
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanLogicalDevice() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanLogicalDevice() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan logical device.
 	*/
 	const VkDevice& Get() const NOEXCEPT { return _VulkanLogicalDevice; }

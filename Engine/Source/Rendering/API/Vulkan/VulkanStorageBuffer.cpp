@@ -6,22 +6,6 @@
 #include <Rendering/API/Vulkan/VulkanUtilities.h>
 
 /*
-*	Default constructor.
-*/
-VulkanStorageBuffer::VulkanStorageBuffer() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanStorageBuffer::~VulkanStorageBuffer() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan storage buffer.
 */
 void VulkanStorageBuffer::Initialize(const VkDeviceSize initialStorageBufferSize) NOEXCEPT

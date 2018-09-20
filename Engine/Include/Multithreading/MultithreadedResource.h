@@ -33,14 +33,6 @@ public:
 	}
 
 	/*
-	*	Default destructor.
-	*/
-	~MultithreadedResource() NOEXCEPT
-	{
-
-	}
-
-	/*
 	*	Returns the underlying resource.
 	*/
 	const Type GetSafe() const NOEXCEPT

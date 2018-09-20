@@ -8,22 +8,6 @@
 #include <Rendering/API/Vulkan/VulkanUtilities.h>
 
 /*
-*	Default constructor.
-*/
-VulkanCubeMapTexture::VulkanCubeMapTexture() NOEXCEPT
-{
-
-}
-
-/*
-*	Default desctuctor.
-*/
-VulkanCubeMapTexture::~VulkanCubeMapTexture() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this texture.
 */
 void VulkanCubeMapTexture::Initialize(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT

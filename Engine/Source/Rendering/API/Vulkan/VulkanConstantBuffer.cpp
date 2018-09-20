@@ -6,22 +6,6 @@
 #include <Rendering/API/Vulkan/VulkanUtilities.h>
 
 /*
-*	Default constructor.
-*/
-VulkanConstantBuffer::VulkanConstantBuffer() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanConstantBuffer::~VulkanConstantBuffer() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan buffer.
 *
 *	data - Pointer to an array of pointers to the data that should be copied into the buffer.

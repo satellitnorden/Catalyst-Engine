@@ -15,16 +15,6 @@ class Vulkan2DTexture final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	Vulkan2DTexture() NOEXCEPT;
-
-	/*
-	*	Default desctuctor.
-	*/
-	~Vulkan2DTexture() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan image.
 	*/
 	const VkImage& Get() const NOEXCEPT { return _VulkanImage; }

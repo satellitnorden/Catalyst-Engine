@@ -5,22 +5,6 @@
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
 /*
-*	Default constructor.
-*/
-VulkanFence::VulkanFence() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanFence::~VulkanFence() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan fence.
 */
 void VulkanFence::Initialize(const VkFenceCreateFlags flags) NOEXCEPT

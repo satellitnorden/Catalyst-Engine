@@ -12,16 +12,6 @@ class VulkanConstantBuffer final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanConstantBuffer() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanConstantBuffer() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan buffer.
 	*/
 	const VkBuffer& Get() const NOEXCEPT { return _VulkanBuffer; }

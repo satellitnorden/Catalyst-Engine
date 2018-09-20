@@ -2,22 +2,6 @@
 #include <Rendering/API/Vulkan/VulkanAllocator.h>
 
 /*
-*	Default constructor.
-*/
-VulkanAllocator::VulkanAllocator() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanAllocator::~VulkanAllocator() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes the Vulkan allocator.
 */
 void VulkanAllocator::Initialize() NOEXCEPT

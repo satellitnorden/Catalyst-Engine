@@ -12,16 +12,6 @@ class VulkanDescriptorSetLayout final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanDescriptorSetLayout() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanDescriptorSetLayout() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan descriptor set layout.
 	*/
 	const VkDescriptorSetLayout& Get() const NOEXCEPT { return _VulkanDescriptorSetLayout; }

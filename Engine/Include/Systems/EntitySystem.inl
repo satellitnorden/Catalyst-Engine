@@ -56,7 +56,5 @@ RESTRICTED Type* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEP
 template <typename Type>
 void EntitySystem::DestroyInitializationData(EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
-	static_cast<Type* const RESTRICT>(data)->~Type();
-
 	MemoryUtilities::GlobalPoolDeAllocate<sizeof(Type)>(data);
 }

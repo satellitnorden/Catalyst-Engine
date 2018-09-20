@@ -12,16 +12,6 @@ class VulkanFence final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanFence() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanFence() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan fence.
 	*/
 	const VkFence& Get() const NOEXCEPT { return _VulkanFence; }

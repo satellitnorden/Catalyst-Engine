@@ -23,16 +23,6 @@ class VulkanAllocator final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanAllocator() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanAllocator() NOEXCEPT;
-
-	/*
 	*	Initializes the Vulkan allocator.
 	*/
 	void Initialize() NOEXCEPT;

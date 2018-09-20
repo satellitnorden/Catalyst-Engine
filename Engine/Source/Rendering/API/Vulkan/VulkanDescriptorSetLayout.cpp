@@ -5,22 +5,6 @@
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
 /*
-*	Default constructor.
-*/
-VulkanDescriptorSetLayout::VulkanDescriptorSetLayout() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanDescriptorSetLayout::~VulkanDescriptorSetLayout() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan descriptor set layout.
 */
 void VulkanDescriptorSetLayout::Initialize(const uint32 descriptorSetLayoutBindingCount, const VkDescriptorSetLayoutBinding *RESTRICT descriptorSetLayoutBindings) NOEXCEPT

@@ -5,22 +5,6 @@
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
 /*
-*	Default constructor.
-*/
-VulkanSurface::VulkanSurface() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanSurface::~VulkanSurface() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan surface.
 */
 void VulkanSurface::Initialize() NOEXCEPT

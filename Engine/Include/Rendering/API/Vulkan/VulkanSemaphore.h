@@ -15,16 +15,6 @@ class VulkanSemaphore final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanSemaphore() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanSemaphore() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan semaphore.
 	*/
 	const VkSemaphore& Get() const NOEXCEPT { return _VulkanSemaphore; }

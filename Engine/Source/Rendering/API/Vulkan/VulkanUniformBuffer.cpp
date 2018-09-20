@@ -6,22 +6,6 @@
 #include <Rendering/API/Vulkan/VulkanUtilities.h>
 
 /*
-*	Default constructor.
-*/
-VulkanUniformBuffer::VulkanUniformBuffer() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanUniformBuffer::~VulkanUniformBuffer() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan uniform buffer.
 */
 void VulkanUniformBuffer::Initialize(const VkDeviceSize newUniformBufferSize) NOEXCEPT

@@ -12,22 +12,6 @@ class Map final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	Map() NOEXCEPT
-	{
-
-	}
-
-	/*
-	*	Default destructor.
-	*/
-	~Map() NOEXCEPT
-	{
-
-	}
-
-	/*
 	*	Subsript operator overload, non-const.
 	*/
 	ObjectType& operator[](const KeyType key)

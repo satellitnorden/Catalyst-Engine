@@ -15,16 +15,6 @@ class VulkanCubeMapTexture final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanCubeMapTexture() NOEXCEPT;
-
-	/*
-	*	Default desctuctor.
-	*/
-	~VulkanCubeMapTexture() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan image.
 	*/
 	const VkImage& Get() const NOEXCEPT { return _VulkanImage; }

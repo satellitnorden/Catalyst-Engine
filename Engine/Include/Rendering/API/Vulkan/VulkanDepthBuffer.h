@@ -12,16 +12,6 @@ class VulkanDepthBuffer final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanDepthBuffer() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanDepthBuffer() NOEXCEPT;
-
-	/*
 	*	Initializes this Vulkan depth buffer.
 	*/
 	void Initialize(const VkExtent2D imageExtent) NOEXCEPT;

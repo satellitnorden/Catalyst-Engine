@@ -12,16 +12,6 @@ class VulkanSurface final
 public:
 
 	/*
-	*	Default constructor.
-	*/
-	VulkanSurface() NOEXCEPT;
-
-	/*
-	*	Default destructor.
-	*/
-	~VulkanSurface() NOEXCEPT;
-
-	/*
 	*	Returns the underlying Vulkan surface.
 	*/
 	const VkSurfaceKHR& Get() const NOEXCEPT { return _VulkanSurface; }

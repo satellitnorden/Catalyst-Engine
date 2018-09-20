@@ -6,22 +6,6 @@
 #include <Rendering/API/Vulkan/VulkanUtilities.h>
 
 /*
-*	Default constructor.
-*/
-VulkanDepthBuffer::VulkanDepthBuffer() NOEXCEPT
-{
-
-}
-
-/*
-*	Default destructor.
-*/
-VulkanDepthBuffer::~VulkanDepthBuffer() NOEXCEPT
-{
-
-}
-
-/*
 *	Initializes this Vulkan depth buffer.
 */
 void VulkanDepthBuffer::Initialize(const VkExtent2D imageExtent) NOEXCEPT
