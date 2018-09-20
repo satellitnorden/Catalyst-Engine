@@ -587,10 +587,22 @@ void RenderingSystem::TerminateTerrainEntity(const TerrainEntity *const RESTRICT
 /*
 *	Initializes an instanced physical entity.
 */
-void RenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT
+void RenderingSystem::InitializeInstancedPhysicalEntity(Entity *const RESTRICT entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT
 {
-	//Initialize the instanced physical entity via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->InitializeInstancedPhysicalEntity(entity, model, transformations);
+	//Cache relevant data.
+	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalInstancedPhysicalRenderComponents()[entity->_ComponentsIndex] };
+
+	//Create the transformations buffer.
+	const void *RESTRICT transformationsData[]{ transformations.Data() };
+	const uint64 transformationsDataSizes[]{ sizeof(Matrix4) * transformations.Size() };
+
+	//Fill the instanced physical entity components with the relevant data.
+	renderComponent._ModelBuffer = model._Buffer;
+	renderComponent._RenderDataTable = GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red)._RenderDataTable;
+	renderComponent._TransformationsBuffer = CreateConstantBuffer(transformationsData, transformationsDataSizes, 1);
+	renderComponent._IndexOffset = model._IndexOffset;
+	renderComponent._IndexCount = model._IndexCount;
+	renderComponent._InstanceCount = static_cast<uint32>(transformations.Size());
 }
 
 /*

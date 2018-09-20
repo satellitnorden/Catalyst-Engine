@@ -6,7 +6,6 @@
 
 //Entities.
 #include <Entities/CameraEntity.h>
-#include <Entities/InstancedPhysicalEntity.h>
 #include <Entities/PointLightEntity.h>
 #include <Entities/SpotLightEntity.h>
 #include <Entities/TerrainEntity.h>
@@ -200,29 +199,6 @@ void VulkanRenderingSystem::InitializeTerrainEntity(const TerrainEntity *const R
 	};
 
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
-}
-
-/*
-*	Initializes an instanced physical entity.
-*/
-void VulkanRenderingSystem::InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT
-{
-	//Cache relevant data.
-	const PhysicalMaterial material{ RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red) };
-	InstancedPhysicalRenderComponent &renderComponent{ ComponentManager::GetInstancedPhysicalInstancedPhysicalRenderComponents()[entity._ComponentsIndex] };
-
-	//Create the transformations buffer.
-	const void *RESTRICT transformationsData[]{ transformations.Data() };
-	const VkDeviceSize transformationsDataSizes[]{ sizeof(Matrix4) * transformations.Size() };
-	VulkanConstantBuffer *RESTRICT transformationsBuffer = VulkanInterface::Instance->CreateConstantBuffer(transformationsData, transformationsDataSizes, 1);
-
-	//Fill the instanced physical entity components with the relevant data.
-	renderComponent._ModelBuffer = model._Buffer;
-	renderComponent._RenderDataTable = material._RenderDataTable;
-	renderComponent._TransformationsBuffer = reinterpret_cast<ConstantBufferHandle>(transformationsBuffer->Get());
-	renderComponent._IndexOffset = model._IndexOffset;
-	renderComponent._IndexCount = model._IndexCount;
-	renderComponent._InstanceCount = static_cast<uint32>(transformations.Size());
 }
 
 /*

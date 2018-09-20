@@ -22,5 +22,5 @@ InstancedPhysicalEntity::InstancedPhysicalEntity() NOEXCEPT
 void InstancedPhysicalEntity::Initialize(const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) NOEXCEPT
 {
 	//Initialize this instanced physical entity via the rendering system.
-	RenderingSystem::Instance->InitializeInstancedPhysicalEntity(*this, model, transformations);
+	RenderingSystem::Instance->InitializeInstancedPhysicalEntity(this, model, transformations);
 }

@@ -390,7 +390,7 @@ public:
 	/*
 	*	Initializes an instanced physical entity.
 	*/
-	void InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT;
+	void InitializeInstancedPhysicalEntity(Entity *const RESTRICT entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT;
 
 	/*
 	*	Initializes a particle system entity.

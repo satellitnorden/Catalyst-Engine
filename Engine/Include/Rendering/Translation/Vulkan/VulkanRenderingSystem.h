@@ -14,7 +14,6 @@
 #include <Rendering/API/Vulkan/VulkanInterface.h>
 
 //Forward declarations.
-class InstancedPhysicalEntity;
 class PhysicalModel;
 class RenderPass;
 class Resolution;
@@ -121,11 +120,6 @@ public:
 	*	Initializes a terrain entity.
 	*/
 	void InitializeTerrainEntity(const TerrainEntity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT;
-
-	/*
-	*	Initializes an instanced physical entity.
-	*/
-	void InitializeInstancedPhysicalEntity(const InstancedPhysicalEntity &entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a uniform buffer.
