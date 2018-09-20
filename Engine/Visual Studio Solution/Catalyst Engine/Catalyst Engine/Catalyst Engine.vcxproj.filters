@@ -687,12 +687,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalModelData.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\Android\AndroidPlatformVulkan.h">
-      <Filter>Platform\Include\Android</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Platform\Windows\WindowsPlatformVulkan.h">
-      <Filter>Platform\Include\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h">
       <Filter>Managers\Include</Filter>
     </ClInclude>
@@ -857,6 +851,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassMainStageData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Platform\Android\VulkanCoreAndroid.h">
+      <Filter>Platform\Include\Android</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Platform\Windows\VulkanCoreWindows.h">
+      <Filter>Platform\Include\Windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1106,12 +1106,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.cpp">
       <Filter>Rendering\Source\Translation\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Android\AndroidPlatformVulkan.cpp">
-      <Filter>Platform\Source\Android</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsPlatformVulkan.cpp">
-      <Filter>Platform\Source\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp">
       <Filter>Managers\Source</Filter>
     </ClCompile>
@@ -1198,6 +1192,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DebugScreenBoxVertexShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Android\VulkanCoreAndroid.cpp">
+      <Filter>Platform\Source\Android</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Platform\Windows\VulkanCoreWindows.cpp">
+      <Filter>Platform\Source\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

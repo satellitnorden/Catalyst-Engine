@@ -1,6 +1,6 @@
 #if defined(CATALYST_WINDOWS)
 //Header file.
-#include <Platform/Windows/WindowsPlatformVulkan.h>
+#include <Platform/Windows/VulkanCoreWindows.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>

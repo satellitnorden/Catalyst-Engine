@@ -127,11 +127,11 @@
     <ClInclude Include="..\..\..\Include\Physics\PhysicalConstants.h" />
     <ClInclude Include="..\..\..\Include\Physics\Ray.h" />
     <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h" />
-    <ClInclude Include="..\..\..\Include\Platform\Android\AndroidPlatformVulkan.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h" />
+    <ClInclude Include="..\..\..\Include\Platform\Android\VulkanCoreAndroid.h" />
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h" />
     <ClInclude Include="..\..\..\Include\Platform\Windows\CatalystWindows.h" />
-    <ClInclude Include="..\..\..\Include\Platform\Windows\WindowsPlatformVulkan.h" />
+    <ClInclude Include="..\..\..\Include\Platform\Windows\VulkanCoreWindows.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\Vulkan2DTexture.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanAllocation.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanAllocator.h" />
@@ -284,10 +284,10 @@
     <ClCompile Include="..\..\..\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\Source\Math\PerlinNoiseGenerator.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Vector3.cpp" />
-    <ClCompile Include="..\..\..\Source\Platform\Android\AndroidPlatformVulkan.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
+    <ClCompile Include="..\..\..\Source\Platform\Android\VulkanCoreAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />
-    <ClCompile Include="..\..\..\Source\Platform\Windows\WindowsPlatformVulkan.cpp" />
+    <ClCompile Include="..\..\..\Source\Platform\Windows\VulkanCoreWindows.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanAllocator.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanCommandBuffer.cpp" />

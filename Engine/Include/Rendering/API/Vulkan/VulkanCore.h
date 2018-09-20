@@ -5,9 +5,9 @@
 
 //Platform.
 #if defined(CATALYST_WINDOWS)
-	#include <Platform/Windows/WindowsPlatformVulkan.h>
+	#include <Platform/Windows/VulkanCoreWindows.h>
 #elif defined(CATALYST_ANDROID)
-	#include <Platform/Android/AndroidPlatformVulkan.h>
+	#include <Platform/Android/VulkanCoreAndroid.h>
 #endif
 
 /*

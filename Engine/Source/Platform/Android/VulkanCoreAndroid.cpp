@@ -1,6 +1,6 @@
 #if defined(CATALYST_ANDROID)
 //Header file.
-#include <Platform/Android/AndroidPlatformVulkan.h>
+#include <Platform/Windows/VulkanCoreAndroid.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanInterface.h>

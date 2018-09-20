@@ -51,10 +51,10 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\PerlinNoiseGenerator.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Vector3.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\AndroidPlatformVulkan.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\CatalystAndroid.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\VulkanCoreAndroid.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\CatalystWindows.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\WindowsPlatformVulkan.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\VulkanCoreWindows.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\Vulkan2DTexture.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanAllocator.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\API\Vulkan\VulkanCommandBuffer.cpp" />
@@ -104,6 +104,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\CubeMapVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugAxisAlignedBoundingBoxFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugAxisAlignedBoundingBoxVertexShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugBoxFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugScreenBoxFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugScreenBoxVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.cpp" />
