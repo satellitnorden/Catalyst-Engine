@@ -188,9 +188,6 @@ private:
 	//The dynamic uniform data.
 	VulkanDynamicUniformData _DynamicUniformData;
 
-	//Container for all temporary pipelines.
-	StaticArray<VulkanPipeline *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _Pipelines;
-
 	//Container for all semaphores.
 	StaticArray<VulkanSemaphore *RESTRICT, UNDERLYING(GraphicsSemaphore::NumberOfSemaphores)> _Semaphores;
 

@@ -15,10 +15,7 @@ public:
 	DynamicArray<VkFramebuffer> _Framebuffers;
 
 	//The pipeline associated with the render pass.
-	VkPipeline _Pipeline;
-
-	//The pipeline layout associated with the render pass.
-	VkPipelineLayout _PipelineLayout;
+	VulkanPipeline *RESTRICT _Pipeline;
 
 	//The render pass associated with the render pass.
 	VkRenderPass _RenderPass;

@@ -19,7 +19,7 @@ void VulkanTranslationCommandBuffer::Begin(const RenderPass *const RESTRICT rend
 	_CommandBuffer.BeginSecondary(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT | VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, renderPassSubStageData->_RenderPass, renderPass->GetSubStageIndex(), renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? renderPassSubStageData->_Framebuffers[VulkanRenderingSystem::Instance->GetCurrentFrameIndex()] : renderPassSubStageData->_Framebuffers[0]);
 	
 	//Bind the pipeline.
-	_CommandBuffer.CommandBindPipeline(renderPassSubStageData->_Pipeline);
+	_CommandBuffer.CommandBindPipeline(renderPassSubStageData->_Pipeline->Get());
 }
 
 /*
@@ -40,7 +40,7 @@ void VulkanTranslationCommandBuffer::BindRenderDataTable(const RenderPass *const
 	const VulkanRenderPassSubStageData *const RESTRICT renderPassSubStageData{ static_cast<const VulkanRenderPassSubStageData *const RESTRICT>(renderPass->GetData()) };
 
 	//Bind the render data tables.
-	_CommandBuffer.CommandBindDescriptorSets(renderPassSubStageData->_PipelineLayout, binding, 1, &static_cast<const VulkanDescriptorSet *const RESTRICT>(renderDataTable)->Get());
+	_CommandBuffer.CommandBindDescriptorSets(renderPassSubStageData->_Pipeline->GetPipelineLayout(), binding, 1, &static_cast<const VulkanDescriptorSet *const RESTRICT>(renderDataTable)->Get());
 }
 
 /*
@@ -79,7 +79,7 @@ void VulkanTranslationCommandBuffer::PushConstants(const RenderPass *const RESTR
 	const VulkanRenderPassSubStageData *const RESTRICT renderPassSubStageData{ static_cast<const VulkanRenderPassSubStageData *const RESTRICT>(renderPass->GetData()) };
 
 	//Push the constants.
-	_CommandBuffer.CommandPushConstants(renderPassSubStageData->_PipelineLayout, VulkanTranslationUtilities::GetVulkanShaderStages(shaderStage), offset, size, data);
+	_CommandBuffer.CommandPushConstants(renderPassSubStageData->_Pipeline->GetPipelineLayout(), VulkanTranslationUtilities::GetVulkanShaderStages(shaderStage), offset, size, data);
 }
 
 /*

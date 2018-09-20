@@ -285,7 +285,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	parameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._RenderPass;
 
 	//Create the pipeline!
-	_Pipelines[UNDERLYING(_RenderPass->GetSubStage())] = VulkanInterface::Instance->CreatePipeline(parameters);
+	_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]._Pipeline = VulkanInterface::Instance->CreatePipeline(parameters);
 
 	//Update the Vulkan render pass data.
 	_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]._Framebuffers.Reserve(_VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._FrameBuffers.Size());
@@ -295,8 +295,6 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 		_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]._Framebuffers.EmplaceFast(vulkanFrameBuffer->Get());
 	}
 
-	_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]._Pipeline = _Pipelines[UNDERLYING(_RenderPass->GetSubStage())]->Get();
-	_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]._PipelineLayout = _Pipelines[UNDERLYING(_RenderPass->GetSubStage())]->GetPipelineLayout();
 	_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(_RenderPass->GetMainStage())]._RenderPass->Get();
 
 	_RenderPass->SetData(&_VulkanRenderPassSubStageData[UNDERLYING(_RenderPass->GetSubStage())]);
