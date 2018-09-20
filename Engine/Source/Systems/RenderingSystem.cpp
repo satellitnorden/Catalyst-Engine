@@ -16,6 +16,7 @@
 
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>
+#include <Rendering/Engine/CommonPhysicalMaterialData.h>
 #include <Rendering/Engine/CommonPhysicalModelData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/OceanMaterial.h>
@@ -803,87 +804,21 @@ void RenderingSystem::InitializeCommonPhysicalMaterials() NOEXCEPT
 	{
 		//Create the black common physical material.
 		PhysicalMaterialData data;
-
-		data._MipmapLevels = 1;
-		data._Width = 1;
-		data._Height = 1;
-		data._AlbedoData.UpsizeSlow(1);
-		data._AlbedoData[0].Reserve(4);
-		data._AlbedoData[0].EmplaceFast(0);
-		data._AlbedoData[0].EmplaceFast(0);
-		data._AlbedoData[0].EmplaceFast(0);
-		data._AlbedoData[0].EmplaceFast(255);
-		data._NormalMapData.UpsizeSlow(1);
-		data._NormalMapData[0].Reserve(4);
-		data._NormalMapData[0].EmplaceFast(127);
-		data._NormalMapData[0].EmplaceFast(127);
-		data._NormalMapData[0].EmplaceFast(255);
-		data._NormalMapData[0].EmplaceFast(255);
-		data._MaterialPropertiesData.UpsizeSlow(1);
-		data._MaterialPropertiesData[0].Reserve(4);
-		data._MaterialPropertiesData[0].EmplaceFast(255);
-		data._MaterialPropertiesData[0].EmplaceFast(0);
-		data._MaterialPropertiesData[0].EmplaceFast(255);
-		data._MaterialPropertiesData[0].EmplaceFast(0);
-
+		CommonPhysicalMaterialData::GetBlackPhysicalMaterialData(&data);
 		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[UNDERLYING(CommonPhysicalMaterial::Black)]);
 	}
 
 	{
 		//Create the red common physical material.
 		PhysicalMaterialData data;
-		
-		data._MipmapLevels = 1;
-		data._Width = 1;
-		data._Height = 1;
-		data._AlbedoData.UpsizeSlow(1);
-		data._AlbedoData[0].Reserve(4);
-		data._AlbedoData[0].EmplaceFast(255);
-		data._AlbedoData[0].EmplaceFast(0);
-		data._AlbedoData[0].EmplaceFast(0);
-		data._AlbedoData[0].EmplaceFast(255);
-		data._NormalMapData.UpsizeSlow(1);
-		data._NormalMapData[0].Reserve(4);
-		data._NormalMapData[0].EmplaceFast(127);
-		data._NormalMapData[0].EmplaceFast(127);
-		data._NormalMapData[0].EmplaceFast(255);
-		data._NormalMapData[0].EmplaceFast(255);
-		data._MaterialPropertiesData.UpsizeSlow(1);
-		data._MaterialPropertiesData[0].Reserve(4);
-		data._MaterialPropertiesData[0].EmplaceFast(255);
-		data._MaterialPropertiesData[0].EmplaceFast(0);
-		data._MaterialPropertiesData[0].EmplaceFast(255);
-		data._MaterialPropertiesData[0].EmplaceFast(0);
-
+		CommonPhysicalMaterialData::GetRedPhysicalMaterialData(&data);
 		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[UNDERLYING(CommonPhysicalMaterial::Red)]);
 	}
 
 	{
 		//Create the teal common physical material.
 		PhysicalMaterialData data;
-
-		data._MipmapLevels = 1;
-		data._Width = 1;
-		data._Height = 1;
-		data._AlbedoData.UpsizeSlow(1);
-		data._AlbedoData[0].Reserve(4);
-		data._AlbedoData[0].EmplaceFast(0);
-		data._AlbedoData[0].EmplaceFast(255);
-		data._AlbedoData[0].EmplaceFast(255);
-		data._AlbedoData[0].EmplaceFast(255);
-		data._NormalMapData.UpsizeSlow(1);
-		data._NormalMapData[0].Reserve(4);
-		data._NormalMapData[0].EmplaceFast(127);
-		data._NormalMapData[0].EmplaceFast(127);
-		data._NormalMapData[0].EmplaceFast(255);
-		data._NormalMapData[0].EmplaceFast(255);
-		data._MaterialPropertiesData.UpsizeSlow(1);
-		data._MaterialPropertiesData[0].Reserve(4);
-		data._MaterialPropertiesData[0].EmplaceFast(255);
-		data._MaterialPropertiesData[0].EmplaceFast(0);
-		data._MaterialPropertiesData[0].EmplaceFast(255);
-		data._MaterialPropertiesData[0].EmplaceFast(0);
-
+		CommonPhysicalMaterialData::GetTealPhysicalMaterialData(&data);
 		CreatePhysicalMaterial(data, _CommonPhysicalMaterials[UNDERLYING(CommonPhysicalMaterial::Teal)]);
 	}
 }

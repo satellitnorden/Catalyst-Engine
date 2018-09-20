@@ -858,6 +858,9 @@
     <ClInclude Include="..\..\..\Include\Platform\Windows\VulkanCoreWindows.h">
       <Filter>Platform\Include\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalMaterialData.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
