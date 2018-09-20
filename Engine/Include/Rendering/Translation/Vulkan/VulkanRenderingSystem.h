@@ -177,7 +177,7 @@ private:
 		*/
 		VulkanDestructionData(const Type type, OpaqueHandle handle) NOEXCEPT
 			:
-		_Type(type),
+			_Type(type),
 			_Handle(handle)
 		{
 
