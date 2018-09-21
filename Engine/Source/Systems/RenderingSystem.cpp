@@ -17,6 +17,9 @@
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>
 #include <Rendering/Engine/CommonEnvironmentMaterialData.h>
+#if defined(CATALYST_ENABLE_OCEAN)
+#include <Rendering/Engine/CommonOceanMaterialData.h>
+#endif
 #include <Rendering/Engine/CommonParticleMaterialData.h>
 #include <Rendering/Engine/CommonPhysicalMaterialData.h>
 #include <Rendering/Engine/CommonPhysicalModelData.h>
@@ -82,6 +85,11 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 	//Initialize the common environment materials.
 	InitializeCommonEnvironmentMaterials();
 
+#if defined(CATALYST_ENABLE_OCEAN)
+	//Initialize the common ocean materials.
+	InitializeCommonOceanMaterials();
+#endif
+
 	//Initialize the common particle materials.
 	InitializeCommonParticleMaterials();
 
@@ -90,9 +98,6 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 
 	//Initialize the common physical models.
 	InitializeCommonPhysicalModels();
-
-	//Initialize all default assets.
-	InitializeDefaultAssets();
 
 	//Post-initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->PostInitializeSystem();
@@ -781,6 +786,21 @@ void RenderingSystem::InitializeCommonEnvironmentMaterials() NOEXCEPT
 	}
 }
 
+#if defined(CATALYST_ENABLE_OCEAN)
+/*
+*	Initializes the common ocean materials.
+*/
+void RenderingSystem::InitializeCommonOceanMaterials() NOEXCEPT
+{
+	{
+		//Create the ocean common ocean material.
+		OceanMaterialData data;
+		CommonOceanMaterialData::GetOceanOceanMaterialData(&data);
+		CreateOceanMaterial(data, _CommonOceanMaterials[UNDERLYING(CommonOceanMaterial::Ocean)]);
+	}
+}
+#endif
+
 /*
 *	Initializes the common particle materials.
 */
@@ -945,39 +965,6 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GaussianBlur)]);
 	}
-}
-
-/*
-*	Initializes all default assets.
-*/
-void RenderingSystem::InitializeDefaultAssets() NOEXCEPT
-{
-#if defined(CATALYST_ENABLE_OCEAN)
-	{
-		//Initialize the default ocean material.
-		constexpr uint8 RESOLUTION{ 32 };
-
-		OceanMaterialData data;
-
-		data._MipmapLevels = 1;
-		data._Width = RESOLUTION;
-		data._Height = RESOLUTION;
-		data._NormalMapData.UpsizeSlow(1);
-		data._NormalMapData[0].Reserve(RESOLUTION * RESOLUTION * 4);
-
-		for (uint16 i = 0; i < RESOLUTION * RESOLUTION; ++i)
-		{
-			data._NormalMapData[0].EmplaceFast(static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(126, 128)));
-			data._NormalMapData[0].EmplaceFast(static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(126, 128)));
-			data._NormalMapData[0].EmplaceFast(255);
-			data._NormalMapData[0].EmplaceFast(255);
-		}
-
-		CreateOceanMaterial(data, _DefaultOceanMaterial);
-
-		EnvironmentManager::Instance->SetOceanMaterial(_DefaultOceanMaterial);
-	}
-#endif
 }
 
 //Undefine defines to keep them from leaking into other scopes.

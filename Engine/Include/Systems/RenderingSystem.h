@@ -62,13 +62,25 @@ public:
 	{
 		Day,
 		Night,
+
 		NumberOfCommonEnvironmentMaterials
 	};
+
+#if defined(CATALYST_ENABLE_OCEAN)
+	//Enumeration covering all common ocean materials.
+	enum class CommonOceanMaterial : uint8
+	{
+		Ocean,
+
+		NumberOfCommonOceanMaterials
+	};
+#endif
 
 	//Enumeration covering all common particle materials.
 	enum class CommonParticleMaterial : uint8
 	{
 		WhiteCircle,
+
 		NumberOfCommonParticleMaterials
 	};
 
@@ -78,6 +90,7 @@ public:
 		Black,
 		Red,
 		Teal,
+
 		NumberOfCommonPhysicalMaterials
 	};
 
@@ -87,6 +100,7 @@ public:
 		Cube,
 		Octahedron,
 		Plane,
+
 		NumberOfCommonPhysicalModels
 	};
 
@@ -256,6 +270,16 @@ public:
 	{
 		return _CommonEnvironmentMaterials[UNDERLYING(commonEnvironmentMaterial)];
 	}
+
+#if defined(CATALYST_ENABLE_OCEAN)
+	/*
+	*	Returns the given common ocean material.
+	*/
+	const OceanMaterial& GetCommonOceanMaterial(const CommonOceanMaterial commonOceanMaterial) const NOEXCEPT
+	{
+		return _CommonOceanMaterials[UNDERLYING(commonOceanMaterial)];
+	}
+#endif
 
 	/*
 	*	Returns the given common particle material.
@@ -467,6 +491,11 @@ private:
 	//Container for all common environment materials.
 	StaticArray<EnvironmentMaterial, UNDERLYING(CommonEnvironmentMaterial::NumberOfCommonEnvironmentMaterials)> _CommonEnvironmentMaterials;
 
+#if defined(CATALYST_ENABLE_OCEAN)
+	//Container for all common ocean materials.
+	StaticArray<OceanMaterial, UNDERLYING(CommonOceanMaterial::NumberOfCommonOceanMaterials)> _CommonOceanMaterials;
+#endif
+
 	//Container for all common particle materials.
 	StaticArray<ParticleMaterial, UNDERLYING(CommonParticleMaterial::NumberOfCommonParticleMaterials)> _CommonParticleMaterials;
 
@@ -481,11 +510,6 @@ private:
 
 	//The default day environment material.
 	EnvironmentMaterial _DefaultDayEnvironmentMaterial;
-
-#if defined(CATALYST_ENABLE_OCEAN)
-	//The default ocean material.
-	OceanMaterial _DefaultOceanMaterial;
-#endif
 
 	/*
 	*	Initializes all depth buffers.
@@ -512,6 +536,13 @@ private:
 	*/
 	void InitializeCommonEnvironmentMaterials() NOEXCEPT;
 
+#if defined(CATALYST_ENABLE_OCEAN)
+	/*
+	*	Initializes the common ocean materials.
+	*/
+	void InitializeCommonOceanMaterials() NOEXCEPT;
+#endif
+
 	/*
 	*	Initializes the common particle materials.
 	*/
@@ -531,10 +562,5 @@ private:
 	*	Initializes all common render data table layouts.
 	*/
 	void InitializeCommonRenderDataTableLayouts() NOEXCEPT;
-
-	/*
-	*	Initializes all default assets.
-	*/
-	void InitializeDefaultAssets() NOEXCEPT;
 
 };

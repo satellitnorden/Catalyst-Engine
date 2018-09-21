@@ -36,6 +36,9 @@ void MaximGameSystem::InitializeSystem() NOEXCEPT
 	EnvironmentManager::Instance->SetNightEnvironmentMaterial(RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Night));
 	EnvironmentManager::Instance->SetDayEnvironmentMaterial(RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Day));
 	EnvironmentManager::Instance->SetEnvironmentBlend(0.0f);
+#if defined(CATALYST_ENABLE_OCEAN)
+	EnvironmentManager::Instance->SetOceanMaterial(RenderingSystem::Instance->GetCommonOceanMaterial(RenderingSystem::CommonOceanMaterial::Ocean));
+#endif
 
 	//Randomize the current color.
 	_CurrentColor = GetRandomColor();
