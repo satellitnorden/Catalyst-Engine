@@ -864,6 +864,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonParticleMaterialData.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonEnvironmentMaterialData.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

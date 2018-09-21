@@ -167,6 +167,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanUtilities.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\AxisAlignedBoundingBox.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommandBuffer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonEnvironmentMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonParticleMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalModelData.h" />

@@ -57,6 +57,14 @@ public:
 	//System declaration.
 	DECLARE_SINGLETON(RenderingSystem);
 
+	//Enumeration covering all common environment materials.
+	enum class CommonEnvironmentMaterial : uint8
+	{
+		Day,
+		Night,
+		NumberOfCommonEnvironmentMaterials
+	};
+
 	//Enumeration covering all common particle materials.
 	enum class CommonParticleMaterial : uint8
 	{
@@ -242,11 +250,19 @@ public:
 	}
 
 	/*
+	*	Returns the given common environment material.
+	*/
+	const EnvironmentMaterial& GetCommonEnvironmentMaterial(const CommonEnvironmentMaterial commonEnvironmentMaterial) const NOEXCEPT
+	{
+		return _CommonEnvironmentMaterials[UNDERLYING(commonEnvironmentMaterial)];
+	}
+
+	/*
 	*	Returns the given common particle material.
 	*/
-	const ParticleMaterial& GetCommonParticleMaterial(const CommonParticleMaterial commonParticlelMaterial) const NOEXCEPT
+	const ParticleMaterial& GetCommonParticleMaterial(const CommonParticleMaterial commonParticleMaterial) const NOEXCEPT
 	{
-		return _CommonParticleMaterials[UNDERLYING(commonParticlelMaterial)];
+		return _CommonParticleMaterials[UNDERLYING(commonParticleMaterial)];
 	}
 
 	/*
@@ -448,6 +464,9 @@ private:
 	//Container for all common render data table layouts.
 	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;
 
+	//Container for all common environment materials.
+	StaticArray<EnvironmentMaterial, UNDERLYING(CommonEnvironmentMaterial::NumberOfCommonEnvironmentMaterials)> _CommonEnvironmentMaterials;
+
 	//Container for all common particle materials.
 	StaticArray<ParticleMaterial, UNDERLYING(CommonParticleMaterial::NumberOfCommonParticleMaterials)> _CommonParticleMaterials;
 
@@ -487,6 +506,11 @@ private:
 	*	Initializes all render passes.
 	*/
 	void InitializeRenderPasses() NOEXCEPT;
+
+	/*
+	*	Initializes the common environment materials.
+	*/
+	void InitializeCommonEnvironmentMaterials() NOEXCEPT;
 
 	/*
 	*	Initializes the common particle materials.

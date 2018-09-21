@@ -5,6 +5,7 @@
 #include <Entities/InitializationData/ParticleSystemInitializationData.h>
 
 //Managers.
+#include <Managers/EnvironmentManager.h>
 #include <Managers/RenderingConfigurationManager.h>
 
 //Math.
@@ -26,13 +27,16 @@
 //Singleton definition.
 DEFINE_SINGLETON(MaximGameSystem);
 
-DynamicPhysicalEntity *RESTRICT spinner;
-
 /*
 *	Initializes the Maxim game system.
 */
 void MaximGameSystem::InitializeSystem() NOEXCEPT
 {
+	//Set the environment materials/blend.
+	EnvironmentManager::Instance->SetNightEnvironmentMaterial(RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Night));
+	EnvironmentManager::Instance->SetDayEnvironmentMaterial(RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Day));
+	EnvironmentManager::Instance->SetEnvironmentBlend(0.0f);
+
 	//Randomize the current color.
 	_CurrentColor = GetRandomColor();
 
