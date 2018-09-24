@@ -167,7 +167,6 @@ enum class Shader : uint8
 {
 	BloomFragment,
 	BoxBlurFragment,
-	CubeMapVertex,
 #if !defined(CATALYST_FINAL)
 	DebugAxisAlignedBoundingBoxFragment,
 	DebugAxisAlignedBoundingBoxVertex,

@@ -30,6 +30,12 @@ SkyRenderPass::SkyRenderPass() NOEXCEPT
 */
 void SkyRenderPass::InitializeInternal() NOEXCEPT
 {
+	//Create the render data table layout.
+	CreateRenderDataTableLayout();
+
+	//Create the render data table.
+	CreateRenderDataTable();
+
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
@@ -40,22 +46,23 @@ void SkyRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStageIndex(5);
 
 	//Set the shaders.
-	SetVertexShader(Shader::CubeMapVertex);
+	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
 	SetFragmentShader(Shader::SkyFragment);
 
 	//Set the depth buffer.
-	SetDepthBuffer(DepthBuffer::SceneBuffer);
+	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::Scene);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(3);
+	SetNumberOfRenderDataTableLayouts(4);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
+	AddRenderDataTableLayout(_RenderDataTableLayout);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::EnvironmentMaterial));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::EnvironmentMaterial));
 
@@ -65,10 +72,10 @@ void SkyRenderPass::InitializeInternal() NOEXCEPT
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
 	SetCullMode(CullMode::Back);
-	SetDepthCompareOperator(CompareOperator::LessOrEqual);
-	SetDepthTestEnabled(true);
-	SetDepthWriteEnabled(true);
-	SetTopology(Topology::TriangleList);
+	SetDepthCompareOperator(CompareOperator::Always);
+	SetDepthTestEnabled(false);
+	SetDepthWriteEnabled(false);
+	SetTopology(Topology::TriangleFan);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
@@ -78,6 +85,29 @@ void SkyRenderPass::InitializeInternal() NOEXCEPT
 
 	//Finalize the initialization.
 	FinalizeInitialization();
+}
+
+/*
+*	Creates the render data table layout.
+*/
+void SkyRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+{
+	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	{
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+	};
+
+	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
+}
+
+/*
+*	Creates the render data table.
+*/
+void SkyRenderPass::CreateRenderDataTable() NOEXCEPT
+{
+	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
+
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), _RenderDataTable);
 }
 
 /*
@@ -93,11 +123,12 @@ void SkyRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
-	commandBuffer->BindRenderDataTable(this, 1, EnvironmentManager::Instance->GetNightEnvironmentMaterial()._RenderDataTable);
-	commandBuffer->BindRenderDataTable(this, 2, EnvironmentManager::Instance->GetDayEnvironmentMaterial()._RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 2, EnvironmentManager::Instance->GetNightEnvironmentMaterial()._RenderDataTable);
+	commandBuffer->BindRenderDataTable(this, 3, EnvironmentManager::Instance->GetDayEnvironmentMaterial()._RenderDataTable);
 
 	//Draw!
-	commandBuffer->Draw(this, 36, 1);
+	commandBuffer->Draw(this, 4, 1);
 
 	//End the command buffer.
 	commandBuffer->End(this);

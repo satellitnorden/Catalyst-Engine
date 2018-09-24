@@ -427,13 +427,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		_ShaderModules[UNDERLYING(Shader::BoxBlurFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
-	{
-		//Initialize the cube map vertex shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetCubeMapVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::CubeMapVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
-	}
-
 #if !defined(CATALYST_FINAL)
 	{
 		//Initialize the debug axis-aligned bounding box fragment shader module.

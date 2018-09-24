@@ -21,10 +21,26 @@ public:
 
 private:
 
+	//The render data table layout.
+	RenderDataTableLayoutHandle _RenderDataTableLayout;
+
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
+
 	/*
 	*	Initializes the sky render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
+
+	/*
+*	Creates the render data table layout.
+*/
+	void CreateRenderDataTableLayout() NOEXCEPT;
+
+	/*
+	*	Creates the render data table.
+	*/
+	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
 	*	Renders the sky.
