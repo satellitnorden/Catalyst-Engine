@@ -308,7 +308,13 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TaskSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\UpdateSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\android_native_app_glue.c" />
+    <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantGameSystem.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantMain.cpp" />
+    <ClCompile Include="..\..\..\Code\Source\Source\ClairvoyantPlayer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h" />
+    <ClInclude Include="..\..\..\Code\Include\Player\ClairvoyantPlayer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

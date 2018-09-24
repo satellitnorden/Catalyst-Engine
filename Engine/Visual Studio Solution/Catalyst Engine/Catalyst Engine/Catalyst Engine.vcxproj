@@ -279,7 +279,6 @@
     <ClCompile Include="..\..\..\Source\Entities\ParticleSystemEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\PointLightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\SpotLightEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\StaticPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\TerrainEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
@@ -361,7 +360,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferTessellationControlShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferTessellationEvaluationShader.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\VegetationFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\VegetationGeometryShader.cpp" />

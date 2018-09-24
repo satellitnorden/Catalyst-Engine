@@ -10,6 +10,18 @@
     <Filter Include="Main\Source">
       <UniqueIdentifier>{0a074ac7-83d2-4554-9d4a-d3bec46aeff2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Main\Include">
+      <UniqueIdentifier>{a294b4d7-d136-4f18-a96e-66aa88b35888}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{4773c354-8dea-4e1a-a632-5440aff63e70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player\Include">
+      <UniqueIdentifier>{dcc79509-9fd9-4c57-8b4a-d09de31d0cae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player\Source">
+      <UniqueIdentifier>{d93eb02c-a1d0-4c90-9949-d337a966c4af}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp">
@@ -360,5 +372,19 @@
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantMain.cpp">
       <Filter>Main\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantGameSystem.cpp">
+      <Filter>Main\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\Source\ClairvoyantPlayer.cpp">
+      <Filter>Player\Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h">
+      <Filter>Main\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\Player\ClairvoyantPlayer.h">
+      <Filter>Player\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -893,9 +893,6 @@
     <ClCompile Include="..\..\..\Source\Entities\SpotLightEntity.cpp">
       <Filter>Entities\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\StaticPhysicalEntity.cpp">
-      <Filter>Entities\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\TerrainEntity.cpp">
       <Filter>Entities\Source</Filter>
     </ClCompile>
@@ -1005,9 +1002,6 @@
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferTessellationEvaluationShader.cpp">
-      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferVertexShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainVertexShader.cpp">

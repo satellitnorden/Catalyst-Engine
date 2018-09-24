@@ -2,6 +2,9 @@
 #include <Core/General/DeltaTimer.h>
 #include <Core/Core/CatalystCore.h>
 
+//Clairvoyant.
+#include <Main/ClairvoyantGameSystem.h>
+
 //Systems.
 #include <Systems/EngineSystem.h>
 
@@ -19,9 +22,6 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 
 MAIN_FUNCTION
 (
-	//The delta timer.
-	DeltaTimer deltaTimer;
-
 	//Create the Catalyst project configuration.
 	CatalystProjectConfiguration configuration;
 	CreateCatalystProjectConfiguration(&configuration);
@@ -29,14 +29,24 @@ MAIN_FUNCTION
 	//Initialize the engine system.
 	EngineSystem::Instance->InitializeSystem(configuration);
 
+	//Initialize the Clairvoyant game system.
+	ClairvoyantGameSystem::Instance->InitializeSystem();
+
+	//The delta timer.
+	DeltaTimer deltaTimer;
+
 	//Main game loop.
 	while (!EngineSystem::Instance->ShouldTerminate())
 	{
+		CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game Loop",
+
 		//Calculate the delta time.
 		const float deltaTime{ deltaTimer.Update() };
 
 		//Update the engine system.
 		EngineSystem::Instance->UpdateSystemSynchronous(deltaTime);
+
+		);
 	}
 
 	//Release the engine system.
