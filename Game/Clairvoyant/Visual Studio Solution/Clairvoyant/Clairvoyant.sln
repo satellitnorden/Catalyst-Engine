@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2016
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Clairvoyant", "Clairvoyant\Clairvoyant.vcxproj", "{0956FF11-7358-42CA-9064-E8DD6D29EB95}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Catalyst Engine", "..\..\..\..\Engine\Visual Studio Solution\Catalyst Engine\Catalyst Engine\Catalyst Engine.vcxproj", "{46D08F96-EEDA-4C91-8169-55E211129D2A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Final|x64 = Final|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0956FF11-7358-42CA-9064-E8DD6D29EB95}.Debug|x64.ActiveCfg = Debug|x64
+		{0956FF11-7358-42CA-9064-E8DD6D29EB95}.Debug|x64.Build.0 = Debug|x64
+		{0956FF11-7358-42CA-9064-E8DD6D29EB95}.Final|x64.ActiveCfg = Final|x64
+		{0956FF11-7358-42CA-9064-E8DD6D29EB95}.Final|x64.Build.0 = Final|x64
+		{0956FF11-7358-42CA-9064-E8DD6D29EB95}.Release|x64.ActiveCfg = Release|x64
+		{0956FF11-7358-42CA-9064-E8DD6D29EB95}.Release|x64.Build.0 = Release|x64
+		{46D08F96-EEDA-4C91-8169-55E211129D2A}.Debug|x64.ActiveCfg = Default|x64
+		{46D08F96-EEDA-4C91-8169-55E211129D2A}.Debug|x64.Build.0 = Default|x64
+		{46D08F96-EEDA-4C91-8169-55E211129D2A}.Final|x64.ActiveCfg = Default|x64
+		{46D08F96-EEDA-4C91-8169-55E211129D2A}.Final|x64.Build.0 = Default|x64
+		{46D08F96-EEDA-4C91-8169-55E211129D2A}.Release|x64.ActiveCfg = Default|x64
+		{46D08F96-EEDA-4C91-8169-55E211129D2A}.Release|x64.Build.0 = Default|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DD2B8157-3BDF-470A-BB75-BF50D48BA12D}
+	EndGlobalSection
+EndGlobal
