@@ -33,8 +33,8 @@ DEFINE_SINGLETON(MaximGameSystem);
 void MaximGameSystem::InitializeSystem() NOEXCEPT
 {
 	//Set the environment materials/blend.
-	EnvironmentManager::Instance->SetNightEnvironmentMaterial(RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Night));
-	EnvironmentManager::Instance->SetDayEnvironmentMaterial(RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Day));
+	EnvironmentManager::Instance->SetNightEnvironmentMaterial(RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Black));
+	EnvironmentManager::Instance->SetDayEnvironmentMaterial(RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Black));
 	EnvironmentManager::Instance->SetEnvironmentBlend(0.0f);
 #if defined(CATALYST_ENABLE_OCEAN)
 	EnvironmentManager::Instance->SetOceanMaterial(RenderingSystem::Instance->GetCommonOceanMaterial(RenderingSystem::CommonOceanMaterial::Ocean));

@@ -60,6 +60,7 @@ public:
 	//Enumeration covering all common environment materials.
 	enum class CommonEnvironmentMaterial : uint8
 	{
+		Black,
 		Day,
 		Night,
 

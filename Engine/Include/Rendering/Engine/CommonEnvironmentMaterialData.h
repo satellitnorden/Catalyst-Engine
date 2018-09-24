@@ -10,6 +10,30 @@ namespace CommonEnvironmentMaterialData
 {
 
 	/*
+	*	Generates black environment material data.
+	*/
+	static void GetBlackEnvironmentMaterialData(EnvironmentMaterialData *const RESTRICT data) NOEXCEPT
+	{
+		data->_DiffuseResolution = 1;
+		data->_DiffuseData.Reserve(4 * 6);
+		data->_DiffuseIrradianceResolution = 1;
+		data->_DiffuseIrradianceData.Reserve(4 * 6);
+
+		for (uint8 i = 0; i < 6; ++i)
+		{
+			data->_DiffuseData.EmplaceFast(0.0f);
+			data->_DiffuseData.EmplaceFast(0.0f);
+			data->_DiffuseData.EmplaceFast(0.0f);
+			data->_DiffuseData.EmplaceFast(1.0f);
+
+			data->_DiffuseIrradianceData.EmplaceFast(0.0f);
+			data->_DiffuseIrradianceData.EmplaceFast(0.0f);
+			data->_DiffuseIrradianceData.EmplaceFast(0.0f);
+			data->_DiffuseIrradianceData.EmplaceFast(1.0f);
+		}
+	}
+
+	/*
 	*	Generates day environment material data.
 	*/
 	static void GetDayEnvironmentMaterialData(EnvironmentMaterialData *const RESTRICT data) NOEXCEPT

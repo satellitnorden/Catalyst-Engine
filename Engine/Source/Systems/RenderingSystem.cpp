@@ -772,6 +772,13 @@ void RenderingSystem::InitializeRenderPasses() NOEXCEPT
 void RenderingSystem::InitializeCommonEnvironmentMaterials() NOEXCEPT
 {
 	{
+		//Create the black common environment material.
+		EnvironmentMaterialData data;
+		CommonEnvironmentMaterialData::GetBlackEnvironmentMaterialData(&data);
+		CreateEnvironmentMaterial(data, _CommonEnvironmentMaterials[UNDERLYING(CommonEnvironmentMaterial::Black)]);
+	}
+
+	{
 		//Create the day common environment material.
 		EnvironmentMaterialData data;
 		CommonEnvironmentMaterialData::GetDayEnvironmentMaterialData(&data);
