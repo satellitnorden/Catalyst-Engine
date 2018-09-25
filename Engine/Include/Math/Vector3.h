@@ -418,19 +418,28 @@ public:
 		const float zSine{ CatalystBaseMath::SineRadians(zRadians) };
 
 		//Rotate the roll.
-		float tempY = _Y * xCosine - _Z * xSine;
-		_Z = _Y * xSine + _Z * xCosine;
-		_Y = tempY;
+		if (rotationVector._X != 0.0f)
+		{
+			float tempY = _Y * xCosine - _Z * xSine;
+			_Z = _Y * xSine + _Z * xCosine;
+			_Y = tempY;
+		}
 
 		//Rotate the pitch
-		float tempX1 = _X * yCosine + _Z * ySine;
-		_Z = -_X * ySine + _Z * yCosine;
-		_X = tempX1;
+		if (rotationVector._Y != 0.0f)
+		{
+			float tempX1 = _X * yCosine + _Z * ySine;
+			_Z = -_X * ySine + _Z * yCosine;
+			_X = tempX1;
+		}
 
 		//Rotate the yaw.
-		float tempX2 = _X * zCosine - _Y * zSine;
-		_Y = _X * zSine + _Y * zCosine;
-		_X = tempX2;
+		if (rotationVector._Z != 0.0f)
+		{
+			float tempX2 = _X * zCosine - _Y * zSine;
+			_Y = _X * zSine + _Y * zCosine;
+			_X = tempX2;
+		}
 	}
 
 	/*
