@@ -9,7 +9,7 @@
 //Rendering constants.
 namespace RenderingConstants
 {
-	constexpr float SHADOW_VIEW_DISTANCE{ 40.0f };
+	constexpr float SHADOW_VIEW_DISTANCE{ 1'000.0f };
 }
 
 /*

@@ -40,7 +40,7 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 
 	//Create the sun.
 	_Sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
-	_Sun->Rotate(Vector3(-45.0f, 0.0f, 0.0f));
+	_Sun->Rotate(Vector3(-25.0f, 0.0f, 0.0f));
 	_Sun->SetIntensity(100.0f);
 
 	//Create some particles.

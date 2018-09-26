@@ -27,7 +27,7 @@ namespace RenderingUtilities
 	*/
 	static Matrix4 CalculateDirectionalLightViewMatrix() NOEXCEPT
 	{
-		static Matrix4 directionalLightProjectionMatrix{ Matrix4::Ortographic(-RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, -RenderingConstants::SHADOW_VIEW_DISTANCE * 2.0f, RenderingConstants::SHADOW_VIEW_DISTANCE * 2.0f, 0.0f, RenderingConstants::SHADOW_VIEW_DISTANCE) };
+		static Matrix4 directionalLightProjectionMatrix{ Matrix4::Ortographic(-RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, -RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, 0.0f, RenderingConstants::SHADOW_VIEW_DISTANCE) };
 
 		const CameraComponent *const RESTRICT cameraComponent{ ComponentManager::GetCameraCameraComponents() };
 		const DirectionalLightComponent *const RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightDirectionalLightComponents() };
@@ -36,13 +36,8 @@ namespace RenderingUtilities
 		const Vector3 directionalLightForwardVector{ Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->_Rotation) };
 		const Vector3 directionalLightUpVector{ Vector3(0.0f, 1.0f, 0.0f).Rotated(directionalLightComponent->_Rotation) };
 		const Vector3 directionalLightPosition{ cameraPosition + (directionalLightForwardVector * -1.0f) * (RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f) };
-
 		const Matrix4 directionalLightDirection{ Matrix4::LookAt(directionalLightPosition, directionalLightPosition + directionalLightForwardVector, directionalLightUpVector) };
 	
-		const Matrix4 directionalLightViewMatrix{ directionalLightProjectionMatrix * directionalLightDirection };
-
-		const Vector4 test{ directionalLightViewMatrix * Vector4(cameraPosition , 1.0f) };
-
 		return directionalLightProjectionMatrix * directionalLightDirection;
 	}
 
