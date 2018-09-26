@@ -15,7 +15,7 @@ namespace CommonOceanMaterialData
 	*/
 	static void GetOceanOceanMaterialData(OceanMaterialData *const RESTRICT data) NOEXCEPT
 	{
-		constexpr uint8 RESOLUTION{ 16 };
+		constexpr uint8 RESOLUTION{ 64 };
 
 		data->_MipmapLevels = 1;
 		data->_Width = RESOLUTION;

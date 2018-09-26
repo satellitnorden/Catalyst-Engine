@@ -7,7 +7,9 @@
 
 //Terrain.
 #include <Terrain/TerrainPatch.h>
+#include <Terrain/TerrainPatchInformation.h>
 #include <Terrain/TerrainProperties.h>
+#include <Terrain/TerrainRenderInformation.h>
 
 //Forward declarations.
 class CatalystProjectTerrainConfiguration;
@@ -30,6 +32,11 @@ public:
 	*/
 	void InitializeSystem(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT;
 
+	/*
+	*	Adds a terrain patch.
+	*/
+	void AddTerrainPatch(TerrainPatchInformation &&information) NOEXCEPT;
+
 private:
 
 	//The properties.
@@ -37,5 +44,8 @@ private:
 
 	//The patches.
 	DynamicArray<TerrainPatch> _Patches;
+
+	//The render information.
+	DynamicArray<TerrainRenderInformation> _RenderInformation;
 
 };

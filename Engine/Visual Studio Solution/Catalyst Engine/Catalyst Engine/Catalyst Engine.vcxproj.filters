@@ -891,6 +891,12 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainRenderInformation.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

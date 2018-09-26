@@ -31,11 +31,23 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	CPUTexture2D(const CPUTexture2D &otherTexture) NOEXCEPT
+	CPUTexture2D(const CPUTexture2D &other) NOEXCEPT
 		:
-		_Width(otherTexture._Width),
-		_Height(otherTexture._Width),
-		_Data(otherTexture._Data)
+		_Width(other._Width),
+		_Height(other._Width),
+		_Data(other._Data)
+	{
+
+	}
+
+	/*
+	*	Move constructor.
+	*/
+	CPUTexture2D(CPUTexture2D &&other) NOEXCEPT
+		:
+		_Width(other._Width),
+		_Height(other._Width),
+		_Data(std::move(other._Data))
 	{
 
 	}

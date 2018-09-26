@@ -11,6 +11,9 @@ public:
 	//The height of the terrain.
 	float _Height;
 
+	//The texture tiling factor.
+	float _TextureTilingFactor;
+
 	//The resolution of each patch.
 	uint32 _PatchResolution;
 

@@ -138,7 +138,7 @@ void OceanRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 4, EnvironmentManager::Instance->GetOceanMaterial()._RenderDataTable);
 
 	//Pust constants.
-	constexpr float oceanScaling{ 0.25f };
+	constexpr float oceanScaling{ 0.025f };
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(float), &oceanScaling);
 
 	//Draw!
