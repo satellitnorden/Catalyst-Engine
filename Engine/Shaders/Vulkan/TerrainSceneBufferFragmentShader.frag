@@ -209,7 +209,7 @@ void main()
 	albedoColor = GetAlbedo();
 
 	//Calculate the tangent space matrix.
-	vec3 normal = texture(terrainPropertiesTexture, fragmentHeightMapTextureCoordinate).xyz * 2.0f - 1.0f;
+	vec3 normal = texture(terrainPropertiesTexture, fragmentHeightMapTextureCoordinate).xyz;
 	vec3 tangent = cross(vec3(0.0f, 0.0f, 1.0f), normal);
 	vec3 bitangent = cross(tangent, normal);
 

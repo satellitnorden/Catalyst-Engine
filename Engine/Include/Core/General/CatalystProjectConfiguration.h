@@ -59,6 +59,30 @@ public:
 
 };
 
+class CatalystProjectTerrainConfiguration final
+{
+
+public:
+
+	//The height of the terrain.
+	float _Height;
+
+	//The resolution of each patch.
+	uint32 _PatchResolution;
+
+	//The size of each patch.
+	float _PatchSize;
+
+	/*
+	*	Default constructor.
+	*/
+	CatalystProjectTerrainConfiguration() NOEXCEPT
+	{
+
+	}
+
+};
+
 class CatalystProjectConfiguration final
 {
 
@@ -69,5 +93,8 @@ public:
 
 	//The project rendering configuration.
 	CatalystProjectRenderingConfiguration _RenderingConfiguration;
+
+	//The project terrain configuration.
+	CatalystProjectTerrainConfiguration _TerrainConfiguration;
 
 };

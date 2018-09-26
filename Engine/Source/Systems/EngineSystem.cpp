@@ -16,6 +16,7 @@
 #include <Systems/PhysicsSystem.h>
 #include <Systems/SoundSystem.h>
 #include <Systems/TaskSystem.h>
+#include <Systems/TerrainSystem.h>
 #include <Systems/UpdateSystem.h>
 
 //Singleton definition.
@@ -36,6 +37,7 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 	InputSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
 	TaskSystem::Instance->InitializeSystem();
+	TerrainSystem::Instance->InitializeSystem(_ProjectConfiguration._TerrainConfiguration);
 
 	//Post-initialize all systems.
 	RenderingSystem::Instance->PostInitializeSystem();

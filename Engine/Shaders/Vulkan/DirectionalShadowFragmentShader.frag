@@ -102,6 +102,7 @@ float GetDistanceToCameraMultiplier()
 
 void main()
 {
+    /*
     //Sample values from the textures.
     vec4 normalDirectionDepthSampler = texture(normalDirectionDepthTexture, fragmentTextureCoordinate);
 
@@ -120,4 +121,7 @@ void main()
 
     //Set the final fragment color.
     directionalShadow = vec4(compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
+    */
+
+    directionalShadow = vec4(1.0f, 0.0f, 0.0f, 0.0f);
 }

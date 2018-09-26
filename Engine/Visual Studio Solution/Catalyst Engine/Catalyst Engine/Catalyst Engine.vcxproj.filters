@@ -199,6 +199,15 @@
     <Filter Include="Memory\Include">
       <UniqueIdentifier>{83913965-7fc3-492b-8c0c-e7272dff93c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Terrain">
+      <UniqueIdentifier>{265ae806-d621-48f2-9929-0835c838c0db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Terrain\Include">
+      <UniqueIdentifier>{2f1ccf80-b81e-4b58-afb9-a213e7cc799f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Terrain\Source">
+      <UniqueIdentifier>{e852c610-4d25-4d1e-8b8a-e82e31929479}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\CameraComponent.h">
@@ -867,6 +876,21 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonOceanMaterialData.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\TerrainSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainUtilities.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainProperties.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatch.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1198,6 +1222,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Platform\Windows\VulkanCoreWindows.cpp">
       <Filter>Platform\Source\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

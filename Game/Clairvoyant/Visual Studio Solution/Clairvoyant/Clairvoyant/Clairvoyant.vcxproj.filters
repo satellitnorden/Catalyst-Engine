@@ -393,6 +393,9 @@
     <ClCompile Include="..\..\..\Code\Source\Main\WorldArchitect.cpp">
       <Filter>Clairvoyant Code\Main\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TerrainSystem.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h">
