@@ -92,6 +92,13 @@ static void PrintResultAndBreak(const char *const RESTRICT function, const VkRes
 			break;
 		}
 
+		case VK_ERROR_TOO_MANY_OBJECTS:
+		{
+			ASSERT(false, "Result was VK_ERROR_TOO_MANY_OBJECTS.");
+
+			break;
+		}
+
 		case VK_SUCCESS:
 		{
 			ASSERT(false, "Result was VK_SUCCESS.");
