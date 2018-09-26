@@ -140,7 +140,7 @@ public:
 	/*
 	*	Creates and returns a constant buffer.
 	*/
-	RESTRICTED VulkanConstantBuffer *const RESTRICT CreateConstantBuffer(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
+	RESTRICTED VulkanConstantBuffer *const RESTRICT CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
 
 	/*
 	*	Creates and returns a cube map texture.

@@ -390,6 +390,9 @@
     <ClCompile Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp">
       <Filter>Resource Creator Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\Main\WorldArchitect.cpp">
+      <Filter>Clairvoyant Code\Main\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h">
@@ -399,6 +402,9 @@
       <Filter>Clairvoyant Code\Player\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantResourceCreation.h">
+      <Filter>Clairvoyant Code\Main\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\Main\WorldArchitect.h">
       <Filter>Clairvoyant Code\Main\Include</Filter>
     </ClInclude>
   </ItemGroup>

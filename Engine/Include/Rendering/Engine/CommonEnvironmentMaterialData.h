@@ -38,8 +38,8 @@ namespace CommonEnvironmentMaterialData
 	*/
 	static void GetDayEnvironmentMaterialData(EnvironmentMaterialData *const RESTRICT data) NOEXCEPT
 	{
-		constexpr Vector3 BOTTOM_COLOR{ 0.25f, 0.25f, 0.25f };
-		constexpr Vector3 TOP_COLOR{ 0.0f, 0.75f, 1.0f };
+		constexpr Vector3 BOTTOM_COLOR{ 0.5f, 0.5f, 0.5f };
+		constexpr Vector3 TOP_COLOR{ 0.25f, 1.0f, 1.0f };
 
 		data->_DiffuseResolution = 2;
 		data->_DiffuseData.Reserve(16 * 6);

@@ -312,11 +312,13 @@
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantGameSystem.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantMain.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantResourceCreation.cpp" />
+    <ClCompile Include="..\..\..\Code\Source\Main\WorldArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Source\ClairvoyantPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h" />
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantResourceCreation.h" />
+    <ClInclude Include="..\..\..\Code\Include\Main\WorldArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\Player\ClairvoyantPlayer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

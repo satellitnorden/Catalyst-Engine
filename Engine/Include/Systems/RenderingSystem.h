@@ -309,7 +309,7 @@ public:
 	/*
 	*	Creates a constant buffer.
 	*/
-	ConstantBufferHandle CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
+	ConstantBufferHandle CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
 
 	/*
 	*	Creates a depth buffer.

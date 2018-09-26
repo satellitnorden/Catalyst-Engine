@@ -12,7 +12,7 @@
 *	dataSizes - Pointer to an array of offsets for the data that should be copied into the buffer.
 *	dataChunks - The number of data chunks that should be copied into the buffer.
 */
-void VulkanConstantBuffer::Initialize(const void *RESTRICT data[], const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
+void VulkanConstantBuffer::Initialize(const void *const RESTRICT *const RESTRICT data, const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
 {
 	//Calculate the total size of the buffer.
 	VkDeviceSize bufferSize{ 0 };

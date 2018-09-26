@@ -30,7 +30,7 @@ bool ClairvoyantPlayer::LogicUpdateAsynchronous(const UpdateContext *const RESTR
 {
 	//Define constants.
 	constexpr float ROTATION_SPEED{ 1.0f };
-	constexpr float SPEED{ 1.0f };
+	constexpr float SPEED{ 100.0f };
 
 	//Get the gamepad state.
 	const GamepadState *const RESTRICT state{ InputSystem::Instance->GetGamepadState() };

@@ -270,7 +270,7 @@ void RenderingSystem::ToScreenCoordinate(const Vector3 &worldPosition, Vector2 *
 /*
 *	Creates a constant buffer.
 */
-ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *RESTRICT data[], const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
+ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
 {
 	//Create the constant buffer via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->CreateConstantBuffer(data, dataSizes, dataChunks);
@@ -614,6 +614,27 @@ void RenderingSystem::InitializeTerrainEntity(const Entity *const RESTRICT entit
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(16, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FifthLayerAlbedo), renderComponent._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(17, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FifthLayerNormalMap), renderComponent._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(18, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FifthLayerMaterialProperties), renderComponent._RenderDataTable);
+
+	DynamicArray<float> vertices;
+	DynamicArray<uint32> indices;
+
+	RenderingUtilities::GenerateTerrainPlane(128, vertices, indices);
+
+	StaticArray<void *RESTRICT, 2> bufferData;
+
+	bufferData[0] = vertices.Data();
+	bufferData[1] = indices.Data();
+
+	StaticArray<uint64, 2> bufferDataSizes;
+
+	bufferDataSizes[0] = sizeof(float) * vertices.Size();
+	bufferDataSizes[1] = sizeof(uint32) * indices.Size();
+
+	renderComponent._Buffer = CreateConstantBuffer(bufferData.Data(), bufferDataSizes.Data(), 2);
+
+	renderComponent._IndexOffset = sizeof(float) * vertices.Size();
+	renderComponent._IndexCount = static_cast<uint32>(indices.Size());
+	renderComponent._IsInViewFrustum = true;
 }
 
 /*

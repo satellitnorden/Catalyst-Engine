@@ -2,6 +2,7 @@
 #include <Main/ClairvoyantGameSystem.h>
 
 //Clairvoyant.
+#include <Main/WorldArchitect.h>
 #include <Player/ClairvoyantPlayer.h>
 
 //Entities.
@@ -39,10 +40,8 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 
 	//Create the sun.
 	_Sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
-	_Sun->SetIntensity(10.0f);
-
-	//Initialize the player.
-	ClairvoyantPlayer::Instance->Initialize();
+	_Sun->Rotate(Vector3(-45.0f, 0.0f, 0.0f));
+	_Sun->SetIntensity(100.0f);
 
 	//Create some particles.
 	ParticleSystemInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
@@ -64,4 +63,10 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	ParticleSystemEntity *const RESTRICT particles = EntitySystem::Instance->CreateEntity<ParticleSystemEntity>();
 
 	EntitySystem::Instance->InitializeEntity(particles, data);
+
+	//Initialize the world architects.
+	WorldArchitect::Instance->Initialize();
+
+	//Initialize the player.
+	ClairvoyantPlayer::Instance->Initialize();
 }
