@@ -4,6 +4,9 @@
 
 //Clairvoyant.
 #include <Main/ClairvoyantGameSystem.h>
+#if !defined(CATALYST_FINAL)
+#include <Main/ClairvoyantResourceCreation.h>
+#endif
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -22,6 +25,9 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 
 MAIN_FUNCTION
 (
+	//Create resources.
+	ClairvoyantResourceCreation::CreateResources();
+
 	//Create the Catalyst project configuration.
 	CatalystProjectConfiguration configuration;
 	CreateCatalystProjectConfiguration(&configuration);
@@ -38,7 +44,7 @@ MAIN_FUNCTION
 	//Main game loop.
 	while (!EngineSystem::Instance->ShouldTerminate())
 	{
-		CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game Loop",
+		//CATALYST_BENCHMARK_NAMED_SECTION_AVERAGE("Game Loop",
 
 		//Calculate the delta time.
 		const float deltaTime{ deltaTimer.Update() };
@@ -46,7 +52,7 @@ MAIN_FUNCTION
 		//Update the engine system.
 		EngineSystem::Instance->UpdateSystemSynchronous(deltaTime);
 
-		);
+		//);
 	}
 
 	//Release the engine system.

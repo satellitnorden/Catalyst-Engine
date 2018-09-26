@@ -98,19 +98,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\..\Engine\Libraries\Static;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
-    <SourcePath>..\..\..\..\..\Engine\Source;..\..\..\Code\Source;$(VC_SourcePath);</SourcePath>
+    <SourcePath>..\..\..\..\..\Engine\Source;..\..\..\Code\Source;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source;$(VC_SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
-    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\..\Engine\Libraries\Static;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
-    <SourcePath>..\..\..\..\..\Engine\Source;..\..\..\Code\Source;$(VC_SourcePath);</SourcePath>
+    <SourcePath>..\..\..\..\..\Engine\Source;..\..\..\Code\Source;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source;$(VC_SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>..\..\..\..\..\Engine\Include;..\..\..\Code\Include;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\..\Engine\Libraries\Static;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
-    <SourcePath>..\..\..\..\..\Engine\Source;..\..\..\Code\Source;$(VC_SourcePath);</SourcePath>
+    <SourcePath>..\..\..\..\..\Engine\Source;..\..\..\Code\Source;..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source;$(VC_SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -308,12 +308,15 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TaskSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\UpdateSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\android_native_app_glue.c" />
+    <ClCompile Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantGameSystem.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantMain.cpp" />
+    <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantResourceCreation.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Source\ClairvoyantPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h" />
+    <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantResourceCreation.h" />
     <ClInclude Include="..\..\..\Code\Include\Player\ClairvoyantPlayer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

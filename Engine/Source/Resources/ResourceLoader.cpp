@@ -33,7 +33,7 @@ Map<HashString, TerrainMaterial> ResourceLoader::_TerrainMaterials;
 /*
 *	Given a file path, load a resource collection.
 */
-void ResourceLoader::LoadResourceCollection(char *RESTRICT filePath) NOEXCEPT
+void ResourceLoader::LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT
 {
 	//Load the resource collection.
 	LoadResourceCollectionInternal(filePath);

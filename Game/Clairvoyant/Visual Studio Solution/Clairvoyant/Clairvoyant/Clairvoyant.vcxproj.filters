@@ -4,22 +4,28 @@
     <Filter Include="Engine Source">
       <UniqueIdentifier>{5aa44019-4dd1-4f77-a7b3-2ef429fb7687}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main">
+    <Filter Include="Resource Creator Source">
+      <UniqueIdentifier>{530a2766-c46a-42f4-a554-6b57c8b33446}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Clairvoyant Code">
+      <UniqueIdentifier>{8833b534-743d-418d-9adc-e413f2f920c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Clairvoyant Code\Main">
       <UniqueIdentifier>{6a6c092e-472f-4503-99b7-da711da19e93}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main\Source">
+    <Filter Include="Clairvoyant Code\Main\Source">
       <UniqueIdentifier>{0a074ac7-83d2-4554-9d4a-d3bec46aeff2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main\Include">
+    <Filter Include="Clairvoyant Code\Main\Include">
       <UniqueIdentifier>{a294b4d7-d136-4f18-a96e-66aa88b35888}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Player">
+    <Filter Include="Clairvoyant Code\Player">
       <UniqueIdentifier>{4773c354-8dea-4e1a-a632-5440aff63e70}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Player\Include">
+    <Filter Include="Clairvoyant Code\Player\Include">
       <UniqueIdentifier>{dcc79509-9fd9-4c57-8b4a-d09de31d0cae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Player\Source">
+    <Filter Include="Clairvoyant Code\Player\Source">
       <UniqueIdentifier>{d93eb02c-a1d0-4c90-9949-d337a966c4af}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -370,21 +376,30 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantMain.cpp">
-      <Filter>Main\Source</Filter>
+      <Filter>Clairvoyant Code\Main\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantGameSystem.cpp">
-      <Filter>Main\Source</Filter>
+      <Filter>Clairvoyant Code\Main\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Code\Source\Source\ClairvoyantPlayer.cpp">
-      <Filter>Player\Source</Filter>
+      <Filter>Clairvoyant Code\Player\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantResourceCreation.cpp">
+      <Filter>Clairvoyant Code\Main\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp">
+      <Filter>Resource Creator Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h">
-      <Filter>Main\Include</Filter>
+      <Filter>Clairvoyant Code\Main\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\Player\ClairvoyantPlayer.h">
-      <Filter>Player\Include</Filter>
+      <Filter>Clairvoyant Code\Player\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantResourceCreation.h">
+      <Filter>Clairvoyant Code\Main\Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

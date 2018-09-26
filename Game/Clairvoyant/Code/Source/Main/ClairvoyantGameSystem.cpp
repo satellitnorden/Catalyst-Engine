@@ -11,6 +11,9 @@
 //Managers.
 #include <Managers/EnvironmentManager.h>
 
+//Resources.
+#include <Resources/ResourceLoader.h>
+
 //Systems.
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
@@ -23,6 +26,9 @@ DEFINE_SINGLETON(ClairvoyantGameSystem);
 */
 void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 {
+	//Load the resource collection.
+	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantResourceCollection.crc");
+
 	//Set the environment materials/blend.
 	EnvironmentManager::Instance->SetNightEnvironmentMaterial(RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Night));
 	EnvironmentManager::Instance->SetDayEnvironmentMaterial(RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Day));

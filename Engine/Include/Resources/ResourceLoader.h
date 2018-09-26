@@ -30,7 +30,7 @@ public:
 	/*
 	*	Given a file path, loads a resource collection.
 	*/
-	static void LoadResourceCollection(char *RESTRICT filePath) NOEXCEPT;
+	static void LoadResourceCollection(const char *RESTRICT filePath) NOEXCEPT;
 
 	/*
 	*	Given a resource ID, return the corresponding environment material.

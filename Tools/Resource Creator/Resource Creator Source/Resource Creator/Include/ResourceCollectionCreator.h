@@ -1,37 +1,52 @@
 #pragma once
 
 //Core.
-#include <Core/EngineCore.h>
+#include <Core/Core/CatalystCore.h>
+#include <Core/Containers/DynamicArray.h>
+#include <Core/General/BinaryFile.h>
+#include <Core/General/DynamicString.h>
 
 //Resources
 #include <Resources/ResourcesCore.h>
 
-class ResourceCollectionCreator final
+namespace ResourceCollectionCreator
 {
 
-public:
+	class ResourceCollectionCreationParameters final
+	{
+
+	public:
+
+		//The output file path.
+		const char *RESTRICT _Output;
+
+		//File paths to all resources to put in the resource collection.
+		DynamicArray<const char *RESTRICT> _Resources;
+
+	};
+
 
 	/*
 	*	Creates a resource collection file.
 	*/
-	static void CreateResourceCollection(const int32 argumentCount, const char *const RESTRICT arguments[]) noexcept
+	static void CreateResourceCollection(const ResourceCollectionCreationParameters &parameters) noexcept
 	{
 		//What should the collection be called?
-		DynamicString fileName{ arguments[0] };
+		DynamicString fileName{ parameters._Output };
 		fileName += ".crc";
 
 		//Open the file to be written to.
 		BinaryFile<IOMode::Out> resourceCollectionFile{ fileName.CString() };
 
 		//Write the number of resources in the resource collection.
-		const uint64 numberOfResources{ static_cast<uint64>(argumentCount - 1) };
+		const uint64 numberOfResources{ parameters._Resources.Size() };
 		resourceCollectionFile.Write(&numberOfResources, sizeof(uint64));
 
 		//Slam all resources into the resource collection.
-		for (int32 i = 1; i < argumentCount; ++i)
+		for (const char *RESTRICT resource : parameters._Resources)
 		{
 			//Open the resource file.
-			BinaryFile<IOMode::In> resourceFile{ arguments[i] };
+			BinaryFile<IOMode::In> resourceFile{ resource };
 
 			//Get the size of the resource file.
 			const uint64 resourceFileSize{ resourceFile.Size() };
@@ -54,4 +69,4 @@ public:
 		resourceCollectionFile.Close();
 	}
 
-};
+}
