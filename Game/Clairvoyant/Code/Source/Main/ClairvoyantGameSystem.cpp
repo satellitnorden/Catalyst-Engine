@@ -49,8 +49,8 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	data->_ParticleSystemProperties._SpawnFrequency = 0.01f;
 	data->_ParticleSystemProperties._MinimumScale = Vector2(0.01f, 0.01f);
 	data->_ParticleSystemProperties._MaximumScale = Vector2(0.02f, 0.02f);
-	data->_ParticleSystemProperties._MinimumPosition = Vector3(-5.0f, -12.5f, -5.0f);
-	data->_ParticleSystemProperties._MaximumPosition = Vector3(5.0f, 12.5f, 5.0f);
+	data->_ParticleSystemProperties._MinimumPosition = Vector3(-1'000.0f, 0.0f, -1'000.0f);
+	data->_ParticleSystemProperties._MaximumPosition = Vector3(1'000.0f, 1'000.0f, 1'000.0f);
 	data->_ParticleSystemProperties._MinimumVelocity = Vector3(-0.1f, -0.1f, -0.1f);
 	data->_ParticleSystemProperties._MaximumVelocity = Vector3(0.1f, 0.1f, 0.1f);
 	data->_Position = 0.0f;

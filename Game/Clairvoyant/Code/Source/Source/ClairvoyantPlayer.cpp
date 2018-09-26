@@ -29,26 +29,26 @@ void ClairvoyantPlayer::Initialize() NOEXCEPT
 bool ClairvoyantPlayer::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Define constants.
-	constexpr float ROTATION_SPEED{ 0.25f };
-	constexpr float SPEED{ 0.025f };
+	constexpr float ROTATION_SPEED{ 1.0f };
+	constexpr float SPEED{ 1.0f };
 
 	//Get the gamepad state.
 	const GamepadState *const RESTRICT state{ InputSystem::Instance->GetGamepadState() };
 
 	//Move the camera.
-	_Camera->Move(_Camera->GetRightVector() * state->_LeftThumbstickX * SPEED);
-	_Camera->Move(_Camera->GetForwardVector() * state->_LeftThumbstickY * SPEED);
+	_Camera->Move(_Camera->GetRightVector() * state->_LeftThumbstickX * SPEED * context->_DeltaTime);
+	_Camera->Move(_Camera->GetForwardVector() * state->_LeftThumbstickY * SPEED * context->_DeltaTime);
 
 	if (state->_LeftShoulder == ButtonState::Pressed
 		|| state->_LeftShoulder == ButtonState::PressedHold)
 	{
-		_Camera->Move(Vector3::DOWN * context->_DeltaTime * SPEED * 100.0f);
+		_Camera->Move(Vector3::DOWN * context->_DeltaTime * SPEED);
 	}
 
 	if (state->_RightShoulder == ButtonState::Pressed
 		|| state->_RightShoulder == ButtonState::PressedHold)
 	{
-		_Camera->Move(Vector3::UP * context->_DeltaTime * SPEED * 100.0f);
+		_Camera->Move(Vector3::UP * context->_DeltaTime * SPEED);
 	}
 
 	//Rotate the camera.
