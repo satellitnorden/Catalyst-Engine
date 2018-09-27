@@ -15,8 +15,10 @@ namespace TerrainUtilities
 	/*
 	*	Generates the normals for a terrain patch.
 	*/
-	static void GeneratePatchNormals(const float size, const uint32 resolution, const float height, CPUTexture2D *const RESTRICT properties) NOEXCEPT
+	static void GeneratePatchNormals(const float size, const float height, CPUTexture2D *const RESTRICT properties) NOEXCEPT
 	{
+		const uint64 resolution{ properties->GetWidth() };
+
 		const float offset{ size / static_cast<float>(resolution) };
 
 		for (uint64 i = 0; i < resolution; ++i)

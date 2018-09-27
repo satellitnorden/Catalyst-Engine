@@ -23,7 +23,7 @@ DEFINE_SINGLETON(WorldArchitect);
 //World architect constants.
 namespace WorldArchitectConstants
 {
-	constexpr uint64 MAP_RESOLUTION{ 128 };
+	constexpr uint64 MAP_RESOLUTION{ 256 };
 }
 
 /*
@@ -53,8 +53,32 @@ void WorldArchitect::Initialize() NOEXCEPT
 	{
 		for (uint64 j = 0; j < WorldArchitectConstants::MAP_RESOLUTION; ++j)
 		{
-			weights.At(i, j)._X = 1.0f;
-			weights.At(i, j)._Y = 0.0f;
+			//Determine the weight of the first grass layer.
+			const float worldHeight{ properties.At(i, j)._W * 250.0f };
+
+			if (worldHeight < 0.0f)
+			{
+				weights.At(i, j)._X = 0.0f;
+			}
+
+			else if (worldHeight > 10.0f)
+			{
+				weights.At(i, j)._X = 1.0f;
+			}
+
+			else
+			{
+				weights.At(i, j)._X = worldHeight * 0.1f;
+			}
+
+			//Determine the weight of the second grass layer.
+			const float xCoordinate{ static_cast<float>(i) / static_cast<float>(WorldArchitectConstants::MAP_RESOLUTION) };
+			const float yCoordinate{ static_cast<float>(j) / static_cast<float>(WorldArchitectConstants::MAP_RESOLUTION) };
+
+			weights.At(i, j)._Y = ((PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, 0.0f, randomOffset) + 1.0f) * 0.5f) - (1.0f - weights.At(i, j)._X);
+			weights.At(i, j)._Y = CatalystBaseMath::Clamp<float>(weights.At(i, j)._Y, 0.0f, 1.0f);
+			weights.At(i, j)._Y = CatalystBaseMath::SmoothStep<10>(weights.At(i, j)._Y);
+
 			weights.At(i, j)._Z = 0.0f;
 			weights.At(i, j)._W = 0.0f;
 		}
@@ -67,10 +91,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 	information._NormalHeightMap = properties;
 	information._LayerWeightsMap = weights;
 	information._Material = ResourceLoader::GetTerrainMaterial(HashString("DefaultTerrainMaterial"));
-	information._DisplacementInformation._FirstLayerDisplacement = 10.0f;
+	information._DisplacementInformation._FirstLayerDisplacement = 2.5f;
 	information._DisplacementInformation._SecondLayerDisplacement = 1.0f;
 	information._DisplacementInformation._ThirdLayerDisplacement = 5.0f;
-	information._DisplacementInformation._FourthLayerDisplacement = 10.0f;
+	information._DisplacementInformation._FourthLayerDisplacement = 5.0f;
 	information._DisplacementInformation._FifthLayerDisplacement = 10.0f;
 
 	TerrainSystem::Instance->AddTerrainPatch(std::move(information));

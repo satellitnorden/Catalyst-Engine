@@ -39,7 +39,7 @@ void TerrainSystem::AddTerrainPatch(TerrainPatchInformation &&information) NOEXC
 
 	//Generate the normal for the normal/depth map.
 	patch->_NormalHeightMap = std::move(information._NormalHeightMap);
-	TerrainUtilities::GeneratePatchNormals(_Properties._PatchSize, _Properties._PatchResolution, _Properties._Height, &patch->_NormalHeightMap);
+	TerrainUtilities::GeneratePatchNormals(_Properties._PatchSize, _Properties._Height, &patch->_NormalHeightMap);
 
 	//Set up the new terrain render information.
 	_RenderInformation.EmplaceSlow();

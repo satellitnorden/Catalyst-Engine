@@ -22,9 +22,9 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 	configuration->_RenderingConfiguration._ResolutionScale = 1.0f;
 	configuration->_RenderingConfiguration._ShadowMapResolution = 2'048;
 
-	configuration->_TerrainConfiguration._Height = 100.0f;
-	configuration->_TerrainConfiguration._TextureTilingFactor = 100.0f;
-	configuration->_TerrainConfiguration._PatchResolution = 128;
+	configuration->_TerrainConfiguration._Height = 250.0f;
+	configuration->_TerrainConfiguration._TextureTilingFactor = 250.0f;
+	configuration->_TerrainConfiguration._PatchResolution = 256;
 	configuration->_TerrainConfiguration._PatchSize = 1'000.0f;
 }
 
