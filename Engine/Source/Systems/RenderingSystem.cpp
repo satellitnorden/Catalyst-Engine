@@ -425,14 +425,18 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &d
 */
 void RenderingSystem::CreateOceanMaterial(const OceanMaterialData &data, OceanMaterial &material) const NOEXCEPT
 {
-	//Create the normal map texture.
-	material._NormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._NormalMapData, data._Width, data._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+	//Create the normal texture.
+	material._NormalTexture = CreateTexture2D(TextureData(TextureDataContainer(data._NormalData, data._Width, data._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the foam texture.
+	material._FoamTexture = CreateTexture2D(TextureData(TextureDataContainer(data._FoamData, data._Width, data._Height, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the render data table.
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::OceanMaterial), &material._RenderDataTable);
 
 	//Update the render data table.
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::Texture2D, material._NormalMapTexture), material._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::Texture2D, material._NormalTexture), material._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, material._FoamTexture), material._RenderDataTable);
 }
 #endif
 
@@ -899,9 +903,10 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 #if defined(CATALYST_ENABLE_OCEAN)
 	{
 		//Initialize the ocean render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
 		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::OceanMaterial)]);

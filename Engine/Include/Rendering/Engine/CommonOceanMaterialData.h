@@ -20,15 +20,26 @@ namespace CommonOceanMaterialData
 		data->_MipmapLevels = 1;
 		data->_Width = RESOLUTION;
 		data->_Height = RESOLUTION;
-		data->_NormalMapData.UpsizeSlow(1);
-		data->_NormalMapData[0].Reserve(RESOLUTION * RESOLUTION * 4);
+		data->_NormalData.UpsizeSlow(1);
+		data->_NormalData[0].Reserve(RESOLUTION * RESOLUTION * 4);
 
 		for (uint16 i = 0; i < RESOLUTION * RESOLUTION; ++i)
 		{
-			data->_NormalMapData[0].EmplaceFast(static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(126, 128)));
-			data->_NormalMapData[0].EmplaceFast(static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(126, 128)));
-			data->_NormalMapData[0].EmplaceFast(255);
-			data->_NormalMapData[0].EmplaceFast(255);
+			data->_NormalData[0].EmplaceFast(static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(126, 128)));
+			data->_NormalData[0].EmplaceFast(static_cast<uint8>(CatalystBaseMath::RandomIntegerInRange<uint16>(126, 128)));
+			data->_NormalData[0].EmplaceFast(255);
+			data->_NormalData[0].EmplaceFast(255);
+		}
+
+		data->_FoamData.UpsizeSlow(1);
+		data->_FoamData[0].Reserve(RESOLUTION * RESOLUTION * 4);
+
+		for (uint16 i = 0; i < RESOLUTION * RESOLUTION; ++i)
+		{
+			data->_FoamData[0].EmplaceFast(255);
+			data->_FoamData[0].EmplaceFast(255);
+			data->_FoamData[0].EmplaceFast(255);
+			data->_FoamData[0].EmplaceFast(255);
 		}
 	}
 

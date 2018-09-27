@@ -31,6 +31,7 @@ namespace ClairvoyantResourceCreation
 			parameters._ID = "DefaultOceanMaterial";
 			parameters._MipmapLevels = 9;
 			parameters._Normal = "..\\..\\..\\Resources\\Raw\\Textures\\Ocean\\Normal.jpg";
+			parameters._Foam = "..\\..\\..\\Resources\\Raw\\Textures\\Ocean\\Foam.jpg";
 
 			OceanMaterialCreator::CreateOceanMaterial(parameters);
 		}

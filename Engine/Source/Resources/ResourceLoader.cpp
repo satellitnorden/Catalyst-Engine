@@ -176,16 +176,28 @@ void ResourceLoader::LoadOceanMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	//Read the height.
 	file.Read(&oceanMaterialData._Height, sizeof(uint32));
 
-	//Read the normal map.
-	oceanMaterialData._NormalMapData.UpsizeSlow(oceanMaterialData._MipmapLevels);
+	//Read the normal data.
+	oceanMaterialData._NormalData.UpsizeSlow(oceanMaterialData._MipmapLevels);
 
 	for (uint8 i = 0; i < oceanMaterialData._MipmapLevels; ++i)
 	{
 		const uint64 textureSize{ (oceanMaterialData._Width >> i) * (oceanMaterialData._Height >> i) * 4 };
 
-		oceanMaterialData._NormalMapData[i].Reserve(textureSize);
+		oceanMaterialData._NormalData[i].Reserve(textureSize);
 
-		file.Read(oceanMaterialData._NormalMapData[i].Data(), textureSize);
+		file.Read(oceanMaterialData._NormalData[i].Data(), textureSize);
+	}
+
+	//Read the foam data.
+	oceanMaterialData._FoamData.UpsizeSlow(oceanMaterialData._MipmapLevels);
+
+	for (uint8 i = 0; i < oceanMaterialData._MipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (oceanMaterialData._Width >> i) * (oceanMaterialData._Height >> i) * 4 };
+
+		oceanMaterialData._FoamData[i].Reserve(textureSize);
+
+		file.Read(oceanMaterialData._FoamData[i].Data(), textureSize);
 	}
 
 	//Create the ocean material via the rendering system.

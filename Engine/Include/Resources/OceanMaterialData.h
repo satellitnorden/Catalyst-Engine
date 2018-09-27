@@ -18,8 +18,11 @@ public:
 	//The height.
 	uint32 _Height;
 
-	//The normal map data.
-	DynamicArray<DynamicArray<byte>> _NormalMapData;
+	//The normal data.
+	DynamicArray<DynamicArray<byte>> _NormalData;
+
+	//The foam data.
+	DynamicArray<DynamicArray<byte>> _FoamData;
 
 };
 #endif

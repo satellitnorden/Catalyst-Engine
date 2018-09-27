@@ -121,8 +121,8 @@ void WorldArchitect::Initialize() NOEXCEPT
 	information._NormalHeightMap = properties;
 	information._LayerWeightsMap = weights;
 	information._Material = ResourceLoader::GetTerrainMaterial(HashString("DefaultTerrainMaterial"));
-	information._DisplacementInformation._FirstLayerDisplacement = 1.0f;
-	information._DisplacementInformation._SecondLayerDisplacement = 0.25f;
+	information._DisplacementInformation._FirstLayerDisplacement = 1.25f;
+	information._DisplacementInformation._SecondLayerDisplacement = 0.1f;
 	information._DisplacementInformation._ThirdLayerDisplacement = 1.0f;
 	information._DisplacementInformation._FourthLayerDisplacement = 1.0f;
 	information._DisplacementInformation._FifthLayerDisplacement = 1.0f;

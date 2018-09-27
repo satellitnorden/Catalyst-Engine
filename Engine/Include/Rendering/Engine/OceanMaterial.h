@@ -12,8 +12,11 @@ class OceanMaterial final
 
 public:
 
-	//The normal map texture.
-	Texture2DHandle _NormalMapTexture;
+	//The normal texture.
+	Texture2DHandle _NormalTexture;
+
+	//The foam texture.
+	Texture2DHandle _FoamTexture;
 
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;

@@ -70,6 +70,7 @@ layout (set = 2, binding = 0) uniform samplerCube dayTexture;
 layout (set = 3, binding = 0) uniform sampler2D sceneTexture;
 layout (set = 3, binding = 1) uniform sampler2D sceneNormalDepthTexture;
 layout (set = 4, binding = 0) uniform sampler2D oceanNormalTexture;
+layout (set = 4, binding = 1) uniform sampler2D oceanFoamTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -168,7 +169,8 @@ void main()
     vec3 reflection = CalculateReflection();
 
     //Sample the scene texture.
-    float deformationWeight = clamp(length(sceneWorldPosition - intersectionPoint) / 25.0f, 0.0f, 1.0f);
+    float distanceToBottom = length(sceneWorldPosition - intersectionPoint);
+    float deformationWeight = clamp(distanceToBottom / 25.0f, 0.0f, 1.0f);
     vec2 sceneTextureCoordinate = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? fragmentTextureCoordinate : fragmentTextureCoordinate + (normalDirection.xz * deformationWeight);
 
 	sceneTextureCoordinate = sceneWorldPosition.y > 0.0f ? fragmentTextureCoordinate : sceneTextureCoordinate;
@@ -185,6 +187,9 @@ void main()
 
     //Calculate the final ocean color.
     vec3 finalOceanColor = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? sceneTextureSampler.rgb : mix(mix(sceneTextureSampler.rgb, underwaterColor, underwaterWeight), reflection, transparency);
+
+    //Apply foam.
+    finalOceanColor = sceneWorldPosition.y > 0.0f || cameraWorldPosition.y < 0.0f ? finalOceanColor : mix(finalOceanColor, texture(oceanFoamTexture, intersectionPoint.xz + vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.1f).rgb, clamp(1.0f - distanceToBottom, 0.0f, 1.0f));
 
     //Apply the directional light.
     if (sceneWorldPosition.y < 0.0f && cameraWorldPosition.y > 0.0f)

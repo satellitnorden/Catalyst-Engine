@@ -33,6 +33,9 @@ public:
 		//The normal file path.
 		const char *RESTRICT _Normal;
 
+		//The foam file path.
+		const char *RESTRICT _Foam;
+
 	};
 
 	/*
@@ -61,7 +64,7 @@ public:
 		//Write the number of mipmap levels to the file.
 		file.Write(&numberOfMipmapLevels, sizeof(uint8));
 
-		//Load the normal map.
+		//Load the normal.
 		int32 width, height, numberOfChannels;
 		byte *RESTRICT data{ stbi_load(parameters._Normal, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
@@ -71,6 +74,35 @@ public:
 		//Write the width and height of the albedo into the file, to be read into uint32's.
 		file.Write(&uWidth, sizeof(uint32));
 		file.Write(&uHeight, sizeof(uint32));
+
+		//Write the normal map to the file.
+		for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
+		{
+			const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
+
+			//If this is the base mipmap level, just copy the thing directly into memory.
+			if (i == 0)
+			{
+				file.Write(data, textureSize);
+			}
+
+			//Else, the image data should be resized.
+			else
+			{
+				byte *RESTRICT downsampledData = static_cast<byte *RESTRICT>(MemoryUtilities::AllocateMemory(textureSize));
+				stbir_resize_uint8(data, width, height, 0, downsampledData, uWidth >> i, uHeight >> i, 0, 4);
+
+				file.Write(downsampledData, textureSize);
+
+				MemoryUtilities::FreeMemory(downsampledData);
+			}
+		}
+
+		//Free the normal  data.
+		stbi_image_free(data);
+
+		//Load the foam.
+		data = stbi_load(parameters._Foam, &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 		//Write the normal map to the file.
 		for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
