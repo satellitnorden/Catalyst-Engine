@@ -29,7 +29,7 @@ void ClairvoyantPlayer::Initialize() NOEXCEPT
 bool ClairvoyantPlayer::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Define constants.
-	constexpr float ROTATION_SPEED{ 1.0f };
+	constexpr float ROTATION_SPEED{ 100.0f };
 	constexpr float SPEED{ 100.0f };
 
 	//Get the gamepad state.
@@ -52,7 +52,7 @@ bool ClairvoyantPlayer::LogicUpdateAsynchronous(const UpdateContext *const RESTR
 	}
 
 	//Rotate the camera.
-	_Camera->Rotate(Vector3(state->_RightThumbstickY * ROTATION_SPEED, -state->_RightThumbstickX * ROTATION_SPEED, 0.0f));
+	_Camera->Rotate(Vector3(state->_RightThumbstickY * ROTATION_SPEED * context->_DeltaTime, -state->_RightThumbstickX * ROTATION_SPEED * context->_DeltaTime, 0.0f));
 
 	Vector3 rotation{ _Camera->GetRotation() };
 	rotation._X = CatalystBaseMath::Clamp<float>(rotation._X, -89.0f, 89.0f);

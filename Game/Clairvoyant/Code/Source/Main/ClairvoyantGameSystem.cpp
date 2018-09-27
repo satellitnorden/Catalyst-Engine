@@ -56,8 +56,8 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	data->_ParticleSystemProperties._MaximumScale = Vector2(0.2f, 0.2f);
 	data->_ParticleSystemProperties._MinimumPosition = Vector3(-500.0f, 0.0f, -500.0f);
 	data->_ParticleSystemProperties._MaximumPosition = Vector3(500.0f, 200.0f, 500.0f);
-	data->_ParticleSystemProperties._MinimumVelocity = Vector3(-0.1f, -0.1f, -0.1f);
-	data->_ParticleSystemProperties._MaximumVelocity = Vector3(0.1f, 0.1f, 0.1f);
+	data->_ParticleSystemProperties._MinimumVelocity = Vector3(-1.0f, -1.0f, -1.0f);
+	data->_ParticleSystemProperties._MaximumVelocity = Vector3(1.0f, 1.0f, 1.0f);
 	data->_Position = 0.0f;
 
 	ParticleSystemEntity *const RESTRICT particles = EntitySystem::Instance->CreateEntity<ParticleSystemEntity>();
