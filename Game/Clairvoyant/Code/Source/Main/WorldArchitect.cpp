@@ -62,7 +62,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 			//Determine the weight of the sand layer.
 			float sandLayerWeight;
 
-			const float worldHeight{ properties.At(i, j)._W * 100.0f };
+			const float worldHeight{ properties.At(i, j)._W * 250.0f };
 
 			if (worldHeight < 0.0f)
 			{
@@ -95,7 +95,22 @@ void WorldArchitect::Initialize() NOEXCEPT
 			weights.At(i, j)._Y = CatalystBaseMath::SmoothStep<5>(weights.At(i, j)._Y);
 
 			weights.At(i, j)._Z = 0.0f;
-			weights.At(i, j)._W = 0.0f;
+
+			//Determine the weight of the snow layer.
+			if (worldHeight < 950.0f)
+			{
+				weights.At(i, j)._W = 0.0f;
+			}
+
+			else if (worldHeight > 1'050.0f)
+			{
+				weights.At(i, j)._W = 1.0f;
+			}
+
+			else
+			{
+				weights.At(i, j)._W = (worldHeight - 950.0f) * 0.01f;
+			}
 		}
 	}
 
