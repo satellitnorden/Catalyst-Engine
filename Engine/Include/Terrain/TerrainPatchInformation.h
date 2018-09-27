@@ -5,6 +5,10 @@
 
 //Rendering.
 #include <Rendering/Engine/CPUTexture2D.h>
+#include <Rendering/Engine/TerrainMaterial.h>
+
+//Terrain.
+#include <Terrain/TerrainDisplacementInformation.h>
 
 class TerrainPatchInformation final
 {
@@ -22,5 +26,11 @@ public:
 
 	//The layer weights map.
 	CPUTexture2D _LayerWeightsMap;
+
+	//The material.
+	TerrainMaterial _Material;
+
+	//The displacement information.
+	TerrainDisplacementInformation _DisplacementInformation;
 
 };

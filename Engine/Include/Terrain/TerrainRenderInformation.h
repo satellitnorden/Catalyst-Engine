@@ -20,4 +20,10 @@ public:
 	//The index count.
 	uint32 _IndexCount;
 
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
+
+	//The displacement information.
+	TerrainDisplacementInformation _DisplacementInformation;
+
 };

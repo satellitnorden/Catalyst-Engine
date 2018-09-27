@@ -205,9 +205,6 @@
     <Filter Include="Terrain\Include">
       <UniqueIdentifier>{2f1ccf80-b81e-4b58-afb9-a213e7cc799f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Terrain\Source">
-      <UniqueIdentifier>{e852c610-4d25-4d1e-8b8a-e82e31929479}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\CameraComponent.h">
@@ -895,6 +892,9 @@
       <Filter>Terrain\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainRenderInformation.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainDisplacementInformation.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
   </ItemGroup>

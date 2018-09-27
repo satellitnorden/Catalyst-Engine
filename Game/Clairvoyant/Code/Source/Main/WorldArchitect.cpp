@@ -22,6 +22,7 @@
 //Systems.
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/TerrainSystem.h>
 
 //Terrain.
 #include <Terrain/TerrainUtilities.h>
@@ -95,4 +96,19 @@ void WorldArchitect::Initialize() NOEXCEPT
 	data->_TerrainMaterial = ResourceLoader::GetTerrainMaterial(HashString("DefaultTerrainMaterial"));
 
 	EntitySystem::Instance->InitializeEntity(entity, data);
+
+	TerrainPatchInformation information;
+
+	information._X = 0;
+	information._Y = 0;
+	information._NormalHeightMap = properties;
+	information._LayerWeightsMap = weights;
+	information._Material = ResourceLoader::GetTerrainMaterial(HashString("DefaultTerrainMaterial"));
+	information._DisplacementInformation._FirstLayerDisplacement = 10.0f;
+	information._DisplacementInformation._SecondLayerDisplacement = 1.0f;
+	information._DisplacementInformation._ThirdLayerDisplacement = 5.0f;
+	information._DisplacementInformation._FourthLayerDisplacement = 10.0f;
+	information._DisplacementInformation._FifthLayerDisplacement = 10.0f;
+
+	TerrainSystem::Instance->AddTerrainPatch(std::move(information));
 }

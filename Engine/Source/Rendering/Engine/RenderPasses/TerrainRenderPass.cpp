@@ -63,6 +63,10 @@ void TerrainRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial));
 
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::TessellationEvaluation, 0, sizeof(float) * 5);
+
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(2);
 	AddVertexInputAttributeDescription(	0,
@@ -132,6 +136,19 @@ void TerrainRenderPass::RenderInternal() NOEXCEPT
 		{
 			continue;
 		}
+
+		struct PushConstantData
+		{
+			float a, b, c, d, e;
+		} data;
+
+		data.a = 10.0f;
+		data.b = 1.0f;
+		data.c = 5.0f;
+		data.d = 10.0f;
+		data.e = 10.0f;
+
+		commandBuffer->PushConstants(this, ShaderStage::TessellationEvaluation, 0, sizeof(float) * 5, &data);
 
 		const uint64 offset{ 0 };
 

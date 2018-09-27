@@ -55,6 +55,16 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    float firstLayerDisplacementHeight;
+    float secondLayerDisplacementHeight;
+    float thirdLayerDisplacementHeight;
+    float fourthLayerDisplacementHeight;
+    float fifthLayerDisplacementHeight;
+};
+
 //Terrain uniform buffer.
 layout (std140, set = 1, binding = 1) uniform TerrainUniformData
 {
@@ -98,11 +108,11 @@ float GetDisplacement()
 {
     layerWeightsSampler = texture(layerWeightsTexture, fragmentHeightMapTextureCoordinate);
 
-    float blend1 = mix(terrainFirstLayerDisplacementHeight, terrainSecondLayerDisplacementHeight, layerWeightsSampler.x);
-    float blend2 = mix(blend1, terrainThirdLayerDisplacementHeight, layerWeightsSampler.y);
-    float blend3 = mix(blend2, terrainFourthLayerDisplacementHeight, layerWeightsSampler.z);
+    float blend1 = mix(firstLayerDisplacementHeight, secondLayerDisplacementHeight, layerWeightsSampler.x);
+    float blend2 = mix(blend1, thirdLayerDisplacementHeight, layerWeightsSampler.y);
+    float blend3 = mix(blend2, fourthLayerDisplacementHeight, layerWeightsSampler.z);
 
-    float terrainDisplacementHeight = mix(blend3, terrainFifthLayerDisplacementHeight, layerWeightsSampler.w);
+    float terrainDisplacementHeight = mix(blend3, fifthLayerDisplacementHeight, layerWeightsSampler.w);
 
     float layer1Displacement = texture(layer1MaterialPropertiesTexture, fragmentTextureCoordinate).w;
     float layer2Displacement = texture(layer2MaterialPropertiesTexture, fragmentTextureCoordinate).w;

@@ -72,4 +72,6 @@ void TerrainSystem::AddTerrainPatch(TerrainPatchInformation &&information) NOEXC
 	renderInformation->_Buffer = RenderingSystem::Instance->CreateConstantBuffer(bufferData.Data(), bufferDataSizes.Data(), 2);
 	renderInformation->_IndexOffset = bufferDataSizes[0];
 	renderInformation->_IndexCount = static_cast<uint32>(indices.Size());
+	renderInformation->_RenderDataTable = information._Material._RenderDataTable;
+	renderInformation->_DisplacementInformation = information._DisplacementInformation;
 }
