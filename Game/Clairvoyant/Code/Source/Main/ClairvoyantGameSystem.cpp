@@ -35,7 +35,7 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	EnvironmentManager::Instance->SetDayEnvironmentMaterial(RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Day));
 	EnvironmentManager::Instance->SetEnvironmentBlend(1.0f);
 #if defined(CATALYST_ENABLE_OCEAN)
-	EnvironmentManager::Instance->SetOceanMaterial(RenderingSystem::Instance->GetCommonOceanMaterial(RenderingSystem::CommonOceanMaterial::Ocean));
+	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(HashString("DefaultOceanMaterial")));
 #endif
 
 	//Create the sun.

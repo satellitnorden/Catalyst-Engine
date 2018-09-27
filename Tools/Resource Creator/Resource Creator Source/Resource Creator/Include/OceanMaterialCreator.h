@@ -1,8 +1,8 @@
 #pragma once
 
 //Core.
-#include <Core/EngineCore.h>
-#include <Core/HashString.h>
+#include <Core/Core/CatalystCore.h>
+#include <Core/General/HashString.h>
 
 //Resources
 #include <Resources/ResourcesCore.h>
@@ -11,18 +11,37 @@
 #include <stb_image.h>
 #include <stb_image_resize.h>
 
-class WaterMaterialCreator final
+class OceanMaterialCreator final
 {
 
 public:
 
+	class OceanMaterialCreationParameters final
+	{
+
+	public:
+
+		//The output file path.
+		const char *RESTRICT _Output;
+
+		//The resource id.
+		const char *RESTRICT _ID;
+
+		//The number of mipmap levels.
+		uint8 _MipmapLevels;
+
+		//The normal file path.
+		const char *RESTRICT _Normal;
+
+	};
+
 	/*
-	*	Creates a water material resource file.
+	*	Creates an ocean material resource file.
 	*/
-	static void CreateWaterMaterial(const char *const RESTRICT arguments[]) NOEXCEPT
+	static void CreateOceanMaterial(const OceanMaterialCreationParameters &parameters) NOEXCEPT
 	{
 		//What should the material be called?
-		DynamicString fileName{ arguments[0] };
+		DynamicString fileName{ parameters._Output };
 		fileName += ".cr";
 
 		//Open the file to be written to.
@@ -33,18 +52,18 @@ public:
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
-		const HashString resourceID{ arguments[1] };
+		const HashString resourceID{ parameters._ID };
 		file.Write(&resourceID, sizeof(HashString));
 
 		//Determine how many mipmap levels that should be generated.
-		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[2] - '0') };
+		const uint8 numberOfMipmapLevels{ parameters._MipmapLevels };
 
 		//Write the number of mipmap levels to the file.
 		file.Write(&numberOfMipmapLevels, sizeof(uint8));
 
 		//Load the normal map.
 		int32 width, height, numberOfChannels;
-		byte *RESTRICT data{ stbi_load(arguments[3], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+		byte *RESTRICT data{ stbi_load(parameters._Normal, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 		const uint32 uWidth{ static_cast<uint32>(width) };
 		const uint32 uHeight{ static_cast<uint32>(height) };

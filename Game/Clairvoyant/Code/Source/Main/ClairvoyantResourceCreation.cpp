@@ -3,6 +3,7 @@
 
 //Resource creator.
 #include <ResourceCollectionCreator.h>
+#include <OceanMaterialCreator.h>
 #include <TerrainMaterialCreator.h>
 
 namespace ClairvoyantResourceCreation
@@ -20,6 +21,18 @@ namespace ClairvoyantResourceCreation
 #endif
 		{
 			return;
+		}
+
+		{
+			//Create the ocean material.
+			OceanMaterialCreator::OceanMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial";
+			parameters._ID = "DefaultOceanMaterial";
+			parameters._MipmapLevels = 9;
+			parameters._Normal = "..\\..\\..\\Resources\\Raw\\Textures\\Ocean\\Normal.jpg";
+
+			OceanMaterialCreator::CreateOceanMaterial(parameters);
 		}
 
 		{
@@ -73,6 +86,7 @@ namespace ClairvoyantResourceCreation
 			ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantResourceCollection";
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultTerrainMaterial.cr");
 
 			ResourceCollectionCreator::CreateResourceCollection(parameters);
