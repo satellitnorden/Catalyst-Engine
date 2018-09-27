@@ -57,9 +57,10 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::DirectionalShadowMap);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(3);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(2);
@@ -129,6 +130,7 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 		const uint64 offset{ 0 };
 
 		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);
+		commandBuffer->BindRenderDataTable(this, 2, component->_MaterialRenderDataTable);
 		commandBuffer->BindVertexBuffers(this, 1, &component->_Buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, component->_Buffer, component->_IndexOffset);
 		commandBuffer->DrawIndexed(this, component->_IndexCount, 1);

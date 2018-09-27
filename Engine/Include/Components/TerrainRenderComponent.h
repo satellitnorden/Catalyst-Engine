@@ -20,6 +20,9 @@ public:
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
 
+	//The material data table.
+	RenderDataTableHandle _MaterialRenderDataTable;
+
 	//The index count.
 	uint32 _IndexCount{ 0 };
 

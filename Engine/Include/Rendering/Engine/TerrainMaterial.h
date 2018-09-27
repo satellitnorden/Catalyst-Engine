@@ -56,4 +56,7 @@ public:
 	//The fifth layer material properties.
 	Texture2DHandle _FifthLayerMaterialProperties;
 
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
+
 };

@@ -78,21 +78,21 @@ layout (location = 2) in vec4 layerWeightsSampler;
 
 //Texture samplers.
 layout (set = 1, binding = 2) uniform sampler2D terrainPropertiesTexture;
-layout (set = 1, binding = 4) uniform sampler2D layer1AlbedoTexture;
-layout (set = 1, binding = 5) uniform sampler2D layer1NormalMapTexture;
-layout (set = 1, binding = 6) uniform sampler2D layer1MaterialPropertiesTexture;
-layout (set = 1, binding = 7) uniform sampler2D layer2AlbedoTexture;
-layout (set = 1, binding = 8) uniform sampler2D layer2NormalMapTexture;
-layout (set = 1, binding = 9) uniform sampler2D layer2MaterialPropertiesTexture;
-layout (set = 1, binding = 10) uniform sampler2D layer3AlbedoTexture;
-layout (set = 1, binding = 11) uniform sampler2D layer3NormalMapTexture;
-layout (set = 1, binding = 12) uniform sampler2D layer3MaterialPropertiesTexture;
-layout (set = 1, binding = 13) uniform sampler2D layer4AlbedoTexture;
-layout (set = 1, binding = 14) uniform sampler2D layer4NormalMapTexture;
-layout (set = 1, binding = 15) uniform sampler2D layer4MaterialPropertiesTexture;
-layout (set = 1, binding = 16) uniform sampler2D layer5AlbedoTexture;
-layout (set = 1, binding = 17) uniform sampler2D layer5NormalMapTexture;
-layout (set = 1, binding = 18) uniform sampler2D layer5MaterialPropertiesTexture;
+layout (set = 2, binding = 0) uniform sampler2D layer1AlbedoTexture;
+layout (set = 2, binding = 1) uniform sampler2D layer1NormalMapTexture;
+layout (set = 2, binding = 2) uniform sampler2D layer1MaterialPropertiesTexture;
+layout (set = 2, binding = 3) uniform sampler2D layer2AlbedoTexture;
+layout (set = 2, binding = 4) uniform sampler2D layer2NormalMapTexture;
+layout (set = 2, binding = 5) uniform sampler2D layer2MaterialPropertiesTexture;
+layout (set = 2, binding = 6) uniform sampler2D layer3AlbedoTexture;
+layout (set = 2, binding = 7) uniform sampler2D layer3NormalMapTexture;
+layout (set = 2, binding = 8) uniform sampler2D layer3MaterialPropertiesTexture;
+layout (set = 2, binding = 9) uniform sampler2D layer4AlbedoTexture;
+layout (set = 2, binding = 10) uniform sampler2D layer4NormalMapTexture;
+layout (set = 2, binding = 11) uniform sampler2D layer4MaterialPropertiesTexture;
+layout (set = 2, binding = 12) uniform sampler2D layer5AlbedoTexture;
+layout (set = 2, binding = 13) uniform sampler2D layer5NormalMapTexture;
+layout (set = 2, binding = 14) uniform sampler2D layer5MaterialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;

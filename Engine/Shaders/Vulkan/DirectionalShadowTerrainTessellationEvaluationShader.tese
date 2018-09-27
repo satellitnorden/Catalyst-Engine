@@ -80,11 +80,11 @@ layout (location = 2) in vec3 tessellationEvaluationPosition[];
 //Texture samplers.
 layout (set = 1, binding = 2) uniform sampler2D terrainPropertiesTexture;
 layout (set = 1, binding = 3) uniform sampler2D layerWeightsTexture;
-layout (set = 1, binding = 6) uniform sampler2D layer1MaterialPropertiesTexture;
-layout (set = 1, binding = 9) uniform sampler2D layer2MaterialPropertiesTexture;
-layout (set = 1, binding = 12) uniform sampler2D layer3MaterialPropertiesTexture;
-layout (set = 1, binding = 15) uniform sampler2D layer4MaterialPropertiesTexture;
-layout (set = 1, binding = 18) uniform sampler2D layer5MaterialPropertiesTexture;
+layout (set = 2, binding = 2) uniform sampler2D layer1MaterialPropertiesTexture;
+layout (set = 2, binding = 5) uniform sampler2D layer2MaterialPropertiesTexture;
+layout (set = 2, binding = 8) uniform sampler2D layer3MaterialPropertiesTexture;
+layout (set = 2, binding = 11) uniform sampler2D layer4MaterialPropertiesTexture;
+layout (set = 2, binding = 14) uniform sampler2D layer5MaterialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec2 fragmentHeightMapTextureCoordinate;

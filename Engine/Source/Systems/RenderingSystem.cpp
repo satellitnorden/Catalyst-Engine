@@ -535,6 +535,24 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 
 	//Create the fifth layer material properties.
 	terrainMaterial._FifthLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FifthLayerMaterialPropertiesData, terrainMaterialData._FifthLayerWidth, terrainMaterialData._FifthLayerHeight, 4), AddressMode::Repeat, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the render data table.
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial), &terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FirstLayerAlbedo), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FirstLayerNormalMap), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FirstLayerMaterialProperties), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._SecondLayerAlbedo), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(4, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._SecondLayerNormalMap), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(5, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._SecondLayerMaterialProperties), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(6, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._ThirdLayerAlbedo), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(7, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._ThirdLayerNormalMap), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(8, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._ThirdLayerMaterialProperties), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(9, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FourthLayerAlbedo), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(10, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FourthLayerNormalMap), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(11, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FourthLayerMaterialProperties), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(12, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FifthLayerAlbedo), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(13, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FifthLayerNormalMap), terrainMaterial._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(14, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FifthLayerMaterialProperties), terrainMaterial._RenderDataTable);
 }
 
 /*
@@ -599,21 +617,8 @@ void RenderingSystem::InitializeTerrainEntity(const Entity *const RESTRICT entit
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::UniformBuffer, terrainComponent._UniformBuffer), renderComponent._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, terrainPropertiesTexture), renderComponent._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, data->_LayerWeightsTexture), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(4, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FirstLayerAlbedo), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(5, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FirstLayerNormalMap), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(6, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FirstLayerMaterialProperties), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(7, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._SecondLayerAlbedo), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(8, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._SecondLayerNormalMap), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(9, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._SecondLayerMaterialProperties), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(10, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._ThirdLayerAlbedo), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(11, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._ThirdLayerNormalMap), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(12, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._ThirdLayerMaterialProperties), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(13, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FourthLayerAlbedo), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(14, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FourthLayerNormalMap), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(15, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FourthLayerMaterialProperties), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(16, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FifthLayerAlbedo), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(17, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FifthLayerNormalMap), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(18, RenderDataTableUpdateInformation::Type::Texture2D, data->_TerrainMaterial._FifthLayerMaterialProperties), renderComponent._RenderDataTable);
+
+	renderComponent._MaterialRenderDataTable = data->_TerrainMaterial._RenderDataTable;
 
 	DynamicArray<float> vertices;
 	DynamicArray<uint32> indices;
@@ -924,26 +929,11 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 	{
 		//Initialize the terrain render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 18> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
 		{
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::UniformBuffer, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Vertex | ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(9, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(10, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(11, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(12, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(13, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(14, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(15, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(16, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(17, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(18, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment)
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Terrain)]);
@@ -951,6 +941,30 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 	{
 		//Initialize the physical render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 15> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(9, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(10, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(11, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(12, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(13, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(14, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment)
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::TerrainMaterial)]);
+	}
+
+	{
+		//Initialize the physical material render data table layout.
 		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
 		{
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
