@@ -3,10 +3,8 @@
 
 //Entities.
 #include <Entities/CameraEntity.h>
-#include <Entities/TerrainEntity.h>
 #include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 #include <Entities/InitializationData/ParticleSystemInitializationData.h>
-#include <Entities/InitializationData/TerrainInitializationData.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
@@ -592,71 +590,6 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 }
 
 /*
-*	Initializes a terrain entity.
-*/
-void RenderingSystem::InitializeTerrainEntity(const Entity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT
-{
-	//Fill the terrain entity components with the relevant data.
-	FrustumCullingComponent &frustumCullingComponent{ ComponentManager::GetTerrainFrustumCullingComponents()[entity->_ComponentsIndex] };
-	TerrainComponent &terrainComponent{ ComponentManager::GetTerrainTerrainComponents()[entity->_ComponentsIndex] };
-	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->_ComponentsIndex] };
-
-	frustumCullingComponent._ModelSpaceAxisAlignedBoundingBox = data->_AxisAlignedBoundingBox;
-
-	Texture2DHandle terrainPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(data->_TerrainProperties), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Nearest, TextureFormat::R32G32B32A32_Float));
-
-	terrainComponent._TerrainUniformData = data->_TerrainUniformData;
-	terrainComponent._UniformBuffer = CreateUniformBuffer(sizeof(TerrainUniformData));
-	UploadDataToUniformBuffer(terrainComponent._UniformBuffer, &terrainComponent._TerrainUniformData);
-	terrainComponent._TerrainProperties = data->_TerrainProperties;
-	terrainComponent._TerrainPropertiesTexture = terrainPropertiesTexture;
-
-	//Create the render data table.
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain), &renderComponent._RenderDataTable);
-
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::UniformBuffer, terrainComponent._UniformBuffer), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, terrainPropertiesTexture), renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(3, RenderDataTableUpdateInformation::Type::Texture2D, data->_LayerWeightsTexture), renderComponent._RenderDataTable);
-
-	renderComponent._MaterialRenderDataTable = data->_TerrainMaterial._RenderDataTable;
-
-	DynamicArray<float> vertices;
-	DynamicArray<uint32> indices;
-
-	RenderingUtilities::GenerateTerrainPlane(128, vertices, indices);
-
-	StaticArray<void *RESTRICT, 2> bufferData;
-
-	bufferData[0] = vertices.Data();
-	bufferData[1] = indices.Data();
-
-	StaticArray<uint64, 2> bufferDataSizes;
-
-	bufferDataSizes[0] = sizeof(float) * vertices.Size();
-	bufferDataSizes[1] = sizeof(uint32) * indices.Size();
-
-	renderComponent._Buffer = CreateConstantBuffer(bufferData.Data(), bufferDataSizes.Data(), 2);
-
-	renderComponent._IndexOffset = sizeof(float) * vertices.Size();
-	renderComponent._IndexCount = static_cast<uint32>(indices.Size());
-	renderComponent._IsInViewFrustum = true;
-}
-
-/*
-*	Terminates a terrain entity.
-*/
-void RenderingSystem::TerminateTerrainEntity(const Entity *const RESTRICT entity) const NOEXCEPT
-{
-	//Retrieve the component.
-	TerrainComponent &component{ ComponentManager::GetTerrainTerrainComponents()[entity->_ComponentsIndex] };
-	TerrainRenderComponent &renderComponent{ ComponentManager::GetTerrainTerrainRenderComponents()[entity->_ComponentsIndex] };
-
-	//Destroy the terrain entity's resources.
-	DestroyTexture2D(component._TerrainPropertiesTexture);
-	DestroyRenderDataTable(renderComponent._RenderDataTable);
-}
-
-/*
 *	Initializes an instanced physical entity.
 */
 void RenderingSystem::InitializeInstancedPhysicalEntity(const Entity *const RESTRICT entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT
@@ -925,18 +858,6 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::EnvironmentMaterial)]);
-	}
-
-	{
-		//Initialize the terrain render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
-		{
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::UniformBuffer, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Vertex | ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Terrain)]);
 	}
 
 	{

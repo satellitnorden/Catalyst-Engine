@@ -49,16 +49,6 @@ public:
 	constexpr float GetOceanHeight() const NOEXCEPT { return 0.0f; }
 #endif
 
-	/*
-	*	Given a world position, returns the height of the terrain at that point.
-	*/
-	float GetTerrainHeightAtPosition(const Vector3 &position) const NOEXCEPT;
-
-	/*
-	*	Given a world position, returns the normal of the terrain at that point.
-	*/
-	Vector3 GetTerrainNormalAtPosition(const Vector3 &position) const NOEXCEPT;
-
 private:
 
 	//The wind direction.

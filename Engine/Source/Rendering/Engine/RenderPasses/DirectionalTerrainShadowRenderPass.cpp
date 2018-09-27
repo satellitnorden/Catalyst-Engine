@@ -8,10 +8,11 @@
 #include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
-#include <Systems/CullingSystem.h>
-#include <Systems/EngineSystem.h>
-#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/TerrainSystem.h>
+
+//Terrain.
+#include <Terrain/TerrainVertex.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(DirectionalTerrainShadowRenderPass);
@@ -57,32 +58,39 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::DirectionalShadowMap);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(3);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::TessellationEvaluation, 0, sizeof(float) * 5);
+	AddPushConstantRange(ShaderStage::TessellationEvaluation, 0, sizeof(TerrainDisplacementInformation));
 
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(2);
+	SetNumberOfVertexInputAttributeDescriptions(4);
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
 										0);
 	AddVertexInputAttributeDescription(	1,
 										0,
-										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
 										sizeof(float) * 3);
+	AddVertexInputAttributeDescription(	2,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
+										sizeof(float) * 6);
+	AddVertexInputAttributeDescription(	3,
+										0,
+										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										sizeof(float) * 10);
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
-	AddVertexInputBindingDescription(0, sizeof(float) * 5, VertexInputBindingDescription::InputRate::Vertex);
+	AddVertexInputBindingDescription(0, sizeof(TerrainVertex), VertexInputBindingDescription::InputRate::Vertex);
 
 	//Set the render resolution.
-	SetRenderResolution(Resolution(EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution, EngineSystem::Instance->GetProjectConfiguration()._RenderingConfiguration._ShadowMapResolution));
+	SetRenderResolution(RenderingSystem::Instance->GetDirectionalShadowMapResolution());
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
@@ -107,19 +115,11 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 */
 void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 {
-	if (true)
-	{
-		//Don't include this render pass in the final render.
-		SetIncludeInRender(false);
-
-		return;
-	}
-
-	//Iterate over all terrain components and draw them all.
-	const uint64 numberOfTerrainComponents{ ComponentManager::GetNumberOfTerrainComponents() };
+	//Iterate over all terrain render informations and draw them
+	const DynamicArray<TerrainRenderInformation> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainRenderInformation() };
 
 	//If there's none to render - render none.
-	if (numberOfTerrainComponents == 0)
+	if (informations->Empty())
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
@@ -127,38 +127,25 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 		return;
 	}
 
-	//Cache data the will be used.
+	//Cache the command buffer
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const TerrainRenderComponent *RESTRICT component{ ComponentManager::GetTerrainTerrainRenderComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the render data table.
+	//Bind the current dynamic uniform data render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
-	for (uint64 i = 0; i < numberOfTerrainComponents; ++i, ++component)
+	for (const TerrainRenderInformation &information : *informations)
 	{
-		struct PushConstantData
-		{
-			float a, b, c, d, e;
-		} data;
-
-		data.a = 10.0f;
-		data.b = 1.0f;
-		data.c = 5.0f;
-		data.d = 10.0f;
-		data.e = 10.0f;
-
-		commandBuffer->PushConstants(this, ShaderStage::TessellationEvaluation, 0, sizeof(float) * 5, &data);
-
 		const uint64 offset{ 0 };
 
-		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);
-		commandBuffer->BindRenderDataTable(this, 2, component->_MaterialRenderDataTable);
-		commandBuffer->BindVertexBuffers(this, 1, &component->_Buffer, &offset);
-		commandBuffer->BindIndexBuffer(this, component->_Buffer, component->_IndexOffset);
-		commandBuffer->DrawIndexed(this, component->_IndexCount, 1);
+		commandBuffer->BindVertexBuffers(this, 1, &information._Buffer, &offset);
+		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
+		commandBuffer->BindRenderDataTable(this, 1, information._RenderDataTable);
+		commandBuffer->PushConstants(this, ShaderStage::TessellationEvaluation, 0, sizeof(TerrainDisplacementInformation), &information._DisplacementInformation);
+
+		commandBuffer->DrawIndexed(this, information._IndexCount, 1);
 	}
 
 	//End the command buffer.

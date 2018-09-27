@@ -20,7 +20,6 @@ public:
 	{
 		DynamicPhysical,
 		ParticleSystem,
-		Terrain,
 
 		NumberOfEntityTypes
 	};

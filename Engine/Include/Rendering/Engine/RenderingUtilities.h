@@ -14,7 +14,6 @@
 //Rendering.
 #include <Rendering/Engine/PhysicalVertex.h>
 #include <Rendering/Engine/RenderingCore.h>
-#include <Rendering/Engine/TerrainUniformData.h>
 
 //Resources.
 #include <Resources/PhysicalModelData.h>
@@ -39,61 +38,6 @@ namespace RenderingUtilities
 		const Matrix4 directionalLightDirection{ Matrix4::LookAt(directionalLightPosition, directionalLightPosition + directionalLightForwardVector, directionalLightUpVector) };
 	
 		return directionalLightProjectionMatrix * directionalLightDirection;
-	}
-
-	/*
-	*	Calculates an axis-aligned bounding box for a terrain.
-	*/
-	static void CalculateTerrainAxisAlignedBoundingBox(const CPUTexture2D *const RESTRICT properties, const float extent, const Vector3 *const RESTRICT _WorldPosition, const float height, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
-	{
-		float lowest{ FLOAT_MAXIMUM };
-		float highest{ -FLOAT_MAXIMUM };
-
-		for (const Vector4 &property : *properties)
-		{
-			lowest = CatalystBaseMath::Minimum(lowest, property._W);
-			highest = CatalystBaseMath::Maximum(highest, property._W);
-		}
-
-		const float halfExtent{ extent * 0.5f };
-
-		box->_Minimum = *_WorldPosition + Vector3(-halfExtent, lowest * height, -halfExtent);
-		box->_Maximum = *_WorldPosition + Vector3(halfExtent, highest * height, halfExtent);
-	}
-
-	/*
-	*	Given terrain properties, terrain uniform data and a resolution, generate terrain plane vertices and indices.
-	*/
-	static void GenerateTerrainPlane(const uint32 resolution, DynamicArray<float> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
-	{
-		vertices.Reserve((resolution + 1) * (resolution + 1) * 5);
-		indices.Reserve(resolution * resolution * 6);
-
-		for (uint32 i = 0; i <= resolution; ++i)
-		{
-			for (uint32 j = 0; j <= resolution; ++j)
-			{
-				const float xTextureCoordinate{ static_cast<float>(i) / static_cast<float>(resolution) };
-				const float yTextureCoordinate{ static_cast<float>(j) / static_cast<float>(resolution) };
-
-				vertices.EmplaceFast(-1.0f + (2.0f * xTextureCoordinate));
-				vertices.EmplaceFast(0.0f);
-				vertices.EmplaceFast(-1.0f + (2.0f * yTextureCoordinate));
-				vertices.EmplaceFast(xTextureCoordinate);
-				vertices.EmplaceFast(yTextureCoordinate);
-
-				if (i != resolution && j != resolution)
-				{
-					indices.EmplaceFast((i * (resolution + 1)) + j);
-					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j);
-					indices.EmplaceFast((i * (resolution + 1)) + j + 1);
-
-					indices.EmplaceFast((i * (resolution + 1)) + j + 1);
-					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j);
-					indices.EmplaceFast(((i + 1) * (resolution + 1)) + j + 1);
-				}
-			}
-		}
 	}
 
 	/*

@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/DynamicArray.h>
 
 //Components.
 #include <Components/CameraComponent.h>
@@ -14,8 +15,6 @@
 #include <Components/ParticleSystemRenderComponent.h>
 #include <Components/PointLightComponent.h>
 #include <Components/SpotLightComponent.h>
-#include <Components/TerrainComponent.h>
-#include <Components/TerrainRenderComponent.h>
 #include <Components/TransformComponent.h>
 
 /*
@@ -75,6 +74,5 @@ class ComponentManager final
 	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(SpotLight, SpotLightComponent);
-	DECLARE_ENTITY_CLASS_WITH_THREE_COMPONENTS(Terrain, TerrainComponent, FrustumCullingComponent, TerrainRenderComponent);
 
 };

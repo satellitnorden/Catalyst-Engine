@@ -184,11 +184,6 @@ private:
 	void InitializeParticleSystemEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
 
 	/*
-	*	Initializes a terrain entity.
-	*/
-	void InitializeTerrainEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
-
-	/*
 	*	Processes the termination queue.
 	*/
 	void ProcessTerminationQueue() NOEXCEPT;
@@ -202,11 +197,6 @@ private:
 	*	Terminates a particle system entity.
 	*/
 	void TerminateParticleSystemEntity(Entity* const RESTRICT entity) NOEXCEPT;
-
-	/*
-	*	Terminates a terrain entity.
-	*/
-	void TerminateTerrainEntity(Entity* const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Processes the destruction queue.

@@ -7,7 +7,6 @@
 //Entities.
 #include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 #include <Entities/InitializationData/ParticleSystemInitializationData.h>
-#include <Entities/InitializationData/TerrainInitializationData.h>
 
 //Multithreading.
 #include <Multithreading/ScopedLock.h>
@@ -77,13 +76,6 @@ void EntitySystem::InitializeEntity(Entity* const RESTRICT entity, EntityInitial
 			break;
 		}
 
-		case Entity::EntityType::Terrain:
-		{
-			InitializeTerrainEntity(entity, data);
-
-			break;
-		}
-
 #if !defined(CATALYST_FINAL)
 		default:
 		{
@@ -113,13 +105,6 @@ void EntitySystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCEPT
 		case Entity::EntityType::ParticleSystem:
 		{
 			TerminateParticleSystemEntity(entity);
-
-			break;
-		}
-
-		case Entity::EntityType::Terrain:
-		{
-			TerminateTerrainEntity(entity);
 
 			break;
 		}
@@ -264,21 +249,6 @@ void EntitySystem::InitializeParticleSystemEntity(Entity* const RESTRICT entity,
 }
 
 /*
-*	Initializes a terrain entity.
-*/
-void EntitySystem::InitializeTerrainEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
-{
-	//Retrieve a new components index for the terrain entity.
-	entity->_ComponentsIndex = ComponentManager::GetNewTerrainComponentsIndex(entity);
-
-	//Initialize the terrain entity via the rendering system.
-	RenderingSystem::Instance->InitializeTerrainEntity(entity, static_cast<const TerrainInitializationData *const RESTRICT>(data));
-
-	//Destroy the initialization data.
-	DestroyInitializationData<TerrainInitializationData>(data);
-}
-
-/*
 *	Processes the termination queue.
 */
 void EntitySystem::ProcessTerminationQueue() NOEXCEPT
@@ -312,18 +282,6 @@ void EntitySystem::TerminateParticleSystemEntity(Entity* const RESTRICT entity) 
 
 	//Return this entitiy's components index.
 	ComponentManager::ReturnParticleSystemComponentsIndex(entity->_ComponentsIndex);
-}
-
-/*
-*	Terminates a terrain entity.
-*/
-void EntitySystem::TerminateTerrainEntity(Entity* const RESTRICT entity) NOEXCEPT
-{
-	//Terminate the terrain entity via the rendering system.
-	RenderingSystem::Instance->TerminateTerrainEntity(entity);
-
-	//Return this entitiy's components index.
-	ComponentManager::ReturnTerrainComponentsIndex(entity->_ComponentsIndex);
 }
 
 /*

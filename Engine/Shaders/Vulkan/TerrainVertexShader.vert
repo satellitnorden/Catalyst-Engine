@@ -55,39 +55,23 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
-//Terrain uniform buffer.
-layout (std140, set = 1, binding = 1) uniform TerrainUniformData
-{
-    float terrainFirstLayerDisplacementHeight;
-    float terrainSecondLayerDisplacementHeight;
-    float terrainThirdLayerDisplacementHeight;
-    float terrainFourthLayerDisplacementHeight;
-    float terrainFifthLayerDisplacementHeight;
-    float terrainHeight;
-    float terrainSize;
-    float terrainTextureTilingFactor;
-    vec3 terrainPosition;
-};
-
 //In parameters.
 layout (location = 0) in vec3 vertexPosition;
-layout (location = 1) in vec2 vertexTextureCoordinate;
-
-//Texture samplers.
-layout (set = 1, binding = 2) uniform sampler2D terrainPropertiesTexture;
+layout (location = 1) in vec3 vertexNormal;
+layout (location = 2) in vec4 vertexLayerWeights;
+layout (location = 3) in vec2 vertexTextureCoordinate;
 
 //Out parameters.
-layout (location = 0) out vec2 tessellationControlHeightMapTextureCoordinate;
-layout (location = 1) out vec2 tessellationControlTextureCoordinate;
-layout (location = 2) out vec3 tessellationControlPosition;
+layout (location = 0) out vec3 tessellationControlPosition;
+layout (location = 1) out vec3 tessellationControlNormal;
+layout (location = 2) out vec4 tessellationControlLayerWeights;
+layout (location = 3) out vec2 tessellationControlTextureCoordinate;
 
 void main()
 {	
-	//Pass the texture coordinate to the tesselation control shader.
-	tessellationControlHeightMapTextureCoordinate = vertexTextureCoordinate;
-	tessellationControlTextureCoordinate = tessellationControlHeightMapTextureCoordinate * terrainTextureTilingFactor;
-
-    //Calculate the tessellation control position.
-    tessellationControlPosition = vertexPosition * (terrainSize * 0.5f) + terrainPosition;
-    tessellationControlPosition.y = texture(terrainPropertiesTexture, tessellationControlHeightMapTextureCoordinate).w * terrainHeight;
+	//Pass information to the tessellation control shader.
+    tessellationControlPosition = vertexPosition;
+	tessellationControlNormal = vertexNormal;
+    tessellationControlLayerWeights = vertexLayerWeights;
+    tessellationControlTextureCoordinate = vertexTextureCoordinate;
 }

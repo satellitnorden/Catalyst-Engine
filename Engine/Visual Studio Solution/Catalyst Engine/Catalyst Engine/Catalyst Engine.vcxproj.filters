@@ -234,12 +234,6 @@
     <ClInclude Include="..\..\..\Include\Components\SpotLightComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\TerrainComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\TerrainRenderComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\TransformComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
@@ -286,9 +280,6 @@
       <Filter>Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\SpotLightEntity.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\TerrainEntity.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h">
@@ -395,9 +386,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\TaskSystem.h">
       <Filter>Systems\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\InitializationData\TerrainInitializationData.h">
-      <Filter>Entities\Include\InitializationData</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\Vulkan2DTexture.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
@@ -571,9 +559,6 @@
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainMaterial.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainUniformData.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h">
@@ -921,9 +906,6 @@
       <Filter>Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\SpotLightEntity.cpp">
-      <Filter>Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\TerrainEntity.cpp">
       <Filter>Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp">

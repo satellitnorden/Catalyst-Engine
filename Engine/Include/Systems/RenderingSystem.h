@@ -42,11 +42,8 @@ class PhysicalMaterialData;
 class PhysicalModelData;
 class RenderPass;
 class Resolution;
-class TerrainEntity;
-class TerrainInitializationData;
 class TerrainMaterial;
 class TerrainMaterialData;
-class TerrainUniformData;
 class TextureData;
 
 class RenderingSystem final
@@ -417,16 +414,6 @@ public:
 	*	Initializes a dynamic physical entity.
 	*/
 	void InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT;
-
-	/*
-	*	Initializes a terrain entity.
-	*/
-	void InitializeTerrainEntity(const Entity *const RESTRICT entity, const TerrainInitializationData *const RESTRICT data) const NOEXCEPT;
-
-	/*
-	*	Terminates a terrain entity.
-	*/
-	void TerminateTerrainEntity(const Entity *const RESTRICT entity) const NOEXCEPT;
 
 	/*
 	*	Initializes an instanced physical entity.

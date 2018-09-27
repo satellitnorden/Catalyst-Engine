@@ -33,6 +33,14 @@ public:
 	void InitializeSystem(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT;
 
 	/*
+	*	Returns the terrain render information.
+	*/
+	RESTRICTED NO_DISCARD const DynamicArray<TerrainRenderInformation> *const RESTRICT GetTerrainRenderInformation() const NOEXCEPT
+	{
+		return &_RenderInformation;
+	}
+
+	/*
 	*	Adds a terrain patch.
 	*/
 	void AddTerrainPatch(TerrainPatchInformation &&information) NOEXCEPT;

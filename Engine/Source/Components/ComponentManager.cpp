@@ -186,4 +186,3 @@ DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(InstancedPhysical, InstancedPhysicalRende
 DEFINE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(SpotLight, SpotLightComponent);
-DEFINE_ENTITY_CLASS_WITH_THREE_COMPONENTS(Terrain, TerrainComponent, FrustumCullingComponent, TerrainRenderComponent);

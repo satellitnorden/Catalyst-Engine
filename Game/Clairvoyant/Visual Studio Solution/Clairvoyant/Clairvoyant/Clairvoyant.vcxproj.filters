@@ -57,9 +57,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\SpotLightEntity.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\TerrainEntity.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\EnvironmentManager.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>

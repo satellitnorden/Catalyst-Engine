@@ -57,8 +57,6 @@
     <ClInclude Include="..\..\..\Include\Components\ParticleSystemRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\PointLightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\SpotLightComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\TerrainComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\TerrainRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\TransformComponent.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\HashAlgorithms.h" />
     <ClInclude Include="..\..\..\Include\Core\Algorithms\SortingAlgorithms.h" />
@@ -94,12 +92,10 @@
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\DynamicPhysicalInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\ParticleSystemInitializationData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\InitializationData\TerrainInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InstancedPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\ParticleSystemEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\PointLightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\SpotLightEntity.h" />
-    <ClInclude Include="..\..\..\Include\Entities\TerrainEntity.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\Include\Input\InputCore.h" />
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />
@@ -203,7 +199,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainMaterial.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BloomFragmentShader.h" />
@@ -287,7 +282,6 @@
     <ClCompile Include="..\..\..\Source\Entities\ParticleSystemEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\PointLightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\SpotLightEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\TerrainEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp" />
