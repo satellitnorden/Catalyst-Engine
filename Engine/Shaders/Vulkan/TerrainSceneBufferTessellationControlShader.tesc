@@ -55,6 +55,9 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Preprocessor defines.
+#define MAX_TESSELLATION_LEVEL 32.0f
+
 //Layout specification.
 layout (vertices = 3) out;
 
@@ -97,18 +100,9 @@ vec3 GetMiddlePoint(vec3 point1, vec3 point2, vec3 point3)
 /*
 *   Given a distance to the camera squared, return the proper tesselation level.
 */
-float GetTesselationLevel(float distanceToCameraSquared)
+float GetTesselationLevel(float distanceToCamera)
 {
-    float tesselationLevel = 1.0f;
-
-    tesselationLevel = distanceToCameraSquared < 22500.0f ? 2.0f : tesselationLevel;   //150 meters.
-    tesselationLevel = distanceToCameraSquared < 15625.0f ? 4.0f : tesselationLevel;   //125 meters.
-    tesselationLevel = distanceToCameraSquared < 10000.0f ? 8.0f : tesselationLevel;    //100 meters.
-    tesselationLevel = distanceToCameraSquared < 5625.0f ? 16.0f : tesselationLevel;   //75 meters.
-    tesselationLevel = distanceToCameraSquared < 2500.0f ? 32.0f : tesselationLevel;   //50 meters.
-    tesselationLevel = distanceToCameraSquared < 625.0f ? 64.0f : tesselationLevel;    //25 meters.
-
-    return tesselationLevel;
+    return max(MAX_TESSELLATION_LEVEL - distanceToCamera, 1.0f);
 }
 
 void main()
@@ -132,9 +126,9 @@ void main()
 
         vec3 middleOfTriangle = GetMiddlePoint(middlePoint1, middlePoint2, middlePoint3);
 
-        gl_TessLevelInner[0] = GetTesselationLevel(LengthSquared(cameraWorldPosition - middleOfTriangle));
-        gl_TessLevelOuter[0] = GetTesselationLevel(LengthSquared(cameraWorldPosition - middlePoint1));
-        gl_TessLevelOuter[1] = GetTesselationLevel(LengthSquared(cameraWorldPosition - middlePoint2));
-        gl_TessLevelOuter[2] = GetTesselationLevel(LengthSquared(cameraWorldPosition - middlePoint3));
+        gl_TessLevelInner[0] = GetTesselationLevel(length(cameraWorldPosition - middleOfTriangle));
+        gl_TessLevelOuter[0] = GetTesselationLevel(length(cameraWorldPosition - middlePoint1));
+        gl_TessLevelOuter[1] = GetTesselationLevel(length(cameraWorldPosition - middlePoint2));
+        gl_TessLevelOuter[2] = GetTesselationLevel(length(cameraWorldPosition - middlePoint3));
     }
 }

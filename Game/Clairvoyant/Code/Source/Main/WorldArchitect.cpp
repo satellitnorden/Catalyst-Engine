@@ -34,7 +34,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//Create some terrain.
 	CPUTexture2D properties{ WorldArchitectConstants::MAP_RESOLUTION };
 
-	const float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+	const float randomOffset1{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+	const float randomOffset2{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+	const float randomOffset3{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+	const float randomOffset4{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
 
 	for (uint64 i = 0; i < WorldArchitectConstants::MAP_RESOLUTION; ++i)
 	{
@@ -43,7 +46,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 			const float xCoordinate{ static_cast<float>(i) / static_cast<float>(WorldArchitectConstants::MAP_RESOLUTION) };
 			const float yCoordinate{ static_cast<float>(j) / static_cast<float>(WorldArchitectConstants::MAP_RESOLUTION) };
 
-			properties.At(i, j)._W = PerlinNoiseGenerator::GenerateNoise(xCoordinate * 7.5f, yCoordinate * 7.5f, 0.0f, randomOffset);
+			properties.At(i, j)._W = PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, 0.0f, randomOffset1);
+			properties.At(i, j)._W += PerlinNoiseGenerator::GenerateNoise(xCoordinate * 7.5f, yCoordinate * 7.5f, 0.0f, randomOffset2) * 0.25f;
+			properties.At(i, j)._W += PerlinNoiseGenerator::GenerateNoise(xCoordinate * 15.0f, yCoordinate * 15.0f, 0.0f, randomOffset3) * 0.125f;
+			properties.At(i, j)._W += 0.25f;
 		}
 	}
 
@@ -53,31 +59,40 @@ void WorldArchitect::Initialize() NOEXCEPT
 	{
 		for (uint64 j = 0; j < WorldArchitectConstants::MAP_RESOLUTION; ++j)
 		{
-			//Determine the weight of the first grass layer.
+			//Determine the weight of the sand layer.
+			float sandLayerWeight;
+
 			const float worldHeight{ properties.At(i, j)._W * 100.0f };
 
 			if (worldHeight < 0.0f)
 			{
-				weights.At(i, j)._X = 0.0f;
+				sandLayerWeight = 1.0f;
 			}
 
 			else if (worldHeight > 10.0f)
 			{
-				weights.At(i, j)._X = 1.0f;
+				sandLayerWeight = 0.0f;
 			}
 
 			else
 			{
-				weights.At(i, j)._X = worldHeight * 0.1f;
+				sandLayerWeight = 1.0f - (worldHeight * 0.1f);
 			}
+
+			//Determine the weight of the first grass layer.
+			weights.At(i, j)._X = 1.0f - sandLayerWeight;
 
 			//Determine the weight of the second grass layer.
 			const float xCoordinate{ static_cast<float>(i) / static_cast<float>(WorldArchitectConstants::MAP_RESOLUTION) };
 			const float yCoordinate{ static_cast<float>(j) / static_cast<float>(WorldArchitectConstants::MAP_RESOLUTION) };
 
-			weights.At(i, j)._Y = ((PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, 0.0f, randomOffset) + 1.0f) * 0.5f) - (1.0f - weights.At(i, j)._X);
-			weights.At(i, j)._Y = CatalystBaseMath::Clamp<float>(weights.At(i, j)._Y, 0.0f, 1.0f);
-			weights.At(i, j)._Y = CatalystBaseMath::SmoothStep<10>(weights.At(i, j)._Y);
+			weights.At(i, j)._Y = ((PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, 0.0f, randomOffset4) + 1.0f) * 0.5f);
+
+			//Modify the weight of the first grass layer.
+			weights.At(i, j)._X = CatalystBaseMath::Clamp<float>(weights.At(i, j)._X - weights.At(i, j)._Y, 0.0f, 1.0f);
+
+			weights.At(i, j)._Y = CatalystBaseMath::Clamp<float>(weights.At(i, j)._Y - sandLayerWeight, 0.0f, 1.0f);
+			weights.At(i, j)._Y = CatalystBaseMath::SmoothStep<5>(weights.At(i, j)._Y);
 
 			weights.At(i, j)._Z = 0.0f;
 			weights.At(i, j)._W = 0.0f;
