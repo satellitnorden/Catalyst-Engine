@@ -45,6 +45,11 @@ public:
 	*/
 	void AddTerrainPatch(TerrainPatchInformation &&information) NOEXCEPT;
 
+	/*
+	*	Returns the terrain height at the given position.
+	*/
+	float GetTerrainHeightAtPosition(const Vector3 &position) const NOEXCEPT;
+
 private:
 
 	//The properties.

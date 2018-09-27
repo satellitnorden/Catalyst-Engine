@@ -75,3 +75,19 @@ void TerrainSystem::AddTerrainPatch(TerrainPatchInformation &&information) NOEXC
 	renderInformation->_RenderDataTable = information._Material._RenderDataTable;
 	renderInformation->_DisplacementInformation = information._DisplacementInformation;
 }
+
+/*
+*	Returns the terrain height at the given position.
+*/
+float TerrainSystem::GetTerrainHeightAtPosition(const Vector3 &position) const NOEXCEPT
+{
+	//Transform the position's X and Z components into X and Y coordinates.
+	const float coordinateX{ (position._X + (_Properties._PatchSize * 0.5f)) / _Properties._PatchSize };
+	const float coordinateY{ (position._Z + (_Properties._PatchSize * 0.5f)) / _Properties._PatchSize };
+
+	//Sample the patch's normal/height map.
+	const Vector4 &normalHeight{ _Patches[0]._NormalHeightMap.At(coordinateX, coordinateY) };
+
+	//Return the height.
+	return normalHeight._W * _Properties._Height;
+}

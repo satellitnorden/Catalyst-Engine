@@ -23,7 +23,7 @@ DEFINE_SINGLETON(WorldArchitect);
 //World architect constants.
 namespace WorldArchitectConstants
 {
-	constexpr uint64 MAP_RESOLUTION{ 256 };
+	constexpr uint64 MAP_RESOLUTION{ 512 };
 }
 
 /*
@@ -54,7 +54,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 		for (uint64 j = 0; j < WorldArchitectConstants::MAP_RESOLUTION; ++j)
 		{
 			//Determine the weight of the first grass layer.
-			const float worldHeight{ properties.At(i, j)._W * 250.0f };
+			const float worldHeight{ properties.At(i, j)._W * 100.0f };
 
 			if (worldHeight < 0.0f)
 			{
@@ -91,11 +91,11 @@ void WorldArchitect::Initialize() NOEXCEPT
 	information._NormalHeightMap = properties;
 	information._LayerWeightsMap = weights;
 	information._Material = ResourceLoader::GetTerrainMaterial(HashString("DefaultTerrainMaterial"));
-	information._DisplacementInformation._FirstLayerDisplacement = 2.5f;
-	information._DisplacementInformation._SecondLayerDisplacement = 1.0f;
-	information._DisplacementInformation._ThirdLayerDisplacement = 5.0f;
-	information._DisplacementInformation._FourthLayerDisplacement = 5.0f;
-	information._DisplacementInformation._FifthLayerDisplacement = 10.0f;
+	information._DisplacementInformation._FirstLayerDisplacement = 1.0f;
+	information._DisplacementInformation._SecondLayerDisplacement = 0.25f;
+	information._DisplacementInformation._ThirdLayerDisplacement = 1.0f;
+	information._DisplacementInformation._FourthLayerDisplacement = 1.0f;
+	information._DisplacementInformation._FifthLayerDisplacement = 1.0f;
 
 	TerrainSystem::Instance->AddTerrainPatch(std::move(information));
 }

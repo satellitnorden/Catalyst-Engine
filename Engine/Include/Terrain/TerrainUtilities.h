@@ -67,9 +67,9 @@ namespace TerrainUtilities
 
 				TerrainVertex vertex;
 
-				vertex._PositionX = worldPosition._X + ((-1.0f + (2.0f * textureCoordinateX)) * size);
+				vertex._PositionX = worldPosition._X + ((-1.0f + (2.0f * textureCoordinateX)) * (size * 0.5f));
 				vertex._PositionY = normalHeight._W * height;
-				vertex._PositionZ = worldPosition._Z + ((-1.0f + (2.0f * textureCoordinateY)) * size);
+				vertex._PositionZ = worldPosition._Z + ((-1.0f + (2.0f * textureCoordinateY)) * (size * 0.5f));
 
 				vertex._NormalX = normalHeight._X;
 				vertex._NormalY = normalHeight._Y;
