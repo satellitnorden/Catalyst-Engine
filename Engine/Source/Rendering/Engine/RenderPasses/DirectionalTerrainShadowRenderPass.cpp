@@ -107,6 +107,14 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 */
 void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 {
+	if (true)
+	{
+		//Don't include this render pass in the final render.
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Iterate over all terrain components and draw them all.
 	const uint64 numberOfTerrainComponents{ ComponentManager::GetNumberOfTerrainComponents() };
 
