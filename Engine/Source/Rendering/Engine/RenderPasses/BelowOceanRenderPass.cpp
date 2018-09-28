@@ -1,6 +1,6 @@
 #if defined(CATALYST_ENABLE_OCEAN)
 //Header file.
-#include <Rendering/Engine/RenderPasses/AboveOceanRenderPass.h>
+#include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>
 
 //Entities.
 #include <Entities/CameraEntity.h>
@@ -17,24 +17,24 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(AboveOceanRenderPass);
+DEFINE_SINGLETON(BelowOceanRenderPass);
 
 /*
 *	Default constructor.
 */
-AboveOceanRenderPass::AboveOceanRenderPass() NOEXCEPT
+BelowOceanRenderPass::BelowOceanRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		AboveOceanRenderPass::Instance->InitializeInternal();
+		BelowOceanRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the above ocean render pass.
+*	Initializes the below ocean render pass.
 */
-void AboveOceanRenderPass::InitializeInternal() NOEXCEPT
+void BelowOceanRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -46,17 +46,17 @@ void AboveOceanRenderPass::InitializeInternal() NOEXCEPT
 	SetMainStage(RenderPassMainStage::Ocean);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::AboveOcean);
+	SetSubStage(RenderPassSubStage::BelowOcean);
 
 	//Set the sub stage index.
-	SetSubStageIndex(0);
+	SetSubStageIndex(1);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::AboveOceanFragment);
+	SetFragmentShader(Shader::BelowOceanFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
@@ -91,7 +91,7 @@ void AboveOceanRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		AboveOceanRenderPass::Instance->RenderInternal();
+		BelowOceanRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -101,7 +101,7 @@ void AboveOceanRenderPass::InitializeInternal() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void AboveOceanRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+void BelowOceanRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
@@ -115,7 +115,7 @@ void AboveOceanRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void AboveOceanRenderPass::CreateRenderDataTable() NOEXCEPT
+void BelowOceanRenderPass::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
@@ -124,14 +124,14 @@ void AboveOceanRenderPass::CreateRenderDataTable() NOEXCEPT
 }
 
 /*
-*	Renders the ocean from above.
+*	Renders the ocean from below.
 */
-void AboveOceanRenderPass::RenderInternal() NOEXCEPT
+void BelowOceanRenderPass::RenderInternal() NOEXCEPT
 {
-	//Check if the active camera is over water, if not - don't render.
+	//Check if the active camera is below water, if not - don't render.
 	const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
 
-	if (camera->GetPosition()._Y < 0.0f)
+	if (camera->GetPosition()._Y >= 0.0f)
 	{
 		SetIncludeInRender(false);
 

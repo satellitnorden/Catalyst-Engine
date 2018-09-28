@@ -18,6 +18,7 @@
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/RenderPasses/AboveOceanRenderPass.h>
+#include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>
 #endif
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>

@@ -420,6 +420,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		VulkanShaderData::GetAboveOceanFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::AboveOceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
+
+	{
+		//Initialize the below ocean fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetBelowOceanFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::BelowOceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
 #endif
 
 	{
@@ -1129,7 +1136,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 #if defined(CATALYST_ENABLE_OCEAN)
 	//Initialize the ocean render pass.
 	{
-		constexpr uint64 NUMBER_OF_OCEAN_SUBPASSES{ 1 };
+		constexpr uint64 NUMBER_OF_OCEAN_SUBPASSES{ 2 };
 
 		constexpr uint32 SCENE_INDEX{ 0 };
 
@@ -1163,14 +1170,33 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 														colorAttachmentReferences.Data(),
 														nullptr,
 														0,
+														nullptr),
+
+			VulkanUtilities::CreateSubpassDescription(	0,
+														nullptr,
+														1,
+														colorAttachmentReferences.Data(),
+														nullptr,
+														0,
 														nullptr)
 		};
 
 		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
 		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
 
-		renderPassParameters._SubpassDependencyCount = 0;
-		renderPassParameters._SubpassDependencies = nullptr;
+		StaticArray<VkSubpassDependency, NUMBER_OF_OCEAN_SUBPASSES - 1> subpassDependencies
+		{
+			VulkanUtilities::CreateSubpassDependency(	0,
+														1,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT)
+		};
+
+		renderPassParameters._SubpassDependencyCount = static_cast<uint32>(subpassDependencies.Size());
+		renderPassParameters._SubpassDependencies = subpassDependencies.Data();
 
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Ocean)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 

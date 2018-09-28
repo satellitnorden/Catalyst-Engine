@@ -9,6 +9,7 @@
 
 //Rendering.
 #include <Rendering/ShaderData/Vulkan/AboveOceanFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/BelowOceanFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BloomFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BoxBlurFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/DebugAxisAlignedBoundingBoxFragmentShader.h>

@@ -81,19 +81,17 @@ layout (set = 4, binding = 1) uniform sampler2D oceanFoamTexture;
 layout (location = 0) out vec4 fragment;
 
 //Forward declarations.
-vec3 CalculateAboveOceanFragment();
-vec3 CalculateBelowOceanFragment();
-float CalculateDeformationWeight(float distanceToBottomSquared);
-vec4 CalculateFoamColor(vec2 intersectionPointTextureCoordinate, vec3 reflection);
-float CalculateFoamWeight(float distanceToBottomSquared);
-vec3 CalculateDirectionalLight(vec3 reflectionDirection);
+vec3 CalculateAboveOceanFragment(vec3 sceneWorldPosition);
+vec3 CalculateBelowOceanFragment(vec3 sceneWorldPosition);
+float CalculateDeformationWeight(float distanceToEndPointSquared);
+vec2 CalculateEndPointTextureCoordinate(vec3 endPoint);
 vec3 CalculateIntersectionPoint(vec3 pointOnPlane, vec3 pointOnLine, vec3 normal, vec3 line);
-vec2 CalculateIntersectionPointTextureCoordinate(vec3 intersectionPoint);
-vec3 CalculateNormal(vec2 intersectionPointTextureCoordinate);
+vec3 CalculateNormal(vec2 endPointTextureCoordinate);
 vec3 CalculateOceanColor(vec3 reflection);
-float CalculateOceanColorWeight(float distanceToBottomSquared);
-vec3 CalculateSceneColor(vec3 normal, float distanceToBottomSquared);
-vec2 CalculateSceneTextureCoordinate(vec3 normal, float distanceToBottomSquared);
+float CalculateOceanColorWeight(float distanceToEndPointSquared);
+vec3 CalculateOceanFragment(vec3 endPoint);
+vec3 CalculateSceneColor(vec3 normal, float distanceToIntersectionPointSquared);
+vec2 CalculateSceneTextureCoordinate(vec3 normal, float distanceToIntersectionPointSquared);
 vec3 CalculateSceneWorldPosition();
 vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth);
 float LengthSquared(vec3 vector);
@@ -102,10 +100,16 @@ float Scale(float value, float originalMinimum, float originalMaximum, float new
 /*
 *   Calculates the fragment when the scene world position is above the ocean.
 */
-vec3 CalculateAboveOceanFragment()
+vec3 CalculateAboveOceanFragment(vec3 sceneWorldPosition)
 {
-    //The fragment should simply be the scene texture.
-    return texture(sceneTexture, fragmentTextureCoordinate).rgb;
+    //Calculate the view direction.
+    vec3 viewDirection = normalize(cameraWorldPosition - sceneWorldPosition);
+
+    //Calculate the intersection point.
+    vec3 intersectionPoint = CalculateIntersectionPoint(vec3(0.0f, 0.0f, 0.0f), cameraWorldPosition, vec3(0.0f, -1.0f, 0.0f), viewDirection);
+
+    //Calculate the ocean fragment.
+    return CalculateOceanFragment(intersectionPoint);
 }
 
 /*
@@ -113,95 +117,26 @@ vec3 CalculateAboveOceanFragment()
 */
 vec3 CalculateBelowOceanFragment(vec3 sceneWorldPosition)
 {
-    //Calculate the view direction.
-    vec3 viewDirection = normalize(sceneWorldPosition - cameraWorldPosition);
-
-    //Calculate the intersection point.
-    vec3 intersectionPoint = CalculateIntersectionPoint(vec3(0.0f, 0.0f, 0.0f), cameraWorldPosition, vec3(0.0f, -1.0f, 0.0f), viewDirection);
-
-    //Calculate the distance to the bottom squared.
-    float distanceToBottomSquared = LengthSquared(sceneWorldPosition - intersectionPoint);
-
-    //Calculate the intersection point texture coordinate.
-    vec2 intersectionPointTextureCoordinate = CalculateIntersectionPointTextureCoordinate(intersectionPoint);
-
-    //Calculate the normal.
-    vec3 normal = CalculateNormal(intersectionPointTextureCoordinate);
-
-    //Calculate the scene color.
-    vec3 sceneColor = CalculateSceneColor(normal, distanceToBottomSquared);
-
-    //Calculate the reflection direction.
-    vec3 reflectionDirection = reflect(viewDirection, normal);
-
-    //Calculate the reflection.
-    vec3 reflection = mix(texture(nightTexture, reflectionDirection).rgb, texture(dayTexture, reflectionDirection).rgb, environmentBlend);
-
-    //Calculate the ocean color.
-    vec3 calculatedOceanColor = CalculateOceanColor(mix(texture(nightTexture, normal).rgb, texture(dayTexture, normal).rgb, environmentBlend));
-
-    //Calculate the ocean color weight.
-    float oceanColorWeight = CalculateOceanColorWeight(distanceToBottomSquared);
-
-    //Calculate the underwater color.
-    vec3 underwaterColor = mix(sceneColor, calculatedOceanColor, oceanColorWeight);
-
-    //Calculate the transparency.
-    float transparency = max(dot(normal, -viewDirection), 0.0f);
-
-    //Calculate the final ocean color.
-    vec3 finalOceanColor = mix(reflection, underwaterColor, transparency);
-
-    //Calculate the foam weight.
-    float foamWeight = CalculateFoamWeight(distanceToBottomSquared);
-
-    //Calculate the foam color.
-    vec4 foamColor = CalculateFoamColor(intersectionPointTextureCoordinate, reflection);
-
-    //Mix in the foam color with the final ocean color.
-    finalOceanColor = mix(finalOceanColor, foamColor.rgb, foamWeight * foamColor.a);
-
-    //Apply directional lighting.
-    finalOceanColor += CalculateDirectionalLight(reflectionDirection);
-
-    return finalOceanColor;
+    //Calculate the ocean fragment.
+    return CalculateOceanFragment(sceneWorldPosition);
 }
 
 /*
 *   Calculates the deformation weight.
 */
-float CalculateDeformationWeight(float distanceToBottomSquared)
+float CalculateDeformationWeight(float distanceToEndPointSquared)
 {
     //Calculate the deformation weight.
-    return Scale(min(distanceToBottomSquared / oceanDeformationWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.1f, 1.0f);
+    return Scale(min(distanceToEndPointSquared / oceanDeformationWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.1f, 1.0f);
 }
 
 /*
-*	Calculates the foam color.
+*   Calculates the end point texture coordinate.
 */
-vec4 CalculateFoamColor(vec2 intersectionPointTextureCoordinate, vec3 reflection)
+vec2 CalculateEndPointTextureCoordinate(vec3 endPoint)
 {
-    //Sample the foam texture.
-    vec4 oceanFoamTextureSampler = texture(oceanFoamTexture, intersectionPointTextureCoordinate);
-
-    return vec4(oceanFoamTextureSampler.rgb * (reflection + directionalLightColor * min(directionalLightIntensity, 1.0f)), oceanFoamTextureSampler.a);
-}
-
-/*
-*   Calculates the foam weight.
-*/
-float CalculateFoamWeight(float distanceToBottomSquared)
-{
-	//Calculate the foam weight.
-    return 1.0f - min(distanceToBottomSquared / oceanFoamWeightDistanceSquared, 1.0f);
-}
-
-/*
-*   Calculates the directional light.
-*/
-vec3 CalculateDirectionalLight(vec3 reflectionDirection)
-{
-    return directionalLightColor * directionalLightIntensity * pow(max(dot(-directionalLightDirection, reflectionDirection), 0.0f), 256.0f);
+    //Calculate the intersection point texture coordinate.
+    return endPoint.xz * oceanTextureScaling + vec2(windDirection.x + totalGameTime, windDirection.z + totalGameTime) * windStrength * 0.1f;
 }
 
 /*
@@ -213,21 +148,12 @@ vec3 CalculateIntersectionPoint(vec3 pointOnPlane, vec3 pointOnLine, vec3 normal
 }
 
 /*
-*	Calculates the intersection point texture coordinate.
+*   Calculates the normal.
 */
-vec2 CalculateIntersectionPointTextureCoordinate(vec3 intersectionPoint)
-{
-	//Calculate the intersection point texture coordinate.
-	return intersectionPoint.xz * oceanTextureScaling + vec2(windDirection.x + totalGameTime, windDirection.z + totalGameTime) * windStrength * 0.1f;
-}
-
-/*
-*	Calculates the normal.
-*/
-vec3 CalculateNormal(vec2 intersectionPointTextureCoordinate)
+vec3 CalculateNormal(vec2 endPointTextureCoordinate)
 {
     //Sample the ocean normal.
-    vec3 normal = texture(oceanNormalTexture, intersectionPointTextureCoordinate).xzy;
+    vec3 normal = texture(oceanNormalTexture, endPointTextureCoordinate).xzy;
     normal = normal * 2.0f - 1.0f;
 
     return mix(normal, vec3(0.0f, 1.0f, 0.0f), oceanNormalSmoothingFactor);
@@ -245,19 +171,49 @@ vec3 CalculateOceanColor(vec3 reflection)
 /*
 *   Calculates the ocean color weight.
 */
-float CalculateOceanColorWeight(float distanceToBottomSquared)
+float CalculateOceanColorWeight(float distanceToEndPointSquared)
 {
     //Calculate the ocean color weight.
-    return Scale(min(distanceToBottomSquared / oceanColorWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.25f, 1.0f);
+    return Scale(min(distanceToEndPointSquared / oceanColorWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.25f, 1.0f);
+}
+
+/*
+*   Calculates the ocean fragment.
+*/
+vec3 CalculateOceanFragment(vec3 endPoint)
+{
+    //Calculate the distance to the end point squared.
+    float distanceToEndPointSquared = LengthSquared(endPoint - cameraWorldPosition);
+
+    //Calculate the end point texture coordinate.
+    vec2 endPointTextureCoordinate = CalculateEndPointTextureCoordinate(endPoint);
+
+    //Calculate the normal.
+    vec3 normal = CalculateNormal(endPointTextureCoordinate);
+
+    //Calculate the reflection.
+    vec3 reflection = mix(texture(nightTexture, normal).rgb, texture(dayTexture, normal).rgb, environmentBlend);
+
+    //Calculate the ocean color.
+    vec3 calculatedOceanColor = CalculateOceanColor(reflection);
+
+    //Calculate the ocean color weight.
+    float oceanColorWeight = CalculateOceanColorWeight(distanceToEndPointSquared);
+
+    //Calculate the scene color.
+    vec3 sceneColor = CalculateSceneColor(normal, distanceToEndPointSquared);
+
+    //Calculate the below ocean fragment.
+    return mix(sceneColor, calculatedOceanColor, oceanColorWeight);
 }
 
 /*
 *   Calculates the scene color.
 */
-vec3 CalculateSceneColor(vec3 normal, float distanceToBottomSquared)
+vec3 CalculateSceneColor(vec3 normal, float distanceToEndPointSquared)
 {
     //Calculate the scene texture coordinate.
-    vec2 sceneTextureCoordinate = CalculateSceneTextureCoordinate(normal, distanceToBottomSquared);
+    vec2 sceneTextureCoordinate = CalculateSceneTextureCoordinate(normal, distanceToEndPointSquared);
 
     //Calculate the above ocean scene color.
     return texture(sceneTexture, sceneTextureCoordinate).rgb;
@@ -266,10 +222,10 @@ vec3 CalculateSceneColor(vec3 normal, float distanceToBottomSquared)
 /*
 *   Calculates the scene texture coordinate
 */
-vec2 CalculateSceneTextureCoordinate(vec3 normal, float distanceToBottomSquared)
+vec2 CalculateSceneTextureCoordinate(vec3 normal, float distanceToEndPointSquared)
 {
     //Calculate the above ocean scene texture coordinate.
-    return mix(fragmentTextureCoordinate, fragmentTextureCoordinate + normal.xz, CalculateDeformationWeight(distanceToBottomSquared));
+    return mix(fragmentTextureCoordinate, fragmentTextureCoordinate + normal.xz, CalculateDeformationWeight(distanceToEndPointSquared));
 }
 
 /*
@@ -319,10 +275,10 @@ void main()
     //Calculate the scene world position.
     vec3 sceneWorldPosition = CalculateSceneWorldPosition();
 
-    //Based on whether or not the scene world position is above or below the ocean, render accoordingly.
+    //Based on whether or not the scene world position is above or below the ocean, render accordingly.
     if (sceneWorldPosition.y > 0.0f)
     {
-        fragment = vec4(CalculateAboveOceanFragment(), 1.0f);
+        fragment = vec4(CalculateAboveOceanFragment(sceneWorldPosition), 1.0f);
     }
 
     else
