@@ -76,21 +76,17 @@ layout (set = 4, binding = 1) uniform sampler2D oceanFoamTexture;
 layout (location = 0) out vec4 fragment;
 
 //Globals.
-float depth;
-vec3 intersectionPoint;
 vec3 normalDirection;
-vec3 reflectionDirection;
 vec3 sceneWorldPosition;
-vec3 viewDirection;
 
 //Forward declarations.
 vec3 CalculateAboveOceanFragment();
 float CalculateAverage(vec3 fragment);
 vec3 CalculateBelowOceanFragment();
-vec3 CalculateDirectionalLight();
-void CalculateNormalDirection();
-vec3 CalculateReflection();
-void CalculateReflectionDirection();
+vec3 CalculateDirectionalLight(vec3 reflectionDirection);
+vec3 CalculateIntersectionPoint(vec3 pointOnPlane, vec3 pointOnLine, vec3 normal, vec3 line);
+void CalculateNormalDirection(vec3 intersectionPoint);
+vec3 CalculateReflection(vec3 reflectionDirection);
 void CalculateSceneWorldPosition();
 vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth);
 
@@ -117,17 +113,17 @@ float CalculateAverage(vec3 fragment)
 vec3 CalculateBelowOceanFragment()
 {
     //Calculate the intersection point.
-    viewDirection = normalize(cameraWorldPosition - sceneWorldPosition);
-    intersectionPoint = (dot(-sceneWorldPosition, vec3(0.0f, 1.0f, 0.0f)) / dot (viewDirection, vec3(0.0f, 1.0f, 0.0f))) * viewDirection + sceneWorldPosition;
+    vec3 viewDirection = normalize(sceneWorldPosition - cameraWorldPosition);
+    vec3 intersectionPoint = CalculateIntersectionPoint(vec3(0.0f, 0.0f, 0.0f), cameraWorldPosition, vec3(0.0f, 1.0f, 0.0f), viewDirection);
 
     //Calculate the normal direction.
-    CalculateNormalDirection();
+    CalculateNormalDirection(intersectionPoint);
 
     //Calculate the reflection direction.
-    CalculateReflectionDirection();
+    vec3 reflectionDirection = reflect(viewDirection, normalDirection);
 
     //Calculate the reflection.
-    vec3 reflection = CalculateReflection();
+    vec3 reflection = CalculateReflection(reflectionDirection);
 
     //Sample the scene texture.
     float distanceToBottom = length(sceneWorldPosition - intersectionPoint);
@@ -152,7 +148,7 @@ vec3 CalculateBelowOceanFragment()
     finalOceanColor = mix(finalOceanColor, texture(oceanFoamTexture, intersectionPoint.xz + vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.1f).rgb, clamp(1.0f - distanceToBottom, 0.0f, 1.0f));
 
     //Apply the directional light.
-    finalOceanColor += CalculateDirectionalLight();
+    finalOceanColor += CalculateDirectionalLight(reflectionDirection);
 
     return finalOceanColor;
 }
@@ -160,15 +156,23 @@ vec3 CalculateBelowOceanFragment()
 /*
 *   Calculates the directional light.
 */
-vec3 CalculateDirectionalLight()
+vec3 CalculateDirectionalLight(vec3 reflectionDirection)
 {
     return directionalLightColor * directionalLightIntensity * pow(max(dot(-directionalLightDirection, reflectionDirection), 0.0f), 1024.0f);
 }
 
 /*
+*   Calculates a line-plane intersection point.
+*/
+vec3 CalculateIntersectionPoint(vec3 pointOnPlane, vec3 pointOnLine, vec3 normal, vec3 line)
+{
+    return dot(pointOnPlane - pointOnLine, normal) / dot(line, normal) * line + pointOnLine;
+}
+
+/*
 *   Calculates the normal direction.
 */
-void CalculateNormalDirection()
+void CalculateNormalDirection(vec3 intersectionPoint)
 {
     normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * oceanScaling) - (vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.1f)).xzy * 2.0f - 1.0f;
     normalDirection = mix(normalDirection, vec3(0.0f, 1.0f, 0.0f), 0.9f);
@@ -177,18 +181,9 @@ void CalculateNormalDirection()
 /*
 *   Calculates the reflection.
 */
-vec3 CalculateReflection()
+vec3 CalculateReflection(vec3 reflectionDirection)
 {
     return mix(texture(nightTexture, reflectionDirection).rgb, texture(dayTexture, reflectionDirection).rgb, environmentBlend);
-}
-
-/*
-*   Calculates the reflection direction.
-*/
-void CalculateReflectionDirection()
-{
-    vec3 inverseViewDirection = sceneWorldPosition - cameraWorldPosition;
-    reflectionDirection = normalize(reflect(inverseViewDirection, normalDirection));
 }
 
 /*
