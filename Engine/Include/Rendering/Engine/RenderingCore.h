@@ -77,7 +77,7 @@ enum class RenderPassSubStage : uint8
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	//Ocean main stage.
-	Ocean,
+	OverOcean,
 #endif
 
 	//Post processing final main stage.
@@ -181,7 +181,7 @@ enum class Shader : uint8
 	InstancedPhysicalVertex,
 	LightingFragment,
 #if defined(CATALYST_ENABLE_OCEAN)
-	OceanFragment,
+	OverOceanFragment,
 #endif
 	OutlineFragment,
 	ParticleSystemFragment,

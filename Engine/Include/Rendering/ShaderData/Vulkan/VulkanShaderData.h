@@ -23,8 +23,8 @@
 #include <Rendering/ShaderData/Vulkan/GaussianBlurFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/InstancedPhysicalVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LightingFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/OceanFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/OutlineFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/OverOceanFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemGeometryShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemVertexShader.h>

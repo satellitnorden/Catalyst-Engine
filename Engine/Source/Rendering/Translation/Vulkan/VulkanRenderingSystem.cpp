@@ -510,8 +510,8 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	{
 		//Initialize the ocean fragment shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetOceanFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::OceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanShaderData::GetOverOceanFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::OverOceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 #endif
 

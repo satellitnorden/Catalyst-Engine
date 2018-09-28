@@ -1,6 +1,9 @@
 #if defined(CATALYST_ENABLE_OCEAN)
 //Header file.
-#include <Rendering/Engine/RenderPasses/OceanRenderPass.h>
+#include <Rendering/Engine/RenderPasses/OverOceanRenderPass.h>
+
+//Entities.
+#include <Entities/CameraEntity.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -42,7 +45,7 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 	SetMainStage(RenderPassMainStage::Ocean);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::Ocean);
+	SetSubStage(RenderPassSubStage::OverOcean);
 
 	//Set the sub stage index.
 	SetSubStageIndex(0);
@@ -52,7 +55,7 @@ void OceanRenderPass::InitializeInternal() NOEXCEPT
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::OceanFragment);
+	SetFragmentShader(Shader::OverOceanFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
@@ -124,6 +127,16 @@ void OceanRenderPass::CreateRenderDataTable() NOEXCEPT
 */
 void OceanRenderPass::RenderInternal() NOEXCEPT
 {
+	//Check if the active camera is over water, if not - don't render.
+	const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
+
+	if (camera->GetPosition()._Y < 0.0f)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
 

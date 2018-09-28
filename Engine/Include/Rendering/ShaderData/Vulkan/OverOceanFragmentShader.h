@@ -10,5 +10,5 @@
 
 namespace VulkanShaderData
 {
-	void GetOceanFragmentShaderData(DynamicArray<byte> &data);
+	void GetOverOceanFragmentShaderData(DynamicArray<byte> &data);
 }
