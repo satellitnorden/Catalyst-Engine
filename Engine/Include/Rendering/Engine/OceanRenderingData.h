@@ -44,8 +44,8 @@ static OceanRenderingData GetDefaultOceanRenderingData() NOEXCEPT
 	OceanRenderingData data;
 
 	data._Color = Vector3(0.0f, 1.0f, 1.0f);
-	data._DeformationWeightDistanceSquared = 200.0f * 200.0f;
-	data._ColorWeightDistanceSquared = 100.0f * 100.0f;
+	data._DeformationWeightDistanceSquared = 250.0f * 250.0f;
+	data._ColorWeightDistanceSquared = 250.0f * 250.0f;
 	data._FoamWeightDistanceSquared = 2.5f * 2.5f;
 	data._NormalSmoothingFactor = 0.9f;
 	data._TextureScaling = 0.1f;

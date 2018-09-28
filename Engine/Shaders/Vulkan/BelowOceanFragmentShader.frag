@@ -165,7 +165,7 @@ vec3 CalculateNormal(vec2 endPointTextureCoordinate)
 vec3 CalculateOceanColor(vec3 reflection)
 {
     //Calculate the ocean color.
-    return oceanColor * (reflection + directionalLightColor * directionalLightIntensity);
+    return oceanColor * (reflection + directionalLightColor * (directionalLightIntensity * 0.5f));
 }
 
 /*
