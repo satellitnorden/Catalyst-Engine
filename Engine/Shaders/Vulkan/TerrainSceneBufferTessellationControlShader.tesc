@@ -56,7 +56,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //Preprocessor defines.
-#define MAX_TESSELLATION_LEVEL 50.0f
+#define MAX_TESSELLATION_LEVEL 64.0f
 
 //Layout specification.
 layout (vertices = 3) out;
