@@ -2,6 +2,7 @@
 #include <Main/ClairvoyantResourceCreation.h>
 
 //Resource creator.
+#include <EnvironmentMaterialCreator.h>
 #include <ResourceCollectionCreator.h>
 #include <OceanMaterialCreator.h>
 #include <TerrainMaterialCreator.h>
@@ -24,6 +25,32 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
+			//Create the day environment material.
+			EnvironmentMaterialCreator::EnvironmentMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\DayEnvironmentMaterial";
+			parameters._ID = "DayEnvironmentMaterial";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Textures\\Environment\\Day.hdr";
+			parameters._DiffuseResolution = 1'024;
+			parameters._DiffuseIrradianceResolution = 2;
+
+			//EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+		}
+
+		{
+			//Create the night environment material.
+			EnvironmentMaterialCreator::EnvironmentMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\NightEnvironmentMaterial";
+			parameters._ID = "NightEnvironmentMaterial";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Textures\\Environment\\Night.hdr";
+			parameters._DiffuseResolution = 1'024;
+			parameters._DiffuseIrradianceResolution = 2;
+
+			//EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+		}
+
+		{
 			//Create the ocean material.
 			OceanMaterialCreator::OceanMaterialCreationParameters parameters;
 
@@ -33,7 +60,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Normal = "..\\..\\..\\Resources\\Raw\\Textures\\Ocean\\Normal.jpg";
 			parameters._Foam = "..\\..\\..\\Resources\\Raw\\Textures\\Ocean\\Foam.jpg";
 
-			OceanMaterialCreator::CreateOceanMaterial(parameters);
+			//OceanMaterialCreator::CreateOceanMaterial(parameters);
 		}
 
 		{
@@ -79,7 +106,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Layers[4]._AmbientOcclusion = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow1AmbientOcclusion.png";
 			parameters._Layers[4]._Displacement = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow1Displacement.png";
 
-			TerrainMaterialCreator::CreateTerrainMaterial(parameters);
+			//TerrainMaterialCreator::CreateTerrainMaterial(parameters);
 		}
 
 		{
@@ -87,6 +114,8 @@ namespace ClairvoyantResourceCreation
 			ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantResourceCollection";
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DayEnvironmentMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\NightEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultTerrainMaterial.cr");
 

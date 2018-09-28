@@ -174,7 +174,7 @@ vec3 CalculateOceanColor(vec3 reflection)
 float CalculateOceanColorWeight(float distanceToEndPointSquared)
 {
     //Calculate the ocean color weight.
-    return Scale(min(distanceToEndPointSquared / oceanColorWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.25f, 1.0f);
+    return Scale(min(distanceToEndPointSquared / oceanColorWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.1f, 1.0f);
 }
 
 /*

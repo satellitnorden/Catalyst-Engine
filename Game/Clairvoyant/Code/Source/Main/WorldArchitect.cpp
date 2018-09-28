@@ -17,6 +17,9 @@
 //Systems.
 #include <Systems/TerrainSystem.h>
 
+//Terrain.
+#include <Terrain/TerrainUtilities.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(WorldArchitect);
 
@@ -32,6 +35,8 @@ namespace WorldArchitectConstants
 void WorldArchitect::Initialize() NOEXCEPT
 {
 	//Create some terrain.
+	const TerrainProperties *const RESTRICT terrainProperties{ TerrainSystem::Instance->GetTerrainProperties() };
+
 	CPUTexture2D properties{ WorldArchitectConstants::MAP_RESOLUTION };
 
 	const float randomOffset1{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
@@ -49,9 +54,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 			properties.At(i, j)._W = PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, 0.0f, randomOffset1);
 			properties.At(i, j)._W += PerlinNoiseGenerator::GenerateNoise(xCoordinate * 7.5f, yCoordinate * 7.5f, 0.0f, randomOffset2) * 0.25f;
 			properties.At(i, j)._W += PerlinNoiseGenerator::GenerateNoise(xCoordinate * 15.0f, yCoordinate * 15.0f, 0.0f, randomOffset3) * 0.125f;
-			properties.At(i, j)._W += 0.25f;
 		}
 	}
+
+	TerrainUtilities::GeneratePatchNormals(terrainProperties->_PatchSize, terrainProperties->_Height, &properties);
 
 	CPUTexture2D weights{ WorldArchitectConstants::MAP_RESOLUTION };
 
@@ -62,7 +68,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 			//Determine the weight of the sand layer.
 			float sandLayerWeight;
 
-			const float worldHeight{ properties.At(i, j)._W * 250.0f };
+			const float worldHeight{ properties.At(i, j)._W * terrainProperties->_Height };
 
 			if (worldHeight < 0.0f)
 			{
@@ -94,7 +100,10 @@ void WorldArchitect::Initialize() NOEXCEPT
 			weights.At(i, j)._Y = CatalystBaseMath::Clamp<float>(weights.At(i, j)._Y - sandLayerWeight, 0.0f, 1.0f);
 			weights.At(i, j)._Y = CatalystBaseMath::SmoothStep<5>(weights.At(i, j)._Y);
 
-			weights.At(i, j)._Z = 0.0f;
+			//Determine the weight of the rock layer.
+			const Vector3 normal{ properties.At(i, j)._X, properties.At(i, j)._Y, properties.At(i, j)._Z };
+
+			weights.At(i, j)._Z = CatalystBaseMath::SmoothStep<5>(1.0f - CatalystBaseMath::Clamp<float>(Vector3::DotProduct(normal, Vector3::UP) + 0.1f, 0.0f, 1.0f));
 
 			//Determine the weight of the snow layer.
 			if (worldHeight < 950.0f)
@@ -124,7 +133,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	information._DisplacementInformation._FirstLayerDisplacement = 1.25f;
 	information._DisplacementInformation._SecondLayerDisplacement = 0.1f;
 	information._DisplacementInformation._ThirdLayerDisplacement = 1.0f;
-	information._DisplacementInformation._FourthLayerDisplacement = 1.0f;
+	information._DisplacementInformation._FourthLayerDisplacement = 2.0f;
 	information._DisplacementInformation._FifthLayerDisplacement = 1.0f;
 
 	TerrainSystem::Instance->AddTerrainPatch(std::move(information));
