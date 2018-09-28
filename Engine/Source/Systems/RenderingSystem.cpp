@@ -706,7 +706,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DebugScreenBox)] = DebugScreenBoxRenderPass::Instance.Get();
 #endif
 #if defined(CATALYST_ENABLE_OCEAN)
-	_RenderPasses[UNDERLYING(RenderPassSubStage::OverOcean)] = OceanRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::AboveOcean)] = AboveOceanRenderPass::Instance.Get();
 #endif
 	_RenderPasses[UNDERLYING(RenderPassSubStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
 }

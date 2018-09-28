@@ -7,18 +7,18 @@
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
 
-class OceanRenderPass final : public RenderPass
+class AboveOceanRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(OceanRenderPass);
+	DECLARE_SINGLETON(AboveOceanRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	OceanRenderPass() NOEXCEPT;
+	AboveOceanRenderPass() NOEXCEPT;
 
 private:
 
@@ -29,7 +29,7 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes the ocean render pass.
+	*	Initializes the above ocean render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
@@ -44,7 +44,7 @@ private:
 	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
-	*	Renders the ocean.
+	*	Renders the ocean from above.
 	*/
 	void RenderInternal() NOEXCEPT;
 

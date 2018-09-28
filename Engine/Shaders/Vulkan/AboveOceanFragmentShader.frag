@@ -83,6 +83,88 @@ vec3 reflectionDirection;
 vec3 sceneWorldPosition;
 vec3 viewDirection;
 
+//Forward declarations.
+vec3 CalculateAboveOceanFragment();
+float CalculateAverage(vec3 fragment);
+vec3 CalculateBelowOceanFragment();
+vec3 CalculateDirectionalLight();
+void CalculateNormalDirection();
+vec3 CalculateReflection();
+void CalculateReflectionDirection();
+void CalculateSceneWorldPosition();
+vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth);
+
+/*
+*   Calculates the fragment when the scene world position is above the ocean.
+*/
+vec3 CalculateAboveOceanFragment()
+{
+    //The fragment should simply be the scene texture.
+    return texture(sceneTexture, fragmentTextureCoordinate).rgb;
+}
+
+/*
+*   Calculates the average of a fragment.
+*/
+float CalculateAverage(vec3 fragment)
+{
+    return (fragment.r + fragment.b + fragment.b) * 0.33333333f;
+}
+
+/*
+*   Calculates the fragment when the scene world position is below the ocean.
+*/
+vec3 CalculateBelowOceanFragment()
+{
+    //Calculate the intersection point.
+    viewDirection = normalize(cameraWorldPosition - sceneWorldPosition);
+    intersectionPoint = (dot(-sceneWorldPosition, vec3(0.0f, 1.0f, 0.0f)) / dot (viewDirection, vec3(0.0f, 1.0f, 0.0f))) * viewDirection + sceneWorldPosition;
+
+    //Calculate the normal direction.
+    CalculateNormalDirection();
+
+    //Calculate the reflection direction.
+    CalculateReflectionDirection();
+
+    //Calculate the reflection.
+    vec3 reflection = CalculateReflection();
+
+    //Sample the scene texture.
+    float distanceToBottom = length(sceneWorldPosition - intersectionPoint);
+    float deformationWeight = clamp(distanceToBottom / 25.0f, 0.0f, 1.0f);
+    vec2 sceneTextureCoordinate = fragmentTextureCoordinate + (normalDirection.xz * deformationWeight);
+
+    vec4 sceneTextureSampler = texture(sceneTexture, sceneTextureCoordinate);
+
+    //Calculate the underwater weight.
+    float underwaterWeight = clamp(length(sceneWorldPosition - intersectionPoint) / 250.0f, 0.0f, 1.0f);
+
+    //Calculate the underwater color.
+    vec3 underwaterColor = vec3(0.0f, 0.375f, 0.5f) * (CalculateAverage(reflection) + directionalLightIntensity * 0.5f);
+
+    //Calculate the transparency.
+    float transparency = 1.0f - clamp(dot(normalDirection, normalize(cameraWorldPosition - sceneWorldPosition)), 0.0f, 1.0f);
+
+    //Calculate the final ocean color.
+    vec3 finalOceanColor = mix(mix(sceneTextureSampler.rgb, underwaterColor, underwaterWeight), reflection, transparency);
+
+    //Apply foam.
+    finalOceanColor = mix(finalOceanColor, texture(oceanFoamTexture, intersectionPoint.xz + vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.1f).rgb, clamp(1.0f - distanceToBottom, 0.0f, 1.0f));
+
+    //Apply the directional light.
+    finalOceanColor += CalculateDirectionalLight();
+
+    return finalOceanColor;
+}
+
+/*
+*   Calculates the directional light.
+*/
+vec3 CalculateDirectionalLight()
+{
+    return directionalLightColor * directionalLightIntensity * pow(max(dot(-directionalLightDirection, reflectionDirection), 0.0f), 1024.0f);
+}
+
 /*
 *   Calculates the normal direction.
 */
@@ -90,6 +172,14 @@ void CalculateNormalDirection()
 {
     normalDirection = texture(oceanNormalTexture, (intersectionPoint.xz * oceanScaling) - (vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.1f)).xzy * 2.0f - 1.0f;
     normalDirection = mix(normalDirection, vec3(0.0f, 1.0f, 0.0f), 0.9f);
+}
+
+/*
+*   Calculates the reflection.
+*/
+vec3 CalculateReflection()
+{
+    return mix(texture(nightTexture, reflectionDirection).rgb, texture(dayTexture, reflectionDirection).rgb, environmentBlend);
 }
 
 /*
@@ -102,11 +192,15 @@ void CalculateReflectionDirection()
 }
 
 /*
-*   Calculates the reflection.
+*   Calculates the scene world position.
 */
-vec3 CalculateReflection()
+void CalculateSceneWorldPosition()
 {
-    return mix(texture(nightTexture, reflectionDirection).rgb, texture(dayTexture, reflectionDirection).rgb, environmentBlend);
+    //Sample the depth of the scene at this point.
+    float sceneDepth = texture(sceneNormalDepthTexture, fragmentTextureCoordinate).w;
+
+    //Calculate the scene world position.
+    sceneWorldPosition = CalculateWorldPosition(fragmentTextureCoordinate, sceneDepth);
 }
 
 /*
@@ -123,80 +217,19 @@ vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
     return worldSpacePosition.xyz;
 }
 
-/*
-*   Calculates the directional light.
-*/
-vec3 CalculateDirectionalLight()
-{
-    return directionalLightColor * directionalLightIntensity * pow(max(dot(-directionalLightDirection, reflectionDirection), 0.0f), 1024.0f);
-}
-
-/*
-*   Returns the length of a vector squared, ignoring the Y component.
-*/
-float LengthSquared(vec3 vector)
-{
-    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
-}
-
-/*
-*	Calculates the average of a fragment.
-*/
-float CalculateAverage(vec3 fragment)
-{
-	return (fragment.r + fragment.b + fragment.b) * 0.33333333f;
-}
-
 void main()
 {
-	 //Sample the depth of the scene at this point.
-    float sceneDepth = texture(sceneNormalDepthTexture, fragmentTextureCoordinate).w;
-
     //Calculate the scene world position.
-    sceneWorldPosition = CalculateWorldPosition(fragmentTextureCoordinate, sceneDepth);
+    CalculateSceneWorldPosition();
 
-    //Calculate the intersection point.
-    viewDirection = normalize(cameraWorldPosition - sceneWorldPosition);
-    intersectionPoint = (dot(-sceneWorldPosition, vec3(0.0f, 1.0f, 0.0f)) / dot (viewDirection, vec3(0.0f, 1.0f, 0.0f))) * viewDirection + sceneWorldPosition;
-
-    //Calculate the normal direction.
-    CalculateNormalDirection();
-
-    //Calculate the reflection direction.
-    CalculateReflectionDirection();
-
-	//Calculate the reflection.
-    vec3 reflection = CalculateReflection();
-
-    //Sample the scene texture.
-    float distanceToBottom = length(sceneWorldPosition - intersectionPoint);
-    float deformationWeight = clamp(distanceToBottom / 25.0f, 0.0f, 1.0f);
-    vec2 sceneTextureCoordinate = sceneWorldPosition.y > 0.0f ? fragmentTextureCoordinate : fragmentTextureCoordinate + (normalDirection.xz * deformationWeight);
-
-	sceneTextureCoordinate = sceneWorldPosition.y > 0.0f ? fragmentTextureCoordinate : sceneTextureCoordinate;
-    vec4 sceneTextureSampler = texture(sceneTexture, sceneTextureCoordinate);
-
-	//Calculate the underwater weight.
-    float underwaterWeight = clamp(length(sceneWorldPosition - intersectionPoint) / 250.0f, 0.0f, 1.0f);
-
-    //Calculate the underwater color.
-    vec3 underwaterColor = vec3(0.0f, 0.375f, 0.5f) * (CalculateAverage(reflection) + directionalLightIntensity * 0.5f);
-
-    //Calculate the transparency.
-    float transparency = 1.0f - clamp(dot(normalDirection, normalize(cameraWorldPosition - sceneWorldPosition)), 0.0f, 1.0f);
-
-    //Calculate the final ocean color.
-    vec3 finalOceanColor = sceneWorldPosition.y > 0.0f ? sceneTextureSampler.rgb : mix(mix(sceneTextureSampler.rgb, underwaterColor, underwaterWeight), reflection, transparency);
-
-    //Apply foam.
-    finalOceanColor = sceneWorldPosition.y > 0.0f ? finalOceanColor : mix(finalOceanColor, texture(oceanFoamTexture, intersectionPoint.xz + vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.1f).rgb, clamp(1.0f - distanceToBottom, 0.0f, 1.0f));
-
-    //Apply the directional light.
-    if (sceneWorldPosition.y < 0.0f)
+    //Based on whether or not the scene world position is above or below the ocean, render accoordingly.
+    if (sceneWorldPosition.y > 0.0f)
     {
-        finalOceanColor += CalculateDirectionalLight();
+        fragment = vec4(CalculateAboveOceanFragment(), 1.0f);
     }
 
-    //Write the fragment
-    fragment = vec4(finalOceanColor, 1.0f);
+    else
+    {
+        fragment = vec4(CalculateBelowOceanFragment(), 1.0f);
+    }
 }

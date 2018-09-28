@@ -8,12 +8,11 @@
 #include <Core/Core/CatalystCore.h>
 
 //Rendering.
+#include <Rendering/ShaderData/Vulkan/AboveOceanFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BloomFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/BoxBlurFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/CubeMapVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DebugAxisAlignedBoundingBoxFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/DebugAxisAlignedBoundingBoxVertexShader.h>
-#include <Rendering/ShaderData/Vulkan/DebugBoxFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/DebugScreenBoxFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/DebugScreenBoxVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalPhysicalShadowVertexShader.h>
@@ -24,7 +23,6 @@
 #include <Rendering/ShaderData/Vulkan/InstancedPhysicalVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LightingFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/OutlineFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/OverOceanFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemGeometryShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemVertexShader.h>

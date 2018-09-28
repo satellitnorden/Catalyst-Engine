@@ -413,6 +413,15 @@ void VulkanRenderingSystem::InitializeSemaphores() NOEXCEPT
 */
 void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 {
+#if defined(CATALYST_ENABLE_OCEAN)
+	{
+		//Initialize the above ocean fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetAboveOceanFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::AboveOceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+#endif
+
 	{
 		//Initialize the bloom fragment shader module.
 		DynamicArray<byte> data;
@@ -505,15 +514,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		VulkanShaderData::GetLightingFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::LightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
-
-#if defined(CATALYST_ENABLE_OCEAN)
-	{
-		//Initialize the ocean fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetOverOceanFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::OverOceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-#endif
 
 	{
 		//Initialize the outline fragment shader module.

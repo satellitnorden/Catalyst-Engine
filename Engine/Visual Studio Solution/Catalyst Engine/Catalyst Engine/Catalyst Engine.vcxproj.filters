@@ -879,11 +879,11 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainDisplacementInformation.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\OverOceanRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\OverOceanFragmentShader.h">
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\AboveOceanFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\AboveOceanRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1211,11 +1211,11 @@
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\OverOceanRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\OverOceanFragmentShader.cpp">
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\AboveOceanFragmentShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\AboveOceanRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

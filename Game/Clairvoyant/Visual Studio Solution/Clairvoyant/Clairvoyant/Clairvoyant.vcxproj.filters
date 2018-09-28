@@ -387,10 +387,10 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TerrainSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\OverOceanRenderPass.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\AboveOceanFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\OverOceanFragmentShader.cpp">
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\AboveOceanRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
   </ItemGroup>
