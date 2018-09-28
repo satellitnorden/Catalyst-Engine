@@ -145,7 +145,7 @@ vec3 CalculateBelowOceanFragment()
     vec3 finalOceanColor = mix(mix(sceneTextureSampler.rgb, underwaterColor, underwaterWeight), reflection, transparency);
 
     //Apply foam.
-    finalOceanColor = mix(finalOceanColor, texture(oceanFoamTexture, intersectionPoint.xz + vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.1f).rgb * (0.025f + directionalLightIntensity), clamp(1.0f - distanceToBottom, 0.0f, 1.0f));
+    finalOceanColor = mix(finalOceanColor, texture(oceanFoamTexture, intersectionPoint.xz + vec2(totalGameTime * windDirection.x, totalGameTime * windDirection.z) * windStrength * 0.1f).rgb * (0.01f + min(directionalLightIntensity, 1.0f)), clamp(1.0f - distanceToBottom, 0.0f, 1.0f));
 
     //Apply the directional light.
     finalOceanColor += CalculateDirectionalLight(reflectionDirection);
