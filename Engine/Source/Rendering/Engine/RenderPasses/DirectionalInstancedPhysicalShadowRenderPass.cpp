@@ -160,7 +160,7 @@ void DirectionalInstancedPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 		};
 
 		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);
-		commandBuffer->BindVertexBuffers(this, 2, buffers.Data(), offsets.Data());
+		commandBuffer->BindVertexBuffers(this, 0, 2, buffers.Data(), offsets.Data());
 		commandBuffer->BindIndexBuffer(this, component->_ModelBuffer, component->_IndexOffset);
 		commandBuffer->DrawIndexed(this, component->_IndexCount, component->_InstanceCount);
 	}

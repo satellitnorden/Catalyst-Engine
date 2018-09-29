@@ -33,7 +33,7 @@ public:
 	/*
 	*	Binds a number of vertex buffers.
 	*/
-	virtual void BindVertexBuffers(const RenderPass *const RESTRICT _RenderPass, const uint32 numberOfVertexBuffers, const ConstantBufferHandle *const RESTRICT vertexBuffers, const uint64 *const RESTRICT offsets) NOEXCEPT = 0;
+	virtual void BindVertexBuffers(const RenderPass *const RESTRICT _RenderPass, const uint32 firstBinding, const uint32 numberOfVertexBuffers, const ConstantBufferHandle *const RESTRICT vertexBuffers, const uint64 *const RESTRICT offsets) NOEXCEPT = 0;
 
 	/*
 	*	Draws.

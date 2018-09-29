@@ -50,7 +50,7 @@ public:
 	/*
 	*	Binds a number of vertex buffers.
 	*/
-	void BindVertexBuffers(const RenderPass *const RESTRICT renderPass, const uint32 numberOfVertexBuffers, const ConstantBufferHandle *const RESTRICT vertexBuffers, const uint64 *const RESTRICT offsets) NOEXCEPT override;
+	void BindVertexBuffers(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 numberOfVertexBuffers, const ConstantBufferHandle *const RESTRICT vertexBuffers, const uint64 *const RESTRICT offsets) NOEXCEPT override;
 
 	/*
 	*	Draws.

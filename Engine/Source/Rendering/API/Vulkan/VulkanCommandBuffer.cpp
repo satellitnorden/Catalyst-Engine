@@ -126,9 +126,9 @@ void VulkanCommandBuffer::CommandBindPipeline(const VkPipeline vulkanPipeline) N
 /*
 *	Records a bind vertex buffers command.
 */
-void VulkanCommandBuffer::CommandBindVertexBuffers(const uint32 vertexBufferCount, const VkBuffer *RESTRICT vertexBuffers, const VkDeviceSize *RESTRICT offsets) NOEXCEPT
+void VulkanCommandBuffer::CommandBindVertexBuffers(const uint32 firstBinding, const uint32 vertexBufferCount, const VkBuffer *RESTRICT vertexBuffers, const VkDeviceSize *RESTRICT offsets) NOEXCEPT
 {
-	vkCmdBindVertexBuffers(_VulkanCommandBuffer, 0, vertexBufferCount, vertexBuffers, offsets);
+	vkCmdBindVertexBuffers(_VulkanCommandBuffer, firstBinding, vertexBufferCount, vertexBuffers, offsets);
 }
 
 /*

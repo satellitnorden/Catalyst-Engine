@@ -156,7 +156,7 @@ void DynamicPhysicalRenderPass::RenderInternal() NOEXCEPT
 		{
 			previousBuffer = renderComponent->_Buffer;
 
-			commandBuffer->BindVertexBuffers(this, 1, &renderComponent->_Buffer, &offset);
+			commandBuffer->BindVertexBuffers(this, 0, 1, &renderComponent->_Buffer, &offset);
 			commandBuffer->BindIndexBuffer(this, renderComponent->_Buffer, renderComponent->_IndexOffset);
 		}
 

@@ -136,7 +136,7 @@ void TerrainRenderPass::RenderInternal() NOEXCEPT
 	{
 		const uint64 offset{ 0 };
 
-		commandBuffer->BindVertexBuffers(this, 1, &information._Buffer, &offset);
+		commandBuffer->BindVertexBuffers(this, 0, 1, &information._Buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
 		commandBuffer->BindRenderDataTable(this, 1, information._RenderDataTable);
 		commandBuffer->PushConstants(this, ShaderStage::TessellationEvaluation, 0, sizeof(TerrainDisplacementInformation), &information._DisplacementInformation);

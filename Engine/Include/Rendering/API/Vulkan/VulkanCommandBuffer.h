@@ -67,7 +67,7 @@ public:
 	/*
 	*	Records a bind vertex buffers command.
 	*/
-	void CommandBindVertexBuffers(const uint32 vertexBufferCount, const VkBuffer *RESTRICT vertexBuffers, const VkDeviceSize *RESTRICT offsets) NOEXCEPT;
+	void CommandBindVertexBuffers(const uint32 firstBinding, const uint32 vertexBufferCount, const VkBuffer *RESTRICT vertexBuffers, const VkDeviceSize *RESTRICT offsets) NOEXCEPT;
 
 	/*
 	*	Records a copy image command.

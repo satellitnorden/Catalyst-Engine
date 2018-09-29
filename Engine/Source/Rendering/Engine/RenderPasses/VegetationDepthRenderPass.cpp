@@ -6,6 +6,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/VegetationSystem.h>
 
 //Vegetation.
 #include <Vegetation/VegetationVertex.h>
@@ -126,12 +127,48 @@ void VegetationDepthRenderPass::InitializeInternal() NOEXCEPT
 */
 void VegetationDepthRenderPass::RenderInternal() NOEXCEPT
 {
+	//Retrieve the vegetion type informations.
+	const DynamicArray<VegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetVegetationTypeInformations() };
+
 	//If there's none to render - render none.
-	if (true)
+	if (informations->Empty())
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
 
 		return;
 	}
+
+	//Cache the command buffer
+	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
+
+	//Begin the command buffer.
+	commandBuffer->Begin(this);
+
+	//Bind the current dynamic uniform data render data table.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
+
+	for (const VegetationTypeInformation &information : *informations)
+	{
+		//Bind the model vertex and index buffer.
+		const uint64 offset{ 0 };
+
+		commandBuffer->BindVertexBuffers(this, 0, 1, &information._Model._Buffer, &offset);
+		commandBuffer->BindIndexBuffer(this, information._Model._Buffer, information._Model._IndexOffset);
+
+		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
+		{
+			//Bind the transformations buffer.
+			commandBuffer->BindVertexBuffers(this, 1, 1, &renderInformation._TransformationsBuffer, &offset);
+
+			//Draw the instances!
+			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations);
+		}
+	}
+
+	//End the command buffer.
+	commandBuffer->End(this);
+
+	//Include this render pass in the final render.
+	SetIncludeInRender(true);
 }
