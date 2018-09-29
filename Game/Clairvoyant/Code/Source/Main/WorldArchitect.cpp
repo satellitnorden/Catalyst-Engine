@@ -142,30 +142,33 @@ void WorldArchitect::Initialize() NOEXCEPT
 		TerrainSystem::Instance->AddTerrainPatch(std::move(information));
 	}
 
+	//Initialize the vegetation.
+	InitializeVegetation();
+}
+
+/*
+*	Initializes the vegetation.
+*/
+void WorldArchitect::InitializeVegetation()
+{
+	//Add the grass vegetation type.
+	VegetationTypeProperties properties;
+
+	properties._CutoffDistance = 10.0f;
+	properties._Density = 100;
+	properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 	{
-		//Add some vegetation.
-		VegetationTypeProperties properties;
+		Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
+		position._Y = TerrainSystem::Instance->GetTerrainHeightAtPosition(position);
 
-		properties._CutoffDistance = 25.0f;
-		properties._Density = 100;
-		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
-		{
-			Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
-			position._Y = TerrainSystem::Instance->GetTerrainHeightAtPosition(position);
+		*transformation = Matrix4(position, Vector3(-90.0f, 0.0f, 0.0f), Vector3(CatalystBaseMath::RandomFloatInRange(0.01f, 0.02f), CatalystBaseMath::RandomFloatInRange(0.01f, 0.02f), CatalystBaseMath::RandomFloatInRange(0.01f, 0.02f)));
 
-			*transformation = Matrix4(position, Vector3(-90.0f, 0.0f, 0.0f), Vector3(CatalystBaseMath::RandomFloatInRange(0.025f, 0.05f), CatalystBaseMath::RandomFloatInRange(0.025f, 0.05f), CatalystBaseMath::RandomFloatInRange(0.025f, 0.05f)));
+		return true;
+	};
+	VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("GrassVegetationModel")) };
+	VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("GrassVegetationMaterial")) };
 
-			return true;
-		};
-		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("GrassVegetationModel")) };
-		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("GrassVegetationMaterial")) };
-
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-		properties._CutoffDistance = 50.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-		properties._CutoffDistance = 75.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-		properties._CutoffDistance = 100.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-	}
+	VegetationSystem::Instance->AddVegetationType(properties, model, material);
+	VegetationSystem::Instance->AddVegetationType(properties, model, material);
+	VegetationSystem::Instance->AddVegetationType(properties, model, material);
 }

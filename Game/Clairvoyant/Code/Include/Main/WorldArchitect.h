@@ -22,4 +22,11 @@ public:
 	*/
 	void Initialize() NOEXCEPT;
 
+private:
+
+	/*
+	*	Initializes the vegetation.
+	*/
+	void InitializeVegetation();
+
 };
