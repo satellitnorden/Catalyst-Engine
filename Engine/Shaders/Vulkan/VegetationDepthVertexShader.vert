@@ -55,31 +55,54 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
-//In parameters.
-layout (location = 0) in vec2 fragmentTextureCoordinate;
-layout (location = 1) in float fragmentLengthFactor;
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 0) float halfCutoffDistanceSquared;
+    layout (offset = 4) float inverseHalfCutoffDistanceSquared;
+};
 
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D maskTexture;
+//In parameters.
+layout (location = 0) in vec3 vertexPosition;
+layout (location = 1) in vec3 vertexNormal;
+layout (location = 2) in vec3 vertexTangent;
+layout (location = 3) in vec2 vertexTextureCoordinate;
+layout (location = 4) in float vertexModulatorFactor;
+layout (location = 5) in mat4 vertexTransformationMatrix;
 
 //Out parameters.
-layout (location = 0) out vec4 albedo;
-layout (location = 1) out vec4 normalDepth;
-layout (location = 2) out vec4 materialProperties;
+layout (location = 0) out vec2 fragmentTextureCoordinate;
+layout (location = 1) out float fragmentLengthFactor;
 
 /*
-*   Given a seed, returns a random number.
+*   Calculates the wind modulator.
 */
-float RandomFloat(vec2 seed)
+vec3 CalculateWindModulator(vec3 worldPosition)
 {
-    return fract(sin(dot(seed.xy ,vec2(12.9898f, 78.233f))) * 43758.5453f);
+    return (vec3(sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windStrength * 4.0f), 0.0f, cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windStrength * 4.0f)) + windDirection) * 0.1f;
+}
+
+/*
+*   Returns the length of a vector squared.
+*/
+float LengthSquared(vec3 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 }
 
 void main()
 {
-    //Discard this fragment according to the mask texture.
-    if (RandomFloat(vec2(gl_FragCoord.xy)) > fragmentLengthFactor || texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
-    {
-        discard;
-    }
+    //Calculate the final vertex position.
+    vec3 finalVertexPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
+    finalVertexPosition += CalculateWindModulator(finalVertexPosition) * vertexModulatorFactor;
+
+    //Pass along the fragment texture coordinate.
+    fragmentTextureCoordinate = vertexTextureCoordinate;
+
+    //Calculate the length squared.
+    float distanceToVertexSquared = LengthSquared(finalVertexPosition - cameraWorldPosition);
+    fragmentLengthFactor = distanceToVertexSquared < halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
+
+    //Set the position.
+    gl_Position = viewMatrix * vec4(finalVertexPosition, 1.0f);
 }

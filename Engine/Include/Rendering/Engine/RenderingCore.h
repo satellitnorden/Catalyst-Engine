@@ -204,8 +204,9 @@ enum class Shader : uint8
 	TerrainTessellationEvaluation,
 	TerrainVertex,
 	VegetationColorFragment,
+	VegetationColorVertex,
 	VegetationDepthFragment,
-	VegetationVertex,
+	VegetationDepthVertex,
 	ViewportVertex,
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFogFragment,

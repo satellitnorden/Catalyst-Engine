@@ -58,7 +58,6 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //In parameters.
 layout (location = 0) in mat3 fragmentTangentSpaceMatrix;
 layout (location = 3) in vec2 fragmentTextureCoordinate;
-layout (location = 4) in float fragmentLengthFactor;
 
 //Texture samplers.
 layout (set = 1, binding = 1) uniform sampler2D albedoTexture;

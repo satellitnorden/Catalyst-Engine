@@ -38,7 +38,7 @@ void VegetationColorRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::VegetationColor);
 
 	//Set the shaders.
-	SetVertexShader(Shader::VegetationVertex);
+	SetVertexShader(Shader::VegetationColorVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);

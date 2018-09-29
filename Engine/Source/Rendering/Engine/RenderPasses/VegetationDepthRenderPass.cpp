@@ -48,7 +48,7 @@ void VegetationDepthRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::VegetationDepth);
 
 	//Set the shaders.
-	SetVertexShader(Shader::VegetationVertex);
+	SetVertexShader(Shader::VegetationDepthVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);

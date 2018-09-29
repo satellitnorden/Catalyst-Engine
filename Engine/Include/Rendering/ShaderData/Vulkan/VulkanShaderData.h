@@ -39,7 +39,8 @@
 #include <Rendering/ShaderData/Vulkan/TerrainSceneBufferTessellationEvaluationShader.h>
 #include <Rendering/ShaderData/Vulkan/TerrainVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/VegetationColorFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/VegetationColorVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/VegetationDepthFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/VegetationVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/VegetationDepthVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/ViewportVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/VolumetricFogFragmentShader.h>
