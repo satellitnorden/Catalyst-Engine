@@ -37,6 +37,46 @@ Matrix4 Matrix4::LookAt(const Vector3 &position, const Vector3 &direction, const
 }
 
 /*
+*	Given a normal and an up vector, constructs a rotation matrix.
+*/
+NO_DISCARD Matrix4 Matrix4::Orientation(const Vector3 &normal, const Vector3 & up) NOEXCEPT
+{
+	const Vector3 rotationAxis{ Vector3::CrossProduct(up, normal) };
+	const float rotationAngle{ CatalystBaseMath::ArcCosineRadians(Vector3::DotProduct(normal, up)) };
+
+	const float a = rotationAngle;
+	const float c = CatalystBaseMath::CosineRadians(a);
+	const float s = CatalystBaseMath::SineRadians(a);
+
+	Vector3 axis{ Vector3::Normalize(rotationAxis) };
+	Vector3 temp{ (1.0f - c) * axis };
+
+	Matrix4 Rotate;
+	Rotate._Matrix[0]._X = c + temp._X * axis._X;
+	Rotate._Matrix[0]._Y = temp._X * axis._Y + s * axis._Z;
+	Rotate._Matrix[0]._Z = temp._X * axis._Z - s * axis._Y;
+
+	Rotate._Matrix[1]._X = temp._Y * axis._X - s * axis._Z;
+	Rotate._Matrix[1]._Y = c + temp._Y * axis._Y;
+	Rotate._Matrix[1]._Z = temp._Y * axis._Z + s * axis._X;
+
+	Rotate._Matrix[2]._X = temp._Z * axis._X + s * axis._Y;
+	Rotate._Matrix[2]._Y = temp._Z * axis._Y - s * axis._X;
+	Rotate._Matrix[2]._Z = c + temp._Z * axis._Z;
+
+	Matrix4 identity;
+
+	Matrix4 Result;
+
+	Result._Matrix[0] = identity._Matrix[0] * Rotate._Matrix[0]._X + identity._Matrix[1] * Rotate._Matrix[0]._Y + identity._Matrix[2] * Rotate._Matrix[0]._Z;
+	Result._Matrix[1] = identity._Matrix[0] * Rotate._Matrix[1]._X + identity._Matrix[1] * Rotate._Matrix[1]._Y + identity._Matrix[2] * Rotate._Matrix[1]._Z;
+	Result._Matrix[2] = identity._Matrix[0] * Rotate._Matrix[2]._X + identity._Matrix[1] * Rotate._Matrix[2]._Y + identity._Matrix[2] * Rotate._Matrix[2]._Z;
+	Result._Matrix[3] = identity._Matrix[3];
+
+	return Result;
+}
+
+/*
 *	Calculates an ortographic projection matrix.
 */
 Matrix4 Matrix4::Ortographic(const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane) NOEXCEPT
@@ -130,207 +170,8 @@ Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3
 	:
 	_Matrix{ { scale._X, 0.0f, 0.0f, 0.0f },{ 0.0f, scale._Y, 0.0f, 0.0f },{ 0.0f, 0.0f, scale._Z, 0.0f },{ position._X, position._Y, position._Z, 1.0f } }
 {
-	//Create a rotation matrix for the X axis.
-	if (rotation._X != 0.0f)
-	{
-		const float xRadians = CatalystBaseMath::DegreesToRadians(rotation._X);
-		const float xSine = CatalystBaseMath::SineRadians(xRadians);
-		const float xCosine = CatalystBaseMath::CosineRadians(xRadians);
-
-		const Matrix4 xRotationMatrix{ Vector4(1.0f, 0.0f, 0.0f, 0.0f), Vector4(0.0f, xCosine, xSine, 0.0f), Vector4(0.0f, -xSine, xCosine, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
-
-		*this = *this * xRotationMatrix;
-	}
-
-	//Create a rotation matrix for the Y axis.
-	if (rotation._Y != 0.0f)
-	{
-		const float yRadians = CatalystBaseMath::DegreesToRadians(rotation._Y);
-		const float ySine = CatalystBaseMath::SineRadians(yRadians);
-		const float yCosine = CatalystBaseMath::CosineRadians(yRadians);
-
-		const Matrix4 yRotationMatrix{ Vector4(yCosine, 0.0f, -ySine, 0.0f), Vector4(0.0f, 1.0f, 0.0f, 0.0f), Vector4(ySine, 0.0f, yCosine, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
-
-		*this = *this * yRotationMatrix;
-	}
-
-	//Create a rotation matrix for the Z axis.
-	if (rotation._Z != 0.0f)
-	{
-		const float zRadians = CatalystBaseMath::DegreesToRadians(rotation._Z);
-		const float zSine = CatalystBaseMath::SineRadians(zRadians);
-		const float zCosine = CatalystBaseMath::CosineRadians(zRadians);
-
-		const Matrix4 zRotationMatrix{ Vector4(zCosine, zSine, 0.0f, 0.0f), Vector4(-zSine, zCosine, 0.0f, 0.0f), Vector4(0.0f, 0.0f, 1.0f, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
-
-		*this = *this * zRotationMatrix;
-	}
-}
-
-/*
-*	Returns the translation.
-*/
-Vector3 Matrix4::GetTranslation() const NOEXCEPT
-{
-	return Vector3(_Matrix[3]._X, _Matrix[3]._Y, _Matrix[3]._Z);
-}
-
-/*
-*	Returns the scale.
-*/
-Vector3 Matrix4::GetScale() const NOEXCEPT
-{
-	return Vector3(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
-}
-
-/*
-*	Sets the translation.
-*/
-void Matrix4::SetTranslation(const Vector3 &newTranslation) NOEXCEPT
-{
-	_Matrix[3]._X = newTranslation._X;
-	_Matrix[3]._Y = newTranslation._Y;
-	_Matrix[3]._Z = newTranslation._Z;
-}
-
-/*
-*	Sets the scale.
-*/
-void Matrix4::SetScale(const Vector3 & newScale) NOEXCEPT
-{
-	_Matrix[0]._X = newScale._X;
-	_Matrix[1]._Y = newScale._Y;
-	_Matrix[2]._Z = newScale._Z;
-}
-
-/*
-*	Returns the determinant of this matrix.
-*/
-float Matrix4::GetDeterminant() NOEXCEPT
-{
-	float X1 = _Matrix[1]._Y * ((_Matrix[2]._Z * _Matrix[3]._W) - (_Matrix[3]._Z * _Matrix[2]._W));
-	float X2 = _Matrix[1]._Z * -((_Matrix[2]._Y * _Matrix[3]._W) - (_Matrix[3]._Y * _Matrix[2]._W));
-	float X3 = _Matrix[1]._W * ((_Matrix[2]._Y * _Matrix[3]._Z) - (_Matrix[3]._Y * _Matrix[2]._Z));
-
-	float X = _Matrix[0]._X * (X1 + X2 + X3);
-
-	float Y1 = _Matrix[1]._X * ((_Matrix[2]._Z * _Matrix[3]._W) - (_Matrix[3]._Z * _Matrix[2]._W));
-	float Y2 = _Matrix[1]._Z * -((_Matrix[2]._X * _Matrix[3]._W) - (_Matrix[3]._X * _Matrix[2]._W));
-	float Y3 = _Matrix[1]._W * ((_Matrix[2]._X * _Matrix[3]._Z) - (_Matrix[3]._X * _Matrix[2]._Z));
-
-	float Y = _Matrix[0]._Y * -(Y1 + Y2 + Y3);
-
-	float Z1 = _Matrix[1]._X * ((_Matrix[2]._Y * _Matrix[3]._W) - (_Matrix[3]._Y * _Matrix[2]._W));
-	float Z2 = _Matrix[1]._Y * -((_Matrix[2]._X * _Matrix[3]._W) - (_Matrix[3]._X * _Matrix[2]._W));
-	float Z3 = _Matrix[1]._W * ((_Matrix[2]._X * _Matrix[3]._Y) - (_Matrix[3]._X * _Matrix[2]._Y));
-
-	float Z = _Matrix[0]._Z * (Z1 + Z2 + Z3);
-
-	float W1 = _Matrix[1]._X * ((_Matrix[2]._Y * _Matrix[3]._Z) - (_Matrix[3]._Y * _Matrix[2]._Z));
-	float W2 = _Matrix[1]._Y * -((_Matrix[2]._X * _Matrix[3]._Z) - (_Matrix[3]._X * _Matrix[2]._Z));
-	float W3 = _Matrix[1]._Z * ((_Matrix[2]._X * _Matrix[3]._Y) - (_Matrix[3]._X * _Matrix[2]._Y));
-
-	float W = _Matrix[0]._W * -(W1 + W2 + W3);
-
-	return X + Y + Z + W;
-}
-
-/*
-*	Inverses the matrix.
-*/
-void Matrix4::Inverse() NOEXCEPT
-{
-	float Coef00 = _Matrix[2]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[2]._W;
-	float Coef02 = _Matrix[1]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[1]._W;
-	float Coef03 = _Matrix[1]._Z * _Matrix[2]._W - _Matrix[2]._Z * _Matrix[1]._W;
-
-	float Coef04 = _Matrix[2]._Y * _Matrix[3]._W - _Matrix[3]._Y * _Matrix[2]._W;
-	float Coef06 = _Matrix[1]._Y * _Matrix[3]._W - _Matrix[3]._Y * _Matrix[1]._W;
-	float Coef07 = _Matrix[1]._Y * _Matrix[2]._W - _Matrix[2]._Y * _Matrix[1]._W;
-
-	float Coef08 = _Matrix[2]._Y * _Matrix[3]._Z - _Matrix[3]._Y * _Matrix[2]._Z;
-	float Coef10 = _Matrix[1]._Y * _Matrix[3]._Z - _Matrix[3]._Y * _Matrix[1]._Z;
-	float Coef11 = _Matrix[1]._Y * _Matrix[2]._Z - _Matrix[2]._Y * _Matrix[1]._Z;
-
-	float Coef12 = _Matrix[2]._X * _Matrix[3]._W - _Matrix[3]._X * _Matrix[2]._W;
-	float Coef14 = _Matrix[1]._X * _Matrix[3]._W - _Matrix[3]._X * _Matrix[1]._W;
-	float Coef15 = _Matrix[1]._X * _Matrix[2]._W - _Matrix[2]._X * _Matrix[1]._W;
-
-	float Coef16 = _Matrix[2]._X * _Matrix[3]._Z - _Matrix[3]._X * _Matrix[2]._Z;
-	float Coef18 = _Matrix[1]._X * _Matrix[3]._Z - _Matrix[3]._X * _Matrix[1]._Z;
-	float Coef19 = _Matrix[1]._X * _Matrix[2]._Z - _Matrix[2]._X * _Matrix[1]._Z;
-
-	float Coef20 = _Matrix[2]._X * _Matrix[3]._Y - _Matrix[3]._X * _Matrix[2]._Y;
-	float Coef22 = _Matrix[1]._X * _Matrix[3]._Y - _Matrix[3]._X * _Matrix[1]._Y;
-	float Coef23 = _Matrix[1]._X * _Matrix[2]._Y - _Matrix[2]._X * _Matrix[1]._Y;
-
-	Vector4 Fac0(Coef00, Coef00, Coef02, Coef03);
-	Vector4 Fac1(Coef04, Coef04, Coef06, Coef07);
-	Vector4 Fac2(Coef08, Coef08, Coef10, Coef11);
-	Vector4 Fac3(Coef12, Coef12, Coef14, Coef15);
-	Vector4 Fac4(Coef16, Coef16, Coef18, Coef19);
-	Vector4 Fac5(Coef20, Coef20, Coef22, Coef23);
-
-	Vector4 Vec0(_Matrix[1]._X, _Matrix[0]._X, _Matrix[0]._X, _Matrix[0]._X);
-	Vector4 Vec1(_Matrix[1]._Y, _Matrix[0]._Y, _Matrix[0]._Y, _Matrix[0]._Y);
-	Vector4 Vec2(_Matrix[1]._Z, _Matrix[0]._Z, _Matrix[0]._Z, _Matrix[0]._Z);
-	Vector4 Vec3(_Matrix[1]._W, _Matrix[0]._W, _Matrix[0]._W, _Matrix[0]._W);
-
-	Vector4 Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
-	Vector4 Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
-	Vector4 Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
-	Vector4 Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
-
-	Vector4 SignA(+1, -1, +1, -1);
-	Vector4 SignB(-1, +1, -1, +1);
-	Matrix4 Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
-
-	Vector4 Row0(Inverse._Matrix[0]._X, Inverse._Matrix[1]._X, Inverse._Matrix[2]._X, Inverse._Matrix[3]._X);
-
-	Vector4 Dot0(_Matrix[0] * Row0);
-	float Dot1 = (Dot0._X + Dot0._Y) + (Dot0._Z + Dot0._W);
-
-	float OneOverDeterminant = 1.0f / Dot1;
-
-	Inverse *= OneOverDeterminant;
-
-	_Matrix[0] = Inverse._Matrix[0];
-	_Matrix[1] = Inverse._Matrix[1];
-	_Matrix[2] = Inverse._Matrix[2];
-	_Matrix[3] = Inverse._Matrix[3];
-}
-
-/*
-*	Transposes the matrix.
-*/
-void Matrix4::Transpose() NOEXCEPT
-{
-	Vector4 transposedMatrix[4];
-
-	transposedMatrix[0]._X = _Matrix[0]._X;
-	transposedMatrix[1]._X = _Matrix[0]._Y;
-	transposedMatrix[2]._X = _Matrix[0]._Z;
-	transposedMatrix[3]._X = _Matrix[0]._W;
-
-	transposedMatrix[0]._Y = _Matrix[1]._X;
-	transposedMatrix[1]._Y = _Matrix[1]._Y;
-	transposedMatrix[2]._Y = _Matrix[1]._Z;
-	transposedMatrix[3]._Y = _Matrix[1]._W;
-
-	transposedMatrix[0]._Z = _Matrix[2]._X;
-	transposedMatrix[1]._Z = _Matrix[2]._Y;
-	transposedMatrix[2]._Z = _Matrix[2]._Z;
-	transposedMatrix[3]._Z = _Matrix[2]._W;
-
-	transposedMatrix[0]._W = _Matrix[3]._X;
-	transposedMatrix[1]._W = _Matrix[3]._Y;
-	transposedMatrix[2]._W = _Matrix[3]._Z;
-	transposedMatrix[3]._W = _Matrix[3]._W;
-
-	_Matrix[0] = transposedMatrix[0];
-	_Matrix[1] = transposedMatrix[1];
-	_Matrix[2] = transposedMatrix[2];
-	_Matrix[3] = transposedMatrix[3];
+	//Rotate the matrix.
+	Rotate(rotation);
 }
 
 /*
@@ -402,4 +243,180 @@ Vector4 Matrix4::operator*(const Vector4 &vector) const NOEXCEPT
 	multipliedVector._W = (_Matrix[0]._W * vector._X) + (_Matrix[1]._W * vector._Y) + (_Matrix[2]._W * vector._Z) + (_Matrix[3]._W * vector._W);
 
 	return multipliedVector;
+}
+
+/*
+*	Returns the translation.
+*/
+Vector3 Matrix4::GetTranslation() const NOEXCEPT
+{
+	return Vector3(_Matrix[3]._X, _Matrix[3]._Y, _Matrix[3]._Z);
+}
+
+/*
+*	Returns the scale.
+*/
+Vector3 Matrix4::GetScale() const NOEXCEPT
+{
+	return Vector3(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
+}
+
+/*
+*	Sets the translation.
+*/
+void Matrix4::SetTranslation(const Vector3 &newTranslation) NOEXCEPT
+{
+	_Matrix[3]._X = newTranslation._X;
+	_Matrix[3]._Y = newTranslation._Y;
+	_Matrix[3]._Z = newTranslation._Z;
+}
+
+/*
+*	Sets the scale.
+*/
+void Matrix4::SetScale(const Vector3 & newScale) NOEXCEPT
+{
+	_Matrix[0]._X = newScale._X;
+	_Matrix[1]._Y = newScale._Y;
+	_Matrix[2]._Z = newScale._Z;
+}
+
+/*
+*	Inverses this matrix.
+*/
+void Matrix4::Inverse() NOEXCEPT
+{
+	float Coef00 = _Matrix[2]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[2]._W;
+	float Coef02 = _Matrix[1]._Z * _Matrix[3]._W - _Matrix[3]._Z * _Matrix[1]._W;
+	float Coef03 = _Matrix[1]._Z * _Matrix[2]._W - _Matrix[2]._Z * _Matrix[1]._W;
+
+	float Coef04 = _Matrix[2]._Y * _Matrix[3]._W - _Matrix[3]._Y * _Matrix[2]._W;
+	float Coef06 = _Matrix[1]._Y * _Matrix[3]._W - _Matrix[3]._Y * _Matrix[1]._W;
+	float Coef07 = _Matrix[1]._Y * _Matrix[2]._W - _Matrix[2]._Y * _Matrix[1]._W;
+
+	float Coef08 = _Matrix[2]._Y * _Matrix[3]._Z - _Matrix[3]._Y * _Matrix[2]._Z;
+	float Coef10 = _Matrix[1]._Y * _Matrix[3]._Z - _Matrix[3]._Y * _Matrix[1]._Z;
+	float Coef11 = _Matrix[1]._Y * _Matrix[2]._Z - _Matrix[2]._Y * _Matrix[1]._Z;
+
+	float Coef12 = _Matrix[2]._X * _Matrix[3]._W - _Matrix[3]._X * _Matrix[2]._W;
+	float Coef14 = _Matrix[1]._X * _Matrix[3]._W - _Matrix[3]._X * _Matrix[1]._W;
+	float Coef15 = _Matrix[1]._X * _Matrix[2]._W - _Matrix[2]._X * _Matrix[1]._W;
+
+	float Coef16 = _Matrix[2]._X * _Matrix[3]._Z - _Matrix[3]._X * _Matrix[2]._Z;
+	float Coef18 = _Matrix[1]._X * _Matrix[3]._Z - _Matrix[3]._X * _Matrix[1]._Z;
+	float Coef19 = _Matrix[1]._X * _Matrix[2]._Z - _Matrix[2]._X * _Matrix[1]._Z;
+
+	float Coef20 = _Matrix[2]._X * _Matrix[3]._Y - _Matrix[3]._X * _Matrix[2]._Y;
+	float Coef22 = _Matrix[1]._X * _Matrix[3]._Y - _Matrix[3]._X * _Matrix[1]._Y;
+	float Coef23 = _Matrix[1]._X * _Matrix[2]._Y - _Matrix[2]._X * _Matrix[1]._Y;
+
+	Vector4 Fac0(Coef00, Coef00, Coef02, Coef03);
+	Vector4 Fac1(Coef04, Coef04, Coef06, Coef07);
+	Vector4 Fac2(Coef08, Coef08, Coef10, Coef11);
+	Vector4 Fac3(Coef12, Coef12, Coef14, Coef15);
+	Vector4 Fac4(Coef16, Coef16, Coef18, Coef19);
+	Vector4 Fac5(Coef20, Coef20, Coef22, Coef23);
+
+	Vector4 Vec0(_Matrix[1]._X, _Matrix[0]._X, _Matrix[0]._X, _Matrix[0]._X);
+	Vector4 Vec1(_Matrix[1]._Y, _Matrix[0]._Y, _Matrix[0]._Y, _Matrix[0]._Y);
+	Vector4 Vec2(_Matrix[1]._Z, _Matrix[0]._Z, _Matrix[0]._Z, _Matrix[0]._Z);
+	Vector4 Vec3(_Matrix[1]._W, _Matrix[0]._W, _Matrix[0]._W, _Matrix[0]._W);
+
+	Vector4 Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+	Vector4 Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+	Vector4 Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+	Vector4 Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+
+	Vector4 SignA(+1, -1, +1, -1);
+	Vector4 SignB(-1, +1, -1, +1);
+	Matrix4 Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
+
+	Vector4 Row0(Inverse._Matrix[0]._X, Inverse._Matrix[1]._X, Inverse._Matrix[2]._X, Inverse._Matrix[3]._X);
+
+	Vector4 Dot0(_Matrix[0] * Row0);
+	float Dot1 = (Dot0._X + Dot0._Y) + (Dot0._Z + Dot0._W);
+
+	float OneOverDeterminant = 1.0f / Dot1;
+
+	Inverse *= OneOverDeterminant;
+
+	_Matrix[0] = Inverse._Matrix[0];
+	_Matrix[1] = Inverse._Matrix[1];
+	_Matrix[2] = Inverse._Matrix[2];
+	_Matrix[3] = Inverse._Matrix[3];
+}
+
+/*
+*	Rotates this matrix.
+*/
+void Matrix4::Rotate(const Vector3 &rotation) NOEXCEPT
+{
+	//Create a rotation matrix for the X axis.
+	if (rotation._X != 0.0f)
+	{
+		const float xRadians = CatalystBaseMath::DegreesToRadians(rotation._X);
+		const float xSine = CatalystBaseMath::SineRadians(xRadians);
+		const float xCosine = CatalystBaseMath::CosineRadians(xRadians);
+
+		const Matrix4 xRotationMatrix{ Vector4(1.0f, 0.0f, 0.0f, 0.0f), Vector4(0.0f, xCosine, xSine, 0.0f), Vector4(0.0f, -xSine, xCosine, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
+
+		*this = *this * xRotationMatrix;
+	}
+
+	//Create a rotation matrix for the Y axis.
+	if (rotation._Y != 0.0f)
+	{
+		const float yRadians = CatalystBaseMath::DegreesToRadians(rotation._Y);
+		const float ySine = CatalystBaseMath::SineRadians(yRadians);
+		const float yCosine = CatalystBaseMath::CosineRadians(yRadians);
+
+		const Matrix4 yRotationMatrix{ Vector4(yCosine, 0.0f, -ySine, 0.0f), Vector4(0.0f, 1.0f, 0.0f, 0.0f), Vector4(ySine, 0.0f, yCosine, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
+
+		*this = *this * yRotationMatrix;
+	}
+
+	//Create a rotation matrix for the Z axis.
+	if (rotation._Z != 0.0f)
+	{
+		const float zRadians = CatalystBaseMath::DegreesToRadians(rotation._Z);
+		const float zSine = CatalystBaseMath::SineRadians(zRadians);
+		const float zCosine = CatalystBaseMath::CosineRadians(zRadians);
+
+		const Matrix4 zRotationMatrix{ Vector4(zCosine, zSine, 0.0f, 0.0f), Vector4(-zSine, zCosine, 0.0f, 0.0f), Vector4(0.0f, 0.0f, 1.0f, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
+
+		*this = *this * zRotationMatrix;
+	}
+}
+
+/*
+*	Transposes this matrix.
+*/
+void Matrix4::Transpose() NOEXCEPT
+{
+	Vector4 transposedMatrix[4];
+
+	transposedMatrix[0]._X = _Matrix[0]._X;
+	transposedMatrix[1]._X = _Matrix[0]._Y;
+	transposedMatrix[2]._X = _Matrix[0]._Z;
+	transposedMatrix[3]._X = _Matrix[0]._W;
+
+	transposedMatrix[0]._Y = _Matrix[1]._X;
+	transposedMatrix[1]._Y = _Matrix[1]._Y;
+	transposedMatrix[2]._Y = _Matrix[1]._Z;
+	transposedMatrix[3]._Y = _Matrix[1]._W;
+
+	transposedMatrix[0]._Z = _Matrix[2]._X;
+	transposedMatrix[1]._Z = _Matrix[2]._Y;
+	transposedMatrix[2]._Z = _Matrix[2]._Z;
+	transposedMatrix[3]._Z = _Matrix[2]._W;
+
+	transposedMatrix[0]._W = _Matrix[3]._X;
+	transposedMatrix[1]._W = _Matrix[3]._Y;
+	transposedMatrix[2]._W = _Matrix[3]._Z;
+	transposedMatrix[3]._W = _Matrix[3]._W;
+
+	_Matrix[0] = transposedMatrix[0];
+	_Matrix[1] = transposedMatrix[1];
+	_Matrix[2] = transposedMatrix[2];
+	_Matrix[3] = transposedMatrix[3];
 }

@@ -4,6 +4,10 @@
 #include <Core/Core/CatalystCore.h>
 #include <Core/Pointers/UniquePointer.h>
 
+//Forward declarations.
+class AxisAlignedBoundingBox;
+class Matrix4;
+
 class WorldArchitect final
 {
 
@@ -28,5 +32,10 @@ private:
 	*	Initializes the vegetation.
 	*/
 	void InitializeVegetation();
+
+	/*
+	*	Generates a transformation.
+	*/
+	bool GenerateTransformation(const float minimumScale, const float maximumScale, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT;
 
 };

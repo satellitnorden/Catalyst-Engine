@@ -21,17 +21,22 @@ public:
 	/*
 	*	Calculates a look at matrix.
 	*/
-	static Matrix4 LookAt(const Vector3 &position, const Vector3 &direction, const Vector3 &up) NOEXCEPT;
+	static NO_DISCARD Matrix4 LookAt(const Vector3 &position, const Vector3 &direction, const Vector3 &up) NOEXCEPT;
+
+	/*
+	*	Given a normal and an up vector, constructs a rotation matrix.
+	*/
+	static NO_DISCARD Matrix4 Orientation(const Vector3 &normal, const Vector3 & up) NOEXCEPT;
 
 	/*
 	*	Calculates an ortographic projection matrix.
 	*/
-	static Matrix4 Ortographic(const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane) NOEXCEPT;
+	static NO_DISCARD Matrix4 Ortographic(const float left, const float right, const float bottom, const float top, const float nearPlane, const float farPlane) NOEXCEPT;
 
 	/*
 	*	Calculates a perspective projection matrix.
 	*/
-	static Matrix4 Perspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT;
+	static NO_DISCARD Matrix4 Perspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT;
 
 	/*
 	*	Default constructor.
@@ -64,6 +69,21 @@ public:
 	Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) NOEXCEPT;
 
 	/*
+	*	Matrix4 by Matrix4 multiplication overload.
+	*/
+	Matrix4 operator*(const Matrix4 &otherMatrix) const NOEXCEPT;
+
+	/*
+	*	Matrix4 by scalar multiplication assignment overload.
+	*/
+	void operator*=(const float scalar) NOEXCEPT;
+
+	/*
+	*	Matrix4 by Vector4 multiplication overload.
+	*/
+	Vector4 operator*(const Vector4 &vector) const NOEXCEPT;
+
+	/*
 	*	Returns a data to the pointer of this matrix.
 	*/
 	RESTRICTED float* Data() NOEXCEPT { return &(_Matrix[0]._X); }
@@ -86,36 +106,21 @@ public:
 	/*
 	*	Sets the scale.
 	*/
-	void SetScale(const Vector3 & newScale) NOEXCEPT;
-
-	/*
-	*	Returns the determinant of this matrix.
-	*/
-	float GetDeterminant() NOEXCEPT;
+	void SetScale(const Vector3 &newScale) NOEXCEPT;
 	
 	/*
-	*	Inverses the matrix.
+	*	Inverses this matrix.
 	*/
 	void Inverse() NOEXCEPT;
 
 	/*
-	*	Transposes the matrix.
+	*	Rotates this matrix.
+	*/
+	void Rotate(const Vector3 &rotation) NOEXCEPT;
+
+	/*
+	*	Transposes this matrix.
 	*/
 	void Transpose() NOEXCEPT;
-
-	/*
-	*	Matrix4 by Matrix4 multiplication overload.
-	*/
-	Matrix4 operator*(const Matrix4 &otherMatrix) const NOEXCEPT;
-
-	/*
-	*	Matrix4 by scalar multiplication assignment overload.
-	*/
-	void operator*=(const float scalar) NOEXCEPT;
-
-	/*
-	*	Matrix4 by Vector4 multiplication overload.
-	*/
-	Vector4 operator*(const Vector4 &vector) const NOEXCEPT;
 
 };

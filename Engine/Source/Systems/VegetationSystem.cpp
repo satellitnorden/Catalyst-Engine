@@ -103,7 +103,11 @@ void VegetationSystem::InvalidatePatch(VegetationTypeInformation *const RESTRICT
 	//Invalidate the patch.
 	information->_PatchInformations[index]._Valid = false;
 	information->_PatchRenderInformations[index]._Draw = false;
-	RenderingSystem::Instance->DestroyConstantBuffer(information->_PatchRenderInformations[index]._TransformationsBuffer);
+
+	if (information->_PatchRenderInformations[index]._NumberOfTransformations > 0)
+	{
+		RenderingSystem::Instance->DestroyConstantBuffer(information->_PatchRenderInformations[index]._TransformationsBuffer);
+	}
 }
 
 /*
@@ -238,6 +242,14 @@ void VegetationSystem::GenerateTransformations(const GridPoint &gridPoint, const
 		}
 	}
 
-	RenderingUtilities::CreateTransformationsBuffer(transformations, buffer);
-	*numberOfTransformations = static_cast<uint32>(transformations.Size());
+	if (!transformations.Empty())
+	{
+		RenderingUtilities::CreateTransformationsBuffer(transformations, buffer);
+		*numberOfTransformations = static_cast<uint32>(transformations.Size());
+	}
+	
+	else
+	{
+		*numberOfTransformations = 0;
+	}
 }

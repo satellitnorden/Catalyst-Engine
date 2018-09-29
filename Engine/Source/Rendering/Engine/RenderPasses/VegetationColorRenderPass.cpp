@@ -163,7 +163,7 @@ void VegetationColorRenderPass::RenderInternal() NOEXCEPT
 		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!renderInformation._Draw)
+			if (!renderInformation._Draw || renderInformation._NumberOfTransformations == 0)
 			{
 				continue;
 			}

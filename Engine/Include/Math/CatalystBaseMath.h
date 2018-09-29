@@ -28,6 +28,22 @@ public:
 	}
 
 	/*
+	*	Given a number, denoted in degrees, returns the arc cosine of the number.
+	*/
+	FORCE_INLINE static NO_DISCARD float ArcCosineDegrees(const float number) NOEXCEPT
+	{
+		return ArcCosineRadians(DegreesToRadians(number));
+	}
+
+	/*
+	*	Given a number, denoted in radians, returns the arcsine of the number.
+	*/
+	FORCE_INLINE static NO_DISCARD float ArcCosineRadians(const float number) NOEXCEPT
+	{
+		return acosf(number);
+	}
+
+	/*
 	*	Given a number, denoted in degrees, returns the arcsine of the number.
 	*/
 	FORCE_INLINE static NO_DISCARD float ArcsineDegrees(const float number) NOEXCEPT
