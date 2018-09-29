@@ -7,11 +7,11 @@
 //Math.
 #include <Math/CatalystBaseMath.h>
 
-//Rendering.
-#include <Rendering/Engine/VegetationVertex.h>
-
 //Resources
 #include <Resources/ResourcesCore.h>
+
+//Vegetation.
+#include <Vegetation/VegetationVertex.h>
 
 //Third party libraries.
 #include <assimp/Importer.hpp>

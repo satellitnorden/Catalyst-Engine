@@ -203,8 +203,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationModel.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationVertex.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\AboveOceanFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BelowOceanFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BloomFragmentShader.h" />
@@ -278,6 +276,8 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUtilities.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationModel.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationVertex.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />

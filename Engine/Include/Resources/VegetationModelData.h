@@ -3,8 +3,8 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-//Rendering.
-#include <Rendering/Engine/VegetationVertex.h>
+//Vegetation.
+#include <Vegetation/VegetationVertex.h>
 
 class VegetationModelData final
 {

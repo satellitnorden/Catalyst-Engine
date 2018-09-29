@@ -205,6 +205,12 @@
     <Filter Include="Terrain\Include">
       <UniqueIdentifier>{2f1ccf80-b81e-4b58-afb9-a213e7cc799f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vegetation">
+      <UniqueIdentifier>{a9ed2bc1-50ef-4e88-a850-29674f23c66c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vegetation\Include">
+      <UniqueIdentifier>{f33b6b1f-eef8-40f5-ac6b-91693a12913f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\CameraComponent.h">
@@ -894,14 +900,14 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\OceanRenderingData.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationVertex.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\VegetationModelData.h">
       <Filter>Resources\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationModel.h">
-      <Filter>Rendering\Include\Engine</Filter>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationModel.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationVertex.h">
+      <Filter>Vegetation\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

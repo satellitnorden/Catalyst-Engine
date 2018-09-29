@@ -15,10 +15,12 @@
 #include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/TerrainMaterial.h>
-#include <Rendering/Engine/VegetationModel.h>
 
 //Resources.
 #include <Resources/ResourcesCore.h>
+
+//Vegetation.
+#include <Vegetation/VegetationModel.h>
 
 //Forward declarations.
 class Semaphore;
