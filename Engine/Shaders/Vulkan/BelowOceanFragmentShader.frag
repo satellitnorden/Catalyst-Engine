@@ -127,7 +127,7 @@ vec3 CalculateBelowOceanFragment(vec3 sceneWorldPosition)
 float CalculateDeformationWeight(float distanceToEndPointSquared)
 {
     //Calculate the deformation weight.
-    return Scale(min(distanceToEndPointSquared / oceanDeformationWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.1f, 1.0f);
+    return Scale(min(distanceToEndPointSquared / oceanDeformationWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.25f, 1.0f);
 }
 
 /*
