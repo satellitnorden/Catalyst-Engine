@@ -57,7 +57,7 @@ void VegetationColorRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
 
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(8);
+	SetNumberOfVertexInputAttributeDescriptions(9);
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
