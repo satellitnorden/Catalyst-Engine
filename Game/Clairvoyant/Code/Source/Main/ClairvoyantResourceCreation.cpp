@@ -7,6 +7,7 @@
 #include <ResourceCollectionCreator.h>
 #include <OceanMaterialCreator.h>
 #include <TerrainMaterialCreator.h>
+#include <VegetationMaterialCreator.h>
 #include <VegetationModelCreator.h>
 
 namespace ClairvoyantResourceCreation
@@ -36,7 +37,7 @@ namespace ClairvoyantResourceCreation
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 
-			EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+			//EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
 		}
 
 		{
@@ -49,7 +50,7 @@ namespace ClairvoyantResourceCreation
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 
-			EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+			//EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
 		}
 
 		{
@@ -62,18 +63,33 @@ namespace ClairvoyantResourceCreation
 			parameters._Normal = "..\\..\\..\\Resources\\Raw\\Textures\\Ocean\\Normal.jpg";
 			parameters._Foam = "..\\..\\..\\Resources\\Raw\\Textures\\Ocean\\Foam.jpg";
 
-			OceanMaterialCreator::CreateOceanMaterial(parameters);
+			//OceanMaterialCreator::CreateOceanMaterial(parameters);
 		}
 
 		{
-			//Create the grass vegetation physical model.
+			//Create the grass vegetation material.
+			VegetationMaterialCreator::VegetationMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\GrassVegetationMaterial";
+			parameters._ID = "GrassVegetationMaterial";
+			parameters._MaskMipmapLevels = 7;
+			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\Mask.png";
+			parameters._MipmapLevels = 9;
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\NormalMap.png";
+
+			VegetationMaterialCreator::CreateVegetationMaterial(parameters);
+		}
+
+		{
+			//Create the grass vegetation model.
 			VegetationModelCreator::VegetationModelCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\GrassVegetationModel";
 			parameters._ID = "GrassVegetationModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\GrassVegetationModel.fbx";
 
-			VegetationModelCreator::CreateVegetationModel(parameters);
+			//VegetationModelCreator::CreateVegetationModel(parameters);
 		}
 
 		{
@@ -119,7 +135,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Layers[4]._AmbientOcclusion = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow1AmbientOcclusion.png";
 			parameters._Layers[4]._Displacement = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow1Displacement.png";
 
-			TerrainMaterialCreator::CreateTerrainMaterial(parameters);
+			//TerrainMaterialCreator::CreateTerrainMaterial(parameters);
 		}
 
 		{
@@ -130,6 +146,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DayEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\NightEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\GrassVegetationMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\GrassVegetationModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultTerrainMaterial.cr");
 

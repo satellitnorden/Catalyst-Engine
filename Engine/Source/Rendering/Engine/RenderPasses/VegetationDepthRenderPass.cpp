@@ -54,8 +54,9 @@ void VegetationDepthRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::VegetationMaterial));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(9);
@@ -155,6 +156,9 @@ void VegetationDepthRenderPass::RenderInternal() NOEXCEPT
 
 		commandBuffer->BindVertexBuffers(this, 0, 1, &information._Model._Buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, information._Model._Buffer, information._Model._IndexOffset);
+
+		//Bind the render data table.
+		commandBuffer->BindRenderDataTable(this, 1, information._Material._RenderDataTable);
 
 		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{

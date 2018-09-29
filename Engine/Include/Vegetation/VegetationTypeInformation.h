@@ -5,6 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Vegetation.
+#include <Vegetation/VegetationMaterial.h>
 #include <Vegetation/VegetationModel.h>
 #include <Vegetation/VegetationPatchInformation.h>
 #include <Vegetation/VegetationPatchRenderInformation.h>
@@ -20,6 +21,9 @@ public:
 
 	//The model.
 	VegetationModel _Model;
+
+	//The material.
+	VegetationMaterial _Material;
 
 	//The patch informations.
 	StaticArray<VegetationPatchInformation, 9> _PatchInformations;

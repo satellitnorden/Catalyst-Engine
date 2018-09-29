@@ -59,6 +59,9 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 layout (location = 0) in mat3 fragmentTangentSpaceMatrix;
 layout (location = 3) in vec2 fragmentTextureCoordinate;
 
+//Texture samplers.
+layout (set = 1, binding = 0) uniform sampler2D maskTexture;
+
 //Out parameters.
 layout (location = 0) out vec4 albedo;
 layout (location = 1) out vec4 normalDepth;
@@ -66,5 +69,9 @@ layout (location = 2) out vec4 materialProperties;
 
 void main()
 {
-    //Do nothing here, for now.
+    //Discard this fragment according to the mask texture.
+    if (texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
+    {
+        discard;
+    }
 }

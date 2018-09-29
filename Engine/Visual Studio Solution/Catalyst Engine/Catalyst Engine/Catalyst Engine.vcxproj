@@ -257,6 +257,7 @@
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoaderUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h" />
     <ClInclude Include="..\..\..\Include\Resources\TerrainMaterialData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\VegetationMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\VegetationModelData.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
@@ -281,6 +282,7 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationAddTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationMaterial.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationModel.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchRenderInformation.h" />

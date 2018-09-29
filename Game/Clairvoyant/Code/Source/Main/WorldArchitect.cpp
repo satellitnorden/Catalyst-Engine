@@ -145,17 +145,19 @@ void WorldArchitect::Initialize() NOEXCEPT
 		//Add some vegetation.
 		VegetationAddTypeInformation information;
 
-		information._Properties._CutoffDistance = 100.0f;
+		information._Properties._CutoffDistance = 1'000.0f;
 		information._Properties._Density = 100;
 		information._Properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			const Vector3 position(CatalystBaseMath::RandomFloatInRange(-1'000.0f, 1'000.0f), 100.0f, CatalystBaseMath::RandomFloatInRange(-1'000.0f, 1'000.0f));
+			Vector3 position(CatalystBaseMath::RandomFloatInRange(-500.0f, 500.0f), 100.0f, CatalystBaseMath::RandomFloatInRange(-500.0f, 500.0f));
+			position._Y = TerrainSystem::Instance->GetTerrainHeightAtPosition(position);
 
-			*transformation = Matrix4(position, Vector3(90.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f));
+			*transformation = Matrix4(position, Vector3(-90.0f, 0.0f, 0.0f), Vector3(CatalystBaseMath::RandomFloatInRange(0.025f, 0.05f), CatalystBaseMath::RandomFloatInRange(0.05f, 0.1f), CatalystBaseMath::RandomFloatInRange(0.025f, 0.05f)));
 
 			return true;
 		};
 		information._Model = ResourceLoader::GetVegetationModel(HashString("GrassVegetationModel"));
+		information._Material = ResourceLoader::GetVegetationMaterial(HashString("GrassVegetationMaterial"));
 
 		VegetationSystem::Instance->AddVegetationType(information);
 	}

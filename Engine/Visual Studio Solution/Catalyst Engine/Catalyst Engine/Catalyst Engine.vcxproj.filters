@@ -936,6 +936,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VegetationColorRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\VegetationMaterialData.h">
+      <Filter>Resources\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationMaterial.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

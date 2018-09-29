@@ -41,6 +41,7 @@
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/TerrainMaterialData.h>
+#include <Resources/VegetationMaterialData.h>
 #include <Resources/VegetationModelData.h>
 
 //Systems.
@@ -48,6 +49,7 @@
 #include <Systems/InputSystem.h>
 
 //Vegetation.
+#include <Vegetation/VegetationMaterial.h>
 #include <Vegetation/VegetationModel.h>
 
 //Singleton definition.
@@ -561,6 +563,26 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(14, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FifthLayerMaterialProperties), terrainMaterial._RenderDataTable);
 }
 
+/*
+*	Creates a vegetation material.
+*/
+void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &data, VegetationMaterial &material) NOEXCEPT
+{
+	//Create the mask texture.
+	material._MaskTexture = CreateTexture2D(TextureData(TextureDataContainer(data._MaskData, data._MaskWidth, data._MaskHeight, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the albedo texture.
+	material._AlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._AlbedoData, data._Width, data._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the normal map texture.
+	material._NormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._NormalMapData, data._Width, data._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the render data table.
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::VegetationMaterial), &material._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::Texture2D, material._MaskTexture), material._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, material._AlbedoTexture), material._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, material._NormalMapTexture), material._RenderDataTable);
+}
 
 /*
 *	Creates a vegetation model.
@@ -956,6 +978,18 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GaussianBlur)]);
+	}
+
+	{
+		//Initialize the vegetation material render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::VegetationMaterial)]);
 	}
 }
 

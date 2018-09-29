@@ -45,6 +45,8 @@ class Resolution;
 class TerrainMaterial;
 class TerrainMaterialData;
 class TextureData;
+class VegetationMaterial;
+class VegetationMaterialData;
 class VegetationModel;
 class VegetationModelData;
 
@@ -411,6 +413,11 @@ public:
 	*	Creates a terrain material.
 	*/
 	void CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT;
+
+	/*
+	*	Creates a vegetation material.
+	*/
+	void CreateVegetationMaterial(const VegetationMaterialData &data, VegetationMaterial &material) NOEXCEPT;
 
 	/*
 	*	Creates a vegetation model.

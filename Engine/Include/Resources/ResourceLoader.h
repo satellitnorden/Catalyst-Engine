@@ -20,10 +20,8 @@
 #include <Resources/ResourcesCore.h>
 
 //Vegetation.
+#include <Vegetation/VegetationMaterial.h>
 #include <Vegetation/VegetationModel.h>
-
-//Forward declarations.
-class Semaphore;
 
 class ResourceLoader final
 {
@@ -68,6 +66,11 @@ public:
 	static const TerrainMaterial& GetTerrainMaterial(const HashString resourceID) { return _TerrainMaterials[resourceID]; }
 
 	/*
+	*	Given a resource ID, return the corresponding vegetation material.
+	*/
+	static const VegetationMaterial& GetVegetationMaterial(const HashString resourceID) { return _VegetationMaterials[resourceID]; }
+
+	/*
 	*	Given a resource ID, return the corresponding vegetation model.
 	*/
 	static const VegetationModel& GetVegetationModel(const HashString resourceID) { return _VegetationModels[resourceID]; }
@@ -93,6 +96,9 @@ private:
 
 	//Container for all terrain materials.
 	static Map<HashString, TerrainMaterial> _TerrainMaterials;
+
+	//Container for all vegetation materials.
+	static Map<HashString, VegetationMaterial> _VegetationMaterials;
 
 	//Container for all vegetation models.
 	static Map<HashString, VegetationModel> _VegetationModels;
@@ -133,6 +139,11 @@ private:
 	*	Given a file, load a terrain material.
 	*/
 	static void LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a vegetation material.
+	*/
+	static void LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
 	*	Given a file, load a vegetation model.

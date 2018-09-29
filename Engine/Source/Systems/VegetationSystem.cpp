@@ -27,9 +27,10 @@ void VegetationSystem::AddVegetationType(const VegetationAddTypeInformation &add
 	_VegetationTypeInformations.EmplaceSlow();
 	VegetationTypeInformation *const RESTRICT information{ &_VegetationTypeInformations.Back() };
 
-	//Just copy the properties and the model.
+	//Just copy the properties, the model and the material.
 	information->_Properties = addInformation._Properties;
 	information->_Model = addInformation._Model;
+	information->_Material = addInformation._Material;
 
 	//Fill in the patch and the patch render informations.
 	for (uint8 i = 0; i < 9; ++i)

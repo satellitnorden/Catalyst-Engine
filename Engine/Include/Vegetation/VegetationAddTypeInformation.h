@@ -4,6 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Vegetation.
+#include <Vegetation/VegetationMaterial.h>
 #include <Vegetation/VegetationModel.h>
 #include <Vegetation/VegetationTypeProperties.h>
 
@@ -17,5 +18,8 @@ public:
 
 	//The model.
 	VegetationModel _Model;
+
+	//The material.
+	VegetationMaterial _Material;
 
 };

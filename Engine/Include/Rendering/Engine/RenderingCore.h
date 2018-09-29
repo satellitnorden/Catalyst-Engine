@@ -141,6 +141,7 @@ enum class CommonRenderDataTableLayout : uint8
 #endif
 	ParticleSystem,
 	GaussianBlur,
+	VegetationMaterial,
 
 	NumberOfCommonRenderDataTableLayouts
 };

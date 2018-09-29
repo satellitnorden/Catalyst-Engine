@@ -59,6 +59,10 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 layout (location = 0) in mat3 fragmentTangentSpaceMatrix;
 layout (location = 3) in vec2 fragmentTextureCoordinate;
 
+//Texture samplers.
+layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
+layout (set = 1, binding = 2) uniform sampler2D normalMapTexture;
+
 //Out parameters.
 layout (location = 0) out vec4 albedo;
 layout (location = 1) out vec4 normalDepth;
@@ -67,12 +71,13 @@ layout (location = 2) out vec4 materialProperties;
 void main()
 {
     //Write the albedo.
-    albedo = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    albedo = texture(albedoTexture, fragmentTextureCoordinate);
 
     //Write the normal/depth.
-    vec3 normal = fragmentTangentSpaceMatrix * vec3(0.0f, 0.0f, 1.0f);
+    vec3 normal = texture(normalMapTexture, fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
+    normal = fragmentTangentSpaceMatrix * normal;
     normalDepth = vec4(normal, gl_FragCoord.z);
 
     //Write the material properties.
-    materialProperties = vec4(0.5f, 0.5f, 1.0f, 0.0f);
+    materialProperties = vec4(1.0f, 0.0f, 1.0f, 0.0f);
 }
