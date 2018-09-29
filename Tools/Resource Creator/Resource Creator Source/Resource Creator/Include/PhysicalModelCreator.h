@@ -1,11 +1,11 @@
 #pragma once
 
 //Core.
-#include <Core/EngineCore.h>
-#include <Core/HashString.h>
+#include <Core/Core/CatalystCore.h>
+#include <Core/General/HashString.h>
 
 //Math.
-#include <Math/CatalystMath.h>
+#include <Math/CatalystBaseMath.h>
 
 //Rendering.
 #include <Rendering/Engine/PhysicalVertex.h>
@@ -23,13 +23,29 @@ class PhysicalModelCreator final
 
 public:
 
+	class PhysicalModelCreationParameters final
+	{
+
+	public:
+
+		//The output file path.
+		const char *RESTRICT _Output;
+
+		//The resource id.
+		const char *RESTRICT _ID;
+
+		//The file path.
+		const char *RESTRICT _File;
+
+	};
+
 	/*
 	*	Creates a physical model resource file.
 	*/
-	static void CreatePhysicalModel(const char *const RESTRICT arguments[]) noexcept
+	static void CreatePhysicalModel(const PhysicalModelCreationParameters &parameters) noexcept
 	{
 		//What should the material be called?
-		DynamicString fileName{ arguments[0] };
+		DynamicString fileName{ parameters._Output };
 		fileName += ".cr";
 
 		//Open the file to be written to.
@@ -40,7 +56,7 @@ public:
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
-		const HashString resourceID{ arguments[1] };
+		const HashString resourceID{ parameters._ID };
 		file.Write(&resourceID, sizeof(HashString));
 
 		//Load the model.
@@ -49,7 +65,7 @@ public:
 		float extent{ 0.0f };
 
 		Assimp::Importer modelImporter;
-		const aiScene *modelScene = modelImporter.ReadFile(arguments[2], aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+		const aiScene *modelScene = modelImporter.ReadFile(parameters._File, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
 		ProcessNode(modelScene->mRootNode, modelScene, vertices, indices, extent);
 
@@ -86,9 +102,9 @@ private:
 		{
 			vertices.EmplaceSlow(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
-			extent = CatalystMath::Maximum(extent, CatalystMath::Absolute(vertices.Back().position.X));
-			extent = CatalystMath::Maximum(extent, CatalystMath::Absolute(vertices.Back().position.Y));
-			extent = CatalystMath::Maximum(extent, CatalystMath::Absolute(vertices.Back().position.Z));
+			extent = CatalystBaseMath::Maximum(extent, CatalystBaseMath::Absolute(vertices.Back()._Position._X));
+			extent = CatalystBaseMath::Maximum(extent, CatalystBaseMath::Absolute(vertices.Back()._Position._Y));
+			extent = CatalystBaseMath::Maximum(extent, CatalystBaseMath::Absolute(vertices.Back()._Position._Z));
 		}
 
 		//Process the indices.
