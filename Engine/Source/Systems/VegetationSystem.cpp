@@ -127,7 +127,7 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 void VegetationSystem::UpdateVegetationTypeInformation(VegetationTypeInformation *const RESTRICT information) NOEXCEPT
 {
 	//Calculate the current grid point based on the current camera position.
-	const GridPoint currentGridPoint{ GridPoint::WorldPositionToGridPoint(_CurrentCameraPosition, information->_Properties._CutoffDistance * 2.0f) };
+	const GridPoint currentGridPoint{ GridPoint::WorldPositionToGridPoint(_CurrentCameraPosition, information->_Properties._CutoffDistance * 1.25f) };
 
 	//Create an array with the valid grid positions.
 	const StaticArray<GridPoint, 9> validGridPoints
@@ -220,7 +220,7 @@ void VegetationSystem::UpdateVegetationTypeInformation(VegetationTypeInformation
 void VegetationSystem::GenerateTransformations(const GridPoint &gridPoint, const VegetationTypeProperties &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
 {
 	//Construct the box.
-	const Vector3 worldPosition{ GridPoint::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * 2.0f) };
+	const Vector3 worldPosition{ GridPoint::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * 1.25f) };
 	const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance , worldPosition + properties._CutoffDistance };
 
 	DynamicArray<Matrix4> transformations;

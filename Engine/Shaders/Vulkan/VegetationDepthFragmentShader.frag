@@ -58,6 +58,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //In parameters.
 layout (location = 0) in mat3 fragmentTangentSpaceMatrix;
 layout (location = 3) in vec2 fragmentTextureCoordinate;
+layout (location = 4) in float fragmentLengthFactor;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D maskTexture;
@@ -67,10 +68,18 @@ layout (location = 0) out vec4 albedo;
 layout (location = 1) out vec4 normalDepth;
 layout (location = 2) out vec4 materialProperties;
 
+/*
+*   Given a seed, returns a random number.
+*/
+float RandomFloat(vec2 seed)
+{
+    return fract(sin(dot(seed.xy ,vec2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
 void main()
 {
     //Discard this fragment according to the mask texture.
-    if (texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
+    if (RandomFloat(vec2(gl_FragCoord.xy)) > fragmentLengthFactor || texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
     {
         discard;
     }

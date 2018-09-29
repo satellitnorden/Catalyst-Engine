@@ -55,6 +55,13 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 0) float halfCutoffDistanceSquared;
+    layout (offset = 4) float inverseHalfCutoffDistanceSquared;
+};
+
 //In parameters.
 layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec3 vertexNormal;
@@ -66,6 +73,7 @@ layout (location = 5) in mat4 vertexTransformationMatrix;
 //Out parameters.
 layout (location = 0) out mat3 fragmentTangentSpaceMatrix;
 layout (location = 3) out vec2 fragmentTextureCoordinate;
+layout (location = 4) out float fragmentLengthFactor;
 
 /*
 *   Calculates the wind modulator.
@@ -75,8 +83,20 @@ vec3 CalculateWindModulator(vec3 worldPosition)
     return (vec3(sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windStrength * 4.0f), 0.0f, cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windStrength * 4.0f)) + windDirection) * 0.1f;
 }
 
+/*
+*   Returns the length of a vector squared.
+*/
+float LengthSquared(vec3 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+}
+
 void main()
 {
+    //Calculate the final vertex position.
+    vec3 finalVertexPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
+    finalVertexPosition += CalculateWindModulator(finalVertexPosition) * vertexModulatorFactor;
+
     //Calculate the fragment tangent space matrix.
     vec3 tangent = normalize(vec3(vertexTransformationMatrix * vec4(vertexTangent, 0.0f)));
     vec3 bitangent = normalize(vec3(vertexTransformationMatrix * vec4(cross(vertexNormal, vertexTangent), 0.0f)));
@@ -87,9 +107,9 @@ void main()
     //Pass along the fragment texture coordinate.
     fragmentTextureCoordinate = vertexTextureCoordinate;
 
-    //Calculate the final vertex position.
-    vec3 finalVertexPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
-    finalVertexPosition += CalculateWindModulator(finalVertexPosition) * vertexModulatorFactor;
+    //Calculate the length squared.
+    float distanceToVertexSquared = LengthSquared(finalVertexPosition - cameraWorldPosition);
+    fragmentLengthFactor = distanceToVertexSquared < halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
 
     //Set the position.
     gl_Position = viewMatrix * vec4(finalVertexPosition, 1.0f);
