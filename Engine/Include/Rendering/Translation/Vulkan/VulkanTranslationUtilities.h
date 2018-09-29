@@ -3,12 +3,8 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-//Math.
-#include <Math/Matrix4.h>
-
 //Rendering.
-#include <Rendering/Engine/PhysicalVertex.h>
-#include <Rendering/Engine/TextureData.h>
+#include <Rendering/Engine/RenderingCore.h>
 
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>
@@ -17,6 +13,57 @@ class VulkanTranslationUtilities
 {
 
 public:
+
+	/*
+	*	Given a main stage and a sub stage, return the corresponding sub stage index.
+	*/
+	static uint8 GetSubStageIndex(const RenderPassMainStage main, const RenderPassSubStage sub) NOEXCEPT
+	{
+		switch (main)
+		{
+#if !defined(CATALYST_FINAL)
+			case RenderPassMainStage::None:
+			{
+				ASSERT(false, "None main stage, how could this be?");
+
+				return 0;
+			}
+#endif
+			case RenderPassMainStage::DirectionalShadow:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DirectionalTerrainShadow);
+			}
+
+			case RenderPassMainStage::Scene:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::Terrain);
+			}
+#if !defined(CATALYST_FINAL)
+			case RenderPassMainStage::Debug:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DebugAxisAlignedBoundingBox);
+			}
+#endif
+#if defined(CATALYST_ENABLE_OCEAN)
+			case RenderPassMainStage::Ocean:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::AboveOcean);
+			}
+#endif
+			case RenderPassMainStage::PostProcessingFinal:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::PostProcessing);
+			}
+#if !defined(CATALYST_FINAL)
+			default:
+			{
+				ASSERT(false, "Unhandled case.");
+
+				return 0;
+			}
+#endif
+		}
+	}
 
 	/*
 	*	Given an address mode, return the corresponding Vulkan address mode.

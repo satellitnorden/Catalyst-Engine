@@ -43,9 +43,6 @@ void LightingRenderPass::InitializeInternal() NOEXCEPT
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::Lighting);
 
-	//Set the sub stage index.
-	SetSubStageIndex(4);
-
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);

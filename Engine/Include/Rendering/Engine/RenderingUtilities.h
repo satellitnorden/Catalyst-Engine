@@ -18,6 +18,9 @@
 //Resources.
 #include <Resources/PhysicalModelData.h>
 
+//Systems.
+#include <Systems/RenderingSystem.h>
+
 namespace RenderingUtilities
 {
 

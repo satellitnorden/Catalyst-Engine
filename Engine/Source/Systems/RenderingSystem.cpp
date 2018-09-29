@@ -31,7 +31,6 @@
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/Engine/TerrainMaterial.h>
 #include <Rendering/Engine/TextureData.h>
-#include <Rendering/Engine/VegetationModel.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
 
 //Resources.
@@ -47,6 +46,9 @@
 //Systems.
 #include <Systems/EngineSystem.h>
 #include <Systems/InputSystem.h>
+
+//Vegetation.
+#include <Vegetation/VegetationModel.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);

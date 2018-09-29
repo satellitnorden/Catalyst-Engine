@@ -1,41 +1,43 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/InstancedPhysicalRenderPass.h>
-
-//Components.
-#include <Components/ComponentManager.h>
+#include <Rendering/Engine/RenderPasses/VegetationDepthRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
-#include <Rendering/Engine/PhysicalVertex.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
 
+//Vegetation.
+#include <Vegetation/VegetationVertex.h>
+
 //Singleton definition.
-DEFINE_SINGLETON(InstancedPhysicalRenderPass);
+DEFINE_SINGLETON(VegetationDepthRenderPass);
 
 /*
 *	Default constructor.
 */
-InstancedPhysicalRenderPass::InstancedPhysicalRenderPass() NOEXCEPT
+VegetationDepthRenderPass::VegetationDepthRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		InstancedPhysicalRenderPass::Instance->InitializeInternal();
+		VegetationDepthRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the instanced physical render pass.
+*	Initializes the vegetation depth render pass.
 */
-void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
+void VegetationDepthRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::InstancedPhysical);
+
+	//Set the sub stage index.
+	SetSubStageIndex(2);
 
 	//Set the shaders.
 	SetVertexShader(Shader::InstancedPhysicalVertex);
@@ -60,38 +62,38 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(8);
-	AddVertexInputAttributeDescription(	0,
-										0,
-										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(PhysicalVertex, _Position));
-	AddVertexInputAttributeDescription(	1,
-										0,
-										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(PhysicalVertex, _Normal));
-	AddVertexInputAttributeDescription(	2,
-										0,
-										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(PhysicalVertex, _Tangent));
-	AddVertexInputAttributeDescription(	3,
-										0,
-										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
-										offsetof(PhysicalVertex, _TextureCoordinate));
-	AddVertexInputAttributeDescription(	4,
-										1,
-										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										0);
-	AddVertexInputAttributeDescription(	5,
-										1,
-										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										sizeof(Vector4));
-	AddVertexInputAttributeDescription(	6,
-										1,
-										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										sizeof(Vector4) * 2);
-	AddVertexInputAttributeDescription(	7,
-										1,
-										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										sizeof(Vector4) * 3);
+	AddVertexInputAttributeDescription(0,
+		0,
+		VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+		offsetof(PhysicalVertex, _Position));
+	AddVertexInputAttributeDescription(1,
+		0,
+		VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+		offsetof(PhysicalVertex, _Normal));
+	AddVertexInputAttributeDescription(2,
+		0,
+		VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+		offsetof(PhysicalVertex, _Tangent));
+	AddVertexInputAttributeDescription(3,
+		0,
+		VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+		offsetof(PhysicalVertex, _TextureCoordinate));
+	AddVertexInputAttributeDescription(4,
+		1,
+		VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
+		0);
+	AddVertexInputAttributeDescription(5,
+		1,
+		VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
+		sizeof(Vector4));
+	AddVertexInputAttributeDescription(6,
+		1,
+		VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
+		sizeof(Vector4) * 2);
+	AddVertexInputAttributeDescription(7,
+		1,
+		VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
+		sizeof(Vector4) * 3);
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(2);

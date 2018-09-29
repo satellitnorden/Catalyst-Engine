@@ -46,9 +46,6 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::ParticleSystem);
 
-	//Set the sub stage index.
-	SetSubStageIndex(7);
-
 	//Set the shaders.
 	SetVertexShader(Shader::ParticleSystemVertex);
 	SetTessellationControlShader(Shader::None);

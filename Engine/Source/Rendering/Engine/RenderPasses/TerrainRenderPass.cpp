@@ -37,9 +37,6 @@ void TerrainRenderPass::InitializeInternal() NOEXCEPT
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::Terrain);
 
-	//Set the sub stage index.
-	SetSubStageIndex(0);
-
 	//Set the shaders.
 	SetVertexShader(Shader::TerrainVertex);
 	SetTessellationControlShader(Shader::TerrainTessellationControl);

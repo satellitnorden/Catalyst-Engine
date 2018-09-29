@@ -39,9 +39,6 @@ void DirectionalShadowRenderPass::InitializeInternal() NOEXCEPT
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::DirectionalShadow);
 
-	//Set the sub stage index.
-	SetSubStageIndex(3);
-
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);

@@ -36,9 +36,6 @@ void DebugAxisAlignedBoundingBoxRenderPass::InitializeInternal() NOEXCEPT
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::DebugAxisAlignedBoundingBox);
 
-	//Set the sub stage index.
-	SetSubStageIndex(0);
-
 	//Set the shaders.
 	SetVertexShader(Shader::DebugAxisAlignedBoundingBoxVertex);
 	SetTessellationControlShader(Shader::None);
