@@ -714,6 +714,8 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::Terrain)] = TerrainRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DynamicPhysical)] = DynamicPhysicalRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::InstancedPhysical)] = InstancedPhysicalRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::VegetationDepth)] = VegetationDepthRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::VegetationColor)] = VegetationColorRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();

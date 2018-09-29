@@ -56,29 +56,23 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //In parameters.
-layout (location = 0) in vec3 vertexPosition;
-layout (location = 1) in vec3 vertexNormal;
-layout (location = 2) in vec3 vertexTangent;
-layout (location = 3) in vec2 vertexTextureCoordinate;
-layout (location = 4) in float vertexModulatorFactor;
-layout (location = 5) in mat4 transformationMatrix;
+layout (location = 0) in mat3 fragmentTangentSpaceMatrix;
+layout (location = 3) in vec2 fragmentTextureCoordinate;
 
 //Out parameters.
-layout (location = 0) out mat3 fragmentTangentSpaceMatrix;
-layout (location = 3) out vec2 fragmentTextureCoordinate;
+layout (location = 0) out vec4 albedo;
+layout (location = 1) out vec4 normalDepth;
+layout (location = 2) out vec4 materialProperties;
 
 void main()
 {
-    //Calculate the fragment tangent space matrix.
-    vec3 tangent = normalize(vec3(transformationMatrix * vec4(vertexTangent, 0.0f)));
-    vec3 bitangent = normalize(vec3(transformationMatrix * vec4(cross(vertexNormal, vertexTangent), 0.0f)));
-    vec3 normal = normalize(vec3(transformationMatrix * vec4(vertexNormal, 0.0f)));
+    //Write the albedo.
+    albedo = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 
-    fragmentTangentSpaceMatrix = mat3(tangent, bitangent, normal);
+    //Write the normal/depth.
+    vec3 normal = fragmentTangentSpaceMatrix * vec3(0.0f, 0.0f, 1.0f);
+    normalDepth = vec4(normal, gl_FragCoord.z);
 
-    //Pass along the fragment texture coordinate.
-    fragmentTextureCoordinate = vertexTextureCoordinate;
-
-    //Set the position.
-    gl_Position = viewMatrix * transformationMatrix * vec4(vertexPosition, 1.0);
+    //Write the material properties.
+    materialProperties = vec4(0.5f, 0.5f, 1.0f, 0.0f);
 }

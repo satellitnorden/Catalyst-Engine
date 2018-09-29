@@ -60,6 +60,8 @@ enum class RenderPassSubStage : uint8
 	Terrain,
 	DynamicPhysical,
 	InstancedPhysical,
+	VegetationDepth,
+	VegetationColor,
 	DirectionalShadow,
 	Lighting,
 	Sky,
@@ -200,6 +202,9 @@ enum class Shader : uint8
 	TerrainTessellationControl,
 	TerrainTessellationEvaluation,
 	TerrainVertex,
+	VegetationColorFragment,
+	VegetationDepthFragment,
+	VegetationVertex,
 	ViewportVertex,
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFogFragment,

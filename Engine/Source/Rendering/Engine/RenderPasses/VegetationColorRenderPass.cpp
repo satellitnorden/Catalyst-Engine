@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/VegetationDepthRenderPass.h>
+#include <Rendering/Engine/RenderPasses/VegetationColorRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -11,37 +11,37 @@
 #include <Vegetation/VegetationVertex.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(VegetationDepthRenderPass);
+DEFINE_SINGLETON(VegetationColorRenderPass);
 
 /*
 *	Default constructor.
 */
-VegetationDepthRenderPass::VegetationDepthRenderPass() NOEXCEPT
+VegetationColorRenderPass::VegetationColorRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		VegetationDepthRenderPass::Instance->InitializeInternal();
+		VegetationColorRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the vegetation depth render pass.
+*	Initializes the vegetation color render pass.
 */
-void VegetationDepthRenderPass::InitializeInternal() NOEXCEPT
+void VegetationColorRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::VegetationDepth);
+	SetSubStage(RenderPassSubStage::VegetationColor);
 
 	//Set the shaders.
 	SetVertexShader(Shader::VegetationVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::VegetationDepthFragment);
+	SetFragmentShader(Shader::VegetationColorFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
@@ -106,15 +106,15 @@ void VegetationDepthRenderPass::InitializeInternal() NOEXCEPT
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
 	SetCullMode(CullMode::None);
-	SetDepthCompareOperator(CompareOperator::Less);
+	SetDepthCompareOperator(CompareOperator::Equal);
 	SetDepthTestEnabled(true);
-	SetDepthWriteEnabled(true);
+	SetDepthWriteEnabled(false);
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		VegetationDepthRenderPass::Instance->RenderInternal();
+		VegetationColorRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -122,9 +122,9 @@ void VegetationDepthRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the depth of the vegetation.
+*	Renders the color of the vegetation.
 */
-void VegetationDepthRenderPass::RenderInternal() NOEXCEPT
+void VegetationColorRenderPass::RenderInternal() NOEXCEPT
 {
 	//If there's none to render - render none.
 	if (true)

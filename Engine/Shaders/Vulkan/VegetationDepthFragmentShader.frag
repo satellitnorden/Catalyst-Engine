@@ -56,56 +56,15 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //In parameters.
-layout (location = 0) in vec2 fragmentTextureCoordinate;
-layout (location = 1) in float fragmentCosineRotation;
-layout (location = 2) in float fragmentSineRotation;
-
-//Texture samplers.
-layout (set = 1, binding = 2) uniform sampler2D maskTexture;
-layout (set = 1, binding = 3) uniform sampler2D albedoTexture;
-layout (set = 1, binding = 4) uniform sampler2D normalMapTexture;
-layout (set = 1, binding = 5) uniform sampler2D materialPropertiesTexture;
+layout (location = 0) in mat3 fragmentTangentSpaceMatrix;
+layout (location = 3) in vec2 fragmentTextureCoordinate;
 
 //Out parameters.
-layout (location = 0) out vec4 albedoColor;
-layout (location = 1) out vec4 normalDirectionDepth;
+layout (location = 0) out vec4 albedo;
+layout (location = 1) out vec4 normalDepth;
 layout (location = 2) out vec4 materialProperties;
-
-/*
-*   Calculates the normal.
-*/
-vec3 CalculateNormal()
-{
-    vec3 normal = texture(normalMapTexture, fragmentTextureCoordinate).xyz;
-
-    float tempX = normal.x * fragmentCosineRotation + normal.z * fragmentSineRotation;
-    normal.z = -normal.x * fragmentSineRotation + normal.z * fragmentCosineRotation;
-    normal.x = tempX;
-
-    return normal;
-}
 
 void main()
 {
-    //Sample the mask texture.
-    vec4 maskTextureSampler = texture(maskTexture, fragmentTextureCoordinate);
-
-    //Discard this fragment if the the alpha is zero.
-    if (maskTextureSampler.a < 0.01f)
-    {
-        discard;
-    }
-
-    else
-    {
-        //Set the albedo color.
-        albedoColor = texture(albedoTexture, fragmentTextureCoordinate);
-
-        //Write the normal direction/depth.
-        vec3 normal = CalculateNormal();
-        normalDirectionDepth = vec4(gl_FrontFacing ? -normal : normal, gl_FragCoord.z);
-
-        //Write the properties.
-        materialProperties = texture(materialPropertiesTexture, fragmentTextureCoordinate);
-    }
+    //Do nothing here, for now.
 }

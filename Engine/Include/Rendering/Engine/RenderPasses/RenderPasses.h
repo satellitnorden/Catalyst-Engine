@@ -24,6 +24,8 @@
 #include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>
 #include <Rendering/Engine/RenderPasses/TerrainRenderPass.h>
+#include <Rendering/Engine/RenderPasses/VegetationColorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/VegetationDepthRenderPass.h>
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 #include <Rendering/Engine/RenderPasses/VolumetricFogRenderPass.h>
 #endif
