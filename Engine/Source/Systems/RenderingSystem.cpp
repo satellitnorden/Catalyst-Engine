@@ -281,6 +281,15 @@ ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *const RES
 }
 
 /*
+*	Destroys a constant buffer.
+*/
+void RenderingSystem::DestroyConstantBuffer(ConstantBufferHandle handle) const NOEXCEPT
+{
+	//Create the constant buffer via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->DestroyConstantBuffer(handle);
+}
+
+/*
 *	Creates a depth buffer.
 */
 DepthBufferHandle RenderingSystem::CreateDepthBuffer(const Resolution resolution) const NOEXCEPT

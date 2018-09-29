@@ -313,6 +313,11 @@ public:
 	ConstantBufferHandle CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
 
 	/*
+	*	Destroys a constant buffer.
+	*/
+	void DestroyConstantBuffer(ConstantBufferHandle handle) const NOEXCEPT;
+
+	/*
 	*	Creates a depth buffer.
 	*/
 	DepthBufferHandle CreateDepthBuffer(const Resolution resolution) const NOEXCEPT;

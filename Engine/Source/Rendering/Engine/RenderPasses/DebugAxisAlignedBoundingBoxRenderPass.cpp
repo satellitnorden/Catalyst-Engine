@@ -132,7 +132,7 @@ void DebugAxisAlignedBoundingBoxRenderPass::RenderInternal() NOEXCEPT
 	//Bind the cube model.
 	const PhysicalModel cubeModel{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };
 	constexpr uint64 offset{ 0 };
-	commandBuffer->BindVertexBuffers(this, 0, 1, &cubeModel._Buffer, &offset);
+	commandBuffer->BindVertexBuffer(this, 0, cubeModel._Buffer, &offset);
 	commandBuffer->BindIndexBuffer(this, cubeModel._Buffer, cubeModel._IndexOffset);
 
 	for (const DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData &renderData : *data)

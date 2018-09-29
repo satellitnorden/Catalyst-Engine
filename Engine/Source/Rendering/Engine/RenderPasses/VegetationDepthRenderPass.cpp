@@ -154,7 +154,7 @@ void VegetationDepthRenderPass::RenderInternal() NOEXCEPT
 		//Bind the model vertex and index buffer.
 		const uint64 offset{ 0 };
 
-		commandBuffer->BindVertexBuffers(this, 0, 1, &information._Model._Buffer, &offset);
+		commandBuffer->BindVertexBuffer(this, 0, information._Model._Buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, information._Model._Buffer, information._Model._IndexOffset);
 
 		//Bind the render data table.
@@ -162,8 +162,14 @@ void VegetationDepthRenderPass::RenderInternal() NOEXCEPT
 
 		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
+			//Check whether or not this should be drawn.
+			if (!renderInformation._Draw)
+			{
+				continue;
+			}
+
 			//Bind the transformations buffer.
-			commandBuffer->BindVertexBuffers(this, 1, 1, &renderInformation._TransformationsBuffer, &offset);
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffer, &offset);
 
 			//Draw the instances!
 			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations);

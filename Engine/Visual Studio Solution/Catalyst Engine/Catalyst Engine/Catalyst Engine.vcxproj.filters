@@ -942,6 +942,15 @@
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationMaterial.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\GridPoint.h">
+      <Filter>Math\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformationUpdate.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchUpdate.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

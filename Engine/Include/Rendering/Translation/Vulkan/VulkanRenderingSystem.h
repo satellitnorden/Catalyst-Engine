@@ -83,6 +83,11 @@ public:
 	ConstantBufferHandle CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
 
 	/*
+	*	Destroys a constant buffer.
+	*/
+	void DestroyConstantBuffer(ConstantBufferHandle handle) NOEXCEPT;
+
+	/*
 	*	Creates a depth buffer.
 	*/
 	DepthBufferHandle CreateDepthBuffer(const Resolution resolution) const NOEXCEPT;
@@ -158,6 +163,7 @@ private:
 		//Enumeration covering all types.
 		enum class Type : uint8
 		{
+			ConstantBuffer,
 			RenderDataTable,
 			Texture2D,
 			UniformBuffer

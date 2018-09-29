@@ -117,7 +117,16 @@ uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 */
 ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
 {
-	return reinterpret_cast<ConstantBufferHandle>(VulkanInterface::Instance->CreateConstantBuffer(data, reinterpret_cast<const VkDeviceSize *const RESTRICT>(dataSizes), dataChunks)->Get());
+	return reinterpret_cast<ConstantBufferHandle>(VulkanInterface::Instance->CreateConstantBuffer(data, reinterpret_cast<const VkDeviceSize *const RESTRICT>(dataSizes), dataChunks));
+}
+
+/*
+*	Destroys a constant buffer.
+*/
+void VulkanRenderingSystem::DestroyConstantBuffer(ConstantBufferHandle handle) NOEXCEPT
+{
+	//Put in a queue, destroy when no command buffer uses it anymore.
+	_DestructionQueue.EmplaceSlow(VulkanDestructionData::Type::ConstantBuffer, handle);
 }
 
 /*
@@ -1364,6 +1373,13 @@ void VulkanRenderingSystem::ProcessDestructionQueue() NOEXCEPT
 		{
 			switch (_DestructionQueue[i]._Type)
 			{
+				case VulkanDestructionData::Type::ConstantBuffer:
+				{
+					VulkanInterface::Instance->DestroyConstantBuffer(static_cast<VulkanConstantBuffer *const RESTRICT>(_DestructionQueue[i]._Handle));
+
+					break;
+				}
+
 				case VulkanDestructionData::Type::RenderDataTable:
 				{
 					VulkanInterface::Instance->DestroyDescriptorSet(static_cast<VulkanDescriptorSet *const RESTRICT>(_DestructionQueue[i]._Handle));

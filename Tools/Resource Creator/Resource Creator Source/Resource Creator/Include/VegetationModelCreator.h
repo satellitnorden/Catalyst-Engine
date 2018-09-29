@@ -28,6 +28,14 @@ public:
 
 	public:
 
+		//Enumeration covering all axis.
+		enum class Axis : uint8
+		{
+			X,
+			Y,
+			Z
+		};
+
 		//The output file path.
 		const char *RESTRICT _Output;
 
@@ -36,6 +44,9 @@ public:
 
 		//The file path.
 		const char *RESTRICT _File;
+
+		//Denotes the up axis.
+		Axis _UpAxis;
 
 	};
 
@@ -60,13 +71,19 @@ public:
 		file.Write(&resourceID, sizeof(HashString));
 
 		//Load the model.
-		DynamicArray<VegetationVertex> vertices;
-		DynamicArray<uint32> indices;
-
 		Assimp::Importer modelImporter;
 		const aiScene *modelScene = modelImporter.ReadFile(parameters._File, aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
-		ProcessNode(modelScene->mRootNode, modelScene, vertices, indices);
+		//Determine the height range.
+		Vector2 heightRange{ FLOAT_MAXIMUM, -FLOAT_MAXIMUM };
+
+		ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, &heightRange);
+
+		//Process the vertices/indices.
+		DynamicArray<VegetationVertex> vertices;
+		DynamicArray<uint32> indices;
+
+		ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, heightRange, vertices, indices);
 
 		//Write the size of the vertices to the file.
 		const uint64 sizeOfVertices{ vertices.Size() };
@@ -91,12 +108,79 @@ private:
 	/*
 	*	Processes a single Assimp mesh.
 	*/
-	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, DynamicArray<VegetationVertex> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
+	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, const VegetationModelCreationParameters::Axis upAxis, Vector2 *const RESTRICT heightRange) NOEXCEPT
 	{
 		//Process the vertices.
 		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
 		{
-			vertices.EmplaceSlow(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y, 0.5f);
+			float upValue;
+
+			if (upAxis == VegetationModelCreationParameters::Axis::Z)
+			{
+				upValue = mesh->mVertices[i].x;
+			}
+
+			else if (upAxis == VegetationModelCreationParameters::Axis::Z)
+			{
+				upValue = mesh->mVertices[i].y;
+			}
+
+			else
+			{
+				upValue = mesh->mVertices[i].z;
+			}
+
+			heightRange->_X = CatalystBaseMath::Minimum<float>(heightRange->_X, upValue);
+			heightRange->_Y = CatalystBaseMath::Maximum<float>(heightRange->_Y, upValue);
+		}
+	}
+
+	/*
+	*	Processes a single Assimp node.
+	*/
+	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, const VegetationModelCreationParameters::Axis upAxis, Vector2 *const RESTRICT heightRange) NOEXCEPT
+	{
+		//Process all meshes.
+		for (uint32 i = 0; i < node->mNumMeshes; ++i)
+		{
+			ProcessMesh(scene->mMeshes[node->mMeshes[i]], scene, upAxis, heightRange);
+		}
+
+		//Process all nodes.
+		for (uint32 i = 0; i < node->mNumChildren; ++i)
+		{
+			ProcessNode(node->mChildren[i], scene, upAxis, heightRange);
+		}
+	}
+
+	/*
+	*	Processes a single Assimp mesh.
+	*/
+	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, const VegetationModelCreationParameters::Axis upAxis, const Vector2 &heightRange, DynamicArray<VegetationVertex> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
+	{
+		//Process the vertices.
+		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
+		{
+			float upValue;
+
+			if (upAxis == VegetationModelCreationParameters::Axis::Z)
+			{
+				upValue = mesh->mVertices[i].x;
+			}
+
+			else if (upAxis == VegetationModelCreationParameters::Axis::Z)
+			{
+				upValue = mesh->mVertices[i].y;
+			}
+
+			else
+			{
+				upValue = mesh->mVertices[i].z;
+			}
+
+			const float modulatorFactor{ CatalystBaseMath::ScaleToNormalizedRange(upValue, heightRange._X, heightRange._Y) };
+
+			vertices.EmplaceSlow(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y, modulatorFactor);
 		}
 
 		//Process the indices.
@@ -114,18 +198,18 @@ private:
 	/*
 	*	Processes a single Assimp node.
 	*/
-	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, DynamicArray<VegetationVertex> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
+	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, const VegetationModelCreationParameters::Axis upAxis, const Vector2 &heightRange, DynamicArray<VegetationVertex> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
 	{
 		//Process all meshes.
 		for (uint32 i = 0; i < node->mNumMeshes; ++i)
 		{
-			ProcessMesh(scene->mMeshes[node->mMeshes[i]], scene, vertices, indices);
+			ProcessMesh(scene->mMeshes[node->mMeshes[i]], scene, upAxis, heightRange, vertices, indices);
 		}
 
 		//Process all nodes.
 		for (uint32 i = 0; i < node->mNumChildren; ++i)
 		{
-			ProcessNode(node->mChildren[i], scene, vertices, indices);
+			ProcessNode(node->mChildren[i], scene, upAxis, heightRange, vertices, indices);
 		}
 	}
 

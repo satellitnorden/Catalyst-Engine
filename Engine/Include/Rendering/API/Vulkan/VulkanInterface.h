@@ -143,6 +143,11 @@ public:
 	RESTRICTED VulkanConstantBuffer *const RESTRICT CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
 
 	/*
+	*	Destroys a constant buffer.
+	*/
+	void DestroyConstantBuffer(VulkanConstantBuffer *const RESTRICT buffer) NOEXCEPT;
+
+	/*
 	*	Creates and returns a cube map texture.
 	*/
 	RESTRICTED VulkanCubeMapTexture *const RESTRICT CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT;

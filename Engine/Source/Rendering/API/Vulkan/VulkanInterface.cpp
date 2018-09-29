@@ -272,6 +272,16 @@ RESTRICTED VulkanConstantBuffer *const RESTRICT VulkanInterface::CreateConstantB
 }
 
 /*
+*	Destroys a constant buffer.
+*/
+void VulkanInterface::DestroyConstantBuffer(VulkanConstantBuffer *const RESTRICT buffer) NOEXCEPT
+{
+	buffer->Release();
+	_VulkanConstantBuffers.Erase(buffer);
+	MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanConstantBuffer)>(buffer);
+}
+
+/*
 *	Creates and returns a cube map texture.
 */
 RESTRICTED VulkanCubeMapTexture *const RESTRICT VulkanInterface::CreateCubeMapTexture(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT

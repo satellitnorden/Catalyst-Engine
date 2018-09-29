@@ -145,22 +145,13 @@ void DirectionalInstancedPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
-	StaticArray<uint64, 2> offsets
-	{
-		static_cast<uint64>(0),
-		static_cast<uint64>(0)
-	};
+	const uint64 offset{ 0 };
 
 	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++component)
 	{
-		StaticArray<ConstantBufferHandle, 2> buffers
-		{
-			component->_ModelBuffer,
-			component->_TransformationsBuffer
-		};
-
 		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);
-		commandBuffer->BindVertexBuffers(this, 0, 2, buffers.Data(), offsets.Data());
+		commandBuffer->BindVertexBuffer(this, 0, component->_ModelBuffer, &offset);
+		commandBuffer->BindVertexBuffer(this, 1, component->_TransformationsBuffer, &offset);
 		commandBuffer->BindIndexBuffer(this, component->_ModelBuffer, component->_IndexOffset);
 		commandBuffer->DrawIndexed(this, component->_IndexCount, component->_InstanceCount);
 	}

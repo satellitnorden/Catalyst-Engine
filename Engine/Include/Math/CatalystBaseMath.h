@@ -140,7 +140,7 @@ public:
 	template <typename Type>
 	FORCE_INLINE constexpr static NO_DISCARD Type Floor(const float number) NOEXCEPT
 	{
-		return number > 0.0f ? static_cast<Type>(static_cast<int32>(number)) : static_cast<Type>(static_cast<int32>(number - 1.0f));
+		return number >= 0.0f ? static_cast<Type>(static_cast<int32>(number)) : static_cast<Type>(static_cast<int32>(number - 1.0f));
 	}
 
 	/*

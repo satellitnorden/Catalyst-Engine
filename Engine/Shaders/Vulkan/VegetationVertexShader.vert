@@ -70,9 +70,9 @@ layout (location = 3) out vec2 fragmentTextureCoordinate;
 /*
 *   Calculates the wind modulator.
 */
-vec3 CalculateWindModulator()
+vec3 CalculateWindModulator(vec3 worldPosition)
 {
-    return vec3(sin(totalGameTime), 0.0f, cos(totalGameTime)) * vertexModulatorFactor;
+    return (vec3(sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windStrength), 0.0f, cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windStrength)) + windDirection * windStrength) * 0.2f;
 }
 
 void main()
@@ -89,7 +89,7 @@ void main()
 
     //Calculate the final vertex position.
     vec3 finalVertexPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
-    finalVertexPosition += CalculateWindModulator();
+    finalVertexPosition += CalculateWindModulator(finalVertexPosition) * vertexModulatorFactor;
 
     //Set the position.
     gl_Position = viewMatrix * vec4(finalVertexPosition, 1.0f);

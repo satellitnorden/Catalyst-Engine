@@ -39,6 +39,7 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
 	TaskSystem::Instance->InitializeSystem();
 	TerrainSystem::Instance->InitializeSystem(_ProjectConfiguration._TerrainConfiguration);
+	VegetationSystem::Instance->InitializeSystem();
 
 	//Post-initialize all systems.
 	RenderingSystem::Instance->PostInitializeSystem();

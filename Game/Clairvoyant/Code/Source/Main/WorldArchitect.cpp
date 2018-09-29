@@ -56,6 +56,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 				properties.At(i, j)._W = PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, 0.0f, randomOffset1);
 				properties.At(i, j)._W += PerlinNoiseGenerator::GenerateNoise(xCoordinate * 7.5f, yCoordinate * 7.5f, 0.0f, randomOffset2) * 0.25f;
 				properties.At(i, j)._W += PerlinNoiseGenerator::GenerateNoise(xCoordinate * 15.0f, yCoordinate * 15.0f, 0.0f, randomOffset3) * 0.125f;
+				properties.At(i, j)._W += 0.25f;
 			}
 		}
 
@@ -145,14 +146,14 @@ void WorldArchitect::Initialize() NOEXCEPT
 		//Add some vegetation.
 		VegetationAddTypeInformation information;
 
-		information._Properties._CutoffDistance = 1'000.0f;
+		information._Properties._CutoffDistance = 10.0f;
 		information._Properties._Density = 100;
 		information._Properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			Vector3 position(CatalystBaseMath::RandomFloatInRange(-500.0f, 500.0f), 100.0f, CatalystBaseMath::RandomFloatInRange(-500.0f, 500.0f));
+			Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
 			position._Y = TerrainSystem::Instance->GetTerrainHeightAtPosition(position);
 
-			*transformation = Matrix4(position, Vector3(-90.0f, 0.0f, 0.0f), Vector3(CatalystBaseMath::RandomFloatInRange(0.025f, 0.05f), CatalystBaseMath::RandomFloatInRange(0.05f, 0.1f), CatalystBaseMath::RandomFloatInRange(0.025f, 0.05f)));
+			*transformation = Matrix4(position, Vector3(-90.0f, 0.0f, 0.0f), Vector3(CatalystBaseMath::RandomFloatInRange(0.025f, 0.05f), CatalystBaseMath::RandomFloatInRange(0.025f, 0.05f), CatalystBaseMath::RandomFloatInRange(0.025f, 0.05f)));
 
 			return true;
 		};

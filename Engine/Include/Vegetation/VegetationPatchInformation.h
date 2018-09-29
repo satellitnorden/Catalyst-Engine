@@ -3,15 +3,18 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Math.
+#include <Math/GridPoint.h>
+
 class VegetationPatchInformation final
 {
 
 public:
 
-	//The grid point on the X axis.
-	int64 _X;
+	//Denotes whether or not this patch is valid.
+	bool _Valid;
 
-	//The grid point on the Y axis.
-	int64 _Y;
+	//The grid point.
+	GridPoint _GridPoint;
 
 };

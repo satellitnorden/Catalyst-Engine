@@ -72,7 +72,7 @@ namespace ClairvoyantResourceCreation
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\GrassVegetationMaterial";
 			parameters._ID = "GrassVegetationMaterial";
-			parameters._MaskMipmapLevels = 7;
+			parameters._MaskMipmapLevels = 8;
 			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\Mask.png";
 			parameters._MipmapLevels = 9;
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\Albedo.png";
@@ -88,6 +88,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\GrassVegetationModel";
 			parameters._ID = "GrassVegetationModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\GrassVegetationModel.fbx";
+			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::X;
 
 			//VegetationModelCreator::CreateVegetationModel(parameters);
 		}

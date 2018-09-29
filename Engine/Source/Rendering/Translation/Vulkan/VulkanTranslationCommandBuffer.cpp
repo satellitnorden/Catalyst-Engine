@@ -25,10 +25,10 @@ void VulkanTranslationCommandBuffer::Begin(const RenderPass *const RESTRICT rend
 /*
 *	Binds an index buffer.
 */
-void VulkanTranslationCommandBuffer::BindIndexBuffer(const RenderPass *const RESTRICT renderPass, const ConstantBufferHandle indexBuffer, const uint64 offset) NOEXCEPT
+void VulkanTranslationCommandBuffer::BindIndexBuffer(const RenderPass *const RESTRICT renderPass, ConstantBufferHandle buffer, const uint64 offset) NOEXCEPT
 {
 	//Bind the index buffer.
-	_CommandBuffer.CommandBindIndexBuffer(reinterpret_cast<const VkBuffer>(indexBuffer), offset);
+	_CommandBuffer.CommandBindIndexBuffer(static_cast<VulkanConstantBuffer *const RESTRICT>(buffer)->Get(), offset);
 }
 
 /*
@@ -46,10 +46,10 @@ void VulkanTranslationCommandBuffer::BindRenderDataTable(const RenderPass *const
 /*
 *	Binds a number of vertex buffers.
 */
-void VulkanTranslationCommandBuffer::BindVertexBuffers(const RenderPass *const RESTRICT renderPass, const uint32 firstBinding, const uint32 numberOfVertexBuffers, const ConstantBufferHandle *const RESTRICT vertexBuffers, const uint64 *const RESTRICT offsets) NOEXCEPT
+void VulkanTranslationCommandBuffer::BindVertexBuffer(const RenderPass *const RESTRICT renderPass, const uint32 binding, ConstantBufferHandle buffer, const uint64 *const RESTRICT offset) NOEXCEPT
 {
 	//Bind the vertex buffers.
-	_CommandBuffer.CommandBindVertexBuffers(firstBinding, numberOfVertexBuffers, (const VkBuffer *const RESTRICT) vertexBuffers, reinterpret_cast<const VkDeviceSize *const RESTRICT>(offsets));
+	_CommandBuffer.CommandBindVertexBuffers(binding, 1, &static_cast<const VulkanConstantBuffer *const RESTRICT>(buffer)->Get(), reinterpret_cast<const VkDeviceSize *const RESTRICT>(offset));
 }
 
 /*
