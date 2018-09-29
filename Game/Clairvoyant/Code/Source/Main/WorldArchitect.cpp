@@ -156,7 +156,7 @@ void WorldArchitect::InitializeVegetation()
 		VegetationTypeProperties properties;
 
 		properties._CutoffDistance = 25.0f;
-		properties._Density = 200;
+		properties._Density = 225;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return WorldArchitect::Instance->GenerateTransformation(0.01f, 0.02f, box, transformation);
@@ -177,7 +177,7 @@ void WorldArchitect::InitializeVegetation()
 		//Add the fern vegetation type.
 		VegetationTypeProperties properties;
 
-		properties._CutoffDistance = 250.0f;
+		properties._CutoffDistance = 125.0f;
 		properties._Density = 75;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
@@ -186,6 +186,12 @@ void WorldArchitect::InitializeVegetation()
 		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("FernVegetationModel")) };
 		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("FernVegetationMaterial")) };
 
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 250.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 500.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 	}
 }
@@ -196,9 +202,19 @@ void WorldArchitect::InitializeVegetation()
 bool WorldArchitect::GenerateTransformation(const float minimumScale, const float maximumScale, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
 {
 	Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
-	position._Y = TerrainSystem::Instance->GetTerrainHeightAtPosition(position);
+	
+	const float terrainheight{ TerrainSystem::Instance->GetTerrainHeightAtPosition(position) };
 
-	if (position._Y < 0.0f)
+	if (terrainheight < 0.0f)
+	{
+		return false;
+	}
+
+	position._Y = terrainheight;
+
+	const Vector3 terrainNormal{ TerrainSystem::Instance->GetTerrainNormalAtPosition(position) };
+
+	if (!CatalystBaseMath::RandomChance(CatalystBaseMath::Maximum<float>(Vector3::DotProduct(terrainNormal, Vector3::UP), 0.0f) - 0.25f))
 	{
 		return false;
 	}
@@ -208,7 +224,7 @@ bool WorldArchitect::GenerateTransformation(const float minimumScale, const floa
 	transformation->SetTranslation(position);
 	transformation->SetScale(Vector3(scale, scale, scale));
 
-	Matrix4 rotationMatrix{ Matrix4::Orientation(TerrainSystem::Instance->GetTerrainNormalAtPosition(position), Vector3::UP) };
+	Matrix4 rotationMatrix{ Matrix4::Orientation(terrainNormal, Vector3::UP) };
 	rotationMatrix.Rotate(Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)));
 
 	*transformation = *transformation * rotationMatrix;
