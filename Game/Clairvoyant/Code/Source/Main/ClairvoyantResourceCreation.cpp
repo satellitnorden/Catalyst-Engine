@@ -3,9 +3,11 @@
 
 //Resource creator.
 #include <EnvironmentMaterialCreator.h>
+#include <PhysicalModelCreator.h>
 #include <ResourceCollectionCreator.h>
 #include <OceanMaterialCreator.h>
 #include <TerrainMaterialCreator.h>
+#include <VegetationModelCreator.h>
 
 namespace ClairvoyantResourceCreation
 {
@@ -34,7 +36,7 @@ namespace ClairvoyantResourceCreation
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 
-			//EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+			EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
 		}
 
 		{
@@ -47,7 +49,7 @@ namespace ClairvoyantResourceCreation
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 
-			//EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+			EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
 		}
 
 		{
@@ -60,7 +62,18 @@ namespace ClairvoyantResourceCreation
 			parameters._Normal = "..\\..\\..\\Resources\\Raw\\Textures\\Ocean\\Normal.jpg";
 			parameters._Foam = "..\\..\\..\\Resources\\Raw\\Textures\\Ocean\\Foam.jpg";
 
-			//OceanMaterialCreator::CreateOceanMaterial(parameters);
+			OceanMaterialCreator::CreateOceanMaterial(parameters);
+		}
+
+		{
+			//Create the grass vegetation physical model.
+			VegetationModelCreator::VegetationModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\GrassVegetationModel";
+			parameters._ID = "GrassVegetationModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\GrassVegetationModel.fbx";
+
+			VegetationModelCreator::CreateVegetationModel(parameters);
 		}
 
 		{
@@ -106,7 +119,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Layers[4]._AmbientOcclusion = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow1AmbientOcclusion.png";
 			parameters._Layers[4]._Displacement = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow1Displacement.png";
 
-			//TerrainMaterialCreator::CreateTerrainMaterial(parameters);
+			TerrainMaterialCreator::CreateTerrainMaterial(parameters);
 		}
 
 		{
@@ -117,6 +130,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DayEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\NightEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\GrassVegetationModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultTerrainMaterial.cr");
 
 			ResourceCollectionCreator::CreateResourceCollection(parameters);

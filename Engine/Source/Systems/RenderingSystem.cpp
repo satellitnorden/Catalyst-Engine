@@ -31,6 +31,7 @@
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/Engine/TerrainMaterial.h>
 #include <Rendering/Engine/TextureData.h>
+#include <Rendering/Engine/VegetationModel.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
 
 //Resources.
@@ -41,6 +42,7 @@
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/TerrainMaterialData.h>
+#include <Resources/VegetationModelData.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -555,6 +557,23 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(12, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FifthLayerAlbedo), terrainMaterial._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(13, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FifthLayerNormalMap), terrainMaterial._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(14, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FifthLayerMaterialProperties), terrainMaterial._RenderDataTable);
+}
+
+
+/*
+*	Creates a vegetation model.
+*/
+void RenderingSystem::CreateVegetationModel(const VegetationModelData &data, VegetationModel &model) NOEXCEPT
+{
+	//Create the vertex and index buffer.
+	const void *RESTRICT modelData[]{ data._Vertices.Data(), data._Indices.Data() };
+	const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
+	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
+
+	//Set up the physical model.
+	model._Buffer = buffer;
+	model._IndexOffset = modelDataSizes[0];
+	model._IndexCount = static_cast<uint32>(data._Indices.Size());
 }
 
 /*

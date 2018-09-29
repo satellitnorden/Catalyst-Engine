@@ -15,6 +15,7 @@
 #include <Resources/ResourceLoaderUtilities.h>
 #include <Resources/ResourcesCore.h>
 #include <Resources/TerrainMaterialData.h>
+#include <Resources/VegetationModelData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -29,6 +30,7 @@ Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::_PhysicalModels;
 Map<HashString, TerrainMaterial> ResourceLoader::_TerrainMaterials;
+Map<HashString, VegetationModel> ResourceLoader::_VegetationModels;
 
 /*
 *	Given a file path, load a resource collection.
@@ -98,6 +100,13 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			case ResourceType::TerrainMaterial:
 			{
 				LoadTerrainMaterial(file);
+
+				break;
+			}
+
+			case ResourceType::VegetationModel:
+			{
+				LoadVegetationModel(file);
 
 				break;
 			}
@@ -370,4 +379,36 @@ void ResourceLoader::LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the terrain material via the rendering system.
 	RenderingSystem::Instance->CreateTerrainMaterial(terrainMaterialData, _TerrainMaterials[resourceID]);
+}
+
+/*
+*	Given a file, load a vegetation model.
+*/
+void ResourceLoader::LoadVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the vegetation model data in the vegetation model data structure.
+	VegetationModelData data;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the number of vertices.
+	uint64 numberOfVertices;
+	file.Read(&numberOfVertices, sizeof(uint64));
+
+	//Read the vertices.
+	data._Vertices.UpsizeFast(numberOfVertices);
+	file.Read(data._Vertices.Data(), sizeof(VegetationVertex) * numberOfVertices);
+
+	//Read the number of indices.
+	uint64 numberOfIndices;
+	file.Read(&numberOfIndices, sizeof(uint64));
+
+	//Read the indices.
+	data._Indices.UpsizeFast(numberOfIndices);
+	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
+
+	//Create the vegetation model via the rendering system.
+	RenderingSystem::Instance->CreateVegetationModel(data, _VegetationModels[resourceID]);
 }

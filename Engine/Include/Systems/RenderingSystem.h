@@ -45,6 +45,8 @@ class Resolution;
 class TerrainMaterial;
 class TerrainMaterialData;
 class TextureData;
+class VegetationModel;
+class VegetationModelData;
 
 class RenderingSystem final
 {
@@ -409,6 +411,11 @@ public:
 	*	Creates a terrain material.
 	*/
 	void CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT;
+
+	/*
+	*	Creates a vegetation model.
+	*/
+	void CreateVegetationModel(const VegetationModelData &data, VegetationModel &model) NOEXCEPT;
 
 	/*
 	*	Initializes a dynamic physical entity.

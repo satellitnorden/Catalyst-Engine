@@ -894,6 +894,15 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\OceanRenderingData.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationVertex.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\VegetationModelData.h">
+      <Filter>Resources\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\VegetationModel.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

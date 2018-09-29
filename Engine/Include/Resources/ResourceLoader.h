@@ -8,13 +8,14 @@
 
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>
+#if defined(CATALYST_ENABLE_OCEAN)
+#include <Rendering/Engine/OceanMaterial.h>
+#endif
 #include <Rendering/Engine/ParticleMaterial.h>
 #include <Rendering/Engine/PhysicalMaterial.h>
 #include <Rendering/Engine/PhysicalModel.h>
 #include <Rendering/Engine/TerrainMaterial.h>
-#if defined(CATALYST_ENABLE_OCEAN)
-#include <Rendering/Engine/OceanMaterial.h>
-#endif
+#include <Rendering/Engine/VegetationModel.h>
 
 //Resources.
 #include <Resources/ResourcesCore.h>
@@ -64,6 +65,11 @@ public:
 	*/
 	static const TerrainMaterial& GetTerrainMaterial(const HashString resourceID) { return _TerrainMaterials[resourceID]; }
 
+	/*
+	*	Given a resource ID, return the corresponding vegetation model.
+	*/
+	static const VegetationModel& GetVegetationModel(const HashString resourceID) { return _VegetationModels[resourceID]; }
+
 private:
 
 	//Container for all environment materials.
@@ -85,6 +91,9 @@ private:
 
 	//Container for all terrain materials.
 	static Map<HashString, TerrainMaterial> _TerrainMaterials;
+
+	//Container for all vegetation models.
+	static Map<HashString, VegetationModel> _VegetationModels;
 
 	/*
 	*	Loads a resource collection, internal implementation.
@@ -122,5 +131,10 @@ private:
 	*	Given a file, load a terrain material.
 	*/
 	static void LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a vegetation model.
+	*/
+	static void LoadVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 };
