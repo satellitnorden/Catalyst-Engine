@@ -41,6 +41,16 @@ namespace RenderingUtilities
 	}
 
 	/*
+	*	Creates a transformations buffer.
+	*/
+	static void CreateTransformationsBuffer(const DynamicArray<Matrix4> &transformations, ConstantBufferHandle *const RESTRICT buffer) NOEXCEPT
+	{
+		const void *RESTRICT data[]{ transformations.Data() };
+		const uint64 dataSizes[]{ sizeof(Matrix4) * transformations.Size() };
+		*buffer = RenderingSystem::Instance->CreateConstantBuffer(data, dataSizes, 1);
+	}
+
+	/*
 	*	Given 8 corners of a cube, determine if it is within the view frustum.
 	*/
 	static bool IsCubeWithinViewFrustum(const StaticArray<Vector4, 8> &corners) NOEXCEPT

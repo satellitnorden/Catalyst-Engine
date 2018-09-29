@@ -269,6 +269,7 @@
     <ClInclude Include="..\..\..\Include\Systems\TaskSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\TerrainSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\UpdateSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\VegetationSystem.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainDisplacementInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatch.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h" />
@@ -276,7 +277,13 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUtilities.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationAddTypeInformation.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationModel.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchRenderInformation.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformation.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeProperties.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationVertex.h" />
   </ItemGroup>
   <ItemGroup>
@@ -392,6 +399,7 @@
     <ClCompile Include="..\..\..\Source\Systems\TaskSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\TerrainSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\UpdateSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\VegetationSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Include\Math\Vector3.inl" />

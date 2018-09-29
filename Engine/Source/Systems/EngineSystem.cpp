@@ -18,6 +18,7 @@
 #include <Systems/TaskSystem.h>
 #include <Systems/TerrainSystem.h>
 #include <Systems/UpdateSystem.h>
+#include <Systems/VegetationSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(EngineSystem);
@@ -71,6 +72,7 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	_CurrentUpdatePhase = UpdatePhase::OpeningUpdate;
 	UpdateSystem::Instance->PreOpeningUpdateSystemSynchronous(&context);
 	InputSystem::Instance->PreOpeningUpdateSystemSynchronous(&context);
+	VegetationSystem::Instance->OpeningUpdateSystemSynchronous(&context);
 	UpdateSystem::Instance->PostOpeningUpdateSystemSynchronous(&context);
 	InputSystem::Instance->PostOpeningUpdateSystemSynchronous(&context);
 

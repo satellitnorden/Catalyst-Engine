@@ -909,6 +909,27 @@
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationVertex.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\VegetationSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchRenderInformation.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformation.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeProperties.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationAddTypeInformation.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1246,6 +1267,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BelowOceanRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\VegetationSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
