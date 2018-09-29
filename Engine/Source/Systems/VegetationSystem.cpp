@@ -211,7 +211,10 @@ void VegetationSystem::UpdateVegetationTypeInformation(VegetationTypeInformation
 	}
 
 	//Add the new update to the vegetation type information updates.
-	_VegetationTypeInformationUpdates.EmplaceSlow(update);
+	if (!update._PatchesToInvalidate.Empty() || !update._Updates.Empty())
+	{
+		_VegetationTypeInformationUpdates.EmplaceSlow(update);
+	}
 }
 
 /*
