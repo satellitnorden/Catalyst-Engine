@@ -48,16 +48,16 @@ void VegetationSystem::OpeningUpdateSystemSynchronous(const UpdateContext *const
 /*
 *	Adds a vegetation type.
 */
-void VegetationSystem::AddVegetationType(const VegetationAddTypeInformation &addInformation) NOEXCEPT
+void VegetationSystem::AddVegetationType(const VegetationTypeProperties &properties, const VegetationModel &model, const VegetationMaterial &material) NOEXCEPT
 {
 	//Create the new vegetation information.
 	_VegetationTypeInformations.EmplaceSlow();
 	VegetationTypeInformation *const RESTRICT information{ &_VegetationTypeInformations.Back() };
 
 	//Just copy the properties, the model and the material.
-	information->_Properties = addInformation._Properties;
-	information->_Model = addInformation._Model;
-	information->_Material = addInformation._Material;
+	information->_Properties = properties;
+	information->_Model = model;
+	information->_Material = material;
 
 	//Fill in the patch and the patch render informations.
 	for (uint8 i = 0; i < 9; ++i)

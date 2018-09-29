@@ -915,9 +915,6 @@
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeProperties.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationAddTypeInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>

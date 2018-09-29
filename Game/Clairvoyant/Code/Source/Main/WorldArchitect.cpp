@@ -144,11 +144,11 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 	{
 		//Add some vegetation.
-		VegetationAddTypeInformation information;
+		VegetationTypeProperties properties;
 
-		information._Properties._CutoffDistance = 10.0f;
-		information._Properties._Density = 100;
-		information._Properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
+		properties._CutoffDistance = 25.0f;
+		properties._Density = 100;
+		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
 			position._Y = TerrainSystem::Instance->GetTerrainHeightAtPosition(position);
@@ -157,9 +157,15 @@ void WorldArchitect::Initialize() NOEXCEPT
 
 			return true;
 		};
-		information._Model = ResourceLoader::GetVegetationModel(HashString("GrassVegetationModel"));
-		information._Material = ResourceLoader::GetVegetationMaterial(HashString("GrassVegetationMaterial"));
+		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("GrassVegetationModel")) };
+		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("GrassVegetationMaterial")) };
 
-		VegetationSystem::Instance->AddVegetationType(information);
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		properties._CutoffDistance = 50.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		properties._CutoffDistance = 75.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		properties._CutoffDistance = 100.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 	}
 }

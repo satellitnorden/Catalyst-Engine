@@ -281,7 +281,6 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUtilities.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationAddTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationMaterial.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationModel.h" />

@@ -10,7 +10,6 @@
 #include <Multithreading/Task.h>
 
 //Vegetation.
-#include <Vegetation/VegetationAddTypeInformation.h>
 #include <Vegetation/VegetationTypeInformation.h>
 #include <Vegetation/VegetationTypeInformationUpdate.h>
 
@@ -48,7 +47,7 @@ public:
 	/*
 	*	Adds a vegetation type.
 	*/
-	void AddVegetationType(const VegetationAddTypeInformation &addInformation) NOEXCEPT;
+	void AddVegetationType(const VegetationTypeProperties &properties, const VegetationModel &model, const VegetationMaterial &material) NOEXCEPT;
 
 private:
 
