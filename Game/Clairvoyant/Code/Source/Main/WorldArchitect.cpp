@@ -156,7 +156,7 @@ void WorldArchitect::InitializeVegetation()
 		VegetationTypeProperties properties;
 
 		properties._CutoffDistance = 25.0f;
-		properties._Density = 175;
+		properties._Density = 225;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
