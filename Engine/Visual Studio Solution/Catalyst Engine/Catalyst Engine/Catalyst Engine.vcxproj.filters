@@ -942,9 +942,6 @@
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformationUpdate.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchUpdate.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VegetationColorVertexShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>

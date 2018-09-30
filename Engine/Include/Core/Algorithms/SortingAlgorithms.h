@@ -10,7 +10,7 @@ public:
 
 	//Type aliases.
 	template <typename Type>
-	using ComparisonFunction = bool(*)(const Type *const RESTRICT firstElement, const Type *const RESTRICT secondElement);
+	using ComparisonFunction = bool(*)(const void *const RESTRICT userData, const Type *const RESTRICT firstElement, const Type *const RESTRICT secondElement);
 
 	/*
 	*	Bubble sort.
@@ -22,7 +22,7 @@ public:
 	*	Uses: Useful when an array is almost sorted as it almost only takes linear complexity.
 	*/
 	template <typename Type>
-	static void BubbleSort(Type *const RESTRICT begin, Type *const RESTRICT end, ComparisonFunction<Type> comparisonFunction = [](const Type *const RESTRICT firstElement, const Type *const RESTRICT secondElement) { return *firstElement < *secondElement; }) NOEXCEPT
+	static void BubbleSort(Type *const RESTRICT begin, Type *const RESTRICT end, const void *const RESTRICT userData, ComparisonFunction<Type> comparisonFunction = [](const void *const RESTRICT userData, const Type *const RESTRICT firstElement, const Type *const RESTRICT secondElement) { return *firstElement < *secondElement; }) NOEXCEPT
 	{
 		bool swapped;
 
@@ -32,7 +32,7 @@ public:
 
 			for (Type *RESTRICT iterator{ begin }; iterator != end - 1; ++iterator)
 			{
-				if (comparisonFunction(iterator + 1, iterator))
+				if (comparisonFunction(userData, iterator + 1, iterator))
 				{
 					Swap(iterator, iterator + 1);
 
@@ -52,13 +52,13 @@ public:
 	*	Uses: Useful when number of elements is small or when the array is almost sorted.
 	*/
 	template <typename Type>
-	static void InsertionSort(Type *const RESTRICT begin, Type *const RESTRICT end, ComparisonFunction<Type> comparisonFunction = [](const Type *const RESTRICT firstElement, const Type *const RESTRICT secondElement) { return *firstElement < *secondElement; }) NOEXCEPT
+	static void InsertionSort(Type *const RESTRICT begin, Type *const RESTRICT end, const void *const RESTRICT userData, ComparisonFunction<Type> comparisonFunction = [](const void *const RESTRICT userData, const Type *const RESTRICT firstElement, const Type *const RESTRICT secondElement) { return *firstElement < *secondElement; }) NOEXCEPT
 	{
 		for (Type *RESTRICT iterator{ begin + 1 }; iterator != end; ++iterator)
 		{
 			Type *RESTRICT reverseIterator{ iterator };
 
-			while (reverseIterator != begin && comparisonFunction(reverseIterator, reverseIterator - 1))
+			while (reverseIterator != begin && comparisonFunction(userData, reverseIterator, reverseIterator - 1))
 			{
 				Swap(reverseIterator, reverseIterator - 1);
 
@@ -76,7 +76,7 @@ public:
 	*	Uses: Useful when memory writes are a costly process as selection sort never makes more than N swaps.
 	*/
 	template <typename Type>
-	static void SelectionSort(Type *const RESTRICT begin, Type *const RESTRICT end, ComparisonFunction<Type> comparisonFunction = [](const Type *const RESTRICT firstElement, const Type *const RESTRICT secondElement) { return *firstElement < *secondElement; }) NOEXCEPT
+	static void SelectionSort(Type *const RESTRICT begin, Type *const RESTRICT end, const void *const RESTRICT userData, ComparisonFunction<Type> comparisonFunction = [](const void *const RESTRICT userData, const Type *const RESTRICT firstElement, const Type *const RESTRICT secondElement) { return *firstElement < *secondElement; }) NOEXCEPT
 	{
 		for (Type *RESTRICT iterator{ begin }; iterator != end; ++iterator)
 		{
@@ -84,7 +84,7 @@ public:
 
 			for (Type *RESTRICT secondIterator{ iterator + 1 }; secondIterator != end; ++secondIterator)
 			{
-				if (comparisonFunction(secondIterator, selected))
+				if (comparisonFunction(userData, secondIterator, selected))
 				{
 					selected = secondIterator;
 				}
@@ -95,16 +95,6 @@ public:
 				Swap(iterator, selected);
 			}
 		}
-	}
-
-	/*
-	*	A standard sort algorithm that is generally applicable to most cases.
-	*	Stable: No.
-	*/
-	template <typename Type>
-	static void StandardSort(Type *const RESTRICT begin, Type *const RESTRICT end, ComparisonFunction<Type> comparisonFunction = [](const Type *const RESTRICT firstElement, const Type *const RESTRICT secondElement) { return *firstElement < *secondElement; }) NOEXCEPT
-	{
-		std::sort(begin, end, [comparisonFunction](const Type &firstElement, const Type &secondElement) { return comparisonFunction(&firstElement, &secondElement); });
 	}
 
 private:

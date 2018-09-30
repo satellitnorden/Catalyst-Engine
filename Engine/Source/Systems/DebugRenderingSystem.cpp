@@ -25,7 +25,7 @@ void DebugRenderingSystem::RenderingUpdateSystemSynchronous(const UpdateContext 
 	//Sort the axis-aligned bounding box debug rendering data.
 	if (_AxisAlignedBoundingBoxDebugRenderData.Size() > 1)
 	{
-		SortingAlgorithms::StandardSort<AxisAlignedBoundingBoxDebugRenderData>(_AxisAlignedBoundingBoxDebugRenderData.Begin(), _AxisAlignedBoundingBoxDebugRenderData.End(), [](const AxisAlignedBoundingBoxDebugRenderData *const RESTRICT first, const AxisAlignedBoundingBoxDebugRenderData *const RESTRICT second)
+		SortingAlgorithms::InsertionSort<AxisAlignedBoundingBoxDebugRenderData>(_AxisAlignedBoundingBoxDebugRenderData.Begin(), _AxisAlignedBoundingBoxDebugRenderData.End(), nullptr, [](const void *const RESTRICT userData, const AxisAlignedBoundingBoxDebugRenderData *const RESTRICT first, const AxisAlignedBoundingBoxDebugRenderData *const RESTRICT second)
 		{
 			if (const CameraEntity *const RESTRICT activeCamera{ RenderingSystem::Instance->GetActiveCamera() })
 			{

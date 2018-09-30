@@ -6,7 +6,6 @@
 
 //Vegetation.
 #include <Vegetation/VegetationTypeInformation.h>
-#include <Vegetation/VegetationPatchUpdate.h>
 
 class VegetationTypeInformationUpdate final
 {
@@ -19,7 +18,10 @@ public:
 	//The patch indices to invalidate.
 	DynamicArray<uint8> _PatchesToInvalidate;
 
-	//The patches to be update.
-	DynamicArray<VegetationPatchUpdate> _Updates;
+	//The new patch information.
+	VegetationPatchInformation _NewPatchInformation;
+
+	//The new patch render information.
+	VegetationPatchRenderInformation _NewPatchRenderInformation;
 
 };

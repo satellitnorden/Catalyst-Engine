@@ -1,6 +1,9 @@
 //Header file.
 #include <Systems/VegetationSystem.h>
 
+//Core.
+#include <Core/Algorithms/SortingAlgorithms.h>
+
 //Entities.
 #include <Entities/CameraEntity.h>
 
@@ -83,17 +86,14 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 		InvalidatePatch(_VegetationTypeInformationUpdate._Information, index);
 	}
 
-	for (VegetationPatchUpdate &patchUpdate : _VegetationTypeInformationUpdate._Updates)
+	for (uint64 i = 0, size = _VegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
 	{
-		for (uint64 i = 0, size = _VegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
+		if (!_VegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
 		{
-			if (!_VegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
-			{
-				_VegetationTypeInformationUpdate._Information->_PatchInformations[i] = patchUpdate._PatchInformation;
-				_VegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = patchUpdate._PatchRenderInformation;
+			_VegetationTypeInformationUpdate._Information->_PatchInformations[i] = _VegetationTypeInformationUpdate._NewPatchInformation;
+			_VegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _VegetationTypeInformationUpdate._NewPatchRenderInformation;
 
-				break;
-			}
+			break;
 		}
 	}
 }
@@ -128,14 +128,15 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 		const GridPoint currentGridPoint{ GridPoint::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * 2.0f) };
 
 		//Create an array with the valid grid positions.
-		const StaticArray<GridPoint, 9> validGridPoints
+		StaticArray<GridPoint, 9> validGridPoints
 		{
+			GridPoint(currentGridPoint._X, currentGridPoint._Y),
+
 			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y - 1),
 			GridPoint(currentGridPoint._X, currentGridPoint._Y - 1),
 			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y - 1),
 
 			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y),
-			GridPoint(currentGridPoint._X, currentGridPoint._Y),
 			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y),
 
 			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y + 1),
@@ -143,10 +144,40 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y + 1),
 		};
 
+		//Construct the sorting data.
+		class SortingData final
+		{
+
+		public:
+
+			//The current camera position.
+			Vector3 _CameraPosition;
+
+			//The cutoff distance.
+			float _CutoffDistance;
+		};
+
+		SortingData sortingData;
+
+		sortingData._CameraPosition = _CurrentCameraPosition;
+		sortingData._CutoffDistance = information._Properties._CutoffDistance;
+
+		//Sort the array so that the closest grid point is first.
+		SortingAlgorithms::InsertionSort<GridPoint>(validGridPoints.begin(), validGridPoints.end(), &sortingData, [](const void *const RESTRICT userData, const GridPoint *const RESTRICT first, const GridPoint *const RESTRICT second)
+		{
+			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
+
+			const Vector3 firstGridPosition{ GridPoint::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * 2.0f) };
+			const Vector3 secondGridPosition{ GridPoint::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * 2.0f) };
+
+			return Vector3::LengthSquaredXZ(sortingData->_CameraPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_CameraPosition - secondGridPosition);
+		});
+
 		//Construct the update.
 		VegetationTypeInformationUpdate update;
 
 		update._Information = &information;
+		update._NewPatchInformation._Valid = false;
 
 		//Determine the patch indices to invalidate.
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
@@ -193,23 +224,21 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 			if (!exists)
 			{
 				//Construct the update.
-				VegetationPatchUpdate patchUpdate;
+				update._NewPatchInformation._Valid = true;
+				update._NewPatchInformation._GridPoint = gridPoint;
 
-				patchUpdate._PatchInformation._Valid = true;
-				patchUpdate._PatchInformation._GridPoint = gridPoint;
-
-				patchUpdate._PatchRenderInformation._Draw = true;
+				update._NewPatchRenderInformation._Draw = true;
 				GenerateTransformations(	gridPoint,
 											information._Properties,
-											&patchUpdate._PatchRenderInformation._TransformationsBuffer,
-											&patchUpdate._PatchRenderInformation._NumberOfTransformations);
+											&update._NewPatchRenderInformation._TransformationsBuffer,
+											&update._NewPatchRenderInformation._NumberOfTransformations);
 
-				update._Updates.EmplaceSlow(patchUpdate);
+				break;
 			}
 		}
 
 		//If the new update is valid, copy it and return.
-		if (!update._PatchesToInvalidate.Empty() || !update._Updates.Empty())
+		if (!update._PatchesToInvalidate.Empty() || update._NewPatchInformation._Valid)
 		{
 			_VegetationTypeInformationUpdate = update;
 

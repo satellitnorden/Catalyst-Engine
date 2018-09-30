@@ -156,7 +156,7 @@ void WorldArchitect::InitializeVegetation()
 		VegetationTypeProperties properties;
 
 		properties._CutoffDistance = 200.0f;
-		properties._Density = 75;
+		properties._Density = 50;
 		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.0f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -180,12 +180,12 @@ void WorldArchitect::InitializeVegetation()
 		VegetationTypeProperties properties;
 
 		properties._CutoffDistance = 100.0f;
-		properties._Density = 100;
+		properties._Density = 125;
 		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.05f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.25f, 0.03f, 0.06f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.25f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("FernVegetationModel")) };
 		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("FernVegetationMaterial")) };
@@ -255,9 +255,9 @@ void WorldArchitect::InitializeVegetation()
 		VegetationTypeProperties properties;
 
 		properties._CutoffDistance = 500.0f;
-		properties._Density = 500;
+		properties._Density = 250;
 		properties._Thickness = 1.0f;
-		properties._WindModulatorFactor = 0.0f;
+		properties._WindModulatorFactor = 0.025f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.9f, 0.03f, 0.06f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);

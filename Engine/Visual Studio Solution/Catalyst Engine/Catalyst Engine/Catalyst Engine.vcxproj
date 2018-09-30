@@ -287,7 +287,6 @@
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationModel.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchRenderInformation.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeProperties.h" />
