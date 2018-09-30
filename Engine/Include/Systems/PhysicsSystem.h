@@ -38,9 +38,9 @@ public:
 	const Vector3& GetWindDirection() const NOEXCEPT { return _WindDirection; }
 
 	/*
-	*	Returns the wind strength.
+	*	Returns the wind speed.
 	*/
-	float GetWindStrength() const NOEXCEPT { return _WindStrength; }
+	float GetWindSpeed() const NOEXCEPT { return _WindSpeed; }
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*
@@ -54,7 +54,7 @@ private:
 	//The wind direction.
 	Vector3 _WindDirection{ Vector3::Normalize(Vector3::RIGHT + Vector3::FORWARD) };
 
-	//The wind strength.
-	float _WindStrength{ 0.25f };
+	//The wind speed.
+	float _WindSpeed{ 4.0f };
 
 };
