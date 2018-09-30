@@ -203,7 +203,7 @@ void WorldArchitect::InitializeVegetation()
 		//Add the grass vegetation type.
 		VegetationTypeProperties properties;
 
-		properties._CutoffDistance = 10.0f;
+		properties._CutoffDistance = 20.0f;
 		properties._Density = 5'000;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.2f;
@@ -216,10 +216,13 @@ void WorldArchitect::InitializeVegetation()
 
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
-		properties._CutoffDistance = 50.0f;
+		properties._CutoffDistance = 40.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
-		properties._CutoffDistance = 75.0f;
+		properties._CutoffDistance = 60.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 80.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 100.0f;
@@ -247,6 +250,12 @@ void WorldArchitect::InitializeVegetation()
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 75.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 100.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 125.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 	}
 
