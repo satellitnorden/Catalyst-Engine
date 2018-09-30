@@ -21,6 +21,7 @@ public:
 
 	float _HalfCutoffDistanceSquared;
 	float _InverseHalfCutoffDistanceSquared;
+	float _WindModulatorFactor;
 
 };
 
@@ -179,6 +180,7 @@ void VegetationDepthRenderPass::RenderInternal() NOEXCEPT
 
 		data._HalfCutoffDistanceSquared = (information._Properties._CutoffDistance * 0.5f) * (information._Properties._CutoffDistance * 0.5f);
 		data._InverseHalfCutoffDistanceSquared = 1.0f / data._HalfCutoffDistanceSquared;
+		data._WindModulatorFactor = information._Properties._WindModulatorFactor;
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
 

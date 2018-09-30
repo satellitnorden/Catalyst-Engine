@@ -55,6 +55,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 0) float windModulatorFactor;
+};
+
 //In parameters.
 layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec3 vertexNormal;
@@ -72,14 +78,14 @@ layout (location = 3) out vec2 fragmentTextureCoordinate;
 */
 vec3 CalculateWindModulator(vec3 worldPosition)
 {
-    return vec3((sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.x, 0.0f, (cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.z) * 0.1f;
+    return vec3((sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.x, 0.0f, (cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.z);
 }
 
 void main()
 {
     //Calculate the final vertex position.
     vec3 finalVertexPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
-    finalVertexPosition += CalculateWindModulator(finalVertexPosition) * vertexModulatorFactor;
+    finalVertexPosition += CalculateWindModulator(finalVertexPosition) * windModulatorFactor * vertexModulatorFactor;
 
     //Calculate the fragment tangent space matrix.
     vec3 tangent = normalize(vec3(vertexTransformationMatrix * vec4(vertexTangent, 0.0f)));

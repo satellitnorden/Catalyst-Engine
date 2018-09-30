@@ -60,6 +60,7 @@ layout (push_constant) uniform PushConstantData
 {
     layout (offset = 0) float halfCutoffDistanceSquared;
     layout (offset = 4) float inverseHalfCutoffDistanceSquared;
+    layout (offset = 8) float windModulatorFactor;
 };
 
 //In parameters.
@@ -79,7 +80,7 @@ layout (location = 1) out float fragmentLengthFactor;
 */
 vec3 CalculateWindModulator(vec3 worldPosition)
 {
-    return vec3((sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.x, 0.0f, (cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.z) * 0.1f;
+    return vec3((sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.x, 0.0f, (cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.z);
 }
 
 /*
@@ -94,7 +95,7 @@ void main()
 {
     //Calculate the final vertex position.
     vec3 finalVertexPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
-    finalVertexPosition += CalculateWindModulator(finalVertexPosition) * vertexModulatorFactor;
+    finalVertexPosition += CalculateWindModulator(finalVertexPosition) * windModulatorFactor * vertexModulatorFactor;
 
     //Pass along the fragment texture coordinate.
     fragmentTextureCoordinate = vertexTextureCoordinate;

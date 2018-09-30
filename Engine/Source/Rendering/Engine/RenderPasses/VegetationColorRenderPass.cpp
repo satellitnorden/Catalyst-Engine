@@ -14,6 +14,15 @@
 //Singleton definition.
 DEFINE_SINGLETON(VegetationColorRenderPass);
 
+class PushConstantData final
+{
+
+public:
+
+	float _WindModulatorFactor;
+
+};
+
 /*
 *	Default constructor.
 */
@@ -57,6 +66,10 @@ void VegetationColorRenderPass::InitializeInternal() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::VegetationMaterial));
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(PushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(9);
@@ -159,6 +172,13 @@ void VegetationColorRenderPass::RenderInternal() NOEXCEPT
 
 		//Bind the render data table.
 		commandBuffer->BindRenderDataTable(this, 1, information._Material._RenderDataTable);
+
+		//Pust constants.
+		PushConstantData data;
+
+		data._WindModulatorFactor = information._Properties._WindModulatorFactor;
+
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
 
 		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
