@@ -93,6 +93,21 @@ namespace ClairvoyantResourceCreation
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\Albedo.png";
 			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\NormalMap.png";
 
+			//VegetationMaterialCreator::CreateVegetationMaterial(parameters);
+		}
+
+		{
+			//Create the grass vegetation material.
+			VegetationMaterialCreator::VegetationMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\Grass2VegetationMaterial";
+			parameters._ID = "Grass2VegetationMaterial";
+			parameters._MaskMipmapLevels = 1;
+			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass2\\Mask.png";
+			parameters._MipmapLevels = 7;
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass2\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass2\\NormalMap.png";
+
 			VegetationMaterialCreator::CreateVegetationMaterial(parameters);
 		}
 
@@ -176,6 +191,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\FernVegetationMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\GrassVegetationMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\Grass2VegetationMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\FernVegetationModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\GrassVegetationModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultTerrainMaterial.cr");
