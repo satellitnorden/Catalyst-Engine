@@ -136,7 +136,7 @@ float CalculateDeformationWeight(float distanceToEndPointSquared)
 vec2 CalculateEndPointTextureCoordinate(vec3 endPoint)
 {
     //Calculate the intersection point texture coordinate.
-    return endPoint.xz * oceanTextureScaling + vec2(windDirection.x + totalGameTime, windDirection.z + totalGameTime) * windSpeed * 0.01f;
+    return endPoint.xz * oceanTextureScaling + vec2(-windDirection.x, -windDirection.z) * windSpeed * totalGameTime * 0.01f;
 }
 
 /*

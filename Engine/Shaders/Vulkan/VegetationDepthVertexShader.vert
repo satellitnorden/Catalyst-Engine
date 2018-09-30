@@ -83,7 +83,7 @@ layout (location = 1) out float fragmentLengthFactor;
 */
 vec3 CalculateWindModulator(vec3 worldPosition)
 {
-    return vec3((sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.x, 0.0f, (cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.z);
+    return vec3((sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.75f) * windDirection.x, 0.0f, (cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.z);
 }
 
 /*

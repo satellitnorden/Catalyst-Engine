@@ -218,7 +218,7 @@ vec3 CalculateIntersectionPoint(vec3 pointOnPlane, vec3 pointOnLine, vec3 normal
 vec2 CalculateIntersectionPointTextureCoordinate(vec3 intersectionPoint)
 {
 	//Calculate the intersection point texture coordinate.
-	return intersectionPoint.xz * oceanTextureScaling + vec2(windDirection.x + totalGameTime, windDirection.z + totalGameTime) * windSpeed * 0.01f;
+	return intersectionPoint.xz * oceanTextureScaling + vec2(-windDirection.x, -windDirection.z) * windSpeed * totalGameTime * 0.01f;
 }
 
 /*
