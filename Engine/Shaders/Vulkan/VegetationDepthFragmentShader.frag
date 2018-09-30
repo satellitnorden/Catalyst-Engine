@@ -2,6 +2,9 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
+//Default precision declaration.
+precision lowp float;
+
 //Preprocessor defines.
 #define MaximumNumberOfPointLights 8
 #define MaximumNumberOfSpotLights 8
@@ -55,6 +58,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 layout (location = 1) in float fragmentLengthFactor;
@@ -70,15 +74,15 @@ layout (location = 2) out vec4 materialProperties;
 /*
 *   Given a seed, returns a random number.
 */
-float RandomFloat(vec2 seed)
+float RandomFloat(vec2 coordinate, float seed)
 {
-    return fract(sin(dot(seed.xy ,vec2(12.9898f, 78.233f))) * 43758.5453f);
+    return fract(sin(dot(coordinate.xy * seed, vec2(12.9898f, 78.233f))) * 43758.5453f);
 }
 
 void main()
 {
     //Discard this fragment according to the mask texture.
-    if (RandomFloat(vec2(gl_FragCoord.xy)) > fragmentLengthFactor || texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
+    if (RandomFloat(gl_FragCoord.xy, gl_FragCoord.z) > fragmentLengthFactor || texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
     {
         discard;
     }

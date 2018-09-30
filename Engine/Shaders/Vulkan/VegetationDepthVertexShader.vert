@@ -2,6 +2,9 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
+//Default precision declaration.
+precision lowp float;
+
 //Preprocessor defines.
 #define MaximumNumberOfPointLights 8
 #define MaximumNumberOfSpotLights 8
