@@ -155,8 +155,8 @@ void WorldArchitect::InitializeVegetation()
 		//Add the grass vegetation type.
 		VegetationTypeProperties properties;
 
-		properties._CutoffDistance = 25.0f;
-		properties._Density = 1'750;
+		properties._CutoffDistance = 20.0f;
+		properties._Density = 2'000;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return WorldArchitect::Instance->GenerateTransformation(true, 0.45f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
@@ -166,16 +166,16 @@ void WorldArchitect::InitializeVegetation()
 
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
-		properties._CutoffDistance = 50.0f;
+		properties._CutoffDistance = 40.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
-		properties._CutoffDistance = 75.0f;
+		properties._CutoffDistance = 60.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 80.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 100.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 125.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 	}
 

@@ -72,7 +72,7 @@ layout (location = 3) out vec2 fragmentTextureCoordinate;
 */
 vec3 CalculateWindModulator(vec3 worldPosition)
 {
-    return (vec3(sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed), 0.0f, cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed)) + windDirection) * 0.1f;
+    return vec3((sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.x, 0.0f, (cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.z) * 0.1f;
 }
 
 void main()
