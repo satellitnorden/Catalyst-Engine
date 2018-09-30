@@ -182,7 +182,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._CutoffDistance = 100.0f;
 		properties._Density = 125;
 		properties._Thickness = 1.0f;
-		properties._WindModulatorFactor = 0.05f;
+		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.25f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
@@ -203,10 +203,10 @@ void WorldArchitect::InitializeVegetation()
 		//Add the grass vegetation type.
 		VegetationTypeProperties properties;
 
-		properties._CutoffDistance = 25.0f;
+		properties._CutoffDistance = 10.0f;
 		properties._Density = 5'000;
 		properties._Thickness = 0.1f;
-		properties._WindModulatorFactor = 0.1f;
+		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return WorldArchitect::Instance->GenerateTransformation(true, 0.35f, 0.25f, 0.15f, 0.3f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
@@ -233,7 +233,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._CutoffDistance = 25.0f;
 		properties._Density = 1'000;
 		properties._Thickness = 0.1f;
-		properties._WindModulatorFactor = 0.15f;
+		properties._WindModulatorFactor = 0.3f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return WorldArchitect::Instance->GenerateTransformation(true, 0.35f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
@@ -257,7 +257,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._CutoffDistance = 500.0f;
 		properties._Density = 250;
 		properties._Thickness = 1.0f;
-		properties._WindModulatorFactor = 0.025f;
+		properties._WindModulatorFactor = 0.0f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.9f, 0.03f, 0.06f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);

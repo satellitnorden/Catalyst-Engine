@@ -58,6 +58,10 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Preprocessor defines.
+#define PHI 1.618033f
+#define PI 3.141592f
+
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
@@ -81,7 +85,10 @@ layout (location = 3) out vec2 fragmentTextureCoordinate;
 */
 vec3 CalculateWindModulator(vec3 worldPosition)
 {
-    return vec3((sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.75f) * windDirection.x, 0.0f, (cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed) + 0.5f) * windDirection.z);
+    float xModulator = sin(worldPosition.x + worldPosition.y + totalGameTime * windSpeed * PHI * 0.25f) * cos(worldPosition.z + worldPosition.y + totalGameTime * windSpeed * PI * 0.25f) + 1.0f;
+    float zModulator = cos(worldPosition.z + worldPosition.y + totalGameTime * windSpeed * PHI * 0.25f) * sin(worldPosition.z + worldPosition.y + totalGameTime * windSpeed * PI * 0.25f) + 1.0f;
+
+    return vec3(xModulator * windDirection.x, 0.0f, zModulator * windDirection.z);
 }
 
 void main()
