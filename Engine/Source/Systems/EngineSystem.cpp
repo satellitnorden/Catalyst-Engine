@@ -35,6 +35,7 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 	CatalystPlatform::Initialize();
 
 	//Initialize all systems.
+	CullingSystem::Instance->InitializeSystem();
 	InputSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
 	TaskSystem::Instance->InitializeSystem();
@@ -97,6 +98,7 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	*/
 	_CurrentUpdatePhase = UpdatePhase::CullingUpdate;
 	UpdateSystem::Instance->PreCullingUpdateSystemSynchronous(&context);
+	CullingSystem::Instance->CullingUpdateSystemSynchronous(&context);
 	UpdateSystem::Instance->PostCullingUpdateSystemSynchronous(&context);
 
 	/*

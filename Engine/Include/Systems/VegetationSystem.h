@@ -37,9 +37,17 @@ public:
 	void OpeningUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
-	*	Returns the vegetation type informations.
+	*	Returns the vegetation type informations, const.
 	*/
 	RESTRICTED NO_DISCARD const DynamicArray<VegetationTypeInformation> *const RESTRICT GetVegetationTypeInformations() const NOEXCEPT
+	{
+		return &_VegetationTypeInformations;
+	}
+
+	/*
+	*	Returns the vegetation type informations, non-const.
+	*/
+	RESTRICTED NO_DISCARD DynamicArray<VegetationTypeInformation> *const RESTRICT GetVegetationTypeInformations() NOEXCEPT
 	{
 		return &_VegetationTypeInformations;
 	}

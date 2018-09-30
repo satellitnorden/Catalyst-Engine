@@ -5,6 +5,7 @@
 #include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/VegetationSystem.h>
 
@@ -161,6 +162,9 @@ void VegetationColorRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the current dynamic uniform data render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
+
+	//Wait for the vegetation culling to finish.
+	CullingSystem::Instance->WaitForVegetationCulling();
 
 	for (const VegetationTypeInformation &information : *informations)
 	{
