@@ -20,14 +20,15 @@ void TaskSystem::InitializeSystem() NOEXCEPT
 
 	//In the rare case that the number of hardware threads cannot be retrieved, default to 8.
 	if (numberOfHardwareThreads == 0)
+	{
 		numberOfHardwareThreads = 8;
+	}
 
 	//Set the number of task executors. Leave one slot open for the main thread and another slot open for the operating system.
 	_NumberOfTaskExecutors = numberOfHardwareThreads - 2;
 
 	//Kick off all task executor threads.
 	_TaskExecutorThreads.Reserve(_NumberOfTaskExecutors);
-	_TaskQueues.UpsizeSlow(_NumberOfTaskExecutors);
 
 	for (uint8 i = 0; i < _NumberOfTaskExecutors; ++i)
 	{
@@ -41,7 +42,7 @@ void TaskSystem::InitializeSystem() NOEXCEPT
 					(*newTask)->Execute();
 				}
 			}
-		}, &_TaskQueues[i])));
+		}, &_TaskQueue)));
 	}
 }
 
@@ -65,13 +66,9 @@ void TaskSystem::ReleaseSystem() NOEXCEPT
 */
 void TaskSystem::ExecuteTask(Task *const RESTRICT newTask) NOEXCEPT
 {
-	static uint64 currentTaskQueue{ 0 };
-
-	currentTaskQueue = currentTaskQueue == _NumberOfTaskExecutors - 1 ? 0 : currentTaskQueue + 1;
-
 	//Reset the semaphore.
 	newTask->_Semaphore.Reset();
 
 	//Put the task into the task queue.
-	_TaskQueues[currentTaskQueue].Push(newTask);
+	_TaskQueue.Push(newTask);
 }

@@ -59,6 +59,6 @@ private:
 	DynamicArray<std::thread> _TaskExecutorThreads;
 
 	//Container for all atomic queues in which to put tasks in.
-	DynamicArray<AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS>> _TaskQueues;
+	AtomicQueue<Task *RESTRICT, MAXIMUM_NUMBER_OF_TASKS> _TaskQueue;
 
 };
