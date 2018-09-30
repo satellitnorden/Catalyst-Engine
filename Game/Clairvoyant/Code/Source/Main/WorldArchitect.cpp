@@ -160,7 +160,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.0f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(true, 0.0f, 0.05f, 0.1f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return WorldArchitect::Instance->GenerateTransformation(true, 0.0f, 0.25f, 0.05f, 0.1f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("DebrisVegetationModel")) };
 		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("DebrisVegetationMaterial")) };
@@ -183,7 +183,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.05f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.03f, 0.06f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.25f, 0.03f, 0.06f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("FernVegetationModel")) };
 		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("FernVegetationMaterial")) };
@@ -206,7 +206,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(true, 0.35f, 0.15f, 0.3f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return WorldArchitect::Instance->GenerateTransformation(true, 0.35f, 0.25f, 0.15f, 0.3f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("GrassVegetationModel")) };
 		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("GrassVegetationMaterial")) };
@@ -232,7 +232,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(true, 0.35f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return WorldArchitect::Instance->GenerateTransformation(true, 0.35f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("GrassVegetationModel")) };
 		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("Grass2VegetationMaterial")) };
@@ -245,12 +245,35 @@ void WorldArchitect::InitializeVegetation()
 		properties._CutoffDistance = 75.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 	}
+
+	{
+		//Add the tree vegetation type.
+		VegetationTypeProperties properties;
+
+		properties._CutoffDistance = 200.0f;
+		properties._Density = 100;
+		properties._WindModulatorFactor = 0.0f;
+		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
+		{
+			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.9f, 0.03f, 0.06f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+		};
+		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("TreeVegetationModel")) };
+		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("TreeVegetationMaterial")) };
+
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 400.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 600.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+	}
 }
 
 /*
 *	Generates a transformation.
 */
-bool WorldArchitect::GenerateTransformation(const bool underwater, const float height, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
+bool WorldArchitect::GenerateTransformation(const bool underwater, const float height, const float dotModulator, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
 {
 	Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
 	
@@ -265,7 +288,7 @@ bool WorldArchitect::GenerateTransformation(const bool underwater, const float h
 
 	const Vector3 terrainNormal{ TerrainSystem::Instance->GetTerrainNormalAtPosition(position) };
 
-	if (!CatalystBaseMath::RandomChance(CatalystBaseMath::Maximum<float>(Vector3::DotProduct(terrainNormal, Vector3::UP), 0.0f) - 0.25f))
+	if (!CatalystBaseMath::RandomChance(CatalystBaseMath::Maximum<float>(Vector3::DotProduct(terrainNormal, Vector3::UP), 0.0f) - dotModulator))
 	{
 		return false;
 	}
