@@ -74,7 +74,6 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	_CurrentUpdatePhase = UpdatePhase::OpeningUpdate;
 	UpdateSystem::Instance->PreOpeningUpdateSystemSynchronous(&context);
 	InputSystem::Instance->PreOpeningUpdateSystemSynchronous(&context);
-	VegetationSystem::Instance->OpeningUpdateSystemSynchronous(&context);
 	UpdateSystem::Instance->PostOpeningUpdateSystemSynchronous(&context);
 	InputSystem::Instance->PostOpeningUpdateSystemSynchronous(&context);
 
@@ -125,6 +124,9 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 
 	//Post-update the platform.
 	CatalystPlatform::PostUpdate(&context);
+
+	//Executes the sequential update.
+	ExecuteSequentialUpdate();
 }
 
 /*
@@ -141,4 +143,26 @@ void EngineSystem::ReleaseSystem() NOEXCEPT
 	//Release all systems.
 	RenderingSystem::Instance->ReleaseSystem();
 	TaskSystem::Instance->ReleaseSystem();
+}
+
+/*
+*	Executes the sequential update.
+*/
+void EngineSystem::ExecuteSequentialUpdate() NOEXCEPT
+{
+	//Update the current sequential update.
+	_CurrentSequentialUpdate =	static_cast<SequentialUpdate>(UNDERLYING(_CurrentSequentialUpdate) + 1) < SequentialUpdate::NumberOfSequentialUpdates
+								? static_cast<SequentialUpdate>(UNDERLYING(_CurrentSequentialUpdate) + 1)
+								: static_cast<SequentialUpdate>(0);
+
+	//Execute the sequential update.
+	switch (_CurrentSequentialUpdate)
+	{
+		case SequentialUpdate::VegetationSystem:
+		{
+			VegetationSystem::Instance->SequentialUpdateSystemSynchronous();
+
+			break;
+		}
+	}
 }

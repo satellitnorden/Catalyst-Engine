@@ -31,9 +31,9 @@ void VegetationSystem::InitializeSystem()
 }
 
 /*
-*	Updates the vegetation system synchronously during the closing update phase.
+*	Updates the vegetation system sequentially.
 */
-void VegetationSystem::OpeningUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+void VegetationSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 {
 	//If the asynchronous update has finished, cache the relevant data and fire off another update.
 	if (_UpdateTask.IsExecuted())

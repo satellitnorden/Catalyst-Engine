@@ -32,9 +32,9 @@ public:
 	void InitializeSystem();
 
 	/*
-	*	Updates the vegetation system synchronously during the closing update phase.
+	*	Updates the vegetation system sequentially.
 	*/
-	void OpeningUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
+	void SequentialUpdateSystemSynchronous() NOEXCEPT;
 
 	/*
 	*	Returns the vegetation type informations, const.

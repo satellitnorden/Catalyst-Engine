@@ -86,6 +86,14 @@ public:
 
 private:
 
+	//Enumeration covering all sequential updates.
+	enum class SequentialUpdate : uint8
+	{
+		VegetationSystem,
+
+		NumberOfSequentialUpdates
+	};
+
 	//The project configuration.
 	CatalystProjectConfiguration _ProjectConfiguration;
 
@@ -100,5 +108,13 @@ private:
 
 	//Denotes whether or not the game should terminate.
 	std::atomic<bool> _ShouldTerminate{ false };
+
+	//The current sequential update.
+	SequentialUpdate _CurrentSequentialUpdate{ SequentialUpdate::NumberOfSequentialUpdates };
+
+	/*
+	*	Executes the sequential update.
+	*/
+	void ExecuteSequentialUpdate() NOEXCEPT;
 
 };
