@@ -156,7 +156,7 @@ void WorldArchitect::InitializeVegetation()
 		VegetationTypeProperties properties;
 
 		properties._CutoffDistance = 200.0f;
-		properties._Density = 100;
+		properties._Density = 75;
 		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.0f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -254,8 +254,8 @@ void WorldArchitect::InitializeVegetation()
 		//Add the tree vegetation type.
 		VegetationTypeProperties properties;
 
-		properties._CutoffDistance = 200.0f;
-		properties._Density = 100;
+		properties._CutoffDistance = 500.0f;
+		properties._Density = 500;
 		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.0f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -265,12 +265,6 @@ void WorldArchitect::InitializeVegetation()
 		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("TreeVegetationModel")) };
 		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("TreeVegetationMaterial")) };
 
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 400.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 600.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 	}
 }
