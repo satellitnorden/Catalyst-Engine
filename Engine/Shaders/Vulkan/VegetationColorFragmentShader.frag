@@ -58,6 +58,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 4) float thickness;
+};
+
 //In parameters.
 layout (location = 0) in mat3 fragmentTangentSpaceMatrix;
 layout (location = 3) in vec2 fragmentTextureCoordinate;
@@ -83,5 +89,5 @@ void main()
     normalDepth = vec4(normal, gl_FragCoord.z);
 
     //Write the material properties.
-    materialProperties = vec4(1.0f, 0.0f, 1.0f, 1.0f);
+    materialProperties = vec4(1.0f, 0.0f, 1.0f, thickness);
 }

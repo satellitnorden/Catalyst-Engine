@@ -184,7 +184,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\TreeVegetationModel";
 			parameters._ID = "TreeVegetationModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\TreeVegetationModel.fbx";
-			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::X;
+			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::Z;
 
 			//VegetationModelCreator::CreateVegetationModel(parameters);
 		}

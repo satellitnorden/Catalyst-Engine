@@ -157,6 +157,7 @@ void WorldArchitect::InitializeVegetation()
 
 		properties._CutoffDistance = 200.0f;
 		properties._Density = 100;
+		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.0f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
@@ -180,6 +181,7 @@ void WorldArchitect::InitializeVegetation()
 
 		properties._CutoffDistance = 100.0f;
 		properties._Density = 100;
+		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.05f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
@@ -203,6 +205,7 @@ void WorldArchitect::InitializeVegetation()
 
 		properties._CutoffDistance = 25.0f;
 		properties._Density = 5'000;
+		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
@@ -229,6 +232,7 @@ void WorldArchitect::InitializeVegetation()
 
 		properties._CutoffDistance = 25.0f;
 		properties._Density = 1'000;
+		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
@@ -252,6 +256,7 @@ void WorldArchitect::InitializeVegetation()
 
 		properties._CutoffDistance = 200.0f;
 		properties._Density = 100;
+		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.0f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{

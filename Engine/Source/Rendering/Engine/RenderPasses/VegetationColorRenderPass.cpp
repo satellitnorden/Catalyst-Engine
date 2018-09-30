@@ -15,12 +15,21 @@
 //Singleton definition.
 DEFINE_SINGLETON(VegetationColorRenderPass);
 
-class PushConstantData final
+class VertexPushConstantData final
 {
 
 public:
 
 	float _WindModulatorFactor;
+
+};
+
+class FragmentPushConstantData final
+{
+
+public:
+
+	float _Thickness;
 
 };
 
@@ -69,8 +78,9 @@ void VegetationColorRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::VegetationMaterial));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(PushConstantData));
+	SetNumberOfPushConstantRanges(2);
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(9);
@@ -178,11 +188,13 @@ void VegetationColorRenderPass::RenderInternal() NOEXCEPT
 		commandBuffer->BindRenderDataTable(this, 1, information._Material._RenderDataTable);
 
 		//Pust constants.
-		PushConstantData data;
+		VertexPushConstantData vertexData;
+		vertexData._WindModulatorFactor = information._Properties._WindModulatorFactor;
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 
-		data._WindModulatorFactor = information._Properties._WindModulatorFactor;
-
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
+		FragmentPushConstantData fragmentData;
+		fragmentData._Thickness = information._Properties._Thickness;
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{

@@ -17,6 +17,9 @@ public:
 	//The density.
 	uint32 _Density;
 
+	//The thickness.
+	float _Thickness;
+
 	//The wind modulator factor.
 	float _WindModulatorFactor;
 
