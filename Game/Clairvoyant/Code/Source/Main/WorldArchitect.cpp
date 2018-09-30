@@ -202,7 +202,7 @@ void WorldArchitect::InitializeVegetation()
 		VegetationTypeProperties properties;
 
 		properties._CutoffDistance = 20.0f;
-		properties._Density = 2'000;
+		properties._Density = 2'500;
 		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
