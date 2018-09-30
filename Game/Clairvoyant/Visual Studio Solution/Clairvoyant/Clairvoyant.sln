@@ -8,6 +8,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Catalyst Engine", "..\..\..\..\Engine\Visual Studio Solution\Catalyst Engine\Catalyst Engine\Catalyst Engine.vcxproj", "{46D08F96-EEDA-4C91-8169-55E211129D2A}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Final|x64 = Final|x64

@@ -115,12 +115,12 @@ private:
 		{
 			float upValue;
 
-			if (upAxis == VegetationModelCreationParameters::Axis::Z)
+			if (upAxis == VegetationModelCreationParameters::Axis::X)
 			{
 				upValue = mesh->mVertices[i].x;
 			}
 
-			else if (upAxis == VegetationModelCreationParameters::Axis::Z)
+			else if (upAxis == VegetationModelCreationParameters::Axis::Y)
 			{
 				upValue = mesh->mVertices[i].y;
 			}
@@ -163,12 +163,12 @@ private:
 		{
 			float upValue;
 
-			if (upAxis == VegetationModelCreationParameters::Axis::Z)
+			if (upAxis == VegetationModelCreationParameters::Axis::X)
 			{
 				upValue = mesh->mVertices[i].x;
 			}
 
-			else if (upAxis == VegetationModelCreationParameters::Axis::Z)
+			else if (upAxis == VegetationModelCreationParameters::Axis::Y)
 			{
 				upValue = mesh->mVertices[i].y;
 			}
@@ -178,7 +178,7 @@ private:
 				upValue = mesh->mVertices[i].z;
 			}
 
-			const float modulatorFactor{ CatalystBaseMath::ScaleToNormalizedRange(upValue, heightRange._X, heightRange._Y) };
+			const float modulatorFactor{ heightRange._Y - heightRange._X == 0.0f ? 0.0f : CatalystBaseMath::ScaleToNormalizedRange(upValue, heightRange._X, heightRange._Y) };
 
 			vertices.EmplaceSlow(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y, modulatorFactor);
 		}

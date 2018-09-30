@@ -7,6 +7,7 @@
 //Forward declarations.
 class AxisAlignedBoundingBox;
 class Matrix4;
+class Vector3;
 
 class WorldArchitect final
 {
@@ -36,6 +37,6 @@ private:
 	/*
 	*	Generates a transformation.
 	*/
-	bool GenerateTransformation(const float minimumScale, const float maximumScale, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT;
+	bool GenerateTransformation(const float height, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT;
 
 };
