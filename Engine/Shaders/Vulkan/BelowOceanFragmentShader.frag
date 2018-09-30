@@ -49,7 +49,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 1744) vec3 spotLightWorldPositions[MaximumNumberOfSpotLights]; //Offset; 1744 - Size; 128
 
     //Physics data.
-    layout (offset = 1872) float windStrength; //Offset; 1872 - Size; 16
+    layout (offset = 1872) float windSpeed; //Offset; 1872 - Size; 16
     layout (offset = 1888) vec3 windDirection; //Offset; 1824 - Size; 16
 
     //Total size; 1904
@@ -136,7 +136,7 @@ float CalculateDeformationWeight(float distanceToEndPointSquared)
 vec2 CalculateEndPointTextureCoordinate(vec3 endPoint)
 {
     //Calculate the intersection point texture coordinate.
-    return endPoint.xz * oceanTextureScaling + vec2(windDirection.x + totalGameTime, windDirection.z + totalGameTime) * windStrength * 0.1f;
+    return endPoint.xz * oceanTextureScaling + vec2(windDirection.x + totalGameTime, windDirection.z + totalGameTime) * windSpeed * 0.01f;
 }
 
 /*

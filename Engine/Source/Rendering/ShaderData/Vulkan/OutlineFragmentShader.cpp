@@ -9,7 +9,7 @@ namespace VulkanShaderData
 {
 	void GetOutlineFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.Reserve(3736);
+		data.Reserve(3732);
 
 		data.EmplaceFast(3);
 		data.EmplaceFast(2);
@@ -1229,7 +1229,7 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 		data.EmplaceFast(6);
 		data.EmplaceFast(0);
-		data.EmplaceFast(7);
+		data.EmplaceFast(6);
 		data.EmplaceFast(0);
 		data.EmplaceFast(26);
 		data.EmplaceFast(0);
@@ -1244,14 +1244,10 @@ namespace VulkanShaderData
 		data.EmplaceFast(110);
 		data.EmplaceFast(100);
 		data.EmplaceFast(83);
-		data.EmplaceFast(116);
-		data.EmplaceFast(114);
+		data.EmplaceFast(112);
 		data.EmplaceFast(101);
-		data.EmplaceFast(110);
-		data.EmplaceFast(103);
-		data.EmplaceFast(116);
-		data.EmplaceFast(104);
-		data.EmplaceFast(0);
+		data.EmplaceFast(101);
+		data.EmplaceFast(100);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);

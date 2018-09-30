@@ -1672,7 +1672,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	}
 
 	//Update the physics data.
-	_DynamicUniformData._WindStrength = PhysicsSystem::Instance->GetWindStrength();
+	_DynamicUniformData._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
 	_DynamicUniformData._WindDirection = PhysicsSystem::Instance->GetWindDirection();
 
 	//Upload the dynamic uniform data to the uniform buffer.

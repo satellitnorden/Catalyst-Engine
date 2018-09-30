@@ -49,7 +49,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 1744) vec3 spotLightWorldPositions[MaximumNumberOfSpotLights]; //Offset; 1744 - Size; 128
 
     //Physics data.
-    layout (offset = 1872) float windStrength; //Offset; 1872 - Size; 16
+    layout (offset = 1872) float windSpeed; //Offset; 1872 - Size; 16
     layout (offset = 1888) vec3 windDirection; //Offset; 1824 - Size; 16
 
     //Total size; 1904
@@ -152,7 +152,7 @@ vec3 GenerateRandomVelocity()
 	float randomY = mix(particleSystemInitialMinimumVelocity.y, particleSystemInitialMaximumVelocity.y, RandomFloat(float(particleIndex) * 0.4f + particleSystemRandomSeed * 0.6f));
 	float randomZ = mix(particleSystemInitialMinimumVelocity.z, particleSystemInitialMaximumVelocity.z, RandomFloat(float(particleIndex) * 0.3f + particleSystemRandomSeed * 0.7f));
 
-	return vec3(randomX, randomY, randomZ) + (IsAffectedByWind() ? windDirection * windStrength : vec3(0.0f));
+	return vec3(randomX, randomY, randomZ) + (IsAffectedByWind() ? windDirection * windSpeed : vec3(0.0f));
 }
 
 /*

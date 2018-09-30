@@ -49,7 +49,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     layout (offset = 1744) vec3 spotLightWorldPositions[MaximumNumberOfSpotLights]; //Offset; 1744 - Size; 128
 
     //Physics data.
-    layout (offset = 1872) float windStrength; //Offset; 1872 - Size; 16
+    layout (offset = 1872) float windSpeed; //Offset; 1872 - Size; 16
     layout (offset = 1888) vec3 windDirection; //Offset; 1824 - Size; 16
 
     //Total size; 1904
@@ -79,7 +79,7 @@ layout (location = 1) out float fragmentLengthFactor;
 */
 vec3 CalculateWindModulator(vec3 worldPosition)
 {
-    return (vec3(sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windStrength * 4.0f), 0.0f, cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windStrength * 4.0f)) + windDirection) * 0.1f;
+    return (vec3(sin(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed), 0.0f, cos(worldPosition.x + worldPosition.y + worldPosition.z + totalGameTime * windSpeed)) + windDirection) * 0.1f;
 }
 
 /*

@@ -62,7 +62,7 @@ public:
 	StaticArray<Vector4, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightWorldPositions;
 
 	//Physics data.
-	Vector4 _WindStrength;
+	Vector4 _WindSpeed;
 	Vector4 _WindDirection;
 
 };
@@ -103,5 +103,5 @@ static_assert(offsetof(VulkanDynamicUniformData, _SpotLightColors) == 1488, "X")
 static_assert(offsetof(VulkanDynamicUniformData, _SpotLightDirections) == 1616, "X");
 static_assert(offsetof(VulkanDynamicUniformData, _SpotLightWorldPositions) == 1744, "X");
 
-static_assert(offsetof(VulkanDynamicUniformData, _WindStrength) == 1872, "X");
+static_assert(offsetof(VulkanDynamicUniformData, _WindSpeed) == 1872, "X");
 static_assert(offsetof(VulkanDynamicUniformData, _WindDirection) == 1888, "X");
