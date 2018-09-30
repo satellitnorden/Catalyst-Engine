@@ -67,21 +67,6 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
-			//Create the commoneaster vegetation material.
-			VegetationMaterialCreator::VegetationMaterialCreationParameters parameters;
-
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\CommoneasterVegetationMaterial";
-			parameters._ID = "CommoneasterVegetationMaterial";
-			parameters._MaskMipmapLevels = 1;
-			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Commoneaster\\Mask.png";
-			parameters._MipmapLevels = 7;
-			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Commoneaster\\Albedo.png";
-			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Commoneaster\\NormalMap.png";
-
-			VegetationMaterialCreator::CreateVegetationMaterial(parameters);
-		}
-
-		{
 			//Create the fern vegetation material.
 			VegetationMaterialCreator::VegetationMaterialCreationParameters parameters;
 
@@ -189,7 +174,6 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DayEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\NightEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\CommoneasterVegetationMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\FernVegetationMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\GrassVegetationMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\FernVegetationModel.cr");

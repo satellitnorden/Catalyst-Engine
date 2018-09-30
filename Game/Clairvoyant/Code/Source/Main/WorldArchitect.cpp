@@ -152,30 +152,14 @@ void WorldArchitect::Initialize() NOEXCEPT
 void WorldArchitect::InitializeVegetation()
 {
 	{
-		//Add the commoneaster vegetation type.
-		VegetationTypeProperties properties;
-
-		properties._CutoffDistance = 100.0f;
-		properties._Density = 100;
-		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
-		{
-			return WorldArchitect::Instance->GenerateTransformation(0.25f, 0.3f, 0.6f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
-		};
-		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("GrassVegetationModel")) };
-		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("CommoneasterVegetationMaterial")) };
-
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-	}
-
-	{
 		//Add the grass vegetation type.
 		VegetationTypeProperties properties;
 
 		properties._CutoffDistance = 25.0f;
-		properties._Density = 2'000;
+		properties._Density = 1'750;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(0.45f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return WorldArchitect::Instance->GenerateTransformation(true, 0.45f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("GrassVegetationModel")) };
 		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("GrassVegetationMaterial")) };
@@ -185,13 +169,13 @@ void WorldArchitect::InitializeVegetation()
 		properties._CutoffDistance = 50.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
+		properties._CutoffDistance = 75.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+
 		properties._CutoffDistance = 100.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
-		properties._CutoffDistance = 200.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 400.0f;
+		properties._CutoffDistance = 125.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 	}
 
@@ -199,21 +183,21 @@ void WorldArchitect::InitializeVegetation()
 		//Add the fern vegetation type.
 		VegetationTypeProperties properties;
 
-		properties._CutoffDistance = 125.0f;
+		properties._CutoffDistance = 100.0f;
 		properties._Density = 75;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(0.0f, 0.03f, 0.06f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.03f, 0.06f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("FernVegetationModel")) };
 		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("FernVegetationMaterial")) };
 
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
-		properties._CutoffDistance = 250.0f;
+		properties._CutoffDistance = 200.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
-		properties._CutoffDistance = 500.0f;
+		properties._CutoffDistance = 300.0f;
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 	}
 }
@@ -221,13 +205,13 @@ void WorldArchitect::InitializeVegetation()
 /*
 *	Generates a transformation.
 */
-bool WorldArchitect::GenerateTransformation(const float height, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
+bool WorldArchitect::GenerateTransformation(const bool underwater, const float height, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
 {
 	Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
 	
 	const float terrainheight{ TerrainSystem::Instance->GetTerrainHeightAtPosition(position) };
 
-	if (terrainheight < 0.0f)
+	if (!underwater && terrainheight < 0.0f)
 	{
 		return false;
 	}
