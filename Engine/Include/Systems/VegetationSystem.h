@@ -67,13 +67,14 @@ private:
 
 	//The current camera position.
 	Vector3 _CurrentCameraPosition;
-
-	DynamicArray<VegetationTypeInformationUpdate> _VegetationTypeInformationUpdates;
+	
+	//The vegetation type information update.
+	VegetationTypeInformationUpdate _VegetationTypeInformationUpdate;
 
 	/*
-	*	Updates the vegetation type informations.
+	*	Processes the vegetation type information update.
 	*/
-	void UpdateVegetationTypeInformations() NOEXCEPT;
+	void ProcessVegetationTypeInformationUpdate() NOEXCEPT;
 
 	/*
 	*	Invalidates one patch.
@@ -84,11 +85,6 @@ private:
 	*	Updates the vegetation system asynchronously.
 	*/
 	void UpdateSystemAsynchronous() NOEXCEPT;
-
-	/*
-	*	Updates a single vegetation type information.
-	*/
-	void UpdateVegetationTypeInformation(VegetationTypeInformation *const RESTRICT information) NOEXCEPT;
 
 	/*
 	*	Generates the transformations.

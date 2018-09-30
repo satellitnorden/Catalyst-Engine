@@ -35,8 +35,8 @@ void VegetationSystem::OpeningUpdateSystemSynchronous(const UpdateContext *const
 	//If the asynchronous update has finished, cache the relevant data and fire off another update.
 	if (_UpdateTask.IsExecuted())
 	{
-		//Update the vegetation type informations.
-		UpdateVegetationTypeInformations();
+		//Process the vegetation type information update.
+		ProcessVegetationTypeInformationUpdate();
 
 		const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
 		_CurrentCameraPosition = camera->GetPosition();
@@ -68,28 +68,31 @@ void VegetationSystem::AddVegetationType(const VegetationTypeProperties &propert
 }
 
 /*
-*	Updates the vegetation type informations.
+*	Processes the vegetation type information update.
 */
-void VegetationSystem::UpdateVegetationTypeInformations() NOEXCEPT
+void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 {
-	for (VegetationTypeInformationUpdate &update : _VegetationTypeInformationUpdates)
+	//Return early if there's no vegetation type information to update.
+	if (!_VegetationTypeInformationUpdate._Information)
 	{
-		for (const uint8 index : update._PatchesToInvalidate)
-		{
-			InvalidatePatch(update._Information, index);
-		}
+		return;
+	}
 
-		for (VegetationPatchUpdate &patchUpdate : update._Updates)
+	for (const uint8 index : _VegetationTypeInformationUpdate._PatchesToInvalidate)
+	{
+		InvalidatePatch(_VegetationTypeInformationUpdate._Information, index);
+	}
+
+	for (VegetationPatchUpdate &patchUpdate : _VegetationTypeInformationUpdate._Updates)
+	{
+		for (uint64 i = 0, size = _VegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
 		{
-			for (uint64 i = 0, size = update._Information->_PatchInformations.Size(); i < size; ++i)
+			if (!_VegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
 			{
-				if (!update._Information->_PatchInformations[i]._Valid)
-				{
-					update._Information->_PatchInformations[i] = patchUpdate._PatchInformation;
-					update._Information->_PatchRenderInformations[i] = patchUpdate._PatchRenderInformation;
+				_VegetationTypeInformationUpdate._Information->_PatchInformations[i] = patchUpdate._PatchInformation;
+				_VegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = patchUpdate._PatchRenderInformation;
 
-					break;
-				}
+				break;
 			}
 		}
 	}
@@ -115,109 +118,103 @@ void VegetationSystem::InvalidatePatch(VegetationTypeInformation *const RESTRICT
 */
 void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
-	//Clear vegetation type information updates.
-	_VegetationTypeInformationUpdates.ClearFast();
+	//Reset vegetation type information update.
+	_VegetationTypeInformationUpdate._Information = nullptr;
 
 	//Update all vegetation type informations.
 	for (VegetationTypeInformation &information : _VegetationTypeInformations)
 	{
-		UpdateVegetationTypeInformation(&information);
-	}
-}
+		//Calculate the current grid point based on the current camera position.
+		const GridPoint currentGridPoint{ GridPoint::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * 2.0f) };
 
-/*
-*	Updates a single vegetation type information.
-*/
-void VegetationSystem::UpdateVegetationTypeInformation(VegetationTypeInformation *const RESTRICT information) NOEXCEPT
-{
-	//Calculate the current grid point based on the current camera position.
-	const GridPoint currentGridPoint{ GridPoint::WorldPositionToGridPoint(_CurrentCameraPosition, information->_Properties._CutoffDistance * 2.0f) };
-
-	//Create an array with the valid grid positions.
-	const StaticArray<GridPoint, 9> validGridPoints
-	{
-		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y - 1),
-		GridPoint(currentGridPoint._X, currentGridPoint._Y - 1),
-		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y - 1),
-
-		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y),
-		GridPoint(currentGridPoint._X, currentGridPoint._Y),
-		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y),
-
-		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y + 1),
-		GridPoint(currentGridPoint._X, currentGridPoint._Y + 1),
-		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y + 1),
-	};
-
-	//Construct the update.
-	VegetationTypeInformationUpdate update;
-
-	update._Information = information;
-
-	//Determine the patch indices to invalidate.
-	for (uint64 i = 0, size = information->_PatchInformations.Size(); i < size; ++i)
-	{
-		//If this patch is already invalid, no need to invalidate it.
-		if (!information->_PatchInformations[i]._Valid)
+		//Create an array with the valid grid positions.
+		const StaticArray<GridPoint, 9> validGridPoints
 		{
-			continue;
+			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y - 1),
+			GridPoint(currentGridPoint._X, currentGridPoint._Y - 1),
+			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y - 1),
+
+			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y),
+			GridPoint(currentGridPoint._X, currentGridPoint._Y),
+			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y),
+
+			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y + 1),
+			GridPoint(currentGridPoint._X, currentGridPoint._Y + 1),
+			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y + 1),
+		};
+
+		//Construct the update.
+		VegetationTypeInformationUpdate update;
+
+		update._Information = &information;
+
+		//Determine the patch indices to invalidate.
+		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
+		{
+			//If this patch is already invalid, no need to invalidate it.
+			if (!information._PatchInformations[i]._Valid)
+			{
+				continue;
+			}
+
+			bool valid{ false };
+
+			for (const GridPoint &gridPoint : validGridPoints)
+			{
+				if (information._PatchInformations[i]._GridPoint == gridPoint)
+				{
+					valid = true;
+
+					break;
+				}
+			}
+
+			if (!valid)
+			{
+				update._PatchesToInvalidate.EmplaceSlow(static_cast<uint8>(i));
+			}
 		}
 
-		bool valid{ false };
-
+		//Determine the patches to update.
 		for (const GridPoint &gridPoint : validGridPoints)
 		{
-			if (information->_PatchInformations[i]._GridPoint == gridPoint)
-			{
-				valid = true;
+			bool exists{ false };
 
-				break;
+			for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
+			{
+				if (information._PatchInformations[i]._Valid && information._PatchInformations[i]._GridPoint == gridPoint)
+				{
+					exists = true;
+
+					break;
+				}
+			}
+
+			if (!exists)
+			{
+				//Construct the update.
+				VegetationPatchUpdate patchUpdate;
+
+				patchUpdate._PatchInformation._Valid = true;
+				patchUpdate._PatchInformation._GridPoint = gridPoint;
+
+				patchUpdate._PatchRenderInformation._Draw = true;
+				GenerateTransformations(	gridPoint,
+											information._Properties,
+											&patchUpdate._PatchRenderInformation._TransformationsBuffer,
+											&patchUpdate._PatchRenderInformation._NumberOfTransformations);
+
+				update._Updates.EmplaceSlow(patchUpdate);
 			}
 		}
 
-		if (!valid)
+		//If the new update is valid, copy it and return.
+		if (!update._PatchesToInvalidate.Empty() || !update._Updates.Empty())
 		{
-			update._PatchesToInvalidate.EmplaceSlow(static_cast<uint8>(i));
+			_VegetationTypeInformationUpdate = update;
+
+			return;
 		}
-	}
-
-	//Determine the patches to update.
-	for (const GridPoint &gridPoint : validGridPoints)
-	{
-		bool exists{ false };
-
-		for (uint64 i = 0, size = information->_PatchInformations.Size(); i < size; ++i)
-		{
-			if (information->_PatchInformations[i]._Valid && information->_PatchInformations[i]._GridPoint == gridPoint)
-			{
-				exists = true;
-
-				break;
-			}
-		}
-
-		if (!exists)
-		{
-			//Construct the update.
-			VegetationPatchUpdate patchUpdate;
-
-			patchUpdate._PatchInformation._Valid = true;
-			patchUpdate._PatchInformation._GridPoint = gridPoint;
-
-			patchUpdate._PatchRenderInformation._Draw = true;
-			GenerateTransformations(gridPoint,
-									information->_Properties,
-									&patchUpdate._PatchRenderInformation._TransformationsBuffer,
-									&patchUpdate._PatchRenderInformation._NumberOfTransformations);
-
-			update._Updates.EmplaceSlow(patchUpdate);
-		}
-	}
-
-	//Add the new update to the vegetation type information updates.
-	if (!update._PatchesToInvalidate.Empty() || !update._Updates.Empty())
-	{
-		_VegetationTypeInformationUpdates.EmplaceSlow(update);
 	}
 }
 
