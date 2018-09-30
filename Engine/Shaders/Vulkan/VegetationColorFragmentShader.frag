@@ -76,6 +76,7 @@ void main()
     //Write the normal/depth.
     vec3 normal = texture(normalMapTexture, fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
     normal = fragmentTangentSpaceMatrix * normal;
+    normal *= gl_FrontFacing ? 1.0f : -1.0f;
     normalDepth = vec4(normal, gl_FragCoord.z);
 
     //Write the material properties.
