@@ -67,6 +67,21 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
+			//Create the debris vegetation material.
+			VegetationMaterialCreator::VegetationMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\DebrisVegetationMaterial";
+			parameters._ID = "DebrisVegetationMaterial";
+			parameters._MaskMipmapLevels = 1;
+			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Debris\\Mask.png";
+			parameters._MipmapLevels = 9;
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Debris\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Debris\\NormalMap.png";
+
+			VegetationMaterialCreator::CreateVegetationMaterial(parameters);
+		}
+
+		{
 			//Create the fern vegetation material.
 			VegetationMaterialCreator::VegetationMaterialCreationParameters parameters;
 
@@ -108,7 +123,19 @@ namespace ClairvoyantResourceCreation
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass2\\Albedo.png";
 			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass2\\NormalMap.png";
 
-			VegetationMaterialCreator::CreateVegetationMaterial(parameters);
+			//VegetationMaterialCreator::CreateVegetationMaterial(parameters);
+		}
+
+		{
+			//Create the debris vegetation model.
+			VegetationModelCreator::VegetationModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\DebrisVegetationModel";
+			parameters._ID = "DebrisVegetationModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\DebrisVegetationModel.fbx";
+			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::X;
+
+			VegetationModelCreator::CreateVegetationModel(parameters);
 		}
 
 		{
@@ -189,9 +216,11 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DayEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\NightEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DebrisVegetationMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\FernVegetationMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\GrassVegetationMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\Grass2VegetationMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\DebrisVegetationModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\FernVegetationModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\GrassVegetationModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultTerrainMaterial.cr");

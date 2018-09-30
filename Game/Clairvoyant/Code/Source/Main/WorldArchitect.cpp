@@ -152,6 +152,29 @@ void WorldArchitect::Initialize() NOEXCEPT
 void WorldArchitect::InitializeVegetation()
 {
 	{
+		//Add the debris vegetation type.
+		VegetationTypeProperties properties;
+
+		properties._CutoffDistance = 200.0f;
+		properties._Density = 100;
+		properties._WindModulatorFactor = 0.0f;
+		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
+		{
+			return WorldArchitect::Instance->GenerateTransformation(true, 0.0f, 0.05f, 0.1f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+		};
+		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("DebrisVegetationModel")) };
+		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("DebrisVegetationMaterial")) };
+
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 400.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 600.0f;
+		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+	}
+
+	{
 		//Add the fern vegetation type.
 		VegetationTypeProperties properties;
 
