@@ -83,5 +83,5 @@ void main()
     normalDepth = vec4(normal, gl_FragCoord.z);
 
     //Write the material properties.
-    materialProperties = vec4(1.0f, 0.0f, 1.0f, 0.0f);
+    materialProperties = vec4(1.0f, 0.0f, 1.0f, 1.0f);
 }

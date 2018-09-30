@@ -89,7 +89,7 @@ float fragmentDepth;
 float metallic;
 float roughness;
 float screenSpaceAmbientOcclusion;
-float thinness;
+float thickness;
 float viewAngle;
 vec3 viewDirection;
 vec3 surfaceColor;
@@ -170,7 +170,7 @@ vec3 CalculateLight(vec3 lightDirection, vec3 radiance)
 {
     vec3 halfwayDirection = normalize(viewDirection + lightDirection);
     float lightViewAngle = clamp(dot(halfwayDirection, viewDirection), 0.0f, 1.0f);
-    float lightAngle = mix(max(dot(normalDirection, lightDirection), 0.0f), 1.0f, thinness);
+    float lightAngle = mix(1.0f, max(dot(normalDirection, lightDirection), 0.0f), thickness);
 
     float distribution = CalculateDistribution(halfwayDirection);
     float geometry = CalculateGeometry(lightAngle);
@@ -253,7 +253,7 @@ vec3 CalculateDirectionalLight()
 {
     //Calculate the directional light.
     vec3 lightDirection = -directionalLightDirection;
-    vec3 radiance = mix(directionalLightColor, albedoColor, thinness) * directionalLightIntensity;
+    vec3 radiance = mix(albedoColor, directionalLightColor, thickness) * directionalLightIntensity;
 
     return CalculateLight(lightDirection, radiance) * CalculateDirectionalLightShadowMultiplier() * screenSpaceAmbientOcclusion;
 }
@@ -284,7 +284,7 @@ vec3 CalculatePointLight(int index)
     float attenuation = clamp(1.0f - distanceToLightSource / pointLightAttenuationDistances[index], 0.0f, 1.0f);
     attenuation *= attenuation;
 
-    vec3 radiance = mix(pointLightColors[index], albedoColor, thinness) * pointLightIntensities[index] * attenuation;
+    vec3 radiance = mix(albedoColor, pointLightColors[index], thickness) * pointLightIntensities[index] * attenuation;
 
     return CalculateLight(lightDirection, radiance);
 }
@@ -314,7 +314,7 @@ vec3 CalculateSpotLight(int index)
     float epsilon = spotLightInnerCutoffAngles[index] - spotLightOuterCutoffAngles[index];
     float intensity = angle > spotLightInnerCutoffAngles[index] ? 1.0f : clamp((angle - spotLightOuterCutoffAngles[index]) / epsilon, 0.0f, 1.0f); 
 
-    vec3 radiance = mix(spotLightColors[index], albedoColor, thinness) * spotLightIntensities[index] * intensity * attenuation;
+    vec3 radiance = mix(albedoColor, spotLightColors[index], thickness) * spotLightIntensities[index] * intensity * attenuation;
 
     return CalculateLight(lightDirection, radiance);
 }
@@ -344,8 +344,8 @@ void main()
     //Set the ambient occlusion.
     ambientOcclusion = roughnessMetallicAmbientOcclusionSampler.b;
 
-    //Set the thinness.
-    thinness = roughnessMetallicAmbientOcclusionSampler.a;
+    //Set the thickness.
+    thickness = roughnessMetallicAmbientOcclusionSampler.a;
 
     //Calculate globals.
     viewDirection = normalize(cameraWorldPosition - fragmentWorldPosition);

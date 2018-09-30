@@ -3935,7 +3935,7 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
-		data.EmplaceFast(61);
+		data.EmplaceFast(30);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
