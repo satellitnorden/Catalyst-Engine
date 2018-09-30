@@ -20,9 +20,14 @@ public:
 	CameraEntity() NOEXCEPT;
 
 	/*
-	*	Returns the field of view for this camera entity.
+	*	Returns the field of view in degrees for this camera entity.
 	*/
-	float GetFieldOfView() const NOEXCEPT;
+	float GetFieldOfViewDegrees() const NOEXCEPT;
+
+	/*
+	*	Returns the field of view in radians for this camera entity.
+	*/
+	float GetFieldOfViewRadians() const NOEXCEPT;
 
 	/*
 	*	Returns the near plane of the frustum.

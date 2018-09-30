@@ -17,12 +17,21 @@ CameraEntity::CameraEntity() NOEXCEPT
 }
 
 /*
-*	Returns the field of view for this camera entity.
+*	Returns the field of view in degrees for this camera entity.
 */
-float CameraEntity::GetFieldOfView() const NOEXCEPT
+float CameraEntity::GetFieldOfViewDegrees() const NOEXCEPT
 {
 	//Return the field of view for this camera entity.
-	return ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._FieldOfView;
+	return ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._FieldOfViewDegrees;
+}
+
+/*
+*	Returns the field of view in radians for this camera entity.
+*/
+float CameraEntity::GetFieldOfViewRadians() const NOEXCEPT
+{
+	//Return the field of view for this camera entity.
+	return ComponentManager::GetCameraCameraComponents()[_ComponentsIndex]._FieldOfViewRadians;
 }
 
 /*

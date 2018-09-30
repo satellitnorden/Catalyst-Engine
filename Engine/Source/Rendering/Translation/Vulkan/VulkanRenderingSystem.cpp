@@ -1581,7 +1581,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	Matrix4 cameraOriginMatrix{ *cameraMatrix };
 	cameraOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
 
-	_DynamicUniformData._CameraFieldOfViewCosine = CatalystBaseMath::CosineDegrees(activeCamera->GetFieldOfView()) - 0.2f;
+	_DynamicUniformData._CameraFieldOfViewCosine = CatalystBaseMath::CosineRadians(activeCamera->GetFieldOfViewRadians()) - 0.2f;
 	_DynamicUniformData._InverseCameraMatrix = *inverseCameraMatrix;
 	_DynamicUniformData._InverseProjectionMatrix = *inverseProjectionMatrix;
 	_DynamicUniformData._OriginViewMatrix = *projectionMatrix * cameraOriginMatrix;

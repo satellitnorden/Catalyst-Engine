@@ -4,6 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Math.
+#include <Math/CatalystBaseMath.h>
 #include <Math/Vector3.h>
 
 //Physics.
@@ -20,8 +21,11 @@ public:
 	//The rotation.
 	Vector3 _Rotation{ 0.0f, 0.0f, 0.0f };
 
-	//The field of view.
-	float _FieldOfView{ 60.0f };
+	//The field of view in degrees.
+	float _FieldOfViewDegrees{ 60.0f };
+
+	//The field of view in radians.
+	float _FieldOfViewRadians{ CatalystBaseMath::DegreesToRadians(60.0f) };
 
 	//The near plane.
 	float _NearPlane{ 0.1f };
