@@ -378,7 +378,7 @@ void TerrainSystem::GeneratePatch(const GridPoint &gridPoint, TerrainPatchInform
 	TerrainUtilities::FindMinimumMaximumHeight(patchInformation->_NormalHeightMap, &minimumHeight, &maximumHeight);
 
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(gridPointWorldPosition._X - (_Properties._PatchSize * 0.5f), minimumHeight, gridPointWorldPosition._Z - (_Properties._PatchSize * 0.5f));
-	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (_Properties._PatchSize * 0.5f), minimumHeight, gridPointWorldPosition._Z + (_Properties._PatchSize * 0.5f));
+	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (_Properties._PatchSize * 0.5f), maximumHeight, gridPointWorldPosition._Z + (_Properties._PatchSize * 0.5f));
 
 	//Fill in the details about the patch render information.
 	patchRenderInformation->_Draw = true;
