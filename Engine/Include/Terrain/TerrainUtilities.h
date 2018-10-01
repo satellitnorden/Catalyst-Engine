@@ -13,9 +13,24 @@ namespace TerrainUtilities
 {
 
 	/*
+	*	Finds the minimum and the maximum height values given a CPU texture 2D.
+	*/
+	static void FindMinimumMaximumHeight(const CPUTexture2D &normalHeightMap, float *const RESTRICT minimum, float *const RESTRICT maximum) NOEXCEPT
+	{
+		*minimum = FLOAT_MAXIMUM;
+		*maximum = -FLOAT_MAXIMUM;
+
+		for (const Vector4 &normalHeight : normalHeightMap)
+		{
+			*minimum = CatalystBaseMath::Minimum<float>(*minimum, normalHeight._W);
+			*maximum = CatalystBaseMath::Maximum<float>(*maximum, normalHeight._W);
+		}
+	}
+
+	/*
 	*	Generates the normals for a terrain patch.
 	*/
-	static void GeneratePatchNormals(const float size, const float height, CPUTexture2D *const RESTRICT properties) NOEXCEPT
+	static void GeneratePatchNormals(const float size, CPUTexture2D *const RESTRICT properties) NOEXCEPT
 	{
 		const uint64 resolution{ properties->GetWidth() };
 
@@ -25,11 +40,11 @@ namespace TerrainUtilities
 		{
 			for (uint64 j = 0; j < resolution; ++j)
 			{
-				const Vector3 left{ -offset, properties->At(i > 0 ? i - 1 : i, j)._W * height, 0.0f };
-				const Vector3 right{ offset, properties->At(i < resolution - 1 ? i + 1 : i, j)._W * height, 0.0f };
-				const Vector3 up{ 0.0f, properties->At(i, j > 0 ? j - 1 : j)._W * height, -offset };
-				const Vector3 down{ 0.0f, properties->At(i, j < resolution - 1 ? j + 1 : j)._W * height, offset };
-				const Vector3 center{ 0.0f, properties->At(i, j)._W * height, 0.0f };
+				const Vector3 left{ -offset, properties->At(i > 0 ? i - 1 : i, j)._W, 0.0f };
+				const Vector3 right{ offset, properties->At(i < resolution - 1 ? i + 1 : i, j)._W, 0.0f };
+				const Vector3 up{ 0.0f, properties->At(i, j > 0 ? j - 1 : j)._W, -offset };
+				const Vector3 down{ 0.0f, properties->At(i, j < resolution - 1 ? j + 1 : j)._W, offset };
+				const Vector3 center{ 0.0f, properties->At(i, j)._W, 0.0f };
 
 				const Vector3 normal1{ Vector3::CrossProduct(up - center, left - center) };
 				const Vector3 normal2{ Vector3::CrossProduct(right - center, up - center) };
@@ -50,7 +65,7 @@ namespace TerrainUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	static void GenerateTerrainPlane(const uint32 resolution, const Vector3 &worldPosition, const float size, const CPUTexture2D &normalHeightMap, const CPUTexture2D &layerWeightsMap, const float height, const float textureTilingFactor, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	static void GenerateTerrainPlane(const uint32 resolution, const Vector3 &worldPosition, const float size, const CPUTexture2D &normalHeightMap, const CPUTexture2D &layerWeightsMap, const float textureTilingFactor, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
 	{
 		vertices->Reserve((resolution + 1) * (resolution + 1) * 5);
 		indices->Reserve(resolution * resolution * 6);
@@ -68,7 +83,7 @@ namespace TerrainUtilities
 				TerrainVertex vertex;
 
 				vertex._PositionX = worldPosition._X + ((-1.0f + (2.0f * textureCoordinateX)) * (size * 0.5f));
-				vertex._PositionY = normalHeight._W * height;
+				vertex._PositionY = normalHeight._W ;
 				vertex._PositionZ = worldPosition._Z + ((-1.0f + (2.0f * textureCoordinateY)) * (size * 0.5f));
 
 				vertex._NormalX = normalHeight._X;

@@ -107,6 +107,19 @@ public:
 	RESTRICTED Vector4 *const RESTRICT end() NOEXCEPT { return _Data.end(); }
 
 	/*
+	*	Initializes this CPU texture 2D.
+	*/
+	void Initialize(const uint64 initialWidth, const uint64 initialHeight) NOEXCEPT
+	{
+		//Set the width and height.
+		_Width = initialWidth;
+		_Height = initialHeight;
+
+		//Resize the underlying texture data to be able to hold all the data.
+		_Data.UpsizeFast(_Width * _Height);
+	}
+
+	/*
 	*	Returns the texture data, const.
 	*/
 	RESTRICTED const Vector4* Data() const NOEXCEPT { return _Data.Data(); }

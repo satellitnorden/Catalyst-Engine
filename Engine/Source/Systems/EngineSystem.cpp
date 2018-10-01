@@ -158,6 +158,13 @@ void EngineSystem::ExecuteSequentialUpdate() NOEXCEPT
 	//Execute the sequential update.
 	switch (_CurrentSequentialUpdate)
 	{
+		case SequentialUpdate::TerrainSystem:
+		{
+			TerrainSystem::Instance->SequentialUpdateSystemSynchronous();
+
+			break;
+		}
+
 		case SequentialUpdate::VegetationSystem:
 		{
 			VegetationSystem::Instance->SequentialUpdateSystemSynchronous();

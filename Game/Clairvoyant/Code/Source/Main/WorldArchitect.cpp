@@ -35,6 +35,7 @@ namespace WorldArchitectConstants
 */
 void WorldArchitect::Initialize() NOEXCEPT
 {
+	/*
 	{
 		//Create some terrain.
 		const TerrainProperties *const RESTRICT terrainProperties{ TerrainSystem::Instance->GetTerrainProperties() };
@@ -139,8 +140,9 @@ void WorldArchitect::Initialize() NOEXCEPT
 		information._DisplacementInformation._FourthLayerDisplacement = 2.0f;
 		information._DisplacementInformation._FifthLayerDisplacement = 1.0f;
 
-		TerrainSystem::Instance->AddTerrainPatch(std::move(information));
+		//TerrainSystem::Instance->AddTerrainPatch(std::move(information));
 	}
+	*/
 
 	//Initialize the vegetation.
 	InitializeVegetation();

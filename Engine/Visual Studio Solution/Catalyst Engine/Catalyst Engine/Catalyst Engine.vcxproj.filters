@@ -861,16 +861,10 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainProperties.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatch.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainRenderInformation.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainDisplacementInformation.h">
@@ -947,6 +941,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VegetationDepthVertexShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchRenderInformation.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h">
+      <Filter>Terrain\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

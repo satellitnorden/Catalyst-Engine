@@ -1,6 +1,9 @@
 //Header file.
 #include <Player/ClairvoyantPlayer.h>
 
+//Math.
+#include <Math/CatalystBaseMath.h>
+
 //Systems.
 #include <Systems/EntitySystem.h>
 #include <Systems/InputSystem.h>
@@ -31,7 +34,8 @@ bool ClairvoyantPlayer::LogicUpdateAsynchronous(const UpdateContext *const RESTR
 {
 	//Define constants.
 	constexpr float ROTATION_SPEED{ 100.0f };
-	constexpr float FLYING_SPEED{ 100.0f };
+	constexpr float FLYING_NORMAL_SPEED{ 100.0f };
+	constexpr float FLYING_FAST_SPEED{ 1'000.0f };
 	constexpr float WALKING_SPEED{ 2.0f };
 
 	//Get the gamepad state.
@@ -46,7 +50,7 @@ bool ClairvoyantPlayer::LogicUpdateAsynchronous(const UpdateContext *const RESTR
 	}
 
 	//Determine the speed.
-	const float speed{ constrainToTerrain ? WALKING_SPEED : FLYING_SPEED };
+	const float speed{ constrainToTerrain ? WALKING_SPEED : CatalystBaseMath::LinearlyInterpolate(FLYING_NORMAL_SPEED, FLYING_FAST_SPEED, state->_RightTrigger) };
 
 	//Move the camera.
 	_Camera->Move(_Camera->GetRightVector() * state->_LeftThumbstickX * speed * context->_DeltaTime);

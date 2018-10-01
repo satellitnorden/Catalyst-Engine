@@ -3,7 +3,11 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Math.
+#include <Math/GridPoint.h>
+
 //Rendering.
+#include <Rendering/Engine/AxisAlignedBoundingBox.h>
 #include <Rendering/Engine/CPUTexture2D.h>
 #include <Rendering/Engine/TerrainMaterial.h>
 
@@ -15,11 +19,14 @@ class TerrainPatchInformation final
 
 public:
 
-	//The grid X position.
-	int64 _X;
+	//Denotes whether or not this patch is valid.
+	bool _Valid;
 
-	//The grid Y position.
-	int64 _Y;
+	//The grid point.
+	GridPoint _GridPoint;
+
+	//The axis-aligned bounding box for this terrain patch.
+	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
 
 	//The normal/height map.
 	CPUTexture2D _NormalHeightMap;

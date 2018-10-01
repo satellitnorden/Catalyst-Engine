@@ -7,6 +7,7 @@
 #if !defined(CATALYST_FINAL)
 #include <Main/ClairvoyantResourceCreation.h>
 #endif
+#include <World/ClairvoyantTerrainGeneration.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -22,10 +23,12 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 	configuration->_RenderingConfiguration._ResolutionScale = 1.0f;
 	configuration->_RenderingConfiguration._ShadowMapResolution = 2'048;
 
-	configuration->_TerrainConfiguration._Height = 250.0f;
-	configuration->_TerrainConfiguration._TextureTilingFactor = 250.0f;
-	configuration->_TerrainConfiguration._PatchResolution = 512;
+	configuration->_TerrainConfiguration._TerrainTextureTilingFactor = 250.0f;
+	configuration->_TerrainConfiguration._PatchResolution = 128;
 	configuration->_TerrainConfiguration._PatchSize = 1'000.0f;
+	configuration->_TerrainConfiguration._HeightGenerationFunction = ClairvoyantTerrainGeneration::GenerateHeight;
+	configuration->_TerrainConfiguration._LayerWeightsGenerationFunction = ClairvoyantTerrainGeneration::GenerateLayerWeights;
+	configuration->_TerrainConfiguration._PatchPropertiesGenerationFunction = ClairvoyantTerrainGeneration::GeneratePatchProperties;
 }
 
 MAIN_FUNCTION

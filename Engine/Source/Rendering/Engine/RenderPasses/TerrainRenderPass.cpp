@@ -112,16 +112,7 @@ void TerrainRenderPass::InitializeInternal() NOEXCEPT
 void TerrainRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all terrain render informations and draw them
-	const DynamicArray<TerrainRenderInformation> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainRenderInformation() };
-
-	//If there's none to render - render none.
-	if (informations->Empty())
-	{
-		//Don't include this render pass in the final render.
-		SetIncludeInRender(false);
-
-		return;
-	}
+	const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
 
 	//Cache the command buffer
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -132,8 +123,13 @@ void TerrainRenderPass::RenderInternal() NOEXCEPT
 	//Bind the current dynamic uniform data render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
-	for (const TerrainRenderInformation &information : *informations)
+	for (const TerrainPatchRenderInformation &information : *informations)
 	{
+		if (!information._Draw)
+		{
+			continue;
+		}
+
 		const uint64 offset{ 0 };
 
 		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &offset);

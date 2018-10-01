@@ -28,6 +28,15 @@
     <Filter Include="Clairvoyant Code\Player\Source">
       <UniqueIdentifier>{d93eb02c-a1d0-4c90-9949-d337a966c4af}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Clairvoyant Code\World">
+      <UniqueIdentifier>{1d739f09-9baa-43c6-8720-93b4c7b703e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Clairvoyant Code\World\Include">
+      <UniqueIdentifier>{2c7fcae4-e933-4411-b96f-20ab7c65986e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Clairvoyant Code\World\Source">
+      <UniqueIdentifier>{54cccbfc-b4e4-4b76-be76-d40f73e53bd7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp">
@@ -363,9 +372,6 @@
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantGameSystem.cpp">
       <Filter>Clairvoyant Code\Main\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Code\Source\Source\ClairvoyantPlayer.cpp">
-      <Filter>Clairvoyant Code\Player\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantResourceCreation.cpp">
       <Filter>Clairvoyant Code\Main\Source</Filter>
     </ClCompile>
@@ -411,6 +417,12 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\VegetationDepthVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantTerrainGeneration.cpp">
+      <Filter>Clairvoyant Code\World\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\Player\ClairvoyantPlayer.cpp">
+      <Filter>Clairvoyant Code\Player\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h">
@@ -424,6 +436,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\Main\WorldArchitect.h">
       <Filter>Clairvoyant Code\Main\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantTerrainGeneration.h">
+      <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
