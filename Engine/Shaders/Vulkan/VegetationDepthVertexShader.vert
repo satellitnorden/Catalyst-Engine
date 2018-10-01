@@ -59,8 +59,11 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //Preprocessor defines.
+#define EULERS_NUMBER 2.718281f
 #define PHI 1.618033f
 #define PI 3.141592f
+#define SQUARE_ROOT_OF_TWO 1.414213f
+#define VEGETATION_WIND_AFFECTION 0.15f
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -87,10 +90,10 @@ layout (location = 1) out float fragmentLengthFactor;
 */
 vec3 CalculateWindModulator(vec3 worldPosition)
 {
-    float xModulator = sin(worldPosition.x + worldPosition.y + totalGameTime * windSpeed * PHI * 0.25f) * cos(worldPosition.z + worldPosition.y + totalGameTime * windSpeed * PI * 0.25f) + 1.0f;
-    float zModulator = cos(worldPosition.z + worldPosition.y + totalGameTime * windSpeed * PHI * 0.25f) * sin(worldPosition.z + worldPosition.y + totalGameTime * windSpeed * PI * 0.25f) + 1.0f;
+    float xModulator = sin(worldPosition.x + worldPosition.y  + totalGameTime * windSpeed * EULERS_NUMBER * VEGETATION_WIND_AFFECTION) * cos(worldPosition.x + worldPosition.z + totalGameTime * windSpeed * PHI * VEGETATION_WIND_AFFECTION) + 1.0f;
+    float zModulator = cos(worldPosition.z + worldPosition.y + totalGameTime * windSpeed * PI * VEGETATION_WIND_AFFECTION) * sin(worldPosition.z + worldPosition.x + totalGameTime * windSpeed * SQUARE_ROOT_OF_TWO * VEGETATION_WIND_AFFECTION) + 1.0f;
 
-    return vec3(xModulator * windDirection.x, 0.0f, zModulator * windDirection.z);
+    return vec3(xModulator * windDirection.x, 0.0f, zModulator * windDirection.z) * windSpeed * VEGETATION_WIND_AFFECTION;
 }
 
 /*
