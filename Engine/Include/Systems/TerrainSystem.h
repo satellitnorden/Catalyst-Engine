@@ -52,7 +52,7 @@ public:
 	/*
 	*	Returns the terrain patch informations.
 	*/
-	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchInformation, 9> *const RESTRICT GetTerrainPatchInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchInformation, 25> *const RESTRICT GetTerrainPatchInformations() const NOEXCEPT
 	{
 		return &_PatchInformations;
 	}
@@ -60,7 +60,7 @@ public:
 	/*
 	*	Returns the terrain patch render informations.
 	*/
-	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT GetTerrainPatchRenderInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchRenderInformation, 25> *const RESTRICT GetTerrainPatchRenderInformations() const NOEXCEPT
 	{
 		return &_PatchRenderInformations;
 	}
@@ -90,10 +90,10 @@ private:
 	mutable Spinlock _PatchLock;
 
 	//The patch informations.
-	StaticArray<TerrainPatchInformation, 9> _PatchInformations;
+	StaticArray<TerrainPatchInformation, 25> _PatchInformations;
 
 	//The patch render informations.
-	StaticArray<TerrainPatchRenderInformation, 9> _PatchRenderInformations;
+	StaticArray<TerrainPatchRenderInformation, 25> _PatchRenderInformations;
 
 	//The terrain update.
 	TerrainUpdate _Update;

@@ -203,20 +203,37 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 	const GridPoint currentGridPoint{ GridPoint::WorldPositionToGridPoint(_CurrentCameraPosition, _Properties._PatchSize) };
 
 	//Create an array with the valid grid positions.
-	StaticArray<GridPoint, 9> validGridPoints
+	StaticArray<GridPoint, 25> validGridPoints
 	{
-		GridPoint(currentGridPoint._X, currentGridPoint._Y),
+		GridPoint(currentGridPoint._X - 2, currentGridPoint._Y - 2),
+		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y - 2),
+		GridPoint(currentGridPoint._X, currentGridPoint._Y - 2),
+		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y - 2),
+		GridPoint(currentGridPoint._X + 2, currentGridPoint._Y - 2),
 
+		GridPoint(currentGridPoint._X - 2, currentGridPoint._Y - 1),
 		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y - 1),
 		GridPoint(currentGridPoint._X, currentGridPoint._Y - 1),
 		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y - 1),
+		GridPoint(currentGridPoint._X + 2, currentGridPoint._Y - 1),
 
+		GridPoint(currentGridPoint._X - 2, currentGridPoint._Y),
 		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y),
+		GridPoint(currentGridPoint._X, currentGridPoint._Y),
 		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y),
+		GridPoint(currentGridPoint._X + 2, currentGridPoint._Y),
 
+		GridPoint(currentGridPoint._X - 2, currentGridPoint._Y + 1),
 		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y + 1),
 		GridPoint(currentGridPoint._X, currentGridPoint._Y + 1),
 		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y + 1),
+		GridPoint(currentGridPoint._X + 2, currentGridPoint._Y + 1),
+
+		GridPoint(currentGridPoint._X - 2, currentGridPoint._Y + 2),
+		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y + 2),
+		GridPoint(currentGridPoint._X, currentGridPoint._Y + 2),
+		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y + 2),
+		GridPoint(currentGridPoint._X + 2, currentGridPoint._Y + 2),
 	};
 
 	//Construct the sorting data.
