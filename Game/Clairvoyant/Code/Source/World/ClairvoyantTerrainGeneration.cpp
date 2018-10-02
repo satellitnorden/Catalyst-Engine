@@ -204,25 +204,42 @@ namespace ClairvoyantTerrainGeneration
 	*/
 	void GenerateLayerWeights(const TerrainProperties &properties, const Vector3 &worldPosition, const Vector3 &normal, Vector4 *const RESTRICT layerWeights) NOEXCEPT
 	{
-		//Determine the weight of the first grass layer.
+		//Determine the weight of the second grass layer.
 		if (worldPosition._Y < 0.0f)
 		{
-			layerWeights->_X = 0.0f;
+			layerWeights->_Y = 0.0f;
 		}
 
-		else if (worldPosition._Y > 20.0f)
+		else if (worldPosition._Y > 1'000.0f)
 		{
-			layerWeights->_X = 1.0f;
+			layerWeights->_Y = 1.0f;
 		}
 
 		else
 		{
-			layerWeights->_X = worldPosition._Y * 0.05f;
+			layerWeights->_Y = worldPosition._Y * 0.001f;
 		}
 
-		layerWeights->_Y = 0.0f;
-		layerWeights->_Z = 0.0f;
-		layerWeights->_W = 0.0f;
+		layerWeights->_X = 0.0f;
+
+		//Determine the weight of the rock layer.
+		layerWeights->_Z = CatalystBaseMath::SmoothStep<1>(1.0f - CatalystBaseMath::Clamp<float>(Vector3::DotProduct(normal, Vector3::UP) - 0.1f, 0.0f, 1.0f));
+
+		//Determine the weight of the snow layer.
+		if (worldPosition._Y < 7'000.0f)
+		{
+			layerWeights->_W = 0.0f;
+		}
+
+		else if (worldPosition._Y > 8'000.0f)
+		{
+			layerWeights->_W = 1.0f;
+		}
+
+		else
+		{
+			layerWeights->_W = (worldPosition._Y - 7'000.0f) * 0.001f;
+		}
 	}
 
 	/*
