@@ -72,8 +72,15 @@ bool ClairvoyantPlayer::LogicUpdateAsynchronous(const UpdateContext *const RESTR
 	if (constrainToTerrain)
 	{
 		Vector3 position{ _Camera->GetPosition() };
-		position._Y = TerrainSystem::Instance->GetTerrainHeightAtPosition(position) + 2.0f;
-		_Camera->SetPosition(position);
+
+		float terrainHeight;
+
+		if (TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &terrainHeight))
+		{
+			position._Y = terrainHeight + 2.0f;
+
+			_Camera->SetPosition(position);
+		}
 	}
 
 	//Rotate the camera.

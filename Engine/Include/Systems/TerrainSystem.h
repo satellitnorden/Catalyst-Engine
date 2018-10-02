@@ -68,12 +68,12 @@ public:
 	/*
 	*	Returns the terrain height at the given position.
 	*/
-	float GetTerrainHeightAtPosition(const Vector3 &position) const NOEXCEPT;
+	bool GetTerrainHeightAtPosition(const Vector3 &position, float *const RESTRICT height) const NOEXCEPT;
 
 	/*
 	*	Returns the terrain normal at the given position.
 	*/
-	Vector3 GetTerrainNormalAtPosition(const Vector3 &position) const NOEXCEPT;
+	bool GetTerrainNormalAtPosition(const Vector3 &position, Vector3 *const RESTRICT normal) const NOEXCEPT;
 
 private:
 

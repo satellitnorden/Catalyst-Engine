@@ -287,16 +287,26 @@ bool WorldArchitect::GenerateTransformation(const bool underwater, const float h
 {
 	Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
 	
-	const float terrainheight{ TerrainSystem::Instance->GetTerrainHeightAtPosition(position) };
+	float terrainHeight;
 
-	if (!underwater && terrainheight < 0.0f)
+	if (!TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &terrainHeight))
 	{
 		return false;
 	}
 
-	position._Y = terrainheight + height;
+	if (!underwater && terrainHeight < 0.0f)
+	{
+		return false;
+	}
 
-	const Vector3 terrainNormal{ TerrainSystem::Instance->GetTerrainNormalAtPosition(position) };
+	position._Y = terrainHeight + height;
+
+	Vector3 terrainNormal;
+
+	if (!TerrainSystem::Instance->GetTerrainNormalAtPosition(position, &terrainNormal))
+	{
+		return false;
+	}
 
 	if (!CatalystBaseMath::RandomChance(CatalystBaseMath::Maximum<float>(Vector3::DotProduct(terrainNormal, Vector3::UP), 0.0f) - dotModulator))
 	{

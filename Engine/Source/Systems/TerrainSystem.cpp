@@ -69,7 +69,7 @@ void TerrainSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 /*
 *	Returns the terrain height at the given position.
 */
-float TerrainSystem::GetTerrainHeightAtPosition(const Vector3 &position) const NOEXCEPT
+bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3 &position, float *const RESTRICT height) const NOEXCEPT
 {
 	//Find the nearest terrain patch to the position.
 	const TerrainPatchInformation *RESTRICT nearestPatch{ nullptr };
@@ -96,10 +96,19 @@ float TerrainSystem::GetTerrainHeightAtPosition(const Vector3 &position) const N
 	//Unlock the patches.
 	_PatchLock.Unlock();
 
-	//If no valid patch could be found, just return zero.
+	//If no valid patch could be found, return that the retrieval failed.
 	if (!nearestPatch)
 	{
-		return 0.0f;
+		return false;
+	}
+
+	//If the position is not within the nearest patch's axis-aligned bounding box, return that the retrival failed.
+	if (position._X < nearestPatch->_AxisAlignedBoundingBox._Minimum._X
+		|| position._X > nearestPatch->_AxisAlignedBoundingBox._Maximum._X
+		|| position._Z < nearestPatch->_AxisAlignedBoundingBox._Minimum._Z
+		|| position._Z > nearestPatch->_AxisAlignedBoundingBox._Maximum._Z)
+	{
+		return false;
 	}
 
 	//Calculate the patch's world position.
@@ -112,14 +121,17 @@ float TerrainSystem::GetTerrainHeightAtPosition(const Vector3 &position) const N
 	//Sample the patch's normal/height map.
 	const Vector4 &normalHeight{ nearestPatch->_NormalHeightMap.At(coordinateX, coordinateY) };
 
-	//Return the height.
-	return normalHeight._W;
+	//Set the height.
+	*height = normalHeight._W;
+
+	//Return that the retrieval succeeded.
+	return true;
 }
 
 /*
 *	Returns the terrain normal at the given position.
 */
-Vector3 TerrainSystem::GetTerrainNormalAtPosition(const Vector3 &position) const NOEXCEPT
+bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3 &position, Vector3 *const RESTRICT normal) const NOEXCEPT
 {
 	//Find the nearest terrain patch to the position.
 	const TerrainPatchInformation *RESTRICT nearestPatch{ nullptr };
@@ -146,10 +158,19 @@ Vector3 TerrainSystem::GetTerrainNormalAtPosition(const Vector3 &position) const
 	//Unlock the patches.
 	_PatchLock.Unlock();
 
-	//If no valid patch could be found, just return zero.
+	//If no valid patch could be found, return that the retrieval failed.
 	if (!nearestPatch)
 	{
-		return 0.0f;
+		return false;
+	}
+
+	//If the position is not within the nearest patch's axis-aligned bounding box, return that the retrival failed.
+	if (position._X < nearestPatch->_AxisAlignedBoundingBox._Minimum._X
+		|| position._X > nearestPatch->_AxisAlignedBoundingBox._Maximum._X
+		|| position._Z < nearestPatch->_AxisAlignedBoundingBox._Minimum._Z
+		|| position._Z > nearestPatch->_AxisAlignedBoundingBox._Maximum._Z)
+	{
+		return false;
 	}
 
 	//Calculate the patch's world position.
@@ -162,8 +183,11 @@ Vector3 TerrainSystem::GetTerrainNormalAtPosition(const Vector3 &position) const
 	//Sample the patch's normal/height map.
 	const Vector4 &normalHeight{ nearestPatch->_NormalHeightMap.At(coordinateX, coordinateY) };
 
-	//Return the normal.
-	return Vector3(normalHeight._X, normalHeight._Y, normalHeight._Z);
+	//Set the normal.
+	*normal = Vector3(normalHeight._X, normalHeight._Y, normalHeight._Z);
+
+	//Return that the retrieval succeeded.
+	return true;
 }
 
 /*
