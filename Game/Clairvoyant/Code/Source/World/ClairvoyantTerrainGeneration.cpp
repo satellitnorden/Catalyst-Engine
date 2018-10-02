@@ -29,7 +29,7 @@ namespace ClairvoyantTerrainGenerationConstants
 	constexpr float LARGE_HILL_INFLUENCE{ 0.025f };
 
 	constexpr float MEDIUM_HILL_RANGE{ 100.0f };
-	constexpr float MEDIUM_HILL_INFLUENCE{ 0.0015f };
+	constexpr float MEDIUM_HILL_INFLUENCE{ 0.00175f };
 
 	constexpr float SMALL_HILL_RANGE{ 10.0f };
 	constexpr float SMALL_HILL_INFLUENCE{ 0.0003f };
