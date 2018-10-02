@@ -19,35 +19,29 @@ namespace ClairvoyantTerrainGenerationConstants
 {
 	constexpr float TERRAIN_HEIGHT{ 10'000.0f };
 
-	constexpr float FIRST_RANGE{ 10'000'000'000.0f };
-	constexpr float FIRST_INCLUENCE{ 1.0f };
+	constexpr float LANDSCAPE_RANGE{ 100'000.0f };
+	constexpr float LANDSCAPE_INCLUENCE{ 1.0f };
 
-	constexpr float SECOND_RANGE{ 1'000'000'000.0f };
-	constexpr float SECOND_INCLUENCE{ 0.5f };
+	constexpr float MOUNTAIN_RANGE{ 10'000.0f };
+	constexpr float MOUNTAIN_INFLUENCE{ 0.25f };
 
-	constexpr float THIRD_RANGE{ 100'000'000.0f };
-	constexpr float THIRD_INCLUENCE{ 0.25f };
+	constexpr float LARGE_HILL_RANGE{ 1'000.0f };
+	constexpr float LARGE_HILL_INFLUENCE{ 0.025f };
 
-	constexpr float FOURTH_RANGE{ 10'000'000.0f };
-	constexpr float FOURTH_INCLUENCE{ 0.125f };
+	constexpr float MEDIUM_HILL_RANGE{ 100.0f };
+	constexpr float MEDIUM_HILL_INFLUENCE{ 0.001f };
 
-	constexpr float FIFTH_RANGE{ 1'000'000.0f };
-	constexpr float FIFTH_INCLUENCE{ 0.0625f };
+	constexpr float SMALL_HILL_RANGE{ 10.0f };
+	constexpr float SMALL_HILL_INFLUENCE{ 0.00025f };
 
-	constexpr float SIXTH_RANGE{ 100'000.0f };
-	constexpr float SIXTH_INCLUENCE{ 0.03125f };
+	constexpr float ROCK_RANGE{ 1.0f };
+	constexpr float ROCK_INFLUENCE{ 0.0001f };
 
-	constexpr float SEVENTH_RANGE{ 10'000.0f };
-	constexpr float SEVENTH_INCLUENCE{ 0.015625f };
+	constexpr float PEBBLE_RANGE{ 0.1f };
+	constexpr float PEBBLE_INFLUENCE{ 0.000025f };
 
-	constexpr float EIGHTH_RANGE{ 1'000.0f };
-	constexpr float EIGHTH_INCLUENCE{ 0.0078125f };
-
-	constexpr float NINTH_RANGE{ 100.0f };
-	constexpr float NINTH_INCLUENCE{ 0.00390625f };
-
-	constexpr float TENTH_RANGE{ 10.0f };
-	constexpr float TENTH_INCLUENCE{ 0.001953125f };
+	constexpr float SPECK_RANGE{ 0.01f };
+	constexpr float SPECK_INFLUENCE{ 0.00001f };
 }
 
 namespace ClairvoyantTerrainGeneration
@@ -56,8 +50,69 @@ namespace ClairvoyantTerrainGeneration
 	/*
 	*	Returns the random offset.
 	*/
-	float GetRandomOffset() NOEXCEPT
+	float GetRandomOffset(const uint8 index) NOEXCEPT
 	{
+		switch (index)
+		{
+			case 0:
+			{
+				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return randomOffset;
+			}
+
+			case 1:
+			{
+				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return randomOffset;
+			}
+
+			case 2:
+			{
+				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return randomOffset;
+			}
+
+			case 3:
+			{
+				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return randomOffset;
+			}
+
+			case 4:
+			{
+				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return randomOffset;
+			}
+
+			case 5:
+			{
+				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return randomOffset;
+			}
+
+			case 6:
+			{
+				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return randomOffset;
+			}
+
+			case 7:
+			{
+				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return randomOffset;
+			}
+		}
+
+		ASSERT(false, "You should add a case here. ):");
+
 		return 0.0f;
 	}
 
@@ -66,59 +121,79 @@ namespace ClairvoyantTerrainGeneration
 	*/
 	void GenerateHeight(const TerrainProperties &properties, const Vector3 &worldPosition, float *const RESTRICT height) NOEXCEPT
 	{
-		//Apply the first range.
-		float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::FIRST_RANGE };
-		float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::FIRST_RANGE };
+		{
+			//Apply the lancscape range.
+			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::LANDSCAPE_RANGE };
+			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::LANDSCAPE_RANGE };
 
-		*height = PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset()) * ClairvoyantTerrainGenerationConstants::FIRST_INCLUENCE;
+			*height = PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(0)) * ClairvoyantTerrainGenerationConstants::LANDSCAPE_INCLUENCE;
+		}
 
-		//Apply the second range.
-		xCoordinate = worldPosition._X / ClairvoyantTerrainGenerationConstants::SECOND_RANGE;
-		yCoordinate = worldPosition._Z / ClairvoyantTerrainGenerationConstants::SECOND_RANGE;
+		{
+			//Apply the mountain range.
+			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::MOUNTAIN_RANGE };
+			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::MOUNTAIN_RANGE };
 
-		*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset()) * ClairvoyantTerrainGenerationConstants::SECOND_INCLUENCE;
+			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(1)) };
 
-		//Apply the third range.
-		xCoordinate = worldPosition._X / ClairvoyantTerrainGenerationConstants::THIRD_RANGE;
-		yCoordinate = worldPosition._Z / ClairvoyantTerrainGenerationConstants::THIRD_RANGE;
+			*height += CatalystBaseMath::SmoothStep<5>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MOUNTAIN_INFLUENCE;
+		}
 
-		*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset()) * ClairvoyantTerrainGenerationConstants::THIRD_INCLUENCE;
+		{
+			//Apply the large hill range.
+			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::LARGE_HILL_RANGE };
+			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::LARGE_HILL_RANGE };
 
-		//Apply the fourth range.
-		xCoordinate = worldPosition._X / ClairvoyantTerrainGenerationConstants::FOURTH_RANGE;
-		yCoordinate = worldPosition._Z / ClairvoyantTerrainGenerationConstants::FOURTH_RANGE;
+			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(2)) };
 
-		*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset()) * ClairvoyantTerrainGenerationConstants::FOURTH_INCLUENCE;
+			*height += CatalystBaseMath::SmoothStep<4>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::LARGE_HILL_INFLUENCE;
+		}
 
-		//Apply the fifth range.
-		xCoordinate = worldPosition._X / ClairvoyantTerrainGenerationConstants::FIFTH_RANGE;
-		yCoordinate = worldPosition._Z / ClairvoyantTerrainGenerationConstants::FIFTH_RANGE;
+		{
+			//Apply the medium hill range.
+			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::MEDIUM_HILL_RANGE };
+			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::MEDIUM_HILL_RANGE };
 
-		*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset()) * ClairvoyantTerrainGenerationConstants::FIFTH_INCLUENCE;
+			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(3)) };
 
-		//Apply the sixth range.
-		xCoordinate = worldPosition._X / ClairvoyantTerrainGenerationConstants::SIXTH_RANGE;
-		yCoordinate = worldPosition._Z / ClairvoyantTerrainGenerationConstants::SIXTH_RANGE;
+			*height += CatalystBaseMath::SmoothStep<3>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MEDIUM_HILL_INFLUENCE; 
+		}
 
-		*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset()) * ClairvoyantTerrainGenerationConstants::SIXTH_INCLUENCE;
+		{
+			//Apply the small hill range.
+			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::SMALL_HILL_RANGE };
+			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::SMALL_HILL_RANGE };
 
-		//Apply the seventh range.
-		xCoordinate = worldPosition._X / ClairvoyantTerrainGenerationConstants::SEVENTH_RANGE;
-		yCoordinate = worldPosition._Z / ClairvoyantTerrainGenerationConstants::SEVENTH_RANGE;
+			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(4)) };
 
-		*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset()) * ClairvoyantTerrainGenerationConstants::SEVENTH_INCLUENCE;
+			*height += CatalystBaseMath::SmoothStep<2>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::SMALL_HILL_INFLUENCE;
+		}
 
-		//Apply the eighth range.
-		xCoordinate = worldPosition._X / ClairvoyantTerrainGenerationConstants::EIGHTH_RANGE;
-		yCoordinate = worldPosition._Z / ClairvoyantTerrainGenerationConstants::EIGHTH_RANGE;
+		{
+			//Apply the rock range.
+			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::ROCK_RANGE };
+			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::ROCK_RANGE };
 
-		*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset()) * ClairvoyantTerrainGenerationConstants::EIGHTH_INCLUENCE;
+			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(5)) };
 
-		//Apply the ninth range.
-		xCoordinate = worldPosition._X / ClairvoyantTerrainGenerationConstants::NINTH_RANGE;
-		yCoordinate = worldPosition._Z / ClairvoyantTerrainGenerationConstants::NINTH_RANGE;
+			*height += CatalystBaseMath::SmoothStep<1>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::ROCK_INFLUENCE;
+		}
 
-		*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset()) * ClairvoyantTerrainGenerationConstants::NINTH_INCLUENCE;
+		{
+			//Apply the pebble range.
+			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::PEBBLE_RANGE };
+			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::PEBBLE_RANGE };
+
+			*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(6)) * ClairvoyantTerrainGenerationConstants::PEBBLE_INFLUENCE;
+		}
+
+		{
+			//Apply the speck range.
+			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::SPECK_RANGE };
+			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::SPECK_RANGE };
+
+			*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(7)) * ClairvoyantTerrainGenerationConstants::SPECK_INFLUENCE;
+		}
 
 		//Apply the height.
 		*height *= ClairvoyantTerrainGenerationConstants::TERRAIN_HEIGHT;
