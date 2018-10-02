@@ -30,7 +30,7 @@ RESTRICTED EntityClass *const RESTRICT EntitySystem::CreateChildEntity(Entity *R
 	EntityClass *const RESTRICT newChild{ new (memory) EntityClass(std::forward<Arguments>(arguments)...) };
 
 	parentEntity->_Children.EmplaceSlow(newChild);
-	newChild->SetParent(parentEntity);
+	newChild->_Parent = parentEntity;
 
 	_Entities.EmplaceSlow(newChild);
 
