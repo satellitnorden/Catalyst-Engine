@@ -69,11 +69,20 @@ void Entity::SetPosition(const Vector3 &newPosition) NOEXCEPT
 	//Set the position of this entity.
 	if (Vector3 *const RESTRICT position{ GetPositionInternal() })
 	{
-		*position = newPosition;
-	}
+		//Calculate the amount to move and move all children.
+		const Vector3 moveVector{ newPosition - *position };
 
-	//Call the callback.
-	OnMove();
+		for (Entity *const RESTRICT child : _Children)
+		{
+			child->Move(moveVector);
+		}
+
+		//Set the position of this entity.
+		*position = newPosition;
+
+		//Call the callback.
+		OnMove();
+	}
 }
 
 /*
@@ -84,11 +93,20 @@ void Entity::SetRotation(const Vector3 &newRotation) NOEXCEPT
 	//Set the rotation of this entity.
 	if (Vector3 *const RESTRICT rotation{ GetRotationInternal() })
 	{
-		*rotation = newRotation;
-	}
+		//Calculate the amount to rotate and rotate all children.
+		const Vector3 rotateVector{ newRotation - *rotation };
 
-	//Call the callback.
-	OnRotate();
+		for (Entity *const RESTRICT child : _Children)
+		{
+			child->Rotate(rotateVector);
+		}
+
+		//Set the rotation of this entity.
+		*rotation = newRotation;
+
+		//Call the callback.
+		OnRotate();
+	}
 }
 
 /*
@@ -99,11 +117,20 @@ void Entity::SetScale(const Vector3 &newScale) NOEXCEPT
 	//Set the scale of this entity.
 	if (Vector3 *const RESTRICT scale{ GetScaleInternal() })
 	{
-		*scale = newScale;
-	}
+		//Calculate the amount to scale and scale all children.
+		const Vector3 scaleVector{ newScale - *scale };
 
-	//Call the callback.
-	OnScale();
+		for (Entity *const RESTRICT child : _Children)
+		{
+			child->Scale(scaleVector);
+		}
+
+		//Set the scale of this entity.
+		*scale = newScale;
+
+		//Call the callback.
+		OnScale();
+	}
 }
 
 /*
