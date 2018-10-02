@@ -383,12 +383,11 @@ void TerrainSystem::GeneratePatch(const GridPoint &gridPoint, TerrainPatchInform
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
 
-	TerrainUtilities::GenerateTerrainPlane(	_Properties._PatchResolution,
+	TerrainUtilities::GenerateTerrainPlane(_Properties,
+											_Properties._PatchResolution,
 											gridPointWorldPosition,
-											_Properties._PatchSize,
 											patchInformation->_NormalHeightMap,
 											patchInformation->_LayerWeightsMap,
-											_Properties._TerrainTextureTilingFactor,
 											&vertices,
 											&indices);
 

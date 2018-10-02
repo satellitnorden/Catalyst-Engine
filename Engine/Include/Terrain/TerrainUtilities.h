@@ -7,6 +7,7 @@
 #include <Rendering/Engine/CPUTexture2D.h>
 
 //Terrain.
+#include <Terrain/TerrainProperties.h>
 #include <Terrain/TerrainVertex.h>
 
 namespace TerrainUtilities
@@ -65,7 +66,7 @@ namespace TerrainUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	static void GenerateTerrainPlane(const uint32 resolution, const Vector3 &worldPosition, const float size, const CPUTexture2D &normalHeightMap, const CPUTexture2D &layerWeightsMap, const float textureTilingFactor, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, const Vector3 &worldPosition, const CPUTexture2D &normalHeightMap, const CPUTexture2D &layerWeightsMap, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
 	{
 		vertices->Reserve((resolution + 1) * (resolution + 1) * 5);
 		indices->Reserve(resolution * resolution * 6);
@@ -82,9 +83,9 @@ namespace TerrainUtilities
 
 				TerrainVertex vertex;
 
-				vertex._PositionX = worldPosition._X + ((-1.0f + (2.0f * textureCoordinateX)) * (size * 0.5f));
-				vertex._PositionY = normalHeight._W ;
-				vertex._PositionZ = worldPosition._Z + ((-1.0f + (2.0f * textureCoordinateY)) * (size * 0.5f));
+				vertex._PositionX = worldPosition._X + ((-1.0f + (2.0f * textureCoordinateX)) * (properties._PatchSize * 0.5f));
+				vertex._PositionZ = worldPosition._Z + ((-1.0f + (2.0f * textureCoordinateY)) * (properties._PatchSize * 0.5f));
+				properties._HeightGenerationFunction(properties, Vector3(vertex._PositionX, 0.0f, vertex._PositionZ), &vertex._PositionY);
 
 				vertex._NormalX = normalHeight._X;
 				vertex._NormalY = normalHeight._Y;
@@ -95,8 +96,8 @@ namespace TerrainUtilities
 				vertex._LayerWeightZ = layerWeight._Z;
 				vertex._LayerWeightW = layerWeight._W;
 
-				vertex._TextureCoordinateX = textureCoordinateX * textureTilingFactor;
-				vertex._TextureCoordinateY = textureCoordinateY * textureTilingFactor;
+				vertex._TextureCoordinateX = textureCoordinateX * properties._TerrainTextureTilingFactor;
+				vertex._TextureCoordinateY = textureCoordinateY * properties._TerrainTextureTilingFactor;
 
 				vertices->EmplaceFast(vertex);
 
