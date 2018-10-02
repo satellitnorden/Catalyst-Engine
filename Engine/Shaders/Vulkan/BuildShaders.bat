@@ -24,9 +24,9 @@ glslangValidator.exe -V PostProcessingFragmentShader.frag -o 				PostProcessingF
 glslangValidator.exe -V ScreenSpaceAmbientOcclusionFragmentShader.frag -o 		ScreenSpaceAmbientOcclusionFragmentShader.spv
 glslangValidator.exe -V ShadowMapFragmentShader.frag -o 				ShadowMapFragmentShader.spv
 glslangValidator.exe -V SkyFragmentShader.frag -o 					SkyFragmentShader.spv
-glslangValidator.exe -V TerrainSceneBufferFragmentShader.frag -o 			TerrainSceneBufferFragmentShader.spv
-glslangValidator.exe -V TerrainSceneBufferTessellationControlShader.tesc -o 		TerrainSceneBufferTessellationControlShader.spv
-glslangValidator.exe -V TerrainSceneBufferTessellationEvaluationShader.tese -o 		TerrainSceneBufferTessellationEvaluationShader.spv
+glslangValidator.exe -V TerrainFragmentShader.frag -o 					TerrainFragmentShader.spv
+glslangValidator.exe -V TerrainTessellationControlShader.tesc -o 			TerrainTessellationControlShader.spv
+glslangValidator.exe -V TerrainTessellationEvaluationShader.tese -o 			TerrainTessellationEvaluationShader.spv
 glslangValidator.exe -V TerrainVertexShader.vert -o 					TerrainVertexShader.spv
 glslangValidator.exe -V VegetationColorFragmentShader.frag -o 				VegetationColorFragmentShader.spv
 glslangValidator.exe -V VegetationColorVertexShader.vert -o 				VegetationColorVertexShader.spv

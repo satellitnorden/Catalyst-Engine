@@ -10,5 +10,5 @@
 
 namespace VulkanShaderData
 {
-	void GetTerrainSceneBufferTessellationEvaluationShaderData(DynamicArray<byte> &data);
+	void GetTerrainTessellationEvaluationShaderData(DynamicArray<byte> &data);
 }

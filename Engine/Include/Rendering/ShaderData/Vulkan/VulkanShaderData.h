@@ -34,9 +34,9 @@
 #include <Rendering/ShaderData/Vulkan/ScreenSpaceAmbientOcclusionFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ShadowMapFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/SkyFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/TerrainSceneBufferFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/TerrainSceneBufferTessellationControlShader.h>
-#include <Rendering/ShaderData/Vulkan/TerrainSceneBufferTessellationEvaluationShader.h>
+#include <Rendering/ShaderData/Vulkan/TerrainFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/TerrainTessellationControlShader.h>
+#include <Rendering/ShaderData/Vulkan/TerrainTessellationEvaluationShader.h>
 #include <Rendering/ShaderData/Vulkan/TerrainVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/VegetationColorFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/VegetationColorVertexShader.h>

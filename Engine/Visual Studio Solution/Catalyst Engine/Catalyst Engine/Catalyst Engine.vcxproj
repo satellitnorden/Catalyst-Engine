@@ -231,10 +231,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\ScreenSpaceAmbientOcclusionFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\ShadowMapFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\SkyFragmentShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TerrainSceneBufferFragmentShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TerrainSceneBufferTessellationControlShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TerrainSceneBufferTessellationEvaluationShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TerrainSceneBufferVertexShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TerrainFragmentShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TerrainTessellationControlShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TerrainTessellationEvaluationShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TerrainVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VegetationColorFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VegetationColorVertexShader.h" />
@@ -384,9 +383,9 @@
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\ScreenSpaceAmbientOcclusionFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\ShadowMapFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\SkyFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferTessellationControlShader.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferTessellationEvaluationShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainTessellationControlShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainTessellationEvaluationShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\VegetationColorFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\VegetationColorVertexShader.cpp" />

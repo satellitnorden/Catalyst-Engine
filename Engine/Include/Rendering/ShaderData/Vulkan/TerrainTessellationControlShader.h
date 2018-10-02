@@ -6,8 +6,9 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/DynamicArray.h>
 
 namespace VulkanShaderData
 {
-	void GetTerrainSceneBufferVertexShaderData(DynamicArray<byte> &data);
+	void GetTerrainTessellationControlShaderData(DynamicArray<byte> &data);
 }

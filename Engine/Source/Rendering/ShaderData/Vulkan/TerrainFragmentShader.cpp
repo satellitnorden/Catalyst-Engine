@@ -3,11 +3,11 @@
 */
 
 //Header file.
-#include <Rendering/ShaderData/Vulkan/TerrainSceneBufferFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/TerrainFragmentShader.h>
 
 namespace VulkanShaderData
 {
-	void GetTerrainSceneBufferFragmentShaderData(DynamicArray<byte> &data)
+	void GetTerrainFragmentShaderData(DynamicArray<byte> &data)
 	{
 		data.Reserve(12512);
 

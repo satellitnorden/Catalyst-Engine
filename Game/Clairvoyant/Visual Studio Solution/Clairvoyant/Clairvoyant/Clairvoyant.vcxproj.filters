@@ -303,15 +303,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\SkyFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferFragmentShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferTessellationControlShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainSceneBufferTessellationEvaluationShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -422,6 +413,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Code\Source\Player\ClairvoyantPlayer.cpp">
       <Filter>Clairvoyant Code\Player\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainTessellationControlShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainTessellationEvaluationShader.cpp">
+      <Filter>Engine Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

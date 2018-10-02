@@ -617,21 +617,21 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	{
 		//Initialize the terrain scene buffer fragment shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetTerrainSceneBufferFragmentShaderData(data);
+		VulkanShaderData::GetTerrainFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::TerrainFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
 		//Initialize the terrain scene buffer tessellation control shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetTerrainSceneBufferTessellationControlShaderData(data);
+		VulkanShaderData::GetTerrainTessellationControlShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::TerrainTessellationControl)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
 	}
 	
 	{
 		//Initialize the terrain scene buffer tessellation evaluation shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetTerrainSceneBufferTessellationEvaluationShaderData(data);
+		VulkanShaderData::GetTerrainTessellationEvaluationShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::TerrainTessellationEvaluation)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
 	}
 	
