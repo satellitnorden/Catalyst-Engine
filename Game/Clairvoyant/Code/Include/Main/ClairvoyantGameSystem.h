@@ -4,10 +4,6 @@
 #include <Core/Core/CatalystCore.h>
 #include <Core/Pointers/UniquePointer.h>
 
-//Entities.
-#include <Entities/CameraEntity.h>
-#include <Entities/DirectionalLightEntity.h>
-
 class ClairvoyantGameSystem final
 {
 
@@ -25,10 +21,5 @@ public:
 	*	Initializes the Clairvoyant game system.
 	*/
 	void InitializeSystem() NOEXCEPT;
-
-private:
-
-	//The sun.
-	DirectionalLightEntity *RESTRICT _Sun;
 
 };

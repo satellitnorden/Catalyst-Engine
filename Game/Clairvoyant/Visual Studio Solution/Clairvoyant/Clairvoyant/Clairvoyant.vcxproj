@@ -321,6 +321,7 @@
     <ClCompile Include="..\..\..\Code\Source\Main\WorldArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Player\ClairvoyantPlayer.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantTerrainGeneration.cpp" />
+    <ClCompile Include="..\..\..\Code\Source\World\TimeOfDaySystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h" />
@@ -328,6 +329,7 @@
     <ClInclude Include="..\..\..\Code\Include\Main\WorldArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\Player\ClairvoyantPlayer.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantTerrainGeneration.h" />
+    <ClInclude Include="..\..\..\Code\Include\World\TimeOfDaySystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

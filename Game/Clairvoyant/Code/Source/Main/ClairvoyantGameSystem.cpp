@@ -4,6 +4,7 @@
 //Clairvoyant.
 #include <Main/WorldArchitect.h>
 #include <Player/ClairvoyantPlayer.h>
+#include <World/TimeOfDaySystem.h>
 
 //Entities.
 #include <Entities/ParticleSystemEntity.h>
@@ -33,15 +34,9 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	//Set the environment materials/blend.
 	EnvironmentManager::Instance->SetNightEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(HashString("NightEnvironmentMaterial")));
 	EnvironmentManager::Instance->SetDayEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(HashString("DayEnvironmentMaterial")));
-	EnvironmentManager::Instance->SetEnvironmentBlend(1.0f);
 #if defined(CATALYST_ENABLE_OCEAN)
 	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(HashString("DefaultOceanMaterial")));
 #endif
-
-	//Create the sun.
-	_Sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
-	_Sun->Rotate(Vector3(-25.0f, 0.0f, 0.0f));
-	_Sun->SetIntensity(25.0f);
 
 	//Create some particles.
 	for (uint8 i = 0; i < 4; ++i)
@@ -67,9 +62,12 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 		EntitySystem::Instance->InitializeEntity(particles, data);
 	}
 
-	//Initialize the world architects.
+	//Initialize the world architect.
 	WorldArchitect::Instance->Initialize();
 
 	//Initialize the player.
 	ClairvoyantPlayer::Instance->Initialize();
+
+	//Initialize the time of day system.
+	TimeOfDaySystem::Instance->Initialize();
 }

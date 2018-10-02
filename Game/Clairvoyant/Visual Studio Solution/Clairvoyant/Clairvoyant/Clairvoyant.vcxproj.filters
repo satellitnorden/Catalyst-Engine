@@ -423,6 +423,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainTessellationEvaluationShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\World\TimeOfDaySystem.cpp">
+      <Filter>Clairvoyant Code\World\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h">
@@ -438,6 +441,9 @@
       <Filter>Clairvoyant Code\Main\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantTerrainGeneration.h">
+      <Filter>Clairvoyant Code\World\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\World\TimeOfDaySystem.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
   </ItemGroup>
