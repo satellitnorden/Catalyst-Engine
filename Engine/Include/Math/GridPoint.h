@@ -48,8 +48,8 @@ public:
 	*/
 	static NO_DISCARD Vector3 GridPointToWorldPosition(const GridPoint &gridPoint, const float gridSize) NOEXCEPT
 	{
-		return Vector3(	gridPoint._X * gridSize + (gridSize * 0.5f), 0.0f,
-						gridPoint._Y * gridSize + (gridSize * 0.5f));
+		return Vector3(	gridPoint._X * gridSize , 0.0f,
+						gridPoint._Y * gridSize);
 	}
 
 	/*
@@ -57,8 +57,8 @@ public:
 	*/
 	static NO_DISCARD GridPoint WorldPositionToGridPoint(const Vector3 &worldPosition, const float gridSize) NOEXCEPT
 	{
-		return GridPoint(	CatalystBaseMath::Floor<int32>(worldPosition._X / gridSize),
-							CatalystBaseMath::Floor<int32>(worldPosition._Z / gridSize));
+		return GridPoint(	CatalystBaseMath::Round<int32>(worldPosition._X / gridSize),
+							CatalystBaseMath::Round<int32>(worldPosition._Z / gridSize));
 	}
 
 };
