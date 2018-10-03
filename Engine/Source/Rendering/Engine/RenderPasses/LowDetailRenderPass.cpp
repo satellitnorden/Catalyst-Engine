@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/HighDetailTerrainRenderPass.h>
+#include <Rendering/Engine/RenderPasses/LowDetailTerrainRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -12,35 +12,35 @@
 #include <Terrain/TerrainVertex.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(HighDetailTerrainRenderPass);
+DEFINE_SINGLETON(LowDetailTerrainRenderPass);
 
 /*
 *	Default constructor.
 */
-HighDetailTerrainRenderPass::HighDetailTerrainRenderPass() NOEXCEPT
+LowDetailTerrainRenderPass::LowDetailTerrainRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		HighDetailTerrainRenderPass::Instance->InitializeInternal();
+		LowDetailTerrainRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the high detail terrain render pass.
+*	Initializes the low detail terrain render pass.
 */
-void HighDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
+void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::HighDetailTerrain);
+	SetSubStage(RenderPassSubStage::LowDetailTerrain);
 
 	//Set the shaders.
-	SetVertexShader(Shader::HighDetailTerrainVertex);
-	SetTessellationControlShader(Shader::HighDetailTerrainTessellationControl);
-	SetTessellationEvaluationShader(Shader::HighDetailTerrainTessellationEvaluation);
+	SetVertexShader(Shader::LowDetailTerrainVertex);
+	SetTessellationControlShader(Shader::None);
+	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
 	SetFragmentShader(Shader::TerrainFragment);
 
@@ -57,10 +57,6 @@ void HighDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial));
-
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::TessellationEvaluation, 0, sizeof(TerrainDisplacementInformation));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -90,16 +86,16 @@ void HighDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
-	SetCullMode(CullMode::Back);
+	SetCullMode(CullMode::Front);
 	SetDepthCompareOperator(CompareOperator::Less);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
-	SetTopology(Topology::PatchList);
+	SetTopology(Topology::TriangleList);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		HighDetailTerrainRenderPass::Instance->RenderInternal();
+		LowDetailTerrainRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -107,12 +103,12 @@ void HighDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the high detail terrain.
+*	Renders the low detail terrain.
 */
-void HighDetailTerrainRenderPass::RenderInternal() NOEXCEPT
+void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 {
-	//Iterate over all high detail terrain render informations and draw them
-	const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT informations{ TerrainSystem::Instance->GetHighDetailTerrainPatchRenderInformations() };
+	//Iterate over all low detail terrain render informations and draw them
+	const StaticArray<TerrainPatchRenderInformation, 8> *const RESTRICT informations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
 
 	//Cache the command buffer
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -135,7 +131,6 @@ void HighDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
 		commandBuffer->BindRenderDataTable(this, 1, information._RenderDataTable);
-		commandBuffer->PushConstants(this, ShaderStage::TessellationEvaluation, 0, sizeof(TerrainDisplacementInformation), &information._DisplacementInformation);
 
 		commandBuffer->DrawIndexed(this, information._IndexCount, 1);
 	}

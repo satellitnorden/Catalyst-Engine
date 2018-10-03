@@ -124,6 +124,17 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 			}
 		}
 
+		for (uint64 i = 0, size = _LowDetailPatchInformations[_CurrentAsynchronousBuffer].Size(); i < size; ++i)
+		{
+			if (_LowDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid)
+			{
+				_LowDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid = false;
+				_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Draw = false;
+
+				RenderingSystem::Instance->DestroyConstantBuffer(_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Buffer);
+			}
+		}
+
 		//Create an array with the valid high detail grid points.
 		StaticArray<GridPoint, 9> validHighDetailGridPoints
 		{
@@ -143,7 +154,28 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 		//Generate all high detail patches.
 		for (uint64 i = 0, size = _HighDetailPatchInformations[_CurrentAsynchronousBuffer].Size(); i < size; ++i)
 		{
-			GeneratePatch(validHighDetailGridPoints[i], &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][i], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]);
+			GenerateHighDetailPatch(validHighDetailGridPoints[i], &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][i], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]);
+		}
+
+		//Create an array with the valid high detail grid points.
+		StaticArray<GridPoint, 8> validLowDetailGridPoints
+		{
+			GridPoint(currentGridPoint._X - 3, currentGridPoint._Y - 3),
+			GridPoint(currentGridPoint._X, currentGridPoint._Y - 3),
+			GridPoint(currentGridPoint._X + 3, currentGridPoint._Y - 3),
+
+			GridPoint(currentGridPoint._X - 3, currentGridPoint._Y),
+			GridPoint(currentGridPoint._X + 3, currentGridPoint._Y),
+
+			GridPoint(currentGridPoint._X - 3, currentGridPoint._Y + 3),
+			GridPoint(currentGridPoint._X, currentGridPoint._Y + 3),
+			GridPoint(currentGridPoint._X + 3, currentGridPoint._Y + 3),
+		};
+
+		//Generate all low detail patches.
+		for (uint64 i = 0, size = _LowDetailPatchInformations[_CurrentAsynchronousBuffer].Size(); i < size; ++i)
+		{
+			GenerateLowDetailPatch(validLowDetailGridPoints[i], &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][i], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]);
 		}
 
 		//Update the current grid point.
@@ -152,49 +184,21 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 }
 
 /*
-*	Generates a new patch at the specified grid point.
+*	Generates a new high detail patch at the specified grid point.
 */
-void TerrainSystem::GeneratePatch(const GridPoint &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
+void TerrainSystem::GenerateHighDetailPatch(const GridPoint &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
 	//Calculate the world position of the grid point.
 	const Vector3 gridPointWorldPosition{ GridPoint::GridPointToWorldPosition(gridPoint, _Properties._PatchSize) };
-
-	//Generate the layer weights.
-	patchInformation->_LayerWeightsMap.Initialize(_Properties._PatchResolution, _Properties._PatchResolution);
-
-	for (uint32 i = 0; i < _Properties._PatchResolution; ++i)
-	{
-		for (uint32 j = 0; j < _Properties._PatchResolution; ++j)
-		{
-			//Calculate the coordinates for this point.
-			const float xCoordinate{ static_cast<float>(i) / static_cast<float>(_Properties._PatchResolution) };
-			const float yCoordinate{ static_cast<float>(j) / static_cast<float>(_Properties._PatchResolution) };
-
-			//Calculate the world position for this point.
-			Vector3 pointWorldPosition{	gridPointWorldPosition._X - (_Properties._PatchSize * 0.5f) + (_Properties._PatchSize * xCoordinate),
-										0.0f,
-										gridPointWorldPosition._Z - (_Properties._PatchSize * 0.5f) + (_Properties._PatchSize * yCoordinate) };
-
-			_Properties._HeightGenerationFunction(_Properties, pointWorldPosition, &pointWorldPosition._Y);
-
-			//Get the normal at this point.
-			Vector3 pointNormal;
-
-			TerrainUtilities::GenerateNormal(_Properties, pointWorldPosition, &pointNormal);
-
-			//Generate the layer weights.
-			_Properties._LayerWeightsGenerationFunction(_Properties, pointWorldPosition, pointNormal, &patchInformation->_LayerWeightsMap.At(i, j));
-		}
-	}
 
 	//Generate the terrain plane.
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
 
-	TerrainUtilities::GenerateTerrainPlane(_Properties,
+	TerrainUtilities::GenerateTerrainPlane(	_Properties,
 											_Properties._PatchResolution,
 											gridPointWorldPosition,
-											patchInformation->_LayerWeightsMap,
+											_Properties._PatchSize,
 											&vertices,
 											&indices);
 
@@ -226,6 +230,63 @@ void TerrainSystem::GeneratePatch(const GridPoint &gridPoint, TerrainPatchInform
 
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(gridPointWorldPosition._X - (_Properties._PatchSize * 0.5f), minimumHeight, gridPointWorldPosition._Z - (_Properties._PatchSize * 0.5f));
 	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (_Properties._PatchSize * 0.5f), maximumHeight, gridPointWorldPosition._Z + (_Properties._PatchSize * 0.5f));
+
+	//Fill in the details about the patch render information.
+	patchRenderInformation->_Draw = true;
+	patchRenderInformation->_Buffer = RenderingSystem::Instance->CreateConstantBuffer(bufferData.Data(), bufferDataSizes.Data(), 2);
+	patchRenderInformation->_IndexOffset = bufferDataSizes[0];
+	patchRenderInformation->_IndexCount = static_cast<uint32>(indices.Size());
+	patchRenderInformation->_RenderDataTable = material._RenderDataTable;
+	patchRenderInformation->_DisplacementInformation = displacementInformation;
+}
+
+/*
+*	Generates a new low detail patch at the specified grid point.
+*/
+void TerrainSystem::GenerateLowDetailPatch(const GridPoint &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
+{
+	//Calculate the world position of the grid point.
+	const Vector3 gridPointWorldPosition{ GridPoint::GridPointToWorldPosition(gridPoint, _Properties._PatchSize) };
+
+	//Generate the terrain plane.
+	DynamicArray<TerrainVertex> vertices;
+	DynamicArray<uint32> indices;
+
+	TerrainUtilities::GenerateTerrainPlane(	_Properties,
+											_Properties._PatchResolution / 2,
+											gridPointWorldPosition,
+											_Properties._PatchSize * 3.0f,
+											&vertices,
+											&indices);
+
+	//Get the material and the displacement information.
+	TerrainMaterial material;
+	TerrainDisplacementInformation displacementInformation;
+
+	_Properties._PatchPropertiesGenerationFunction(_Properties, gridPointWorldPosition, &material, &displacementInformation);
+
+	//Create the constant buffer.
+	StaticArray<void *RESTRICT, 2> bufferData;
+
+	bufferData[0] = vertices.Data();
+	bufferData[1] = indices.Data();
+
+	StaticArray<uint64, 2> bufferDataSizes;
+
+	bufferDataSizes[0] = sizeof(TerrainVertex) * vertices.Size();
+	bufferDataSizes[1] = sizeof(uint32) * indices.Size();
+
+	//Fill in the details about the patch information.
+	patchInformation->_Valid = true;
+	patchInformation->_GridPoint = gridPoint;
+
+	float minimumHeight;
+	float maximumHeight;
+
+	TerrainUtilities::FindMinimumMaximumHeight(vertices, &minimumHeight, &maximumHeight);
+
+	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(gridPointWorldPosition._X - (_Properties._PatchSize * 3.0f * 0.5f), minimumHeight, gridPointWorldPosition._Z - (_Properties._PatchSize * 3.0f * 0.5f));
+	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (_Properties._PatchSize * 3.0f * 0.5f), maximumHeight, gridPointWorldPosition._Z + (_Properties._PatchSize * 3.0f * 0.5f));
 
 	//Fill in the details about the patch render information.
 	patchRenderInformation->_Draw = true;

@@ -17,6 +17,7 @@
 #include <Rendering/Engine/RenderPasses/HighDetailTerrainRenderPass.h>
 #include <Rendering/Engine/RenderPasses/InstancedPhysicalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
+#include <Rendering/Engine/RenderPasses/LowDetailTerrainRenderPass.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/RenderPasses/AboveOceanRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>

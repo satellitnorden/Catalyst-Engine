@@ -58,6 +58,7 @@ enum class RenderPassSubStage : uint8
 
 	//Scene main stage.
 	HighDetailTerrain,
+	LowDetailTerrain,
 	DynamicPhysical,
 	InstancedPhysical,
 	VegetationDepth,
@@ -191,6 +192,7 @@ enum class Shader : uint8
 	HighDetailTerrainVertex,
 	InstancedPhysicalVertex,
 	LightingFragment,
+	LowDetailTerrainVertex,
 	OutlineFragment,
 	ParticleSystemFragment,
 	ParticleSystemGeometry,

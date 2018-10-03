@@ -57,7 +57,7 @@ namespace TerrainUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, const Vector3 &worldPosition, const CPUTexture2D &layerWeightsMap, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, const Vector3 &worldPosition, const float patchSize, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
 	{
 		vertices->Reserve((resolution + 1) * (resolution + 1) * 5);
 		indices->Reserve(resolution * resolution * 6);
@@ -69,12 +69,10 @@ namespace TerrainUtilities
 				const float textureCoordinateX{ static_cast<float>(i) / static_cast<float>(resolution) };
 				const float textureCoordinateY{ static_cast<float>(j) / static_cast<float>(resolution) };
 
-				const Vector4 &layerWeight{ layerWeightsMap.At(textureCoordinateX, textureCoordinateY) };
-
 				TerrainVertex vertex;
 
-				vertex._PositionX = worldPosition._X + ((-1.0f + (2.0f * textureCoordinateX)) * (properties._PatchSize * 0.5f));
-				vertex._PositionZ = worldPosition._Z + ((-1.0f + (2.0f * textureCoordinateY)) * (properties._PatchSize * 0.5f));
+				vertex._PositionX = worldPosition._X + ((-1.0f + (2.0f * textureCoordinateX)) * (patchSize * 0.5f));
+				vertex._PositionZ = worldPosition._Z + ((-1.0f + (2.0f * textureCoordinateY)) * (patchSize * 0.5f));
 				properties._HeightGenerationFunction(properties, Vector3(vertex._PositionX, 0.0f, vertex._PositionZ), &vertex._PositionY);
 
 				const Vector3 worldPosition{ vertex._PositionX, vertex._PositionY, vertex._PositionZ };
@@ -86,10 +84,14 @@ namespace TerrainUtilities
 				vertex._NormalY = normal._Y;
 				vertex._NormalZ = normal._Z;
 
-				vertex._LayerWeightX = layerWeight._X;
-				vertex._LayerWeightY = layerWeight._Y;
-				vertex._LayerWeightZ = layerWeight._Z;
-				vertex._LayerWeightW = layerWeight._W;
+				Vector4 layerWeights;
+
+				properties._LayerWeightsGenerationFunction(properties, worldPosition, normal, &layerWeights);
+
+				vertex._LayerWeightX = layerWeights._X;
+				vertex._LayerWeightY = layerWeights._Y;
+				vertex._LayerWeightZ = layerWeights._Z;
+				vertex._LayerWeightW = layerWeights._W;
 
 				vertex._TextureCoordinateX = textureCoordinateX * properties._TerrainTextureTilingFactor;
 				vertex._TextureCoordinateY = textureCoordinateY * properties._TerrainTextureTilingFactor;

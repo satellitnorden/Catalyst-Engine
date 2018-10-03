@@ -66,6 +66,22 @@ public:
 	}
 
 	/*
+	*	Returns the low detail terrain patch informations.
+	*/
+	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchInformation, 8> *const RESTRICT GetLowDetailTerrainPatchInformations() const NOEXCEPT
+	{
+		return &_LowDetailPatchInformations[_CurrentSynchronousBuffer];
+	}
+
+	/*
+	*	Returns the low detail terrain patch render informations.
+	*/
+	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchRenderInformation, 8> *const RESTRICT GetLowDetailTerrainPatchRenderInformations() const NOEXCEPT
+	{
+		return &_LowDetailPatchRenderInformations[_CurrentSynchronousBuffer];
+	}
+
+	/*
 	*	Returns the terrain height at the given position.
 	*/
 	bool GetTerrainHeightAtPosition(const Vector3 &position, float *const RESTRICT height) const NOEXCEPT;
@@ -104,14 +120,26 @@ private:
 	//The high detail patch render informations.
 	StaticArray<StaticArray<TerrainPatchRenderInformation, 9>, 2> _HighDetailPatchRenderInformations;
 
+	//The low detail patch informations.
+	StaticArray<StaticArray<TerrainPatchInformation, 8>, 2> _LowDetailPatchInformations;
+
+	//The low detail patch render informations.
+	StaticArray<StaticArray<TerrainPatchRenderInformation, 8>, 2> _LowDetailPatchRenderInformations;
+
 	/*
 	*	Updates the terrain system asynchronously.
 	*/
 	void UpdateSystemAsynchronous() NOEXCEPT;
 
 	/*
-	*	Generates a new patch at the specified grid point.
+	*	Generates a new high detail patch at the specified grid point.
 	*/
-	void GeneratePatch(const GridPoint &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
+	void GenerateHighDetailPatch(const GridPoint &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
+
+	/*
+	*	Generates a new low detail patch at the specified grid point.
+	*/
+	void GenerateLowDetailPatch(const GridPoint &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
+
 
 };

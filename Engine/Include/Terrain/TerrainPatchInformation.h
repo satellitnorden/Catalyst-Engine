@@ -28,9 +28,6 @@ public:
 	//The axis-aligned bounding box for this terrain patch.
 	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
 
-	//The layer weights map.
-	CPUTexture2D _LayerWeightsMap;
-
 	//The material.
 	TerrainMaterial _Material;
 

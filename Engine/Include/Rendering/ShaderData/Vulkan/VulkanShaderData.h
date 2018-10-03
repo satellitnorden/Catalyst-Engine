@@ -26,6 +26,7 @@
 #include <Rendering/ShaderData/Vulkan/HighDetailTerrainVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/InstancedPhysicalVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LightingFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/LowDetailTerrainVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/OutlineFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemGeometryShader.h>
