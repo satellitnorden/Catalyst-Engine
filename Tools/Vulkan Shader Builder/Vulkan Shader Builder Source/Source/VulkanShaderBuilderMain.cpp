@@ -65,6 +65,8 @@ int main()
 			sourceOutput << "//Header file." << std::endl;
 			sourceOutput << "#include <Rendering/ShaderData/Vulkan/" << outputFileName << ".h>" << std::endl;
 			sourceOutput << std::endl;
+			sourceOutput << "#pragma optimize(\"\", off)" << std::endl;
+			sourceOutput << std::endl;
 			sourceOutput << "namespace VulkanShaderData" << std::endl;
 			sourceOutput << "{" << std::endl;
 			sourceOutput << "\tvoid Get" << outputFileName.c_str() << "Data(DynamicArray<byte> &data)" << std::endl;
@@ -83,6 +85,8 @@ int main()
 
 			sourceOutput << "\t}" << std::endl;
 			sourceOutput << "}" << std::endl;
+			sourceOutput << std::endl;
+			sourceOutput << "#pragma optimize(\"\", on)" << std::endl;
 
 			sourceOutput.close();
 		}

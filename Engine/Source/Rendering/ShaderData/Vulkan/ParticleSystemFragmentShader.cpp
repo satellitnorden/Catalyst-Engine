@@ -5,6 +5,8 @@
 //Header file.
 #include <Rendering/ShaderData/Vulkan/ParticleSystemFragmentShader.h>
 
+#pragma optimize("", off)
+
 namespace VulkanShaderData
 {
 	void GetParticleSystemFragmentShaderData(DynamicArray<byte> &data)
@@ -8813,3 +8815,5 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 	}
 }
+
+#pragma optimize("", on)

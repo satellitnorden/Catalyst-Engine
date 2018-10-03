@@ -5,6 +5,8 @@
 //Header file.
 #include <Rendering/ShaderData/Vulkan/VegetationDepthVertexShader.h>
 
+#pragma optimize("", off)
+
 namespace VulkanShaderData
 {
 	void GetVegetationDepthVertexShaderData(DynamicArray<byte> &data)
@@ -9569,3 +9571,5 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 	}
 }
+
+#pragma optimize("", on)

@@ -5,6 +5,8 @@
 //Header file.
 #include <Rendering/ShaderData/Vulkan/GaussianBlurFragmentShader.h>
 
+#pragma optimize("", off)
+
 namespace VulkanShaderData
 {
 	void GetGaussianBlurFragmentShaderData(DynamicArray<byte> &data)
@@ -5401,3 +5403,5 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 	}
 }
+
+#pragma optimize("", on)

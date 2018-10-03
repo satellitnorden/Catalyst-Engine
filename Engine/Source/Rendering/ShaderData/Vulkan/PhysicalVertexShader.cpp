@@ -5,6 +5,8 @@
 //Header file.
 #include <Rendering/ShaderData/Vulkan/PhysicalVertexShader.h>
 
+#pragma optimize("", off)
+
 namespace VulkanShaderData
 {
 	void GetPhysicalVertexShaderData(DynamicArray<byte> &data)
@@ -5785,3 +5787,5 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 	}
 }
+
+#pragma optimize("", on)

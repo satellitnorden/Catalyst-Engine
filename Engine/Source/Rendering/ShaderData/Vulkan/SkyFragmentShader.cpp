@@ -5,6 +5,8 @@
 //Header file.
 #include <Rendering/ShaderData/Vulkan/SkyFragmentShader.h>
 
+#pragma optimize("", off)
+
 namespace VulkanShaderData
 {
 	void GetSkyFragmentShaderData(DynamicArray<byte> &data)
@@ -6665,3 +6667,5 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 	}
 }
+
+#pragma optimize("", on)

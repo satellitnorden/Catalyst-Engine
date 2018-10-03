@@ -5,6 +5,8 @@
 //Header file.
 #include <Rendering/ShaderData/Vulkan/ViewportVertexShader.h>
 
+#pragma optimize("", off)
+
 namespace VulkanShaderData
 {
 	void GetViewportVertexShaderData(DynamicArray<byte> &data)
@@ -4025,3 +4027,5 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 	}
 }
+
+#pragma optimize("", on)

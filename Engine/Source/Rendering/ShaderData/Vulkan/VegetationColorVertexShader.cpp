@@ -5,6 +5,8 @@
 //Header file.
 #include <Rendering/ShaderData/Vulkan/VegetationColorVertexShader.h>
 
+#pragma optimize("", off)
+
 namespace VulkanShaderData
 {
 	void GetVegetationColorVertexShaderData(DynamicArray<byte> &data)
@@ -9989,3 +9991,5 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 	}
 }
+
+#pragma optimize("", on)

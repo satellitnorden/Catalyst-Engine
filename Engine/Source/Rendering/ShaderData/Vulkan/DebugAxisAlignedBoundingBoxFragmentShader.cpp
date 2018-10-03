@@ -5,6 +5,8 @@
 //Header file.
 #include <Rendering/ShaderData/Vulkan/DebugAxisAlignedBoundingBoxFragmentShader.h>
 
+#pragma optimize("", off)
+
 namespace VulkanShaderData
 {
 	void GetDebugAxisAlignedBoundingBoxFragmentShaderData(DynamicArray<byte> &data)
@@ -3049,3 +3051,5 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 	}
 }
+
+#pragma optimize("", on)

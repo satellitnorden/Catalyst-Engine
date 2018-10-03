@@ -5,6 +5,8 @@
 //Header file.
 #include <Rendering/ShaderData/Vulkan/PostProcessingBloomFragmentShader.h>
 
+#pragma optimize("", off)
+
 namespace VulkanShaderData
 {
 	void GetPostProcessingBloomFragmentShaderData(DynamicArray<byte> &data)
@@ -4341,3 +4343,5 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 	}
 }
+
+#pragma optimize("", on)

@@ -5,6 +5,8 @@
 //Header file.
 #include <Rendering/ShaderData/Vulkan/DebugScreenBoxVertexShader.h>
 
+#pragma optimize("", off)
+
 namespace VulkanShaderData
 {
 	void GetDebugScreenBoxVertexShaderData(DynamicArray<byte> &data)
@@ -4457,3 +4459,5 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 	}
 }
+
+#pragma optimize("", on)
