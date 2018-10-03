@@ -54,43 +54,6 @@ namespace RenderingUtilities
 	}
 
 	/*
-	*	Given 8 corners of a cube, determine if it is within the view frustum.
-	*/
-	static bool IsCubeWithinViewFrustum(const StaticArray<Vector4, 8> &corners) NOEXCEPT
-	{
-		float highestX{ -FLOAT_MAXIMUM };
-		float lowestX{ FLOAT_MAXIMUM };
-		float highestY{ -FLOAT_MAXIMUM };
-		float lowestY{ FLOAT_MAXIMUM };
-		float highestZ{ -FLOAT_MAXIMUM };
-		float lowestZ{ FLOAT_MAXIMUM };
-
-		for (uint8 i = 0; i < 8; ++i)
-		{
-			highestX = CatalystBaseMath::Maximum(highestX, corners[i]._X);
-			lowestX = CatalystBaseMath::Minimum(lowestX, corners[i]._X);
-			highestY = CatalystBaseMath::Maximum(highestY, corners[i]._Y);
-			lowestY = CatalystBaseMath::Minimum(lowestY, corners[i]._Y);
-			highestZ = CatalystBaseMath::Maximum(highestZ, corners[i]._Z);
-			lowestZ = CatalystBaseMath::Minimum(lowestZ, corners[i]._Z);
-		}
-
-		if (((highestX > 1.0f && lowestX > 1.0f) || (highestX < -1.0f && lowestX < -1.0f))
-			||
-			((highestY > 1.0f && lowestY > 1.0f) || (highestY < -1.0f && lowestY < -1.0f))
-			||
-			((highestZ > 1.0f && lowestZ > 1.0f) || (highestZ < 0.0f && lowestZ < 0.0f)))
-		{
-			return false;
-		}
-
-		else
-		{
-			return true;
-		}
-	}
-
-	/*
 	*	Given a view matrix and an axis-aligned bounding box, returns if the box is in the view frustum.
 	*/
 	static bool IsInViewFrustum(const Matrix4 &viewMatrix, const AxisAlignedBoundingBox &axisAlignedBoundingBox) NOEXCEPT
