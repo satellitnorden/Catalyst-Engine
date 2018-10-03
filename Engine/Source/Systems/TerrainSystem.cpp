@@ -230,30 +230,6 @@ void TerrainSystem::GeneratePatch(const GridPoint &gridPoint, TerrainPatchInform
 	//Calculate the world position of the grid point.
 	const Vector3 gridPointWorldPosition{ GridPoint::GridPointToWorldPosition(gridPoint, _Properties._PatchSize) };
 
-	//Generate the height.
-	patchInformation->_NormalHeightMap.Initialize(_Properties._PatchResolution, _Properties._PatchResolution);
-
-	for (uint32 i = 0; i < _Properties._PatchResolution; ++i)
-	{
-		for (uint32 j = 0; j < _Properties._PatchResolution; ++j)
-		{
-			//Calculate the coordinates for this point.
-			const float xCoordinate{ static_cast<float>(i) / static_cast<float>(_Properties._PatchResolution) };
-			const float yCoordinate{ static_cast<float>(j) / static_cast<float>(_Properties._PatchResolution) };
-
-			//Calculate the world position for this point.
-			const Vector3 pointWorldPosition{	gridPointWorldPosition._X - (_Properties._PatchSize * 0.5f) + (_Properties._PatchSize * xCoordinate),
-												0.0f, 
-												gridPointWorldPosition._Z - (_Properties._PatchSize * 0.5f) + (_Properties._PatchSize * yCoordinate) };
-
-			//Generate the height.
-			_Properties._HeightGenerationFunction(_Properties, pointWorldPosition, &patchInformation->_NormalHeightMap.At(i, j)._W);
-		}
-	}
-
-	//Generate normals.
-	TerrainUtilities::GeneratePatchNormals(_Properties._PatchSize, &patchInformation->_NormalHeightMap);
-
 	//Generate the layer weights.
 	patchInformation->_LayerWeightsMap.Initialize(_Properties._PatchResolution, _Properties._PatchResolution);
 
@@ -261,18 +237,21 @@ void TerrainSystem::GeneratePatch(const GridPoint &gridPoint, TerrainPatchInform
 	{
 		for (uint32 j = 0; j < _Properties._PatchResolution; ++j)
 		{
-			//Get the normal at this point.
-			const Vector4 &pointNormalheight{ patchInformation->_NormalHeightMap.At(i, j) };
-			const Vector3 pointNormal{ pointNormalheight._X, pointNormalheight._Y, pointNormalheight._Z };
-
 			//Calculate the coordinates for this point.
 			const float xCoordinate{ static_cast<float>(i) / static_cast<float>(_Properties._PatchResolution) };
 			const float yCoordinate{ static_cast<float>(j) / static_cast<float>(_Properties._PatchResolution) };
 
 			//Calculate the world position for this point.
-			const Vector3 pointWorldPosition{	gridPointWorldPosition._X - (_Properties._PatchSize * 0.5f) + (_Properties._PatchSize * xCoordinate),
-												pointNormalheight._W,
-												gridPointWorldPosition._Z - (_Properties._PatchSize * 0.5f) + (_Properties._PatchSize * yCoordinate) };
+			Vector3 pointWorldPosition{	gridPointWorldPosition._X - (_Properties._PatchSize * 0.5f) + (_Properties._PatchSize * xCoordinate),
+										0.0f,
+										gridPointWorldPosition._Z - (_Properties._PatchSize * 0.5f) + (_Properties._PatchSize * yCoordinate) };
+
+			_Properties._HeightGenerationFunction(_Properties, pointWorldPosition, &pointWorldPosition._Y);
+
+			//Get the normal at this point.
+			Vector3 pointNormal;
+
+			TerrainUtilities::GenerateNormal(_Properties, pointWorldPosition, &pointNormal);
 
 			//Generate the layer weights.
 			_Properties._LayerWeightsGenerationFunction(_Properties, pointWorldPosition, pointNormal, &patchInformation->_LayerWeightsMap.At(i, j));
@@ -286,7 +265,6 @@ void TerrainSystem::GeneratePatch(const GridPoint &gridPoint, TerrainPatchInform
 	TerrainUtilities::GenerateTerrainPlane(_Properties,
 											_Properties._PatchResolution,
 											gridPointWorldPosition,
-											patchInformation->_NormalHeightMap,
 											patchInformation->_LayerWeightsMap,
 											&vertices,
 											&indices);
@@ -315,7 +293,7 @@ void TerrainSystem::GeneratePatch(const GridPoint &gridPoint, TerrainPatchInform
 	float minimumHeight;
 	float maximumHeight;
 
-	TerrainUtilities::FindMinimumMaximumHeight(patchInformation->_NormalHeightMap, &minimumHeight, &maximumHeight);
+	TerrainUtilities::FindMinimumMaximumHeight(vertices, &minimumHeight, &maximumHeight);
 
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(gridPointWorldPosition._X - (_Properties._PatchSize * 0.5f), minimumHeight, gridPointWorldPosition._Z - (_Properties._PatchSize * 0.5f));
 	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (_Properties._PatchSize * 0.5f), maximumHeight, gridPointWorldPosition._Z + (_Properties._PatchSize * 0.5f));
