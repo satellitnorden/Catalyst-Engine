@@ -95,7 +95,36 @@ bool SoakCamera::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT con
 void SoakCamera::Randomize() NOEXCEPT
 {
 	//Randomize the current height over terrain.
-	_CurrentHeightOverTerrain = CatalystBaseMath::RandomFloatInRange(1.0f, 1'000.0f);
+	switch (CatalystBaseMath::RandomIntegerInRange(0, 3))
+	{
+		case 0:
+		{
+			_CurrentHeightOverTerrain = 1.0f;
+
+			break;
+		}
+
+		case 1:
+		{
+			_CurrentHeightOverTerrain = 10.0f;
+
+			break;
+		}
+
+		case 2:
+		{
+			_CurrentHeightOverTerrain = 100.0f;
+
+			break;
+		}
+
+		case 3:
+		{
+			_CurrentHeightOverTerrain = 1'000.0f;
+
+			break;
+		}
+	}
 
 	//Randomize the current rotation.
 	_CurrentRotation = CatalystBaseMath::RandomFloatInRange(-2.5f, 2.5f);
