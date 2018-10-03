@@ -29,6 +29,32 @@ namespace TerrainUtilities
 	}
 
 	/*
+	*	Generates a normal at the given position.
+	*/
+	static void GenerateNormal(const TerrainProperties &properties, const Vector3 &position, Vector3 *const RESTRICT normal) NOEXCEPT
+	{
+		const float offset{ properties._PatchSize / properties._PatchResolution };
+
+		Vector3 left{ position._X - offset, 0.0f, position._Z };
+		properties._HeightGenerationFunction(properties, left, &left._Y);
+		Vector3 right{ position._X + offset, 0.0f, position._Z };
+		properties._HeightGenerationFunction(properties, right, &right._Y);
+		Vector3 up{ position._X, 0.0f, position._Z - offset };
+		properties._HeightGenerationFunction(properties, up, &up._Y);
+		Vector3 down{ position._X, 0.0f, position._Z + offset };
+		properties._HeightGenerationFunction(properties, down, &down._Y);
+		Vector3 center{ position._X, 0.0f, position._Z };
+		properties._HeightGenerationFunction(properties, center, &center._Y);
+
+		const Vector3 normal1{ Vector3::CrossProduct(up - center, left - center) };
+		const Vector3 normal2{ Vector3::CrossProduct(right - center, up - center) };
+		const Vector3 normal3{ Vector3::CrossProduct(down - center, right - center) };
+		const Vector3 normal4{ Vector3::CrossProduct(left - center, down - center) };
+
+		*normal = Vector3::Normalize(normal1 + normal2 + normal3 + normal4);
+	}
+
+	/*
 	*	Generates the normals for a terrain patch.
 	*/
 	static void GeneratePatchNormals(const float size, CPUTexture2D *const RESTRICT properties) NOEXCEPT
