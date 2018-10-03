@@ -4,6 +4,7 @@
 //Clairvoyant.
 #include <Main/WorldArchitect.h>
 #include <Player/ClairvoyantPlayer.h>
+#include <Player/SoakCamera.h>
 #include <World/TimeOfDaySystem.h>
 
 //Entities.
@@ -38,35 +39,14 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(HashString("DefaultOceanMaterial")));
 #endif
 
-	//Create some particles.
-	for (uint8 i = 0; i < 4; ++i)
-	{
-		ParticleSystemInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
-
-		data->_Properties = EntityInitializationData::EntityProperty::None;
-		data->_Material = RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle);
-		data->_ParticleSystemProperties._Properties = static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::AffectedByWind) | static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::Looping);
-		data->_ParticleSystemProperties._FadeTime = 10.0f;
-		data->_ParticleSystemProperties._Lifetime = 60.0f;
-		data->_ParticleSystemProperties._SpawnFrequency = 0.01f;
-		data->_ParticleSystemProperties._MinimumScale = Vector2(0.05f, 0.05f);
-		data->_ParticleSystemProperties._MaximumScale = Vector2(0.1f, 0.1f);
-		data->_ParticleSystemProperties._MinimumPosition = Vector3(-500.0f, 0.0f, -500.0f);
-		data->_ParticleSystemProperties._MaximumPosition = Vector3(500.0f, 200.0f, 500.0f);
-		data->_ParticleSystemProperties._MinimumVelocity = Vector3(-1.0f, -1.0f, -1.0f);
-		data->_ParticleSystemProperties._MaximumVelocity = Vector3(1.0f, 1.0f, 1.0f);
-		data->_Position = 0.0f;
-
-		ParticleSystemEntity *const RESTRICT particles = EntitySystem::Instance->CreateEntity<ParticleSystemEntity>();
-
-		EntitySystem::Instance->InitializeEntity(particles, data);
-	}
-
 	//Initialize the world architect.
 	WorldArchitect::Instance->Initialize();
 
 	//Initialize the player.
 	ClairvoyantPlayer::Instance->Initialize();
+
+	//Initialize the soak camera.
+	//SoakCamera::Instance->Initialize();
 
 	//Initialize the time of day system.
 	TimeOfDaySystem::Instance->Initialize();

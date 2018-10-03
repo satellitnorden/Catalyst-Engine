@@ -22,7 +22,7 @@ DEFINE_SINGLETON(ClairvoyantPlayer);
 */
 void ClairvoyantPlayer::Initialize() NOEXCEPT
 {
-	//Create the camera and set it as the active one..
+	//Create the camera and set it as the active one.
 	_Camera = EntitySystem::Instance->CreateEntity<CameraEntity>();
 	RenderingSystem::Instance->SetActiveCamera(_Camera);
 

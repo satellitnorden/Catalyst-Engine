@@ -432,6 +432,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\LowDetailTerrainVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\Player\SoakCamera.cpp">
+      <Filter>Clairvoyant Code\Player\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h">
@@ -451,6 +454,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\World\TimeOfDaySystem.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\Player\SoakCamera.h">
+      <Filter>Clairvoyant Code\Player\Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
