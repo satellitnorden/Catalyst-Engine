@@ -33,6 +33,14 @@ public:
 	void CullingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
+	*	Waits for the terrain culling to finish.
+	*/
+	void WaitForTerrainCulling() const NOEXCEPT
+	{
+		_CullingTasks[UNDERLYING(CullingTask::Terrain)].WaitFor();
+	}
+
+	/*
 	*	Waits for the vegetation culling to finish.
 	*/
 	void WaitForVegetationCulling() const NOEXCEPT
@@ -45,6 +53,7 @@ private:
 	//Enumeration covering all culling tasks.
 	enum class CullingTask : uint8
 	{
+		Terrain,
 		Vegetation,
 
 		NumberOfCullingTasks
@@ -52,6 +61,11 @@ private:
 
 	//Container for all culling tasks.
 	StaticArray<Task, UNDERLYING(CullingTask::NumberOfCullingTasks)> _CullingTasks;
+
+	/*
+	*	Culls terrain.
+	*/
+	void CullTerrain() NOEXCEPT;
 
 	/*
 	*	Culls vegetation.

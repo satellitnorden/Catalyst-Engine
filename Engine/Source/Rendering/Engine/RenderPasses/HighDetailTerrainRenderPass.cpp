@@ -5,6 +5,7 @@
 #include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TerrainSystem.h>
 
@@ -122,6 +123,9 @@ void HighDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 
 	//Bind the current dynamic uniform data render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
+
+	//Wait for terrain culling to finish.
+	CullingSystem::Instance->WaitForTerrainCulling();
 
 	for (const TerrainPatchRenderInformation &information : *informations)
 	{

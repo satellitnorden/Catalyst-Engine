@@ -79,13 +79,6 @@ namespace ClairvoyantTerrainGeneration
 
 				return randomOffset;
 			}
-
-			case 5:
-			{
-				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
-
-				return randomOffset;
-			}
 		}
 
 		ASSERT(false, "You should add a case here. ):");
@@ -113,7 +106,7 @@ namespace ClairvoyantTerrainGeneration
 
 			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(1)) };
 
-			*height += CatalystBaseMath::SmoothStep<4>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MOUNTAIN_INFLUENCE;
+			*height += CatalystBaseMath::SmoothStep<3>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MOUNTAIN_INFLUENCE;
 		}
 
 		{
@@ -123,7 +116,7 @@ namespace ClairvoyantTerrainGeneration
 
 			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(2)) };
 
-			*height += CatalystBaseMath::SmoothStep<3>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::LARGE_HILL_INFLUENCE;
+			*height += CatalystBaseMath::SmoothStep<2>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::LARGE_HILL_INFLUENCE;
 		}
 
 		{
@@ -133,7 +126,7 @@ namespace ClairvoyantTerrainGeneration
 
 			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(3)) };
 
-			*height += CatalystBaseMath::SmoothStep<2>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MEDIUM_HILL_INFLUENCE; 
+			*height += CatalystBaseMath::SmoothStep<1>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MEDIUM_HILL_INFLUENCE; 
 		}
 
 		{
@@ -141,9 +134,7 @@ namespace ClairvoyantTerrainGeneration
 			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::SMALL_HILL_RANGE };
 			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::SMALL_HILL_RANGE };
 
-			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(4)) };
-
-			*height += CatalystBaseMath::SmoothStep<1>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::SMALL_HILL_INFLUENCE;
+			*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(4)) * ClairvoyantTerrainGenerationConstants::SMALL_HILL_INFLUENCE;
 		}
 
 		//Apply the height.

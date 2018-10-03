@@ -52,7 +52,7 @@ public:
 	/*
 	*	Returns the high detail terrain patch informations.
 	*/
-	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchInformation, 9> *const RESTRICT GetHighDetailTerrainPatchInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD StaticArray<TerrainPatchInformation, 9> *const RESTRICT GetHighDetailTerrainPatchInformations() NOEXCEPT
 	{
 		return &_HighDetailPatchInformations[_CurrentSynchronousBuffer];
 	}
@@ -60,7 +60,7 @@ public:
 	/*
 	*	Returns the high detail terrain patch render informations.
 	*/
-	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT GetHighDetailTerrainPatchRenderInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT GetHighDetailTerrainPatchRenderInformations() NOEXCEPT
 	{
 		return &_HighDetailPatchRenderInformations[_CurrentSynchronousBuffer];
 	}
@@ -68,7 +68,7 @@ public:
 	/*
 	*	Returns the low detail terrain patch informations.
 	*/
-	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchInformation, 32> *const RESTRICT GetLowDetailTerrainPatchInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD StaticArray<TerrainPatchInformation, 32> *const RESTRICT GetLowDetailTerrainPatchInformations() NOEXCEPT
 	{
 		return &_LowDetailPatchInformations[_CurrentSynchronousBuffer];
 	}
@@ -76,7 +76,7 @@ public:
 	/*
 	*	Returns the low detail terrain patch render informations.
 	*/
-	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchRenderInformation, 32> *const RESTRICT GetLowDetailTerrainPatchRenderInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD StaticArray<TerrainPatchRenderInformation, 32> *const RESTRICT GetLowDetailTerrainPatchRenderInformations() NOEXCEPT
 	{
 		return &_LowDetailPatchRenderInformations[_CurrentSynchronousBuffer];
 	}

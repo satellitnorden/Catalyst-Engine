@@ -7,9 +7,13 @@
 //Entities.
 #include <Entities/CameraEntity.h>
 
+//Rendering.
+#include <Rendering/Engine/RenderingUtilities.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
+#include <Systems/TerrainSystem.h>
 #include <Systems/VegetationSystem.h>
 
 //Singleton definition.
@@ -21,6 +25,12 @@ DEFINE_SINGLETON(CullingSystem);
 void CullingSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize all culling tasks.
+	_CullingTasks[UNDERLYING(CullingTask::Terrain)]._Function = [](void *const RESTRICT)
+	{
+		CullingSystem::Instance->CullTerrain();
+	};
+	_CullingTasks[UNDERLYING(CullingTask::Terrain)]._Arguments = nullptr;
+
 	_CullingTasks[UNDERLYING(CullingTask::Vegetation)]._Function = [](void *const RESTRICT)
 	{
 		CullingSystem::Instance->CullVegetation();
@@ -37,6 +47,57 @@ void CullingSystem::CullingUpdateSystemSynchronous(const UpdateContext *const RE
 	for (Task &task : _CullingTasks)
 	{
 		TaskSystem::Instance->ExecuteTask(&task);
+	}
+}
+
+/*
+*	Culls terrain.
+*/
+void CullingSystem::CullTerrain() NOEXCEPT
+{
+	//Get the current view matrix.
+	const Matrix4 *const RESTRICT viewMatrix{ RenderingSystem::Instance->GetViewMatrix() };
+
+	{
+		//Iterate over all high detail terrain patches and cull them.
+		StaticArray<TerrainPatchInformation, 9> *const RESTRICT patchInformations{ TerrainSystem::Instance->GetHighDetailTerrainPatchInformations() };
+		StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT patchRenderInformations{ TerrainSystem::Instance->GetHighDetailTerrainPatchRenderInformations() };
+
+		for (uint64 i = 0, size = patchInformations->Size(); i < size; ++i)
+		{
+			TerrainPatchInformation &patchInformation{ (*patchInformations)[i] };
+			TerrainPatchRenderInformation &patchRenderInformation{ (*patchRenderInformations)[i] };
+
+			//If this patch is invalid, no need to check it.
+			if (!(*patchInformations)[i]._Valid)
+			{
+				continue;
+			}
+
+			//Test this patch's axis-aligned bounding box against the current view matrix.
+			patchRenderInformation._Draw = RenderingUtilities::IsInViewFrustum(*viewMatrix, patchInformation._AxisAlignedBoundingBox);
+		}
+	}
+
+	{
+		//Iterate over all low detail terrain patches and cull them.
+		StaticArray<TerrainPatchInformation, 32> *const RESTRICT patchInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchInformations() };
+		StaticArray<TerrainPatchRenderInformation, 32> *const RESTRICT patchRenderInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
+
+		for (uint64 i = 0, size = patchInformations->Size(); i < size; ++i)
+		{
+			TerrainPatchInformation &patchInformation{ (*patchInformations)[i] };
+			TerrainPatchRenderInformation &patchRenderInformation{ (*patchRenderInformations)[i] };
+
+			//If this patch is invalid, no need to check it.
+			if (!(*patchInformations)[i]._Valid)
+			{
+				continue;
+			}
+
+			//Test this patch's axis-aligned bounding box against the current view matrix.
+			patchRenderInformation._Draw = RenderingUtilities::IsInViewFrustum(*viewMatrix, patchInformation._AxisAlignedBoundingBox);
+		}
 	}
 }
 
