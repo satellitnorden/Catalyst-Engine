@@ -301,7 +301,7 @@ public:
 	template <typename Type>
 	FORCE_INLINE constexpr static NO_DISCARD Type Round(const float value) NOEXCEPT
 	{
-		return static_cast<Type>(static_cast<float>(value) + 0.5f);
+		return value >= 0.0f ? static_cast<Type>(static_cast<int32>(value + 0.5f)) : static_cast<Type>(static_cast<int32>(value - 0.5f));
 	}
 
 	/*
