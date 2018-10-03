@@ -211,6 +211,7 @@ void TerrainSystem::GenerateHighDetailPatch(const GridPoint &gridPoint, TerrainP
 											_Properties._PatchResolution,
 											gridPointWorldPosition,
 											_Properties._PatchSize,
+											_Properties._TerrainTextureTilingFactor,
 											&vertices,
 											&indices);
 
@@ -268,6 +269,7 @@ void TerrainSystem::GenerateLowDetailPatch(const GridPoint &gridPoint, const flo
 											_Properties._PatchResolution,
 											gridPointWorldPosition,
 											_Properties._PatchSize * patchSizeMultiplier,
+											_Properties._TerrainTextureTilingFactor * patchSizeMultiplier,
 											&vertices,
 											&indices);
 
