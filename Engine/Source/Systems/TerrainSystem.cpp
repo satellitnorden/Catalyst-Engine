@@ -42,8 +42,11 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 	//Set all the patch and patch render informations to their default state.
 	for (uint64 i = 0, size = _HighDetailPatchInformations.Size(); i < size; ++i)
 	{
-		_HighDetailPatchInformations[i]._Valid = false;
-		_HighDetailPatchRenderInformations[i]._Draw = false;
+		for (uint64 j = 0, size = _HighDetailPatchInformations[i].Size(); j < size; ++j)
+		{
+			_HighDetailPatchInformations[i][j]._Valid = false;
+			_HighDetailPatchRenderInformations[i][j]._Draw = false;
+		}
 	}
 }
 
@@ -55,13 +58,21 @@ void TerrainSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 	//Check if the asynchronous update has finished,
 	if (_UpdateTask.IsExecuted())
 	{
-		//Process the terrain update.
-		ProcessTerrainUpdate();
+		//If the current grid point has been updated, flip the buffers.
+		if (_LastGridPoint != _CurrentGridPoint)
+		{
+			_CurrentSynchronousBuffer ^= static_cast<uint8>(1);
+			_CurrentAsynchronousBuffer ^= static_cast<uint8>(1);
 
-		//cache the relevant data and fire off another asynchronous update.
+			_LastGridPoint = _CurrentGridPoint;
+		}
+
+		//Cache the current camera position.
 		const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
 		_CurrentCameraPosition = camera->GetPosition();
 
+		//Fire off another asynchronous update.
+		//Fire off another asynchronous update.
 		TaskSystem::Instance->ExecuteTask(&_UpdateTask);
 	}
 }
@@ -95,112 +106,48 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3 &position, Vector3 
 */
 void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
-	//Reset the update.
-	_Update._PatchesToInvalidate.ClearFast();
-	_Update._AddPatch = false;
-
-	//Calculate the current grid point based on the current camera position.
+	//Calculate the grid point for the current camera position.
 	const GridPoint currentGridPoint{ GridPoint::WorldPositionToGridPoint(_CurrentCameraPosition, _Properties._PatchSize) };
 
-	//Create an array with the valid grid positions.
-	StaticArray<GridPoint, 9> validGridPoints
+	//If the last grid point has changed, generate a new set of patches.
+	if (currentGridPoint != _LastGridPoint)
 	{
-		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y - 1),
-		GridPoint(currentGridPoint._X, currentGridPoint._Y - 1),
-		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y - 1),
-
-		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y),
-		GridPoint(currentGridPoint._X, currentGridPoint._Y),
-		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y),
-
-		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y + 1),
-		GridPoint(currentGridPoint._X, currentGridPoint._Y + 1),
-		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y + 1),
-	};
-
-	//Construct the sorting data.
-	class SortingData final
-	{
-
-	public:
-
-		//The current camera position.
-		Vector3 _CameraPosition;
-
-		//The patch size.
-		float _PatchSize;
-
-	};
-
-	SortingData sortingData;
-
-	sortingData._CameraPosition = _CurrentCameraPosition;
-	sortingData._PatchSize = _Properties._PatchSize;
-
-	//Sort the array so that the closest grid point is first.
-	SortingAlgorithms::InsertionSort<GridPoint>(validGridPoints.begin(), validGridPoints.end(), &sortingData, [](const void *const RESTRICT userData, const GridPoint *const RESTRICT first, const GridPoint *const RESTRICT second)
-	{
-		const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
-
-		const Vector3 firstGridPosition{ GridPoint::GridPointToWorldPosition(*first, sortingData->_PatchSize) };
-		const Vector3 secondGridPosition{ GridPoint::GridPointToWorldPosition(*second, sortingData->_PatchSize) };
-
-		return Vector3::LengthSquaredXZ(sortingData->_CameraPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_CameraPosition - secondGridPosition);
-	});
-
-	//Determine the patch indices to invalidate.
-	for (uint64 i = 0, size = _HighDetailPatchInformations.Size(); i < size; ++i)
-	{
-		//If this patch is already invalid, no need to invalidate it.
-		if (!_HighDetailPatchInformations[i]._Valid)
+		//Check if the current asynchronous informations are valid, and if so, invalidate them.
+		for (uint64 i = 0, size = _HighDetailPatchInformations[_CurrentAsynchronousBuffer].Size(); i < size; ++i)
 		{
-			continue;
-		}
-
-		bool valid{ false };
-
-		for (const GridPoint &gridPoint : validGridPoints)
-		{
-			if (_HighDetailPatchInformations[i]._GridPoint == gridPoint)
+			if (_HighDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid)
 			{
-				valid = true;
+				_HighDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid = false;
+				_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Draw = false;
 
-				break;
+				RenderingSystem::Instance->DestroyConstantBuffer(_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Buffer);
 			}
 		}
 
-		if (!valid)
+		//Create an array with the valid high detail grid points.
+		StaticArray<GridPoint, 9> validHighDetailGridPoints
 		{
-			_Update._PatchesToInvalidate.EmplaceSlow(static_cast<uint8>(i));
-		}
-	}
+			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y - 1),
+			GridPoint(currentGridPoint._X, currentGridPoint._Y - 1),
+			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y - 1),
 
-	//Determine if a new patch should be generated.
-	bool generatedNewPatch{ false };
+			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y),
+			GridPoint(currentGridPoint._X, currentGridPoint._Y),
+			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y),
 
-	for (const GridPoint &gridPoint : validGridPoints)
-	{
-		bool exists{ false };
+			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y + 1),
+			GridPoint(currentGridPoint._X, currentGridPoint._Y + 1),
+			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y + 1),
+		};
 
-		for (const TerrainPatchInformation &information : _HighDetailPatchInformations)
+		//Generate all high detail patches.
+		for (uint64 i = 0, size = _HighDetailPatchInformations[_CurrentAsynchronousBuffer].Size(); i < size; ++i)
 		{
-			if (information._Valid && information._GridPoint == gridPoint)
-			{
-				exists = true;
-
-				break;
-			}
+			GeneratePatch(validHighDetailGridPoints[i], &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][i], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]);
 		}
 
-		if (!exists)
-		{
-			//Generate the new patch.
-			GeneratePatch(gridPoint, &_Update._NewPatchInformation, &_Update._NewPatchRenderInformation);
-
-			_Update._AddPatch = true;
-
-			break;
-		}
+		//Update the current grid point.
+		_CurrentGridPoint = currentGridPoint;
 	}
 }
 
@@ -287,42 +234,4 @@ void TerrainSystem::GeneratePatch(const GridPoint &gridPoint, TerrainPatchInform
 	patchRenderInformation->_IndexCount = static_cast<uint32>(indices.Size());
 	patchRenderInformation->_RenderDataTable = material._RenderDataTable;
 	patchRenderInformation->_DisplacementInformation = displacementInformation;
-}
-
-/*
-*	Processes the terrain update.
-*/
-void TerrainSystem::ProcessTerrainUpdate() NOEXCEPT
-{
-	//Invalidate patches.
-	for (const uint64 index : _Update._PatchesToInvalidate)
-	{
-		InvalidatePatch(index);
-	}
-
-	//If there is a new patch to add, add it.
-	if (_Update._AddPatch)
-	{
-		for (uint64 i = 0, size = _HighDetailPatchInformations.Size(); i < size; ++i)
-		{
-			if (!_HighDetailPatchInformations[i]._Valid)
-			{
-				_HighDetailPatchInformations[i] = _Update._NewPatchInformation;
-				_HighDetailPatchRenderInformations[i] = _Update._NewPatchRenderInformation;
-
-				break;
-			}
-		}
-	}
-}
-
-/*
-*	Invalidates the patch at the specified index.
-*/
-void TerrainSystem::InvalidatePatch(const uint64 index) NOEXCEPT
-{
-	_HighDetailPatchInformations[index]._Valid = false;
-	_HighDetailPatchRenderInformations[index]._Draw = false;
-
-	RenderingSystem::Instance->DestroyConstantBuffer(_HighDetailPatchRenderInformations[index]._Buffer);
 }

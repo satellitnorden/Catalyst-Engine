@@ -36,13 +36,21 @@ public:
 
 
 	/*
-	*	Equal operator overload.
+	*	Equality operator overload.
 	*/
 	constexpr bool operator==(const GridPoint &other) const NOEXCEPT
 	{
 		return _X == other._X && _Y == other._Y;
 	}
 		
+	/*
+	*	Inequality operator overload.
+	*/
+	constexpr bool operator!=(const GridPoint &other) const NOEXCEPT
+	{
+		return !(operator==(other));
+	}
+
 	/*
 	*	Calculates the world position from a grid point.
 	*/

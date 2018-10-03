@@ -54,7 +54,7 @@ public:
 	*/
 	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchInformation, 9> *const RESTRICT GetHighDetailTerrainPatchInformations() const NOEXCEPT
 	{
-		return &_HighDetailPatchInformations;
+		return &_HighDetailPatchInformations[_CurrentSynchronousBuffer];
 	}
 
 	/*
@@ -62,7 +62,7 @@ public:
 	*/
 	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT GetHighDetailTerrainPatchRenderInformations() const NOEXCEPT
 	{
-		return &_HighDetailPatchRenderInformations;
+		return &_HighDetailPatchRenderInformations[_CurrentSynchronousBuffer];
 	}
 
 	/*
@@ -77,23 +77,32 @@ public:
 
 private:
 
-	//The properties.
-	TerrainProperties _Properties;
-
 	//The update task.
 	Task _UpdateTask;
+
+	//The properties.
+	TerrainProperties _Properties;
 
 	//The current camera position.
 	Vector3 _CurrentCameraPosition;
 
+	//The last grid point.
+	GridPoint _LastGridPoint{ INT32_MAXIMUM, INT32_MAXIMUM };
+
+	//The current grid point.
+	GridPoint _CurrentGridPoint{ INT32_MAXIMUM, INT32_MAXIMUM };
+
+	//The current synchronous buffer.
+	uint8 _CurrentSynchronousBuffer{ 0 };
+
+	//The current asynchronous buffer.
+	uint8 _CurrentAsynchronousBuffer{ 1 };
+
 	//The high detail patch informations.
-	StaticArray<TerrainPatchInformation, 9> _HighDetailPatchInformations;
+	StaticArray<StaticArray<TerrainPatchInformation, 9>, 2> _HighDetailPatchInformations;
 
 	//The high detail patch render informations.
-	StaticArray<TerrainPatchRenderInformation, 9> _HighDetailPatchRenderInformations;
-
-	//The terrain update.
-	TerrainUpdate _Update;
+	StaticArray<StaticArray<TerrainPatchRenderInformation, 9>, 2> _HighDetailPatchRenderInformations;
 
 	/*
 	*	Updates the terrain system asynchronously.
@@ -104,15 +113,5 @@ private:
 	*	Generates a new patch at the specified grid point.
 	*/
 	void GeneratePatch(const GridPoint &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
-
-	/*
-	*	Processes the terrain update.
-	*/
-	void ProcessTerrainUpdate() NOEXCEPT;
-
-	/*
-	*	Invalidates the patch at the specified index.
-	*/
-	void InvalidatePatch(const uint64 index) NOEXCEPT;
 
 };
