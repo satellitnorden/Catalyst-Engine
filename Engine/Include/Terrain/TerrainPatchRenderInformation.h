@@ -15,7 +15,7 @@ class TerrainPatchRenderInformation final
 public:
 
 	//Denotes whether or not to draw this patch.
-	bool _Draw;
+	std::atomic<bool> _Draw;
 
 	//The buffer.
 	ConstantBufferHandle _Buffer;

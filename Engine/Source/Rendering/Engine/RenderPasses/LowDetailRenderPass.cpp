@@ -108,7 +108,7 @@ void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all low detail terrain render informations and draw them
-	const StaticArray<TerrainPatchRenderInformation, 8> *const RESTRICT informations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
+	const StaticArray<TerrainPatchRenderInformation, 32> *const RESTRICT informations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
 
 	//Cache the command buffer
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

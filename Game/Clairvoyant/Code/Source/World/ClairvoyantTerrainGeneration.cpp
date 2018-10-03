@@ -23,7 +23,7 @@ namespace ClairvoyantTerrainGenerationConstants
 	constexpr float LANDSCAPE_INCLUENCE{ 1.0f };
 
 	constexpr float MOUNTAIN_RANGE{ 10'000.0f };
-	constexpr float MOUNTAIN_INFLUENCE{ 0.25f };
+	constexpr float MOUNTAIN_INFLUENCE{ 0.35f };
 
 	constexpr float LARGE_HILL_RANGE{ 1'000.0f };
 	constexpr float LARGE_HILL_INFLUENCE{ 0.025f };
@@ -113,7 +113,7 @@ namespace ClairvoyantTerrainGeneration
 
 			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(1)) };
 
-			*height += CatalystBaseMath::SmoothStep<5>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MOUNTAIN_INFLUENCE;
+			*height += CatalystBaseMath::SmoothStep<4>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MOUNTAIN_INFLUENCE;
 		}
 
 		{
@@ -123,7 +123,7 @@ namespace ClairvoyantTerrainGeneration
 
 			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(2)) };
 
-			*height += CatalystBaseMath::SmoothStep<4>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::LARGE_HILL_INFLUENCE;
+			*height += CatalystBaseMath::SmoothStep<3>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::LARGE_HILL_INFLUENCE;
 		}
 
 		{
@@ -133,7 +133,7 @@ namespace ClairvoyantTerrainGeneration
 
 			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(3)) };
 
-			*height += CatalystBaseMath::SmoothStep<3>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MEDIUM_HILL_INFLUENCE; 
+			*height += CatalystBaseMath::SmoothStep<2>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MEDIUM_HILL_INFLUENCE; 
 		}
 
 		{
@@ -143,7 +143,7 @@ namespace ClairvoyantTerrainGeneration
 
 			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(4)) };
 
-			*height += CatalystBaseMath::SmoothStep<2>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::SMALL_HILL_INFLUENCE;
+			*height += CatalystBaseMath::SmoothStep<1>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::SMALL_HILL_INFLUENCE;
 		}
 
 		//Apply the height.

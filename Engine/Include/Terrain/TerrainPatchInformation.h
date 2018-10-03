@@ -20,7 +20,7 @@ class TerrainPatchInformation final
 public:
 
 	//Denotes whether or not this patch is valid.
-	bool _Valid;
+	std::atomic<bool> _Valid;
 
 	//The grid point.
 	GridPoint _GridPoint;
@@ -30,8 +30,5 @@ public:
 
 	//The material.
 	TerrainMaterial _Material;
-
-	//The displacement information.
-	TerrainDisplacementInformation _DisplacementInformation;
 
 };

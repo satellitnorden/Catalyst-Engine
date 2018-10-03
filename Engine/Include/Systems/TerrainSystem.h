@@ -68,7 +68,7 @@ public:
 	/*
 	*	Returns the low detail terrain patch informations.
 	*/
-	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchInformation, 8> *const RESTRICT GetLowDetailTerrainPatchInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchInformation, 32> *const RESTRICT GetLowDetailTerrainPatchInformations() const NOEXCEPT
 	{
 		return &_LowDetailPatchInformations[_CurrentSynchronousBuffer];
 	}
@@ -76,7 +76,7 @@ public:
 	/*
 	*	Returns the low detail terrain patch render informations.
 	*/
-	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchRenderInformation, 8> *const RESTRICT GetLowDetailTerrainPatchRenderInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchRenderInformation, 32> *const RESTRICT GetLowDetailTerrainPatchRenderInformations() const NOEXCEPT
 	{
 		return &_LowDetailPatchRenderInformations[_CurrentSynchronousBuffer];
 	}
@@ -121,15 +121,20 @@ private:
 	StaticArray<StaticArray<TerrainPatchRenderInformation, 9>, 2> _HighDetailPatchRenderInformations;
 
 	//The low detail patch informations.
-	StaticArray<StaticArray<TerrainPatchInformation, 8>, 2> _LowDetailPatchInformations;
+	StaticArray<StaticArray<TerrainPatchInformation, 32>, 2> _LowDetailPatchInformations;
 
 	//The low detail patch render informations.
-	StaticArray<StaticArray<TerrainPatchRenderInformation, 8>, 2> _LowDetailPatchRenderInformations;
+	StaticArray<StaticArray<TerrainPatchRenderInformation, 32>, 2> _LowDetailPatchRenderInformations;
 
 	/*
 	*	Updates the terrain system asynchronously.
 	*/
 	void UpdateSystemAsynchronous() NOEXCEPT;
+
+	/*
+	*	Generates low detail patches.
+	*/
+	void GenerateLowDetailPatches(const GridPoint &currentGridPoint, const uint8 gridPointOffset, const uint8 layer) NOEXCEPT;
 
 	/*
 	*	Generates a new high detail patch at the specified grid point.
@@ -139,7 +144,7 @@ private:
 	/*
 	*	Generates a new low detail patch at the specified grid point.
 	*/
-	void GenerateLowDetailPatch(const GridPoint &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
+	void GenerateLowDetailPatch(const GridPoint &gridPoint, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
 
 
 };
