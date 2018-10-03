@@ -33,15 +33,6 @@ namespace ClairvoyantTerrainGenerationConstants
 
 	constexpr float SMALL_HILL_RANGE{ 10.0f };
 	constexpr float SMALL_HILL_INFLUENCE{ 0.0003f };
-
-	constexpr float ROCK_RANGE{ 1.0f };
-	constexpr float ROCK_INFLUENCE{ 0.0001f };
-
-	constexpr float PEBBLE_RANGE{ 0.1f };
-	constexpr float PEBBLE_INFLUENCE{ 0.000025f };
-
-	constexpr float SPECK_RANGE{ 0.01f };
-	constexpr float SPECK_INFLUENCE{ 0.00001f };
 }
 
 namespace ClairvoyantTerrainGeneration
@@ -90,20 +81,6 @@ namespace ClairvoyantTerrainGeneration
 			}
 
 			case 5:
-			{
-				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
-
-				return randomOffset;
-			}
-
-			case 6:
-			{
-				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
-
-				return randomOffset;
-			}
-
-			case 7:
 			{
 				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
 
@@ -167,32 +144,6 @@ namespace ClairvoyantTerrainGeneration
 			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(4)) };
 
 			*height += CatalystBaseMath::SmoothStep<2>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::SMALL_HILL_INFLUENCE;
-		}
-
-		{
-			//Apply the rock range.
-			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::ROCK_RANGE };
-			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::ROCK_RANGE };
-
-			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(5)) };
-
-			*height += CatalystBaseMath::SmoothStep<1>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::ROCK_INFLUENCE;
-		}
-
-		{
-			//Apply the pebble range.
-			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::PEBBLE_RANGE };
-			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::PEBBLE_RANGE };
-
-			*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(6)) * ClairvoyantTerrainGenerationConstants::PEBBLE_INFLUENCE;
-		}
-
-		{
-			//Apply the speck range.
-			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::SPECK_RANGE };
-			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::SPECK_RANGE };
-
-			*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(7)) * ClairvoyantTerrainGenerationConstants::SPECK_INFLUENCE;
 		}
 
 		//Apply the height.
