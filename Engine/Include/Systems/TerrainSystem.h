@@ -86,9 +86,6 @@ private:
 	//The current camera position.
 	Vector3 _CurrentCameraPosition;
 
-	//The patch lock.
-	mutable Spinlock _PatchLock;
-
 	//The high detail patch informations.
 	StaticArray<TerrainPatchInformation, 9> _HighDetailPatchInformations;
 

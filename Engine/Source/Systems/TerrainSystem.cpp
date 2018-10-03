@@ -303,9 +303,6 @@ void TerrainSystem::ProcessTerrainUpdate() NOEXCEPT
 	//If there is a new patch to add, add it.
 	if (_Update._AddPatch)
 	{
-		//Lock the patches.
-		_PatchLock.Lock();
-
 		for (uint64 i = 0, size = _HighDetailPatchInformations.Size(); i < size; ++i)
 		{
 			if (!_HighDetailPatchInformations[i]._Valid)
@@ -316,9 +313,6 @@ void TerrainSystem::ProcessTerrainUpdate() NOEXCEPT
 				break;
 			}
 		}
-
-		//Unlock the patches.
-		_PatchLock.Unlock();
 	}
 }
 
