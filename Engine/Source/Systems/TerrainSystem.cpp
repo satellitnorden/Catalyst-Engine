@@ -71,58 +71,8 @@ void TerrainSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 */
 bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3 &position, float *const RESTRICT height) const NOEXCEPT
 {
-	//Find the nearest terrain patch to the position.
-	const TerrainPatchInformation *RESTRICT nearestPatch{ nullptr };
-	float nearestPatchDistanceSquared{ FLOAT_MAXIMUM };
-
-	//Lock the patches.
-	_PatchLock.Lock();
-
-	for (const TerrainPatchInformation &patchInformation : _PatchInformations)
-	{
-		if (patchInformation._Valid)
-		{
-			const Vector3 patchWorldPosition{ GridPoint::GridPointToWorldPosition(patchInformation._GridPoint, _Properties._PatchSize) };
-			const float distanceToPatchSquared{ Vector3::LengthSquaredXZ(patchWorldPosition - position) };
-
-			if (distanceToPatchSquared < nearestPatchDistanceSquared)
-			{
-				nearestPatch = &patchInformation;
-				nearestPatchDistanceSquared = distanceToPatchSquared;
-			}
-		}
-	}
-
-	//Unlock the patches.
-	_PatchLock.Unlock();
-
-	//If no valid patch could be found, return that the retrieval failed.
-	if (!nearestPatch)
-	{
-		return false;
-	}
-
-	//If the position is not within the nearest patch's axis-aligned bounding box, return that the retrival failed.
-	if (position._X < nearestPatch->_AxisAlignedBoundingBox._Minimum._X
-		|| position._X > nearestPatch->_AxisAlignedBoundingBox._Maximum._X
-		|| position._Z < nearestPatch->_AxisAlignedBoundingBox._Minimum._Z
-		|| position._Z > nearestPatch->_AxisAlignedBoundingBox._Maximum._Z)
-	{
-		return false;
-	}
-
-	//Calculate the patch's world position.
-	const Vector3 patchWorldPosition{ GridPoint::GridPointToWorldPosition(nearestPatch->_GridPoint, _Properties._PatchSize) };
-
-	//Transform the position's X and Z components into X and Y coordinates.
-	const float coordinateX{ (position._X - (patchWorldPosition._X - _Properties._PatchSize * 0.5f)) / _Properties._PatchSize };
-	const float coordinateY{ (position._Z - (patchWorldPosition._Z - _Properties._PatchSize * 0.5f)) / _Properties._PatchSize };
-
-	//Sample the patch's normal/height map.
-	const Vector4 &normalHeight{ nearestPatch->_NormalHeightMap.At(coordinateX, coordinateY) };
-
-	//Set the height.
-	*height = normalHeight._W;
+	//Just ask the height generation function what the height at the position are.
+	_Properties._HeightGenerationFunction(_Properties, position, height);
 
 	//Return that the retrieval succeeded.
 	return true;
