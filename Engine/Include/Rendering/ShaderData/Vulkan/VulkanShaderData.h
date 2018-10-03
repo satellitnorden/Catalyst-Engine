@@ -21,6 +21,9 @@
 #include <Rendering/ShaderData/Vulkan/DirectionalShadowInstancedPhysicalVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalShadowTerrainTessellationEvaluationShader.h>
 #include <Rendering/ShaderData/Vulkan/GaussianBlurFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailTerrainTessellationControlShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailTerrainTessellationEvaluationShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailTerrainVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/InstancedPhysicalVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LightingFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/OutlineFragmentShader.h>
@@ -35,9 +38,6 @@
 #include <Rendering/ShaderData/Vulkan/ShadowMapFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/SkyFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/TerrainFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/TerrainTessellationControlShader.h>
-#include <Rendering/ShaderData/Vulkan/TerrainTessellationEvaluationShader.h>
-#include <Rendering/ShaderData/Vulkan/TerrainVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/VegetationColorFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/VegetationColorVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/VegetationDepthFragmentShader.h>

@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/TerrainRenderPass.h>
+#include <Rendering/Engine/RenderPasses/HighDetailTerrainRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -12,35 +12,35 @@
 #include <Terrain/TerrainVertex.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(TerrainRenderPass);
+DEFINE_SINGLETON(HighDetailTerrainRenderPass);
 
 /*
 *	Default constructor.
 */
-TerrainRenderPass::TerrainRenderPass() NOEXCEPT
+HighDetailTerrainRenderPass::HighDetailTerrainRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		TerrainRenderPass::Instance->InitializeInternal();
+		HighDetailTerrainRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the terrain render pass.
+*	Initializes the high detail terrain render pass.
 */
-void TerrainRenderPass::InitializeInternal() NOEXCEPT
+void HighDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::Terrain);
+	SetSubStage(RenderPassSubStage::HighDetailTerrain);
 
 	//Set the shaders.
-	SetVertexShader(Shader::TerrainVertex);
-	SetTessellationControlShader(Shader::TerrainTessellationControl);
-	SetTessellationEvaluationShader(Shader::TerrainTessellationEvaluation);
+	SetVertexShader(Shader::HighDetailTerrainVertex);
+	SetTessellationControlShader(Shader::HighDetailTerrainTessellationControl);
+	SetTessellationEvaluationShader(Shader::HighDetailTerrainTessellationEvaluation);
 	SetGeometryShader(Shader::None);
 	SetFragmentShader(Shader::TerrainFragment);
 
@@ -99,7 +99,7 @@ void TerrainRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		TerrainRenderPass::Instance->RenderInternal();
+		HighDetailTerrainRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -107,9 +107,9 @@ void TerrainRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the terrain.
+*	Renders the high detail terrain.
 */
-void TerrainRenderPass::RenderInternal() NOEXCEPT
+void HighDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all terrain render informations and draw them
 	const StaticArray<TerrainPatchRenderInformation, 25> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };

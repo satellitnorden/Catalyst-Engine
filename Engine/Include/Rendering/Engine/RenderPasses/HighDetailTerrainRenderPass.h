@@ -6,28 +6,28 @@
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
 
-class TerrainRenderPass final : public RenderPass
+class HighDetailTerrainRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(TerrainRenderPass);
+	DECLARE_SINGLETON(HighDetailTerrainRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	TerrainRenderPass() NOEXCEPT;
+	HighDetailTerrainRenderPass() NOEXCEPT;
 
 private:
 
 	/*
-	*	Initializes the terrain render pass.
+	*	Initializes the high detail terrain render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
 	/*
-	*	Renders the terrain.
+	*	Renders the high detail terrain.
 	*/
 	void RenderInternal() NOEXCEPT;
 

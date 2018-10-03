@@ -10,6 +10,9 @@ glslangValidator.exe -V DirectionalPhysicalShadowVertexShader.vert -o			Directio
 glslangValidator.exe -V DirectionalShadowFragmentShader.frag -o				DirectionalShadowFragmentShader.spv
 glslangValidator.exe -V DirectionalShadowInstancedPhysicalVertexShader.vert -o		DirectionalShadowInstancedPhysicalVertexShader.spv
 glslangValidator.exe -V DirectionalShadowTerrainTessellationEvaluationShader.tese -o	DirectionalShadowTerrainTessellationEvaluationShader.spv
+glslangValidator.exe -V HighDetailTerrainTessellationControlShader.tesc -o 		HighDetailTerrainTessellationControlShader.spv
+glslangValidator.exe -V HighDetailTerrainTessellationEvaluationShader.tese -o 		HighDetailTerrainTessellationEvaluationShader.spv
+glslangValidator.exe -V HighDetailTerrainVertexShader.vert -o 				HighDetailTerrainVertexShader.spv
 glslangValidator.exe -V GaussianBlurFragmentShader.frag -o				GaussianBlurFragmentShader.spv
 glslangValidator.exe -V InstancedPhysicalVertexShader.vert -o 				InstancedPhysicalVertexShader.spv
 glslangValidator.exe -V LightingFragmentShader.frag -o 					LightingFragmentShader.spv
@@ -25,9 +28,6 @@ glslangValidator.exe -V ScreenSpaceAmbientOcclusionFragmentShader.frag -o 		Scre
 glslangValidator.exe -V ShadowMapFragmentShader.frag -o 				ShadowMapFragmentShader.spv
 glslangValidator.exe -V SkyFragmentShader.frag -o 					SkyFragmentShader.spv
 glslangValidator.exe -V TerrainFragmentShader.frag -o 					TerrainFragmentShader.spv
-glslangValidator.exe -V TerrainTessellationControlShader.tesc -o 			TerrainTessellationControlShader.spv
-glslangValidator.exe -V TerrainTessellationEvaluationShader.tese -o 			TerrainTessellationEvaluationShader.spv
-glslangValidator.exe -V TerrainVertexShader.vert -o 					TerrainVertexShader.spv
 glslangValidator.exe -V VegetationColorFragmentShader.frag -o 				VegetationColorFragmentShader.spv
 glslangValidator.exe -V VegetationColorVertexShader.vert -o 				VegetationColorVertexShader.spv
 glslangValidator.exe -V VegetationDepthFragmentShader.frag -o 				VegetationDepthFragmentShader.spv

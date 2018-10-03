@@ -57,7 +57,7 @@ enum class RenderPassSubStage : uint8
 	DirectionalInstancedPhysicalShadow,
 
 	//Scene main stage.
-	Terrain,
+	HighDetailTerrain,
 	DynamicPhysical,
 	InstancedPhysical,
 	VegetationDepth,
@@ -186,6 +186,9 @@ enum class Shader : uint8
 	DirectionalInstancedPhysicalShadowVertex,
 	DirectionalTerrainShadowTessellationEvaluation,
 	GaussianBlurFragment,
+	HighDetailTerrainTessellationControl,
+	HighDetailTerrainTessellationEvaluation,
+	HighDetailTerrainVertex,
 	InstancedPhysicalVertex,
 	LightingFragment,
 	OutlineFragment,
@@ -200,9 +203,6 @@ enum class Shader : uint8
 	ShadowMapFragment,
 	SkyFragment,
 	TerrainFragment,
-	TerrainTessellationControl,
-	TerrainTessellationEvaluation,
-	TerrainVertex,
 	VegetationColorFragment,
 	VegetationColorVertex,
 	VegetationDepthFragment,

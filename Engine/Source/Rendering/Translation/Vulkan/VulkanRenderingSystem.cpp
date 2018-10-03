@@ -524,6 +524,27 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the high detail terrain tessellation control shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetHighDetailTerrainTessellationControlShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::HighDetailTerrainTessellationControl)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
+	}
+
+	{
+		//Initialize the high detail terrain tessellation evaluation shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetHighDetailTerrainTessellationEvaluationShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::HighDetailTerrainTessellationEvaluation)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+	}
+
+	{
+		//Initialize the high detail terrain vertex shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetHighDetailTerrainVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::HighDetailTerrainVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
 		//Initialize the instanced physical vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetInstancedPhysicalVertexShaderData(data);
@@ -620,27 +641,7 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		VulkanShaderData::GetTerrainFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::TerrainFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
-	
-	{
-		//Initialize the terrain scene buffer tessellation control shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetTerrainTessellationControlShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::TerrainTessellationControl)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
-	}
-	
-	{
-		//Initialize the terrain scene buffer tessellation evaluation shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetTerrainTessellationEvaluationShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::TerrainTessellationEvaluation)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
-	}
-	
-	{
-		//Initialize the terrain scene buffer vertex shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetTerrainVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::TerrainVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
-	}
+
 	
 	{
 		//Initialize the vegetation color fragment shader module.

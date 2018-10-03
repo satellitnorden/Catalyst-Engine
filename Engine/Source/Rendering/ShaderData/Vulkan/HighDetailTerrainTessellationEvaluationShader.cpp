@@ -3,11 +3,11 @@
 */
 
 //Header file.
-#include <Rendering/ShaderData/Vulkan/TerrainTessellationEvaluationShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailTerrainTessellationEvaluationShader.h>
 
 namespace VulkanShaderData
 {
-	void GetTerrainTessellationEvaluationShaderData(DynamicArray<byte> &data)
+	void GetHighDetailTerrainTessellationEvaluationShaderData(DynamicArray<byte> &data)
 	{
 		data.Reserve(8724);
 

@@ -41,8 +41,8 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::DirectionalTerrainShadow);
 
 	//Set the shaders.
-	SetVertexShader(Shader::TerrainVertex);
-	SetTessellationControlShader(Shader::TerrainTessellationControl);
+	SetVertexShader(Shader::HighDetailTerrainVertex);
+	SetTessellationControlShader(Shader::HighDetailTerrainTessellationControl);
 	SetTessellationEvaluationShader(Shader::DirectionalTerrainShadowTessellationEvaluation);
 	SetGeometryShader(Shader::None);
 	SetFragmentShader(Shader::ShadowMapFragment);
