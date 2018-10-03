@@ -40,10 +40,10 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 	_UpdateTask._Arguments = nullptr;
 
 	//Set all the patch and patch render informations to their default state.
-	for (uint64 i = 0, size = _PatchInformations.Size(); i < size; ++i)
+	for (uint64 i = 0, size = _HighDetailPatchInformations.Size(); i < size; ++i)
 	{
-		_PatchInformations[i]._Valid = false;
-		_PatchRenderInformations[i]._Draw = false;
+		_HighDetailPatchInformations[i]._Valid = false;
+		_HighDetailPatchRenderInformations[i]._Draw = false;
 	}
 }
 
@@ -103,37 +103,19 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 	const GridPoint currentGridPoint{ GridPoint::WorldPositionToGridPoint(_CurrentCameraPosition, _Properties._PatchSize) };
 
 	//Create an array with the valid grid positions.
-	StaticArray<GridPoint, 25> validGridPoints
+	StaticArray<GridPoint, 9> validGridPoints
 	{
-		GridPoint(currentGridPoint._X - 2, currentGridPoint._Y - 2),
-		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y - 2),
-		GridPoint(currentGridPoint._X, currentGridPoint._Y - 2),
-		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y - 2),
-		GridPoint(currentGridPoint._X + 2, currentGridPoint._Y - 2),
-
-		GridPoint(currentGridPoint._X - 2, currentGridPoint._Y - 1),
 		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y - 1),
 		GridPoint(currentGridPoint._X, currentGridPoint._Y - 1),
 		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y - 1),
-		GridPoint(currentGridPoint._X + 2, currentGridPoint._Y - 1),
 
-		GridPoint(currentGridPoint._X - 2, currentGridPoint._Y),
 		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y),
 		GridPoint(currentGridPoint._X, currentGridPoint._Y),
 		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y),
-		GridPoint(currentGridPoint._X + 2, currentGridPoint._Y),
 
-		GridPoint(currentGridPoint._X - 2, currentGridPoint._Y + 1),
 		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y + 1),
 		GridPoint(currentGridPoint._X, currentGridPoint._Y + 1),
 		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y + 1),
-		GridPoint(currentGridPoint._X + 2, currentGridPoint._Y + 1),
-
-		GridPoint(currentGridPoint._X - 2, currentGridPoint._Y + 2),
-		GridPoint(currentGridPoint._X - 1, currentGridPoint._Y + 2),
-		GridPoint(currentGridPoint._X, currentGridPoint._Y + 2),
-		GridPoint(currentGridPoint._X + 1, currentGridPoint._Y + 2),
-		GridPoint(currentGridPoint._X + 2, currentGridPoint._Y + 2),
 	};
 
 	//Construct the sorting data.
@@ -167,10 +149,10 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 	});
 
 	//Determine the patch indices to invalidate.
-	for (uint64 i = 0, size = _PatchInformations.Size(); i < size; ++i)
+	for (uint64 i = 0, size = _HighDetailPatchInformations.Size(); i < size; ++i)
 	{
 		//If this patch is already invalid, no need to invalidate it.
-		if (!_PatchInformations[i]._Valid)
+		if (!_HighDetailPatchInformations[i]._Valid)
 		{
 			continue;
 		}
@@ -179,7 +161,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 
 		for (const GridPoint &gridPoint : validGridPoints)
 		{
-			if (_PatchInformations[i]._GridPoint == gridPoint)
+			if (_HighDetailPatchInformations[i]._GridPoint == gridPoint)
 			{
 				valid = true;
 
@@ -200,7 +182,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 	{
 		bool exists{ false };
 
-		for (const TerrainPatchInformation &information : _PatchInformations)
+		for (const TerrainPatchInformation &information : _HighDetailPatchInformations)
 		{
 			if (information._Valid && information._GridPoint == gridPoint)
 			{
@@ -324,12 +306,12 @@ void TerrainSystem::ProcessTerrainUpdate() NOEXCEPT
 		//Lock the patches.
 		_PatchLock.Lock();
 
-		for (uint64 i = 0, size = _PatchInformations.Size(); i < size; ++i)
+		for (uint64 i = 0, size = _HighDetailPatchInformations.Size(); i < size; ++i)
 		{
-			if (!_PatchInformations[i]._Valid)
+			if (!_HighDetailPatchInformations[i]._Valid)
 			{
-				_PatchInformations[i] = _Update._NewPatchInformation;
-				_PatchRenderInformations[i] = _Update._NewPatchRenderInformation;
+				_HighDetailPatchInformations[i] = _Update._NewPatchInformation;
+				_HighDetailPatchRenderInformations[i] = _Update._NewPatchRenderInformation;
 
 				break;
 			}
@@ -345,8 +327,8 @@ void TerrainSystem::ProcessTerrainUpdate() NOEXCEPT
 */
 void TerrainSystem::InvalidatePatch(const uint64 index) NOEXCEPT
 {
-	_PatchInformations[index]._Valid = false;
-	_PatchRenderInformations[index]._Draw = false;
+	_HighDetailPatchInformations[index]._Valid = false;
+	_HighDetailPatchRenderInformations[index]._Draw = false;
 
-	RenderingSystem::Instance->DestroyConstantBuffer(_PatchRenderInformations[index]._Buffer);
+	RenderingSystem::Instance->DestroyConstantBuffer(_HighDetailPatchRenderInformations[index]._Buffer);
 }

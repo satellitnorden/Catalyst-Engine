@@ -113,7 +113,7 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all terrain render informations and draw them
-	const StaticArray<TerrainPatchRenderInformation, 25> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
+	const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT informations{ TerrainSystem::Instance->GetHighDetailTerrainPatchRenderInformations() };
 
 	//Cache the command buffer
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

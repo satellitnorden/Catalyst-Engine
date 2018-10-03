@@ -50,19 +50,19 @@ public:
 	}
 
 	/*
-	*	Returns the terrain patch informations.
+	*	Returns the high detail terrain patch informations.
 	*/
-	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchInformation, 25> *const RESTRICT GetTerrainPatchInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchInformation, 9> *const RESTRICT GetHighDetailTerrainPatchInformations() const NOEXCEPT
 	{
-		return &_PatchInformations;
+		return &_HighDetailPatchInformations;
 	}
 
 	/*
-	*	Returns the terrain patch render informations.
+	*	Returns the high detail terrain patch render informations.
 	*/
-	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchRenderInformation, 25> *const RESTRICT GetTerrainPatchRenderInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT GetHighDetailTerrainPatchRenderInformations() const NOEXCEPT
 	{
-		return &_PatchRenderInformations;
+		return &_HighDetailPatchRenderInformations;
 	}
 
 	/*
@@ -89,11 +89,11 @@ private:
 	//The patch lock.
 	mutable Spinlock _PatchLock;
 
-	//The patch informations.
-	StaticArray<TerrainPatchInformation, 25> _PatchInformations;
+	//The high detail patch informations.
+	StaticArray<TerrainPatchInformation, 9> _HighDetailPatchInformations;
 
-	//The patch render informations.
-	StaticArray<TerrainPatchRenderInformation, 25> _PatchRenderInformations;
+	//The high detail patch render informations.
+	StaticArray<TerrainPatchRenderInformation, 9> _HighDetailPatchRenderInformations;
 
 	//The terrain update.
 	TerrainUpdate _Update;
