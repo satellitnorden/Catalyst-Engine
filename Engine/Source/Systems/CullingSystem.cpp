@@ -122,7 +122,7 @@ void CullingSystem::CullVegetation() NOEXCEPT
 			}
 
 			//Get this patch's world position.
-			const Vector3 patchPosition{ GridPoint::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * 2.0f) };
+			const Vector3 patchPosition{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * 2.0f) };
 
 			//Perform the distance test.
 			const bool distanceTest{	CatalystBaseMath::Absolute(cameraPosition._X - patchPosition._X) < information._Properties._CutoffDistance * 2.0f

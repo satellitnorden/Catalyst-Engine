@@ -89,6 +89,6 @@ private:
 	/*
 	*	Generates the transformations.
 	*/
-	void GenerateTransformations(const GridPoint &gridPoint, const VegetationTypeProperties &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT;
+	void GenerateTransformations(const GridPoint2 &gridPoint, const VegetationTypeProperties &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT;
 
 };

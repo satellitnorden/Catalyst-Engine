@@ -4,7 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Math.
-#include <Math/GridPoint.h>
+#include <Math/GridPoint2.h>
 
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>
@@ -23,7 +23,7 @@ public:
 	std::atomic<bool> _Valid;
 
 	//The grid point.
-	GridPoint _GridPoint;
+	GridPoint2 _GridPoint;
 
 	//The axis-aligned bounding box for this terrain patch.
 	AxisAlignedBoundingBox _AxisAlignedBoundingBox;

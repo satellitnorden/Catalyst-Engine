@@ -125,23 +125,23 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 	for (VegetationTypeInformation &information : _VegetationTypeInformations)
 	{
 		//Calculate the current grid point based on the current camera position.
-		const GridPoint currentGridPoint{ GridPoint::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * 2.0f) };
+		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * 2.0f) };
 
 		//Create an array with the valid grid positions.
-		StaticArray<GridPoint, 9> validGridPoints
+		StaticArray<GridPoint2, 9> validGridPoints
 		{
-			GridPoint(currentGridPoint._X, currentGridPoint._Y),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y),
 
-			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y - 1),
-			GridPoint(currentGridPoint._X, currentGridPoint._Y - 1),
-			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y - 1),
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 1),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y - 1),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 1),
 
-			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y),
-			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y),
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y),
 
-			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y + 1),
-			GridPoint(currentGridPoint._X, currentGridPoint._Y + 1),
-			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y + 1),
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 1),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y + 1),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 1),
 		};
 
 		//Construct the sorting data.
@@ -163,12 +163,12 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 		sortingData._CutoffDistance = information._Properties._CutoffDistance;
 
 		//Sort the array so that the closest grid point is first.
-		SortingAlgorithms::InsertionSort<GridPoint>(validGridPoints.begin(), validGridPoints.end(), &sortingData, [](const void *const RESTRICT userData, const GridPoint *const RESTRICT first, const GridPoint *const RESTRICT second)
+		SortingAlgorithms::InsertionSort<GridPoint2>(validGridPoints.begin(), validGridPoints.end(), &sortingData, [](const void *const RESTRICT userData, const GridPoint2 *const RESTRICT first, const GridPoint2 *const RESTRICT second)
 		{
 			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
 
-			const Vector3 firstGridPosition{ GridPoint::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * 2.0f) };
-			const Vector3 secondGridPosition{ GridPoint::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * 2.0f) };
+			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * 2.0f) };
+			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * 2.0f) };
 
 			return Vector3::LengthSquaredXZ(sortingData->_CameraPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_CameraPosition - secondGridPosition);
 		});
@@ -190,7 +190,7 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 
 			bool valid{ false };
 
-			for (const GridPoint &gridPoint : validGridPoints)
+			for (const GridPoint2 &gridPoint : validGridPoints)
 			{
 				if (information._PatchInformations[i]._GridPoint == gridPoint)
 				{
@@ -207,7 +207,7 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 		}
 
 		//Determine the patches to update.
-		for (const GridPoint &gridPoint : validGridPoints)
+		for (const GridPoint2 &gridPoint : validGridPoints)
 		{
 			bool exists{ false };
 
@@ -250,10 +250,10 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 /*
 *	Generates the transformations.
 */
-void VegetationSystem::GenerateTransformations(const GridPoint &gridPoint, const VegetationTypeProperties &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
+void VegetationSystem::GenerateTransformations(const GridPoint2 &gridPoint, const VegetationTypeProperties &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
 {
 	//Construct the box.
-	const Vector3 worldPosition{ GridPoint::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * 2.0f) };
+	const Vector3 worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * 2.0f) };
 	const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance , worldPosition + properties._CutoffDistance };
 
 	DynamicArray<Matrix4> transformations;

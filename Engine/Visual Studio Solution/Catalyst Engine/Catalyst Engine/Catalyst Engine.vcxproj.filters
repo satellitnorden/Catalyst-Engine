@@ -912,9 +912,6 @@
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationMaterial.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\GridPoint.h">
-      <Filter>Math\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformationUpdate.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
@@ -953,6 +950,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\LowDetailTerrainVertexShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\GridPoint2.h">
+      <Filter>Math\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

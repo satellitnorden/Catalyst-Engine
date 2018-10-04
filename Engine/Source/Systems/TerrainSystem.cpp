@@ -107,7 +107,7 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3 &position, Vector3 
 void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
 	//Calculate the grid point for the current camera position.
-	const GridPoint currentGridPoint{ GridPoint::WorldPositionToGridPoint(_CurrentCameraPosition, _Properties._PatchSize) };
+	const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, _Properties._PatchSize) };
 
 	//If the last grid point has changed, generate a new set of patches.
 	if (currentGridPoint != _LastGridPoint)
@@ -136,19 +136,19 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 		}
 
 		//Create an array with the valid high detail grid points.
-		StaticArray<GridPoint, 9> validHighDetailGridPoints
+		StaticArray<GridPoint2, 9> validHighDetailGridPoints
 		{
-			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y - 1),
-			GridPoint(currentGridPoint._X, currentGridPoint._Y - 1),
-			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y - 1),
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 1),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y - 1),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 1),
 
-			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y),
-			GridPoint(currentGridPoint._X, currentGridPoint._Y),
-			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y),
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y),
 
-			GridPoint(currentGridPoint._X - 1, currentGridPoint._Y + 1),
-			GridPoint(currentGridPoint._X, currentGridPoint._Y + 1),
-			GridPoint(currentGridPoint._X + 1, currentGridPoint._Y + 1),
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 1),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y + 1),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 1),
 		};
 
 		//Generate all high detail patches.
@@ -171,21 +171,21 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 /*
 *	Generates low detail patches.
 */
-void TerrainSystem::GenerateLowDetailPatches(const GridPoint &currentGridPoint, const uint8 gridPointOffset, const uint8 layer) NOEXCEPT
+void TerrainSystem::GenerateLowDetailPatches(const GridPoint2 &currentGridPoint, const uint8 gridPointOffset, const uint8 layer) NOEXCEPT
 {
 	//Create an array with the valid high detail grid points.
-	StaticArray<GridPoint, 8> validLowDetailGridPoints
+	StaticArray<GridPoint2, 8> validLowDetailGridPoints
 	{
-		GridPoint(currentGridPoint._X - gridPointOffset, currentGridPoint._Y - gridPointOffset),
-		GridPoint(currentGridPoint._X, currentGridPoint._Y - gridPointOffset),
-		GridPoint(currentGridPoint._X + gridPointOffset, currentGridPoint._Y - gridPointOffset),
+		GridPoint2(currentGridPoint._X - gridPointOffset, currentGridPoint._Y - gridPointOffset),
+		GridPoint2(currentGridPoint._X, currentGridPoint._Y - gridPointOffset),
+		GridPoint2(currentGridPoint._X + gridPointOffset, currentGridPoint._Y - gridPointOffset),
 
-		GridPoint(currentGridPoint._X - gridPointOffset, currentGridPoint._Y),
-		GridPoint(currentGridPoint._X + gridPointOffset, currentGridPoint._Y),
+		GridPoint2(currentGridPoint._X - gridPointOffset, currentGridPoint._Y),
+		GridPoint2(currentGridPoint._X + gridPointOffset, currentGridPoint._Y),
 
-		GridPoint(currentGridPoint._X - gridPointOffset, currentGridPoint._Y + gridPointOffset),
-		GridPoint(currentGridPoint._X, currentGridPoint._Y + gridPointOffset),
-		GridPoint(currentGridPoint._X + gridPointOffset, currentGridPoint._Y + gridPointOffset),
+		GridPoint2(currentGridPoint._X - gridPointOffset, currentGridPoint._Y + gridPointOffset),
+		GridPoint2(currentGridPoint._X, currentGridPoint._Y + gridPointOffset),
+		GridPoint2(currentGridPoint._X + gridPointOffset, currentGridPoint._Y + gridPointOffset),
 	};
 
 	//Generate all low detail patches.
@@ -198,10 +198,10 @@ void TerrainSystem::GenerateLowDetailPatches(const GridPoint &currentGridPoint, 
 /*
 *	Generates a new high detail patch at the specified grid point.
 */
-void TerrainSystem::GenerateHighDetailPatch(const GridPoint &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
+void TerrainSystem::GenerateHighDetailPatch(const GridPoint2 &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
 	//Calculate the world position of the grid point.
-	const Vector3 gridPointWorldPosition{ GridPoint::GridPointToWorldPosition(gridPoint, _Properties._PatchSize) };
+	const Vector3 gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, _Properties._PatchSize) };
 
 	//Generate the terrain plane.
 	DynamicArray<TerrainVertex> vertices;
@@ -256,10 +256,10 @@ void TerrainSystem::GenerateHighDetailPatch(const GridPoint &gridPoint, TerrainP
 /*
 *	Generates a new low detail patch at the specified grid point.
 */
-void TerrainSystem::GenerateLowDetailPatch(const GridPoint &gridPoint, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
+void TerrainSystem::GenerateLowDetailPatch(const GridPoint2 &gridPoint, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
 	//Calculate the world position of the grid point.
-	const Vector3 gridPointWorldPosition{ GridPoint::GridPointToWorldPosition(gridPoint, _Properties._PatchSize) };
+	const Vector3 gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, _Properties._PatchSize) };
 
 	//Generate the terrain plane.
 	DynamicArray<TerrainVertex> vertices;

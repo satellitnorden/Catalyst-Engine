@@ -103,10 +103,10 @@ private:
 	Vector3 _CurrentCameraPosition;
 
 	//The last grid point.
-	GridPoint _LastGridPoint{ INT32_MAXIMUM, INT32_MAXIMUM };
+	GridPoint2 _LastGridPoint{ INT32_MAXIMUM, INT32_MAXIMUM };
 
 	//The current grid point.
-	GridPoint _CurrentGridPoint{ INT32_MAXIMUM, INT32_MAXIMUM };
+	GridPoint2 _CurrentGridPoint{ INT32_MAXIMUM, INT32_MAXIMUM };
 
 	//The current synchronous buffer.
 	uint8 _CurrentSynchronousBuffer{ 0 };
@@ -134,17 +134,17 @@ private:
 	/*
 	*	Generates low detail patches.
 	*/
-	void GenerateLowDetailPatches(const GridPoint &currentGridPoint, const uint8 gridPointOffset, const uint8 layer) NOEXCEPT;
+	void GenerateLowDetailPatches(const GridPoint2 &currentGridPoint, const uint8 gridPointOffset, const uint8 layer) NOEXCEPT;
 
 	/*
 	*	Generates a new high detail patch at the specified grid point.
 	*/
-	void GenerateHighDetailPatch(const GridPoint &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
+	void GenerateHighDetailPatch(const GridPoint2 &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
 
 	/*
 	*	Generates a new low detail patch at the specified grid point.
 	*/
-	void GenerateLowDetailPatch(const GridPoint &gridPoint, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
+	void GenerateLowDetailPatch(const GridPoint2 &gridPoint, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
 
 
 };

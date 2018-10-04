@@ -105,7 +105,7 @@
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
     <ClInclude Include="..\..\..\Include\Math\CatalystBaseMath.h" />
     <ClInclude Include="..\..\..\Include\Math\CatalystVectorMath.h" />
-    <ClInclude Include="..\..\..\Include\Math\GridPoint.h" />
+    <ClInclude Include="..\..\..\Include\Math\GridPoint2.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix3.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix4.h" />
     <ClInclude Include="..\..\..\Include\Math\PerlinNoiseGenerator.h" />

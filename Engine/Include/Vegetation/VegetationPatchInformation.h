@@ -4,7 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Math.
-#include <Math/GridPoint.h>
+#include <Math/GridPoint2.h>
 
 class VegetationPatchInformation final
 {
@@ -15,6 +15,6 @@ public:
 	bool _Valid;
 
 	//The grid point.
-	GridPoint _GridPoint;
+	GridPoint2 _GridPoint;
 
 };
