@@ -139,10 +139,10 @@ float GetRoughness()
     float layer5Roughness = layer5MaterialPropertiesSampler.r;
 
     float blend1 = mix(layer1Roughness, layer2Roughness, fragmentLayerWeights.x);
-    float blend2 = mix(blend1, layer3Roughness, fragmentLayerWeights.x);
-    float blend3 = mix(blend2, layer4Roughness, fragmentLayerWeights.x);
+    float blend2 = mix(blend1, layer3Roughness, fragmentLayerWeights.y);
+    float blend3 = mix(blend2, layer4Roughness, fragmentLayerWeights.z);
 
-    return mix(blend3, layer5Roughness, fragmentLayerWeights.y);
+    return mix(blend3, layer5Roughness, fragmentLayerWeights.w);
 }
 
 /*

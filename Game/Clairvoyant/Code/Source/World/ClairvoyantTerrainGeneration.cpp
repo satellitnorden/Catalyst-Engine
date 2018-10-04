@@ -33,6 +33,8 @@ namespace ClairvoyantTerrainGenerationConstants
 
 	constexpr float SMALL_HILL_RANGE{ 10.0f };
 	constexpr float SMALL_HILL_INFLUENCE{ 0.0002f };
+
+	constexpr float GRASS_RANGE{ 1'000.0f };
 }
 
 namespace ClairvoyantTerrainGeneration
@@ -74,6 +76,13 @@ namespace ClairvoyantTerrainGeneration
 			}
 
 			case 4:
+			{
+				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return randomOffset;
+			}
+
+			case 5:
 			{
 				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
 
@@ -144,23 +153,33 @@ namespace ClairvoyantTerrainGeneration
 	*/
 	void GenerateLayerWeights(const TerrainProperties &properties, const Vector3 &worldPosition, const Vector3 &normal, Vector4 *const RESTRICT layerWeights) NOEXCEPT
 	{
-		//Determine the weight of the second grass layer.
-		if (worldPosition._Y < 0.0f)
 		{
-			layerWeights->_Y = 0.0f;
+			//Determine the weight of the first grass layer.
+			if (worldPosition._Y < 0.0f)
+			{
+				layerWeights->_X = 0.0f;
+			}
+
+			else if (worldPosition._Y > 1'000.0f)
+			{
+				layerWeights->_X = 1.0f;
+			}
+
+			else
+			{
+				layerWeights->_X = worldPosition._Y * 0.001f;
+			}
 		}
 
-		else if (worldPosition._Y > 1'000.0f)
 		{
-			layerWeights->_Y = 1.0f;
-		}
+			//Determine the weight of the second grass layer.
+			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::GRASS_RANGE };
+			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::GRASS_RANGE };
 
-		else
-		{
-			layerWeights->_Y = worldPosition._Y * 0.001f;
-		}
+			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(5)) };
 
-		layerWeights->_X = 0.0f;
+			layerWeights->_Y = (noise + 1.0f) * 0.5f;
+		}
 
 		//Determine the weight of the rock layer.
 		layerWeights->_Z = CatalystBaseMath::SmoothStep<1>(1.0f - CatalystBaseMath::Clamp<float>(Vector3::DotProduct(normal, Vector3::UP) - 0.1f, 0.0f, 1.0f));

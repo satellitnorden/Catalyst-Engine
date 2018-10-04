@@ -80,7 +80,6 @@ bool TimeOfDaySystem::LogicUpdateAsynchronous(const UpdateContext *const RESTRIC
 		sunBlend = 0.0f;
 	}
 		
-
 	else
 	{
 		if (_CurrentTime < 12.0f)
