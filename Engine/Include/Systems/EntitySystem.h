@@ -7,12 +7,13 @@
 
 //Entities.
 #include <Entities/Entity.h>
+#include <Entities/EntityProceduralPlacementData.h>
+#include <Entities/EntitiesCore.h>
+#include <Entities/InitializationData/EntityInitializationData.h>
 
 //Multithreading.
+#include <Multithreading/Task.h>
 #include <Multithreading/Spinlock.h>
-
-//Forward declarations.
-class EntityInitializationData;
 
 class EntitySystem final
 {
@@ -29,6 +30,16 @@ public:
 	{
 
 	}
+
+	/*
+	*	Initializes the entity system.
+	*/
+	void InitializeSystem() NOEXCEPT;
+
+	/*
+	*	Updates the entity system sequentially.
+	*/
+	void SequentialUpdateSystemSynchronous() NOEXCEPT;
 
 	/*
 	*	Updates the entity system synchronously during the closing update phase.
@@ -83,13 +94,18 @@ public:
 	*	Requests the termination of en entity.
 	*	Termination will happen at the next synchronous update of the entity system.
 	*/
-	void RequesTermination(Entity* const RESTRICT entity) NOEXCEPT;
+	void RequestTermination(Entity* const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Requests the destruction of an entity.
 	*	Destruction will happen at the next synchronous update of the entity system.
 	*/
 	void RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT;
+
+	/*
+	*	Registers a procedural placement function.
+	*/
+	void RegisterProceduralPlacementFunction(EntityProceduralPlacementFunction function, const float gridSize) NOEXCEPT;
 
 private:
 
@@ -168,6 +184,15 @@ private:
 	//Container for all entities that have requested automatic destruction.
 	DynamicArray<Entity *RESTRICT> _AutomaticDestructionQueue;
 
+	//Container for all procedural placement data.
+	DynamicArray<EntityProceduralPlacementData> _ProceduralPlacementData;
+
+	//The procedural placement update task.
+	Task _ProceduralPlacementUpdateTask;
+
+	//The current camera position.
+	Vector3 _CurrentCameraPosition;
+
 	/*
 	*	Processes the initialization queue.
 	*/
@@ -218,6 +243,11 @@ private:
 	*/
 	template <typename Type>
 	void DestroyInitializationData(EntityInitializationData* const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Updates the procedural placement.
+	*/
+	void UpdateProceduralPlacement() NOEXCEPT;
 
 };
 

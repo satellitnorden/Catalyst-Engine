@@ -954,6 +954,18 @@
     <ClInclude Include="..\..\..\Include\Math\GridPoint2.h">
       <Filter>Math\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\GridPoint3.h">
+      <Filter>Math\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\EntitiesCore.h">
+      <Filter>Entities\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\EntityProceduralPlacementData.h">
+      <Filter>Entities\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\EntityProceduralPlacementGridPoint.h">
+      <Filter>Entities\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

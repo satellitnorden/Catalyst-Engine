@@ -88,7 +88,10 @@
     <ClInclude Include="..\..\..\Include\Entities\CameraEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\DynamicPhysicalEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\EntitiesCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Entity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\EntityProceduralPlacementData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\EntityProceduralPlacementGridPoint.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\DynamicPhysicalInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\ParticleSystemInitializationData.h" />
@@ -106,6 +109,7 @@
     <ClInclude Include="..\..\..\Include\Math\CatalystBaseMath.h" />
     <ClInclude Include="..\..\..\Include\Math\CatalystVectorMath.h" />
     <ClInclude Include="..\..\..\Include\Math\GridPoint2.h" />
+    <ClInclude Include="..\..\..\Include\Math\GridPoint3.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix3.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix4.h" />
     <ClInclude Include="..\..\..\Include\Math\PerlinNoiseGenerator.h" />

@@ -1400,7 +1400,7 @@ void VulkanRenderingSystem::ProcessDestructionQueue() NOEXCEPT
 	{
 		++_DestructionQueue[i]._Frames;
 
-		if (_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages())
+		if (_DestructionQueue[i]._Frames > VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages() + 1)
 		{
 			switch (_DestructionQueue[i]._Type)
 			{

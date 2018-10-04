@@ -5,6 +5,7 @@
 #include <Components/ComponentManager.h>
 
 //Entities.
+#include <Entities/CameraEntity.h>
 #include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 #include <Entities/InitializationData/ParticleSystemInitializationData.h>
 
@@ -13,9 +14,40 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/TaskSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(EntitySystem);
+
+/*
+*	Initializes the entity system.
+*/
+void EntitySystem::InitializeSystem() NOEXCEPT
+{
+	//Initialize the procedural placement update task.
+	_ProceduralPlacementUpdateTask._Function = [](void *const RESTRICT)
+	{
+		EntitySystem::Instance->UpdateProceduralPlacement();
+	};
+	_ProceduralPlacementUpdateTask._Arguments = nullptr;
+}
+
+/*
+*	Updates the entity system sequentially.
+*/
+void EntitySystem::SequentialUpdateSystemSynchronous() NOEXCEPT
+{
+	//If the procedural placement update has finished, cache the relevant data and fire off another update.
+	if (_ProceduralPlacementUpdateTask.IsExecuted())
+	{
+		//Cache the current camera position.
+		const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
+		_CurrentCameraPosition = camera->GetPosition();
+
+		//Fire off another update.
+		TaskSystem::Instance->ExecuteTask(&_ProceduralPlacementUpdateTask);
+	}
+}
 
 /*
 *	Updates the entity system synchronously during the closing update phase.
@@ -153,7 +185,7 @@ void EntitySystem::RequestInitialization(Entity* const RESTRICT entity, EntityIn
 *	Requests the termination of en entity.
 *	Termination will happen at the next synchronous update of the entity system.
 */
-void EntitySystem::RequesTermination(Entity* const RESTRICT entity) NOEXCEPT
+void EntitySystem::RequestTermination(Entity* const RESTRICT entity) NOEXCEPT
 {
 	//Lock the queue.
 	ScopedLock<Spinlock> scopedLock{ _TerminationQueueLock };
@@ -173,6 +205,26 @@ void EntitySystem::RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT
 
 	//Add the data.
 	_DestructionQueue.EmplaceSlow(entity);
+}
+
+/*
+*	Registers a procedural placement function.
+*/
+void EntitySystem::RegisterProceduralPlacementFunction(EntityProceduralPlacementFunction function, const float gridSize) NOEXCEPT
+{
+	//Create the new procedural placement data.
+	_ProceduralPlacementData.EmplaceSlow();
+	EntityProceduralPlacementData *const RESTRICT data{ &_ProceduralPlacementData.Back() };
+
+	//Fill in the details.
+	data->_Function = function;
+	data->_GridSize = gridSize;
+
+	//Reset all grid points.
+	for (EntityProceduralPlacementGridPoint &gridPoint : data->_GridPoints)
+	{
+		gridPoint._Valid = false;
+	}
 }
 
 /*
@@ -261,6 +313,9 @@ void EntitySystem::ProcessTerminationQueue() NOEXCEPT
 	{
 		TerminateEntity(entity);
 	}
+
+	//Clear the termination queue.
+	_TerminationQueue.ClearFast();
 }
 
 /*
@@ -297,6 +352,9 @@ void EntitySystem::ProcessDestructionQueue() NOEXCEPT
 	{
 		DestroyEntity(entity);
 	}
+
+	//Clear the destruction queue.
+	_DestructionQueue.ClearFast();
 }
 
 /*
@@ -341,6 +399,135 @@ void EntitySystem::ProcessAutomaticDestructionQueue() NOEXCEPT
 		else
 		{
 			++i;
+		}
+	}
+}
+
+/*
+*	Updates the procedural placement.
+*/
+void EntitySystem::UpdateProceduralPlacement() NOEXCEPT
+{
+	//Update all procedural placement data.
+	for (EntityProceduralPlacementData &data : _ProceduralPlacementData)
+	{
+		//Calculate the current grid point based on the current camera position.
+		const GridPoint3 currentGridPoint{ GridPoint3::WorldPositionToGridPoint(_CurrentCameraPosition, data._GridSize) };
+
+		//Create an array with the valid grid positions.
+		StaticArray<GridPoint3, 27> validGridPoints
+		{
+			GridPoint3(currentGridPoint._X - 1, currentGridPoint._Y - 1, currentGridPoint._Z - 1),
+			GridPoint3(currentGridPoint._X - 1, currentGridPoint._Y - 1, currentGridPoint._Z),
+			GridPoint3(currentGridPoint._X - 1, currentGridPoint._Y - 1, currentGridPoint._Z + 1),
+			GridPoint3(currentGridPoint._X - 1, currentGridPoint._Y, currentGridPoint._Z - 1),
+			GridPoint3(currentGridPoint._X - 1, currentGridPoint._Y, currentGridPoint._Z),
+			GridPoint3(currentGridPoint._X - 1, currentGridPoint._Y, currentGridPoint._Z + 1),
+			GridPoint3(currentGridPoint._X - 1, currentGridPoint._Y + 1, currentGridPoint._Z - 1),
+			GridPoint3(currentGridPoint._X - 1, currentGridPoint._Y + 1, currentGridPoint._Z),
+			GridPoint3(currentGridPoint._X - 1, currentGridPoint._Y + 1, currentGridPoint._Z + 1),
+
+			GridPoint3(currentGridPoint._X, currentGridPoint._Y - 1, currentGridPoint._Z - 1),
+			GridPoint3(currentGridPoint._X, currentGridPoint._Y - 1, currentGridPoint._Z),
+			GridPoint3(currentGridPoint._X, currentGridPoint._Y - 1, currentGridPoint._Z + 1),
+			GridPoint3(currentGridPoint._X, currentGridPoint._Y, currentGridPoint._Z - 1),
+			GridPoint3(currentGridPoint._X, currentGridPoint._Y, currentGridPoint._Z),
+			GridPoint3(currentGridPoint._X, currentGridPoint._Y, currentGridPoint._Z + 1),
+			GridPoint3(currentGridPoint._X, currentGridPoint._Y + 1, currentGridPoint._Z - 1),
+			GridPoint3(currentGridPoint._X, currentGridPoint._Y + 1, currentGridPoint._Z),
+			GridPoint3(currentGridPoint._X, currentGridPoint._Y + 1, currentGridPoint._Z + 1),
+
+			GridPoint3(currentGridPoint._X + 1, currentGridPoint._Y - 1, currentGridPoint._Z - 1),
+			GridPoint3(currentGridPoint._X + 1, currentGridPoint._Y - 1, currentGridPoint._Z),
+			GridPoint3(currentGridPoint._X + 1, currentGridPoint._Y - 1, currentGridPoint._Z + 1),
+			GridPoint3(currentGridPoint._X + 1, currentGridPoint._Y, currentGridPoint._Z - 1),
+			GridPoint3(currentGridPoint._X + 1, currentGridPoint._Y, currentGridPoint._Z),
+			GridPoint3(currentGridPoint._X + 1, currentGridPoint._Y, currentGridPoint._Z + 1),
+			GridPoint3(currentGridPoint._X + 1, currentGridPoint._Y + 1, currentGridPoint._Z - 1),
+			GridPoint3(currentGridPoint._X + 1, currentGridPoint._Y + 1, currentGridPoint._Z),
+			GridPoint3(currentGridPoint._X + 1, currentGridPoint._Y + 1, currentGridPoint._Z + 1),
+		};
+
+		//Determine the grid points to invalidate.
+		for (EntityProceduralPlacementGridPoint &currentGridPoint : data._GridPoints)
+		{
+			//If this grid point is already invalid, no need to invalidate it.
+			if (!currentGridPoint._Valid)
+			{
+				continue;
+			}
+
+			bool valid{ false };
+
+			for (const GridPoint3 &validGridPoint : validGridPoints)
+			{
+				if (currentGridPoint._GridPoint == validGridPoint)
+				{
+					valid = true;
+
+					break;
+				}
+			}
+
+			if (!valid)
+			{
+				//Invalidate this grid point.
+				currentGridPoint._Valid = false;
+
+				for (Entity *const RESTRICT entity : currentGridPoint._Entities)
+				{
+					RequestTermination(entity);
+					RequestDestruction(entity);
+				}
+
+				currentGridPoint._Entities.ClearFast();
+			}
+		}
+
+		//Determine the grid points to update.
+		for (const GridPoint3 &validGridPoint : validGridPoints)
+		{
+			bool exists{ false };
+
+			for (EntityProceduralPlacementGridPoint &currentGridPoint : data._GridPoints)
+			{
+				if (currentGridPoint._Valid && currentGridPoint._GridPoint == validGridPoint)
+				{
+					exists = true;
+
+					break;
+				}
+			}
+
+			if (!exists)
+			{
+				//Find the first invalid grid point and update it.
+				for (EntityProceduralPlacementGridPoint &currentGridPoint : data._GridPoints)
+				{
+					if (!currentGridPoint._Valid)
+					{
+						currentGridPoint._Valid = true;
+						currentGridPoint._GridPoint = validGridPoint;
+
+						//Construct the axis aligned bounding box.
+						const Vector3 currentGridPointWorldPosition{ GridPoint3::GridPointToWorldPosition(currentGridPoint._GridPoint, data._GridSize) };
+
+						AxisAlignedBoundingBox box;
+
+						box._Minimum._X = currentGridPointWorldPosition._X - (data._GridSize * 0.5f);
+						box._Minimum._Y = currentGridPointWorldPosition._Y - (data._GridSize * 0.5f);
+						box._Minimum._Z = currentGridPointWorldPosition._Z - (data._GridSize * 0.5f);
+
+						box._Maximum._X = currentGridPointWorldPosition._X - (data._GridSize * 0.5f);
+						box._Maximum._Y = currentGridPointWorldPosition._Y - (data._GridSize * 0.5f);
+						box._Maximum._Z = currentGridPointWorldPosition._Z - (data._GridSize * 0.5f);
+
+						data._Function(box, &currentGridPoint._Entities);
+
+						break;
+					}
+				}
+			}
 		}
 	}
 }

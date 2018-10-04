@@ -30,6 +30,11 @@ public:
 private:
 
 	/*
+	*	Initializes the particles.
+	*/
+	void InitializeParticles();
+
+	/*
 	*	Initializes the vegetation.
 	*/
 	void InitializeVegetation();

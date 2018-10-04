@@ -89,6 +89,7 @@ private:
 	//Enumeration covering all sequential updates.
 	enum class SequentialUpdate : uint8
 	{
+		EntitySystem,
 		TerrainSystem,
 		VegetationSystem,
 

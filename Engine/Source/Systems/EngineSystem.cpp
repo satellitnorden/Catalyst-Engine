@@ -36,6 +36,7 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 
 	//Initialize all systems.
 	CullingSystem::Instance->InitializeSystem();
+	EntitySystem::Instance->InitializeSystem();
 	InputSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
 	TaskSystem::Instance->InitializeSystem();
@@ -160,6 +161,13 @@ void EngineSystem::ExecuteSequentialUpdate() NOEXCEPT
 	//Execute the sequential update.
 	switch (_CurrentSequentialUpdate)
 	{
+		case SequentialUpdate::EntitySystem:
+		{
+			EntitySystem::Instance->SequentialUpdateSystemSynchronous();
+
+			break;
+		}
+
 		case SequentialUpdate::TerrainSystem:
 		{
 			TerrainSystem::Instance->SequentialUpdateSystemSynchronous();
