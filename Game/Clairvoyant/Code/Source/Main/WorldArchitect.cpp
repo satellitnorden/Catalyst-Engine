@@ -64,13 +64,13 @@ void WorldArchitect::InitializeParticles()
 		data->_ParticleSystemProperties._Properties = static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::AffectedByWind) | static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::Looping);
 		data->_ParticleSystemProperties._FadeTime = 10.0f;
 		data->_ParticleSystemProperties._Lifetime = 60.0f;
-		data->_ParticleSystemProperties._SpawnFrequency = 0.01f;
+		data->_ParticleSystemProperties._SpawnFrequency = 0.1f;
 		data->_ParticleSystemProperties._MinimumScale = Vector2(0.05f, 0.05f);
 		data->_ParticleSystemProperties._MaximumScale = Vector2(0.1f, 0.1f);
 		data->_ParticleSystemProperties._MinimumPosition = Vector3(-50.0f, -50.0f, -50.0f);
 		data->_ParticleSystemProperties._MaximumPosition = Vector3(50.0f, 50.0f, 50.0f);
-		data->_ParticleSystemProperties._MinimumVelocity = Vector3(-0.1f, -0.1f, -0.1f);
-		data->_ParticleSystemProperties._MaximumVelocity = Vector3(0.1f, 0.1f, 0.1f);
+		data->_ParticleSystemProperties._MinimumVelocity = Vector3(-0.25f, -0.25f, -0.25f);
+		data->_ParticleSystemProperties._MaximumVelocity = Vector3(0.25f, 0.25f, 0.25f);
 		data->_Position = AxisAlignedBoundingBox::CalculateCenter(box);
 
 		ParticleSystemEntity *const RESTRICT particles = EntitySystem::Instance->CreateEntity<ParticleSystemEntity>();
@@ -115,7 +115,7 @@ void WorldArchitect::InitializeVegetation()
 		VegetationTypeProperties properties;
 
 		properties._CutoffDistance = 100.0f;
-		properties._Density = 125;
+		properties._Density = 250;
 		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -139,7 +139,7 @@ void WorldArchitect::InitializeVegetation()
 		VegetationTypeProperties properties;
 
 		properties._CutoffDistance = 20.0f;
-		properties._Density = 5'000;
+		properties._Density = 10'000;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -169,7 +169,7 @@ void WorldArchitect::InitializeVegetation()
 		VegetationTypeProperties properties;
 
 		properties._CutoffDistance = 25.0f;
-		properties._Density = 1'000;
+		properties._Density = 2'000;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.3f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)

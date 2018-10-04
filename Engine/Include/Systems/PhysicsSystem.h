@@ -55,6 +55,6 @@ private:
 	Vector3 _WindDirection{ Vector3::Normalize(Vector3::RIGHT + Vector3::FORWARD) };
 
 	//The wind speed.
-	float _WindSpeed{ 10.0f };
+	float _WindSpeed{ 4.0f };
 
 };
