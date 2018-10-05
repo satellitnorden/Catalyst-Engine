@@ -48,11 +48,11 @@ private:
 	//The target speed.
 	float _TargetSpeed;
 
-	//The current velocity.
-	float _CurrentVelocity{ 0.0f };
+	//The current upwards velocity.
+	float _CurrentUpwardsVelocity{ 0.0f };
 
-	//The current height over terrain.
-	float _CurrentHeightOverTerrain;
+	//The target altitude.
+	float _TargetAltitude;
 
 	//The current rotation, expressed as degrees per second.
 	float _CurrentRotation{ 0.0f };
@@ -64,6 +64,11 @@ private:
 	*	Updates the forward movement of the camera.
 	*/
 	void UpdateForwardMovement(const UpdateContext *const RESTRICT context) NOEXCEPT;
+
+	/*
+	*	Updates the altitude of the camera.
+	*/
+	void UpdateAltitude(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
 	/*
 	*	Updates the rotation of the camera.

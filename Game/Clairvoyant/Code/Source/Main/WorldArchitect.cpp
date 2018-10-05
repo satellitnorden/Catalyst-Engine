@@ -30,12 +30,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(WorldArchitect);
 
-//World architect constants.
-namespace WorldArchitectConstants
-{
-	constexpr uint64 MAP_RESOLUTION{ 512 };
-}
-
 /*
 *	Initializes the world architect.
 */
@@ -62,8 +56,8 @@ void WorldArchitect::InitializeParticles()
 		data->_Properties = EntityInitializationData::EntityProperty::None;
 		data->_Material = RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle);
 		data->_ParticleSystemProperties._Properties = static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::AffectedByWind) | static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::Looping);
-		data->_ParticleSystemProperties._FadeTime = 10.0f;
-		data->_ParticleSystemProperties._Lifetime = 60.0f;
+		data->_ParticleSystemProperties._FadeTime = 2.5f;
+		data->_ParticleSystemProperties._Lifetime = 10.0f;
 		data->_ParticleSystemProperties._SpawnFrequency = 0.01f;
 		data->_ParticleSystemProperties._MinimumScale = Vector2(0.05f, 0.05f);
 		data->_ParticleSystemProperties._MaximumScale = Vector2(0.1f, 0.1f);

@@ -63,42 +63,11 @@ bool SoakCamera::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT con
 	//Update the forward movement of the camera.
 	UpdateForwardMovement(context);
 
+	//Update the altitude of the camera.
+	UpdateAltitude(context);
+
 	//Update the rotation of the camera.
 	UpdateRotation(context);
-
-	//Get the current position of the camera.
-	Vector3 position{ _Camera->GetPosition() };
-
-	//Look ahead at the terrain height at a position in front of the camera to determine how the velocity should be affected.
-	float terrainHeightAhead;
-	TerrainSystem::Instance->GetTerrainHeightAtPosition(_Camera->GetPosition() + _Camera->GetForwardVector() * _CurrentSpeed, &terrainHeightAhead);
-
-	if (terrainHeightAhead + _CurrentHeightOverTerrain < position._Y)
-	{
-		_CurrentVelocity -= SoakCameraConstants::OPERATIONAL_SPEED * context->_DeltaTime;
-	}
-
-	else
-	{
-		_CurrentVelocity += SoakCameraConstants::OPERATIONAL_SPEED * context->_DeltaTime;
-	}
-
-	//Modify the camera's height.
-	position._Y += _CurrentVelocity * context->_DeltaTime;
-
-	//Never let the camera go under the terrain.
-	float terrainHeight;
-	TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &terrainHeight);
-
-	if (position._Y < CatalystBaseMath::Maximum<float>(terrainHeight + 1.0f, 1.0f))
-	{
-		position._Y = CatalystBaseMath::Maximum<float>(terrainHeight + 1.0f, 1.0f);
-
-		_CurrentVelocity = 0.0f;
-	}
-
-	//Set the position of the camera.
-	_Camera->SetPosition(position);
 
 	return true;
 }
@@ -124,6 +93,46 @@ void SoakCamera::UpdateForwardMovement(const UpdateContext *const RESTRICT conte
 }
 
 /*
+*		Updates the altitude of the camera.
+*/
+void SoakCamera::UpdateAltitude(const UpdateContext *const RESTRICT context) NOEXCEPT
+{
+	//Get the current position of the camera.
+	Vector3 position{ _Camera->GetPosition() };
+
+	//Look ahead at the terrain height at a position in front of the camera to determine how the velocity should be affected.
+	float terrainHeightAhead;
+	TerrainSystem::Instance->GetTerrainHeightAtPosition(_Camera->GetPosition() + _Camera->GetForwardVector() * _CurrentSpeed, &terrainHeightAhead);
+
+	if (position._Y > CatalystBaseMath::Maximum<float>(terrainHeightAhead + _TargetAltitude, 1.0f))
+	{
+		_CurrentUpwardsVelocity -= SoakCameraConstants::OPERATIONAL_SPEED * context->_DeltaTime;
+	}
+
+	else
+	{
+		_CurrentUpwardsVelocity += SoakCameraConstants::OPERATIONAL_SPEED * context->_DeltaTime;
+	}
+
+	//Modify the camera's height.
+	position._Y += _CurrentUpwardsVelocity * context->_DeltaTime;
+
+	//Never let the camera go under the terrain.
+	float terrainHeight;
+	TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &terrainHeight);
+
+	if (position._Y < terrainHeight + 1.0f)
+	{
+		position._Y = terrainHeight + 1.0f;
+
+		_CurrentUpwardsVelocity = CatalystBaseMath::Absolute(_CurrentUpwardsVelocity);
+	}
+
+	//Set the position of the camera.
+	_Camera->SetPosition(position);
+}
+
+/*
 *	Updates the rotation of the camera.
 */
 void SoakCamera::UpdateRotation(const UpdateContext *const RESTRICT context) NOEXCEPT
@@ -131,12 +140,12 @@ void SoakCamera::UpdateRotation(const UpdateContext *const RESTRICT context) NOE
 	//Update the current rotation.
 	if (_CurrentRotation < _TargetRotation)
 	{
-		_CurrentRotation += SoakCameraConstants::OPERATIONAL_SPEED * context->_DeltaTime;
+		_CurrentRotation += SoakCameraConstants::OPERATIONAL_SPEED * 0.1f * context->_DeltaTime;
 	}
 
 	else
 	{
-		_CurrentRotation -= SoakCameraConstants::OPERATIONAL_SPEED * context->_DeltaTime;
+		_CurrentRotation -= SoakCameraConstants::OPERATIONAL_SPEED * 0.1f * context->_DeltaTime;
 	}
 
 	//Rotate the camera.
@@ -151,11 +160,11 @@ void SoakCamera::Randomize() NOEXCEPT
 	//Randomize a new target speed.
 	_TargetSpeed = CatalystBaseMath::RandomFloatInRange(2.0f, 200.0f);
 
-	//Randomize the current height over terrain.
-	_CurrentHeightOverTerrain = CatalystBaseMath::RandomFloatInRange(2.0f, 200.0f);
+	//Randomize the target altitude.
+	_TargetAltitude = CatalystBaseMath::RandomFloatInRange(2.0f, 200.0f);
 
 	//Randomize a new target rotation.
-	_TargetRotation = CatalystBaseMath::RandomFloatInRange(-5.0f, 5.0f);
+	_TargetRotation = CatalystBaseMath::RandomFloatInRange(-2.5f, 2.5f);
 
 	//Randomize the time until the properties of the soak camera is randomized again.
 	_RandomizeTime = CatalystBaseMath::RandomFloatInRange(1.0f, 100.0f);
