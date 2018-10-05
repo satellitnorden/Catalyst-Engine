@@ -59,8 +59,8 @@ void WorldArchitect::InitializeParticles()
 		data->_ParticleSystemProperties._FadeTime = 2.5f;
 		data->_ParticleSystemProperties._Lifetime = 10.0f;
 		data->_ParticleSystemProperties._SpawnFrequency = 0.01f;
-		data->_ParticleSystemProperties._MinimumScale = Vector2(0.05f, 0.05f);
-		data->_ParticleSystemProperties._MaximumScale = Vector2(0.1f, 0.1f);
+		data->_ParticleSystemProperties._MinimumScale = Vector2(0.025f, 0.025f);
+		data->_ParticleSystemProperties._MaximumScale = Vector2(0.05f, 0.05f);
 		data->_ParticleSystemProperties._MinimumPosition = Vector3(-50.0f, -50.0f, -50.0f);
 		data->_ParticleSystemProperties._MaximumPosition = Vector3(50.0f, 50.0f, 50.0f);
 		data->_ParticleSystemProperties._MinimumVelocity = Vector3(-0.25f, -0.25f, -0.25f);
