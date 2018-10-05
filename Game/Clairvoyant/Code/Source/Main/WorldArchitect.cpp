@@ -64,7 +64,7 @@ void WorldArchitect::InitializeParticles()
 		data->_ParticleSystemProperties._Properties = static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::AffectedByWind) | static_cast<uint32>(ParticleSystemProperties::ParticleSystemProperty::Looping);
 		data->_ParticleSystemProperties._FadeTime = 10.0f;
 		data->_ParticleSystemProperties._Lifetime = 60.0f;
-		data->_ParticleSystemProperties._SpawnFrequency = 0.1f;
+		data->_ParticleSystemProperties._SpawnFrequency = 0.01f;
 		data->_ParticleSystemProperties._MinimumScale = Vector2(0.05f, 0.05f);
 		data->_ParticleSystemProperties._MaximumScale = Vector2(0.1f, 0.1f);
 		data->_ParticleSystemProperties._MinimumPosition = Vector3(-50.0f, -50.0f, -50.0f);
