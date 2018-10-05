@@ -42,9 +42,9 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::DirectionalTerrainShadow);
 
 	//Set the shaders.
-	SetVertexShader(Shader::HighDetailTerrainVertex);
-	SetTessellationControlShader(Shader::HighDetailTerrainTessellationControl);
-	SetTessellationEvaluationShader(Shader::DirectionalTerrainShadowTessellationEvaluation);
+	SetVertexShader(Shader::DirectionalTerrainShadowVertex);
+	SetTessellationControlShader(Shader::None);
+	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
 	SetFragmentShader(Shader::ShadowMapFragment);
 
@@ -92,11 +92,11 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
-	SetCullMode(CullMode::None);
+	SetCullMode(CullMode::Front);
 	SetDepthCompareOperator(CompareOperator::Less);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
-	SetTopology(Topology::PatchList);
+	SetTopology(Topology::TriangleList);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)

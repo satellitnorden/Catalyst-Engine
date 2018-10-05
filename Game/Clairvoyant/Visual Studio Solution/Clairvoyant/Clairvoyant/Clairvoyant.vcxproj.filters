@@ -255,9 +255,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalShadowInstancedPhysicalVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalShadowTerrainTessellationEvaluationShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GaussianBlurFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -434,6 +431,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Code\Source\Player\SoakCamera.cpp">
       <Filter>Clairvoyant Code\Player\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalTerrainShadowVertexShader.cpp">
+      <Filter>Engine Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

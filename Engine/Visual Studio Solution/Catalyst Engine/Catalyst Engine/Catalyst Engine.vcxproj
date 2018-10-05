@@ -220,7 +220,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalShadowFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalShadowInstancedPhysicalVertexShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalShadowTerrainTessellationEvaluationShader.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalTerrainShadowVertexShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\GaussianBlurFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTerrainTessellationControlShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\HighDetailTerrainTessellationEvaluationShader.h" />
@@ -375,7 +375,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalPhysicalShadowVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalShadowFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalShadowInstancedPhysicalVertexShader.cpp" />
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalShadowTerrainTessellationEvaluationShader.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalTerrainShadowVertexShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\GaussianBlurFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTerrainTessellationControlShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\HighDetailTerrainTessellationEvaluationShader.cpp" />

@@ -185,7 +185,7 @@ enum class Shader : uint8
 	DirectionalPhysicalShadowVertex,
 	DirectionalShadowFragment,
 	DirectionalInstancedPhysicalShadowVertex,
-	DirectionalTerrainShadowTessellationEvaluation,
+	DirectionalTerrainShadowVertex,
 	GaussianBlurFragment,
 	HighDetailTerrainTessellationControl,
 	HighDetailTerrainTessellationEvaluation,

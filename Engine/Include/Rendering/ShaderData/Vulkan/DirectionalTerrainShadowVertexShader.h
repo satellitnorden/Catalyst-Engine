@@ -10,5 +10,5 @@
 
 namespace VulkanShaderData
 {
-	void GetDirectionalShadowTerrainTessellationEvaluationShaderData(DynamicArray<byte> &data);
+	void GetDirectionalTerrainShadowVertexShaderData(DynamicArray<byte> &data);
 }

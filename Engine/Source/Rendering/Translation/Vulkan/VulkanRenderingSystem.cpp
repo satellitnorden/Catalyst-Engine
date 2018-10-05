@@ -512,8 +512,8 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	{
 		//Initialize directional shadow terrain tesselation evaluation shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDirectionalShadowTerrainTessellationEvaluationShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::DirectionalTerrainShadowTessellationEvaluation)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+		VulkanShaderData::GetDirectionalTerrainShadowVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::DirectionalTerrainShadowVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{

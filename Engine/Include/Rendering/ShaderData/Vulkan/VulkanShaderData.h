@@ -19,7 +19,7 @@
 #include <Rendering/ShaderData/Vulkan/DirectionalPhysicalShadowVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalShadowFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalShadowInstancedPhysicalVertexShader.h>
-#include <Rendering/ShaderData/Vulkan/DirectionalShadowTerrainTessellationEvaluationShader.h>
+#include <Rendering/ShaderData/Vulkan/DirectionalTerrainShadowVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/GaussianBlurFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailTerrainTessellationControlShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailTerrainTessellationEvaluationShader.h>

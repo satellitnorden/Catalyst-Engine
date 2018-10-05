@@ -9,11 +9,11 @@ glslangValidator.exe -V DebugScreenBoxVertexShader.vert -o 				DebugScreenBoxVer
 glslangValidator.exe -V DirectionalPhysicalShadowVertexShader.vert -o			DirectionalPhysicalShadowVertexShader.spv
 glslangValidator.exe -V DirectionalShadowFragmentShader.frag -o				DirectionalShadowFragmentShader.spv
 glslangValidator.exe -V DirectionalShadowInstancedPhysicalVertexShader.vert -o		DirectionalShadowInstancedPhysicalVertexShader.spv
-glslangValidator.exe -V DirectionalShadowTerrainTessellationEvaluationShader.tese -o	DirectionalShadowTerrainTessellationEvaluationShader.spv
+glslangValidator.exe -V DirectionalTerrainShadowVertexShader.vert -o			DirectionalTerrainShadowVertexShader.spv
+glslangValidator.exe -V GaussianBlurFragmentShader.frag -o				GaussianBlurFragmentShader.spv
 glslangValidator.exe -V HighDetailTerrainTessellationControlShader.tesc -o 		HighDetailTerrainTessellationControlShader.spv
 glslangValidator.exe -V HighDetailTerrainTessellationEvaluationShader.tese -o 		HighDetailTerrainTessellationEvaluationShader.spv
 glslangValidator.exe -V HighDetailTerrainVertexShader.vert -o 				HighDetailTerrainVertexShader.spv
-glslangValidator.exe -V GaussianBlurFragmentShader.frag -o				GaussianBlurFragmentShader.spv
 glslangValidator.exe -V InstancedPhysicalVertexShader.vert -o 				InstancedPhysicalVertexShader.spv
 glslangValidator.exe -V LightingFragmentShader.frag -o 					LightingFragmentShader.spv
 glslangValidator.exe -V LowDetailTerrainVertexShader.vert -o 				LowDetailTerrainVertexShader.spv
