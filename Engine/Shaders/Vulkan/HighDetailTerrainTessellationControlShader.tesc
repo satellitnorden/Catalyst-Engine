@@ -56,7 +56,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //Preprocessor defines.
-#define MAX_TESSELLATION_LEVEL 32.0f
+#define MAX_TESSELLATION_LEVEL 16.0f
 
 //Layout specification.
 layout (vertices = 3) out;
@@ -116,7 +116,6 @@ void main()
     //Calculate tht tessellation levels.
     if (gl_InvocationID == 0)
     {
-    	/*
         vec3 position1 = tessellationControlPosition[0];
         vec3 position2 = tessellationControlPosition[1];
         vec3 position3 = tessellationControlPosition[2];
@@ -131,11 +130,5 @@ void main()
         gl_TessLevelOuter[0] = GetTesselationLevel(length(cameraWorldPosition - middlePoint1));
         gl_TessLevelOuter[1] = GetTesselationLevel(length(cameraWorldPosition - middlePoint2));
         gl_TessLevelOuter[2] = GetTesselationLevel(length(cameraWorldPosition - middlePoint3));
-        */
-
-        gl_TessLevelInner[0] = 1.0f;
-        gl_TessLevelOuter[0] = 1.0f;
-        gl_TessLevelOuter[1] = 1.0f;
-        gl_TessLevelOuter[2] = 1.0f;
     }
 }
