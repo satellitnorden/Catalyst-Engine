@@ -20,19 +20,19 @@ namespace ClairvoyantTerrainGenerationConstants
 	constexpr float TERRAIN_HEIGHT{ 10'000.0f };
 
 	constexpr float LANDSCAPE_RANGE{ 100'000.0f };
-	constexpr float LANDSCAPE_INCLUENCE{ 1.0f };
+	constexpr float LANDSCAPE_INFLUENCE{ 0.5f };
 
 	constexpr float LARGE_MOUNTAIN_RANGE{ 10'000.0f };
-	constexpr float LARGE_MOUNTAIN_INFLUENCE{ 25.0f };
+	constexpr float LARGE_MOUNTAIN_INFLUENCE{ 2.0f };
 
-	constexpr float SMALL_MOUNTAIN_RANGE{ 10'000.0f };
-	constexpr float SMALL_MOUNTAIN_INFLUENCE{ 0.25f };
+	constexpr float SMALL_MOUNTAIN_RANGE{ 1'000.0f };
+	constexpr float SMALL_MOUNTAIN_INFLUENCE{ 0.1f };
 
-	constexpr float LARGE_HILL_RANGE{ 1'000.0f };
-	constexpr float LARGE_HILL_INFLUENCE{ 0.025f };
+	constexpr float LARGE_HILL_RANGE{ 100.0f };
+	constexpr float LARGE_HILL_INFLUENCE{ 0.0025f };
 
-	constexpr float SMALL_HILL_RANGE{ 100.0f };
-	constexpr float SMALL_HILL_INFLUENCE{ 0.0025f };
+	constexpr float SMALL_HILL_RANGE{ 10.0f };
+	constexpr float SMALL_HILL_INFLUENCE{ 0.00035f };
 
 	constexpr float GRASS_RANGE{ 1'000.0f };
 }
@@ -134,7 +134,7 @@ namespace ClairvoyantTerrainGeneration
 
 		{
 			//Apply the lancscape range.
-			*height = PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(0)) * ClairvoyantTerrainGenerationConstants::LANDSCAPE_INCLUENCE;
+			*height = PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(0)) * ClairvoyantTerrainGenerationConstants::LANDSCAPE_INFLUENCE;
 		}
 
 		{
@@ -145,44 +145,38 @@ namespace ClairvoyantTerrainGeneration
 			const float noise{ (PerlinNoiseGenerator::GenerateNoise(rangeCoordinateX, rangeCoordinateY, GetRandomOffset(1)) + 1.0f) * 0.5f };
 			const float influence{ (PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(2)) + 1.0f) * 0.5f };
 
-			*height += CatalystBaseMath::PowerOf(noise, 10) * CatalystBaseMath::PowerOf(influence, 10) * ClairvoyantTerrainGenerationConstants::LARGE_MOUNTAIN_INFLUENCE;
+			*height += CatalystBaseMath::PowerOf(noise, 4) * influence * ClairvoyantTerrainGenerationConstants::LARGE_MOUNTAIN_INFLUENCE;
 		}
-
+		
 		{
 			//Apply the small mountain range.
-			constexpr uint8 SMALL_MOUNTAIN_SMOOTHING{ 3 };
-
 			float rangeCoordinateX{ worldPosition._X / ClairvoyantTerrainGenerationConstants::SMALL_MOUNTAIN_RANGE };
 			float rangeCoordinateY{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::SMALL_MOUNTAIN_RANGE };
 
-			const float noise{ CatalystBaseMath::SmoothStep<SMALL_MOUNTAIN_SMOOTHING>((PerlinNoiseGenerator::GenerateNoise(rangeCoordinateX, rangeCoordinateY, GetRandomOffset(3)) + 1.0f) * 0.5f) };
-			const float influence{ CatalystBaseMath::SmoothStep<SMALL_MOUNTAIN_SMOOTHING>((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(4)) + 1.0f) * 0.5f) };
+			const float noise{ (PerlinNoiseGenerator::GenerateNoise(rangeCoordinateX, rangeCoordinateY, GetRandomOffset(3)) + 1.0f) * 0.5f };
+			const float influence{ (PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(4)) + 1.0f) * 0.5f };
 
 			*height += noise * influence * ClairvoyantTerrainGenerationConstants::SMALL_MOUNTAIN_INFLUENCE;
 		}
-
+		
 		{
 			//Apply the large hill range.
-			constexpr uint8 LARGE_HILL_SMOOTHING{ 2 };
-
 			float rangeCoordinateX{ worldPosition._X / ClairvoyantTerrainGenerationConstants::LARGE_HILL_RANGE };
 			float rangeCoordinateY{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::LARGE_HILL_RANGE };
 
-			const float noise{ CatalystBaseMath::SmoothStep<LARGE_HILL_SMOOTHING>((PerlinNoiseGenerator::GenerateNoise(rangeCoordinateX, rangeCoordinateY, GetRandomOffset(5)) + 1.0f) * 0.5f) };
-			const float influence{ CatalystBaseMath::SmoothStep<LARGE_HILL_SMOOTHING>((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(6)) + 1.0f) * 0.5f) };
+			const float noise{ (PerlinNoiseGenerator::GenerateNoise(rangeCoordinateX, rangeCoordinateY, GetRandomOffset(5)) + 1.0f) * 0.5f };
+			const float influence{ (PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(6)) + 1.0f) * 0.5f };
 
 			*height += noise * influence * ClairvoyantTerrainGenerationConstants::LARGE_HILL_INFLUENCE;
 		}
 
 		{
-			//Apply the small hill range.
-			constexpr uint8 SMALL_HILL_SMOOTHING{ 1 };
-
+			//Apply the large hill range.
 			float rangeCoordinateX{ worldPosition._X / ClairvoyantTerrainGenerationConstants::SMALL_HILL_RANGE };
 			float rangeCoordinateY{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::SMALL_HILL_RANGE };
 
-			const float noise{ CatalystBaseMath::SmoothStep<SMALL_HILL_SMOOTHING>((PerlinNoiseGenerator::GenerateNoise(rangeCoordinateX, rangeCoordinateY, GetRandomOffset(7)) + 1.0f) * 0.5f) };
-			const float influence{ CatalystBaseMath::SmoothStep<SMALL_HILL_SMOOTHING>((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(8)) + 1.0f) * 0.5f) };
+			const float noise{ (PerlinNoiseGenerator::GenerateNoise(rangeCoordinateX, rangeCoordinateY, GetRandomOffset(7)) + 1.0f) * 0.5f };
+			const float influence{ (PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(8)) + 1.0f) * 0.5f };
 
 			*height += noise * influence * ClairvoyantTerrainGenerationConstants::SMALL_HILL_INFLUENCE;
 		}
