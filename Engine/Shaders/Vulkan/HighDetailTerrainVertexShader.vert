@@ -59,7 +59,6 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec3 vertexNormal;
 layout (location = 2) in vec4 vertexLayerWeights;
-layout (location = 3) in vec2 vertexTextureCoordinate;
 
 //Out parameters.
 layout (location = 0) out vec3 tessellationControlPosition;

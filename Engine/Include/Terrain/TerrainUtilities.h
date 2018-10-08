@@ -57,7 +57,7 @@ namespace TerrainUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, const Vector3 &worldPosition, const float patchSize, const float textureTilingFactor, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, const Vector3 &worldPosition, const float patchSize, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
 	{
 		vertices->Reserve((resolution + 1) * (resolution + 1) * 5);
 		indices->Reserve(resolution * resolution * 6);
@@ -92,9 +92,6 @@ namespace TerrainUtilities
 				vertex._LayerWeightY = layerWeights._Y;
 				vertex._LayerWeightZ = layerWeights._Z;
 				vertex._LayerWeightW = layerWeights._W;
-
-				vertex._TextureCoordinateX = textureCoordinateX * textureTilingFactor;
-				vertex._TextureCoordinateY = textureCoordinateY * textureTilingFactor;
 
 				vertices->EmplaceFast(vertex);
 

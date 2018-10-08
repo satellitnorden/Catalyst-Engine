@@ -60,7 +60,7 @@ void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial));
 
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(4);
+	SetNumberOfVertexInputAttributeDescriptions(3);
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
@@ -73,10 +73,6 @@ void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
 										sizeof(float) * 6);
-	AddVertexInputAttributeDescription(	3,
-										0,
-										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
-										sizeof(float) * 10);
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);

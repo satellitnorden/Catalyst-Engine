@@ -77,10 +77,6 @@ void HighDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
 										sizeof(float) * 6);
-	AddVertexInputAttributeDescription(	3,
-										0,
-										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
-										sizeof(float) * 10);
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);

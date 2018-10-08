@@ -38,10 +38,4 @@ public:
 	//The layer weight on the W axis.
 	float _LayerWeightW;
 
-	//The texture coordinate on the X axis.
-	float _TextureCoordinateX;
-
-	//The texture coordinate on the Y axis.
-	float _TextureCoordinateY;
-
 };
