@@ -73,5 +73,5 @@ void main()
     tessellationControlPosition = vertexPosition;
 	tessellationControlNormal = vertexNormal;
     tessellationControlLayerWeights = vertexLayerWeights;
-    tessellationControlTextureCoordinate = vertexTextureCoordinate;
+    tessellationControlTextureCoordinate = vec2(vertexPosition.x, vertexPosition.z);
 }

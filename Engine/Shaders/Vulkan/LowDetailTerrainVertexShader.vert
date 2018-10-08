@@ -71,7 +71,7 @@ void main()
 	//Pass information to the fragment shader.
 	fragmentNormal = vertexNormal;
     fragmentLayerWeights = vertexLayerWeights;
-    fragmentTextureCoordinate = vertexTextureCoordinate;
+    fragmentTextureCoordinate = vec2(vertexPosition.x, vertexPosition.z);
 
     //Set the position.
     gl_Position = viewMatrix * vec4(vertexPosition, 1.0f);
