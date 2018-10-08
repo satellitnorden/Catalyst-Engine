@@ -118,7 +118,7 @@ void main()
     fragmentTextureCoordinate = gl_TessCoord.x * tessellationEvaluationTextureCoordinate[0] + gl_TessCoord.y * tessellationEvaluationTextureCoordinate[1] + gl_TessCoord.z * tessellationEvaluationTextureCoordinate[2];
 
     vec3 position = (gl_TessCoord.x * tessellationEvaluationPosition[0] + gl_TessCoord.y * tessellationEvaluationPosition[1] + gl_TessCoord.z * tessellationEvaluationPosition[2]);
-    position.y += GetDisplacement();
+    position += fragmentNormal * GetDisplacement();
 
     gl_Position = viewMatrix * vec4(position, 1.0f);
 }
