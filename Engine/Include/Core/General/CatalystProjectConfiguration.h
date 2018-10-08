@@ -67,9 +67,6 @@ class CatalystProjectTerrainConfiguration final
 
 public:
 
-	//The terrain texture tiling factor.
-	float _TerrainTextureTilingFactor;
-
 	//The resolution of each patch.
 	uint32 _PatchResolution;
 

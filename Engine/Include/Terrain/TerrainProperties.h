@@ -11,9 +11,6 @@ class TerrainProperties final
 
 public:
 
-	//The texture tiling factor.
-	float _TerrainTextureTilingFactor;
-
 	//The resolution of each patch.
 	uint32 _PatchResolution;
 

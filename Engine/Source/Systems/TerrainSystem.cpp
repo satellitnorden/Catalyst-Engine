@@ -25,7 +25,6 @@ DEFINE_SINGLETON(TerrainSystem);
 void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT
 {
 	//Copy over the relevant properties.
-	_Properties._TerrainTextureTilingFactor = configuration._TerrainTextureTilingFactor;
 	_Properties._PatchResolution = configuration._PatchResolution;
 	_Properties._PatchSize = configuration._PatchSize;
 	_Properties._HeightGenerationFunction = configuration._HeightGenerationFunction;

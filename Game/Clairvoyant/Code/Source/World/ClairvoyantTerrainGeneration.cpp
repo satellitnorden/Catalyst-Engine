@@ -28,11 +28,8 @@ namespace ClairvoyantTerrainGenerationConstants
 	constexpr float LARGE_HILL_RANGE{ 1'000.0f };
 	constexpr float LARGE_HILL_INFLUENCE{ 0.025f };
 
-	constexpr float MEDIUM_HILL_RANGE{ 100.0f };
-	constexpr float MEDIUM_HILL_INFLUENCE{ 0.00175f };
-
-	constexpr float SMALL_HILL_RANGE{ 10.0f };
-	constexpr float SMALL_HILL_INFLUENCE{ 0.0002f };
+	constexpr float SMALL_HILL_RANGE{ 100.0f };
+	constexpr float SMALL_HILL_INFLUENCE{ 0.00175f };
 
 	constexpr float GRASS_RANGE{ 1'000.0f };
 }
@@ -115,7 +112,7 @@ namespace ClairvoyantTerrainGeneration
 
 			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(1)) };
 
-			*height += CatalystBaseMath::SmoothStep<2>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MOUNTAIN_INFLUENCE;
+			*height += CatalystBaseMath::SmoothStep<3>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::MOUNTAIN_INFLUENCE;
 		}
 
 		{
@@ -125,15 +122,7 @@ namespace ClairvoyantTerrainGeneration
 
 			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(2)) };
 
-			*height += CatalystBaseMath::SmoothStep<1>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::LARGE_HILL_INFLUENCE;
-		}
-
-		{
-			//Apply the medium hill range.
-			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::MEDIUM_HILL_RANGE };
-			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::MEDIUM_HILL_RANGE };
-
-			*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(3)) * ClairvoyantTerrainGenerationConstants::MEDIUM_HILL_INFLUENCE;
+			*height += CatalystBaseMath::SmoothStep<2>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::LARGE_HILL_INFLUENCE;
 		}
 
 		{
@@ -141,7 +130,9 @@ namespace ClairvoyantTerrainGeneration
 			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::SMALL_HILL_RANGE };
 			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::SMALL_HILL_RANGE };
 
-			*height += PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(4)) * ClairvoyantTerrainGenerationConstants::SMALL_HILL_INFLUENCE;
+			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(3)) };
+
+			*height += CatalystBaseMath::SmoothStep<1>((noise + 1.0f) * 0.5f) * ClairvoyantTerrainGenerationConstants::SMALL_HILL_INFLUENCE;
 		}
 
 		//Apply the height.
@@ -208,11 +199,11 @@ namespace ClairvoyantTerrainGeneration
 	{
 		*material = ResourceLoader::GetTerrainMaterial(HashString("DefaultTerrainMaterial"));
 
-		displacementInformation->_FirstLayerDisplacement = 1.25f;
+		displacementInformation->_FirstLayerDisplacement = 0.5f;
 		displacementInformation->_SecondLayerDisplacement = 0.1f;
-		displacementInformation->_ThirdLayerDisplacement = 1.0f;
-		displacementInformation->_FourthLayerDisplacement = 2.0f;
-		displacementInformation->_FifthLayerDisplacement = 1.0f;
+		displacementInformation->_ThirdLayerDisplacement = 0.5f;
+		displacementInformation->_FourthLayerDisplacement = 1.0f;
+		displacementInformation->_FifthLayerDisplacement = 0.5f;
 	}
 
 }

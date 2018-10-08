@@ -58,9 +58,9 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 layout (early_fragment_tests) in;
 
 //In parameters.
-layout (location = 0) in vec3 fragmentNormal;
-layout (location = 1) in vec4 fragmentLayerWeights;
-layout (location = 2) in vec2 fragmentTextureCoordinate;
+layout (location = 0) in vec3 fragmentPosition;
+layout (location = 1) in vec3 fragmentNormal;
+layout (location = 2) in vec4 fragmentLayerWeights;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D layer1AlbedoTexture;
@@ -90,17 +90,48 @@ vec4 layer2MaterialPropertiesSampler;
 vec4 layer3MaterialPropertiesSampler;
 vec4 layer4MaterialPropertiesSampler;
 vec4 layer5MaterialPropertiesSampler;
+vec3 absoluteNormal;
+vec2 textureCoordinateYZ;
+vec2 textureCoordinateXZ;
+vec2 textureCoordinateXY;
+
+/*
+*	Calculates the tri-planar data.
+*/
+void CalculateTriPlanarData()
+{
+	//Calculate the absolute normal.
+	absoluteNormal = abs(fragmentNormal);
+	absoluteNormal /= absoluteNormal.x + absoluteNormal.y + absoluteNormal.z;
+
+	//Calculate the texture coordinates on the three planes.
+	textureCoordinateYZ = fragmentPosition.yz * 0.25f;
+	textureCoordinateXZ = fragmentPosition.xz * 0.25f;
+	textureCoordinateXY = fragmentPosition.xy * 0.25f;
+}
+
+/*
+*	Samples a texture using tri-planar mapping.
+*/
+vec4 SampleTriPlanar(sampler2D textureSampler)
+{
+	vec4 xSample = texture(textureSampler, textureCoordinateYZ) * absoluteNormal.x;
+	vec4 ySample = texture(textureSampler, textureCoordinateXZ) * absoluteNormal.y;
+	vec4 zSample = texture(textureSampler, textureCoordinateXY) * absoluteNormal.z;
+
+	return xSample + ySample + zSample;
+}
 
 /*
 *	Returns the albedo.
 */
 vec4 GetAlbedo()
 {
-    vec4 layer1Albedo = texture(layer1AlbedoTexture, fragmentTextureCoordinate);
-    vec4 layer2Albedo = texture(layer2AlbedoTexture, fragmentTextureCoordinate);
-    vec4 layer3Albedo = texture(layer3AlbedoTexture, fragmentTextureCoordinate);
-    vec4 layer4Albedo = texture(layer4AlbedoTexture, fragmentTextureCoordinate);
-    vec4 layer5Albedo = texture(layer5AlbedoTexture, fragmentTextureCoordinate);
+    vec4 layer1Albedo = SampleTriPlanar(layer1AlbedoTexture);
+    vec4 layer2Albedo = SampleTriPlanar(layer2AlbedoTexture);
+    vec4 layer3Albedo = SampleTriPlanar(layer3AlbedoTexture);
+    vec4 layer4Albedo = SampleTriPlanar(layer4AlbedoTexture);
+    vec4 layer5Albedo = SampleTriPlanar(layer5AlbedoTexture);
 
     vec4 blend1 = mix(layer1Albedo, layer2Albedo, fragmentLayerWeights.x);
     vec4 blend2 = mix(blend1, layer3Albedo, fragmentLayerWeights.y);
@@ -114,11 +145,11 @@ vec4 GetAlbedo()
 */
 vec3 GetNormalDirection()
 {
-	vec3 layer1NormalDirection = texture(layer1NormalMapTexture, fragmentTextureCoordinate).xyz;
-    vec3 layer2NormalDirection = texture(layer2NormalMapTexture, fragmentTextureCoordinate).xyz;
-    vec3 layer3NormalDirection = texture(layer3NormalMapTexture, fragmentTextureCoordinate).xyz;
-    vec3 layer4NormalDirection = texture(layer4NormalMapTexture, fragmentTextureCoordinate).xyz;
-    vec3 layer5NormalDirection = texture(layer5NormalMapTexture, fragmentTextureCoordinate).xyz;
+	vec3 layer1NormalDirection = SampleTriPlanar(layer1NormalMapTexture).xyz;
+    vec3 layer2NormalDirection = SampleTriPlanar(layer2NormalMapTexture).xyz;
+    vec3 layer3NormalDirection = SampleTriPlanar(layer3NormalMapTexture).xyz;
+    vec3 layer4NormalDirection = SampleTriPlanar(layer4NormalMapTexture).xyz;
+    vec3 layer5NormalDirection = SampleTriPlanar(layer5NormalMapTexture).xyz;
 
     vec3 blend1 = mix(layer1NormalDirection, layer2NormalDirection, fragmentLayerWeights.x);
     vec3 blend2 = mix(blend1, layer3NormalDirection, fragmentLayerWeights.y);
@@ -183,12 +214,15 @@ float GetAmbientOcclusion()
 
 void main()
 {
+	//Calculate the tri-planar data.
+	CalculateTriPlanarData();
+
     //Sampler the material properties.
-    layer1MaterialPropertiesSampler = texture(layer1MaterialPropertiesTexture, fragmentTextureCoordinate);
-    layer2MaterialPropertiesSampler = texture(layer2MaterialPropertiesTexture, fragmentTextureCoordinate);
-    layer3MaterialPropertiesSampler = texture(layer3MaterialPropertiesTexture, fragmentTextureCoordinate);
-    layer4MaterialPropertiesSampler = texture(layer4MaterialPropertiesTexture, fragmentTextureCoordinate);
-    layer5MaterialPropertiesSampler = texture(layer5MaterialPropertiesTexture, fragmentTextureCoordinate);
+    layer1MaterialPropertiesSampler = SampleTriPlanar(layer1MaterialPropertiesTexture);
+    layer2MaterialPropertiesSampler = SampleTriPlanar(layer2MaterialPropertiesTexture);
+    layer3MaterialPropertiesSampler = SampleTriPlanar(layer3MaterialPropertiesTexture);
+    layer4MaterialPropertiesSampler = SampleTriPlanar(layer4MaterialPropertiesTexture);
+    layer5MaterialPropertiesSampler = SampleTriPlanar(layer5MaterialPropertiesTexture);
 
 	//Set the albedo color.
 	albedoColor = GetAlbedo();

@@ -82,9 +82,12 @@ layout (set = 1, binding = 11) uniform sampler2D layer4MaterialPropertiesTexture
 layout (set = 1, binding = 14) uniform sampler2D layer5MaterialPropertiesTexture;
 
 //Out parameters.
-layout (location = 0) out vec3 fragmentNormal;
-layout (location = 1) out vec4 fragmentLayerWeights;
-layout (location = 2) out vec2 fragmentTextureCoordinate;
+layout (location = 0) out vec3 fragmentPosition;
+layout (location = 1) out vec3 fragmentNormal;
+layout (location = 2) out vec4 fragmentLayerWeights;
+
+//Globals.
+vec2 fragmentTextureCoordinate;
 
 /*
 *   Returns the displacement value.
@@ -113,12 +116,12 @@ float GetDisplacement()
 void main()
 {
     //Pass information to the tessellation evaluation shader.
+    fragmentPosition = gl_TessCoord.x * tessellationEvaluationPosition[0] + gl_TessCoord.y * tessellationEvaluationPosition[1] + gl_TessCoord.z * tessellationEvaluationPosition[2];
     fragmentNormal = gl_TessCoord.x * tessellationEvaluationNormal[0] + gl_TessCoord.y * tessellationEvaluationNormal[1] + gl_TessCoord.z * tessellationEvaluationNormal[2];
     fragmentLayerWeights = gl_TessCoord.x * tessellationEvaluationLayerWeights[0] + gl_TessCoord.y * tessellationEvaluationLayerWeights[1] + gl_TessCoord.z * tessellationEvaluationLayerWeights[2];
     fragmentTextureCoordinate = gl_TessCoord.x * tessellationEvaluationTextureCoordinate[0] + gl_TessCoord.y * tessellationEvaluationTextureCoordinate[1] + gl_TessCoord.z * tessellationEvaluationTextureCoordinate[2];
 
-    vec3 position = (gl_TessCoord.x * tessellationEvaluationPosition[0] + gl_TessCoord.y * tessellationEvaluationPosition[1] + gl_TessCoord.z * tessellationEvaluationPosition[2]);
-    position += fragmentNormal * GetDisplacement();
+    fragmentPosition += fragmentNormal * GetDisplacement();
 
-    gl_Position = viewMatrix * vec4(position, 1.0f);
+    gl_Position = viewMatrix * vec4(fragmentPosition, 1.0f);
 }

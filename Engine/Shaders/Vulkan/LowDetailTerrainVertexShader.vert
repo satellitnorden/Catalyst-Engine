@@ -61,16 +61,16 @@ layout (location = 1) in vec3 vertexNormal;
 layout (location = 2) in vec4 vertexLayerWeights;
 
 //Out parameters.
-layout (location = 0) out vec3 fragmentNormal;
-layout (location = 1) out vec4 fragmentLayerWeights;
-layout (location = 2) out vec2 fragmentTextureCoordinate;
+layout (location = 0) out vec3 fragmentPosition;
+layout (location = 1) out vec3 fragmentNormal;
+layout (location = 2) out vec4 fragmentLayerWeights;
 
 void main()
 {	
 	//Pass information to the fragment shader.
+    fragmentPosition = vertexPosition;
 	fragmentNormal = vertexNormal;
     fragmentLayerWeights = vertexLayerWeights;
-    fragmentTextureCoordinate = vec2(vertexPosition.x, vertexPosition.z);
 
     //Set the position.
     gl_Position = viewMatrix * vec4(vertexPosition, 1.0f);
