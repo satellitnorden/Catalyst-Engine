@@ -88,10 +88,12 @@ vec4 layer2MaterialPropertiesSampler;
 vec4 layer3MaterialPropertiesSampler;
 vec4 layer4MaterialPropertiesSampler;
 vec4 layer5MaterialPropertiesSampler;
+
 vec3 absoluteNormal;
 vec2 textureCoordinateYZ;
 vec2 textureCoordinateXZ;
 vec2 textureCoordinateXY;
+vec2 finalTextureCoordinate;
 
 vec3 fragmentWorldPosition;
 vec3 fragmentWorldNormal;
@@ -99,6 +101,8 @@ vec4 fragmentLayerWeights;
 
 //Forward declarations.
 vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth);
+float LengthSquared(vec2 vector);
+float RandomFloat(vec3 seed);
 
 /*
 *   Calculates the fragment world position.
@@ -115,18 +119,61 @@ vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
 }
 
 /*
+*   Returns the length of a vector squared.
+*/
+float LengthSquared(vec2 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y;
+}
+
+/*
+*   Given a coordinate and a seed, returns a random number.
+*/
+float RandomFloat(vec3 seed)
+{
+    #define PHI (1.61803398874989484820459f * 00000.1f)
+    #define PI (3.14159265358979323846264f * 00000.1f)
+    #define SQ2 (1.41421356237309504880169f * 10000.0f)
+
+    float modulator = LengthSquared(seed.xy * (seed.z + PHI) - vec2(PHI, PI));
+    modulator += modulator > 1.0f ? 1.0f : 0.0f;
+
+    return fract(tan(modulator) * SQ2);
+}
+
+/*
 *	Calculates the tri-planar data.
 */
 void CalculateTriPlanarData()
 {
 	//Calculate the absolute normal.
 	absoluteNormal = abs(fragmentWorldNormal);
-	absoluteNormal /= absoluteNormal.x + absoluteNormal.y + absoluteNormal.z;
 
 	//Calculate the texture coordinates on the three planes.
-	textureCoordinateYZ = fragmentWorldPosition.yz * 0.25f;
-	textureCoordinateXZ = fragmentWorldPosition.xz * 0.25f;
-	textureCoordinateXY = fragmentWorldPosition.xy * 0.25f;
+	textureCoordinateYZ = fragmentWorldPosition.yz;
+	textureCoordinateXZ = fragmentWorldPosition.xz;
+	textureCoordinateXY = fragmentWorldPosition.xy;
+
+    //Calculate the random float.
+    float randomFloat = RandomFloat(fragmentWorldPosition);
+
+    //Pick which plane to sample.
+    if (absoluteNormal.x > absoluteNormal.y && absoluteNormal.x > absoluteNormal.z && absoluteNormal.x > randomFloat)
+    {
+        finalTextureCoordinate = textureCoordinateYZ;
+    }
+
+    else if (absoluteNormal.y > absoluteNormal.x && absoluteNormal.y > absoluteNormal.z && absoluteNormal.y > randomFloat)
+    {
+        finalTextureCoordinate = textureCoordinateXZ;
+    }
+
+    else
+    {
+        finalTextureCoordinate = textureCoordinateXY;
+    }
+
+    finalTextureCoordinate *= 0.25f;
 }
 
 /*
@@ -134,11 +181,7 @@ void CalculateTriPlanarData()
 */
 vec4 SampleTriPlanar(sampler2D textureSampler)
 {
-	vec4 xSample = texture(textureSampler, textureCoordinateYZ) * absoluteNormal.x;
-	vec4 ySample = texture(textureSampler, textureCoordinateXZ) * absoluteNormal.y;
-	vec4 zSample = texture(textureSampler, textureCoordinateXY) * absoluteNormal.z;
-
-	return xSample + ySample + zSample;
+	return texture(textureSampler, finalTextureCoordinate);
 }
 
 /*

@@ -72,7 +72,7 @@ layout (location = 1) out vec4 normalDepth;
 layout (location = 2) out vec4 materialProperties;
 
 /*
-*   Given a seed, returns a random number.
+*   Given a coordinate and a seed, returns a random number.
 */
 float RandomFloat(vec2 coordinate, float seed)
 {
