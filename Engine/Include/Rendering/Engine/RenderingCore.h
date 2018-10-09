@@ -59,6 +59,7 @@ enum class RenderPassSubStage : uint8
 	//Scene main stage.
 	HighDetailTerrain,
 	LowDetailTerrain,
+	TerrainColor,
 	DynamicPhysical,
 	InstancedPhysical,
 	VegetationDepth,
@@ -204,7 +205,8 @@ enum class Shader : uint8
 	ScreenSpaceAmbientOcclusionFragment,
 	ShadowMapFragment,
 	SkyFragment,
-	TerrainFragment,
+	TerrainColorFragment,
+	TerrainDepthFragment,
 	VegetationColorFragment,
 	VegetationColorVertex,
 	VegetationDepthFragment,

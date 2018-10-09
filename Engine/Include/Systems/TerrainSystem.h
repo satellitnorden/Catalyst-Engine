@@ -42,9 +42,17 @@ public:
 	void SequentialUpdateSystemSynchronous() NOEXCEPT;
 
 	/*
-	*	Returns the terrain properties.
+	*	Returns the terrain properties, const.
 	*/
 	RESTRICTED NO_DISCARD const TerrainProperties *const RESTRICT GetTerrainProperties() const NOEXCEPT
+	{
+		return &_Properties;
+	}
+
+	/*
+	*	Returns the terrain properties, non-const.
+	*/
+	RESTRICTED NO_DISCARD TerrainProperties *const RESTRICT GetTerrainProperties() NOEXCEPT
 	{
 		return &_Properties;
 	}

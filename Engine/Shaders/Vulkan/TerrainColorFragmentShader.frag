@@ -58,26 +58,25 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 layout (early_fragment_tests) in;
 
 //In parameters.
-layout (location = 0) in vec3 fragmentPosition;
-layout (location = 1) in vec3 fragmentNormal;
-layout (location = 2) in vec4 fragmentLayerWeights;
+layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D layer1AlbedoTexture;
-layout (set = 1, binding = 1) uniform sampler2D layer1NormalMapTexture;
-layout (set = 1, binding = 2) uniform sampler2D layer1MaterialPropertiesTexture;
-layout (set = 1, binding = 3) uniform sampler2D layer2AlbedoTexture;
-layout (set = 1, binding = 4) uniform sampler2D layer2NormalMapTexture;
-layout (set = 1, binding = 5) uniform sampler2D layer2MaterialPropertiesTexture;
-layout (set = 1, binding = 6) uniform sampler2D layer3AlbedoTexture;
-layout (set = 1, binding = 7) uniform sampler2D layer3NormalMapTexture;
-layout (set = 1, binding = 8) uniform sampler2D layer3MaterialPropertiesTexture;
-layout (set = 1, binding = 9) uniform sampler2D layer4AlbedoTexture;
-layout (set = 1, binding = 10) uniform sampler2D layer4NormalMapTexture;
-layout (set = 1, binding = 11) uniform sampler2D layer4MaterialPropertiesTexture;
-layout (set = 1, binding = 12) uniform sampler2D layer5AlbedoTexture;
-layout (set = 1, binding = 13) uniform sampler2D layer5NormalMapTexture;
-layout (set = 1, binding = 14) uniform sampler2D layer5MaterialPropertiesTexture;
+layout (set = 1, binding = 0) uniform sampler2D normalDepthTexture;
+layout (set = 2, binding = 0) uniform sampler2D layer1AlbedoTexture;
+layout (set = 2, binding = 1) uniform sampler2D layer1NormalMapTexture;
+layout (set = 2, binding = 2) uniform sampler2D layer1MaterialPropertiesTexture;
+layout (set = 2, binding = 3) uniform sampler2D layer2AlbedoTexture;
+layout (set = 2, binding = 4) uniform sampler2D layer2NormalMapTexture;
+layout (set = 2, binding = 5) uniform sampler2D layer2MaterialPropertiesTexture;
+layout (set = 2, binding = 6) uniform sampler2D layer3AlbedoTexture;
+layout (set = 2, binding = 7) uniform sampler2D layer3NormalMapTexture;
+layout (set = 2, binding = 8) uniform sampler2D layer3MaterialPropertiesTexture;
+layout (set = 2, binding = 9) uniform sampler2D layer4AlbedoTexture;
+layout (set = 2, binding = 10) uniform sampler2D layer4NormalMapTexture;
+layout (set = 2, binding = 11) uniform sampler2D layer4MaterialPropertiesTexture;
+layout (set = 2, binding = 12) uniform sampler2D layer5AlbedoTexture;
+layout (set = 2, binding = 13) uniform sampler2D layer5NormalMapTexture;
+layout (set = 2, binding = 14) uniform sampler2D layer5MaterialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
@@ -95,19 +94,40 @@ vec2 textureCoordinateYZ;
 vec2 textureCoordinateXZ;
 vec2 textureCoordinateXY;
 
+vec3 fragmentWorldPosition;
+vec3 fragmentWorldNormal;
+vec4 fragmentLayerWeights;
+
+//Forward declarations.
+vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth);
+
+/*
+*   Calculates the fragment world position.
+*/
+vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
+{
+    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
+    vec3 fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, depth);
+    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
+    viewSpacePosition /= viewSpacePosition.w;
+    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
+
+    return worldSpacePosition.xyz;
+}
+
 /*
 *	Calculates the tri-planar data.
 */
 void CalculateTriPlanarData()
 {
 	//Calculate the absolute normal.
-	absoluteNormal = abs(fragmentNormal);
+	absoluteNormal = abs(fragmentWorldNormal);
 	absoluteNormal /= absoluteNormal.x + absoluteNormal.y + absoluteNormal.z;
 
 	//Calculate the texture coordinates on the three planes.
-	textureCoordinateYZ = fragmentPosition.yz * 0.25f;
-	textureCoordinateXZ = fragmentPosition.xz * 0.25f;
-	textureCoordinateXY = fragmentPosition.xy * 0.25f;
+	textureCoordinateYZ = fragmentWorldPosition.yz * 0.25f;
+	textureCoordinateXZ = fragmentWorldPosition.xz * 0.25f;
+	textureCoordinateXY = fragmentWorldPosition.xy * 0.25f;
 }
 
 /*
@@ -214,6 +234,18 @@ float GetAmbientOcclusion()
 
 void main()
 {
+    //Sample the normal depth texture.
+    vec4 normalDepthTextureSampler = texture(normalDepthTexture, fragmentTextureCoordinate);
+
+    //Calculate the fragment world position.
+    fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, normalDepthTextureSampler.w);
+
+    //Set the fragment world normal.
+    fragmentWorldNormal = normalDepthTextureSampler.xyz;
+
+    //Set the fragment layer weights.
+    fragmentLayerWeights = vec4(1.0f, 0.0f, 0.0f, 0.0f);
+
 	//Calculate the tri-planar data.
 	CalculateTriPlanarData();
 
@@ -228,7 +260,7 @@ void main()
 	albedoColor = GetAlbedo();
 
 	//Calculate the tangent space matrix.
-	vec3 normal = fragmentNormal;
+	vec3 normal = fragmentWorldNormal;
 	vec3 tangent = cross(vec3(0.0f, 0.0f, 1.0f), normal);
 	vec3 bitangent = cross(tangent, normal);
 
@@ -238,7 +270,7 @@ void main()
     vec3 normalDirection = GetNormalDirection();
     normalDirection = tangentSpaceMatrix * normalDirection;
     normalDirection = normalize(normalDirection);
-    normalDirectionDepth = vec4(normalDirection, gl_FragCoord.z);
+    normalDirectionDepth = vec4(normalDirection, normalDepthTextureSampler.w);
 
 	//Set the roughness.
     materialProperties.r = GetRoughness();

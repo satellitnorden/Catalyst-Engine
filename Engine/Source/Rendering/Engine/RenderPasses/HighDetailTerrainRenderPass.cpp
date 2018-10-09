@@ -43,7 +43,7 @@ void HighDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 	SetTessellationControlShader(Shader::HighDetailTerrainTessellationControl);
 	SetTessellationEvaluationShader(Shader::HighDetailTerrainTessellationEvaluation);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::TerrainFragment);
+	SetFragmentShader(Shader::TerrainDepthFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);

@@ -25,6 +25,7 @@
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>
+#include <Rendering/Engine/RenderPasses/TerrainColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/VegetationColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/VegetationDepthRenderPass.h>
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)

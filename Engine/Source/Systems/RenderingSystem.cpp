@@ -119,11 +119,19 @@ void RenderingSystem::PostInitializeSystem()
 	InitializeRenderPasses();
 }
 
+#include <Systems/TerrainSystem.h>
+
 /*
 *	Updates the rendering system synchronously during the rendering update phase.
 */
 void RenderingSystem::RenderingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	//TEMP: Update the terrain material.
+	TerrainMaterial material;
+	TerrainDisplacementInformation displacement;
+	TerrainSystem::Instance->GetTerrainProperties()->_PatchPropertiesGenerationFunction(*TerrainSystem::Instance->GetTerrainProperties(), Vector3(0.0f, 0.0f, 0.0f), &material, &displacement);
+	TerrainSystem::Instance->GetTerrainProperties()->_RenderDataTable = material._RenderDataTable;
+
 	//Render-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
@@ -744,6 +752,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalInstancedPhysicalShadow)] = DirectionalInstancedPhysicalShadowRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTerrain)] = HighDetailTerrainRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTerrain)] = LowDetailTerrainRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::TerrainColor)] = TerrainColorRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DynamicPhysical)] = DynamicPhysicalRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::InstancedPhysical)] = InstancedPhysicalRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::VegetationDepth)] = VegetationDepthRenderPass::Instance.Get();

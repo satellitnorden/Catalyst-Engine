@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Rendering.
+#include <Rendering/Engine/RenderingCore.h>
+
 //Terrain.
 #include <Terrain/TerrainCore.h>
 
@@ -10,6 +13,9 @@ class TerrainProperties final
 {
 
 public:
+
+	//The render data table for the terrain material.
+	RenderDataTableHandle _RenderDataTable;
 
 	//The resolution of each patch.
 	uint32 _PatchResolution;
