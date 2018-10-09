@@ -37,7 +37,7 @@ namespace ClairvoyantResourceCreation
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 
-			//EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+			EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
 		}
 
 		{
@@ -50,7 +50,7 @@ namespace ClairvoyantResourceCreation
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 
-			//EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+			EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
 		}
 
 		{
@@ -63,7 +63,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Normal = "..\\..\\..\\Resources\\Raw\\Textures\\Ocean\\Normal.jpg";
 			parameters._Foam = "..\\..\\..\\Resources\\Raw\\Textures\\Ocean\\Foam.jpg";
 
-			//OceanMaterialCreator::CreateOceanMaterial(parameters);
+			OceanMaterialCreator::CreateOceanMaterial(parameters);
 		}
 
 		{
@@ -78,7 +78,7 @@ namespace ClairvoyantResourceCreation
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Debris\\Albedo.png";
 			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Debris\\NormalMap.png";
 
-			//VegetationMaterialCreator::CreateVegetationMaterial(parameters);
+			VegetationMaterialCreator::CreateVegetationMaterial(parameters);
 		}
 
 		{
@@ -93,7 +93,7 @@ namespace ClairvoyantResourceCreation
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Fern\\Albedo.png";
 			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Fern\\NormalMap.png";
 
-			//VegetationMaterialCreator::CreateVegetationMaterial(parameters);
+			VegetationMaterialCreator::CreateVegetationMaterial(parameters);
 		}
 
 		{
@@ -108,7 +108,7 @@ namespace ClairvoyantResourceCreation
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\Albedo.png";
 			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\NormalMap.png";
 
-			//VegetationMaterialCreator::CreateVegetationMaterial(parameters);
+			VegetationMaterialCreator::CreateVegetationMaterial(parameters);
 		}
 
 		{
@@ -123,7 +123,7 @@ namespace ClairvoyantResourceCreation
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass2\\Albedo.png";
 			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass2\\NormalMap.png";
 
-			//VegetationMaterialCreator::CreateVegetationMaterial(parameters);
+			VegetationMaterialCreator::CreateVegetationMaterial(parameters);
 		}
 
 		{
@@ -138,7 +138,7 @@ namespace ClairvoyantResourceCreation
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Tree\\Albedo.png";
 			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Tree\\NormalMap.png";
 
-			//VegetationMaterialCreator::CreateVegetationMaterial(parameters);
+			VegetationMaterialCreator::CreateVegetationMaterial(parameters);
 		}
 
 		{
@@ -150,7 +150,7 @@ namespace ClairvoyantResourceCreation
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\DebrisVegetationModel.fbx";
 			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::X;
 
-			//VegetationModelCreator::CreateVegetationModel(parameters);
+			VegetationModelCreator::CreateVegetationModel(parameters);
 		}
 
 		{
@@ -162,7 +162,7 @@ namespace ClairvoyantResourceCreation
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\FernVegetationModel.fbx";
 			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::Z;
 
-			//VegetationModelCreator::CreateVegetationModel(parameters);
+			VegetationModelCreator::CreateVegetationModel(parameters);
 		}
 
 		{
@@ -174,7 +174,7 @@ namespace ClairvoyantResourceCreation
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\GrassVegetationModel.fbx";
 			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::Y;
 
-			//VegetationModelCreator::CreateVegetationModel(parameters);
+			VegetationModelCreator::CreateVegetationModel(parameters);
 		}
 
 		{
@@ -186,7 +186,7 @@ namespace ClairvoyantResourceCreation
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\TreeVegetationModel.fbx";
 			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::Z;
 
-			//VegetationModelCreator::CreateVegetationModel(parameters);
+			VegetationModelCreator::CreateVegetationModel(parameters);
 		}
 
 		{
@@ -232,7 +232,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Layers[4]._AmbientOcclusion = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow1AmbientOcclusion.png";
 			parameters._Layers[4]._Displacement = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Snow1Displacement.png";
 
-			//TerrainMaterialCreator::CreateTerrainMaterial(parameters);
+			TerrainMaterialCreator::CreateTerrainMaterial(parameters);
 		}
 
 		{

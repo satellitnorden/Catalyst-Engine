@@ -816,10 +816,11 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		constexpr uint32 MATERIAL_PROPERTIES_INDEX{ 3 };
 		constexpr uint32 DIRECTIONAL_SHADOW_INDEX{ 4 };
 		constexpr uint32 SCENE_INDEX{ 5 };
+		constexpr uint32 SCENE_INTERMEDIATE_INDEX{ 6 };
 
 		VulkanRenderPassCreationParameters renderPassParameters;
 
-		StaticArray<VkAttachmentDescription, 6> attachmenDescriptions
+		StaticArray<VkAttachmentDescription, 7> attachmenDescriptions
 		{
 			//Depth buffer.
 			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetFormat(),
@@ -873,6 +874,15 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 															VK_ATTACHMENT_STORE_OP_DONT_CARE,
 															VK_IMAGE_LAYOUT_UNDEFINED,
+															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL),
+
+			//Scene intermediate.
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_CLEAR,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_UNDEFINED,
 															VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
 		};
 
@@ -886,33 +896,63 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
 		};
 
+		constexpr StaticArray<const VkAttachmentReference, 2> terrainDepthAttachmentReferences
+		{
+			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
+			VkAttachmentReference{ SCENE_INTERMEDIATE_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+		};
+
+		constexpr VkAttachmentReference normalDepthAttachmentReference{  NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
+
 		constexpr VkAttachmentReference depthAttachmentReference{ DEPTH_BUFFER_INDEX, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
+
+		constexpr StaticArray<const VkAttachmentReference, 2> particleSystemAttachmentReferences
+		{
+			VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_GENERAL },
+			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL }
+		};
+
+		constexpr VkAttachmentReference normalDepthInputAttachmentReference{ VulkanUtilities::CreateAttachmentReference(NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) };
+
+		constexpr VkAttachmentReference directionalShadowColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(DIRECTIONAL_SHADOW_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) };
 
 		StaticArray<VkSubpassDescription, NUMBER_OF_SCENE_BUFFER_SUBPASSES> subpassDescriptions;
 
-		subpassDescriptions[0] = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
-																			sceneBufferColorAttachmentReferences.Data(),
-																			&depthAttachmentReference,
-																			0,
-																			nullptr);
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailTerrain)]
+			= VulkanUtilities::CreateSubpassDescription(	0,
+															nullptr,
+															static_cast<uint32>(terrainDepthAttachmentReferences.Size()),
+															terrainDepthAttachmentReferences.Data(),
+															&depthAttachmentReference,
+															0,
+															nullptr);
 
-		subpassDescriptions[1] = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
-																			sceneBufferColorAttachmentReferences.Data(),
-																			&depthAttachmentReference,
-																			0,
-																			nullptr);
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::LowDetailTerrain)]
+			= VulkanUtilities::CreateSubpassDescription(	0,
+															nullptr,
+															static_cast<uint32>(terrainDepthAttachmentReferences.Size()),
+															terrainDepthAttachmentReferences.Data(),
+															&depthAttachmentReference,
+															0,
+															nullptr);
 
-		subpassDescriptions[2] = VulkanUtilities::CreateSubpassDescription(	0,
-																		nullptr,
-																		static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
-																		sceneBufferColorAttachmentReferences.Data(),
-																		&depthAttachmentReference,
-																		0,
-																		nullptr);
+		constexpr VkAttachmentReference terrainColorInputAttachmentReference{ VulkanUtilities::CreateAttachmentReference(NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL) };
+
+		constexpr StaticArray<const VkAttachmentReference, 3> terrainColorAttachmentReferences
+		{
+			VkAttachmentReference{ ALBEDO_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
+			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL },
+			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+		};
+
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TerrainColor)]
+			= VulkanUtilities::CreateSubpassDescription(	1,
+															&terrainColorInputAttachmentReference,
+															static_cast<uint32>(terrainColorAttachmentReferences.Size()),
+															terrainColorAttachmentReferences.Data(),
+															&depthAttachmentReference,
+															0,
+															nullptr);
 
 		subpassDescriptions[3] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
@@ -945,10 +985,6 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
-
-		constexpr VkAttachmentReference normalDepthInputAttachmentReference{ VulkanUtilities::CreateAttachmentReference(NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) };
-
-		constexpr VkAttachmentReference directionalShadowColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(DIRECTIONAL_SHADOW_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) };
 
 		subpassDescriptions[7] = VulkanUtilities::CreateSubpassDescription(	1,
 																			&normalDepthInputAttachmentReference,
@@ -990,12 +1026,6 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
-
-		constexpr StaticArray<const VkAttachmentReference, 2> particleSystemAttachmentReferences
-		{
-			VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_GENERAL },
-			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL }
-		};
 
 		subpassDescriptions[11] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(particleSystemAttachmentReferences.Size()),
 																			particleSystemAttachmentReferences.Data(),
@@ -1129,14 +1159,15 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._RenderPass->Get();
 
-		StaticArray<VkImageView, 6> attachments
+		StaticArray<VkImageView, 7> attachments
 		{
 			static_cast<VulkanDepthBuffer *const RESTRICT>(RenderingSystem::Instance->GetDepthBuffer(DepthBuffer::SceneBuffer))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferAlbedo))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferMaterialProperties))->GetImageView(),
 			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::DirectionalShadow))->GetImageView(),
-			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView(),
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImageView()
 		};
 
 		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
@@ -1145,7 +1176,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._FrameBuffers.Reserve(1);
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._NumberOfAttachments = 6;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._NumberOfAttachments = static_cast<uint32>(attachments.Size());
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::Scene)]._ShouldClear = true;
 	}
 

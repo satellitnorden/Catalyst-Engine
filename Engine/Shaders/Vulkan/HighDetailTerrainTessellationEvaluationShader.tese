@@ -83,10 +83,10 @@ layout (set = 1, binding = 14) uniform sampler2D layer5MaterialPropertiesTexture
 
 //Out parameters.
 layout (location = 0) out vec3 fragmentNormal;
+layout (location = 1) out vec4 fragmentLayerWeights;
 
 //Globals.
 vec2 fragmentTextureCoordinate;
-vec4 fragmentLayerWeights;
 
 /*
 *   Returns the displacement value.
@@ -116,7 +116,6 @@ void main()
 {
     //Pass information to the tessellation evaluation shader.
     fragmentNormal = gl_TessCoord.x * tessellationEvaluationNormal[0] + gl_TessCoord.y * tessellationEvaluationNormal[1] + gl_TessCoord.z * tessellationEvaluationNormal[2];
-
     fragmentLayerWeights = gl_TessCoord.x * tessellationEvaluationLayerWeights[0] + gl_TessCoord.y * tessellationEvaluationLayerWeights[1] + gl_TessCoord.z * tessellationEvaluationLayerWeights[2];
 
     vec3 position = gl_TessCoord.x * tessellationEvaluationPosition[0] + gl_TessCoord.y * tessellationEvaluationPosition[1] + gl_TessCoord.z * tessellationEvaluationPosition[2];

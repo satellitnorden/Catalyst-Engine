@@ -49,10 +49,9 @@ void HighDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(3);
-	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
+	SetNumberOfRenderTargets(2);
 	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
-	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
+	AddRenderTarget(RenderTarget::SceneIntermediate);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -125,7 +124,7 @@ void HighDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 
 	for (const TerrainPatchRenderInformation &information : *informations)
 	{
-		if (!information._Draw)
+		if (!information._Draw || !information._HighDetail)
 		{
 			continue;
 		}
@@ -134,7 +133,7 @@ void HighDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 
 		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
-		commandBuffer->BindRenderDataTable(this, 1, information._RenderDataTable);
+		commandBuffer->BindRenderDataTable(this, 1, TerrainSystem::Instance->GetTerrainProperties()->_RenderDataTable);
 		commandBuffer->PushConstants(this, ShaderStage::TessellationEvaluation, 0, sizeof(TerrainDisplacementInformation), &information._DisplacementInformation);
 
 		commandBuffer->DrawIndexed(this, information._IndexCount, 1);

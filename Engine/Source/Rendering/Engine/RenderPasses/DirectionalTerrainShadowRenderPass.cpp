@@ -139,7 +139,7 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 
 		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
-		commandBuffer->BindRenderDataTable(this, 1, information._RenderDataTable);
+		commandBuffer->BindRenderDataTable(this, 1, TerrainSystem::Instance->GetTerrainProperties()->_RenderDataTable);
 		commandBuffer->PushConstants(this, ShaderStage::TessellationEvaluation, 0, sizeof(TerrainDisplacementInformation), &information._DisplacementInformation);
 
 		commandBuffer->DrawIndexed(this, information._IndexCount, 1);

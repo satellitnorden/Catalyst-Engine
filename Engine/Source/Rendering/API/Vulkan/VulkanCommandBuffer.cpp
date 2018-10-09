@@ -7,7 +7,7 @@
 //Vulkan command buffer constants.
 namespace VulkanCommandBufferConstants
 {
-	constexpr uint64 MAXIMUM_NUMBER_OF_CLEAR_VALUES{ 6 };
+	constexpr uint64 MAXIMUM_NUMBER_OF_CLEAR_VALUES{ 7 };
 }
 
 /*

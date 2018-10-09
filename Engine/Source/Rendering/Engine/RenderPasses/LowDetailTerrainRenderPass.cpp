@@ -49,15 +49,13 @@ void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(3);
-	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
+	SetNumberOfRenderTargets(2);
 	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
-	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
+	AddRenderTarget(RenderTarget::SceneIntermediate);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(3);
@@ -105,7 +103,8 @@ void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all low detail terrain render informations and draw them
-	const StaticArray<TerrainPatchRenderInformation, 32> *const RESTRICT informations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
+	const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT highDetailInformations{ TerrainSystem::Instance->GetHighDetailTerrainPatchRenderInformations() };
+	const StaticArray<TerrainPatchRenderInformation, 32> *const RESTRICT lowDetailInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
 
 	//Cache the command buffer
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -119,7 +118,27 @@ void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 	//Wait for terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
 
-	for (const TerrainPatchRenderInformation &information : *informations)
+	for (const TerrainPatchRenderInformation &information : *highDetailInformations)
+	{
+		if (!information._Draw)
+		{
+			continue;
+		}
+
+		if (information._HighDetail)
+		{
+			continue;
+		}
+
+		const uint64 offset{ 0 };
+
+		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &offset);
+		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
+
+		commandBuffer->DrawIndexed(this, information._IndexCount, 1);
+	}
+
+	for (const TerrainPatchRenderInformation &information : *lowDetailInformations)
 	{
 		if (!information._Draw)
 		{
@@ -130,7 +149,6 @@ void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 
 		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
-		commandBuffer->BindRenderDataTable(this, 1, information._RenderDataTable);
 
 		commandBuffer->DrawIndexed(this, information._IndexCount, 1);
 	}

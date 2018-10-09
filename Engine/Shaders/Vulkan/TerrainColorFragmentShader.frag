@@ -55,13 +55,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
-layout (early_fragment_tests) in;
-
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D normalDepthTexture;
+layout (set = 1, binding = 1) uniform sampler2D layerWeightsTexture;
 layout (set = 2, binding = 0) uniform sampler2D layer1AlbedoTexture;
 layout (set = 2, binding = 1) uniform sampler2D layer1NormalMapTexture;
 layout (set = 2, binding = 2) uniform sampler2D layer1MaterialPropertiesTexture;
@@ -244,7 +243,7 @@ void main()
     fragmentWorldNormal = normalDepthTextureSampler.xyz;
 
     //Set the fragment layer weights.
-    fragmentLayerWeights = vec4(1.0f, 0.0f, 0.0f, 0.0f);
+    fragmentLayerWeights = texture(layerWeightsTexture, fragmentTextureCoordinate);
 
 	//Calculate the tri-planar data.
 	CalculateTriPlanarData();

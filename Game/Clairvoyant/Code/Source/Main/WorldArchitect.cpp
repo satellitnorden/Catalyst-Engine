@@ -36,10 +36,10 @@ DEFINE_SINGLETON(WorldArchitect);
 void WorldArchitect::Initialize() NOEXCEPT
 {
 	//Initialize the particles.
-	InitializeParticles();
+	//InitializeParticles();
 
 	//Initialize the vegetation.
-	InitializeVegetation();
+	//InitializeVegetation();
 }
 
 /*

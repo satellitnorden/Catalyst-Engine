@@ -15,7 +15,10 @@ class TerrainPatchRenderInformation final
 public:
 
 	//Denotes whether or not to draw this patch.
-	std::atomic<bool> _Draw;
+	bool _Draw;
+
+	//Denotes whether or not to draw this patch as high detail.
+	bool _HighDetail;
 
 	//The buffer.
 	ConstantBufferHandle _Buffer;
@@ -25,9 +28,6 @@ public:
 
 	//The index count.
 	uint32 _IndexCount;
-
-	//The render data table.
-	RenderDataTableHandle _RenderDataTable;
 
 	//The displacement information.
 	TerrainDisplacementInformation _DisplacementInformation;
