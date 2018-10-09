@@ -151,6 +151,46 @@ public:
 	bool IsDepthWriteEnabled() const NOEXCEPT { return _DepthWriteEnabled; }
 
 	/*
+	*	Returns whether or not stencil test is enabled.
+	*/
+	bool IsStencilTestEnabled() const NOEXCEPT { return _StencilTestEnabled; }
+
+	/*
+	*	Returns the action performed on samples that fail the stencil test.
+	*/
+	StencilOperator GetStencilFailOperator() const NOEXCEPT { return _StencilFailOperator; }
+
+	/*
+	*	Returns the action performed on samples that pass both the depth test and the stencil test.
+	*/
+	StencilOperator GetStencilPassOperator() const NOEXCEPT { return _StencilPassOperator; }
+
+	/*
+	*	Returns the action performed on samples that fail the depth test but pass the stencil test.
+	*/
+	StencilOperator GetStencilDepthFailOperator() const NOEXCEPT { return _StencilDepthFailOperator; }
+
+	/*
+	*	Returns the stencil compare operator.
+	*/
+	CompareOperator GetStencilCompareOperator() const NOEXCEPT { return _StencilCompareOperator; }
+
+	/*
+	*	Returns the stencil compare mask.
+	*/
+	uint32 GetStencilCompareMask() const NOEXCEPT { return _StencilCompareMask; }
+
+	/*
+	*	Returns the stencil write mask.
+	*/
+	uint32 GetStencilWriteMask() const NOEXCEPT { return _StencilWriteMask; }
+
+	/*
+	*	Returns the stencil reference mask.
+	*/
+	uint32 GetStencilReferenceMask() const NOEXCEPT { return _StencilCompareMask; }
+
+	/*
 	*	Returns the topology.
 	*/
 	Topology GetTopology() const NOEXCEPT { return _Topology; }
@@ -303,6 +343,46 @@ protected:
 	void SetDepthWriteEnabled(const bool newDepthWriteEnabled) NOEXCEPT { _DepthWriteEnabled = newDepthWriteEnabled; }
 
 	/*
+	*	Sets whether or not stencil test is enabled.
+	*/
+	void SetStencilTestEnabled(const bool newStencilTestEnabled) NOEXCEPT { _StencilTestEnabled = newStencilTestEnabled; }
+
+	/*
+	*	Sets the action performed on samples that fail the stencil test.
+	*/
+	void SetStencilFailOperator(const StencilOperator newStencilFailOperator) NOEXCEPT { _StencilFailOperator = newStencilFailOperator; }
+
+	/*
+	*	Sets the action performed on samples that pass both the depth test and the stencil test.
+	*/
+	void SetStencilPassOperator(const StencilOperator newStencilPassOperator) NOEXCEPT { _StencilPassOperator = newStencilPassOperator; }
+
+	/*
+	*	Sets the action performed on samples that fail the depth test but pass the stencil test.
+	*/
+	void SetStencilDepthFailOperator(const StencilOperator newStencilDepthFailOperator) NOEXCEPT { _StencilDepthFailOperator = newStencilDepthFailOperator; }
+
+	/*
+	*	Sets the stencil compare operator.
+	*/
+	void SetStencilCompareOperator(const CompareOperator newStencilCompareOperator) NOEXCEPT { _StencilCompareOperator = newStencilCompareOperator; }
+
+	/*
+	*	Sets the stencil compare mask.
+	*/
+	void SetStencilCompareMask(const uint32 newStencilCompareMask) NOEXCEPT { _StencilCompareMask = newStencilCompareMask; }
+
+	/*
+	*	Sets the stencil write mask.
+	*/
+	void SetStencilWriteMask(const uint32 newStencilWriteMask) NOEXCEPT { _StencilWriteMask = newStencilWriteMask; }
+
+	/*
+	*	Sets the stencil reference mask.
+	*/
+	void SetStencilReferenceMask(const uint32 newStencilReferenceMask) NOEXCEPT { _StencilCompareMask = newStencilReferenceMask; }
+
+	/*
 	*	Sets the topology.
 	*/
 	void SetTopology(const Topology newTopology) NOEXCEPT { _Topology = newTopology; }
@@ -388,6 +468,30 @@ private:
 
 	//Denotes whether or not depth write is enabled.
 	bool _DepthWriteEnabled;
+
+	//Denotes whether or not stencil test is enabled.
+	bool _StencilTestEnabled;
+
+	//The action performed on samples that fail the stencil test.
+	StencilOperator _StencilFailOperator;
+
+	//The action performed on samples that pass both the depth test and the stencil test.
+	StencilOperator _StencilPassOperator;
+
+	//The action performed on samples that fail the depth test but pass the stencil test.
+	StencilOperator _StencilDepthFailOperator;
+
+	//The stencil compare operator.
+	CompareOperator _StencilCompareOperator;
+
+	//The stencil compare mask.
+	uint32 _StencilCompareMask;
+
+	//The stencil write mask.
+	uint32 _StencilWriteMask;
+
+	//The stencil reference mask.
+	uint32 _StencilReferenceMask;
 
 	//The topology.
 	Topology _Topology;

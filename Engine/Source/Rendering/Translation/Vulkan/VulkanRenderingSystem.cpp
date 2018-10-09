@@ -265,6 +265,14 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	if (renderPass->GetTessellationEvaluationShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(renderPass->GetTessellationEvaluationShader())]);
 	if (renderPass->GetGeometryShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(renderPass->GetGeometryShader())]);
 	if (renderPass->GetFragmentShader() != Shader::None) parameters._ShaderModules.EmplaceFast(_ShaderModules[UNDERLYING(renderPass->GetFragmentShader())]);
+	parameters._StencilTestEnable = renderPass->IsStencilTestEnabled();
+	parameters._StencilFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(renderPass->GetStencilFailOperator());
+	parameters._StencilPassOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(renderPass->GetStencilPassOperator());
+	parameters._StencilDepthFailOperator = VulkanTranslationUtilities::GetVulkanStencilOperator(renderPass->GetStencilDepthFailOperator());
+	parameters._StencilCompareOperator = VulkanTranslationUtilities::GetVulkanCompareOperator(renderPass->GetStencilCompareOperator());
+	parameters._StencilCompareMask = renderPass->GetStencilCompareMask();
+	parameters._StencilWriteMask = renderPass->GetStencilWriteMask();
+	parameters._StencilReferenceMask = renderPass->GetStencilReferenceMask();
 	parameters._Subpass = VulkanTranslationUtilities::GetSubStageIndex(renderPass->GetMainStage(), renderPass->GetSubStage());
 
 	parameters._Topology = VulkanTranslationUtilities::GetVulkanTopology(renderPass->GetTopology());

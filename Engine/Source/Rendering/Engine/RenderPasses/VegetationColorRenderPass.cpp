@@ -135,6 +135,14 @@ void VegetationColorRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthCompareOperator(CompareOperator::Equal);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(false);
+	SetStencilTestEnabled(false);
+	SetStencilFailOperator(StencilOperator::Keep);
+	SetStencilPassOperator(StencilOperator::Keep);
+	SetStencilDepthFailOperator(StencilOperator::Keep);
+	SetStencilCompareOperator(CompareOperator::Always);
+	SetStencilCompareMask(0);
+	SetStencilWriteMask(0);
+	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.

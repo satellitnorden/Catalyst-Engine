@@ -83,6 +83,14 @@ void AboveOceanRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthCompareOperator(CompareOperator::Always);
 	SetDepthTestEnabled(false);
 	SetDepthWriteEnabled(false);
+	SetStencilTestEnabled(false);
+	SetStencilFailOperator(StencilOperator::Keep);
+	SetStencilPassOperator(StencilOperator::Keep);
+	SetStencilDepthFailOperator(StencilOperator::Keep);
+	SetStencilCompareOperator(CompareOperator::Always);
+	SetStencilCompareMask(0);
+	SetStencilWriteMask(0);
+	SetStencilReferenceMask(0);
 	SetTopology(Topology::TriangleFan);
 
 	//Set the render function.

@@ -44,6 +44,30 @@ public:
 	//The shader modules.
 	DynamicArray<VulkanShaderModule *RESTRICT> _ShaderModules;
 
+	//Defines whether or not to enable stencil test.
+	VkBool32 _StencilTestEnable;
+
+	//The stencil fail operator.
+	VkStencilOp _StencilFailOperator;
+
+	//The stencil pass operator.
+	VkStencilOp _StencilPassOperator;
+
+	//The stencil depth fail operator.
+	VkStencilOp _StencilDepthFailOperator;
+
+	//The stencil compare operator.
+	VkCompareOp _StencilCompareOperator;
+
+	//The stencil compare mask.
+	uint32 _StencilCompareMask;
+
+	//The stencil write mask.
+	uint32 _StencilWriteMask;
+
+	//The stencil reference mask.
+	uint32 _StencilReferenceMask;
+
 	//The subpass.
 	uint32 _Subpass;
 

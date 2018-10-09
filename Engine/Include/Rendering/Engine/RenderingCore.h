@@ -234,6 +234,19 @@ enum class ShaderStage : uint8
 
 ENUMERATION_BIT_OPERATIONS(ShaderStage);
 
+//Enumeration covering all stencil operators.
+enum class StencilOperator : uint8
+{
+	Keep,
+	Zero,
+	Replace,
+	IncrementAndClamp,
+	DecrementAndClamp,
+	Invert,
+	IncrementAndWrap,
+	DecrementAndWrap
+};
+
 //Enumeration covering all topologies.
 enum class Topology : uint8
 {

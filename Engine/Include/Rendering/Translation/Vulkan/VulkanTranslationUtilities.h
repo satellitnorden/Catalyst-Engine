@@ -257,6 +257,25 @@ public:
 	}
 
 	/*
+	*	Given a stencil operator, return the corresponding stencil compare operator.
+	*/
+	static VkStencilOp GetVulkanStencilOperator(const StencilOperator stencilOperator) NOEXCEPT
+	{
+		switch (stencilOperator)
+		{
+			default: return VK_STENCIL_OP_KEEP;
+			case StencilOperator::Keep: return VK_STENCIL_OP_KEEP;
+			case StencilOperator::Zero: return VK_STENCIL_OP_ZERO;
+			case StencilOperator::Replace: return VK_STENCIL_OP_REPLACE;
+			case StencilOperator::IncrementAndClamp: return VK_STENCIL_OP_INCREMENT_AND_CLAMP;
+			case StencilOperator::DecrementAndClamp: return VK_STENCIL_OP_DECREMENT_AND_CLAMP;
+			case StencilOperator::Invert: return VK_STENCIL_OP_INVERT;
+			case StencilOperator::IncrementAndWrap: return VK_STENCIL_OP_INCREMENT_AND_WRAP;
+			case StencilOperator::DecrementAndWrap: return VK_STENCIL_OP_DECREMENT_AND_WRAP;
+		}
+	}
+
+	/*
 	*	Given a texture filter, return the corresponding Vulkan texture filter.
 	*/
 	static VkFilter GetVulkanTextureFilter(const TextureFilter textureFilter) NOEXCEPT
