@@ -1015,7 +1015,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			lightingInputAttachmentReferences.Data(),
 																			1,
 																			&sceneColorAttachmentReference,
-																			nullptr,
+																			&depthAttachmentReference,
 																			0,
 																			nullptr);
 

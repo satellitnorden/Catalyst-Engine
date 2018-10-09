@@ -39,7 +39,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 	//InitializeParticles();
 
 	//Initialize the vegetation.
-	//InitializeVegetation();
+	InitializeVegetation();
 }
 
 /*

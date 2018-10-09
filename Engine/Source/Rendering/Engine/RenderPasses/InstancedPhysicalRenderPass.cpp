@@ -107,14 +107,14 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthCompareOperator(CompareOperator::Less);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
-	SetStencilTestEnabled(false);
+	SetStencilTestEnabled(true);
 	SetStencilFailOperator(StencilOperator::Keep);
-	SetStencilPassOperator(StencilOperator::Keep);
+	SetStencilPassOperator(StencilOperator::Replace);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(0);
-	SetStencilReferenceMask(0);
+	SetStencilWriteMask(BIT(0));
+	SetStencilReferenceMask(BIT(0));
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.

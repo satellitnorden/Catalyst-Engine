@@ -48,7 +48,7 @@ void TerrainColorRenderPass::InitializeInternal() NOEXCEPT
 	SetFragmentShader(Shader::TerrainColorFragment);
 
 	//Set the depth buffer.
-	SetDepthBuffer(DepthBuffer::None);
+	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(3);
