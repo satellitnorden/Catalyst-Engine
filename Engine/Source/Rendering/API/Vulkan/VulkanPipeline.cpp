@@ -214,9 +214,15 @@ void VulkanPipeline::CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthSt
 	pipelineDepthStencilStateCreateInfo.depthWriteEnable = vulkanPipelineCreationParameters._DepthWriteEnable;
 	pipelineDepthStencilStateCreateInfo.depthCompareOp = vulkanPipelineCreationParameters._DepthCompareOp;
 	pipelineDepthStencilStateCreateInfo.depthBoundsTestEnable = VK_FALSE;
-	pipelineDepthStencilStateCreateInfo.stencilTestEnable = VK_FALSE;
-	pipelineDepthStencilStateCreateInfo.front = { };
-	pipelineDepthStencilStateCreateInfo.back = { };
+	pipelineDepthStencilStateCreateInfo.stencilTestEnable = vulkanPipelineCreationParameters._StencilTestEnable;
+	pipelineDepthStencilStateCreateInfo.front.failOp = vulkanPipelineCreationParameters._StencilFailOperator;
+	pipelineDepthStencilStateCreateInfo.front.passOp = vulkanPipelineCreationParameters._StencilPassOperator;
+	pipelineDepthStencilStateCreateInfo.front.depthFailOp = vulkanPipelineCreationParameters._StencilDepthFailOperator;
+	pipelineDepthStencilStateCreateInfo.front.compareOp = vulkanPipelineCreationParameters._StencilCompareOperator;
+	pipelineDepthStencilStateCreateInfo.front.compareMask = vulkanPipelineCreationParameters._StencilCompareMask;
+	pipelineDepthStencilStateCreateInfo.front.writeMask = vulkanPipelineCreationParameters._StencilWriteMask;
+	pipelineDepthStencilStateCreateInfo.front.reference = vulkanPipelineCreationParameters._StencilReferenceMask;
+	pipelineDepthStencilStateCreateInfo.back = pipelineDepthStencilStateCreateInfo.front;
 	pipelineDepthStencilStateCreateInfo.minDepthBounds = 0.0f;
 	pipelineDepthStencilStateCreateInfo.maxDepthBounds = 1.0f;
 }
