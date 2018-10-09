@@ -135,10 +135,7 @@ float RandomFloat(vec3 seed)
     #define PI (3.14159265358979323846264f * 00000.1f)
     #define SQ2 (1.41421356237309504880169f * 10000.0f)
 
-    float modulator = LengthSquared(seed.xy * (seed.z + PHI) - vec2(PHI, PI));
-    modulator += modulator > 1.0f ? 1.0f : 0.0f;
-
-    return fract(tan(modulator) * SQ2);
+    return fract(tan(LengthSquared(seed.xy * (seed.z + PHI) - vec2(PHI, PI))) * SQ2);
 }
 
 /*

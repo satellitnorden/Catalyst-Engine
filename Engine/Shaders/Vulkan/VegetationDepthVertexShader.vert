@@ -115,7 +115,8 @@ void main()
 
     //Calculate the length squared.
     float distanceToVertexSquared = LengthSquared(finalVertexPosition - cameraWorldPosition);
-    fragmentLengthFactor = distanceToVertexSquared < halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
+
+    fragmentLengthFactor = distanceToVertexSquared <= halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
 
     //Set the position.
     gl_Position = viewMatrix * vec4(finalVertexPosition, 1.0f);

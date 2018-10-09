@@ -298,7 +298,7 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 
 	parameters._VertexInputBindingDescriptionCount = static_cast<uint32>(vertexInputBindingDescriptions.Size());
 	parameters._VertexInputBindingDescriptions = vertexInputBindingDescriptions.Data();
-	parameters._ViewportExtent = renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height };
+	parameters._ViewportExtent = renderPass->GetRenderTargets().Empty() ? VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height } : renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height };
 
 	parameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(renderPass->GetMainStage())]._RenderPass;
 
@@ -980,8 +980,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		subpassDescriptions[5] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
-																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
-																			sceneBufferColorAttachmentReferences.Data(),
+																			0,
+																			nullptr,
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);

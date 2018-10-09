@@ -66,11 +66,6 @@ layout (location = 1) in float fragmentLengthFactor;
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D maskTexture;
 
-//Out parameters.
-layout (location = 0) out vec4 albedo;
-layout (location = 1) out vec4 normalDepth;
-layout (location = 2) out vec4 materialProperties;
-
 /*
 *   Given a coordinate and a seed, returns a random number.
 */
@@ -82,7 +77,9 @@ float RandomFloat(vec2 coordinate, float seed)
 void main()
 {
     //Discard this fragment according to the mask texture.
-    if (RandomFloat(gl_FragCoord.xy, gl_FragCoord.z) > fragmentLengthFactor || texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
+    if (fragmentLengthFactor == 0.0f
+        || fragmentLengthFactor < RandomFloat(gl_FragCoord.xy, gl_FragCoord.z)
+        || texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
     {
         discard;
     }

@@ -59,12 +59,6 @@ void VegetationDepthRenderPass::InitializeInternal() NOEXCEPT
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(3);
-	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
-	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
-	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
-
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
