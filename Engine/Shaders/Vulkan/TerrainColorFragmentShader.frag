@@ -101,7 +101,6 @@ vec4 fragmentLayerWeights;
 
 //Forward declarations.
 vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth);
-float LengthSquared(vec2 vector);
 float RandomFloat(vec3 seed);
 
 /*
@@ -119,23 +118,11 @@ vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
 }
 
 /*
-*   Returns the length of a vector squared.
-*/
-float LengthSquared(vec2 vector)
-{
-    return vector.x * vector.x + vector.y * vector.y;
-}
-
-/*
 *   Given a coordinate and a seed, returns a random number.
 */
 float RandomFloat(vec3 seed)
 {
-    #define PHI (1.61803398874989484820459f * 00000.1f)
-    #define PI (3.14159265358979323846264f * 00000.1f)
-    #define SQ2 (1.41421356237309504880169f * 10000.0f)
-
-    return fract(tan(LengthSquared(seed.xy * (seed.z + PHI) - vec2(PHI, PI))) * SQ2);
+    return fract(sin(dot(seed.xy * seed.z, vec2(12.9898f, 78.233f))) * 43758.5453f);
 }
 
 /*
@@ -152,15 +139,15 @@ void CalculateTriPlanarData()
 	textureCoordinateXY = fragmentWorldPosition.xy;
 
     //Calculate the random float.
-    float randomFloat = RandomFloat(fragmentWorldPosition);
+    float randomFloat = RandomFloat(vec3(gl_FragCoord.xy, 1.0f));
 
     //Pick which plane to sample.
-    if (absoluteNormal.x > absoluteNormal.y && absoluteNormal.x > absoluteNormal.z && absoluteNormal.x > randomFloat)
+    if (absoluteNormal.x > randomFloat)
     {
         finalTextureCoordinate = textureCoordinateYZ;
     }
 
-    else if (absoluteNormal.y > absoluteNormal.x && absoluteNormal.y > absoluteNormal.z && absoluteNormal.y > randomFloat)
+    else if (absoluteNormal.y > randomFloat)
     {
         finalTextureCoordinate = textureCoordinateXZ;
     }
