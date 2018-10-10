@@ -160,8 +160,8 @@ void GrassColorRenderPass::InitializeInternal() NOEXCEPT
 */
 void GrassColorRenderPass::RenderInternal() NOEXCEPT
 {
-	//Retrieve the vegetion type informations.
-	const DynamicArray<GrassVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetVegetationTypeInformations() };
+	//Retrieve the grass vegetion type informations.
+	const DynamicArray<GrassVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetGrassVegetationTypeInformations() };
 
 	//If there's none to render - render none.
 	if (informations->Empty())

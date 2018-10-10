@@ -7,7 +7,7 @@
 //Vegetation.
 #include <Vegetation/GrassVegetationTypeInformation.h>
 
-class VegetationTypeInformationUpdate final
+class GrassVegetationTypeInformationUpdate final
 {
 
 public:

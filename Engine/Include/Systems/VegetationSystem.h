@@ -11,7 +11,7 @@
 
 //Vegetation.
 #include <Vegetation/GrassVegetationTypeInformation.h>
-#include <Vegetation/VegetationTypeInformationUpdate.h>
+#include <Vegetation/GrassVegetationTypeInformationUpdate.h>
 
 class VegetationSystem final
 {
@@ -37,17 +37,17 @@ public:
 	void SequentialUpdateSystemSynchronous() NOEXCEPT;
 
 	/*
-	*	Returns the vegetation type informations, const.
+	*	Returns the grass vegetation type informations, const.
 	*/
-	RESTRICTED NO_DISCARD const DynamicArray<GrassVegetationTypeInformation> *const RESTRICT GetVegetationTypeInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD const DynamicArray<GrassVegetationTypeInformation> *const RESTRICT GetGrassVegetationTypeInformations() const NOEXCEPT
 	{
 		return &_GrassVegetationTypeInformations;
 	}
 
 	/*
-	*	Returns the vegetation type informations, non-const.
+	*	Returns the grass vegetation type informations, non-const.
 	*/
-	RESTRICTED NO_DISCARD DynamicArray<GrassVegetationTypeInformation> *const RESTRICT GetVegetationTypeInformations() NOEXCEPT
+	RESTRICTED NO_DISCARD DynamicArray<GrassVegetationTypeInformation> *const RESTRICT GetGrassVegetationTypeInformations() NOEXCEPT
 	{
 		return &_GrassVegetationTypeInformations;
 	}
@@ -59,17 +59,17 @@ public:
 
 private:
 
-	//The grass vegetation type informations.
-	DynamicArray<GrassVegetationTypeInformation> _GrassVegetationTypeInformations;
-
 	//The update task.
 	Task _UpdateTask;
 
 	//The current camera position.
 	Vector3 _CurrentCameraPosition;
-	
-	//The vegetation type information update.
-	VegetationTypeInformationUpdate _VegetationTypeInformationUpdate;
+
+	//The grass vegetation type information update.
+	GrassVegetationTypeInformationUpdate _VegetationTypeInformationUpdate;
+
+	//The grass vegetation type informations.
+	DynamicArray<GrassVegetationTypeInformation> _GrassVegetationTypeInformations;
 
 	/*
 	*	Processes the vegetation type information update.

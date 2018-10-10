@@ -174,7 +174,7 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 		});
 
 		//Construct the update.
-		VegetationTypeInformationUpdate update;
+		GrassVegetationTypeInformationUpdate update;
 
 		update._Information = &information;
 		update._NewPatchInformation._Valid = false;

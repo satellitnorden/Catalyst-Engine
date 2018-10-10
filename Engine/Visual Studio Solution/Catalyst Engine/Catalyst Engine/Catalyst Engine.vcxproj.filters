@@ -966,10 +966,16 @@
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchRenderInformation.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformationUpdate.h">
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformation.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformation.h">
+    <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeProperties.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformation.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformationUpdate.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
   </ItemGroup>
