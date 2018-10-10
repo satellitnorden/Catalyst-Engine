@@ -135,14 +135,14 @@ void GrassColorRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthCompareOperator(CompareOperator::Equal);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(false);
-	SetStencilTestEnabled(false);
+	SetStencilTestEnabled(true);
 	SetStencilFailOperator(StencilOperator::Keep);
 	SetStencilPassOperator(StencilOperator::Keep);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
-	SetStencilCompareOperator(CompareOperator::Always);
-	SetStencilCompareMask(0);
+	SetStencilCompareOperator(CompareOperator::Equal);
+	SetStencilCompareMask(BIT(1));
 	SetStencilWriteMask(0);
-	SetStencilReferenceMask(0);
+	SetStencilReferenceMask(BIT(1));
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.

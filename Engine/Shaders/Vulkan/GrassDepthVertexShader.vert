@@ -68,9 +68,10 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) float halfCutoffDistanceSquared;
-    layout (offset = 4) float inverseHalfCutoffDistanceSquared;
-    layout (offset = 8) float windModulatorFactor;
+    layout (offset = 0) float cutoffDistanceSquared;
+    layout (offset = 4) float halfCutoffDistanceSquared;
+    layout (offset = 8) float inverseHalfCutoffDistanceSquared;
+    layout (offset = 12) float windModulatorFactor;
 };
 
 //In parameters.
@@ -116,7 +117,7 @@ void main()
     //Calculate the length squared.
     float distanceToVertexSquared = LengthSquared(finalVertexPosition - cameraWorldPosition);
 
-    fragmentLengthFactor = distanceToVertexSquared <= halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
+    fragmentLengthFactor = distanceToVertexSquared >= cutoffDistanceSquared ? 0.0f : distanceToVertexSquared <= halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
 
     //Set the position.
     gl_Position = viewMatrix * vec4(finalVertexPosition, 1.0f);
