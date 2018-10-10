@@ -142,12 +142,12 @@ void CalculateTriPlanarData()
     float randomFloat = RandomFloat(vec3(gl_FragCoord.xy, 1.0f));
 
     //Pick which plane to sample.
-    if (absoluteNormal.x > randomFloat)
+    if (absoluteNormal.x > absoluteNormal.y && absoluteNormal.x > absoluteNormal.z && absoluteNormal.x > randomFloat)
     {
         finalTextureCoordinate = textureCoordinateYZ;
     }
 
-    else if (absoluteNormal.y > randomFloat)
+    else if (absoluteNormal.y > absoluteNormal.x && absoluteNormal.y > absoluteNormal.z && absoluteNormal.y > randomFloat)
     {
         finalTextureCoordinate = textureCoordinateXZ;
     }
