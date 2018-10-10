@@ -19,7 +19,7 @@ namespace ClairvoyantResourceCreation
 	void CreateResources() NOEXCEPT
 	{
 #if !defined(CATALYST_FINAL)
-		if (false)
+		if (true)
 #else
 		if (true)
 #endif
@@ -70,8 +70,8 @@ namespace ClairvoyantResourceCreation
 			//Create the fern grass material.
 			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\FernVegetationMaterial";
-			parameters._ID = "FernVegetationMaterial";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\FernGrassMaterial";
+			parameters._ID = "FernGrassMaterial";
 			parameters._MaskMipmapLevels = 8;
 			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Fern\\Mask.png";
 			parameters._MipmapLevels = 9;
@@ -82,31 +82,31 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
-			//Create the grass grass material.
+			//Create the default grass material.
 			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\GrassVegetationMaterial";
-			parameters._ID = "GrassVegetationMaterial";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultGrassMaterial";
+			parameters._ID = "DefaultGrassMaterial";
 			parameters._MaskMipmapLevels = 1;
-			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\Mask.png";
+			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\DefaultGrass\\Mask.png";
 			parameters._MipmapLevels = 7;
-			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\Albedo.png";
-			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass\\NormalMap.png";
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\DefaultGrass\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\DefaultGrass\\NormalMap.png";
 
 			GrassMaterialCreator::CreateGrassMaterial(parameters);
 		}
 
 		{
-			//Create the grass grass material.
+			//Create the plum grass material.
 			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\Grass2VegetationMaterial";
-			parameters._ID = "Grass2VegetationMaterial";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\PlumGrassMaterial";
+			parameters._ID = "PlumGrassMaterial";
 			parameters._MaskMipmapLevels = 1;
-			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass2\\Mask.png";
+			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Plum\\Mask.png";
 			parameters._MipmapLevels = 7;
-			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass2\\Albedo.png";
-			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Grass2\\NormalMap.png";
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Plum\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Plum\\NormalMap.png";
 
 			GrassMaterialCreator::CreateGrassMaterial(parameters);
 		}
@@ -115,9 +115,9 @@ namespace ClairvoyantResourceCreation
 			//Create the fern grass model.
 			GrassModelCreator::GrassModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\FernVegetationModel";
-			parameters._ID = "FernVegetationModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\FernVegetationModel.fbx";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\FernGrassModel";
+			parameters._ID = "FernGrassModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\FernGrassModel.fbx";
 			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Z;
 
 			GrassModelCreator::CreateGrassModel(parameters);
@@ -127,9 +127,9 @@ namespace ClairvoyantResourceCreation
 			//Create the grass grass model.
 			GrassModelCreator::GrassModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\GrassVegetationModel";
-			parameters._ID = "GrassVegetationModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\GrassVegetationModel.fbx";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\DefaultGrassModel";
+			parameters._ID = "DefaultGrassModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\DefaultGrassModel.fbx";
 			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Y;
 
 			GrassModelCreator::CreateGrassModel(parameters);
@@ -189,11 +189,11 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DayEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\NightEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\FernVegetationMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\GrassVegetationMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\Grass2VegetationMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\FernVegetationModel.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\GrassVegetationModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\FernGrassMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultGrassMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\PlumGrassMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\FernGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\DefaultGrassModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultTerrainMaterial.cr");
 
 			ResourceCollectionCreator::CreateResourceCollection(parameters);
