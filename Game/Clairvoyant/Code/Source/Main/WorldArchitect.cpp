@@ -36,7 +36,7 @@ DEFINE_SINGLETON(WorldArchitect);
 void WorldArchitect::Initialize() NOEXCEPT
 {
 	//Initialize the particles.
-	//InitializeParticles();
+	InitializeParticles();
 
 	//Initialize the vegetation.
 	InitializeVegetation();
@@ -92,8 +92,8 @@ void WorldArchitect::InitializeVegetation()
 		{
 			return WorldArchitect::Instance->GenerateTransformation(true, 0.0f, 0.25f, 0.05f, 0.1f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
-		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("DebrisVegetationModel")) };
-		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("DebrisVegetationMaterial")) };
+		VegetationModel model{ ResourceLoader::GetGrassVegetationModel(HashString("DebrisVegetationModel")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DebrisVegetationMaterial")) };
 
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
@@ -116,8 +116,8 @@ void WorldArchitect::InitializeVegetation()
 		{
 			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.25f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
-		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("FernVegetationModel")) };
-		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("FernVegetationMaterial")) };
+		VegetationModel model{ ResourceLoader::GetGrassVegetationModel(HashString("FernVegetationModel")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("FernVegetationMaterial")) };
 
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
@@ -140,8 +140,8 @@ void WorldArchitect::InitializeVegetation()
 		{
 			return WorldArchitect::Instance->GenerateTransformation(true, 0.35f, 0.25f, 0.15f, 0.3f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
-		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("GrassVegetationModel")) };
-		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("GrassVegetationMaterial")) };
+		VegetationModel model{ ResourceLoader::GetGrassVegetationModel(HashString("GrassVegetationModel")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("GrassVegetationMaterial")) };
 
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
@@ -170,8 +170,8 @@ void WorldArchitect::InitializeVegetation()
 		{
 			return WorldArchitect::Instance->GenerateTransformation(true, 0.35f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
-		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("GrassVegetationModel")) };
-		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("Grass2VegetationMaterial")) };
+		VegetationModel model{ ResourceLoader::GetGrassVegetationModel(HashString("GrassVegetationModel")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("Grass2VegetationMaterial")) };
 
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
@@ -200,8 +200,8 @@ void WorldArchitect::InitializeVegetation()
 		{
 			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.9f, 0.03f, 0.06f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
-		VegetationModel model{ ResourceLoader::GetVegetationModel(HashString("TreeVegetationModel")) };
-		VegetationMaterial material{ ResourceLoader::GetVegetationMaterial(HashString("TreeVegetationMaterial")) };
+		VegetationModel model{ ResourceLoader::GetGrassVegetationModel(HashString("TreeVegetationModel")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("TreeVegetationMaterial")) };
 
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 	}

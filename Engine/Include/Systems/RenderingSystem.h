@@ -29,6 +29,9 @@ class CPUTexture2D;
 class DynamicPhysicalInitializationData;
 class Entity;
 class EnvironmentMaterialData;
+class GrassVegetationMaterial;
+class GrassVegetationMaterialData;
+class GrassVegetationModelData;
 class InstancedPhysicalEntity;
 #if defined(CATALYST_ENABLE_OCEAN)
 class OceanMaterialData;
@@ -45,10 +48,7 @@ class Resolution;
 class TerrainMaterial;
 class TerrainMaterialData;
 class TextureData;
-class VegetationMaterial;
-class VegetationMaterialData;
 class VegetationModel;
-class VegetationModelData;
 
 class RenderingSystem final
 {
@@ -392,6 +392,16 @@ public:
 	*/
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &data, EnvironmentMaterial &material) NOEXCEPT;
 
+	/*
+	*	Creates a grass vegetation material.
+	*/
+	void CreateGrassVegetationMaterial(const GrassVegetationMaterialData &data, GrassVegetationMaterial &material) NOEXCEPT;
+
+	/*
+	*	Creates a grass vegetation model.
+	*/
+	void CreateGrassVegetationModel(const GrassVegetationModelData &data, VegetationModel &model) NOEXCEPT;
+
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Creates an ocean material.
@@ -418,16 +428,6 @@ public:
 	*	Creates a terrain material.
 	*/
 	void CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT;
-
-	/*
-	*	Creates a vegetation material.
-	*/
-	void CreateVegetationMaterial(const VegetationMaterialData &data, VegetationMaterial &material) NOEXCEPT;
-
-	/*
-	*	Creates a vegetation model.
-	*/
-	void CreateVegetationModel(const VegetationModelData &data, VegetationModel &model) NOEXCEPT;
 
 	/*
 	*	Initializes a dynamic physical entity.

@@ -35,21 +35,21 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
+#include <Resources/GrassVegetationMaterialData.h>
+#include <Resources/GrassVegetationModelData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
 #endif
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
 #include <Resources/TerrainMaterialData.h>
-#include <Resources/VegetationMaterialData.h>
-#include <Resources/VegetationModelData.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
 #include <Systems/InputSystem.h>
 
 //Vegetation.
-#include <Vegetation/VegetationMaterial.h>
+#include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/VegetationModel.h>
 
 //Singleton definition.
@@ -442,6 +442,43 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &d
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::TextureCube, material._DiffuseIrradianceTexture), material._RenderDataTable);
 }
 
+/*
+*	Creates a grass vegetation material.
+*/
+void RenderingSystem::CreateGrassVegetationMaterial(const GrassVegetationMaterialData &data, GrassVegetationMaterial &material) NOEXCEPT
+{
+	//Create the mask texture.
+	material._MaskTexture = CreateTexture2D(TextureData(TextureDataContainer(data._MaskData, data._MaskWidth, data._MaskHeight, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the albedo texture.
+	material._AlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._AlbedoData, data._Width, data._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the normal map texture.
+	material._NormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._NormalMapData, data._Width, data._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
+
+	//Create the render data table.
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::VegetationMaterial), &material._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::Texture2D, material._MaskTexture), material._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, material._AlbedoTexture), material._RenderDataTable);
+	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, material._NormalMapTexture), material._RenderDataTable);
+}
+
+/*
+*	Creates a grass vegetation model.
+*/
+void RenderingSystem::CreateGrassVegetationModel(const GrassVegetationModelData &data, VegetationModel &model) NOEXCEPT
+{
+	//Create the vertex and index buffer.
+	const void *RESTRICT modelData[]{ data._Vertices.Data(), data._Indices.Data() };
+	const uint64 modelDataSizes[]{ sizeof(GrassVegetationVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
+	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
+
+	//Set up the physical model.
+	model._Buffer = buffer;
+	model._IndexOffset = modelDataSizes[0];
+	model._IndexCount = static_cast<uint32>(data._Indices.Size());
+}
+
 #if defined(CATALYST_ENABLE_OCEAN)
 /*
 *	Creates an ocean material.
@@ -578,43 +615,6 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(12, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FifthLayerAlbedo), terrainMaterial._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(13, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FifthLayerNormalMap), terrainMaterial._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(14, RenderDataTableUpdateInformation::Type::Texture2D, terrainMaterial._FifthLayerMaterialProperties), terrainMaterial._RenderDataTable);
-}
-
-/*
-*	Creates a vegetation material.
-*/
-void RenderingSystem::CreateVegetationMaterial(const VegetationMaterialData &data, VegetationMaterial &material) NOEXCEPT
-{
-	//Create the mask texture.
-	material._MaskTexture = CreateTexture2D(TextureData(TextureDataContainer(data._MaskData, data._MaskWidth, data._MaskHeight, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-
-	//Create the albedo texture.
-	material._AlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(data._AlbedoData, data._Width, data._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-
-	//Create the normal map texture.
-	material._NormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._NormalMapData, data._Width, data._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
-
-	//Create the render data table.
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::VegetationMaterial), &material._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::Texture2D, material._MaskTexture), material._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, material._AlbedoTexture), material._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, material._NormalMapTexture), material._RenderDataTable);
-}
-
-/*
-*	Creates a vegetation model.
-*/
-void RenderingSystem::CreateVegetationModel(const VegetationModelData &data, VegetationModel &model) NOEXCEPT
-{
-	//Create the vertex and index buffer.
-	const void *RESTRICT modelData[]{ data._Vertices.Data(), data._Indices.Data() };
-	const uint64 modelDataSizes[]{ sizeof(VegetationVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
-	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
-
-	//Set up the physical model.
-	model._Buffer = buffer;
-	model._IndexOffset = modelDataSizes[0];
-	model._IndexCount = static_cast<uint32>(data._Indices.Size());
 }
 
 /*

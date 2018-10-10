@@ -57,7 +57,7 @@ public:
 		BinaryFile<IOMode::Out> file{ fileName.CString() };
 
 		//Write the resource type to the file.
-		constexpr ResourceType resourceType{ ResourceType::VegetationMaterial };
+		constexpr ResourceType resourceType{ ResourceType::GrassVegetationMaterial };
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.

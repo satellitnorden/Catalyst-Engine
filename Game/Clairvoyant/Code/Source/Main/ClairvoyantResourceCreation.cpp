@@ -8,7 +8,7 @@
 #include <OceanMaterialCreator.h>
 #include <TerrainMaterialCreator.h>
 #include <VegetationMaterialCreator.h>
-#include <VegetationModelCreator.h>
+#include <GrassVegetationModelCreator.h>
 
 namespace ClairvoyantResourceCreation
 {
@@ -142,51 +142,51 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
-			//Create the debris vegetation model.
-			VegetationModelCreator::VegetationModelCreationParameters parameters;
+			//Create the debris grass vegetation model.
+			GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\DebrisVegetationModel";
 			parameters._ID = "DebrisVegetationModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\DebrisVegetationModel.fbx";
-			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::X;
+			parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::X;
 
-			VegetationModelCreator::CreateVegetationModel(parameters);
+			GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
 		}
 
 		{
-			//Create the fern vegetation model.
-			VegetationModelCreator::VegetationModelCreationParameters parameters;
+			//Create the fern grass vegetation model.
+			GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\FernVegetationModel";
 			parameters._ID = "FernVegetationModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\FernVegetationModel.fbx";
-			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::Z;
+			parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::Z;
 
-			VegetationModelCreator::CreateVegetationModel(parameters);
+			GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
 		}
 
 		{
-			//Create the grass vegetation model.
-			VegetationModelCreator::VegetationModelCreationParameters parameters;
+			//Create the grass grass vegetation model.
+			GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\GrassVegetationModel";
 			parameters._ID = "GrassVegetationModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\GrassVegetationModel.fbx";
-			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::Y;
+			parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::Y;
 
-			VegetationModelCreator::CreateVegetationModel(parameters);
+			GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
 		}
 
 		{
-			//Create the tree vegetation model.
-			VegetationModelCreator::VegetationModelCreationParameters parameters;
+			//Create the tree grass vegetation model.
+			GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\TreeVegetationModel";
 			parameters._ID = "TreeVegetationModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\TreeVegetationModel.fbx";
-			parameters._UpAxis = VegetationModelCreator::VegetationModelCreationParameters::Axis::Z;
+			parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::Z;
 
-			VegetationModelCreator::CreateVegetationModel(parameters);
+			GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
 		}
 
 		{

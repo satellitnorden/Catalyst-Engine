@@ -6,6 +6,8 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
+#include <Resources/GrassVegetationMaterialData.h>
+#include <Resources/GrassVegetationModelData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
 #endif
@@ -15,8 +17,6 @@
 #include <Resources/ResourceLoaderUtilities.h>
 #include <Resources/ResourcesCore.h>
 #include <Resources/TerrainMaterialData.h>
-#include <Resources/VegetationMaterialData.h>
-#include <Resources/VegetationModelData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -24,6 +24,8 @@
 
 //Static variable definitions.
 Map<HashString, EnvironmentMaterial> ResourceLoader::_EnvironmentMaterials;
+Map<HashString, GrassVegetationMaterial> ResourceLoader::_GrassVegetationMaterials;
+Map<HashString, VegetationModel> ResourceLoader::_GrassVegetationModels;
 #if defined(CATALYST_ENABLE_OCEAN)
 Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
 #endif
@@ -31,8 +33,6 @@ Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::_PhysicalModels;
 Map<HashString, TerrainMaterial> ResourceLoader::_TerrainMaterials;
-Map<HashString, VegetationMaterial> ResourceLoader::_VegetationMaterials;
-Map<HashString, VegetationModel> ResourceLoader::_VegetationModels;
 
 /*
 *	Given a file path, load a resource collection.
@@ -78,6 +78,29 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 				break;
 			}
 
+			case ResourceType::GrassVegetationMaterial:
+			{
+				LoadGrassVegetationMaterial(file);
+
+				break;
+			}
+
+			case ResourceType::GrassVegetationModel:
+			{
+				LoadGrassVegetationModel(file);
+
+				break;
+			}
+
+#if defined(CATALYST_ENABLE_OCEAN)
+			case ResourceType::OceanMaterial:
+			{
+				LoadOceanMaterial(file);
+
+				break;
+			}
+#endif
+
 			case ResourceType::ParticleMaterial:
 			{
 				LoadParticleMaterial(file);
@@ -105,29 +128,6 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 
 				break;
 			}
-
-			case ResourceType::VegetationMaterial:
-			{
-				LoadVegetationMaterial(file);
-
-				break;
-			}
-
-			case ResourceType::VegetationModel:
-			{
-				LoadVegetationModel(file);
-
-				break;
-			}
-
-#if defined(CATALYST_ENABLE_OCEAN)
-			case ResourceType::OceanMaterial:
-			{
-				LoadOceanMaterial(file);
-
-				break;
-			}
-#endif
 		}
 	}
 }
@@ -170,6 +170,108 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 
 	//Create the environment material via the rendering system.
 	RenderingSystem::Instance->CreateEnvironmentMaterial(environmentMaterialData, _EnvironmentMaterials[resourceID]);
+}
+
+/*
+*	Given a file, load a grass vegetation material.
+*/
+void ResourceLoader::LoadGrassVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the grass vegetation material data in the grass vegetation material data structure.
+	GrassVegetationMaterialData data;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the number of mask mipmap levels.
+	file.Read(&data._MaskMipmapLevels, sizeof(uint8));
+
+	//Read the mask width.
+	file.Read(&data._MaskWidth, sizeof(uint32));
+
+	//Read the mask height.
+	file.Read(&data._MaskHeight, sizeof(uint32));
+
+	//Read the mask data.
+	data._MaskData.UpsizeSlow(data._MaskMipmapLevels);
+
+	for (uint8 i = 0; i < data._MaskMipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._MaskWidth >> i) * (data._MaskHeight >> i) * 4 };
+
+		data._MaskData[i].Reserve(textureSize);
+
+		file.Read(data._MaskData[i].Data(), textureSize);
+	}
+
+	//Read the number of mipmap levels.
+	file.Read(&data._MipmapLevels, sizeof(uint8));
+
+	//Read the width.
+	file.Read(&data._Width, sizeof(uint32));
+
+	//Read the height.
+	file.Read(&data._Height, sizeof(uint32));
+
+	//Read the albedo data.
+	data._AlbedoData.UpsizeSlow(data._MipmapLevels);
+
+	for (uint8 i = 0; i < data._MipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._Width >> i) * (data._Height >> i) * 4 };
+
+		data._AlbedoData[i].Reserve(textureSize);
+
+		file.Read(data._AlbedoData[i].Data(), textureSize);
+	}
+
+	//Read the normal map data.
+	data._NormalMapData.UpsizeSlow(data._MipmapLevels);
+
+	for (uint8 i = 0; i < data._MipmapLevels; ++i)
+	{
+		const uint64 textureSize{ (data._Width >> i) * (data._Height >> i) * 4 };
+
+		data._NormalMapData[i].Reserve(textureSize);
+
+		file.Read(data._NormalMapData[i].Data(), textureSize);
+	}
+
+	//Create the grass vegetation material via the rendering system.
+	RenderingSystem::Instance->CreateGrassVegetationMaterial(data, _GrassVegetationMaterials[resourceID]);
+}
+
+/*
+*	Given a file, load a grass vegetation model.
+*/
+void ResourceLoader::LoadGrassVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT
+{
+	//Store the grass vegetation model data in the grass vegetation model data structure.
+	GrassVegetationModelData data;
+
+	//Read the resource ID.
+	HashString resourceID;
+	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the number of vertices.
+	uint64 numberOfVertices;
+	file.Read(&numberOfVertices, sizeof(uint64));
+
+	//Read the vertices.
+	data._Vertices.UpsizeFast(numberOfVertices);
+	file.Read(data._Vertices.Data(), sizeof(GrassVegetationVertex) * numberOfVertices);
+
+	//Read the number of indices.
+	uint64 numberOfIndices;
+	file.Read(&numberOfIndices, sizeof(uint64));
+
+	//Read the indices.
+	data._Indices.UpsizeFast(numberOfIndices);
+	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
+
+	//Create the vegetation model via the rendering system.
+	RenderingSystem::Instance->CreateGrassVegetationModel(data, _GrassVegetationModels[resourceID]);
 }
 
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -388,106 +490,4 @@ void ResourceLoader::LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the terrain material via the rendering system.
 	RenderingSystem::Instance->CreateTerrainMaterial(terrainMaterialData, _TerrainMaterials[resourceID]);
-}
-
-/*
-*	Given a file, load a vegetation material.
-*/
-void ResourceLoader::LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
-{
-	//Store the vegetation material data in the vegetation material data structure.
-	VegetationMaterialData data;
-
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
-
-	//Read the number of mask mipmap levels.
-	file.Read(&data._MaskMipmapLevels, sizeof(uint8));
-
-	//Read the mask width.
-	file.Read(&data._MaskWidth, sizeof(uint32));
-
-	//Read the mask height.
-	file.Read(&data._MaskHeight, sizeof(uint32));
-
-	//Read the mask data.
-	data._MaskData.UpsizeSlow(data._MaskMipmapLevels);
-
-	for (uint8 i = 0; i < data._MaskMipmapLevels; ++i)
-	{
-		const uint64 textureSize{ (data._MaskWidth >> i) * (data._MaskHeight >> i) * 4 };
-
-		data._MaskData[i].Reserve(textureSize);
-
-		file.Read(data._MaskData[i].Data(), textureSize);
-	}
-
-	//Read the number of mipmap levels.
-	file.Read(&data._MipmapLevels, sizeof(uint8));
-
-	//Read the width.
-	file.Read(&data._Width, sizeof(uint32));
-
-	//Read the height.
-	file.Read(&data._Height, sizeof(uint32));
-
-	//Read the albedo data.
-	data._AlbedoData.UpsizeSlow(data._MipmapLevels);
-
-	for (uint8 i = 0; i < data._MipmapLevels; ++i)
-	{
-		const uint64 textureSize{ (data._Width >> i) * (data._Height >> i) * 4 };
-
-		data._AlbedoData[i].Reserve(textureSize);
-
-		file.Read(data._AlbedoData[i].Data(), textureSize);
-	}
-
-	//Read the normal map data.
-	data._NormalMapData.UpsizeSlow(data._MipmapLevels);
-
-	for (uint8 i = 0; i < data._MipmapLevels; ++i)
-	{
-		const uint64 textureSize{ (data._Width >> i) * (data._Height >> i) * 4 };
-
-		data._NormalMapData[i].Reserve(textureSize);
-
-		file.Read(data._NormalMapData[i].Data(), textureSize);
-	}
-
-	//Create the vegetation material via the rendering system.
-	RenderingSystem::Instance->CreateVegetationMaterial(data, _VegetationMaterials[resourceID]);
-}
-
-/*
-*	Given a file, load a vegetation model.
-*/
-void ResourceLoader::LoadVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT
-{
-	//Store the vegetation model data in the vegetation model data structure.
-	VegetationModelData data;
-
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
-
-	//Read the number of vertices.
-	uint64 numberOfVertices;
-	file.Read(&numberOfVertices, sizeof(uint64));
-
-	//Read the vertices.
-	data._Vertices.UpsizeFast(numberOfVertices);
-	file.Read(data._Vertices.Data(), sizeof(VegetationVertex) * numberOfVertices);
-
-	//Read the number of indices.
-	uint64 numberOfIndices;
-	file.Read(&numberOfIndices, sizeof(uint64));
-
-	//Read the indices.
-	data._Indices.UpsizeFast(numberOfIndices);
-	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
-
-	//Create the vegetation model via the rendering system.
-	RenderingSystem::Instance->CreateVegetationModel(data, _VegetationModels[resourceID]);
 }

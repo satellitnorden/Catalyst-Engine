@@ -7,39 +7,39 @@
 #include <Math/Vector2.h>
 #include <Math/Vector3.h>
 
-class VegetationVertex final
+class GrassVegetationVertex final
 {
 
 public:
 
-	//The position of this vegetation vertex.
+	//The position of this grass vegetation vertex.
 	Vector3 _Position;
 
-	//The normal of this vegetation vertex.
+	//The normal of this grass vegetation vertex.
 	Vector3 _Normal;
 
-	//The tangent of this vegetation vertex.
+	//The tangent of this grass vegetation vertex.
 	Vector3 _Tangent;
 
-	//The texture coordinate of this vegetation vertex.
+	//The texture coordinate of this grass vegetation vertex.
 	Vector2 _TextureCoordinate;
 
-	//The modulator factor of this vegetation vertex.
+	//The modulator factor of this grass vegetation vertex.
 	float _ModulatorFactor;
 
 	/*
 	*	Default constructor - prohibited, must be constructed with the proper arguments.
 	*/
-	VegetationVertex() NOEXCEPT = delete;
+	GrassVegetationVertex() NOEXCEPT = delete;
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	VegetationVertex(	const Vector3 &initialPosition,
-						const Vector3 &initialNormal,
-						const Vector3 &initialTangent,
-						const Vector2 &initialTextureCoordinate,
-						const float initialModulatorFactor) NOEXCEPT
+	GrassVegetationVertex(	const Vector3 &initialPosition,
+							const Vector3 &initialNormal,
+							const Vector3 &initialTangent,
+							const Vector2 &initialTextureCoordinate,
+							const float initialModulatorFactor) NOEXCEPT
 		:
 		_Position(initialPosition),
 		_Normal(initialNormal),
@@ -53,7 +53,7 @@ public:
 	/*
 	*	Constructor taking all values as separate arguments.
 	*/
-		VegetationVertex(	const float initialPositionX,
+	GrassVegetationVertex(	const float initialPositionX,
 							const float initialPositionY,
 							const float initialPositionZ,
 							const float initialNormalX,
@@ -65,14 +65,14 @@ public:
 							const float initialTextureCoordinateX,
 							const float initialTextureCoordinateY,
 							const float initialModulatorFactor) NOEXCEPT
-			:
-			_Position(initialPositionX, initialPositionY, initialPositionZ),
-			_Normal(initialNormalX, initialNormalY, initialNormalZ),
-			_Tangent(initialTangentX, initialTangentY, initialTangentZ),
-			_TextureCoordinate(initialTextureCoordinateX, initialTextureCoordinateY),
-			_ModulatorFactor(initialModulatorFactor)
-		{
+		:
+		_Position(initialPositionX, initialPositionY, initialPositionZ),
+		_Normal(initialNormalX, initialNormalY, initialNormalZ),
+		_Tangent(initialTangentX, initialTangentY, initialTangentZ),
+		_TextureCoordinate(initialTextureCoordinateX, initialTextureCoordinateY),
+		_ModulatorFactor(initialModulatorFactor)
+	{
 
-		}
+	}
 
 };

@@ -20,7 +20,7 @@
 #include <Resources/ResourcesCore.h>
 
 //Vegetation.
-#include <Vegetation/VegetationMaterial.h>
+#include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/VegetationModel.h>
 
 class ResourceLoader final
@@ -37,6 +37,16 @@ public:
 	*	Given a resource ID, return the corresponding environment material.
 	*/
 	static const EnvironmentMaterial& GetEnvironmentMaterial(const HashString resourceID) { return _EnvironmentMaterials[resourceID]; }
+
+	/*
+	*	Given a resource ID, return the corresponding grass vegetation material.
+	*/
+	static const GrassVegetationMaterial& GetGrassVegetationMaterial(const HashString resourceID) { return _GrassVegetationMaterials[resourceID]; }
+
+	/*
+	*	Given a resource ID, return the corresponding grass vegetation model.
+	*/
+	static const VegetationModel& GetGrassVegetationModel(const HashString resourceID) { return _GrassVegetationModels[resourceID]; }
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*
@@ -65,20 +75,16 @@ public:
 	*/
 	static const TerrainMaterial& GetTerrainMaterial(const HashString resourceID) { return _TerrainMaterials[resourceID]; }
 
-	/*
-	*	Given a resource ID, return the corresponding vegetation material.
-	*/
-	static const VegetationMaterial& GetVegetationMaterial(const HashString resourceID) { return _VegetationMaterials[resourceID]; }
-
-	/*
-	*	Given a resource ID, return the corresponding vegetation model.
-	*/
-	static const VegetationModel& GetVegetationModel(const HashString resourceID) { return _VegetationModels[resourceID]; }
-
 private:
 
 	//Container for all environment materials.
 	static Map<HashString, EnvironmentMaterial> _EnvironmentMaterials;
+
+	//Container for all grass vegetation materials.
+	static Map<HashString, GrassVegetationMaterial> _GrassVegetationMaterials;
+
+	//Container for all grass vegetation models.
+	static Map<HashString, VegetationModel> _GrassVegetationModels;
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	//Container for all ocean materials.
@@ -97,12 +103,6 @@ private:
 	//Container for all terrain materials.
 	static Map<HashString, TerrainMaterial> _TerrainMaterials;
 
-	//Container for all vegetation materials.
-	static Map<HashString, VegetationMaterial> _VegetationMaterials;
-
-	//Container for all vegetation models.
-	static Map<HashString, VegetationModel> _VegetationModels;
-
 	/*
 	*	Loads a resource collection, internal implementation.
 	*/
@@ -112,6 +112,16 @@ private:
 	*	Given a file, load an environment material.
 	*/
 	static void LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a grass vegetation material.
+	*/
+	static void LoadGrassVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a grass vegetation model.
+	*/
+	static void LoadGrassVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*
@@ -139,15 +149,5 @@ private:
 	*	Given a file, load a terrain material.
 	*/
 	static void LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
-
-	/*
-	*	Given a file, load a vegetation material.
-	*/
-	static void LoadVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
-
-	/*
-	*	Given a file, load a vegetation model.
-	*/
-	static void LoadVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 };

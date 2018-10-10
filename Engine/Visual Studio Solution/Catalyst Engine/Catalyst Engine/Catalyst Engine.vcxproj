@@ -258,6 +258,8 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\EnvironmentMaterialData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\GrassVegetationMaterialData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\GrassVegetationModelData.h" />
     <ClInclude Include="..\..\..\Include\Resources\OceanMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\ParticleMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\PhysicalMaterialData.h" />
@@ -266,8 +268,6 @@
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoaderUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h" />
     <ClInclude Include="..\..\..\Include\Resources\TerrainMaterialData.h" />
-    <ClInclude Include="..\..\..\Include\Resources\VegetationMaterialData.h" />
-    <ClInclude Include="..\..\..\Include\Resources\VegetationModelData.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\DebugRenderingSystem.h" />
@@ -290,15 +290,15 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUtilities.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationMaterial.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationVertex.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationMaterial.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationModel.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeProperties.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationVertex.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />

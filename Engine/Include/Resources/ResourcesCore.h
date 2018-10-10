@@ -7,6 +7,8 @@
 enum class ResourceType : uint8
 {
 	EnvironmentMaterial,
+	GrassVegetationMaterial,
+	GrassVegetationModel,
 #if defined(CATALYST_ENABLE_OCEAN)
 	OceanMaterial,
 #endif
@@ -14,8 +16,6 @@ enum class ResourceType : uint8
 	PhysicalMaterial,
 	PhysicalModel,
 	TerrainMaterial,
-	VegetationMaterial,
-	VegetationModel,
 
 	NumberOfResourceTypes
 };
