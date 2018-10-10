@@ -35,8 +35,8 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
-#include <Resources/GrassVegetationMaterialData.h>
-#include <Resources/GrassVegetationModelData.h>
+#include <Resources/GrassMaterialData.h>
+#include <Resources/GrassModelData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
 #endif
@@ -49,8 +49,8 @@
 #include <Systems/InputSystem.h>
 
 //Vegetation.
-#include <Vegetation/GrassVegetationMaterial.h>
-#include <Vegetation/VegetationModel.h>
+#include <Vegetation/GrassMaterial.h>
+#include <Vegetation/GrassModel.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
@@ -443,9 +443,9 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &d
 }
 
 /*
-*	Creates a grass vegetation material.
+*	Creates a grass material.
 */
-void RenderingSystem::CreateGrassVegetationMaterial(const GrassVegetationMaterialData &data, GrassVegetationMaterial &material) NOEXCEPT
+void RenderingSystem::CreateGrassMaterial(const GrassMaterialData &data, GrassMaterial &material) NOEXCEPT
 {
 	//Create the mask texture.
 	material._MaskTexture = CreateTexture2D(TextureData(TextureDataContainer(data._MaskData, data._MaskWidth, data._MaskHeight, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
@@ -457,20 +457,20 @@ void RenderingSystem::CreateGrassVegetationMaterial(const GrassVegetationMateria
 	material._NormalMapTexture = CreateTexture2D(TextureData(TextureDataContainer(data._NormalMapData, data._Width, data._Height, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
 
 	//Create the render data table.
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::VegetationMaterial), &material._RenderDataTable);
+	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GrassMaterial), &material._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::Texture2D, material._MaskTexture), material._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, material._AlbedoTexture), material._RenderDataTable);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(2, RenderDataTableUpdateInformation::Type::Texture2D, material._NormalMapTexture), material._RenderDataTable);
 }
 
 /*
-*	Creates a grass vegetation model.
+*	Creates a grass model.
 */
-void RenderingSystem::CreateGrassVegetationModel(const GrassVegetationModelData &data, VegetationModel &model) NOEXCEPT
+void RenderingSystem::CreateGrassModel(const GrassModelData &data, GrassModel &model) NOEXCEPT
 {
 	//Create the vertex and index buffer.
 	const void *RESTRICT modelData[]{ data._Vertices.Data(), data._Indices.Data() };
-	const uint64 modelDataSizes[]{ sizeof(GrassVegetationVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
+	const uint64 modelDataSizes[]{ sizeof(GrassVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
 	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
 
 	//Set up the physical model.
@@ -755,8 +755,8 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::TerrainColor)] = TerrainColorRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DynamicPhysical)] = DynamicPhysicalRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::InstancedPhysical)] = InstancedPhysicalRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::VegetationDepth)] = VegetationDepthRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::VegetationColor)] = VegetationColorRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::GrassDepth)] = GrassDepthRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::GrassColor)] = GrassColorRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalShadow)] = DirectionalShadowRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::Lighting)] = LightingRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::Sky)] = SkyRenderPass::Instance.Get();
@@ -1000,7 +1000,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 	}
 
 	{
-		//Initialize the vegetation material render data table layout.
+		//Initialize the grass material render data table layout.
 		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
@@ -1008,7 +1008,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
 		};
 
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::VegetationMaterial)]);
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GrassMaterial)]);
 	}
 }
 

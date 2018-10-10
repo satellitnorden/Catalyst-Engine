@@ -62,8 +62,8 @@ enum class RenderPassSubStage : uint8
 	TerrainColor,
 	DynamicPhysical,
 	InstancedPhysical,
-	VegetationDepth,
-	VegetationColor,
+	GrassDepth,
+	GrassColor,
 	DirectionalShadow,
 	Lighting,
 	Sky,
@@ -136,6 +136,7 @@ enum class CommonRenderDataTableLayout : uint8
 {
 	DynamicUniformData,
 	EnvironmentMaterial,
+	GrassMaterial,
 	TerrainMaterial,
 	PhysicalMaterial,
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -143,7 +144,6 @@ enum class CommonRenderDataTableLayout : uint8
 #endif
 	ParticleSystem,
 	GaussianBlur,
-	VegetationMaterial,
 
 	NumberOfCommonRenderDataTableLayouts
 };
@@ -207,10 +207,10 @@ enum class Shader : uint8
 	SkyFragment,
 	TerrainColorFragment,
 	TerrainDepthFragment,
-	VegetationColorFragment,
-	VegetationColorVertex,
-	VegetationDepthFragment,
-	VegetationDepthVertex,
+	GrassColorFragment,
+	GrassColorVertex,
+	GrassDepthFragment,
+	GrassDepthVertex,
 	ViewportVertex,
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFogFragment,

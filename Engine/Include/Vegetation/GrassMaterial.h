@@ -6,7 +6,7 @@
 //Rendering.
 #include <Rendering/Engine/RenderingCore.h>
 
-class GrassVegetationMaterial final
+class GrassMaterial final
 {
 
 public:

@@ -51,7 +51,7 @@ void VegetationSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 /*
 *	Adds a vegetation type.
 */
-void VegetationSystem::AddVegetationType(const VegetationTypeProperties &properties, const VegetationModel &model, const GrassVegetationMaterial &material) NOEXCEPT
+void VegetationSystem::AddVegetationType(const VegetationTypeProperties &properties, const GrassModel &model, const GrassMaterial &material) NOEXCEPT
 {
 	//Create the new vegetation information.
 	_VegetationTypeInformations.EmplaceSlow();

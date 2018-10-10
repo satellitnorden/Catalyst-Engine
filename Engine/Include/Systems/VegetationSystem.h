@@ -55,7 +55,7 @@ public:
 	/*
 	*	Adds a vegetation type.
 	*/
-	void AddVegetationType(const VegetationTypeProperties &properties, const VegetationModel &model, const GrassVegetationMaterial &material) NOEXCEPT;
+	void AddVegetationType(const VegetationTypeProperties &properties, const GrassModel &model, const GrassMaterial &material) NOEXCEPT;
 
 private:
 

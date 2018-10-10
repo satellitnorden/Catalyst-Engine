@@ -6,28 +6,28 @@
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
 
-class VegetationColorRenderPass final : public RenderPass
+class GrassColorRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(VegetationColorRenderPass);
+	DECLARE_SINGLETON(GrassColorRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	VegetationColorRenderPass() NOEXCEPT;
+	GrassColorRenderPass() NOEXCEPT;
 
 private:
 
 	/*
-	*	Initializes the vegetation color render pass.
+	*	Initializes the grass color render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
 	/*
-	*	Renders the color of the vegetation.
+	*	Renders the color of the grass.
 	*/
 	void RenderInternal() NOEXCEPT;
 

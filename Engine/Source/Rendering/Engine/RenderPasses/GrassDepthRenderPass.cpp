@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/VegetationColorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/GrassDepthRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -10,100 +10,86 @@
 #include <Systems/VegetationSystem.h>
 
 //Vegetation.
-#include <Vegetation/GrassVegetationVertex.h>
+#include <Vegetation/GrassVertex.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(VegetationColorRenderPass);
+DEFINE_SINGLETON(GrassDepthRenderPass);
 
-class VertexPushConstantData final
+class PushConstantData final
 {
 
 public:
 
+	float _HalfCutoffDistanceSquared;
+	float _InverseHalfCutoffDistanceSquared;
 	float _WindModulatorFactor;
-
-};
-
-class FragmentPushConstantData final
-{
-
-public:
-
-	float _Thickness;
 
 };
 
 /*
 *	Default constructor.
 */
-VegetationColorRenderPass::VegetationColorRenderPass() NOEXCEPT
+GrassDepthRenderPass::GrassDepthRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		VegetationColorRenderPass::Instance->InitializeInternal();
+		GrassDepthRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the vegetation color render pass.
+*	Initializes the grass depth render pass.
 */
-void VegetationColorRenderPass::InitializeInternal() NOEXCEPT
+void GrassDepthRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::VegetationColor);
+	SetSubStage(RenderPassSubStage::GrassDepth);
 
 	//Set the shaders.
-	SetVertexShader(Shader::VegetationColorVertex);
+	SetVertexShader(Shader::GrassDepthVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::VegetationColorFragment);
+	SetFragmentShader(Shader::GrassDepthFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
-	//Add the render targets.
-	SetNumberOfRenderTargets(3);
-	AddRenderTarget(RenderTarget::SceneBufferAlbedo);
-	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
-	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
-
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::VegetationMaterial));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GrassMaterial));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(PushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(9);
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(GrassVegetationVertex, _Position));
+										offsetof(GrassVertex, _Position));
 	AddVertexInputAttributeDescription(	1,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(GrassVegetationVertex, _Normal));
+										offsetof(GrassVertex, _Normal));
 	AddVertexInputAttributeDescription(	2,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										offsetof(GrassVegetationVertex, _Tangent));
+										offsetof(GrassVertex, _Tangent));
 	AddVertexInputAttributeDescription(	3,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
-										offsetof(GrassVegetationVertex, _TextureCoordinate));
+										offsetof(GrassVertex, _TextureCoordinate));
 	AddVertexInputAttributeDescription(	4,
 										0,
 										VertexInputAttributeDescription::Format::X32SignedFloat,
-										offsetof(GrassVegetationVertex, _ModulatorFactor));
+										offsetof(GrassVertex, _ModulatorFactor));
 	AddVertexInputAttributeDescription(	5,
 										1,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
@@ -123,7 +109,7 @@ void VegetationColorRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(2);
-	AddVertexInputBindingDescription(0, sizeof(GrassVegetationVertex), VertexInputBindingDescription::InputRate::Vertex);
+	AddVertexInputBindingDescription(0, sizeof(GrassVertex), VertexInputBindingDescription::InputRate::Vertex);
 	AddVertexInputBindingDescription(1, sizeof(Matrix4), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
@@ -132,23 +118,23 @@ void VegetationColorRenderPass::InitializeInternal() NOEXCEPT
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
 	SetCullMode(CullMode::None);
-	SetDepthCompareOperator(CompareOperator::Equal);
+	SetDepthCompareOperator(CompareOperator::Less);
 	SetDepthTestEnabled(true);
-	SetDepthWriteEnabled(false);
-	SetStencilTestEnabled(false);
+	SetDepthWriteEnabled(true);
+	SetStencilTestEnabled(true);
 	SetStencilFailOperator(StencilOperator::Keep);
-	SetStencilPassOperator(StencilOperator::Keep);
+	SetStencilPassOperator(StencilOperator::Replace);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(0);
-	SetStencilReferenceMask(0);
+	SetStencilWriteMask(BIT(0));
+	SetStencilReferenceMask(BIT(0));
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		VegetationColorRenderPass::Instance->RenderInternal();
+		GrassDepthRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -156,9 +142,9 @@ void VegetationColorRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the color of the vegetation.
+*	Renders the depth of the grass.
 */
-void VegetationColorRenderPass::RenderInternal() NOEXCEPT
+void GrassDepthRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the vegetion type informations.
 	const DynamicArray<VegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetVegetationTypeInformations() };
@@ -196,13 +182,13 @@ void VegetationColorRenderPass::RenderInternal() NOEXCEPT
 		commandBuffer->BindRenderDataTable(this, 1, information._Material._RenderDataTable);
 
 		//Pust constants.
-		VertexPushConstantData vertexData;
-		vertexData._WindModulatorFactor = information._Properties._WindModulatorFactor;
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+		PushConstantData data;
 
-		FragmentPushConstantData fragmentData;
-		fragmentData._Thickness = information._Properties._Thickness;
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+		data._HalfCutoffDistanceSquared = (information._Properties._CutoffDistance * 0.5f) * (information._Properties._CutoffDistance * 0.5f);
+		data._InverseHalfCutoffDistanceSquared = 1.0f / data._HalfCutoffDistanceSquared;
+		data._WindModulatorFactor = information._Properties._WindModulatorFactor;
+
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
 
 		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{

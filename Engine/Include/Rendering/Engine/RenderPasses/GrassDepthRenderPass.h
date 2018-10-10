@@ -6,28 +6,28 @@
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
 
-class VegetationDepthRenderPass final : public RenderPass
+class GrassDepthRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(VegetationDepthRenderPass);
+	DECLARE_SINGLETON(GrassDepthRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	VegetationDepthRenderPass() NOEXCEPT;
+	GrassDepthRenderPass() NOEXCEPT;
 
 private:
 
 	/*
-	*	Initializes the vegetation depth render pass.
+	*	Initializes the grass depth render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
 	/*
-	*	Renders the depth of the vegetation.
+	*	Renders the depth of the grass.
 	*/
 	void RenderInternal() NOEXCEPT;
 

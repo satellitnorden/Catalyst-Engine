@@ -81,30 +81,6 @@ void WorldArchitect::InitializeParticles()
 void WorldArchitect::InitializeVegetation()
 {
 	{
-		//Add the debris vegetation type.
-		VegetationTypeProperties properties;
-
-		properties._CutoffDistance = 200.0f;
-		properties._Density = 50;
-		properties._Thickness = 1.0f;
-		properties._WindModulatorFactor = 0.0f;
-		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
-		{
-			return WorldArchitect::Instance->GenerateTransformation(true, 0.0f, 0.25f, 0.05f, 0.1f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
-		};
-		VegetationModel model{ ResourceLoader::GetGrassVegetationModel(HashString("DebrisVegetationModel")) };
-		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DebrisVegetationMaterial")) };
-
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 400.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 600.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-	}
-
-	{
 		//Add the fern vegetation type.
 		VegetationTypeProperties properties;
 
@@ -116,8 +92,8 @@ void WorldArchitect::InitializeVegetation()
 		{
 			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.25f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
-		VegetationModel model{ ResourceLoader::GetGrassVegetationModel(HashString("FernVegetationModel")) };
-		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("FernVegetationMaterial")) };
+		GrassModel model{ ResourceLoader::GetGrassModel(HashString("FernVegetationModel")) };
+		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("FernVegetationMaterial")) };
 
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
@@ -140,8 +116,8 @@ void WorldArchitect::InitializeVegetation()
 		{
 			return WorldArchitect::Instance->GenerateTransformation(true, 0.35f, 0.25f, 0.15f, 0.3f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
-		VegetationModel model{ ResourceLoader::GetGrassVegetationModel(HashString("GrassVegetationModel")) };
-		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("GrassVegetationMaterial")) };
+		GrassModel model{ ResourceLoader::GetGrassModel(HashString("GrassVegetationModel")) };
+		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("GrassVegetationMaterial")) };
 
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
@@ -170,8 +146,8 @@ void WorldArchitect::InitializeVegetation()
 		{
 			return WorldArchitect::Instance->GenerateTransformation(true, 0.35f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
-		VegetationModel model{ ResourceLoader::GetGrassVegetationModel(HashString("GrassVegetationModel")) };
-		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("Grass2VegetationMaterial")) };
+		GrassModel model{ ResourceLoader::GetGrassModel(HashString("GrassVegetationModel")) };
+		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("Grass2VegetationMaterial")) };
 
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
@@ -185,24 +161,6 @@ void WorldArchitect::InitializeVegetation()
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 125.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
-	}
-
-	{
-		//Add the tree vegetation type.
-		VegetationTypeProperties properties;
-
-		properties._CutoffDistance = 500.0f;
-		properties._Density = 250;
-		properties._Thickness = 1.0f;
-		properties._WindModulatorFactor = 0.0f;
-		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
-		{
-			return WorldArchitect::Instance->GenerateTransformation(false, 0.0f, 0.9f, 0.03f, 0.06f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
-		};
-		VegetationModel model{ ResourceLoader::GetGrassVegetationModel(HashString("TreeVegetationModel")) };
-		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("TreeVegetationMaterial")) };
-
 		VegetationSystem::Instance->AddVegetationType(properties, model, material);
 	}
 }

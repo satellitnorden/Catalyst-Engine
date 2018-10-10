@@ -29,9 +29,10 @@ class CPUTexture2D;
 class DynamicPhysicalInitializationData;
 class Entity;
 class EnvironmentMaterialData;
-class GrassVegetationMaterial;
-class GrassVegetationMaterialData;
-class GrassVegetationModelData;
+class GrassMaterial;
+class GrassMaterialData;
+class GrassModel;
+class GrassModelData;
 class InstancedPhysicalEntity;
 #if defined(CATALYST_ENABLE_OCEAN)
 class OceanMaterialData;
@@ -48,7 +49,6 @@ class Resolution;
 class TerrainMaterial;
 class TerrainMaterialData;
 class TextureData;
-class VegetationModel;
 
 class RenderingSystem final
 {
@@ -393,14 +393,14 @@ public:
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &data, EnvironmentMaterial &material) NOEXCEPT;
 
 	/*
-	*	Creates a grass vegetation material.
+	*	Creates a grass material.
 	*/
-	void CreateGrassVegetationMaterial(const GrassVegetationMaterialData &data, GrassVegetationMaterial &material) NOEXCEPT;
+	void CreateGrassMaterial(const GrassMaterialData &data, GrassMaterial &material) NOEXCEPT;
 
 	/*
-	*	Creates a grass vegetation model.
+	*	Creates a grass model.
 	*/
-	void CreateGrassVegetationModel(const GrassVegetationModelData &data, VegetationModel &model) NOEXCEPT;
+	void CreateGrassModel(const GrassModelData &data, GrassModel &model) NOEXCEPT;
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*

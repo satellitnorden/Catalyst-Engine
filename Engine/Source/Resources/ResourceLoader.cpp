@@ -6,8 +6,8 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
-#include <Resources/GrassVegetationMaterialData.h>
-#include <Resources/GrassVegetationModelData.h>
+#include <Resources/GrassMaterialData.h>
+#include <Resources/GrassModelData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
 #endif
@@ -24,8 +24,8 @@
 
 //Static variable definitions.
 Map<HashString, EnvironmentMaterial> ResourceLoader::_EnvironmentMaterials;
-Map<HashString, GrassVegetationMaterial> ResourceLoader::_GrassVegetationMaterials;
-Map<HashString, VegetationModel> ResourceLoader::_GrassVegetationModels;
+Map<HashString, GrassMaterial> ResourceLoader::_GrassMaterials;
+Map<HashString, GrassModel> ResourceLoader::_GrassModels;
 #if defined(CATALYST_ENABLE_OCEAN)
 Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
 #endif
@@ -78,16 +78,16 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 				break;
 			}
 
-			case ResourceType::GrassVegetationMaterial:
+			case ResourceType::GrassMaterial:
 			{
-				LoadGrassVegetationMaterial(file);
+				LoadGrassMaterial(file);
 
 				break;
 			}
 
-			case ResourceType::GrassVegetationModel:
+			case ResourceType::GrassModel:
 			{
-				LoadGrassVegetationModel(file);
+				LoadGrassModel(file);
 
 				break;
 			}
@@ -173,12 +173,12 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 }
 
 /*
-*	Given a file, load a grass vegetation material.
+*	Given a file, load a grass material.
 */
-void ResourceLoader::LoadGrassVegetationMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoader::LoadGrassMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
-	//Store the grass vegetation material data in the grass vegetation material data structure.
-	GrassVegetationMaterialData data;
+	//Store the grass material data in the grass material data structure.
+	GrassMaterialData data;
 
 	//Read the resource ID.
 	HashString resourceID;
@@ -238,17 +238,17 @@ void ResourceLoader::LoadGrassVegetationMaterial(BinaryFile<IOMode::In> &file) N
 		file.Read(data._NormalMapData[i].Data(), textureSize);
 	}
 
-	//Create the grass vegetation material via the rendering system.
-	RenderingSystem::Instance->CreateGrassVegetationMaterial(data, _GrassVegetationMaterials[resourceID]);
+	//Create the grass material via the rendering system.
+	RenderingSystem::Instance->CreateGrassMaterial(data, _GrassMaterials[resourceID]);
 }
 
 /*
-*	Given a file, load a grass vegetation model.
+*	Given a file, load a grass model.
 */
-void ResourceLoader::LoadGrassVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoader::LoadGrassModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
-	//Store the grass vegetation model data in the grass vegetation model data structure.
-	GrassVegetationModelData data;
+	//Store the grass model data in the grass model data structure.
+	GrassModelData data;
 
 	//Read the resource ID.
 	HashString resourceID;
@@ -260,7 +260,7 @@ void ResourceLoader::LoadGrassVegetationModel(BinaryFile<IOMode::In> &file) NOEX
 
 	//Read the vertices.
 	data._Vertices.UpsizeFast(numberOfVertices);
-	file.Read(data._Vertices.Data(), sizeof(GrassVegetationVertex) * numberOfVertices);
+	file.Read(data._Vertices.Data(), sizeof(GrassVertex) * numberOfVertices);
 
 	//Read the number of indices.
 	uint64 numberOfIndices;
@@ -270,8 +270,8 @@ void ResourceLoader::LoadGrassVegetationModel(BinaryFile<IOMode::In> &file) NOEX
 	data._Indices.UpsizeFast(numberOfIndices);
 	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
 
-	//Create the vegetation model via the rendering system.
-	RenderingSystem::Instance->CreateGrassVegetationModel(data, _GrassVegetationModels[resourceID]);
+	//Create the model via the rendering system.
+	RenderingSystem::Instance->CreateGrassModel(data, _GrassModels[resourceID]);
 }
 
 #if defined(CATALYST_ENABLE_OCEAN)

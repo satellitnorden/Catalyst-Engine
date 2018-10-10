@@ -6,7 +6,7 @@
 //Rendering.
 #include <Rendering/Engine/RenderingCore.h>
 
-class VegetationModel final
+class GrassModel final
 {
 
 public:
@@ -17,13 +17,13 @@ public:
 	//The index offset in the buffer.
 	uint64 _IndexOffset;
 
-	//The number of indices that this vegetation model has.
+	//The number of indices that this grass model has.
 	uint32 _IndexCount;
 
 	/*
 	*	Default constructor.
 	*/
-	VegetationModel() NOEXCEPT
+	GrassModel() NOEXCEPT
 	{
 
 	}
@@ -31,11 +31,11 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	VegetationModel(const VegetationModel &otherPhysicalModel) NOEXCEPT
+	GrassModel(const GrassModel &other) NOEXCEPT
 		:
-		_Buffer(otherPhysicalModel._Buffer),
-		_IndexOffset(otherPhysicalModel._IndexOffset),
-		_IndexCount(otherPhysicalModel._IndexCount)
+		_Buffer(other._Buffer),
+		_IndexOffset(other._IndexOffset),
+		_IndexCount(other._IndexCount)
 	{
 
 	}
