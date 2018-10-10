@@ -111,7 +111,7 @@ void CullingSystem::CullVegetation() NOEXCEPT
 	const Vector3 cameraPosition{ camera->GetPosition() };
 
 	//Iterate over alll vegetion type informations, and cull the grid points that is too far away from the camera.
-	for (VegetationTypeInformation &information : *VegetationSystem::Instance->GetVegetationTypeInformations())
+	for (GrassVegetationTypeInformation &information : *VegetationSystem::Instance->GetVegetationTypeInformations())
 	{
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
 		{

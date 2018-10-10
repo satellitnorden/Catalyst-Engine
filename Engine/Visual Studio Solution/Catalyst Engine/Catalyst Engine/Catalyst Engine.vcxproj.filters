@@ -867,24 +867,6 @@
     <ClInclude Include="..\..\..\Include\Systems\VegetationSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchRenderInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformation.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeProperties.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformationUpdate.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchRenderInformation.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
@@ -939,15 +921,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\TerrainDepthFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassMaterial.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassModel.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVertex.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\GrassMaterialData.h">
       <Filter>Resources\Include</Filter>
     </ClInclude>
@@ -971,6 +944,33 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\GrassDepthRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassMaterial.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassModel.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVertex.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchRenderInformation.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\VegetationTypeInformationUpdate.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformation.h">
+      <Filter>Vegetation\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

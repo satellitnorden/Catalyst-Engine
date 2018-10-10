@@ -161,7 +161,7 @@ void GrassColorRenderPass::InitializeInternal() NOEXCEPT
 void GrassColorRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the vegetion type informations.
-	const DynamicArray<VegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetVegetationTypeInformations() };
+	const DynamicArray<GrassVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetVegetationTypeInformations() };
 
 	//If there's none to render - render none.
 	if (informations->Empty())
@@ -184,7 +184,7 @@ void GrassColorRenderPass::RenderInternal() NOEXCEPT
 	//Wait for the vegetation culling to finish.
 	CullingSystem::Instance->WaitForVegetationCulling();
 
-	for (const VegetationTypeInformation &information : *informations)
+	for (const GrassVegetationTypeInformation &information : *informations)
 	{
 		//Bind the model vertex and index buffer.
 		const uint64 offset{ 0 };

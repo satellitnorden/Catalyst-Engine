@@ -6,7 +6,7 @@
 //Vegetation.
 #include <Vegetation/VegetationCore.h>
 
-class VegetationTypeProperties final
+class GrassVegetationTypeProperties final
 {
 
 public:

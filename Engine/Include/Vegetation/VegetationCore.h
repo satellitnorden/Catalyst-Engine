@@ -11,12 +11,3 @@
 
 //Type aliases.
 using VegetationPlacementFunction = bool(*)(const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation);
-
-//Enumeraion covering all vegetation types.
-enum class VegetationType : uint8
-{
-	Grass,
-	Solid,
-
-	NumberOfVegetationTypes
-};

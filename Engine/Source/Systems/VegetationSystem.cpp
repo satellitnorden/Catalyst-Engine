@@ -49,13 +49,13 @@ void VegetationSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 }
 
 /*
-*	Adds a vegetation type.
+*	Adds a grass vegetation type.
 */
-void VegetationSystem::AddVegetationType(const VegetationTypeProperties &properties, const GrassModel &model, const GrassMaterial &material) NOEXCEPT
+void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const GrassModel &model, const GrassMaterial &material) NOEXCEPT
 {
 	//Create the new vegetation information.
-	_VegetationTypeInformations.EmplaceSlow();
-	VegetationTypeInformation *const RESTRICT information{ &_VegetationTypeInformations.Back() };
+	_GrassVegetationTypeInformations.EmplaceSlow();
+	GrassVegetationTypeInformation *const RESTRICT information{ &_GrassVegetationTypeInformations.Back() };
 
 	//Just copy the properties, the model and the material.
 	information->_Properties = properties;
@@ -101,7 +101,7 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 /*
 *	Invalidates one patch.
 */
-void VegetationSystem::InvalidatePatch(VegetationTypeInformation *const RESTRICT information, const uint8 index) NOEXCEPT
+void VegetationSystem::InvalidatePatch(GrassVegetationTypeInformation *const RESTRICT information, const uint8 index) NOEXCEPT
 {
 	//Invalidate the patch.
 	information->_PatchInformations[index]._Valid = false;
@@ -122,7 +122,7 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 	_VegetationTypeInformationUpdate._Information = nullptr;
 
 	//Update all vegetation type informations.
-	for (VegetationTypeInformation &information : _VegetationTypeInformations)
+	for (GrassVegetationTypeInformation &information : _GrassVegetationTypeInformations)
 	{
 		//Calculate the current grid point based on the current camera position.
 		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * 2.0f) };
@@ -250,7 +250,7 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 /*
 *	Generates the transformations.
 */
-void VegetationSystem::GenerateTransformations(const GridPoint2 &gridPoint, const VegetationTypeProperties &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
+void VegetationSystem::GenerateTransformations(const GridPoint2 &gridPoint, const GrassVegetationTypeProperties &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
 {
 	//Construct the box.
 	const Vector3 worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * 2.0f) };

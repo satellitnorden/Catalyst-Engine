@@ -7,17 +7,17 @@
 //Vegetation.
 #include <Vegetation/GrassMaterial.h>
 #include <Vegetation/GrassModel.h>
+#include <Vegetation/GrassVegetationTypeProperties.h>
 #include <Vegetation/VegetationPatchInformation.h>
 #include <Vegetation/VegetationPatchRenderInformation.h>
-#include <Vegetation/VegetationTypeProperties.h>
 
-class VegetationTypeInformation final
+class GrassVegetationTypeInformation final
 {
 
 public:
 
 	//The properties.
-	VegetationTypeProperties _Properties;
+	GrassVegetationTypeProperties _Properties;
 
 	//The model.
 	GrassModel _Model;

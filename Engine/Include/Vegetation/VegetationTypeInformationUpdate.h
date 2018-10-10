@@ -5,7 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Vegetation.
-#include <Vegetation/VegetationTypeInformation.h>
+#include <Vegetation/GrassVegetationTypeInformation.h>
 
 class VegetationTypeInformationUpdate final
 {
@@ -13,7 +13,7 @@ class VegetationTypeInformationUpdate final
 public:
 
 	//The vegetation type information to update.
-	VegetationTypeInformation *RESTRICT _Information;
+	GrassVegetationTypeInformation *RESTRICT _Information;
 
 	//The patch indices to invalidate.
 	DynamicArray<uint8> _PatchesToInvalidate;

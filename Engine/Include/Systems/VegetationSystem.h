@@ -10,7 +10,7 @@
 #include <Multithreading/Task.h>
 
 //Vegetation.
-#include <Vegetation/VegetationTypeInformation.h>
+#include <Vegetation/GrassVegetationTypeInformation.h>
 #include <Vegetation/VegetationTypeInformationUpdate.h>
 
 class VegetationSystem final
@@ -39,28 +39,28 @@ public:
 	/*
 	*	Returns the vegetation type informations, const.
 	*/
-	RESTRICTED NO_DISCARD const DynamicArray<VegetationTypeInformation> *const RESTRICT GetVegetationTypeInformations() const NOEXCEPT
+	RESTRICTED NO_DISCARD const DynamicArray<GrassVegetationTypeInformation> *const RESTRICT GetVegetationTypeInformations() const NOEXCEPT
 	{
-		return &_VegetationTypeInformations;
+		return &_GrassVegetationTypeInformations;
 	}
 
 	/*
 	*	Returns the vegetation type informations, non-const.
 	*/
-	RESTRICTED NO_DISCARD DynamicArray<VegetationTypeInformation> *const RESTRICT GetVegetationTypeInformations() NOEXCEPT
+	RESTRICTED NO_DISCARD DynamicArray<GrassVegetationTypeInformation> *const RESTRICT GetVegetationTypeInformations() NOEXCEPT
 	{
-		return &_VegetationTypeInformations;
+		return &_GrassVegetationTypeInformations;
 	}
 
 	/*
-	*	Adds a vegetation type.
+	*	Adds a grass vegetation type.
 	*/
-	void AddVegetationType(const VegetationTypeProperties &properties, const GrassModel &model, const GrassMaterial &material) NOEXCEPT;
+	void AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const GrassModel &model, const GrassMaterial &material) NOEXCEPT;
 
 private:
 
-	//The vegetation type informations.
-	DynamicArray<VegetationTypeInformation> _VegetationTypeInformations;
+	//The grass vegetation type informations.
+	DynamicArray<GrassVegetationTypeInformation> _GrassVegetationTypeInformations;
 
 	//The update task.
 	Task _UpdateTask;
@@ -79,7 +79,7 @@ private:
 	/*
 	*	Invalidates one patch.
 	*/
-	void InvalidatePatch(VegetationTypeInformation *const RESTRICT information, const uint8 index) NOEXCEPT;
+	void InvalidatePatch(GrassVegetationTypeInformation *const RESTRICT information, const uint8 index) NOEXCEPT;
 
 	/*
 	*	Updates the vegetation system asynchronously.
@@ -89,6 +89,6 @@ private:
 	/*
 	*	Generates the transformations.
 	*/
-	void GenerateTransformations(const GridPoint2 &gridPoint, const VegetationTypeProperties &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT;
+	void GenerateTransformations(const GridPoint2 &gridPoint, const GrassVegetationTypeProperties &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT;
 
 };

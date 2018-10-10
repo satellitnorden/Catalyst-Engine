@@ -81,8 +81,8 @@ void WorldArchitect::InitializeParticles()
 void WorldArchitect::InitializeVegetation()
 {
 	{
-		//Add the default grass type.
-		VegetationTypeProperties properties;
+		//Add the default grass vegetation type.
+		GrassVegetationTypeProperties properties;
 
 		properties._CutoffDistance = 100.0f;
 		properties._Density = 10'000;
@@ -95,24 +95,24 @@ void WorldArchitect::InitializeVegetation()
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("DefaultGrassMaterial")) };
 
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 200.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 300.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 400.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 500.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 	}
 
 	{
-		//Add the fern type.
-		VegetationTypeProperties properties;
+		//Add the fern vegetation type.
+		GrassVegetationTypeProperties properties;
 
 		properties._CutoffDistance = 250.0f;
 		properties._Density = 100;
@@ -125,15 +125,15 @@ void WorldArchitect::InitializeVegetation()
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("FernGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("FernGrassMaterial")) };
 
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 500.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 	}
 
 	{
-		//Add the plum grass type.
-		VegetationTypeProperties properties;
+		//Add the plum grass vegetation type.
+		GrassVegetationTypeProperties properties;
 
 		properties._CutoffDistance = 250.0f;
 		properties._Density = 5'000;
@@ -146,15 +146,15 @@ void WorldArchitect::InitializeVegetation()
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("PlumGrassMaterial")) };
 
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 500.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 	}
 
 	{
-		//Add the thistle grass type.
-		VegetationTypeProperties properties;
+		//Add the thistle grass vegetation type.
+		GrassVegetationTypeProperties properties;
 
 		properties._CutoffDistance = 250.0f;
 		properties._Density = 5'000;
@@ -167,15 +167,15 @@ void WorldArchitect::InitializeVegetation()
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("ThistleGrassMaterial")) };
 
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 500.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 	}
 
 	{
-		//Add the weed grass type.
-		VegetationTypeProperties properties;
+		//Add the weed grass vegetation type.
+		GrassVegetationTypeProperties properties;
 
 		properties._CutoffDistance = 250.0f;
 		properties._Density = 5'000;
@@ -188,10 +188,10 @@ void WorldArchitect::InitializeVegetation()
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("WeedGrassMaterial")) };
 
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
 		properties._CutoffDistance = 500.0f;
-		VegetationSystem::Instance->AddVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 	}
 }
 
