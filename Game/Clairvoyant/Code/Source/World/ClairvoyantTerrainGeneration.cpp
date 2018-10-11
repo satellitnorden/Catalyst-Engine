@@ -17,7 +17,7 @@
 //Clairvoyant terrain generation constants.
 namespace ClairvoyantTerrainGenerationConstants
 {
-	constexpr float TERRAIN_HEIGHT{ 16'000.0f };
+	constexpr float TERRAIN_HEIGHT{ 10'000.0f };
 
 	constexpr float GRASS_RANGE{ 1'000.0f };
 }
