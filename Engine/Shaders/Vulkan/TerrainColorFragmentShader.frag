@@ -128,7 +128,7 @@ float RandomFloat(vec3 seed)
 /*
 *	Calculates the tri-planar data.
 */
-void CalculateTriPlanarData()
+void CalculateTriPlanarData(float depth)
 {
 	//Calculate the absolute normal.
 	absoluteNormal = abs(fragmentWorldNormal);
@@ -139,7 +139,7 @@ void CalculateTriPlanarData()
 	textureCoordinateXY = fragmentWorldPosition.xy;
 
     //Calculate the random float.
-    float randomFloat = RandomFloat(vec3(gl_FragCoord.xy, 1.0f));
+    float randomFloat = RandomFloat(vec3(gl_FragCoord.xy, depth));
 
     //Pick which plane to sample.
     if (absoluteNormal.x > absoluteNormal.y && absoluteNormal.x > absoluteNormal.z && absoluteNormal.x > randomFloat)
@@ -273,7 +273,7 @@ void main()
     fragmentLayerWeights = texture(layerWeightsTexture, fragmentTextureCoordinate);
 
 	//Calculate the tri-planar data.
-	CalculateTriPlanarData();
+	CalculateTriPlanarData(normalDepthTextureSampler.w);
 
     //Sampler the material properties.
     layer1MaterialPropertiesSampler = SampleTriPlanar(layer1MaterialPropertiesTexture);

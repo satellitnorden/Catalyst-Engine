@@ -47,7 +47,7 @@ namespace ClairvoyantResourceCreation
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\NightEnvironmentMaterial";
 			parameters._ID = "NightEnvironmentMaterial";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Textures\\Environment\\Night.hdr";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Textures\\Environment\\Night.png";
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 

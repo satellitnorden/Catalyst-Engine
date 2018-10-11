@@ -15,8 +15,8 @@ DEFINE_SINGLETON(TimeOfDaySystem);
 namespace TimeOfDaySystemConstants
 {
 	constexpr float MAXIMUM_SUN_INTENSITY{ 25.0f };
-	constexpr float STARTING_TIME{ 6.0f };
-	constexpr float TIME_MULTIPLIER{ 100.0f };
+	constexpr float STARTING_TIME{ 0.0f };
+	constexpr float TIME_MULTIPLIER{ 500.0f };
 }
 
 /*
