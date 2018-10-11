@@ -81,8 +81,8 @@ void CullingSystem::CullTerrain() NOEXCEPT
 
 	{
 		//Iterate over all low detail terrain patches and cull them.
-		StaticArray<TerrainPatchInformation, 48> *const RESTRICT patchInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchInformations() };
-		StaticArray<TerrainPatchRenderInformation, 48> *const RESTRICT patchRenderInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
+		StaticArray<TerrainPatchInformation, 64> *const RESTRICT patchInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchInformations() };
+		StaticArray<TerrainPatchRenderInformation, 64> *const RESTRICT patchRenderInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
 
 		for (uint64 i = 0, size = patchInformations->Size(); i < size; ++i)
 		{

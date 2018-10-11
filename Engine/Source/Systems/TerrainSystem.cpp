@@ -163,6 +163,8 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 		GenerateLowDetailPatches(currentGridPoint, 81, 3);
 		GenerateLowDetailPatches(currentGridPoint, 243, 4);
 		GenerateLowDetailPatches(currentGridPoint, 729, 5);
+		GenerateLowDetailPatches(currentGridPoint, 2'187, 6);
+		GenerateLowDetailPatches(currentGridPoint, 6'561, 7);
 
 		//Update the current grid point.
 		_CurrentGridPoint = currentGridPoint;
