@@ -138,7 +138,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._CutoffDistance = 125.0f;
 		properties._Density = 5'000;
 		properties._Thickness = 0.1f;
-		properties._WindModulatorFactor = 0.15f;
+		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return WorldArchitect::Instance->GenerateTransformation(true, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
@@ -159,7 +159,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._CutoffDistance = 125.0f;
 		properties._Density = 5'000;
 		properties._Thickness = 0.1f;
-		properties._WindModulatorFactor = 0.25f;
+		properties._WindModulatorFactor = 0.3f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return WorldArchitect::Instance->GenerateTransformation(true, 0.5f, 0.25f, 0.35f, 0.7f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
