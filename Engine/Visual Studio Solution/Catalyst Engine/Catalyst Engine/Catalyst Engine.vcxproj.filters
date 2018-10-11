@@ -978,6 +978,9 @@
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformationUpdate.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformationUpdate.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

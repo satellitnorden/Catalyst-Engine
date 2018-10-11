@@ -41,9 +41,22 @@ void VegetationSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 		//Process the vegetation type information update.
 		ProcessVegetationTypeInformationUpdate();
 
+		//Select the vegetation type to update.
+		if (UNDERLYING(_VegetationTypeToUpdate) < (UNDERLYING(VegetationType::NumberOfVegetationTypes) - 1))
+		{
+			_VegetationTypeToUpdate = static_cast<VegetationType>(UNDERLYING(_VegetationTypeToUpdate) + 1);
+		}
+
+		else
+		{
+			_VegetationTypeToUpdate = static_cast<VegetationType>(0);
+		}
+
+		//Cache the current camera position.
 		const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
 		_CurrentCameraPosition = camera->GetPosition();
 
+		//Fire off another update!
 		TaskSystem::Instance->ExecuteTask(&_UpdateTask);
 	}
 }
@@ -76,22 +89,22 @@ void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypePropertie
 void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 {
 	//Return early if there's no vegetation type information to update.
-	if (!_VegetationTypeInformationUpdate._Information)
+	if (!_GrassVegetationTypeInformationUpdate._Information)
 	{
 		return;
 	}
 
-	for (const uint8 index : _VegetationTypeInformationUpdate._PatchesToInvalidate)
+	for (const uint8 index : _GrassVegetationTypeInformationUpdate._PatchesToInvalidate)
 	{
-		InvalidatePatch(_VegetationTypeInformationUpdate._Information, index);
+		InvalidatePatch(_GrassVegetationTypeInformationUpdate._Information, index);
 	}
 
-	for (uint64 i = 0, size = _VegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
+	for (uint64 i = 0, size = _GrassVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
 	{
-		if (!_VegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
+		if (!_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
 		{
-			_VegetationTypeInformationUpdate._Information->_PatchInformations[i] = _VegetationTypeInformationUpdate._NewPatchInformation;
-			_VegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _VegetationTypeInformationUpdate._NewPatchRenderInformation;
+			_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[i] = _GrassVegetationTypeInformationUpdate._NewPatchInformation;
+			_GrassVegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _GrassVegetationTypeInformationUpdate._NewPatchRenderInformation;
 
 			break;
 		}
@@ -118,8 +131,41 @@ void VegetationSystem::InvalidatePatch(GrassVegetationTypeInformation *const RES
 */
 void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
+	//Update the current vegetation type to update.
+	switch (_VegetationTypeToUpdate)
+	{
+		case VegetationType::Grass:
+		{
+			UpdateGrassVegetationAsynchronous();
+
+			break;
+		}
+
+		case VegetationType::Solid:
+		{
+			UpdateGrassVegetationAsynchronous();
+
+			break;
+		}
+
+#if !defined(CATALYST_FINAL)
+		default:
+		{
+			ASSERT(false, "Unhandled case. ):");
+
+			break;
+		}
+#endif
+	}
+}
+
+/*
+*	Updates the grass vegetation asynchonously.
+*/
+void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
+{
 	//Reset vegetation type information update.
-	_VegetationTypeInformationUpdate._Information = nullptr;
+	_GrassVegetationTypeInformationUpdate._Information = nullptr;
 
 	//Update all vegetation type informations.
 	for (GrassVegetationTypeInformation &information : _GrassVegetationTypeInformations)
@@ -228,10 +274,10 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 				update._NewPatchInformation._GridPoint = gridPoint;
 
 				update._NewPatchRenderInformation._Draw = true;
-				GenerateTransformations(	gridPoint,
-											information._Properties,
-											&update._NewPatchRenderInformation._TransformationsBuffer,
-											&update._NewPatchRenderInformation._NumberOfTransformations);
+				GenerateTransformations(gridPoint,
+					information._Properties,
+					&update._NewPatchRenderInformation._TransformationsBuffer,
+					&update._NewPatchRenderInformation._NumberOfTransformations);
 
 				break;
 			}
@@ -240,11 +286,19 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 		//If the new update is valid, copy it and return.
 		if (!update._PatchesToInvalidate.Empty() || update._NewPatchInformation._Valid)
 		{
-			_VegetationTypeInformationUpdate = update;
+			_GrassVegetationTypeInformationUpdate = update;
 
 			return;
 		}
 	}
+}
+
+/*
+*	Updates the solid vegetation asynchonously.
+*/
+void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
+{
+
 }
 
 /*

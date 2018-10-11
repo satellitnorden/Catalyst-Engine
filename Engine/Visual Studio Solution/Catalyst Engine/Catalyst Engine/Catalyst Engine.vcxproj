@@ -297,6 +297,7 @@
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVertex.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformation.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeProperties.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationPatchInformation.h" />
