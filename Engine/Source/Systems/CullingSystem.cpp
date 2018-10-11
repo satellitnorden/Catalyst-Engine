@@ -80,18 +80,19 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 			const Vector3 patchPosition{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
 			//Perform the distance test.
-			const bool distanceTest{	CatalystBaseMath::Absolute(cameraPosition._X - patchPosition._X) < information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE
-										&& CatalystBaseMath::Absolute(cameraPosition._Z - patchPosition._Z) < information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE };
+			const float halfGridSize{ information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE * 0.5f };
 
-			//If the distance test succeeded, this patch should be drawn.
-			if (distanceTest)
+			if ((cameraPosition._X > patchPosition._X && cameraPosition._X - (patchPosition._X + halfGridSize) > information._Properties._CutoffDistance)
+				|| (cameraPosition._X < patchPosition._X && (patchPosition._X - halfGridSize) - cameraPosition._X > information._Properties._CutoffDistance)
+				|| (cameraPosition._Z > patchPosition._Z && cameraPosition._Z - (patchPosition._Z + halfGridSize) > information._Properties._CutoffDistance)
+				|| (cameraPosition._Z < patchPosition._Z && (patchPosition._Z - halfGridSize) - cameraPosition._Z > information._Properties._CutoffDistance))
 			{
-				information._PatchRenderInformations[i]._Draw = true;
+				information._PatchRenderInformations[i]._Draw = false;
 			}
 
 			else
 			{
-				information._PatchRenderInformations[i]._Draw = false;
+				information._PatchRenderInformations[i]._Draw = true;
 			}
 		}
 	}
@@ -121,18 +122,19 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 			const Vector3 patchPosition{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
 			//Perform the distance test.
-			const bool distanceTest{	CatalystBaseMath::Absolute(cameraPosition._X - patchPosition._X) < information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE
-										&& CatalystBaseMath::Absolute(cameraPosition._Z - patchPosition._Z) < information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE };
+			const float halfGridSize{ information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE * 0.5f };
 
-			//If the distance test succeeded, this patch should be drawn.
-			if (distanceTest)
+			if ((cameraPosition._X > patchPosition._X && cameraPosition._X - (patchPosition._X + halfGridSize) > information._Properties._CutoffDistance)
+				|| (cameraPosition._X < patchPosition._X && (patchPosition._X - halfGridSize) - cameraPosition._X > information._Properties._CutoffDistance)
+				|| (cameraPosition._Z > patchPosition._Z && cameraPosition._Z - (patchPosition._Z + halfGridSize) > information._Properties._CutoffDistance)
+				|| (cameraPosition._Z < patchPosition._Z && (patchPosition._Z - halfGridSize) - cameraPosition._Z > information._Properties._CutoffDistance))
 			{
-				information._PatchRenderInformations[i]._Draw = true;
+				information._PatchRenderInformations[i]._Draw = false;
 			}
 
 			else
 			{
-				information._PatchRenderInformations[i]._Draw = false;
+				information._PatchRenderInformations[i]._Draw = true;
 			}
 		}
 	}
