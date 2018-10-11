@@ -17,7 +17,7 @@
 //Clairvoyant terrain generation constants.
 namespace ClairvoyantTerrainGenerationConstants
 {
-	constexpr float TERRAIN_HEIGHT{ 10'000.0f };
+	constexpr float TERRAIN_HEIGHT{ 16'000.0f };
 
 	constexpr float GRASS_RANGE{ 1'000.0f };
 }
@@ -195,12 +195,12 @@ namespace ClairvoyantTerrainGeneration
 
 		else if (worldPosition._Y > 8'000.0f)
 		{
-			layerWeights->_W = 1.0f;
+			layerWeights->_W = CatalystBaseMath::Maximum<float>(1.0f - layerWeights->_Z, 0.0f);
 		}
 
 		else
 		{
-			layerWeights->_W = (worldPosition._Y - 7'000.0f) * 0.001f;
+			layerWeights->_W = CatalystBaseMath::Maximum<float>(((worldPosition._Y - 7'000.0f) * 0.001f) - layerWeights->_Z, 0.0f);
 		}
 	}
 
