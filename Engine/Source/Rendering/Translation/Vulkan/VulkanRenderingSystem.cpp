@@ -527,31 +527,31 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
-		//Initialize the grass color fragment shader module.
+		//Initialize the grass vegetation color fragment shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetGrassColorFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::GrassColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanShaderData::GetGrassVegetationColorFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::GrassVegetationColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
-		//Initialize the grass color vertex shader module.
+		//Initialize the grass vegetation color vertex shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetGrassColorVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::GrassColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		VulkanShaderData::GetGrassVegetationColorVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::GrassVegetationColorVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
-		//Initialize the grass depth fragment shader module.
+		//Initialize the grass vegetation depth fragment shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetGrassDepthFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::GrassDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanShaderData::GetGrassVegetationDepthFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::GrassVegetationDepthFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
-		//Initialize the grass depth vertex shader module.
+		//Initialize the grass vegetation depth vertex shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetGrassDepthVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::GrassDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+		VulkanShaderData::GetGrassVegetationDepthVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::GrassVegetationDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
@@ -573,13 +573,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetHighDetailTerrainVertexShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::HighDetailTerrainVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
-	}
-
-	{
-		//Initialize the instanced physical vertex shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetInstancedPhysicalVertexShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::InstancedPhysicalVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{
@@ -671,6 +664,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetSkyFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::SkyFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize the solid vegetation vertex shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetSolidVegetationVertexShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::SolidVegetationVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
 	}
 
 	{

@@ -57,11 +57,11 @@ void GrassColorRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::GrassColor);
 
 	//Set the shaders.
-	SetVertexShader(Shader::GrassColorVertex);
+	SetVertexShader(Shader::GrassVegetationColorVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::GrassColorFragment);
+	SetFragmentShader(Shader::GrassVegetationColorFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);

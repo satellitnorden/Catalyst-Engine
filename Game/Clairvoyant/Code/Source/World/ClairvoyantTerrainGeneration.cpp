@@ -133,22 +133,27 @@ namespace ClairvoyantTerrainGeneration
 
 		//Generate the noise.
 		*height = PerlinNoiseGenerator::GenerateNoise(coordinateX, coordinateY, GetRandomOffset(0));
-		*height += ((PerlinNoiseGenerator::GenerateNoise(coordinateX * 2.0f, coordinateY * 2.0f, GetRandomOffset(1)) + 1.0f) * 0.5f) * 0.5f;
-		*height += ((PerlinNoiseGenerator::GenerateNoise(coordinateX * 4.0f, coordinateY * 4.0f, GetRandomOffset(2)) + 1.0f) * 0.5f) * 0.25f;
-		*height += ((PerlinNoiseGenerator::GenerateNoise(coordinateX * 8.0f, coordinateY * 8.0f, GetRandomOffset(3)) + 1.0f) * 0.5f) * 0.125f;
-		*height += ((PerlinNoiseGenerator::GenerateNoise(coordinateX * 16.0f, coordinateY * 16.0f, GetRandomOffset(4)) + 1.0f) * 0.5f) * 0.0625f;
-		*height += ((PerlinNoiseGenerator::GenerateNoise(coordinateX * 32.0f, coordinateY * 32.0f, GetRandomOffset(5)) + 1.0f) * 0.5f) * 0.03125f;
-		*height += ((PerlinNoiseGenerator::GenerateNoise(coordinateX * 64.0f, coordinateY * 64.0f, GetRandomOffset(6)) + 1.0f) * 0.5f) * 0.015625f;
-		*height += ((PerlinNoiseGenerator::GenerateNoise(coordinateX * 128.0f, coordinateY * 128.0f, GetRandomOffset(7)) + 1.0f) * 0.5f) * 0.0078125f;
-		*height += ((PerlinNoiseGenerator::GenerateNoise(coordinateX * 256.0f, coordinateY * 256.0f, GetRandomOffset(8)) + 1.0f) * 0.5f) * 0.00390625f;
-		*height += ((PerlinNoiseGenerator::GenerateNoise(coordinateX * 512.0f, coordinateY * 512.0f, GetRandomOffset(9)) + 1.0f) * 0.5f) * 0.001953125f;
+
+		float frequency{ 1.0f };
+		float influence{ 1.0f };
+
+		for (uint8 i = 0; i < 9; ++i)
+		{
+			frequency *= 2.0f;
+			influence *= 0.5f;
+
+			*height += CatalystBaseMath::SmoothStep<1>((PerlinNoiseGenerator::GenerateNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(i + 1)) + 1.0f) * 0.5f) * influence;
+		}
 
 		//Calculate the height influence.
-		const float landscapeCoordinateX{ worldPosition._X / 64'000.0f };
-		const float landscapeCoordinateY{ worldPosition._Z / 64'000.0f };
+		const float landscapeCoordinateX{ worldPosition._X / 32'000.0f };
+		const float landscapeCoordinateY{ worldPosition._Z / 32'000.0f };
+
+		float heightInfluence{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(10)) + 1.0f) * 0.5f) };
+		heightInfluence *= heightInfluence;
 
 		//Apply the height.
-		*height *= ClairvoyantTerrainGenerationConstants::TERRAIN_HEIGHT * ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(10)) + 1.0f) * 0.5f);
+		*height *= ClairvoyantTerrainGenerationConstants::TERRAIN_HEIGHT * heightInfluence;
 	}
 
 	/*

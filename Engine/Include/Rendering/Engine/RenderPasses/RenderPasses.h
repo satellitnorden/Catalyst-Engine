@@ -17,7 +17,6 @@
 #include <Rendering/Engine/RenderPasses/GrassColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/GrassDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailTerrainRenderPass.h>
-#include <Rendering/Engine/RenderPasses/InstancedPhysicalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LowDetailTerrainRenderPass.h>
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -27,6 +26,7 @@
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>
+#include <Rendering/Engine/RenderPasses/SolidVegetationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/TerrainColorRenderPass.h>
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 #include <Rendering/Engine/RenderPasses/VolumetricFogRenderPass.h>

@@ -14,6 +14,9 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/TaskSystem.h>
 
+//Vegetation.
+#include <Vegetation/VegetationUtilities.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(VegetationSystem);
 
@@ -66,9 +69,31 @@ void VegetationSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 */
 void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const GrassModel &model, const GrassMaterial &material) NOEXCEPT
 {
-	//Create the new vegetation information.
+	//Create the new grass vegetation information.
 	_GrassVegetationTypeInformations.EmplaceSlow();
 	GrassVegetationTypeInformation *const RESTRICT information{ &_GrassVegetationTypeInformations.Back() };
+
+	//Just copy the properties, the model and the material.
+	information->_Properties = properties;
+	information->_Model = model;
+	information->_Material = material;
+
+	//Fill in the patch and the patch render informations.
+	for (uint8 i = 0; i < 9; ++i)
+	{
+		information->_PatchInformations[i]._Valid = false;
+		information->_PatchRenderInformations[i]._Draw = false;
+	}
+}
+
+/*
+*	Adds a solid vegetation type.
+*/
+void VegetationSystem::AddSolidVegetationType(const SolidVegetationTypeProperties &properties, const PhysicalModel &model, const PhysicalMaterial &material) NOEXCEPT
+{
+	//Create the new solid vegetation information.
+	_SolidVegetationTypeInformations.EmplaceSlow();
+	SolidVegetationTypeInformation *const RESTRICT information{ &_SolidVegetationTypeInformations.Back() };
 
 	//Just copy the properties, the model and the material.
 	information->_Properties = properties;
@@ -93,7 +118,7 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 	{
 		case VegetationType::Grass:
 		{
-			//Return early if there's no vegetation type information to update.
+			//Return early if there's no grass vegetation type information to update.
 			if (!_GrassVegetationTypeInformationUpdate._Information)
 			{
 				return;
@@ -101,7 +126,7 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 
 			for (const uint8 index : _GrassVegetationTypeInformationUpdate._PatchesToInvalidate)
 			{
-				InvalidatePatch(_GrassVegetationTypeInformationUpdate._Information, index);
+				VegetationUtilities::InvalidatePatch(_GrassVegetationTypeInformationUpdate._Information, index);
 			}
 
 			for (uint64 i = 0, size = _GrassVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
@@ -120,26 +145,30 @@ void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 
 		case VegetationType::Solid:
 		{
-			//Nothing to do here yet.
+			//Return early if there's no solid vegetation type information to update.
+			if (!_SolidVegetationTypeInformationUpdate._Information)
+			{
+				return;
+			}
+
+			for (const uint8 index : _SolidVegetationTypeInformationUpdate._PatchesToInvalidate)
+			{
+				VegetationUtilities::InvalidatePatch(_SolidVegetationTypeInformationUpdate._Information, index);
+			}
+
+			for (uint64 i = 0, size = _SolidVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
+			{
+				if (!_SolidVegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
+				{
+					_SolidVegetationTypeInformationUpdate._Information->_PatchInformations[i] = _SolidVegetationTypeInformationUpdate._NewPatchInformation;
+					_SolidVegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _SolidVegetationTypeInformationUpdate._NewPatchRenderInformation;
+
+					break;
+				}
+			}
 
 			break;
 		}
-	}
-	
-}
-
-/*
-*	Invalidates one patch.
-*/
-void VegetationSystem::InvalidatePatch(GrassVegetationTypeInformation *const RESTRICT information, const uint8 index) NOEXCEPT
-{
-	//Invalidate the patch.
-	information->_PatchInformations[index]._Valid = false;
-	information->_PatchRenderInformations[index]._Draw = false;
-
-	if (information->_PatchRenderInformations[index]._NumberOfTransformations > 0)
-	{
-		RenderingSystem::Instance->DestroyConstantBuffer(information->_PatchRenderInformations[index]._TransformationsBuffer);
 	}
 }
 
@@ -291,10 +320,10 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 				update._NewPatchInformation._GridPoint = gridPoint;
 
 				update._NewPatchRenderInformation._Draw = true;
-				GenerateTransformations(gridPoint,
-					information._Properties,
-					&update._NewPatchRenderInformation._TransformationsBuffer,
-					&update._NewPatchRenderInformation._NumberOfTransformations);
+				VegetationUtilities::GenerateTransformations(	gridPoint,
+																information._Properties,
+																&update._NewPatchRenderInformation._TransformationsBuffer,
+																&update._NewPatchRenderInformation._NumberOfTransformations);
 
 				break;
 			}
@@ -315,38 +344,131 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 */
 void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 {
+	//Reset the solid vegetation type information update.
+	_SolidVegetationTypeInformationUpdate._Information = nullptr;
 
-}
-
-/*
-*	Generates the transformations.
-*/
-void VegetationSystem::GenerateTransformations(const GridPoint2 &gridPoint, const GrassVegetationTypeProperties &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
-{
-	//Construct the box.
-	const Vector3 worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * 2.0f) };
-	const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance , worldPosition + properties._CutoffDistance };
-
-	DynamicArray<Matrix4> transformations;
-
-	for (uint32 i = 0; i < properties._Density; ++i)
+	//Update all solid vegetation type informations.
+	for (SolidVegetationTypeInformation &information : _SolidVegetationTypeInformations)
 	{
-		Matrix4 newTransformation;
+		//Calculate the current grid point based on the current camera position.
+		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * 2.0f) };
 
-		if (properties._PlacementFunction(box, &newTransformation))
+		//Create an array with the valid grid positions.
+		StaticArray<GridPoint2, 9> validGridPoints
 		{
-			transformations.EmplaceSlow(newTransformation);
-		}
-	}
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y),
 
-	if (!transformations.Empty())
-	{
-		RenderingUtilities::CreateTransformationsBuffer(transformations, buffer);
-		*numberOfTransformations = static_cast<uint32>(transformations.Size());
-	}
-	
-	else
-	{
-		*numberOfTransformations = 0;
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 1),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y - 1),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 1),
+
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y),
+
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 1),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y + 1),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 1),
+		};
+
+		//Construct the sorting data.
+		class SortingData final
+		{
+
+		public:
+
+			//The current camera position.
+			Vector3 _CameraPosition;
+
+			//The cutoff distance.
+			float _CutoffDistance;
+		};
+
+		SortingData sortingData;
+
+		sortingData._CameraPosition = _CurrentCameraPosition;
+		sortingData._CutoffDistance = information._Properties._CutoffDistance;
+
+		//Sort the array so that the closest grid point is first.
+		SortingAlgorithms::InsertionSort<GridPoint2>(validGridPoints.begin(), validGridPoints.end(), &sortingData, [](const void *const RESTRICT userData, const GridPoint2 *const RESTRICT first, const GridPoint2 *const RESTRICT second)
+		{
+			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
+
+			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * 2.0f) };
+			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * 2.0f) };
+
+			return Vector3::LengthSquaredXZ(sortingData->_CameraPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_CameraPosition - secondGridPosition);
+		});
+
+		//Construct the update.
+		SolidVegetationTypeInformationUpdate update;
+
+		update._Information = &information;
+		update._NewPatchInformation._Valid = false;
+
+		//Determine the patch indices to invalidate.
+		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
+		{
+			//If this patch is already invalid, no need to invalidate it.
+			if (!information._PatchInformations[i]._Valid)
+			{
+				continue;
+			}
+
+			bool valid{ false };
+
+			for (const GridPoint2 &gridPoint : validGridPoints)
+			{
+				if (information._PatchInformations[i]._GridPoint == gridPoint)
+				{
+					valid = true;
+
+					break;
+				}
+			}
+
+			if (!valid)
+			{
+				update._PatchesToInvalidate.EmplaceSlow(static_cast<uint8>(i));
+			}
+		}
+
+		//Determine the patches to update.
+		for (const GridPoint2 &gridPoint : validGridPoints)
+		{
+			bool exists{ false };
+
+			for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
+			{
+				if (information._PatchInformations[i]._Valid && information._PatchInformations[i]._GridPoint == gridPoint)
+				{
+					exists = true;
+
+					break;
+				}
+			}
+
+			if (!exists)
+			{
+				//Construct the update.
+				update._NewPatchInformation._Valid = true;
+				update._NewPatchInformation._GridPoint = gridPoint;
+
+				update._NewPatchRenderInformation._Draw = true;
+				VegetationUtilities::GenerateTransformations(	gridPoint,
+																information._Properties,
+																&update._NewPatchRenderInformation._TransformationsBuffer,
+																&update._NewPatchRenderInformation._NumberOfTransformations);
+
+				break;
+			}
+		}
+
+		//If the new update is valid, copy it and return.
+		if (!update._PatchesToInvalidate.Empty() || update._NewPatchInformation._Valid)
+		{
+			_SolidVegetationTypeInformationUpdate = update;
+
+			return;
+		}
 	}
 }

@@ -3,13 +3,13 @@
 */
 
 //Header file.
-#include <Rendering/ShaderData/Vulkan/InstancedPhysicalVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/SolidVegetationVertexShader.h>
 
 #pragma optimize("", off)
 
 namespace VulkanShaderData
 {
-	void GetInstancedPhysicalVertexShaderData(DynamicArray<byte> &data)
+	void GetSolidVegetationVertexShaderData(DynamicArray<byte> &data)
 	{
 		data.Reserve(5560);
 

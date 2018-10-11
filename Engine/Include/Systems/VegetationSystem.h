@@ -109,11 +109,6 @@ private:
 	void ProcessVegetationTypeInformationUpdate() NOEXCEPT;
 
 	/*
-	*	Invalidates one patch.
-	*/
-	void InvalidatePatch(GrassVegetationTypeInformation *const RESTRICT information, const uint8 index) NOEXCEPT;
-
-	/*
 	*	Updates the vegetation system asynchronously.
 	*/
 	void UpdateSystemAsynchronous() NOEXCEPT;
@@ -127,10 +122,5 @@ private:
 	*	Updates the solid vegetation asynchonously.
 	*/
 	void UpdateSolidVegetationAsynchronous() NOEXCEPT;
-
-	/*
-	*	Generates the transformations.
-	*/
-	void GenerateTransformations(const GridPoint2 &gridPoint, const GrassVegetationTypeProperties &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT;
 
 };

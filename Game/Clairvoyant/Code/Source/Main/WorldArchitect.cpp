@@ -114,7 +114,7 @@ void WorldArchitect::InitializeVegetation()
 		//Add the fern vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._CutoffDistance = 125.0f;
+		properties._CutoffDistance = 250.0f;
 		properties._Density = 100;
 		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.1f;
@@ -127,7 +127,7 @@ void WorldArchitect::InitializeVegetation()
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
-		properties._CutoffDistance = 250.0f;
+		properties._CutoffDistance = 500.0f;
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 	}
 
@@ -192,6 +192,25 @@ void WorldArchitect::InitializeVegetation()
 
 		properties._CutoffDistance = 250.0f;
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
+	}
+
+	{
+		//Add the tree solid vegetation type.
+		SolidVegetationTypeProperties properties;
+
+		properties._CutoffDistance = 500.0f;
+		properties._Density = 100;
+		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
+		{
+			return WorldArchitect::Instance->GenerateTransformation(false, true, 0.0f, 0.9f, 0.025f, 0.05f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+		};
+		PhysicalModel model{ ResourceLoader::GetPhysicalModel(HashString("TreePhysicalModel")) };
+		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("TreePhysicalMaterial")) };
+
+		VegetationSystem::Instance->AddSolidVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 1'000.0f;
+		VegetationSystem::Instance->AddSolidVegetationType(properties, model, material);
 	}
 }
 

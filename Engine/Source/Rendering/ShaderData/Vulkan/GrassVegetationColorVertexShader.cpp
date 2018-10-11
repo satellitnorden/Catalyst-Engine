@@ -3,13 +3,13 @@
 */
 
 //Header file.
-#include <Rendering/ShaderData/Vulkan/GrassColorVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/GrassVegetationColorVertexShader.h>
 
 #pragma optimize("", off)
 
 namespace VulkanShaderData
 {
-	void GetGrassColorVertexShaderData(DynamicArray<byte> &data)
+	void GetGrassVegetationColorVertexShaderData(DynamicArray<byte> &data)
 	{
 		data.Reserve(9976);
 

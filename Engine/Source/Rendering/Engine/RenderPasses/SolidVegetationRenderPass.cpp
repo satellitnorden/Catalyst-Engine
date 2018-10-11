@@ -1,44 +1,43 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/InstancedPhysicalRenderPass.h>
-
-//Components.
-#include <Components/ComponentManager.h>
+#include <Rendering/Engine/RenderPasses/SolidVegetationRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
 #include <Rendering/Engine/PhysicalVertex.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/VegetationSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(InstancedPhysicalRenderPass);
+DEFINE_SINGLETON(SolidVegetationRenderPass);
 
 /*
 *	Default constructor.
 */
-InstancedPhysicalRenderPass::InstancedPhysicalRenderPass() NOEXCEPT
+SolidVegetationRenderPass::SolidVegetationRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		InstancedPhysicalRenderPass::Instance->InitializeInternal();
+		SolidVegetationRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the instanced physical render pass.
+*	Initializes the solid vegetation render pass.
 */
-void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
+void SolidVegetationRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::InstancedPhysical);
+	SetSubStage(RenderPassSubStage::SolidVegetation);
 
 	//Set the shaders.
-	SetVertexShader(Shader::InstancedPhysicalVertex);
+	SetVertexShader(Shader::SolidVegetationVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
@@ -120,7 +119,7 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		InstancedPhysicalRenderPass::Instance->RenderInternal();
+		SolidVegetationRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -128,15 +127,15 @@ void InstancedPhysicalRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the terrain.
+*	Renders the solid vegetation.
 */
-void InstancedPhysicalRenderPass::RenderInternal() NOEXCEPT
+void SolidVegetationRenderPass::RenderInternal() NOEXCEPT
 {
-	//Iterate over all instanced physical components and draw them all.
-	const uint64 numberOfInstancedPhysicalComponents{ ComponentManager::GetNumberOfInstancedPhysicalComponents() };
+	//Retrieve the solid vegetion type informations.
+	const DynamicArray<SolidVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetSolidVegetationTypeInformations() };
 
 	//If there's none to render - render none.
-	if (numberOfInstancedPhysicalComponents == 0)
+	if (informations->Empty())
 	{
 		//Don't include this render pass in the final render.
 		SetIncludeInRender(false);
@@ -144,25 +143,43 @@ void InstancedPhysicalRenderPass::RenderInternal() NOEXCEPT
 		return;
 	}
 
-	//Cache data the will be used.
+	//Cache the command buffer
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
-	const InstancedPhysicalRenderComponent *RESTRICT component{ ComponentManager::GetInstancedPhysicalInstancedPhysicalRenderComponents() };
 
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the render data table.
+	//Bind the current dynamic uniform data render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
-	const uint64 offset{ 0 };
+	//Wait for the solid vegetation culling to finish.
+	CullingSystem::Instance->WaitForVegetationCulling();
 
-	for (uint64 i = 0; i < numberOfInstancedPhysicalComponents; ++i, ++component)
+	for (const SolidVegetationTypeInformation &information : *informations)
 	{
-		commandBuffer->BindRenderDataTable(this, 1, component->_RenderDataTable);
-		commandBuffer->BindVertexBuffer(this, 0, component->_ModelBuffer, &offset);
-		commandBuffer->BindVertexBuffer(this, 1, component->_TransformationsBuffer, &offset);
-		commandBuffer->BindIndexBuffer(this, component->_ModelBuffer, component->_IndexOffset);
-		commandBuffer->DrawIndexed(this, component->_IndexCount, component->_InstanceCount);
+		//Bind the model vertex and index buffer.
+		const uint64 offset{ 0 };
+
+		commandBuffer->BindVertexBuffer(this, 0, information._Model._Buffer, &offset);
+		commandBuffer->BindIndexBuffer(this, information._Model._Buffer, information._Model._IndexOffset);
+
+		//Bind the render data table.
+		commandBuffer->BindRenderDataTable(this, 1, information._Material._RenderDataTable);
+
+		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
+		{
+			//Check whether or not this should be drawn.
+			if (!renderInformation._Draw || renderInformation._NumberOfTransformations == 0)
+			{
+				continue;
+			}
+
+			//Bind the transformations buffer.
+			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffer, &offset);
+
+			//Draw the instances!
+			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations);
+		}
 	}
 
 	//End the command buffer.

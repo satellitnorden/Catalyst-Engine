@@ -51,11 +51,11 @@ void GrassDepthRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::GrassDepth);
 
 	//Set the shaders.
-	SetVertexShader(Shader::GrassDepthVertex);
+	SetVertexShader(Shader::GrassVegetationDepthVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::GrassDepthFragment);
+	SetFragmentShader(Shader::GrassVegetationDepthFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
