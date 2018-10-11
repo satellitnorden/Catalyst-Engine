@@ -1,8 +1,8 @@
 #pragma once
 
 //Core.
-#include <Core/EngineCore.h>
-#include <Core/HashString.h>
+#include <Core/Core/CatalystCore.h>
+#include <Core/General/HashString.h>
 
 //Resources
 #include <Resources/ResourcesCore.h>
@@ -16,13 +16,47 @@ class PhysicalMaterialCreator final
 
 public:
 
+	class PhysicalMaterialCreationParameters final
+	{
+
+	public:
+
+		//The output file path.
+		const char *RESTRICT _Output;
+
+		//The resource id.
+		const char *RESTRICT _ID;
+
+		//The number of mipmap levels.
+		uint8 _MipmapLevels;
+
+		//The albedo file path.
+		const char *RESTRICT _AlbedoFile;
+
+		//The normal map file path.
+		const char *RESTRICT _NormalMapFile;
+
+		//The roughness file path.
+		const char *RESTRICT _RoughnessFile;
+
+		//The metallic file path.
+		const char *RESTRICT _MetallicFile;
+
+		//The ambient occlusion file path.
+		const char *RESTRICT _AmbientOcclusionFile;
+
+		//The thickness file path.
+		const char *RESTRICT _ThicknessFile;
+
+	};
+
 	/*
 	*	Creates a physical material resource file.
 	*/
-	static void CreatePhysicalMaterial(const char *const RESTRICT arguments[]) noexcept
+	static void CreatePhysicalMaterial(const PhysicalMaterialCreationParameters &parameters) noexcept
 	{
 		//What should the material be called?
-		DynamicString fileName{ arguments[0] };
+		DynamicString fileName{ parameters._Output };
 		fileName += ".cr";
 
 		//Open the file to be written to.
@@ -33,18 +67,15 @@ public:
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
-		const HashString resourceID{ arguments[1] };
+		const HashString resourceID{ parameters._ID };
 		file.Write(&resourceID, sizeof(HashString));
 
-		//Determine how many mipmap levels that should be generated.
-		const uint8 numberOfMipmapLevels{ static_cast<uint8>(*arguments[2] - '0') };
-
 		//Write the number of mipmap levels to the file.
-		file.Write(&numberOfMipmapLevels, sizeof(uint8));
+		file.Write(&parameters._MipmapLevels, sizeof(uint8));
 
 		//Load the albedo.
 		int32 width, height, numberOfChannels;
-		byte *RESTRICT data{ stbi_load(arguments[3], &width, &height, &numberOfChannels, STBI_rgb_alpha) };
+		byte *RESTRICT data{ stbi_load(parameters._AlbedoFile, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 		const uint32 uWidth{ static_cast<uint32>(width) };
 		const uint32 uHeight{ static_cast<uint32>(height) };
@@ -54,7 +85,7 @@ public:
 		file.Write(&uHeight, sizeof(uint32));
 
 		//Write the albedo to the file.
-		for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
+		for (uint8 i = 0; i < parameters._MipmapLevels; ++i)
 		{
 			const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
 
@@ -80,10 +111,10 @@ public:
 		stbi_image_free(data);
 
 		//Load the normal map.
-		data = stbi_load(arguments[4], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+		data = stbi_load(parameters._NormalMapFile, &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 		//Write the layer albedo to the file, to be read into byte's.
-		for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
+		for (uint8 i = 0; i < parameters._MipmapLevels; ++i)
 		{
 			const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) * 4 };
 
@@ -108,19 +139,19 @@ public:
 		//Free the layer normal map data.
 		stbi_image_free(data);
 
-		//Load the roughness, metallic, ambient occlusion and displacement data.
-		byte *RESTRICT roughnessData = stbi_load(arguments[5], &width, &height, &numberOfChannels, STBI_rgb_alpha);
-		byte *RESTRICT metallicData = stbi_load(arguments[6], &width, &height, &numberOfChannels, STBI_rgb_alpha);
-		byte *RESTRICT ambientOcclusionData = stbi_load(arguments[7], &width, &height, &numberOfChannels, STBI_rgb_alpha);
-		byte *RESTRICT displacementData = stbi_load(arguments[8], &width, &height, &numberOfChannels, STBI_rgb_alpha);
+		//Load the roughness, metallic, ambient occlusion and thickness data.
+		byte *RESTRICT roughnessData = parameters._RoughnessFile ? stbi_load(parameters._RoughnessFile, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr;
+		byte *RESTRICT metallicData = parameters._MetallicFile ? stbi_load(parameters._MetallicFile, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr;
+		byte *RESTRICT ambientOcclusionData = parameters._AmbientOcclusionFile ? stbi_load(parameters._AmbientOcclusionFile, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr;
+		byte *RESTRICT thicknessData = parameters._ThicknessFile ? stbi_load(parameters._ThicknessFile, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr;
 
-		//Write the roughness, metallic, ambient occlusion and displacement data to the file.
+		//Write the roughness, metallic, ambient occlusion and thickness data to the file.
 		constexpr byte defaultRoughness{ 255 };
 		constexpr byte defaultMetallic{ 0 };
 		constexpr byte defaultAmbientOcclusion{ 255 };
-		constexpr byte defaultDisplacement{ 0 };
+		constexpr byte defaultThickness{ 255 };
 
-		for (uint8 i = 0; i < numberOfMipmapLevels; ++i)
+		for (uint8 i = 0; i < parameters._MipmapLevels; ++i)
 		{
 			const uint64 textureSize{ (uWidth >> i) * (uHeight >> i) };
 
@@ -132,7 +163,7 @@ public:
 					file.Write(roughnessData ? &roughnessData[j * 4] : &defaultRoughness, sizeof(byte));
 					file.Write(metallicData ? &metallicData[j * 4] : &defaultMetallic, sizeof(byte));
 					file.Write(ambientOcclusionData ? &ambientOcclusionData[j * 4] : &defaultAmbientOcclusion, sizeof(byte));
-					file.Write(displacementData ? &displacementData[j * 4] : &defaultDisplacement, sizeof(byte));
+					file.Write(thicknessData ? &thicknessData[j * 4] : &defaultThickness, sizeof(byte));
 				}
 			}
 
@@ -141,25 +172,25 @@ public:
 				byte *RESTRICT downsampledRoughnessData = roughnessData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
 				byte *RESTRICT downsampledMetallicData = metallicData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
 				byte *RESTRICT downsampledAmbientOcclusionData = ambientOcclusionData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
-				byte *RESTRICT downsampledDisplacementData = displacementData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
+				byte *RESTRICT downsampledThicknessData = thicknessData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
 
 				if (roughnessData) stbir_resize_uint8(roughnessData, width, height, 0, downsampledRoughnessData, uWidth >> i, uHeight >> i, 0, 4);
 				if (metallicData) stbir_resize_uint8(metallicData, width, height, 0, downsampledMetallicData, uWidth >> i, uHeight >> i, 0, 4);
 				if (ambientOcclusionData) stbir_resize_uint8(ambientOcclusionData, width, height, 0, downsampledAmbientOcclusionData, uWidth >> i, uHeight >> i, 0, 4);
-				if (displacementData) stbir_resize_uint8(displacementData, width, height, 0, downsampledDisplacementData, uWidth >> i, uHeight >> i, 0, 4);
+				if (thicknessData) stbir_resize_uint8(thicknessData, width, height, 0, downsampledThicknessData, uWidth >> i, uHeight >> i, 0, 4);
 
 				for (uint64 j = 0; j < textureSize; ++j)
 				{
 					file.Write(downsampledRoughnessData ? &downsampledRoughnessData[j * 4] : &defaultRoughness, sizeof(byte));
 					file.Write(downsampledMetallicData ? &downsampledMetallicData[j * 4] : &defaultMetallic, sizeof(byte));
 					file.Write(downsampledAmbientOcclusionData ? &downsampledAmbientOcclusionData[j * 4] : &defaultAmbientOcclusion, sizeof(byte));
-					file.Write(downsampledDisplacementData ? &downsampledDisplacementData[j * 4] : &defaultDisplacement, sizeof(byte));
+					file.Write(downsampledThicknessData ? &downsampledThicknessData[j * 4] : &defaultThickness, sizeof(byte));
 				}
 
 				MemoryUtilities::FreeMemory(downsampledRoughnessData);
 				MemoryUtilities::FreeMemory(downsampledMetallicData);
 				MemoryUtilities::FreeMemory(downsampledAmbientOcclusionData);
-				MemoryUtilities::FreeMemory(downsampledDisplacementData);
+				MemoryUtilities::FreeMemory(downsampledThicknessData);
 			}
 		}
 
@@ -167,7 +198,7 @@ public:
 		stbi_image_free(roughnessData);
 		stbi_image_free(metallicData);
 		stbi_image_free(ambientOcclusionData);
-		stbi_image_free(displacementData);
+		stbi_image_free(thicknessData);
 
 		//Close the file.
 		file.Close();

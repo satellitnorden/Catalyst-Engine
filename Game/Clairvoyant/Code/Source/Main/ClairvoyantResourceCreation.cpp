@@ -5,6 +5,7 @@
 #include <EnvironmentMaterialCreator.h>
 #include <GrassMaterialCreator.h>
 #include <GrassModelCreator.h>
+#include <PhysicalMaterialCreator.h>
 #include <PhysicalModelCreator.h>
 #include <ResourceCollectionCreator.h>
 #include <OceanMaterialCreator.h>
@@ -166,6 +167,34 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
+			//Create the tree physical material.
+			PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\TreePhysicalMaterial";
+			parameters._ID = "TreePhysicalMaterial";
+			parameters._MipmapLevels = 9;
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Tree\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Tree\\NormalMap.png";
+			parameters._RoughnessFile = nullptr;
+			parameters._MetallicFile = nullptr;
+			parameters._AmbientOcclusionFile = nullptr;
+			parameters._ThicknessFile = nullptr;
+
+			PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+		}
+
+		{
+			//Create the tree physical model.
+			PhysicalModelCreator::PhysicalModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\TreePhysicalModel";
+			parameters._ID = "TreePhysicalModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\TreePhysicalModel.fbx";
+
+			PhysicalModelCreator::CreatePhysicalModel(parameters);
+		}
+
+		{
 			//Create the terrain material.
 			TerrainMaterialCreator::TerrainMaterialCreationParameters parameters;
 
@@ -226,6 +255,8 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\WeedGrassMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\FernGrassModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\DefaultGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TreePhysicalMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\TreePhysicalModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultTerrainMaterial.cr");
 
 			ResourceCollectionCreator::CreateResourceCollection(parameters);
