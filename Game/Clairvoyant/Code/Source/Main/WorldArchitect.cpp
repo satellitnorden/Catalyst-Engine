@@ -90,7 +90,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(true, 0.5f, 0.25f, 0.3f, 0.6f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return WorldArchitect::Instance->GenerateTransformation(true, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("DefaultGrassMaterial")) };
@@ -162,7 +162,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.3f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(true, 0.5f, 0.25f, 0.35f, 0.7f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return WorldArchitect::Instance->GenerateTransformation(true, 0.5f, 0.25f, 0.3f, 0.6f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("ThistleGrassMaterial")) };
