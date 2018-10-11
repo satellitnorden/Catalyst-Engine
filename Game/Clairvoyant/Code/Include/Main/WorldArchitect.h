@@ -42,6 +42,6 @@ private:
 	/*
 	*	Generates a transformation.
 	*/
-	bool GenerateTransformation(const bool underwater, const float height, const float dotModulator, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT;
+	bool GenerateTransformation(const bool underwater, const bool snow, const float height, const float dotModulator, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT;
 
 };
