@@ -161,6 +161,8 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 		GenerateLowDetailPatches(currentGridPoint, 9, 1);
 		GenerateLowDetailPatches(currentGridPoint, 27, 2);
 		GenerateLowDetailPatches(currentGridPoint, 81, 3);
+		GenerateLowDetailPatches(currentGridPoint, 243, 4);
+		GenerateLowDetailPatches(currentGridPoint, 729, 5);
 
 		//Update the current grid point.
 		_CurrentGridPoint = currentGridPoint;
@@ -170,7 +172,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 /*
 *	Generates low detail patches.
 */
-void TerrainSystem::GenerateLowDetailPatches(const GridPoint2 &currentGridPoint, const uint8 gridPointOffset, const uint8 layer) NOEXCEPT
+void TerrainSystem::GenerateLowDetailPatches(const GridPoint2 &currentGridPoint, const int32 gridPointOffset, const uint8 layer) NOEXCEPT
 {
 	//Create an array with the valid high detail grid points.
 	StaticArray<GridPoint2, 8> validLowDetailGridPoints

@@ -76,7 +76,7 @@ public:
 	/*
 	*	Returns the low detail terrain patch informations.
 	*/
-	RESTRICTED NO_DISCARD StaticArray<TerrainPatchInformation, 32> *const RESTRICT GetLowDetailTerrainPatchInformations() NOEXCEPT
+	RESTRICTED NO_DISCARD StaticArray<TerrainPatchInformation, 48> *const RESTRICT GetLowDetailTerrainPatchInformations() NOEXCEPT
 	{
 		return &_LowDetailPatchInformations[_CurrentSynchronousBuffer];
 	}
@@ -84,7 +84,7 @@ public:
 	/*
 	*	Returns the low detail terrain patch render informations.
 	*/
-	RESTRICTED NO_DISCARD StaticArray<TerrainPatchRenderInformation, 32> *const RESTRICT GetLowDetailTerrainPatchRenderInformations() NOEXCEPT
+	RESTRICTED NO_DISCARD StaticArray<TerrainPatchRenderInformation, 48> *const RESTRICT GetLowDetailTerrainPatchRenderInformations() NOEXCEPT
 	{
 		return &_LowDetailPatchRenderInformations[_CurrentSynchronousBuffer];
 	}
@@ -129,10 +129,10 @@ private:
 	StaticArray<StaticArray<TerrainPatchRenderInformation, 9>, 2> _HighDetailPatchRenderInformations;
 
 	//The low detail patch informations.
-	StaticArray<StaticArray<TerrainPatchInformation, 32>, 2> _LowDetailPatchInformations;
+	StaticArray<StaticArray<TerrainPatchInformation, 48>, 2> _LowDetailPatchInformations;
 
 	//The low detail patch render informations.
-	StaticArray<StaticArray<TerrainPatchRenderInformation, 32>, 2> _LowDetailPatchRenderInformations;
+	StaticArray<StaticArray<TerrainPatchRenderInformation, 48>, 2> _LowDetailPatchRenderInformations;
 
 	/*
 	*	Updates the terrain system asynchronously.
@@ -142,7 +142,7 @@ private:
 	/*
 	*	Generates low detail patches.
 	*/
-	void GenerateLowDetailPatches(const GridPoint2 &currentGridPoint, const uint8 gridPointOffset, const uint8 layer) NOEXCEPT;
+	void GenerateLowDetailPatches(const GridPoint2 &currentGridPoint, const int32 gridPointOffset, const uint8 layer) NOEXCEPT;
 
 	/*
 	*	Generates a new high detail patch at the specified grid point.
