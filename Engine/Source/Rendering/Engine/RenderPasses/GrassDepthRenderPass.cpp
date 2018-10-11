@@ -168,8 +168,8 @@ void GrassDepthRenderPass::RenderInternal() NOEXCEPT
 	//Bind the current dynamic uniform data render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
-	//Wait for the vegetation culling to finish.
-	CullingSystem::Instance->WaitForVegetationCulling();
+	//Wait for the grass vegetation culling to finish.
+	CullingSystem::Instance->WaitForGrassVegetationCulling();
 
 	for (const GrassVegetationTypeInformation &information : *informations)
 	{

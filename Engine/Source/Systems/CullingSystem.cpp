@@ -25,17 +25,23 @@ DEFINE_SINGLETON(CullingSystem);
 void CullingSystem::InitializeSystem() NOEXCEPT
 {
 	//Initialize all culling tasks.
+	_CullingTasks[UNDERLYING(CullingTask::GrassVegetation)]._Function = [](void *const RESTRICT)
+	{
+		CullingSystem::Instance->CullGrassVegetation();
+	};
+	_CullingTasks[UNDERLYING(CullingTask::GrassVegetation)]._Arguments = nullptr;
+
+	_CullingTasks[UNDERLYING(CullingTask::SolidVegetation)]._Function = [](void *const RESTRICT)
+	{
+		CullingSystem::Instance->CullSolidVegetation();
+	};
+	_CullingTasks[UNDERLYING(CullingTask::SolidVegetation)]._Arguments = nullptr;
+
 	_CullingTasks[UNDERLYING(CullingTask::Terrain)]._Function = [](void *const RESTRICT)
 	{
 		CullingSystem::Instance->CullTerrain();
 	};
 	_CullingTasks[UNDERLYING(CullingTask::Terrain)]._Arguments = nullptr;
-
-	_CullingTasks[UNDERLYING(CullingTask::Vegetation)]._Function = [](void *const RESTRICT)
-	{
-		CullingSystem::Instance->CullVegetation();
-	};
-	_CullingTasks[UNDERLYING(CullingTask::Vegetation)]._Arguments = nullptr;
 }
 
 /*
@@ -47,6 +53,88 @@ void CullingSystem::CullingUpdateSystemSynchronous(const UpdateContext *const RE
 	for (Task &task : _CullingTasks)
 	{
 		TaskSystem::Instance->ExecuteTask(&task);
+	}
+}
+
+/*
+*	Culls grass vegetation.
+*/
+void CullingSystem::CullGrassVegetation() NOEXCEPT
+{
+	//Get the camera position.
+	const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
+	const Vector3 cameraPosition{ camera->GetPosition() };
+
+	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the camera.
+	for (GrassVegetationTypeInformation &information : *VegetationSystem::Instance->GetGrassVegetationTypeInformations())
+	{
+		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
+		{
+			//If this patch isn't even valid, don't test it.
+			if (!information._PatchInformations[i]._Valid)
+			{
+				continue;
+			}
+
+			//Get this patch's world position.
+			const Vector3 patchPosition{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * 2.0f) };
+
+			//Perform the distance test.
+			const bool distanceTest{	CatalystBaseMath::Absolute(cameraPosition._X - patchPosition._X) < information._Properties._CutoffDistance * 2.0f
+										&& CatalystBaseMath::Absolute(cameraPosition._Z - patchPosition._Z) < information._Properties._CutoffDistance * 2.0f };
+
+			//If the distance test succeeded, this patch should be drawn.
+			if (distanceTest)
+			{
+				information._PatchRenderInformations[i]._Draw = true;
+			}
+
+			else
+			{
+				information._PatchRenderInformations[i]._Draw = false;
+			}
+		}
+	}
+}
+
+/*
+*	Culls solid vegetation.
+*/
+void CullingSystem::CullSolidVegetation() NOEXCEPT
+{
+	//Get the camera position.
+	const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
+	const Vector3 cameraPosition{ camera->GetPosition() };
+
+	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the camera.
+	for (SolidVegetationTypeInformation &information : *VegetationSystem::Instance->GetSolidVegetationTypeInformations())
+	{
+		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
+		{
+			//If this patch isn't even valid, don't test it.
+			if (!information._PatchInformations[i]._Valid)
+			{
+				continue;
+			}
+
+			//Get this patch's world position.
+			const Vector3 patchPosition{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * 2.0f) };
+
+			//Perform the distance test.
+			const bool distanceTest{	CatalystBaseMath::Absolute(cameraPosition._X - patchPosition._X) < information._Properties._CutoffDistance * 2.0f
+										&& CatalystBaseMath::Absolute(cameraPosition._Z - patchPosition._Z) < information._Properties._CutoffDistance * 2.0f };
+
+			//If the distance test succeeded, this patch should be drawn.
+			if (distanceTest)
+			{
+				information._PatchRenderInformations[i]._Draw = true;
+			}
+
+			else
+			{
+				information._PatchRenderInformations[i]._Draw = false;
+			}
+		}
 	}
 }
 
@@ -97,47 +185,6 @@ void CullingSystem::CullTerrain() NOEXCEPT
 
 			//Test this patch's axis-aligned bounding box against the current view matrix.
 			patchRenderInformation._Draw = RenderingUtilities::IsInViewFrustum(*viewMatrix, patchInformation._AxisAlignedBoundingBox);
-		}
-	}
-}
-
-/*
-*	Culls vegetation.
-*/
-void CullingSystem::CullVegetation() NOEXCEPT
-{
-	//Get the camera position.
-	const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
-	const Vector3 cameraPosition{ camera->GetPosition() };
-
-	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the camera.
-	for (GrassVegetationTypeInformation &information : *VegetationSystem::Instance->GetGrassVegetationTypeInformations())
-	{
-		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
-		{
-			//If this patch isn't even valid, don't test it.
-			if (!information._PatchInformations[i]._Valid)
-			{
-				continue;
-			}
-
-			//Get this patch's world position.
-			const Vector3 patchPosition{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * 2.0f) };
-
-			//Perform the distance test.
-			const bool distanceTest{	CatalystBaseMath::Absolute(cameraPosition._X - patchPosition._X) < information._Properties._CutoffDistance * 2.0f
-										&& CatalystBaseMath::Absolute(cameraPosition._Z - patchPosition._Z) < information._Properties._CutoffDistance * 2.0f };
-
-			//If the distance test succeeded, this patch should be drawn.
-			if (distanceTest)
-			{
-				information._PatchRenderInformations[i]._Draw = true;
-			}
-
-			else
-			{
-				information._PatchRenderInformations[i]._Draw = false;
-			}
 		}
 	}
 }

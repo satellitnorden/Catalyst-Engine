@@ -153,7 +153,7 @@ void SolidVegetationRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
 	//Wait for the solid vegetation culling to finish.
-	CullingSystem::Instance->WaitForVegetationCulling();
+	CullingSystem::Instance->WaitForSolidVegetationCulling();
 
 	for (const SolidVegetationTypeInformation &information : *informations)
 	{
