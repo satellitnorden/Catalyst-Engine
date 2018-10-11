@@ -204,6 +204,7 @@ enum class Shader : uint8
 	ScreenSpaceAmbientOcclusionFragment,
 	ShadowMapFragment,
 	SkyFragment,
+	SolidVegetationFragment,
 	SolidVegetationVertex,
 	TerrainColorFragment,
 	TerrainDepthFragment,

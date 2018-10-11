@@ -16,7 +16,7 @@ namespace VegetationUtilities
 	static void GenerateTransformations(const GridPoint2 &gridPoint, const Type &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
 	{
 		//Construct the box.
-		const Vector3 worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * 2.0f) };
+		const Vector3 worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 		const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance , worldPosition + properties._CutoffDistance };
 
 		DynamicArray<Matrix4> transformations;

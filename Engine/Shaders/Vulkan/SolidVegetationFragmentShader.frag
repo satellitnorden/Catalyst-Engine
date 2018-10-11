@@ -55,53 +55,61 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-    layout (offset = 0) float cutoffDistanceSquared;
-    layout (offset = 4) float halfCutoffDistanceSquared;
-    layout (offset = 8) float inverseHalfCutoffDistanceSquared;
-};
+//Layout specification.
+layout (early_fragment_tests) in;
 
 //In parameters.
-layout (location = 0) in vec3 vertexPosition;
-layout (location = 1) in vec3 vertexNormal;
-layout (location = 2) in vec3 vertexTangent;
-layout (location = 3) in vec2 vertexTextureCoordinate;
-layout (location = 4) in mat4 transformationMatrix;
+layout (location = 0) in float fragmentLengthFactor;
+layout (location = 1) in vec2 fragmentTextureCoordinate;
+layout (location = 2) in mat3 fragmentTangentSpaceMatrix;
+
+//Texture samplers.
+layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
+layout (set = 1, binding = 2) uniform sampler2D normalMapTexture;
+layout (set = 1, binding = 3) uniform sampler2D materialPropertiesTexture;
 
 //Out parameters.
-layout (location = 0) out float fragmentLengthFactor;
-layout (location = 1) out vec2 fragmentTextureCoordinate;
-layout (location = 2) out mat3 fragmentTangentSpaceMatrix;
+layout (location = 0) out vec4 albedo;
+layout (location = 1) out vec4 normalDepth;
+layout (location = 2) out vec4 materialProperties;
 
 /*
-*   Returns the length of a vector squared.
+*   Given a coordinate and a seed, returns a random number.
 */
-float LengthSquared(vec3 vector)
+float RandomFloat(vec3 seed)
 {
-    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+    return fract(sin(dot(seed.xy * seed.z, vec2(12.9898f, 78.233f))) * 43758.5453f);
 }
 
 void main()
 {
-    //Calculate the transformed position.
-    vec4 transformedPosition = transformationMatrix * vec4(vertexPosition, 1.0);
+    //Discard this fragment according to the length factor.
+    if (fragmentLengthFactor == 0.0f
+        || fragmentLengthFactor < RandomFloat(gl_FragCoord.xyz))
+    {
+        discard;
+    }
 
-    //Calculate the fragment length factor.
-    float distanceToVertexSquared = LengthSquared(transformedPosition.xyz - cameraWorldPosition);
-    fragmentLengthFactor = distanceToVertexSquared >= cutoffDistanceSquared ? 0.0f : distanceToVertexSquared <= halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
+    //Write the albedo.
+    albedo = texture(albedoTexture, fragmentTextureCoordinate);
 
-    //Pass along the texture coordinate to the fragment shader.
-    fragmentTextureCoordinate = vertexTextureCoordinate;
+    //Write the normal/depth.
+    vec3 normal = texture(normalMapTexture, fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
+    normal = fragmentTangentSpaceMatrix * normal;
+    normalDepth = vec4(normal, gl_FragCoord.z);
 
-    //Calculate the tangent space matrix.
-    vec3 tangent = normalize(vec3(transformationMatrix * vec4(vertexTangent, 0.0f)));
-    vec3 bitangent = normalize(vec3(transformationMatrix * vec4(cross(vertexNormal, vertexTangent), 0.0f)));
-    vec3 normal = normalize(vec3(transformationMatrix * vec4(vertexNormal, 0.0f)));
+    //Sample the material properties.
+    vec4 materialPropertiesSampler = texture(materialPropertiesTexture, fragmentTextureCoordinate);
 
-    fragmentTangentSpaceMatrix = mat3(tangent, bitangent, normal);
+    //Write the roughness.
+    materialProperties.r = materialPropertiesSampler.r;
 
-    //Write the position.
-    gl_Position = viewMatrix * transformationMatrix * vec4(vertexPosition, 1.0);
+    //Write the metallic.
+    materialProperties.g = materialPropertiesSampler.g;
+
+    //Write the ambient occlusion.
+    materialProperties.b = materialPropertiesSampler.b;
+
+    //Write the thickness.
+    materialProperties.a = 1.0f;
 }

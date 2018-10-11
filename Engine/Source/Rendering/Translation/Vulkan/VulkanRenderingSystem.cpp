@@ -667,6 +667,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the solid vegetation fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetSolidVegetationFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::SolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
 		//Initialize the solid vegetation vertex shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetSolidVegetationVertexShaderData(data);

@@ -217,7 +217,7 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 	for (GrassVegetationTypeInformation &information : _GrassVegetationTypeInformations)
 	{
 		//Calculate the current grid point based on the current camera position.
-		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * 2.0f) };
+		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
 		//Create an array with the valid grid positions.
 		StaticArray<GridPoint2, 9> validGridPoints
@@ -259,8 +259,8 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 		{
 			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
 
-			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * 2.0f) };
-			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * 2.0f) };
+			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
+			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
 			return Vector3::LengthSquaredXZ(sortingData->_CameraPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_CameraPosition - secondGridPosition);
 		});
@@ -351,7 +351,7 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 	for (SolidVegetationTypeInformation &information : _SolidVegetationTypeInformations)
 	{
 		//Calculate the current grid point based on the current camera position.
-		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * 2.0f) };
+		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
 		//Create an array with the valid grid positions.
 		StaticArray<GridPoint2, 9> validGridPoints
@@ -393,8 +393,8 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 		{
 			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
 
-			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * 2.0f) };
-			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * 2.0f) };
+			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
+			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
 			return Vector3::LengthSquaredXZ(sortingData->_CameraPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_CameraPosition - secondGridPosition);
 		});

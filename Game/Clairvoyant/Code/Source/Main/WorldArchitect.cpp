@@ -85,7 +85,7 @@ void WorldArchitect::InitializeVegetation()
 		GrassVegetationTypeProperties properties;
 
 		properties._CutoffDistance = 50.0f;
-		properties._Density = 10'000;
+		properties._Density = 5'000;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -115,7 +115,7 @@ void WorldArchitect::InitializeVegetation()
 		GrassVegetationTypeProperties properties;
 
 		properties._CutoffDistance = 250.0f;
-		properties._Density = 100;
+		properties._Density = 250;
 		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -136,7 +136,7 @@ void WorldArchitect::InitializeVegetation()
 		GrassVegetationTypeProperties properties;
 
 		properties._CutoffDistance = 125.0f;
-		properties._Density = 2'500;
+		properties._Density = 1'250;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -157,7 +157,7 @@ void WorldArchitect::InitializeVegetation()
 		GrassVegetationTypeProperties properties;
 
 		properties._CutoffDistance = 125.0f;
-		properties._Density = 2'500;
+		properties._Density = 1'250;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.3f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -178,7 +178,7 @@ void WorldArchitect::InitializeVegetation()
 		GrassVegetationTypeProperties properties;
 
 		properties._CutoffDistance = 125.0f;
-		properties._Density = 2'500;
+		properties._Density = 1'250;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
