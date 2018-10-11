@@ -88,27 +88,44 @@ void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypePropertie
 */
 void VegetationSystem::ProcessVegetationTypeInformationUpdate() NOEXCEPT
 {
-	//Return early if there's no vegetation type information to update.
-	if (!_GrassVegetationTypeInformationUpdate._Information)
+	//Update the current vegetation type to update.
+	switch (_VegetationTypeToUpdate)
 	{
-		return;
-	}
-
-	for (const uint8 index : _GrassVegetationTypeInformationUpdate._PatchesToInvalidate)
-	{
-		InvalidatePatch(_GrassVegetationTypeInformationUpdate._Information, index);
-	}
-
-	for (uint64 i = 0, size = _GrassVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
-	{
-		if (!_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
+		case VegetationType::Grass:
 		{
-			_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[i] = _GrassVegetationTypeInformationUpdate._NewPatchInformation;
-			_GrassVegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _GrassVegetationTypeInformationUpdate._NewPatchRenderInformation;
+			//Return early if there's no vegetation type information to update.
+			if (!_GrassVegetationTypeInformationUpdate._Information)
+			{
+				return;
+			}
+
+			for (const uint8 index : _GrassVegetationTypeInformationUpdate._PatchesToInvalidate)
+			{
+				InvalidatePatch(_GrassVegetationTypeInformationUpdate._Information, index);
+			}
+
+			for (uint64 i = 0, size = _GrassVegetationTypeInformationUpdate._Information->_PatchInformations.Size(); i < size; ++i)
+			{
+				if (!_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[i]._Valid)
+				{
+					_GrassVegetationTypeInformationUpdate._Information->_PatchInformations[i] = _GrassVegetationTypeInformationUpdate._NewPatchInformation;
+					_GrassVegetationTypeInformationUpdate._Information->_PatchRenderInformations[i] = _GrassVegetationTypeInformationUpdate._NewPatchRenderInformation;
+
+					break;
+				}
+			}
+
+			break;
+		}
+
+		case VegetationType::Solid:
+		{
+			//Nothing to do here yet.
 
 			break;
 		}
 	}
+	
 }
 
 /*
@@ -143,7 +160,7 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 
 		case VegetationType::Solid:
 		{
-			UpdateGrassVegetationAsynchronous();
+			UpdateSolidVegetationAsynchronous();
 
 			break;
 		}
