@@ -195,6 +195,25 @@ void WorldArchitect::InitializeVegetation()
 	}
 
 	{
+		//Add the rock solid vegetation type.
+		SolidVegetationTypeProperties properties;
+
+		properties._CutoffDistance = 500.0f;
+		properties._Density = 100;
+		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
+		{
+			return WorldArchitect::Instance->GenerateTransformation(false, true, 1.0f, 0.8f, 0.1f, 0.2f, Vector3(180.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+		};
+		PhysicalModel model{ ResourceLoader::GetPhysicalModel(HashString("RockPhysicalModel")) };
+		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("RockPhysicalMaterial")) };
+
+		VegetationSystem::Instance->AddSolidVegetationType(properties, model, material);
+
+		properties._CutoffDistance = 1'000.0f;
+		VegetationSystem::Instance->AddSolidVegetationType(properties, model, material);
+	}
+
+	{
 		//Add the tree solid vegetation type.
 		SolidVegetationTypeProperties properties;
 
@@ -202,7 +221,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._Density = 100;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(false, true, 0.0f, 0.9f, 0.025f, 0.05f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return WorldArchitect::Instance->GenerateTransformation(false, true, 0.0f, 0.9f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 		PhysicalModel model{ ResourceLoader::GetPhysicalModel(HashString("TreePhysicalModel")) };
 		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("TreePhysicalMaterial")) };

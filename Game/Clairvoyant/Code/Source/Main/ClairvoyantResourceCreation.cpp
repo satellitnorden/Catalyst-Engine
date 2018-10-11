@@ -167,6 +167,23 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
+			//Create the rock physical material.
+			PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\RockPhysicalMaterial";
+			parameters._ID = "RockPhysicalMaterial";
+			parameters._MipmapLevels = 9;
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Rock\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Rock\\NormalMap.png";
+			parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Rock\\Roughness.png";
+			parameters._MetallicFile = nullptr;
+			parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Rock\\AmbientOcclusion.png";
+			parameters._ThicknessFile = nullptr;
+
+			PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+		}
+
+		{
 			//Create the tree physical material.
 			PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
 
@@ -181,6 +198,17 @@ namespace ClairvoyantResourceCreation
 			parameters._ThicknessFile = nullptr;
 
 			PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+		}
+
+		{
+			//Create the rock physical model.
+			PhysicalModelCreator::PhysicalModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\RockPhysicalModel";
+			parameters._ID = "RockPhysicalModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\RockPhysicalModel.fbx";
+
+			PhysicalModelCreator::CreatePhysicalModel(parameters);
 		}
 
 		{
@@ -255,7 +283,9 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\WeedGrassMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\FernGrassModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\DefaultGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\RockPhysicalMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TreePhysicalMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\RockPhysicalModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\TreePhysicalModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultTerrainMaterial.cr");
 
