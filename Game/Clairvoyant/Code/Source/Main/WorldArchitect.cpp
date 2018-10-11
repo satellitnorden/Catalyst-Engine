@@ -199,7 +199,7 @@ void WorldArchitect::InitializeVegetation()
 		SolidVegetationTypeProperties properties;
 
 		properties._CutoffDistance = 500.0f;
-		properties._Density = 100;
+		properties._Density = 25;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return WorldArchitect::Instance->GenerateTransformation(false, true, 1.0f, 0.8f, 0.1f, 0.2f, Vector3(180.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
