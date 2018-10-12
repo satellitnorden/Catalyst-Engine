@@ -7,6 +7,7 @@
 #include <Rendering/Engine/CPUTexture2D.h>
 
 //Terrain.
+#include <Terrain/TerrainCore.h>
 #include <Terrain/TerrainProperties.h>
 #include <Terrain/TerrainVertex.h>
 
@@ -57,7 +58,7 @@ namespace TerrainUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, const Vector3 &worldPosition, const float patchSize, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, const Vector3 &worldPosition, const float patchSize, const TerrainAxis borders, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
 	{
 		vertices->Reserve((resolution + 1) * (resolution + 1) * 5);
 		indices->Reserve(resolution * resolution * 6);
@@ -66,8 +67,38 @@ namespace TerrainUtilities
 		{
 			for (uint32 j = 0; j <= resolution; ++j)
 			{
-				const float textureCoordinateX{ static_cast<float>(i) / static_cast<float>(resolution) };
-				const float textureCoordinateY{ static_cast<float>(j) / static_cast<float>(resolution) };
+				float textureCoordinateX;
+				float textureCoordinateY;
+
+				if (i == 0 && (borders & TerrainAxis::PositiveX) == TerrainAxis::PositiveX)
+				{
+					textureCoordinateX = static_cast<float>(((i + 3 / 2) / 3) * 3) / static_cast<float>(resolution);
+				}
+
+				else if (i == resolution && (borders & TerrainAxis::NegativeX) == TerrainAxis::NegativeX)
+				{
+					textureCoordinateX = static_cast<float>(((i + 3 / 2) / 3) * 3) / static_cast<float>(resolution);
+				}
+
+				else
+				{
+					textureCoordinateX = static_cast<float>(i) / static_cast<float>(resolution);
+				}
+
+				if (j == 0 && (borders & TerrainAxis::PositiveY) == TerrainAxis::PositiveY)
+				{
+					textureCoordinateY = static_cast<float>(((j + 3 / 2) / 3) * 3) / static_cast<float>(resolution);
+				}
+
+				else if (j == resolution && (borders & TerrainAxis::NegativeY) == TerrainAxis::NegativeY)
+				{
+					textureCoordinateY = static_cast<float>(((j + 3 / 2) / 3) * 3) / static_cast<float>(resolution);
+				}
+
+				else
+				{
+					textureCoordinateY = static_cast<float>(j) / static_cast<float>(resolution);
+				}
 
 				TerrainVertex vertex;
 
@@ -98,12 +129,12 @@ namespace TerrainUtilities
 				if (i != resolution && j != resolution)
 				{
 					indices->EmplaceFast((i * (resolution + 1)) + j);
-					indices->EmplaceFast(((i + 1) * (resolution + 1)) + j);
 					indices->EmplaceFast((i * (resolution + 1)) + j + 1);
+					indices->EmplaceFast(((i + 1) * (resolution + 1)) + j);
 
 					indices->EmplaceFast((i * (resolution + 1)) + j + 1);
-					indices->EmplaceFast(((i + 1) * (resolution + 1)) + j);
 					indices->EmplaceFast(((i + 1) * (resolution + 1)) + j + 1);
+					indices->EmplaceFast(((i + 1) * (resolution + 1)) + j);
 				}
 			}
 		}

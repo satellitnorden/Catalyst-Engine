@@ -151,10 +151,17 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 		};
 
 		//Generate all high detail patches.
-		for (uint64 i = 0, size = _HighDetailPatchInformations[_CurrentAsynchronousBuffer].Size(); i < size; ++i)
-		{
-			GenerateHighDetailPatch(validHighDetailGridPoints[i], &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][i], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]);
-		}
+		GenerateHighDetailPatch(validHighDetailGridPoints[0], TerrainAxis::NegativeX | TerrainAxis::PositiveY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][0], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][0]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[1], TerrainAxis::PositiveY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][1], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][1]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[2], TerrainAxis::PositiveX | TerrainAxis::PositiveY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][2], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][2]);
+
+		GenerateHighDetailPatch(validHighDetailGridPoints[3], TerrainAxis::NegativeX, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][3], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][3]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[4], TerrainAxis::None, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][4], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][4]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[5], TerrainAxis::PositiveX, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][5], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][5]);
+
+		GenerateHighDetailPatch(validHighDetailGridPoints[6], TerrainAxis::NegativeX | TerrainAxis::NegativeY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][6], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][6]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[7], TerrainAxis::NegativeY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][7], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][7]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[8], TerrainAxis::PositiveX | TerrainAxis::NegativeY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][8], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][8]);
 
 		//Generate all low detail patches.
 		GenerateLowDetailPatches(currentGridPoint, 3, 0);
@@ -192,16 +199,22 @@ void TerrainSystem::GenerateLowDetailPatches(const GridPoint2 &currentGridPoint,
 	};
 
 	//Generate all low detail patches.
-	for (uint64 i = 0; i < 8; ++i)
-	{
-		GenerateLowDetailPatch(validLowDetailGridPoints[i], static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][i + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i + (layer * 8)]);
-	}
+	GenerateLowDetailPatch(validLowDetailGridPoints[0], TerrainAxis::NegativeX | TerrainAxis::PositiveY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][0 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][0 + (layer * 8)]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[1], TerrainAxis::PositiveY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][1 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][1 + (layer * 8)]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[2], TerrainAxis::PositiveX | TerrainAxis::PositiveY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][2 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][2 + (layer * 8)]);
+
+	GenerateLowDetailPatch(validLowDetailGridPoints[3], TerrainAxis::NegativeX, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][3 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][3 + (layer * 8)]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[4], TerrainAxis::PositiveX, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][4 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][4 + (layer * 8)]);
+
+	GenerateLowDetailPatch(validLowDetailGridPoints[5], TerrainAxis::NegativeX | TerrainAxis::NegativeY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][5 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][5 + (layer * 8)]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[6], TerrainAxis::NegativeY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][6 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][6 + (layer * 8)]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[7], TerrainAxis::PositiveX | TerrainAxis::NegativeY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][7 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][7 + (layer * 8)]);
 }
 
 /*
 *	Generates a new high detail patch at the specified grid point.
 */
-void TerrainSystem::GenerateHighDetailPatch(const GridPoint2 &gridPoint, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
+void TerrainSystem::GenerateHighDetailPatch(const GridPoint2 &gridPoint, const TerrainAxis borders, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
 	//Calculate the world position of the grid point.
 	const Vector3 gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, _Properties._PatchSize) };
@@ -214,6 +227,7 @@ void TerrainSystem::GenerateHighDetailPatch(const GridPoint2 &gridPoint, Terrain
 											_Properties._PatchResolution,
 											gridPointWorldPosition,
 											_Properties._PatchSize,
+											borders,
 											&vertices,
 											&indices);
 
@@ -258,7 +272,7 @@ void TerrainSystem::GenerateHighDetailPatch(const GridPoint2 &gridPoint, Terrain
 /*
 *	Generates a new low detail patch at the specified grid point.
 */
-void TerrainSystem::GenerateLowDetailPatch(const GridPoint2 &gridPoint, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
+void TerrainSystem::GenerateLowDetailPatch(const GridPoint2 &gridPoint, const TerrainAxis borders, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
 	//Calculate the world position of the grid point.
 	const Vector3 gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, _Properties._PatchSize) };
@@ -271,6 +285,7 @@ void TerrainSystem::GenerateLowDetailPatch(const GridPoint2 &gridPoint, const fl
 											_Properties._PatchResolution,
 											gridPointWorldPosition,
 											_Properties._PatchSize * patchSizeMultiplier,
+											borders,
 											&vertices,
 											&indices);
 
