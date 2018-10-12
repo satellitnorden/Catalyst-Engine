@@ -9,21 +9,21 @@ class AxisAlignedBoundingBox;
 class Matrix4;
 class Vector3;
 
-class WorldArchitect final
+class ClairvoyantWorldArchitect final
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(WorldArchitect);
+	DECLARE_SINGLETON(ClairvoyantWorldArchitect);
 
 	/*
 	*	Default constructor.
 	*/
-	WorldArchitect() NOEXCEPT { }
+	ClairvoyantWorldArchitect() NOEXCEPT { }
 
 	/*
-	*	Initializes the world architect.
+	*	Initializes the Clairvoyant world architect.
 	*/
 	void Initialize() NOEXCEPT;
 

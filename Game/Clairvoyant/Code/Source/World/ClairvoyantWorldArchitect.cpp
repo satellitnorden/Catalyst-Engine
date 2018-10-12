@@ -1,5 +1,5 @@
 //Header file.
-#include <Main/WorldArchitect.h>
+#include <World/ClairvoyantWorldArchitect.h>
 
 //Core.
 #include <Core/General/HashString.h>
@@ -28,12 +28,12 @@
 #include <Terrain/TerrainUtilities.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(WorldArchitect);
+DEFINE_SINGLETON(ClairvoyantWorldArchitect);
 
 /*
-*	Initializes the world architect.
+*	Initializes Clairvoyant the world architect.
 */
-void WorldArchitect::Initialize() NOEXCEPT
+void ClairvoyantWorldArchitect::Initialize() NOEXCEPT
 {
 	//Initialize the particles.
 	InitializeParticles();
@@ -45,7 +45,7 @@ void WorldArchitect::Initialize() NOEXCEPT
 /*
 *	Initializes the particles.
 */
-void WorldArchitect::InitializeParticles()
+void ClairvoyantWorldArchitect::InitializeParticles()
 {
 	//Register a procedural placement function for the dust particles.
 	EntitySystem::Instance->RegisterProceduralPlacementFunction([](const AxisAlignedBoundingBox &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities)
@@ -78,7 +78,7 @@ void WorldArchitect::InitializeParticles()
 /*
 *	Initializes the vegetation.
 */
-void WorldArchitect::InitializeVegetation()
+void ClairvoyantWorldArchitect::InitializeVegetation()
 {
 	{
 		//Add the default grass vegetation type.
@@ -90,7 +90,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("DefaultGrassMaterial")) };
@@ -120,7 +120,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(false, false, 0.0f, 0.25f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, false, 0.0f, 0.25f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("FernGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("FernGrassMaterial")) };
@@ -141,7 +141,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("PlumGrassMaterial")) };
@@ -162,7 +162,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.3f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.3f, 0.6f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.3f, 0.6f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("ThistleGrassMaterial")) };
@@ -183,7 +183,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("WeedGrassMaterial")) };
@@ -202,7 +202,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._Density = 25;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(false, true, 1.0f, 0.8f, 0.1f, 0.2f, Vector3(180.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, true, 1.0f, 0.8f, 0.1f, 0.2f, Vector3(180.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		PhysicalModel model{ ResourceLoader::GetPhysicalModel(HashString("RockPhysicalModel")) };
 		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("RockPhysicalMaterial")) };
@@ -221,7 +221,7 @@ void WorldArchitect::InitializeVegetation()
 		properties._Density = 100;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return WorldArchitect::Instance->GenerateTransformation(false, true, 0.0f, 0.9f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, true, 0.0f, 0.9f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 		PhysicalModel model{ ResourceLoader::GetPhysicalModel(HashString("TreePhysicalModel")) };
 		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("TreePhysicalMaterial")) };
@@ -236,7 +236,7 @@ void WorldArchitect::InitializeVegetation()
 /*
 *	Generates a transformation.
 */
-bool WorldArchitect::GenerateTransformation(const bool underwater, const bool snow, const float height, const float dotModulator, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
+bool ClairvoyantWorldArchitect::GenerateTransformation(const bool underwater, const bool snow, const float height, const float dotModulator, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
 {
 	Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
 	

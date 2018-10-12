@@ -2,9 +2,9 @@
 #include <Main/ClairvoyantGameSystem.h>
 
 //Clairvoyant.
-#include <Main/WorldArchitect.h>
 #include <Player/ClairvoyantPlayer.h>
 #include <Player/SoakCamera.h>
+#include <World/ClairvoyantWorldArchitect.h>
 #include <World/TimeOfDaySystem.h>
 
 //Entities.
@@ -40,7 +40,7 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 #endif
 
 	//Initialize the world architect.
-	WorldArchitect::Instance->Initialize();
+	ClairvoyantWorldArchitect::Instance->Initialize();
 
 	//Initialize the player.
 	ClairvoyantPlayer::Instance->Initialize();
