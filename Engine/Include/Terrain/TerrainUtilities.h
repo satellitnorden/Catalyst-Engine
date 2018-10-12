@@ -70,9 +70,20 @@ namespace TerrainUtilities
 				float textureCoordinateX;
 				float textureCoordinateY;
 
-				if (i == resolution && (borders & TerrainAxis::X) == TerrainAxis::X)
+				if (((borders & TerrainAxis::NegativeX) == TerrainAxis::NegativeX && i == resolution)
+					|| (borders & TerrainAxis::PositiveX) == TerrainAxis::PositiveX && i == resolution)
 				{
-					textureCoordinateX = static_cast<float>(((i + 3 / 2) / 3) * 3) / static_cast<float>(resolution);
+					const uint32 remainder{ i % 3 };
+
+					if (remainder == 0)
+					{
+						textureCoordinateX = static_cast<float>(i) / static_cast<float>(resolution);
+					}
+
+					else
+					{
+						textureCoordinateX = static_cast<float>(i + 3 - remainder) / static_cast<float>(resolution);
+					}
 				}
 
 				else
@@ -80,9 +91,20 @@ namespace TerrainUtilities
 					textureCoordinateX = static_cast<float>(i) / static_cast<float>(resolution);
 				}
 
-				if (j == resolution && (borders & TerrainAxis::Y) == TerrainAxis::Y)
+				if (((borders & TerrainAxis::NegativeY) == TerrainAxis::NegativeY && j == resolution)
+					|| (borders & TerrainAxis::PositiveY) == TerrainAxis::PositiveY && j == resolution)
 				{
-					textureCoordinateY = static_cast<float>(((j + 3 / 2) / 3) * 3) / static_cast<float>(resolution);
+					const uint32 remainder{ j % 3 };
+
+					if (remainder == 0)
+					{
+						textureCoordinateY = static_cast<float>(j) / static_cast<float>(resolution);
+					}
+
+					else
+					{
+						textureCoordinateY = static_cast<float>(j + 3 - remainder) / static_cast<float>(resolution);
+					}
 				}
 
 				else

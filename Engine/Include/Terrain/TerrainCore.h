@@ -19,8 +19,10 @@ using PatchPropertiesGenerationFunction = void(*)(const TerrainProperties &prope
 enum class TerrainAxis : uint8
 {
 	None = BIT(0),
-	X = BIT(1),
-	Y = BIT(2)
+	PositiveX = BIT(1),
+	NegativeX = BIT(2),
+	PositiveY = BIT(3),
+	NegativeY = BIT(4)
 };
 
 DEFINE_ENUM_FLAG_OPERATORS(TerrainAxis);
