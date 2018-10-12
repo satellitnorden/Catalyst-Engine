@@ -39,6 +39,11 @@ public:
 	static NO_DISCARD Matrix4 Perspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT;
 
 	/*
+	*	Calculates a reverse perspective projection matrix.
+	*/
+	static NO_DISCARD Matrix4 ReversePerspective(const float fov, const float aspectRatio, const float nearPlane, const float farPlane) NOEXCEPT;
+
+	/*
 	*	Default constructor.
 	*/
 	Matrix4() NOEXCEPT;

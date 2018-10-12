@@ -88,7 +88,7 @@ void DebugAxisAlignedBoundingBoxRenderPass::InitializeInternal() NOEXCEPT
 	//Set the properties of the render pass.
 	SetBlendEnabled(true);
 	SetCullMode(CullMode::None);
-	SetDepthCompareOperator(CompareOperator::Less);
+	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(false);
 	SetStencilTestEnabled(false);

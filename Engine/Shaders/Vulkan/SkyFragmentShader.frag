@@ -87,11 +87,6 @@ void main()
 	//Sample the depth.
 	float depth = texture(depthTexture, fragmentTextureCoordinate).r;
 
-	if (depth < 1.0f)
-	{
-		discard;
-	}
-
 	//Calculate the texture coordinate.
 	vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, depth);
 	vec3 cubeTextureCoordinate = normalize(fragmentWorldPosition - cameraWorldPosition);

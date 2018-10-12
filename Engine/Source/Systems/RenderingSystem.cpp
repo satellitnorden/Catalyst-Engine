@@ -183,7 +183,7 @@ void RenderingSystem::UpdateMatrices() NOEXCEPT
 	if (_ActiveCamera)
 	{
 		//Calculate the projection matrix.
-		_ProjectionMatrix = Matrix4::Perspective(_ActiveCamera->GetFieldOfViewRadians(), static_cast<float>(GetResolution()._Width) / static_cast<float>(GetResolution()._Height), _ActiveCamera->GetNearPlane(), _ActiveCamera->GetFarPlane());
+		_ProjectionMatrix = Matrix4::ReversePerspective(_ActiveCamera->GetFieldOfViewRadians(), static_cast<float>(GetResolution()._Width) / static_cast<float>(GetResolution()._Height), _ActiveCamera->GetNearPlane(), _ActiveCamera->GetFarPlane());
 
 		//Calculate the camera matrix.
 		_CameraMatrix = Matrix4::LookAt(_ActiveCamera->GetPosition(), _ActiveCamera->GetPosition() + _ActiveCamera->GetForwardVector(), _ActiveCamera->GetUpVector());

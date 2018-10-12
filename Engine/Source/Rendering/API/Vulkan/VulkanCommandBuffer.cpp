@@ -82,7 +82,7 @@ void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VkRenderPass rend
 	for (uint32 i = 0; i < numberOfClearValues; ++i)
 	{
 		clearValues[i].color = { 1.0f, 1.0f, 1.0f, 1.0f };
-		clearValues[i].depthStencil = { 1.0f, 0 };
+		clearValues[i].depthStencil = { 0.0f, 0 };
 	}
 
 	VkRenderPassBeginInfo renderPassBeginInfo;

@@ -82,7 +82,7 @@ void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
 	SetCullMode(CullMode::Front);
-	SetDepthCompareOperator(CompareOperator::Less);
+	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);
 	SetDepthWriteEnabled(true);
 	SetStencilTestEnabled(true);
