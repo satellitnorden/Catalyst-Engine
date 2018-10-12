@@ -70,12 +70,7 @@ namespace TerrainUtilities
 				float textureCoordinateX;
 				float textureCoordinateY;
 
-				if (i == 0 && (borders & TerrainAxis::PositiveX) == TerrainAxis::PositiveX)
-				{
-					textureCoordinateX = static_cast<float>(((i + 3 / 2) / 3) * 3) / static_cast<float>(resolution);
-				}
-
-				else if (i == resolution && (borders & TerrainAxis::NegativeX) == TerrainAxis::NegativeX)
+				if (i == resolution && (borders & TerrainAxis::X) == TerrainAxis::X)
 				{
 					textureCoordinateX = static_cast<float>(((i + 3 / 2) / 3) * 3) / static_cast<float>(resolution);
 				}
@@ -85,12 +80,7 @@ namespace TerrainUtilities
 					textureCoordinateX = static_cast<float>(i) / static_cast<float>(resolution);
 				}
 
-				if (j == 0 && (borders & TerrainAxis::PositiveY) == TerrainAxis::PositiveY)
-				{
-					textureCoordinateY = static_cast<float>(((j + 3 / 2) / 3) * 3) / static_cast<float>(resolution);
-				}
-
-				else if (j == resolution && (borders & TerrainAxis::NegativeY) == TerrainAxis::NegativeY)
+				if (j == resolution && (borders & TerrainAxis::Y) == TerrainAxis::Y)
 				{
 					textureCoordinateY = static_cast<float>(((j + 3 / 2) / 3) * 3) / static_cast<float>(resolution);
 				}

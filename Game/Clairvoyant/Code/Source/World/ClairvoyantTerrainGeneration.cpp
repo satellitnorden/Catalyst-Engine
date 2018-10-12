@@ -146,8 +146,8 @@ namespace ClairvoyantTerrainGeneration
 		}
 
 		//Calculate the height influence.
-		const float landscapeCoordinateX{ worldPosition._X / 32'000.0f };
-		const float landscapeCoordinateY{ worldPosition._Z / 32'000.0f };
+		const float landscapeCoordinateX{ worldPosition._X / 64'000.0f };
+		const float landscapeCoordinateY{ worldPosition._Z / 64'000.0f };
 
 		float heightInfluence{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(10)) + 1.0f) * 0.5f) };
 		heightInfluence *= heightInfluence;
