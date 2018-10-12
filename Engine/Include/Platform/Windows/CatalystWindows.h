@@ -13,6 +13,7 @@
 #undef CopyMemory
 #undef CreateEvent
 #undef CreateSemaphore
+#undef GetCurrentTime
 #undef max
 #undef min
 #undef PlaySound

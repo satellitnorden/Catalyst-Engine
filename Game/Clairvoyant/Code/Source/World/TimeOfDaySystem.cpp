@@ -28,7 +28,7 @@ void TimeOfDaySystem::Initialize() NOEXCEPT
 	_Sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
 
 	//Register the time of day system for updates.
-	UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(this);
+	UpdateSystem::Instance->RegisterAsynchronousOpeningUpdate(this);
 
 	//Update this once to the starting time.
 	UpdateContext context;
@@ -37,9 +37,9 @@ void TimeOfDaySystem::Initialize() NOEXCEPT
 }
 
 /*
-*	Updates the time of day system asynchronously during the logic update phase.
+*	Updates the time of day system asynchronously during the opening update phase.
 */
-bool TimeOfDaySystem::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+bool TimeOfDaySystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Convert the delta time from seconds, to minutes and then to hours and increment the current time.
 	_CurrentTime += ((context->_DeltaTime / 60.0f) / 60.0f) * TimeOfDaySystemConstants::TIME_MULTIPLIER;

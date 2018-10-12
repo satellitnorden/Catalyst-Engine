@@ -1,6 +1,9 @@
 //Header file.
 #include <World/ClairvoyantWorldArchitect.h>
 
+//Clairvoyant.
+#include <World/TimeOfDaySystem.h>
+
 //Core.
 #include <Core/General/HashString.h>
 
@@ -22,6 +25,7 @@
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TerrainSystem.h>
+#include <Systems/UpdateSystem.h>
 #include <Systems/VegetationSystem.h>
 
 //Terrain.
@@ -35,11 +39,40 @@ DEFINE_SINGLETON(ClairvoyantWorldArchitect);
 */
 void ClairvoyantWorldArchitect::Initialize() NOEXCEPT
 {
+	//Initialize the environment parameters.
+	InitializeEnvironmentParameters();
+
 	//Initialize the particles.
 	InitializeParticles();
 
 	//Initialize the vegetation.
 	InitializeVegetation();
+
+	//Register the Clairvoyant world architect for updates.
+	UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(this);
+}
+
+/*
+*	Updates the Clairvoyant world architect asynchronously during the logic update phase.
+*/
+bool ClairvoyantWorldArchitect::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
+{
+	//Update the environment.
+	UpdateEnvironment();
+
+	//Return that the Clairvoyant world architect wants to continue to receive updates.
+	return true;
+}
+
+/*
+*	Initializes the environment parameters.
+*/
+void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
+{
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._SunColor = Vector3(0.75f, 0.75f, 1.0f);
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._SunColor = Vector3(1.0f, 0.75f, 0.75f);
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._SunColor = Vector3(1.0f, 1.0f, 0.5f);
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._SunColor = Vector3(0.75f, 1.0f, 1.0f);
 }
 
 /*
@@ -292,4 +325,51 @@ bool ClairvoyantWorldArchitect::GenerateTransformation(const bool underwater, co
 	*transformation = *transformation * rotationMatrix;
 
 	return true;
+}
+
+/*
+*	Updates the environment.
+*/
+void ClairvoyantWorldArchitect::UpdateEnvironment() NOEXCEPT
+{
+	//Get the current time.
+	const float currentTime{ TimeOfDaySystem::Instance->GetCurrentTime() };
+
+	//Determine which environment parameters to blend between.
+	if (currentTime < 6.0f)
+	{
+		BlendEnvironmentParameters(	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)],
+									_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)],
+									currentTime / 6.0f);
+	}
+
+	else if (currentTime < 12.0f)
+	{
+		BlendEnvironmentParameters(	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)],
+									_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)],
+									(currentTime - 6.0f) / 6.0f);
+	}
+
+	else if (currentTime < 18.0f)
+	{
+		BlendEnvironmentParameters(	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)],
+									_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)],
+									(currentTime - 12.0f) / 6.0f);
+	}
+
+	else
+	{
+		BlendEnvironmentParameters(	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)],
+									_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)],
+									(currentTime - 18.0f) / 6.0f);
+	}
+}
+
+/*
+*	Blends between two environment parameters.
+*/
+void ClairvoyantWorldArchitect::BlendEnvironmentParameters(const EnvironmentParameters &first, const EnvironmentParameters &second, const float alpha) NOEXCEPT
+{
+	//Blend the sun color.
+	TimeOfDaySystem::Instance->GetSun()->SetColor(Vector3::LinearlyInterpolate(first._SunColor, second._SunColor, alpha));
 }

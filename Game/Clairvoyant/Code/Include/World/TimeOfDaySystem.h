@@ -27,16 +27,32 @@ public:
 	void Initialize() NOEXCEPT;
 
 	/*
-	*	Updates the time of day system asynchronously during the logic update phase.
+	*	Updates the time of day system asynchronously during the opening update phase.
 	*/
-	bool LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
+	bool OpeningUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
+
+	/*
+	*	Returns the current time.
+	*/
+	float GetCurrentTime() const NOEXCEPT
+	{
+		return _CurrentTime;
+	}
+
+	/*
+	*	Returns the sun.
+	*/
+	DirectionalLightEntity *const RESTRICT GetSun() NOEXCEPT
+	{
+		return _Sun;
+	}
 
 private:
 
-	//The sun.
-	DirectionalLightEntity *RESTRICT _Sun;
-
 	//The current time.
 	float _CurrentTime{ 0.0f };
+
+	//The sun.
+	DirectionalLightEntity *RESTRICT _Sun;
 
 };

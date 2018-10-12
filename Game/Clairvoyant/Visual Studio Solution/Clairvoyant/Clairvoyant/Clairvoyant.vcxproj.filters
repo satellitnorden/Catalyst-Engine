@@ -442,7 +442,7 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantWorldArchitect.cpp">
-      <Filter>Clairvoyant Code\Main\Source</Filter>
+      <Filter>Clairvoyant Code\World\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -465,7 +465,10 @@
       <Filter>Clairvoyant Code\Player\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantWorldArchitect.h">
-      <Filter>Clairvoyant Code\Main\Include</Filter>
+      <Filter>Clairvoyant Code\World\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\World\EnvironmentParameters.h">
+      <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
