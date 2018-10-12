@@ -33,8 +33,6 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantResourceCollection.crc");
 
 	//Set the environment materials/blend.
-	EnvironmentManager::Instance->SetNightEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(HashString("NightEnvironmentMaterial")));
-	EnvironmentManager::Instance->SetDayEnvironmentMaterial(ResourceLoader::GetEnvironmentMaterial(HashString("DayEnvironmentMaterial")));
 #if defined(CATALYST_ENABLE_OCEAN)
 	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(HashString("DefaultOceanMaterial")));
 #endif

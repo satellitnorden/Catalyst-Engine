@@ -86,10 +86,10 @@ layout (location = 3) out vec2 fragmentTextureCoordinate;
 /*
 *   Calculates the wind modulator.
 */
-vec3 CalculateWindModulator(vec3 worldPosition)
+vec3 CalculateWindModulator()
 {
-    float xModulator = sin(worldPosition.x + worldPosition.y  + totalGameTime * windSpeed * EULERS_NUMBER * VEGETATION_WIND_AFFECTION) * cos(worldPosition.x + worldPosition.z + totalGameTime * windSpeed * PHI * VEGETATION_WIND_AFFECTION) + 1.0f;
-    float zModulator = cos(worldPosition.z + worldPosition.y + totalGameTime * windSpeed * PI * VEGETATION_WIND_AFFECTION) * sin(worldPosition.z + worldPosition.x + totalGameTime * windSpeed * SQUARE_ROOT_OF_TWO * VEGETATION_WIND_AFFECTION) + 1.0f;
+    float xModulator = sin(vertexPosition.x + vertexPosition.y  + totalGameTime * windSpeed * EULERS_NUMBER * VEGETATION_WIND_AFFECTION) * cos(vertexPosition.x + vertexPosition.z + totalGameTime * windSpeed * PHI * VEGETATION_WIND_AFFECTION) + 1.0f;
+    float zModulator = cos(vertexPosition.z + vertexPosition.y + totalGameTime * windSpeed * PI * VEGETATION_WIND_AFFECTION) * sin(vertexPosition.z + vertexPosition.x + totalGameTime * windSpeed * SQUARE_ROOT_OF_TWO * VEGETATION_WIND_AFFECTION) + 1.0f;
 
     return vec3(xModulator * windDirection.x, 0.0f, zModulator * windDirection.z) * windSpeed * VEGETATION_WIND_AFFECTION;
 }
@@ -98,7 +98,7 @@ void main()
 {
     //Calculate the final vertex position.
     vec3 finalVertexPosition = (vertexTransformationMatrix * vec4(vertexPosition, 1.0)).xyz;
-    finalVertexPosition += CalculateWindModulator(finalVertexPosition) * windModulatorFactor * vertexModulatorFactor;
+    finalVertexPosition += CalculateWindModulator() * windModulatorFactor * vertexModulatorFactor;
 
     //Calculate the fragment tangent space matrix.
     vec3 tangent = normalize(vec3(vertexTransformationMatrix * vec4(vertexTangent, 0.0f)));

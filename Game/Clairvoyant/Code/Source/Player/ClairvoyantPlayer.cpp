@@ -1,9 +1,6 @@
 //Header file.
 #include <Player/ClairvoyantPlayer.h>
 
-//Entities.
-#include <Entities/PointLightEntity.h>
-
 //Math.
 #include <Math/CatalystBaseMath.h>
 
@@ -25,11 +22,6 @@ void ClairvoyantPlayer::Initialize() NOEXCEPT
 	//Create the camera and set it as the active one.
 	_Camera = EntitySystem::Instance->CreateEntity<CameraEntity>();
 	RenderingSystem::Instance->SetActiveCamera(_Camera);
-
-	//Add a point light to the camera. (:
-	PointLightEntity *const RESTRICT light{ EntitySystem::Instance->CreateChildEntity<PointLightEntity>(_Camera) };
-	light->SetIntensity(1.0f);
-	light->SetAttenuationDistance(10.0f);
 
 	//Register the player for updates.
 	UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(this);

@@ -42,6 +42,11 @@ public:
 	*/
 	float GetWindSpeed() const NOEXCEPT { return _WindSpeed; }
 
+	/*
+	*	Sets the wind speed.
+	*/
+	void SetWindSpeed(const float newWindSpeed) NOEXCEPT { _WindSpeed = newWindSpeed; }
+
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*
 	*	Returns the ocean height.

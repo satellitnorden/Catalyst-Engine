@@ -17,7 +17,8 @@
 //Clairvoyant terrain generation constants.
 namespace ClairvoyantTerrainGenerationConstants
 {
-	constexpr float TERRAIN_HEIGHT{ 16'000.0f };
+	constexpr float TERRAIN_MINIMUM_HEIGHT{ 8'000.0f };
+	constexpr float TERRAIN_MAXIMUM_HEIGHT{ 16'000.0f };
 
 	constexpr float GRASS_RANGE{ 1'000.0f };
 }
@@ -115,6 +116,13 @@ namespace ClairvoyantTerrainGeneration
 
 				return randomOffset;
 			}
+
+			case 12:
+			{
+				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
+
+				return randomOffset;
+			}
 		}
 
 		ASSERT(false, "You should add a case here. ):");
@@ -142,7 +150,7 @@ namespace ClairvoyantTerrainGeneration
 			frequency *= 2.0f;
 			influence *= 0.5f;
 
-			*height += CatalystBaseMath::SmoothStep<1>((PerlinNoiseGenerator::GenerateNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(i + 1)) + 1.0f) * 0.5f) * influence;
+			*height += CatalystBaseMath::SmoothStep<2>((PerlinNoiseGenerator::GenerateNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(i + 1)) + 1.0f) * 0.5f) * influence;
 		}
 
 		//Calculate the height influence.
@@ -150,9 +158,10 @@ namespace ClairvoyantTerrainGeneration
 		const float landscapeCoordinateY{ worldPosition._Z / 64'000.0f };
 
 		float heightInfluence{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(10)) + 1.0f) * 0.5f) };
+		float flatness{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(11)) + 1.0f) * 0.5f) };
 
 		//Apply the height.
-		*height *= ClairvoyantTerrainGenerationConstants::TERRAIN_HEIGHT * heightInfluence;
+		*height *= CatalystBaseMath::LinearlyInterpolate(ClairvoyantTerrainGenerationConstants::TERRAIN_MINIMUM_HEIGHT, ClairvoyantTerrainGenerationConstants::TERRAIN_MAXIMUM_HEIGHT, flatness) * heightInfluence;
 	}
 
 	/*
@@ -183,7 +192,7 @@ namespace ClairvoyantTerrainGeneration
 			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::GRASS_RANGE };
 			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::GRASS_RANGE };
 
-			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(10)) };
+			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(12)) };
 
 			layerWeights->_Y = (noise + 1.0f) * 0.5f;
 		}

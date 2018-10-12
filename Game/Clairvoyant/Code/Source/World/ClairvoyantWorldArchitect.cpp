@@ -15,6 +15,9 @@
 #include <Math/CatalystBaseMath.h>
 #include <Math/PerlinNoiseGenerator.h>
 
+//Managers.
+#include <Managers/EnvironmentManager.h>
+
 //Rendering.
 #include <Rendering/Engine/CPUTexture2D.h>
 
@@ -24,6 +27,7 @@
 //Systems.
 #include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
+#include <Systems/PhysicsSystem.h>
 #include <Systems/TerrainSystem.h>
 #include <Systems/UpdateSystem.h>
 #include <Systems/VegetationSystem.h>
@@ -69,10 +73,22 @@ bool ClairvoyantWorldArchitect::LogicUpdateAsynchronous(const UpdateContext *con
 */
 void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 {
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._EnvironmentMaterial = ResourceLoader::GetEnvironmentMaterial(HashString("NightEnvironmentMaterial"));
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._SunColor = Vector3(0.75f, 0.75f, 1.0f);
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._SunIntensity = 0.0f;
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._WindSpeed = CatalystBaseMath::RandomFloatInRange(1.0f, 10.0f);
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._EnvironmentMaterial = ResourceLoader::GetEnvironmentMaterial(HashString("MorningEnvironmentMaterial"));
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._SunColor = Vector3(1.0f, 0.75f, 0.75f);
-	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._SunColor = Vector3(1.0f, 1.0f, 0.5f);
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._SunIntensity = 1.0f;
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Morning)]._WindSpeed = CatalystBaseMath::RandomFloatInRange(1.0f, 10.0f);
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._EnvironmentMaterial = RenderingSystem::Instance->GetCommonEnvironmentMaterial(RenderingSystem::CommonEnvironmentMaterial::Day);
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._SunColor = Vector3(1.0f, 1.0f, 0.75f);
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._SunIntensity = 25.0f;
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Day)]._WindSpeed = CatalystBaseMath::RandomFloatInRange(1.0f, 10.0f);
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._EnvironmentMaterial = ResourceLoader::GetEnvironmentMaterial(HashString("EveningEnvironmentMaterial"));
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._SunColor = Vector3(0.75f, 1.0f, 1.0f);
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._SunIntensity = 1.0f;
+	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Evening)]._WindSpeed = CatalystBaseMath::RandomFloatInRange(1.0f, 10.0f);
 }
 
 /*
@@ -370,6 +386,17 @@ void ClairvoyantWorldArchitect::UpdateEnvironment() NOEXCEPT
 */
 void ClairvoyantWorldArchitect::BlendEnvironmentParameters(const EnvironmentParameters &first, const EnvironmentParameters &second, const float alpha) NOEXCEPT
 {
+	//Blend the environment materials.
+	EnvironmentManager::Instance->SetNightEnvironmentMaterial(first._EnvironmentMaterial);
+	EnvironmentManager::Instance->SetDayEnvironmentMaterial(second._EnvironmentMaterial);
+	EnvironmentManager::Instance->SetEnvironmentBlend(alpha);
+
 	//Blend the sun color.
 	TimeOfDaySystem::Instance->GetSun()->SetColor(Vector3::LinearlyInterpolate(first._SunColor, second._SunColor, alpha));
+
+	//Blend the sun intensity.
+	TimeOfDaySystem::Instance->GetSun()->SetIntensity(CatalystBaseMath::LinearlyInterpolate(first._SunIntensity, second._SunIntensity, alpha));
+
+	//Blend the wind speed.
+	PhysicsSystem::Instance->SetWindSpeed(CatalystBaseMath::LinearlyInterpolate(first._WindSpeed, second._WindSpeed, alpha));
 }

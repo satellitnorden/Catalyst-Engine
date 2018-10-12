@@ -152,7 +152,7 @@ vec3 GenerateRandomVelocity()
 	float randomY = mix(particleSystemInitialMinimumVelocity.y, particleSystemInitialMaximumVelocity.y, RandomFloat(float(particleIndex) * 0.4f + particleSystemRandomSeed * 0.6f));
 	float randomZ = mix(particleSystemInitialMinimumVelocity.z, particleSystemInitialMaximumVelocity.z, RandomFloat(float(particleIndex) * 0.3f + particleSystemRandomSeed * 0.7f));
 
-	return vec3(randomX, randomY, randomZ) + (IsAffectedByWind() ? windDirection * windSpeed * 0.1f : vec3(0.0f));
+	return vec3(randomX, randomY, randomZ) + (IsAffectedByWind() ? windDirection * windSpeed * 0.25f : vec3(0.0f));
 }
 
 /*

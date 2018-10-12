@@ -29,12 +29,12 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
-			//Create the day environment material.
+			//Create the night environment material.
 			EnvironmentMaterialCreator::EnvironmentMaterialCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\DayEnvironmentMaterial";
-			parameters._ID = "DayEnvironmentMaterial";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Textures\\Environment\\Day.hdr";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\NightEnvironmentMaterial";
+			parameters._ID = "NightEnvironmentMaterial";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Textures\\Environment\\Night.png";
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 
@@ -42,12 +42,25 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
-			//Create the night environment material.
+			//Create the morning environment material.
 			EnvironmentMaterialCreator::EnvironmentMaterialCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\NightEnvironmentMaterial";
-			parameters._ID = "NightEnvironmentMaterial";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Textures\\Environment\\Night.png";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\MorningEnvironmentMaterial";
+			parameters._ID = "MorningEnvironmentMaterial";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Textures\\Environment\\Morning.hdr";
+			parameters._DiffuseResolution = 1'024;
+			parameters._DiffuseIrradianceResolution = 2;
+
+			EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+		}
+
+		{
+			//Create the evening environment material.
+			EnvironmentMaterialCreator::EnvironmentMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\EveningEnvironmentMaterial";
+			parameters._ID = "EveningEnvironmentMaterial";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Textures\\Environment\\Evening.hdr";
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 
@@ -273,8 +286,9 @@ namespace ClairvoyantResourceCreation
 			ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Final\\ClairvoyantResourceCollection";
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DayEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\NightEnvironmentMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\MorningEnvironmentMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\EveningEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultGrassMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\FernGrassMaterial.cr");
