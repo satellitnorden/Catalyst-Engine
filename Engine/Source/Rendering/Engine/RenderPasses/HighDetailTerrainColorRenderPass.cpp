@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/TerrainColorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/HighDetailTerrainColorRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -9,24 +9,24 @@
 #include <Systems/TerrainSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(TerrainColorRenderPass);
+DEFINE_SINGLETON(HighDetailTerrainColorRenderPass);
 
 /*
 *	Default constructor.
 */
-TerrainColorRenderPass::TerrainColorRenderPass() NOEXCEPT
+HighDetailTerrainColorRenderPass::HighDetailTerrainColorRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		TerrainColorRenderPass::Instance->InitializeInternal();
+		HighDetailTerrainColorRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the terrain color render pass.
+*	Initializes the high detail terrain color render pass.
 */
-void TerrainColorRenderPass::InitializeInternal() NOEXCEPT
+void HighDetailTerrainColorRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -38,14 +38,14 @@ void TerrainColorRenderPass::InitializeInternal() NOEXCEPT
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::TerrainColor);
+	SetSubStage(RenderPassSubStage::HighDetailTerrainColor);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::TerrainColorFragment);
+	SetFragmentShader(Shader::HighDetailTerrainColorFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
@@ -76,15 +76,15 @@ void TerrainColorRenderPass::InitializeInternal() NOEXCEPT
 	SetStencilPassOperator(StencilOperator::Keep);
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Equal);
-	SetStencilCompareMask(BIT(0));
+	SetStencilCompareMask(BIT(1));
 	SetStencilWriteMask(0);
-	SetStencilReferenceMask(BIT(0));
+	SetStencilReferenceMask(BIT(1));
 	SetTopology(Topology::TriangleFan);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		TerrainColorRenderPass::Instance->RenderInternal();
+		HighDetailTerrainColorRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -94,7 +94,7 @@ void TerrainColorRenderPass::InitializeInternal() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void TerrainColorRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+void HighDetailTerrainColorRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
@@ -108,7 +108,7 @@ void TerrainColorRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void TerrainColorRenderPass::CreateRenderDataTable() NOEXCEPT
+void HighDetailTerrainColorRenderPass::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
@@ -117,9 +117,9 @@ void TerrainColorRenderPass::CreateRenderDataTable() NOEXCEPT
 }
 
 /*
-*	Renders the terrain color.
+*	Renders the high detail terrain color.
 */
-void TerrainColorRenderPass::RenderInternal() NOEXCEPT
+void HighDetailTerrainColorRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

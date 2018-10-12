@@ -25,10 +25,12 @@
 #include <Rendering/ShaderData/Vulkan/GrassVegetationColorVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/GrassVegetationDepthFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/GrassVegetationDepthVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailTerrainColorFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailTerrainTessellationControlShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailTerrainTessellationEvaluationShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailTerrainVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/LightingFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/LowDetailTerrainColorFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/LowDetailTerrainVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/OutlineFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ParticleSystemFragmentShader.h>
@@ -43,7 +45,6 @@
 #include <Rendering/ShaderData/Vulkan/SkyFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/SolidVegetationFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/SolidVegetationVertexShader.h>
-#include <Rendering/ShaderData/Vulkan/TerrainColorFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/TerrainDepthFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ViewportVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/VolumetricFogFragmentShader.h>

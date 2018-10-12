@@ -555,6 +555,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the high detail terrain color fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetHighDetailTerrainColorFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::HighDetailTerrainColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
 		//Initialize the high detail terrain tessellation control shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetHighDetailTerrainTessellationControlShaderData(data);
@@ -580,6 +587,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetLightingFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::LightingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
+		//Initialize the low detail terrain color fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetLowDetailTerrainColorFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::LowDetailTerrainColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -678,13 +692,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetSolidVegetationVertexShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::SolidVegetationVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
-	}
-
-	{
-		//Initialize the terrain color fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetTerrainColorFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::TerrainColorFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -819,7 +826,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 	//Initialize the scene buffer render pass.
 	{
-		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 12
+		constexpr uint64 NUMBER_OF_SCENE_BUFFER_SUBPASSES{ 13
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 		+ 1
 #endif
@@ -953,29 +960,36 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		constexpr VkAttachmentReference terrainColorInputAttachmentReference{ VulkanUtilities::CreateAttachmentReference(NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL) };
 
-		constexpr StaticArray<const VkAttachmentReference, 3> terrainColorAttachmentReferences
+		constexpr StaticArray<const VkAttachmentReference, 3> highDetailTerrainColorAttachmentReferences
 		{
 			VkAttachmentReference{ ALBEDO_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
 			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL },
 			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
 		};
 
-		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TerrainColor)]
+		constexpr StaticArray<const VkAttachmentReference, 2> lowDetailTerrainColorAttachmentReferences
+		{
+			VkAttachmentReference{ ALBEDO_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
+			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
+		};
+
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::HighDetailTerrainColor)]
 			= VulkanUtilities::CreateSubpassDescription(	1,
 															&terrainColorInputAttachmentReference,
-															static_cast<uint32>(terrainColorAttachmentReferences.Size()),
-															terrainColorAttachmentReferences.Data(),
+															static_cast<uint32>(highDetailTerrainColorAttachmentReferences.Size()),
+															highDetailTerrainColorAttachmentReferences.Data(),
 															&depthAttachmentReference,
 															0,
 															nullptr);
 
-		subpassDescriptions[3] = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
-																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
-																			sceneBufferColorAttachmentReferences.Data(),
-																			&depthAttachmentReference,
-																			0,
-																			nullptr);
+		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::LowDetailTerrainColor)]
+			= VulkanUtilities::CreateSubpassDescription(	1,
+															&terrainColorInputAttachmentReference,
+															static_cast<uint32>(lowDetailTerrainColorAttachmentReferences.Size()),
+															lowDetailTerrainColorAttachmentReferences.Data(),
+															&depthAttachmentReference,
+															0,
+															nullptr);
 
 		subpassDescriptions[4] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
@@ -987,13 +1001,21 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		subpassDescriptions[5] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
+																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
+																			sceneBufferColorAttachmentReferences.Data(),
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
+
+		subpassDescriptions[6] = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
 																			0,
 																			nullptr,
 																			&depthAttachmentReference,
 																			0,
 																			nullptr);
 
-		subpassDescriptions[6] = VulkanUtilities::CreateSubpassDescription(	0,
+		subpassDescriptions[7] = VulkanUtilities::CreateSubpassDescription(	0,
 																			nullptr,
 																			static_cast<uint32>(sceneBufferColorAttachmentReferences.Size()),
 																			sceneBufferColorAttachmentReferences.Data(),
@@ -1001,7 +1023,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[7] = VulkanUtilities::CreateSubpassDescription(	1,
+		subpassDescriptions[8] = VulkanUtilities::CreateSubpassDescription(	1,
 																			&normalDepthInputAttachmentReference,
 																			1,
 																			&directionalShadowColorAttachmentReference,
@@ -1018,16 +1040,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 		constexpr VkAttachmentReference sceneColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(SCENE_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) };
 
-		subpassDescriptions[8] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(lightingInputAttachmentReferences.Size()),
+		subpassDescriptions[9] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(lightingInputAttachmentReferences.Size()),
 																			lightingInputAttachmentReferences.Data(),
-																			1,
-																			&sceneColorAttachmentReference,
-																			&depthAttachmentReference,
-																			0,
-																			nullptr);
-
-		subpassDescriptions[9] = VulkanUtilities::CreateSubpassDescription(	0,
-																			nullptr,
 																			1,
 																			&sceneColorAttachmentReference,
 																			&depthAttachmentReference,
@@ -1042,7 +1056,15 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			0,
 																			nullptr);
 
-		subpassDescriptions[11] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(particleSystemAttachmentReferences.Size()),
+		subpassDescriptions[11] = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			1,
+																			&sceneColorAttachmentReference,
+																			&depthAttachmentReference,
+																			0,
+																			nullptr);
+
+		subpassDescriptions[12] = VulkanUtilities::CreateSubpassDescription(	static_cast<uint32>(particleSystemAttachmentReferences.Size()),
 																			particleSystemAttachmentReferences.Data(),
 																			static_cast<uint32>(particleSystemAttachmentReferences.Size()),
 																			particleSystemAttachmentReferences.Data(),
@@ -1051,7 +1073,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 																			nullptr);
 
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
-		subpassDescriptions[12] = VulkanUtilities::CreateSubpassDescription(	1,
+		subpassDescriptions[13] = VulkanUtilities::CreateSubpassDescription(	1,
 																				&normalDepthInputAttachmentReference,
 																				1,
 																				&sceneColorAttachmentReference,
@@ -1115,10 +1137,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 
 			VulkanUtilities::CreateSubpassDependency(	6,
 														7,
-														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
 			VulkanUtilities::CreateSubpassDependency(	7,
@@ -1132,9 +1154,9 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			VulkanUtilities::CreateSubpassDependency(	8,
 														9,
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_INPUT_ATTACHMENT_READ_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
 			VulkanUtilities::CreateSubpassDependency(	9,
@@ -1153,9 +1175,17 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 														VK_DEPENDENCY_BY_REGION_BIT),
 
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 			VulkanUtilities::CreateSubpassDependency(	11,
 														12,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+														VK_DEPENDENCY_BY_REGION_BIT),
+
+#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
+			VulkanUtilities::CreateSubpassDependency(	12,
+														13,
 														VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 														VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 														VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,

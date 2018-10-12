@@ -262,7 +262,7 @@ void TerrainSystem::GenerateHighDetailPatch(const GridPoint2 &gridPoint, const T
 
 	//Fill in the details about the patch render information.
 	patchRenderInformation->_Draw = true;
-	patchRenderInformation->_HighDetail = false;
+	patchRenderInformation->_HighDetail = true;
 	patchRenderInformation->_Buffer = RenderingSystem::Instance->CreateConstantBuffer(bufferData.Data(), bufferDataSizes.Data(), 2);
 	patchRenderInformation->_IndexOffset = bufferDataSizes[0];
 	patchRenderInformation->_IndexCount = static_cast<uint32>(indices.Size());

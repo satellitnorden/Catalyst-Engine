@@ -15,10 +15,12 @@ glslangValidator.exe -V GrassVegetationColorFragmentShader.frag -o 			GrassVeget
 glslangValidator.exe -V GrassVegetationColorVertexShader.vert -o 			GrassVegetationColorVertexShader.spv
 glslangValidator.exe -V GrassVegetationDepthFragmentShader.frag -o 			GrassVegetationDepthFragmentShader.spv
 glslangValidator.exe -V GrassVegetationDepthVertexShader.vert -o 			GrassVegetationDepthVertexShader.spv
+glslangValidator.exe -V HighDetailTerrainColorFragmentShader.frag -o 			HighDetailTerrainColorFragmentShader.spv
 glslangValidator.exe -V HighDetailTerrainTessellationControlShader.tesc -o 		HighDetailTerrainTessellationControlShader.spv
 glslangValidator.exe -V HighDetailTerrainTessellationEvaluationShader.tese -o 		HighDetailTerrainTessellationEvaluationShader.spv
 glslangValidator.exe -V HighDetailTerrainVertexShader.vert -o 				HighDetailTerrainVertexShader.spv
 glslangValidator.exe -V LightingFragmentShader.frag -o 					LightingFragmentShader.spv
+glslangValidator.exe -V LowDetailTerrainColorFragmentShader.frag -o 			LowDetailTerrainColorFragmentShader.spv
 glslangValidator.exe -V LowDetailTerrainVertexShader.vert -o 				LowDetailTerrainVertexShader.spv
 glslangValidator.exe -V OutlineFragmentShader.frag -o 					OutlineFragmentShader.spv
 glslangValidator.exe -V ParticleSystemFragmentShader.frag -o 				ParticleSystemFragmentShader.spv
@@ -33,7 +35,6 @@ glslangValidator.exe -V ShadowMapFragmentShader.frag -o 				ShadowMapFragmentSha
 glslangValidator.exe -V SkyFragmentShader.frag -o 					SkyFragmentShader.spv
 glslangValidator.exe -V SolidVegetationFragmentShader.frag -o 				SolidVegetationFragmentShader.spv
 glslangValidator.exe -V SolidVegetationVertexShader.vert -o 				SolidVegetationVertexShader.spv
-glslangValidator.exe -V TerrainColorFragmentShader.frag -o 				TerrainColorFragmentShader.spv
 glslangValidator.exe -V TerrainDepthFragmentShader.frag -o 				TerrainDepthFragmentShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
 glslangValidator.exe -V VolumetricFogFragmentShader.frag -o 				VolumetricFogFragmentShader.spv

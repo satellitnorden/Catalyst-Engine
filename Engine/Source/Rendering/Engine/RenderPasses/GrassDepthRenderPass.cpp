@@ -128,8 +128,8 @@ void GrassDepthRenderPass::InitializeInternal() NOEXCEPT
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(BIT(0) | BIT(1));
-	SetStencilReferenceMask(BIT(0) | BIT(1));
+	SetStencilWriteMask(BIT(0) | BIT(3));
+	SetStencilReferenceMask(BIT(0) | BIT(3));
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.

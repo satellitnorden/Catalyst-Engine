@@ -3,13 +3,13 @@
 */
 
 //Header file.
-#include <Rendering/ShaderData/Vulkan/TerrainColorFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/HighDetailTerrainColorFragmentShader.h>
 
 #pragma optimize("", off)
 
 namespace VulkanShaderData
 {
-	void GetTerrainColorFragmentShaderData(DynamicArray<byte> &data)
+	void GetHighDetailTerrainColorFragmentShaderData(DynamicArray<byte> &data)
 	{
 		data.Reserve(16196);
 

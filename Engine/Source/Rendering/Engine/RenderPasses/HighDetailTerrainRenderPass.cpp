@@ -39,9 +39,9 @@ void HighDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 	SetSubStage(RenderPassSubStage::HighDetailTerrain);
 
 	//Set the shaders.
-	SetVertexShader(Shader::HighDetailTerrainVertex);
-	SetTessellationControlShader(Shader::HighDetailTerrainTessellationControl);
-	SetTessellationEvaluationShader(Shader::HighDetailTerrainTessellationEvaluation);
+	SetVertexShader(Shader::LowDetailTerrainVertex);
+	SetTessellationControlShader(Shader::None);
+	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
 	SetFragmentShader(Shader::TerrainDepthFragment);
 
@@ -96,9 +96,9 @@ void HighDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(BIT(0));
-	SetStencilReferenceMask(BIT(0));
-	SetTopology(Topology::PatchList);
+	SetStencilWriteMask(BIT(0) | BIT(1));
+	SetStencilReferenceMask(BIT(0) | BIT(1));
+	SetTopology(Topology::TriangleList);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)

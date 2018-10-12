@@ -91,8 +91,8 @@ void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(BIT(0));
-	SetStencilReferenceMask(BIT(0));
+	SetStencilWriteMask(BIT(0) | BIT(2));
+	SetStencilReferenceMask(BIT(0) | BIT(2));
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.
@@ -110,7 +110,7 @@ void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 */
 void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 {
-	//Iterate over all low detail terrain render informations and draw them
+	//Iterate over all terrain render informations and draw them
 	const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT highDetailInformations{ TerrainSystem::Instance->GetHighDetailTerrainPatchRenderInformations() };
 	const StaticArray<TerrainPatchRenderInformation, 64> *const RESTRICT lowDetailInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
 
