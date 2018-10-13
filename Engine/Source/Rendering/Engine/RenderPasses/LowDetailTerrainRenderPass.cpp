@@ -112,7 +112,7 @@ void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all terrain render informations and draw them
 	const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT highDetailInformations{ TerrainSystem::Instance->GetHighDetailTerrainPatchRenderInformations() };
-	const StaticArray<TerrainPatchRenderInformation, 64> *const RESTRICT lowDetailInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
+	const StaticArray<TerrainPatchRenderInformation, 56> *const RESTRICT lowDetailInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
 
 	//Cache the command buffer
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };

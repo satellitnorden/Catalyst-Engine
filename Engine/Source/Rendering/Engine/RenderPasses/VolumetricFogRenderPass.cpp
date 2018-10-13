@@ -14,6 +14,17 @@
 //Singleton definition.
 DEFINE_SINGLETON(VolumetricFogRenderPass);
 
+class PushConstantData final
+{
+
+public:
+
+	float _FogLengthSquared;
+	float _FogMinimumHeight;
+	float _FogMaximumHeight;
+
+};
+
 /*
 *	Default constructor.
 */
@@ -38,13 +49,10 @@ void VolumetricFogRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::Scene);
+	SetMainStage(RenderPassMainStage::VolumetricFog);
 
 	//Set the sub stage.
 	SetSubStage(RenderPassSubStage::VolumetricFog);
-
-	//Set the sub stage index.
-	SetSubStageIndex(8);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
@@ -67,7 +75,7 @@ void VolumetricFogRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(VolumetricFogData));
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -139,10 +147,13 @@ void VolumetricFogRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Pust constants.
-	_Data._Density = 0.1f;
-	_Data._RayDistanceSquared = 20.0f * 20.0f;
-	_Data._NumberOfRaySteps = 64;
-	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(VolumetricFogData), &_Data);
+	PushConstantData data;
+
+	data._FogLengthSquared = 209'952.0f * 209'952.0f;
+	data._FogMinimumHeight = 5'000.0f;
+	data._FogMaximumHeight = 20'000.0f;
+	
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

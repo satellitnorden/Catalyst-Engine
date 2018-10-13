@@ -22,33 +22,11 @@ public:
 
 private:
 
-	/*
-	*	Volumetric fog data definition.
-	*/
-	class VolumetricFogData final
-	{
-
-	public:
-
-		//The density.
-		float _Density;
-
-		//The ray distance squared.
-		float _RayDistanceSquared;
-
-		//The number of ray steps.
-		int32 _NumberOfRaySteps;
-
-	};
-
 	//The render data table layout.
 	RenderDataTableLayoutHandle _RenderDataTableLayout;
 
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
-
-	//The volumetric fog data.
-	VolumetricFogData _Data;
 
 	/*
 	*	Initializes the volumetric fog render pass.

@@ -61,11 +61,10 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	float density;
-    float rayDistanceSquared;
-    int numberOfRaySteps;
+	layout (offset = 0) float fogLengthSquared;
+    layout (offset = 4) float fogMinimumHeight;
+    layout (offset = 8) float fogMaximumHeight;
 };
-
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
@@ -104,9 +103,28 @@ void main()
 	 //Sample the depth of the scene at this point.
     float sceneDepth = texture(sceneNormalDepthTexture, fragmentTextureCoordinate).w;
 
-    //Calculate this fragment's world position.
+    //Calculate the scene world position.
     vec3 sceneWorldPosition = CalculateWorldPosition(fragmentTextureCoordinate, sceneDepth);
 
+    //Calculate the distance to the scene world position.
+    float distanceToSceneWorldPosition = LengthSquared(sceneWorldPosition - cameraWorldPosition);
+
+    //Calculate the fog color.
+    vec3 fogColor = vec3(1.0f, 1.0f, 1.0f) * 0.01f + directionalLightColor * directionalLightIntensity;
+
+    //Calculate the fog weight.
+    float distanceWeight = min(distanceToSceneWorldPosition / fogLengthSquared, 1.0f);
+    distanceWeight *= distanceWeight;
+
+    float heightWeight = 1.0f - clamp((sceneWorldPosition.y - fogMinimumHeight) / (fogMaximumHeight - fogMinimumHeight), 0.0f, 1.0f);
+    heightWeight *= heightWeight;
+
+    float fogWeight = distanceWeight * heightWeight;
+
+    //Write the fragment.
+    fragment = vec4(fogColor, fogWeight);
+
+    /*
     //Calculate the ray direction, distance and step.
     vec3 rayDirection = normalize(sceneWorldPosition - cameraWorldPosition);
     float distanceToScenePositionSquared = LengthSquared(sceneWorldPosition - cameraWorldPosition);
@@ -137,4 +155,5 @@ void main()
 
     //Write the fragment
     fragment = vec4(accumulatedFog, 1.0f);
+    */
 }

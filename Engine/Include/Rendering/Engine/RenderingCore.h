@@ -40,6 +40,9 @@ enum class RenderPassMainStage : uint8
 #if defined(CATALYST_ENABLE_OCEAN)
 	Ocean,
 #endif
+#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
+	VolumetricFog,
+#endif
 	PostProcessingFinal,
 
 	NumberOfRenderPassMainStages
@@ -70,9 +73,6 @@ enum class RenderPassSubStage : uint8
 	Sky,
 	DynamicOutline,
 	ParticleSystem,
-#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
-	VolumetricFog,
-#endif
 
 #if !defined(CATALYST_FINAL)
 	//Debug.
@@ -84,6 +84,11 @@ enum class RenderPassSubStage : uint8
 	//Ocean main stage.
 	AboveOcean,
 	BelowOcean,
+#endif
+
+#if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
+	//Volumetric fog main stage.
+	VolumetricFog,
 #endif
 
 	//Post processing final main stage.

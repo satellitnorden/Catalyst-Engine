@@ -76,7 +76,7 @@ public:
 	/*
 	*	Returns the low detail terrain patch informations.
 	*/
-	RESTRICTED NO_DISCARD StaticArray<TerrainPatchInformation, 64> *const RESTRICT GetLowDetailTerrainPatchInformations() NOEXCEPT
+	RESTRICTED NO_DISCARD StaticArray<TerrainPatchInformation, 56> *const RESTRICT GetLowDetailTerrainPatchInformations() NOEXCEPT
 	{
 		return &_LowDetailPatchInformations[_CurrentSynchronousBuffer];
 	}
@@ -84,7 +84,7 @@ public:
 	/*
 	*	Returns the low detail terrain patch render informations.
 	*/
-	RESTRICTED NO_DISCARD StaticArray<TerrainPatchRenderInformation, 64> *const RESTRICT GetLowDetailTerrainPatchRenderInformations() NOEXCEPT
+	RESTRICTED NO_DISCARD StaticArray<TerrainPatchRenderInformation, 56> *const RESTRICT GetLowDetailTerrainPatchRenderInformations() NOEXCEPT
 	{
 		return &_LowDetailPatchRenderInformations[_CurrentSynchronousBuffer];
 	}
@@ -129,10 +129,10 @@ private:
 	StaticArray<StaticArray<TerrainPatchRenderInformation, 9>, 2> _HighDetailPatchRenderInformations;
 
 	//The low detail patch informations.
-	StaticArray<StaticArray<TerrainPatchInformation, 64>, 2> _LowDetailPatchInformations;
+	StaticArray<StaticArray<TerrainPatchInformation, 56>, 2> _LowDetailPatchInformations;
 
 	//The low detail patch render informations.
-	StaticArray<StaticArray<TerrainPatchRenderInformation, 64>, 2> _LowDetailPatchRenderInformations;
+	StaticArray<StaticArray<TerrainPatchRenderInformation, 56>, 2> _LowDetailPatchRenderInformations;
 
 	/*
 	*	Updates the terrain system asynchronously.
