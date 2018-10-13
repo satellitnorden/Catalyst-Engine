@@ -49,6 +49,9 @@ private:
 		NumberOfEnvironmentPhases
 	};
 
+	//The current time.
+	float _CurrentTime{ 0.0f };
+
 	//Container for all environment parameters.
 	StaticArray<EnvironmentParameters, UNDERLYING(EnvironmentPhase::NumberOfEnvironmentPhases)> _EnvironmentParameters;
 

@@ -239,7 +239,7 @@ vec3 CalculateNormal(vec2 intersectionPointTextureCoordinate)
 vec3 CalculateOceanColor(vec3 reflection)
 {
     //Calculate the ocean color.
-    return oceanColor * (reflection + directionalLightColor * (directionalLightIntensity * 0.5f));
+    return oceanColor * (reflection + directionalLightColor * (directionalLightIntensity * 0.25f));
 }
 
 /*
@@ -248,7 +248,8 @@ vec3 CalculateOceanColor(vec3 reflection)
 float CalculateOceanColorWeight(float distanceToBottomSquared)
 {
     //Calculate the ocean color weight.
-    return Scale(min(distanceToBottomSquared / oceanColorWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.1f, 1.0f);
+    float oceanColorWeight = Scale(min(distanceToBottomSquared / oceanColorWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.1f, 1.0f);
+    return oceanColorWeight * oceanColorWeight;
 }
 
 /*

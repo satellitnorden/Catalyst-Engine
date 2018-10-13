@@ -165,16 +165,17 @@ vec3 CalculateNormal(vec2 endPointTextureCoordinate)
 vec3 CalculateOceanColor(vec3 reflection)
 {
     //Calculate the ocean color.
-    return oceanColor * (reflection + directionalLightColor * (directionalLightIntensity * 0.5f));
+    return oceanColor * (reflection + directionalLightColor * (directionalLightIntensity * 0.25f));
 }
 
 /*
 *   Calculates the ocean color weight.
 */
-float CalculateOceanColorWeight(float distanceToEndPointSquared)
+float CalculateOceanColorWeight(float distanceToBottomSquared)
 {
     //Calculate the ocean color weight.
-    return Scale(min(distanceToEndPointSquared / oceanColorWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.1f, 1.0f);
+    float oceanColorWeight = Scale(min(distanceToBottomSquared / oceanColorWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.1f, 1.0f);
+    return oceanColorWeight * oceanColorWeight;
 }
 
 /*

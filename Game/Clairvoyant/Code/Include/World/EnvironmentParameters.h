@@ -26,4 +26,7 @@ public:
 	//The wind speed.
 	float _WindSpeed;
 
+	//The volumetric fog density.
+	float _VolumetricFogDensity;
+
 };

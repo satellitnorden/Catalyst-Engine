@@ -144,7 +144,7 @@ void LightingRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 3, _RenderDataTable);
 
 	//Pust constants.
-	const int32 screenSpaceAmbientOcclusionEnabled{ static_cast<bool>(RenderingConfigurationManager::Instance->GetScreenSpaceAmbientOcclusionEnabled()) };
+	constexpr int32 screenSpaceAmbientOcclusionEnabled{ false };
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(int32), &screenSpaceAmbientOcclusionEnabled);
 
 	//Draw!
