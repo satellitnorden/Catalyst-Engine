@@ -121,6 +121,13 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 */
 void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 {
+	if (true)
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
+
 	//Iterate over all terrain render informations and draw them
 	const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT informations{ TerrainSystem::Instance->GetHighDetailTerrainPatchRenderInformations() };
 
