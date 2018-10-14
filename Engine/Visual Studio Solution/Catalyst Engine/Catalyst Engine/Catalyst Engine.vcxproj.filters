@@ -1002,6 +1002,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\LowDetailTerrainColorRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h">
+      <Filter>Physics\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

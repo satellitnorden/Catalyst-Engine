@@ -1,12 +1,17 @@
 //Header file.
 #include <Player/ClairvoyantPlayer.h>
 
+//Entities.
+#include <Entities/DynamicPhysicalEntity.h>
+#include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
+
 //Math.
 #include <Math/CatalystBaseMath.h>
 
 //Systems.
 #include <Systems/EntitySystem.h>
 #include <Systems/InputSystem.h>
+#include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TerrainSystem.h>
 #include <Systems/UpdateSystem.h>
@@ -89,6 +94,30 @@ bool ClairvoyantPlayer::LogicUpdateAsynchronous(const UpdateContext *const RESTR
 	Vector3 rotation{ _Camera->GetRotation() };
 	rotation._X = CatalystBaseMath::Clamp<float>(rotation._X, -89.0f, 89.0f);
 	_Camera->SetRotation(rotation);
+
+	//Spawn... Boxes. (:
+	if (state->_X == ButtonState::Pressed)
+	{
+		const Ray ray{ _Camera->GetPosition(), _Camera->GetForwardVector(), FLOAT_MAXIMUM };
+		RayCastResult result;
+
+		PhysicsSystem::Instance->CastRay(PhysicsChannel::Ocean, ray, &result);
+
+		DynamicPhysicalEntity *const RESTRICT box{ EntitySystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
+
+		DynamicPhysicalInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+
+		data->_Properties = EntityInitializationData::EntityProperty::None;
+		data->_PhysicalFlags = PhysicalFlag::Outline | PhysicalFlag::Physical;
+		data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
+		data->_Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
+		data->_Position = result._HitPosition;
+		data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
+		data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
+		data->_OutlineColor = Vector3(CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f));
+
+		EntitySystem::Instance->RequestInitialization(box, data, false);
+	}
 
 	return true;
 }

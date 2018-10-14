@@ -12,7 +12,7 @@ class DynamicPhysicalRenderComponent final
 public:
 
 	//The physical flags.
-	uint8 _PhysicalFlags;
+	PhysicalFlag _PhysicalFlags;
 
 	//The buffer.
 	ConstantBufferHandle _Buffer;

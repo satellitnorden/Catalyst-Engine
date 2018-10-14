@@ -17,6 +17,9 @@ public:
 	//Denotes whether or not there was a hit.
 	bool _HasHit;
 
+	//The hit position.
+	Vector3 _HitPosition;
+
 	//The hit entity.
 	Entity *RESTRICT _HitEntity;
 

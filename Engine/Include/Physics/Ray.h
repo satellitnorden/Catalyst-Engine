@@ -21,6 +21,18 @@ public:
 	float _Distance;
 
 	/*
+	*	Constructor taking all values as arguments.
+	*/
+	Ray(const Vector3 &initalOrigin, const Vector3 &initialDirection, const float initialDistance) NOEXCEPT
+		:
+		_Origin(initalOrigin),
+		_Direction(initialDirection),
+		_Distance(initialDistance)
+	{
+
+	}
+
+	/*
 	*	Returns whether or not a ray is valid.
 	*/
 	static NO_DISCARD bool IsValid(const Ray &ray) NOEXCEPT

@@ -104,6 +104,8 @@ enum class PhysicalFlag : uint8
 	Outline = BIT(1)
 };
 
+ENUMERATION_BIT_OPERATIONS(PhysicalFlag);
+
 //Enumeration covering all compare operators.
 enum class CompareOperator : uint8
 {

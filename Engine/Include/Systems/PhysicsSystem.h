@@ -6,6 +6,7 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Physics.
+#include <Physics/PhysicsCore.h>
 #include <Physics/Ray.h>
 #include <Physics/RayCastResult.h>
 
@@ -30,7 +31,7 @@ public:
 	/*
 	*	Casts a ray.
 	*/
-	void CastRay(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT;
+	void CastRay(const PhysicsChannel channels, const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT;
 
 	/*
 	*	Returns the wind direction.
@@ -61,5 +62,20 @@ private:
 
 	//The wind speed.
 	float _WindSpeed{ 4.0f };
+
+	/*
+	*	Casts a ray against dynamic physical entities.
+	*/
+	void CastRayDynamicPhysical(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT;
+
+	/*
+	*	Casts a ray against the ocean.
+	*/
+	void CastRayOcean(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT;
+
+	/*
+	*	Casts a ray against the terrain.
+	*/
+	void CastRayTerrain(const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT;
 
 };

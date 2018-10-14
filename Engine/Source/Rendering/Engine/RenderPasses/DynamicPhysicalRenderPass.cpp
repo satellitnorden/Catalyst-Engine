@@ -150,7 +150,7 @@ void DynamicPhysicalRenderPass::RenderInternal() NOEXCEPT
 	for (uint64 i = 0; i < numberOfDynamicPhysicalComponents; ++i, ++renderComponent, ++transformComponent)
 	{
 		//Don't draw this dynamic physical entity if it isn't in the view frustum or if it's not supposed to be included in this render pass.
-		if (!renderComponent->_IsInViewFrustum || !(renderComponent->_PhysicalFlags & static_cast<uint8>(PhysicalFlag::Physical)))
+		if (!renderComponent->_IsInViewFrustum || !((renderComponent->_PhysicalFlags & PhysicalFlag::Physical) == PhysicalFlag::Physical))
 		{
 			continue;
 		}

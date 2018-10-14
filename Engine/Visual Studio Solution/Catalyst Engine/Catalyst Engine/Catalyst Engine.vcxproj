@@ -126,6 +126,7 @@
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Threadlock.h" />
     <ClInclude Include="..\..\..\Include\Physics\PhysicalConstants.h" />
+    <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h" />
     <ClInclude Include="..\..\..\Include\Physics\Ray.h" />
     <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h" />
     <ClInclude Include="..\..\..\Include\Platform\Android\CatalystAndroid.h" />

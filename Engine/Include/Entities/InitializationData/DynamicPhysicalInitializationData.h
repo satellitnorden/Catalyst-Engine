@@ -19,7 +19,7 @@ class DynamicPhysicalInitializationData final : public EntityInitializationData
 public:
 
 	//The physical flags.
-	uint8 _PhysicalFlags;
+	PhysicalFlag _PhysicalFlags;
 
 	//The model.
 	PhysicalModel _Model;

@@ -15,7 +15,7 @@ class DynamicOutlineRenderComponent final
 public:
 
 	//The physical flags.
-	uint8 _PhysicalFlags;
+	PhysicalFlag _PhysicalFlags;
 
 	//The outline color.
 	Vector3 _Color;

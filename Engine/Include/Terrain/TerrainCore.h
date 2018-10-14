@@ -25,4 +25,4 @@ enum class TerrainAxis : uint8
 	NegativeY = BIT(4)
 };
 
-DEFINE_ENUM_FLAG_OPERATORS(TerrainAxis);
+ENUMERATION_BIT_OPERATIONS(TerrainAxis);
