@@ -35,7 +35,7 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
-#include <Resources/GrassMaterialData.h>
+#include <Resources/GrassVegetationMaterialData.h>
 #include <Resources/GrassModelData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
@@ -49,7 +49,7 @@
 #include <Systems/InputSystem.h>
 
 //Vegetation.
-#include <Vegetation/GrassMaterial.h>
+#include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/GrassModel.h>
 
 //Singleton definition.
@@ -443,9 +443,9 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &d
 }
 
 /*
-*	Creates a grass material.
+*	Creates a grass vegetation material.
 */
-void RenderingSystem::CreateGrassMaterial(const GrassMaterialData &data, GrassMaterial &material) NOEXCEPT
+void RenderingSystem::CreateGrassVegetationMaterial(const GrassVegetationMaterialData &data, GrassVegetationMaterial &material) NOEXCEPT
 {
 	//Create the mask texture.
 	material._MaskTexture = CreateTexture2D(TextureData(TextureDataContainer(data._MaskData, data._MaskWidth, data._MaskHeight, 4), AddressMode::ClampToEdge, TextureFilter::Linear, MipmapMode::Linear, TextureFormat::R8G8B8A8_Byte));
@@ -470,7 +470,7 @@ void RenderingSystem::CreateGrassModel(const GrassModelData &data, GrassModel &m
 {
 	//Create the vertex and index buffer.
 	const void *RESTRICT modelData[]{ data._Vertices.Data(), data._Indices.Data() };
-	const uint64 modelDataSizes[]{ sizeof(GrassVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
+	const uint64 modelDataSizes[]{ sizeof(GrassVegetationVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
 	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
 
 	//Set up the physical model.

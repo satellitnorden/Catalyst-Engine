@@ -18,6 +18,16 @@ namespace VegetationConstants
 //Type aliases.
 using VegetationPlacementFunction = bool(*)(const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation);
 
+//Enumeration covering all vegetation level of details.
+enum class VegetationLevelOfDetail : uint8
+{
+	Low = BIT(0),
+	Medium = BIT(1),
+	High = BIT(2)
+};
+
+ENUMERATION_BIT_OPERATIONS(VegetationLevelOfDetail);
+
 //Enumeration covering all vegetation types.
 enum class VegetationType : uint8
 {

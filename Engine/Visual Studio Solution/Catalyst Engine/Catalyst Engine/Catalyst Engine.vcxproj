@@ -265,8 +265,8 @@
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationCommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanTranslationUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\EnvironmentMaterialData.h" />
-    <ClInclude Include="..\..\..\Include\Resources\GrassMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\GrassModelData.h" />
+    <ClInclude Include="..\..\..\Include\Resources\GrassVegetationMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\OceanMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\ParticleMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Resources\PhysicalMaterialData.h" />
@@ -297,12 +297,12 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUtilities.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassMaterial.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassModel.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassvegetationMaterial.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVertex.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationVertex.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\SolidVegetationTypeProperties.h" />

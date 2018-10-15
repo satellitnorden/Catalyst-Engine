@@ -4,17 +4,17 @@
 #include <Core/Core/CatalystCore.h>
 
 //Vegetation.
-#include <Vegetation/GrassVertex.h>
+#include <Vegetation/GrassVegetationVertex.h>
 
 class GrassModelData final
 {
 
 public:
 
-	//The vertices of the grass model.
-	DynamicArray<GrassVertex> _Vertices;
+	//The vertices of the grass vegetation model.
+	DynamicArray<GrassVegetationVertex> _Vertices;
 
-	//The indices of the grass model.
+	//The indices of the grass vegetation model.
 	DynamicArray<uint32> _Indices;
 
 };

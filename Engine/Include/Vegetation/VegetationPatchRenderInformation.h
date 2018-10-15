@@ -6,6 +6,9 @@
 //Rendering.
 #include <Rendering/Engine/RenderingCore.h>
 
+//Vegetation.
+#include <Vegetation/VegetationCore.h>
+
 class VegetationPatchRenderInformation final
 {
 

@@ -813,9 +813,6 @@
     <ClInclude Include="..\..\..\Include\Entities\EntityProceduralPlacementGridPoint.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\GrassMaterialData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\GrassModelData.h">
       <Filter>Resources\Include</Filter>
     </ClInclude>
@@ -825,16 +822,10 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\GrassDepthRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassMaterial.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\GrassModel.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassVertex.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\VegetationCore.h">
@@ -1004,6 +995,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h">
       <Filter>Physics\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationVertex.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassvegetationMaterial.h">
+      <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\GrassVegetationMaterialData.h">
+      <Filter>Resources\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

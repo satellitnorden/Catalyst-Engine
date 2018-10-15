@@ -29,8 +29,8 @@ class CPUTexture2D;
 class DynamicPhysicalInitializationData;
 class Entity;
 class EnvironmentMaterialData;
-class GrassMaterial;
-class GrassMaterialData;
+class GrassVegetationMaterial;
+class GrassVegetationMaterialData;
 class GrassModel;
 class GrassModelData;
 class InstancedPhysicalEntity;
@@ -393,9 +393,9 @@ public:
 	void CreateEnvironmentMaterial(const EnvironmentMaterialData &data, EnvironmentMaterial &material) NOEXCEPT;
 
 	/*
-	*	Creates a grass material.
+	*	Creates a grass vegetation material.
 	*/
-	void CreateGrassMaterial(const GrassMaterialData &data, GrassMaterial &material) NOEXCEPT;
+	void CreateGrassVegetationMaterial(const GrassVegetationMaterialData &data, GrassVegetationMaterial &material) NOEXCEPT;
 
 	/*
 	*	Creates a grass model.

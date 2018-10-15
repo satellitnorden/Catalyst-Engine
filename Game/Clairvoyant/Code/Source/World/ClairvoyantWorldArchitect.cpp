@@ -156,7 +156,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
-		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("DefaultGrassMaterial")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DefaultGrassMaterial")) };
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
@@ -186,7 +186,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, false, 0.0f, 0.25f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("FernGrassModel")) };
-		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("FernGrassMaterial")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("FernGrassMaterial")) };
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
@@ -207,7 +207,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
-		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("PlumGrassMaterial")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("PlumGrassMaterial")) };
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
@@ -228,7 +228,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.3f, 0.6f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
-		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("ThistleGrassMaterial")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("ThistleGrassMaterial")) };
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
@@ -249,7 +249,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
-		GrassMaterial material{ ResourceLoader::GetGrassMaterial(HashString("WeedGrassMaterial")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("WeedGrassMaterial")) };
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 

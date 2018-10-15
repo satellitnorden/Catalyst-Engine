@@ -6,7 +6,7 @@
 
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
-#include <Resources/GrassMaterialData.h>
+#include <Resources/GrassVegetationMaterialData.h>
 #include <Resources/GrassModelData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
@@ -24,7 +24,7 @@
 
 //Static variable definitions.
 Map<HashString, EnvironmentMaterial> ResourceLoader::_EnvironmentMaterials;
-Map<HashString, GrassMaterial> ResourceLoader::_GrassMaterials;
+Map<HashString, GrassVegetationMaterial> ResourceLoader::_GrassVegetationMaterials;
 Map<HashString, GrassModel> ResourceLoader::_GrassModels;
 #if defined(CATALYST_ENABLE_OCEAN)
 Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
@@ -177,8 +177,8 @@ void ResourceLoader::LoadEnvironmentMaterial(BinaryFile<IOMode::In> &file) NOEXC
 */
 void ResourceLoader::LoadGrassMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
-	//Store the grass material data in the grass material data structure.
-	GrassMaterialData data;
+	//Store the grass vegetation material data in the grass vegetation material data structure.
+	GrassVegetationMaterialData data;
 
 	//Read the resource ID.
 	HashString resourceID;
@@ -239,7 +239,7 @@ void ResourceLoader::LoadGrassMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 	}
 
 	//Create the grass material via the rendering system.
-	RenderingSystem::Instance->CreateGrassMaterial(data, _GrassMaterials[resourceID]);
+	RenderingSystem::Instance->CreateGrassVegetationMaterial(data, _GrassVegetationMaterials[resourceID]);
 }
 
 /*
@@ -260,7 +260,7 @@ void ResourceLoader::LoadGrassModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Read the vertices.
 	data._Vertices.UpsizeFast(numberOfVertices);
-	file.Read(data._Vertices.Data(), sizeof(GrassVertex) * numberOfVertices);
+	file.Read(data._Vertices.Data(), sizeof(GrassVegetationVertex) * numberOfVertices);
 
 	//Read the number of indices.
 	uint64 numberOfIndices;

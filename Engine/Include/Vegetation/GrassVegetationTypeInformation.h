@@ -5,8 +5,8 @@
 #include <Core/Containers/StaticArray.h>
 
 //Vegetation.
-#include <Vegetation/GrassMaterial.h>
 #include <Vegetation/GrassModel.h>
+#include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/GrassVegetationTypeProperties.h>
 #include <Vegetation/VegetationPatchInformation.h>
 #include <Vegetation/VegetationPatchRenderInformation.h>
@@ -23,7 +23,7 @@ public:
 	GrassModel _Model;
 
 	//The material.
-	GrassMaterial _Material;
+	GrassVegetationMaterial _Material;
 
 	//The patch informations.
 	StaticArray<VegetationPatchInformation, 9> _PatchInformations;

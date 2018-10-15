@@ -20,7 +20,7 @@
 #include <Resources/ResourcesCore.h>
 
 //Vegetation.
-#include <Vegetation/GrassMaterial.h>
+#include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/GrassModel.h>
 
 class ResourceLoader final
@@ -39,9 +39,9 @@ public:
 	static const EnvironmentMaterial& GetEnvironmentMaterial(const HashString resourceID) { return _EnvironmentMaterials[resourceID]; }
 
 	/*
-	*	Given a resource ID, return the corresponding grass material.
+	*	Given a resource ID, return the corresponding grass vegetation material.
 	*/
-	static const GrassMaterial& GetGrassMaterial(const HashString resourceID) { return _GrassMaterials[resourceID]; }
+	static const GrassVegetationMaterial& GetGrassVegetationMaterial(const HashString resourceID) { return _GrassVegetationMaterials[resourceID]; }
 
 	/*
 	*	Given a resource ID, return the corresponding grass model.
@@ -80,8 +80,8 @@ private:
 	//Container for all environment materials.
 	static Map<HashString, EnvironmentMaterial> _EnvironmentMaterials;
 
-	//Container for all grass materials.
-	static Map<HashString, GrassMaterial> _GrassMaterials;
+	//Container for all grass vegetation materials.
+	static Map<HashString, GrassVegetationMaterial> _GrassVegetationMaterials;
 
 	//Container for all grass models.
 	static Map<HashString, GrassModel> _GrassModels;

@@ -3,7 +3,7 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-class GrassMaterialData final
+class GrassVegetationMaterialData final
 {
 
 public:
