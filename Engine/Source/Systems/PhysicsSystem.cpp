@@ -32,7 +32,7 @@ void PhysicsSystem::PhysicsUpdateSystemSynchronous(const UpdateContext *const RE
 void PhysicsSystem::CastRay(const PhysicsChannel channels, const Ray &ray, RayCastResult *const RESTRICT result) NOEXCEPT
 {
 	//Check that the ray is valid.
-	ASSERT(ray.IsValid(), "Invalid ray!");
+	ASSERT(Ray::IsValid(ray), "Invalid ray!");
 
 	//Cast rays against the different channels.
 	if ((channels & PhysicsChannel::DynamicPhysical) == PhysicsChannel::DynamicPhysical)

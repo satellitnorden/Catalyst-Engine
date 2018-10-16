@@ -17,6 +17,9 @@ public:
 	//Denotes whether or not to draw this patch.
 	bool _Draw;
 
+	//The level of detail.
+	VegetationLevelOfDetail _LevelOfDetail{ VegetationLevelOfDetail::Low };
+
 	//The transformations buffer.
 	ConstantBufferHandle _TransformationsBuffer;
 

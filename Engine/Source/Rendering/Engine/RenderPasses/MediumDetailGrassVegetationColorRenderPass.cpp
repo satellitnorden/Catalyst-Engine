@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/GrassColorRenderPass.h>
+#include <Rendering/Engine/RenderPasses/MediumDetailGrassVegetationColorRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -13,7 +13,7 @@
 #include <Vegetation/GrassVegetationVertex.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(GrassColorRenderPass);
+DEFINE_SINGLETON(MediumDetailGrassVegetationColorRenderPass);
 
 class VertexPushConstantData final
 {
@@ -36,32 +36,32 @@ public:
 /*
 *	Default constructor.
 */
-GrassColorRenderPass::GrassColorRenderPass() NOEXCEPT
+MediumDetailGrassVegetationColorRenderPass::MediumDetailGrassVegetationColorRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		GrassColorRenderPass::Instance->InitializeInternal();
+		MediumDetailGrassVegetationColorRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the grass color render pass.
+*	Initializes the medium detail grass vegetation color render pass.
 */
-void GrassColorRenderPass::InitializeInternal() NOEXCEPT
+void MediumDetailGrassVegetationColorRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::GrassColor);
+	SetSubStage(RenderPassSubStage::MediumDetailGrassVegetationColor);
 
 	//Set the shaders.
-	SetVertexShader(Shader::GrassVegetationColorVertex);
+	SetVertexShader(Shader::MediumDetailGrassVegetationColorVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::GrassVegetationColorFragment);
+	SetFragmentShader(Shader::MediumDetailGrassVegetationColorFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
@@ -148,7 +148,7 @@ void GrassColorRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		GrassColorRenderPass::Instance->RenderInternal();
+		MediumDetailGrassVegetationColorRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -156,9 +156,9 @@ void GrassColorRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the color of the grass.
+*	Renders the medium detail color of the grass vegetation.
 */
-void GrassColorRenderPass::RenderInternal() NOEXCEPT
+void MediumDetailGrassVegetationColorRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the grass vegetion type informations.
 	const DynamicArray<GrassVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetGrassVegetationTypeInformations() };
@@ -195,7 +195,7 @@ void GrassColorRenderPass::RenderInternal() NOEXCEPT
 		//Bind the render data table.
 		commandBuffer->BindRenderDataTable(this, 1, information._Material._RenderDataTable);
 
-		//Pust constants.
+		//Push constants.
 		VertexPushConstantData vertexData;
 		vertexData._WindModulatorFactor = information._Properties._WindModulatorFactor;
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
@@ -207,7 +207,9 @@ void GrassColorRenderPass::RenderInternal() NOEXCEPT
 		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!renderInformation._Draw || renderInformation._NumberOfTransformations == 0)
+			if (!renderInformation._Draw
+				|| renderInformation._NumberOfTransformations == 0
+				|| !((renderInformation._LevelOfDetail & VegetationLevelOfDetail::Medium) == VegetationLevelOfDetail::Medium))
 			{
 				continue;
 			}

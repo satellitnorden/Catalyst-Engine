@@ -11,7 +11,7 @@
 #include <Resources/ResourcesCore.h>
 
 //Vegetation.
-#include <Vegetation/GrassVertex.h>
+#include <Vegetation/GrassVegetationVertex.h>
 
 //Third party libraries.
 #include <assimp/Importer.hpp>
@@ -80,7 +80,7 @@ public:
 		ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, &heightRange);
 
 		//Process the vertices/indices.
-		DynamicArray<GrassVertex> vertices;
+		DynamicArray<GrassVegetationVertex> vertices;
 		DynamicArray<uint32> indices;
 
 		ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, heightRange, vertices, indices);
@@ -90,7 +90,7 @@ public:
 		file.Write(&sizeOfVertices, sizeof(uint64));
 
 		//Write the vertices to the file.
-		file.Write(vertices.Data(), sizeof(GrassVertex) * sizeOfVertices);
+		file.Write(vertices.Data(), sizeof(GrassVegetationVertex) * sizeOfVertices);
 
 		//Write the size of the indices to the file.
 		const uint64 sizeOfIndices{ indices.Size() };
@@ -156,7 +156,7 @@ private:
 	/*
 	*	Processes a single Assimp mesh.
 	*/
-	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, const GrassModelCreationParameters::Axis upAxis, const Vector2 &heightRange, DynamicArray<GrassVertex> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
+	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, const GrassModelCreationParameters::Axis upAxis, const Vector2 &heightRange, DynamicArray<GrassVegetationVertex> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
 	{
 		//Process the vertices.
 		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
@@ -198,7 +198,7 @@ private:
 	/*
 	*	Processes a single Assimp node.
 	*/
-	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, const GrassModelCreationParameters::Axis upAxis, const Vector2 &heightRange, DynamicArray<GrassVertex> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
+	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, const GrassModelCreationParameters::Axis upAxis, const Vector2 &heightRange, DynamicArray<GrassVegetationVertex> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
 	{
 		//Process all meshes.
 		for (uint32 i = 0; i < node->mNumMeshes; ++i)

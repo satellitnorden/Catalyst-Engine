@@ -231,12 +231,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DynamicPhysicalRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\GrassColorRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\GrassDepthRenderPass.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\HighDetailTerrainRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -304,18 +298,6 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GaussianBlurFragmentShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationColorFragmentShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationColorVertexShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationDepthFragmentShader.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\GrassVegetationDepthVertexShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\HighDetailTerrainTessellationControlShader.cpp">
@@ -448,6 +430,60 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\LowDetailTerrainColorRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\LowDetailGrassVegetationColorFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\LowDetailGrassVegetationColorVertexShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\LowDetailGrassVegetationDepthFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\LowDetailGrassVegetationDepthVertexShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\LowDetailGrassVegetationDepthRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\LowDetailGrassVegetationColorRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\MediumDetailGrassVegetationColorFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\MediumDetailGrassVegetationColorVertexShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\MediumDetailGrassVegetationDepthFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\MediumDetailGrassVegetationDepthVertexShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\MediumDetailGrassVegetationColorRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\MediumDetailGrassVegetationDepthRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationColorFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationColorVertexShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationDepthFragmentShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\HighDetailGrassVegetationDepthVertexShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\HighDetailGrassVegetationColorRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\HighDetailGrassVegetationDepthRenderPass.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
   </ItemGroup>
