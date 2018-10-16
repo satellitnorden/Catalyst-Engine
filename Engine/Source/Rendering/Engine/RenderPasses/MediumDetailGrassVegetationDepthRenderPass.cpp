@@ -6,6 +6,7 @@
 
 //Systems.
 #include <Systems/CullingSystem.h>
+#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/VegetationSystem.h>
 
@@ -171,6 +172,9 @@ void MediumDetailGrassVegetationDepthRenderPass::RenderInternal() NOEXCEPT
 	//Wait for the grass vegetation culling to finish.
 	CullingSystem::Instance->WaitForGrassVegetationCulling();
 
+	//Wait for the grass vegetation level of detail to finish.
+	LevelOfDetailSystem::Instance->WaitForGrassVegetationLevelOfDetail();
+
 	for (const GrassVegetationTypeInformation &information : *informations)
 	{
 		//Bind the model vertex and index buffer.
@@ -182,7 +186,7 @@ void MediumDetailGrassVegetationDepthRenderPass::RenderInternal() NOEXCEPT
 		//Bind the render data table.
 		commandBuffer->BindRenderDataTable(this, 1, information._Material._RenderDataTable);
 
-		//Pust constants.
+		//Push constants.
 		PushConstantData data;
 
 		data._CutoffDistanceSquared = (information._Properties._CutoffDistance) * (information._Properties._CutoffDistance);

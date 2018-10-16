@@ -60,6 +60,8 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
+layout (location = 1) in float fragmentLengthFactor;
+
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D maskTexture;
@@ -75,7 +77,9 @@ float RandomFloat(vec3 seed)
 void main()
 {
     //Discard this fragment according to the mask texture.
-    if (texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
+    if (fragmentLengthFactor == 0.0f
+        || fragmentLengthFactor < RandomFloat(gl_FragCoord.xyz)
+        || texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
     {
         discard;
     }

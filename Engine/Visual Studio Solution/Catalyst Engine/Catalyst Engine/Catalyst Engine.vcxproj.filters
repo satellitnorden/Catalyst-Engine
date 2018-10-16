@@ -981,9 +981,6 @@
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationVertex.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassvegetationMaterial.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Resources\GrassVegetationMaterialData.h">
       <Filter>Resources\Include</Filter>
     </ClInclude>
@@ -1040,6 +1037,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\HighDetailGrassVegetationDepthRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationMaterial.h">
+      <Filter>Vegetation\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

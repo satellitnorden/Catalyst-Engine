@@ -147,8 +147,10 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		//Add the default grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._CutoffDistance = 50.0f;
-		properties._Density = 5'000;
+		properties._MediumDetailDistance = 50.0f;
+		properties._LowDetailDistance = 100.0f;
+		properties._CutoffDistance = 250.0f;
+		properties._Density = 10'000;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -160,6 +162,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
+		/*
 		properties._CutoffDistance = 100.0f;
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
@@ -171,8 +174,10 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 
 		properties._CutoffDistance = 250.0f;
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
+		*/
 	}
 
+	/*
 	{
 		//Add the fern vegetation type.
 		GrassVegetationTypeProperties properties;
@@ -256,6 +261,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._CutoffDistance = 250.0f;
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 	}
+	*/
 
 	{
 		//Add the rock solid vegetation type.

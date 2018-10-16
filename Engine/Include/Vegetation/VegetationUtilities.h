@@ -13,11 +13,11 @@ namespace VegetationUtilities
 	*	Generates the transformations.
 	*/
 	template <typename Type>
-	static void GenerateTransformations(const GridPoint2 &gridPoint, const Type &properties, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
+	static void GenerateTransformations(const GridPoint2 &gridPoint, const Type &properties, const float gridSize, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
 	{
 		//Construct the box.
-		const Vector3 worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
-		const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance , worldPosition + properties._CutoffDistance };
+		const Vector3 worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * gridSize) };
+		const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance * gridSize, worldPosition + properties._CutoffDistance * gridSize };
 
 		DynamicArray<Matrix4> transformations;
 

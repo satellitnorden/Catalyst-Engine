@@ -6,6 +6,7 @@
 
 //Systems.
 #include <Systems/CullingSystem.h>
+#include <Systems/LevelOfDetailSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/VegetationSystem.h>
 
@@ -183,6 +184,9 @@ void HighDetailGrassVegetationColorRenderPass::RenderInternal() NOEXCEPT
 
 	//Wait for the grass vegetation culling to finish.
 	CullingSystem::Instance->WaitForGrassVegetationCulling();
+
+	//Wait for the grass vegetation level of detail to finish.
+	LevelOfDetailSystem::Instance->WaitForGrassVegetationLevelOfDetail();
 
 	for (const GrassVegetationTypeInformation &information : *informations)
 	{

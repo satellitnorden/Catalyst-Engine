@@ -68,7 +68,10 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-    layout (offset = 0) float windModulatorFactor;
+    layout (offset = 0) float cutoffDistanceSquared;
+    layout (offset = 4) float halfCutoffDistanceSquared;
+    layout (offset = 8) float inverseHalfCutoffDistanceSquared;
+    layout (offset = 12) float windModulatorFactor;
 };
 
 //In parameters.
@@ -81,6 +84,7 @@ layout (location = 5) in mat4 vertexTransformationMatrix;
 
 //Out parameters.
 layout (location = 0) out vec2 fragmentTextureCoordinate;
+layout (location = 1) out float fragmentLengthFactor;
 
 /*
 *   Calculates the wind modulator.
@@ -109,6 +113,10 @@ void main()
 
     //Pass along the fragment texture coordinate.
     fragmentTextureCoordinate = vertexTextureCoordinate;
+
+    //Calculate the fragment length factor.
+    float distanceToVertexSquared = LengthSquared(finalVertexPosition - cameraWorldPosition);
+    fragmentLengthFactor = distanceToVertexSquared >= cutoffDistanceSquared ? 0.0f : distanceToVertexSquared <= halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
 
     //Set the position.
     gl_Position = viewMatrix * vec4(finalVertexPosition, 1.0f);

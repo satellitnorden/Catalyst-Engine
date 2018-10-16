@@ -310,7 +310,7 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUtilities.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainVertex.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassModel.h" />
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassvegetationMaterial.h" />
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationMaterial.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformation.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeInformationUpdate.h" />
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h" />
