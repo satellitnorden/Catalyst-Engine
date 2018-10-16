@@ -150,7 +150,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._MediumDetailDistance = 50.0f;
 		properties._LowDetailDistance = 100.0f;
 		properties._CutoffDistance = 250.0f;
-		properties._Density = 10'000;
+		properties._Density = 2'500;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -162,28 +162,16 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 
-		/*
-		properties._CutoffDistance = 100.0f;
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 150.0f;
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 200.0f;
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 250.0f;
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
-		*/
 	}
 
-	/*
 	{
 		//Add the fern vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._CutoffDistance = 250.0f;
-		properties._Density = 250;
+		properties._MediumDetailDistance = 100.0f;
+		properties._LowDetailDistance = 200.0f;
+		properties._CutoffDistance = 500.0f;
+		properties._Density = 100;
 		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -194,16 +182,15 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("FernGrassMaterial")) };
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 500.0f;
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 	}
 
 	{
 		//Add the plum grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._CutoffDistance = 125.0f;
+		properties._MediumDetailDistance = 50.0f;
+		properties._LowDetailDistance = 100.0f;
+		properties._CutoffDistance = 250.0f;
 		properties._Density = 1'250;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.1f;
@@ -215,16 +202,15 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("PlumGrassMaterial")) };
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 250.0f;
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 	}
 
 	{
 		//Add the thistle grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._CutoffDistance = 125.0f;
+		properties._MediumDetailDistance = 50.0f;
+		properties._LowDetailDistance = 100.0f;
+		properties._CutoffDistance = 250.0f;
 		properties._Density = 1'250;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.3f;
@@ -236,16 +222,15 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("ThistleGrassMaterial")) };
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 250.0f;
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 	}
 
 	{
 		//Add the weed grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._CutoffDistance = 125.0f;
+		properties._MediumDetailDistance = 50.0f;
+		properties._LowDetailDistance = 100.0f;
+		properties._CutoffDistance = 250.0f;
 		properties._Density = 1'250;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.2f;
@@ -257,11 +242,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("WeedGrassMaterial")) };
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 250.0f;
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
 	}
-	*/
 
 	{
 		//Add the rock solid vegetation type.
