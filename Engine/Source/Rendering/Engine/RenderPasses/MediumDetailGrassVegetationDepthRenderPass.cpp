@@ -180,8 +180,8 @@ void MediumDetailGrassVegetationDepthRenderPass::RenderInternal() NOEXCEPT
 		//Bind the model vertex and index buffer.
 		const uint64 offset{ 0 };
 
-		commandBuffer->BindVertexBuffer(this, 0, information._Model._Buffer, &offset);
-		commandBuffer->BindIndexBuffer(this, information._Model._Buffer, information._Model._IndexOffset);
+		commandBuffer->BindVertexBuffer(this, 0, information._Models[UNDERLYING(VegetationLevelOfDetail::Medium)]._Buffer, &offset);
+		commandBuffer->BindIndexBuffer(this, information._Models[UNDERLYING(VegetationLevelOfDetail::Medium)]._Buffer, information._Models[UNDERLYING(VegetationLevelOfDetail::Medium)]._IndexOffset);
 
 		//Bind the render data table.
 		commandBuffer->BindRenderDataTable(this, 1, information._Material._RenderDataTable);
@@ -201,7 +201,7 @@ void MediumDetailGrassVegetationDepthRenderPass::RenderInternal() NOEXCEPT
 			//Check whether or not this should be drawn.
 			if (!renderInformation._Draw
 				|| renderInformation._NumberOfTransformations == 0
-				|| !((renderInformation._LevelOfDetail & VegetationLevelOfDetail::Medium) == VegetationLevelOfDetail::Medium))
+				|| renderInformation._LevelOfDetail != VegetationLevelOfDetail::Medium)
 			{
 				continue;
 			}
@@ -210,7 +210,7 @@ void MediumDetailGrassVegetationDepthRenderPass::RenderInternal() NOEXCEPT
 			commandBuffer->BindVertexBuffer(this, 1, renderInformation._TransformationsBuffer, &offset);
 
 			//Draw the instances!
-			commandBuffer->DrawIndexed(this, information._Model._IndexCount, renderInformation._NumberOfTransformations);
+			commandBuffer->DrawIndexed(this, information._Models[UNDERLYING(VegetationLevelOfDetail::Medium)]._IndexCount, renderInformation._NumberOfTransformations);
 		}
 	}
 

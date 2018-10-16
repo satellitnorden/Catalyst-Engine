@@ -20,7 +20,7 @@ public:
 	GrassVegetationTypeProperties _Properties;
 
 	//The model.
-	GrassModel _Model;
+	StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> _Models;
 
 	//The material.
 	GrassVegetationMaterial _Material;

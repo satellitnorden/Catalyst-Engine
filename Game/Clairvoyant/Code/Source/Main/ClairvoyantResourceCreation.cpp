@@ -20,7 +20,7 @@ namespace ClairvoyantResourceCreation
 	void CreateResources() NOEXCEPT
 	{
 #if !defined(CATALYST_FINAL)
-		if (true)
+		if (false)
 #else
 		if (true)
 #endif
@@ -156,24 +156,72 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
-			//Create the fern grass model.
+			//Create the low detail fern grass model.
 			GrassModelCreator::GrassModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\FernGrassModel";
-			parameters._ID = "FernGrassModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\FernGrassModel.fbx";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailFernGrassModel";
+			parameters._ID = "LowDetailFernGrassModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\LowDetailFernGrassModel.fbx";
 			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Z;
 
 			GrassModelCreator::CreateGrassModel(parameters);
 		}
 
 		{
-			//Create the grass grass model.
+			//Create the medium detail fern grass model.
 			GrassModelCreator::GrassModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\DefaultGrassModel";
-			parameters._ID = "DefaultGrassModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\DefaultGrassModel.fbx";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailFernGrassModel";
+			parameters._ID = "MediumDetailFernGrassModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\MediumDetailFernGrassModel.fbx";
+			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Z;
+
+			GrassModelCreator::CreateGrassModel(parameters);
+		}
+
+		{
+			//Create the high detail fern grass model.
+			GrassModelCreator::GrassModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailFernGrassModel";
+			parameters._ID = "HighDetailFernGrassModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\HighDetailFernGrassModel.fbx";
+			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Z;
+
+			GrassModelCreator::CreateGrassModel(parameters);
+		}
+
+		{
+			//Create the low detail grass model.
+			GrassModelCreator::GrassModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailGrassModel";
+			parameters._ID = "LowDetailGrassModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\LowDetailGrassModel.fbx";
+			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Y;
+
+			GrassModelCreator::CreateGrassModel(parameters);
+		}
+
+		{
+			//Create the medium detail grass model.
+			GrassModelCreator::GrassModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailGrassModel";
+			parameters._ID = "MediumDetailGrassModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\MediumDetailGrassModel.fbx";
+			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Y;
+
+			GrassModelCreator::CreateGrassModel(parameters);
+		}
+
+		{
+			//Create the high detail grass model.
+			GrassModelCreator::GrassModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailGrassModel";
+			parameters._ID = "HighDetailGrassModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\HighDetailGrassModel.fbx";
 			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Y;
 
 			GrassModelCreator::CreateGrassModel(parameters);
@@ -295,8 +343,12 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\PlumGrassMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\ThistleGrassMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\WeedGrassMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\FernGrassModel.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\DefaultGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailFernGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailFernGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailFernGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailGrassModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\RockPhysicalMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TreePhysicalMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\RockPhysicalModel.cr");

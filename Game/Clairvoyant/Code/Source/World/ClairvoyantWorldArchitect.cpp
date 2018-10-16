@@ -77,8 +77,8 @@ void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 	constexpr float MINIMUM_SUN_INTENSITY{ 10.0f };
 	constexpr float MAXIMUM_SUN_INTENSITY{ 25.0f };
 
-	constexpr float MINIMUM_WIND_SPEED{ 3.0f };
-	constexpr float MAXIMUM_WIND_SPEED{ 5.0f };
+	constexpr float MINIMUM_WIND_SPEED{ 2.0f };
+	constexpr float MAXIMUM_WIND_SPEED{ 6.0f };
 
 	constexpr float MINIMUM_VOLUMETRIC_FOG_DENSITY{ 1.0f };
 	constexpr float MAXIMUM_VOLUMETRIC_FOG_DENSITY{ 2.0f };
@@ -143,6 +143,12 @@ void ClairvoyantWorldArchitect::InitializeParticles()
 */
 void ClairvoyantWorldArchitect::InitializeVegetation()
 {
+	StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
+
+	models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("LowDetailGrassModel"));
+	models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("MediumDetailGrassModel"));
+	models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("HighDetailGrassModel"));
+
 	{
 		//Add the default grass vegetation type.
 		GrassVegetationTypeProperties properties;
@@ -150,17 +156,16 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._MediumDetailDistance = 50.0f;
 		properties._LowDetailDistance = 100.0f;
 		properties._CutoffDistance = 250.0f;
-		properties._Density = 2'500;
+		properties._Density = 2'000;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
-		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DefaultGrassMaterial")) };
 
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
 
 	}
 
@@ -171,17 +176,22 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._MediumDetailDistance = 100.0f;
 		properties._LowDetailDistance = 200.0f;
 		properties._CutoffDistance = 500.0f;
-		properties._Density = 100;
+		properties._Density = 25;
 		properties._Thickness = 1.0f;
 		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, false, 0.0f, 0.25f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
-		GrassModel model{ ResourceLoader::GetGrassModel(HashString("FernGrassModel")) };
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("FernGrassMaterial")) };
 
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
+		StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> fernModels;
+
+		fernModels[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("LowDetailFernGrassModel"));
+		fernModels[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("MediumDetailFernGrassModel"));
+		fernModels[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("HighDetailFernGrassModel"));
+
+		VegetationSystem::Instance->AddGrassVegetationType(properties, fernModels, material);
 	}
 
 	{
@@ -191,17 +201,16 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._MediumDetailDistance = 50.0f;
 		properties._LowDetailDistance = 100.0f;
 		properties._CutoffDistance = 250.0f;
-		properties._Density = 1'250;
+		properties._Density = 1'000;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.1f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
-		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("PlumGrassMaterial")) };
 
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
 	}
 
 	{
@@ -211,17 +220,16 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._MediumDetailDistance = 50.0f;
 		properties._LowDetailDistance = 100.0f;
 		properties._CutoffDistance = 250.0f;
-		properties._Density = 1'250;
+		properties._Density = 1'000;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.3f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.3f, 0.6f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
-		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("ThistleGrassMaterial")) };
 
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
 	}
 
 	{
@@ -231,17 +239,16 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._MediumDetailDistance = 50.0f;
 		properties._LowDetailDistance = 100.0f;
 		properties._CutoffDistance = 250.0f;
-		properties._Density = 1'250;
+		properties._Density = 1'000;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
-		GrassModel model{ ResourceLoader::GetGrassModel(HashString("DefaultGrassModel")) };
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("WeedGrassMaterial")) };
 
-		VegetationSystem::Instance->AddGrassVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
 	}
 
 	{
