@@ -39,6 +39,13 @@
 //Singleton definition.
 DEFINE_SINGLETON(ClairvoyantWorldArchitect);
 
+//Clairvoyant world architects constants.
+namespace ClairvoyantWorldArchitectConstants
+{
+	constexpr float GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE{ 50.0f };
+	constexpr float GRASS_VEGETATION_LOW_DETAIL_DISTANCE{ 100.0f };
+}
+
 /*
 *	Initializes Clairvoyant the world architect.
 */
@@ -153,8 +160,8 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		//Add the default grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._MediumDetailDistance = 50.0f;
-		properties._LowDetailDistance = 100.0f;
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 250.0f;
 		properties._Density = 5'000;
 		properties._Thickness = 0.1f;
@@ -173,8 +180,8 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		//Add the fern vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._MediumDetailDistance = 100.0f;
-		properties._LowDetailDistance = 200.0f;
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 500.0f;
 		properties._Density = 25;
 		properties._Thickness = 1.0f;
@@ -198,8 +205,8 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		//Add the plum grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._MediumDetailDistance = 50.0f;
-		properties._LowDetailDistance = 100.0f;
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 250.0f;
 		properties._Density = 1'250;
 		properties._Thickness = 0.1f;
@@ -217,8 +224,8 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		//Add the thistle grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._MediumDetailDistance = 50.0f;
-		properties._LowDetailDistance = 100.0f;
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 250.0f;
 		properties._Density = 1'250;
 		properties._Thickness = 0.1f;
@@ -236,8 +243,8 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		//Add the weed grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._MediumDetailDistance = 50.0f;
-		properties._LowDetailDistance = 100.0f;
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 250.0f;
 		properties._Density = 1'250;
 		properties._Thickness = 0.1f;

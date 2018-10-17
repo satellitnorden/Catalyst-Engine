@@ -17,7 +17,7 @@ namespace VegetationUtilities
 	{
 		//Construct the box.
 		const Vector3 worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * gridSize) };
-		const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance * gridSize, worldPosition + properties._CutoffDistance * gridSize };
+		const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance * (gridSize * 0.5f), worldPosition + properties._CutoffDistance * (gridSize * 0.5f) };
 
 		DynamicArray<Matrix4> transformations;
 
