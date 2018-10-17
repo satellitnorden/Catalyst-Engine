@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/HighDetailSolidVegetationRenderPass.h>
+#include <Rendering/Engine/RenderPasses/MediumDetailSolidVegetationRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -12,7 +12,7 @@
 #include <Systems/VegetationSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(HighDetailSolidVegetationRenderPass);
+DEFINE_SINGLETON(MediumDetailSolidVegetationRenderPass);
 
 class PushConstantData final
 {
@@ -28,32 +28,32 @@ public:
 /*
 *	Default constructor.
 */
-HighDetailSolidVegetationRenderPass::HighDetailSolidVegetationRenderPass() NOEXCEPT
+MediumDetailSolidVegetationRenderPass::MediumDetailSolidVegetationRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		HighDetailSolidVegetationRenderPass::Instance->InitializeInternal();
+		MediumDetailSolidVegetationRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the high detail solid vegetation render pass.
+*	Initializes the medium detail solid vegetation render pass.
 */
-void HighDetailSolidVegetationRenderPass::InitializeInternal() NOEXCEPT
+void MediumDetailSolidVegetationRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::HighDetailSolidVegetation);
+	SetSubStage(RenderPassSubStage::MediumDetailSolidVegetation);
 
 	//Set the shaders.
 	SetVertexShader(Shader::SolidVegetationVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::HighDetailSolidVegetationFragment);
+	SetFragmentShader(Shader::MediumDetailSolidVegetationFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
@@ -135,7 +135,7 @@ void HighDetailSolidVegetationRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		HighDetailSolidVegetationRenderPass::Instance->RenderInternal();
+		MediumDetailSolidVegetationRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -143,9 +143,9 @@ void HighDetailSolidVegetationRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the high detail solid vegetation.
+*	Renders the medium detail solid vegetation.
 */
-void HighDetailSolidVegetationRenderPass::RenderInternal() NOEXCEPT
+void MediumDetailSolidVegetationRenderPass::RenderInternal() NOEXCEPT
 {
 	//Retrieve the solid vegetion type informations.
 	const DynamicArray<SolidVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetSolidVegetationTypeInformations() };
@@ -199,7 +199,7 @@ void HighDetailSolidVegetationRenderPass::RenderInternal() NOEXCEPT
 			//Check whether or not this should be drawn.
 			if (!renderInformation._Draw
 				|| renderInformation._NumberOfTransformations == 0
-				|| renderInformation._LevelOfDetail != VegetationLevelOfDetail::High)
+				|| renderInformation._LevelOfDetail != VegetationLevelOfDetail::Medium)
 			{
 				continue;
 			}

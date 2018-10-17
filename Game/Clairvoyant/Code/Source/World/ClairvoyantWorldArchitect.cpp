@@ -262,6 +262,8 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		//Add the rock solid vegetation type.
 		SolidVegetationTypeProperties properties;
 
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 500.0f;
 		properties._Density = 25;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -281,6 +283,8 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		//Add the tree solid vegetation type.
 		SolidVegetationTypeProperties properties;
 
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 500.0f;
 		properties._Density = 100;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)

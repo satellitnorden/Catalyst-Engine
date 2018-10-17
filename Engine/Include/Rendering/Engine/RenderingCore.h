@@ -66,6 +66,8 @@ enum class RenderPassSubStage : uint8
 	LowDetailTerrainColor,
 	DynamicPhysical,
 	HighDetailSolidVegetation,
+	MediumDetailSolidVegetation,
+	LowDetailSolidVegetation,
 	HighDetailGrassVegetationDepth,
 	HighDetailGrassVegetationColor,
 	MediumDetailGrassVegetationDepth,

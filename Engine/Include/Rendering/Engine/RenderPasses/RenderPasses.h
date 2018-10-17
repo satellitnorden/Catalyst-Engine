@@ -22,10 +22,12 @@
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LowDetailGrassVegetationColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LowDetailGrassVegetationDepthRenderPass.h>
+#include <Rendering/Engine/RenderPasses/LowDetailSolidVegetationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LowDetailTerrainColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LowDetailTerrainRenderPass.h>
 #include <Rendering/Engine/RenderPasses/MediumDetailGrassVegetationColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/MediumDetailGrassVegetationDepthRenderPass.h>
+#include <Rendering/Engine/RenderPasses/MediumDetailSolidVegetationRenderPass.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/RenderPasses/AboveOceanRenderPass.h>
 #include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>

@@ -39,12 +39,21 @@ public:
 		_LevelOfDetailTasks[UNDERLYING(LevelOfDetailTask::GrassVegetation)].WaitFor();
 	}
 
+	/*
+	*	Waits for the solid vegetation level of detail to finish.
+	*/
+	void WaitForSolidVegetationLevelOfDetail() const NOEXCEPT
+	{
+		_LevelOfDetailTasks[UNDERLYING(LevelOfDetailTask::SolidVegetation)].WaitFor();
+	}
+
 private:
 
 	//Enumeration covering all level of detail tasks.
 	enum class LevelOfDetailTask : uint8
 	{
 		GrassVegetation,
+		SolidVegetation,
 
 		NumberOfLevelOfDetailTasks
 	};
@@ -56,5 +65,10 @@ private:
 	*	Calculates level of detail for grass vegetation.
 	*/
 	void LevelOfDetailGrassVegetation() NOEXCEPT;
+
+	/*
+	*	Calculates level of detail for solid vegetation.
+	*/
+	void LevelOfDetailSolidVegetation() NOEXCEPT;
 
 };
