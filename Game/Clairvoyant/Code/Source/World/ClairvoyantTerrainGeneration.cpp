@@ -159,6 +159,7 @@ namespace ClairvoyantTerrainGeneration
 
 		float heightInfluence{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(10)) + 1.0f) * 0.5f) };
 		float flatness{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(11)) + 1.0f) * 0.5f) };
+		flatness *= flatness;
 
 		//Apply the height.
 		*height *= CatalystBaseMath::LinearlyInterpolate(ClairvoyantTerrainGenerationConstants::TERRAIN_MINIMUM_HEIGHT, ClairvoyantTerrainGenerationConstants::TERRAIN_MAXIMUM_HEIGHT, flatness) * heightInfluence;

@@ -84,10 +84,10 @@ void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 	constexpr float MINIMUM_SUN_INTENSITY{ 10.0f };
 	constexpr float MAXIMUM_SUN_INTENSITY{ 25.0f };
 
-	constexpr float MINIMUM_WIND_SPEED{ 2.0f };
+	constexpr float MINIMUM_WIND_SPEED{ 4.0f };
 	constexpr float MAXIMUM_WIND_SPEED{ 6.0f };
 
-	constexpr float MINIMUM_VOLUMETRIC_FOG_DISTANCE{ 2'000.0f };
+	constexpr float MINIMUM_VOLUMETRIC_FOG_DISTANCE{ 20'000.0f };
 	constexpr float MAXIMUM_VOLUMETRIC_FOG_DISTANCE{ 200'000.0f };
 
 	_EnvironmentParameters[UNDERLYING(EnvironmentPhase::Night)]._EnvironmentMaterial = ResourceLoader::GetEnvironmentMaterial(HashString("NightEnvironmentMaterial"));
