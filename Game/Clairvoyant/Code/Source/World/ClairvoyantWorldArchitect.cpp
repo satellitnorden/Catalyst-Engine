@@ -152,137 +152,105 @@ void ClairvoyantWorldArchitect::InitializeParticles()
 *	Initializes the vegetation.
 */
 void ClairvoyantWorldArchitect::InitializeVegetation()
-{
-	StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
-
-	models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("LowDetailGrassModel"));
-	models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("MediumDetailGrassModel"));
-	models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("HighDetailGrassModel"));
-
+{	
 	{
-		//Add the default grass vegetation type.
+		//Add the common fern grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
-		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
-		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
-		properties._CutoffDistance = 250.0f;
-		properties._Density = 2'000;
-		properties._Thickness = 0.1f;
-		properties._WindModulatorFactor = 0.2f;
-		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
-		{
-			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
-		};
-		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DefaultGrassMaterial")) };
-
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
-
-	}
-
-	{
-		//Add the fern vegetation type.
-		GrassVegetationTypeProperties properties;
-
-		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
-		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE * 2.0f;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE * 2.0f;
 		properties._CutoffDistance = 500.0f;
-		properties._Density = 25;
+		properties._Density = 50;
 		properties._Thickness = 1.0f;
-		properties._WindModulatorFactor = 0.1f;
+		properties._WindModulatorFactor = 0.05f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, false, 0.0f, 0.25f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
-		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("FernGrassMaterial")) };
 
-		StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> fernModels;
+		StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
 
-		fernModels[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("LowDetailFernGrassModel"));
-		fernModels[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("MediumDetailFernGrassModel"));
-		fernModels[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("HighDetailFernGrassModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("LowDetailCommonFernModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("MediumDetailCommonFernModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("HighDetailCommonFernModel"));
 
-		VegetationSystem::Instance->AddGrassVegetationType(properties, fernModels, material);
-	}
-
-	{
-		//Add the plum grass vegetation type.
-		GrassVegetationTypeProperties properties;
-
-		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
-		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
-		properties._CutoffDistance = 250.0f;
-		properties._Density = 500;
-		properties._Thickness = 0.1f;
-		properties._WindModulatorFactor = 0.1f;
-		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
-		{
-			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
-		};
-		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("PlumGrassMaterial")) };
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("CommonFernGrassMaterial")) };
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
 	}
 
 	{
-		//Add the thistle grass vegetation type.
+		//Add the default grass grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
 		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 250.0f;
-		properties._Density = 500;
-		properties._Thickness = 0.1f;
-		properties._WindModulatorFactor = 0.3f;
+		properties._Density = 2'500;
+		properties._Thickness = 0.25f;
+		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.3f, 0.6f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
-		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("ThistleGrassMaterial")) };
+
+		StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
+
+		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
+
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DefaultGrassMaterial")) };
 
 		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
 	}
 
 	{
-		//Add the weed grass vegetation type.
-		GrassVegetationTypeProperties properties;
-
-		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
-		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
-		properties._CutoffDistance = 250.0f;
-		properties._Density = 500;
-		properties._Thickness = 0.1f;
-		properties._WindModulatorFactor = 0.2f;
-		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
-		{
-			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
-		};
-		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("WeedGrassMaterial")) };
-
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
-	}
-
-	{
-		//Add the tree solid vegetation type.
+		//Add the rock volcanic solid vegetation type.
 		SolidVegetationTypeProperties properties;
 
 		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 1'000.0f;
-		properties._Density = 100;
+		properties._Density = 25;
+		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
+		{
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, true, 0.0f, 0.8f, 0.15f, 0.3f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+		};
+
+		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
+
+		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetPhysicalModel(HashString("LowDetailRockVolcanicModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetPhysicalModel(HashString("MediumDetailRockVolcanicModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("HighDetailRockVolcanicModel"));
+
+		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("RockVolcanicMaterial")) };
+
+		VegetationSystem::Instance->AddSolidVegetationType(properties, models, material);
+	}
+
+	{
+		//Add the tree stump solid vegetation type.
+		SolidVegetationTypeProperties properties;
+
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_LOW_DETAIL_DISTANCE;
+		properties._CutoffDistance = 1'000.0f;
+		properties._Density = 150;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, true, 0.0f, 0.9f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 		
-		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> treeModels;
+		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
 
-		treeModels[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetPhysicalModel(HashString("TreePhysicalModel"));
-		treeModels[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetPhysicalModel(HashString("TreePhysicalModel"));
-		treeModels[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("TreePhysicalModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetPhysicalModel(HashString("LowDetailTreeStumpModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetPhysicalModel(HashString("MediumDetailTreeStumpModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("HighDetailTreeStumpModel"));
 
-		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("TreePhysicalMaterial")) };
+		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("TreeStumpMaterial")) };
 
-		VegetationSystem::Instance->AddSolidVegetationType(properties, treeModels, material);
+		VegetationSystem::Instance->AddSolidVegetationType(properties, models, material);
 	}
 }
 

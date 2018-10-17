@@ -20,7 +20,7 @@ namespace ClairvoyantResourceCreation
 	void CreateResources() NOEXCEPT
 	{
 #if !defined(CATALYST_FINAL)
-		if (true)
+		if (false)
 #else
 		if (true)
 #endif
@@ -38,7 +38,7 @@ namespace ClairvoyantResourceCreation
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 
-			EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+			//EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
 		}
 
 		{
@@ -51,7 +51,7 @@ namespace ClairvoyantResourceCreation
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 
-			EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+			//EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
 		}
 
 		{
@@ -64,7 +64,7 @@ namespace ClairvoyantResourceCreation
 			parameters._DiffuseResolution = 1'024;
 			parameters._DiffuseIrradianceResolution = 2;
 
-			EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
+			//EnvironmentMaterialCreator::CreateEnvironmentMaterial(parameters);
 		}
 
 		{
@@ -81,6 +81,21 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
+			//Create the common fern grass material.
+			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\CommonFernGrassMaterial";
+			parameters._ID = "CommonFernGrassMaterial";
+			parameters._MaskMipmapLevels = 9;
+			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\CommonFern\\Mask.png";
+			parameters._MipmapLevels = 9;
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\CommonFern\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\CommonFern\\NormalMap.png";
+
+			GrassMaterialCreator::CreateGrassMaterial(parameters);
+		}
+
+		{
 			//Create the default grass material.
 			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
 
@@ -88,7 +103,7 @@ namespace ClairvoyantResourceCreation
 			parameters._ID = "DefaultGrassMaterial";
 			parameters._MaskMipmapLevels = 2;
 			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\DefaultGrass\\Mask.png";
-			parameters._MipmapLevels = 8;
+			parameters._MipmapLevels = 9;
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\DefaultGrass\\Albedo.png";
 			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\DefaultGrass\\NormalMap.png";
 
@@ -96,189 +111,173 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
-			//Create the fern grass material.
-			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
-
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\FernGrassMaterial";
-			parameters._ID = "FernGrassMaterial";
-			parameters._MaskMipmapLevels = 8;
-			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Fern\\Mask.png";
-			parameters._MipmapLevels = 9;
-			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Fern\\Albedo.png";
-			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Fern\\NormalMap.png";
-
-			GrassMaterialCreator::CreateGrassMaterial(parameters);
-		}
-
-		{
-			//Create the plum grass material.
-			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
-
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\PlumGrassMaterial";
-			parameters._ID = "PlumGrassMaterial";
-			parameters._MaskMipmapLevels = 2;
-			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Plum\\Mask.png";
-			parameters._MipmapLevels = 8;
-			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Plum\\Albedo.png";
-			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Plum\\NormalMap.png";
-
-			GrassMaterialCreator::CreateGrassMaterial(parameters);
-		}
-
-		{
-			//Create the thistle grass material.
-			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
-
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\ThistleGrassMaterial";
-			parameters._ID = "ThistleGrassMaterial";
-			parameters._MaskMipmapLevels = 2;
-			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Thistle\\Mask.png";
-			parameters._MipmapLevels = 8;
-			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Thistle\\Albedo.png";
-			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Thistle\\NormalMap.png";
-
-			GrassMaterialCreator::CreateGrassMaterial(parameters);
-		}
-
-		{
-			//Create the weed grass material.
-			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
-
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\WeedGrassMaterial";
-			parameters._ID = "WeedGrassMaterial";
-			parameters._MaskMipmapLevels = 2;
-			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Weed\\Mask.png";
-			parameters._MipmapLevels = 8;
-			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Weed\\Albedo.png";
-			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Weed\\NormalMap.png";
-
-			GrassMaterialCreator::CreateGrassMaterial(parameters);
-		}
-
-		{
-			//Create the low detail fern grass model.
+			//Create the low detail common fern grass model.
 			GrassModelCreator::GrassModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailFernGrassModel";
-			parameters._ID = "LowDetailFernGrassModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\LowDetailFernGrassModel.fbx";
-			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Z;
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailCommonFernModel";
+			parameters._ID = "LowDetailCommonFernModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\LowDetailCommonFernModel.fbx";
+			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::X;
 
 			GrassModelCreator::CreateGrassModel(parameters);
 		}
 
 		{
-			//Create the medium detail fern grass model.
+			//Create the medium detail common fern grass model.
 			GrassModelCreator::GrassModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailFernGrassModel";
-			parameters._ID = "MediumDetailFernGrassModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\MediumDetailFernGrassModel.fbx";
-			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Z;
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailCommonFernModel";
+			parameters._ID = "MediumDetailCommonFernModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\MediumDetailCommonFernModel.fbx";
+			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::X;
 
 			GrassModelCreator::CreateGrassModel(parameters);
 		}
 
 		{
-			//Create the high detail fern grass model.
+			//Create the high detail common fern grass model.
 			GrassModelCreator::GrassModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailFernGrassModel";
-			parameters._ID = "HighDetailFernGrassModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\HighDetailFernGrassModel.fbx";
-			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Z;
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailCommonFernModel";
+			parameters._ID = "HighDetailCommonFernModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\HighDetailCommonFernModel.fbx";
+			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::X;
 
 			GrassModelCreator::CreateGrassModel(parameters);
 		}
 
 		{
-			//Create the low detail grass model.
+			//Create the low detail default grass model.
 			GrassModelCreator::GrassModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailGrassModel";
-			parameters._ID = "LowDetailGrassModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\LowDetailGrassModel.fbx";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailDefaultGrassModel";
+			parameters._ID = "LowDetailDefaultGrassModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\LowDetailDefaultGrassModel.fbx";
 			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Y;
 
 			GrassModelCreator::CreateGrassModel(parameters);
 		}
 
 		{
-			//Create the medium detail grass model.
+			//Create the medium detail default grass model.
 			GrassModelCreator::GrassModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailGrassModel";
-			parameters._ID = "MediumDetailGrassModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\MediumDetailGrassModel.fbx";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailDefaultGrassModel";
+			parameters._ID = "MediumDetailDefaultGrassModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\MediumDetailDefaultGrassModel.fbx";
 			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Y;
 
 			GrassModelCreator::CreateGrassModel(parameters);
 		}
 
 		{
-			//Create the high detail grass model.
+			//Create the high detail default grass model.
 			GrassModelCreator::GrassModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailGrassModel";
-			parameters._ID = "HighDetailGrassModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\HighDetailGrassModel.fbx";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailDefaultGrassModel";
+			parameters._ID = "HighDetailDefaultGrassModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\HighDetailDefaultGrassModel.fbx";
 			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Y;
 
 			GrassModelCreator::CreateGrassModel(parameters);
 		}
 
 		{
-			//Create the rock physical material.
+			//Create the rock volcanic physical material.
 			PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\RockPhysicalMaterial";
-			parameters._ID = "RockPhysicalMaterial";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\RockVolcanicMaterial";
+			parameters._ID = "RockVolcanicMaterial";
 			parameters._MipmapLevels = 9;
-			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Rock\\Albedo.png";
-			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Rock\\NormalMap.png";
-			parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Rock\\Roughness.png";
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\RockVolcanic\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\RockVolcanic\\NormalMap.png";
+			parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\RockVolcanic\\Roughness.png";
 			parameters._MetallicFile = nullptr;
-			parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Rock\\AmbientOcclusion.png";
+			parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\RockVolcanic\\AmbientOcclusion.png";
 			parameters._ThicknessFile = nullptr;
 
 			PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
 		}
 
 		{
-			//Create the tree physical material.
+			//Create the tree stump physical material.
 			PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\TreePhysicalMaterial";
-			parameters._ID = "TreePhysicalMaterial";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\TreeStumpMaterial";
+			parameters._ID = "TreeStumpMaterial";
 			parameters._MipmapLevels = 9;
-			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Tree\\Albedo.png";
-			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Tree\\NormalMap.png";
-			parameters._RoughnessFile = nullptr;
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\TreeStump\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\TreeStump\\NormalMap.png";
+			parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\TreeStump\\Roughness.png";
 			parameters._MetallicFile = nullptr;
-			parameters._AmbientOcclusionFile = nullptr;
+			parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\TreeStump\\AmbientOcclusion.png";
 			parameters._ThicknessFile = nullptr;
 
 			PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
 		}
 
 		{
-			//Create the rock physical model.
+			//Create the low detail tree stump model.
 			PhysicalModelCreator::PhysicalModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\RockPhysicalModel";
-			parameters._ID = "RockPhysicalModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\RockPhysicalModel.fbx";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailTreeStumpModel";
+			parameters._ID = "LowDetailTreeStumpModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\LowDetailTreeStumpModel.fbx";
 
 			PhysicalModelCreator::CreatePhysicalModel(parameters);
 		}
 
 		{
-			//Create the tree physical model.
+			//Create the medium detail tree stump model.
 			PhysicalModelCreator::PhysicalModelCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\TreePhysicalModel";
-			parameters._ID = "TreePhysicalModel";
-			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\TreePhysicalModel.fbx";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailTreeStumpModel";
+			parameters._ID = "MediumDetailTreeStumpModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\MediumDetailTreeStumpModel.fbx";
+
+			PhysicalModelCreator::CreatePhysicalModel(parameters);
+		}
+
+		{
+			//Create the high detail tree stump model.
+			PhysicalModelCreator::PhysicalModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailTreeStumpModel";
+			parameters._ID = "HighDetailTreeStumpModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\HighDetailTreeStumpModel.fbx";
+
+			PhysicalModelCreator::CreatePhysicalModel(parameters);
+		}
+
+		{
+			//Create the low detail rock volcanic model.
+			PhysicalModelCreator::PhysicalModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailRockVolcanicModel";
+			parameters._ID = "LowDetailRockVolcanicModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\LowDetailRockVolcanicModel.fbx";
+
+			PhysicalModelCreator::CreatePhysicalModel(parameters);
+		}
+
+		{
+			//Create the medium detail rock volcanic model.
+			PhysicalModelCreator::PhysicalModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailRockVolcanicModel";
+			parameters._ID = "MediumDetailRockVolcanicModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\MediumDetailRockVolcanicModel.fbx";
+
+			PhysicalModelCreator::CreatePhysicalModel(parameters);
+		}
+
+		{
+			//Create the high detail rock volcanic model.
+			PhysicalModelCreator::PhysicalModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailRockVolcanicModel";
+			parameters._ID = "HighDetailRockVolcanicModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\HighDetailRockVolcanicModel.fbx";
 
 			PhysicalModelCreator::CreatePhysicalModel(parameters);
 		}
@@ -338,21 +337,22 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\MorningEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\EveningEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\CommonFernGrassMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultGrassMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\FernGrassMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\PlumGrassMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\ThistleGrassMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\WeedGrassMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailFernGrassModel.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailFernGrassModel.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailFernGrassModel.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailGrassModel.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailGrassModel.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailGrassModel.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\RockPhysicalMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TreePhysicalMaterial.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\RockPhysicalModel.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\TreePhysicalModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailCommonFernModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailCommonFernModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailCommonFernModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailDefaultGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailDefaultGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailDefaultGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\RockVolcanicMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TreeStumpMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailRockVolcanicModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailRockVolcanicModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailRockVolcanicModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailTreeStumpModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailTreeStumpModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailTreeStumpModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultTerrainMaterial.cr");
 
 			ResourceCollectionCreator::CreateResourceCollection(parameters);

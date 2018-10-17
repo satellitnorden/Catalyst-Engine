@@ -172,30 +172,25 @@ namespace ClairvoyantTerrainGeneration
 	{
 		{
 			//Determine the weight of the first grass layer.
-			if (worldPosition._Y < 0.0f)
-			{
-				layerWeights->_X = 0.0f;
-			}
-
-			else if (worldPosition._Y > 1'000.0f)
-			{
-				layerWeights->_X = 1.0f;
-			}
-
-			else
-			{
-				layerWeights->_X = worldPosition._Y * 0.001f;
-			}
+			layerWeights->_X = 0.0f;
 		}
 
 		{
 			//Determine the weight of the second grass layer.
-			float xCoordinate{ worldPosition._X / ClairvoyantTerrainGenerationConstants::GRASS_RANGE };
-			float yCoordinate{ worldPosition._Z / ClairvoyantTerrainGenerationConstants::GRASS_RANGE };
+			if (worldPosition._Y < 0.0f)
+			{
+				layerWeights->_Y = 0.0f;
+			}
 
-			const float noise{ PerlinNoiseGenerator::GenerateNoise(xCoordinate, yCoordinate, GetRandomOffset(12)) };
+			else if (worldPosition._Y > 1'000.0f)
+			{
+				layerWeights->_Y = 1.0f;
+			}
 
-			layerWeights->_Y = (noise + 1.0f) * 0.5f;
+			else
+			{
+				layerWeights->_Y = worldPosition._Y * 0.001f;
+			}
 		}
 
 		//Determine the weight of the rock layer.
