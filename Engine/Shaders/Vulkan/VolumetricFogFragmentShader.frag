@@ -64,7 +64,6 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 0) float fogLengthSquared;
     layout (offset = 4) float fogMinimumHeight;
     layout (offset = 8) float fogMaximumHeight;
-    layout (offset = 12) float fogDensity;
 };
 
 //In parameters.
@@ -112,11 +111,8 @@ void main()
 
     //Calculate the fog weight.
     float distanceWeight = min(distanceToSceneWorldPosition / fogLengthSquared, 1.0f);
-    distanceWeight *= distanceWeight;
-    distanceWeight = clamp(distanceWeight * fogDensity, 0.0f, 1.0f);
 
     float heightWeight = 1.0f - clamp((sceneWorldPosition.y - fogMinimumHeight) / (fogMaximumHeight - fogMinimumHeight), 0.0f, 1.0f);
-    heightWeight *= heightWeight;
 
     float fogWeight = distanceWeight * heightWeight;
 

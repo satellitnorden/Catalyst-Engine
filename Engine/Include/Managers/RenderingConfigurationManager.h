@@ -29,14 +29,14 @@ public:
 
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	/*
-	*	Returns the volumetric fog density.
+	*	Returns the volumetric fog distance.
 	*/
-	float GetVolumetricFogDensity() const NOEXCEPT { return _VolumetricFogDensity; }
+	float GetVolumetricFogDistance() const NOEXCEPT { return _VolumetricFogDistance; }
 
 	/*
-	*	Sets the volumetric fog density.
+	*	Sets the volumetric fog distance.
 	*/
-	void SetVolumetricFogDensity(const float newVolumetricFogDensity) NOEXCEPT { _VolumetricFogDensity = newVolumetricFogDensity; }
+	void SetVolumetricFogDistance(const float newVolumetricFogDistance) NOEXCEPT { _VolumetricFogDistance = newVolumetricFogDistance; }
 #endif
 
 private:
@@ -45,8 +45,8 @@ private:
 	float _SaturationStrength{ 1.0f };
 
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
-	//The volumetric fog density.
-	float _VolumetricFogDensity{ 1.0f };
+	//The volumetric fog distance.
+	float _VolumetricFogDistance{ 100.0f };
 #endif
 
 };
