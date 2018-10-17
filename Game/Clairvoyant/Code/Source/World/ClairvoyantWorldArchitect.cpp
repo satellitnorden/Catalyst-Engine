@@ -44,6 +44,9 @@ namespace ClairvoyantWorldArchitectConstants
 {
 	constexpr float GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE{ 50.0f };
 	constexpr float GRASS_VEGETATION_LOW_DETAIL_DISTANCE{ 100.0f };
+
+	constexpr float SOLID_VEGETATION_MEDIUM_DETAIL_DISTANCE{ 100.0f };
+	constexpr float SOLID_VEGETATION_LOW_DETAIL_DISTANCE{ 200.0f };
 }
 
 /*
@@ -259,45 +262,27 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 	}
 
 	{
-		//Add the rock solid vegetation type.
-		SolidVegetationTypeProperties properties;
-
-		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
-		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
-		properties._CutoffDistance = 500.0f;
-		properties._Density = 25;
-		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
-		{
-			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, true, 1.0f, 0.8f, 0.1f, 0.2f, Vector3(180.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
-		};
-		PhysicalModel model{ ResourceLoader::GetPhysicalModel(HashString("RockPhysicalModel")) };
-		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("RockPhysicalMaterial")) };
-
-		VegetationSystem::Instance->AddSolidVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 1'000.0f;
-		VegetationSystem::Instance->AddSolidVegetationType(properties, model, material);
-	}
-
-	{
 		//Add the tree solid vegetation type.
 		SolidVegetationTypeProperties properties;
 
-		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
-		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
-		properties._CutoffDistance = 500.0f;
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_LOW_DETAIL_DISTANCE;
+		properties._CutoffDistance = 1'000.0f;
 		properties._Density = 100;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, true, 0.0f, 0.9f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
-		PhysicalModel model{ ResourceLoader::GetPhysicalModel(HashString("TreePhysicalModel")) };
+		
+		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> treeModels;
+
+		treeModels[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetPhysicalModel(HashString("TreePhysicalModel"));
+		treeModels[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetPhysicalModel(HashString("TreePhysicalModel"));
+		treeModels[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("TreePhysicalModel"));
+
 		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("TreePhysicalMaterial")) };
 
-		VegetationSystem::Instance->AddSolidVegetationType(properties, model, material);
-
-		properties._CutoffDistance = 1'000.0f;
-		VegetationSystem::Instance->AddSolidVegetationType(properties, model, material);
+		VegetationSystem::Instance->AddSolidVegetationType(properties, treeModels, material);
 	}
 }
 

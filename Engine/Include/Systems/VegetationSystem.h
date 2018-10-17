@@ -62,7 +62,7 @@ public:
 	/*
 	*	Adds a solid vegetation type.
 	*/
-	void AddSolidVegetationType(const SolidVegetationTypeProperties &properties, const PhysicalModel &model, const PhysicalMaterial &material) NOEXCEPT;
+	void AddSolidVegetationType(const SolidVegetationTypeProperties &properties, const StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> &models, const PhysicalMaterial &material) NOEXCEPT;
 
 	/*
 	*	Returns the solid vegetation type informations, const.

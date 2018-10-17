@@ -21,8 +21,8 @@ public:
 	//The properties.
 	SolidVegetationTypeProperties _Properties;
 
-	//The model.
-	PhysicalModel _Model;
+	//The models.
+	StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> _Models;
 
 	//The material.
 	PhysicalMaterial _Material;
