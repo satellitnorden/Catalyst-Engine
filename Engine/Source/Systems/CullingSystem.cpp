@@ -77,10 +77,10 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 			}
 
 			//Get this patch's world position.
-			const Vector3 patchPosition{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE) };
+			const Vector3 patchPosition{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
 			//Perform the distance test.
-			const float halfGridSize{ information._Properties._CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE * 0.5f };
+			const float halfGridSize{ information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE * 0.5f };
 
 			if ((cameraPosition._X > patchPosition._X && cameraPosition._X - (patchPosition._X + halfGridSize) > information._Properties._CutoffDistance)
 				|| (cameraPosition._X < patchPosition._X && (patchPosition._X - halfGridSize) - cameraPosition._X > information._Properties._CutoffDistance)
@@ -119,10 +119,10 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 			}
 
 			//Get this patch's world position.
-			const Vector3 patchPosition{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * VegetationConstants::SOLID_VEGETATION_GRID_SIZE) };
+			const Vector3 patchPosition{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
 			//Perform the distance test.
-			const float halfGridSize{ information._Properties._CutoffDistance * VegetationConstants::SOLID_VEGETATION_GRID_SIZE * 0.5f };
+			const float halfGridSize{ information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE * 0.5f };
 
 			if ((cameraPosition._X > patchPosition._X && cameraPosition._X - (patchPosition._X + halfGridSize) > information._Properties._CutoffDistance)
 				|| (cameraPosition._X < patchPosition._X && (patchPosition._X - halfGridSize) - cameraPosition._X > information._Properties._CutoffDistance)

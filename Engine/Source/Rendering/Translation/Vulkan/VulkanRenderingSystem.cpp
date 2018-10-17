@@ -555,6 +555,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the high detail solid vegetation fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetHighDetailSolidVegetationFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::HighDetailSolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
 		//Initialize the high detail terrain color fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetHighDetailTerrainColorFragmentShaderData(data);
@@ -618,6 +625,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 	}
 
 	{
+		//Initialize the low detail solid vegetation fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetLowDetailSolidVegetationFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::LowDetailSolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+	{
 		//Initialize the low detail terrain color fragment shader module.
 		DynamicArray<byte> data;
 		VulkanShaderData::GetLowDetailTerrainColorFragmentShaderData(data);
@@ -657,6 +671,13 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetMediumDetailGrassVegetationDepthVertexShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::MediumDetailGrassVegetationDepthVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
+	}
+
+	{
+		//Initialize the medium detail solid vegetation fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetMediumDetailSolidVegetationFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::MediumDetailSolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{
@@ -734,13 +755,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetSkyFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::SkyFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the solid vegetation fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetSolidVegetationFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::SolidVegetationFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{

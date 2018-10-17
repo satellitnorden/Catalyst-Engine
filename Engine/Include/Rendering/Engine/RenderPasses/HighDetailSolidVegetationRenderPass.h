@@ -6,28 +6,28 @@
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
 
-class SolidVegetationRenderPass final : public RenderPass
+class HighDetailSolidVegetationRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(SolidVegetationRenderPass);
+	DECLARE_SINGLETON(HighDetailSolidVegetationRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	SolidVegetationRenderPass() NOEXCEPT;
+	HighDetailSolidVegetationRenderPass() NOEXCEPT;
 
 private:
 
 	/*
-	*	Initializes the solid vegetation render pass.
+	*	Initializes the high detail solid vegetation render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
 	/*
-	*	Renders the solid vegetation.
+	*	Renders the high detail solid vegetation.
 	*/
 	void RenderInternal() NOEXCEPT;
 

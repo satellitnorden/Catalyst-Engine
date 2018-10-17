@@ -16,6 +16,7 @@
 #include <Rendering/Engine/RenderPasses/DynamicPhysicalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailGrassVegetationColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailGrassVegetationDepthRenderPass.h>
+#include <Rendering/Engine/RenderPasses/HighDetailSolidVegetationRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailTerrainColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/HighDetailTerrainRenderPass.h>
 #include <Rendering/Engine/RenderPasses/LightingRenderPass.h>
@@ -32,7 +33,6 @@
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>
-#include <Rendering/Engine/RenderPasses/SolidVegetationRenderPass.h>
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 #include <Rendering/Engine/RenderPasses/VolumetricFogRenderPass.h>
 #endif

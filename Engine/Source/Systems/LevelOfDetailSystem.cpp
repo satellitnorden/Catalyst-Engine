@@ -51,7 +51,7 @@ void LevelOfDetailSystem::LevelOfDetailGrassVegetation() NOEXCEPT
 	for (GrassVegetationTypeInformation &information : *informations)
 	{
 		//Cache the grid size.
-		const float gridSize{ information._Properties._CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE };
+		const float gridSize{ information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE };
 
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
 		{

@@ -15,6 +15,7 @@ glslangValidator.exe -V HighDetailGrassVegetationColorFragmentShader.frag -o 		H
 glslangValidator.exe -V HighDetailGrassVegetationColorVertexShader.vert -o 		HighDetailGrassVegetationColorVertexShader.spv
 glslangValidator.exe -V HighDetailGrassVegetationDepthFragmentShader.frag -o 		HighDetailGrassVegetationDepthFragmentShader.spv
 glslangValidator.exe -V HighDetailGrassVegetationDepthVertexShader.vert -o 		HighDetailGrassVegetationDepthVertexShader.spv
+glslangValidator.exe -V HighDetailSolidVegetationFragmentShader.frag -o 		HighDetailSolidVegetationFragmentShader.spv
 glslangValidator.exe -V HighDetailTerrainColorFragmentShader.frag -o 			HighDetailTerrainColorFragmentShader.spv
 glslangValidator.exe -V HighDetailTerrainTessellationControlShader.tesc -o 		HighDetailTerrainTessellationControlShader.spv
 glslangValidator.exe -V HighDetailTerrainTessellationEvaluationShader.tese -o 		HighDetailTerrainTessellationEvaluationShader.spv
@@ -24,12 +25,14 @@ glslangValidator.exe -V LowDetailGrassVegetationColorFragmentShader.frag -o 		Lo
 glslangValidator.exe -V LowDetailGrassVegetationColorVertexShader.vert -o 		LowDetailGrassVegetationColorVertexShader.spv
 glslangValidator.exe -V LowDetailGrassVegetationDepthFragmentShader.frag -o 		LowDetailGrassVegetationDepthFragmentShader.spv
 glslangValidator.exe -V LowDetailGrassVegetationDepthVertexShader.vert -o 		LowDetailGrassVegetationDepthVertexShader.spv
+glslangValidator.exe -V LowDetailSolidVegetationFragmentShader.frag -o 			LowDetailSolidVegetationFragmentShader.spv
 glslangValidator.exe -V LowDetailTerrainColorFragmentShader.frag -o 			LowDetailTerrainColorFragmentShader.spv
 glslangValidator.exe -V LowDetailTerrainVertexShader.vert -o 				LowDetailTerrainVertexShader.spv
 glslangValidator.exe -V MediumDetailGrassVegetationColorFragmentShader.frag -o 		MediumDetailGrassVegetationColorFragmentShader.spv
 glslangValidator.exe -V MediumDetailGrassVegetationColorVertexShader.vert -o 		MediumDetailGrassVegetationColorVertexShader.spv
 glslangValidator.exe -V MediumDetailGrassVegetationDepthFragmentShader.frag -o 		MediumDetailGrassVegetationDepthFragmentShader.spv
 glslangValidator.exe -V MediumDetailGrassVegetationDepthVertexShader.vert -o 		MediumDetailGrassVegetationDepthVertexShader.spv
+glslangValidator.exe -V MediumDetailSolidVegetationFragmentShader.frag -o 		MediumDetailSolidVegetationFragmentShader.spv
 glslangValidator.exe -V OutlineFragmentShader.frag -o 					OutlineFragmentShader.spv
 glslangValidator.exe -V ParticleSystemFragmentShader.frag -o 				ParticleSystemFragmentShader.spv
 glslangValidator.exe -V ParticleSystemGeometryShader.geom -o 				ParticleSystemGeometryShader.spv
@@ -41,7 +44,6 @@ glslangValidator.exe -V PostProcessingFragmentShader.frag -o 				PostProcessingF
 glslangValidator.exe -V ScreenSpaceAmbientOcclusionFragmentShader.frag -o 		ScreenSpaceAmbientOcclusionFragmentShader.spv
 glslangValidator.exe -V ShadowMapFragmentShader.frag -o 				ShadowMapFragmentShader.spv
 glslangValidator.exe -V SkyFragmentShader.frag -o 					SkyFragmentShader.spv
-glslangValidator.exe -V SolidVegetationFragmentShader.frag -o 				SolidVegetationFragmentShader.spv
 glslangValidator.exe -V SolidVegetationVertexShader.vert -o 				SolidVegetationVertexShader.spv
 glslangValidator.exe -V TerrainDepthFragmentShader.frag -o 				TerrainDepthFragmentShader.spv
 glslangValidator.exe -V ViewportVertexShader.vert -o 					ViewportVertexShader.spv
