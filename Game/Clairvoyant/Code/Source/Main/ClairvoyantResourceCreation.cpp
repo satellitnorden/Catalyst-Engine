@@ -86,7 +86,7 @@ namespace ClairvoyantResourceCreation
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultGrassMaterial";
 			parameters._ID = "DefaultGrassMaterial";
-			parameters._MaskMipmapLevels = 4;
+			parameters._MaskMipmapLevels = 2;
 			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\DefaultGrass\\Mask.png";
 			parameters._MipmapLevels = 8;
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\DefaultGrass\\Albedo.png";
@@ -116,7 +116,7 @@ namespace ClairvoyantResourceCreation
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\PlumGrassMaterial";
 			parameters._ID = "PlumGrassMaterial";
-			parameters._MaskMipmapLevels = 4;
+			parameters._MaskMipmapLevels = 2;
 			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Plum\\Mask.png";
 			parameters._MipmapLevels = 8;
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Plum\\Albedo.png";
@@ -131,7 +131,7 @@ namespace ClairvoyantResourceCreation
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\ThistleGrassMaterial";
 			parameters._ID = "ThistleGrassMaterial";
-			parameters._MaskMipmapLevels = 4;
+			parameters._MaskMipmapLevels = 2;
 			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Thistle\\Mask.png";
 			parameters._MipmapLevels = 8;
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Thistle\\Albedo.png";
@@ -146,7 +146,7 @@ namespace ClairvoyantResourceCreation
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\WeedGrassMaterial";
 			parameters._ID = "WeedGrassMaterial";
-			parameters._MaskMipmapLevels = 4;
+			parameters._MaskMipmapLevels = 2;
 			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Weed\\Mask.png";
 			parameters._MipmapLevels = 8;
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Weed\\Albedo.png";

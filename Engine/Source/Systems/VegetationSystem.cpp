@@ -220,37 +220,63 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE) };
 
 		//Create an array with the valid grid positions.
-		StaticArray<GridPoint2, 25> validGridPoints
+		StaticArray<GridPoint2, 49> validGridPoints
 		{
+			GridPoint2(currentGridPoint._X - 3, currentGridPoint._Y - 3),
+			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y - 3),
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 3),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y - 3),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 3),
+			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y - 3),
+			GridPoint2(currentGridPoint._X + 3, currentGridPoint._Y - 3),
+
+			GridPoint2(currentGridPoint._X - 3, currentGridPoint._Y - 2),
 			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y - 2),
 			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 2),
 			GridPoint2(currentGridPoint._X, currentGridPoint._Y - 2),
 			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 2),
 			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y - 2),
+			GridPoint2(currentGridPoint._X + 3, currentGridPoint._Y - 2),
 
+			GridPoint2(currentGridPoint._X - 3, currentGridPoint._Y - 1),
 			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y - 1),
 			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 1),
 			GridPoint2(currentGridPoint._X, currentGridPoint._Y - 1),
 			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 1),
 			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y - 1),
+			GridPoint2(currentGridPoint._X + 3, currentGridPoint._Y - 1),
 
+			GridPoint2(currentGridPoint._X - 3, currentGridPoint._Y),
 			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y),
 			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y),
 			GridPoint2(currentGridPoint._X, currentGridPoint._Y),
 			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y),
 			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y),
+			GridPoint2(currentGridPoint._X + 3, currentGridPoint._Y),
 
+			GridPoint2(currentGridPoint._X - 3, currentGridPoint._Y + 1),
 			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y + 1),
 			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 1),
 			GridPoint2(currentGridPoint._X, currentGridPoint._Y + 1),
 			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 1),
 			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y + 1),
+			GridPoint2(currentGridPoint._X + 3, currentGridPoint._Y + 1),
 
+			GridPoint2(currentGridPoint._X - 3, currentGridPoint._Y + 2),
 			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y + 2),
 			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 2),
 			GridPoint2(currentGridPoint._X, currentGridPoint._Y + 2),
 			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 2),
 			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y + 2),
+			GridPoint2(currentGridPoint._X + 3, currentGridPoint._Y + 2),
+
+			GridPoint2(currentGridPoint._X - 3, currentGridPoint._Y + 3),
+			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y + 3),
+			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 3),
+			GridPoint2(currentGridPoint._X, currentGridPoint._Y + 3),
+			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 3),
+			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y + 3),
+			GridPoint2(currentGridPoint._X + 3, currentGridPoint._Y + 3),
 		};
 
 		//Construct the sorting data.
