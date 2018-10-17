@@ -117,7 +117,7 @@ void main()
     float fogWeight = distanceWeight * heightWeight;
 
     //Calculate the fog color.
-    vec3 fogColor = vec3(1.0f, 1.0f, 1.0f) * 0.01f + directionalLightColor * directionalLightIntensity;
+    vec3 fogColor = vec3(1.0f, 1.0f, 1.0f) * 0.01f + directionalLightColor * (directionalLightIntensity * 0.5f);
 
     //Write the fragment.
     fragment = vec4(fogColor, fogWeight);
