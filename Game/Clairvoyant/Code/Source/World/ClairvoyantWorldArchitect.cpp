@@ -156,7 +156,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._MediumDetailDistance = 50.0f;
 		properties._LowDetailDistance = 100.0f;
 		properties._CutoffDistance = 250.0f;
-		properties._Density = 2'500;
+		properties._Density = 5'000;
 		properties._Thickness = 0.1f;
 		properties._WindModulatorFactor = 0.2f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
