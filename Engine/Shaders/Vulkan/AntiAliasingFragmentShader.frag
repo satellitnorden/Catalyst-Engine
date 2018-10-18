@@ -102,10 +102,10 @@ vec3 ApplyFXAA(vec3 fragment)
         float sampleAverage = CalculateAverage(indirectSamples[i]);
 
         //Calculate the difference.
-        float difference = pow(abs(average - sampleAverage), 1.5f);
+        float difference = pow(abs(average - sampleAverage), 1.25f);
 
         //Blend in the sample based on the difference.
-        fragment = mix(fragment, mix(fragment, indirectSamples[i], 0.25f), difference);
+        fragment = mix(fragment, mix(fragment, indirectSamples[i], 0.2f), difference);
     }
 
     vec3 straightSamples[4] = vec3[]
@@ -122,10 +122,10 @@ vec3 ApplyFXAA(vec3 fragment)
         float sampleAverage = CalculateAverage(straightSamples[i]);
 
         //Calculate the difference.
-        float difference = pow(abs(average - sampleAverage), 1.5f);
+        float difference = pow(abs(average - sampleAverage), 1.25f);
 
         //Blend in the sample based on the difference.
-        fragment = mix(fragment, mix(fragment, straightSamples[i], 0.75f), difference);
+        fragment = mix(fragment, mix(fragment, straightSamples[i], 0.8f), difference);
     }
 
     return fragment;
