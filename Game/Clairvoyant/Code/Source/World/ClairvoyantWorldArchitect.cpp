@@ -165,7 +165,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.05f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, false, 0.0f, 0.25f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, false, false, 0.0f, 0.25f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 
 		StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
@@ -190,11 +190,53 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, false, false, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 
 		StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DefaultGrassMaterial")) };
+
+		properties._CutoffDistance = 62.5f;
+
+		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
+
+		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+
+		properties._CutoffDistance = 125.5f;
+
+		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
+
+		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+
+		properties._CutoffDistance = 250.5f;
+
+		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
+
+		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+	}
+
+	{
+		//Add the snow grass grass vegetation type.
+		GrassVegetationTypeProperties properties;
+
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
+		properties._Density = 500;
+		properties._Thickness = 0.25f;
+		properties._WindModulatorFactor = 0.15f;
+		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
+		{
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, true, true, 0.5f, 0.25f, 0.25f, 0.5f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+		};
+
+		StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("SnowGrassMaterial")) };
 
 		properties._CutoffDistance = 62.5f;
 
@@ -231,7 +273,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._Density = 25;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, true, 0.0f, 0.8f, 0.15f, 0.3f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, true, false, 0.0f, 0.8f, 0.15f, 0.3f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 
 		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
@@ -255,7 +297,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._Density = 150;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, true, 0.0f, 0.9f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, true, false, 0.0f, 0.9f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 		
 		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
@@ -273,7 +315,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 /*
 *	Generates a transformation.
 */
-bool ClairvoyantWorldArchitect::GenerateTransformation(const bool underwater, const bool snow, const float height, const float dotModulator, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
+bool ClairvoyantWorldArchitect::GenerateTransformation(const bool underwater, const bool snow, const bool onlySnow, const float height, const float dotModulator, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
 {
 	Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
 	
@@ -297,6 +339,19 @@ bool ClairvoyantWorldArchitect::GenerateTransformation(const bool underwater, co
 	else if (!snow && terrainHeight > 7'000.0f)
 	{
 		if (CatalystBaseMath::RandomChance((terrainHeight - 7'000.0f) * 0.001f))
+		{
+			return false;
+		}
+	}
+
+	if (onlySnow && terrainHeight < 7'000.0f)
+	{
+		return false;
+	}
+
+	if (onlySnow && terrainHeight < 8'000.0f)
+	{
+		if (CatalystBaseMath::RandomChance(1.0f - (terrainHeight - 7'000.0f) * 0.001f))
 		{
 			return false;
 		}

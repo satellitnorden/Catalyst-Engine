@@ -20,7 +20,7 @@ namespace ClairvoyantResourceCreation
 	void CreateResources() NOEXCEPT
 	{
 #if !defined(CATALYST_FINAL)
-		if (true)
+		if (false)
 #else
 		if (true)
 #endif
@@ -106,6 +106,21 @@ namespace ClairvoyantResourceCreation
 			parameters._MipmapLevels = 9;
 			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\DefaultGrass\\Albedo.png";
 			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\DefaultGrass\\NormalMap.png";
+
+			GrassMaterialCreator::CreateGrassMaterial(parameters);
+		}
+
+		{
+			//Create the default grass material.
+			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\SnowGrassMaterial";
+			parameters._ID = "SnowGrassMaterial";
+			parameters._MaskMipmapLevels = 2;
+			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\SnowGrass\\Mask.png";
+			parameters._MipmapLevels = 9;
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\SnowGrass\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\SnowGrass\\NormalMap.png";
 
 			GrassMaterialCreator::CreateGrassMaterial(parameters);
 		}
@@ -339,6 +354,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\CommonFernGrassMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultGrassMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\SnowGrassMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailCommonFernModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailCommonFernModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailCommonFernModel.cr");
