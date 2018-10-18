@@ -56,7 +56,12 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 };
 
 //Preprocessor defines.
-#define SHADOW_BIAS 0.0025f
+#define ITERATIONS (8)
+#define INFLUENCE_PER_ITERATION (1.0f / ITERATIONS)
+#define MAXIMUM_OFFSET (0.001f)
+#define PHI (1.618033f)
+#define PI (3.141592f)
+#define SHADOW_BIAS (0.0025f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
@@ -89,6 +94,14 @@ vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
     return worldSpacePosition.xyz;
 }
 
+/*
+*   Given a coordinate and a seed, returns a random number.
+*/
+float RandomFloat(float seed)
+{
+    return fract(sin(dot(gl_FragCoord.xy * seed, vec2(12.9898f, 78.233f))) * 43758.5453f);
+}
+
 void main()
 {
     //Sample values from the textures.
@@ -104,9 +117,19 @@ void main()
     vec4 directionalLightShadowMapCoordinate = directionalLightViewMatrix * vec4(fragmentWorldPosition, 1.0f);
     directionalLightShadowMapCoordinate.xy = directionalLightShadowMapCoordinate.xy * 0.5f + 0.5f;
 
-    float directionalDepth = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy).r;
-    float compare = directionalLightShadowMapCoordinate.z - SHADOW_BIAS;
+    //Calculate the shadow multiplier.
+    float shadowMultiplier = 0.0f;
+
+    for (int i = 0; i < ITERATIONS; ++i)
+    {
+        vec2 offset = vec2(mix(-MAXIMUM_OFFSET, MAXIMUM_OFFSET, RandomFloat(i * PI)), mix(-MAXIMUM_OFFSET, MAXIMUM_OFFSET, RandomFloat(i * PHI)));
+
+        float directionalDepth = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy + offset).r;
+        float compare = directionalLightShadowMapCoordinate.z - SHADOW_BIAS;
+
+        shadowMultiplier += (compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f) * INFLUENCE_PER_ITERATION;
+    }
 
     //Set the final fragment color.
-    directionalShadow = vec4(compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
+    directionalShadow = vec4(shadowMultiplier, 0.0f, 0.0f, 0.0f);
 }

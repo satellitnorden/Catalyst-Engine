@@ -732,7 +732,7 @@ void RenderingSystem::InitializeDepthBuffers() NOEXCEPT
 void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 {
 	//Initialize all render targets.
-	CreateRenderTarget(GetDirectionalShadowMapResolution(), TextureFormat::R8_Byte, TextureFilter::Linear, AddressMode::ClampToBorder, &_RenderTargets[UNDERLYING(RenderTarget::DirectionalShadowMap)]);
+	CreateRenderTarget(GetDirectionalShadowMapResolution(), TextureFormat::R8_Byte, TextureFilter::Nearest, AddressMode::ClampToBorder, &_RenderTargets[UNDERLYING(RenderTarget::DirectionalShadowMap)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8_Byte, TextureFilter::Nearest, AddressMode::ClampToBorder, &_RenderTargets[UNDERLYING(RenderTarget::DirectionalShadow)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, TextureFilter::Linear, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferAlbedo)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferNormalDepth)]);
