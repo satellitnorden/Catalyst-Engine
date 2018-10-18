@@ -438,7 +438,16 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		VulkanShaderData::GetAboveOceanFragmentShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::AboveOceanFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
+#endif
 
+	{
+		//Initialize the anti-aliasing fragment shader module.
+		DynamicArray<byte> data;
+		VulkanShaderData::GetAntiAliasingFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::AntiAliasingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	}
+
+#if defined(CATALYST_ENABLE_OCEAN)
 	{
 		//Initialize the below ocean fragment shader module.
 		DynamicArray<byte> data;
@@ -706,20 +715,6 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 		DynamicArray<byte> data;
 		VulkanShaderData::GetParticleSystemVertexShaderData(data);
 		_ShaderModules[UNDERLYING(Shader::ParticleSystemVertex)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_VERTEX_BIT);
-	}
-
-	{
-		//Initialize the post processing bloom fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetPostProcessingBloomFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::PostProcessingBloomFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the post processing fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetPostProcessingFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::PostProcessingFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 	
 	{
@@ -1700,9 +1695,9 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::ToneMapping)]._ShouldClear = false;
 	}
 
-	//Initialize the post processing final render pass.
+	//Initialize the anti-aliasing final render pass.
 	{
-		constexpr uint64 NUMBER_OF_POST_PROCESSING_FINAL_SUBPASSES{ 1 };
+		constexpr uint64 NUMBER_OF_ANTI_ALIASING_SUBPASSES{ 1 };
 
 		constexpr uint32 SCREEN_INDEX{ 0 };
 
@@ -1728,7 +1723,7 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			VkAttachmentReference{ SCREEN_INDEX, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
 		};
 
-		StaticArray<VkSubpassDescription, NUMBER_OF_POST_PROCESSING_FINAL_SUBPASSES> subpassDescriptions;
+		StaticArray<VkSubpassDescription, NUMBER_OF_ANTI_ALIASING_SUBPASSES> subpassDescriptions;
 
 		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
 		{
@@ -1747,27 +1742,27 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		renderPassParameters._SubpassDependencyCount = 0;
 		renderPassParameters._SubpassDependencies = nullptr;
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
 
 		//Create the framebuffers.
 		const DynamicArray<VkImageView> &swapchainImages{ VulkanInterface::Instance->GetSwapchain().GetSwapChainImageViews() };
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._FrameBuffers.Reserve(swapchainImages.Size());
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._FrameBuffers.Reserve(swapchainImages.Size());
 
 		for (VkImageView swapchainImage : swapchainImages)
 		{
 			VulkanFramebufferCreationParameters framebufferParameters;
 
-			framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._RenderPass->Get();
+			framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._RenderPass->Get();
 
 			framebufferParameters._AttachmentCount = 1;
 			framebufferParameters._Attachments = &swapchainImage;
 			framebufferParameters._Extent = VulkanInterface::Instance->GetSwapchain().GetSwapExtent();
 
-			_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+			_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
 		}
 
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._NumberOfAttachments = 1;
-		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::PostProcessingFinal)]._ShouldClear = false;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::AntiAliasing)]._ShouldClear = false;
 	}
 }
 

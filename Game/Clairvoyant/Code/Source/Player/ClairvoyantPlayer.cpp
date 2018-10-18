@@ -41,7 +41,7 @@ bool ClairvoyantPlayer::LogicUpdateAsynchronous(const UpdateContext *const RESTR
 	ApplyGamepadControls(context);
 
 	//Apply keyboard controls.
-	ApplyKeyboardControls(context);
+	//ApplyKeyboardControls(context);
 
 	return true;
 }

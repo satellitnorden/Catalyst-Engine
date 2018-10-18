@@ -504,9 +504,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\ParticleSystemRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\PostProcessingRenderPass.h">
-      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\RenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
@@ -927,12 +924,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\PhysicalVertexShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\PostProcessingBloomFragmentShader.h">
-      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\PostProcessingFragmentShader.h">
-      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\ScreenSpaceAmbientOcclusionFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
@@ -1058,6 +1049,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\ToneMappingFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\AntiAliasingFragmentShader.h">
+      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\AntiAliasingRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1238,9 +1235,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ParticleSystemRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\PostProcessingRenderPass.cpp">
-      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\RenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
@@ -1394,12 +1388,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\PhysicalVertexShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\PostProcessingBloomFragmentShader.cpp">
-      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\PostProcessingFragmentShader.cpp">
-      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\ScreenSpaceAmbientOcclusionFragmentShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
@@ -1513,6 +1501,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\ToneMappingFragmentShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\AntiAliasingFragmentShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\AntiAliasingRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

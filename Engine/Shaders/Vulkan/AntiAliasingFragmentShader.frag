@@ -63,35 +63,73 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
-layout (set = 1, binding = 1) uniform sampler2D bloomTexture;
 
 //Out parameters.
-layout (location = 0) out vec4 fragment;
-
-//Push constant
-layout (push_constant) uniform PostProcessingData
-{
-    float bloomStrength;
-};
+layout (location = 0) out vec4 fragmentColor;
 
 /*
-*   Applies bloom.
+*	Calculates the average of a fragment.
 */
-vec3 ApplyBloom(vec3 fragment)
+float CalculateAverage(vec3 fragment)
 {
-    if (bloomStrength > 0.0f)
-    {
-        //Sample the bloom texture.
-        vec4 bloomTextureSampler = texture(bloomTexture, fragmentTextureCoordinate);
+	return fragment.r * 0.2126f + fragment.g * 0.7152f + fragment.b * 0.0722f;
+}
 
-        //Apply the bloom.
-        return fragment + (bloomTextureSampler.rgb * bloomTextureSampler.a * bloomStrength);
-    }
+/*
+*	Applies FXAA.
+*/
+vec3 ApplyFXAA(vec3 fragment)
+{
+	//Sample the 8 surrounding pixels.
+	#define WIDTH_OFFSET ((1.0f / 1920.0f) * 1.5f)
+	#define HEIGHT_OFFSET ((1.0f / 1080.0f) * 1.5f)
 
-    else
-    {
-        return fragment;
-    }
+	vec3 samples[9];
+
+	samples[0] = texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, -HEIGHT_OFFSET)).rgb;
+	samples[1] = texture(sceneTexture, fragmentTextureCoordinate + vec2(0.0f, -HEIGHT_OFFSET)).rgb;
+	samples[2] = texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, -HEIGHT_OFFSET)).rgb;
+	samples[3] = texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, 0.0f)).rgb;
+	samples[4] = fragment;
+	samples[5] = texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, 0.0f)).rgb;
+	samples[6] = texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, HEIGHT_OFFSET)).rgb;
+	samples[7] = texture(sceneTexture, fragmentTextureCoordinate + vec2(0.0f, HEIGHT_OFFSET)).rgb;
+	samples[8] = texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, HEIGHT_OFFSET)).rgb;
+
+	//Calculate the averages for all 9 samples.
+	float averages[9];
+
+	for (int i = 0; i < 9; ++i)
+	{
+		averages[i] = CalculateAverage(samples[i]);
+	}
+
+	//Determine the minimum and the maximum average.
+	float minimumAverage = averages[0];
+	float maximumAverage = averages[0];
+
+	for (int i = 1; i < 9; ++i)
+	{
+		minimumAverage = min(minimumAverage, averages[i]);
+		maximumAverage = max(maximumAverage, averages[i]);
+	}
+
+	//Calculate the average range.
+	float averageRange = clamp(maximumAverage - minimumAverage, 0.0f, 1.0f);
+
+	//Calculate the blurred fragment.
+	vec3 blurredFragment =	samples[0] * 0.0625f + 
+							samples[1] * 0.125f + 
+							samples[2] * 0.0625f + 
+							samples[3] * 0.125f + 
+							samples[4] * 0.25f + 
+							samples[5] * 0.125f + 
+							samples[6] * 0.0625f + 
+							samples[7] * 0.125f + 
+							samples[8] * 0.0625f;
+
+	//Blend between the original fragment and the blurred fragment depending on the average range.
+	return mix(fragment, blurredFragment, averageRange);
 }
 
 void main()
@@ -99,9 +137,9 @@ void main()
     //Sample the scene texture.
     vec3 sceneTextureSampler = texture(sceneTexture, fragmentTextureCoordinate).rgb;
 
-    //Apply bloom.
-    sceneTextureSampler = ApplyBloom(sceneTextureSampler);
+    //Apply FXAA.
+    sceneTextureSampler = ApplyFXAA(sceneTextureSampler);
 
     //Set the fragment color.
-    fragment = vec4(sceneTextureSampler, 1.0f);
+    fragmentColor = vec4(sceneTextureSampler, 1.0f);
 }

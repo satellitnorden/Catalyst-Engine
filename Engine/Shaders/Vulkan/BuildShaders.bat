@@ -1,4 +1,5 @@
 glslangValidator.exe -V AboveOceanFragmentShader.frag -o 				AboveOceanFragmentShader.spv
+glslangValidator.exe -V AntiAliasingFragmentShader.frag -o 				AntiAliasingFragmentShader.spv
 glslangValidator.exe -V BelowOceanFragmentShader.frag -o 				BelowOceanFragmentShader.spv
 glslangValidator.exe -V BloomFragmentShader.frag -o 					BloomFragmentShader.spv
 glslangValidator.exe -V BoxBlurFragmentShader.frag -o 					BoxBlurFragmentShader.spv
@@ -39,8 +40,6 @@ glslangValidator.exe -V ParticleSystemGeometryShader.geom -o 				ParticleSystemG
 glslangValidator.exe -V ParticleSystemVertexShader.vert -o 				ParticleSystemVertexShader.spv
 glslangValidator.exe -V PhysicalFragmentShader.frag -o 					PhysicalFragmentShader.spv
 glslangValidator.exe -V PhysicalVertexShader.vert -o 					PhysicalVertexShader.spv
-glslangValidator.exe -V PostProcessingBloomFragmentShader.frag -o 			PostProcessingBloomFragmentShader.spv
-glslangValidator.exe -V PostProcessingFragmentShader.frag -o 				PostProcessingFragmentShader.spv
 glslangValidator.exe -V ScreenSpaceAmbientOcclusionFragmentShader.frag -o 		ScreenSpaceAmbientOcclusionFragmentShader.spv
 glslangValidator.exe -V ShadowMapFragmentShader.frag -o 				ShadowMapFragmentShader.spv
 glslangValidator.exe -V SkyFragmentShader.frag -o 					SkyFragmentShader.spv

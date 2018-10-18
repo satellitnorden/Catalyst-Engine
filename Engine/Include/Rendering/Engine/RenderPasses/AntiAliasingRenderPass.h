@@ -6,18 +6,18 @@
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
 
-class PostProcessingRenderPass final : public RenderPass
+class AntiAliasingRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(PostProcessingRenderPass);
+	DECLARE_SINGLETON(AntiAliasingRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	PostProcessingRenderPass() NOEXCEPT;
+	AntiAliasingRenderPass() NOEXCEPT;
 
 private:
 
@@ -28,7 +28,7 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes the post processing render pass.
+	*	Initializes the anti-aliasing render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
@@ -43,7 +43,7 @@ private:
 	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
-	*	Renders the post processing.
+	*	Renders the anti-aliasing.
 	*/
 	void RenderInternal() NOEXCEPT;
 

@@ -4,6 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Rendering.
+#include <Rendering/Engine/RenderPasses/AntiAliasingRenderPass.h>
 #if !defined(CATALYST_FINAL)
 #include <Rendering/Engine/RenderPasses/DebugAxisAlignedBoundingBoxRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DebugScreenBoxRenderPass.h>
@@ -33,7 +34,6 @@
 #include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>
 #endif
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
-#include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>
 #include <Rendering/Engine/RenderPasses/ToneMappingRenderPass.h>
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)

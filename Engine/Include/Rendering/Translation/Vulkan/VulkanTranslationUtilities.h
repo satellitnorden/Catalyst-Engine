@@ -61,9 +61,9 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ToneMapping);
 			}
 
-			case RenderPassMainStage::PostProcessingFinal:
+			case RenderPassMainStage::AntiAliasing:
 			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::PostProcessing);
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::AntiAliasing);
 			}
 #if !defined(CATALYST_FINAL)
 			default:

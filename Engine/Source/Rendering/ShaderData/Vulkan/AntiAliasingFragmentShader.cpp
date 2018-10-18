@@ -3,15 +3,15 @@
 */
 
 //Header file.
-#include <Rendering/ShaderData/Vulkan/PostProcessingFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/AntiAliasingFragmentShader.h>
 
 #pragma optimize("", off)
 
 namespace VulkanShaderData
 {
-	void GetPostProcessingFragmentShaderData(DynamicArray<byte> &data)
+	void GetAntiAliasingFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.Reserve(7860);
+		data.Reserve(7720);
 
 		data.EmplaceFast(3);
 		data.EmplaceFast(2);
@@ -25,8 +25,8 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 		data.EmplaceFast(8);
 		data.EmplaceFast(0);
-		data.EmplaceFast(2);
-		data.EmplaceFast(1);
+		data.EmplaceFast(255);
+		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
@@ -1665,70 +1665,6 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
-		data.EmplaceFast(5);
-		data.EmplaceFast(0);
-		data.EmplaceFast(7);
-		data.EmplaceFast(0);
-		data.EmplaceFast(255);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(80);
-		data.EmplaceFast(111);
-		data.EmplaceFast(115);
-		data.EmplaceFast(116);
-		data.EmplaceFast(80);
-		data.EmplaceFast(114);
-		data.EmplaceFast(111);
-		data.EmplaceFast(99);
-		data.EmplaceFast(101);
-		data.EmplaceFast(115);
-		data.EmplaceFast(115);
-		data.EmplaceFast(105);
-		data.EmplaceFast(110);
-		data.EmplaceFast(103);
-		data.EmplaceFast(68);
-		data.EmplaceFast(97);
-		data.EmplaceFast(116);
-		data.EmplaceFast(97);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(6);
-		data.EmplaceFast(0);
-		data.EmplaceFast(6);
-		data.EmplaceFast(0);
-		data.EmplaceFast(255);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(115);
-		data.EmplaceFast(97);
-		data.EmplaceFast(116);
-		data.EmplaceFast(117);
-		data.EmplaceFast(114);
-		data.EmplaceFast(97);
-		data.EmplaceFast(116);
-		data.EmplaceFast(105);
-		data.EmplaceFast(111);
-		data.EmplaceFast(110);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(5);
-		data.EmplaceFast(0);
-		data.EmplaceFast(3);
-		data.EmplaceFast(0);
-		data.EmplaceFast(1);
-		data.EmplaceFast(1);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
 		data.EmplaceFast(71);
 		data.EmplaceFast(0);
 		data.EmplaceFast(4);
@@ -2790,38 +2726,6 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(72);
-		data.EmplaceFast(0);
-		data.EmplaceFast(5);
-		data.EmplaceFast(0);
-		data.EmplaceFast(255);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(35);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(71);
-		data.EmplaceFast(0);
-		data.EmplaceFast(3);
-		data.EmplaceFast(0);
-		data.EmplaceFast(255);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(2);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
@@ -4174,50 +4078,6 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(2);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(30);
-		data.EmplaceFast(0);
-		data.EmplaceFast(3);
-		data.EmplaceFast(0);
-		data.EmplaceFast(255);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(6);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(32);
-		data.EmplaceFast(0);
-		data.EmplaceFast(4);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(1);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(9);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(255);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(59);
-		data.EmplaceFast(0);
-		data.EmplaceFast(4);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(1);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(1);
-		data.EmplaceFast(1);
-		data.EmplaceFast(0);
-		data.EmplaceFast(0);
-		data.EmplaceFast(9);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);

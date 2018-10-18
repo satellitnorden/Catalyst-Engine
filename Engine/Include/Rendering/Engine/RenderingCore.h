@@ -44,7 +44,7 @@ enum class RenderPassMainStage : uint8
 	VolumetricFog,
 #endif
 	ToneMapping,
-	PostProcessingFinal,
+	AntiAliasing,
 
 	NumberOfRenderPassMainStages
 };
@@ -101,8 +101,8 @@ enum class RenderPassSubStage : uint8
 	//Tone mapping main stage.
 	ToneMapping,
 
-	//Post processing final main stage.
-	PostProcessing,
+	//Anti-aliasing main stage.
+	AntiAliasing,
 
 	NumberOfRenderPassSubStages
 };
@@ -232,8 +232,7 @@ enum class Shader : uint8
 	ParticleSystemFragment,
 	ParticleSystemGeometry,
 	ParticleSystemVertex,
-	PostProcessingBloomFragment,
-	PostProcessingFragment,
+	AntiAliasingFragment,
 	PhysicalFragment,
 	PhysicalVertex,
 	ScreenSpaceAmbientOcclusionFragment,

@@ -781,7 +781,7 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::BelowOcean)] = BelowOceanRenderPass::Instance.Get();
 #endif
 	_RenderPasses[UNDERLYING(RenderPassSubStage::ToneMapping)] = ToneMappingRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::PostProcessing)] = PostProcessingRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::AntiAliasing)] = AntiAliasingRenderPass::Instance.Get();
 }
 
 /*

@@ -10,5 +10,5 @@
 
 namespace VulkanShaderData
 {
-	void GetPostProcessingFragmentShaderData(DynamicArray<byte> &data);
+	void GetAntiAliasingFragmentShaderData(DynamicArray<byte> &data);
 }
