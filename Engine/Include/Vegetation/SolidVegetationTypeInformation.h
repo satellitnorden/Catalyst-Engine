@@ -28,9 +28,9 @@ public:
 	PhysicalMaterial _Material;
 
 	//The patch informations.
-	StaticArray<VegetationPatchInformation, 49> _PatchInformations;
+	StaticArray<VegetationPatchInformation, 25> _PatchInformations;
 
 	//The patch render informations.
-	StaticArray<VegetationPatchRenderInformation, 49> _PatchRenderInformations;
+	StaticArray<VegetationPatchRenderInformation, 25> _PatchRenderInformations;
 
 };
