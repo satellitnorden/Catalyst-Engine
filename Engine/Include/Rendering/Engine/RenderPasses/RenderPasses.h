@@ -35,6 +35,7 @@
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>
+#include <Rendering/Engine/RenderPasses/ToneMappingRenderPass.h>
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 #include <Rendering/Engine/RenderPasses/VolumetricFogRenderPass.h>
 #endif

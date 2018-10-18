@@ -55,12 +55,7 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
-//Post processing data.
-layout (push_constant) uniform PostProcessingData
-{
-    float saturation;
-};
-
+//Layout specification.
 layout (early_fragment_tests) in;
 
 //In parameters.
@@ -70,38 +65,7 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentColor;
-
-/*
-*	Calculates the average of a fragment.
-*/
-float CalculateAverage(vec3 fragment)
-{
-	return fragment.r * 0.2126f + fragment.g * 0.7152f + fragment.b * 0.0722f;
-}
-
-/*
-*   Applies saturation.
-*/
-vec3 ApplySaturation(vec3 sceneTextureSampler)
-{
-    if (saturation != 0.0f)
-    {
-        //Calculate the average.
-        float average = CalculateAverage(sceneTextureSampler);
-
-        //Calculate the grayscale color.
-        vec3 grayscaleColor = vec3(average, average, average);
-
-        //Return the calculated color.
-        return mix (grayscaleColor, sceneTextureSampler, saturation);
-    }
-    
-    else
-    {
-        return sceneTextureSampler;
-    }
-}
+layout (location = 0) out vec4 fragment;
 
 /*
 *   Applies HDR .
@@ -119,71 +83,17 @@ vec3 ApplyGammaCorrection(vec3 fragment)
     return pow(fragment, vec3(1.0f / 2.2f));
 }
 
-/*
-*	Applies FXAA.
-*/
-vec3 ApplyFXAA(vec3 fragment)
-{
-	//Sample the 8 surrounding pixels.
-	#define WIDTH_OFFSET ((1.0f / 1920.0f) * 1.5f)
-	#define HEIGHT_OFFSET ((1.0f / 1080.0f) * 1.5f)
-
-	vec3 samples[9];
-
-	samples[0] = texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, -HEIGHT_OFFSET)).rgb;
-	samples[1] = texture(sceneTexture, fragmentTextureCoordinate + vec2(0.0f, -HEIGHT_OFFSET)).rgb;
-	samples[2] = texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, -HEIGHT_OFFSET)).rgb;
-	samples[3] = texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, 0.0f)).rgb;
-	samples[4] = fragment;
-	samples[5] = texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, 0.0f)).rgb;
-	samples[6] = texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, HEIGHT_OFFSET)).rgb;
-	samples[7] = texture(sceneTexture, fragmentTextureCoordinate + vec2(0.0f, HEIGHT_OFFSET)).rgb;
-	samples[8] = texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, HEIGHT_OFFSET)).rgb;
-
-	//Calculate the averages for all 9 samples.
-	float averages[9];
-
-	for (int i = 0; i < 9; ++i)
-	{
-		averages[i] = CalculateAverage(samples[i]);
-	}
-
-	//Determine the minimum and the maximum average.
-	float minimumAverage = averages[0];
-	float maximumAverage = averages[0];
-
-	for (int i = 1; i < 9; ++i)
-	{
-		minimumAverage = min(minimumAverage, averages[i]);
-		maximumAverage = max(maximumAverage, averages[i]);
-	}
-
-	//Calculate the average range.
-	float averageRange = clamp(maximumAverage - minimumAverage, 0.0f, 1.0f);
-
-	//Calculate the blurred fragment.
-	vec3 blurredFragment =	samples[0] * 0.0625f + 
-							samples[1] * 0.125f + 
-							samples[2] * 0.0625f + 
-							samples[3] * 0.125f + 
-							samples[4] * 0.25f + 
-							samples[5] * 0.125f + 
-							samples[6] * 0.0625f + 
-							samples[7] * 0.125f + 
-							samples[8] * 0.0625f;
-
-	//Blend between the original fragment and the blurred fragment depending on the average range.
-	return mix(fragment, blurredFragment, averageRange);
-}
-
 void main()
 {
     //Sample the scene texture.
-    vec3 sceneTextureSampler = texture(sceneTexture, fragmentTextureCoordinate).rgb;
+    vec3 sceneTextureColor = texture(sceneTexture, fragmentTextureCoordinate).rgb;
 
-    //Apply FXAA.
-    sceneTextureSampler = ApplyFXAA(sceneTextureSampler);
+    //Apply HDR.
+    sceneTextureColor = ApplyHDR(sceneTextureColor);
 
-    //Set the fragment color.
-    fragmentColor = vec4(sceneTextureSampler, 1.0f);
+    //Apply gamma correction.
+    sceneTextureColor = ApplyGammaCorrection(sceneTextureColor);
+
+    //Write the fragment
+    fragment = vec4(sceneTextureColor, 1.0f);
 }

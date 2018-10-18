@@ -1,8 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/PostProcessingRenderPass.h>
-
-//Managers.
-#include <Managers/RenderingConfigurationManager.h>
+#include <Rendering/Engine/RenderPasses/ToneMappingRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -11,24 +8,24 @@
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(PostProcessingRenderPass);
+DEFINE_SINGLETON(ToneMappingRenderPass);
 
 /*
 *	Default constructor.
 */
-PostProcessingRenderPass::PostProcessingRenderPass() NOEXCEPT
+ToneMappingRenderPass::ToneMappingRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		PostProcessingRenderPass::Instance->InitializeInternal();
+		ToneMappingRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the post processing render pass.
+*	Initializes the tone mapping render pass.
 */
-void PostProcessingRenderPass::InitializeInternal() NOEXCEPT
+void ToneMappingRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Create the render data table layout.
 	CreateRenderDataTableLayout();
@@ -37,24 +34,24 @@ void PostProcessingRenderPass::InitializeInternal() NOEXCEPT
 	CreateRenderDataTable();
 
 	//Set the main stage.
-	SetMainStage(RenderPassMainStage::PostProcessingFinal);
+	SetMainStage(RenderPassMainStage::ToneMapping);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::PostProcessing);
+	SetSubStage(RenderPassSubStage::ToneMapping);
 
 	//Set the shaders.
 	SetVertexShader(Shader::ViewportVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::PostProcessingFragment);
+	SetFragmentShader(Shader::ToneMappingFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
 
 	//Add the render targets.
 	SetNumberOfRenderTargets(1);
-	AddRenderTarget(RenderTarget::Screen);
+	AddRenderTarget(RenderTarget::SceneIntermediate);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -87,7 +84,7 @@ void PostProcessingRenderPass::InitializeInternal() NOEXCEPT
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		PostProcessingRenderPass::Instance->RenderInternal();
+		ToneMappingRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -98,7 +95,7 @@ void PostProcessingRenderPass::InitializeInternal() NOEXCEPT
 /*
 *	Creates the render data table layout.
 */
-void PostProcessingRenderPass::CreateRenderDataTableLayout() NOEXCEPT
+void ToneMappingRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 {
 	StaticArray<RenderDataTableLayoutBinding, 1> bindings
 	{
@@ -111,17 +108,17 @@ void PostProcessingRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 /*
 *	Creates the render data table.
 */
-void PostProcessingRenderPass::CreateRenderDataTable() NOEXCEPT
+void ToneMappingRenderPass::CreateRenderDataTable() NOEXCEPT
 {
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
-	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate)), _RenderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene)), _RenderDataTable);
 }
 
 /*
-*	Renders the post processing.
+*	Renders the tone mapping.
 */
-void PostProcessingRenderPass::RenderInternal() NOEXCEPT
+void ToneMappingRenderPass::RenderInternal() NOEXCEPT
 {
 	//Cache data the will be used.
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -132,10 +129,6 @@ void PostProcessingRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
-
-	//Pust constants.
-	float postProcessingData{ RenderingConfigurationManager::Instance->GetSaturationStrength() };
-	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(float), &postProcessingData);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

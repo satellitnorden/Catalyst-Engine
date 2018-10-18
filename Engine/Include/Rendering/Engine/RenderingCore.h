@@ -43,6 +43,7 @@ enum class RenderPassMainStage : uint8
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFog,
 #endif
+	ToneMapping,
 	PostProcessingFinal,
 
 	NumberOfRenderPassMainStages
@@ -96,6 +97,9 @@ enum class RenderPassSubStage : uint8
 	//Volumetric fog main stage.
 	VolumetricFog,
 #endif
+
+	//Tone mapping main stage.
+	ToneMapping,
 
 	//Post processing final main stage.
 	PostProcessing,
@@ -237,6 +241,7 @@ enum class Shader : uint8
 	SkyFragment,
 	SolidVegetationVertex,
 	TerrainDepthFragment,
+	ToneMappingFragment,
 	ViewportVertex,
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFogFragment,

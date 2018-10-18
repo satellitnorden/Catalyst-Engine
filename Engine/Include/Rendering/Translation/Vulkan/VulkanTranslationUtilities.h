@@ -56,6 +56,11 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::VolumetricFog);
 			}
 #endif
+			case RenderPassMainStage::ToneMapping:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ToneMapping);
+			}
+
 			case RenderPassMainStage::PostProcessingFinal:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::PostProcessing);

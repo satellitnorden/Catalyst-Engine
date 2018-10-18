@@ -56,5 +56,6 @@
 #include <Rendering/ShaderData/Vulkan/SkyFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/SolidVegetationVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/TerrainDepthFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/ToneMappingFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ViewportVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/VolumetricFogFragmentShader.h>
