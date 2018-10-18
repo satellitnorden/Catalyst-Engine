@@ -9,7 +9,8 @@ glslangValidator.exe -V DebugScreenBoxFragmentShader.frag -o 				DebugScreenBoxF
 glslangValidator.exe -V DebugScreenBoxVertexShader.vert -o 				DebugScreenBoxVertexShader.spv
 glslangValidator.exe -V DirectionalPhysicalShadowVertexShader.vert -o			DirectionalPhysicalShadowVertexShader.spv
 glslangValidator.exe -V DirectionalShadowFragmentShader.frag -o				DirectionalShadowFragmentShader.spv
-glslangValidator.exe -V DirectionalShadowInstancedPhysicalVertexShader.vert -o		DirectionalShadowInstancedPhysicalVertexShader.spv
+glslangValidator.exe -V DirectionalSolidVegetationShadowFragmentShader.frag -o		DirectionalSolidVegetationShadowFragmentShader.spv
+glslangValidator.exe -V DirectionalSolidVegetationShadowVertexShader.vert -o		DirectionalSolidVegetationShadowVertexShader.spv
 glslangValidator.exe -V DirectionalTerrainShadowVertexShader.vert -o			DirectionalTerrainShadowVertexShader.spv
 glslangValidator.exe -V GaussianBlurFragmentShader.frag -o				GaussianBlurFragmentShader.spv
 glslangValidator.exe -V HighDetailGrassVegetationColorFragmentShader.frag -o 		HighDetailGrassVegetationColorFragmentShader.spv

@@ -9,7 +9,7 @@
 //Rendering constants.
 namespace RenderingConstants
 {
-	constexpr float SHADOW_VIEW_DISTANCE{ 1'000.0f };
+	constexpr float SHADOW_VIEW_DISTANCE{ 100.0f };
 }
 
 /*
@@ -58,7 +58,7 @@ enum class RenderPassSubStage : uint8
 	//Directional shadow main stage.
 	DirectionalTerrainShadow,
 	DirectionalDynamicPhysicalShadow,
-	DirectionalInstancedPhysicalShadow,
+	DirectionalSolidVegetationShadow,
 
 	//Scene main stage.
 	HighDetailTerrain,
@@ -203,7 +203,8 @@ enum class Shader : uint8
 #endif
 	DirectionalPhysicalShadowVertex,
 	DirectionalShadowFragment,
-	DirectionalInstancedPhysicalShadowVertex,
+	DirectionalSolidVegetationShadowFragment,
+	DirectionalSolidVegetationShadowVertex,
 	DirectionalTerrainShadowVertex,
 	GaussianBlurFragment,
 	HighDetailGrassVegetationColorFragment,

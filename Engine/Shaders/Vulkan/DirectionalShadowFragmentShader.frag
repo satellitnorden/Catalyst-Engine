@@ -89,20 +89,8 @@ vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
     return worldSpacePosition.xyz;
 }
 
-/*
-*   Returns the distance from camera multiplier.
-*/
-float GetDistanceToCameraMultiplier()
-{
-    vec3 distanceVector = cameraWorldPosition - fragmentWorldPosition;
-    float squaredDistance = distanceVector.x * distanceVector.x + distanceVector.y * distanceVector.y + distanceVector.z * distanceVector.z;
-
-    return 1.0f - clamp(squaredDistance / 100000000.0f, 0.0f, 1.0f);
-}
-
 void main()
 {
-    /*
     //Sample values from the textures.
     vec4 normalDirectionDepthSampler = texture(normalDirectionDepthTexture, fragmentTextureCoordinate);
 
@@ -121,7 +109,4 @@ void main()
 
     //Set the final fragment color.
     directionalShadow = vec4(compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f);
-    */
-
-    directionalShadow = vec4(1.0f, 0.0f, 0.0f, 0.0f);
 }

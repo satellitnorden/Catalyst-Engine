@@ -11,7 +11,7 @@ DEFINE_SINGLETON(TimeOfDaySystem);
 //Time of day system constants.
 namespace TimeOfDaySystemConstants
 {
-	constexpr float STARTING_TIME{ 0.0f };
+	constexpr float STARTING_TIME{ 9.0f };
 	constexpr float TIME_MULTIPLIER{ 250.0f };
 }
 

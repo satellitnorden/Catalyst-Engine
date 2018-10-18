@@ -10,8 +10,8 @@
 #include <Rendering/Engine/RenderPasses/DebugScreenBoxRenderPass.h>
 #endif
 #include <Rendering/Engine/RenderPasses/DirectionalDynamicPhysicalShadowRenderPass.h>
-#include <Rendering/Engine/RenderPasses/DirectionalInstancedPhysicalShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalShadowRenderPass.h>
+#include <Rendering/Engine/RenderPasses/DirectionalSolidVegetationShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalTerrainShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DynamicOutlineRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DynamicPhysicalRenderPass.h>

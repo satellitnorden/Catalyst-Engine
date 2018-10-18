@@ -75,14 +75,14 @@ void VulkanCommandBuffer::CommandBeginRenderPass(const VkRenderPass renderPass, 
 /*
 *	Records a begin render pass command and clears.
 */
-void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const VkRenderPass renderPass, const VkFramebuffer framebuffer, const VkExtent2D renderArea, const VkSubpassContents contents, const uint32 numberOfClearValues) NOEXCEPT
+void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const float depth, const VkRenderPass renderPass, const VkFramebuffer framebuffer, const VkExtent2D renderArea, const VkSubpassContents contents, const uint32 numberOfClearValues) NOEXCEPT
 {
 	StaticArray<VkClearValue, VulkanCommandBufferConstants::MAXIMUM_NUMBER_OF_CLEAR_VALUES> clearValues;
 
 	for (uint32 i = 0; i < numberOfClearValues; ++i)
 	{
 		clearValues[i].color = { 1.0f, 1.0f, 1.0f, 0.0f };
-		clearValues[i].depthStencil = { 0.0f, 0 };
+		clearValues[i].depthStencil = { depth, 0 };
 	}
 
 	VkRenderPassBeginInfo renderPassBeginInfo;

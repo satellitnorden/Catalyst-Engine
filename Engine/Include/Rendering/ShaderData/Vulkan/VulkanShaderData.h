@@ -19,7 +19,8 @@
 #include <Rendering/ShaderData/Vulkan/DebugScreenBoxVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalPhysicalShadowVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalShadowFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/DirectionalShadowInstancedPhysicalVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/DirectionalSolidVegetationShadowFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/DirectionalSolidVegetationShadowVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalTerrainShadowVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/GaussianBlurFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/HighDetailGrassVegetationColorFragmentShader.h>
