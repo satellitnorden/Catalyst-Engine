@@ -65,7 +65,7 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentColor;
+layout (location = 0) out vec4 fragment;
 
 /*
 *	Calculates the average of a fragment.
@@ -81,65 +81,64 @@ float CalculateAverage(vec3 fragment)
 vec3 ApplyFXAA(vec3 fragment)
 {
 	//Sample the 8 surrounding pixels.
-	#define WIDTH_OFFSET ((1.0f / 1920.0f) * 1.5f)
-	#define HEIGHT_OFFSET ((1.0f / 1080.0f) * 1.5f)
+	#define WIDTH_OFFSET (1.0f / 1920.0f)
+	#define HEIGHT_OFFSET (1.0f / 1080.0f)
 
-	vec3 samples[9];
+    //Calculate the average of this fragment.
+    float average = CalculateAverage(fragment);
 
-	samples[0] = texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, -HEIGHT_OFFSET)).rgb;
-	samples[1] = texture(sceneTexture, fragmentTextureCoordinate + vec2(0.0f, -HEIGHT_OFFSET)).rgb;
-	samples[2] = texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, -HEIGHT_OFFSET)).rgb;
-	samples[3] = texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, 0.0f)).rgb;
-	samples[4] = fragment;
-	samples[5] = texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, 0.0f)).rgb;
-	samples[6] = texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, HEIGHT_OFFSET)).rgb;
-	samples[7] = texture(sceneTexture, fragmentTextureCoordinate + vec2(0.0f, HEIGHT_OFFSET)).rgb;
-	samples[8] = texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, HEIGHT_OFFSET)).rgb;
+    //Sample the neighboring pixels.
+    vec3 indirectSamples[4] = vec3[]
+    (  
+        texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, -HEIGHT_OFFSET)).rgb,
+        texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, HEIGHT_OFFSET)).rgb,
+        texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, HEIGHT_OFFSET)).rgb,
+        texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, -HEIGHT_OFFSET)).rgb
+    );
 
-	//Calculate the averages for all 9 samples.
-	float averages[9];
+    for (int i = 0; i < 4; ++i)
+    {
+        //Calculate the average for the sample.
+        float sampleAverage = CalculateAverage(indirectSamples[i]);
 
-	for (int i = 0; i < 9; ++i)
-	{
-		averages[i] = CalculateAverage(samples[i]);
-	}
+        //Calculate the difference.
+        float difference = pow(abs(average - sampleAverage), 1.5f);
 
-	//Determine the minimum and the maximum average.
-	float minimumAverage = averages[0];
-	float maximumAverage = averages[0];
+        //Blend in the sample based on the difference.
+        fragment = mix(fragment, mix(fragment, indirectSamples[i], 0.25f), difference);
+    }
 
-	for (int i = 1; i < 9; ++i)
-	{
-		minimumAverage = min(minimumAverage, averages[i]);
-		maximumAverage = max(maximumAverage, averages[i]);
-	}
+    vec3 straightSamples[4] = vec3[]
+    (  
+        texture(sceneTexture, fragmentTextureCoordinate + vec2(-WIDTH_OFFSET, 0.0f)).rgb,
+        texture(sceneTexture, fragmentTextureCoordinate + vec2(WIDTH_OFFSET, 0.0f)).rgb,
+        texture(sceneTexture, fragmentTextureCoordinate + vec2(0.0f, -HEIGHT_OFFSET)).rgb,
+        texture(sceneTexture, fragmentTextureCoordinate + vec2(0.0f, HEIGHT_OFFSET)).rgb
+    );
 
-	//Calculate the average range.
-	float averageRange = clamp(maximumAverage - minimumAverage, 0.0f, 1.0f);
+    for (int i = 0; i < 4; ++i)
+    {
+        //Calculate the average for the sample.
+        float sampleAverage = CalculateAverage(straightSamples[i]);
 
-	//Calculate the blurred fragment.
-	vec3 blurredFragment =	samples[0] * 0.0625f + 
-							samples[1] * 0.125f + 
-							samples[2] * 0.0625f + 
-							samples[3] * 0.125f + 
-							samples[4] * 0.25f + 
-							samples[5] * 0.125f + 
-							samples[6] * 0.0625f + 
-							samples[7] * 0.125f + 
-							samples[8] * 0.0625f;
+        //Calculate the difference.
+        float difference = pow(abs(average - sampleAverage), 1.5f);
 
-	//Blend between the original fragment and the blurred fragment depending on the average range.
-	return mix(fragment, blurredFragment, averageRange);
+        //Blend in the sample based on the difference.
+        fragment = mix(fragment, mix(fragment, straightSamples[i], 0.75f), difference);
+    }
+
+    return fragment;
 }
 
 void main()
 {
-    //Sample the scene texture.
-    vec3 sceneTextureSampler = texture(sceneTexture, fragmentTextureCoordinate).rgb;
+    //Sample the scene color.
+    vec3 sceneColor = texture(sceneTexture, fragmentTextureCoordinate).rgb;
 
     //Apply FXAA.
-    sceneTextureSampler = ApplyFXAA(sceneTextureSampler);
+    sceneColor = ApplyFXAA(sceneColor);
 
-    //Set the fragment color.
-    fragmentColor = vec4(sceneTextureSampler, 1.0f);
+    //Write the fragment.
+    fragment = vec4(sceneColor, 1.0f);
 }

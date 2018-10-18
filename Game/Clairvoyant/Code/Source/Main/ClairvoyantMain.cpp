@@ -30,8 +30,6 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 
 MAIN_FUNCTION
 (
-	//BREAKPOINT();
-
 	//Create resources.
 	ClairvoyantResourceCreation::CreateResources();
 
