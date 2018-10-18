@@ -184,14 +184,14 @@ void main()
     //Apply saturation.
     sceneTextureSampler = ApplySaturation(sceneTextureSampler);
 
-    //Apply FXAA.
-    sceneTextureSampler = ApplyFXAA(sceneTextureSampler);
-
     //Apply HDR.
     sceneTextureSampler = ApplyHDR(sceneTextureSampler);
 
     //Apply gamma correction.
     sceneTextureSampler = ApplyGammaCorrection(sceneTextureSampler);
+
+    //Apply FXAA.
+    sceneTextureSampler = ApplyFXAA(sceneTextureSampler);
 
     //Set the fragment color.
     fragmentColor = vec4(sceneTextureSampler, 1.0f);
