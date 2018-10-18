@@ -36,4 +36,14 @@ private:
 	//The camera.
 	CameraEntity *RESTRICT _Camera;
 
+	/*
+	*	Applies gamepad controls.
+	*/
+	void ApplyGamepadControls(const UpdateContext *const RESTRICT context) NOEXCEPT;
+
+	/*
+	*	Applies keyboard controls.
+	*/
+	void ApplyKeyboardControls(const UpdateContext *const RESTRICT context) NOEXCEPT;
+
 };

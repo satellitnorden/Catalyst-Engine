@@ -37,6 +37,20 @@ void ClairvoyantPlayer::Initialize() NOEXCEPT
 */
 bool ClairvoyantPlayer::LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
+	//Apply gamepad controls.
+	ApplyGamepadControls(context);
+
+	//Apply keyboard controls.
+	ApplyKeyboardControls(context);
+
+	return true;
+}
+
+/*
+*	Applies gamepad controls.
+*/
+void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT context) NOEXCEPT
+{
 	//Define constants.
 	constexpr float ROTATION_SPEED{ 100.0f };
 	constexpr float FLYING_NORMAL_SPEED{ 100.0f };
@@ -118,6 +132,114 @@ bool ClairvoyantPlayer::LogicUpdateAsynchronous(const UpdateContext *const RESTR
 
 		EntitySystem::Instance->RequestInitialization(box, data, false);
 	}
+}
 
-	return true;
+/*
+*	Applies keyboard controls.
+*/
+void ClairvoyantPlayer::ApplyKeyboardControls(const UpdateContext *const RESTRICT context) NOEXCEPT
+{
+	//Define constants.
+	constexpr float ROTATION_SPEED{ 360.0f };
+	constexpr float FLYING_NORMAL_SPEED{ 100.0f };
+	constexpr float FLYING_FAST_SPEED{ 1'000.0f };
+	constexpr float WALKING_SPEED{ 2.0f };
+
+	//Get the gamepad state.
+	const KeyboardState *const RESTRICT keyboardState{ InputSystem::Instance->GetKeyboardState() };
+	const MouseState *const RESTRICT mouseState{ InputSystem::Instance->GetMouseState() };
+
+	//Switch whether or not to constraint the camera to the ground.
+	static bool constrainToTerrain{ false };
+
+	if (keyboardState->GetButtonState(KeyboardButton::Spacebar) == ButtonState::Pressed)
+	{
+		constrainToTerrain = !constrainToTerrain;
+	}
+
+	//Determine the speed.
+	const float speed{ constrainToTerrain ? WALKING_SPEED : keyboardState->GetButtonState(KeyboardButton::LeftShift) == ButtonState::Pressed || keyboardState->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PressedHold ? FLYING_FAST_SPEED : FLYING_NORMAL_SPEED };
+
+	//Move the camera.
+	if (keyboardState->GetButtonState(KeyboardButton::D) == ButtonState::Pressed
+		|| keyboardState->GetButtonState(KeyboardButton::D) == ButtonState::PressedHold)
+	{
+		_Camera->Move(_Camera->GetRightVector() * speed * context->_DeltaTime);
+	}
+
+	if (keyboardState->GetButtonState(KeyboardButton::A) == ButtonState::Pressed
+		|| keyboardState->GetButtonState(KeyboardButton::A) == ButtonState::PressedHold)
+	{
+		_Camera->Move(_Camera->GetRightVector() * -speed * context->_DeltaTime);
+	}
+
+	if (keyboardState->GetButtonState(KeyboardButton::W) == ButtonState::Pressed
+		|| keyboardState->GetButtonState(KeyboardButton::W) == ButtonState::PressedHold)
+	{
+		_Camera->Move(_Camera->GetForwardVector() * speed * context->_DeltaTime);
+	}
+
+	if (keyboardState->GetButtonState(KeyboardButton::S) == ButtonState::Pressed
+		|| keyboardState->GetButtonState(KeyboardButton::S) == ButtonState::PressedHold)
+	{
+		_Camera->Move(_Camera->GetForwardVector() * -speed * context->_DeltaTime);
+	}
+
+	if (keyboardState->GetButtonState(KeyboardButton::F) == ButtonState::Pressed
+		|| keyboardState->GetButtonState(KeyboardButton::F) == ButtonState::PressedHold)
+	{
+		_Camera->Move(Vector3::DOWN * context->_DeltaTime * speed);
+	}
+
+	if (keyboardState->GetButtonState(KeyboardButton::R) == ButtonState::Pressed
+		|| keyboardState->GetButtonState(KeyboardButton::R) == ButtonState::PressedHold)
+	{
+		_Camera->Move(Vector3::UP * context->_DeltaTime * speed);
+	}
+
+	//Constrain the camera to the terrain.
+	if (constrainToTerrain)
+	{
+		Vector3 position{ _Camera->GetPosition() };
+
+		float terrainHeight;
+
+		if (TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &terrainHeight))
+		{
+			position._Y = terrainHeight + 2.0f;
+
+			_Camera->SetPosition(position);
+		}
+	}
+
+	//Rotate the camera.
+	_Camera->Rotate(Vector3(mouseState->_DeltaY * ROTATION_SPEED, -mouseState->_DeltaX * ROTATION_SPEED, 0.0f));
+
+	Vector3 rotation{ _Camera->GetRotation() };
+	rotation._X = CatalystBaseMath::Clamp<float>(rotation._X, -89.0f, 89.0f);
+	_Camera->SetRotation(rotation);
+
+	//Spawn... Boxes. (:
+	if (keyboardState->GetButtonState(KeyboardButton::E) == ButtonState::Pressed)
+	{
+		const Ray ray{ _Camera->GetPosition(), _Camera->GetForwardVector(), FLOAT_MAXIMUM };
+		RayCastResult result;
+
+		PhysicsSystem::Instance->CastRay(PhysicsChannel::Ocean, ray, &result);
+
+		DynamicPhysicalEntity *const RESTRICT box{ EntitySystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
+
+		DynamicPhysicalInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+
+		data->_Properties = EntityInitializationData::EntityProperty::None;
+		data->_PhysicalFlags = PhysicalFlag::Outline | PhysicalFlag::Physical;
+		data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
+		data->_Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
+		data->_Position = result._HitPosition;
+		data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
+		data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
+		data->_OutlineColor = Vector3(CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f));
+
+		EntitySystem::Instance->RequestInitialization(box, data, false);
+	}
 }
