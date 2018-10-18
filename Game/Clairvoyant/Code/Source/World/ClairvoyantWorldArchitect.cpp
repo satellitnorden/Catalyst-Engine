@@ -84,8 +84,8 @@ bool ClairvoyantWorldArchitect::LogicUpdateAsynchronous(const UpdateContext *con
 */
 void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 {
-	constexpr float MINIMUM_SUN_INTENSITY{ 10.0f };
-	constexpr float MAXIMUM_SUN_INTENSITY{ 25.0f };
+	constexpr float MINIMUM_SUN_INTENSITY{ 7.5f };
+	constexpr float MAXIMUM_SUN_INTENSITY{ 12.5f };
 
 	constexpr float MINIMUM_WIND_SPEED{ 4.0f };
 	constexpr float MAXIMUM_WIND_SPEED{ 6.0f };
@@ -186,7 +186,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::GRASS_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 250.0f;
-		properties._Density = 2'500;
+		properties._Density = 5'000;
 		properties._Thickness = 0.25f;
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
