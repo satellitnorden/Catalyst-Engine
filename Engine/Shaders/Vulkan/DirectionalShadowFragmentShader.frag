@@ -1,6 +1,7 @@
 //Version declaration.
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
+#extension GL_GOOGLE_include_directive : enable
 
 //Preprocessor defines.
 #define MaximumNumberOfPointLights 8
@@ -55,8 +56,10 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
     //Total size; 1904
 };
 
+#include "CatalystShaderUtilities.util"
+
 //Preprocessor defines.
-#define ITERATIONS (8)
+#define ITERATIONS (4)
 #define INFLUENCE_PER_ITERATION (1.0f / ITERATIONS)
 #define MAXIMUM_OFFSET (0.001f)
 #define PHI (1.618033f)
@@ -81,21 +84,7 @@ float fragmentDepth;
 vec3 fragmentWorldPosition;
 
 /*
-*   Calculates the fragment world position.
-*/
-vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
-{
-    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
-    vec3 fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, depth);
-    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
-    viewSpacePosition /= viewSpacePosition.w;
-    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
-
-    return worldSpacePosition.xyz;
-}
-
-/*
-*   Given a coordinate and a seed, returns a random number.
+*   Given a seed, returns a random number.
 */
 float RandomFloat(float seed)
 {
@@ -122,12 +111,12 @@ void main()
 
     for (int i = 0; i < ITERATIONS; ++i)
     {
-        vec2 offset = vec2(mix(-MAXIMUM_OFFSET, MAXIMUM_OFFSET, RandomFloat(i * PI)), mix(-MAXIMUM_OFFSET, MAXIMUM_OFFSET, RandomFloat(i * PHI)));
+    	vec2 offset = vec2(mix(-MAXIMUM_OFFSET, MAXIMUM_OFFSET, RandomFloat(i * PI)), mix(-MAXIMUM_OFFSET, MAXIMUM_OFFSET, RandomFloat(i * PHI)));
 
-        float directionalDepth = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy + offset).r;
-        float compare = directionalLightShadowMapCoordinate.z - SHADOW_BIAS;
+	    float directionalDepth = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy + offset).r;
+	    float compare = directionalLightShadowMapCoordinate.z - SHADOW_BIAS;
 
-        shadowMultiplier += (compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f) * INFLUENCE_PER_ITERATION;
+	    shadowMultiplier += (compare >= 1.0f || compare < directionalDepth ? 1.0f : 0.0f) * INFLUENCE_PER_ITERATION;
     }
 
     //Set the final fragment color.
