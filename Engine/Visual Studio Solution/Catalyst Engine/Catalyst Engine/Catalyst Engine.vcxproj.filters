@@ -225,9 +225,6 @@
     <ClInclude Include="..\..\..\Include\Components\FrustumCullingComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\InstancedPhysicalRenderComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\ParticleSystemComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
@@ -274,9 +271,6 @@
       <Filter>Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Entity.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\InstancedPhysicalEntity.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\ParticleSystemEntity.h">
@@ -1071,9 +1065,6 @@
       <Filter>Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Entity.cpp">
-      <Filter>Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\InstancedPhysicalEntity.cpp">
       <Filter>Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\ParticleSystemEntity.cpp">

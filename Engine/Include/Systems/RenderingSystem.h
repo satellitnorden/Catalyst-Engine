@@ -33,7 +33,6 @@ class GrassVegetationMaterial;
 class GrassVegetationMaterialData;
 class GrassModel;
 class GrassModelData;
-class InstancedPhysicalEntity;
 #if defined(CATALYST_ENABLE_OCEAN)
 class OceanMaterialData;
 #endif
@@ -433,11 +432,6 @@ public:
 	*	Initializes a dynamic physical entity.
 	*/
 	void InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT;
-
-	/*
-	*	Initializes an instanced physical entity.
-	*/
-	void InitializeInstancedPhysicalEntity(const Entity *const RESTRICT entity, const PhysicalModel &model, const DynamicArray<Matrix4> &transformations) const NOEXCEPT;
 
 	/*
 	*	Initializes a particle system entity.

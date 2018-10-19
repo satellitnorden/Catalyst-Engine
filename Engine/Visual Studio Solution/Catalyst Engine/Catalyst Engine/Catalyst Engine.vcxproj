@@ -52,7 +52,6 @@
     <ClInclude Include="..\..\..\Include\Components\DynamicOutlineRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\DynamicPhysicalRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\FrustumCullingComponent.h" />
-    <ClInclude Include="..\..\..\Include\Components\InstancedPhysicalRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\ParticleSystemComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\ParticleSystemRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\PointLightComponent.h" />
@@ -95,7 +94,6 @@
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\DynamicPhysicalInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\ParticleSystemInitializationData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\InstancedPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\ParticleSystemEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\PointLightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\SpotLightEntity.h" />
@@ -335,7 +333,6 @@
     <ClCompile Include="..\..\..\Source\Entities\DirectionalLightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\DynamicPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Entity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\InstancedPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\ParticleSystemEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\PointLightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\SpotLightEntity.cpp" />
