@@ -194,7 +194,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\CameraEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\DirectionalLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\DynamicPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Entity.cpp" />
@@ -268,6 +267,7 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\SkyRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\ToneMappingRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\Viewer.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\AboveOceanFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\AntiAliasingFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BelowOceanFragmentShader.cpp" />

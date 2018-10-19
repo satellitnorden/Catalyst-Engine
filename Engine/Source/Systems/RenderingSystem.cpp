@@ -2,7 +2,7 @@
 #include <Systems/RenderingSystem.h>
 
 //Entities.
-#include <Entities/CameraEntity.h>
+#include <Entities/Entity.h>
 #include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 #include <Entities/InitializationData/ParticleSystemInitializationData.h>
 
@@ -31,6 +31,7 @@
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/Engine/TerrainMaterial.h>
 #include <Rendering/Engine/TextureData.h>
+#include <Rendering/Engine/Viewer.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
 
 //Resources.
@@ -164,65 +165,42 @@ uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 }
 
 /*
-*	Sets the active camera.
-*/
-void RenderingSystem::SetActiveCamera(CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT
-{
-	//Set the active camera.
-	_ActiveCamera = newActiveCamera;
-
-	//Update the matrices.
-	UpdateMatrices();
-}
-
-/*
 *	Updates the matrices.
 */
 void RenderingSystem::UpdateMatrices() NOEXCEPT
 {
-	if (_ActiveCamera)
-	{
-		//Calculate the projection matrix.
-		_ProjectionMatrix = Matrix4::ReversePerspective(_ActiveCamera->GetFieldOfViewRadians(), static_cast<float>(GetResolution()._Width) / static_cast<float>(GetResolution()._Height), _ActiveCamera->GetNearPlane(), _ActiveCamera->GetFarPlane());
+	//Calculate the projection matrix.
+	_ProjectionMatrix = Matrix4::ReversePerspective(Viewer::Instance->GetFieldOfViewRadians(), static_cast<float>(GetResolution()._Width) / static_cast<float>(GetResolution()._Height), Viewer::Instance->GetNearPlane(), Viewer::Instance->GetFarPlane());
 
-		//Calculate the camera matrix.
-		_CameraMatrix = Matrix4::LookAt(_ActiveCamera->GetPosition(), _ActiveCamera->GetPosition() + _ActiveCamera->GetForwardVector(), _ActiveCamera->GetUpVector());
+	//Calculate the viewer matrix.
+	_ViewerMatrix = Matrix4::LookAt(Viewer::Instance->GetPosition(), Viewer::Instance->GetPosition() + Viewer::Instance->GetForwardVector(), Viewer::Instance->GetUpVector());
 
-		//Calculate the view matrix.
-		_ViewMatrix = _ProjectionMatrix * _CameraMatrix;
+	//Calculate the view matrix.
+	_ViewMatrix = _ProjectionMatrix * _ViewerMatrix;
 
-		//Calculate the inverse projection matrix.
-		_InverseProjectionMatrix = _ProjectionMatrix;
-		_InverseProjectionMatrix.Inverse();
+	//Calculate the inverse projection matrix.
+	_InverseProjectionMatrix = _ProjectionMatrix;
+	_InverseProjectionMatrix.Inverse();
 
-		//Calculate the inverse camera matrix.
-		_InverseCameraMatrix = _CameraMatrix;
-		_InverseCameraMatrix.Inverse();
-	}
+	//Calculate the inverse viewer matrix.
+	_InverseViewerMatrix = _ViewerMatrix;
+	_InverseViewerMatrix.Inverse();
 }
 
 /*
-*	Given screen coordinates, returns the world direction from the camera to where the screen coordinates are pointing.
+*	Given screen coordinates, returns the world direction from the viewer to where the screen coordinates are pointing.
 */
 Vector3 RenderingSystem::GetWorldDirectionFromScreenCoordinate(const Vector2 &coordinates) const NOEXCEPT
 {
-	if (_ActiveCamera)
-	{
-		const Vector2 nearPlaneCoordinate{ coordinates._X * 2.0f - 1.0f, (1.0f - coordinates._Y) * 2.0f - 1.0f };
-		const Vector3 screenSpacePosition{ nearPlaneCoordinate, 1.0f };
-		Vector4 viewSpacePosition{ _InverseProjectionMatrix * Vector4(screenSpacePosition, 1.0f) };
-		viewSpacePosition._X /= viewSpacePosition._W;
-		viewSpacePosition._Y /= viewSpacePosition._W;
-		viewSpacePosition._Z /= viewSpacePosition._W;
-		Vector4 worldSpacePosition{ _InverseCameraMatrix * viewSpacePosition };
+	const Vector2 nearPlaneCoordinate{ coordinates._X * 2.0f - 1.0f, (1.0f - coordinates._Y) * 2.0f - 1.0f };
+	const Vector3 screenSpacePosition{ nearPlaneCoordinate, 1.0f };
+	Vector4 viewSpacePosition{ _InverseProjectionMatrix * Vector4(screenSpacePosition, 1.0f) };
+	viewSpacePosition._X /= viewSpacePosition._W;
+	viewSpacePosition._Y /= viewSpacePosition._W;
+	viewSpacePosition._Z /= viewSpacePosition._W;
+	Vector4 worldSpacePosition{ _InverseViewerMatrix * viewSpacePosition };
 
-		return Vector3::Normalize(Vector3(worldSpacePosition._X, worldSpacePosition._Y, worldSpacePosition._Z) - _ActiveCamera->GetPosition());
-	}
-	
-	else
-	{
-		return Vector3{ 0.0f, 0.0f, -1.0f };
-	}
+	return Vector3::Normalize(Vector3(worldSpacePosition._X, worldSpacePosition._Y, worldSpacePosition._Z) - Viewer::Instance->GetPosition());
 }
 
 /*

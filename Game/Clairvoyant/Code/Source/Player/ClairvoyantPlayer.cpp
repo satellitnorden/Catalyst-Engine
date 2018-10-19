@@ -8,6 +8,9 @@
 //Math.
 #include <Math/CatalystBaseMath.h>
 
+//Rendering.
+#include <Rendering/Engine/Viewer.h>
+
 //Systems.
 #include <Systems/EntitySystem.h>
 #include <Systems/InputSystem.h>
@@ -24,10 +27,6 @@ DEFINE_SINGLETON(ClairvoyantPlayer);
 */
 void ClairvoyantPlayer::Initialize() NOEXCEPT
 {
-	//Create the camera and set it as the active one.
-	_Camera = EntitySystem::Instance->CreateEntity<CameraEntity>();
-	RenderingSystem::Instance->SetActiveCamera(_Camera);
-
 	//Register the player for updates.
 	UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(this);
 }
@@ -60,7 +59,7 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 	//Get the gamepad state.
 	const GamepadState *const RESTRICT state{ InputSystem::Instance->GetGamepadState() };
 
-	//Switch whether or not to constraint the camera to the ground.
+	//Switch whether or not to constraint the viewer to the ground.
 	static bool constrainToTerrain{ false };
 
 	if (state->_A == ButtonState::Pressed)
@@ -71,26 +70,26 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 	//Determine the speed.
 	const float speed{ constrainToTerrain ? WALKING_SPEED : CatalystBaseMath::LinearlyInterpolate(FLYING_NORMAL_SPEED, FLYING_FAST_SPEED, state->_RightTrigger) };
 
-	//Move the camera.
-	_Camera->Move(_Camera->GetRightVector() * state->_LeftThumbstickX * speed * context->_DeltaTime);
-	_Camera->Move(_Camera->GetForwardVector() * state->_LeftThumbstickY * speed * context->_DeltaTime);
+	//Move the viewer.
+	Viewer::Instance->Move(Viewer::Instance->GetRightVector() * state->_LeftThumbstickX * speed * context->_DeltaTime);
+	Viewer::Instance->Move(Viewer::Instance->GetForwardVector() * state->_LeftThumbstickY * speed * context->_DeltaTime);
 
 	if (state->_LeftShoulder == ButtonState::Pressed
 		|| state->_LeftShoulder == ButtonState::PressedHold)
 	{
-		_Camera->Move(Vector3::DOWN * context->_DeltaTime * speed);
+		Viewer::Instance->Move(Vector3::DOWN * context->_DeltaTime * speed);
 	}
 
 	if (state->_RightShoulder == ButtonState::Pressed
 		|| state->_RightShoulder == ButtonState::PressedHold)
 	{
-		_Camera->Move(Vector3::UP * context->_DeltaTime * speed);
+		Viewer::Instance->Move(Vector3::UP * context->_DeltaTime * speed);
 	}
 
-	//Constrain the camera to the terrain.
+	//Constrain the viewer to the terrain.
 	if (constrainToTerrain)
 	{
-		Vector3 position{ _Camera->GetPosition() };
+		Vector3 position{ Viewer::Instance->GetPosition() };
 
 		float terrainHeight;
 
@@ -98,21 +97,21 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 		{
 			position._Y = terrainHeight + 2.0f;
 
-			_Camera->SetPosition(position);
+			Viewer::Instance->SetPosition(position);
 		}
 	}
 
-	//Rotate the camera.
-	_Camera->Rotate(Vector3(state->_RightThumbstickY * ROTATION_SPEED * context->_DeltaTime, -state->_RightThumbstickX * ROTATION_SPEED * context->_DeltaTime, 0.0f));
+	//Rotate the viewer.
+	Viewer::Instance->Rotate(Vector3(state->_RightThumbstickY * ROTATION_SPEED * context->_DeltaTime, -state->_RightThumbstickX * ROTATION_SPEED * context->_DeltaTime, 0.0f));
 
-	Vector3 rotation{ _Camera->GetRotation() };
+	Vector3 rotation{ Viewer::Instance->GetRotation() };
 	rotation._X = CatalystBaseMath::Clamp<float>(rotation._X, -89.0f, 89.0f);
-	_Camera->SetRotation(rotation);
+	Viewer::Instance->SetRotation(rotation);
 
 	//Spawn... Boxes. (:
 	if (state->_X == ButtonState::Pressed)
 	{
-		const Ray ray{ _Camera->GetPosition(), _Camera->GetForwardVector(), FLOAT_MAXIMUM };
+		const Ray ray{ Viewer::Instance->GetPosition(), Viewer::Instance->GetForwardVector(), FLOAT_MAXIMUM };
 		RayCastResult result;
 
 		PhysicsSystem::Instance->CastRay(PhysicsChannel::Ocean, ray, &result);
@@ -149,7 +148,7 @@ void ClairvoyantPlayer::ApplyKeyboardControls(const UpdateContext *const RESTRIC
 	const KeyboardState *const RESTRICT keyboardState{ InputSystem::Instance->GetKeyboardState() };
 	const MouseState *const RESTRICT mouseState{ InputSystem::Instance->GetMouseState() };
 
-	//Switch whether or not to constraint the camera to the ground.
+	//Switch whether or not to constraint the viewer to the ground.
 	static bool constrainToTerrain{ false };
 
 	if (keyboardState->GetButtonState(KeyboardButton::Spacebar) == ButtonState::Pressed)
@@ -160,47 +159,47 @@ void ClairvoyantPlayer::ApplyKeyboardControls(const UpdateContext *const RESTRIC
 	//Determine the speed.
 	const float speed{ constrainToTerrain ? WALKING_SPEED : keyboardState->GetButtonState(KeyboardButton::LeftShift) == ButtonState::Pressed || keyboardState->GetButtonState(KeyboardButton::LeftShift) == ButtonState::PressedHold ? FLYING_FAST_SPEED : FLYING_NORMAL_SPEED };
 
-	//Move the camera.
+	//Move the viewer.
 	if (keyboardState->GetButtonState(KeyboardButton::D) == ButtonState::Pressed
 		|| keyboardState->GetButtonState(KeyboardButton::D) == ButtonState::PressedHold)
 	{
-		_Camera->Move(_Camera->GetRightVector() * speed * context->_DeltaTime);
+		Viewer::Instance->Move(Viewer::Instance->GetRightVector() * speed * context->_DeltaTime);
 	}
 
 	if (keyboardState->GetButtonState(KeyboardButton::A) == ButtonState::Pressed
 		|| keyboardState->GetButtonState(KeyboardButton::A) == ButtonState::PressedHold)
 	{
-		_Camera->Move(_Camera->GetRightVector() * -speed * context->_DeltaTime);
+		Viewer::Instance->Move(Viewer::Instance->GetRightVector() * -speed * context->_DeltaTime);
 	}
 
 	if (keyboardState->GetButtonState(KeyboardButton::W) == ButtonState::Pressed
 		|| keyboardState->GetButtonState(KeyboardButton::W) == ButtonState::PressedHold)
 	{
-		_Camera->Move(_Camera->GetForwardVector() * speed * context->_DeltaTime);
+		Viewer::Instance->Move(Viewer::Instance->GetForwardVector() * speed * context->_DeltaTime);
 	}
 
 	if (keyboardState->GetButtonState(KeyboardButton::S) == ButtonState::Pressed
 		|| keyboardState->GetButtonState(KeyboardButton::S) == ButtonState::PressedHold)
 	{
-		_Camera->Move(_Camera->GetForwardVector() * -speed * context->_DeltaTime);
+		Viewer::Instance->Move(Viewer::Instance->GetForwardVector() * -speed * context->_DeltaTime);
 	}
 
 	if (keyboardState->GetButtonState(KeyboardButton::F) == ButtonState::Pressed
 		|| keyboardState->GetButtonState(KeyboardButton::F) == ButtonState::PressedHold)
 	{
-		_Camera->Move(Vector3::DOWN * context->_DeltaTime * speed);
+		Viewer::Instance->Move(Vector3::DOWN * context->_DeltaTime * speed);
 	}
 
 	if (keyboardState->GetButtonState(KeyboardButton::R) == ButtonState::Pressed
 		|| keyboardState->GetButtonState(KeyboardButton::R) == ButtonState::PressedHold)
 	{
-		_Camera->Move(Vector3::UP * context->_DeltaTime * speed);
+		Viewer::Instance->Move(Vector3::UP * context->_DeltaTime * speed);
 	}
 
-	//Constrain the camera to the terrain.
+	//Constrain the viewer to the terrain.
 	if (constrainToTerrain)
 	{
-		Vector3 position{ _Camera->GetPosition() };
+		Vector3 position{ Viewer::Instance->GetPosition() };
 
 		float terrainHeight;
 
@@ -208,21 +207,21 @@ void ClairvoyantPlayer::ApplyKeyboardControls(const UpdateContext *const RESTRIC
 		{
 			position._Y = terrainHeight + 2.0f;
 
-			_Camera->SetPosition(position);
+			Viewer::Instance->SetPosition(position);
 		}
 	}
 
-	//Rotate the camera.
-	_Camera->Rotate(Vector3(mouseState->_DeltaY * ROTATION_SPEED, -mouseState->_DeltaX * ROTATION_SPEED, 0.0f));
+	//Rotate the viewer.
+	Viewer::Instance->Rotate(Vector3(mouseState->_DeltaY * ROTATION_SPEED, -mouseState->_DeltaX * ROTATION_SPEED, 0.0f));
 
-	Vector3 rotation{ _Camera->GetRotation() };
+	Vector3 rotation{ Viewer::Instance->GetRotation() };
 	rotation._X = CatalystBaseMath::Clamp<float>(rotation._X, -89.0f, 89.0f);
-	_Camera->SetRotation(rotation);
+	Viewer::Instance->SetRotation(rotation);
 
 	//Spawn... Boxes. (:
 	if (keyboardState->GetButtonState(KeyboardButton::E) == ButtonState::Pressed)
 	{
-		const Ray ray{ _Camera->GetPosition(), _Camera->GetForwardVector(), FLOAT_MAXIMUM };
+		const Ray ray{ Viewer::Instance->GetPosition(), Viewer::Instance->GetForwardVector(), FLOAT_MAXIMUM };
 		RayCastResult result;
 
 		PhysicsSystem::Instance->CastRay(PhysicsChannel::Ocean, ray, &result);

@@ -4,11 +4,9 @@
 //Core.
 #include <Core/Algorithms/SortingAlgorithms.h>
 
-//Entities.
-#include <Entities/CameraEntity.h>
-
 //Rendering.
 #include <Rendering/Engine/RenderingUtilities.h>
+#include <Rendering/Engine/Viewer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -54,10 +52,6 @@ void VegetationSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 		{
 			_VegetationTypeToUpdate = static_cast<VegetationType>(0);
 		}
-
-		//Cache the current camera position.
-		const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
-		_CurrentCameraPosition = camera->GetPosition();
 
 		//Fire off another update!
 		TaskSystem::Instance->ExecuteTask(&_UpdateTask);
@@ -210,14 +204,17 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 */
 void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 {
+	//Cache the viewer position.
+	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
+
 	//Reset vegetation type information update.
 	_GrassVegetationTypeInformationUpdate._Information = nullptr;
 
 	//Update all vegetation type informations.
 	for (GrassVegetationTypeInformation &information : _GrassVegetationTypeInformations)
 	{
-		//Calculate the current grid point based on the current camera position.
-		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
+		//Calculate the current grid point based on the current viewer position.
+		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
 		//Create an array with the valid grid positions.
 		StaticArray<GridPoint2, 25> validGridPoints
@@ -260,8 +257,8 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 
 		public:
 
-			//The current camera position.
-			Vector3 _CameraPosition;
+			//The current viewer position.
+			Vector3 _ViewerPosition;
 
 			//The cutoff distance.
 			float _CutoffDistance;
@@ -269,7 +266,7 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 
 		SortingData sortingData;
 
-		sortingData._CameraPosition = _CurrentCameraPosition;
+		sortingData._ViewerPosition = viewerPosition;
 		sortingData._CutoffDistance = information._Properties._CutoffDistance;
 
 		//Sort the array so that the closest grid point is first.
@@ -280,7 +277,7 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
-			return Vector3::LengthSquaredXZ(sortingData->_CameraPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_CameraPosition - secondGridPosition);
+			return Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
 		});
 
 		//Construct the update.
@@ -363,14 +360,17 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 */
 void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 {
+	//Cache the viewer position.
+	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
+
 	//Reset the solid vegetation type information update.
 	_SolidVegetationTypeInformationUpdate._Information = nullptr;
 
 	//Update all solid vegetation type informations.
 	for (SolidVegetationTypeInformation &information : _SolidVegetationTypeInformations)
 	{
-		//Calculate the current grid point based on the current camera position.
-		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
+		//Calculate the current grid point based on the current viewer position.
+		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
 		//Create an array with the valid grid positions.
 		StaticArray<GridPoint2, 25> validGridPoints
@@ -413,8 +413,8 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 
 		public:
 
-			//The current camera position.
-			Vector3 _CameraPosition;
+			//The current viewer position.
+			Vector3 _ViewerPosition;
 
 			//The cutoff distance.
 			float _CutoffDistance;
@@ -422,7 +422,7 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 
 		SortingData sortingData;
 
-		sortingData._CameraPosition = _CurrentCameraPosition;
+		sortingData._ViewerPosition = viewerPosition;
 		sortingData._CutoffDistance = information._Properties._CutoffDistance;
 
 		//Sort the array so that the closest grid point is first.
@@ -433,7 +433,7 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
 
-			return Vector3::LengthSquaredXZ(sortingData->_CameraPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_CameraPosition - secondGridPosition);
+			return Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
 		});
 
 		//Construct the update.

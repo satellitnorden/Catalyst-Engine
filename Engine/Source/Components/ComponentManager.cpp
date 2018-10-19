@@ -179,7 +179,6 @@ void ComponentManager::Return ## ENTITY_CLASS ## ComponentsIndex(const uint64 co
 	_ ## ENTITY_CLASS ## FOURTH_COMPONENT ## s.EraseAt(componentsIndex);																\
 }
 
-DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(Camera, CameraComponent);
 DEFINE_ENTITY_CLASS_WITH_ONE_COMPONENT(DirectionalLight, DirectionalLightComponent);
 DEFINE_ENTITY_CLASS_WITH_FOUR_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicOutlineRenderComponent, DynamicPhysicalRenderComponent, TransformComponent);
 DEFINE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);

@@ -12,9 +12,6 @@
 #include <Math/CatalystVectorMath.h>
 #include <Math/Vector3.h>
 
-//Physics.
-#include <Physics/PhysicalConstants.h>
-
 //Singleton definition.
 DEFINE_SINGLETON(PhysicsSystem);
 

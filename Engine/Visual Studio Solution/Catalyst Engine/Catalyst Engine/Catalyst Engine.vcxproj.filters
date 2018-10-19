@@ -213,9 +213,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Include\Components\CameraComponent.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
@@ -263,9 +260,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\CameraEntity.h">
-      <Filter>Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\DirectionalLightEntity.h">
       <Filter>Entities\Include</Filter>
@@ -326,9 +320,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Multithreading\Threadlock.h">
       <Filter>Multithreading\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Physics\PhysicalConstants.h">
-      <Filter>Physics\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Platform\General\Platform.h">
       <Filter>Platform\Include\General</Filter>
@@ -1053,13 +1044,13 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DirectionalSolidVegetationShadowVertexShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Viewer.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
       <Filter>Components\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\CameraEntity.cpp">
-      <Filter>Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\DirectionalLightEntity.cpp">
       <Filter>Entities\Source</Filter>
@@ -1504,6 +1495,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DirectionalSolidVegetationShadowVertexShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\Viewer.cpp">
+      <Filter>Rendering\Source\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

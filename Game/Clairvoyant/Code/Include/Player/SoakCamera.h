@@ -5,9 +5,6 @@
 #include <Core/General/Updateable.h>
 #include <Core/Pointers/UniquePointer.h>
 
-//Entities.
-#include <Entities/CameraEntity.h>
-
 class SoakCamera final : public Updateable
 {
 
@@ -32,9 +29,6 @@ public:
 	bool LogicUpdateAsynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT final override;
 
 private:
-
-	//The camera.
-	CameraEntity *RESTRICT _Camera;
 
 	//The time until the properties of the soak camera is randomized again.
 	float _RandomizeTime;

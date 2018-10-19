@@ -6,8 +6,9 @@
 #include <Core/Containers/StaticArray.h>
 #include <Core/General/CatalystProjectConfiguration.h>
 
-//Entities.
-#include <Entities/CameraEntity.h>
+
+//Rendering.
+#include <Rendering/Engine/Viewer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -66,11 +67,6 @@ void TerrainSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 			_LastGridPoint = _CurrentGridPoint;
 		}
 
-		//Cache the current camera position.
-		const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
-		_CurrentCameraPosition = camera->GetPosition();
-
-		//Fire off another asynchronous update.
 		//Fire off another asynchronous update.
 		TaskSystem::Instance->ExecuteTask(&_UpdateTask);
 	}
@@ -105,8 +101,11 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3 &position, Vector3 
 */
 void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
-	//Calculate the grid point for the current camera position.
-	const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(_CurrentCameraPosition, _Properties._PatchSize) };
+	//Cache the current viewer position.
+	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
+
+	//Calculate the grid point for the current viewer position.
+	const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, _Properties._PatchSize) };
 
 	//If the last grid point has changed, generate a new set of patches.
 	if (currentGridPoint != _LastGridPoint)

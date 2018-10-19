@@ -4,11 +4,9 @@
 //Components.
 #include <Components/ComponentManager.h>
 
-//Entities.
-#include <Entities/CameraEntity.h>
-
 //Rendering.
 #include <Rendering/Engine/RenderingUtilities.h>
+#include <Rendering/Engine/Viewer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -61,11 +59,10 @@ void CullingSystem::CullingUpdateSystemSynchronous(const UpdateContext *const RE
 */
 void CullingSystem::CullGrassVegetation() NOEXCEPT
 {
-	//Get the camera position.
-	const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
-	const Vector3 cameraPosition{ camera->GetPosition() };
+	//Get the viewer position.
+	const Vector3& viewerPosition{ Viewer::Instance->GetPosition() };
 
-	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the camera.
+	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the viewer.
 	for (GrassVegetationTypeInformation &information : *VegetationSystem::Instance->GetGrassVegetationTypeInformations())
 	{
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
@@ -82,10 +79,10 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 			//Perform the distance test.
 			const float halfGridSize{ information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE * 0.5f };
 
-			if ((cameraPosition._X > patchPosition._X && cameraPosition._X - (patchPosition._X + halfGridSize) > information._Properties._CutoffDistance)
-				|| (cameraPosition._X < patchPosition._X && (patchPosition._X - halfGridSize) - cameraPosition._X > information._Properties._CutoffDistance)
-				|| (cameraPosition._Z > patchPosition._Z && cameraPosition._Z - (patchPosition._Z + halfGridSize) > information._Properties._CutoffDistance)
-				|| (cameraPosition._Z < patchPosition._Z && (patchPosition._Z - halfGridSize) - cameraPosition._Z > information._Properties._CutoffDistance))
+			if ((viewerPosition._X > patchPosition._X && viewerPosition._X - (patchPosition._X + halfGridSize) > information._Properties._CutoffDistance)
+				|| (viewerPosition._X < patchPosition._X && (patchPosition._X - halfGridSize) - viewerPosition._X > information._Properties._CutoffDistance)
+				|| (viewerPosition._Z > patchPosition._Z && viewerPosition._Z - (patchPosition._Z + halfGridSize) > information._Properties._CutoffDistance)
+				|| (viewerPosition._Z < patchPosition._Z && (patchPosition._Z - halfGridSize) - viewerPosition._Z > information._Properties._CutoffDistance))
 			{
 				information._PatchRenderInformations[i]._Draw = true;
 			}
@@ -103,11 +100,10 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 */
 void CullingSystem::CullSolidVegetation() NOEXCEPT
 {
-	//Get the camera position.
-	const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
-	const Vector3 cameraPosition{ camera->GetPosition() };
+	//Get the viewer position.
+	const Vector3& viewerPosition{ Viewer::Instance->GetPosition() };
 
-	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the camera.
+	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the viewer.
 	for (SolidVegetationTypeInformation &information : *VegetationSystem::Instance->GetSolidVegetationTypeInformations())
 	{
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
@@ -124,10 +120,10 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 			//Perform the distance test.
 			const float halfGridSize{ information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE * 0.5f };
 
-			if ((cameraPosition._X > patchPosition._X && cameraPosition._X - (patchPosition._X + halfGridSize) > information._Properties._CutoffDistance)
-				|| (cameraPosition._X < patchPosition._X && (patchPosition._X - halfGridSize) - cameraPosition._X > information._Properties._CutoffDistance)
-				|| (cameraPosition._Z > patchPosition._Z && cameraPosition._Z - (patchPosition._Z + halfGridSize) > information._Properties._CutoffDistance)
-				|| (cameraPosition._Z < patchPosition._Z && (patchPosition._Z - halfGridSize) - cameraPosition._Z > information._Properties._CutoffDistance))
+			if ((viewerPosition._X > patchPosition._X && viewerPosition._X - (patchPosition._X + halfGridSize) > information._Properties._CutoffDistance)
+				|| (viewerPosition._X < patchPosition._X && (patchPosition._X - halfGridSize) - viewerPosition._X > information._Properties._CutoffDistance)
+				|| (viewerPosition._Z > patchPosition._Z && viewerPosition._Z - (patchPosition._Z + halfGridSize) > information._Properties._CutoffDistance)
+				|| (viewerPosition._Z < patchPosition._Z && (patchPosition._Z - halfGridSize) - viewerPosition._Z > information._Properties._CutoffDistance))
 			{
 				information._PatchRenderInformations[i]._Draw = false;
 			}

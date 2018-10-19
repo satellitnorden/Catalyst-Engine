@@ -5,7 +5,6 @@
 #include <Components/ComponentManager.h>
 
 //Entities.
-#include <Entities/CameraEntity.h>
 #include <Entities/PointLightEntity.h>
 #include <Entities/SpotLightEntity.h>
 
@@ -18,6 +17,7 @@
 //Rendering.
 #include <Rendering/Engine/RenderingUtilities.h>
 #include <Rendering/Engine/TextureData.h>
+#include <Rendering/Engine/Viewer.h>
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
 #include <Rendering/ShaderData/Vulkan/VulkanShaderData.h>
 #include <Rendering/Translation/Vulkan/VulkanTranslationCommandBuffer.h>
@@ -1973,28 +1973,27 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 */
 void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 {
-	//Calculate the camera data.
-	const CameraEntity *const RESTRICT activeCamera{ RenderingSystem::Instance->GetActiveCamera() };
-	Vector3 cameraWorldPosition = activeCamera->GetPosition();
-	Vector3 forwardVector = activeCamera->GetForwardVector();
-	Vector3 upVector = activeCamera->GetUpVector();
+	//Calculate the viewer data.
+	Vector3 viewerPosition = Viewer::Instance->GetPosition();
+	Vector3 forwardVector = Viewer::Instance->GetForwardVector();
+	Vector3 upVector = Viewer::Instance->GetUpVector();
 
 	const Matrix4 *const RESTRICT projectionMatrix{ RenderingSystem::Instance->GetProjectionMatrix() };
-	const Matrix4 *const RESTRICT cameraMatrix{ RenderingSystem::Instance->GetCameraMatrix() };
+	const Matrix4 *const RESTRICT viewerMatrix{ RenderingSystem::Instance->GetViewerMatrix() };
 	const Matrix4 *const RESTRICT viewMatrix{ RenderingSystem::Instance->GetViewMatrix() };
 	const Matrix4 *const RESTRICT inverseProjectionMatrix{ RenderingSystem::Instance->GetInverseProjectionMatrix() };
-	const Matrix4 *const RESTRICT inverseCameraMatrix{ RenderingSystem::Instance->GetInverseCameraMatrix() };
+	const Matrix4 *const RESTRICT inverseViewerMatrix{ RenderingSystem::Instance->GetInverseViewerMatrix() };
 
-	Matrix4 cameraOriginMatrix{ *cameraMatrix };
-	cameraOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
+	Matrix4 viewerOriginMatrix{ *viewerMatrix };
+	viewerOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
 
-	_DynamicUniformData._CameraFieldOfViewCosine = CatalystBaseMath::CosineRadians(activeCamera->GetFieldOfViewRadians()) - 0.2f;
-	_DynamicUniformData._InverseCameraMatrix = *inverseCameraMatrix;
+	_DynamicUniformData._ViewerFieldOfViewCosine = CatalystBaseMath::CosineRadians(Viewer::Instance->GetFieldOfViewRadians()) - 0.2f;
+	_DynamicUniformData._InverseViewerMatrix = *inverseViewerMatrix;
 	_DynamicUniformData._InverseProjectionMatrix = *inverseProjectionMatrix;
-	_DynamicUniformData._OriginViewMatrix = *projectionMatrix * cameraOriginMatrix;
+	_DynamicUniformData._OriginViewMatrix = *projectionMatrix * viewerOriginMatrix;
 	_DynamicUniformData._ViewMatrix = *viewMatrix;
-	_DynamicUniformData._CameraForwardVector = forwardVector;
-	_DynamicUniformData._CameraWorldPosition = cameraWorldPosition;
+	_DynamicUniformData._ViewerForwardVector = forwardVector;
+	_DynamicUniformData._ViewerWorldPosition = viewerPosition;
 
 	const uint64 numberOfDirectionalLightEntityComponents{ ComponentManager::GetNumberOfDirectionalLightComponents() };
 
@@ -2006,7 +2005,7 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 		_DynamicUniformData._DirectionalLightViewMatrix = RenderingUtilities::CalculateDirectionalLightViewMatrix();
 		_DynamicUniformData._DirectionalLightDirection = Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->_Rotation);
 		_DynamicUniformData._DirectionalLightColor = directionalLightComponent->_Color;
-		_DynamicUniformData._DirectionalLightScreenSpacePosition = *viewMatrix * Vector4(-_DynamicUniformData._DirectionalLightDirection._X * 100.0f + cameraWorldPosition._X, -_DynamicUniformData._DirectionalLightDirection._Y * 100.0f + cameraWorldPosition._Y, -_DynamicUniformData._DirectionalLightDirection._Z * 100.0f + cameraWorldPosition._Z, 1.0f);
+		_DynamicUniformData._DirectionalLightScreenSpacePosition = *viewMatrix * Vector4(-_DynamicUniformData._DirectionalLightDirection._X * 100.0f + viewerPosition._X, -_DynamicUniformData._DirectionalLightDirection._Y * 100.0f + viewerPosition._Y, -_DynamicUniformData._DirectionalLightDirection._Z * 100.0f + viewerPosition._Z, 1.0f);
 		_DynamicUniformData._DirectionalLightScreenSpacePosition._X /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;
 		_DynamicUniformData._DirectionalLightScreenSpacePosition._Y /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;
 		_DynamicUniformData._DirectionalLightScreenSpacePosition._Z /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;

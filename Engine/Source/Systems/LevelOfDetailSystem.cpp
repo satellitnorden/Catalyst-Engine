@@ -1,8 +1,8 @@
 //Header file.
 #include <Systems/LevelOfDetailSystem.h>
 
-//Entities.
-#include <Entities/CameraEntity.h>
+//Rendering.
+#include <Rendering/Engine/Viewer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -48,9 +48,6 @@ void LevelOfDetailSystem::CullingUpdateSystemSynchronous(const UpdateContext *co
 */
 void LevelOfDetailSystem::LevelOfDetailGrassVegetation() NOEXCEPT
 {
-	//Cache the current camera position.
-	const Vector3 currentCameraPosition{ RenderingSystem::Instance->GetActiveCamera()->GetPosition() };
-
 	//Iterate over all grass vegetation type informations and determine their level of detail.
 	DynamicArray<GrassVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetGrassVegetationTypeInformations() };
 
@@ -67,7 +64,7 @@ void LevelOfDetailSystem::LevelOfDetailGrassVegetation() NOEXCEPT
 			}
 
 			const Vector3 gridMiddlePoint{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, gridSize) };
-			const float distanceToGridPoint{ Vector3::LengthSquaredXZ(currentCameraPosition - gridMiddlePoint) };
+			const float distanceToGridPoint{ Vector3::LengthSquaredXZ(Viewer::Instance->GetPosition() - gridMiddlePoint) };
 			
 			if (distanceToGridPoint < information._Properties._MediumDetailDistance * information._Properties._MediumDetailDistance)
 			{
@@ -92,9 +89,6 @@ void LevelOfDetailSystem::LevelOfDetailGrassVegetation() NOEXCEPT
 */
 void LevelOfDetailSystem::LevelOfDetailSolidVegetation() NOEXCEPT
 {
-	//Cache the current camera position.
-	const Vector3 currentCameraPosition{ RenderingSystem::Instance->GetActiveCamera()->GetPosition() };
-
 	//Iterate over all solid vegetation type informations and determine their level of detail.
 	DynamicArray<SolidVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetSolidVegetationTypeInformations() };
 
@@ -111,7 +105,7 @@ void LevelOfDetailSystem::LevelOfDetailSolidVegetation() NOEXCEPT
 			}
 
 			const Vector3 gridMiddlePoint{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, gridSize) };
-			const float distanceToGridPoint{ Vector3::LengthSquaredXZ(currentCameraPosition - gridMiddlePoint) };
+			const float distanceToGridPoint{ Vector3::LengthSquaredXZ(Viewer::Instance->GetPosition() - gridMiddlePoint) };
 
 			if (distanceToGridPoint < information._Properties._MediumDetailDistance * information._Properties._MediumDetailDistance)
 			{

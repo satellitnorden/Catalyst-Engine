@@ -107,9 +107,6 @@ private:
 	//The properties.
 	TerrainProperties _Properties;
 
-	//The current camera position.
-	Vector3 _CurrentCameraPosition;
-
 	//The last grid point.
 	GridPoint2 _LastGridPoint{ INT32_MAXIMUM, INT32_MAXIMUM };
 

@@ -88,9 +88,6 @@ private:
 	//The vegetation type to update.
 	VegetationType _VegetationTypeToUpdate{ VegetationType::NumberOfVegetationTypes };
 
-	//The current camera position.
-	Vector3 _CurrentCameraPosition;
-
 	//The grass vegetation type information update.
 	GrassVegetationTypeInformationUpdate _GrassVegetationTypeInformationUpdate;
 

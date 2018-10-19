@@ -190,9 +190,6 @@ private:
 	//The procedural placement update task.
 	Task _ProceduralPlacementUpdateTask;
 
-	//The current camera position.
-	Vector3 _CurrentCameraPosition;
-
 	/*
 	*	Processes the initialization queue.
 	*/

@@ -66,9 +66,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\CameraEntity.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\DirectionalLightEntity.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -499,6 +496,9 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DirectionalSolidVegetationShadowVertexShader.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\Viewer.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
   </ItemGroup>

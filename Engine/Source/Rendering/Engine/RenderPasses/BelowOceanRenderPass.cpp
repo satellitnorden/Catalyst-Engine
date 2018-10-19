@@ -2,12 +2,10 @@
 //Header file.
 #include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>
 
-//Entities.
-#include <Entities/CameraEntity.h>
-
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
 #include <Rendering/Engine/OceanRenderingData.h>
+#include <Rendering/Engine/Viewer.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>
@@ -133,10 +131,8 @@ void BelowOceanRenderPass::CreateRenderDataTable() NOEXCEPT
 */
 void BelowOceanRenderPass::RenderInternal() NOEXCEPT
 {
-	//Check if the active camera is below water, if not - don't render.
-	const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
-
-	if (camera->GetPosition()._Y >= 0.0f)
+	//Check if the view is below water, if not - don't render.
+	if (Viewer::Instance->GetPosition()._Y >= 0.0f)
 	{
 		SetIncludeInRender(false);
 

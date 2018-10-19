@@ -46,7 +46,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Include\Components\CameraComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h" />
     <ClInclude Include="..\..\..\Include\Components\DirectionalLightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\DynamicOutlineRenderComponent.h" />
@@ -84,7 +83,6 @@
     <ClInclude Include="..\..\..\Include\Core\Tools\HashTools.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h" />
-    <ClInclude Include="..\..\..\Include\Entities\CameraEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\DynamicPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\EntitiesCore.h" />
@@ -123,7 +121,6 @@
     <ClInclude Include="..\..\..\Include\Multithreading\Spinlock.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Task.h" />
     <ClInclude Include="..\..\..\Include\Multithreading\Threadlock.h" />
-    <ClInclude Include="..\..\..\Include\Physics\PhysicalConstants.h" />
     <ClInclude Include="..\..\..\Include\Physics\PhysicsCore.h" />
     <ClInclude Include="..\..\..\Include\Physics\Ray.h" />
     <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h" />
@@ -219,6 +216,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\Viewer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\AboveOceanFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\AntiAliasingFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BelowOceanFragmentShader.h" />
@@ -329,7 +327,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\CameraEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\DirectionalLightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\DynamicPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Entity.cpp" />
@@ -403,6 +400,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\SkyRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\ToneMappingRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\Viewer.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\AboveOceanFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\AntiAliasingFragmentShader.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BelowOceanFragmentShader.cpp" />

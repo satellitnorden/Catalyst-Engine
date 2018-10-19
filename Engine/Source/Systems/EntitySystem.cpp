@@ -5,12 +5,14 @@
 #include <Components/ComponentManager.h>
 
 //Entities.
-#include <Entities/CameraEntity.h>
 #include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
 #include <Entities/InitializationData/ParticleSystemInitializationData.h>
 
 //Multithreading.
 #include <Multithreading/ScopedLock.h>
+
+//Rendering.
+#include <Rendering/Engine/Viewer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -40,10 +42,6 @@ void EntitySystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 	//If the procedural placement update has finished, cache the relevant data and fire off another update.
 	if (_ProceduralPlacementUpdateTask.IsExecuted())
 	{
-		//Cache the current camera position.
-		const CameraEntity *const RESTRICT camera{ RenderingSystem::Instance->GetActiveCamera() };
-		_CurrentCameraPosition = camera->GetPosition();
-
 		//Fire off another update.
 		TaskSystem::Instance->ExecuteTask(&_ProceduralPlacementUpdateTask);
 	}
@@ -408,11 +406,14 @@ void EntitySystem::ProcessAutomaticDestructionQueue() NOEXCEPT
 */
 void EntitySystem::UpdateProceduralPlacement() NOEXCEPT
 {
+	//Cache the current viewer position.
+	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
+
 	//Update all procedural placement data.
 	for (EntityProceduralPlacementData &data : _ProceduralPlacementData)
 	{
-		//Calculate the current grid point based on the current camera position.
-		const GridPoint3 currentGridPoint{ GridPoint3::WorldPositionToGridPoint(_CurrentCameraPosition, data._GridSize) };
+		//Calculate the current grid point based on the current viewer position.
+		const GridPoint3 currentGridPoint{ GridPoint3::WorldPositionToGridPoint(viewerPosition, data._GridSize) };
 
 		//Create an array with the valid grid positions.
 		StaticArray<GridPoint3, 27> validGridPoints

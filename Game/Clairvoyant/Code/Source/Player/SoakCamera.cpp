@@ -4,6 +4,9 @@
 //Math.
 #include <Math/CatalystBaseMath.h>
 
+//Rendering.
+#include <Rendering/Engine/Viewer.h>
+
 //Systems.
 #include <Systems/RenderingSystem.h>
 #include <Systems/EntitySystem.h>
@@ -24,18 +27,14 @@ namespace SoakCameraConstants
 */
 void SoakCamera::Initialize() NOEXCEPT
 {
-	//Create the camera and set it as the active one.
-	_Camera = EntitySystem::Instance->CreateEntity<CameraEntity>();
-	RenderingSystem::Instance->SetActiveCamera(_Camera);
-
 	//Register the soak camera for updates.
 	UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(this);
 
 	//Randomize.
 	Randomize();
 
-	//Constrain the camera to the ground.
-	Vector3 position{ _Camera->GetPosition() };
+	//Constrain the viewer to the ground.
+	Vector3 position{ Viewer::Instance->GetPosition() };
 
 	float terrainHeight;
 
@@ -43,7 +42,7 @@ void SoakCamera::Initialize() NOEXCEPT
 	{
 		position._Y = terrainHeight;
 
-		_Camera->SetPosition(position);
+		Viewer::Instance->SetPosition(position);
 	}
 }
 
@@ -88,8 +87,8 @@ void SoakCamera::UpdateForwardMovement(const UpdateContext *const RESTRICT conte
 		_CurrentSpeed -= SoakCameraConstants::OPERATIONAL_SPEED * context->_DeltaTime;
 	}
 
-	//Move the camera forward.
-	_Camera->Move(_Camera->GetForwardVector() * _CurrentSpeed * context->_DeltaTime);
+	//Move the viewer forward.
+	Viewer::Instance->Move(Viewer::Instance->GetForwardVector() * _CurrentSpeed * context->_DeltaTime);
 }
 
 /*
@@ -97,12 +96,12 @@ void SoakCamera::UpdateForwardMovement(const UpdateContext *const RESTRICT conte
 */
 void SoakCamera::UpdateAltitude(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//Get the current position of the camera.
-	Vector3 position{ _Camera->GetPosition() };
+	//Get the current position of the viewer.
+	Vector3 position{ Viewer::Instance->GetPosition() };
 
-	//Look ahead at the terrain height at a position in front of the camera to determine how the velocity should be affected.
+	//Look ahead at the terrain height at a position in front of the viewer to determine how the velocity should be affected.
 	float terrainHeightAhead;
-	TerrainSystem::Instance->GetTerrainHeightAtPosition(_Camera->GetPosition() + _Camera->GetForwardVector() * _CurrentSpeed, &terrainHeightAhead);
+	TerrainSystem::Instance->GetTerrainHeightAtPosition(Viewer::Instance->GetPosition() + Viewer::Instance->GetForwardVector() * _CurrentSpeed, &terrainHeightAhead);
 
 	if (position._Y > CatalystBaseMath::Maximum<float>(terrainHeightAhead + _TargetAltitude, 1.0f))
 	{
@@ -114,10 +113,10 @@ void SoakCamera::UpdateAltitude(const UpdateContext *const RESTRICT context) NOE
 		_CurrentUpwardsVelocity += SoakCameraConstants::OPERATIONAL_SPEED * context->_DeltaTime;
 	}
 
-	//Modify the camera's height.
+	//Modify the viewer's height.
 	position._Y += _CurrentUpwardsVelocity * context->_DeltaTime;
 
-	//Never let the camera go under the terrain.
+	//Never let the viewer go under the terrain.
 	float terrainHeight;
 	TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &terrainHeight);
 
@@ -128,8 +127,8 @@ void SoakCamera::UpdateAltitude(const UpdateContext *const RESTRICT context) NOE
 		_CurrentUpwardsVelocity = CatalystBaseMath::Absolute(_CurrentUpwardsVelocity);
 	}
 
-	//Set the position of the camera.
-	_Camera->SetPosition(position);
+	//Set the position of the viewer.
+	Viewer::Instance->SetPosition(position);
 }
 
 /*
@@ -148,8 +147,8 @@ void SoakCamera::UpdateRotation(const UpdateContext *const RESTRICT context) NOE
 		_CurrentRotation -= SoakCameraConstants::OPERATIONAL_SPEED * 0.1f * context->_DeltaTime;
 	}
 
-	//Rotate the camera.
-	_Camera->Rotate(Vector3(0.0f, _CurrentRotation * context->_DeltaTime, 0.0f));
+	//Rotate the viewer.
+	Viewer::Instance->Rotate(Vector3(0.0f, _CurrentRotation * context->_DeltaTime, 0.0f));
 }
 
 /*

@@ -19,14 +19,14 @@ public:
 	//The maximum number of spot lights.
 	static constexpr uint8 MAXIMUM_NUMBER_OF_SPOT_LIGHTS{ 8 };
 
-	//Camera data.
-	Vector4 _CameraFieldOfViewCosine;
-	Matrix4 _InverseCameraMatrix;
+	//Viewer data.
+	Vector4 _ViewerFieldOfViewCosine;
+	Matrix4 _InverseViewerMatrix;
 	Matrix4 _InverseProjectionMatrix;
 	Matrix4 _OriginViewMatrix;
 	Matrix4 _ViewMatrix;
-	Vector4 _CameraForwardVector;
-	Vector4 _CameraWorldPosition;
+	Vector4 _ViewerForwardVector;
+	Vector4 _ViewerWorldPosition;
 
 	//Directional light data.
 	Vector4 _DirectionalLightIntensity;
@@ -69,13 +69,13 @@ public:
 
 static_assert(sizeof(VulkanDynamicUniformData) == 1904, "X");
 
-static_assert(offsetof(VulkanDynamicUniformData, _CameraFieldOfViewCosine) == 0, "X");
-static_assert(offsetof(VulkanDynamicUniformData, _InverseCameraMatrix) == 16, "X");
+static_assert(offsetof(VulkanDynamicUniformData, _ViewerFieldOfViewCosine) == 0, "X");
+static_assert(offsetof(VulkanDynamicUniformData, _InverseViewerMatrix) == 16, "X");
 static_assert(offsetof(VulkanDynamicUniformData, _InverseProjectionMatrix) == 80, "X");
 static_assert(offsetof(VulkanDynamicUniformData, _OriginViewMatrix) == 144, "X");
 static_assert(offsetof(VulkanDynamicUniformData, _ViewMatrix) == 208, "X");
-static_assert(offsetof(VulkanDynamicUniformData, _CameraForwardVector) == 272, "X");
-static_assert(offsetof(VulkanDynamicUniformData, _CameraWorldPosition) == 288, "X");
+static_assert(offsetof(VulkanDynamicUniformData, _ViewerForwardVector) == 272, "X");
+static_assert(offsetof(VulkanDynamicUniformData, _ViewerWorldPosition) == 288, "X");
 
 static_assert(offsetof(VulkanDynamicUniformData, _DirectionalLightIntensity) == 304, "X");
 static_assert(offsetof(VulkanDynamicUniformData, _DirectionalLightViewMatrix) == 320, "X");

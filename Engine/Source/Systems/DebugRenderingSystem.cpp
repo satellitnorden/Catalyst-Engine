@@ -5,11 +5,11 @@
 //Core.
 #include <Core/Algorithms/SortingAlgorithms.h>
 
-//Entities.
-#include <Entities/CameraEntity.h>
-
 //Multithreading.
 #include <Multithreading/ScopedLock.h>
+
+//Rendering.
+#include <Rendering/Engine/Viewer.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -27,17 +27,9 @@ void DebugRenderingSystem::RenderingUpdateSystemSynchronous(const UpdateContext 
 	{
 		SortingAlgorithms::InsertionSort<AxisAlignedBoundingBoxDebugRenderData>(_AxisAlignedBoundingBoxDebugRenderData.Begin(), _AxisAlignedBoundingBoxDebugRenderData.End(), nullptr, [](const void *const RESTRICT userData, const AxisAlignedBoundingBoxDebugRenderData *const RESTRICT first, const AxisAlignedBoundingBoxDebugRenderData *const RESTRICT second)
 		{
-			if (const CameraEntity *const RESTRICT activeCamera{ RenderingSystem::Instance->GetActiveCamera() })
-			{
-				const Vector3 &cameraWorldPosition{ activeCamera->GetPosition() };
+			const Vector3 &viewerPosition{ Viewer::Instance->GetPosition() };
 
-				return Vector3::LengthSquared(cameraWorldPosition - AxisAlignedBoundingBox::CalculateCenter(first->_Box)) < Vector3::LengthSquared(cameraWorldPosition - AxisAlignedBoundingBox::CalculateCenter(second->_Box));
-			}
-
-			else
-			{
-				return true;
-			}
+			return Vector3::LengthSquared(viewerPosition - AxisAlignedBoundingBox::CalculateCenter(first->_Box)) < Vector3::LengthSquared(viewerPosition - AxisAlignedBoundingBox::CalculateCenter(second->_Box));
 		});
 	}
 }

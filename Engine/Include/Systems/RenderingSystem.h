@@ -23,7 +23,6 @@
 
 //Forward declarations.
 class AxisAlignedBoundingBox;
-class CameraEntity;
 class CatalystProjectRenderingConfiguration;
 class CPUTexture2D;
 class DynamicPhysicalInitializationData;
@@ -160,27 +159,6 @@ public:
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
 
 	/*
-	*	Returns the active camera, const.
-	*/
-	RESTRICTED const CameraEntity *const RESTRICT GetActiveCamera() const NOEXCEPT
-	{
-		return _ActiveCamera;
-	}
-
-	/*
-	*	Returns the active camera, const.
-	*/
-	RESTRICTED CameraEntity *const RESTRICT GetActiveCamera() NOEXCEPT
-	{
-		return _ActiveCamera;
-	}
-
-	/*
-	*	Sets the active camera.
-	*/
-	void SetActiveCamera(CameraEntity *const RESTRICT newActiveCamera) NOEXCEPT;
-
-	/*
 	*	Updates the matrices.
 	*/
 	void UpdateMatrices() NOEXCEPT;
@@ -194,11 +172,11 @@ public:
 	}
 
 	/*
-	*	Returns the camera matrix.
+	*	Returns the viewer matrix.
 	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetCameraMatrix() const NOEXCEPT
+	RESTRICTED const Matrix4 *const RESTRICT GetViewerMatrix() const NOEXCEPT
 	{
-		return &_CameraMatrix;
+		return &_ViewerMatrix;
 	}
 
 	/*
@@ -218,15 +196,15 @@ public:
 	}
 
 	/*
-	*	Returns the inverse camera matrix.
+	*	Returns the inverse viewer matrix.
 	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetInverseCameraMatrix() const NOEXCEPT
+	RESTRICTED const Matrix4 *const RESTRICT GetInverseViewerMatrix() const NOEXCEPT
 	{
-		return &_InverseCameraMatrix;
+		return &_InverseViewerMatrix;
 	}
 
 	/*
-	*	Given screen coordinates, returns the world direction from the camera to where the screen coordinates are pointing.
+	*	Given screen coordinates, returns the world direction from the viewer to where the screen coordinates are pointing.
 	*/
 	Vector3 GetWorldDirectionFromScreenCoordinate(const Vector2 &coordinates) const NOEXCEPT;
 
@@ -459,14 +437,11 @@ private:
 	//The directional shadow map resolution.
 	Resolution _DirectionalShadowMapResolution;
 
-	//The active camera.
-	CameraEntity *RESTRICT _ActiveCamera{ nullptr };
-
 	//The projection matrix.
 	Matrix4 _ProjectionMatrix;
 
-	//The camera matrix.
-	Matrix4 _CameraMatrix;
+	//The viewer matrix.
+	Matrix4 _ViewerMatrix;
 
 	//The view matrix.
 	Matrix4 _ViewMatrix;
@@ -474,8 +449,8 @@ private:
 	//The inverse projection matrix.
 	Matrix4 _InverseProjectionMatrix;
 
-	//The inverse camera matrix.
-	Matrix4 _InverseCameraMatrix;
+	//The inverse viewer matrix.
+	Matrix4 _InverseViewerMatrix;
 
 	//Container for all render passes.
 	StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _RenderPasses;
