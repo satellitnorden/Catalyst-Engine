@@ -85,7 +85,7 @@ bool ClairvoyantWorldArchitect::LogicUpdateAsynchronous(const UpdateContext *con
 void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 {
 	constexpr float MINIMUM_SUN_INTENSITY{ 7.5f };
-	constexpr float MAXIMUM_SUN_INTENSITY{ 12.5f };
+	constexpr float MAXIMUM_SUN_INTENSITY{ 15.0f };
 
 	constexpr float MINIMUM_WIND_SPEED{ 4.0f };
 	constexpr float MAXIMUM_WIND_SPEED{ 6.0f };
