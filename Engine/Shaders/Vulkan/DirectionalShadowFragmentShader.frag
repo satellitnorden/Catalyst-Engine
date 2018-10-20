@@ -11,7 +11,7 @@
 #define ITERATIONS (4)
 #define INFLUENCE_PER_ITERATION (1.0f / ITERATIONS)
 #define MAXIMUM_OFFSET (0.001f)
-#define SHADOW_BIAS (0.0025f)
+#define SHADOW_BIAS (0.00325f)
 
 //Layout specification.
 layout (early_fragment_tests) in;

@@ -6,6 +6,7 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -23,7 +24,9 @@ layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
 layout (set = 1, binding = 0) uniform samplerCube nightTexture;
+layout (set = 1, binding = 1) uniform samplerCube diffuseIrradianceFirstTexture;
 layout (set = 2, binding = 0) uniform samplerCube dayTexture;
+layout (set = 2, binding = 1) uniform samplerCube diffuseIrradianceSecondTexture;
 layout (set = 3, binding = 0) uniform sampler2D sceneTexture;
 layout (set = 3, binding = 1) uniform sampler2D sceneNormalDepthTexture;
 layout (set = 4, binding = 0) uniform sampler2D oceanNormalTexture;
@@ -36,7 +39,6 @@ layout (location = 0) out vec4 fragment;
 vec3 CalculateAboveOceanFragment();
 vec3 CalculateBelowOceanFragment();
 float CalculateDeformationWeight(float distanceToBottomSquared);
-vec4 CalculateFoamColor(vec2 intersectionPointTextureCoordinate, vec3 reflection);
 float CalculateFoamWeight(float distanceToBottomSquared);
 vec3 CalculateDirectionalLight(vec3 reflectionDirection);
 vec3 CalculateIntersectionPoint(vec3 pointOnPlane, vec3 pointOnLine, vec3 normal, vec3 line);
@@ -107,10 +109,20 @@ vec3 CalculateBelowOceanFragment(vec3 sceneWorldPosition)
     float foamWeight = CalculateFoamWeight(distanceToBottomSquared);
 
     //Calculate the foam color.
-    vec4 foamColor = CalculateFoamColor(intersectionPointTextureCoordinate, reflection);
+    vec4 foamTextureSampler = texture(oceanFoamTexture, intersectionPointTextureCoordinate);
+    vec3 foamColor = CalculateLighting( mix(texture(diffuseIrradianceFirstTexture, reflectionDirection).rgb, texture(diffuseIrradianceSecondTexture, reflectionDirection).rgb, environmentBlend),
+                                        reflection,
+                                        1.0f,
+                                        intersectionPoint,
+                                        foamTextureSampler.rgb,
+                                        normal,
+                                        0.5f,
+                                        0.0f,
+                                        1.0f,
+                                        1.0f);
 
     //Mix in the foam color with the final ocean color.
-    finalOceanColor = mix(finalOceanColor, foamColor.rgb, foamWeight * foamColor.a);
+    finalOceanColor = mix(finalOceanColor, foamColor.rgb, foamWeight * foamTextureSampler.a);
 
     //Apply directional lighting.
     finalOceanColor += CalculateDirectionalLight(reflectionDirection);
@@ -125,17 +137,6 @@ float CalculateDeformationWeight(float distanceToBottomSquared)
 {
     //Calculate the deformation weight.
     return Scale(min(distanceToBottomSquared / oceanDeformationWeightDistanceSquared, 1.0f), 0.0f, 1.0f, 0.25f, 1.0f);
-}
-
-/*
-*	Calculates the foam color.
-*/
-vec4 CalculateFoamColor(vec2 intersectionPointTextureCoordinate, vec3 reflection)
-{
-    //Sample the foam texture.
-    vec4 oceanFoamTextureSampler = texture(oceanFoamTexture, intersectionPointTextureCoordinate);
-
-    return vec4(oceanFoamTextureSampler.rgb * (reflection + directionalLightColor * min(directionalLightIntensity, 1.0f)), oceanFoamTextureSampler.a);
 }
 
 /*

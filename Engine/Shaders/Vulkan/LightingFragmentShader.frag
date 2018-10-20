@@ -31,7 +31,7 @@ layout (set = 3, binding = 2) uniform sampler2D roughnessMetallicAmbientOcclusio
 layout (set = 3, binding = 3) uniform sampler2D directionalShadow;
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentColor;
+layout (location = 0) out vec4 fragment;
 
 void main()
 {
@@ -61,65 +61,16 @@ void main()
     //Set the thickness.
     float thickness = roughnessMetallicAmbientOcclusionSampler.a;
 
-    //Calculate globals.
-    vec3 viewDirection = normalize(cameraWorldPosition - fragmentWorldPosition);
-    float viewAngle = max(dot(normalDirection, viewDirection), 0.0f);
-    vec3 surfaceColor = mix(vec3(0.04f), albedoColor, metallic);
-
-    //Start off with just the ambient lighting.
-    vec3 finalFragment = CalculateAmbient(  surfaceColor,
-                                            roughness,
-                                            viewAngle,
-                                            metallic,
-                                            nightDiffuseIrradianceTexture,
-                                            dayDiffuseIrradianceTexture,
-                                            normalDirection,
-                                            albedoColor,
-                                            viewDirection,
-                                            nightDiffuseTexture,
-                                            dayDiffuseTexture,
-                                            ambientOcclusion);
-
-    //Calculate the directional light.
-    finalFragment += CalculateDirectionalLight( albedoColor,
-                                                thickness,
-                                                viewDirection,
-                                                normalDirection,
-                                                roughness,
-                                                viewAngle,
-                                                surfaceColor,
-                                                metallic) * texture(directionalShadow, fragmentTextureCoordinate).r;
-
-    //Calculate all point lights.
-    for (int i = 0; i < numberOfPointLights; ++i)
-    {
-        finalFragment += CalculatePointLight(   i,
-                                                fragmentWorldPosition, 
-                                                viewAngle,
-                                                viewDirection,
-                                                albedoColor,
-                                                normalDirection,
-                                                roughness,
-                                                metallic,
-                                                ambientOcclusion,
-                                                thickness);
-    }
-
-    //Calculate all spot lights.
-    for (int i = 0; i < numberOfSpotLights; ++i)
-    {
-        finalFragment += CalculateSpotLight(    i,
-                                                fragmentWorldPosition, 
-                                                viewAngle,
-                                                viewDirection,
-                                                albedoColor,
-                                                normalDirection,
-                                                roughness,
-                                                metallic,
-                                                ambientOcclusion,
-                                                thickness);
-    }
-
-    //Set the final fragment color.
-    fragmentColor = vec4(finalFragment, 1.0f);
+    //Write the fragment.
+    fragment = vec4(CalculateLighting(  mix(texture(nightDiffuseIrradianceTexture, normalDirection).rgb, texture(dayDiffuseIrradianceTexture, normalDirection).rgb, environmentBlend),
+                                        mix(texture(nightDiffuseTexture, normalDirection).rgb, texture(dayDiffuseTexture, normalDirection).rgb, environmentBlend),
+                                        texture(directionalShadow, fragmentTextureCoordinate).r,
+                                        fragmentWorldPosition, 
+                                        albedoColor,
+                                        normalDirection,
+                                        roughness,
+                                        metallic,
+                                        ambientOcclusion,
+                                        thickness),
+                                        1.0f);
 }
