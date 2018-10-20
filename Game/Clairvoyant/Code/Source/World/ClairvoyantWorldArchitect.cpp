@@ -208,7 +208,7 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 1'000.0f;
-		properties._Density = 150;
+		properties._Density = 175;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(false, true, false, 0.0f, 0.9f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);

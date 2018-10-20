@@ -5,7 +5,7 @@
 //Clairvoyant.
 #include <Main/ClairvoyantGameSystem.h>
 #include <Main/ClairvoyantResourceCreation.h>
-#include <World/ClairvoyantTerrainGeneration.h>
+#include <World/ClairvoyantTerrainArchitect.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -23,9 +23,9 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 
 	configuration->_TerrainConfiguration._PatchResolution = 256;
 	configuration->_TerrainConfiguration._PatchSize = 64.0f;
-	configuration->_TerrainConfiguration._HeightGenerationFunction = ClairvoyantTerrainGeneration::GenerateHeight;
-	configuration->_TerrainConfiguration._LayerWeightsGenerationFunction = ClairvoyantTerrainGeneration::GenerateLayerWeights;
-	configuration->_TerrainConfiguration._PatchPropertiesGenerationFunction = ClairvoyantTerrainGeneration::GeneratePatchProperties;
+	configuration->_TerrainConfiguration._HeightGenerationFunction = ClairvoyantTerrainArchitect::GenerateHeight;
+	configuration->_TerrainConfiguration._LayerWeightsGenerationFunction = ClairvoyantTerrainArchitect::GenerateLayerWeights;
+	configuration->_TerrainConfiguration._PatchPropertiesGenerationFunction = ClairvoyantTerrainArchitect::GeneratePatchProperties;
 }
 
 MAIN_FUNCTION

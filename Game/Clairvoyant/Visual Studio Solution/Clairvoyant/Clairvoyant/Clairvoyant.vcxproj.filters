@@ -51,9 +51,6 @@
     <ClCompile Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp">
       <Filter>Resource Creator Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantTerrainGeneration.cpp">
-      <Filter>Clairvoyant Code\World\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Code\Source\Player\ClairvoyantPlayer.cpp">
       <Filter>Clairvoyant Code\Player\Source</Filter>
     </ClCompile>
@@ -504,6 +501,9 @@
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantGrassVegetationArchitect.cpp">
       <Filter>Clairvoyant Code\World\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantTerrainArchitect.cpp">
+      <Filter>Clairvoyant Code\World\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h">
@@ -514,9 +514,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantResourceCreation.h">
       <Filter>Clairvoyant Code\Main\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantTerrainGeneration.h">
-      <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\World\TimeOfDaySystem.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
@@ -534,6 +531,9 @@
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantWorldConstants.h">
+      <Filter>Clairvoyant Code\World\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantTerrainArchitect.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
   </ItemGroup>
