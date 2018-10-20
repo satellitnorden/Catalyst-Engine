@@ -94,4 +94,13 @@ float LengthSquared3(vec3 vector)
     return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 }
 
+/*
+*   Given a seed, returns a random number.
+*/
+float RandomFloat(float seed)
+{
+    //return fract(sin(dot(gl_FragCoord.xy * seed, vec2(12.9898f, 78.233f))) * 43758.5453f);
+    return fract(sin(seed * EULERS_NUMBER) * PHI * cos(seed * PI) * SQUARE_ROOT_OF_TWO);
+}
+
 #endif

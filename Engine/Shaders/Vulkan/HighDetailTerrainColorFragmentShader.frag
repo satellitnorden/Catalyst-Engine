@@ -51,17 +51,6 @@ vec3 fragmentWorldPosition;
 vec3 fragmentWorldNormal;
 vec4 fragmentLayerWeights;
 
-//Forward declarations.
-float RandomFloat(vec3 seed);
-
-/*
-*   Given a coordinate and a seed, returns a random number.
-*/
-float RandomFloat(vec3 seed)
-{
-    return fract(sin(dot(seed.xy * seed.z, vec2(12.9898f, 78.233f))) * 43758.5453f);
-}
-
 /*
 *	Calculates the tri-planar data.
 */
@@ -76,7 +65,7 @@ void CalculateTriPlanarData(float depth)
 	textureCoordinateXY = fragmentWorldPosition.xy;
 
     //Calculate the random float.
-    float randomFloat = RandomFloat(vec3(gl_FragCoord.xy, depth));
+    float randomFloat = RandomFloat(gl_FragCoord.x * gl_FragCoord.y * depth);
 
     //Pick which plane to sample.
     if (absoluteNormal.x > absoluteNormal.y && absoluteNormal.x > absoluteNormal.z && absoluteNormal.x > randomFloat)

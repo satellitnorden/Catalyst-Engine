@@ -63,14 +63,6 @@ bool IsLooping()
 }
 
 /*
-*	Given a seed, generate a random float in the 0.0f to 1.0f range.
-*/
-float RandomFloat(float seed)
-{
-	return fract(sin(seed) * cos(seed * float(particleIndex)));
-}
-
-/*
 *	Generates a new random scale.
 */
 vec2 GenerateRandomScale()
