@@ -66,16 +66,6 @@ private:
 	void InitializeParticles();
 
 	/*
-	*	Initializes the vegetation.
-	*/
-	void InitializeVegetation();
-
-	/*
-	*	Generates a transformation.
-	*/
-	bool GenerateTransformation(const bool underwater, const bool snow, const bool onlySnow, const float height, const float dotModulator, const float minimumScale, const float maximumScale, const Vector3 &randomRotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT;
-
-	/*
 	*	Updates the environment.
 	*/
 	void UpdateEnvironment() NOEXCEPT;

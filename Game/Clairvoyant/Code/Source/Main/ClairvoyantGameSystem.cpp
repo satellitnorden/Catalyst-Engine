@@ -5,6 +5,7 @@
 #include <Player/ClairvoyantPlayer.h>
 #include <Player/SoakCamera.h>
 #include <World/ClairvoyantGrassVegetationArchitect.h>
+#include <World/ClairvoyantSolidVegetationArchitect.h>
 #include <World/ClairvoyantWorldArchitect.h>
 #include <World/TimeOfDaySystem.h>
 
@@ -40,6 +41,9 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 
 	//Initialize the Clairvoyant grass vegetation architect.
 	ClairvoyantGrassVegetationArchitect::Initialize();
+
+	//Initialize the Clairvoyant solid vegetation architect.
+	ClairvoyantSolidVegetationArchitect::Initialize();
 
 	//Initialize the world architect.
 	ClairvoyantWorldArchitect::Instance->Initialize();

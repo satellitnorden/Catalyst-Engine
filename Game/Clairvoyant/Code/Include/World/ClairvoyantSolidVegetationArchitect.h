@@ -3,13 +3,13 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-class ClairvoyantGrassVegetationArchitect final
+class ClairvoyantSolidVegetationArchitect final
 {
 
 public:
 
 	/*
-	*	Initializes the Clairvoyant grass vegetation architect.
+	*	Initializes the Clairvoyant solid vegetation architect.
 	*/
 	static void Initialize() NOEXCEPT;
 
