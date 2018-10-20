@@ -45,8 +45,8 @@ namespace ClairvoyantWorldArchitectConstants
 	constexpr float GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE{ 62.5f };
 	constexpr float GRASS_VEGETATION_LOW_DETAIL_DISTANCE{ 125.0f };
 
-	constexpr float SOLID_VEGETATION_MEDIUM_DETAIL_DISTANCE{ 125.0f };
-	constexpr float SOLID_VEGETATION_LOW_DETAIL_DISTANCE{ 250.0f };
+	constexpr float SOLID_VEGETATION_MEDIUM_DETAIL_DISTANCE{ 250.0f };
+	constexpr float SOLID_VEGETATION_LOW_DETAIL_DISTANCE{ 500.0f };
 }
 
 /*
@@ -270,10 +270,10 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 1'000.0f;
-		properties._Density = 10;
+		properties._Density = 1;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, true, false, 2.0f, 0.9f, 0.25f, 0.25f, Vector3(0.0f, 0.0f, 0.0f), box, transformation);
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, true, false, 2.0f, 0.0f, 0.25f, 0.25f, Vector3(0.0f, 0.0f, 0.0f), box, transformation);
 		};
 
 		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;

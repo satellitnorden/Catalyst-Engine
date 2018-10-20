@@ -66,6 +66,7 @@ layout (location = 2) in mat3 fragmentTangentSpaceMatrix;
 //Texture samplers.
 layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
 layout (set = 1, binding = 2) uniform sampler2D normalMapTexture;
+layout (set = 1, binding = 3) uniform sampler2D materialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedo;
@@ -93,10 +94,20 @@ void main()
     albedo = texture(albedoTexture, fragmentTextureCoordinate);
 
     //Write the normal/depth.
-    vec3 normal = texture(normalMapTexture, fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
-    normal = fragmentTangentSpaceMatrix * normal;
-    normalDepth = vec4(normal, gl_FragCoord.z);
+    normalDepth = vec4(fragmentTangentSpaceMatrix[2], gl_FragCoord.z);
 
-    //Write the material properties.
-    materialProperties = vec4(1.0f, 0.0f, 1.0f, 1.0f);
+    //Sample the material properties.
+    vec4 materialPropertiesSampler = texture(materialPropertiesTexture, fragmentTextureCoordinate);
+
+    //Write the roughness.
+    materialProperties.r = materialPropertiesSampler.r;
+
+    //Write the metallic.
+    materialProperties.g = materialPropertiesSampler.g;
+
+    //Write the ambient occlusion.
+    materialProperties.b = materialPropertiesSampler.b;
+
+    //Write the thickness.
+    materialProperties.a = 1.0f;
 }
