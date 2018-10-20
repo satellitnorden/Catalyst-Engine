@@ -305,11 +305,11 @@ public:
 	}
 
 	/*
-	*	Given a value and an original range, scale the value to a range between 0.0f and 1.0f.
+	*	Scales a value from one range to another.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float ScaleToNormalizedRange(const float value, const float originalRangeMinimum, const float originalRangeMaximum) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float Scale(const float value, const float originalMinimum, const float originalMaximum, const float newMinimum, const float newMaximum) NOEXCEPT
 	{
-		return (value - originalRangeMinimum) / (originalRangeMaximum - originalRangeMinimum);
+		return (((value - originalMinimum) * (newMaximum - newMinimum)) / (originalMaximum - originalMinimum)) + newMinimum;
 	}
 
 	/*

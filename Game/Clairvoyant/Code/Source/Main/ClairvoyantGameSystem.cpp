@@ -4,6 +4,7 @@
 //Clairvoyant.
 #include <Player/ClairvoyantPlayer.h>
 #include <Player/SoakCamera.h>
+#include <World/ClairvoyantGrassVegetationArchitect.h>
 #include <World/ClairvoyantWorldArchitect.h>
 #include <World/TimeOfDaySystem.h>
 
@@ -36,6 +37,9 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 #if defined(CATALYST_ENABLE_OCEAN)
 	EnvironmentManager::Instance->SetOceanMaterial(ResourceLoader::GetOceanMaterial(HashString("DefaultOceanMaterial")));
 #endif
+
+	//Initialize the Clairvoyant grass vegetation architect.
+	ClairvoyantGrassVegetationArchitect::Initialize();
 
 	//Initialize the world architect.
 	ClairvoyantWorldArchitect::Instance->Initialize();

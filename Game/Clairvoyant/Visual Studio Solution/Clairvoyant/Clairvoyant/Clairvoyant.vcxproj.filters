@@ -501,6 +501,9 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\Viewer.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantGrassVegetationArchitect.cpp">
+      <Filter>Clairvoyant Code\World\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantGameSystem.h">
@@ -525,6 +528,12 @@
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Code\Include\World\EnvironmentParameters.h">
+      <Filter>Clairvoyant Code\World\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantGrassVegetationArchitect.h">
+      <Filter>Clairvoyant Code\World\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantWorldConstants.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
   </ItemGroup>

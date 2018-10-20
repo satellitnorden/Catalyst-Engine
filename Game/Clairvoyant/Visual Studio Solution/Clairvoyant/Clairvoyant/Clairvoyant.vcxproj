@@ -344,6 +344,7 @@
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantResourceCreation.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Player\ClairvoyantPlayer.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Player\SoakCamera.cpp" />
+    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantGrassVegetationArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantTerrainGeneration.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantWorldArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\TimeOfDaySystem.cpp" />
@@ -353,8 +354,10 @@
     <ClInclude Include="..\..\..\Code\Include\Main\ClairvoyantResourceCreation.h" />
     <ClInclude Include="..\..\..\Code\Include\Player\ClairvoyantPlayer.h" />
     <ClInclude Include="..\..\..\Code\Include\Player\SoakCamera.h" />
+    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantGrassVegetationArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantTerrainGeneration.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantWorldArchitect.h" />
+    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantWorldConstants.h" />
     <ClInclude Include="..\..\..\Code\Include\World\EnvironmentParameters.h" />
     <ClInclude Include="..\..\..\Code\Include\World\TimeOfDaySystem.h" />
   </ItemGroup>
