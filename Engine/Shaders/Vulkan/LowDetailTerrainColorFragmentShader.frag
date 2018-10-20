@@ -31,22 +31,7 @@ vec3 fragmentWorldNormal;
 vec4 fragmentLayerWeights;
 
 //Forward declarations.
-vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth);
 float RandomFloat(vec3 seed);
-
-/*
-*   Calculates the fragment world position.
-*/
-vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
-{
-    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
-    vec3 fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, depth);
-    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
-    viewSpacePosition /= viewSpacePosition.w;
-    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
-
-    return worldSpacePosition.xyz;
-}
 
 /*
 *   Given a coordinate and a seed, returns a random number.

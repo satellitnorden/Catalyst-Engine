@@ -38,28 +38,6 @@ layout (push_constant) uniform ScreenSpaceAmbientOcclusionData
     vec2 noiseScale;
 };
 
-/*
-*   Calculates the fragment world position.
-*/
-vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
-{
-    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
-    vec3 fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, depth);
-    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
-    viewSpacePosition /= viewSpacePosition.w;
-    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
-
-    return worldSpacePosition.xyz;
-}
-
-/*
-*   Returns the length of a vector squared, ignoring the Y component.
-*/
-float LengthSquared(vec3 vector)
-{
-    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
-}
-
 void main()
 {
     //Sample the normal depth texture.
@@ -96,7 +74,7 @@ void main()
         float sampleDepth = texture(normalDepthTexture, offset.xy).w;
         vec3 actualSamplePosition = CalculateFragmentWorldPosition(offset.xy, sampleDepth);
 
-        float rangeCheck = smoothstep(0.0f, 1.0f, SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS_SQUARED / LengthSquared(currentSample - actualSamplePosition));
+        float rangeCheck = smoothstep(0.0f, 1.0f, SCREEN_SPACE_AMBIENT_OCCLUSION_RADIUS_SQUARED / LengthSquared3(currentSample - actualSamplePosition));
         occlusion += (offset.z >= sampleDepth + SCREEN_SPACE_AMBIENT_OCCLUSION_BIAS ? 1.0f : 0.0f) * rangeCheck;    
     }
 

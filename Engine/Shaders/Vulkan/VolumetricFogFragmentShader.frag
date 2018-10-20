@@ -42,14 +42,6 @@ vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
     return worldSpacePosition.xyz;
 }
 
-/*
-*   Returns the length of a vector squared.
-*/
-float LengthSquared(vec3 vector)
-{
-    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
-}
-
 void main()
 {
 	 //Sample the depth of the scene at this point.
@@ -59,7 +51,7 @@ void main()
     vec3 sceneWorldPosition = CalculateWorldPosition(fragmentTextureCoordinate, sceneDepth);
 
     //Calculate the distance to the scene world position.
-    float distanceToSceneWorldPosition = LengthSquared(sceneWorldPosition - cameraWorldPosition);
+    float distanceToSceneWorldPosition = LengthSquared3(sceneWorldPosition - cameraWorldPosition);
 
     //Calculate the fog weight.
     float distanceWeight = min(distanceToSceneWorldPosition / fogLengthSquared, 1.0f);
@@ -77,7 +69,7 @@ void main()
     /*
     //Calculate the ray direction, distance and step.
     vec3 rayDirection = normalize(sceneWorldPosition - cameraWorldPosition);
-    float distanceToScenePositionSquared = LengthSquared(sceneWorldPosition - cameraWorldPosition);
+    float distanceToScenePositionSquared = LengthSquared3(sceneWorldPosition - cameraWorldPosition);
     float rayDistance = min(rayDistanceSquared, distanceToScenePositionSquared);
     vec3 rayStep = rayDirection * (sqrt(rayDistance) / numberOfRaySteps);
 

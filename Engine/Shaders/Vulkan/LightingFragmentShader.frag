@@ -6,11 +6,12 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystShaderPhysicallyBasedLighting.glsl"
 
 //Preprocessor defines.
 #define DIRECTIONAL_LIGHT_SCREEN_SHADE_SHADOWS_SAMPLES 250
-#define PI 3.141592f
 
+//Layout specification.
 layout (early_fragment_tests) in;
 
 //Post processing data.
@@ -45,99 +46,9 @@ float thickness;
 float viewAngle;
 vec3 viewDirection;
 vec3 surfaceColor;
-vec3 fragmentScreenSpacePosition;
 vec3 fragmentWorldPosition;
 vec3 albedoColor;
 vec3 normalDirection;
-
-/*
-*   Calculates the fresnel, with roughness in mind.
-*/
-vec3 CalculateFresnelRoughness(float lightViewAngle)
-{
-    return surfaceColor + (max(vec3(1.0f - roughness), surfaceColor) - surfaceColor) * pow(max(1.0f - lightViewAngle, 0.0f), 5.0f);
-}
-
-/*
-*   Calculates the ambient component of this fragment.
-*/
-vec3 CalculateAmbient()
-{
-    vec3 specularComponent = CalculateFresnelRoughness(viewAngle);
-    vec3 diffuseComponent = 1.0f - specularComponent;
-    diffuseComponent *= 1.0f - metallic;
-
-    vec3 irradiance = mix(texture(nightDiffuseIrradianceTexture, normalDirection).rgb, texture(dayDiffuseIrradianceTexture, normalDirection).rgb, environmentBlend);
-    vec3 diffuse = irradiance * albedoColor;
-
-    vec3 reclectionDirection = reflect(-viewDirection, normalDirection);
-    vec3 specularIrradiance = mix(texture(nightDiffuseTexture, normalDirection).rgb, texture(dayDiffuseTexture, normalDirection).rgb, environmentBlend);
-    vec3 specular = mix(specularIrradiance, irradiance, roughness);
-    vec3 ambient = (diffuse * diffuseComponent + specular * specularComponent) * ambientOcclusion * (screenSpaceAmbientOcclusion * screenSpaceAmbientOcclusion);
-
-    return vec3(min(ambient.r, 1.0f), min(ambient.g, 1.0f), min(ambient.b, 1.0f));
-}
-
-/*
-*   Calculates the distribution.
-*/
-float CalculateDistribution(vec3 halfwayDirection)
-{
-    float roughnessSquared = roughness * roughness;
-    float roughnessSquaredSquared = roughnessSquared * roughnessSquared;
-    float normalHalfwayAngle = max(dot(normalDirection, halfwayDirection), 0.0f);
-    float normalHalfwayAngleSquared = normalHalfwayAngle * normalHalfwayAngle;
-
-    float denominator = normalHalfwayAngleSquared * (roughnessSquaredSquared - 1.0f) + 1.0f;
-
-    return roughnessSquaredSquared / (PI * denominator * denominator);
-}
-
-/*
-*   Calculates the geometry.
-*/
-float CalculateGeometry(float lightAngle)
-{
-    float geometryRoughness = roughness + 1.0f;
-    geometryRoughness = (geometryRoughness * geometryRoughness) / 8.0f;
-
-    float lightObstruction = lightAngle / (lightAngle * (1.0f - geometryRoughness) + geometryRoughness);
-    float viewObstruction = viewAngle / (viewAngle * (1.0f - geometryRoughness) + geometryRoughness);
-
-    return lightObstruction * viewObstruction;
-}
-
-/*
-*   Calculates the fresnel.
-*/
-vec3 CalculateFresnel(float lightViewAngle)
-{
-    return surfaceColor + (1.0f - surfaceColor) * pow(max(1.0f - lightViewAngle, 0.0f), 5.0f);
-}
-
-/*
-*   Calculates a light.
-*/
-vec3 CalculateLight(vec3 lightDirection, vec3 radiance)
-{
-    vec3 halfwayDirection = normalize(viewDirection + lightDirection);
-    float lightViewAngle = clamp(dot(halfwayDirection, viewDirection), 0.0f, 1.0f);
-    float lightAngle = mix(1.0f, max(dot(normalDirection, lightDirection), 0.0f), thickness);
-
-    float distribution = CalculateDistribution(halfwayDirection);
-    float geometry = CalculateGeometry(lightAngle);
-    vec3 fresnel = CalculateFresnel(lightViewAngle);
-
-    vec3 diffuseComponent = vec3(1.0f) - fresnel;
-    diffuseComponent *= 1.0f - metallic;
-
-    vec3 nominator = distribution * geometry * fresnel;
-    float denominator = 4 * viewAngle * lightAngle + 0.001f;
-    vec3 specularComponent = nominator / denominator;
-
-    //Return the combined components.
-    return (diffuseComponent * albedoColor / PI + specularComponent) * radiance * lightAngle;
-}
 
 /*
 *   Linear step.
@@ -156,49 +67,6 @@ float CalculateDirectionalLightShadowMultiplier()
 }
 
 /*
-*   Returns the length of a vector squared, ignoring the Y component.
-*/
-float LengthSquared(vec3 vector)
-{
-    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
-}
-
-/*
-*   Returns the directional light screen space shadow multiplier.
-*/
-float CalculateDirectionalLightScreenSpaceShadowMultiplier()
-{
-    const float rayStep = 0.1f;
-    const int numberOfRaySteps = 10;
-
-    /*
-    if (LengthSquared(fragmentWorldPosition - cameraWorldPosition) > 10000.0f)
-    {
-        return 1.0f;
-    }
-    */
-
-    vec3 rayDirection = -directionalLightDirection;
-
-    float accumulatedShadow = 0.0f;
-    vec3 currentPosition = fragmentWorldPosition;
-
-    for (int i = 0; i < numberOfRaySteps; ++i)
-    {
-        currentPosition += rayDirection * rayStep;
-
-        vec4 currentPositionProjection = viewMatrix * vec4(currentPosition, 1.0f);
-        currentPositionProjection.xyz /= currentPositionProjection.w;
-
-        vec2 currentPositionCoordinates = currentPositionProjection.xy * 0.5f + 0.5f;
-
-        accumulatedShadow += texture(normalDirectionDepthTexture, currentPositionCoordinates).a < currentPositionProjection.z ? 0.0f : 1.0f;
-    }
-
-    return accumulatedShadow / numberOfRaySteps;
-}
-
-/*
 *   Calculates the directional light.
 */
 vec3 CalculateDirectionalLight()
@@ -207,21 +75,16 @@ vec3 CalculateDirectionalLight()
     vec3 lightDirection = -directionalLightDirection;
     vec3 radiance = mix(albedoColor, directionalLightColor, thickness) * directionalLightIntensity;
 
-    return CalculateLight(lightDirection, radiance) * CalculateDirectionalLightShadowMultiplier() * screenSpaceAmbientOcclusion;
-}
-
-/*
-*   Calculates the fragment world position.
-*/
-vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
-{
-    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
-    fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, depth);
-    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
-    viewSpacePosition /= viewSpacePosition.w;
-    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
-
-    return worldSpacePosition.xyz;
+    return CalculateLight(  viewDirection,
+                            lightDirection,
+                            normalDirection,
+                            thickness,
+                            roughness,
+                            viewAngle,
+                            surfaceColor,
+                            metallic,
+                            albedoColor,
+                            radiance) * CalculateDirectionalLightShadowMultiplier() * screenSpaceAmbientOcclusion;
 }
 
 /*
@@ -238,7 +101,16 @@ vec3 CalculatePointLight(int index)
 
     vec3 radiance = mix(albedoColor, pointLightColors[index], thickness) * pointLightIntensities[index] * attenuation;
 
-    return CalculateLight(lightDirection, radiance);
+    return CalculateLight(  viewDirection,
+                            lightDirection,
+                            normalDirection,
+                            thickness,
+                            roughness,
+                            viewAngle,
+                            surfaceColor,
+                            metallic,
+                            albedoColor,
+                            radiance);
 }
 
 /*
@@ -268,7 +140,16 @@ vec3 CalculateSpotLight(int index)
 
     vec3 radiance = mix(albedoColor, spotLightColors[index], thickness) * spotLightIntensities[index] * intensity * attenuation;
 
-    return CalculateLight(lightDirection, radiance);
+    return CalculateLight(  viewDirection,
+                            lightDirection,
+                            normalDirection,
+                            thickness,
+                            roughness,
+                            viewAngle,
+                            surfaceColor,
+                            metallic,
+                            albedoColor,
+                            radiance);
 }
 
 void main()
@@ -308,7 +189,18 @@ void main()
     CalculateScreenSpaceAmbientOcclusion();
 
     //Start off with just the ambient lighting.
-    vec3 finalFragment = CalculateAmbient();
+    vec3 finalFragment = CalculateAmbient(  surfaceColor,
+                                            roughness,
+                                            viewAngle,
+                                            metallic,
+                                            nightDiffuseIrradianceTexture,
+                                            dayDiffuseIrradianceTexture,
+                                            normalDirection,
+                                            albedoColor,
+                                            viewDirection,
+                                            nightDiffuseTexture,
+                                            dayDiffuseTexture,
+                                            ambientOcclusion);
 
     //Calculate the directional light.
     finalFragment += CalculateDirectionalLight();

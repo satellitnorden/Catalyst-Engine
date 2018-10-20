@@ -27,21 +27,13 @@ layout (location = 0) out float fragmentLengthFactor;
 layout (location = 1) out vec2 fragmentTextureCoordinate;
 layout (location = 2) out mat3 fragmentTangentSpaceMatrix;
 
-/*
-*   Returns the length of a vector squared.
-*/
-float LengthSquared(vec3 vector)
-{
-    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
-}
-
 void main()
 {
     //Calculate the transformed position.
     vec4 transformedPosition = transformationMatrix * vec4(vertexPosition, 1.0);
 
     //Calculate the fragment length factor.
-    float distanceToVertexSquared = LengthSquared(transformedPosition.xyz - cameraWorldPosition);
+    float distanceToVertexSquared = LengthSquared3(transformedPosition.xyz - cameraWorldPosition);
     fragmentLengthFactor = distanceToVertexSquared >= cutoffDistanceSquared ? 0.0f : distanceToVertexSquared <= halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
 
     //Pass along the texture coordinate to the fragment shader.

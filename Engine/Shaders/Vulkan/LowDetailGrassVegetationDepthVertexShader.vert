@@ -8,10 +8,6 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define EULERS_NUMBER 2.718281f
-#define PHI 1.618033f
-#define PI 3.141592f
-#define SQUARE_ROOT_OF_TWO 1.414213f
 #define VEGETATION_WIND_AFFECTION 0.15f
 
 //Push constant data.
@@ -34,14 +30,6 @@ layout (location = 5) in mat4 vertexTransformationMatrix;
 layout (location = 0) out vec2 fragmentTextureCoordinate;
 layout (location = 1) out float fragmentLengthFactor;
 
-/*
-*   Returns the length of a vector squared.
-*/
-float LengthSquared(vec3 vector)
-{
-    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
-}
-
 void main()
 {
     //Calculate the final vertex position.
@@ -51,7 +39,7 @@ void main()
     fragmentTextureCoordinate = vertexTextureCoordinate;
 
     //Calculate the length squared.
-    float distanceToVertexSquared = LengthSquared(finalVertexPosition - cameraWorldPosition);
+    float distanceToVertexSquared = LengthSquared3(finalVertexPosition - cameraWorldPosition);
 
     fragmentLengthFactor = distanceToVertexSquared >= cutoffDistanceSquared ? 0.0f : distanceToVertexSquared <= halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
 

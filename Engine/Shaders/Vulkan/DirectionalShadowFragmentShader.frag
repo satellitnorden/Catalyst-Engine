@@ -6,14 +6,11 @@
 
 //Includes.
 #include "CatalystShaderCommon.glsl"
-#include "CatalystShaderUtilities.util"
 
 //Preprocessor defines.
 #define ITERATIONS (4)
 #define INFLUENCE_PER_ITERATION (1.0f / ITERATIONS)
 #define MAXIMUM_OFFSET (0.001f)
-#define PHI (1.618033f)
-#define PI (3.141592f)
 #define SHADOW_BIAS (0.0025f)
 
 //Layout specification.

@@ -26,14 +26,6 @@ layout (location = 2) out vec4 tessellationEvaluationLayerWeights[];
 layout (location = 3) out vec2 tessellationEvaluationTextureCoordinate[];
 
 /*
-*   Returns the length of a vector squared, ignoring the Y component.
-*/
-float LengthSquared(vec3 vector)
-{
-    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
-}
-
-/*
 *   Returns the middle point given two points.
 */
 vec3 GetMiddlePoint(vec3 point1, vec3 point2)

@@ -8,10 +8,6 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define EULERS_NUMBER 2.718281f
-#define PHI 1.618033f
-#define PI 3.141592f
-#define SQUARE_ROOT_OF_TWO 1.414213f
 #define VEGETATION_WIND_AFFECTION 0.15f
 
 //Push constant data.
@@ -46,14 +42,6 @@ vec3 CalculateWindModulator()
     return vec3(xModulator * windDirection.x, 0.0f, zModulator * windDirection.z) * windSpeed * VEGETATION_WIND_AFFECTION;
 }
 
-/*
-*   Returns the length of a vector squared.
-*/
-float LengthSquared(vec3 vector)
-{
-    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
-}
-
 void main()
 {
     //Calculate the final vertex position.
@@ -64,7 +52,7 @@ void main()
     fragmentTextureCoordinate = vertexTextureCoordinate;
 
     //Calculate the fragment length factor.
-    float distanceToVertexSquared = LengthSquared(finalVertexPosition - cameraWorldPosition);
+    float distanceToVertexSquared = LengthSquared3(finalVertexPosition - cameraWorldPosition);
     fragmentLengthFactor = distanceToVertexSquared >= cutoffDistanceSquared ? 0.0f : distanceToVertexSquared <= halfCutoffDistanceSquared ? 1.0f : 1.0f - ((distanceToVertexSquared - halfCutoffDistanceSquared) * inverseHalfCutoffDistanceSquared);
 
     //Set the position.

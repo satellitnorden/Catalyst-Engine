@@ -305,13 +305,12 @@ namespace VulkanShaderData
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
-		data.EmplaceFast(68);
-		data.EmplaceFast(121);
-		data.EmplaceFast(110);
+		data.EmplaceFast(71);
+		data.EmplaceFast(108);
+		data.EmplaceFast(111);
+		data.EmplaceFast(98);
 		data.EmplaceFast(97);
-		data.EmplaceFast(109);
-		data.EmplaceFast(105);
-		data.EmplaceFast(99);
+		data.EmplaceFast(108);
 		data.EmplaceFast(85);
 		data.EmplaceFast(110);
 		data.EmplaceFast(105);
@@ -323,6 +322,7 @@ namespace VulkanShaderData
 		data.EmplaceFast(97);
 		data.EmplaceFast(116);
 		data.EmplaceFast(97);
+		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(0);
 		data.EmplaceFast(6);

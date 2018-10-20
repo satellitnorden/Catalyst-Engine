@@ -48,7 +48,6 @@ vec3 CalculateSceneColor(vec3 normal, float distanceToBottomSquared);
 vec2 CalculateSceneTextureCoordinate(vec3 normal, float distanceToBottomSquared);
 vec3 CalculateSceneWorldPosition();
 vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth);
-float LengthSquared(vec3 vector);
 float Scale(float value, float originalMinimum, float originalMaximum, float newMinimum, float newMaximum);
 
 /*
@@ -72,7 +71,7 @@ vec3 CalculateBelowOceanFragment(vec3 sceneWorldPosition)
     vec3 intersectionPoint = CalculateIntersectionPoint(vec3(0.0f, 0.0f, 0.0f), cameraWorldPosition, vec3(0.0f, -1.0f, 0.0f), viewDirection);
 
     //Calculate the distance to the bottom squared.
-    float distanceToBottomSquared = LengthSquared(sceneWorldPosition - intersectionPoint);
+    float distanceToBottomSquared = LengthSquared3(sceneWorldPosition - intersectionPoint);
 
     //Calculate the intersection point texture coordinate.
     vec2 intersectionPointTextureCoordinate = CalculateIntersectionPointTextureCoordinate(intersectionPoint);
@@ -249,14 +248,6 @@ vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
     vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
 
     return worldSpacePosition.xyz;
-}
-
-/*
-*   Returns the length of a vector squared.
-*/
-float LengthSquared(vec3 vector)
-{
-    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 }
 
 /*

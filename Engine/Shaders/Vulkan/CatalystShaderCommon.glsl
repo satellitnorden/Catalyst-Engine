@@ -1,3 +1,6 @@
+#if !defined(CATALYST_SHADER_COMMON)
+#define CATALYST_SHADER_COMMON
+
 //Extensions.
 #extension GL_ARB_separate_shader_objects : enable
 
@@ -5,9 +8,10 @@
 #define MaximumNumberOfPointLights 8
 #define MaximumNumberOfSpotLights 8
 
-layout (std140, set = 0, binding = 0) uniform DynamicUniformData
+//Global uniform data.
+layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 {
-    //Camera data.
+    //Viewer data.
     layout (offset = 0) float cameraFieldOfViewCosine; //Offset; 0 - Size; 16
     layout (offset = 16) mat4 inverseCameraMatrix; //Offset; 16 - Size; 64
     layout (offset = 80) mat4 inverseProjectionMatrix; //Offset; 80 - Size; 64
@@ -53,3 +57,41 @@ layout (std140, set = 0, binding = 0) uniform DynamicUniformData
 
     //Total size; 1904
 };
+
+//Constants.
+#define EULERS_NUMBER (2.718281f)
+#define PHI (1.618033f)
+#define PI (3.141592f)
+#define SQUARE_ROOT_OF_TWO (1.414213f)
+
+/*
+*   Calculates a fragment's world position.
+*/
+vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)
+{
+    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
+    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(vec3(nearPlaneCoordinate, depth), 1.0f);
+    float inverseViewSpacePositionDenominator = 1.0f / viewSpacePosition.w;
+    viewSpacePosition *= inverseViewSpacePositionDenominator;
+    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
+
+    return worldSpacePosition.xyz;
+}
+
+/*
+*   Returns the length of a vector with two components squared.
+*/
+float LengthSquared2(vec2 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y;
+}
+
+/*
+*   Returns the length of a vector with three components squared.
+*/
+float LengthSquared3(vec3 vector)
+{
+    return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+}
+
+#endif

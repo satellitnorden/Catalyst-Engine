@@ -8,10 +8,6 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define EULERS_NUMBER 2.718281f
-#define PHI 1.618033f
-#define PI 3.141592f
-#define SQUARE_ROOT_OF_TWO 1.414213f
 #define VEGETATION_WIND_AFFECTION 0.15f
 
 //Push constant data.
