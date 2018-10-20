@@ -264,6 +264,30 @@ void ClairvoyantWorldArchitect::InitializeVegetation()
 	}
 
 	{
+		//Add the test solid vegetation type.
+		SolidVegetationTypeProperties properties;
+
+		properties._MediumDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantWorldArchitectConstants::SOLID_VEGETATION_LOW_DETAIL_DISTANCE;
+		properties._CutoffDistance = 1'000.0f;
+		properties._Density = 10;
+		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
+		{
+			return ClairvoyantWorldArchitect::Instance->GenerateTransformation(true, true, false, 2.0f, 0.9f, 0.25f, 0.25f, Vector3(0.0f, 0.0f, 0.0f), box, transformation);
+		};
+
+		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
+
+		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetPhysicalModel(HashString("TestModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetPhysicalModel(HashString("TestModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("TestModel"));
+
+		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("TestMaterial")) };
+
+		VegetationSystem::Instance->AddSolidVegetationType(properties, models, material);
+	}
+
+	{
 		//Add the rock volcanic solid vegetation type.
 		SolidVegetationTypeProperties properties;
 

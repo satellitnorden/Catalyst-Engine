@@ -198,6 +198,23 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
+			//Create the test material.
+			PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\TestMaterial";
+			parameters._ID = "TestMaterial";
+			parameters._MipmapLevels = 9;
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Test\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Test\\NormalMap.png";
+			parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Test\\Roughness.png";
+			parameters._MetallicFile = "..\\..\\..\\Resources\\Raw\\Textures\\Test\\Metallic.png";
+			parameters._AmbientOcclusionFile = nullptr;
+			parameters._ThicknessFile = nullptr;
+
+			PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+		}
+
+		{
 			//Create the rock volcanic physical material.
 			PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
 
@@ -229,6 +246,17 @@ namespace ClairvoyantResourceCreation
 			parameters._ThicknessFile = nullptr;
 
 			PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+		}
+
+		{
+			//Create the test model.
+			PhysicalModelCreator::PhysicalModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\TestModel";
+			parameters._ID = "TestModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Test\\Model.obj";
+
+			PhysicalModelCreator::CreatePhysicalModel(parameters);
 		}
 
 		{
@@ -361,8 +389,10 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailDefaultGrassModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailDefaultGrassModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailDefaultGrassModel.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TestMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\RockVolcanicMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TreeStumpMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\TestModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailRockVolcanicModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailRockVolcanicModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailRockVolcanicModel.cr");

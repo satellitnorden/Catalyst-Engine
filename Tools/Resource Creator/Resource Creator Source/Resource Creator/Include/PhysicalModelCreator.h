@@ -14,9 +14,11 @@
 #include <Resources/ResourcesCore.h>
 
 //Third party libraries.
+#pragma optimize("", off)
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#pragma optimize("", on)
 
 class PhysicalModelCreator final
 {
