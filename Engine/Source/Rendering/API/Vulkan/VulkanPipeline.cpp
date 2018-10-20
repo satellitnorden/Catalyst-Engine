@@ -240,10 +240,10 @@ void VulkanPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPip
 
 		newPipelineColorBlendAttachmentState.blendEnable = vulkanPipelineCreationParameters._BlendEnable ? VK_TRUE : VK_FALSE;
 		newPipelineColorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-		newPipelineColorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
+		newPipelineColorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 		newPipelineColorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
-		newPipelineColorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-		newPipelineColorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		newPipelineColorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		newPipelineColorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 		newPipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
 		newPipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	

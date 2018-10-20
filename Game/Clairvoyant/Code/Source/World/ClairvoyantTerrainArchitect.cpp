@@ -196,7 +196,7 @@ void ClairvoyantTerrainArchitect::GenerateLayerWeights(const TerrainProperties &
 	}
 
 	//Determine the weight of the rock layer.
-	layerWeights->_Z = CatalystBaseMath::SmoothStep<1>(1.0f - CatalystBaseMath::Clamp<float>(Vector3::DotProduct(normal, Vector3::UP), 0.0f, 1.0f));
+	layerWeights->_Z = CatalystBaseMath::SmoothStep<3>(1.0f - CatalystBaseMath::Clamp<float>(Vector3::DotProduct(normal, Vector3::UP), 0.0f, 1.0f));
 
 	//Determine the weight of the snow layer.
 	if (worldPosition._Y < ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
