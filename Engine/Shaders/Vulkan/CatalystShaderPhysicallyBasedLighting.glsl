@@ -1,5 +1,6 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
+#include "CatalystShaderPhysicallyBasedLightingInternals.glsl"
 
 //Forward declarations.
 vec3 CalculateAmbient(  vec3 surfaceColor,
@@ -15,33 +16,28 @@ vec3 CalculateAmbient(  vec3 surfaceColor,
                         samplerCube secondDiffuseTexture,
                         float ambientOcclusion);
 
-float CalculateDistribution(    float roughness,
+vec3 CalculateDirectionalLight( vec3 albedoColor,
+                                float thickness,
+                                vec3 viewDirection,
                                 vec3 normalDirection,
-                                vec3 halfwayDirection);
-
-vec3 CalculateFresnel(  vec3 surfaceColor,
-                        float lightViewAngle);
-
-vec3 CalculateFresnelRoughness( vec3 surfaceColor,
                                 float roughness,
-                                float lightViewAngle);
+                                float viewAngle,
+                                vec3 surfaceColor,
+                                float metallic);
 
-float CalculateGeometry(    float roughness,
-                            float lightAngle,
-                            float viewAngle);
-
-vec3 CalculateLight(    vec3 viewDirection,
-                        vec3 lightDirection,
-                        vec3 normalDirection,
-                        float thickness,
-                        float roughness,
-                        float viewAngle,
-                        vec3 surfaceColor,
-                        float metallic,
-                        vec3 radiance);
+vec3 CalculateSpotLight(    int index,
+                            vec3 fragmentWorldPosition,
+                            float viewAngle,
+                            vec3 viewDirection,
+                            vec3 albedo,
+                            vec3 normal,
+                            float roughness,
+                            float metallic,
+                            float ambientOcclusion,
+                            float thickness);
 
 /*
-*   Calculates the ambient component of this fragment.
+*   Calculates the ambient lighting.
 */
 vec3 CalculateAmbient(  vec3 surfaceColor,
                         float roughness,
@@ -71,86 +67,103 @@ vec3 CalculateAmbient(  vec3 surfaceColor,
 }
 
 /*
-*   Calculates the distribution.
+*   Calculates the directional light.
 */
-float CalculateDistribution(    float roughness,
+vec3 CalculateDirectionalLight( vec3 albedoColor,
+                                float thickness,
+                                vec3 viewDirection,
                                 vec3 normalDirection,
-                                vec3 halfwayDirection)
-{
-    float roughnessSquared = roughness * roughness;
-    float roughnessSquaredSquared = roughnessSquared * roughnessSquared;
-    float normalHalfwayAngle = max(dot(normalDirection, halfwayDirection), 0.0f);
-    float normalHalfwayAngleSquared = normalHalfwayAngle * normalHalfwayAngle;
-
-    float denominator = normalHalfwayAngleSquared * (roughnessSquaredSquared - 1.0f) + 1.0f;
-
-    return roughnessSquaredSquared / (PI * denominator * denominator);
-}
-
-/*
-*   Calculates the fresnel.
-*/
-vec3 CalculateFresnel(  vec3 surfaceColor,
-                        float lightViewAngle)
-{
-    return surfaceColor + (1.0f - surfaceColor) * pow(max(1.0f - lightViewAngle, 0.0f), 5.0f);
-}
-
-/*
-*   Calculates the fresnel with roughness in mind.
-*/
-vec3 CalculateFresnelRoughness( vec3 surfaceColor,
                                 float roughness,
-                                float lightViewAngle)
+                                float viewAngle,
+                                vec3 surfaceColor,
+                                float metallic)
 {
-    return surfaceColor + (max(vec3(1.0f - roughness), surfaceColor) - surfaceColor) * pow(max(1.0f - lightViewAngle, 0.0f), 5.0f);
+    //Calculate the directional light.
+    vec3 lightDirection = -directionalLightDirection;
+    vec3 radiance = mix(albedoColor, directionalLightColor, thickness) * directionalLightIntensity;
+
+    return CalculateLight(  viewDirection,
+                            lightDirection,
+                            normalDirection,
+                            thickness,
+                            roughness,
+                            viewAngle,
+                            surfaceColor,
+                            metallic,
+                            albedoColor,
+                            radiance);
 }
 
 /*
-*   Calculates the geometry.
+*   Calculates a single point light.
 */
-float CalculateGeometry(    float roughness,
-                            float lightAngle,
-                            float viewAngle)
+vec3 CalculatePointLight(   int index,
+                            vec3 fragmentWorldPosition,
+                            float viewAngle,
+                            vec3 viewDirection,
+                            vec3 albedo,
+                            vec3 normal,
+                            float roughness,
+                            float metallic,
+                            float ambientOcclusion,
+                            float thickness)
 {
-    float geometryRoughness = roughness + 1.0f;
-    geometryRoughness = (geometryRoughness * geometryRoughness) / 8.0f;
+    //Calculate the point light.
+    vec3 lightDirection = normalize(pointLightWorldPositions[index] - fragmentWorldPosition);
 
-    float lightObstruction = lightAngle / (lightAngle * (1.0f - geometryRoughness) + geometryRoughness);
-    float viewObstruction = viewAngle / (viewAngle * (1.0f - geometryRoughness) + geometryRoughness);
+    float distanceToLightSource = length(fragmentWorldPosition - pointLightWorldPositions[index]);
+    float attenuation = pow(clamp(1.0f - distanceToLightSource / pointLightAttenuationDistances[index], 0.0f, 1.0f), 2.0f);
 
-    return lightObstruction * viewObstruction;
+    vec3 radiance = mix(albedo, pointLightColors[index], thickness) * pointLightIntensities[index] * attenuation;
+
+    return CalculateLight(  viewDirection,
+                            lightDirection,
+                            normal,
+                            thickness,
+                            roughness,
+                            viewAngle,
+                            CalculateSurfaceColor(albedo, metallic),
+                            metallic,
+                            albedo,
+                            radiance);
 }
 
 /*
-*   Calculates a light.
+*   Calculates a single spot light.
 */
-vec3 CalculateLight(    vec3 viewDirection,
-                        vec3 lightDirection,
-                        vec3 normalDirection,
-                        float thickness,
-                        float roughness,
-                        float viewAngle,
-                        vec3 surfaceColor,
-                        float metallic,
-                        vec3 albedoColor,
-                        vec3 radiance)
+vec3 CalculateSpotLight(    int index,
+                            vec3 fragmentWorldPosition,
+                            float viewAngle,
+                            vec3 viewDirection,
+                            vec3 albedo,
+                            vec3 normal,
+                            float roughness,
+                            float metallic,
+                            float ambientOcclusion,
+                            float thickness)
 {
-    vec3 halfwayDirection = normalize(viewDirection + lightDirection);
-    float lightViewAngle = clamp(dot(halfwayDirection, viewDirection), 0.0f, 1.0f);
-    float lightAngle = mix(1.0f, max(dot(normalDirection, lightDirection), 0.0f), thickness);
+    //Calculate the spot light.
+    vec3 lightDirection = normalize(spotLightWorldPositions[index] - fragmentWorldPosition);
+    float angle = dot(lightDirection, -spotLightDirections[index]);
 
-    float distribution = CalculateDistribution(roughness, normalDirection, halfwayDirection);
-    float geometry = CalculateGeometry(roughness, lightAngle, viewAngle);
-    vec3 fresnel = CalculateFresnel(surfaceColor, lightViewAngle);
+    float distanceToLightSource = length(fragmentWorldPosition - spotLightWorldPositions[index]);
+    float attenuation = clamp(1.0f - distanceToLightSource / spotLightAttenuationDistances[index], 0.0f, 1.0f);
+    attenuation *= attenuation;
 
-    vec3 diffuseComponent = vec3(1.0f) - fresnel;
-    diffuseComponent *= 1.0f - metallic;
+    //Calculate the inner/outer cone fade out.
+    float epsilon = spotLightInnerCutoffAngles[index] - spotLightOuterCutoffAngles[index];
+    float intensity = angle > spotLightInnerCutoffAngles[index] ? 1.0f : clamp((angle - spotLightOuterCutoffAngles[index]) / epsilon, 0.0f, 1.0f); 
 
-    vec3 nominator = distribution * geometry * fresnel;
-    float denominator = 4 * viewAngle * lightAngle + 0.001f;
-    vec3 specularComponent = nominator / denominator;
+    vec3 radiance = mix(albedo, spotLightColors[index], thickness) * spotLightIntensities[index] * intensity * attenuation;
 
-    //Return the combined components.
-    return (diffuseComponent * albedoColor / PI + specularComponent) * radiance * lightAngle;
+    return CalculateLight(  viewDirection,
+                            lightDirection,
+                            normal,
+                            thickness,
+                            roughness,
+                            viewAngle,
+                            CalculateSurfaceColor(albedo, metallic),
+                            metallic,
+                            albedo,
+                            radiance);
 }
