@@ -47,14 +47,14 @@ void CalculateTriPlanarData(float depth)
     float randomFloat = RandomFloat(gl_FragCoord.x * gl_FragCoord.y * depth);
 
     //Pick which plane to sample.
-    if (absoluteNormal.x > absoluteNormal.y && absoluteNormal.x > absoluteNormal.z && absoluteNormal.x > randomFloat)
-    {
-        finalTextureCoordinate = textureCoordinateYZ;
-    }
-
-    else if (absoluteNormal.y > absoluteNormal.x && absoluteNormal.y > absoluteNormal.z && absoluteNormal.y > randomFloat)
+    if (absoluteNormal.y > randomFloat)
     {
         finalTextureCoordinate = textureCoordinateXZ;
+    }
+
+    else if (absoluteNormal.x > randomFloat)
+    {
+        finalTextureCoordinate = textureCoordinateYZ;
     }
 
     else
