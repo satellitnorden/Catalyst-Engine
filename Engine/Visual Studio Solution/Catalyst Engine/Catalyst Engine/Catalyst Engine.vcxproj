@@ -82,6 +82,7 @@
     <ClInclude Include="..\..\..\Include\Core\Pointers\UniquePointer.h" />
     <ClInclude Include="..\..\..\Include\Core\Tools\HashTools.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\DynamicPhysicalEntity.h" />
@@ -327,6 +328,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
+    <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\DirectionalLightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\DynamicPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Entity.cpp" />

@@ -211,6 +211,12 @@
     <Filter Include="Vegetation\Include">
       <UniqueIdentifier>{f33b6b1f-eef8-40f5-ac6b-91693a12913f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Source">
+      <UniqueIdentifier>{e8372456-0728-4226-8cae-31fada280c3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Source\Utilities">
+      <UniqueIdentifier>{502cb0a0-7824-4562-ae84-fb40af103dee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
@@ -1047,6 +1053,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Viewer.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h">
+      <Filter>Core\Include\Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1498,6 +1507,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\Viewer.cpp">
       <Filter>Rendering\Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp">
+      <Filter>Core\Source\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

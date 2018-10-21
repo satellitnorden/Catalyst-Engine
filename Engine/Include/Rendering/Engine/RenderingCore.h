@@ -34,14 +34,14 @@ enum class RenderPassMainStage : uint8
 	None,
 	DirectionalShadow,
 	Scene,
-#if !defined(CATALYST_FINAL)
-	Debug,
-#endif
 #if defined(CATALYST_ENABLE_OCEAN)
 	Ocean,
 #endif
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFog,
+#endif
+#if !defined(CATALYST_FINAL)
+	Debug,
 #endif
 	ToneMapping,
 	AntiAliasing,
@@ -81,12 +81,6 @@ enum class RenderPassSubStage : uint8
 	DynamicOutline,
 	ParticleSystem,
 
-#if !defined(CATALYST_FINAL)
-	//Debug.
-	DebugAxisAlignedBoundingBox,
-	DebugScreenBox,
-#endif
-
 #if defined(CATALYST_ENABLE_OCEAN)
 	//Ocean main stage.
 	AboveOcean,
@@ -96,6 +90,12 @@ enum class RenderPassSubStage : uint8
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	//Volumetric fog main stage.
 	VolumetricFog,
+#endif
+
+#if !defined(CATALYST_FINAL)
+	//Debug.
+	DebugAxisAlignedBoundingBox,
+	DebugScreenBox,
 #endif
 
 	//Tone mapping main stage.
