@@ -13,7 +13,7 @@ namespace ClairvoyantWorldUtilities
 	/*
 	*	Generates a transformation.
 	*/
-	bool GenerateTransformation(const bool grass, const bool snow, const bool underwater, const float minimumAngle, const float height, const float minimumScale, const float maximumScale, const Vector3 &rotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
+	bool GenerateTransformation(const bool grass, const bool sand, const bool snow, const bool underwater, const float minimumAngle, const float height, const float minimumScale, const float maximumScale, const Vector3 &rotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
 	{
 		//Generate a random position.
 		Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
@@ -27,14 +27,56 @@ namespace ClairvoyantWorldUtilities
 		//Handle spawning on grass.
 		if (!grass)
 		{
-			if (position._Y < ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
+			if (position._Y > ClairvoyantWorldConstants::SAND_BLEND_END
+				&& position._Y < ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
 			{
 				return false;
 			}
 
-			else if (position._Y < ClairvoyantWorldConstants::SNOW_BLEND_END)
+			else if (position._Y < ClairvoyantWorldConstants::SAND_BLEND_END)
 			{
-				if (1.0f - CatalystBaseMath::RandomChance((position._Y - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN) / (ClairvoyantWorldConstants::SNOW_BLEND_END - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)))
+				if (!sand)
+				{
+					return false;
+				}
+
+				else if (position._Y > ClairvoyantWorldConstants::SAND_BLEND_BEGIN)
+				{
+					if (CatalystBaseMath::RandomChance((position._Y - ClairvoyantWorldConstants::SAND_BLEND_BEGIN) / (ClairvoyantWorldConstants::SAND_BLEND_END - ClairvoyantWorldConstants::SAND_BLEND_BEGIN)))
+					{
+						return false;
+					}
+				}
+			}
+
+			else if (position._Y > ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
+			{
+				if (!snow)
+				{
+					return false;
+				}
+
+				else if (position._Y < ClairvoyantWorldConstants::SNOW_BLEND_END)
+				{
+					if (1.0f - CatalystBaseMath::RandomChance((position._Y - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN) / (ClairvoyantWorldConstants::SNOW_BLEND_END - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)))
+					{
+						return false;
+					}
+				}
+			}
+		}
+
+		//Handle spawning on sand.
+		if (!sand)
+		{
+			if (position._Y < ClairvoyantWorldConstants::SAND_BLEND_BEGIN)
+			{
+				return false;
+			}
+
+			else if (position._Y < ClairvoyantWorldConstants::SAND_BLEND_END)
+			{
+				if (CatalystBaseMath::RandomChance((position._Y - ClairvoyantWorldConstants::SAND_BLEND_BEGIN) / (ClairvoyantWorldConstants::SAND_BLEND_END - ClairvoyantWorldConstants::SAND_BLEND_BEGIN)))
 				{
 					return false;
 				}

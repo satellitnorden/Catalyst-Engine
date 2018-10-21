@@ -59,7 +59,7 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 		properties._Density = 25;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(true, true, true, 0.8f, 0.0f, 0.15f, 0.3f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return ClairvoyantWorldUtilities::GenerateTransformation(true, true, true, true, 0.8f, 0.0f, 0.15f, 0.3f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 
 		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
@@ -83,7 +83,7 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 		properties._Density = 175;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(true, true, false, 0.9f, 0.0f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return ClairvoyantWorldUtilities::GenerateTransformation(true, true, true, false, 0.9f, 0.0f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 
 		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;

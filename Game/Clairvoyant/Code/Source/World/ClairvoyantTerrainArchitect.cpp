@@ -173,46 +173,49 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 void ClairvoyantTerrainArchitect::GenerateLayerWeights(const TerrainProperties &properties, const Vector3 &worldPosition, const Vector3 &normal, Vector4 *const RESTRICT layerWeights) NOEXCEPT
 {
 	{
-		//Determine the weight of the first grass layer.
-		layerWeights->_X = 0.0f;
+		//Determine the weight of the second grass layer.
+		const float coordinateX{ worldPosition._X / 64'000.0f };
+		const float coordinateY{ worldPosition._Z / 64'000.0f };
+
+		layerWeights->_X = CatalystBaseMath::SmoothStep<1>((PerlinNoiseGenerator::GenerateNoise(coordinateX, coordinateY, GetRandomOffset(12)) + 1.0f) * 0.5f);
 	}
 
 	{
-		//Determine the weight of the second grass layer.
-		if (worldPosition._Y < 0.0f)
-		{
-			layerWeights->_Y = 0.0f;
-		}
-
-		else if (worldPosition._Y > 1'000.0f)
+		//Determine the weight of the sand layer.
+		if (worldPosition._Y < ClairvoyantWorldConstants::SAND_BLEND_BEGIN)
 		{
 			layerWeights->_Y = 1.0f;
 		}
 
+		else if (worldPosition._Y > ClairvoyantWorldConstants::SAND_BLEND_END)
+		{
+			layerWeights->_Y = 0.0f;
+		}
+
 		else
 		{
-			layerWeights->_Y = worldPosition._Y * 0.001f;
+			layerWeights->_Y = 1.0f - (worldPosition._Y - ClairvoyantWorldConstants::SAND_BLEND_BEGIN) / (ClairvoyantWorldConstants::SAND_BLEND_END - ClairvoyantWorldConstants::SAND_BLEND_BEGIN);
 		}
 	}
-
-	//Determine the weight of the rock layer.
-	layerWeights->_Z = CatalystBaseMath::SmoothStep<2>(1.0f - CatalystBaseMath::Clamp<float>(Vector3::DotProduct(normal, Vector3::UP), 0.0f, 1.0f));
 
 	//Determine the weight of the snow layer.
 	if (worldPosition._Y < ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
 	{
-		layerWeights->_W = 0.0f;
+		layerWeights->_Z = 0.0f;
 	}
 
 	else if (worldPosition._Y > ClairvoyantWorldConstants::SNOW_BLEND_END)
 	{
-		layerWeights->_W = CatalystBaseMath::Maximum<float>(1.0f - layerWeights->_Z, 0.0f);
+		layerWeights->_Z = 1.0f;
 	}
 
 	else
 	{
-		layerWeights->_W = CatalystBaseMath::Maximum<float>(((worldPosition._Y - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN) * 0.001f) - layerWeights->_Z, 0.0f);
+		layerWeights->_Z = (worldPosition._Y - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN) / (ClairvoyantWorldConstants::SNOW_BLEND_END - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN);
 	}
+
+	//Determine the weight of the rock layer.
+	layerWeights->_W = CatalystBaseMath::SmoothStep<2>(1.0f - CatalystBaseMath::Clamp<float>(Vector3::DotProduct(normal, Vector3::UP), 0.0f, 1.0f));
 }
 
 /*
