@@ -42,7 +42,7 @@ public:
 	{
 		_Position += amount;
 
-		RenderingSystem::Instance->UpdateMatrices();
+		_ViewerMatrixDirty = true;
 	}
 
 	/*
@@ -52,7 +52,7 @@ public:
 	{
 		_Position = newPosition;
 
-		RenderingSystem::Instance->UpdateMatrices();
+		_ViewerMatrixDirty = true;
 	}
 
 	/*
@@ -70,7 +70,7 @@ public:
 	{
 		_Rotation += amount;
 
-		RenderingSystem::Instance->UpdateMatrices();
+		_ViewerMatrixDirty = true;
 	}
 
 	/*
@@ -80,7 +80,7 @@ public:
 	{
 		_Rotation = newRotation;
 
-		RenderingSystem::Instance->UpdateMatrices();
+		_ViewerMatrixDirty = true;
 	}
 
 	/*
@@ -139,6 +139,76 @@ public:
 		return _FarPlane;
 	}
 
+	/*
+	*	Returns the projection matrix.
+	*/
+	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() NOEXCEPT
+	{
+		if (_ProjectionMatrixDirty)
+		{
+			UpdateProjectionMatrix();
+		}
+
+		return &_ProjectionMatrix;
+	}
+
+	/*
+*	Returns the inverse projection matrix.
+*/
+	RESTRICTED const Matrix4 *const RESTRICT GetInverseProjectionMatrix() NOEXCEPT
+	{
+		if (_ProjectionMatrixDirty)
+		{
+			UpdateProjectionMatrix();
+		}
+
+		return &_InverseProjectionMatrix;
+	}
+
+	/*
+	*	Returns the viewer matrix.
+	*/
+	RESTRICTED const Matrix4 *const RESTRICT GetViewerMatrix() NOEXCEPT
+	{
+		if (_ViewerMatrixDirty)
+		{
+			UpdateViewerMatrix();
+		}
+
+		return &_ViewerMatrix;
+	}
+
+	/*
+	*	Returns the inverse viewer matrix.
+	*/
+	RESTRICTED const Matrix4 *const RESTRICT GetInverseViewerMatrix() NOEXCEPT
+	{
+		if (_ViewerMatrixDirty)
+		{
+			UpdateViewerMatrix();
+		}
+
+		return &_InverseViewerMatrix;
+	}
+
+	/*
+	*	Returns the view matrix.
+	*/
+	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() NOEXCEPT
+	{
+		if (_ProjectionMatrixDirty)
+		{
+			UpdateProjectionMatrix();
+		}
+
+		if (_ViewerMatrixDirty)
+		{
+			UpdateViewerMatrix();
+		}
+
+		return &_ViewMatrix;
+	}
+
 private:
 
 	//The position.
@@ -158,5 +228,36 @@ private:
 
 	//The far plane.
 	float _FarPlane{ 419'904.0f };
+
+	//Denotes whether or not the projection matrix is dirty.
+	bool _ProjectionMatrixDirty{ true };
+
+	//Denotes whether or not the viewer matrix is dirty.
+	bool _ViewerMatrixDirty{ true };
+
+	//The projection matrix.
+	Matrix4 _ProjectionMatrix;
+
+	//The inverse projection matrix.
+	Matrix4 _InverseProjectionMatrix;
+
+	//The viewer matrix.
+	Matrix4 _ViewerMatrix;
+
+	//The inverse viewer matrix.
+	Matrix4 _InverseViewerMatrix;
+
+	//The view matrix.
+	Matrix4 _ViewMatrix;
+
+	/*
+	*	Updates the projection matrix.	
+	*/
+	void UpdateProjectionMatrix() NOEXCEPT;
+
+	/*
+	*	Updates the viewer matrix.
+	*/
+	void UpdateViewerMatrix() NOEXCEPT;
 
 };

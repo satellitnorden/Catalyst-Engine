@@ -142,7 +142,7 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 void CullingSystem::CullTerrain() NOEXCEPT
 {
 	//Get the current view matrix.
-	const Matrix4 *const RESTRICT viewMatrix{ RenderingSystem::Instance->GetViewMatrix() };
+	const Matrix4 *const RESTRICT viewMatrix{ Viewer::Instance->GetViewMatrix() };
 
 	{
 		//Iterate over all high detail terrain patches and cull them.

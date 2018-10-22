@@ -159,66 +159,6 @@ public:
 	uint8 GetCurrentFrameIndex() const NOEXCEPT;
 
 	/*
-	*	Updates the matrices.
-	*/
-	void UpdateMatrices() NOEXCEPT;
-
-	/*
-	*	Returns the projection matrix.
-	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() const NOEXCEPT
-	{
-		return &_ProjectionMatrix;
-	}
-
-	/*
-	*	Returns the viewer matrix.
-	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetViewerMatrix() const NOEXCEPT
-	{
-		return &_ViewerMatrix;
-	}
-
-	/*
-	*	Returns the view matrix.
-	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() const NOEXCEPT
-	{
-		return &_ViewMatrix;
-	}
-
-	/*
-*	Returns the inverse projection matrix.
-*/
-	RESTRICTED const Matrix4 *const RESTRICT GetInverseProjectionMatrix() const NOEXCEPT
-	{
-		return &_InverseProjectionMatrix;
-	}
-
-	/*
-	*	Returns the inverse viewer matrix.
-	*/
-	RESTRICTED const Matrix4 *const RESTRICT GetInverseViewerMatrix() const NOEXCEPT
-	{
-		return &_InverseViewerMatrix;
-	}
-
-	/*
-	*	Given screen coordinates, returns the world direction from the viewer to where the screen coordinates are pointing.
-	*/
-	Vector3 GetWorldDirectionFromScreenCoordinate(const Vector2 &coordinates) const NOEXCEPT;
-
-	/*
-	*	Returns whether an axis-aligned bounding box is clicked or touched.
-	*/
-	bool IsClockedOrTouched(const AxisAlignedBoundingBox &box) const NOEXCEPT;
-
-	/*
-	*	Converts a world position to screen coordinates.
-	*/
-	void ToScreenCoordinate(const Vector3 &worldPosition, Vector2 *const RESTRICT screenCoordinates) const NOEXCEPT;
-
-	/*
 	*	Returns the render passes.
 	*/
 	const StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)>& GetRenderPasses() const
@@ -436,21 +376,6 @@ private:
 
 	//The directional shadow map resolution.
 	Resolution _DirectionalShadowMapResolution;
-
-	//The projection matrix.
-	Matrix4 _ProjectionMatrix;
-
-	//The viewer matrix.
-	Matrix4 _ViewerMatrix;
-
-	//The view matrix.
-	Matrix4 _ViewMatrix;
-
-	//The inverse projection matrix.
-	Matrix4 _InverseProjectionMatrix;
-
-	//The inverse viewer matrix.
-	Matrix4 _InverseViewerMatrix;
 
 	//Container for all render passes.
 	StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _RenderPasses;

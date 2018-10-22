@@ -1978,11 +1978,11 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	Vector3 forwardVector = Viewer::Instance->GetForwardVector();
 	Vector3 upVector = Viewer::Instance->GetUpVector();
 
-	const Matrix4 *const RESTRICT projectionMatrix{ RenderingSystem::Instance->GetProjectionMatrix() };
-	const Matrix4 *const RESTRICT viewerMatrix{ RenderingSystem::Instance->GetViewerMatrix() };
-	const Matrix4 *const RESTRICT viewMatrix{ RenderingSystem::Instance->GetViewMatrix() };
-	const Matrix4 *const RESTRICT inverseProjectionMatrix{ RenderingSystem::Instance->GetInverseProjectionMatrix() };
-	const Matrix4 *const RESTRICT inverseViewerMatrix{ RenderingSystem::Instance->GetInverseViewerMatrix() };
+	const Matrix4 *const RESTRICT projectionMatrix{ Viewer::Instance->GetProjectionMatrix() };
+	const Matrix4 *const RESTRICT viewerMatrix{ Viewer::Instance->GetViewerMatrix() };
+	const Matrix4 *const RESTRICT viewMatrix{ Viewer::Instance->GetViewMatrix() };
+	const Matrix4 *const RESTRICT inverseProjectionMatrix{ Viewer::Instance->GetInverseProjectionMatrix() };
+	const Matrix4 *const RESTRICT inverseViewerMatrix{ Viewer::Instance->GetInverseViewerMatrix() };
 
 	Matrix4 viewerOriginMatrix{ *viewerMatrix };
 	viewerOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
