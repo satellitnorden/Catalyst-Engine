@@ -54,62 +54,52 @@ namespace RenderingUtilities
 	}
 
 	/*
-	*	Given a view matrix and an axis-aligned bounding box, returns if the box is in the view frustum.
+	*	Returns whether or not an axis-aligned bounding box is within the view frustum.
 	*/
-	static bool IsInViewFrustum(const Matrix4 &viewMatrix, const AxisAlignedBoundingBox &axisAlignedBoundingBox) NOEXCEPT
+	static bool IsWithinViewFrustum(const StaticArray<Vector4, 6> &planes, const AxisAlignedBoundingBox &box) NOEXCEPT
 	{
-		StaticArray<Vector4, 8> corners;
-
-		corners[0] = Vector4(axisAlignedBoundingBox._Minimum._X, axisAlignedBoundingBox._Minimum._Y, axisAlignedBoundingBox._Minimum._Z, 1.0f);
-		corners[1] = Vector4(axisAlignedBoundingBox._Minimum._X, axisAlignedBoundingBox._Maximum._Y, axisAlignedBoundingBox._Minimum._Z, 1.0f);
-		corners[2] = Vector4(axisAlignedBoundingBox._Maximum._X, axisAlignedBoundingBox._Maximum._Y, axisAlignedBoundingBox._Minimum._Z, 1.0f);
-		corners[3] = Vector4(axisAlignedBoundingBox._Maximum._X, axisAlignedBoundingBox._Minimum._Y, axisAlignedBoundingBox._Minimum._Z, 1.0f);
-
-		corners[4] = Vector4(axisAlignedBoundingBox._Minimum._X, axisAlignedBoundingBox._Minimum._Y, axisAlignedBoundingBox._Maximum._Z, 1.0f);
-		corners[5] = Vector4(axisAlignedBoundingBox._Minimum._X, axisAlignedBoundingBox._Maximum._Y, axisAlignedBoundingBox._Maximum._Z, 1.0f);
-		corners[6] = Vector4(axisAlignedBoundingBox._Maximum._X, axisAlignedBoundingBox._Maximum._Y, axisAlignedBoundingBox._Maximum._Z, 1.0f);
-		corners[7] = Vector4(axisAlignedBoundingBox._Maximum._X, axisAlignedBoundingBox._Minimum._Y, axisAlignedBoundingBox._Maximum._Z, 1.0f);
-
-		for (uint8 i = 0; i < 8; ++i)
+		for (uint8 i = 0; i < 6; ++i)
 		{
-			corners[i] = viewMatrix * corners[i];
+			Vector3 axis;
 
-			const float inverseW{ 1.0f / corners[i]._W };
+			if (planes[i]._X < 0.0f)
+			{
+				axis._X = box._Minimum._X;
+			}
 
-			corners[i]._X *= inverseW;
-			corners[i]._Y *= inverseW;
-			corners[i]._Z *= inverseW;
+			else
+			{
+				axis._X = box._Maximum._X;
+			}
+
+			if (planes[i]._Y < 0.0f)
+			{
+				axis._Y = box._Minimum._Y;
+			}
+
+			else
+			{
+				axis._Y = box._Maximum._Y;
+			}
+
+			if (planes[i]._Z < 0.0f)
+			{
+				axis._Z = box._Minimum._Z;
+			}
+
+			else
+			{
+				axis._Z = box._Maximum._Z;
+			}
+
+			const Vector3 planeNormal{ Vector3(planes[i]._X, planes[i]._Y, planes[i]._Z) };
+
+			if (Vector3::DotProduct(planeNormal, axis) + planes[i]._W < 0.0f)
+			{
+				return false;
+			}
 		}
 
-		float highestX{ -FLOAT_MAXIMUM };
-		float lowestX{ FLOAT_MAXIMUM };
-		float highestY{ -FLOAT_MAXIMUM };
-		float lowestY{ FLOAT_MAXIMUM };
-		float highestZ{ -FLOAT_MAXIMUM };
-		float lowestZ{ FLOAT_MAXIMUM };
-
-		for (uint8 i = 0; i < 8; ++i)
-		{
-			highestX = CatalystBaseMath::Maximum(highestX, corners[i]._X);
-			lowestX = CatalystBaseMath::Minimum(lowestX, corners[i]._X);
-			highestY = CatalystBaseMath::Maximum(highestY, corners[i]._Y);
-			lowestY = CatalystBaseMath::Minimum(lowestY, corners[i]._Y);
-			highestZ = CatalystBaseMath::Maximum(highestZ, corners[i]._Z);
-			lowestZ = CatalystBaseMath::Minimum(lowestZ, corners[i]._Z);
-		}
-
-		if (((highestX > 1.0f && lowestX > 1.0f) || (highestX < -1.0f && lowestX < -1.0f))
-			||
-			((highestY > 1.0f && lowestY > 1.0f) || (highestY < -1.0f && lowestY < -1.0f))
-			||
-			((highestZ > 1.0f && lowestZ > 1.0f) || (highestZ < 0.0f && lowestZ < 0.0f)))
-		{
-			return false;
-		}
-
-		else
-		{
-			return true;
-		}
+		return true;
 	}
 }

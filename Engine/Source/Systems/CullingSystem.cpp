@@ -141,8 +141,8 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 */
 void CullingSystem::CullTerrain() NOEXCEPT
 {
-	//Get the current view matrix.
-	const Matrix4 *const RESTRICT viewMatrix{ Viewer::Instance->GetViewMatrix() };
+	//Get the current frustum planes.
+	const StaticArray<Vector4, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
 
 	{
 		//Iterate over all high detail terrain patches and cull them.
@@ -160,8 +160,8 @@ void CullingSystem::CullTerrain() NOEXCEPT
 				continue;
 			}
 
-			//Test this patch's axis-aligned bounding box against the current view matrix.
-			patchRenderInformation._Draw = RenderingUtilities::IsInViewFrustum(*viewMatrix, patchInformation._AxisAlignedBoundingBox);
+			//Test this patch's axis-aligned bounding box against the current frustum planes.
+			patchRenderInformation._Draw = RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, patchInformation._AxisAlignedBoundingBox);
 		}
 	}
 
@@ -181,8 +181,8 @@ void CullingSystem::CullTerrain() NOEXCEPT
 				continue;
 			}
 
-			//Test this patch's axis-aligned bounding box against the current view matrix.
-			patchRenderInformation._Draw = RenderingUtilities::IsInViewFrustum(*viewMatrix, patchInformation._AxisAlignedBoundingBox);
+			//Test this patch's axis-aligned bounding box against the current frustum planes.
+			patchRenderInformation._Draw = RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, patchInformation._AxisAlignedBoundingBox);
 		}
 	}
 }

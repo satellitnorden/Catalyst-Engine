@@ -42,9 +42,9 @@
 		static uint64 averageDuration{ 0 };																														\
 		std::chrono::time_point<std::chrono::steady_clock> timeBeforeFunction{ std::chrono::high_resolution_clock::now() };										\
 		function;																																				\
-		averageDuration += std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - timeBeforeFunction).count(); 		\
+		averageDuration += std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - timeBeforeFunction).count(); 		\
 		++iterations;																																			\
-		float duration{ static_cast<float>(averageDuration / iterations) / 1'000.0f };																			\
+		float duration{ static_cast<float>(averageDuration / iterations) / 1'000'000.0f };																		\
 		PRINT_TO_OUTPUT(message << " - " << duration << " milliseconds.");																						\
 	}
 #else
