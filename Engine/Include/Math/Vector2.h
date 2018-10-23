@@ -11,11 +11,20 @@ class Vector2 final
 
 public:
 
-	//The X component.
-	float _X;
+	union
+	{
+		struct
+		{
+			//The X component.
+			float _X;
 
-	//The Y component.
-	float _Y;
+			//The Y component.
+			float _Y;
+		};
+
+		//The data.
+		float _Data[2];
+	};
 
 	/*
 	*	Given a vector, return it's length.
@@ -53,6 +62,22 @@ public:
 		_Y(newY)
 	{
 
+	}
+
+	/*
+	*	Subscript operator overload, const.
+	*/
+	const float& operator[](const uint64 index) const NOEXCEPT
+	{
+		return _Data[index];
+	}
+
+	/*
+	*	Subscript operator overload, non-const.
+	*/
+	float& operator[](const uint64 index)  NOEXCEPT
+	{
+		return _Data[index];
 	}
 
 	/*

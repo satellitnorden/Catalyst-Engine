@@ -20,14 +20,23 @@ public:
 	const static Vector3 RIGHT;
 	const static Vector3 LEFT;
 
-	//The X component.
-	float _X;
+	union
+	{
+		struct
+		{
+			//The X component.
+			float _X;
 
-	//The Y component.
-	float _Y;
+			//The Y component.
+			float _Y;
 
-	//The Z component.
-	float _Z;
+			//The Z component.
+			float _Z;
+		};
+
+		//The data.
+		float _Data[3];
+	};
 
 	/*
 	*	Returns the absolute value of the Vector3 passed in.
@@ -177,6 +186,22 @@ public:
 		_X = otherVector._X;
 		_Y = otherVector._Y;
 		_Z = otherVector._Z;
+	}
+
+	/*
+	*	Subscript operator overload, const.
+	*/
+	const float& operator[](const uint64 index) const NOEXCEPT
+	{
+		return _Data[index];
+	}
+
+	/*
+	*	Subscript operator overload, non-const.
+	*/
+	float& operator[](const uint64 index)  NOEXCEPT
+	{
+		return _Data[index];
 	}
 
 	/*
