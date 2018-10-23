@@ -8,6 +8,27 @@
 DEFINE_SINGLETON(Viewer);
 
 /*
+*	Checks for updates.
+*/
+void Viewer::CheckUpdates() NOEXCEPT
+{
+	if (_ProjectionMatrixDirty)
+	{
+		UpdateProjectionMatrix();
+	}
+
+	if (_ViewerMatrixDirty)
+	{
+		UpdateViewerMatrix();
+	}
+
+	if (_FrustumPlanesDirty)
+	{
+		UpdateFrustumPlanes();
+	}
+}
+
+/*
 *	Updates the projection matrix.
 */
 void Viewer::UpdateProjectionMatrix() NOEXCEPT
@@ -43,4 +64,19 @@ void Viewer::UpdateViewerMatrix() NOEXCEPT
 
 	//Reset the dirtyness of the viewer matrix.
 	_ViewerMatrixDirty = false;
+}
+
+/*
+	*	Updates the frustum planes.
+	*/
+void Viewer::UpdateFrustumPlanes() NOEXCEPT
+{
+	//Left frustum plane.
+	_FrustumPlanes[0]._X = _ViewMatrix._Matrix[0]._X + _ViewMatrix._Matrix[3]._X;
+	_FrustumPlanes[0]._X = _ViewMatrix._Matrix[0]._X + _ViewMatrix._Matrix[3]._Y;
+	_FrustumPlanes[0]._X = _ViewMatrix._Matrix[0]._X + _ViewMatrix._Matrix[3]._Z;
+	_FrustumPlanes[0]._X = _ViewMatrix._Matrix[0]._X + _ViewMatrix._Matrix[3]._W;
+
+	//Reset the dirtyness of the frustum planes.
+	_FrustumPlanesDirty = false;
 }

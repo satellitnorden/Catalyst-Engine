@@ -43,6 +43,7 @@ public:
 		_Position += amount;
 
 		_ViewerMatrixDirty = true;
+		_FrustumPlanesDirty = true;
 	}
 
 	/*
@@ -53,6 +54,7 @@ public:
 		_Position = newPosition;
 
 		_ViewerMatrixDirty = true;
+		_FrustumPlanesDirty = true;
 	}
 
 	/*
@@ -71,6 +73,7 @@ public:
 		_Rotation += amount;
 
 		_ViewerMatrixDirty = true;
+		_FrustumPlanesDirty = true;
 	}
 
 	/*
@@ -81,6 +84,7 @@ public:
 		_Rotation = newRotation;
 
 		_ViewerMatrixDirty = true;
+		_FrustumPlanesDirty = true;
 	}
 
 	/*
@@ -144,10 +148,7 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() NOEXCEPT
 	{
-		if (_ProjectionMatrixDirty)
-		{
-			UpdateProjectionMatrix();
-		}
+		CheckUpdates();
 
 		return &_ProjectionMatrix;
 	}
@@ -157,10 +158,7 @@ public:
 */
 	RESTRICTED const Matrix4 *const RESTRICT GetInverseProjectionMatrix() NOEXCEPT
 	{
-		if (_ProjectionMatrixDirty)
-		{
-			UpdateProjectionMatrix();
-		}
+		CheckUpdates();
 
 		return &_InverseProjectionMatrix;
 	}
@@ -170,10 +168,7 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetViewerMatrix() NOEXCEPT
 	{
-		if (_ViewerMatrixDirty)
-		{
-			UpdateViewerMatrix();
-		}
+		CheckUpdates();
 
 		return &_ViewerMatrix;
 	}
@@ -183,10 +178,7 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetInverseViewerMatrix() NOEXCEPT
 	{
-		if (_ViewerMatrixDirty)
-		{
-			UpdateViewerMatrix();
-		}
+		CheckUpdates();
 
 		return &_InverseViewerMatrix;
 	}
@@ -196,17 +188,19 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() NOEXCEPT
 	{
-		if (_ProjectionMatrixDirty)
-		{
-			UpdateProjectionMatrix();
-		}
-
-		if (_ViewerMatrixDirty)
-		{
-			UpdateViewerMatrix();
-		}
+		CheckUpdates();
 
 		return &_ViewMatrix;
+	}
+
+	/*
+	*	Returns the frustum planes.
+	*/
+	RESTRICTED const StaticArray<Vector4, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
+	{
+		CheckUpdates();
+
+		return &_FrustumPlanes;
 	}
 
 private:
@@ -235,6 +229,9 @@ private:
 	//Denotes whether or not the viewer matrix is dirty.
 	bool _ViewerMatrixDirty{ true };
 
+	//Denotes whether or not the frustum planes is dirty.
+	bool _FrustumPlanesDirty{ true };
+
 	//The projection matrix.
 	Matrix4 _ProjectionMatrix;
 
@@ -250,6 +247,13 @@ private:
 	//The view matrix.
 	Matrix4 _ViewMatrix;
 
+	StaticArray<Vector4, 6> _FrustumPlanes;
+
+	/*
+	*	Checks for updates.
+	*/
+	void CheckUpdates() NOEXCEPT;
+
 	/*
 	*	Updates the projection matrix.	
 	*/
@@ -259,5 +263,10 @@ private:
 	*	Updates the viewer matrix.
 	*/
 	void UpdateViewerMatrix() NOEXCEPT;
+
+	/*
+	*	Updates the frustum planes.
+	*/
+	void UpdateFrustumPlanes() NOEXCEPT;
 
 };
