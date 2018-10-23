@@ -14,8 +14,10 @@
 #undef CreateEvent
 #undef CreateSemaphore
 #undef GetCurrentTime
+#undef far
 #undef max
 #undef min
+#undef near
 #undef PlaySound
 
 /*
