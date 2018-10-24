@@ -26,6 +26,48 @@ namespace RenderingUtilities
 {
 
 	/*
+	*	Calculates an axis-aligned bounding box from a set of transformations.
+	*/
+	static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4> &transformations, const float extent, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	{
+		box->_Minimum._X = FLOAT_MAXIMUM;
+		box->_Minimum._Y = FLOAT_MAXIMUM;
+		box->_Minimum._Z = FLOAT_MAXIMUM;
+
+		box->_Maximum._X = -FLOAT_MAXIMUM;
+		box->_Maximum._Y = -FLOAT_MAXIMUM;
+		box->_Maximum._Z = -FLOAT_MAXIMUM;
+
+		float biggestScale{ -FLOAT_MAXIMUM };
+
+		for (const Matrix4 &transformation : transformations)
+		{
+			const Vector3 position{ transformation.GetTranslation() };
+			const Vector3 scale{ transformation.GetScale() };
+
+			box->_Minimum._X = CatalystBaseMath::Minimum<float>(box->_Minimum._X, position._X);
+			box->_Minimum._Y = CatalystBaseMath::Minimum<float>(box->_Minimum._Y, position._Y);
+			box->_Minimum._Z = CatalystBaseMath::Minimum<float>(box->_Minimum._Z, position._Z);
+
+			box->_Maximum._X = CatalystBaseMath::Maximum<float>(box->_Maximum._X, position._X);
+			box->_Maximum._Y = CatalystBaseMath::Maximum<float>(box->_Maximum._Y, position._Y);
+			box->_Maximum._Z = CatalystBaseMath::Maximum<float>(box->_Maximum._Z, position._Z);
+
+			biggestScale = CatalystBaseMath::Maximum<float>(biggestScale, scale._X);
+			biggestScale = CatalystBaseMath::Maximum<float>(biggestScale, scale._Y);
+			biggestScale = CatalystBaseMath::Maximum<float>(biggestScale, scale._Z);
+		}
+
+		box->_Minimum._X -= extent * biggestScale;
+		box->_Minimum._Y -= extent * biggestScale;
+		box->_Minimum._Z -= extent * biggestScale;
+
+		box->_Maximum._X += extent * biggestScale;
+		box->_Maximum._Y += extent * biggestScale;
+		box->_Maximum._Z += extent * biggestScale;
+	}
+
+	/*
 	*	Calculates the directional light view matrix.
 	*/
 	static Matrix4 CalculateDirectionalLightViewMatrix() NOEXCEPT
