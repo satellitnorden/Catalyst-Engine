@@ -65,8 +65,8 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
 
 		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetPhysicalModel(HashString("LowDetailRockVolcanicModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetPhysicalModel(HashString("LowDetailRockVolcanicModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("LowDetailRockVolcanicModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetPhysicalModel(HashString("MediumDetailRockVolcanicModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("HighDetailRockVolcanicModel"));
 
 		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("RockVolcanicMaterial")) };
 
@@ -80,7 +80,7 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 		properties._MediumDetailDistance = ClairvoyantSolidVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantSolidVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 1'000.0f;
-		properties._Density = 200;
+		properties._Density = 225;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
 			return ClairvoyantWorldUtilities::GenerateTransformation(true, true, true, false, 0.9f, 0.0f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
@@ -89,8 +89,8 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
 
 		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetPhysicalModel(HashString("LowDetailTreeStumpModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetPhysicalModel(HashString("LowDetailTreeStumpModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("LowDetailTreeStumpModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetPhysicalModel(HashString("MediumDetailTreeStumpModel"));
+		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetPhysicalModel(HashString("HighDetailTreeStumpModel"));
 
 		PhysicalMaterial material{ ResourceLoader::GetPhysicalMaterial(HashString("TreeStumpMaterial")) };
 
