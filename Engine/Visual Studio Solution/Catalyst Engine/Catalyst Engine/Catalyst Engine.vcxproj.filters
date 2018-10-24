@@ -217,6 +217,12 @@
     <Filter Include="Core\Source\Utilities">
       <UniqueIdentifier>{502cb0a0-7824-4562-ae84-fb40af103dee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lighting">
+      <UniqueIdentifier>{36aee9da-b00c-4011-9440-e38334f7ad77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lighting\Include">
+      <UniqueIdentifier>{3a76fa3c-6e1d-47cf-b358-7da4c92cfd54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
@@ -1055,6 +1061,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationModel.h">
       <Filter>Vegetation\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Lighting\LightingCore.h">
+      <Filter>Lighting\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Lighting\DirectionalLight.h">
+      <Filter>Lighting\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Lighting\PointLight.h">
+      <Filter>Lighting\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Lighting\SpotLight.h">
+      <Filter>Lighting\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
