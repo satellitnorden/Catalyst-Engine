@@ -42,24 +42,24 @@ public:
 	Vector3 _MinimumPosition;
 
 	//Some padding.
-	Padding<1> _Padding2;
+	Padding<1> _Padding1;
 
 	//The maximum position.
 	Vector3 _MaximumPosition;
 
 	//Some padding.
-	Padding<1> _Padding3;
+	Padding<1> _Padding2;
 
 	//The minimum velocity.
 	Vector3 _MinimumVelocity;
 
 	//Some padding.
-	Padding<1> _Padding4;
+	Padding<1> _Padding3;
 
 	//The maximum velocity.
 	Vector3 _MaximumVelocity;
 
 	//Some padding.
-	Padding<1> _Padding5;
+	Padding<1> _Padding4;
 
 };
