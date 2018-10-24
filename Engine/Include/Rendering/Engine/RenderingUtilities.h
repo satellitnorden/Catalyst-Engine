@@ -28,8 +28,17 @@ namespace RenderingUtilities
 	/*
 	*	Calculates an axis-aligned bounding box from a set of transformations.
 	*/
-	static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4> &transformations, const float extent, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4> &transformations, const AxisAlignedBoundingBox &modelBox, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
 	{
+		float extent{ CatalystBaseMath::Absolute(modelBox._Minimum._X) };
+		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(modelBox._Minimum._Y));
+		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(modelBox._Minimum._Z));
+		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(modelBox._Maximum._X));
+		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(modelBox._Maximum._Y));
+		extent = CatalystBaseMath::Maximum<float>(extent, CatalystBaseMath::Absolute(modelBox._Maximum._Z));
+
+		extent *= 2.0f;
+
 		box->_Minimum._X = FLOAT_MAXIMUM;
 		box->_Minimum._Y = FLOAT_MAXIMUM;
 		box->_Minimum._Z = FLOAT_MAXIMUM;

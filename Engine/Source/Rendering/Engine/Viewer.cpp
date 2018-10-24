@@ -53,7 +53,7 @@ void Viewer::UpdateProjectionMatrix() NOEXCEPT
 void Viewer::UpdateViewerMatrix() NOEXCEPT
 {
 	//Update the viewer matrix.
-	_ViewerMatrix = Matrix4::LookAt(_Position, _Position + GetForwardVector(), GetUpVector());
+	_ViewerMatrix = Matrix4::LookAt(_Position, _Position + Vector3::Normalize(Vector3(Vector3::FORWARD).Rotated(_Rotation)), Vector3::Normalize(Vector3(Vector3::UP).Rotated(_Rotation)));
 
 	//Update the inverse viewer matrix.
 	_InverseViewerMatrix = _ViewerMatrix;

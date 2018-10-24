@@ -6,6 +6,9 @@
 //Math.
 #include <Math/GridPoint2.h>
 
+//Rendering.
+#include <Rendering/Engine/AxisAlignedBoundingBox.h>
+
 class VegetationPatchInformation final
 {
 
@@ -16,5 +19,8 @@ public:
 
 	//The grid point.
 	GridPoint2 _GridPoint;
+
+	//The axis aligned bounding box.
+	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
 
 };

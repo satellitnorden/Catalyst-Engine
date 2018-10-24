@@ -32,6 +32,8 @@ public:
 	*/
 	const Vector3& GetPosition() const NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		return _Position;
 	}
 
@@ -40,6 +42,8 @@ public:
 	*/
 	void Move(const Vector3 &amount) NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		_Position += amount;
 
 		_ViewerMatrixDirty = true;
@@ -51,6 +55,8 @@ public:
 	*/
 	void SetPosition(const Vector3 &newPosition) NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		_Position = newPosition;
 
 		_ViewerMatrixDirty = true;
@@ -62,6 +68,8 @@ public:
 	*/
 	const Vector3& GetRotation() const NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		return _Rotation;
 	}
 
@@ -70,6 +78,8 @@ public:
 	*/
 	void Rotate(const Vector3 &amount) NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		_Rotation += amount;
 
 		_ViewerMatrixDirty = true;
@@ -81,6 +91,8 @@ public:
 	*/
 	void SetRotation(const Vector3 &newRotation) NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		_Rotation = newRotation;
 
 		_ViewerMatrixDirty = true;
@@ -92,6 +104,8 @@ public:
 	*/
 	Vector3 GetForwardVector() const NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		return Vector3::Normalize(Vector3(Vector3::FORWARD).Rotated(_Rotation));
 	}
 
@@ -100,6 +114,8 @@ public:
 	*/
 	Vector3 GetRightVector() const NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		return Vector3::Normalize(Vector3(Vector3::RIGHT).Rotated(_Rotation));
 	}
 
@@ -108,6 +124,8 @@ public:
 	*/
 	Vector3 GetUpVector() const NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		return Vector3::Normalize(Vector3(Vector3::UP).Rotated(_Rotation));
 	}
 
@@ -116,6 +134,8 @@ public:
 	*/
 	float GetFieldOfViewDegrees() const NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		return _FieldOfViewDegrees;
 	}
 
@@ -124,6 +144,8 @@ public:
 	*/
 	float GetFieldOfViewRadians() const NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		return _FieldOfViewRadians;
 	}
 
@@ -132,6 +154,8 @@ public:
 	*/
 	float GetNearPlane() const NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		return _NearPlane;
 	}
 
@@ -140,6 +164,8 @@ public:
 	*/
 	float GetFarPlane() const NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		return _FarPlane;
 	}
 
@@ -148,16 +174,20 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetProjectionMatrix() NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		CheckUpdates();
 
 		return &_ProjectionMatrix;
 	}
 
 	/*
-*	Returns the inverse projection matrix.
-*/
+	*	Returns the inverse projection matrix.
+	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetInverseProjectionMatrix() NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		CheckUpdates();
 
 		return &_InverseProjectionMatrix;
@@ -168,6 +198,8 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetViewerMatrix() NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		CheckUpdates();
 
 		return &_ViewerMatrix;
@@ -178,6 +210,8 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetInverseViewerMatrix() NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		CheckUpdates();
 
 		return &_InverseViewerMatrix;
@@ -188,6 +222,8 @@ public:
 	*/
 	RESTRICTED const Matrix4 *const RESTRICT GetViewMatrix() NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		CheckUpdates();
 
 		return &_ViewMatrix;
@@ -198,12 +234,17 @@ public:
 	*/
 	RESTRICTED const StaticArray<Vector4, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
 	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
 		CheckUpdates();
 
 		return &_FrustumPlanes;
 	}
 
 private:
+
+	//The lock for the viewer.
+	mutable Spinlock _Lock;
 
 	//The position.
 	Vector3 _Position{ 0.0f, 0.0f, 0.0f };

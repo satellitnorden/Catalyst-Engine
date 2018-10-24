@@ -13,13 +13,11 @@ namespace VegetationUtilities
 	*	Generates the transformations.
 	*/
 	template <typename Type>
-	static void GenerateTransformations(const GridPoint2 &gridPoint, const Type &properties, const float gridSize, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
+	static void GenerateTransformations(const GridPoint2 &gridPoint, const Type &properties, const float gridSize, DynamicArray<Matrix4> *const RESTRICT transformations, ConstantBufferHandle *const RESTRICT buffer, uint32 *const RESTRICT numberOfTransformations) NOEXCEPT
 	{
 		//Construct the box.
 		const Vector3 worldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, properties._CutoffDistance * gridSize) };
 		const AxisAlignedBoundingBox box{ worldPosition - properties._CutoffDistance * (gridSize * 0.5f), worldPosition + properties._CutoffDistance * (gridSize * 0.5f) };
-
-		DynamicArray<Matrix4> transformations;
 
 		for (uint32 i = 0; i < properties._Density; ++i)
 		{
@@ -27,14 +25,14 @@ namespace VegetationUtilities
 
 			if (properties._PlacementFunction(box, &newTransformation))
 			{
-				transformations.EmplaceSlow(newTransformation);
+				transformations->EmplaceSlow(newTransformation);
 			}
 		}
 
-		if (!transformations.Empty())
+		if (!transformations->Empty())
 		{
-			RenderingUtilities::CreateTransformationsBuffer(transformations, buffer);
-			*numberOfTransformations = static_cast<uint32>(transformations.Size());
+			RenderingUtilities::CreateTransformationsBuffer(*transformations, buffer);
+			*numberOfTransformations = static_cast<uint32>(transformations->Size());
 		}
 
 		else

@@ -27,6 +27,6 @@ public:
 private:
 
 	//The underlying atomic lock.
-	std::atomic_flag _Lock{ 0 };
+	std::atomic_flag _Lock{ ATOMIC_FLAG_INIT };
 
 };

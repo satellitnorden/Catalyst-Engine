@@ -331,15 +331,17 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 			if (!exists)
 			{
 				//Construct the update.
-				update._NewPatchInformation._Valid = true;
-				update._NewPatchInformation._GridPoint = gridPoint;
-
+				DynamicArray<Matrix4> transformations;
 				update._NewPatchRenderInformation._Draw = true;
 				VegetationUtilities::GenerateTransformations(	gridPoint,
 																information._Properties,
 																VegetationConstants::VEGETATION_GRID_SIZE,
+																&transformations,
 																&update._NewPatchRenderInformation._TransformationsBuffer,
 																&update._NewPatchRenderInformation._NumberOfTransformations);
+
+				update._NewPatchInformation._Valid = true;
+				update._NewPatchInformation._GridPoint = gridPoint;
 
 				break;
 			}
@@ -487,15 +489,20 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 			if (!exists)
 			{
 				//Construct the update.
-				update._NewPatchInformation._Valid = true;
-				update._NewPatchInformation._GridPoint = gridPoint;
-
+				DynamicArray<Matrix4> transformations;
 				update._NewPatchRenderInformation._Draw = true;
 				VegetationUtilities::GenerateTransformations(	gridPoint,
 																information._Properties,
 																VegetationConstants::VEGETATION_GRID_SIZE,
+																&transformations,
 																&update._NewPatchRenderInformation._TransformationsBuffer,
 																&update._NewPatchRenderInformation._NumberOfTransformations);
+
+				update._NewPatchInformation._Valid = true;
+				update._NewPatchInformation._GridPoint = gridPoint;
+				RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	transformations,
+																						information._Models[0]._AxisAlignedBoundingBox,
+																						&update._NewPatchInformation._AxisAlignedBoundingBox);
 
 				break;
 			}

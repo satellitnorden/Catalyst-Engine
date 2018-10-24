@@ -5,16 +5,18 @@
 //Systems.
 #include <Systems/DebugRenderingSystem.h>
 #include <Systems/TerrainSystem.h>
+#include <Systems/VegetationSystem.h>
 
 namespace DebugUtilities
 {
 
 	/*
-	*	Debug renders all axis aligned bounding boxes for terrain.
+	*	Given an index, returns a random color.
 	*/
-	void DebugRenderTerrainAxisAlignedBoundingBoxes() NOEXCEPT
+	Vector4 GetRandomColor(const uint64 index) NOEXCEPT
 	{
 		constexpr float ALPHA{ 0.25f };
+
 		constexpr StaticArray<Vector4, 6> colors
 		{
 			Vector4(1.0f, 0.0f, 0.0f, ALPHA),
@@ -26,6 +28,40 @@ namespace DebugUtilities
 			Vector4(0.0f, 1.0f, 1.0f, ALPHA),
 		};
 
+		return colors[index % colors.Size()];
+	}
+
+	/*
+	*	Debug renders all axis aligned bounding boxes for solid vegetation.
+	*/
+	void DebugRenderSolidVegetationAxisAlignedBoundingBoxes() NOEXCEPT
+	{
+		const DynamicArray<SolidVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetSolidVegetationTypeInformations() };
+
+		uint64 counter{ 0 };
+
+		for (const SolidVegetationTypeInformation &information : *informations)
+		{
+			for (const VegetationPatchInformation &patchInformation : information._PatchInformations)
+			{
+				if (patchInformation._Valid)
+				{
+					DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData data;
+
+					data._Box = patchInformation._AxisAlignedBoundingBox;
+					data._Color = GetRandomColor(counter++);
+
+					DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(data);
+				}
+			}
+		}
+	}
+
+	/*
+	*	Debug renders all axis aligned bounding boxes for terrain.
+	*/
+	void DebugRenderTerrainAxisAlignedBoundingBoxes() NOEXCEPT
+	{
 		uint8 counter{ 0 };
 
 		const StaticArray<TerrainPatchInformation, 9> *const RESTRICT highDetailInformations{ TerrainSystem::Instance->GetHighDetailTerrainPatchInformations() };
@@ -37,13 +73,11 @@ namespace DebugUtilities
 				DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData data;
 
 				data._Box = information._AxisAlignedBoundingBox;
-				data._Color = colors[(counter++) % colors.Size()];
+				data._Color = GetRandomColor(counter++);
 
 				DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(data);
 			}
 		}
-
-		counter = 0;
 
 		const StaticArray<TerrainPatchInformation, 56> *const RESTRICT lowDetailInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchInformations() };
 
@@ -54,7 +88,7 @@ namespace DebugUtilities
 				DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData data;
 
 				data._Box = information._AxisAlignedBoundingBox;
-				data._Color = colors[(counter++) % colors.Size()];
+				data._Color = GetRandomColor(counter++);
 
 				DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(data);
 			}
