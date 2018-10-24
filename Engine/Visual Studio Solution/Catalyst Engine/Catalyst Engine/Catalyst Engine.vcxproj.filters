@@ -798,12 +798,6 @@
     <ClInclude Include="..\..\..\Include\Entities\EntityProceduralPlacementGridPoint.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\GrassModelData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Vegetation\GrassModel.h">
-      <Filter>Vegetation\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
@@ -1055,6 +1049,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Resources\GrassVegetationModelData.h">
+      <Filter>Resources\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationModel.h">
+      <Filter>Vegetation\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -7,7 +7,7 @@
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
 #include <Resources/GrassVegetationMaterialData.h>
-#include <Resources/GrassModelData.h>
+#include <Resources/GrassVegetationModelData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
 #endif
@@ -25,7 +25,7 @@
 //Static variable definitions.
 Map<HashString, EnvironmentMaterial> ResourceLoader::_EnvironmentMaterials;
 Map<HashString, GrassVegetationMaterial> ResourceLoader::_GrassVegetationMaterials;
-Map<HashString, GrassModel> ResourceLoader::_GrassModels;
+Map<HashString, GrassVegetationModel> ResourceLoader::_GrassVegetationModels;
 #if defined(CATALYST_ENABLE_OCEAN)
 Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
 #endif
@@ -85,9 +85,9 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 				break;
 			}
 
-			case ResourceType::GrassModel:
+			case ResourceType::GrassVegetationModel:
 			{
-				LoadGrassModel(file);
+				LoadGrassVegetationModel(file);
 
 				break;
 			}
@@ -243,16 +243,19 @@ void ResourceLoader::LoadGrassMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
 }
 
 /*
-*	Given a file, load a grass model.
+*	Given a file, load a grass vegetation model.
 */
-void ResourceLoader::LoadGrassModel(BinaryFile<IOMode::In> &file) NOEXCEPT
+void ResourceLoader::LoadGrassVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 {
-	//Store the grass model data in the grass model data structure.
-	GrassModelData data;
+	//Store the grass vegetation model data in the grass vegetation model data structure.
+	GrassVegetationModelData data;
 
 	//Read the resource ID.
 	HashString resourceID;
 	file.Read(&resourceID, sizeof(HashString));
+
+	//Read the extent of the grass vegetation model.
+	file.Read(&data._Extent, sizeof(float));
 
 	//Read the number of vertices.
 	uint64 numberOfVertices;
@@ -270,8 +273,8 @@ void ResourceLoader::LoadGrassModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 	data._Indices.UpsizeFast(numberOfIndices);
 	file.Read(data._Indices.Data(), sizeof(uint32) * numberOfIndices);
 
-	//Create the model via the rendering system.
-	RenderingSystem::Instance->CreateGrassModel(data, _GrassModels[resourceID]);
+	//Create the grass vegetation model via the rendering system.
+	RenderingSystem::Instance->CreateGrassVegetationModel(data, _GrassVegetationModels[resourceID]);
 }
 
 #if defined(CATALYST_ENABLE_OCEAN)

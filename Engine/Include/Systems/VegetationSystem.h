@@ -41,7 +41,7 @@ public:
 	/*
 	*	Adds a grass vegetation type.
 	*/
-	void AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const GrassModel &model, const GrassVegetationMaterial &material) NOEXCEPT;
+	void AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const GrassVegetationModel &model, const GrassVegetationMaterial &material) NOEXCEPT;
 
 	/*
 	*	Returns the grass vegetation type informations, const.

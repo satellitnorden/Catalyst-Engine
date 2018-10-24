@@ -37,7 +37,7 @@
 //Resources.
 #include <Resources/EnvironmentMaterialData.h>
 #include <Resources/GrassVegetationMaterialData.h>
-#include <Resources/GrassModelData.h>
+#include <Resources/GrassVegetationModelData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Resources/OceanMaterialData.h>
 #endif
@@ -51,7 +51,7 @@
 
 //Vegetation.
 #include <Vegetation/GrassVegetationMaterial.h>
-#include <Vegetation/GrassModel.h>
+#include <Vegetation/GrassVegetationModel.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(RenderingSystem);
@@ -349,9 +349,9 @@ void RenderingSystem::CreateGrassVegetationMaterial(const GrassVegetationMateria
 }
 
 /*
-*	Creates a grass model.
+*	Creates a grass vegetation model.
 */
-void RenderingSystem::CreateGrassModel(const GrassModelData &data, GrassModel &model) NOEXCEPT
+void RenderingSystem::CreateGrassVegetationModel(const GrassVegetationModelData &data, GrassVegetationModel &model) NOEXCEPT
 {
 	//Create the vertex and index buffer.
 	const void *RESTRICT modelData[]{ data._Vertices.Data(), data._Indices.Data() };
@@ -359,6 +359,8 @@ void RenderingSystem::CreateGrassModel(const GrassModelData &data, GrassModel &m
 	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
 
 	//Set up the physical model.
+	model._AxisAlignedBoundingBox._Minimum = Vector3(-data._Extent * 0.5f, -data._Extent * 0.5f, -data._Extent * 0.5f);
+	model._AxisAlignedBoundingBox._Maximum = Vector3(data._Extent * 0.5f, data._Extent * 0.5f, data._Extent * 0.5f);
 	model._Buffer = buffer;
 	model._IndexOffset = modelDataSizes[0];
 	model._IndexCount = static_cast<uint32>(data._Indices.Size());

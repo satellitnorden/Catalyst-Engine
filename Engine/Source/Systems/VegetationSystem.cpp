@@ -61,7 +61,7 @@ void VegetationSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 /*
 *	Adds a grass vegetation type.
 */
-void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const GrassModel &model, const GrassVegetationMaterial &material) NOEXCEPT
+void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const GrassVegetationModel &model, const GrassVegetationMaterial &material) NOEXCEPT
 {
 	//Create the new grass vegetation information.
 	_GrassVegetationTypeInformations.EmplaceSlow();
@@ -342,6 +342,9 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 
 				update._NewPatchInformation._Valid = true;
 				update._NewPatchInformation._GridPoint = gridPoint;
+				RenderingUtilities::CalculateAxisAlignedBoundingBoxFromTransformations(	transformations,
+																						information._Model._AxisAlignedBoundingBox,
+																						&update._NewPatchInformation._AxisAlignedBoundingBox);
 
 				break;
 			}

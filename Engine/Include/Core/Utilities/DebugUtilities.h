@@ -8,6 +8,11 @@ namespace DebugUtilities
 {
 
 	/*
+	*	Debug renders all axis aligned bounding boxes for grass vegetation.
+	*/
+	void DebugRenderGrassVegetationAxisAlignedBoundingBoxes() NOEXCEPT;
+
+	/*
 	*	Debug renders all axis aligned bounding boxes for solid vegetation.
 	*/
 	void DebugRenderSolidVegetationAxisAlignedBoundingBoxes() NOEXCEPT;

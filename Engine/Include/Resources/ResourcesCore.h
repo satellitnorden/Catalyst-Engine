@@ -8,7 +8,7 @@ enum class ResourceType : uint8
 {
 	EnvironmentMaterial,
 	GrassMaterial,
-	GrassModel,
+	GrassVegetationModel,
 #if defined(CATALYST_ENABLE_OCEAN)
 	OceanMaterial,
 #endif

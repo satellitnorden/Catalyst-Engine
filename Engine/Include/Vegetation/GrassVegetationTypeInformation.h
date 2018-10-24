@@ -5,7 +5,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Vegetation.
-#include <Vegetation/GrassModel.h>
+#include <Vegetation/GrassVegetationModel.h>
 #include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/GrassVegetationTypeProperties.h>
 #include <Vegetation/VegetationPatchInformation.h>
@@ -20,7 +20,7 @@ public:
 	GrassVegetationTypeProperties _Properties;
 
 	//The model.
-	GrassModel _Model;
+	GrassVegetationModel _Model;
 
 	//The material.
 	GrassVegetationMaterial _Material;

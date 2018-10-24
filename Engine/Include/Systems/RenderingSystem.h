@@ -30,8 +30,8 @@ class Entity;
 class EnvironmentMaterialData;
 class GrassVegetationMaterial;
 class GrassVegetationMaterialData;
-class GrassModel;
-class GrassModelData;
+class GrassVegetationModel;
+class GrassVegetationModelData;
 #if defined(CATALYST_ENABLE_OCEAN)
 class OceanMaterialData;
 #endif
@@ -315,9 +315,9 @@ public:
 	void CreateGrassVegetationMaterial(const GrassVegetationMaterialData &data, GrassVegetationMaterial &material) NOEXCEPT;
 
 	/*
-	*	Creates a grass model.
+	*	Creates a grass vegetation model.
 	*/
-	void CreateGrassModel(const GrassModelData &data, GrassModel &model) NOEXCEPT;
+	void CreateGrassVegetationModel(const GrassVegetationModelData &data, GrassVegetationModel &model) NOEXCEPT;
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*

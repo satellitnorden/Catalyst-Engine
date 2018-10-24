@@ -59,8 +59,8 @@ void CullingSystem::CullingUpdateSystemSynchronous(const UpdateContext *const RE
 */
 void CullingSystem::CullGrassVegetation() NOEXCEPT
 {
-	//Get the viewer position.
-	const Vector3& viewerPosition{ Viewer::Instance->GetPosition() };
+	//Get the current frustum planes.
+	const StaticArray<Vector4, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
 
 	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the viewer.
 	for (GrassVegetationTypeInformation &information : *VegetationSystem::Instance->GetGrassVegetationTypeInformations())
@@ -73,24 +73,8 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 				continue;
 			}
 
-			//Get this patch's world position.
-			const Vector3 patchPosition{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
-
-			//Perform the distance test.
-			const float halfGridSize{ information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE * 0.5f };
-
-			if ((viewerPosition._X > patchPosition._X && viewerPosition._X - (patchPosition._X + halfGridSize) > information._Properties._CutoffDistance)
-				|| (viewerPosition._X < patchPosition._X && (patchPosition._X - halfGridSize) - viewerPosition._X > information._Properties._CutoffDistance)
-				|| (viewerPosition._Z > patchPosition._Z && viewerPosition._Z - (patchPosition._Z + halfGridSize) > information._Properties._CutoffDistance)
-				|| (viewerPosition._Z < patchPosition._Z && (patchPosition._Z - halfGridSize) - viewerPosition._Z > information._Properties._CutoffDistance))
-			{
-				information._PatchRenderInformations[i]._Draw = true;
-			}
-
-			else
-			{
-				information._PatchRenderInformations[i]._Draw = true;
-			}
+			//Test this patch's axis-aligned bounding box against the current frustum planes.
+			information._PatchRenderInformations[i]._Draw = RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox);
 		}
 	}
 }

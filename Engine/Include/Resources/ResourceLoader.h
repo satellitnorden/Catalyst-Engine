@@ -21,7 +21,7 @@
 
 //Vegetation.
 #include <Vegetation/GrassVegetationMaterial.h>
-#include <Vegetation/GrassModel.h>
+#include <Vegetation/GrassVegetationModel.h>
 
 class ResourceLoader final
 {
@@ -44,9 +44,9 @@ public:
 	static const GrassVegetationMaterial& GetGrassVegetationMaterial(const HashString resourceID) { return _GrassVegetationMaterials[resourceID]; }
 
 	/*
-	*	Given a resource ID, return the corresponding grass model.
+	*	Given a resource ID, return the corresponding grass vegetation model.
 	*/
-	static const GrassModel& GetGrassModel(const HashString resourceID) { return _GrassModels[resourceID]; }
+	static const GrassVegetationModel& GetGrassVegetationModel(const HashString resourceID) { return _GrassVegetationModels[resourceID]; }
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*
@@ -83,8 +83,8 @@ private:
 	//Container for all grass vegetation materials.
 	static Map<HashString, GrassVegetationMaterial> _GrassVegetationMaterials;
 
-	//Container for all grass models.
-	static Map<HashString, GrassModel> _GrassModels;
+	//Container for all grass vegetation models.
+	static Map<HashString, GrassVegetationModel> _GrassVegetationModels;
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	//Container for all ocean materials.
@@ -119,9 +119,9 @@ private:
 	static void LoadGrassMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 	/*
-	*	Given a file, load a grass model.
+	*	Given a file, load a grass vegetation model.
 	*/
-	static void LoadGrassModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
+	static void LoadGrassVegetationModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 #if defined(CATALYST_ENABLE_OCEAN)
 	/*

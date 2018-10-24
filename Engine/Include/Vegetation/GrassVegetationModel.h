@@ -4,12 +4,16 @@
 #include <Core/Core/CatalystCore.h>
 
 //Rendering.
+#include <Rendering/Engine/AxisAlignedBoundingBox.h>
 #include <Rendering/Engine/RenderingCore.h>
 
-class GrassModel final
+class GrassVegetationModel final
 {
 
 public:
+
+	//The model space axis-aligned bounding box of this physical model.
+	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
 
 	//The buffer.
 	ConstantBufferHandle _Buffer;
@@ -23,7 +27,7 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	GrassModel() NOEXCEPT
+	GrassVegetationModel() NOEXCEPT
 	{
 
 	}
@@ -31,7 +35,7 @@ public:
 	/*
 	*	Copy constructor.
 	*/
-	GrassModel(const GrassModel &other) NOEXCEPT
+	GrassVegetationModel(const GrassVegetationModel &other) NOEXCEPT
 		:
 		_Buffer(other._Buffer),
 		_IndexOffset(other._IndexOffset),

@@ -6,10 +6,13 @@
 //Vegetation.
 #include <Vegetation/GrassVegetationVertex.h>
 
-class GrassModelData final
+class GrassVegetationModelData final
 {
 
 public:
+
+	//The extent of the grass vegetation model.
+	float _Extent;
 
 	//The vertices of the grass vegetation model.
 	DynamicArray<GrassVegetationVertex> _Vertices;

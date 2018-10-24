@@ -20,12 +20,12 @@
 #include <assimp/postprocess.h>
 #pragma optimize("", on)
 
-class GrassModelCreator final
+class GrassVegetationModelCreator final
 {
 
 public:
 
-	class GrassModelCreationParameters final
+	class GrassVegetationModelCreationParameters final
 	{
 
 	public:
@@ -53,9 +53,9 @@ public:
 	};
 
 	/*
-	*	Creates a grass model resource file.
+	*	Creates a grass vegetation model resource file.
 	*/
-	static void CreateGrassModel(const GrassModelCreationParameters &parameters) noexcept
+	static void CreateGrassVegetationModel(const GrassVegetationModelCreationParameters &parameters) noexcept
 	{
 		//What should the material be called?
 		DynamicString fileName{ parameters._Output };
@@ -65,7 +65,7 @@ public:
 		BinaryFile<IOMode::Out> file{ fileName.CString() };
 
 		//Write the resource type to the file.
-		constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::GrassModel) };
+		constexpr uint8 resourceType{ static_cast<uint8>(ResourceType::GrassVegetationModel) };
 		file.Write(&resourceType, sizeof(ResourceType));
 
 		//Write the resource ID to the file.
@@ -84,8 +84,12 @@ public:
 		//Process the vertices/indices.
 		DynamicArray<GrassVegetationVertex> vertices;
 		DynamicArray<uint32> indices;
+		float extent{ 0.0f };
 
-		ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, heightRange, vertices, indices);
+		ProcessNode(modelScene->mRootNode, modelScene, parameters._UpAxis, heightRange, vertices, indices, extent);
+
+		//Write the extent to the file.
+		file.Write(&extent, sizeof(float));
 
 		//Write the size of the vertices to the file.
 		const uint64 sizeOfVertices{ vertices.Size() };
@@ -110,19 +114,19 @@ private:
 	/*
 	*	Processes a single Assimp mesh.
 	*/
-	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, const GrassModelCreationParameters::Axis upAxis, Vector2 *const RESTRICT heightRange) NOEXCEPT
+	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, const GrassVegetationModelCreationParameters::Axis upAxis, Vector2 *const RESTRICT heightRange) NOEXCEPT
 	{
 		//Process the vertices.
 		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
 		{
 			float upValue;
 
-			if (upAxis == GrassModelCreationParameters::Axis::X)
+			if (upAxis == GrassVegetationModelCreationParameters::Axis::X)
 			{
 				upValue = mesh->mVertices[i].x;
 			}
 
-			else if (upAxis == GrassModelCreationParameters::Axis::Y)
+			else if (upAxis == GrassVegetationModelCreationParameters::Axis::Y)
 			{
 				upValue = mesh->mVertices[i].y;
 			}
@@ -140,7 +144,7 @@ private:
 	/*
 	*	Processes a single Assimp node.
 	*/
-	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, const GrassModelCreationParameters::Axis upAxis, Vector2 *const RESTRICT heightRange) NOEXCEPT
+	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, const GrassVegetationModelCreationParameters::Axis upAxis, Vector2 *const RESTRICT heightRange) NOEXCEPT
 	{
 		//Process all meshes.
 		for (uint32 i = 0; i < node->mNumMeshes; ++i)
@@ -158,19 +162,19 @@ private:
 	/*
 	*	Processes a single Assimp mesh.
 	*/
-	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, const GrassModelCreationParameters::Axis upAxis, const Vector2 &heightRange, DynamicArray<GrassVegetationVertex> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
+	static void ProcessMesh(aiMesh *RESTRICT mesh, const aiScene *RESTRICT scene, const GrassVegetationModelCreationParameters::Axis upAxis, const Vector2 &heightRange, DynamicArray<GrassVegetationVertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		//Process the vertices.
 		for (uint32 i = 0; i < mesh->mNumVertices; ++i)
 		{
 			float upValue;
 
-			if (upAxis == GrassModelCreationParameters::Axis::X)
+			if (upAxis == GrassVegetationModelCreationParameters::Axis::X)
 			{
 				upValue = mesh->mVertices[i].x;
 			}
 
-			else if (upAxis == GrassModelCreationParameters::Axis::Y)
+			else if (upAxis == GrassVegetationModelCreationParameters::Axis::Y)
 			{
 				upValue = mesh->mVertices[i].y;
 			}
@@ -183,6 +187,10 @@ private:
 			const float modulatorFactor{ heightRange._Y - heightRange._X == 0.0f ? 0.0f : CatalystBaseMath::Scale(upValue, heightRange._X, heightRange._Y, 0.0f, 1.0f) };
 
 			vertices.EmplaceSlow(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z, mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z, mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z, mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y, modulatorFactor);
+
+			extent = CatalystBaseMath::Maximum(extent, CatalystBaseMath::Absolute(vertices.Back()._Position._X));
+			extent = CatalystBaseMath::Maximum(extent, CatalystBaseMath::Absolute(vertices.Back()._Position._Y));
+			extent = CatalystBaseMath::Maximum(extent, CatalystBaseMath::Absolute(vertices.Back()._Position._Z));
 		}
 
 		//Process the indices.
@@ -200,18 +208,18 @@ private:
 	/*
 	*	Processes a single Assimp node.
 	*/
-	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, const GrassModelCreationParameters::Axis upAxis, const Vector2 &heightRange, DynamicArray<GrassVegetationVertex> &vertices, DynamicArray<uint32> &indices) NOEXCEPT
+	static void ProcessNode(aiNode *RESTRICT node, const aiScene *RESTRICT scene, const GrassVegetationModelCreationParameters::Axis upAxis, const Vector2 &heightRange, DynamicArray<GrassVegetationVertex> &vertices, DynamicArray<uint32> &indices, float &extent) NOEXCEPT
 	{
 		//Process all meshes.
 		for (uint32 i = 0; i < node->mNumMeshes; ++i)
 		{
-			ProcessMesh(scene->mMeshes[node->mMeshes[i]], scene, upAxis, heightRange, vertices, indices);
+			ProcessMesh(scene->mMeshes[node->mMeshes[i]], scene, upAxis, heightRange, vertices, indices, extent);
 		}
 
 		//Process all nodes.
 		for (uint32 i = 0; i < node->mNumChildren; ++i)
 		{
-			ProcessNode(node->mChildren[i], scene, upAxis, heightRange, vertices, indices);
+			ProcessNode(node->mChildren[i], scene, upAxis, heightRange, vertices, indices, extent);
 		}
 	}
 

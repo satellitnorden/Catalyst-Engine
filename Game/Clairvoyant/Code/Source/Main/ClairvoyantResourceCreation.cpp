@@ -4,7 +4,7 @@
 //Resource creator.
 #include <EnvironmentMaterialCreator.h>
 #include <GrassMaterialCreator.h>
-#include <GrassModelCreator.h>
+#include <GrassVegetationModelCreator.h>
 #include <PhysicalMaterialCreator.h>
 #include <PhysicalModelCreator.h>
 #include <ResourceCollectionCreator.h>
@@ -141,75 +141,75 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
-			//Create the low detail common fern grass model.
-			GrassModelCreator::GrassModelCreationParameters parameters;
+			//Create the low detail common fern grass vegetation model.
+			GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailCommonFernModel";
 			parameters._ID = "LowDetailCommonFernModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\LowDetailCommonFernModel.fbx";
-			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::X;
+			parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::X;
 
-			GrassModelCreator::CreateGrassModel(parameters);
+			GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
 		}
 
 		{
-			//Create the medium detail common fern grass model.
-			GrassModelCreator::GrassModelCreationParameters parameters;
+			//Create the medium detail common fern grass vegetation model.
+			GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailCommonFernModel";
 			parameters._ID = "MediumDetailCommonFernModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\MediumDetailCommonFernModel.fbx";
-			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::X;
+			parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::X;
 
-			GrassModelCreator::CreateGrassModel(parameters);
+			GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
 		}
 
 		{
-			//Create the high detail common fern grass model.
-			GrassModelCreator::GrassModelCreationParameters parameters;
+			//Create the high detail common fern grass vegetation model.
+			GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailCommonFernModel";
 			parameters._ID = "HighDetailCommonFernModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\HighDetailCommonFernModel.fbx";
-			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::X;
+			parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::X;
 
-			GrassModelCreator::CreateGrassModel(parameters);
+			GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
 		}
 
 		{
-			//Create the low detail default grass model.
-			GrassModelCreator::GrassModelCreationParameters parameters;
+			//Create the low detail default grass vegetation model.
+			GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailDefaultGrassModel";
 			parameters._ID = "LowDetailDefaultGrassModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\LowDetailDefaultGrassModel.fbx";
-			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Y;
+			parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::Y;
 
-			GrassModelCreator::CreateGrassModel(parameters);
+			GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
 		}
 
 		{
-			//Create the medium detail default grass model.
-			GrassModelCreator::GrassModelCreationParameters parameters;
+			//Create the medium detail default grass vegetation model.
+			GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailDefaultGrassModel";
 			parameters._ID = "MediumDetailDefaultGrassModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\MediumDetailDefaultGrassModel.fbx";
-			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Y;
+			parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::Y;
 
-			GrassModelCreator::CreateGrassModel(parameters);
+			GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
 		}
 
 		{
-			//Create the high detail default grass model.
-			GrassModelCreator::GrassModelCreationParameters parameters;
+			//Create the high detail default grass vegetation model.
+			GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
 
 			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailDefaultGrassModel";
 			parameters._ID = "HighDetailDefaultGrassModel";
 			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\HighDetailDefaultGrassModel.fbx";
-			parameters._UpAxis = GrassModelCreator::GrassModelCreationParameters::Axis::Y;
+			parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::Y;
 
-			GrassModelCreator::CreateGrassModel(parameters);
+			GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
 		}
 
 		{

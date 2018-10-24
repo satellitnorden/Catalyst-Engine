@@ -32,6 +32,32 @@ namespace DebugUtilities
 	}
 
 	/*
+	*	Debug renders all axis aligned bounding boxes for grass vegetation.
+	*/
+	void DebugRenderGrassVegetationAxisAlignedBoundingBoxes() NOEXCEPT
+	{
+		const DynamicArray<GrassVegetationTypeInformation> *const RESTRICT informations{ VegetationSystem::Instance->GetGrassVegetationTypeInformations() };
+
+		uint64 counter{ 0 };
+
+		for (const GrassVegetationTypeInformation &information : *informations)
+		{
+			for (const VegetationPatchInformation &patchInformation : information._PatchInformations)
+			{
+				if (patchInformation._Valid)
+				{
+					DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData data;
+
+					data._Box = patchInformation._AxisAlignedBoundingBox;
+					data._Color = GetRandomColor(counter++);
+
+					DebugRenderingSystem::Instance->DebugRenderAxisAlignedBoundingBox(data);
+				}
+			}
+		}
+	}
+
+	/*
 	*	Debug renders all axis aligned bounding boxes for solid vegetation.
 	*/
 	void DebugRenderSolidVegetationAxisAlignedBoundingBoxes() NOEXCEPT
