@@ -40,13 +40,9 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 
 		StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
 
-		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("LowDetailCommonFernModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("MediumDetailCommonFernModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("HighDetailCommonFernModel"));
-
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("CommonFernGrassMaterial")) };
 
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassModel(HashString("HighDetailCommonFernModel")), material);
 	}
 
 	{
@@ -55,7 +51,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 
 		properties._MediumDetailDistance = ClairvoyantGrassVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantGrassVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
-		properties._Density = 2'000;
+		properties._Density = 1'500;
 		properties._Thickness = 0.25f;
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -63,32 +59,19 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 			return ClairvoyantWorldUtilities::GenerateTransformation(true, false, false, true, 0.5f, 0.5f, 0.2f, 0.4f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 
-		StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DefaultGrassMaterial")) };
 
 		properties._CutoffDistance = 250.0f;
 
-		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
-
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel")), material);
 
 		properties._CutoffDistance = 125.0f;
 
-		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
-
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel")), material);
 
 		properties._CutoffDistance = 62.5f;
 
-		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
-
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel")), material);
 	}
 
 	{
@@ -105,32 +88,19 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 			return ClairvoyantWorldUtilities::GenerateTransformation(false, true, false, false, 0.5f, 0.5f, 0.2f, 0.4f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 
-		StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("SandGrassMaterial")) };
 
 		properties._CutoffDistance = 250.0f;
 
-		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
-
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel")), material);
 
 		properties._CutoffDistance = 125.0f;
 
-		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
-
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel")), material);
 
 		properties._CutoffDistance = 62.5f;
 
-		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
-
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel")), material);
 	}
 
 	{
@@ -147,31 +117,18 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 			return ClairvoyantWorldUtilities::GenerateTransformation(false, false, true, false, 0.5f, 0.5f, 0.2f, 0.4f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 
-		StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("SnowGrassMaterial")) };
 
 		properties._CutoffDistance = 250.0f;
 
-		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel"));
-
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassModel(HashString("LowDetailDefaultGrassModel")), material);
 
 		properties._CutoffDistance = 125.0f;
 
-		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel"));
-
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassModel(HashString("MediumDetailDefaultGrassModel")), material);
 
 		properties._CutoffDistance = 62.5f;
 
-		models[UNDERLYING(VegetationLevelOfDetail::Low)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::Medium)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
-		models[UNDERLYING(VegetationLevelOfDetail::High)] = ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel"));
-
-		VegetationSystem::Instance->AddGrassVegetationType(properties, models, material);
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassModel(HashString("HighDetailDefaultGrassModel")), material);
 	}
 }

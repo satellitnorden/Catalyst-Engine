@@ -41,7 +41,7 @@ public:
 	/*
 	*	Adds a grass vegetation type.
 	*/
-	void AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> &models, const GrassVegetationMaterial &material) NOEXCEPT;
+	void AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const GrassModel &model, const GrassVegetationMaterial &material) NOEXCEPT;
 
 	/*
 	*	Returns the grass vegetation type informations, const.

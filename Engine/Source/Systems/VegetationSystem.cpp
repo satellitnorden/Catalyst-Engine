@@ -61,15 +61,15 @@ void VegetationSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 /*
 *	Adds a grass vegetation type.
 */
-void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const StaticArray<GrassModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> &models, const GrassVegetationMaterial &material) NOEXCEPT
+void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypeProperties &properties, const GrassModel &model, const GrassVegetationMaterial &material) NOEXCEPT
 {
 	//Create the new grass vegetation information.
 	_GrassVegetationTypeInformations.EmplaceSlow();
 	GrassVegetationTypeInformation *const RESTRICT information{ &_GrassVegetationTypeInformations.Back() };
 
-	//Just copy the properties, the models and the material.
+	//Just copy the properties, the model and the material.
 	information->_Properties = properties;
-	information->_Models = models;
+	information->_Model = model;
 	information->_Material = material;
 
 	//Fill in the patch and the patch render informations.
