@@ -80,10 +80,10 @@ void ClairvoyantSolidVegetationArchitect::Initialize() NOEXCEPT
 		properties._MediumDetailDistance = ClairvoyantSolidVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantSolidVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
 		properties._CutoffDistance = 1'000.0f;
-		properties._Density = 225;
+		properties._Density = 250;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(true, true, true, false, 0.9f, 0.0f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return ClairvoyantWorldUtilities::GenerateTransformation(true, true, true, false, 0.85f, 0.0f, 0.035f, 0.07f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 
 		StaticArray<PhysicalModel, UNDERLYING(VegetationLevelOfDetail::NumberOfVegetationLevelOfDetails)> models;
