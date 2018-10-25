@@ -59,7 +59,7 @@
 /*
 *	Clears the bit at the specified index.
 */
-#define CLEAR_BIT(bitfield, bit) (bitfield &= ~(bit))
+#define CLEAR_BIT(bitfield, bit) (bitfield = bitfield & ~(bit))
 
 /*
 *	Concatenates the arguments together.
@@ -87,7 +87,11 @@ constexpr static ENUMERATION operator|(const ENUMERATION first, const ENUMERATIO
 constexpr static ENUMERATION operator&(const ENUMERATION first, const ENUMERATION second) NOEXCEPT	\
 {																									\
 	return static_cast<ENUMERATION>(UNDERLYING(first) & UNDERLYING(second));						\
-}
+}																									\
+constexpr static ENUMERATION operator~(const ENUMERATION first) NOEXCEPT							\
+{																									\
+return static_cast<ENUMERATION>(~UNDERLYING(first));												\
+}																									\
 
 /*
 *	Returns whether or not a bit is set.
@@ -113,7 +117,12 @@ constexpr static ENUMERATION operator&(const ENUMERATION first, const ENUMERATIO
 /*
 *	Sets the bit at the specified index.
 */
-#define SET_BIT(bitfield, bit) (bitfield |= (bit))
+#define SET_BIT(bitfield, bit) (bitfield = (bitfield | bit))
+
+/*
+*	Tests the bit of the specified bitfield
+*/
+#define TEST_BIT(bitfield, bit) ((bitfield & bit) == bit)
 
 /*
 *	Casts a value to it's underlying type.

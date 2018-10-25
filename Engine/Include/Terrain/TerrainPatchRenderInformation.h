@@ -14,8 +14,8 @@ class TerrainPatchRenderInformation final
 
 public:
 
-	//Denotes whether or not to draw this patch.
-	bool _Draw;
+	//The visibility.
+	VisibilityFlag _Visibility;
 
 	//Denotes whether or not to draw this patch as high detail.
 	bool _HighDetail;

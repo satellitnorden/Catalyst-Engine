@@ -132,7 +132,8 @@ void HighDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 
 	for (const TerrainPatchRenderInformation &information : *informations)
 	{
-		if (!information._Draw || !information._HighDetail)
+		if (!TEST_BIT(information._Visibility, VisibilityFlag::Viewer)
+			|| !information._HighDetail)
 		{
 			continue;
 		}

@@ -45,7 +45,7 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 		for (uint64 j = 0, size = _HighDetailPatchInformations[i].Size(); j < size; ++j)
 		{
 			_HighDetailPatchInformations[i][j]._Valid = false;
-			_HighDetailPatchRenderInformations[i][j]._Draw = false;
+			_HighDetailPatchRenderInformations[i][j]._Visibility = VisibilityFlag::None;
 		}
 	}
 }
@@ -116,7 +116,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 			if (_HighDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid)
 			{
 				_HighDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid = false;
-				_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Draw = false;
+				_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Visibility = VisibilityFlag::None;
 
 				RenderingSystem::Instance->DestroyConstantBuffer(_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Buffer);
 			}
@@ -127,7 +127,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 			if (_LowDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid)
 			{
 				_LowDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid = false;
-				_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Draw = false;
+				_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Visibility = VisibilityFlag::None;
 
 				RenderingSystem::Instance->DestroyConstantBuffer(_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Buffer);
 			}
@@ -259,7 +259,7 @@ void TerrainSystem::GenerateHighDetailPatch(const GridPoint2 &gridPoint, const T
 	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (_Properties._PatchSize * 0.5f), maximumHeight, gridPointWorldPosition._Z + (_Properties._PatchSize * 0.5f));
 
 	//Fill in the details about the patch render information.
-	patchRenderInformation->_Draw = true;
+	patchRenderInformation->_Visibility = VisibilityFlag::None;
 	patchRenderInformation->_HighDetail = true;
 	patchRenderInformation->_Buffer = RenderingSystem::Instance->CreateConstantBuffer(bufferData.Data(), bufferDataSizes.Data(), 2);
 	patchRenderInformation->_IndexOffset = bufferDataSizes[0];
@@ -317,7 +317,7 @@ void TerrainSystem::GenerateLowDetailPatch(const GridPoint2 &gridPoint, const Te
 	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (_Properties._PatchSize * patchSizeMultiplier * 0.5f), maximumHeight, gridPointWorldPosition._Z + (_Properties._PatchSize * patchSizeMultiplier * 0.5f));
 
 	//Fill in the details about the patch render information.
-	patchRenderInformation->_Draw = true;
+	patchRenderInformation->_Visibility = VisibilityFlag::None;
 	patchRenderInformation->_HighDetail = false;
 	patchRenderInformation->_Buffer = RenderingSystem::Instance->CreateConstantBuffer(bufferData.Data(), bufferDataSizes.Data(), 2);
 	patchRenderInformation->_IndexOffset = bufferDataSizes[0];

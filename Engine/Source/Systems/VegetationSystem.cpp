@@ -76,7 +76,7 @@ void VegetationSystem::AddGrassVegetationType(const GrassVegetationTypePropertie
 	for (uint8 i = 0; i < 9; ++i)
 	{
 		information->_PatchInformations[i]._Valid = false;
-		information->_PatchRenderInformations[i]._Draw = false;
+		information->_PatchRenderInformations[i]._Visibility = VisibilityFlag::None;
 	}
 }
 
@@ -98,7 +98,7 @@ void VegetationSystem::AddSolidVegetationType(const SolidVegetationTypePropertie
 	for (uint8 i = 0; i < 9; ++i)
 	{
 		information->_PatchInformations[i]._Valid = false;
-		information->_PatchRenderInformations[i]._Draw = false;
+		information->_PatchRenderInformations[i]._Visibility = VisibilityFlag::None;
 	}
 }
 
@@ -332,7 +332,7 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 			{
 				//Construct the update.
 				DynamicArray<Matrix4> transformations;
-				update._NewPatchRenderInformation._Draw = true;
+				update._NewPatchRenderInformation._Visibility = VisibilityFlag::None;
 				VegetationUtilities::GenerateTransformations(	gridPoint,
 																information._Properties,
 																VegetationConstants::VEGETATION_GRID_SIZE,
@@ -493,7 +493,7 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 			{
 				//Construct the update.
 				DynamicArray<Matrix4> transformations;
-				update._NewPatchRenderInformation._Draw = true;
+				update._NewPatchRenderInformation._Visibility = VisibilityFlag::None;
 				VegetationUtilities::GenerateTransformations(	gridPoint,
 																information._Properties,
 																VegetationConstants::VEGETATION_GRID_SIZE,

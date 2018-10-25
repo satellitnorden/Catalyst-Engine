@@ -74,7 +74,15 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 			}
 
 			//Test this patch's axis-aligned bounding box against the current frustum planes.
-			information._PatchRenderInformations[i]._Draw = RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox);
+			if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox))
+			{
+				SET_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
+			}
+
+			else
+			{
+				CLEAR_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
+			}
 		}
 	}
 }
@@ -99,7 +107,15 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 			}
 
 			//Test this patch's axis-aligned bounding box against the current frustum planes.
-			information._PatchRenderInformations[i]._Draw = RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox);
+			if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox))
+			{
+				SET_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
+			}
+
+			else
+			{
+				CLEAR_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
+			}
 		}
 	}
 }
@@ -129,7 +145,15 @@ void CullingSystem::CullTerrain() NOEXCEPT
 			}
 
 			//Test this patch's axis-aligned bounding box against the current frustum planes.
-			patchRenderInformation._Draw = RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, patchInformation._AxisAlignedBoundingBox);
+			if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, patchInformation._AxisAlignedBoundingBox))
+			{
+				SET_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
+			}
+
+			else
+			{
+				CLEAR_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
+			}
 		}
 	}
 
@@ -150,7 +174,15 @@ void CullingSystem::CullTerrain() NOEXCEPT
 			}
 
 			//Test this patch's axis-aligned bounding box against the current frustum planes.
-			patchRenderInformation._Draw = RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, patchInformation._AxisAlignedBoundingBox);
+			if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, patchInformation._AxisAlignedBoundingBox))
+			{
+				SET_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
+			}
+
+			else
+			{
+				CLEAR_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
+			}
 		}
 	}
 }

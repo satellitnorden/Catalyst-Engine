@@ -294,6 +294,16 @@ enum class Topology : uint8
 	TriangleStripWithAdjacency
 };
 
+//Enumeration covering all visibility flags.
+enum class VisibilityFlag : uint8
+{
+	None = BIT(0),
+	Viewer = BIT(1),
+	DirectionalLight = BIT(2)
+};
+
+ENUMERATION_BIT_OPERATIONS(VisibilityFlag);
+
 //Enumeration covering all address modes.
 enum class AddressMode : uint8
 {

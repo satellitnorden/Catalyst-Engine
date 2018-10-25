@@ -14,8 +14,8 @@ class VegetationPatchRenderInformation final
 
 public:
 
-	//Denotes whether or not to draw this patch.
-	bool _Draw;
+	//The visibility.
+	VisibilityFlag _Visibility;
 
 	//The level of detail.
 	VegetationLevelOfDetail _LevelOfDetail{ VegetationLevelOfDetail::Low };

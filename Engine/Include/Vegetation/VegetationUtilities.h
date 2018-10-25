@@ -49,7 +49,7 @@ namespace VegetationUtilities
 	{
 		//Invalidate the patch.
 		information->_PatchInformations[index]._Valid = false;
-		information->_PatchRenderInformations[index]._Draw = false;
+		information->_PatchRenderInformations[index]._Visibility = VisibilityFlag::None;
 
 		if (information->_PatchRenderInformations[index]._NumberOfTransformations > 0)
 		{

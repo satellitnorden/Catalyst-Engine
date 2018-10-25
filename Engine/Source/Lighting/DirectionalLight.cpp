@@ -47,7 +47,7 @@ void DirectionalLight::UpdateLightMatrix() NOEXCEPT
 void DirectionalLight::UpdateViewMatrix() NOEXCEPT
 {
 	//Update the view matrix.
-	_ViewMatrix = _LightMatrix * _ProjectionMatrix;
+	_ViewMatrix = _ProjectionMatrix * _LightMatrix;
 
 	//Reset the dirtyness of the view matrix.
 	_ViewMatrixDirty = false;

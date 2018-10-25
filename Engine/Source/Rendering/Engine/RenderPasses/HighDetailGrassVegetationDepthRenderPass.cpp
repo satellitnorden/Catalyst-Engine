@@ -199,7 +199,7 @@ void HighDetailGrassVegetationDepthRenderPass::RenderInternal() NOEXCEPT
 		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!renderInformation._Draw
+			if (!TEST_BIT(renderInformation._Visibility, VisibilityFlag::Viewer)
 				|| renderInformation._NumberOfTransformations == 0
 				|| renderInformation._LevelOfDetail != VegetationLevelOfDetail::High)
 			{

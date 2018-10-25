@@ -128,7 +128,7 @@ void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 
 	for (const TerrainPatchRenderInformation &information : *highDetailInformations)
 	{
-		if (!information._Draw)
+		if (!TEST_BIT(information._Visibility, VisibilityFlag::Viewer))
 		{
 			continue;
 		}
@@ -148,7 +148,7 @@ void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 
 	for (const TerrainPatchRenderInformation &information : *lowDetailInformations)
 	{
-		if (!information._Draw)
+		if (!TEST_BIT(information._Visibility, VisibilityFlag::Viewer))
 		{
 			continue;
 		}
