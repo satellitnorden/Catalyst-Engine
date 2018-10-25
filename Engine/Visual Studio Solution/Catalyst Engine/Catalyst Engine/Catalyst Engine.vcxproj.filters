@@ -223,12 +223,12 @@
     <Filter Include="Lighting\Include">
       <UniqueIdentifier>{3a76fa3c-6e1d-47cf-b358-7da4c92cfd54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lighting\Source">
+      <UniqueIdentifier>{0dc7d249-4daf-4231-bb24-8a295b5c1675}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
-      <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Components\DirectionalLightComponent.h">
       <Filter>Components\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\FrustumCullingComponent.h">
@@ -272,9 +272,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\DirectionalLightEntity.h">
-      <Filter>Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Entities\Entity.h">
       <Filter>Entities\Include</Filter>
@@ -1074,13 +1071,13 @@
     <ClInclude Include="..\..\..\Include\Lighting\SpotLight.h">
       <Filter>Lighting\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\LightingSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
       <Filter>Components\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\DirectionalLightEntity.cpp">
-      <Filter>Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Entities\Entity.cpp">
       <Filter>Entities\Source</Filter>
@@ -1528,6 +1525,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp">
       <Filter>Core\Source\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\LightinSystem.cpp">
+      <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp">
+      <Filter>Lighting\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

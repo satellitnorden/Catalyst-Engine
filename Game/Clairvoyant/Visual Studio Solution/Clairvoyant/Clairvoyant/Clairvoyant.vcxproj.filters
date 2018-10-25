@@ -63,9 +63,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\DirectionalLightEntity.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\DynamicPhysicalEntity.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -511,6 +508,12 @@
       <Filter>Clairvoyant Code\World\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Core\Utilities\DebugUtilities.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\LightinSystem.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Lighting\DirectionalLight.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
   </ItemGroup>

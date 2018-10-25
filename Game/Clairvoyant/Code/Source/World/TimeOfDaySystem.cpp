@@ -3,6 +3,7 @@
 
 //Systems.
 #include <Systems/EntitySystem.h>
+#include <Systems/LightingSystem.h>
 #include <Systems/UpdateSystem.h>
 
 //Singleton definition.
@@ -20,9 +21,6 @@ namespace TimeOfDaySystemConstants
 */
 void TimeOfDaySystem::Initialize() NOEXCEPT
 {
-	//Create the sun.
-	_Sun = EntitySystem::Instance->CreateEntity<DirectionalLightEntity>();
-
 	//Register the time of day system for updates.
 	UpdateSystem::Instance->RegisterAsynchronousOpeningUpdate(this);
 
@@ -47,7 +45,7 @@ bool TimeOfDaySystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTR
 	}
 
 	//Rotate the sun.
-	_Sun->SetRotation(Vector3(90.0f + _CurrentTime * 15.0f, 45.0f, 0.0f));
+	LightingSystem::Instance->GetDirectionalLight()->SetRotation(Vector3(90.0f + _CurrentTime * 15.0f, 45.0f, 0.0f));
 
 	//Return that the time of day system wants to continue being updated.
 	return true;

@@ -27,6 +27,7 @@
 
 //Systems.
 #include <Systems/EntitySystem.h>
+#include <Systems/LightingSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/TerrainSystem.h>
@@ -205,10 +206,10 @@ void ClairvoyantWorldArchitect::BlendEnvironmentParameters(const EnvironmentPara
 	EnvironmentManager::Instance->SetEnvironmentBlend(smoothedAlpha);
 
 	//Blend the sun color.
-	TimeOfDaySystem::Instance->GetSun()->SetColor(Vector3::LinearlyInterpolate(first._SunColor, second._SunColor, smoothedAlpha));
+	LightingSystem::Instance->GetDirectionalLight()->SetColor(Vector3::LinearlyInterpolate(first._SunColor, second._SunColor, smoothedAlpha));
 
 	//Blend the sun intensity.
-	TimeOfDaySystem::Instance->GetSun()->SetIntensity(CatalystBaseMath::LinearlyInterpolate(first._SunIntensity, second._SunIntensity, smoothedAlpha));
+	LightingSystem::Instance->GetDirectionalLight()->SetIntensity(CatalystBaseMath::LinearlyInterpolate(first._SunIntensity, second._SunIntensity, smoothedAlpha));
 
 	//Blend the wind speed.
 	PhysicsSystem::Instance->SetWindSpeed(CatalystBaseMath::LinearlyInterpolate(first._WindSpeed, second._WindSpeed, smoothedAlpha));

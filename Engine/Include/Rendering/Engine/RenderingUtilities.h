@@ -77,24 +77,6 @@ namespace RenderingUtilities
 	}
 
 	/*
-	*	Calculates the directional light view matrix.
-	*/
-	static Matrix4 CalculateDirectionalLightViewMatrix() NOEXCEPT
-	{
-		static Matrix4 directionalLightProjectionMatrix{ Matrix4::Ortographic(-RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, -RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f, 0.0f, RenderingConstants::SHADOW_VIEW_DISTANCE) };
-
-		const DirectionalLightComponent *const RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightDirectionalLightComponents() };
-
-		const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
-		const Vector3 directionalLightForwardVector{ Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->_Rotation) };
-		const Vector3 directionalLightUpVector{ Vector3(0.0f, 1.0f, 0.0f).Rotated(directionalLightComponent->_Rotation) };
-		const Vector3 directionalLightPosition{ viewerPosition + (directionalLightForwardVector * -1.0f) * (RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f) };
-		const Matrix4 directionalLightDirection{ Matrix4::LookAt(directionalLightPosition, directionalLightPosition + directionalLightForwardVector, directionalLightUpVector) };
-	
-		return directionalLightProjectionMatrix * directionalLightDirection;
-	}
-
-	/*
 	*	Creates a transformations buffer.
 	*/
 	static void CreateTransformationsBuffer(const DynamicArray<Matrix4> &transformations, ConstantBufferHandle *const RESTRICT buffer) NOEXCEPT

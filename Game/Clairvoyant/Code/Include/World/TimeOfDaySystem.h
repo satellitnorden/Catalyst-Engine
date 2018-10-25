@@ -5,9 +5,6 @@
 #include <Core/General/Updateable.h>
 #include <Core/Pointers/UniquePointer.h>
 
-//Entities.
-#include <Entities/DirectionalLightEntity.h>
-
 class TimeOfDaySystem final : public Updateable
 {
 
@@ -39,20 +36,9 @@ public:
 		return _CurrentTime;
 	}
 
-	/*
-	*	Returns the sun.
-	*/
-	DirectionalLightEntity *const RESTRICT GetSun() NOEXCEPT
-	{
-		return _Sun;
-	}
-
 private:
 
 	//The current time.
 	float _CurrentTime{ 0.0f };
-
-	//The sun.
-	DirectionalLightEntity *RESTRICT _Sun;
 
 };

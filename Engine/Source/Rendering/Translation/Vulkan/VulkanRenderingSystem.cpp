@@ -25,6 +25,7 @@
 
 //Systems.
 #include <Systems/EngineSystem.h>
+#include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
 
@@ -1995,30 +1996,14 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 	_DynamicUniformData._ViewerForwardVector = forwardVector;
 	_DynamicUniformData._ViewerWorldPosition = viewerPosition;
 
-	const uint64 numberOfDirectionalLightEntityComponents{ ComponentManager::GetNumberOfDirectionalLightComponents() };
-
-	if (numberOfDirectionalLightEntityComponents > 0)
-	{
-		const DirectionalLightComponent *RESTRICT directionalLightComponent{ ComponentManager::GetDirectionalLightDirectionalLightComponents() };
-
-		_DynamicUniformData._DirectionalLightIntensity = directionalLightComponent->_Intensity;
-		_DynamicUniformData._DirectionalLightViewMatrix = RenderingUtilities::CalculateDirectionalLightViewMatrix();
-		_DynamicUniformData._DirectionalLightDirection = Vector3(0.0f, 0.0f, -1.0f).Rotated(directionalLightComponent->_Rotation);
-		_DynamicUniformData._DirectionalLightColor = directionalLightComponent->_Color;
-		_DynamicUniformData._DirectionalLightScreenSpacePosition = *viewMatrix * Vector4(-_DynamicUniformData._DirectionalLightDirection._X * 100.0f + viewerPosition._X, -_DynamicUniformData._DirectionalLightDirection._Y * 100.0f + viewerPosition._Y, -_DynamicUniformData._DirectionalLightDirection._Z * 100.0f + viewerPosition._Z, 1.0f);
-		_DynamicUniformData._DirectionalLightScreenSpacePosition._X /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;
-		_DynamicUniformData._DirectionalLightScreenSpacePosition._Y /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;
-		_DynamicUniformData._DirectionalLightScreenSpacePosition._Z /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;
-	}
-
-	else
-	{
-		_DynamicUniformData._DirectionalLightIntensity = 0.0f;
-		_DynamicUniformData._DirectionalLightViewMatrix = Matrix4();
-		_DynamicUniformData._DirectionalLightDirection = Vector3(0.0f, 0.0f, 0.0f);
-		_DynamicUniformData._DirectionalLightColor = Vector3(0.0f, 0.0f, 0.0f);
-		_DynamicUniformData._DirectionalLightScreenSpacePosition = Vector3(0.0f, 0.0f, 0.0f);
-	}
+	_DynamicUniformData._DirectionalLightIntensity = LightingSystem::Instance->GetDirectionalLight()->GetIntensity();
+	_DynamicUniformData._DirectionalLightViewMatrix = *LightingSystem::Instance->GetDirectionalLight()->GetViewMatrix();
+	_DynamicUniformData._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
+	_DynamicUniformData._DirectionalLightColor = LightingSystem::Instance->GetDirectionalLight()->GetColor();
+	_DynamicUniformData._DirectionalLightScreenSpacePosition = *viewMatrix * Vector4(-_DynamicUniformData._DirectionalLightDirection._X * 100.0f + viewerPosition._X, -_DynamicUniformData._DirectionalLightDirection._Y * 100.0f + viewerPosition._Y, -_DynamicUniformData._DirectionalLightDirection._Z * 100.0f + viewerPosition._Z, 1.0f);
+	_DynamicUniformData._DirectionalLightScreenSpacePosition._X /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;
+	_DynamicUniformData._DirectionalLightScreenSpacePosition._Y /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;
+	_DynamicUniformData._DirectionalLightScreenSpacePosition._Z /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;
 
 	_DynamicUniformData._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
 

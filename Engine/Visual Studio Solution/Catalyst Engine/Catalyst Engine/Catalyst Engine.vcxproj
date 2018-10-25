@@ -47,7 +47,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h" />
-    <ClInclude Include="..\..\..\Include\Components\DirectionalLightComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\DynamicOutlineRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\DynamicPhysicalRenderComponent.h" />
     <ClInclude Include="..\..\..\Include\Components\FrustumCullingComponent.h" />
@@ -84,7 +83,6 @@
     <ClInclude Include="..\..\..\Include\Core\Utilities\CompileTimeUtilities.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h" />
-    <ClInclude Include="..\..\..\Include\Entities\DirectionalLightEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\DynamicPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\EntitiesCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Entity.h" />
@@ -301,6 +299,7 @@
     <ClInclude Include="..\..\..\Include\Systems\EntitySystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\LevelOfDetailSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\LightingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\PhysicsSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\RenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\SoundSystem.h" />
@@ -333,12 +332,12 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\DirectionalLightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\DynamicPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\Entity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\ParticleSystemEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\PointLightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Entities\SpotLightEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp" />
@@ -475,6 +474,7 @@
     <ClCompile Include="..\..\..\Source\Systems\EntitySystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\LevelOfDetailSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\LightinSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\PhysicsSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\RenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\SoundSystem.cpp" />

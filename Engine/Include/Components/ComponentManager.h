@@ -5,7 +5,6 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Components.
-#include <Components/DirectionalLightComponent.h>
 #include <Components/DynamicPhysicalRenderComponent.h>
 #include <Components/DynamicOutlineRenderComponent.h>
 #include <Components/FrustumCullingComponent.h>
@@ -65,7 +64,6 @@ class Entity;
 class ComponentManager final
 {
 
-	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(DirectionalLight, DirectionalLightComponent);
 	DECLARE_ENTITY_CLASS_WITH_FOUR_COMPONENTS(DynamicPhysical, FrustumCullingComponent, DynamicOutlineRenderComponent, DynamicPhysicalRenderComponent, TransformComponent);
 	DECLARE_ENTITY_CLASS_WITH_TWO_COMPONENTS(ParticleSystem, ParticleSystemComponent, ParticleSystemRenderComponent);
 	DECLARE_ENTITY_CLASS_WITH_ONE_COMPONENT(PointLight, PointLightComponent);
