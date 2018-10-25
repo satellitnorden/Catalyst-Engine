@@ -192,7 +192,7 @@ void DirectionalSolidVegetationShadowRenderPass::RenderInternal() NOEXCEPT
 		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{
 			//Check whether or not this should be drawn.
-			if (!TEST_BIT(renderInformation._Visibility, VisibilityFlag::Viewer)
+			if (!TEST_BIT(renderInformation._Visibility, VisibilityFlag::DirectionalLight)
 				|| renderInformation._NumberOfTransformations == 0)
 			{
 				continue;

@@ -10,6 +10,7 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
+#include <Systems/LightingSystem.h>
 #include <Systems/TaskSystem.h>
 #include <Systems/TerrainSystem.h>
 #include <Systems/VegetationSystem.h>
@@ -93,7 +94,8 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 void CullingSystem::CullSolidVegetation() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4, 6> *const RESTRICT directionalLightFrustumPlanes{ LightingSystem::Instance->GetDirectionalLight()->GetFrustumPlanes() };
+	const StaticArray<Vector4, 6> *const RESTRICT viewerFrustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
 
 	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the viewer.
 	for (SolidVegetationTypeInformation &information : *VegetationSystem::Instance->GetSolidVegetationTypeInformations())
@@ -107,7 +109,7 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 			}
 
 			//Test this patch's axis-aligned bounding box against the current frustum planes.
-			if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox))
+			if (RenderingUtilities::IsWithinViewFrustum(*viewerFrustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox))
 			{
 				SET_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
 			}
@@ -115,6 +117,16 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 			else
 			{
 				CLEAR_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
+			}
+
+			if (RenderingUtilities::IsWithinViewFrustum(*directionalLightFrustumPlanes, information._PatchInformations[i]._AxisAlignedBoundingBox))
+			{
+				SET_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::DirectionalLight);
+			}
+
+			else
+			{
+				CLEAR_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::DirectionalLight);
 			}
 		}
 	}

@@ -2,9 +2,11 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/StaticArray.h>
 
 //Math.
 #include <Math/Vector3.h>
+#include <Math/Vector4.h>
 #include <Math/Matrix4.h>
 
 //Multithreading.
@@ -72,9 +74,39 @@ public:
 	}
 
 	/*
+	*	Returns the frustum planes.
+	*/
+	RESTRICTED const StaticArray<Vector4, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
+	{
+		ScopedLock<Spinlock> scopedLock{ _Lock };
+
+		if (_ProjectionMatrixDirty)
+		{
+			UpdateProjectionMatrix();
+		}
+
+		if (_LightMatrixDirty)
+		{
+			UpdateLightMatrix();
+		}
+
+		if (_ViewMatrixDirty)
+		{
+			UpdateViewMatrix();
+		}
+
+		if (_FrustumPlanesDirty)
+		{
+			UpdateFrustumPlanes();
+		}
+
+		return &_FrustumPlanes;
+	}
+
+	/*
 	*	Returns the direction of the directional light.
 	*/
-	const Vector3& GetDirection() const NOEXCEPT
+	Vector3 GetDirection() const NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -157,6 +189,12 @@ private:
 	//The view matrix.
 	Matrix4 _ViewMatrix;
 
+	//Denotes whether or not the frustum planes is dirty.
+	bool _FrustumPlanesDirty{ true };
+
+	//The frustum planes.
+	StaticArray<Vector4, 6> _FrustumPlanes;
+
 	//The rotation.
 	Vector3 _Rotation{ 0.0f, 0.0f, 0.0f };
 
@@ -180,5 +218,10 @@ private:
 	*	Update the view matrix.
 	*/
 	void UpdateViewMatrix() NOEXCEPT;
+
+	/*
+	*	Update the frustum planes.
+	*/
+	void UpdateFrustumPlanes() NOEXCEPT;
 
 };
