@@ -47,6 +47,38 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
+	RESTRICTED constexpr const Type *const RESTRICT Begin() const NOEXCEPT
+	{
+		return _Array;
+	}
+
+	/*
+	*	Begin iterator, non-const.
+	*/
+	RESTRICTED constexpr Type *const RESTRICT Begin()  NOEXCEPT
+	{
+		return _Array;
+	}
+
+	/*
+	*	End iterator, const.
+	*/
+	RESTRICTED constexpr const Type *const RESTRICT End() const NOEXCEPT
+	{
+		return _Array + SIZE;
+	}
+
+	/*
+	*	End iterator, non-const.
+	*/
+	RESTRICTED constexpr Type *const RESTRICT End() NOEXCEPT
+	{
+		return _Array + SIZE;
+	}
+
+	/*
+	*	Begin iterator, const.
+	*/
 	RESTRICTED constexpr const Type *const RESTRICT begin() const NOEXCEPT
 	{
 		return _Array;

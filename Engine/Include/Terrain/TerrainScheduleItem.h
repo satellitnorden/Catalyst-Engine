@@ -17,6 +17,9 @@ public:
 	//The grid point.
 	GridPoint2 _GridPoint;
 
+	//The borders.
+	TerrainBorder _Borders;
+
 	//The patch size multiplier.
 	float _PatchSizeMultiplier;
 

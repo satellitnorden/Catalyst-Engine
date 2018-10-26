@@ -58,7 +58,7 @@ namespace TerrainUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, const Vector3 &worldPosition, const float patchSize, const TerrainAxis borders, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, const Vector3 &worldPosition, const float patchSize, const TerrainBorder borders, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
 	{
 		vertices->Reserve((resolution + 1) * (resolution + 1) * 5);
 		indices->Reserve(resolution * resolution * 6);
@@ -70,19 +70,22 @@ namespace TerrainUtilities
 				float textureCoordinateX;
 				float textureCoordinateY;
 
-				if (((borders & TerrainAxis::NegativeX) == TerrainAxis::NegativeX && i == resolution)
-					|| (borders & TerrainAxis::PositiveX) == TerrainAxis::PositiveX && i == resolution)
+				if ((j == 0 && TEST_BIT(borders, TerrainBorder::Upper))
+					|| (j == resolution && TEST_BIT(borders, TerrainBorder::Lower)))
 				{
-					const uint32 remainder{ i % 3 };
-
-					if (remainder == 0)
+					if (i % 3 == 0)
 					{
 						textureCoordinateX = static_cast<float>(i) / static_cast<float>(resolution);
 					}
 
+					else if ((i - 1) % 3 == 0)
+					{
+						textureCoordinateX = static_cast<float>(i - 1) / static_cast<float>(resolution);
+					}
+
 					else
 					{
-						textureCoordinateX = static_cast<float>(i + 3 - remainder) / static_cast<float>(resolution);
+						textureCoordinateX = static_cast<float>(i - 2) / static_cast<float>(resolution);
 					}
 				}
 
@@ -91,19 +94,22 @@ namespace TerrainUtilities
 					textureCoordinateX = static_cast<float>(i) / static_cast<float>(resolution);
 				}
 
-				if (((borders & TerrainAxis::NegativeY) == TerrainAxis::NegativeY && j == resolution)
-					|| (borders & TerrainAxis::PositiveY) == TerrainAxis::PositiveY && j == resolution)
+				if ((i == 0 && TEST_BIT(borders, TerrainBorder::Left))
+					|| (i == resolution && TEST_BIT(borders, TerrainBorder::Right)))
 				{
-					const uint32 remainder{ j % 3 };
-
-					if (remainder == 0)
+					if (j % 3 == 0)
 					{
 						textureCoordinateY = static_cast<float>(j) / static_cast<float>(resolution);
 					}
 
+					else if ((j - 1) % 3 == 0)
+					{
+						textureCoordinateY = static_cast<float>(j - 1) / static_cast<float>(resolution);
+					}
+
 					else
 					{
-						textureCoordinateY = static_cast<float>(j + 3 - remainder) / static_cast<float>(resolution);
+						textureCoordinateY = static_cast<float>(j - 2) / static_cast<float>(resolution);
 					}
 				}
 

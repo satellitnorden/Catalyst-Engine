@@ -34,6 +34,13 @@ public:
 
 	}
 
+	/*
+	*	Addition operator overload.
+	*/
+	constexpr GridPoint2 operator+(const GridPoint2 other) const NOEXCEPT
+	{
+		return GridPoint2(_X + other._X, _Y + other._Y);
+	}
 
 	/*
 	*	Equality operator overload.
@@ -57,6 +64,14 @@ public:
 	constexpr GridPoint2 operator*(const int32 scalar) const NOEXCEPT
 	{
 		return GridPoint2(_X * scalar, _Y * scalar);
+	}
+
+	/*
+	*	Subtraction operator overload.
+	*/
+	constexpr GridPoint2 operator-(const GridPoint2 other) const NOEXCEPT
+	{
+		return GridPoint2(_X - other._X, _Y - other._Y);
 	}
 
 	/*

@@ -1,6 +1,9 @@
 //Header file.
 #include <Terrain/TerrainSchedule.h>
 
+//Core.
+#include <Core/Algorithms/SortingAlgorithms.h>
+
 //Terrain schedule constants.
 namespace TerrainScheduleConstants
 {
@@ -155,6 +158,83 @@ namespace TerrainScheduleConstants
 		GridPoint2(-1, -1) * 2'187,
 	};
 
+	constexpr StaticArray<TerrainBorder, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> BORDERS
+	{
+		TerrainBorder::None,
+
+		TerrainBorder::Upper,
+		TerrainBorder::Upper | TerrainBorder::Right,
+		TerrainBorder::Right,
+		TerrainBorder::Right | TerrainBorder::Lower,
+		TerrainBorder::Lower,
+		TerrainBorder::Lower | TerrainBorder::Left,
+		TerrainBorder::Left,
+		TerrainBorder::Upper | TerrainBorder::Left,
+
+		TerrainBorder::Upper,
+		TerrainBorder::Upper | TerrainBorder::Right,
+		TerrainBorder::Right,
+		TerrainBorder::Right | TerrainBorder::Lower,
+		TerrainBorder::Lower,
+		TerrainBorder::Lower | TerrainBorder::Left,
+		TerrainBorder::Left,
+		TerrainBorder::Upper | TerrainBorder::Left,
+
+		TerrainBorder::Upper,
+		TerrainBorder::Upper | TerrainBorder::Right,
+		TerrainBorder::Right,
+		TerrainBorder::Right | TerrainBorder::Lower,
+		TerrainBorder::Lower,
+		TerrainBorder::Lower | TerrainBorder::Left,
+		TerrainBorder::Left,
+		TerrainBorder::Upper | TerrainBorder::Left,
+
+		TerrainBorder::Upper,
+		TerrainBorder::Upper | TerrainBorder::Right,
+		TerrainBorder::Right,
+		TerrainBorder::Right | TerrainBorder::Lower,
+		TerrainBorder::Lower,
+		TerrainBorder::Lower | TerrainBorder::Left,
+		TerrainBorder::Left,
+		TerrainBorder::Upper | TerrainBorder::Left,
+
+		TerrainBorder::Upper,
+		TerrainBorder::Upper | TerrainBorder::Right,
+		TerrainBorder::Right,
+		TerrainBorder::Right | TerrainBorder::Lower,
+		TerrainBorder::Lower,
+		TerrainBorder::Lower | TerrainBorder::Left,
+		TerrainBorder::Left,
+		TerrainBorder::Upper | TerrainBorder::Left,
+
+		TerrainBorder::Upper,
+		TerrainBorder::Upper | TerrainBorder::Right,
+		TerrainBorder::Right,
+		TerrainBorder::Right | TerrainBorder::Lower,
+		TerrainBorder::Lower,
+		TerrainBorder::Lower | TerrainBorder::Left,
+		TerrainBorder::Left,
+		TerrainBorder::Upper | TerrainBorder::Left,
+
+		TerrainBorder::Upper,
+		TerrainBorder::Upper | TerrainBorder::Right,
+		TerrainBorder::Right,
+		TerrainBorder::Right | TerrainBorder::Lower,
+		TerrainBorder::Lower,
+		TerrainBorder::Lower | TerrainBorder::Left,
+		TerrainBorder::Left,
+		TerrainBorder::Upper | TerrainBorder::Left,
+
+		TerrainBorder::Upper,
+		TerrainBorder::Upper | TerrainBorder::Right,
+		TerrainBorder::Right,
+		TerrainBorder::Right | TerrainBorder::Lower,
+		TerrainBorder::Lower,
+		TerrainBorder::Lower | TerrainBorder::Left,
+		TerrainBorder::Left,
+		TerrainBorder::Upper | TerrainBorder::Left,
+	};
+
 	constexpr StaticArray<float, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> PATCH_SIZE_MULTIPLIERS
 	{
 		1.0f,
@@ -236,15 +316,150 @@ namespace TerrainScheduleConstants
 /*
 *	Generates a new schedule based on the delta.
 */
-void TerrainSchedule::GenerateNewSchedule(const GridPoint2 delta) NOEXCEPT
+void TerrainSchedule::GenerateNewSchedule(const GridPoint2 previous, const GridPoint2 current) NOEXCEPT
 {
-	#define SET_ITEM(index)																				\
-	{																									\
-		_Items[index]._Index = index;																	\
-		_Items[index]._GridPoint = TerrainScheduleConstants::GRID_POINT_OFFSETS[index];					\
-		_Items[index]._PatchSizeMultiplier = TerrainScheduleConstants::PATCH_SIZE_MULTIPLIERS[index];	\
+	//Calculate the delta.
+	const GridPoint2 delta{ current - previous };
+
+	//Sort the schedule in different direction depending on the delta.
+	if (delta._X < 0)
+	{
+		//Generate the starting schedule.
+		GenerateStartingSchedule(GridPoint2(current._X, previous._Y));
+
+		SortingAlgorithms::InsertionSort<TerrainScheduleItem>(_Items.Begin(), _Items.End(), nullptr, [](const void *const RESTRICT userData, const TerrainScheduleItem *const RESTRICT first, const TerrainScheduleItem *const RESTRICT second)
+		{
+			return first->_GridPoint._X > second->_GridPoint._X;
+		});
 	}
-	
+
+	else if (delta._X > 0)
+	{
+		//Generate the starting schedule.
+		GenerateStartingSchedule(GridPoint2(current._X, previous._Y));
+
+		SortingAlgorithms::InsertionSort<TerrainScheduleItem>(_Items.Begin(), _Items.End(), nullptr, [](const void *const RESTRICT userData, const TerrainScheduleItem *const RESTRICT first, const TerrainScheduleItem *const RESTRICT second)
+		{
+			return first->_GridPoint._X < second->_GridPoint._X;
+		});
+	}
+
+	else if (delta._Y < 0)
+	{
+		//Generate the starting schedule.
+		GenerateStartingSchedule(GridPoint2(previous._X, current._Y));
+
+		SortingAlgorithms::InsertionSort<TerrainScheduleItem>(_Items.Begin(), _Items.End(), nullptr, [](const void *const RESTRICT userData, const TerrainScheduleItem *const RESTRICT first, const TerrainScheduleItem *const RESTRICT second)
+		{
+			return first->_GridPoint._Y > second->_GridPoint._Y;
+		});
+	}
+
+	else if (delta._Y > 0)
+	{
+		//Generate the starting schedule.
+		GenerateStartingSchedule(GridPoint2(previous._X, current._Y));
+
+		SortingAlgorithms::InsertionSort<TerrainScheduleItem>(_Items.Begin(), _Items.End(), nullptr, [](const void *const RESTRICT userData, const TerrainScheduleItem *const RESTRICT first, const TerrainScheduleItem *const RESTRICT second)
+		{
+			return first->_GridPoint._Y < second->_GridPoint._Y;
+		});
+	}
+
+	else
+	{
+		GenerateStartingSchedule(current);
+	}
+
+	//Reset the current item.
+	_CurrentItem = 0;
+}
+
+/*
+*	Generates the starting schedule.
+*/
+void TerrainSchedule::GenerateStartingSchedule(const GridPoint2 current) NOEXCEPT
+{
+	#define SET_ITEM(SCHEDULE_INDEX, PATCH_INDEX)																		\
+	{																													\
+		_Items[SCHEDULE_INDEX]._Index = PATCH_INDEX;																	\
+		_Items[SCHEDULE_INDEX]._GridPoint = current + TerrainScheduleConstants::GRID_POINT_OFFSETS[PATCH_INDEX];		\
+		_Items[SCHEDULE_INDEX]._Borders = TerrainScheduleConstants::BORDERS[PATCH_INDEX];								\
+		_Items[SCHEDULE_INDEX]._PatchSizeMultiplier = TerrainScheduleConstants::PATCH_SIZE_MULTIPLIERS[PATCH_INDEX];	\
+	}
+
 	//For now, just generate the starting schedule.
-	SET_ITEM(TerrainScheduleConstants::CENTER_INDEX);
+	SET_ITEM(0, TerrainScheduleConstants::CENTER_INDEX);
+
+	SET_ITEM(1, TerrainScheduleConstants::UPPER_LAYER_ZERO_INDEX);
+	SET_ITEM(2, TerrainScheduleConstants::UPPER_RIGHT_LAYER_ZERO_INDEX);
+	SET_ITEM(3, TerrainScheduleConstants::RIGHT_LAYER_ZERO_INDEX);
+	SET_ITEM(4, TerrainScheduleConstants::LOWER_RIGHT_LAYER_ZERO_INDEX);
+	SET_ITEM(5, TerrainScheduleConstants::LOWER_LAYER_ZERO_INDEX);
+	SET_ITEM(6, TerrainScheduleConstants::LOWER_LEFT_LAYER_ZERO_INDEX);
+	SET_ITEM(7, TerrainScheduleConstants::LEFT_LAYER_ZERO_INDEX);
+	SET_ITEM(8, TerrainScheduleConstants::UPPER_LEFT_LAYER_ZERO_INDEX);
+
+	SET_ITEM(9, TerrainScheduleConstants::UPPER_LAYER_ONE_INDEX);
+	SET_ITEM(10, TerrainScheduleConstants::UPPER_RIGHT_LAYER_ONE_INDEX);
+	SET_ITEM(11, TerrainScheduleConstants::RIGHT_LAYER_ONE_INDEX);
+	SET_ITEM(12, TerrainScheduleConstants::LOWER_RIGHT_LAYER_ONE_INDEX);
+	SET_ITEM(13, TerrainScheduleConstants::LOWER_LAYER_ONE_INDEX);
+	SET_ITEM(14, TerrainScheduleConstants::LOWER_LEFT_LAYER_ONE_INDEX);
+	SET_ITEM(15, TerrainScheduleConstants::LEFT_LAYER_ONE_INDEX);
+	SET_ITEM(16, TerrainScheduleConstants::UPPER_LEFT_LAYER_ONE_INDEX);
+
+	SET_ITEM(17, TerrainScheduleConstants::UPPER_LAYER_TWO_INDEX);
+	SET_ITEM(18, TerrainScheduleConstants::UPPER_RIGHT_LAYER_TWO_INDEX);
+	SET_ITEM(19, TerrainScheduleConstants::RIGHT_LAYER_TWO_INDEX);
+	SET_ITEM(20, TerrainScheduleConstants::LOWER_RIGHT_LAYER_TWO_INDEX);
+	SET_ITEM(21, TerrainScheduleConstants::LOWER_LAYER_TWO_INDEX);
+	SET_ITEM(22, TerrainScheduleConstants::LOWER_LEFT_LAYER_TWO_INDEX);
+	SET_ITEM(23, TerrainScheduleConstants::LEFT_LAYER_TWO_INDEX);
+	SET_ITEM(24, TerrainScheduleConstants::UPPER_LEFT_LAYER_TWO_INDEX);
+
+	SET_ITEM(25, TerrainScheduleConstants::UPPER_LAYER_THREE_INDEX);
+	SET_ITEM(26, TerrainScheduleConstants::UPPER_RIGHT_LAYER_THREE_INDEX);
+	SET_ITEM(27, TerrainScheduleConstants::RIGHT_LAYER_THREE_INDEX);
+	SET_ITEM(28, TerrainScheduleConstants::LOWER_RIGHT_LAYER_THREE_INDEX);
+	SET_ITEM(29, TerrainScheduleConstants::LOWER_LAYER_THREE_INDEX);
+	SET_ITEM(30, TerrainScheduleConstants::LOWER_LEFT_LAYER_THREE_INDEX);
+	SET_ITEM(31, TerrainScheduleConstants::LEFT_LAYER_THREE_INDEX);
+	SET_ITEM(32, TerrainScheduleConstants::UPPER_LEFT_LAYER_THREE_INDEX);
+
+	SET_ITEM(33, TerrainScheduleConstants::UPPER_LAYER_FOUR_INDEX);
+	SET_ITEM(34, TerrainScheduleConstants::UPPER_RIGHT_LAYER_FOUR_INDEX);
+	SET_ITEM(35, TerrainScheduleConstants::RIGHT_LAYER_FOUR_INDEX);
+	SET_ITEM(36, TerrainScheduleConstants::LOWER_RIGHT_LAYER_FOUR_INDEX);
+	SET_ITEM(37, TerrainScheduleConstants::LOWER_LAYER_FOUR_INDEX);
+	SET_ITEM(38, TerrainScheduleConstants::LOWER_LEFT_LAYER_FOUR_INDEX);
+	SET_ITEM(39, TerrainScheduleConstants::LEFT_LAYER_FOUR_INDEX);
+	SET_ITEM(40, TerrainScheduleConstants::UPPER_LEFT_LAYER_FOUR_INDEX);
+
+	SET_ITEM(41, TerrainScheduleConstants::UPPER_LAYER_FIVE_INDEX);
+	SET_ITEM(42, TerrainScheduleConstants::UPPER_RIGHT_LAYER_FIVE_INDEX);
+	SET_ITEM(43, TerrainScheduleConstants::RIGHT_LAYER_FIVE_INDEX);
+	SET_ITEM(44, TerrainScheduleConstants::LOWER_RIGHT_LAYER_FIVE_INDEX);
+	SET_ITEM(45, TerrainScheduleConstants::LOWER_LAYER_FIVE_INDEX);
+	SET_ITEM(46, TerrainScheduleConstants::LOWER_LEFT_LAYER_FIVE_INDEX);
+	SET_ITEM(47, TerrainScheduleConstants::LEFT_LAYER_FIVE_INDEX);
+	SET_ITEM(48, TerrainScheduleConstants::UPPER_LEFT_LAYER_FIVE_INDEX);
+
+	SET_ITEM(49, TerrainScheduleConstants::UPPER_LAYER_SIX_INDEX);
+	SET_ITEM(50, TerrainScheduleConstants::UPPER_RIGHT_LAYER_SIX_INDEX);
+	SET_ITEM(51, TerrainScheduleConstants::RIGHT_LAYER_SIX_INDEX);
+	SET_ITEM(52, TerrainScheduleConstants::LOWER_RIGHT_LAYER_SIX_INDEX);
+	SET_ITEM(53, TerrainScheduleConstants::LOWER_LAYER_SIX_INDEX);
+	SET_ITEM(54, TerrainScheduleConstants::LOWER_LEFT_LAYER_SIX_INDEX);
+	SET_ITEM(55, TerrainScheduleConstants::LEFT_LAYER_SIX_INDEX);
+	SET_ITEM(56, TerrainScheduleConstants::UPPER_LEFT_LAYER_SIX_INDEX);
+
+	SET_ITEM(57, TerrainScheduleConstants::UPPER_LAYER_SEVEN_INDEX);
+	SET_ITEM(58, TerrainScheduleConstants::UPPER_RIGHT_LAYER_SEVEN_INDEX);
+	SET_ITEM(59, TerrainScheduleConstants::RIGHT_LAYER_SEVEN_INDEX);
+	SET_ITEM(60, TerrainScheduleConstants::LOWER_RIGHT_LAYER_SEVEN_INDEX);
+	SET_ITEM(61, TerrainScheduleConstants::LOWER_LAYER_SEVEN_INDEX);
+	SET_ITEM(62, TerrainScheduleConstants::LOWER_LEFT_LAYER_SEVEN_INDEX);
+	SET_ITEM(63, TerrainScheduleConstants::LEFT_LAYER_SEVEN_INDEX);
+	SET_ITEM(64, TerrainScheduleConstants::UPPER_LEFT_LAYER_SEVEN_INDEX);
 }

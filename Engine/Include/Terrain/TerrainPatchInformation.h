@@ -20,7 +20,7 @@ class TerrainPatchInformation final
 public:
 
 	//Denotes whether or not this patch is valid.
-	std::atomic<bool> _Valid;
+	bool _Valid;
 
 	//The grid point.
 	GridPoint2 _GridPoint;

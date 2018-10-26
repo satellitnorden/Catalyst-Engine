@@ -13,6 +13,8 @@
 #include <Terrain/TerrainPatchInformation.h>
 #include <Terrain/TerrainPatchRenderInformation.h>
 #include <Terrain/TerrainProperties.h>
+#include <Terrain/TerrainSchedule.h>
+#include <Terrain/TerrainUpdate.h>
 
 //Forward declarations.
 class CatalystProjectTerrainConfiguration;
@@ -61,7 +63,7 @@ public:
 	*/
 	RESTRICTED NO_DISCARD StaticArray<TerrainPatchInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> *const RESTRICT GetTerrainPatchInformations() NOEXCEPT
 	{
-		return &_PatchInformations[_CurrentSynchronousBuffer];
+		return &_PatchInformations;
 	}
 
 	/*
@@ -69,7 +71,7 @@ public:
 	*/
 	RESTRICTED NO_DISCARD StaticArray<TerrainPatchRenderInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> *const RESTRICT GetTerrainPatchRenderInformations() NOEXCEPT
 	{
-		return &_PatchRenderInformations[_CurrentSynchronousBuffer];
+		return &_PatchRenderInformations;
 	}
 
 	/*
@@ -84,29 +86,45 @@ public:
 
 private:
 
-	//The update task.
-	Task _UpdateTask;
+	//Enum covering all terrain system states,
+	enum class TerrainSystemState : uint8
+	{
+		Starting,
+		Idling,
+		Updating
+	};
+
+	//The state.
+	TerrainSystemState _State{ TerrainSystemState::Starting };
 
 	//The properties.
 	TerrainProperties _Properties;
 
+	//The schedule.
+	TerrainSchedule _Schedule;
+
+	//The update.
+	TerrainUpdate _Update;
+
+	//The update task.
+	Task _UpdateTask;
+
 	//The last grid point.
-	GridPoint2 _LastGridPoint{ INT32_MAXIMUM, INT32_MAXIMUM };
+	GridPoint2 _LastGridPoint{ 0, 0 };
 
 	//The current grid point.
-	GridPoint2 _CurrentGridPoint{ INT32_MAXIMUM, INT32_MAXIMUM };
-
-	//The current synchronous buffer.
-	uint8 _CurrentSynchronousBuffer{ 0 };
-
-	//The current asynchronous buffer.
-	uint8 _CurrentAsynchronousBuffer{ 1 };
+	GridPoint2 _CurrentGridPoint{ 0, 0 };
 
 	//The patch informations.
-	StaticArray<StaticArray<TerrainPatchInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES>, 2> _PatchInformations;
+	StaticArray<TerrainPatchInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> _PatchInformations;
 
 	//The patch render informations.
-	StaticArray<StaticArray<TerrainPatchRenderInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES>, 2> _PatchRenderInformations;
+	StaticArray<TerrainPatchRenderInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> _PatchRenderInformations;
+
+	/*
+	*	Processes the update.
+	*/
+	void ProcessUpdate() NOEXCEPT;
 
 	/*
 	*	Updates the terrain system asynchronously.
@@ -114,19 +132,14 @@ private:
 	void UpdateSystemAsynchronous() NOEXCEPT;
 
 	/*
-	*	Generates low detail patches.
+	*	Follows the schedule.
 	*/
-	void GenerateLowDetailPatches(const GridPoint2 &currentGridPoint, const int32 gridPointOffset, const uint8 layer) NOEXCEPT;
+	void FollowSchedule() NOEXCEPT;
 
 	/*
-	*	Generates a new high detail patch at the specified grid point.
+	*	Generates a patch.
 	*/
-	void GenerateHighDetailPatch(const GridPoint2 &gridPoint, const TerrainAxis borders, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
-
-	/*
-	*	Generates a new low detail patch at the specified grid point.
-	*/
-	void GenerateLowDetailPatch(const GridPoint2 &gridPoint, const TerrainAxis borders, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
+	void GeneratePatch(const GridPoint2 &gridPoint, const TerrainBorder borders, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
 
 
 };

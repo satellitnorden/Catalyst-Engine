@@ -21,14 +21,14 @@ using HeightGenerationFunction = void(*)(const TerrainProperties &properties, co
 using LayerWeightsGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3 &worldPosition, const Vector3 &normal, Vector4 *const RESTRICT layerWeights);
 using PatchPropertiesGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3 &worldPosition, TerrainMaterial *const RESTRICT material, TerrainDisplacementInformation *const RESTRICT displacementInformation);
 
-//Enumeration covering all terrain axis.
-enum class TerrainAxis : uint8
+//Enumeration covering all terrain borders.
+enum class TerrainBorder : uint8
 {
 	None = BIT(0),
-	PositiveX = BIT(1),
-	NegativeX = BIT(2),
-	PositiveY = BIT(3),
-	NegativeY = BIT(4)
+	Upper = BIT(1),
+	Right = BIT(2),
+	Lower = BIT(3),
+	Left = BIT(4)
 };
 
-ENUMERATION_BIT_OPERATIONS(TerrainAxis);
+ENUMERATION_BIT_OPERATIONS(TerrainBorder);
