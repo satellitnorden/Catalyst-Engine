@@ -6,12 +6,6 @@
 //Math.
 #include <Math/Vector2.h>
 
-//Rendering constants.
-namespace RenderingConstants
-{
-	constexpr float SHADOW_VIEW_DISTANCE{ 100.0f };
-}
-
 /*
 *	Type aliases.
 */

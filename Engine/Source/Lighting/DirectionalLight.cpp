@@ -18,7 +18,7 @@ void DirectionalLight::UpdateProjectionMatrix() NOEXCEPT
 												-LightingConstants::DIRECTIONAL_SHADOW_VIEW_DISTANCE * 0.5f,
 												LightingConstants::DIRECTIONAL_SHADOW_VIEW_DISTANCE * 0.5f,
 												0.0f,
-												LightingConstants::DIRECTIONAL_SHADOW_VIEW_DISTANCE);
+												LightingConstants::DIRECTIONAL_SHADOW_VIEW_DISTANCE * 2.0f);
 
 	//Reset the dirtyness of the projection matrix.
 	_ProjectionMatrixDirty = false;
@@ -33,7 +33,7 @@ void DirectionalLight::UpdateLightMatrix() NOEXCEPT
 	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
 	const Vector3 directionalLightForwardVector{ Vector3::FORWARD.Rotated(_Rotation) };
 	const Vector3 directionalLightUpVector{ Vector3::UP.Rotated(_Rotation) };
-	const Vector3 directionalLightPosition{ viewerPosition + (directionalLightForwardVector * -1.0f) * (RenderingConstants::SHADOW_VIEW_DISTANCE * 0.5f) };
+	const Vector3 directionalLightPosition{ viewerPosition + (directionalLightForwardVector * -1.0f) * (LightingConstants::DIRECTIONAL_SHADOW_VIEW_DISTANCE * 1.0f) };
 
 	_LightMatrix = Matrix4::LookAt(directionalLightPosition, directionalLightPosition + directionalLightForwardVector, directionalLightUpVector);
 
