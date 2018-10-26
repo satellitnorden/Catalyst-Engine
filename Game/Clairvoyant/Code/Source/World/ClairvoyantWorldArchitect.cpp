@@ -40,16 +40,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(ClairvoyantWorldArchitect);
 
-//Clairvoyant world architects constants.
-namespace ClairvoyantWorldArchitectConstants
-{
-	constexpr float GRASS_VEGETATION_MEDIUM_DETAIL_DISTANCE{ 62.5f };
-	constexpr float GRASS_VEGETATION_LOW_DETAIL_DISTANCE{ 125.0f };
-
-	constexpr float SOLID_VEGETATION_MEDIUM_DETAIL_DISTANCE{ 250.0f };
-	constexpr float SOLID_VEGETATION_LOW_DETAIL_DISTANCE{ 500.0f };
-}
-
 /*
 *	Initializes Clairvoyant the world architect.
 */
