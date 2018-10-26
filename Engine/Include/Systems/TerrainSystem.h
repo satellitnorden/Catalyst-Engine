@@ -13,7 +13,6 @@
 #include <Terrain/TerrainPatchInformation.h>
 #include <Terrain/TerrainPatchRenderInformation.h>
 #include <Terrain/TerrainProperties.h>
-#include <Terrain/TerrainUpdate.h>
 
 //Forward declarations.
 class CatalystProjectTerrainConfiguration;

@@ -226,6 +226,9 @@
     <Filter Include="Lighting\Source">
       <UniqueIdentifier>{0dc7d249-4daf-4231-bb24-8a295b5c1675}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Terrain\Source">
+      <UniqueIdentifier>{b5ff2ff7-b5ae-4d25-8b73-1e927966183b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
@@ -774,9 +777,6 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchRenderInformation.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
@@ -1073,6 +1073,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\LightingSystem.h">
       <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainSchedule.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainScheduleItem.h">
+      <Filter>Terrain\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1531,6 +1537,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp">
       <Filter>Lighting\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Terrain\TerrainSchedule.cpp">
+      <Filter>Terrain\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

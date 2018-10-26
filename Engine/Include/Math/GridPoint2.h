@@ -13,20 +13,20 @@ class GridPoint2 final
 public:
 
 	//The X position.
-	int32 _X;
+	int32 _X{ 0 };
 
 	//The Y position.
-	int32 _Y;
+	int32 _Y{ 0 };
 
 	/*
 	*	Default constructor.
 	*/
-	GridPoint2() NOEXCEPT { }
+	constexpr GridPoint2() NOEXCEPT { }
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	GridPoint2(const int32 initialX, const int32 initialY) NOEXCEPT
+	constexpr GridPoint2(const int32 initialX, const int32 initialY) NOEXCEPT
 		:
 		_X(initialX),
 		_Y(initialY)
@@ -52,9 +52,17 @@ public:
 	}
 
 	/*
+	*	Multiplication by scalar operator overload.
+	*/
+	constexpr GridPoint2 operator*(const int32 scalar) const NOEXCEPT
+	{
+		return GridPoint2(_X * scalar, _Y * scalar);
+	}
+
+	/*
 	*	Calculates the world position from a grid point.
 	*/
-	static NO_DISCARD Vector3 GridPointToWorldPosition(const GridPoint2 &gridPoint, const float gridSize) NOEXCEPT
+	constexpr static NO_DISCARD Vector3 GridPointToWorldPosition(const GridPoint2 &gridPoint, const float gridSize) NOEXCEPT
 	{
 		return Vector3(	gridPoint._X * gridSize , 0.0f,
 						gridPoint._Y * gridSize);
@@ -63,7 +71,7 @@ public:
 	/*
 	*	Calculates the grid point from a world position.
 	*/
-	static NO_DISCARD GridPoint2 WorldPositionToGridPoint(const Vector3 &worldPosition, const float gridSize) NOEXCEPT
+	constexpr static NO_DISCARD GridPoint2 WorldPositionToGridPoint(const Vector3 &worldPosition, const float gridSize) NOEXCEPT
 	{
 		return GridPoint2(	CatalystBaseMath::Round<int32>(worldPosition._X / gridSize),
 							CatalystBaseMath::Round<int32>(worldPosition._Z / gridSize));
