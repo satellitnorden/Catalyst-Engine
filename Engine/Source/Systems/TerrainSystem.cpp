@@ -26,8 +26,6 @@ DEFINE_SINGLETON(TerrainSystem);
 void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT
 {
 	//Copy over the relevant properties.
-	_Properties._PatchResolution = configuration._PatchResolution;
-	_Properties._PatchSize = configuration._PatchSize;
 	_Properties._HeightGenerationFunction = configuration._HeightGenerationFunction;
 	_Properties._LayerWeightsGenerationFunction = configuration._LayerWeightsGenerationFunction;
 	_Properties._PatchPropertiesGenerationFunction = configuration._PatchPropertiesGenerationFunction;
@@ -123,7 +121,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 			const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
 
 			//Calculate the current grid point.
-			_CurrentGridPoint = GridPoint2::WorldPositionToGridPoint(viewerPosition, _Properties._PatchSize);
+			_CurrentGridPoint = GridPoint2::WorldPositionToGridPoint(viewerPosition, TerrainConstants::TERRAIN_PATCH_SIZE);
 
 			//If the grid point changed, generate a new schedule.
 			if (_LastGridPoint != _CurrentGridPoint)
@@ -190,16 +188,15 @@ void TerrainSystem::FollowSchedule() NOEXCEPT
 void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBorder borders, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
 	//Calculate the world position of the grid point.
-	const Vector3 gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, _Properties._PatchSize) };
+	const Vector3 gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, TerrainConstants::TERRAIN_PATCH_SIZE) };
 
 	//Generate the terrain plane.
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
 
 	TerrainUtilities::GenerateTerrainPlane(	_Properties,
-											_Properties._PatchResolution,
 											gridPointWorldPosition,
-											_Properties._PatchSize * patchSizeMultiplier,
+											patchSizeMultiplier,
 											borders,
 											&vertices,
 											&indices);
@@ -230,8 +227,8 @@ void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBord
 
 	TerrainUtilities::FindMinimumMaximumHeight(vertices, &minimumHeight, &maximumHeight);
 
-	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(gridPointWorldPosition._X - (_Properties._PatchSize * patchSizeMultiplier * 0.5f), minimumHeight, gridPointWorldPosition._Z - (_Properties._PatchSize * patchSizeMultiplier * 0.5f));
-	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (_Properties._PatchSize * patchSizeMultiplier * 0.5f), maximumHeight, gridPointWorldPosition._Z + (_Properties._PatchSize * patchSizeMultiplier * 0.5f));
+	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(gridPointWorldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, gridPointWorldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
+	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, gridPointWorldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
 
 	//Fill in the details about the patch render information.
 	patchRenderInformation->_Visibility = VisibilityFlag::None;

@@ -7,6 +7,8 @@
 namespace TerrainConstants
 {
 	constexpr uint8 NUMBER_OF_TERRAIN_PATCHES{ 65 };
+	constexpr uint32 TERRAIN_PATCH_RESOLUTION{ 255 };
+	constexpr float TERRAIN_PATCH_SIZE{ 100.0f };
 }
 
 //Forward declarations.

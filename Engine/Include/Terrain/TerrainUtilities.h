@@ -34,7 +34,7 @@ namespace TerrainUtilities
 	*/
 	static void GenerateNormal(const TerrainProperties &properties, const Vector3 &position, Vector3 *const RESTRICT normal) NOEXCEPT
 	{
-		const float offset{ properties._PatchSize / properties._PatchResolution };
+		constexpr float offset{ TerrainConstants::TERRAIN_PATCH_SIZE / TerrainConstants::TERRAIN_PATCH_RESOLUTION };
 
 		Vector3 left{ position._X - offset, 0.0f, position._Z };
 		properties._HeightGenerationFunction(properties, left, &left._Y);
@@ -58,64 +58,66 @@ namespace TerrainUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	static void GenerateTerrainPlane(const TerrainProperties &properties, const uint32 resolution, const Vector3 &worldPosition, const float patchSize, const TerrainBorder borders, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	static void GenerateTerrainPlane(const TerrainProperties &properties, const Vector3 &worldPosition, const float patchSizeMultiplier, const TerrainBorder borders, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
 	{
-		vertices->Reserve((resolution + 1) * (resolution + 1) * 5);
-		indices->Reserve(resolution * resolution * 6);
+		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 
-		for (uint32 i = 0; i <= resolution; ++i)
+		vertices->Reserve((TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1) * 5);
+		indices->Reserve(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION * 6);
+
+		for (uint32 i = 0; i <= TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++i)
 		{
-			for (uint32 j = 0; j <= resolution; ++j)
+			for (uint32 j = 0; j <= TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++j)
 			{
 				float textureCoordinateX;
 				float textureCoordinateY;
 
 				if ((j == 0 && TEST_BIT(borders, TerrainBorder::Upper))
-					|| (j == resolution && TEST_BIT(borders, TerrainBorder::Lower)))
+					|| (j == TerrainConstants::TERRAIN_PATCH_RESOLUTION && TEST_BIT(borders, TerrainBorder::Lower)))
 				{
 					if (i % 3 == 0)
 					{
-						textureCoordinateX = static_cast<float>(i) / static_cast<float>(resolution);
+						textureCoordinateX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 					}
 
 					else if ((i - 1) % 3 == 0)
 					{
-						textureCoordinateX = static_cast<float>(i - 1) / static_cast<float>(resolution);
+						textureCoordinateX = static_cast<float>(i - 1) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 					}
 
 					else
 					{
-						textureCoordinateX = static_cast<float>(i - 2) / static_cast<float>(resolution);
+						textureCoordinateX = static_cast<float>(i - 2) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 					}
 				}
 
 				else
 				{
-					textureCoordinateX = static_cast<float>(i) / static_cast<float>(resolution);
+					textureCoordinateX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 				}
 
 				if ((i == 0 && TEST_BIT(borders, TerrainBorder::Left))
-					|| (i == resolution && TEST_BIT(borders, TerrainBorder::Right)))
+					|| (i == TerrainConstants::TERRAIN_PATCH_RESOLUTION && TEST_BIT(borders, TerrainBorder::Right)))
 				{
 					if (j % 3 == 0)
 					{
-						textureCoordinateY = static_cast<float>(j) / static_cast<float>(resolution);
+						textureCoordinateY = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 					}
 
 					else if ((j - 1) % 3 == 0)
 					{
-						textureCoordinateY = static_cast<float>(j - 1) / static_cast<float>(resolution);
+						textureCoordinateY = static_cast<float>(j - 1) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 					}
 
 					else
 					{
-						textureCoordinateY = static_cast<float>(j - 2) / static_cast<float>(resolution);
+						textureCoordinateY = static_cast<float>(j - 2) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 					}
 				}
 
 				else
 				{
-					textureCoordinateY = static_cast<float>(j) / static_cast<float>(resolution);
+					textureCoordinateY = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 				}
 
 				TerrainVertex vertex;
@@ -144,15 +146,15 @@ namespace TerrainUtilities
 
 				vertices->EmplaceFast(vertex);
 
-				if (i != resolution && j != resolution)
+				if (i != TerrainConstants::TERRAIN_PATCH_RESOLUTION && j != TerrainConstants::TERRAIN_PATCH_RESOLUTION)
 				{
-					indices->EmplaceFast((i * (resolution + 1)) + j);
-					indices->EmplaceFast((i * (resolution + 1)) + j + 1);
-					indices->EmplaceFast(((i + 1) * (resolution + 1)) + j);
+					indices->EmplaceFast((i * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j);
+					indices->EmplaceFast((i * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j + 1);
+					indices->EmplaceFast(((i + 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j);
 
-					indices->EmplaceFast((i * (resolution + 1)) + j + 1);
-					indices->EmplaceFast(((i + 1) * (resolution + 1)) + j + 1);
-					indices->EmplaceFast(((i + 1) * (resolution + 1)) + j);
+					indices->EmplaceFast((i * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j + 1);
+					indices->EmplaceFast(((i + 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j + 1);
+					indices->EmplaceFast(((i + 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j);
 				}
 			}
 		}

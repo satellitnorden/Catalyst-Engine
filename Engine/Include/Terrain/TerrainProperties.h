@@ -17,12 +17,6 @@ public:
 	//The render data table for the terrain material.
 	RenderDataTableHandle _RenderDataTable;
 
-	//The resolution of each patch.
-	uint32 _PatchResolution;
-
-	//The size of each patch.
-	float _PatchSize;
-
 	//The height generation function.
 	HeightGenerationFunction _HeightGenerationFunction;
 

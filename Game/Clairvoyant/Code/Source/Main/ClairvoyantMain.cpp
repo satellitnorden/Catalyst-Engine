@@ -21,8 +21,6 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 	configuration->_RenderingConfiguration._ResolutionScale = 1.0f;
 	configuration->_RenderingConfiguration._ShadowMapResolution = 2'048;
 
-	configuration->_TerrainConfiguration._PatchResolution = 255;
-	configuration->_TerrainConfiguration._PatchSize = 64.0f;
 	configuration->_TerrainConfiguration._HeightGenerationFunction = ClairvoyantTerrainArchitect::GenerateHeight;
 	configuration->_TerrainConfiguration._LayerWeightsGenerationFunction = ClairvoyantTerrainArchitect::GenerateLayerWeights;
 	configuration->_TerrainConfiguration._PatchPropertiesGenerationFunction = ClairvoyantTerrainArchitect::GeneratePatchProperties;

@@ -67,12 +67,6 @@ class CatalystProjectTerrainConfiguration final
 
 public:
 
-	//The resolution of each patch.
-	uint32 _PatchResolution;
-
-	//The size of each patch.
-	float _PatchSize;
-
 	//The height generation function.
 	HeightGenerationFunction _HeightGenerationFunction;
 
