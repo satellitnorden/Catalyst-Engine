@@ -3,13 +3,13 @@
 */
 
 //Header file.
-#include <Rendering/ShaderData/Vulkan/LowDetailTerrainVertexShader.h>
+#include <Rendering/ShaderData/Vulkan/TerrainVertexShader.h>
 
 #pragma optimize("", off)
 
 namespace VulkanShaderData
 {
-	void GetLowDetailTerrainVertexShaderData(DynamicArray<byte> &data)
+	void GetTerrainVertexShaderData(DynamicArray<byte> &data)
 	{
 		data.Reserve(3812);
 

@@ -54,7 +54,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(true, false, false, true, 0.5f, 0.5f, 0.2f, 0.4f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldUtilities::GenerateTransformation(true, false, false, true, 0.5f, 0.25f, 0.2f, 0.4f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DefaultGrassMaterial")) };
@@ -83,7 +83,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(false, true, false, false, 0.5f, 0.5f, 0.2f, 0.4f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldUtilities::GenerateTransformation(false, true, false, false, 0.5f, 0.25f, 0.2f, 0.4f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("SandGrassMaterial")) };
@@ -112,7 +112,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(false, false, true, false, 0.5f, 0.5f, 0.2f, 0.4f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldUtilities::GenerateTransformation(false, false, true, false, 0.5f, 0.25f, 0.2f, 0.4f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("SnowGrassMaterial")) };

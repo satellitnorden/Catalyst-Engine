@@ -616,10 +616,8 @@ void RenderingSystem::RegisterRenderPasses() NOEXCEPT
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalTerrainShadow)] = DirectionalTerrainShadowRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalDynamicPhysicalShadow)] = DirectionalDynamicPhysicalShadowRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DirectionalSolidVegetationShadow)] = DirectionalSolidVegetationShadowRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTerrain)] = HighDetailTerrainRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTerrain)] = LowDetailTerrainRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailTerrainColor)] = HighDetailTerrainColorRenderPass::Instance.Get();
-	_RenderPasses[UNDERLYING(RenderPassSubStage::LowDetailTerrainColor)] = LowDetailTerrainColorRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::TerrainDepth)] = TerrainDepthRenderPass::Instance.Get();
+	_RenderPasses[UNDERLYING(RenderPassSubStage::TerrainColor)] = TerrainColorRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::DynamicPhysical)] = DynamicPhysicalRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::HighDetailSolidVegetation)] = HighDetailSolidVegetationRenderPass::Instance.Get();
 	_RenderPasses[UNDERLYING(RenderPassSubStage::MediumDetailSolidVegetation)] = MediumDetailSolidVegetationRenderPass::Instance.Get();

@@ -1,5 +1,5 @@
 //Header file.
-#include <Rendering/Engine/RenderPasses/LowDetailTerrainRenderPass.h>
+#include <Rendering/Engine/RenderPasses/TerrainDepthRenderPass.h>
 
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
@@ -13,33 +13,33 @@
 #include <Terrain/TerrainVertex.h>
 
 //Singleton definition.
-DEFINE_SINGLETON(LowDetailTerrainRenderPass);
+DEFINE_SINGLETON(TerrainDepthRenderPass);
 
 /*
 *	Default constructor.
 */
-LowDetailTerrainRenderPass::LowDetailTerrainRenderPass() NOEXCEPT
+TerrainDepthRenderPass::TerrainDepthRenderPass() NOEXCEPT
 {
 	//Set the initialization function.
 	SetInitializationFunction([](void *const RESTRICT)
 	{
-		LowDetailTerrainRenderPass::Instance->InitializeInternal();
+		TerrainDepthRenderPass::Instance->InitializeInternal();
 	});
 }
 
 /*
-*	Initializes the low detail terrain render pass.
+*	Initializes the terrain depth render pass.
 */
-void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
+void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 {
 	//Set the main stage.
 	SetMainStage(RenderPassMainStage::Scene);
 
 	//Set the sub stage.
-	SetSubStage(RenderPassSubStage::LowDetailTerrain);
+	SetSubStage(RenderPassSubStage::TerrainDepth);
 
 	//Set the shaders.
-	SetVertexShader(Shader::LowDetailTerrainVertex);
+	SetVertexShader(Shader::TerrainVertex);
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
@@ -91,14 +91,14 @@ void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 	SetStencilDepthFailOperator(StencilOperator::Keep);
 	SetStencilCompareOperator(CompareOperator::Always);
 	SetStencilCompareMask(0);
-	SetStencilWriteMask(BIT(0) | BIT(2));
-	SetStencilReferenceMask(BIT(0) | BIT(2));
+	SetStencilWriteMask(BIT(0) | BIT(1));
+	SetStencilReferenceMask(BIT(0) | BIT(1));
 	SetTopology(Topology::TriangleList);
 
 	//Set the render function.
 	SetRenderFunction([](void *const RESTRICT)
 	{
-		LowDetailTerrainRenderPass::Instance->RenderInternal();
+		TerrainDepthRenderPass::Instance->RenderInternal();
 	});
 
 	//Finalize the initialization.
@@ -106,9 +106,9 @@ void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 }
 
 /*
-*	Renders the low detail terrain.
+*	Renders the depth of the terrain.
 */
-void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
+void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all terrain render informations and draw them if they're low detail.
 	const StaticArray<TerrainPatchRenderInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
@@ -128,11 +128,6 @@ void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 	for (const TerrainPatchRenderInformation &information : *informations)
 	{
 		if (!TEST_BIT(information._Visibility, VisibilityFlag::Viewer))
-		{
-			continue;
-		}
-
-		if (information._HighDetail)
 		{
 			continue;
 		}

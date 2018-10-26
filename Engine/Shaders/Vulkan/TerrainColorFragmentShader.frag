@@ -58,32 +58,14 @@ void CalculateTriPlanarData(float depth)
 {
 	//Calculate the absolute normal.
 	absoluteNormal = abs(fragmentWorldNormal);
+    float normalSum = absoluteNormal.x + absoluteNormal.y + absoluteNormal.z;
+    float inverseNormalSum = 1.0f / normalSum;
+    absoluteNormal *= inverseNormalSum;
 
 	//Calculate the texture coordinates on the three planes.
-	textureCoordinateYZ = fragmentWorldPosition.yz;
-	textureCoordinateXZ = fragmentWorldPosition.xz;
-	textureCoordinateXY = fragmentWorldPosition.xy;
-
-    //Calculate the random float.
-    float randomFloat = RandomFloat(gl_FragCoord.x * gl_FragCoord.y * depth);
-
-    //Pick which plane to sample.
-    if (absoluteNormal.y > randomFloat)
-    {
-        finalTextureCoordinate = textureCoordinateXZ;
-    }
-
-    else if (absoluteNormal.x > randomFloat)
-    {
-        finalTextureCoordinate = textureCoordinateYZ;
-    }
-
-    else
-    {
-        finalTextureCoordinate = textureCoordinateXY;
-    }
-
-    finalTextureCoordinate *= 0.25f;
+	textureCoordinateYZ = fragmentWorldPosition.yz * 0.25f;
+	textureCoordinateXZ = fragmentWorldPosition.xz * 0.25f;
+	textureCoordinateXY = fragmentWorldPosition.xy * 0.25f;
 }
 
 /*
@@ -91,7 +73,11 @@ void CalculateTriPlanarData(float depth)
 */
 vec4 SampleTriPlanar(sampler2D textureSampler)
 {
-	return texture(textureSampler, finalTextureCoordinate);
+    vec4 sampleYZ = texture(textureSampler, textureCoordinateYZ);
+    vec4 sampleXZ = texture(textureSampler, textureCoordinateXZ);
+    vec4 sampleXY = texture(textureSampler, textureCoordinateXY);
+
+	return sampleYZ * absoluteNormal.x + sampleXZ * absoluteNormal.y + sampleYZ * absoluteNormal.z;
 }
 
 /*

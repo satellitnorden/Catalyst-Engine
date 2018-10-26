@@ -6,18 +6,18 @@
 //Rendering.
 #include <Rendering/Engine/RenderPasses/RenderPass.h>
 
-class HighDetailTerrainColorRenderPass final : public RenderPass
+class TerrainColorRenderPass final : public RenderPass
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(HighDetailTerrainColorRenderPass);
+	DECLARE_SINGLETON(TerrainColorRenderPass);
 
 	/*
 	*	Default constructor.
 	*/
-	HighDetailTerrainColorRenderPass() NOEXCEPT;
+	TerrainColorRenderPass() NOEXCEPT;
 
 private:
 
@@ -28,7 +28,7 @@ private:
 	RenderDataTableHandle _RenderDataTable;
 
 	/*
-	*	Initializes the high detail terrain color render pass.
+	*	Initializes the terrain color render pass.
 	*/
 	void InitializeInternal() NOEXCEPT;
 
@@ -43,7 +43,7 @@ private:
 	void CreateRenderDataTable() NOEXCEPT;
 
 	/*
-	*	Renders the high detail terrain color.
+	*	Renders the color of the terrain.
 	*/
 	void RenderInternal() NOEXCEPT;
 

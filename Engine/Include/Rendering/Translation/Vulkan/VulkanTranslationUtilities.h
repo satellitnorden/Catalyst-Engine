@@ -36,7 +36,7 @@ public:
 
 			case RenderPassMainStage::Scene:
 			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::HighDetailTerrain);
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::TerrainDepth);
 			}
 #if !defined(CATALYST_FINAL)
 			case RenderPassMainStage::Debug:

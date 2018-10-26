@@ -10,5 +10,5 @@
 
 namespace VulkanShaderData
 {
-	void GetLowDetailTerrainColorFragmentShaderData(DynamicArray<byte> &data);
+	void GetTerrainColorFragmentShaderData(DynamicArray<byte> &data);
 }
