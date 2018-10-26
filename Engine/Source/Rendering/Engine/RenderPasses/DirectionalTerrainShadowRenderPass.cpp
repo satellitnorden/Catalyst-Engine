@@ -129,7 +129,7 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 	}
 
 	//Iterate over all terrain render informations and draw them
-	const StaticArray<TerrainPatchRenderInformation, 65> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
+	const StaticArray<TerrainPatchRenderInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
 
 	//Cache the command buffer
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
