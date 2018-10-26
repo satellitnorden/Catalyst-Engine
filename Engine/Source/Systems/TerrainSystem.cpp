@@ -40,12 +40,12 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 	_UpdateTask._Arguments = nullptr;
 
 	//Set all the patch and patch render informations to their default state.
-	for (uint64 i = 0, size = _HighDetailPatchInformations.Size(); i < size; ++i)
+	for (uint64 i = 0, size = _PatchInformations.Size(); i < size; ++i)
 	{
-		for (uint64 j = 0, size = _HighDetailPatchInformations[i].Size(); j < size; ++j)
+		for (uint64 j = 0, size = _PatchInformations[i].Size(); j < size; ++j)
 		{
-			_HighDetailPatchInformations[i][j]._Valid = false;
-			_HighDetailPatchRenderInformations[i][j]._Visibility = VisibilityFlag::None;
+			_PatchInformations[i][j]._Valid = false;
+			_PatchRenderInformations[i][j]._Visibility = VisibilityFlag::None;
 		}
 	}
 }
@@ -111,25 +111,14 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 	if (currentGridPoint != _LastGridPoint)
 	{
 		//Check if the current asynchronous informations are valid, and if so, invalidate them.
-		for (uint64 i = 0, size = _HighDetailPatchInformations[_CurrentAsynchronousBuffer].Size(); i < size; ++i)
+		for (uint64 i = 0, size = _PatchInformations[_CurrentAsynchronousBuffer].Size(); i < size; ++i)
 		{
-			if (_HighDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid)
+			if (_PatchInformations[_CurrentAsynchronousBuffer][i]._Valid)
 			{
-				_HighDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid = false;
-				_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Visibility = VisibilityFlag::None;
+				_PatchInformations[_CurrentAsynchronousBuffer][i]._Valid = false;
+				_PatchRenderInformations[_CurrentAsynchronousBuffer][i]._Visibility = VisibilityFlag::None;
 
-				RenderingSystem::Instance->DestroyConstantBuffer(_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Buffer);
-			}
-		}
-
-		for (uint64 i = 0, size = _LowDetailPatchInformations[_CurrentAsynchronousBuffer].Size(); i < size; ++i)
-		{
-			if (_LowDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid)
-			{
-				_LowDetailPatchInformations[_CurrentAsynchronousBuffer][i]._Valid = false;
-				_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Visibility = VisibilityFlag::None;
-
-				RenderingSystem::Instance->DestroyConstantBuffer(_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][i]._Buffer);
+				RenderingSystem::Instance->DestroyConstantBuffer(_PatchRenderInformations[_CurrentAsynchronousBuffer][i]._Buffer);
 			}
 		}
 
@@ -150,17 +139,17 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 		};
 
 		//Generate all high detail patches.
-		GenerateHighDetailPatch(validHighDetailGridPoints[0], TerrainAxis::NegativeX | TerrainAxis::NegativeY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][0], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][0]);
-		GenerateHighDetailPatch(validHighDetailGridPoints[1], TerrainAxis::NegativeY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][1], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][1]);
-		GenerateHighDetailPatch(validHighDetailGridPoints[2], TerrainAxis::PositiveX | TerrainAxis::NegativeY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][2], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][2]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[0], TerrainAxis::NegativeX | TerrainAxis::NegativeY, &_PatchInformations[_CurrentAsynchronousBuffer][0], &_PatchRenderInformations[_CurrentAsynchronousBuffer][0]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[1], TerrainAxis::NegativeY, &_PatchInformations[_CurrentAsynchronousBuffer][1], &_PatchRenderInformations[_CurrentAsynchronousBuffer][1]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[2], TerrainAxis::PositiveX | TerrainAxis::NegativeY, &_PatchInformations[_CurrentAsynchronousBuffer][2], &_PatchRenderInformations[_CurrentAsynchronousBuffer][2]);
 
-		GenerateHighDetailPatch(validHighDetailGridPoints[3], TerrainAxis::NegativeX, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][3], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][3]);
-		GenerateHighDetailPatch(validHighDetailGridPoints[4], TerrainAxis::None, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][4], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][4]);
-		GenerateHighDetailPatch(validHighDetailGridPoints[5], TerrainAxis::PositiveX, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][5], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][5]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[3], TerrainAxis::NegativeX, &_PatchInformations[_CurrentAsynchronousBuffer][3], &_PatchRenderInformations[_CurrentAsynchronousBuffer][3]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[4], TerrainAxis::None, &_PatchInformations[_CurrentAsynchronousBuffer][4], &_PatchRenderInformations[_CurrentAsynchronousBuffer][4]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[5], TerrainAxis::PositiveX, &_PatchInformations[_CurrentAsynchronousBuffer][5], &_PatchRenderInformations[_CurrentAsynchronousBuffer][5]);
 
-		GenerateHighDetailPatch(validHighDetailGridPoints[6], TerrainAxis::NegativeX | TerrainAxis::PositiveY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][6], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][6]);
-		GenerateHighDetailPatch(validHighDetailGridPoints[7], TerrainAxis::PositiveY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][7], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][7]);
-		GenerateHighDetailPatch(validHighDetailGridPoints[8], TerrainAxis::PositiveX | TerrainAxis::PositiveY, &_HighDetailPatchInformations[_CurrentAsynchronousBuffer][8], &_HighDetailPatchRenderInformations[_CurrentAsynchronousBuffer][8]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[6], TerrainAxis::NegativeX | TerrainAxis::PositiveY, &_PatchInformations[_CurrentAsynchronousBuffer][6], &_PatchRenderInformations[_CurrentAsynchronousBuffer][6]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[7], TerrainAxis::PositiveY, &_PatchInformations[_CurrentAsynchronousBuffer][7], &_PatchRenderInformations[_CurrentAsynchronousBuffer][7]);
+		GenerateHighDetailPatch(validHighDetailGridPoints[8], TerrainAxis::PositiveX | TerrainAxis::PositiveY, &_PatchInformations[_CurrentAsynchronousBuffer][8], &_PatchRenderInformations[_CurrentAsynchronousBuffer][8]);
 
 		//Generate all low detail patches.
 		GenerateLowDetailPatches(currentGridPoint, 3, 0);
@@ -197,16 +186,16 @@ void TerrainSystem::GenerateLowDetailPatches(const GridPoint2 &currentGridPoint,
 	};
 
 	//Generate all low detail patches.
-	GenerateLowDetailPatch(validLowDetailGridPoints[0], TerrainAxis::NegativeX | TerrainAxis::NegativeY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][0 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][0 + (layer * 8)]);
-	GenerateLowDetailPatch(validLowDetailGridPoints[1], TerrainAxis::NegativeY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][1 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][1 + (layer * 8)]);
-	GenerateLowDetailPatch(validLowDetailGridPoints[2], TerrainAxis::PositiveX | TerrainAxis::NegativeY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][2 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][2 + (layer * 8)]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[0], TerrainAxis::NegativeX | TerrainAxis::NegativeY, static_cast<float>(gridPointOffset), &_PatchInformations[_CurrentAsynchronousBuffer][0 + (layer * 8) + 9], &_PatchRenderInformations[_CurrentAsynchronousBuffer][0 + (layer * 8) + 9]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[1], TerrainAxis::NegativeY, static_cast<float>(gridPointOffset), &_PatchInformations[_CurrentAsynchronousBuffer][1 + (layer * 8) + 9], &_PatchRenderInformations[_CurrentAsynchronousBuffer][1 + (layer * 8) + 9]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[2], TerrainAxis::PositiveX | TerrainAxis::NegativeY, static_cast<float>(gridPointOffset), &_PatchInformations[_CurrentAsynchronousBuffer][2 + (layer * 8) + 9], &_PatchRenderInformations[_CurrentAsynchronousBuffer][2 + (layer * 8) + 9]);
 
-	GenerateLowDetailPatch(validLowDetailGridPoints[3], TerrainAxis::NegativeX, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][3 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][3 + (layer * 8)]);
-	GenerateLowDetailPatch(validLowDetailGridPoints[4], TerrainAxis::PositiveX, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][4 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][4 + (layer * 8)]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[3], TerrainAxis::NegativeX, static_cast<float>(gridPointOffset), &_PatchInformations[_CurrentAsynchronousBuffer][3 + (layer * 8) + 9], &_PatchRenderInformations[_CurrentAsynchronousBuffer][3 + (layer * 8) + 9]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[4], TerrainAxis::PositiveX, static_cast<float>(gridPointOffset), &_PatchInformations[_CurrentAsynchronousBuffer][4 + (layer * 8) + 9], &_PatchRenderInformations[_CurrentAsynchronousBuffer][4 + (layer * 8) + 9]);
 
-	GenerateLowDetailPatch(validLowDetailGridPoints[5], TerrainAxis::NegativeX | TerrainAxis::PositiveY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][5 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][5 + (layer * 8)]);
-	GenerateLowDetailPatch(validLowDetailGridPoints[6], TerrainAxis::PositiveY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][6 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][6 + (layer * 8)]);
-	GenerateLowDetailPatch(validLowDetailGridPoints[7], TerrainAxis::PositiveX | TerrainAxis::PositiveY, static_cast<float>(gridPointOffset), &_LowDetailPatchInformations[_CurrentAsynchronousBuffer][7 + (layer * 8)], &_LowDetailPatchRenderInformations[_CurrentAsynchronousBuffer][7 + (layer * 8)]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[5], TerrainAxis::NegativeX | TerrainAxis::PositiveY, static_cast<float>(gridPointOffset), &_PatchInformations[_CurrentAsynchronousBuffer][5 + (layer * 8) + 9], &_PatchRenderInformations[_CurrentAsynchronousBuffer][5 + (layer * 8) + 9]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[6], TerrainAxis::PositiveY, static_cast<float>(gridPointOffset), &_PatchInformations[_CurrentAsynchronousBuffer][6 + (layer * 8) + 9], &_PatchRenderInformations[_CurrentAsynchronousBuffer][6 + (layer * 8) + 9]);
+	GenerateLowDetailPatch(validLowDetailGridPoints[7], TerrainAxis::PositiveX | TerrainAxis::PositiveY, static_cast<float>(gridPointOffset), &_PatchInformations[_CurrentAsynchronousBuffer][7 + (layer * 8) + 9], &_PatchRenderInformations[_CurrentAsynchronousBuffer][7 + (layer * 8) + 9]);
 }
 
 /*

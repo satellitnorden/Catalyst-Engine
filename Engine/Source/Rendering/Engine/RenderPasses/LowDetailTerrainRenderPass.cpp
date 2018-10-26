@@ -111,8 +111,7 @@ void LowDetailTerrainRenderPass::InitializeInternal() NOEXCEPT
 void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all terrain render informations and draw them
-	const StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT highDetailInformations{ TerrainSystem::Instance->GetHighDetailTerrainPatchRenderInformations() };
-	const StaticArray<TerrainPatchRenderInformation, 56> *const RESTRICT lowDetailInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
+	const StaticArray<TerrainPatchRenderInformation, 65> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
 
 	//Cache the command buffer
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -126,7 +125,7 @@ void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 	//Wait for terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
 
-	for (const TerrainPatchRenderInformation &information : *highDetailInformations)
+	for (const TerrainPatchRenderInformation &information : *informations)
 	{
 		if (!TEST_BIT(information._Visibility, VisibilityFlag::Viewer))
 		{
@@ -134,21 +133,6 @@ void LowDetailTerrainRenderPass::RenderInternal() NOEXCEPT
 		}
 
 		if (information._HighDetail)
-		{
-			continue;
-		}
-
-		const uint64 offset{ 0 };
-
-		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &offset);
-		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
-
-		commandBuffer->DrawIndexed(this, information._IndexCount, 1);
-	}
-
-	for (const TerrainPatchRenderInformation &information : *lowDetailInformations)
-	{
-		if (!TEST_BIT(information._Visibility, VisibilityFlag::Viewer))
 		{
 			continue;
 		}

@@ -58,35 +58,19 @@ public:
 	}
 
 	/*
-	*	Returns the high detail terrain patch informations.
-	*/
-	RESTRICTED NO_DISCARD StaticArray<TerrainPatchInformation, 9> *const RESTRICT GetHighDetailTerrainPatchInformations() NOEXCEPT
-	{
-		return &_HighDetailPatchInformations[_CurrentSynchronousBuffer];
-	}
-
-	/*
-	*	Returns the high detail terrain patch render informations.
-	*/
-	RESTRICTED NO_DISCARD StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT GetHighDetailTerrainPatchRenderInformations() NOEXCEPT
-	{
-		return &_HighDetailPatchRenderInformations[_CurrentSynchronousBuffer];
-	}
-
-	/*
 	*	Returns the low detail terrain patch informations.
 	*/
-	RESTRICTED NO_DISCARD StaticArray<TerrainPatchInformation, 56> *const RESTRICT GetLowDetailTerrainPatchInformations() NOEXCEPT
+	RESTRICTED NO_DISCARD StaticArray<TerrainPatchInformation, 65> *const RESTRICT GetTerrainPatchInformations() NOEXCEPT
 	{
-		return &_LowDetailPatchInformations[_CurrentSynchronousBuffer];
+		return &_PatchInformations[_CurrentSynchronousBuffer];
 	}
 
 	/*
 	*	Returns the low detail terrain patch render informations.
 	*/
-	RESTRICTED NO_DISCARD StaticArray<TerrainPatchRenderInformation, 56> *const RESTRICT GetLowDetailTerrainPatchRenderInformations() NOEXCEPT
+	RESTRICTED NO_DISCARD StaticArray<TerrainPatchRenderInformation, 65> *const RESTRICT GetTerrainPatchRenderInformations() NOEXCEPT
 	{
-		return &_LowDetailPatchRenderInformations[_CurrentSynchronousBuffer];
+		return &_PatchRenderInformations[_CurrentSynchronousBuffer];
 	}
 
 	/*
@@ -119,17 +103,11 @@ private:
 	//The current asynchronous buffer.
 	uint8 _CurrentAsynchronousBuffer{ 1 };
 
-	//The high detail patch informations.
-	StaticArray<StaticArray<TerrainPatchInformation, 9>, 2> _HighDetailPatchInformations;
+	//The patch informations.
+	StaticArray<StaticArray<TerrainPatchInformation, 65>, 2> _PatchInformations;
 
-	//The high detail patch render informations.
-	StaticArray<StaticArray<TerrainPatchRenderInformation, 9>, 2> _HighDetailPatchRenderInformations;
-
-	//The low detail patch informations.
-	StaticArray<StaticArray<TerrainPatchInformation, 56>, 2> _LowDetailPatchInformations;
-
-	//The low detail patch render informations.
-	StaticArray<StaticArray<TerrainPatchRenderInformation, 56>, 2> _LowDetailPatchRenderInformations;
+	//The patch render informations.
+	StaticArray<StaticArray<TerrainPatchRenderInformation, 65>, 2> _PatchRenderInformations;
 
 	/*
 	*	Updates the terrain system asynchronously.

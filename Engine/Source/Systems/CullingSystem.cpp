@@ -140,61 +140,30 @@ void CullingSystem::CullTerrain() NOEXCEPT
 	//Get the current frustum planes.
 	const StaticArray<Vector4, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
 
+	//Iterate over all terrain patches and cull them.
+	StaticArray<TerrainPatchInformation, 65> *const RESTRICT patchInformations{ TerrainSystem::Instance->GetTerrainPatchInformations() };
+	StaticArray<TerrainPatchRenderInformation, 65> *const RESTRICT patchRenderInformations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
+
+	for (uint64 i = 0, size = patchInformations->Size(); i < size; ++i)
 	{
-		//Iterate over all high detail terrain patches and cull them.
-		StaticArray<TerrainPatchInformation, 9> *const RESTRICT patchInformations{ TerrainSystem::Instance->GetHighDetailTerrainPatchInformations() };
-		StaticArray<TerrainPatchRenderInformation, 9> *const RESTRICT patchRenderInformations{ TerrainSystem::Instance->GetHighDetailTerrainPatchRenderInformations() };
+		TerrainPatchInformation &patchInformation{ (*patchInformations)[i] };
+		TerrainPatchRenderInformation &patchRenderInformation{ (*patchRenderInformations)[i] };
 
-		for (uint64 i = 0, size = patchInformations->Size(); i < size; ++i)
+		//If this patch is invalid, no need to check it.
+		if (!(*patchInformations)[i]._Valid)
 		{
-			TerrainPatchInformation &patchInformation{ (*patchInformations)[i] };
-			TerrainPatchRenderInformation &patchRenderInformation{ (*patchRenderInformations)[i] };
-
-			//If this patch is invalid, no need to check it.
-			if (!(*patchInformations)[i]._Valid)
-			{
-				continue;
-			}
-
-			//Test this patch's axis-aligned bounding box against the current frustum planes.
-			if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, patchInformation._AxisAlignedBoundingBox))
-			{
-				SET_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
-			}
-
-			else
-			{
-				CLEAR_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
-			}
+			continue;
 		}
-	}
 
-	{
-		//Iterate over all low detail terrain patches and cull them.
-		StaticArray<TerrainPatchInformation, 56> *const RESTRICT patchInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchInformations() };
-		StaticArray<TerrainPatchRenderInformation, 56> *const RESTRICT patchRenderInformations{ TerrainSystem::Instance->GetLowDetailTerrainPatchRenderInformations() };
-
-		for (uint64 i = 0, size = patchInformations->Size(); i < size; ++i)
+		//Test this patch's axis-aligned bounding box against the current frustum planes.
+		if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, patchInformation._AxisAlignedBoundingBox))
 		{
-			TerrainPatchInformation &patchInformation{ (*patchInformations)[i] };
-			TerrainPatchRenderInformation &patchRenderInformation{ (*patchRenderInformations)[i] };
+			SET_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
+		}
 
-			//If this patch is invalid, no need to check it.
-			if (!(*patchInformations)[i]._Valid)
-			{
-				continue;
-			}
-
-			//Test this patch's axis-aligned bounding box against the current frustum planes.
-			if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, patchInformation._AxisAlignedBoundingBox))
-			{
-				SET_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
-			}
-
-			else
-			{
-				CLEAR_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
-			}
+		else
+		{
+			CLEAR_BIT(patchRenderInformation._Visibility, VisibilityFlag::Viewer);
 		}
 	}
 }
