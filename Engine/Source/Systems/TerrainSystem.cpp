@@ -95,6 +95,13 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 {
 	if (_Update._Index != -1)
 	{
+		if (_PatchInformations[_Update._Index]._Valid)
+		{
+			RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[_Update._Index]._NormalTexture);
+			RenderingSystem::Instance->DestroyRenderDataTable(_PatchRenderInformations[_Update._Index]._NormalRenderDataTable);
+			RenderingSystem::Instance->DestroyConstantBuffer(_PatchRenderInformations[_Update._Index]._Buffer);
+		}
+
 		_PatchInformations[_Update._Index] = _Update._PatchInformation;
 		_PatchRenderInformations[_Update._Index] = _Update._PatchRenderInformation;
 	}
@@ -105,6 +112,9 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 */
 void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
+	//Reset the update.
+	_Update._Index = -1;
+
 	switch (_State)
 	{
 		case TerrainSystemState::Starting:
@@ -172,6 +182,7 @@ void TerrainSystem::FollowSchedule() NOEXCEPT
 	GeneratePatch(	scheduleItem._GridPoint,
 					scheduleItem._Borders,
 					scheduleItem._PatchSizeMultiplier,
+					scheduleItem._NormalResolutionMultiplier,
 					&_Update._PatchInformation,
 					&_Update._PatchRenderInformation);
 
@@ -185,7 +196,7 @@ void TerrainSystem::FollowSchedule() NOEXCEPT
 /*
 *	Generates a patch.
 */
-void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBorder borders, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
+void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBorder borders, const float patchSizeMultiplier, const uint8 normalResolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
 	//Calculate the world position of the grid point.
 	const Vector3 gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, TerrainConstants::TERRAIN_PATCH_SIZE) };
@@ -203,9 +214,8 @@ void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBord
 
 	//Get the material and the displacement information.
 	TerrainMaterial material;
-	TerrainDisplacementInformation displacementInformation;
 
-	_Properties._PatchPropertiesGenerationFunction(_Properties, gridPointWorldPosition, &material, &displacementInformation);
+	_Properties._PatchPropertiesGenerationFunction(_Properties, gridPointWorldPosition, &material);
 
 	//Create the constant buffer.
 	StaticArray<void *RESTRICT, 2> bufferData;
@@ -232,8 +242,16 @@ void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBord
 
 	//Fill in the details about the patch render information.
 	patchRenderInformation->_Visibility = VisibilityFlag::None;
+	patchRenderInformation->_WorldPosition = Vector2(gridPointWorldPosition._X, gridPointWorldPosition._Z);
+	patchRenderInformation->_PatchSize = TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier;
 	patchRenderInformation->_Buffer = RenderingSystem::Instance->CreateConstantBuffer(bufferData.Data(), bufferDataSizes.Data(), 2);
 	patchRenderInformation->_IndexOffset = bufferDataSizes[0];
 	patchRenderInformation->_IndexCount = static_cast<uint32>(indices.Size());
-	patchRenderInformation->_DisplacementInformation = displacementInformation;
+
+	TerrainUtilities::GenerateNormalTexture(	_Properties,
+												patchSizeMultiplier,
+												normalResolutionMultiplier,
+												gridPointWorldPosition,
+												&patchInformation->_NormalTexture,
+												&patchRenderInformation->_NormalRenderDataTable);
 }

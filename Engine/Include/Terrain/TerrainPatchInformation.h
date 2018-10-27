@@ -11,9 +11,6 @@
 #include <Rendering/Engine/CPUTexture2D.h>
 #include <Rendering/Engine/TerrainMaterial.h>
 
-//Terrain.
-#include <Terrain/TerrainDisplacementInformation.h>
-
 class TerrainPatchInformation final
 {
 
@@ -30,5 +27,8 @@ public:
 
 	//The material.
 	TerrainMaterial _Material;
+
+	//The normal texture.
+	Texture2DHandle _NormalTexture;
 
 };

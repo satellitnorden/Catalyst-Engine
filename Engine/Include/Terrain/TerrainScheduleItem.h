@@ -23,4 +23,7 @@ public:
 	//The patch size multiplier.
 	float _PatchSizeMultiplier;
 
+	//The normal resolution multiplier.
+	uint8 _NormalResolutionMultiplier;
+
 };

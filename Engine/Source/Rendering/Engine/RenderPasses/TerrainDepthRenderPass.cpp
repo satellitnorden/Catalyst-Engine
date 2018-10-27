@@ -15,6 +15,17 @@
 //Singleton definition.
 DEFINE_SINGLETON(TerrainDepthRenderPass);
 
+class PushConstantData final
+{
+
+public:
+
+	Vector2 _PatchWorldPosition;
+	float _PatchHalfSize;
+	float _PatchInverseSize;
+
+};
+
 /*
 *	Default constructor.
 */
@@ -54,8 +65,13 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::SceneIntermediate);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(1);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::OneTexture));
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(PushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(3);
@@ -65,12 +81,8 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 										0);
 	AddVertexInputAttributeDescription(	1,
 										0,
-										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
-										sizeof(float) * 3);
-	AddVertexInputAttributeDescription(	2,
-										0,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										sizeof(float) * 6);
+										sizeof(float) * 3);
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
@@ -132,7 +144,20 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 			continue;
 		}
 
-		const uint64 offset{ 0 };
+		//Bind the normal texture.
+		commandBuffer->BindRenderDataTable(this, 1, information._NormalRenderDataTable);
+
+		//Push constants.
+		PushConstantData data;
+
+		data._PatchWorldPosition = information._WorldPosition;
+		data._PatchHalfSize = information._PatchSize * 0.5f;
+		data._PatchInverseSize = 1.0f / information._PatchSize;
+
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
+
+		//Bind vertex/inder buffer.
+		constexpr uint64 offset{ 0 };
 
 		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);

@@ -54,7 +54,8 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 	constexpr float ROTATION_SPEED{ 100.0f };
 	constexpr float FLYING_NORMAL_SPEED{ 100.0f };
 	constexpr float FLYING_FAST_SPEED{ 1'000.0f };
-	constexpr float WALKING_SPEED{ 2.0f };
+	constexpr float WALKING_NORMAL_SPEED{ 2.0f };
+	constexpr float WALKING_FASTL_SPEED{ 10.0f };
 
 	//Get the gamepad state.
 	const GamepadState *const RESTRICT state{ InputSystem::Instance->GetGamepadState() };
@@ -68,7 +69,7 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 	}
 
 	//Determine the speed.
-	const float speed{ constrainToTerrain ? WALKING_SPEED : CatalystBaseMath::LinearlyInterpolate(FLYING_NORMAL_SPEED, FLYING_FAST_SPEED, state->_RightTrigger) };
+	const float speed{ constrainToTerrain ? CatalystBaseMath::LinearlyInterpolate(WALKING_NORMAL_SPEED, WALKING_FASTL_SPEED, state->_RightTrigger) : CatalystBaseMath::LinearlyInterpolate(FLYING_NORMAL_SPEED, FLYING_FAST_SPEED, state->_RightTrigger) };
 
 	//Move the viewer.
 	Viewer::Instance->Move(Viewer::Instance->GetRightVector() * state->_LeftThumbstickX * speed * context->_DeltaTime);

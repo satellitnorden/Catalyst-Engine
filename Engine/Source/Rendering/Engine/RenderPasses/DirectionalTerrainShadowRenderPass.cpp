@@ -62,7 +62,7 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::TessellationEvaluation, 0, sizeof(TerrainDisplacementInformation));
+	AddPushConstantRange(ShaderStage::TessellationEvaluation, 0, sizeof(float) * 5);
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -155,7 +155,7 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
 		commandBuffer->BindRenderDataTable(this, 1, TerrainSystem::Instance->GetTerrainProperties()->_RenderDataTable);
-		commandBuffer->PushConstants(this, ShaderStage::TessellationEvaluation, 0, sizeof(TerrainDisplacementInformation), &information._DisplacementInformation);
+		commandBuffer->PushConstants(this, ShaderStage::TessellationEvaluation, 0, sizeof(float) * 5, nullptr);
 
 		commandBuffer->DrawIndexed(this, information._IndexCount, 1);
 	}

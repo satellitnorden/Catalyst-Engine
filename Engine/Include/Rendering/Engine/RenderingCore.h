@@ -155,6 +155,8 @@ enum class CommonRenderDataTableLayout : uint8
 	ParticleSystem,
 	GaussianBlur,
 
+	OneTexture,
+
 	NumberOfCommonRenderDataTableLayouts
 };
 

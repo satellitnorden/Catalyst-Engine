@@ -147,29 +147,11 @@ namespace TerrainScheduleConstants
 		GridPoint2(-1, 1) * 729,
 		GridPoint2(-1, 0) * 729,
 		GridPoint2(-1, -1) * 729,
-
-		GridPoint2(0, -1) * 2'187,
-		GridPoint2(1, -1) * 2'187,
-		GridPoint2(1, 0) * 2'187,
-		GridPoint2(1, 1) * 2'187,
-		GridPoint2(0, 1) * 2'187,
-		GridPoint2(-1, 1) * 2'187,
-		GridPoint2(-1, 0) * 2'187,
-		GridPoint2(-1, -1) * 2'187,
 	};
 
 	constexpr StaticArray<TerrainBorder, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> BORDERS
 	{
 		TerrainBorder::None,
-
-		TerrainBorder::Upper,
-		TerrainBorder::Upper | TerrainBorder::Right,
-		TerrainBorder::Right,
-		TerrainBorder::Right | TerrainBorder::Lower,
-		TerrainBorder::Lower,
-		TerrainBorder::Lower | TerrainBorder::Left,
-		TerrainBorder::Left,
-		TerrainBorder::Upper | TerrainBorder::Left,
 
 		TerrainBorder::Upper,
 		TerrainBorder::Upper | TerrainBorder::Right,
@@ -301,15 +283,74 @@ namespace TerrainScheduleConstants
 		729.0f,
 		729.0f,
 		729.0f,
+	};
 
-		2'187.0f,
-		2'187.0f,
-		2'187.0f,
-		2'187.0f,
-		2'187.0f,
-		2'187.0f,
-		2'187.0f,
-		2'187.0f,
+	constexpr StaticArray<uint8, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> NORMAL_RESOLUTION_MULTIPLIERS
+	{
+		static_cast<uint8>(1),
+
+		static_cast<uint8>(1),
+		static_cast<uint8>(1),
+		static_cast<uint8>(1),
+		static_cast<uint8>(1),
+		static_cast<uint8>(1),
+		static_cast<uint8>(1),
+		static_cast<uint8>(1),
+		static_cast<uint8>(1),
+
+		static_cast<uint8>(2),
+		static_cast<uint8>(2),
+		static_cast<uint8>(2),
+		static_cast<uint8>(2),
+		static_cast<uint8>(2),
+		static_cast<uint8>(2),
+		static_cast<uint8>(2),
+		static_cast<uint8>(2),
+
+		static_cast<uint8>(3),
+		static_cast<uint8>(3),
+		static_cast<uint8>(3),
+		static_cast<uint8>(3),
+		static_cast<uint8>(3),
+		static_cast<uint8>(3),
+		static_cast<uint8>(3),
+		static_cast<uint8>(3),
+
+		static_cast<uint8>(4),
+		static_cast<uint8>(4),
+		static_cast<uint8>(4),
+		static_cast<uint8>(4),
+		static_cast<uint8>(4),
+		static_cast<uint8>(4),
+		static_cast<uint8>(4),
+		static_cast<uint8>(4),
+
+		static_cast<uint8>(5),
+		static_cast<uint8>(5),
+		static_cast<uint8>(5),
+		static_cast<uint8>(5),
+		static_cast<uint8>(5),
+		static_cast<uint8>(5),
+		static_cast<uint8>(5),
+		static_cast<uint8>(5),
+
+		static_cast<uint8>(6),
+		static_cast<uint8>(6),
+		static_cast<uint8>(6),
+		static_cast<uint8>(6),
+		static_cast<uint8>(6),
+		static_cast<uint8>(6),
+		static_cast<uint8>(6),
+		static_cast<uint8>(6),
+
+		static_cast<uint8>(7),
+		static_cast<uint8>(7),
+		static_cast<uint8>(7),
+		static_cast<uint8>(7),
+		static_cast<uint8>(7),
+		static_cast<uint8>(7),
+		static_cast<uint8>(7),
+		static_cast<uint8>(7),
 	};
 }
 
@@ -380,12 +421,13 @@ void TerrainSchedule::GenerateNewSchedule(const GridPoint2 previous, const GridP
 */
 void TerrainSchedule::GenerateStartingSchedule(const GridPoint2 current) NOEXCEPT
 {
-	#define SET_ITEM(SCHEDULE_INDEX, PATCH_INDEX)																		\
-	{																													\
-		_Items[SCHEDULE_INDEX]._Index = PATCH_INDEX;																	\
-		_Items[SCHEDULE_INDEX]._GridPoint = current + TerrainScheduleConstants::GRID_POINT_OFFSETS[PATCH_INDEX];		\
-		_Items[SCHEDULE_INDEX]._Borders = TerrainScheduleConstants::BORDERS[PATCH_INDEX];								\
-		_Items[SCHEDULE_INDEX]._PatchSizeMultiplier = TerrainScheduleConstants::PATCH_SIZE_MULTIPLIERS[PATCH_INDEX];	\
+	#define SET_ITEM(SCHEDULE_INDEX, PATCH_INDEX)																					\
+	{																																\
+		_Items[SCHEDULE_INDEX]._Index = PATCH_INDEX;																				\
+		_Items[SCHEDULE_INDEX]._GridPoint = current + TerrainScheduleConstants::GRID_POINT_OFFSETS[PATCH_INDEX];					\
+		_Items[SCHEDULE_INDEX]._Borders = TerrainScheduleConstants::BORDERS[PATCH_INDEX];											\
+		_Items[SCHEDULE_INDEX]._PatchSizeMultiplier = TerrainScheduleConstants::PATCH_SIZE_MULTIPLIERS[PATCH_INDEX];				\
+		_Items[SCHEDULE_INDEX]._NormalResolutionMultiplier = TerrainScheduleConstants::NORMAL_RESOLUTION_MULTIPLIERS[PATCH_INDEX];	\
 	}
 
 	//For now, just generate the starting schedule.
@@ -454,6 +496,7 @@ void TerrainSchedule::GenerateStartingSchedule(const GridPoint2 current) NOEXCEP
 	SET_ITEM(55, TerrainScheduleConstants::LEFT_LAYER_SIX_INDEX);
 	SET_ITEM(56, TerrainScheduleConstants::UPPER_LEFT_LAYER_SIX_INDEX);
 
+	/*
 	SET_ITEM(57, TerrainScheduleConstants::UPPER_LAYER_SEVEN_INDEX);
 	SET_ITEM(58, TerrainScheduleConstants::UPPER_RIGHT_LAYER_SEVEN_INDEX);
 	SET_ITEM(59, TerrainScheduleConstants::RIGHT_LAYER_SEVEN_INDEX);
@@ -462,4 +505,5 @@ void TerrainSchedule::GenerateStartingSchedule(const GridPoint2 current) NOEXCEP
 	SET_ITEM(62, TerrainScheduleConstants::LOWER_LEFT_LAYER_SEVEN_INDEX);
 	SET_ITEM(63, TerrainScheduleConstants::LEFT_LAYER_SEVEN_INDEX);
 	SET_ITEM(64, TerrainScheduleConstants::UPPER_LEFT_LAYER_SEVEN_INDEX);
+	*/
 }

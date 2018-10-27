@@ -129,8 +129,7 @@ void RenderingSystem::RenderingUpdateSystemSynchronous(const UpdateContext *cons
 {
 	//TEMP: Update the terrain material.
 	TerrainMaterial material;
-	TerrainDisplacementInformation displacement;
-	TerrainSystem::Instance->GetTerrainProperties()->_PatchPropertiesGenerationFunction(*TerrainSystem::Instance->GetTerrainProperties(), Vector3(0.0f, 0.0f, 0.0f), &material, &displacement);
+	TerrainSystem::Instance->GetTerrainProperties()->_PatchPropertiesGenerationFunction(*TerrainSystem::Instance->GetTerrainProperties(), Vector3(0.0f, 0.0f, 0.0f), &material);
 	TerrainSystem::Instance->GetTerrainProperties()->_RenderDataTable = material._RenderDataTable;
 
 	//Render-update the current rendering system synchronously.
@@ -881,6 +880,16 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GrassMaterial)]);
+	}
+
+	{
+		//Initialize the one texture render data table layout.
+		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
+		{
+			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+		};
+
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::OneTexture)]);
 	}
 }
 

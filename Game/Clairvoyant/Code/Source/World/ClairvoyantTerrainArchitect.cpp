@@ -14,7 +14,6 @@
 #include <Resources/ResourceLoader.h>
 
 //Terrain.
-#include <Terrain/TerrainDisplacementInformation.h>
 #include <Terrain/TerrainProperties.h>
 
 //Clairvoyant terrain generation constants.
@@ -221,13 +220,7 @@ void ClairvoyantTerrainArchitect::GenerateLayerWeights(const TerrainProperties &
 /*
 *	Generates the patch properties.
 */
-void ClairvoyantTerrainArchitect::GeneratePatchProperties(const TerrainProperties &properties, const Vector3 &worldPosition, TerrainMaterial *const RESTRICT material, TerrainDisplacementInformation *const RESTRICT displacementInformation) NOEXCEPT
+void ClairvoyantTerrainArchitect::GeneratePatchProperties(const TerrainProperties &properties, const Vector3 &worldPosition, TerrainMaterial *const RESTRICT material) NOEXCEPT
 {
 	*material = ResourceLoader::GetTerrainMaterial(HashString("DefaultTerrainMaterial"));
-
-	displacementInformation->_FirstLayerDisplacement = 0.5f;
-	displacementInformation->_SecondLayerDisplacement = 0.1f;
-	displacementInformation->_ThirdLayerDisplacement = 0.5f;
-	displacementInformation->_FourthLayerDisplacement = 1.0f;
-	displacementInformation->_FifthLayerDisplacement = 0.5f;
 }

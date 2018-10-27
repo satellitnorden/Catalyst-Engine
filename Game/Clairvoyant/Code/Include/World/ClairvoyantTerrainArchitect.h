@@ -4,7 +4,6 @@
 #include <Core/Core/CatalystCore.h>
 
 //Forward declarations.
-class TerrainDisplacementInformation;
 class TerrainMaterial;
 class TerrainProperties;
 class Vector3;
@@ -28,6 +27,6 @@ public:
 	/*
 	*	Generates the patch properties.
 	*/
-	static void GeneratePatchProperties(const TerrainProperties &properties, const Vector3 &worldPosition, TerrainMaterial *const RESTRICT, TerrainDisplacementInformation *const RESTRICT displacementInformation) NOEXCEPT;
+	static void GeneratePatchProperties(const TerrainProperties &properties, const Vector3 &worldPosition, TerrainMaterial *const RESTRICT) NOEXCEPT;
 
 };

@@ -6,9 +6,6 @@
 //Rendering.
 #include <Rendering/Engine/RenderingCore.h>
 
-//Terrain.
-#include <Terrain/TerrainDisplacementInformation.h>
-
 class TerrainPatchRenderInformation final
 {
 
@@ -16,6 +13,15 @@ public:
 
 	//The visibility.
 	VisibilityFlag _Visibility;
+
+	//The normal render data table.
+	RenderDataTableHandle _NormalRenderDataTable;
+
+	//The world position.
+	Vector2 _WorldPosition;
+
+	//The patch size.
+	float _PatchSize;
 
 	//The buffer.
 	ConstantBufferHandle _Buffer;
@@ -25,8 +31,5 @@ public:
 
 	//The index count.
 	uint32 _IndexCount;
-
-	//The displacement information.
-	TerrainDisplacementInformation _DisplacementInformation;
 
 };

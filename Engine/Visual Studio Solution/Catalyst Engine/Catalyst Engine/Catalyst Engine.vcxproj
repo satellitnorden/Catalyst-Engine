@@ -302,7 +302,6 @@
     <ClInclude Include="..\..\..\Include\Systems\UpdateSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\VegetationSystem.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h" />
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainDisplacementInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainProperties.h" />

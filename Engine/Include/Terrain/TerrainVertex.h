@@ -17,15 +17,6 @@ public:
 	//The position on the Z axis.
 	float _PositionZ;
 
-	//The normal on the X axis.
-	float _NormalX;
-
-	//The normal on the Y axis.
-	float _NormalY;
-
-	//The normal on the Z axis.
-	float _NormalZ;
-
 	//The layer weight on the X axis.
 	float _LayerWeightX;
 
