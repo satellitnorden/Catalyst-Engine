@@ -4,10 +4,6 @@
 //Components.
 #include <Components/ComponentManager.h>
 
-//Entities.
-#include <Entities/PointLightEntity.h>
-#include <Entities/SpotLightEntity.h>
-
 //Managers.
 #include <Managers/EnvironmentManager.h>
 

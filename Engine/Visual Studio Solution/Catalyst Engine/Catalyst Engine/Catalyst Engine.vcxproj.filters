@@ -282,12 +282,6 @@
     <ClInclude Include="..\..\..\Include\Entities\ParticleSystemEntity.h">
       <Filter>Entities\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\PointLightEntity.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\SpotLightEntity.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h">
       <Filter>Input\Include</Filter>
     </ClInclude>

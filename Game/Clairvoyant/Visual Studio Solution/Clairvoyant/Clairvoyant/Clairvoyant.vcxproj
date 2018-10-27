@@ -198,8 +198,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\DynamicPhysicalEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Entity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\ParticleSystemEntity.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\PointLightEntity.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\SpotLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\RenderingConfigurationManager.cpp" />
