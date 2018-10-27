@@ -61,7 +61,7 @@ namespace TerrainUtilities
 	*/
 	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint8 normalResolutionMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture, RenderDataTableHandle *const RESTRICT renderDataTable) NOEXCEPT
 	{
-		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
+		const float patchSize{ (TerrainConstants::TERRAIN_PATCH_SIZE + ((TerrainConstants::TERRAIN_PATCH_SIZE / TerrainConstants::TERRAIN_PATCH_RESOLUTION) * 2.0f)) * patchSizeMultiplier };
 		const uint32 resolution{ TerrainConstants::TERRAIN_PATCH_NORMAL_RESOLUTION  * normalResolutionMultiplier };
 
 		DynamicArray<byte> data;

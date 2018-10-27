@@ -151,8 +151,11 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 		PushConstantData data;
 
 		data._PatchWorldPosition = information._WorldPosition;
-		data._PatchHalfSize = information._PatchSize * 0.5f;
-		data._PatchInverseSize = 1.0f / information._PatchSize;
+
+		const float patchSize{ information._PatchSize + ((information._PatchSize / TerrainConstants::TERRAIN_PATCH_RESOLUTION) * 2.0f) };
+
+		data._PatchHalfSize = patchSize * 0.5f;
+		data._PatchInverseSize = 1.0f / patchSize;
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
 

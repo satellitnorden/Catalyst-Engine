@@ -8,7 +8,7 @@ namespace TerrainConstants
 {
 	constexpr uint8 NUMBER_OF_TERRAIN_PATCHES{ 57 };
 	constexpr uint32 TERRAIN_PATCH_RESOLUTION{ 126 };
-	constexpr uint32 TERRAIN_PATCH_NORMAL_RESOLUTION{ 64 };
+	constexpr uint32 TERRAIN_PATCH_NORMAL_RESOLUTION{ 128 };
 	constexpr float TERRAIN_PATCH_SIZE{ 64.0f };
 }
 
