@@ -21,8 +21,6 @@ namespace ClairvoyantTerrainGenerationConstants
 {
 	constexpr float TERRAIN_MINIMUM_HEIGHT{ 2'000.0f };
 	constexpr float TERRAIN_MAXIMUM_HEIGHT{ 32'000.0f };
-
-	constexpr float GRASS_RANGE{ 10'000.0f };
 }
 
 /*
@@ -137,8 +135,8 @@ float GetRandomOffset(const uint8 index) NOEXCEPT
 void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &properties, const Vector3 &worldPosition, float *const RESTRICT height) NOEXCEPT
 {
 	//Calculate the coordinates.
-	const float coordinateX{ worldPosition._X / 16'000.0f };
-	const float coordinateY{ worldPosition._Z / 16'000.0f };
+	const float coordinateX{ worldPosition._X / 32'000.0f };
+	const float coordinateY{ worldPosition._Z / 32'000.0f };
 
 	//Generate the noise.
 	*height = PerlinNoiseGenerator::GenerateNoise(coordinateX, coordinateY, GetRandomOffset(0));
@@ -146,7 +144,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 	float frequency{ 1.0f };
 	float influence{ 1.0f };
 
-	for (uint8 i = 0; i < 9; ++i)
+	for (uint8 i = 0; i < 10; ++i)
 	{
 		frequency *= 2.0f;
 		influence *= 0.5f;
@@ -155,12 +153,11 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 	}
 
 	//Calculate the height influence.
-	const float landscapeCoordinateX{ worldPosition._X / 64'000.0f };
-	const float landscapeCoordinateY{ worldPosition._Z / 64'000.0f };
+	const float landscapeCoordinateX{ worldPosition._X / 32'000.0f };
+	const float landscapeCoordinateY{ worldPosition._Z / 32'000.0f };
 
-	float heightInfluence{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(10)) + 1.0f) * 0.5f) };
-	float flatness{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(11)) + 1.0f) * 0.5f) };
-	flatness *= flatness;
+	float heightInfluence{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(11)) + 1.0f) * 0.5f) };
+	float flatness{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(12)) + 1.0f) * 0.5f) };
 
 	//Apply the height.
 	*height *= CatalystBaseMath::LinearlyInterpolate(ClairvoyantTerrainGenerationConstants::TERRAIN_MINIMUM_HEIGHT, ClairvoyantTerrainGenerationConstants::TERRAIN_MAXIMUM_HEIGHT, flatness) * heightInfluence;
