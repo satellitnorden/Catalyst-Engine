@@ -37,6 +37,8 @@ enum class RenderPassMainStage : uint8
 #if !defined(CATALYST_FINAL)
 	Debug,
 #endif
+	DepthOfFieldHorizontal,
+	DepthOfFieldVertical,
 	ToneMapping,
 	AntiAliasing,
 
@@ -89,6 +91,12 @@ enum class RenderPassSubStage : uint8
 	DebugAxisAlignedBoundingBox,
 	DebugScreenBox,
 #endif
+
+	//Depth of field horizontal main stage.
+	DepthOfFieldHorizontal,
+
+	//Depth of field vertical main stage.
+	DepthOfFieldVertical,
 
 	//Tone mapping main stage.
 	ToneMapping,

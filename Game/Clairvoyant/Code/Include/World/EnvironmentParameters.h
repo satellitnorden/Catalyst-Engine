@@ -29,4 +29,7 @@ public:
 	//The volumetric fog distance.
 	float _VolumetricFogDistance;
 
+	//The depth of field distance.
+	float _DepthOfFieldDistance;
+
 };

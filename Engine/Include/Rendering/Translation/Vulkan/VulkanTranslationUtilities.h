@@ -56,6 +56,16 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::VolumetricFog);
 			}
 #endif
+			case RenderPassMainStage::DepthOfFieldHorizontal:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DepthOfFieldHorizontal);
+			}
+
+			case RenderPassMainStage::DepthOfFieldVertical:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DepthOfFieldVertical);
+			}
+
 			case RenderPassMainStage::ToneMapping:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ToneMapping);

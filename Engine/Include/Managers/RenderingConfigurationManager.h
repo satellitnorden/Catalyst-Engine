@@ -18,6 +18,16 @@ public:
 	RenderingConfigurationManager() NOEXCEPT { }
 
 	/*
+	*	Returns the depth of field distance.
+	*/
+	float GetDepthOfFieldDistance() const NOEXCEPT { return _DepthOfFieldDistance; }
+
+	/*
+	*	Sets the depth of field distance.
+	*/
+	void SetDepthOfFieldDistanceh(const float newDepthOfFieldDistance) NOEXCEPT { _DepthOfFieldDistance = newDepthOfFieldDistance; }
+
+	/*
 	*	Returns the saturation strength.
 	*/
 	float GetSaturationStrength() const NOEXCEPT { return _SaturationStrength; }
@@ -40,6 +50,9 @@ public:
 #endif
 
 private:
+
+	//The depth of field distance.
+	float _DepthOfFieldDistance{ 1'000.0f };
 
 	//The saturation strength.
 	float _SaturationStrength{ 1.0f };

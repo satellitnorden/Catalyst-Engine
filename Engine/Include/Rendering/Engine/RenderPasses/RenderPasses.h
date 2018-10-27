@@ -9,6 +9,8 @@
 #include <Rendering/Engine/RenderPasses/DebugAxisAlignedBoundingBoxRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DebugScreenBoxRenderPass.h>
 #endif
+#include <Rendering/Engine/RenderPasses/DepthOfFieldHorizontalRenderPass.h>
+#include <Rendering/Engine/RenderPasses/DepthOfFieldVerticalRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalDynamicPhysicalShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalShadowRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DirectionalSolidVegetationShadowRenderPass.h>

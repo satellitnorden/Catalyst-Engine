@@ -1586,6 +1586,144 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 	}
 #endif
 
+	//Initialize the depth of field horizontal render pass.
+	{
+		constexpr uint64 SUBPASSES{ 1 };
+
+		constexpr uint32 SCENE_INTERMEDIATE_INDEX{ 0 };
+
+		VulkanRenderPassCreationParameters renderPassParameters;
+
+		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
+		{
+			//Screen.
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_GENERAL,
+															VK_IMAGE_LAYOUT_GENERAL)
+		};
+
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
+
+		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
+		{
+			VkAttachmentReference{ SCENE_INTERMEDIATE_INDEX, VK_IMAGE_LAYOUT_GENERAL }
+		};
+
+		StaticArray<VkSubpassDescription, SUBPASSES> subpassDescriptions;
+
+		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
+		{
+			subpassDescription = VulkanUtilities::CreateSubpassDescription(	0,
+																				nullptr,
+																				1,
+																				colorAttachmentReferences.Data(),
+																				nullptr,
+																				0,
+																				nullptr);
+		}
+
+		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
+
+		renderPassParameters._SubpassDependencyCount = 0;
+		renderPassParameters._SubpassDependencies = nullptr;
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldHorizontal)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+
+		//Create the framebuffer.
+		VulkanFramebufferCreationParameters framebufferParameters;
+
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldHorizontal)]._RenderPass->Get();
+
+		StaticArray<VkImageView, 1> attachments
+		{
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneIntermediate))->GetImageView()
+		};
+
+		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters._Attachments = attachments.Data();
+		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldHorizontal)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldHorizontal)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldHorizontal)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldHorizontal)]._ShouldClear = false;
+	}
+
+	//Initialize the depth of field vertical  render pass.
+	{
+		constexpr uint64 SUBPASSES{ 1 };
+
+		constexpr uint32 SCENE_INDEX{ 0 };
+
+		VulkanRenderPassCreationParameters renderPassParameters;
+
+		StaticArray<VkAttachmentDescription, 1> attachmenDescriptions
+		{
+			//Screen.
+			VulkanUtilities::CreateAttachmentDescription(	static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetFormat(),
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_STORE,
+															VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+															VK_ATTACHMENT_STORE_OP_DONT_CARE,
+															VK_IMAGE_LAYOUT_GENERAL,
+															VK_IMAGE_LAYOUT_GENERAL)
+		};
+
+		renderPassParameters._AttachmentCount = static_cast<uint32>(attachmenDescriptions.Size());
+		renderPassParameters._AttachmentDescriptions = attachmenDescriptions.Data();
+
+		constexpr StaticArray<const VkAttachmentReference, 1> colorAttachmentReferences
+		{
+			VkAttachmentReference{ SCENE_INDEX, VK_IMAGE_LAYOUT_GENERAL }
+		};
+
+		StaticArray<VkSubpassDescription, SUBPASSES> subpassDescriptions;
+
+		for (VkSubpassDescription &subpassDescription : subpassDescriptions)
+		{
+			subpassDescription = VulkanUtilities::CreateSubpassDescription(	0,
+																			nullptr,
+																			1,
+																			colorAttachmentReferences.Data(),
+																			nullptr,
+																			0,
+																			nullptr);
+		}
+
+		renderPassParameters._SubpassDescriptionCount = static_cast<uint32>(subpassDescriptions.Size());
+		renderPassParameters._SubpassDescriptions = subpassDescriptions.Data();
+
+		renderPassParameters._SubpassDependencyCount = 0;
+		renderPassParameters._SubpassDependencies = nullptr;
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._RenderPass = VulkanInterface::Instance->CreateRenderPass(renderPassParameters);
+
+		//Create the framebuffer.
+		VulkanFramebufferCreationParameters framebufferParameters;
+
+		framebufferParameters._RenderPass = _VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._RenderPass->Get();
+
+		StaticArray<VkImageView, 1> attachments
+		{
+			static_cast<VulkanRenderTarget *const RESTRICT>(RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene))->GetImageView()
+		};
+
+		framebufferParameters._AttachmentCount = static_cast<uint32>(attachments.Size());
+		framebufferParameters._Attachments = attachments.Data();
+		framebufferParameters._Extent = { RenderingSystem::Instance->GetScaledResolution()._Width, RenderingSystem::Instance->GetScaledResolution()._Height };
+
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._FrameBuffers.Reserve(1);
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._FrameBuffers.EmplaceFast(VulkanInterface::Instance->CreateFramebuffer(framebufferParameters));
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._NumberOfAttachments = 1;
+		_VulkanRenderPassMainStageData[UNDERLYING(RenderPassMainStage::DepthOfFieldVertical)]._ShouldClear = false;
+	}
+
 	//Initialize the tone mapping render pass.
 	{
 		constexpr uint64 NUMBER_OF_TONE_MAPPING_SUBPASSES{ 1 };
