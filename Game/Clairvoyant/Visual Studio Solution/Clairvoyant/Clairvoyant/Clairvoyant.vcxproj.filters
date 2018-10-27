@@ -327,9 +327,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EngineSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntitySystem.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\InputSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
@@ -505,6 +502,12 @@
       <Filter>Engine Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DepthOfFieldVerticalRenderPass.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntityCreationSystem.cpp">
+      <Filter>Engine Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntityPlacementSystem.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
   </ItemGroup>

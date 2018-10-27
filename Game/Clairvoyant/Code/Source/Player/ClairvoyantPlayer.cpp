@@ -12,7 +12,7 @@
 #include <Rendering/Engine/Viewer.h>
 
 //Systems.
-#include <Systems/EntitySystem.h>
+#include <Systems/EntityCreationSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/PhysicsSystem.h>
 #include <Systems/RenderingSystem.h>
@@ -117,9 +117,9 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 
 		PhysicsSystem::Instance->CastRay(PhysicsChannel::Ocean, ray, &result);
 
-		DynamicPhysicalEntity *const RESTRICT box{ EntitySystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
+		DynamicPhysicalEntity *const RESTRICT box{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
 
-		DynamicPhysicalInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+		DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
 
 		data->_Properties = EntityInitializationData::EntityProperty::None;
 		data->_PhysicalFlags = PhysicalFlag::Outline | PhysicalFlag::Physical;
@@ -130,7 +130,7 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 		data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
 		data->_OutlineColor = Vector3(CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f));
 
-		EntitySystem::Instance->RequestInitialization(box, data, false);
+		EntityCreationSystem::Instance->RequestInitialization(box, data, false);
 	}
 }
 
@@ -227,9 +227,9 @@ void ClairvoyantPlayer::ApplyKeyboardControls(const UpdateContext *const RESTRIC
 
 		PhysicsSystem::Instance->CastRay(PhysicsChannel::Ocean, ray, &result);
 
-		DynamicPhysicalEntity *const RESTRICT box{ EntitySystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
+		DynamicPhysicalEntity *const RESTRICT box{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
 
-		DynamicPhysicalInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+		DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
 
 		data->_Properties = EntityInitializationData::EntityProperty::None;
 		data->_PhysicalFlags = PhysicalFlag::Outline | PhysicalFlag::Physical;
@@ -240,6 +240,6 @@ void ClairvoyantPlayer::ApplyKeyboardControls(const UpdateContext *const RESTRIC
 		data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
 		data->_OutlineColor = Vector3(CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f));
 
-		EntitySystem::Instance->RequestInitialization(box, data, false);
+		EntityCreationSystem::Instance->RequestInitialization(box, data, false);
 	}
 }

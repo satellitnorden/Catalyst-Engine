@@ -4,7 +4,7 @@
 *	Creates a new entity.
 */
 template <class EntityClass, class... Arguments>
-RESTRICTED EntityClass* const RESTRICT EntitySystem::CreateEntity(Arguments&&... arguments) NOEXCEPT
+RESTRICTED EntityClass* const RESTRICT EntityCreationSystem::CreateEntity(Arguments&&... arguments) NOEXCEPT
 {
 	_AllocatorLock.Lock();
 	void *const RESTRICT memory{ _Allocator.Allocate() };
@@ -21,7 +21,7 @@ RESTRICTED EntityClass* const RESTRICT EntitySystem::CreateEntity(Arguments&&...
 *	Creates a new child entity.
 */
 template <class EntityClass, class... Arguments>
-RESTRICTED EntityClass *const RESTRICT EntitySystem::CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) NOEXCEPT
+RESTRICTED EntityClass *const RESTRICT EntityCreationSystem::CreateChildEntity(Entity *RESTRICT parentEntity, Arguments&&... arguments) NOEXCEPT
 {
 	_AllocatorLock.Lock();
 	void *const RESTRICT memory{ _Allocator.Allocate() };
@@ -41,7 +41,7 @@ RESTRICTED EntityClass *const RESTRICT EntitySystem::CreateChildEntity(Entity *R
 *	Creates initialization data for an entity.
 */
 template <typename Type>
-RESTRICTED Type* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEPT
+RESTRICTED Type* const RESTRICT EntityCreationSystem::CreateInitializationData() NOEXCEPT
 {
 	void* const RESTRICT memory{ MemoryUtilities::GlobalPoolAllocate<sizeof(Type)>() };
 
@@ -54,7 +54,7 @@ RESTRICTED Type* const RESTRICT EntitySystem::CreateInitializationData() NOEXCEP
 *	Destroys initialization data for an entity.
 */
 template <typename Type>
-void EntitySystem::DestroyInitializationData(EntityInitializationData* const RESTRICT data) NOEXCEPT
+void EntityCreationSystem::DestroyInitializationData(EntityInitializationData* const RESTRICT data) NOEXCEPT
 {
 	MemoryUtilities::GlobalPoolDeAllocate<sizeof(Type)>(data);
 }

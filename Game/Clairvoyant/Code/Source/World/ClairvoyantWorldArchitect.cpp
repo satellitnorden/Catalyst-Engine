@@ -26,7 +26,8 @@
 #include <Resources/ResourceLoader.h>
 
 //Systems.
-#include <Systems/EntitySystem.h>
+#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntityPlacementSystem.h>
 #include <Systems/LightingSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/PhysicsSystem.h>
@@ -114,11 +115,11 @@ void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 */
 void ClairvoyantWorldArchitect::InitializeParticles()
 {
-	//Register a procedural placement function for the dust particles.
-	EntitySystem::Instance->RegisterProceduralPlacementFunction([](const AxisAlignedBoundingBox &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities)
+	//Register a placement function for the dust particles.
+	EntityPlacementSystem::Instance->RegisterThreeDimensionalPlacementFunction([](const AxisAlignedBoundingBox &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities)
 	{
 		//Create the particles.
-		ParticleSystemInitializationData *const RESTRICT data{ EntitySystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
+		ParticleSystemInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
 
 		data->_Properties = EntityInitializationData::EntityProperty::None;
 		data->_Material = RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle);
@@ -134,9 +135,9 @@ void ClairvoyantWorldArchitect::InitializeParticles()
 		data->_ParticleSystemProperties._MaximumVelocity = Vector3(0.25f, 0.25f, 0.25f);
 		data->_Position = AxisAlignedBoundingBox::CalculateCenter(box);
 
-		ParticleSystemEntity *const RESTRICT particles = EntitySystem::Instance->CreateEntity<ParticleSystemEntity>();
+		ParticleSystemEntity *const RESTRICT particles = EntityCreationSystem::Instance->CreateEntity<ParticleSystemEntity>();
 
-		EntitySystem::Instance->RequestInitialization(particles, data, true);
+		EntityCreationSystem::Instance->RequestInitialization(particles, data, true);
 
 		entities->EmplaceSlow(particles);
 	}, 50.0f);

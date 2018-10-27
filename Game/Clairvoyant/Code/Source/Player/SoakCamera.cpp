@@ -9,7 +9,6 @@
 
 //Systems.
 #include <Systems/RenderingSystem.h>
-#include <Systems/EntitySystem.h>
 #include <Systems/TerrainSystem.h>
 #include <Systems/UpdateSystem.h>
 

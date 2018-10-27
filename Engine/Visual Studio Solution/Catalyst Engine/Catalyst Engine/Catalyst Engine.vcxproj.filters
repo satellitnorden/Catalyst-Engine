@@ -229,6 +229,9 @@
     <Filter Include="Terrain\Source">
       <UniqueIdentifier>{b5ff2ff7-b5ae-4d25-8b73-1e927966183b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entities\Include\EntityPlacement">
+      <UniqueIdentifier>{3a3a3283-6f7c-4153-86a6-b8a6bd69fc84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
@@ -361,9 +364,6 @@
       <Filter>Systems\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\EngineSystem.h">
-      <Filter>Systems\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Systems\EntitySystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h">
@@ -777,15 +777,6 @@
     <ClInclude Include="..\..\..\Include\Math\GridPoint3.h">
       <Filter>Math\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\EntitiesCore.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\EntityProceduralPlacementData.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\EntityProceduralPlacementGridPoint.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Vegetation\GrassVegetationTypeProperties.h">
       <Filter>Vegetation\Include</Filter>
     </ClInclude>
@@ -1068,6 +1059,27 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DepthOfFieldVerticalRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\EntityPlacementSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Systems\EntityCreationSystem.h">
+      <Filter>Systems\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityPlacementCore.h">
+      <Filter>Entities\Include\EntityPlacement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityTwoDimensionalPlacementData.h">
+      <Filter>Entities\Include\EntityPlacement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityTwoDimensionalGridPoint.h">
+      <Filter>Entities\Include\EntityPlacement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityThreeDimensionalGridPoint.h">
+      <Filter>Entities\Include\EntityPlacement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityThreeDimensionalPlacementData.h">
+      <Filter>Entities\Include\EntityPlacement</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1104,9 +1116,6 @@
       <Filter>Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\EngineSystem.cpp">
-      <Filter>Systems\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Systems\EntitySystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp">
@@ -1522,6 +1531,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DepthOfFieldVerticalRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp">
+      <Filter>Systems\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Systems\EntityPlacementSystem.cpp">
+      <Filter>Systems\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -167,7 +167,7 @@ protected:
 private:
 
 	//Friend declaration.
-	friend class EntitySystem;
+	friend class EntityCreationSystem;
 
 	//The default position.
 	static constexpr Vector3 _DefaultPosition{ 0.0f, 0.0f, 0.0f };

@@ -324,7 +324,8 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\CullingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\DebugRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EngineSystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntitySystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntityCreationSystem.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\EntityPlacementSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\InputSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\LevelOfDetailSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\LightinSystem.cpp" />

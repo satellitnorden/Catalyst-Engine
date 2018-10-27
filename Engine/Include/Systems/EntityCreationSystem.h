@@ -7,42 +7,29 @@
 
 //Entities.
 #include <Entities/Entity.h>
-#include <Entities/EntityProceduralPlacementData.h>
-#include <Entities/EntitiesCore.h>
 #include <Entities/InitializationData/EntityInitializationData.h>
 
 //Multithreading.
-#include <Multithreading/Task.h>
 #include <Multithreading/Spinlock.h>
 
-class EntitySystem final
+class EntityCreationSystem final
 {
 
 public:
 
 	//Singleton declaration.
-	DECLARE_SINGLETON(EntitySystem);
+	DECLARE_SINGLETON(EntityCreationSystem);
 
 	/*
 	*	Default constructor.
 	*/
-	EntitySystem() NOEXCEPT
+	EntityCreationSystem() NOEXCEPT
 	{
 
 	}
 
 	/*
-	*	Initializes the entity system.
-	*/
-	void InitializeSystem() NOEXCEPT;
-
-	/*
-	*	Updates the entity system sequentially.
-	*/
-	void SequentialUpdateSystemSynchronous() NOEXCEPT;
-
-	/*
-	*	Updates the entity system synchronously during the closing update phase.
+	*	Updates the entity creation system synchronously during the closing update phase.
 	*/
 	void ClosingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT;
 
@@ -101,11 +88,6 @@ public:
 	*	Destruction will happen at the next synchronous update of the entity system.
 	*/
 	void RequestDestruction(Entity *const RESTRICT entity) NOEXCEPT;
-
-	/*
-	*	Registers a procedural placement function.
-	*/
-	void RegisterProceduralPlacementFunction(EntityProceduralPlacementFunction function, const float gridSize) NOEXCEPT;
 
 private:
 
@@ -184,12 +166,6 @@ private:
 	//Container for all entities that have requested automatic destruction.
 	DynamicArray<Entity *RESTRICT> _AutomaticDestructionQueue;
 
-	//Container for all procedural placement data.
-	DynamicArray<EntityProceduralPlacementData> _ProceduralPlacementData;
-
-	//The procedural placement update task.
-	Task _ProceduralPlacementUpdateTask;
-
 	/*
 	*	Processes the initialization queue.
 	*/
@@ -240,11 +216,6 @@ private:
 	*/
 	template <typename Type>
 	void DestroyInitializationData(EntityInitializationData* const RESTRICT data) NOEXCEPT;
-
-	/*
-	*	Updates the procedural placement.
-	*/
-	void UpdateProceduralPlacement() NOEXCEPT;
 
 };
 

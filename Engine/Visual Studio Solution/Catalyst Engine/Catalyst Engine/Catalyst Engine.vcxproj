@@ -84,10 +84,12 @@
     <ClInclude Include="..\..\..\Include\Core\Utilities\DebugUtilities.h" />
     <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h" />
     <ClInclude Include="..\..\..\Include\Entities\DynamicPhysicalEntity.h" />
-    <ClInclude Include="..\..\..\Include\Entities\EntitiesCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Entity.h" />
-    <ClInclude Include="..\..\..\Include\Entities\EntityProceduralPlacementData.h" />
-    <ClInclude Include="..\..\..\Include\Entities\EntityProceduralPlacementGridPoint.h" />
+    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityPlacementCore.h" />
+    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityThreeDimensionalGridPoint.h" />
+    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityThreeDimensionalPlacementData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityTwoDimensionalGridPoint.h" />
+    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityTwoDimensionalPlacementData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\DynamicPhysicalInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\InitializationData\ParticleSystemInitializationData.h" />
@@ -292,7 +294,8 @@
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\DebugRenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\EngineSystem.h" />
-    <ClInclude Include="..\..\..\Include\Systems\EntitySystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\EntityCreationSystem.h" />
+    <ClInclude Include="..\..\..\Include\Systems\EntityPlacementSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\InputSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\LevelOfDetailSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\LightingSystem.h" />
@@ -466,7 +469,8 @@
     <ClCompile Include="..\..\..\Source\Systems\CullingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\DebugRenderingSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\EngineSystem.cpp" />
-    <ClCompile Include="..\..\..\Source\Systems\EntitySystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\EntityCreationSystem.cpp" />
+    <ClCompile Include="..\..\..\Source\Systems\EntityPlacementSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\InputSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\LevelOfDetailSystem.cpp" />
     <ClCompile Include="..\..\..\Source\Systems\LightinSystem.cpp" />

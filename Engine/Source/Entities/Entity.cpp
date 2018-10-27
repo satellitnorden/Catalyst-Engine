@@ -2,7 +2,7 @@
 #include <Entities/Entity.h>
 
 //Systems.
-#include <Systems/EntitySystem.h>
+#include <Systems/EntityCreationSystem.h>
 #include <Systems/PhysicsSystem.h>
 
 //Static variable definitions.

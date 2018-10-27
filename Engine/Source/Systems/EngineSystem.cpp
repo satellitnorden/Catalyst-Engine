@@ -9,7 +9,8 @@
 #if !defined(CATALYST_FINAL)
 #include <Systems/DebugRenderingSystem.h>
 #endif
-#include <Systems/EntitySystem.h>
+#include <Systems/EntityCreationSystem.h>
+#include <Systems/EntityPlacementSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/LevelOfDetailSystem.h>
@@ -36,7 +37,7 @@ void EngineSystem::InitializeSystem(const CatalystProjectConfiguration &initialP
 
 	//Initialize all systems.
 	CullingSystem::Instance->InitializeSystem();
-	EntitySystem::Instance->InitializeSystem();
+	EntityPlacementSystem::Instance->InitializeSystem();
 	InputSystem::Instance->InitializeSystem();
 	LevelOfDetailSystem::Instance->InitializeSystem();
 	RenderingSystem::Instance->InitializeSystem(_ProjectConfiguration._RenderingConfiguration);
@@ -119,7 +120,7 @@ void EngineSystem::UpdateSystemSynchronous(const float newDeltaTime) NOEXCEPT
 	*/
 	_CurrentUpdatePhase = UpdatePhase::ClosingUpdate;
 	UpdateSystem::Instance->PreClosingUpdateSystemSynchronous(&context);
-	EntitySystem::Instance->ClosingUpdateSystemSynchronous(&context);
+	EntityCreationSystem::Instance->ClosingUpdateSystemSynchronous(&context);
 #if !defined(CATALYST_FINAL)
 	DebugRenderingSystem::Instance->ClosingUpdateSystemSynchronous(&context);
 #endif
@@ -163,9 +164,9 @@ void EngineSystem::ExecuteSequentialUpdate() NOEXCEPT
 	//Execute the sequential update.
 	switch (_CurrentSequentialUpdate)
 	{
-		case SequentialUpdate::EntitySystem:
+		case SequentialUpdate::EntityPlacementSystem:
 		{
-			EntitySystem::Instance->SequentialUpdateSystemSynchronous();
+			EntityPlacementSystem::Instance->SequentialUpdateSystemSynchronous();
 
 			break;
 		}

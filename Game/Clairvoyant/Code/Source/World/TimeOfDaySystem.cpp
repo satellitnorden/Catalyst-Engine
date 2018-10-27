@@ -2,7 +2,6 @@
 #include <World/TimeOfDaySystem.h>
 
 //Systems.
-#include <Systems/EntitySystem.h>
 #include <Systems/LightingSystem.h>
 #include <Systems/UpdateSystem.h>
 

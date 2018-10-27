@@ -9,10 +9,6 @@
 #include <World/ClairvoyantWorldArchitect.h>
 #include <World/TimeOfDaySystem.h>
 
-//Entities.
-#include <Entities/ParticleSystemEntity.h>
-#include <Entities/InitializationData/ParticleSystemInitializationData.h>
-
 //Managers.
 #include <Managers/EnvironmentManager.h>
 
@@ -20,7 +16,6 @@
 #include <Resources/ResourceLoader.h>
 
 //Systems.
-#include <Systems/EntitySystem.h>
 #include <Systems/RenderingSystem.h>
 
 //Singleton definition.
