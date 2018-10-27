@@ -72,7 +72,7 @@ namespace TerrainUtilities
 			for (uint32 j = 0; j < resolution; ++j)
 			{
 				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution) };
-				const float coordinateY{ 1.0f - static_cast<float>(j) / static_cast<float>(resolution) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution) };
 			
 				const Vector3 worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 												0.0f,

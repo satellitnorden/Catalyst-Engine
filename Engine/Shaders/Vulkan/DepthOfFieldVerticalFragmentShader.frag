@@ -60,7 +60,7 @@ void main()
     float depth = texture(normalDepthTexture, fragmentTextureCoordinate).w;
 
     //Calculate the fragment world position.
-    vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, depth);
+    vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, depth == 0.0f ? 1.0f : depth);
 
     //Calculate the distance to the fragment world position squared.
     float distanceSquared = LengthSquared3(cameraWorldPosition - fragmentWorldPosition);

@@ -30,7 +30,7 @@ namespace ClairvoyantTerrainGenerationConstants
 */
 float GetRandomOffset(const uint8 index) NOEXCEPT
 {
-	constexpr float MAXIMUM_OFFSET{ 10.0f };
+	constexpr float MAXIMUM_OFFSET{ 1'000.0f };
 
 	switch (index)
 	{
