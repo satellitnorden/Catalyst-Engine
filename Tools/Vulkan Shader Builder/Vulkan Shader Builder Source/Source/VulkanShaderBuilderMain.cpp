@@ -71,18 +71,21 @@ int main()
 			sourceOutput << "{" << std::endl;
 			sourceOutput << "\tvoid Get" << outputFileName.c_str() << "Data(DynamicArray<byte> &data)" << std::endl;
 			sourceOutput << "\t{" << std::endl;
-			sourceOutput << "\t\tdata.Reserve(" << file.Size() << ");" << std::endl;
+			sourceOutput << "\t\tdata.UpsizeFast(" << file.Size() << ");" << std::endl;
 			sourceOutput << std::endl;
+			sourceOutput << "\t\tnew (data.Data()) byte[" << file.Size() << "]" << std::endl;
+			sourceOutput << "\t\t{" << std::endl;
 
 			for (uint64 i = 0, size = file.Size(); i < size; ++i)
 			{
 				byte outputByte;
 				file.Read(&outputByte, sizeof(byte));
-				sourceOutput << "\t\tdata.EmplaceFast(" << static_cast<uint64>(outputByte) << ");" << std::endl;
+				sourceOutput << "\t\t\t" << static_cast<uint64>(outputByte) << "," << std::endl;
 			}
 
 			file.Close();
 
+			sourceOutput << "\t\t};" << std::endl;
 			sourceOutput << "\t}" << std::endl;
 			sourceOutput << "}" << std::endl;
 			sourceOutput << std::endl;
