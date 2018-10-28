@@ -24,6 +24,26 @@ namespace ClairvoyantGrassVegetationArchitectConstants
 void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 {
 	{
+		//Add the amaryllis grass vegetation type.
+		GrassVegetationTypeProperties properties;
+
+		properties._MediumDetailDistance = ClairvoyantGrassVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantGrassVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
+		properties._CutoffDistance = 500.0f;
+		properties._Density = 250;
+		properties._Thickness = 1.0f;
+		properties._WindModulatorFactor = 0.05f;
+		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
+		{
+			return ClairvoyantWorldUtilities::GenerateTransformation(true, false, false, true, 0.5f, 0.0f, 0.0075f, 0.015f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+		};
+
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("AmaryllisGrassVegetationMaterial")) };
+
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("AmaryllisGrassVegetationModel")), material);
+	}
+
+	{
 		//Add the common fern grass vegetation type.
 		GrassVegetationTypeProperties properties;
 

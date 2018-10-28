@@ -20,7 +20,7 @@ namespace ClairvoyantResourceCreation
 	void CreateResources() NOEXCEPT
 	{
 #if !defined(CATALYST_FINAL)
-		if (true)
+		if (false)
 #else
 		if (true)
 #endif
@@ -81,6 +81,21 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
+			//Create the common amaryllis grass vegetation material.
+			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\AmaryllisGrassVegetationMaterial";
+			parameters._ID = "AmaryllisGrassVegetationMaterial";
+			parameters._MaskMipmapLevels = 9;
+			parameters._MaskFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Amaryllis\\Mask.png";
+			parameters._MipmapLevels = 9;
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Amaryllis\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\Amaryllis\\NormalMap.png";
+
+			GrassMaterialCreator::CreateGrassMaterial(parameters);
+		}
+
+		{
 			//Create the common fern grass material.
 			GrassMaterialCreator::GrassMaterialCreationParameters parameters;
 
@@ -138,6 +153,18 @@ namespace ClairvoyantResourceCreation
 			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\SnowGrass\\NormalMap.png";
 
 			GrassMaterialCreator::CreateGrassMaterial(parameters);
+		}
+
+		{
+			//Create the amaryllis grass vegetation model.
+			GrassVegetationModelCreator::GrassVegetationModelCreationParameters parameters;
+
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\AmaryllisGrassVegetationModel";
+			parameters._ID = "AmaryllisGrassVegetationModel";
+			parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Vegetation\\AmaryllisGrassVegetationModel.fbx";
+			parameters._UpAxis = GrassVegetationModelCreator::GrassVegetationModelCreationParameters::Axis::X;
+
+			GrassVegetationModelCreator::CreateGrassVegetationModel(parameters);
 		}
 
 		{
@@ -395,10 +422,12 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\MorningEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\EveningEnvironmentMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\AmaryllisGrassVegetationMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\CommonFernGrassMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultGrassMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\SandGrassMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\SnowGrassMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\AmaryllisGrassVegetationModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailCommonFernModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailCommonFernModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailCommonFernModel.cr");
