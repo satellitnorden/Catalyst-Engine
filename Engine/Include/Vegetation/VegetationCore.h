@@ -12,7 +12,8 @@
 //Vegetation constants.
 namespace VegetationConstants
 {
-	constexpr float VEGETATION_GRID_SIZE{ 0.35f };
+	constexpr float GRASS_VEGETATION_GRID_SIZE{ 1.0f };
+	constexpr float SOLID_VEGETATION_GRID_SIZE{ 0.35f };
 }
 
 //Type aliases.

@@ -214,41 +214,22 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 	for (GrassVegetationTypeInformation &information : _GrassVegetationTypeInformations)
 	{
 		//Calculate the current grid point based on the current viewer position.
-		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
+		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, information._Properties._CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE) };
 
 		//Create an array with the valid grid positions.
-		StaticArray<GridPoint2, 25> validGridPoints
+		StaticArray<GridPoint2, 9> validGridPoints
 		{
-
-			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y - 2),
-			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 2),
-			GridPoint2(currentGridPoint._X, currentGridPoint._Y - 2),
-			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 2),
-			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y - 2),
-
-			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y - 1),
 			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 1),
 			GridPoint2(currentGridPoint._X, currentGridPoint._Y - 1),
 			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 1),
-			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y - 1),
 
-			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y),
 			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y),
 			GridPoint2(currentGridPoint._X, currentGridPoint._Y),
 			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y),
-			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y),
 
-			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y + 1),
 			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 1),
 			GridPoint2(currentGridPoint._X, currentGridPoint._Y + 1),
 			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 1),
-			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y + 1),
-
-			GridPoint2(currentGridPoint._X - 2, currentGridPoint._Y + 2),
-			GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 2),
-			GridPoint2(currentGridPoint._X, currentGridPoint._Y + 2),
-			GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 2),
-			GridPoint2(currentGridPoint._X + 2, currentGridPoint._Y + 2),
 		};
 
 		//Construct the sorting data.
@@ -274,8 +255,8 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 		{
 			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
 
-			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
-			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
+			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE) };
+			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE) };
 
 			return Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
 		});
@@ -335,7 +316,7 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 				update._NewPatchRenderInformation._Visibility = VisibilityFlag::None;
 				VegetationUtilities::GenerateTransformations(	gridPoint,
 																information._Properties,
-																VegetationConstants::VEGETATION_GRID_SIZE,
+																VegetationConstants::GRASS_VEGETATION_GRID_SIZE,
 																&transformations,
 																&update._NewPatchRenderInformation._TransformationsBuffer,
 																&update._NewPatchRenderInformation._NumberOfTransformations);
@@ -375,7 +356,7 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 	for (SolidVegetationTypeInformation &information : _SolidVegetationTypeInformations)
 	{
 		//Calculate the current grid point based on the current viewer position.
-		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
+		const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, information._Properties._CutoffDistance * VegetationConstants::SOLID_VEGETATION_GRID_SIZE) };
 
 		//Create an array with the valid grid positions.
 		StaticArray<GridPoint2, 25> validGridPoints
@@ -435,8 +416,8 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 		{
 			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
 
-			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
-			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE) };
+			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::SOLID_VEGETATION_GRID_SIZE) };
+			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::SOLID_VEGETATION_GRID_SIZE) };
 
 			return Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
 		});
@@ -496,7 +477,7 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 				update._NewPatchRenderInformation._Visibility = VisibilityFlag::None;
 				VegetationUtilities::GenerateTransformations(	gridPoint,
 																information._Properties,
-																VegetationConstants::VEGETATION_GRID_SIZE,
+																VegetationConstants::SOLID_VEGETATION_GRID_SIZE,
 																&transformations,
 																&update._NewPatchRenderInformation._TransformationsBuffer,
 																&update._NewPatchRenderInformation._NumberOfTransformations);

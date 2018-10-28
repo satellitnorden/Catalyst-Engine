@@ -26,9 +26,9 @@ public:
 	GrassVegetationMaterial _Material;
 
 	//The patch informations.
-	StaticArray<VegetationPatchInformation, 25> _PatchInformations;
+	StaticArray<VegetationPatchInformation, 9> _PatchInformations;
 
 	//The patch render informations.
-	StaticArray<VegetationPatchRenderInformation, 25> _PatchRenderInformations;
+	StaticArray<VegetationPatchRenderInformation, 9> _PatchRenderInformations;
 
 };

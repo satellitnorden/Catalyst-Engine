@@ -54,32 +54,11 @@ void LevelOfDetailSystem::LevelOfDetailGrassVegetation() NOEXCEPT
 	for (GrassVegetationTypeInformation &information : *informations)
 	{
 		//Cache the grid size.
-		const float gridSize{ information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE };
+		const float gridSize{ information._Properties._CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE };
 
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
 		{
-			if (!information._PatchInformations[i]._Valid)
-			{
-				continue;
-			}
-
-			const Vector3 gridMiddlePoint{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, gridSize) };
-			const float distanceToGridPoint{ Vector3::LengthSquaredXZ(Viewer::Instance->GetPosition() - gridMiddlePoint) };
-			
-			if (distanceToGridPoint < information._Properties._MediumDetailDistance * information._Properties._MediumDetailDistance)
-			{
-				information._PatchRenderInformations[i]._LevelOfDetail = VegetationLevelOfDetail::High;
-			}
-
-			else if (distanceToGridPoint < information._Properties._LowDetailDistance * information._Properties._LowDetailDistance)
-			{
-				information._PatchRenderInformations[i]._LevelOfDetail = VegetationLevelOfDetail::Medium;
-			}
-
-			else
-			{
-				information._PatchRenderInformations[i]._LevelOfDetail = VegetationLevelOfDetail::Low;
-			}
+			information._PatchRenderInformations[i]._LevelOfDetail = VegetationLevelOfDetail::High;
 		}
 	}
 }
@@ -95,7 +74,7 @@ void LevelOfDetailSystem::LevelOfDetailSolidVegetation() NOEXCEPT
 	for (SolidVegetationTypeInformation &information : *informations)
 	{
 		//Cache the grid size.
-		const float gridSize{ information._Properties._CutoffDistance * VegetationConstants::VEGETATION_GRID_SIZE };
+		const float gridSize{ information._Properties._CutoffDistance * VegetationConstants::SOLID_VEGETATION_GRID_SIZE };
 
 		for (uint64 i = 0, size = information._PatchInformations.Size(); i < size; ++i)
 		{
