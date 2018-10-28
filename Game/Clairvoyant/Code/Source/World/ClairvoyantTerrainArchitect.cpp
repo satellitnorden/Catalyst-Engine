@@ -169,11 +169,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 void ClairvoyantTerrainArchitect::GenerateLayerWeights(const TerrainProperties &properties, const Vector3 &worldPosition, const Vector3 &normal, Vector4 *const RESTRICT layerWeights) NOEXCEPT
 {
 	{
-		//Determine the weight of the second grass layer.
-		const float coordinateX{ worldPosition._X / 64'000.0f };
-		const float coordinateY{ worldPosition._Z / 64'000.0f };
-
-		layerWeights->_X = CatalystBaseMath::SmoothStep<1>((PerlinNoiseGenerator::GenerateNoise(coordinateX, coordinateY, GetRandomOffset(12)) + 1.0f) * 0.5f);
+		layerWeights->_X = 1.0f;
 	}
 
 	{

@@ -35,7 +35,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		properties._WindModulatorFactor = 0.05f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(true, false, false, true, 0.5f, 0.0f, 0.0075f, 0.015f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
+			return ClairvoyantWorldUtilities::GenerateTransformation(true, false, false, false, 0.5f, 0.0f, 0.0075f, 0.015f, Vector3(-90.0f, 0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f)), box, transformation);
 		};
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("AmaryllisGrassVegetationMaterial")) };
@@ -74,7 +74,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(true, false, false, true, 0.5f, 0.25f, 0.2f, 0.4f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldUtilities::GenerateTransformation(true, false, false, false, 0.5f, 0.25f, 0.2f, 0.4f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("DefaultGrassMaterial")) };
@@ -99,7 +99,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		properties._MediumDetailDistance = ClairvoyantGrassVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantGrassVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
 		properties._Density = 2'000;
-		properties._Thickness = 0.25f;
+		properties._Thickness = 0.5f;
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
@@ -122,13 +122,42 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 	}
 
 	{
+		//Add the seaweed grass vegetation type.
+		GrassVegetationTypeProperties properties;
+
+		properties._MediumDetailDistance = ClairvoyantGrassVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
+		properties._LowDetailDistance = ClairvoyantGrassVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
+		properties._Density = 1'000;
+		properties._Thickness = 0.5f;
+		properties._WindModulatorFactor = 0.25f;
+		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
+		{
+			return ClairvoyantWorldUtilities::GenerateTransformation(false, false, false, true, 0.5f, 0.25f, 0.5f, 1.0f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+		};
+
+		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("SeaweedGrassVegetationMaterial")) };
+
+		properties._CutoffDistance = 250.0f;
+
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("LowDetailDefaultGrassModel")), material);
+
+		properties._CutoffDistance = 125.0f;
+
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("MediumDetailDefaultGrassModel")), material);
+
+		properties._CutoffDistance = 62.5f;
+
+		VegetationSystem::Instance->AddGrassVegetationType(properties, ResourceLoader::GetGrassVegetationModel(HashString("HighDetailDefaultGrassModel")), material);
+	}
+
+	{
 		//Add the snow grass vegetation type.
 		GrassVegetationTypeProperties properties;
 
 		properties._MediumDetailDistance = ClairvoyantGrassVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantGrassVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
 		properties._Density = 2'000;
-		properties._Thickness = 0.25f;
+		properties._Thickness = 0.5f;
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{

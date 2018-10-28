@@ -24,86 +24,39 @@ namespace ClairvoyantWorldUtilities
 			return false;
 		}
 
-		//Handle spawning on grass.
-		if (!grass)
+		//Determine where it is spawning.
+		if (position._Y < 0.0f)
 		{
-			if (position._Y > ClairvoyantWorldConstants::SAND_BLEND_END
-				&& position._Y < ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
+			//Spawning underwater.
+			if (!underwater)
 			{
 				return false;
 			}
-
-			else if (position._Y < ClairvoyantWorldConstants::SAND_BLEND_END)
-			{
-				if (!sand)
-				{
-					return false;
-				}
-
-				else if (position._Y > ClairvoyantWorldConstants::SAND_BLEND_BEGIN)
-				{
-					if (CatalystBaseMath::RandomChance((position._Y - ClairvoyantWorldConstants::SAND_BLEND_BEGIN) / (ClairvoyantWorldConstants::SAND_BLEND_END - ClairvoyantWorldConstants::SAND_BLEND_BEGIN)))
-					{
-						return false;
-					}
-				}
-			}
-
-			else if (position._Y > ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
-			{
-				if (!snow)
-				{
-					return false;
-				}
-
-				else if (position._Y < ClairvoyantWorldConstants::SNOW_BLEND_END)
-				{
-					if (1.0f - CatalystBaseMath::RandomChance((position._Y - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN) / (ClairvoyantWorldConstants::SNOW_BLEND_END - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)))
-					{
-						return false;
-					}
-				}
-			}
 		}
 
-		//Handle spawning on sand.
-		if (!sand)
+		else if (position._Y < ClairvoyantWorldConstants::SAND_BLEND_END)
 		{
-			if (position._Y < ClairvoyantWorldConstants::SAND_BLEND_BEGIN)
+			//Spawning on sand.
+			if (!sand)
 			{
 				return false;
 			}
-
-			else if (position._Y < ClairvoyantWorldConstants::SAND_BLEND_END)
-			{
-				if (CatalystBaseMath::RandomChance((position._Y - ClairvoyantWorldConstants::SAND_BLEND_BEGIN) / (ClairvoyantWorldConstants::SAND_BLEND_END - ClairvoyantWorldConstants::SAND_BLEND_BEGIN)))
-				{
-					return false;
-				}
-			}
 		}
 
-		//Handle spawning on snow.
-		if (!snow)
+		else if (	position._Y > ClairvoyantWorldConstants::SAND_BLEND_END
+					&& position._Y < ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
 		{
-			if (position._Y > ClairvoyantWorldConstants::SNOW_BLEND_END)
+			//Spawning on grass.
+			if (!grass)
 			{
 				return false;
 			}
-
-			else if (position._Y > ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
-			{
-				if (CatalystBaseMath::RandomChance((position._Y - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN) / (ClairvoyantWorldConstants::SNOW_BLEND_END - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)))
-				{
-					return false;
-				}
-			}
 		}
 
-		//Handle spawning underwater.
-		if (!underwater)
+		else
 		{
-			if (position._Y < 0.0f)
+			//Spawning on snow.
+			if (!snow)
 			{
 				return false;
 			}
