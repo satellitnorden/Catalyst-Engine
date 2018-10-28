@@ -20,14 +20,6 @@ layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
 layout (location = 0) out vec4 fragment;
 
 /*
-*	Calculates the average of a fragment.
-*/
-float CalculateAverage(vec3 fragment)
-{
-	return fragment.r * 0.2126f + fragment.g * 0.7152f + fragment.b * 0.0722f;
-}
-
-/*
 *	Applies FXAA.
 */
 vec3 ApplyFXAA(vec3 fragment)

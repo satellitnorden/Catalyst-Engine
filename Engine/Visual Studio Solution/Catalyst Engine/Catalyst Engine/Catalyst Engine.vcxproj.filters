@@ -813,9 +813,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BelowOceanFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BloomFragmentShader.h">
-      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BoxBlurFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
@@ -1077,6 +1074,18 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DepthOfFieldFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BloomHorizontalFragmentShader.h">
+      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\BloomVerticalFragmentShader.h">
+      <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomHorizontalRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomVerticalRenderPass.h">
+      <Filter>Rendering\Include\Engine\RenderPasses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1301,9 +1310,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BelowOceanFragmentShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp">
-      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BoxBlurFragmentShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
     </ClCompile>
@@ -1507,6 +1513,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\DepthOfFieldFragmentShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BloomHorizontalFragmentShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\BloomVerticalFragmentShader.cpp">
+      <Filter>Rendering\Source\ShaderData\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomHorizontalRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomVerticalRenderPass.cpp">
+      <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -10,5 +10,5 @@
 
 namespace VulkanShaderData
 {
-	void GetBloomFragmentShaderData(DynamicArray<byte> &data);
+	void GetBloomHorizontalFragmentShaderData(DynamicArray<byte> &data);
 }

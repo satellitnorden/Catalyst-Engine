@@ -37,6 +37,8 @@ enum class RenderPassMainStage : uint8
 #if !defined(CATALYST_FINAL)
 	Debug,
 #endif
+	BloomHorizontal,
+	BloomVertical,
 	DepthOfFieldHorizontal,
 	DepthOfFieldVertical,
 	ToneMapping,
@@ -92,6 +94,12 @@ enum class RenderPassSubStage : uint8
 	DebugScreenBox,
 #endif
 
+	//Bloom horizontal main stage.
+	BloomHorizontal,
+
+	//Bloom vertical main stage.
+	BloomVertical,
+
 	//Depth of field horizontal main stage.
 	DepthOfFieldHorizontal,
 
@@ -115,6 +123,26 @@ enum class PhysicalFlag : uint8
 };
 
 ENUMERATION_BIT_OPERATIONS(PhysicalFlag);
+
+//Enumeration covering all blend factors.
+enum class BlendFactor : uint8
+{
+	Zero,
+	One,
+	SourceColor,
+	OneMinusSourceColor,
+	DestinationColor,
+	OneMinusDestinationColor,
+	SourceAlpha,
+	OneMinusSourceAlpha,
+	DestinationAlpha,
+	OneMinusDestinationAlpha,
+	ConstantColor,
+	OneMinusConstantColor,
+	ConstantAlpha,
+	OneMinusConstantAlpha,
+	AlphaSaturate
+};
 
 //Enumeration covering all compare operators.
 enum class CompareOperator : uint8
@@ -195,7 +223,8 @@ enum class Shader : uint8
 	AboveOceanFragment,
 	BelowOceanFragment,
 #endif
-	BloomFragment,
+	BloomHorizontalFragment,
+	BloomVerticalFragment,
 	BoxBlurFragment,
 #if !defined(CATALYST_FINAL)
 	DebugAxisAlignedBoundingBoxFragment,

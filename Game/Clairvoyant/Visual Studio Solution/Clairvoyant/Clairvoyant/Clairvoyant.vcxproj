@@ -239,6 +239,8 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\AboveOceanRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\AntiAliasingRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\BelowOceanRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\BloomHorizontalRenderPass.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\BloomVerticalRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DebugAxisAlignedBoundingBoxRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DebugScreenBoxRenderPass.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\Engine\RenderPasses\DepthOfFieldHorizontalRenderPass.cpp" />
@@ -270,7 +272,8 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\AboveOceanFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\AntiAliasingFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BelowOceanFragmentShader.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BloomFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BloomHorizontalFragmentShader.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BloomVerticalFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\BoxBlurFragmentShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\CubeMapVertexShader.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\DebugAxisAlignedBoundingBoxFragmentShader.cpp" />

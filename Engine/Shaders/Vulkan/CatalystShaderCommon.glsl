@@ -65,6 +65,14 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
 /*
+*   Calculates the average of a fragment.
+*/
+float CalculateAverage(vec3 fragment)
+{
+    return fragment.r * 0.2126f + fragment.g * 0.7152f + fragment.b * 0.0722f;
+}
+
+/*
 *   Calculates a fragment's world position.
 */
 vec3 CalculateFragmentWorldPosition(vec2 textureCoordinate, float depth)

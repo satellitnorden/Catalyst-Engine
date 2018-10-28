@@ -5,6 +5,12 @@
 
 //Rendering.
 #include <Rendering/Engine/RenderPasses/AntiAliasingRenderPass.h>
+#if defined(CATALYST_ENABLE_OCEAN)
+#include <Rendering/Engine/RenderPasses/AboveOceanRenderPass.h>
+#include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>
+#endif
+#include <Rendering/Engine/RenderPasses/BloomHorizontalRenderPass.h>
+#include <Rendering/Engine/RenderPasses/BloomVerticalRenderPass.h>
 #if !defined(CATALYST_FINAL)
 #include <Rendering/Engine/RenderPasses/DebugAxisAlignedBoundingBoxRenderPass.h>
 #include <Rendering/Engine/RenderPasses/DebugScreenBoxRenderPass.h>
@@ -27,10 +33,6 @@
 #include <Rendering/Engine/RenderPasses/MediumDetailGrassVegetationColorRenderPass.h>
 #include <Rendering/Engine/RenderPasses/MediumDetailGrassVegetationDepthRenderPass.h>
 #include <Rendering/Engine/RenderPasses/MediumDetailSolidVegetationRenderPass.h>
-#if defined(CATALYST_ENABLE_OCEAN)
-#include <Rendering/Engine/RenderPasses/AboveOceanRenderPass.h>
-#include <Rendering/Engine/RenderPasses/BelowOceanRenderPass.h>
-#endif
 #include <Rendering/Engine/RenderPasses/ParticleSystemRenderPass.h>
 #include <Rendering/Engine/RenderPasses/SkyRenderPass.h>
 #include <Rendering/Engine/RenderPasses/TerrainColorRenderPass.h>

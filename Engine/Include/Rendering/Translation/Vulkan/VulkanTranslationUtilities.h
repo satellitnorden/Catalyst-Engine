@@ -56,6 +56,16 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::VolumetricFog);
 			}
 #endif
+			case RenderPassMainStage::BloomHorizontal:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomHorizontal);
+			}
+
+			case RenderPassMainStage::BloomVertical:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::BloomVertical);
+			}
+
 			case RenderPassMainStage::DepthOfFieldHorizontal:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::DepthOfFieldHorizontal);
