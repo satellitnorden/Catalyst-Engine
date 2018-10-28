@@ -189,9 +189,9 @@ void EntityPlacementSystem::UpdateTwoDimensionalPlacement() NOEXCEPT
 						box._Minimum._Y = 0.0f;
 						box._Minimum._Z = currentGridPointWorldPosition._Z - (data._GridSize * 0.5f);
 
-						box._Maximum._X = currentGridPointWorldPosition._X - (data._GridSize * 0.5f);
+						box._Maximum._X = currentGridPointWorldPosition._X + (data._GridSize * 0.5f);
 						box._Maximum._Y = 0.0f;
-						box._Maximum._Z = currentGridPointWorldPosition._Z - (data._GridSize * 0.5f);
+						box._Maximum._Z = currentGridPointWorldPosition._Z + (data._GridSize * 0.5f);
 
 						data._Function(box, &gridPoint._Entities);
 
@@ -321,9 +321,9 @@ void EntityPlacementSystem::UpdateThreeDimensionalPlacement() NOEXCEPT
 						box._Minimum._Y = currentGridPointWorldPosition._Y - (data._GridSize * 0.5f);
 						box._Minimum._Z = currentGridPointWorldPosition._Z - (data._GridSize * 0.5f);
 
-						box._Maximum._X = currentGridPointWorldPosition._X - (data._GridSize * 0.5f);
-						box._Maximum._Y = currentGridPointWorldPosition._Y - (data._GridSize * 0.5f);
-						box._Maximum._Z = currentGridPointWorldPosition._Z - (data._GridSize * 0.5f);
+						box._Maximum._X = currentGridPointWorldPosition._X + (data._GridSize * 0.5f);
+						box._Maximum._Y = currentGridPointWorldPosition._Y + (data._GridSize * 0.5f);
+						box._Maximum._Z = currentGridPointWorldPosition._Z + (data._GridSize * 0.5f);
 
 						data._Function(box, &gridPoint._Entities);
 
