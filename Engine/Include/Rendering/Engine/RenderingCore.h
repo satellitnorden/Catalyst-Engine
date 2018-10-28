@@ -203,8 +203,7 @@ enum class Shader : uint8
 	DebugScreenBoxFragment,
 	DebugScreenBoxVertex,
 #endif
-	DepthOfFieldHorizontalFragment,
-	DepthOfFieldVerticalFragment,
+	DepthOfFieldFragment,
 	DirectionalPhysicalShadowVertex,
 	DirectionalShadowFragment,
 	DirectionalSolidVegetationShadowFragment,

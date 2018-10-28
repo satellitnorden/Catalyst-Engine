@@ -17,8 +17,7 @@
 #include <Rendering/ShaderData/Vulkan/DebugAxisAlignedBoundingBoxVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DebugScreenBoxFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/DebugScreenBoxVertexShader.h>
-#include <Rendering/ShaderData/Vulkan/DepthOfFieldHorizontalFragmentShader.h>
-#include <Rendering/ShaderData/Vulkan/DepthOfFieldVerticalFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/DepthOfFieldFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalPhysicalShadowVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalShadowFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/DirectionalSolidVegetationShadowFragmentShader.h>

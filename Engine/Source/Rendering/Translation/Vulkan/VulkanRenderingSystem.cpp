@@ -498,17 +498,10 @@ void VulkanRenderingSystem::InitializeShaderModules() NOEXCEPT
 #endif
 
 	{
-		//Initialize the depth of field horizontal fragment shader module.
+		//Initialize the depth of field fragment shader module.
 		DynamicArray<byte> data;
-		VulkanShaderData::GetDepthOfFieldHorizontalFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::DepthOfFieldHorizontalFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
-	}
-
-	{
-		//Initialize the depth of field vertical fragment shader module.
-		DynamicArray<byte> data;
-		VulkanShaderData::GetDepthOfFieldVerticalFragmentShaderData(data);
-		_ShaderModules[UNDERLYING(Shader::DepthOfFieldVerticalFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+		VulkanShaderData::GetDepthOfFieldFragmentShaderData(data);
+		_ShaderModules[UNDERLYING(Shader::DepthOfFieldFragment)] = VulkanInterface::Instance->CreateShaderModule(data.Data(), data.Size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 	}
 
 	{

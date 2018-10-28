@@ -20,7 +20,7 @@ namespace ClairvoyantResourceCreation
 	void CreateResources() NOEXCEPT
 	{
 #if !defined(CATALYST_FINAL)
-		if (false)
+		if (true)
 #else
 		if (true)
 #endif

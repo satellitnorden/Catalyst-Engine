@@ -10,5 +10,5 @@
 
 namespace VulkanShaderData
 {
-	void GetDepthOfFieldVerticalFragmentShaderData(DynamicArray<byte> &data);
+	void GetDepthOfFieldFragmentShaderData(DynamicArray<byte> &data);
 }

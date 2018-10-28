@@ -1,6 +1,9 @@
 //Header file.
 #include <Rendering/Engine/RenderPasses/DepthOfFieldHorizontalRenderPass.h>
 
+//Managers.
+#include <Managers/RenderingConfigurationManager.h>
+
 //Rendering.
 #include <Rendering/Engine/CommandBuffer.h>
 
@@ -9,6 +12,19 @@
 
 //Singleton definition.
 DEFINE_SINGLETON(DepthOfFieldHorizontalRenderPass);
+
+/*
+*	Push constant data.
+*/
+class PushConstantData final
+{
+
+public:
+
+	Vector2 _InverseResolution;
+	float _InverseDepthOfFieldDistanceSquared;
+
+};
 
 /*
 *	Default constructor.
@@ -44,7 +60,7 @@ void DepthOfFieldHorizontalRenderPass::InitializeInternal() NOEXCEPT
 	SetTessellationControlShader(Shader::None);
 	SetTessellationEvaluationShader(Shader::None);
 	SetGeometryShader(Shader::None);
-	SetFragmentShader(Shader::DepthOfFieldHorizontalFragment);
+	SetFragmentShader(Shader::DepthOfFieldFragment);
 
 	//Set the depth buffer.
 	SetDepthBuffer(DepthBuffer::None);
@@ -57,6 +73,10 @@ void DepthOfFieldHorizontalRenderPass::InitializeInternal() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetResolution());
@@ -92,9 +112,10 @@ void DepthOfFieldHorizontalRenderPass::InitializeInternal() NOEXCEPT
 */
 void DepthOfFieldHorizontalRenderPass::CreateRenderDataTableLayout() NOEXCEPT
 {
-	StaticArray<RenderDataTableLayoutBinding, 1> bindings
+	StaticArray<RenderDataTableLayoutBinding, 2> bindings
 	{
-		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
+		RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment),
+		RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, ShaderStage::Fragment)
 	};
 
 	RenderingSystem::Instance->CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_RenderDataTableLayout);
@@ -108,6 +129,7 @@ void DepthOfFieldHorizontalRenderPass::CreateRenderDataTable() NOEXCEPT
 	RenderingSystem::Instance->CreateRenderDataTable(_RenderDataTableLayout, &_RenderDataTable);
 
 	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::Scene)), _RenderDataTable);
+	RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::RenderTarget, RenderingSystem::Instance->GetRenderTarget(RenderTarget::SceneBufferNormalDepth)), _RenderDataTable);
 }
 
 /*
@@ -124,6 +146,16 @@ void DepthOfFieldHorizontalRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
+
+	//Push constants.
+	const float depthOfFieldDistance{ RenderingConfigurationManager::Instance->GetDepthOfFieldDistance() };
+
+	PushConstantData data;
+
+	data._InverseResolution = Vector2(1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Width), 0.0f);
+	data._InverseDepthOfFieldDistanceSquared = 1.0f / (depthOfFieldDistance * depthOfFieldDistance);
+
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);
