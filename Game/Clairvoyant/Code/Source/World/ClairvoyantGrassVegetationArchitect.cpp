@@ -132,7 +132,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 		properties._WindModulatorFactor = 0.25f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
 		{
-			return ClairvoyantWorldUtilities::GenerateTransformation(false, false, false, true, 0.5f, 0.25f, 0.5f, 1.0f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
+			return ClairvoyantWorldUtilities::GenerateTransformation(false, false, false, true, 0.5f, 0.75f, 0.5f, 1.0f, Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f), box, transformation);
 		};
 
 		GrassVegetationMaterial material{ ResourceLoader::GetGrassVegetationMaterial(HashString("SeaweedGrassVegetationMaterial")) };
