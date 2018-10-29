@@ -14,6 +14,18 @@ public:
 	//Whether or not to enable blend.
 	bool _BlendEnable;
 
+	//The blend factor for the source color.
+	VkBlendFactor _BlendFactorSourceColor;
+
+	//The blend factor for the destination color.
+	VkBlendFactor _BlendFactorDestinationColor;
+
+	//The blend factor for the source alpha.
+	VkBlendFactor _BlendFactorSourceAlpha;
+
+	//The blend factor for the destination alpha.
+	VkBlendFactor _BlendFactorDestinationAlpha;
+
 	//The number of color attachments.
 	uint32 _ColorAttachmentCount;
 

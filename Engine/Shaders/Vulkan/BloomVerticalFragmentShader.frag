@@ -69,5 +69,5 @@ void main()
     float bloomWeight = clamp(CalculateAverage(blur.rgb) - 1.0f, 0.0f, 1.0f);
 
     //Write the fragment.
-    fragment += vec4(blur.rgb, 1.0f) * bloomWeight;
+    fragment = vec4(blur.rgb, bloomWeight);
 }

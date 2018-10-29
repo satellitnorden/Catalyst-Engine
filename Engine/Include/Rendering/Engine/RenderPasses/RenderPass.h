@@ -131,6 +131,26 @@ public:
 	bool IsBlendEnabled() const NOEXCEPT { return _BlendEnabled; }
 
 	/*
+	*	Returns the blend factor for the source color.
+	*/
+	BlendFactor GetBlendFactorSourceColor() const NOEXCEPT { return _BlendFactorSourceColor; }
+
+	/*
+	*	Returns the blend factor for the destination color.
+	*/
+	BlendFactor GetBlendFactorDestinationColor() const NOEXCEPT { return _BlendFactorDestinationColor; }
+
+	/*
+	*	Returns the blend factor for the source alpha.
+	*/
+	BlendFactor GetBlendFactorSourceAlpha() const NOEXCEPT { return _BlendFactorSourceAlpha; }
+
+	/*
+	*	Returns the blend factor for the destination alpha.
+	*/
+	BlendFactor GetBlendFactorDestinationAlpha() const NOEXCEPT { return _BlendFactorDestinationAlpha; }
+
+	/*
 	*	Returns the cull mode.
 	*/
 	CullMode GetCullMode() const NOEXCEPT { return _CullMode; }
@@ -323,6 +343,26 @@ protected:
 	void SetBlendEnabled(const bool newBlendEnabled) NOEXCEPT { _BlendEnabled = newBlendEnabled; }
 
 	/*
+	*	Sets the blend factor for the source color.
+	*/
+	void SetBlendFactorSourceColor(const BlendFactor newBlendFactor) NOEXCEPT { _BlendFactorSourceColor = newBlendFactor; }
+
+	/*
+	*	Sets the blend factor for the destination color.
+	*/
+	void SetBlendFactorDestinationColor(const BlendFactor newBlendFactor) NOEXCEPT { _BlendFactorDestinationColor = newBlendFactor; }
+
+	/*
+	*	Sets the blend factor for the source alpha.
+	*/
+	void SetBlendFactorSourceAlpha(const BlendFactor newBlendFactor) NOEXCEPT { _BlendFactorSourceAlpha = newBlendFactor; }
+
+	/*
+	*	Sets the blend factor for the destination alpha.
+	*/
+	void SetBlendFactorDestinationAlpha(const BlendFactor newBlendFactor) NOEXCEPT { _BlendFactorDestinationAlpha = newBlendFactor; }
+
+	/*
 	*	Sets the cull mode.
 	*/
 	void SetCullMode(const CullMode newCullMode) NOEXCEPT { _CullMode = newCullMode; }
@@ -457,6 +497,18 @@ private:
 	//Denotes whether or not blend is enabled.
 	bool _BlendEnabled;
 	
+	//The blend factor for the source color.
+	BlendFactor _BlendFactorSourceColor;
+
+	//The blend factor for the destination color.
+	BlendFactor _BlendFactorDestinationColor;
+
+	//The blend factor for the source alpha.
+	BlendFactor _BlendFactorSourceAlpha;
+
+	//The blend factor for the destination alpha.
+	BlendFactor _BlendFactorDestinationAlpha;
+
 	//The cull mode.
 	CullMode _CullMode;
 

@@ -11,6 +11,9 @@
 #include <OceanMaterialCreator.h>
 #include <TerrainMaterialCreator.h>
 
+//Preprocessor defines.
+#define CREATE_INTERMEDIATE_RESOURCES false
+
 namespace ClairvoyantResourceCreation
 {
 
@@ -28,6 +31,7 @@ namespace ClairvoyantResourceCreation
 			return;
 		}
 
+#if CREATE_INTERMEDIATE_RESOURCES
 		{
 			//Create the night environment material.
 			EnvironmentMaterialCreator::EnvironmentMaterialCreationParameters parameters;
@@ -427,6 +431,7 @@ namespace ClairvoyantResourceCreation
 
 			TerrainMaterialCreator::CreateTerrainMaterial(parameters);
 		}
+#endif
 
 		{
 			//Create the resource collection.

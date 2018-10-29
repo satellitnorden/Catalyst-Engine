@@ -137,11 +137,6 @@ enum class BlendFactor : uint8
 	OneMinusSourceAlpha,
 	DestinationAlpha,
 	OneMinusDestinationAlpha,
-	ConstantColor,
-	OneMinusConstantColor,
-	ConstantAlpha,
-	OneMinusConstantAlpha,
-	AlphaSaturate
 };
 
 //Enumeration covering all compare operators.

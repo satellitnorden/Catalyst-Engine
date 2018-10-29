@@ -91,6 +91,10 @@ void DynamicPhysicalRenderPass::InitializeInternal() NOEXCEPT
 
 	//Set the properties of the render pass.
 	SetBlendEnabled(false);
+	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
+	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
+	SetBlendFactorSourceAlpha(BlendFactor::One);
+	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
 	SetCullMode(CullMode::Back);
 	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);

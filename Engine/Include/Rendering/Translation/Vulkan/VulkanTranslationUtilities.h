@@ -120,6 +120,34 @@ public:
 	}
 
 	/*
+	*	Given a blend factor, return the corresponding Vulkan blend factor.
+	*/
+	static VkBlendFactor GetVulkanBlendFactor(const BlendFactor blendFactor) NOEXCEPT
+	{
+		switch (blendFactor)
+		{
+			case BlendFactor::Zero: return VK_BLEND_FACTOR_ZERO;
+			case BlendFactor::One: return VK_BLEND_FACTOR_ONE;
+			case BlendFactor::SourceColor: return VK_BLEND_FACTOR_SRC_COLOR;
+			case BlendFactor::OneMinusSourceColor: return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+			case BlendFactor::DestinationColor: return VK_BLEND_FACTOR_DST_COLOR;
+			case BlendFactor::OneMinusDestinationColor: return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+			case BlendFactor::SourceAlpha: return VK_BLEND_FACTOR_SRC_ALPHA;
+			case BlendFactor::OneMinusSourceAlpha: return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+			case BlendFactor::DestinationAlpha: return VK_BLEND_FACTOR_DST_ALPHA;
+			case BlendFactor::OneMinusDestinationAlpha: return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+
+			default:
+			{
+	#if !defined(CATALYST_FINAL)
+				ASSERT(false, "Unknown blend factor.");
+	#endif
+				return VK_BLEND_FACTOR_ZERO;
+			}
+		}
+	}
+
+	/*
 	*	Given a compare operator, return the corresponding Vulkan compare operator.
 	*/
 	static VkCompareOp GetVulkanCompareOperator(const CompareOperator compareOperator) NOEXCEPT

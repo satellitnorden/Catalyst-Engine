@@ -89,7 +89,7 @@ private:
 	/*
 	*	Creates a pipeline color blend attachment state.
 	*/
-	void CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT;
+	void CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &parameters) const NOEXCEPT;
 
 	/*
 	*	Creates a pipeline color state create info.

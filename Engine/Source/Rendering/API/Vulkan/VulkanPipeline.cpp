@@ -230,20 +230,20 @@ void VulkanPipeline::CreatePipelineDepthStencilStateCreateInfo(VkPipelineDepthSt
 /*
 *	Creates a pipeline color blend attachment state.
 */
-void VulkanPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &vulkanPipelineCreationParameters) const NOEXCEPT
+void VulkanPipeline::CreatePipelineColorBlendAttachmentStates(DynamicArray<VkPipelineColorBlendAttachmentState> &pipelineColorBlendAttachmentStates, const VulkanPipelineCreationParameters &parameters) const NOEXCEPT
 {
-	pipelineColorBlendAttachmentStates.Reserve(vulkanPipelineCreationParameters._ColorAttachmentCount);
+	pipelineColorBlendAttachmentStates.Reserve(parameters._ColorAttachmentCount);
 
-	for (uint32 i = 0; i < vulkanPipelineCreationParameters._ColorAttachmentCount; ++i)
+	for (uint32 i = 0; i < parameters._ColorAttachmentCount; ++i)
 	{
 		VkPipelineColorBlendAttachmentState newPipelineColorBlendAttachmentState;
 
-		newPipelineColorBlendAttachmentState.blendEnable = vulkanPipelineCreationParameters._BlendEnable ? VK_TRUE : VK_FALSE;
-		newPipelineColorBlendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-		newPipelineColorBlendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		newPipelineColorBlendAttachmentState.blendEnable = parameters._BlendEnable ? VK_TRUE : VK_FALSE;
+		newPipelineColorBlendAttachmentState.srcColorBlendFactor = parameters._BlendFactorSourceColor;
+		newPipelineColorBlendAttachmentState.dstColorBlendFactor = parameters._BlendFactorDestinationColor;
 		newPipelineColorBlendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
-		newPipelineColorBlendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-		newPipelineColorBlendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		newPipelineColorBlendAttachmentState.srcAlphaBlendFactor = parameters._BlendFactorSourceAlpha;
+		newPipelineColorBlendAttachmentState.dstAlphaBlendFactor = parameters._BlendFactorDestinationAlpha;
 		newPipelineColorBlendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
 		newPipelineColorBlendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	

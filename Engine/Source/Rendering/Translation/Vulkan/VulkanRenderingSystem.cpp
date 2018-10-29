@@ -218,6 +218,10 @@ void VulkanRenderingSystem::FinalizeRenderPassInitialization(RenderPass *const R
 	VulkanPipelineCreationParameters parameters;
 
 	parameters._BlendEnable = renderPass->IsBlendEnabled();
+	parameters._BlendFactorSourceColor = VulkanTranslationUtilities::GetVulkanBlendFactor(renderPass->GetBlendFactorSourceColor());
+	parameters._BlendFactorDestinationColor = VulkanTranslationUtilities::GetVulkanBlendFactor(renderPass->GetBlendFactorDestinationColor());
+	parameters._BlendFactorSourceAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(renderPass->GetBlendFactorSourceAlpha());
+	parameters._BlendFactorDestinationAlpha = VulkanTranslationUtilities::GetVulkanBlendFactor(renderPass->GetBlendFactorDestinationAlpha());
 	parameters._ColorAttachmentCount = static_cast<uint32>(renderPass->GetRenderTargets().Size());
 	parameters._CullMode = VulkanTranslationUtilities::GetVulkanCullMode(renderPass->GetCullMode());
 	parameters._DepthCompareOp = VulkanTranslationUtilities::GetVulkanCompareOperator(renderPass->GetDepthCompareOperator());
