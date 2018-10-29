@@ -111,4 +111,20 @@ float RandomFloat(float seed)
     return fract(sin(seed * EULERS_NUMBER) * PHI * cos(seed * PI) * SQUARE_ROOT_OF_TWO);
 }
 
+/*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmoothStep(float number)
+{
+    return number * number * (3.0f - 2.0f * number);
+}
+
+/*
+*   Returns a smoothed vector in the range 0.0f-1.0f.
+*/
+vec3 SmoothStep(vec3 vector)
+{
+    return vec3(SmoothStep(vector.x), SmoothStep(vector.y), SmoothStep(vector.z));
+}
+
 #endif

@@ -57,7 +57,7 @@ vec4 fragmentLayerWeights;
 void CalculateTriPlanarData(float depth)
 {
 	//Calculate the absolute normal.
-	absoluteNormal = abs(fragmentWorldNormal);
+	absoluteNormal = SmoothStep(abs(fragmentWorldNormal));
     float normalSum = absoluteNormal.x + absoluteNormal.y + absoluteNormal.z;
     float inverseNormalSum = 1.0f / normalSum;
     absoluteNormal *= inverseNormalSum;
