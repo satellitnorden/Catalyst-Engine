@@ -67,7 +67,7 @@ bool IsLooping()
 */
 vec2 GenerateRandomScale()
 {
-	float randomBlendFactor = RandomFloat(float(particleIndex) * 0.9f + particleSystemRandomSeed * 0.1f);
+	float randomBlendFactor = RandomFloat(vec3(float(particleIndex) * 1.4f, float(particleIndex) * 1.3f, particleSystemRandomSeed * 0.1f));
 
 	float randomX = mix(particleSystemInitialMinimumScale.x, particleSystemInitialMaximumScale.x, randomBlendFactor);
 	float randomY = mix(particleSystemInitialMinimumScale.y, particleSystemInitialMaximumScale.y, randomBlendFactor);
@@ -80,9 +80,9 @@ vec2 GenerateRandomScale()
 */
 vec3 GenerateRandomPosition()
 {
-	float randomX = mix(particleSystemInitialMinimumPosition.x, particleSystemInitialMaximumPosition.x, RandomFloat(float(particleIndex) * 0.8f + particleSystemRandomSeed * 0.2f));
-	float randomY = mix(particleSystemInitialMinimumPosition.y, particleSystemInitialMaximumPosition.y, RandomFloat(float(particleIndex) * 0.7f + particleSystemRandomSeed * 0.3f));
-	float randomZ = mix(particleSystemInitialMinimumPosition.z, particleSystemInitialMaximumPosition.z, RandomFloat(float(particleIndex) * 0.6f + particleSystemRandomSeed * 0.4f));
+	float randomX = mix(particleSystemInitialMinimumPosition.x, particleSystemInitialMaximumPosition.x, RandomFloat(vec3(float(particleIndex) * 1.2f, float(particleIndex) * 1.0f, particleSystemRandomSeed * 0.2f)));
+	float randomY = mix(particleSystemInitialMinimumPosition.y, particleSystemInitialMaximumPosition.y, RandomFloat(vec3(float(particleIndex) * 1.0f, float(particleIndex) * 0.9f, particleSystemRandomSeed * 0.3f)));
+	float randomZ = mix(particleSystemInitialMinimumPosition.z, particleSystemInitialMaximumPosition.z, RandomFloat(vec3(float(particleIndex) * 0.8f, float(particleIndex) * 0.7f, particleSystemRandomSeed * 0.4f)));
 
 	return vec3(randomX, randomY, randomZ) + particleSystemWorldPosition;
 }
@@ -92,9 +92,9 @@ vec3 GenerateRandomPosition()
 */
 vec3 GenerateRandomVelocity()
 {
-	float randomX = mix(particleSystemInitialMinimumVelocity.x, particleSystemInitialMaximumVelocity.x, RandomFloat(float(particleIndex) * 0.5f + particleSystemRandomSeed * 0.5f));
-	float randomY = mix(particleSystemInitialMinimumVelocity.y, particleSystemInitialMaximumVelocity.y, RandomFloat(float(particleIndex) * 0.4f + particleSystemRandomSeed * 0.6f));
-	float randomZ = mix(particleSystemInitialMinimumVelocity.z, particleSystemInitialMaximumVelocity.z, RandomFloat(float(particleIndex) * 0.3f + particleSystemRandomSeed * 0.7f));
+	float randomX = mix(particleSystemInitialMinimumVelocity.x, particleSystemInitialMaximumVelocity.x, RandomFloat(vec3(float(particleIndex) * 0.6f, float(particleIndex) * 0.5f, particleSystemRandomSeed * 0.5f)));
+	float randomY = mix(particleSystemInitialMinimumVelocity.y, particleSystemInitialMaximumVelocity.y, RandomFloat(vec3(float(particleIndex) * 0.4f, float(particleIndex) * 0.3f, particleSystemRandomSeed * 0.6f)));
+	float randomZ = mix(particleSystemInitialMinimumVelocity.z, particleSystemInitialMaximumVelocity.z, RandomFloat(vec3(float(particleIndex) * 0.2f, float(particleIndex) * 0.1f, particleSystemRandomSeed * 0.7f)));
 
 	return vec3(randomX, randomY, randomZ) + (IsAffectedByWind() ? windDirection * windSpeed * 0.2f : vec3(0.0f));
 }

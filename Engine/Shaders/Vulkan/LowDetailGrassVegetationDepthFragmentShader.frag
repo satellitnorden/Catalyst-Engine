@@ -18,7 +18,7 @@ void main()
 {
     //Discard this fragment according to the mask texture.
     if (fragmentLengthFactor == 0.0f
-        || fragmentLengthFactor < RandomFloat(gl_FragCoord.x * gl_FragCoord.y * gl_FragCoord.z)
+        || fragmentLengthFactor < RandomFloat(gl_FragCoord.xyz)
         || texture(maskTexture, fragmentTextureCoordinate).r == 0.0f)
     {
         discard;

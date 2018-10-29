@@ -46,7 +46,10 @@ void main()
 
     for (int i = 0; i < ITERATIONS; ++i)
     {
-    	vec2 offset = vec2(mix(-MAXIMUM_OFFSET, MAXIMUM_OFFSET, RandomFloat(gl_FragCoord.x * gl_FragCoord.y * i * PI)), mix(-MAXIMUM_OFFSET, MAXIMUM_OFFSET, RandomFloat(gl_FragCoord.x * gl_FragCoord.y * i * PHI)));
+        float offsetX = mix(-MAXIMUM_OFFSET, MAXIMUM_OFFSET, RandomFloat(vec3(gl_FragCoord.xy, i * PI)));
+        float offsetY = mix(-MAXIMUM_OFFSET, MAXIMUM_OFFSET, RandomFloat(vec3(gl_FragCoord.xy, i * PHI)));
+
+    	vec2 offset = vec2(offsetX, offsetY);
 
 	    float directionalDepth = texture(directionalShadowMap, directionalLightShadowMapCoordinate.xy + offset).r;
 	    float compare = directionalLightShadowMapCoordinate.z - SHADOW_BIAS;

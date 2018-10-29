@@ -27,7 +27,7 @@ void main()
 {
     //Discard this fragment according to the length factor.
     if (fragmentLengthFactor == 0.0f
-        || fragmentLengthFactor < RandomFloat(gl_FragCoord.x * gl_FragCoord.y * gl_FragCoord.z))
+        || fragmentLengthFactor < RandomFloat(gl_FragCoord.xyz))
     {
         discard;
     }
