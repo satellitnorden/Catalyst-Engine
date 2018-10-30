@@ -51,13 +51,48 @@ vec3 fragmentWorldPosition;
 vec3 fragmentWorldNormal;
 vec4 fragmentLayerWeights;
 
+float distanceToCameraSquared;
+float blendSmoothing;
+
+/*
+*	Blends two terrain values.
+*/
+vec3 Blend(vec3 first, float firstHeight, vec3 second, float secondHeight, float alpha)
+{
+	float firstWeight = (1.0f - alpha);
+	float secondWeight = alpha;
+
+    float dominant = max(firstHeight + firstWeight, secondHeight + secondWeight) - 0.1f;
+
+    float blend1 = max(firstHeight + firstWeight - dominant, 0.0f);
+    float blend2 = max(secondHeight + secondWeight - dominant, 0.0f);
+
+    return (first * blend1 + second * blend2) / (blend1 + blend2);
+}
+
+/*
+*	Blends two terrain values.
+*/
+float Blend(float first, float firstHeight, float second, float secondHeight, float alpha)
+{
+	float firstWeight = (1.0f - alpha);
+	float secondWeight = alpha;
+
+    float dominant = max(firstHeight + firstWeight, secondHeight + secondWeight) - 0.1f;
+
+    float blend1 = max(firstHeight + firstWeight - dominant, 0.0f);
+    float blend2 = max(secondHeight + secondWeight - dominant, 0.0f);
+
+    return (first * blend1 + second * blend2) / (blend1 + blend2);
+}
+
 /*
 *	Calculates the tri-planar data.
 */
 void CalculateTriPlanarData(float depth)
 {
 	//Calculate the absolute normal.
-	absoluteNormal = SmoothStep(abs(fragmentWorldNormal));
+	absoluteNormal = abs(fragmentWorldNormal);
     float normalSum = absoluteNormal.x + absoluteNormal.y + absoluteNormal.z;
     float inverseNormalSum = 1.0f / normalSum;
     absoluteNormal *= inverseNormalSum;
@@ -83,19 +118,19 @@ vec4 SampleTriPlanar(sampler2D textureSampler)
 /*
 *	Returns the albedo.
 */
-vec4 GetAlbedo()
+vec3 GetAlbedo()
 {
-    vec4 layer1Albedo = SampleTriPlanar(layer1AlbedoTexture);
-    vec4 layer2Albedo = SampleTriPlanar(layer2AlbedoTexture);
-    vec4 layer3Albedo = SampleTriPlanar(layer3AlbedoTexture);
-    vec4 layer4Albedo = SampleTriPlanar(layer4AlbedoTexture);
-    vec4 layer5Albedo = SampleTriPlanar(layer5AlbedoTexture);
+    vec3 layer1Albedo = SampleTriPlanar(layer1AlbedoTexture).rgb;
+    vec3 layer2Albedo = SampleTriPlanar(layer2AlbedoTexture).rgb;
+    vec3 layer3Albedo = SampleTriPlanar(layer3AlbedoTexture).rgb;
+    vec3 layer4Albedo = SampleTriPlanar(layer4AlbedoTexture).rgb;
+    vec3 layer5Albedo = SampleTriPlanar(layer5AlbedoTexture).rgb;
 
-    vec4 blend1 = mix(layer1Albedo, layer2Albedo, fragmentLayerWeights.x);
-    vec4 blend2 = mix(blend1, layer3Albedo, fragmentLayerWeights.y);
-    vec4 blend3 = mix(blend2, layer4Albedo, fragmentLayerWeights.z);
+    vec3 blend1 = Blend(layer1Albedo, layer1MaterialPropertiesSampler.w, layer2Albedo, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
+    vec3 blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3Albedo, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
+    vec3 blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4Albedo, layer4MaterialPropertiesSampler.w, fragmentLayerWeights.z);
 
-    return mix(blend3, layer5Albedo, fragmentLayerWeights.w);
+    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5Albedo, layer5MaterialPropertiesSampler.w, fragmentLayerWeights.w);
 }
 
 /*
@@ -103,17 +138,17 @@ vec4 GetAlbedo()
 */
 vec3 GetNormalDirection()
 {
-	vec3 layer1NormalDirection = SampleTriPlanar(layer1NormalMapTexture).xyz;
-    vec3 layer2NormalDirection = SampleTriPlanar(layer2NormalMapTexture).xyz;
-    vec3 layer3NormalDirection = SampleTriPlanar(layer3NormalMapTexture).xyz;
-    vec3 layer4NormalDirection = SampleTriPlanar(layer4NormalMapTexture).xyz;
-    vec3 layer5NormalDirection = SampleTriPlanar(layer5NormalMapTexture).xyz;
+	vec3 layer1NormalDirection = SampleTriPlanar(layer1NormalMapTexture).rgb;
+    vec3 layer2NormalDirection = SampleTriPlanar(layer2NormalMapTexture).rgb;
+    vec3 layer3NormalDirection = SampleTriPlanar(layer3NormalMapTexture).rgb;
+    vec3 layer4NormalDirection = SampleTriPlanar(layer4NormalMapTexture).rgb;
+    vec3 layer5NormalDirection = SampleTriPlanar(layer5NormalMapTexture).rgb;
 
-    vec3 blend1 = mix(layer1NormalDirection, layer2NormalDirection, fragmentLayerWeights.x);
-    vec3 blend2 = mix(blend1, layer3NormalDirection, fragmentLayerWeights.y);
-    vec3 blend3 = mix(blend2, layer4NormalDirection, fragmentLayerWeights.z);
+    vec3 blend1 = Blend(layer1NormalDirection, layer1MaterialPropertiesSampler.w, layer2NormalDirection, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
+    vec3 blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3NormalDirection, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
+    vec3 blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4NormalDirection, layer4MaterialPropertiesSampler.w, fragmentLayerWeights.z);
 
-    return mix(blend3, layer5NormalDirection, fragmentLayerWeights.w) * 2.0f - 1.0f;
+    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5NormalDirection, layer5MaterialPropertiesSampler.w, fragmentLayerWeights.w) * 2.0f - 1.0f;
 }
 
 /*
@@ -127,11 +162,11 @@ float GetRoughness()
     float layer4Roughness = layer4MaterialPropertiesSampler.r;
     float layer5Roughness = layer5MaterialPropertiesSampler.r;
 
-    float blend1 = mix(layer1Roughness, layer2Roughness, fragmentLayerWeights.x);
-    float blend2 = mix(blend1, layer3Roughness, fragmentLayerWeights.y);
-    float blend3 = mix(blend2, layer4Roughness, fragmentLayerWeights.z);
+    float blend1 = Blend(layer1Roughness, layer1MaterialPropertiesSampler.w, layer2Roughness, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
+    float blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3Roughness, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
+    float blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4Roughness, layer4MaterialPropertiesSampler.w, fragmentLayerWeights.z);
 
-    return mix(blend3, layer5Roughness, fragmentLayerWeights.w);
+    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5Roughness, layer5MaterialPropertiesSampler.w, fragmentLayerWeights.w);
 }
 
 /*
@@ -145,11 +180,11 @@ float GetMetallic()
     float layer4Metallic = layer4MaterialPropertiesSampler.y;
     float layer5Metallic = layer5MaterialPropertiesSampler.y;
 
-    float blend1 = mix(layer1Metallic, layer2Metallic, fragmentLayerWeights.x);
-    float blend2 = mix(blend1, layer3Metallic, fragmentLayerWeights.y);
-    float blend3 = mix(blend2, layer4Metallic, fragmentLayerWeights.z);
+    float blend1 = Blend(layer1Metallic, layer1MaterialPropertiesSampler.w, layer2Metallic, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
+    float blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3Metallic, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
+    float blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4Metallic, layer4MaterialPropertiesSampler.w, fragmentLayerWeights.z);
 
-    return mix(blend3, layer5Metallic, fragmentLayerWeights.w);
+    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5Metallic, layer5MaterialPropertiesSampler.w, fragmentLayerWeights.w);
 }
 
 /*
@@ -163,11 +198,11 @@ float GetAmbientOcclusion()
     float layer4AmbientOcclusion = layer4MaterialPropertiesSampler.z;
     float layer5AmbientOcclusion = layer5MaterialPropertiesSampler.z;
 
-    float blend1 = mix(layer1AmbientOcclusion, layer2AmbientOcclusion, fragmentLayerWeights.x);
-    float blend2 = mix(blend1, layer3AmbientOcclusion, fragmentLayerWeights.y);
-    float blend3 = mix(blend2, layer4AmbientOcclusion, fragmentLayerWeights.z);
+    float blend1 = Blend(layer1AmbientOcclusion, layer1MaterialPropertiesSampler.w, layer2AmbientOcclusion, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
+    float blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3AmbientOcclusion, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
+    float blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4AmbientOcclusion, layer4MaterialPropertiesSampler.w, fragmentLayerWeights.z);
 
-    return mix(blend3, layer5AmbientOcclusion, fragmentLayerWeights.w);
+    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5AmbientOcclusion, layer5MaterialPropertiesSampler.w, fragmentLayerWeights.w);
 }
 
 void main()
@@ -177,6 +212,12 @@ void main()
 
     //Calculate the fragment world position.
     fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, normalDepthTextureSampler.w);
+
+    //Calculate the distance to the camera.
+    distanceToCameraSquared = LengthSquared3(cameraWorldPosition - fragmentWorldPosition);
+
+   	//Calculate the blend smoothing.
+   	blendSmoothing = min(distanceToCameraSquared * (1.0f / (1000.0f * 1000.0f)), 1.0f);
 
     //Set the fragment world normal.
     fragmentWorldNormal = normalDepthTextureSampler.xyz;
@@ -195,7 +236,7 @@ void main()
     layer5MaterialPropertiesSampler = SampleTriPlanar(layer5MaterialPropertiesTexture);
 
 	//Set the albedo color.
-	albedoColor = GetAlbedo();
+	albedoColor = vec4(GetAlbedo(), 1.0f);
 
 	//Calculate the tangent space matrix.
 	vec3 normal = fragmentWorldNormal;

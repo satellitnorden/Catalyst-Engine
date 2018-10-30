@@ -126,4 +126,20 @@ vec3 SmoothStep(vec3 vector)
     return vec3(SmoothStep(vector.x), SmoothStep(vector.y), SmoothStep(vector.z));
 }
 
+/*
+*   Returns a smoothed number in the range 0.0f-1.0f.
+*/
+float SmootherStep(float number)
+{
+    return number * number * number * (number * (number * 6.0f - 15.0f) + 10.0f);
+}
+
+/*
+*   Returns a smoothed vector in the range 0.0f-1.0f.
+*/
+vec3 SmootherStep(vec3 vector)
+{
+    return vec3(SmootherStep(vector.x), SmootherStep(vector.y), SmootherStep(vector.z));
+}
+
 #endif
