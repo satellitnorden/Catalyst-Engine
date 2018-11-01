@@ -8,7 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define BLEND_CONSTANT (1000.0f)
+#define BLEND_CONSTANT (0.25f)
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
@@ -70,7 +70,10 @@ vec3 Blend(vec3 first, float firstHeight, vec3 second, float secondHeight, float
     firstWeight *= total;
     secondWeight *= total;
 
-    return mix(firstWeight > secondWeight ? first : second, mix(first, second, alpha), 0.25f);
+    float difference = abs(firstWeight - secondWeight);
+    float newAlpha = mix(0.5f, 1.0f, min(difference / BLEND_CONSTANT, 1.0f));
+
+    return firstWeight > secondWeight ? mix(second, first, newAlpha) : mix(first, second, newAlpha);
 }
 
 /*
@@ -86,7 +89,10 @@ float Blend(float first, float firstHeight, float second, float secondHeight, fl
     firstWeight *= total;
     secondWeight *= total;
 
-    return mix(firstWeight > secondWeight ? first : second, mix(first, second, alpha), 0.25f);
+    float difference = abs(firstWeight - secondWeight);
+    float newAlpha = mix(0.5f, 1.0f, min(difference / BLEND_CONSTANT, 1.0f));
+
+    return firstWeight > secondWeight ? mix(second, first, newAlpha) : mix(first, second, newAlpha);
 }
 
 /*
@@ -111,11 +117,7 @@ void CalculateTriPlanarData(float depth)
 */
 vec4 SampleTriPlanar(sampler2D textureSampler)
 {
-    vec4 sampleYZ = texture(textureSampler, textureCoordinateYZ);
-    vec4 sampleXZ = texture(textureSampler, textureCoordinateXZ);
-    vec4 sampleXY = texture(textureSampler, textureCoordinateXY);
-
-	return sampleYZ * absoluteNormal.x + sampleXZ * absoluteNormal.y + sampleYZ * absoluteNormal.z;
+	return texture(textureSampler, textureCoordinateXZ);
 }
 
 /*
