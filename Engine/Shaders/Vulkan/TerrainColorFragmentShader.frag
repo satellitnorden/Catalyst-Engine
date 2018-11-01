@@ -8,7 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define BLEND_CONSTANT (0.25f)
+#define BLEND_SMOOTHING (0.1f)
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
@@ -44,18 +44,11 @@ vec4 layer3MaterialPropertiesSampler;
 vec4 layer4MaterialPropertiesSampler;
 vec4 layer5MaterialPropertiesSampler;
 
-vec3 absoluteNormal;
-vec2 textureCoordinateYZ;
 vec2 textureCoordinateXZ;
-vec2 textureCoordinateXY;
-vec2 finalTextureCoordinate;
 
 vec3 fragmentWorldPosition;
 vec3 fragmentWorldNormal;
 vec4 fragmentLayerWeights;
-
-float distanceToCameraSquared;
-float blendSmoothing;
 
 /*
 *	Blends two terrain values.
@@ -71,7 +64,7 @@ vec3 Blend(vec3 first, float firstHeight, vec3 second, float secondHeight, float
     secondWeight *= total;
 
     float difference = abs(firstWeight - secondWeight);
-    float newAlpha = mix(0.5f, 1.0f, min(difference / BLEND_CONSTANT, 1.0f));
+    float newAlpha = mix(0.5f, 1.0f, min(difference / BLEND_SMOOTHING, 1.0f));
 
     return firstWeight > secondWeight ? mix(second, first, newAlpha) : mix(first, second, newAlpha);
 }
@@ -90,7 +83,7 @@ float Blend(float first, float firstHeight, float second, float secondHeight, fl
     secondWeight *= total;
 
     float difference = abs(firstWeight - secondWeight);
-    float newAlpha = mix(0.5f, 1.0f, min(difference / BLEND_CONSTANT, 1.0f));
+    float newAlpha = mix(0.5f, 1.0f, min(difference / BLEND_SMOOTHING, 1.0f));
 
     return firstWeight > secondWeight ? mix(second, first, newAlpha) : mix(first, second, newAlpha);
 }
@@ -100,16 +93,8 @@ float Blend(float first, float firstHeight, float second, float secondHeight, fl
 */
 void CalculateTriPlanarData(float depth)
 {
-	//Calculate the absolute normal.
-	absoluteNormal = abs(fragmentWorldNormal);
-    float normalSum = absoluteNormal.x + absoluteNormal.y + absoluteNormal.z;
-    float inverseNormalSum = 1.0f / normalSum;
-    absoluteNormal *= inverseNormalSum;
-
-	//Calculate the texture coordinates on the three planes.
-	textureCoordinateYZ = fragmentWorldPosition.yz * 0.25f;
+	//Calculate the texture coordinates on the XZ plane.
 	textureCoordinateXZ = fragmentWorldPosition.xz * 0.25f;
-	textureCoordinateXY = fragmentWorldPosition.xy * 0.25f;
 }
 
 /*
@@ -217,12 +202,6 @@ void main()
 
     //Calculate the fragment world position.
     fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, normalDepthTextureSampler.w);
-
-    //Calculate the distance to the camera.
-    distanceToCameraSquared = LengthSquared3(cameraWorldPosition - fragmentWorldPosition);
-
-   	//Calculate the blend smoothing.
-   	blendSmoothing = min(distanceToCameraSquared * (1.0f / (1000.0f * 1000.0f)), 1.0f);
 
     //Set the fragment world normal.
     fragmentWorldNormal = normalDepthTextureSampler.xyz;
