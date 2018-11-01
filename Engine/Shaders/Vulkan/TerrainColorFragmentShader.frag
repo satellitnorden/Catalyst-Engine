@@ -7,6 +7,9 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 
+//Preprocessor defines.
+#define BLEND_CONSTANT (1000.0f)
+
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
@@ -59,15 +62,15 @@ float blendSmoothing;
 */
 vec3 Blend(vec3 first, float firstHeight, vec3 second, float secondHeight, float alpha)
 {
-	float firstWeight = (1.0f - alpha);
-	float secondWeight = alpha;
+	float firstWeight = (1.0f - alpha) * firstHeight;
+	float secondWeight = alpha * secondHeight;
 
-    float dominant = max(firstHeight + firstWeight, secondHeight + secondWeight) - 0.1f;
+    float total = 1.0f / (firstWeight + secondWeight);
 
-    float blend1 = max(firstHeight + firstWeight - dominant, 0.0f);
-    float blend2 = max(secondHeight + secondWeight - dominant, 0.0f);
+    firstWeight *= total;
+    secondWeight *= total;
 
-    return (first * blend1 + second * blend2) / (blend1 + blend2);
+    return mix(firstWeight > secondWeight ? first : second, mix(first, second, alpha), 0.25f);
 }
 
 /*
@@ -75,15 +78,15 @@ vec3 Blend(vec3 first, float firstHeight, vec3 second, float secondHeight, float
 */
 float Blend(float first, float firstHeight, float second, float secondHeight, float alpha)
 {
-	float firstWeight = (1.0f - alpha);
-	float secondWeight = alpha;
+	float firstWeight = (1.0f - alpha) * firstHeight;
+	float secondWeight = alpha * secondHeight;
 
-    float dominant = max(firstHeight + firstWeight, secondHeight + secondWeight) - 0.1f;
+    float total = 1.0f / (firstWeight + secondWeight);
 
-    float blend1 = max(firstHeight + firstWeight - dominant, 0.0f);
-    float blend2 = max(secondHeight + secondWeight - dominant, 0.0f);
+    firstWeight *= total;
+    secondWeight *= total;
 
-    return (first * blend1 + second * blend2) / (blend1 + blend2);
+    return mix(firstWeight > secondWeight ? first : second, mix(first, second, alpha), 0.25f);
 }
 
 /*
