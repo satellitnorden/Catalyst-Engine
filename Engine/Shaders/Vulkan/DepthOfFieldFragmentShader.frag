@@ -16,7 +16,6 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 0) vec3 pushConstantData;
 };
 
-
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 

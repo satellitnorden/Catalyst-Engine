@@ -5,11 +5,24 @@
 #include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
+#include <Systems/InputSystem.h>
 #include <Systems/RenderingSystem.h>
 #include <Systems/TerrainSystem.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(TerrainColorRenderPass);
+
+/*
+*	Push constant data.
+*/
+class PushConstantData final
+{
+
+public:
+
+	int32 _ParalloxOcclusionMappingEnabled;
+
+};
 
 /*
 *	Default constructor.
@@ -61,6 +74,10 @@ void TerrainColorRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial));
+
+	//Add the push constant ranges.
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -135,6 +152,20 @@ void TerrainColorRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 	commandBuffer->BindRenderDataTable(this, 2, TerrainSystem::Instance->GetTerrainProperties()->_RenderDataTable);
+
+	//Push constants.
+	static bool enabled{ false };
+
+	if (InputSystem::Instance->GetGamepadState()->_B == ButtonState::Pressed)
+	{
+		enabled = !enabled;
+	}
+
+	PushConstantData data;
+
+	data._ParalloxOcclusionMappingEnabled = enabled;
+
+	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 4, 1);

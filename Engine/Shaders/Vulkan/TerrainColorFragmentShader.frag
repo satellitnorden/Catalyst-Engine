@@ -10,6 +10,12 @@
 //Preprocessor defines.
 #define BLEND_SMOOTHING (0.1f)
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 0) bool parallaxOcclusionMappingEnabled;
+};
+
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
@@ -44,11 +50,68 @@ vec4 layer3MaterialPropertiesSampler;
 vec4 layer4MaterialPropertiesSampler;
 vec4 layer5MaterialPropertiesSampler;
 
-vec2 textureCoordinateXZ;
-
 vec3 fragmentWorldPosition;
 vec3 fragmentWorldNormal;
 vec4 fragmentLayerWeights;
+
+vec2 textureCoordinates[5];
+
+//Forward declarations.
+void CalculateTextureCoordinates(mat3 tangentSpaceMatrix);
+
+/*
+*   Calculates the texture coordinates for all layers.
+*/
+void CalculateTextureCoordinates(mat3 tangentSpaceMatrix)
+{
+    vec3 tangentSpaceCameraWorldPosition = tangentSpaceMatrix * cameraWorldPosition;
+    vec3 tangentSpaceFragmentWorldPosition = tangentSpaceMatrix * fragmentWorldPosition;
+    vec3 tangentSpaceViewDirection = normalize(tangentSpaceCameraWorldPosition - tangentSpaceFragmentWorldPosition);
+
+    vec2 originalTextureCoordinate = fragmentWorldPosition.xz * 0.25f;
+
+    for (int i = 0; i < 5; ++i)
+    {
+        if (parallaxOcclusionMappingEnabled)
+        {
+            float height;
+
+            if (i == 0)
+            {
+                height = 1.0f - texture(layer1MaterialPropertiesTexture, originalTextureCoordinate).w;
+            }
+
+            else if (i == 1)
+            {
+                height = 1.0f - texture(layer2MaterialPropertiesTexture, originalTextureCoordinate).w;
+            }
+
+            else if (i == 2)
+            {
+                height = 1.0f - texture(layer3MaterialPropertiesTexture, originalTextureCoordinate).w;
+            }
+
+            else if (i == 3)
+            {
+                height = 1.0f - texture(layer4MaterialPropertiesTexture, originalTextureCoordinate).w;
+            }
+
+            else
+            {
+                height = 1.0f - texture(layer5MaterialPropertiesTexture, originalTextureCoordinate).w;
+            }
+
+            vec2 p = tangentSpaceViewDirection.xy / tangentSpaceViewDirection.z * (height * 0.1f);
+
+            textureCoordinates[i] = originalTextureCoordinate - p;   
+        }
+
+        else
+        {
+            textureCoordinates[i] = originalTextureCoordinate;
+        }
+    }
+}
 
 /*
 *	Blends two terrain values.
@@ -89,32 +152,15 @@ float Blend(float first, float firstHeight, float second, float secondHeight, fl
 }
 
 /*
-*	Calculates the tri-planar data.
-*/
-void CalculateTriPlanarData(float depth)
-{
-	//Calculate the texture coordinates on the XZ plane.
-	textureCoordinateXZ = fragmentWorldPosition.xz * 0.25f;
-}
-
-/*
-*	Samples a texture using tri-planar mapping.
-*/
-vec4 SampleTriPlanar(sampler2D textureSampler)
-{
-	return texture(textureSampler, textureCoordinateXZ);
-}
-
-/*
 *	Returns the albedo.
 */
 vec3 GetAlbedo()
 {
-    vec3 layer1Albedo = SampleTriPlanar(layer1AlbedoTexture).rgb;
-    vec3 layer2Albedo = SampleTriPlanar(layer2AlbedoTexture).rgb;
-    vec3 layer3Albedo = SampleTriPlanar(layer3AlbedoTexture).rgb;
-    vec3 layer4Albedo = SampleTriPlanar(layer4AlbedoTexture).rgb;
-    vec3 layer5Albedo = SampleTriPlanar(layer5AlbedoTexture).rgb;
+    vec3 layer1Albedo = texture(layer1AlbedoTexture, textureCoordinates[0]).rgb;
+    vec3 layer2Albedo = texture(layer2AlbedoTexture, textureCoordinates[1]).rgb;
+    vec3 layer3Albedo = texture(layer3AlbedoTexture, textureCoordinates[2]).rgb;
+    vec3 layer4Albedo = texture(layer4AlbedoTexture, textureCoordinates[3]).rgb;
+    vec3 layer5Albedo = texture(layer5AlbedoTexture, textureCoordinates[4]).rgb;
 
     vec3 blend1 = Blend(layer1Albedo, layer1MaterialPropertiesSampler.w, layer2Albedo, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
     vec3 blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3Albedo, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
@@ -128,11 +174,11 @@ vec3 GetAlbedo()
 */
 vec3 GetNormalDirection()
 {
-	vec3 layer1NormalDirection = SampleTriPlanar(layer1NormalMapTexture).rgb;
-    vec3 layer2NormalDirection = SampleTriPlanar(layer2NormalMapTexture).rgb;
-    vec3 layer3NormalDirection = SampleTriPlanar(layer3NormalMapTexture).rgb;
-    vec3 layer4NormalDirection = SampleTriPlanar(layer4NormalMapTexture).rgb;
-    vec3 layer5NormalDirection = SampleTriPlanar(layer5NormalMapTexture).rgb;
+	vec3 layer1NormalDirection = texture(layer1NormalMapTexture, textureCoordinates[0]).rgb;
+    vec3 layer2NormalDirection = texture(layer2NormalMapTexture, textureCoordinates[1]).rgb;
+    vec3 layer3NormalDirection = texture(layer3NormalMapTexture, textureCoordinates[2]).rgb;
+    vec3 layer4NormalDirection = texture(layer4NormalMapTexture, textureCoordinates[3]).rgb;
+    vec3 layer5NormalDirection = texture(layer5NormalMapTexture, textureCoordinates[4]).rgb;
 
     vec3 blend1 = Blend(layer1NormalDirection, layer1MaterialPropertiesSampler.w, layer2NormalDirection, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
     vec3 blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3NormalDirection, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
@@ -206,28 +252,28 @@ void main()
     //Set the fragment world normal.
     fragmentWorldNormal = normalDepthTextureSampler.xyz;
 
+    //Calculate the tangent space matrix.
+    vec3 normal = fragmentWorldNormal;
+    vec3 tangent = cross(vec3(0.0f, 0.0f, 1.0f), normal);
+    vec3 bitangent = cross(tangent, normal);
+
+    mat3 tangentSpaceMatrix = mat3(tangent, bitangent, normal);
+
     //Set the fragment layer weights.
     fragmentLayerWeights = texture(layerWeightsTexture, fragmentTextureCoordinate);
 
-	//Calculate the tri-planar data.
-	CalculateTriPlanarData(normalDepthTextureSampler.w);
+	//Calculate the texture coordinates.
+	CalculateTextureCoordinates(tangentSpaceMatrix);
 
     //Sampler the material properties.
-    layer1MaterialPropertiesSampler = SampleTriPlanar(layer1MaterialPropertiesTexture);
-    layer2MaterialPropertiesSampler = SampleTriPlanar(layer2MaterialPropertiesTexture);
-    layer3MaterialPropertiesSampler = SampleTriPlanar(layer3MaterialPropertiesTexture);
-    layer4MaterialPropertiesSampler = SampleTriPlanar(layer4MaterialPropertiesTexture);
-    layer5MaterialPropertiesSampler = SampleTriPlanar(layer5MaterialPropertiesTexture);
+    layer1MaterialPropertiesSampler = texture(layer1MaterialPropertiesTexture, textureCoordinates[0]);
+    layer2MaterialPropertiesSampler = texture(layer2MaterialPropertiesTexture, textureCoordinates[1]);
+    layer3MaterialPropertiesSampler = texture(layer3MaterialPropertiesTexture, textureCoordinates[2]);
+    layer4MaterialPropertiesSampler = texture(layer4MaterialPropertiesTexture, textureCoordinates[3]);
+    layer5MaterialPropertiesSampler = texture(layer5MaterialPropertiesTexture, textureCoordinates[4]);
 
 	//Set the albedo color.
 	albedoColor = vec4(GetAlbedo(), 1.0f);
-
-	//Calculate the tangent space matrix.
-	vec3 normal = fragmentWorldNormal;
-	vec3 tangent = cross(vec3(0.0f, 0.0f, 1.0f), normal);
-	vec3 bitangent = cross(tangent, normal);
-
-	mat3 tangentSpaceMatrix = mat3(tangent, bitangent, normal);
 
 	//Set the normal.
     vec3 normalDirection = GetNormalDirection();
