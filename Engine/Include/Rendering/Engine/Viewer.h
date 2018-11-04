@@ -262,7 +262,7 @@ private:
 	float _NearPlane{ 0.1f };
 
 	//The far plane.
-	float _FarPlane{ 139'968.0f };
+	float _FarPlane{ 218'700.0f };
 
 	//Denotes whether or not the projection matrix is dirty.
 	bool _ProjectionMatrixDirty{ true };
