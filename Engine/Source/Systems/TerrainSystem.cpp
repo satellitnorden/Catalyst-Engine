@@ -97,8 +97,10 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 	{
 		if (_PatchInformations[_Update._Index]._Valid)
 		{
+			RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[_Update._Index]._HeightTexture);
 			RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[_Update._Index]._NormalTexture);
-			RenderingSystem::Instance->DestroyRenderDataTable(_PatchRenderInformations[_Update._Index]._NormalRenderDataTable);
+			RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[_Update._Index]._LayerWeightsTexture);
+			RenderingSystem::Instance->DestroyRenderDataTable(_PatchRenderInformations[_Update._Index]._RenderDataTable);
 			RenderingSystem::Instance->DestroyConstantBuffer(_PatchRenderInformations[_Update._Index]._Buffer);
 		}
 
@@ -232,14 +234,6 @@ void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBord
 	patchInformation->_Valid = true;
 	patchInformation->_GridPoint = gridPoint;
 
-	float minimumHeight;
-	float maximumHeight;
-
-	TerrainUtilities::FindMinimumMaximumHeight(vertices, &minimumHeight, &maximumHeight);
-
-	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(gridPointWorldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, gridPointWorldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
-	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, gridPointWorldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
-
 	//Fill in the details about the patch render information.
 	patchRenderInformation->_Visibility = VisibilityFlag::None;
 	patchRenderInformation->_WorldPosition = Vector2(gridPointWorldPosition._X, gridPointWorldPosition._Z);
@@ -248,10 +242,34 @@ void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBord
 	patchRenderInformation->_IndexOffset = bufferDataSizes[0];
 	patchRenderInformation->_IndexCount = static_cast<uint32>(indices.Size());
 
+	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain), &patchRenderInformation->_RenderDataTable);
+
+	float minimumHeight;
+	float maximumHeight;
+
+	TerrainUtilities::GenerateHeightTexture(	_Properties,
+												patchSizeMultiplier,
+												gridPointWorldPosition,
+												&minimumHeight,
+												&maximumHeight,
+												&patchInformation->_HeightTexture,
+												&patchRenderInformation->_RenderDataTable);
+
 	TerrainUtilities::GenerateNormalTexture(	_Properties,
 												patchSizeMultiplier,
 												normalResolutionMultiplier,
 												gridPointWorldPosition,
 												&patchInformation->_NormalTexture,
-												&patchRenderInformation->_NormalRenderDataTable);
+												&patchRenderInformation->_RenderDataTable);
+
+	TerrainUtilities::GenerateLayerWeightsTexture(	_Properties,
+													patchSizeMultiplier,
+													normalResolutionMultiplier,
+													gridPointWorldPosition,
+													&patchInformation->_LayerWeightsTexture,
+													&patchRenderInformation->_RenderDataTable);
+
+	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(gridPointWorldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, gridPointWorldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
+	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, gridPointWorldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
+
 }

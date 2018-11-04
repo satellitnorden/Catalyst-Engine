@@ -186,7 +186,7 @@ enum class CommonRenderDataTableLayout : uint8
 	ParticleSystem,
 	GaussianBlur,
 
-	OneTexture,
+	Terrain,
 
 	NumberOfCommonRenderDataTableLayouts
 };
@@ -356,6 +356,7 @@ enum class TextureFormat : uint8
 {
 	R8_Byte,
 	R8G8B8A8_Byte,
+	R32_Float,
 	R32G32B32A32_Float
 };
 

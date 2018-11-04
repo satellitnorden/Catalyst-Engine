@@ -14,8 +14,8 @@ public:
 	//The visibility.
 	VisibilityFlag _Visibility;
 
-	//The normal render data table.
-	RenderDataTableHandle _NormalRenderDataTable;
+	//The render data table.
+	RenderDataTableHandle _RenderDataTable;
 
 	//The world position.
 	Vector2 _WorldPosition;

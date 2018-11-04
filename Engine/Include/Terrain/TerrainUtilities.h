@@ -16,21 +16,6 @@ namespace TerrainUtilities
 {
 
 	/*
-	*	Finds the minimum and the maximum height values given a CPU texture 2D.
-	*/
-	static void FindMinimumMaximumHeight(const DynamicArray<TerrainVertex> &vertices, float *const RESTRICT minimum, float *const RESTRICT maximum) NOEXCEPT
-	{
-		*minimum = FLOAT_MAXIMUM;
-		*maximum = -FLOAT_MAXIMUM;
-
-		for (const TerrainVertex &vertex : vertices)
-		{
-			*minimum = CatalystBaseMath::Minimum<float>(*minimum, vertex._PositionY);
-			*maximum = CatalystBaseMath::Maximum<float>(*maximum, vertex._PositionY);
-		}
-	}
-
-	/*
 	*	Generates a normal at the given position.
 	*/
 	static void GenerateNormal(const TerrainProperties &properties, const Vector3 &position, Vector3 *const RESTRICT normal) NOEXCEPT
@@ -57,12 +42,62 @@ namespace TerrainUtilities
 	}
 
 	/*
+	*	Generates a height texture.
+	*/
+	static void GenerateHeightTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3 &patchWorldPosition, float *const RESTRICT minimumHeight, float *const RESTRICT maximumHeight, Texture2DHandle *const RESTRICT texture, RenderDataTableHandle *const RESTRICT renderDataTable) NOEXCEPT
+	{
+		*minimumHeight = FLOAT_MAXIMUM;
+		*maximumHeight = -FLOAT_MAXIMUM;
+
+		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
+
+		DynamicArray<float> data;
+		data.UpsizeFast(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+
+		for (uint32 i = 0; i < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++i)
+		{
+			for (uint32 j = 0; j < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++j)
+			{
+				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) };
+
+				const Vector3 worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
+												0.0f,
+												patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
+
+				float height;
+
+				properties._HeightGenerationFunction(properties, worldPosition, &height);
+
+				data[((j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i)] = height;
+
+				*minimumHeight = CatalystBaseMath::Minimum<float>(*minimumHeight, height);
+				*maximumHeight = CatalystBaseMath::Maximum<float>(*maximumHeight, height);
+			}
+		}
+
+		*texture = RenderingSystem::Instance->CreateTexture2D(	TextureData(	TextureDataContainer(data.Data(),
+																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
+																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
+																				1),
+																				AddressMode::ClampToEdge,
+																				TextureFilter::Nearest,
+																				MipmapMode::Nearest,
+																				TextureFormat::R32_Float));
+
+		RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(	0,
+																							RenderDataTableUpdateInformation::Type::Texture2D,
+																							*texture),
+																							*renderDataTable);
+	}
+
+	/*
 	*	Generates a normal texture.
 	*/
-	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint8 normalResolutionMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture, RenderDataTableHandle *const RESTRICT renderDataTable) NOEXCEPT
+	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint8 resolutionMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture, RenderDataTableHandle *const RESTRICT renderDataTable) NOEXCEPT
 	{
-		const float patchSize{ (TerrainConstants::TERRAIN_PATCH_SIZE + ((TerrainConstants::TERRAIN_PATCH_SIZE / TerrainConstants::TERRAIN_PATCH_RESOLUTION) * 2.0f)) * patchSizeMultiplier };
-		const uint32 resolution{ TerrainConstants::TERRAIN_PATCH_NORMAL_RESOLUTION  * normalResolutionMultiplier };
+		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
+		const uint32 resolution{ TerrainConstants::TERRAIN_PATCH_NORMAL_RESOLUTION  * resolutionMultiplier };
 
 		DynamicArray<byte> data;
 		data.UpsizeFast(resolution * resolution * 4);
@@ -98,12 +133,57 @@ namespace TerrainUtilities
 																			MipmapMode::Nearest,
 																			TextureFormat::R8G8B8A8_Byte));
 
-		RenderingSystem::Instance->CreateRenderDataTable(	RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::OneTexture),
-															renderDataTable);
+		RenderingSystem::Instance->UpdateRenderDataTable(RenderDataTableUpdateInformation(	1,
+																							RenderDataTableUpdateInformation::Type::Texture2D,
+																							*texture),
+																							*renderDataTable);
+	}
 
-		RenderingSystem::Instance->UpdateRenderDataTable(	RenderDataTableUpdateInformation(	0,
-																								RenderDataTableUpdateInformation::Type::Texture2D,
-																								*texture),
+	/*
+	*	Generates a layer weights texture.
+	*/
+	static void GenerateLayerWeightsTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint8 resolutionMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture, RenderDataTableHandle *const RESTRICT renderDataTable) NOEXCEPT
+	{
+		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
+		const uint32 resolution{ TerrainConstants::TERRAIN_PATCH_NORMAL_RESOLUTION  * resolutionMultiplier };
+
+		DynamicArray<byte> data;
+		data.UpsizeFast(resolution * resolution * 4);
+
+		for (uint32 i = 0; i < resolution; ++i)
+		{
+			for (uint32 j = 0; j < resolution; ++j)
+			{
+				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution) };
+
+				const Vector3 worldPosition{ patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
+												0.0f,
+												patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
+
+				Vector4 layerWeights;
+
+				properties._LayerWeightsGenerationFunction(properties, worldPosition, &layerWeights);
+
+				data[((j * resolution) + i) * 4] = static_cast<byte>(layerWeights._X * 255.0f);
+				data[((j * resolution) + i) * 4 + 1] = static_cast<byte>(layerWeights._Y * 255.0f);
+				data[((j * resolution) + i) * 4 + 2] = static_cast<byte>(layerWeights._Z * 255.0f);
+				data[((j * resolution) + i) * 4 + 3] = static_cast<byte>(layerWeights._W * 255.0f);
+			}
+		}
+
+		*texture = RenderingSystem::Instance->CreateTexture2D(	TextureData(	TextureDataContainer(data.Data(),
+																				resolution,
+																				resolution,
+																				4),
+																AddressMode::ClampToEdge,
+																TextureFilter::Linear,
+																MipmapMode::Nearest,
+																TextureFormat::R8G8B8A8_Byte));
+
+		RenderingSystem::Instance->UpdateRenderDataTable(	RenderDataTableUpdateInformation(2,
+															RenderDataTableUpdateInformation::Type::Texture2D,
+															*texture),
 															*renderDataTable);
 	}
 
@@ -114,98 +194,76 @@ namespace TerrainUtilities
 	{
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 
-		vertices->Reserve((TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1) * 5);
-		indices->Reserve(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION * 6);
+		vertices->Reserve(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+		indices->Reserve((TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) * 6);
 
-		for (uint32 i = 0; i <= TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++i)
+		for (uint32 i = 0; i < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++i)
 		{
-			for (uint32 j = 0; j <= TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++j)
+			for (uint32 j = 0; j < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++j)
 			{
-				float textureCoordinateX;
-				float textureCoordinateY;
+				TerrainVertex vertex;
 
 				if ((j == 0 && TEST_BIT(borders, TerrainBorder::Upper))
-					|| (j == TerrainConstants::TERRAIN_PATCH_RESOLUTION && TEST_BIT(borders, TerrainBorder::Lower)))
+					|| (j == TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1 && TEST_BIT(borders, TerrainBorder::Lower)))
 				{
 					if (i % 3 == 0)
 					{
-						textureCoordinateX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+						vertex._PositionX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 					}
 
 					else if ((i - 1) % 3 == 0)
 					{
-						textureCoordinateX = static_cast<float>(i - 1) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+						vertex._PositionX = static_cast<float>(i - 1) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 					}
 
 					else
 					{
-						textureCoordinateX = static_cast<float>(i - 2) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+						vertex._PositionX = static_cast<float>(i - 2) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 					}
 				}
 
 				else
 				{
-					textureCoordinateX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+					vertex._PositionX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 				}
 
 				if ((i == 0 && TEST_BIT(borders, TerrainBorder::Left))
-					|| (i == TerrainConstants::TERRAIN_PATCH_RESOLUTION && TEST_BIT(borders, TerrainBorder::Right)))
+					|| (i == TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1 && TEST_BIT(borders, TerrainBorder::Right)))
 				{
 					if (j % 3 == 0)
 					{
-						textureCoordinateY = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+						vertex._PositionZ = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 					}
 
 					else if ((j - 1) % 3 == 0)
 					{
-						textureCoordinateY = static_cast<float>(j - 1) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+						vertex._PositionZ = static_cast<float>(j - 1) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 					}
 
 					else
 					{
-						textureCoordinateY = static_cast<float>(j - 2) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+						vertex._PositionZ = static_cast<float>(j - 2) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 					}
 				}
 
 				else
 				{
-					textureCoordinateY = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+					vertex._PositionZ = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 				}
-
-				TerrainVertex vertex;
-
-				vertex._PositionX = patchWorldPosition._X + ((-1.0f + (2.0f * textureCoordinateX)) * (patchSize * 0.5f));
-				vertex._PositionZ = patchWorldPosition._Z + ((-1.0f + (2.0f * textureCoordinateY)) * (patchSize * 0.5f));
-				properties._HeightGenerationFunction(properties, Vector3(vertex._PositionX, 0.0f, vertex._PositionZ), &vertex._PositionY);
-
-				const Vector3 worldPosition{ vertex._PositionX, vertex._PositionY, vertex._PositionZ };
-				Vector3 normal;
-
-				GenerateNormal(properties, worldPosition, &normal);
-
-				Vector4 layerWeights;
-
-				properties._LayerWeightsGenerationFunction(properties, worldPosition, normal, &layerWeights);
-
-				vertex._LayerWeightX = layerWeights._X;
-				vertex._LayerWeightY = layerWeights._Y;
-				vertex._LayerWeightZ = layerWeights._Z;
-				vertex._LayerWeightW = layerWeights._W;
 
 				vertices->EmplaceFast(vertex);
 
-				if (i != TerrainConstants::TERRAIN_PATCH_RESOLUTION && j != TerrainConstants::TERRAIN_PATCH_RESOLUTION)
+				if (i != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1 && j != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 				{
-					indices->EmplaceFast((i * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j);
-					indices->EmplaceFast((i * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j + 1);
-					indices->EmplaceFast(((i + 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j);
+					indices->EmplaceFast((i * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j);
+					indices->EmplaceFast((i * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j + 1);
+					indices->EmplaceFast(((i + 1) * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j);
 
-					indices->EmplaceFast((i * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j + 1);
-					indices->EmplaceFast(((i + 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j + 1);
-					indices->EmplaceFast(((i + 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION + 1)) + j);
+					indices->EmplaceFast((i * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j + 1);
+					indices->EmplaceFast(((i + 1) * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j + 1);
+					indices->EmplaceFast(((i + 1) * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j);
 				}
 			}
 		}
 	}
-
 }

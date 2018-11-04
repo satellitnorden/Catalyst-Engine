@@ -28,7 +28,13 @@ public:
 	//The material.
 	TerrainMaterial _Material;
 
+	//The height texture.
+	Texture2DHandle _HeightTexture;
+
 	//The normal texture.
 	Texture2DHandle _NormalTexture;
+
+	//The layer weights texture.
+	Texture2DHandle _LayerWeightsTexture;
 
 };

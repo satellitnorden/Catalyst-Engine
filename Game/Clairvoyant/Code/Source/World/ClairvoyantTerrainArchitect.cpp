@@ -13,6 +13,9 @@
 //Resources.
 #include <Resources/ResourceLoader.h>
 
+//Systems.
+#include <Systems/TerrainSystem.h>
+
 //Terrain.
 #include <Terrain/TerrainProperties.h>
 
@@ -166,44 +169,50 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 /*
 *	Generates the layer weights.
 */
-void ClairvoyantTerrainArchitect::GenerateLayerWeights(const TerrainProperties &properties, const Vector3 &worldPosition, const Vector3 &normal, Vector4 *const RESTRICT layerWeights) NOEXCEPT
+void ClairvoyantTerrainArchitect::GenerateLayerWeights(const TerrainProperties &properties, const Vector3 &worldPosition, Vector4 *const RESTRICT layerWeights) NOEXCEPT
 {
+	float height;
+	Vector3 normal;
+	
+	TerrainSystem::Instance->GetTerrainHeightAtPosition(worldPosition, &height);
+	TerrainSystem::Instance->GetTerrainNormalAtPosition(worldPosition, &normal);
+
 	{
 		layerWeights->_X = 1.0f;
 	}
 
 	{
 		//Determine the weight of the sand layer.
-		if (worldPosition._Y < ClairvoyantWorldConstants::SAND_BLEND_BEGIN)
+		if (height < ClairvoyantWorldConstants::SAND_BLEND_BEGIN)
 		{
 			layerWeights->_Y = 1.0f;
 		}
 
-		else if (worldPosition._Y > ClairvoyantWorldConstants::SAND_BLEND_END)
+		else if (height > ClairvoyantWorldConstants::SAND_BLEND_END)
 		{
 			layerWeights->_Y = 0.0f;
 		}
 
 		else
 		{
-			layerWeights->_Y = 1.0f - (worldPosition._Y - ClairvoyantWorldConstants::SAND_BLEND_BEGIN) / (ClairvoyantWorldConstants::SAND_BLEND_END - ClairvoyantWorldConstants::SAND_BLEND_BEGIN);
+			layerWeights->_Y = 1.0f - (height - ClairvoyantWorldConstants::SAND_BLEND_BEGIN) / (ClairvoyantWorldConstants::SAND_BLEND_END - ClairvoyantWorldConstants::SAND_BLEND_BEGIN);
 		}
 	}
 
 	//Determine the weight of the snow layer.
-	if (worldPosition._Y < ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
+	if (height < ClairvoyantWorldConstants::SNOW_BLEND_BEGIN)
 	{
 		layerWeights->_Z = 0.0f;
 	}
 
-	else if (worldPosition._Y > ClairvoyantWorldConstants::SNOW_BLEND_END)
+	else if (height > ClairvoyantWorldConstants::SNOW_BLEND_END)
 	{
 		layerWeights->_Z = 1.0f;
 	}
 
 	else
 	{
-		layerWeights->_Z = (worldPosition._Y - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN) / (ClairvoyantWorldConstants::SNOW_BLEND_END - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN);
+		layerWeights->_Z = (height - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN) / (ClairvoyantWorldConstants::SNOW_BLEND_END - ClairvoyantWorldConstants::SNOW_BLEND_BEGIN);
 	}
 
 	//Determine the weight of the rock layer.

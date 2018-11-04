@@ -7,7 +7,7 @@
 namespace TerrainConstants
 {
 	constexpr uint8 NUMBER_OF_TERRAIN_PATCHES{ 57 };
-	constexpr uint32 TERRAIN_PATCH_RESOLUTION{ 126 };
+	constexpr uint32 TERRAIN_PATCH_RESOLUTION{ 64 };
 	constexpr uint32 TERRAIN_PATCH_NORMAL_RESOLUTION{ 128 };
 	constexpr float TERRAIN_PATCH_SIZE{ 64.0f };
 }
@@ -20,7 +20,7 @@ class Vector4;
 
 //Type aliases.
 using HeightGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3 &worldPosition, float *const RESTRICT height);
-using LayerWeightsGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3 &worldPosition, const Vector3 &normal, Vector4 *const RESTRICT layerWeights);
+using LayerWeightsGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3 &worldPosition, Vector4 *const RESTRICT layerWeights);
 using PatchPropertiesGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3 &worldPosition, TerrainMaterial *const RESTRICT material);
 
 //Enumeration covering all terrain borders.

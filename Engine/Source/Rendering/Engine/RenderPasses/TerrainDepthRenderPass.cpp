@@ -22,7 +22,6 @@ public:
 
 	Vector2 _PatchWorldPosition;
 	float _PatchHalfSize;
-	float _PatchInverseSize;
 
 };
 
@@ -67,22 +66,18 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::OneTexture));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
 	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(PushConstantData));
 
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(3);
+	SetNumberOfVertexInputAttributeDescriptions(1);
 	AddVertexInputAttributeDescription(	0,
 										0,
-										VertexInputAttributeDescription::Format::X32Y32Z32SignedFloat,
+										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
 										0);
-	AddVertexInputAttributeDescription(	1,
-										0,
-										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										sizeof(float) * 3);
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);
@@ -149,17 +144,13 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 		}
 
 		//Bind the normal texture.
-		commandBuffer->BindRenderDataTable(this, 1, information._NormalRenderDataTable);
+		commandBuffer->BindRenderDataTable(this, 1, information._RenderDataTable);
 
 		//Push constants.
 		PushConstantData data;
 
 		data._PatchWorldPosition = information._WorldPosition;
-
-		const float patchSize{ information._PatchSize + ((information._PatchSize / TerrainConstants::TERRAIN_PATCH_RESOLUTION) * 2.0f) };
-
-		data._PatchHalfSize = patchSize * 0.5f;
-		data._PatchInverseSize = 1.0f / patchSize;
+		data._PatchHalfSize = information._PatchSize;
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
 

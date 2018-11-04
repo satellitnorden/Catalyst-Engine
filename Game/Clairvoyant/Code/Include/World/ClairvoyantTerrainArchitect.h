@@ -22,7 +22,7 @@ public:
 	/*
 	*	Generates the layer weights.
 	*/
-	static void GenerateLayerWeights(const TerrainProperties &properties, const Vector3 &worldPosition, const Vector3 &normal, Vector4 *const RESTRICT layerWeights) NOEXCEPT;
+	static void GenerateLayerWeights(const TerrainProperties &properties, const Vector3 &worldPosition, Vector4 *const RESTRICT layerWeights) NOEXCEPT;
 
 	/*
 	*	Generates the patch properties.

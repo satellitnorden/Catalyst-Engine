@@ -11,26 +11,23 @@
 layout (push_constant) uniform PushConstantData
 {
 	layout (offset = 0) vec2 patchWorldPosition;
-	layout (offset = 8) float patchHalfSize;
-	layout (offset = 12) float patchInverseSize;
+	layout (offset = 8) float patchSize;
 };
 
 //In parameters.
-layout (location = 0) in vec3 vertexPosition;
-layout (location = 1) in vec4 vertexLayerWeights;
+layout (location = 0) in vec2 vertexPosition;
+
+//Texture samplers.
+layout (set = 1, binding = 0) uniform sampler2D heightTexture;
 
 //Out parameters.
-layout (location = 0) out vec4 fragmentLayerWeights;
-layout (location = 1) out vec2 fragmentTextureCoordinate;
+layout (location = 0) out vec2 fragmentTextureCoordinate;
 
 void main()
 {	
-	//Pass information to the fragment shader.
-    fragmentLayerWeights = vertexLayerWeights;
-
     //Calculate the texture coordinate.
-    fragmentTextureCoordinate = vec2(vertexPosition.xz - patchWorldPosition + patchHalfSize) * patchInverseSize;
+    fragmentTextureCoordinate = vertexPosition + 0.5f;
 
     //Set the position.
-    gl_Position = viewMatrix * vec4(vertexPosition, 1.0f);
+    gl_Position = viewMatrix * vec4(vec3(patchWorldPosition.x + (vertexPosition.x * patchSize), texture(heightTexture, fragmentTextureCoordinate).r, patchWorldPosition.y + (vertexPosition.y * patchSize)), 1.0f);
 }
