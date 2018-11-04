@@ -72,14 +72,14 @@ vec2 CalculateParallaxOcclusionMapping(vec3 tangentSpaceViewDirection, vec2 orig
     vec2 offsetStep = offset / PARALLAX_OCCLUSION_MAPPING_SAMPLES;
 
     vec2 currentTextureCoordinate = originalTextureCoordinate;
-    float currentDepth = texture(heightTexture, currentTextureCoordinate).w;
+    float currentDepth = 1.0f - texture(heightTexture, currentTextureCoordinate).w;
     float accumulatedDepth = 0.0f;
 
     while(accumulatedDepth < currentDepth)
     {
         currentTextureCoordinate -= offsetStep;
 
-        currentDepth = texture(heightTexture, currentTextureCoordinate).w;  
+        currentDepth = 1.0f - texture(heightTexture, currentTextureCoordinate).w;  
 
         accumulatedDepth += PARALLAX_OCCLUSION_MAPPING_SAMPLE_STEP;  
     }
@@ -87,7 +87,7 @@ vec2 CalculateParallaxOcclusionMapping(vec3 tangentSpaceViewDirection, vec2 orig
     vec2 previousTextureCoordinate = currentTextureCoordinate + offsetStep;
 
     float afterDepth  = currentDepth - accumulatedDepth;
-    float beforeDepth = texture(heightTexture, previousTextureCoordinate).w - accumulatedDepth + PARALLAX_OCCLUSION_MAPPING_SAMPLE_STEP;
+    float beforeDepth = 1.0f - texture(heightTexture, previousTextureCoordinate).w - accumulatedDepth + PARALLAX_OCCLUSION_MAPPING_SAMPLE_STEP;
      
     // interpolation of texture coordinates
     float weight = afterDepth / (afterDepth - beforeDepth);
