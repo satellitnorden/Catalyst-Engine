@@ -9,6 +9,9 @@
 
 //Preprocessor defines.
 #define BLEND_SMOOTHING (0.1f)
+#define PARALLAX_OCCLUSION_MAPPING_HEIGHT_SCALE (0.2f)
+#define PARALLAX_OCCLUSION_MAPPING_SAMPLES (32)
+#define PARALLAX_OCCLUSION_MAPPING_SAMPLE_STEP (1.0f / PARALLAX_OCCLUSION_MAPPING_SAMPLES)
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -57,15 +60,50 @@ vec4 fragmentLayerWeights;
 vec2 textureCoordinates[5];
 
 //Forward declarations.
+vec2 CalculateParallaxOcclusionMapping(vec2 originalTextureCoordinate, sampler2D heightTexture);
 void CalculateTextureCoordinates(mat3 tangentSpaceMatrix);
+
+/*
+*   Calculates the parallax occlusion mapping at the given texture coordinate.
+*/
+vec2 CalculateParallaxOcclusionMapping(vec3 tangentSpaceViewDirection, vec2 originalTextureCoordinate, sampler2D heightTexture)
+{
+    vec2 offset = tangentSpaceViewDirection.xy * PARALLAX_OCCLUSION_MAPPING_HEIGHT_SCALE;
+    vec2 offsetStep = offset / PARALLAX_OCCLUSION_MAPPING_SAMPLES;
+
+    vec2 currentTextureCoordinate = originalTextureCoordinate;
+    float currentDepth = texture(heightTexture, currentTextureCoordinate).w;
+    float accumulatedDepth = 0.0f;
+
+    while(accumulatedDepth < currentDepth)
+    {
+        currentTextureCoordinate -= offsetStep;
+
+        currentDepth = texture(heightTexture, currentTextureCoordinate).w;  
+
+        accumulatedDepth += PARALLAX_OCCLUSION_MAPPING_SAMPLE_STEP;  
+    }
+
+    vec2 previousTextureCoordinate = currentTextureCoordinate + offsetStep;
+
+    float afterDepth  = currentDepth - accumulatedDepth;
+    float beforeDepth = texture(heightTexture, previousTextureCoordinate).w - accumulatedDepth + PARALLAX_OCCLUSION_MAPPING_SAMPLE_STEP;
+     
+    // interpolation of texture coordinates
+    float weight = afterDepth / (afterDepth - beforeDepth);
+    vec2 finalTextureCoordinate = previousTextureCoordinate * weight + currentTextureCoordinate * (1.0 - weight);
+
+    return finalTextureCoordinate;  
+}
 
 /*
 *   Calculates the texture coordinates for all layers.
 */
 void CalculateTextureCoordinates(mat3 tangentSpaceMatrix)
 {
-    vec3 tangentSpaceCameraWorldPosition = tangentSpaceMatrix * cameraWorldPosition;
-    vec3 tangentSpaceFragmentWorldPosition = tangentSpaceMatrix * fragmentWorldPosition;
+    mat3 transposedTangentSpaceMatrix = inverse(tangentSpaceMatrix);
+    vec3 tangentSpaceCameraWorldPosition = transposedTangentSpaceMatrix * cameraWorldPosition;
+    vec3 tangentSpaceFragmentWorldPosition = transposedTangentSpaceMatrix * fragmentWorldPosition;
     vec3 tangentSpaceViewDirection = normalize(tangentSpaceCameraWorldPosition - tangentSpaceFragmentWorldPosition);
 
     vec2 originalTextureCoordinate = fragmentWorldPosition.xz * 0.25f;
@@ -74,36 +112,30 @@ void CalculateTextureCoordinates(mat3 tangentSpaceMatrix)
     {
         if (parallaxOcclusionMappingEnabled)
         {
-            float height;
-
             if (i == 0)
             {
-                height = 1.0f - texture(layer1MaterialPropertiesTexture, originalTextureCoordinate).w;
+                textureCoordinates[i] = CalculateParallaxOcclusionMapping(tangentSpaceViewDirection, originalTextureCoordinate, layer1MaterialPropertiesTexture);
             }
 
             else if (i == 1)
             {
-                height = 1.0f - texture(layer2MaterialPropertiesTexture, originalTextureCoordinate).w;
+                textureCoordinates[i] = CalculateParallaxOcclusionMapping(tangentSpaceViewDirection, originalTextureCoordinate, layer2MaterialPropertiesTexture);
             }
 
             else if (i == 2)
             {
-                height = 1.0f - texture(layer3MaterialPropertiesTexture, originalTextureCoordinate).w;
+                textureCoordinates[i] = CalculateParallaxOcclusionMapping(tangentSpaceViewDirection, originalTextureCoordinate, layer3MaterialPropertiesTexture);
             }
 
             else if (i == 3)
             {
-                height = 1.0f - texture(layer4MaterialPropertiesTexture, originalTextureCoordinate).w;
+                textureCoordinates[i] = CalculateParallaxOcclusionMapping(tangentSpaceViewDirection, originalTextureCoordinate, layer4MaterialPropertiesTexture);
             }
 
             else
             {
-                height = 1.0f - texture(layer5MaterialPropertiesTexture, originalTextureCoordinate).w;
+                textureCoordinates[i] = CalculateParallaxOcclusionMapping(tangentSpaceViewDirection, originalTextureCoordinate, layer5MaterialPropertiesTexture);
             }
-
-            vec2 p = tangentSpaceViewDirection.xy / tangentSpaceViewDirection.z * (height * 0.1f);
-
-            textureCoordinates[i] = originalTextureCoordinate - p;   
         }
 
         else
