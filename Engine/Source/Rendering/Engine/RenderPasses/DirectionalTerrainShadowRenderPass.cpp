@@ -144,6 +144,11 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 	//Bind the current dynamic uniform data render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
+	//Bind the terrain buffer.
+	constexpr uint64 offset{ 0 };
+	commandBuffer->BindVertexBuffer(this, 0, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, &offset);
+	commandBuffer->BindIndexBuffer(this, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, TerrainSystem::Instance->GetTerrainProperties()->_IndexOffset);
+
 	//Wait for terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
 
@@ -154,14 +159,10 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 			continue;
 		}
 
-		const uint64 offset{ 0 };
-
-		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &offset);
-		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
 		commandBuffer->BindRenderDataTable(this, 1, TerrainSystem::Instance->GetTerrainProperties()->_RenderDataTable);
 		commandBuffer->PushConstants(this, ShaderStage::TessellationEvaluation, 0, sizeof(float) * 5, nullptr);
 
-		commandBuffer->DrawIndexed(this, information._IndexCount, 1);
+		commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);
 	}
 
 	//End the command buffer.

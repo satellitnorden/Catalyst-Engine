@@ -23,13 +23,4 @@ public:
 	//The patch size.
 	float _PatchSize;
 
-	//The buffer.
-	ConstantBufferHandle _Buffer;
-
-	//The index offset.
-	uint64 _IndexOffset;
-
-	//The index count.
-	uint32 _IndexCount;
-
 };

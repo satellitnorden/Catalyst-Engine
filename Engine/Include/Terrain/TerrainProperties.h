@@ -14,6 +14,15 @@ class TerrainProperties final
 
 public:
 
+	//The buffer.
+	ConstantBufferHandle _Buffer;
+
+	//The index offset.
+	uint64 _IndexOffset;
+
+	//The index count.
+	uint32 _IndexCount;
+
 	//The render data table for the terrain material.
 	RenderDataTableHandle _RenderDataTable;
 

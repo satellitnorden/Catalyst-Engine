@@ -133,6 +133,12 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 	//Bind the current dynamic uniform data render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
+	//Bind vertex/inder buffer.
+	constexpr uint64 offset{ 0 };
+
+	commandBuffer->BindVertexBuffer(this, 0, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, &offset);
+	commandBuffer->BindIndexBuffer(this, TerrainSystem::Instance->GetTerrainProperties()->_Buffer, TerrainSystem::Instance->GetTerrainProperties()->_IndexOffset);
+
 	//Wait for terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
 
@@ -154,13 +160,7 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
 
-		//Bind vertex/inder buffer.
-		constexpr uint64 offset{ 0 };
-
-		commandBuffer->BindVertexBuffer(this, 0, information._Buffer, &offset);
-		commandBuffer->BindIndexBuffer(this, information._Buffer, information._IndexOffset);
-
-		commandBuffer->DrawIndexed(this, information._IndexCount, 1);
+		commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);
 	}
 
 	//End the command buffer.

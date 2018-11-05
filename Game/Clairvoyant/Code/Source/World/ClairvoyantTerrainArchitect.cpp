@@ -216,7 +216,7 @@ void ClairvoyantTerrainArchitect::GenerateLayerWeights(const TerrainProperties &
 	}
 
 	//Determine the weight of the rock layer.
-	layerWeights->_W = CatalystBaseMath::SmoothStep<1>(1.0f - CatalystBaseMath::Clamp<float>(Vector3::DotProduct(normal, Vector3::UP), 0.0f, 1.0f));
+	layerWeights->_W = 1.0f - CatalystBaseMath::Clamp<float>(Vector3::DotProduct(normal, Vector3::UP), 0.0f, 1.0f);
 }
 
 /*

@@ -44,6 +44,27 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 		_PatchRenderInformations[i]._Visibility = VisibilityFlag::None;
 	}
 
+	//Generate the terrain plane.
+	DynamicArray<TerrainVertex> vertices;
+	DynamicArray<uint32> indices;
+
+	TerrainUtilities::GenerateTerrainPlane(	&vertices,
+											&indices);
+
+	StaticArray<void *RESTRICT, 2> bufferData;
+
+	bufferData[0] = vertices.Data();
+	bufferData[1] = indices.Data();
+
+	StaticArray<uint64, 2> bufferDataSizes;
+
+	bufferDataSizes[0] = sizeof(TerrainVertex) * vertices.Size();
+	bufferDataSizes[1] = sizeof(uint32) * indices.Size();
+
+	_Properties._Buffer = RenderingSystem::Instance->CreateConstantBuffer(bufferData.Data(), bufferDataSizes.Data(), 2);
+	_Properties._IndexOffset = bufferDataSizes[0];
+	_Properties._IndexCount = static_cast<uint32>(indices.Size());
+
 	//Generate the starting schedule.
 	_Schedule.GenerateNewSchedule(GridPoint2(0, 0), GridPoint2(0, 0));
 }
@@ -101,7 +122,6 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[_Update._Index]._NormalTexture);
 			RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[_Update._Index]._LayerWeightsTexture);
 			RenderingSystem::Instance->DestroyRenderDataTable(_PatchRenderInformations[_Update._Index]._RenderDataTable);
-			RenderingSystem::Instance->DestroyConstantBuffer(_PatchRenderInformations[_Update._Index]._Buffer);
 		}
 
 		_PatchInformations[_Update._Index] = _Update._PatchInformation;
@@ -203,32 +223,10 @@ void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBord
 	//Calculate the world position of the grid point.
 	const Vector3 gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, TerrainConstants::TERRAIN_PATCH_SIZE) };
 
-	//Generate the terrain plane.
-	DynamicArray<TerrainVertex> vertices;
-	DynamicArray<uint32> indices;
-
-	TerrainUtilities::GenerateTerrainPlane(	_Properties,
-											gridPointWorldPosition,
-											patchSizeMultiplier,
-											borders,
-											&vertices,
-											&indices);
-
 	//Get the material and the displacement information.
 	TerrainMaterial material;
 
 	_Properties._PatchPropertiesGenerationFunction(_Properties, gridPointWorldPosition, &material);
-
-	//Create the constant buffer.
-	StaticArray<void *RESTRICT, 2> bufferData;
-
-	bufferData[0] = vertices.Data();
-	bufferData[1] = indices.Data();
-
-	StaticArray<uint64, 2> bufferDataSizes;
-
-	bufferDataSizes[0] = sizeof(TerrainVertex) * vertices.Size();
-	bufferDataSizes[1] = sizeof(uint32) * indices.Size();
 
 	//Fill in the details about the patch information.
 	patchInformation->_Valid = true;
@@ -238,9 +236,6 @@ void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBord
 	patchRenderInformation->_Visibility = VisibilityFlag::None;
 	patchRenderInformation->_WorldPosition = Vector2(gridPointWorldPosition._X, gridPointWorldPosition._Z);
 	patchRenderInformation->_PatchSize = TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier;
-	patchRenderInformation->_Buffer = RenderingSystem::Instance->CreateConstantBuffer(bufferData.Data(), bufferDataSizes.Data(), 2);
-	patchRenderInformation->_IndexOffset = bufferDataSizes[0];
-	patchRenderInformation->_IndexCount = static_cast<uint32>(indices.Size());
 
 	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain), &patchRenderInformation->_RenderDataTable);
 

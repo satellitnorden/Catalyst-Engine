@@ -189,10 +189,8 @@ namespace TerrainUtilities
 	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
-	static void GenerateTerrainPlane(const TerrainProperties &properties, const Vector3 &patchWorldPosition, const float patchSizeMultiplier, const TerrainBorder borders, DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
+	static void GenerateTerrainPlane(DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT
 	{
-		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
-
 		vertices->Reserve(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 		indices->Reserve((TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) * 6);
 
@@ -202,57 +200,8 @@ namespace TerrainUtilities
 			{
 				TerrainVertex vertex;
 
-				/*
-				if ((j == 0 && TEST_BIT(borders, TerrainBorder::Upper))
-					|| (j == TerrainConstants::TERRAIN_PATCH_RESOLUTION && TEST_BIT(borders, TerrainBorder::Lower)))
-				{
-					if (i % 3 == 0)
-					{
-						vertex._PositionX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
-					}
-
-					else if ((i - 1) % 3 == 0)
-					{
-						vertex._PositionX = static_cast<float>(i - 1) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
-					}
-
-					else
-					{
-						vertex._PositionX = static_cast<float>(i - 2) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
-					}
-				}
-
-				else
-				*/
-				{
-					vertex._PositionX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
-				}
-
-				/*
-				if ((i == 0 && TEST_BIT(borders, TerrainBorder::Left))
-					|| (i == TerrainConstants::TERRAIN_PATCH_RESOLUTION && TEST_BIT(borders, TerrainBorder::Right)))
-				{
-					if (j % 3 == 0)
-					{
-						vertex._PositionZ = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
-					}
-
-					else if ((j - 1) % 3 == 0)
-					{
-						vertex._PositionZ = static_cast<float>(j - 1) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
-					}
-
-					else
-					{
-						vertex._PositionZ = static_cast<float>(j - 2) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
-					}
-				}
-
-				else
-				*/
-				{
-					vertex._PositionZ = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
-				}
+				vertex._PositionX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
+				vertex._PositionZ = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 
 				vertices->EmplaceFast(vertex);
 
