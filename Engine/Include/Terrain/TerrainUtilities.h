@@ -105,8 +105,8 @@ namespace TerrainUtilities
 		{
 			for (uint32 j = 0; j < resolution; ++j)
 			{
-				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution) };
-				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution) };
+				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution - 1) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution - 1) };
 			
 				const Vector3 worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 												0.0f,
@@ -153,8 +153,8 @@ namespace TerrainUtilities
 		{
 			for (uint32 j = 0; j < resolution; ++j)
 			{
-				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution) };
-				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution) };
+				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution - 1) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution - 1) };
 
 				const Vector3 worldPosition{ patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 												0.0f,
@@ -193,76 +193,78 @@ namespace TerrainUtilities
 	{
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 
-		uint32 resolution{ TerrainConstants::TERRAIN_PATCH_RESOLUTION };
+		vertices->Reserve(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+		indices->Reserve((TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) * 6);
 
-		vertices->Reserve(resolution * resolution);
-		indices->Reserve((resolution - 1) * (resolution - 1) * 6);
-
-		for (uint32 i = 0; i < resolution; ++i)
+		for (uint32 i = 0; i < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++i)
 		{
-			for (uint32 j = 0; j < resolution; ++j)
+			for (uint32 j = 0; j < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++j)
 			{
 				TerrainVertex vertex;
 
+				/*
 				if ((j == 0 && TEST_BIT(borders, TerrainBorder::Upper))
-					|| (j == resolution - 1 && TEST_BIT(borders, TerrainBorder::Lower)))
+					|| (j == TerrainConstants::TERRAIN_PATCH_RESOLUTION && TEST_BIT(borders, TerrainBorder::Lower)))
 				{
 					if (i % 3 == 0)
 					{
-						vertex._PositionX = static_cast<float>(i) / static_cast<float>(resolution - 1) - 0.5f;
+						vertex._PositionX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
 					}
 
 					else if ((i - 1) % 3 == 0)
 					{
-						vertex._PositionX = static_cast<float>(i - 1) / static_cast<float>(resolution - 1) - 0.5f;
+						vertex._PositionX = static_cast<float>(i - 1) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
 					}
 
 					else
 					{
-						vertex._PositionX = static_cast<float>(i - 2) / static_cast<float>(resolution - 1) - 0.5f;
+						vertex._PositionX = static_cast<float>(i - 2) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
 					}
 				}
 
 				else
+				*/
 				{
-					vertex._PositionX = static_cast<float>(i) / static_cast<float>(resolution - 1) - 0.5f;
+					vertex._PositionX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 				}
 
+				/*
 				if ((i == 0 && TEST_BIT(borders, TerrainBorder::Left))
-					|| (i == resolution - 1 && TEST_BIT(borders, TerrainBorder::Right)))
+					|| (i == TerrainConstants::TERRAIN_PATCH_RESOLUTION && TEST_BIT(borders, TerrainBorder::Right)))
 				{
 					if (j % 3 == 0)
 					{
-						vertex._PositionZ = static_cast<float>(j) / static_cast<float>(resolution - 1) - 0.5f;
+						vertex._PositionZ = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
 					}
 
 					else if ((j - 1) % 3 == 0)
 					{
-						vertex._PositionZ = static_cast<float>(j - 1) / static_cast<float>(resolution - 1) - 0.5f;
+						vertex._PositionZ = static_cast<float>(j - 1) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
 					}
 
 					else
 					{
-						vertex._PositionZ = static_cast<float>(j - 2) / static_cast<float>(resolution - 1) - 0.5f;
+						vertex._PositionZ = static_cast<float>(j - 2) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION) - 0.5f;
 					}
 				}
 
 				else
+				*/
 				{
-					vertex._PositionZ = static_cast<float>(j) / static_cast<float>(resolution - 1) - 0.5f;
+					vertex._PositionZ = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 				}
 
 				vertices->EmplaceFast(vertex);
 
-				if (i != resolution - 1 && j != resolution - 1)
+				if (i != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1 && j != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 				{
-					indices->EmplaceFast((i * resolution) + j);
-					indices->EmplaceFast((i * resolution) + j + 1);
-					indices->EmplaceFast(((i + 1) * resolution) + j);
+					indices->EmplaceFast((i * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j);
+					indices->EmplaceFast((i * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j + 1);
+					indices->EmplaceFast(((i + 1) * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j);
 
-					indices->EmplaceFast((i * resolution) + j + 1);
-					indices->EmplaceFast(((i + 1) * resolution) + j + 1);
-					indices->EmplaceFast(((i + 1) * resolution) + j);
+					indices->EmplaceFast((i * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j + 1);
+					indices->EmplaceFast(((i + 1) * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j + 1);
+					indices->EmplaceFast(((i + 1) * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + j);
 				}
 			}
 		}
