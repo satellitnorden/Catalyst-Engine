@@ -1086,6 +1086,12 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\BloomVerticalRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTree.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTreeNode.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

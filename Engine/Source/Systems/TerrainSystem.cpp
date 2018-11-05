@@ -65,6 +65,9 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 	_Properties._IndexOffset = bufferDataSizes[0];
 	_Properties._IndexCount = static_cast<uint32>(indices.Size());
 
+	//Initialize the quad tree.
+	_QuadTree.Initialize();
+
 	//Generate the starting schedule.
 	_Schedule.GenerateNewSchedule(GridPoint2(0, 0), GridPoint2(0, 0));
 }

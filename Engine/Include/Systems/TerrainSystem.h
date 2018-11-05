@@ -13,6 +13,7 @@
 #include <Terrain/TerrainPatchInformation.h>
 #include <Terrain/TerrainPatchRenderInformation.h>
 #include <Terrain/TerrainProperties.h>
+#include <Terrain/TerrainQuadTree.h>
 #include <Terrain/TerrainSchedule.h>
 #include <Terrain/TerrainUpdate.h>
 
@@ -99,6 +100,9 @@ private:
 
 	//The properties.
 	TerrainProperties _Properties;
+
+	//The quad tree.
+	TerrainQuadTree _QuadTree;
 
 	//The schedule.
 	TerrainSchedule _Schedule;
