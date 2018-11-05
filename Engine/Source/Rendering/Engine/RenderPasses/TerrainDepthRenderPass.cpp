@@ -73,11 +73,15 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(PushConstantData));
 
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(1);
+	SetNumberOfVertexInputAttributeDescriptions(2);
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
 										0);
+	AddVertexInputAttributeDescription(	1,
+										0,
+										VertexInputAttributeDescription::Format::X32SignedInt,
+										sizeof(Vector2));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(1);

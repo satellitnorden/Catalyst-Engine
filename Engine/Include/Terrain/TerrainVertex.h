@@ -14,4 +14,7 @@ public:
 	//The position on the Z axis.
 	float _PositionZ;
 
+	//The borders.
+	int32 _Borders;
+
 };

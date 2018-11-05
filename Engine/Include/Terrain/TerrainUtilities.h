@@ -203,6 +203,28 @@ namespace TerrainUtilities
 				vertex._PositionX = static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 				vertex._PositionZ = static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) - 0.5f;
 
+				vertex._Borders = 0;
+
+				if (i == 0)
+				{
+					vertex._Borders |= BIT(3);
+				}
+
+				else if (i == TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
+				{
+					vertex._Borders |= BIT(1);
+				}
+
+				if (j == 0)
+				{
+					vertex._Borders |= BIT(0);
+				}
+
+				else if (j == TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
+				{
+					vertex._Borders |= BIT(2);
+				}
+
 				vertices->EmplaceFast(vertex);
 
 				if (i != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1 && j != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
