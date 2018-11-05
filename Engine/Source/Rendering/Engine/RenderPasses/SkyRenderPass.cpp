@@ -137,7 +137,7 @@ void SkyRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 3, EnvironmentManager::Instance->GetDayEnvironmentMaterial()._RenderDataTable);
 
 	//Draw!
-	commandBuffer->Draw(this, 4, 1);
+	commandBuffer->Draw(this, 3, 1);
 
 	//End the command buffer.
 	commandBuffer->End(this);

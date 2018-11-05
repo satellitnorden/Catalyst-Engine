@@ -133,7 +133,7 @@ void BloomVerticalRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
 
 	//Draw!
-	commandBuffer->Draw(this, 4, 1);
+	commandBuffer->Draw(this, 3, 1);
 
 	//End the command buffer.
 	commandBuffer->End(this);

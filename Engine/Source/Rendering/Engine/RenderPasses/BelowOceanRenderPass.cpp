@@ -161,7 +161,7 @@ void BelowOceanRenderPass::RenderInternal() NOEXCEPT
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(OceanRenderingData), &data);
 
 	//Draw!
-	commandBuffer->Draw(this, 4, 1);
+	commandBuffer->Draw(this, 3, 1);
 
 	//End the command buffer.
 	commandBuffer->End(this);
