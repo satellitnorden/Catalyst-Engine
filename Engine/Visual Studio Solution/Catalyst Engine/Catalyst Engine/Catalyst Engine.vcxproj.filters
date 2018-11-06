@@ -1023,12 +1023,6 @@
     <ClInclude Include="..\..\..\Include\Systems\LightingSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainSchedule.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainScheduleItem.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainUpdate.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
@@ -1489,9 +1483,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp">
       <Filter>Lighting\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Terrain\TerrainSchedule.cpp">
-      <Filter>Terrain\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\ShaderData\Vulkan\TerrainColorFragmentShader.cpp">
       <Filter>Rendering\Source\ShaderData\Vulkan</Filter>

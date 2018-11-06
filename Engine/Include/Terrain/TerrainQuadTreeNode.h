@@ -8,11 +8,14 @@ class TerrainQuadTreeNode final
 
 public:
 
+	//The patch identifier.
+	uint64 _Identifier;
+
 	//Denotes whether or not this node is subdivided.
 	bool _Subdivided;
 
-	//The data. If this node is subdivided, it will point to 4 other nodes, otherwise a terrain patch render information.
-	void *RESTRICT _Data;
+	//The children.
+	TerrainQuadTreeNode *RESTRICT _Children;
 
 	//The minimum world position of this node.
 	Vector2 _Minimum;
@@ -21,19 +24,11 @@ public:
 	Vector2 _Maximum;
 
 	/*
-	*	Returns a pointer to the terrain patch information.
-	*/
-	RESTRICTED const TerrainPatchRenderInformation *const RESTRICT GetTerrainPatchRenderInformation() const NOEXCEPT
-	{
-		return _Subdivided ? nullptr : reinterpret_cast<const TerrainPatchRenderInformation *const>(_Data);
-	}
-
-	/*
 	*	Returns a pointer to the child nodes.
 	*/
 	RESTRICTED const TerrainQuadTreeNode *const RESTRICT GetChildNodes() const NOEXCEPT
 	{
-		return _Subdivided ? reinterpret_cast<const TerrainQuadTreeNode *const>(_Data) : nullptr;
+		return _Subdivided ? _Children : nullptr;
 	}
 
 	/*
@@ -59,39 +54,24 @@ public:
 			Vector2(range * 0.5f, 0.0f)
 		};
 
-		if (_Data)
+		if (_Children)
 		{
-			delete _Data;
+			delete[] _Children;
 		}
 
-		_Data = new TerrainQuadTreeNode[4];
+		_Children = new TerrainQuadTreeNode[4];
 
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			TerrainQuadTreeNode *const RESTRICT node{ &reinterpret_cast<TerrainQuadTreeNode *const RESTRICT>(_Data)[i] };
+			TerrainQuadTreeNode *const RESTRICT node{ &_Children[i] };
 
 			node->_Subdivided = false;
-			node->_Data = nullptr;
+			node->_Children = nullptr;
 			node->_Minimum = _Minimum + minimumOffsets[i];
 			node->_Maximum = _Maximum - maximumOffsets[i];
 		}
 
 		_Subdivided = true;
-	}
-
-	/*
-	*	Restores this node.
-	*/
-	void Restore() NOEXCEPT
-	{
-		if (_Data)
-		{
-			delete[] _Data;
-		}
-
-		_Data = new TerrainPatchRenderInformation;
-
-		_Subdivided = false;
 	}
 
 	/*

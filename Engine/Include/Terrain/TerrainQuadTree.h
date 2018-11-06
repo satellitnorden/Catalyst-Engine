@@ -12,6 +12,9 @@ class TerrainQuadTree final
 
 public:
 
+	//The root grid points.
+	StaticArray<GridPoint2, 9> _RootGridPoints;
+
 	//The root nodes.
 	StaticArray<TerrainQuadTreeNode, 9> _RootNodes;
 
@@ -20,11 +23,11 @@ public:
 	*/
 	void Initialize() NOEXCEPT
 	{
-		//Set the initial properties of all root nodes.
-		for (TerrainQuadTreeNode &rootNode : _RootNodes)
+		//Set the initial properties of all root grid points.
+		for (GridPoint2 &rootGridPoint : _RootGridPoints)
 		{
-			rootNode._Subdivided = false;
-			rootNode._Data = nullptr;
+			rootGridPoint._X = INT32_MAXIMUM;
+			rootGridPoint._Y = INT32_MAXIMUM;
 		}
 	}
 

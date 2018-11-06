@@ -474,9 +474,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Lighting\DirectionalLight.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Terrain\TerrainSchedule.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Rendering\ShaderData\Vulkan\TerrainColorFragmentShader.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>

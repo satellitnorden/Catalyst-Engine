@@ -187,6 +187,16 @@ namespace TerrainUtilities
 	}
 
 	/*
+	*	Generates a patch identifier.
+	*/
+	static uint64 GeneratePatchIdentifier() NOEXCEPT
+	{
+		static uint64 counter{ 0 };
+
+		return counter++;
+	}
+
+	/*
 	*	Generates the vertices and indices for a terrain plane.
 	*/
 	static void GenerateTerrainPlane(DynamicArray<TerrainVertex> *const RESTRICT vertices, DynamicArray<uint32> *const RESTRICT indices) NOEXCEPT

@@ -70,9 +70,6 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 
 	//Initialize the quad tree.
 	_QuadTree.Initialize();
-
-	//Generate the starting schedule.
-	_Schedule.GenerateNewSchedule(GridPoint2(0, 0), GridPoint2(0, 0));
 }
 
 /*
@@ -120,18 +117,49 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3 &position, Vector3 
 */
 void TerrainSystem::ProcessUpdate() NOEXCEPT
 {
-	if (_Update._Index != -1)
+	switch (_Update._Type)
 	{
-		if (_PatchInformations[_Update._Index]._Valid)
+		case TerrainUpdate::Type::AddRootNode:
 		{
-			RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[_Update._Index]._HeightTexture);
-			RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[_Update._Index]._NormalTexture);
-			RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[_Update._Index]._LayerWeightsTexture);
-			RenderingSystem::Instance->DestroyRenderDataTable(_PatchRenderInformations[_Update._Index]._RenderDataTable);
+			for (uint64 i{ 0 }, size{ _QuadTree._RootGridPoints.Size() }; i < size; ++i)
+			{
+				if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+				{
+					_QuadTree._RootGridPoints[i] = _Update._AddRootNodeUpdate._GridPoint;
+					_QuadTree._RootNodes[i]._Identifier = _Update._AddRootNodeUpdate._PatchInformation._Identifier;
+
+					break;
+				}
+			}
+
+			_PatchInformations.EmplaceSlow(_Update._AddRootNodeUpdate._PatchInformation);
+			_PatchRenderInformations.EmplaceSlow(_Update._AddRootNodeUpdate._PatchRenderInformation);
+
+			break;
 		}
 
-		_PatchInformations[_Update._Index] = _Update._PatchInformation;
-		_PatchRenderInformations[_Update._Index] = _Update._PatchRenderInformation;
+		case TerrainUpdate::Type::RemoveRootNode:
+		{
+			_QuadTree._RootGridPoints[_Update._RemoveRootNodeUpdate._Index] = GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM);
+
+			for (uint64 i{ 0 }, size{ _PatchInformations.Size() }; i < size; ++i)
+			{
+				if (_PatchInformations[i]._Identifier == _QuadTree._RootNodes[_Update._RemoveRootNodeUpdate._Index]._Identifier)
+				{
+					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._HeightTexture);
+					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._NormalTexture);
+					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._LayerWeightsTexture);
+					RenderingSystem::Instance->DestroyRenderDataTable(_PatchRenderInformations[i]._RenderDataTable);
+
+					_PatchInformations.EraseAt(i);
+					_PatchRenderInformations.EraseAt(i);
+
+					break;
+				}
+			}
+
+			break;
+		}
 	}
 }
 
@@ -141,83 +169,84 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 {
 	//Reset the update.
-	_Update._Index = -1;
+	_Update._Type = TerrainUpdate::Type::Invalid;
 
-	switch (_State)
+	//Get the current viewer position.
+	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
+
+	//Calculate the viewer grid point.
+	const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, TerrainConstants::TERRAIN_PATCH_SIZE) };
+
+	//Calculate the valid grid points.
+	const StaticArray<GridPoint2, 9> validGridPoints
 	{
-		case TerrainSystemState::Starting:
-		{
-			//Follow the schedule.
-			FollowSchedule();
+		GridPoint2(currentGridPoint._X, currentGridPoint._Y),
 
-			break;
+		GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y - 1),
+		GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y),
+		GridPoint2(currentGridPoint._X - 1, currentGridPoint._Y + 1),
+
+		GridPoint2(currentGridPoint._X, currentGridPoint._Y - 1),
+		GridPoint2(currentGridPoint._X, currentGridPoint._Y + 1),
+
+		GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y - 1),
+		GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y),
+		GridPoint2(currentGridPoint._X + 1, currentGridPoint._Y + 1)
+	};
+
+	//If a root grid point does exist that isn't valid, remove it.
+	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
+	{
+		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+		{
+			continue;
 		}
 
-		case TerrainSystemState::Idling:
+		bool exists{ false };
+
+		for (const GridPoint2 validGridPoint : validGridPoints)
 		{
-			//Get the current viewer position.
-			const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
-
-			//Calculate the current grid point.
-			_CurrentGridPoint = GridPoint2::WorldPositionToGridPoint(viewerPosition, TerrainConstants::TERRAIN_PATCH_SIZE);
-
-			//If the grid point changed, generate a new schedule.
-			if (_LastGridPoint != _CurrentGridPoint)
+			if (validGridPoint == _QuadTree._RootGridPoints[i])
 			{
-				_Schedule.GenerateNewSchedule(_LastGridPoint, _CurrentGridPoint);
+				exists = true;
 
-				if (_LastGridPoint._X != _CurrentGridPoint._X)
-				{
-					_LastGridPoint._X = _CurrentGridPoint._X;
-				}
-
-				else
-				{
-					_LastGridPoint._Y = _CurrentGridPoint._Y;
-				}
-
-				_State = TerrainSystemState::Updating;
-
-				//Follow the schedule.
-				FollowSchedule();
+				break;
 			}
-
-			break;
 		}
 
-		case TerrainSystemState::Updating:
+		if (!exists)
 		{
-			//Follow the schedule.
-			FollowSchedule();
+			_Update._Type = TerrainUpdate::Type::RemoveRootNode;
+			_Update._RemoveRootNodeUpdate._Index = i;
 
-			break;
+			return;
 		}
 	}
-}
 
-/*
-*	Follows the schedule.
-*/
-void TerrainSystem::FollowSchedule() NOEXCEPT
-{
-	//Get the next schedule item.
-	const TerrainScheduleItem& scheduleItem{ _Schedule.GetNextScheduleItem() };
-
-	//Update the update.
-	_Update._Index = scheduleItem._Index;
-
-	//Generate a new patch.
-	GeneratePatch(	scheduleItem._GridPoint,
-					scheduleItem._Borders,
-					scheduleItem._PatchSizeMultiplier,
-					scheduleItem._NormalResolutionMultiplier,
-					&_Update._PatchInformation,
-					&_Update._PatchRenderInformation);
-
-	//If the schedule is done, begin idling.
-	if (_Schedule.IsDone())
+	//If a valid grid point does not exist, construct a new update.
+	for (const GridPoint2 validGridPoint : validGridPoints)
 	{
-		_State = TerrainSystemState::Idling;
+		bool exists{ false };
+
+		for (const GridPoint2 rootGridPoint : _QuadTree._RootGridPoints)
+		{
+			if (rootGridPoint == validGridPoint)
+			{
+				exists = true;
+
+				break;
+			}
+		}
+
+		if (!exists)
+		{
+			_Update._Type = TerrainUpdate::Type::AddRootNode;
+			_Update._AddRootNodeUpdate._GridPoint = validGridPoint;
+
+			GeneratePatch(validGridPoint, TerrainBorder::None, 1.0f, 1, &_Update._AddRootNodeUpdate._PatchInformation, &_Update._AddRootNodeUpdate._PatchRenderInformation);
+
+			return;
+		}
 	}
 }
 
@@ -235,6 +264,7 @@ void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBord
 	_Properties._PatchPropertiesGenerationFunction(_Properties, gridPointWorldPosition, &material);
 
 	//Fill in the details about the patch information.
+	patchInformation->_Identifier = TerrainUtilities::GeneratePatchIdentifier();
 	patchInformation->_Valid = true;
 	patchInformation->_GridPoint = gridPoint;
 
@@ -272,5 +302,4 @@ void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBord
 
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(gridPointWorldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, gridPointWorldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
 	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, gridPointWorldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
-
 }

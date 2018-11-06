@@ -16,6 +16,9 @@ class TerrainPatchInformation final
 
 public:
 
+	//The identifier.
+	uint64 _Identifier;
+
 	//Denotes whether or not this patch is valid.
 	bool _Valid;
 

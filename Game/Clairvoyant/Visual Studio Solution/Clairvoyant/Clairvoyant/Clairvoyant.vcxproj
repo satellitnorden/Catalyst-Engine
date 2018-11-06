@@ -338,7 +338,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\TerrainSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\UpdateSystem.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Systems\VegetationSystem.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Terrain\TerrainSchedule.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\ThirdParty\android_native_app_glue.c" />
     <ClCompile Include="..\..\..\..\..\Tools\Resource Creator\Resource Creator Source\Resource Creator\Source\StbImageImplementation.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantGameSystem.cpp" />

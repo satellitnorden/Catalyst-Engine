@@ -14,7 +14,6 @@
 #include <Terrain/TerrainPatchRenderInformation.h>
 #include <Terrain/TerrainProperties.h>
 #include <Terrain/TerrainQuadTree.h>
-#include <Terrain/TerrainSchedule.h>
 #include <Terrain/TerrainUpdate.h>
 
 //Forward declarations.
@@ -104,9 +103,6 @@ private:
 	//The quad tree.
 	TerrainQuadTree _QuadTree;
 
-	//The schedule.
-	TerrainSchedule _Schedule;
-
 	//The update.
 	TerrainUpdate _Update;
 
@@ -134,11 +130,6 @@ private:
 	*	Updates the terrain system asynchronously.
 	*/
 	void UpdateSystemAsynchronous() NOEXCEPT;
-
-	/*
-	*	Follows the schedule.
-	*/
-	void FollowSchedule() NOEXCEPT;
 
 	/*
 	*	Generates a patch.
