@@ -23,8 +23,8 @@ public:
 		//Set the initial properties of all root nodes.
 		for (TerrainQuadTreeNode &rootNode : _RootNodes)
 		{
-			rootNode._Depth = 0;
 			rootNode._Subdivided = false;
+			rootNode._Data = nullptr;
 		}
 	}
 
