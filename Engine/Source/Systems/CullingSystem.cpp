@@ -141,8 +141,8 @@ void CullingSystem::CullTerrain() NOEXCEPT
 	const StaticArray<Vector4, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
 
 	//Iterate over all terrain patches and cull them.
-	StaticArray<TerrainPatchInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> *const RESTRICT patchInformations{ TerrainSystem::Instance->GetTerrainPatchInformations() };
-	StaticArray<TerrainPatchRenderInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> *const RESTRICT patchRenderInformations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
+	DynamicArray<TerrainPatchInformation> *const RESTRICT patchInformations{ TerrainSystem::Instance->GetTerrainPatchInformations() };
+	DynamicArray<TerrainPatchRenderInformation> *const RESTRICT patchRenderInformations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
 
 	for (uint64 i = 0, size = patchInformations->Size(); i < size; ++i)
 	{

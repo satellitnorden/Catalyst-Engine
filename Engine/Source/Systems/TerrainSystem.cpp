@@ -38,6 +38,9 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 	_UpdateTask._Arguments = nullptr;
 
 	//Set all the patch and patch render informations to their default state.
+	_PatchInformations.UpsizeFast(TerrainConstants::NUMBER_OF_TERRAIN_PATCHES);
+	_PatchRenderInformations.UpsizeFast(TerrainConstants::NUMBER_OF_TERRAIN_PATCHES);
+
 	for (uint64 i = 0, size = _PatchInformations.Size(); i < size; ++i)
 	{
 		_PatchInformations[i]._Valid = false;
@@ -77,7 +80,7 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 */
 void TerrainSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 {
-	//Check if the asynchronous update has finished,
+	//Check if the asynchronous update has finished.
 	if (_UpdateTask.IsExecuted())
 	{
 		//Process the update.

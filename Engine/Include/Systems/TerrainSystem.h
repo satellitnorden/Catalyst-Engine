@@ -62,7 +62,7 @@ public:
 	/*
 	*	Returns the low detail terrain patch informations.
 	*/
-	RESTRICTED NO_DISCARD StaticArray<TerrainPatchInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> *const RESTRICT GetTerrainPatchInformations() NOEXCEPT
+	RESTRICTED NO_DISCARD DynamicArray<TerrainPatchInformation> *const RESTRICT GetTerrainPatchInformations() NOEXCEPT
 	{
 		return &_PatchInformations;
 	}
@@ -70,7 +70,7 @@ public:
 	/*
 	*	Returns the low detail terrain patch render informations.
 	*/
-	RESTRICTED NO_DISCARD StaticArray<TerrainPatchRenderInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> *const RESTRICT GetTerrainPatchRenderInformations() NOEXCEPT
+	RESTRICTED NO_DISCARD DynamicArray<TerrainPatchRenderInformation> *const RESTRICT GetTerrainPatchRenderInformations() NOEXCEPT
 	{
 		return &_PatchRenderInformations;
 	}
@@ -120,10 +120,10 @@ private:
 	GridPoint2 _CurrentGridPoint{ 0, 0 };
 
 	//The patch informations.
-	StaticArray<TerrainPatchInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> _PatchInformations;
+	DynamicArray<TerrainPatchInformation> _PatchInformations;
 
 	//The patch render informations.
-	StaticArray<TerrainPatchRenderInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> _PatchRenderInformations;
+	DynamicArray<TerrainPatchRenderInformation> _PatchRenderInformations;
 
 	/*
 	*	Processes the update.

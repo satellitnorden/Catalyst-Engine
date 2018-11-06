@@ -90,7 +90,7 @@ namespace DebugUtilities
 	{
 		uint8 counter{ 0 };
 
-		const StaticArray<TerrainPatchInformation, TerrainConstants::NUMBER_OF_TERRAIN_PATCHES> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchInformations() };
+		const DynamicArray<TerrainPatchInformation> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchInformations() };
 
 		for (const TerrainPatchInformation &information : *informations)
 		{
