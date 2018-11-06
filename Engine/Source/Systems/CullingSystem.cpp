@@ -150,7 +150,7 @@ void CullingSystem::CullTerrain() NOEXCEPT
 		TerrainPatchRenderInformation &patchRenderInformation{ (*patchRenderInformations)[i] };
 
 		//If this patch is invalid, no need to check it.
-		if (!(*patchInformations)[i]._Valid)
+		if (!patchInformation._Valid)
 		{
 			continue;
 		}
