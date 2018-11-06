@@ -19,7 +19,7 @@ namespace TerrainUtilities
 	*/
 	static void GenerateNormal(const TerrainProperties &properties, const Vector3 &position, Vector3 *const RESTRICT normal) NOEXCEPT
 	{
-		constexpr float offset{ TerrainConstants::TERRAIN_PATCH_SIZE / TerrainConstants::TERRAIN_PATCH_RESOLUTION };
+		constexpr float offset{ 1.0f };
 
 		Vector3 left{ position._X - offset, 0.0f, position._Z };
 		properties._HeightGenerationFunction(properties, left, &left._Y);
@@ -156,7 +156,7 @@ namespace TerrainUtilities
 				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution - 1) };
 				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution - 1) };
 
-				const Vector3 worldPosition{ patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
+				const Vector3 worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 												0.0f,
 												patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
 

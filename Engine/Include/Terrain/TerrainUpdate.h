@@ -34,6 +34,22 @@ public:
 
 };
 
+class TerrainSubdivideNodeUpdate final
+{
+
+public:
+
+	//The node to subdivide.
+	TerrainQuadTreeNode *RESTRICT _Node;
+
+	//The patch informations.
+	StaticArray<TerrainPatchInformation, 4> _PatchInformations;
+
+	//The patch render informations.
+	StaticArray<TerrainPatchRenderInformation, 4> _PatchRenderInformations;
+
+};
+
 class TerrainUpdate final
 {
 
@@ -45,6 +61,8 @@ public:
 		Invalid,
 		AddRootNode,
 		RemoveRootNode,
+		SubdivideNode,
+		RestoreNode
 	};
 
 	//The type.
@@ -57,6 +75,9 @@ public:
 
 		//The remove root node update.
 		TerrainRemoveRootNodeUpdate _RemoveRootNodeUpdate;
+
+		//The subdivide node update.
+		TerrainSubdivideNodeUpdate _SubdivideNodeUpdate;
 	};
 
 	/*

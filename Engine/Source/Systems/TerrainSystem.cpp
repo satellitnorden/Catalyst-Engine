@@ -37,16 +37,6 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 	};
 	_UpdateTask._Arguments = nullptr;
 
-	//Set all the patch and patch render informations to their default state.
-	_PatchInformations.UpsizeFast(TerrainConstants::NUMBER_OF_TERRAIN_PATCHES);
-	_PatchRenderInformations.UpsizeFast(TerrainConstants::NUMBER_OF_TERRAIN_PATCHES);
-
-	for (uint64 i = 0, size = _PatchInformations.Size(); i < size; ++i)
-	{
-		_PatchInformations[i]._Valid = false;
-		_PatchRenderInformations[i]._Visibility = VisibilityFlag::None;
-	}
-
 	//Generate the terrain plane.
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
@@ -125,8 +115,15 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			{
 				if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
 				{
+					const Vector3 gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(_Update._AddRootNodeUpdate._GridPoint, TerrainConstants::TERRAIN_PATCH_SIZE) };
+
 					_QuadTree._RootGridPoints[i] = _Update._AddRootNodeUpdate._GridPoint;
+					_QuadTree._RootNodes[i]._Depth = 0;
+					_QuadTree._RootNodes[i]._Subdivided = false;
 					_QuadTree._RootNodes[i]._Identifier = _Update._AddRootNodeUpdate._PatchInformation._Identifier;
+					_QuadTree._RootNodes[i]._ChildNodes = nullptr;
+					_QuadTree._RootNodes[i]._Minimum = Vector2(gridPointWorldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f), gridPointWorldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f));
+					_QuadTree._RootNodes[i]._Maximum = Vector2(gridPointWorldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f), gridPointWorldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f));
 
 					break;
 				}
@@ -156,6 +153,43 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 
 					break;
 				}
+			}
+
+			break;
+		}
+
+		case TerrainUpdate::Type::SubdivideNode:
+		{
+			//Find the patch information for this node and delete it.
+			for (uint64 i{ 0 }, size{ _PatchInformations.Size() }; i < size; ++i)
+			{
+				if (_PatchInformations[i]._Identifier == _Update._SubdivideNodeUpdate._Node->_Identifier)
+				{
+					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._HeightTexture);
+					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._NormalTexture);
+					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._LayerWeightsTexture);
+					RenderingSystem::Instance->DestroyRenderDataTable(_PatchRenderInformations[i]._RenderDataTable);
+
+					_PatchInformations.EraseAt(i);
+					_PatchRenderInformations.EraseAt(i);
+
+					break;
+				}
+			}
+
+			//Actually subdivide node.
+			_Update._SubdivideNodeUpdate._Node->Subdivide();
+
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Identifier = _Update._SubdivideNodeUpdate._PatchInformations[i]._Identifier;
+				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Minimum._X = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Minimum._X;
+				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Minimum._Y = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Minimum._Z;
+				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Maximum._X = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Maximum._X;
+				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Maximum._Y = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Maximum._Z;
+
+				_PatchInformations.EmplaceSlow(_Update._SubdivideNodeUpdate._PatchInformations[i]);
+				_PatchRenderInformations.EmplaceSlow(_Update._SubdivideNodeUpdate._PatchRenderInformations[i]);
 			}
 
 			break;
@@ -243,34 +277,114 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 			_Update._Type = TerrainUpdate::Type::AddRootNode;
 			_Update._AddRootNodeUpdate._GridPoint = validGridPoint;
 
-			GeneratePatch(validGridPoint, TerrainBorder::None, 1.0f, 1, &_Update._AddRootNodeUpdate._PatchInformation, &_Update._AddRootNodeUpdate._PatchRenderInformation);
+			GeneratePatch(GridPoint2::GridPointToWorldPosition(validGridPoint, TerrainConstants::TERRAIN_PATCH_SIZE), 1.0f, 1, &_Update._AddRootNodeUpdate._PatchInformation, &_Update._AddRootNodeUpdate._PatchRenderInformation);
 
+			return;
+		}
+	}
+
+	//Check if a node should be subdivided.
+	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
+	{
+		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+		{
+			continue;
+		}
+
+		if (CheckSubdivision(viewerPosition, &_QuadTree._RootNodes[i]))
+		{
 			return;
 		}
 	}
 }
 
 /*
+*	Checks subdivisions of a node. Returns whether or not the node was subdivided.
+*/
+bool TerrainSystem::CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+{
+	if (node->_Subdivided)
+	{
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			if (CheckSubdivision(viewerPosition, &node->_ChildNodes[i]))
+			{
+				return true;
+			}
+		}
+	}
+
+	else
+	{
+		const bool shouldBeSubdivided{ node->_Depth < TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH && node->IsWithin(viewerPosition) };
+
+		if (shouldBeSubdivided && !node->_Subdivided)
+		{
+			SubdivideNode(node);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*
+*	Subdivides a node.
+*/
+void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+{
+	_Update._Type = TerrainUpdate::Type::SubdivideNode;
+	_Update._SubdivideNodeUpdate._Node = node;
+
+	const float patchSizeMultiplier{ 1.0f / static_cast<float>(1 << (node->_Depth + 1)) };
+
+	const StaticArray<Vector3, 4> positions
+	{
+		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
+					0.0f,
+					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f),
+
+		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
+					0.0f,
+					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f),
+
+		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f,
+					0.0f,
+					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f),
+
+		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f,
+					0.0f,
+					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f)
+	};
+
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		GeneratePatch(	positions[i],
+						patchSizeMultiplier,
+						1,
+						&_Update._SubdivideNodeUpdate._PatchInformations[i],
+						&_Update._SubdivideNodeUpdate._PatchRenderInformations[i]);
+	}
+}
+
+/*
 *	Generates a patch.
 */
-void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBorder borders, const float patchSizeMultiplier, const uint8 normalResolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
+void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patchSizeMultiplier, const uint8 normalResolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
-	//Calculate the world position of the grid point.
-	const Vector3 gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint, TerrainConstants::TERRAIN_PATCH_SIZE) };
-
 	//Get the material and the displacement information.
 	TerrainMaterial material;
 
-	_Properties._PatchPropertiesGenerationFunction(_Properties, gridPointWorldPosition, &material);
+	_Properties._PatchPropertiesGenerationFunction(_Properties, worldPosition, &material);
 
 	//Fill in the details about the patch information.
 	patchInformation->_Identifier = TerrainUtilities::GeneratePatchIdentifier();
 	patchInformation->_Valid = true;
-	patchInformation->_GridPoint = gridPoint;
 
 	//Fill in the details about the patch render information.
 	patchRenderInformation->_Visibility = VisibilityFlag::None;
-	patchRenderInformation->_WorldPosition = Vector2(gridPointWorldPosition._X, gridPointWorldPosition._Z);
+	patchRenderInformation->_WorldPosition = Vector2(worldPosition._X, worldPosition._Z);
 	patchRenderInformation->_PatchSize = TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier;
 
 	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain), &patchRenderInformation->_RenderDataTable);
@@ -280,7 +394,7 @@ void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBord
 
 	TerrainUtilities::GenerateHeightTexture(	_Properties,
 												patchSizeMultiplier,
-												gridPointWorldPosition,
+												worldPosition,
 												&minimumHeight,
 												&maximumHeight,
 												&patchInformation->_HeightTexture,
@@ -289,17 +403,17 @@ void TerrainSystem::GeneratePatch(const GridPoint2 &gridPoint, const TerrainBord
 	TerrainUtilities::GenerateNormalTexture(	_Properties,
 												patchSizeMultiplier,
 												normalResolutionMultiplier,
-												gridPointWorldPosition,
+												worldPosition,
 												&patchInformation->_NormalTexture,
 												&patchRenderInformation->_RenderDataTable);
 
 	TerrainUtilities::GenerateLayerWeightsTexture(	_Properties,
 													patchSizeMultiplier,
 													normalResolutionMultiplier,
-													gridPointWorldPosition,
+													worldPosition,
 													&patchInformation->_LayerWeightsTexture,
 													&patchRenderInformation->_RenderDataTable);
 
-	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(gridPointWorldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, gridPointWorldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
-	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(gridPointWorldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, gridPointWorldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
+	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(worldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, worldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
+	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(worldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, worldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
 }

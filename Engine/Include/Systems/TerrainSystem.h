@@ -5,6 +5,9 @@
 #include <Core/Containers/StaticArray.h>
 #include <Core/Pointers/UniquePointer.h>
 
+//Math.
+#include <Math/GridPoint2.h>
+
 //Multithreading.
 #include <Multithreading/Spinlock.h>
 #include <Multithreading/Task.h>
@@ -30,7 +33,10 @@ public:
 	/*
 	*	Default constructor.
 	*/
-	TerrainSystem() NOEXCEPT { }
+	TerrainSystem() NOEXCEPT
+	{
+	
+	}
 
 	/*
 	*	Initializes the terrain system.
@@ -86,17 +92,6 @@ public:
 
 private:
 
-	//Enum covering all terrain system states,
-	enum class TerrainSystemState : uint8
-	{
-		Starting,
-		Idling,
-		Updating
-	};
-
-	//The state.
-	TerrainSystemState _State{ TerrainSystemState::Starting };
-
 	//The properties.
 	TerrainProperties _Properties;
 
@@ -108,12 +103,6 @@ private:
 
 	//The update task.
 	Task _UpdateTask;
-
-	//The last grid point.
-	GridPoint2 _LastGridPoint{ 0, 0 };
-
-	//The current grid point.
-	GridPoint2 _CurrentGridPoint{ 0, 0 };
 
 	//The patch informations.
 	DynamicArray<TerrainPatchInformation> _PatchInformations;
@@ -132,9 +121,18 @@ private:
 	void UpdateSystemAsynchronous() NOEXCEPT;
 
 	/*
+	*	Checks subdivisions of a node. Returns whether or not the node was subdivided.
+	*/
+	bool CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+
+	/*
+	*	Subdivides a node.
+	*/
+	void SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+
+	/*
 	*	Generates a patch.
 	*/
-	void GeneratePatch(const GridPoint2 &gridPoint, const TerrainBorder borders, const float patchSizeMultiplier, const uint8 normalResolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
-
+	void GeneratePatch(const Vector3 &worldPosition, const float patchSizeMultiplier, const uint8 normalResolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
 
 };
