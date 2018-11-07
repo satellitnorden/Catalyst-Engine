@@ -136,11 +136,6 @@ private:
 	bool CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
-	*	Returns whether or not a node should be subdivided.
-	*/
-	bool ShouldBeSubdivided(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
-
-	/*
 	*	Restores a node.
 	*/
 	void RestoreNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;

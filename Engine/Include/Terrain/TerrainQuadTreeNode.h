@@ -32,29 +32,12 @@ public:
 	/*
 	*	Returns whether or not a world position is within this node.
 	*/
-	bool IsWithin(const Vector3 &worldPosition) NOEXCEPT
+	bool IsWithin(const Vector3 &worldPosition) const NOEXCEPT
 	{
 		return	worldPosition._X >= _Minimum._X
 				&& worldPosition._X < _Maximum._X
 				&& worldPosition._Z >= _Minimum._Y
 				&& worldPosition._Z < _Maximum._Y;
-	}
-
-	/*
-	*	Subdivides the node.
-	*/
-	void Subdivide() NOEXCEPT
-	{
-		_Subdivided = true;
-
-		_ChildNodes = static_cast<TerrainQuadTreeNode *RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(TerrainQuadTreeNode) * 4));
-
-		for (uint8 i{ 0 }; i < 4; ++i)
-		{
-			_ChildNodes[i]._Depth = _Depth + 1;
-			_ChildNodes[i]._Subdivided = false;
-			_ChildNodes[i]._ChildNodes = nullptr;
-		}
 	}
 
 };

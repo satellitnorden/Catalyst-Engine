@@ -35,9 +35,6 @@
 #include <Systems/UpdateSystem.h>
 #include <Systems/VegetationSystem.h>
 
-//Terrain.
-#include <Terrain/TerrainUtilities.h>
-
 //Singleton definition.
 DEFINE_SINGLETON(ClairvoyantWorldArchitect);
 
@@ -79,8 +76,8 @@ void ClairvoyantWorldArchitect::InitializeEnvironmentParameters() NOEXCEPT
 	constexpr float MINIMUM_WIND_SPEED{ 4.0f };
 	constexpr float MAXIMUM_WIND_SPEED{ 6.0f };
 
-	constexpr float MINIMUM_VOLUMETRIC_FOG_DISTANCE{ 109'350.0f };
-	constexpr float MAXIMUM_VOLUMETRIC_FOG_DISTANCE{ 109'350.0f };
+	constexpr float MINIMUM_VOLUMETRIC_FOG_DISTANCE{ 98'304.0f };
+	constexpr float MAXIMUM_VOLUMETRIC_FOG_DISTANCE{ 98'304.0f };
 
 	constexpr float DEPTH_OF_FIELD_DISTANCE_MULTIPLIER{ 0.5f };
 

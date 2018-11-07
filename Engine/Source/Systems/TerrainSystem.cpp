@@ -15,7 +15,8 @@
 #include <Systems/TaskSystem.h>
 
 //Terrain.
-#include <Terrain/TerrainUtilities.h>
+#include <Terrain/TerrainGeneralUtilities.h>
+#include <Terrain/TerrainQuadTreeUtilities.h>
 
 //Singleton definition.
 DEFINE_SINGLETON(TerrainSystem);
@@ -41,8 +42,8 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 	DynamicArray<TerrainVertex> vertices;
 	DynamicArray<uint32> indices;
 
-	TerrainUtilities::GenerateTerrainPlane(	&vertices,
-											&indices);
+	TerrainGeneralUtilities::GenerateTerrainPlane(	&vertices,
+													&indices);
 
 	StaticArray<void *RESTRICT, 2> bufferData;
 
@@ -96,7 +97,7 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3 &position, float *c
 bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3 &position, Vector3 *const RESTRICT normal) const NOEXCEPT
 {
 	//Generate a normal at the position.
-	TerrainUtilities::GenerateNormal(_Properties, position, normal);
+	TerrainGeneralUtilities::GenerateNormal(_Properties, position, normal);
 
 	//Return that the retrieval succeeded.
 	return true;
@@ -201,11 +202,15 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			}
 
 			//Actually subdivide node.
-			_Update._SubdivideNodeUpdate._Node->Subdivide();
+			_Update._SubdivideNodeUpdate._Node->_Subdivided = true;
+			_Update._SubdivideNodeUpdate._Node->_ChildNodes = static_cast<TerrainQuadTreeNode *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(TerrainQuadTreeNode) * 4));
 
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
+				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Depth = _Update._SubdivideNodeUpdate._Node->_Depth + 1;
+				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Subdivided = false;
 				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Identifier = _Update._SubdivideNodeUpdate._PatchInformations[i]._Identifier;
+				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._ChildNodes = nullptr;
 				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Minimum._X = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Minimum._X;
 				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Minimum._Y = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Minimum._Z;
 				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Maximum._X = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Maximum._X;
@@ -388,23 +393,24 @@ bool TerrainSystem::CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadT
 	//Else, check if this node should be subdivided.
 	else
 	{
-		if (ShouldBeSubdivided(viewerPosition, node))
+		if (TerrainQuadTreeUtilities::ShouldBeSubdivided(*node, viewerPosition))
 		{
-			SubdivideNode(node);
+			//If there is a requirement for this subdivision to happen, subdivide that node instead.
+			if (TerrainQuadTreeNode *const RESTRICT requiredNode{ TerrainQuadTreeUtilities::SubdivisionRequirement(node, &_QuadTree) })
+			{
+				SubdivideNode(requiredNode);
+			}
+
+			else
+			{
+				SubdivideNode(node);
+			}
 
 			return true;
 		}
 	}
 
 	return false;
-}
-
-/*
-*	Returns whether or not a node should be subdivided.
-*/
-bool TerrainSystem::ShouldBeSubdivided(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
-{
-	return node->_Depth < TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH && node->IsWithin(viewerPosition);
 }
 
 /*
@@ -415,13 +421,17 @@ void TerrainSystem::RestoreNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 	_Update._Type = TerrainUpdate::Type::RestoreNode;
 	_Update._RestoreNodeUpdate._Node = node;
 
-	const float patchSizeMultiplier{ 1.0f / static_cast<float>(1 << (node->_Depth)) };
+	const float patchSizeMultiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) };
 
-	const Vector3 worldPosition{ node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier,
+	const Vector3 worldPosition{	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier,
 									0.0f,
 									node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 
-	GeneratePatch(worldPosition, patchSizeMultiplier, 1, &_Update._RestoreNodeUpdate._PatchInformation, &_Update._RestoreNodeUpdate._PatchRenderInformation);
+	GeneratePatch(	worldPosition,
+					patchSizeMultiplier,
+					1,
+					&_Update._RestoreNodeUpdate._PatchInformation,
+					&_Update._RestoreNodeUpdate._PatchRenderInformation);
 }
 
 /*
@@ -432,7 +442,7 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 	_Update._Type = TerrainUpdate::Type::SubdivideNode;
 	_Update._SubdivideNodeUpdate._Node = node;
 
-	const float patchSizeMultiplier{ 1.0f / static_cast<float>(1 << (node->_Depth + 1)) };
+	const float patchSizeMultiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) * 0.5f };
 
 	const StaticArray<Vector3, 4> positions
 	{
@@ -474,7 +484,7 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 	_Properties._PatchPropertiesGenerationFunction(_Properties, worldPosition, &material);
 
 	//Fill in the details about the patch information.
-	patchInformation->_Identifier = TerrainUtilities::GeneratePatchIdentifier();
+	patchInformation->_Identifier = TerrainGeneralUtilities::GeneratePatchIdentifier();
 	patchInformation->_Valid = true;
 
 	//Fill in the details about the patch render information.
@@ -487,27 +497,27 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 	float minimumHeight;
 	float maximumHeight;
 
-	TerrainUtilities::GenerateHeightTexture(	_Properties,
-												patchSizeMultiplier,
-												worldPosition,
-												&minimumHeight,
-												&maximumHeight,
-												&patchInformation->_HeightTexture,
-												&patchRenderInformation->_RenderDataTable);
+	TerrainGeneralUtilities::GenerateHeightTexture(	_Properties,
+													patchSizeMultiplier,
+													worldPosition,
+													&minimumHeight,
+													&maximumHeight,
+													&patchInformation->_HeightTexture,
+													&patchRenderInformation->_RenderDataTable);
 
-	TerrainUtilities::GenerateNormalTexture(	_Properties,
-												patchSizeMultiplier,
-												normalResolutionMultiplier,
-												worldPosition,
-												&patchInformation->_NormalTexture,
-												&patchRenderInformation->_RenderDataTable);
-
-	TerrainUtilities::GenerateLayerWeightsTexture(	_Properties,
+	TerrainGeneralUtilities::GenerateNormalTexture(	_Properties,
 													patchSizeMultiplier,
 													normalResolutionMultiplier,
 													worldPosition,
-													&patchInformation->_LayerWeightsTexture,
+													&patchInformation->_NormalTexture,
 													&patchRenderInformation->_RenderDataTable);
+
+	TerrainGeneralUtilities::GenerateLayerWeightsTexture(	_Properties,
+															patchSizeMultiplier,
+															normalResolutionMultiplier,
+															worldPosition,
+															&patchInformation->_LayerWeightsTexture,
+															&patchRenderInformation->_RenderDataTable);
 
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(worldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, worldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
 	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(worldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, worldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));

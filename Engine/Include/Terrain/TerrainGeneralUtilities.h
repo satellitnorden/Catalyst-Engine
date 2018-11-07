@@ -12,7 +12,7 @@
 #include <Terrain/TerrainProperties.h>
 #include <Terrain/TerrainVertex.h>
 
-namespace TerrainUtilities
+namespace TerrainGeneralUtilities
 {
 	/*
 	*	Generates a normal at the given position.
