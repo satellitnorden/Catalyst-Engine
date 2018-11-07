@@ -148,7 +148,7 @@ private:
 	/*
 	*	Generates a patch.
 	*/
-	void GeneratePatch(const Vector3 &worldPosition, const float patchSizeMultiplier, const uint8 normalResolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
+	void GeneratePatch(const Vector3 &worldPosition, const float patchSizeMultiplier, const uint8 resolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
 
 	/*
 	*	Destroys a patch.

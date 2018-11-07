@@ -305,7 +305,11 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 			_Update._Type = TerrainUpdate::Type::AddRootNode;
 			_Update._AddRootNodeUpdate._GridPoint = validGridPoint;
 
-			GeneratePatch(GridPoint2::GridPointToWorldPosition(validGridPoint, TerrainConstants::TERRAIN_PATCH_SIZE), 1.0f, 1, &_Update._AddRootNodeUpdate._PatchInformation, &_Update._AddRootNodeUpdate._PatchRenderInformation);
+			GeneratePatch(	GridPoint2::GridPointToWorldPosition(validGridPoint, TerrainConstants::TERRAIN_PATCH_SIZE),
+							1.0f,
+							TerrainQuadTreeUtilities::ResolutionMultiplier(1.0f),
+							&_Update._AddRootNodeUpdate._PatchInformation,
+							&_Update._AddRootNodeUpdate._PatchRenderInformation);
 
 			return;
 		}
@@ -429,7 +433,7 @@ void TerrainSystem::RestoreNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 
 	GeneratePatch(	worldPosition,
 					patchSizeMultiplier,
-					1,
+					TerrainQuadTreeUtilities::ResolutionMultiplier(patchSizeMultiplier),
 					&_Update._RestoreNodeUpdate._PatchInformation,
 					&_Update._RestoreNodeUpdate._PatchRenderInformation);
 }
@@ -467,7 +471,7 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 	{
 		GeneratePatch(	positions[i],
 						patchSizeMultiplier,
-						1,
+						TerrainQuadTreeUtilities::ResolutionMultiplier(patchSizeMultiplier),
 						&_Update._SubdivideNodeUpdate._PatchInformations[i],
 						&_Update._SubdivideNodeUpdate._PatchRenderInformations[i]);
 	}
@@ -476,8 +480,10 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 /*
 *	Generates a patch.
 */
-void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patchSizeMultiplier, const uint8 normalResolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
+void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patchSizeMultiplier, const uint8 resolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
+	ASSERT(resolutionMultiplier > 0, "No");
+
 	//Get the material and the displacement information.
 	TerrainMaterial material;
 
@@ -507,14 +513,14 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 
 	TerrainGeneralUtilities::GenerateNormalTexture(	_Properties,
 													patchSizeMultiplier,
-													normalResolutionMultiplier,
+													resolutionMultiplier,
 													worldPosition,
 													&patchInformation->_NormalTexture,
 													&patchRenderInformation->_RenderDataTable);
 
 	TerrainGeneralUtilities::GenerateLayerWeightsTexture(	_Properties,
 															patchSizeMultiplier,
-															normalResolutionMultiplier,
+															resolutionMultiplier,
 															worldPosition,
 															&patchInformation->_LayerWeightsTexture,
 															&patchRenderInformation->_RenderDataTable);
