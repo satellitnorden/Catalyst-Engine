@@ -103,6 +103,22 @@ bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3 &position, Vector3 
 }
 
 /*
+	*	Returns the patch information index for the identifier.
+	*/
+uint64 TerrainSystem::GetPatchInformationIndex(const uint64 identifier) const NOEXCEPT
+{
+	for (uint64 i{ 0 }, size{ _PatchInformations.Size() }; i < size; ++i)
+	{
+		if (_PatchInformations[i]._Identifier == identifier)
+		{
+			return i;
+		}
+	}
+
+	return UINT64_MAX;
+}
+
+/*
 *	Processes the update.
 */
 void TerrainSystem::ProcessUpdate() NOEXCEPT
@@ -143,16 +159,23 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			{
 				if (_PatchInformations[i]._Identifier == _QuadTree._RootNodes[_Update._RemoveRootNodeUpdate._Index]._Identifier)
 				{
-					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._HeightTexture);
-					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._NormalTexture);
-					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._LayerWeightsTexture);
-					RenderingSystem::Instance->DestroyRenderDataTable(_PatchRenderInformations[i]._RenderDataTable);
-
-					_PatchInformations.EraseAt(i);
-					_PatchRenderInformations.EraseAt(i);
+					DestroyPatch(i);
 
 					break;
 				}
+			}
+
+			break;
+		}
+
+		case TerrainUpdate::Type::RestoreNode:
+		{	
+			//Destroy the existing child nodes.
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				const uint64 patchInformationIndex{ GetPatchInformationIndex(_Update._RestoreNodeUpdate._Node->_ChildNodes[i]._Identifier) };
+
+				DestroyPatch(patchInformationIndex);
 			}
 
 			break;
@@ -389,8 +412,16 @@ bool TerrainSystem::ShouldBeSubdivided(const Vector3 &viewerPosition, TerrainQua
 */
 void TerrainSystem::RestoreNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
-	_Update._Type = TerrainUpdate::Type::SubdivideNode;
+	_Update._Type = TerrainUpdate::Type::RestoreNode;
 	_Update._RestoreNodeUpdate._Node = node;
+
+	const float patchSizeMultiplier{ 1.0f / static_cast<float>(1 << (node->_Depth)) };
+
+	const Vector3 worldPosition{ node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier,
+									0.0f,
+									node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
+
+	GeneratePatch(worldPosition, patchSizeMultiplier, 1, &_Update._RestoreNodeUpdate._PatchInformation, &_Update._RestoreNodeUpdate._PatchRenderInformation);
 }
 
 /*
@@ -480,4 +511,18 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(worldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, worldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
 	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(worldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, worldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
+}
+
+/*
+*	Destroys a patch.
+*/
+void TerrainSystem::DestroyPatch(const uint64 index) NOEXCEPT
+{
+	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._HeightTexture);
+	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._NormalTexture);
+	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._LayerWeightsTexture);
+	RenderingSystem::Instance->DestroyRenderDataTable(_PatchRenderInformations[index]._RenderDataTable);
+
+	_PatchInformations.EraseAt(index);
+	_PatchRenderInformations.EraseAt(index);
 }

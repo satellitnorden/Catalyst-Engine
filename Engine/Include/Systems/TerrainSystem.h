@@ -111,6 +111,11 @@ private:
 	DynamicArray<TerrainPatchRenderInformation> _PatchRenderInformations;
 
 	/*
+	*	Returns the patch information index for the identifier.
+	*/
+	uint64 GetPatchInformationIndex(const uint64 identifier) const NOEXCEPT;
+
+	/*
 	*	Processes the update.
 	*/
 	void ProcessUpdate() NOEXCEPT;
@@ -149,5 +154,10 @@ private:
 	*	Generates a patch.
 	*/
 	void GeneratePatch(const Vector3 &worldPosition, const float patchSizeMultiplier, const uint8 normalResolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
+
+	/*
+	*	Destroys a patch.
+	*/
+	void DestroyPatch(const uint64 index) NOEXCEPT;
 
 };
