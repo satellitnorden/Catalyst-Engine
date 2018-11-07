@@ -283,6 +283,20 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 		}
 	}
 
+	//Check if a node should be restored.
+	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
+	{
+		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+		{
+			continue;
+		}
+
+		if (CheckRestoration(viewerPosition, &_QuadTree._RootNodes[i]))
+		{
+			return;
+		}
+	}
+
 	//Check if a node should be subdivided.
 	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
 	{
@@ -299,10 +313,44 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 }
 
 /*
+*	Checks restoration of a node. Returns whether or not the node was restored.
+*/
+bool TerrainSystem::CheckRestoration(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+{
+	/*
+	//If this node is already subdivided, check all of it's child nodes.
+	if (node->_Subdivided)
+	{
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			if (CheckRestoration(viewerPosition, &node->_ChildNodes[i]))
+			{
+				return true;
+			}
+		}
+	}
+
+	//Else, check if this node should be restored.
+	else
+	{
+		if (!ShouldBeSubdivided(viewerPosition, node))
+		{
+			RestoreNode(node);
+
+			return true;
+		}
+	}
+	*/
+
+	return false;
+}
+
+/*
 *	Checks subdivisions of a node. Returns whether or not the node was subdivided.
 */
 bool TerrainSystem::CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
+	//If this node is already subdivided, check all of it's child nodes.
 	if (node->_Subdivided)
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
@@ -314,11 +362,10 @@ bool TerrainSystem::CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadT
 		}
 	}
 
+	//Else, check if this node should be subdivided.
 	else
 	{
-		const bool shouldBeSubdivided{ node->_Depth < TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH && node->IsWithin(viewerPosition) };
-
-		if (shouldBeSubdivided && !node->_Subdivided)
+		if (ShouldBeSubdivided(viewerPosition, node))
 		{
 			SubdivideNode(node);
 
@@ -327,6 +374,23 @@ bool TerrainSystem::CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadT
 	}
 
 	return false;
+}
+
+/*
+*	Returns whether or not a node should be subdivided.
+*/
+bool TerrainSystem::ShouldBeSubdivided(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+{
+	return node->_Depth < TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH && node->IsWithin(viewerPosition);
+}
+
+/*
+*	Restores a node.
+*/
+void TerrainSystem::RestoreNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+{
+	_Update._Type = TerrainUpdate::Type::SubdivideNode;
+	_Update._RestoreNodeUpdate._Node = node;
 }
 
 /*

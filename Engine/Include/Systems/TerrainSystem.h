@@ -121,9 +121,24 @@ private:
 	void UpdateSystemAsynchronous() NOEXCEPT;
 
 	/*
+	*	Checks restoration of a node. Returns whether or not the node was restored.
+	*/
+	bool CheckRestoration(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+
+	/*
 	*	Checks subdivisions of a node. Returns whether or not the node was subdivided.
 	*/
 	bool CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+
+	/*
+	*	Returns whether or not a node should be subdivided.
+	*/
+	bool ShouldBeSubdivided(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+
+	/*
+	*	Restores a node.
+	*/
+	void RestoreNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Subdivides a node.
