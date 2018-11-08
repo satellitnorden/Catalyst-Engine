@@ -215,22 +215,34 @@ namespace TerrainGeneralUtilities
 
 				if (i == 0)
 				{
-					vertex._Borders |= BIT(3);
+					if (j != 0 && j != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
+					{
+						vertex._Borders |= BIT(3);
+					}
 				}
 
 				else if (i == TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 				{
-					vertex._Borders |= BIT(1);
+					if (j != 0 && j != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
+					{
+						vertex._Borders |= BIT(1);
+					}
 				}
 
 				if (j == 0)
 				{
-					vertex._Borders |= BIT(0);
+					if (i != 0 && i != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
+					{
+						vertex._Borders |= BIT(0);
+					}
 				}
 
 				else if (j == TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 				{
-					vertex._Borders |= BIT(2);
+					if (i != 0 && i != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
+					{
+						vertex._Borders |= BIT(2);
+					}
 				}
 
 				vertices->EmplaceFast(vertex);
