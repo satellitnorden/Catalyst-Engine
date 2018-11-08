@@ -154,16 +154,8 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 		case TerrainUpdate::Type::RemoveRootNode:
 		{
 			_QuadTree._RootGridPoints[_Update._RemoveRootNodeUpdate._Index] = GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM);
-
-			for (uint64 i{ 0 }, size{ _PatchInformations.Size() }; i < size; ++i)
-			{
-				if (_PatchInformations[i]._Identifier == _QuadTree._RootNodes[_Update._RemoveRootNodeUpdate._Index]._Identifier)
-				{
-					DestroyPatch(i);
-
-					break;
-				}
-			}
+			
+			RemoveNode(&_QuadTree._RootNodes[_Update._RemoveRootNodeUpdate._Index]);
 
 			break;
 		}
@@ -177,7 +169,6 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
 				const uint64 patchInformationIndex{ GetPatchInformationIndex(_Update._CombineNodeUpdate._Node->_ChildNodes[i]._Identifier) };
-
 				DestroyPatch(patchInformationIndex);
 			}
 
@@ -197,22 +188,9 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 
 		case TerrainUpdate::Type::SubdivideNode:
 		{
-			//Find the patch information for this node and delete it.
-			for (uint64 i{ 0 }, size{ _PatchInformations.Size() }; i < size; ++i)
-			{
-				if (_PatchInformations[i]._Identifier == _Update._SubdivideNodeUpdate._Node->_Identifier)
-				{
-					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._HeightTexture);
-					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._NormalTexture);
-					RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[i]._LayerWeightsTexture);
-					RenderingSystem::Instance->DestroyRenderDataTable(_PatchRenderInformations[i]._RenderDataTable);
-
-					_PatchInformations.EraseAt(i);
-					_PatchRenderInformations.EraseAt(i);
-
-					break;
-				}
-			}
+			//Find the patch information for this node and destroy it.
+			const uint64 patchInformationIndex{ GetPatchInformationIndex(_Update._SubdivideNodeUpdate._Node->_Identifier) };
+			DestroyPatch(patchInformationIndex);
 
 			//Actually subdivide node.
 			_Update._SubdivideNodeUpdate._Node->_Subdivided = true;
@@ -320,7 +298,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 
 			GeneratePatch(	GridPoint2::GridPointToWorldPosition(validGridPoint, TerrainConstants::TERRAIN_PATCH_SIZE),
 							1.0f,
-							TerrainQuadTreeUtilities::ResolutionMultiplier(1.0f),
+							TerrainQuadTreeUtilities::ResolutionMultiplier(0),
 							&_Update._AddRootNodeUpdate._PatchInformation,
 							&_Update._AddRootNodeUpdate._PatchRenderInformation);
 
@@ -328,58 +306,83 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 		}
 	}
 
-	//Check if a node should be combined.
-	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
+	//Check if a node should be subdivided.
+	for (uint8 depth{ TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH }; depth > 0; --depth)
 	{
-		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+		for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
 		{
-			continue;
-		}
+			if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+			{
+				continue;
+			}
 
-		if (CheckCombination(viewerPosition, &_QuadTree._RootNodes[i]))
-		{
-			return;
+			if (CheckCombination(depth, viewerPosition, &_QuadTree._RootNodes[i]))
+			{
+				return;
+			}
 		}
 	}
 
 	//Check if a node should be subdivided.
-	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
+	for (uint8 depth{ 0 }; depth < TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH; ++depth)
 	{
-		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+		for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
 		{
-			continue;
-		}
+			if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
+			{
+				continue;
+			}
 
-		if (CheckSubdivision(viewerPosition, &_QuadTree._RootNodes[i]))
-		{
-			return;
+			if (CheckSubdivision(depth, viewerPosition, &_QuadTree._RootNodes[i]))
+			{
+				return;
+			}
 		}
+	}
+}
+
+/*
+*	Removes a quad tree node.
+*/
+void TerrainSystem::RemoveNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+{
+	//If this node is subdivided, remove it's children as well.
+	if (node->_Subdivided)
+	{
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			RemoveNode(&node->_ChildNodes[i]);
+		}
+	}
+
+	else
+	{
+		//Destroy the patch.
+		const uint64 patchInformationIndex{ GetPatchInformationIndex(node->_Identifier) };
+		DestroyPatch(patchInformationIndex);
 	}
 }
 
 /*
 *	Checks combination of a node. Returns whether or not the node was combined.
 */
-bool TerrainSystem::CheckCombination(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+bool TerrainSystem::CheckCombination(const uint8 depth, const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->_Subdivided)
 	{
-		if (TerrainQuadTreeUtilities::ShouldBeCombined(*node, viewerPosition))
+		if (node->_Depth == depth && TerrainQuadTreeUtilities::ShouldBeCombined(*node, viewerPosition))
 		{
-			if (TerrainQuadTreeUtilities::CanBeCombined(node, &_QuadTree))
-			{
-				CombineNode(node);
+			CombineNode(node);
 
-				return true;
-			}
+			return true;
 		}
 
 		else
 		{
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				if (CheckCombination(viewerPosition, &node->_ChildNodes[i]))
+				if (CheckCombination(depth, viewerPosition, &node->_ChildNodes[i]))
 				{
 					return true;
 				}
@@ -393,14 +396,20 @@ bool TerrainSystem::CheckCombination(const Vector3 &viewerPosition, TerrainQuadT
 /*
 *	Checks subdivisions of a node. Returns whether or not the node was subdivided.
 */
-bool TerrainSystem::CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+bool TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
+	//Don't go further down than the depth.
+	if (node->_Depth > depth)
+	{
+		return false;
+	}
+
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->_Subdivided)
 	{
 		for (uint8 i{ 0 }; i < 4; ++i)
 		{
-			if (CheckSubdivision(viewerPosition, &node->_ChildNodes[i]))
+			if (CheckSubdivision(depth, viewerPosition, &node->_ChildNodes[i]))
 			{
 				return true;
 			}
@@ -412,16 +421,7 @@ bool TerrainSystem::CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadT
 	{
 		if (TerrainQuadTreeUtilities::ShouldBeSubdivided(*node, viewerPosition))
 		{
-			//If there is a requirement for this subdivision to happen, subdivide that node instead.
-			if (TerrainQuadTreeNode *const RESTRICT requiredNode{ TerrainQuadTreeUtilities::SubdivisionRequirement(node, &_QuadTree) })
-			{
-				SubdivideNode(requiredNode);
-			}
-
-			else
-			{
-				SubdivideNode(node);
-			}
+			SubdivideNode(node);
 
 			return true;
 		}
@@ -446,7 +446,7 @@ void TerrainSystem::CombineNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 
 	GeneratePatch(	worldPosition,
 					patchSizeMultiplier,
-					TerrainQuadTreeUtilities::ResolutionMultiplier(patchSizeMultiplier),
+					TerrainQuadTreeUtilities::ResolutionMultiplier(node->_Depth),
 					&_Update._CombineNodeUpdate._PatchInformation,
 					&_Update._CombineNodeUpdate._PatchRenderInformation);
 }
@@ -484,7 +484,7 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 	{
 		GeneratePatch(	positions[i],
 						patchSizeMultiplier,
-						TerrainQuadTreeUtilities::ResolutionMultiplier(patchSizeMultiplier),
+						TerrainQuadTreeUtilities::ResolutionMultiplier(node->_Depth),
 						&_Update._SubdivideNodeUpdate._PatchInformations[i],
 						&_Update._SubdivideNodeUpdate._PatchRenderInformations[i]);
 	}
@@ -533,7 +533,6 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 
 	TerrainGeneralUtilities::GenerateLayerWeightsTexture(	_Properties,
 															patchSizeMultiplier,
-															resolutionMultiplier,
 															worldPosition,
 															&patchInformation->_LayerWeightsTexture,
 															&patchRenderInformation->_RenderDataTable);

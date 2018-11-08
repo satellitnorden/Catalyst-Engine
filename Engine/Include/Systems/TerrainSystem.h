@@ -126,14 +126,19 @@ private:
 	void UpdateSystemAsynchronous() NOEXCEPT;
 
 	/*
+	*	Removes a quad tree node.
+	*/
+	void RemoveNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+
+	/*
 	*	Checks combination of a node. Returns whether or not the node was combined.
 	*/
-	bool CheckCombination(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+	bool CheckCombination(const uint8 depth, const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Checks subdivisions of a node. Returns whether or not the node was subdivided.
 	*/
-	bool CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+	bool CheckSubdivision(const uint8 depth, const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Combines a node.

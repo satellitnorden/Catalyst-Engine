@@ -357,6 +357,11 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float SquareRoot(const float number) NOEXCEPT
 	{
+		if (number == 0.0f)
+		{
+			return 0.0;
+		}
+
 		float squareRoot = number * 0.25f;
 
 		for (uint8 i = 0; i < 10; ++i)

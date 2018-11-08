@@ -71,6 +71,30 @@ public:
 	}
 
 	/*
+	*	Given a vector, return it's length, only taking into account the X and Y axis.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float LengthXY(const Vector3 &vector) NOEXCEPT
+	{
+		return CatalystBaseMath::SquareRoot(LengthSquaredXY(vector));
+	}
+
+	/*
+	*	Given a vector, return it's length, only taking into account the X and Z axis.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float LengthXZ(const Vector3 &vector) NOEXCEPT
+	{
+		return CatalystBaseMath::SquareRoot(LengthSquaredXZ(vector));
+	}
+
+	/*
+	*	Given a vector, return it's length, only taking into account the X and Y axis.
+	*/
+	FORCE_INLINE constexpr static NO_DISCARD float LengthYZ(const Vector3 &vector) NOEXCEPT
+	{
+		return CatalystBaseMath::SquareRoot(LengthSquaredYZ(vector));
+	}
+
+	/*
 	*	Given a vector, return it's length squared.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float LengthSquared(const Vector3 &vector) NOEXCEPT
@@ -79,7 +103,7 @@ public:
 	}
 
 	/*
-	*	Given a vector, return it's length squared only taking into account the X and Y axis.
+	*	Given a vector, return it's length squared, only taking into account the X and Y axis.
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float LengthSquaredXY(const Vector3 &vector) NOEXCEPT
 	{

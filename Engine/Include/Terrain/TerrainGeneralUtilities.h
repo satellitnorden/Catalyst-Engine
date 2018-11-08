@@ -96,7 +96,7 @@ namespace TerrainGeneralUtilities
 	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint8 resolutionMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture, RenderDataTableHandle *const RESTRICT renderDataTable) NOEXCEPT
 	{
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
-		const uint32 resolution{ TerrainConstants::TERRAIN_PATCH_RESOLUTION  * resolutionMultiplier };
+		const uint32 resolution{ TerrainConstants::TERRAIN_PATCH_RESOLUTION * resolutionMultiplier };
 
 		DynamicArray<byte> data;
 		data.UpsizeFast(resolution * resolution * 4);
@@ -141,20 +141,18 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates a layer weights texture.
 	*/
-	static void GenerateLayerWeightsTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint8 resolutionMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture, RenderDataTableHandle *const RESTRICT renderDataTable) NOEXCEPT
+	static void GenerateLayerWeightsTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture, RenderDataTableHandle *const RESTRICT renderDataTable) NOEXCEPT
 	{
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
-		const uint32 resolution{ TerrainConstants::TERRAIN_PATCH_RESOLUTION  * resolutionMultiplier };
-
 		DynamicArray<byte> data;
-		data.UpsizeFast(resolution * resolution * 4);
+		data.UpsizeFast(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION * 4);
 
-		for (uint32 i = 0; i < resolution; ++i)
+		for (uint32 i = 0; i < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++i)
 		{
-			for (uint32 j = 0; j < resolution; ++j)
+			for (uint32 j = 0; j < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++j)
 			{
-				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution - 1) };
-				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution - 1) };
+				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) };
 
 				const Vector3 worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 												0.0f,
@@ -164,16 +162,16 @@ namespace TerrainGeneralUtilities
 
 				properties._LayerWeightsGenerationFunction(properties, worldPosition, &layerWeights);
 
-				data[((j * resolution) + i) * 4] = static_cast<byte>(layerWeights._X * 255.0f);
-				data[((j * resolution) + i) * 4 + 1] = static_cast<byte>(layerWeights._Y * 255.0f);
-				data[((j * resolution) + i) * 4 + 2] = static_cast<byte>(layerWeights._Z * 255.0f);
-				data[((j * resolution) + i) * 4 + 3] = static_cast<byte>(layerWeights._W * 255.0f);
+				data[((j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i) * 4] = static_cast<byte>(layerWeights._X * 255.0f);
+				data[((j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i) * 4 + 1] = static_cast<byte>(layerWeights._Y * 255.0f);
+				data[((j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i) * 4 + 2] = static_cast<byte>(layerWeights._Z * 255.0f);
+				data[((j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i) * 4 + 3] = static_cast<byte>(layerWeights._W * 255.0f);
 			}
 		}
 
 		*texture = RenderingSystem::Instance->CreateTexture2D(	TextureData(	TextureDataContainer(data.Data(),
-																				resolution,
-																				resolution,
+																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
+																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
 																				4),
 																AddressMode::ClampToEdge,
 																TextureFilter::Linear,
