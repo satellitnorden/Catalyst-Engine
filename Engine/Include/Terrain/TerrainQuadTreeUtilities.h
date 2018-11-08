@@ -16,6 +16,49 @@ class TerrainQuadTreeUtilities
 public:
 
 	/*
+	*	Given a quad tree and a node, returns whether or not a node can be combined.
+	*/
+	static bool CanBeCombined(TerrainQuadTreeNode *const RESTRICT nodeToBeCombined, TerrainQuadTree *const RESTRICT quadTree) NOEXCEPT
+	{
+		//Calculate the middle point.
+		const Vector3 middlePoint{	nodeToBeCombined->_Minimum._X + ((nodeToBeCombined->_Maximum._X - nodeToBeCombined->_Minimum._X) * 0.5f),
+									0.0f,
+									nodeToBeCombined->_Minimum._Y + ((nodeToBeCombined->_Maximum._Y - nodeToBeCombined->_Minimum._Y) * 0.5f) };
+
+		//Calculate the patch size multiplier.
+		const float patchSizeMultiplier{ PatchSizeMultiplier(*nodeToBeCombined) };
+
+		//Calculate the positions.
+		const StaticArray<const Vector3, 8> positions
+		{
+			middlePoint + Vector3(-TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier, 0.0f, -TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier),
+			middlePoint + Vector3(-TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier, 0.0f, 0.0f),
+			middlePoint + Vector3(-TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier, 0.0f, TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier),
+
+			middlePoint + Vector3(0.0f, 0.0f, -TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier),
+			middlePoint + Vector3(0.0f, 0.0f, TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier),
+
+			middlePoint + Vector3(TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier, 0.0f, -TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier),
+			middlePoint + Vector3(TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier, 0.0f, 0.0f),
+			middlePoint + Vector3(TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier, 0.0f, TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier),
+		};
+
+		//Find the highest node.
+		for (const Vector3 &position : positions)
+		{
+			if (TerrainQuadTreeNode *const RESTRICT node{ FindHighestNode(position, quadTree) })
+			{
+				if (nodeToBeCombined->_Depth < node->_Depth)
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/*
 	*	Given a node, return it's resolution multiplier.
 	*/
 	static uint8 ResolutionMultiplier(const float patchSizeMultiplier) NOEXCEPT
@@ -32,7 +75,31 @@ public:
 	}
 
 	/*
-	*	Given a quad tree and a node, returns if the node should be subdivided.
+	*	Given a node and a position, returns if the node should be combined.
+	*/
+	static bool ShouldBeCombined(const TerrainQuadTreeNode &node, const Vector3 &position) NOEXCEPT
+	{
+		if (node._Subdivided)
+		{
+			if (node._ChildNodes[0]._Subdivided)
+			{
+				return false;
+			}
+
+			else
+			{
+				return !node.IsWithin(position);
+			}
+		}
+
+		else
+		{
+			return false;
+		}
+	}
+
+	/*
+	*	Given a node and a position, returns if the node should be subdivided.
 	*/
 	static bool ShouldBeSubdivided(const TerrainQuadTreeNode &node, const Vector3 &position) NOEXCEPT
 	{

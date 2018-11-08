@@ -34,7 +34,7 @@ public:
 
 };
 
-class TerrainRestoreNodeUpdate final
+class TerrainCombineNodeUpdate final
 {
 
 public:
@@ -77,7 +77,7 @@ public:
 		Invalid,
 		AddRootNode,
 		RemoveRootNode,
-		RestoreNode,
+		CombineNode,
 		SubdivideNode,
 	};
 
@@ -92,8 +92,8 @@ public:
 		//The remove root node update.
 		TerrainRemoveRootNodeUpdate _RemoveRootNodeUpdate;
 
-		//The restore node update.
-		TerrainRestoreNodeUpdate _RestoreNodeUpdate;
+		//The combine node update.
+		TerrainCombineNodeUpdate _CombineNodeUpdate;
 
 		//The subdivide node update.
 		TerrainSubdivideNodeUpdate _SubdivideNodeUpdate;

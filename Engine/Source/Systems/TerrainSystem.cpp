@@ -6,7 +6,6 @@
 #include <Core/Containers/StaticArray.h>
 #include <Core/General/CatalystProjectConfiguration.h>
 
-
 //Rendering.
 #include <Rendering/Engine/Viewer.h>
 
@@ -169,15 +168,29 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			break;
 		}
 
-		case TerrainUpdate::Type::RestoreNode:
+		case TerrainUpdate::Type::CombineNode:
 		{	
+			//Set the node back to not subdivided.
+			_Update._CombineNodeUpdate._Node->_Subdivided = false;
+
 			//Destroy the existing child nodes.
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				const uint64 patchInformationIndex{ GetPatchInformationIndex(_Update._RestoreNodeUpdate._Node->_ChildNodes[i]._Identifier) };
+				const uint64 patchInformationIndex{ GetPatchInformationIndex(_Update._CombineNodeUpdate._Node->_ChildNodes[i]._Identifier) };
 
 				DestroyPatch(patchInformationIndex);
 			}
+
+			MemoryUtilities::FreeMemory(_Update._CombineNodeUpdate._Node->_ChildNodes);
+
+			_Update._CombineNodeUpdate._Node->_ChildNodes = nullptr;
+
+			//Set the identifier.
+			_Update._CombineNodeUpdate._Node->_Identifier = _Update._CombineNodeUpdate._PatchInformation._Identifier;
+
+			//Add the new patch information.
+			_PatchInformations.EmplaceSlow(_Update._CombineNodeUpdate._PatchInformation);
+			_PatchRenderInformations.EmplaceSlow(_Update._CombineNodeUpdate._PatchRenderInformation);
 
 			break;
 		}
@@ -315,7 +328,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 		}
 	}
 
-	//Check if a node should be restored.
+	//Check if a node should be combined.
 	for (uint8 i{ 0 }, size{ static_cast<uint8>(_QuadTree._RootGridPoints.Size()) }; i < size; ++i)
 	{
 		if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
@@ -323,7 +336,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 			continue;
 		}
 
-		if (CheckRestoration(viewerPosition, &_QuadTree._RootNodes[i]))
+		if (CheckCombination(viewerPosition, &_QuadTree._RootNodes[i]))
 		{
 			return;
 		}
@@ -345,34 +358,34 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 }
 
 /*
-*	Checks restoration of a node. Returns whether or not the node was restored.
+*	Checks combination of a node. Returns whether or not the node was combined.
 */
-bool TerrainSystem::CheckRestoration(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+bool TerrainSystem::CheckCombination(const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
-	/*
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->_Subdivided)
 	{
-		for (uint8 i{ 0 }; i < 4; ++i)
+		if (TerrainQuadTreeUtilities::ShouldBeCombined(*node, viewerPosition))
 		{
-			if (CheckRestoration(viewerPosition, &node->_ChildNodes[i]))
+			if (TerrainQuadTreeUtilities::CanBeCombined(node, &_QuadTree))
 			{
+				CombineNode(node);
+
 				return true;
 			}
 		}
-	}
 
-	//Else, check if this node should be restored.
-	else
-	{
-		if (!ShouldBeSubdivided(viewerPosition, node))
+		else
 		{
-			RestoreNode(node);
-
-			return true;
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				if (CheckCombination(viewerPosition, &node->_ChildNodes[i]))
+				{
+					return true;
+				}
+			}
 		}
 	}
-	*/
 
 	return false;
 }
@@ -418,24 +431,24 @@ bool TerrainSystem::CheckSubdivision(const Vector3 &viewerPosition, TerrainQuadT
 }
 
 /*
-*	Restores a node.
+*	Combine a node.
 */
-void TerrainSystem::RestoreNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+void TerrainSystem::CombineNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
-	_Update._Type = TerrainUpdate::Type::RestoreNode;
-	_Update._RestoreNodeUpdate._Node = node;
+	_Update._Type = TerrainUpdate::Type::CombineNode;
+	_Update._CombineNodeUpdate._Node = node;
 
 	const float patchSizeMultiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) };
 
-	const Vector3 worldPosition{	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier,
+	const Vector3 worldPosition{	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
 									0.0f,
-									node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
+									node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f };
 
 	GeneratePatch(	worldPosition,
 					patchSizeMultiplier,
 					TerrainQuadTreeUtilities::ResolutionMultiplier(patchSizeMultiplier),
-					&_Update._RestoreNodeUpdate._PatchInformation,
-					&_Update._RestoreNodeUpdate._PatchRenderInformation);
+					&_Update._CombineNodeUpdate._PatchInformation,
+					&_Update._CombineNodeUpdate._PatchRenderInformation);
 }
 
 /*
