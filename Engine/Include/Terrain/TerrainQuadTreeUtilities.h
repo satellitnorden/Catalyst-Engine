@@ -26,6 +26,33 @@ public:
 	}
 
 	/*
+	*	Given a quad tree and a node, returning the neighboring nodes in the order upper, right, lower, left.
+	*/
+	static void NeighboringNodes(const TerrainQuadTree &quadTree, const TerrainQuadTreeNode &node, StaticArray<const TerrainQuadTreeNode *RESTRICT, 4> *const RESTRICT neighboringNodes) NOEXCEPT
+	{
+		//Calculate the middle point of the node.
+		const Vector3 middlePoint{ MiddlePoint(node) };
+
+		//Calculate the patch size multiplier.
+		const float patchSizeMultiplier{ PatchSizeMultiplier(node) };
+
+		//Calculate the positions.
+		const StaticArray<const Vector3, 4> positions
+		{
+			middlePoint + Vector3(0.0f, 0.0f, -TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier),
+			middlePoint + Vector3(TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier, 0.0f, 0.0f),
+			middlePoint + Vector3(0.0f, 0.0f, TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier),
+			middlePoint + Vector3(-TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier, 0.0f, 0.0f)
+		};
+
+		//Find the node with the highest depth for each position.
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			neighboringNodes->At(i) = FindHighestNode(quadTree, positions[i]);
+		}
+	}
+
+	/*
 	*	Given a node, return it's resolution multiplier.
 	*/
 	static uint8 ResolutionMultiplier(const uint8 depth) NOEXCEPT
@@ -70,6 +97,51 @@ public:
 
 		return	node._Depth < TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH
 				&& length <= TerrainConstants::TERRAIN_PATCH_SIZE * PatchSizeMultiplier(node) * 0.9f;
+	}
+
+private:
+
+	/*
+	*	Given a quad tree and a position, find the node with the highest depth within the quad tree.
+	*/
+	RESTRICTED static const TerrainQuadTreeNode *const RESTRICT FindHighestNode(const TerrainQuadTree &quadTree, const Vector3 &position) NOEXCEPT
+	{
+		for (const TerrainQuadTreeNode &rootNode : quadTree._RootNodes)
+		{
+			if (const TerrainQuadTreeNode *const RESTRICT node{ FindHighestNode(rootNode, position) })
+			{
+				return node;
+			}
+		}
+
+		return nullptr;
+	}
+
+	/*
+	*	Given a node and a position, find the node with the highest depth within the node.
+	*/
+	RESTRICTED static const TerrainQuadTreeNode *const RESTRICT FindHighestNode(const TerrainQuadTreeNode &node, const Vector3 &position) NOEXCEPT
+	{
+		if (node._Subdivided)
+		{
+			for (uint8 i{ 0 }; i < 4; ++i)
+			{
+				if (const TerrainQuadTreeNode *const RESTRICT childNode{ FindHighestNode(node._ChildNodes[i], position) })
+				{
+					return childNode;
+				}
+			}
+		}
+
+		if (node.IsWithin(position))
+		{
+			return &node;
+		}
+
+		else
+		{
+			return nullptr;
+		}
 	}
 
 };

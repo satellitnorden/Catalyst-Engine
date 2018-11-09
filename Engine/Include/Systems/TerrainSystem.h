@@ -160,4 +160,14 @@ private:
 	*/
 	void DestroyPatch(const uint64 index) NOEXCEPT;
 
+	/*
+	*	Traverses the quad tree, calculates new borders for all nodes and fills in the update.
+	*/
+	void CalculateNewborders() NOEXCEPT;
+
+	/*
+	*	Calculates new borders for one node and fills in the update.
+	*/
+	void CalculateNewborders(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+
 };

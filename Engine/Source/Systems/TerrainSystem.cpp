@@ -272,6 +272,9 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 			_Update._Type = TerrainUpdate::Type::RemoveRootNode;
 			_Update._RemoveRootNodeUpdate._Index = i;
 
+			//Calculate new borders.
+			CalculateNewborders();
+
 			return;
 		}
 	}
@@ -302,6 +305,9 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 							&_Update._AddRootNodeUpdate._PatchInformation,
 							&_Update._AddRootNodeUpdate._PatchRenderInformation);
 
+			//Calculate new borders.
+			CalculateNewborders();
+
 			return;
 		}
 	}
@@ -318,6 +324,9 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 
 			if (CheckCombination(depth, viewerPosition, &_QuadTree._RootNodes[i]))
 			{
+				//Calculate new borders.
+				CalculateNewborders();
+
 				return;
 			}
 		}
@@ -335,6 +344,9 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 
 			if (CheckSubdivision(depth, viewerPosition, &_QuadTree._RootNodes[i]))
 			{
+				//Calculate new borders.
+				CalculateNewborders();
+
 				return;
 			}
 		}
@@ -495,8 +507,6 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 */
 void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patchSizeMultiplier, const uint8 resolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
-	ASSERT(resolutionMultiplier > 0, "No");
-
 	//Get the material and the displacement information.
 	TerrainMaterial material;
 
@@ -553,4 +563,38 @@ void TerrainSystem::DestroyPatch(const uint64 index) NOEXCEPT
 
 	_PatchInformations.EraseAt(index);
 	_PatchRenderInformations.EraseAt(index);
+}
+
+/*
+*	Traverses the quad tree, calculates new borders for all nodes and fills in the update.
+*/
+void TerrainSystem::CalculateNewborders() NOEXCEPT
+{
+	//Iterate over all root nodes and calculate new borders for them.
+	for (TerrainQuadTreeNode &rootNode : _QuadTree._RootNodes)
+	{
+		CalculateNewborders(&rootNode);
+	}
+}
+
+/*
+*	Calculates new borders for one node and fills in the update.
+*/
+void TerrainSystem::CalculateNewborders(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+{
+	//If this node is subdivided, calculate new borders for it's child nodes.
+	if (node->_Subdivided)
+	{
+		for (uint8 i{ 0 }; i < 4; ++i)
+		{
+			CalculateNewborders(&node->_ChildNodes[i]);
+		}
+	}
+
+	else
+	{
+		//Retrieve the neighboring nodes.
+		StaticArray<const TerrainQuadTreeNode *RESTRICT, 4> neighboringNodes;
+		TerrainQuadTreeUtilities::NeighboringNodes(_QuadTree, *node, &neighboringNodes);
+	}
 }

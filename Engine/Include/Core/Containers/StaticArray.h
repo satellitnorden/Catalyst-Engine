@@ -109,6 +109,22 @@ public:
 	}
 
 	/*
+	*	Returns the element at the given index, const.
+	*/
+	constexpr const Type& At(const uint64 index) const NOEXCEPT
+	{
+		return _Array[index];
+	}
+
+	/*
+	*	Returns the element at the given index, non-const.
+	*/
+	constexpr Type& At(const uint64 index) NOEXCEPT
+	{
+		return _Array[index];
+	}
+
+	/*
 	*	Returns a pointer to the data of the array, const.
 	*/
 	RESTRICTED constexpr const Type *const RESTRICT Data() const NOEXCEPT
