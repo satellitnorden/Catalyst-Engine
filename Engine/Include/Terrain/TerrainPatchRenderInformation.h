@@ -23,4 +23,7 @@ public:
 	//The patch size.
 	float _PatchSize;
 
+	//The borders.
+	int32 _Borders;
+
 };

@@ -214,6 +214,17 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			break;
 		}
 	}
+
+	//Process the borders updats.
+	if (_Update._Type != TerrainUpdate::Type::Invalid)
+	{
+		for (Pair<TerrainPatchRenderInformation *RESTRICT, const int32> &pair : _Update._BordersUpdates)
+		{
+			pair._First->_Borders = pair._Second;
+		}
+
+		_Update._BordersUpdates.ClearFast();
+	}
 }
 
 /*
@@ -520,6 +531,7 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 	patchRenderInformation->_Visibility = VisibilityFlag::None;
 	patchRenderInformation->_WorldPosition = Vector2(worldPosition._X, worldPosition._Z);
 	patchRenderInformation->_PatchSize = TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier;
+	patchRenderInformation->_Borders = 0;
 
 	RenderingSystem::Instance->CreateRenderDataTable(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain), &patchRenderInformation->_RenderDataTable);
 
@@ -582,6 +594,7 @@ void TerrainSystem::CalculateNewborders() NOEXCEPT
 */
 void TerrainSystem::CalculateNewborders(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
+	/*
 	//If this node is subdivided, calculate new borders for it's child nodes.
 	if (node->_Subdivided)
 	{
@@ -596,5 +609,38 @@ void TerrainSystem::CalculateNewborders(TerrainQuadTreeNode *const RESTRICT node
 		//Retrieve the neighboring nodes.
 		StaticArray<const TerrainQuadTreeNode *RESTRICT, 4> neighboringNodes;
 		TerrainQuadTreeUtilities::NeighboringNodes(_QuadTree, *node, &neighboringNodes);
+
+		//Calculate new borders.
+		int32 borders{ 0 };
+
+		if (neighboringNodes[0] && neighboringNodes[0]->_Depth < node->_Depth)
+		{
+			borders |= TerrainConstants::TERRAIN_BORDER_UPPER;
+		}
+
+		if (neighboringNodes[1] && neighboringNodes[1]->_Depth < node->_Depth)
+		{
+			borders |= TerrainConstants::TERRAIN_BORDER_RIGHT;
+		}
+
+		if (neighboringNodes[2] && neighboringNodes[2]->_Depth < node->_Depth)
+		{
+			borders |= TerrainConstants::TERRAIN_BORDER_LOWER;
+		}
+
+		if (neighboringNodes[3] && neighboringNodes[3]->_Depth < node->_Depth)
+		{
+			borders |= TerrainConstants::TERRAIN_BORDER_LEFT;
+		}
+
+		//Find the terrain patch render information index for this node.
+		const uint64 patchRenderInformationIndex{ GetPatchInformationIndex(node->_Identifier) };
+
+		//If the borders differ, add the new borders to the borders updates.
+		if (_PatchRenderInformations[patchRenderInformationIndex]._Borders != borders)
+		{
+			_Update._BordersUpdates.EmplaceSlow(Pair<TerrainPatchRenderInformation *RESTRICT, const int32>(&_PatchRenderInformations[patchRenderInformationIndex], borders));
+		}
 	}
+	*/
 }

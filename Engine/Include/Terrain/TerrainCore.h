@@ -6,6 +6,10 @@
 //Terrain constants.
 namespace TerrainConstants
 {
+	constexpr int32 TERRAIN_BORDER_UPPER{ BIT(0) };
+	constexpr int32 TERRAIN_BORDER_RIGHT{ BIT(1) };
+	constexpr int32 TERRAIN_BORDER_LOWER{ BIT(2) };
+	constexpr int32 TERRAIN_BORDER_LEFT{ BIT(3) };
 	constexpr uint8 TERRAIN_QUAD_TREE_MAX_DEPTH{ 10 };
 	constexpr uint32 TERRAIN_PATCH_RESOLUTION{ 64 };
 	constexpr float TERRAIN_PATCH_SIZE{ 65'536.0f };
@@ -21,15 +25,3 @@ class Vector4;
 using HeightGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3 &worldPosition, float *const RESTRICT height);
 using LayerWeightsGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3 &worldPosition, Vector4 *const RESTRICT layerWeights);
 using PatchPropertiesGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3 &worldPosition, TerrainMaterial *const RESTRICT material);
-
-//Enumeration covering all terrain borders.
-enum class TerrainBorder : uint8
-{
-	None = BIT(0),
-	Upper = BIT(1),
-	Right = BIT(2),
-	Lower = BIT(3),
-	Left = BIT(4)
-};
-
-ENUMERATION_BIT_OPERATIONS(TerrainBorder);

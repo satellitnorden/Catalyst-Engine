@@ -217,7 +217,7 @@ namespace TerrainGeneralUtilities
 				{
 					if (j != 0 && j != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 					{
-						vertex._Borders |= BIT(3);
+						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_LEFT;
 					}
 				}
 
@@ -225,7 +225,7 @@ namespace TerrainGeneralUtilities
 				{
 					if (j != 0 && j != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 					{
-						vertex._Borders |= BIT(1);
+						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_RIGHT;
 					}
 				}
 
@@ -233,7 +233,7 @@ namespace TerrainGeneralUtilities
 				{
 					if (i != 0 && i != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 					{
-						vertex._Borders |= BIT(0);
+						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_UPPER;
 					}
 				}
 
@@ -241,7 +241,7 @@ namespace TerrainGeneralUtilities
 				{
 					if (i != 0 && i != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 					{
-						vertex._Borders |= BIT(2);
+						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_LOWER;
 					}
 				}
 

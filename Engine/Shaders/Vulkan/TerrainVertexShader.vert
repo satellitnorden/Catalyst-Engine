@@ -8,7 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define VERTEX_BORDER_OFFSET (1.0f / (64.0f))
+#define VERTEX_BORDER_OFFSET (1.0f / (63.0f))
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData

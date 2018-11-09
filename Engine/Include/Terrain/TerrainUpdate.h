@@ -2,7 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
-
+#include <Core/General/Pair.h>
 
 //Terrain.
 #include <Terrain/TerrainPatchInformation.h>
@@ -98,6 +98,9 @@ public:
 		//The subdivide node update.
 		TerrainSubdivideNodeUpdate _SubdivideNodeUpdate;
 	};
+
+	//The borders updates.
+	DynamicArray<Pair<TerrainPatchRenderInformation *RESTRICT, const int32>> _BordersUpdates;
 
 	/*
 	*	Default constructor
