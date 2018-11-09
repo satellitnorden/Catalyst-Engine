@@ -162,22 +162,11 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 
 		case TerrainUpdate::Type::CombineNode:
 		{	
-			//Set the node back to not subdivided.
-			_Update._CombineNodeUpdate._Node->_Subdivided = false;
-
 			//Destroy the existing child nodes.
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				const uint64 patchInformationIndex{ GetPatchInformationIndex(_Update._CombineNodeUpdate._Node->_ChildNodes[i]._Identifier) };
-				DestroyPatch(patchInformationIndex);
+				DestroyPatch(_Update._CombineNodeUpdate._PatchInformationIdentifiers[i]);
 			}
-
-			MemoryUtilities::FreeMemory(_Update._CombineNodeUpdate._Node->_ChildNodes);
-
-			_Update._CombineNodeUpdate._Node->_ChildNodes = nullptr;
-
-			//Set the identifier.
-			_Update._CombineNodeUpdate._Node->_Identifier = _Update._CombineNodeUpdate._PatchInformation._Identifier;
 
 			//Add the new patch information.
 			_PatchInformations.EmplaceSlow(_Update._CombineNodeUpdate._PatchInformation);
@@ -460,6 +449,22 @@ void TerrainSystem::CombineNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 					TerrainQuadTreeUtilities::ResolutionMultiplier(node->_Depth),
 					&_Update._CombineNodeUpdate._PatchInformation,
 					&_Update._CombineNodeUpdate._PatchRenderInformation);
+
+	//Set the node back to not subdivided.
+	node->_Subdivided = false;
+
+	//Add the patch information identifiers.
+	for (uint8 i{ 0 }; i < 4; ++i)
+	{
+		_Update._CombineNodeUpdate._PatchInformationIdentifiers[i] = GetPatchInformationIndex(node->_ChildNodes[i]._Identifier);
+	}
+
+	MemoryUtilities::FreeMemory(node->_ChildNodes);
+
+	node->_ChildNodes = nullptr;
+
+	//Set the identifier.
+	node->_Identifier = _Update._CombineNodeUpdate._PatchInformation._Identifier;
 }
 
 /*

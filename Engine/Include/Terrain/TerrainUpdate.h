@@ -48,6 +48,9 @@ public:
 	//The patch render information.
 	TerrainPatchRenderInformation _PatchRenderInformation;
 
+	//The identifiers for the patch informations to destroy.
+	StaticArray<uint64, 4> _PatchInformationIdentifiers;
+
 };
 
 class TerrainSubdivideNodeUpdate final

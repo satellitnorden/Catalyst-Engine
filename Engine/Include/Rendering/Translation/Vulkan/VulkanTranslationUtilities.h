@@ -85,14 +85,14 @@ public:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::AntiAliasing);
 			}
-#if !defined(CATALYST_FINAL)
+
 			default:
 			{
+#if !defined(CATALYST_FINAL)
 				ASSERT(false, "Unhandled case.");
-
+#endif
 				return 0;
 			}
-#endif
 		}
 	}
 
