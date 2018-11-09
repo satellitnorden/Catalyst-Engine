@@ -192,21 +192,9 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			const uint64 patchInformationIndex{ GetPatchInformationIndex(_Update._SubdivideNodeUpdate._Node->_Identifier) };
 			DestroyPatch(patchInformationIndex);
 
-			//Actually subdivide node.
-			_Update._SubdivideNodeUpdate._Node->_Subdivided = true;
-			_Update._SubdivideNodeUpdate._Node->_ChildNodes = static_cast<TerrainQuadTreeNode *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(TerrainQuadTreeNode) * 4));
-
+			//Add the new patch informations.
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Depth = _Update._SubdivideNodeUpdate._Node->_Depth + 1;
-				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Subdivided = false;
-				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Identifier = _Update._SubdivideNodeUpdate._PatchInformations[i]._Identifier;
-				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._ChildNodes = nullptr;
-				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Minimum._X = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Minimum._X;
-				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Minimum._Y = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Minimum._Z;
-				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Maximum._X = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Maximum._X;
-				_Update._SubdivideNodeUpdate._Node->_ChildNodes[i]._Maximum._Y = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Maximum._Z;
-
 				_PatchInformations.EmplaceSlow(_Update._SubdivideNodeUpdate._PatchInformations[i]);
 				_PatchRenderInformations.EmplaceSlow(_Update._SubdivideNodeUpdate._PatchRenderInformations[i]);
 			}
@@ -503,6 +491,9 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f)
 	};
 
+	node->_Subdivided = true;
+	node->_ChildNodes = static_cast<TerrainQuadTreeNode *const RESTRICT>(MemoryUtilities::AllocateMemory(sizeof(TerrainQuadTreeNode) * 4));
+
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
 		GeneratePatch(	positions[i],
@@ -510,6 +501,15 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 						TerrainQuadTreeUtilities::ResolutionMultiplier(node->_Depth),
 						&_Update._SubdivideNodeUpdate._PatchInformations[i],
 						&_Update._SubdivideNodeUpdate._PatchRenderInformations[i]);
+
+		node->_ChildNodes[i]._Depth = _Update._SubdivideNodeUpdate._Node->_Depth + 1;
+		node->_ChildNodes[i]._Subdivided = false;
+		node->_ChildNodes[i]._Identifier = _Update._SubdivideNodeUpdate._PatchInformations[i]._Identifier;
+		node->_ChildNodes[i]._ChildNodes = nullptr;
+		node->_ChildNodes[i]._Minimum._X = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Minimum._X;
+		node->_ChildNodes[i]._Minimum._Y = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Minimum._Z;
+		node->_ChildNodes[i]._Maximum._X = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Maximum._X;
+		node->_ChildNodes[i]._Maximum._Y = _Update._SubdivideNodeUpdate._PatchInformations[i]._AxisAlignedBoundingBox._Maximum._Z;
 	}
 }
 
