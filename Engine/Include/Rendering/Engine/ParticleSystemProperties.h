@@ -8,20 +8,22 @@
 #include <Math/Vector2.h>
 #include <Math/Vector3.h>
 
+	//Enumeration covering all different particle system properties.
+enum class ParticleSystemProperty : int32
+{
+	AffectedByWind = BIT(0),
+	Looping = BIT(1)
+};
+
+ENUMERATION_BIT_OPERATIONS(ParticleSystemProperty);
+
 class ParticleSystemProperties final
 {
 
 public:
 
-	//Enumeration covering all different particle system properties.
-	enum class ParticleSystemProperty : int32
-	{
-		AffectedByWind = BIT(0),
-		Looping = BIT(1)
-	};
-
 	//The properties.
-	int32 _Properties;
+	ParticleSystemProperty _Properties;
 
 	//The fade time.
 	float _FadeTime;

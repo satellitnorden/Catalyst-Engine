@@ -13,6 +13,7 @@
 
 //Preprocessor defines.
 #define CREATE_INTERMEDIATE_RESOURCES false
+#define CREATE_RESOURCE_COLLECTION false
 
 namespace ClairvoyantResourceCreation
 {
@@ -22,15 +23,6 @@ namespace ClairvoyantResourceCreation
 	*/
 	void CreateResources() NOEXCEPT
 	{
-#if !defined(CATALYST_FINAL)
-		if (true)
-#else
-		if (true)
-#endif
-		{
-			return;
-		}
-
 #if CREATE_INTERMEDIATE_RESOURCES
 		{
 			//Create the night environment material.
@@ -259,16 +251,16 @@ namespace ClairvoyantResourceCreation
 		}
 
 		{
-			//Create the test material.
+			//Create the tower material.
 			PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
 
-			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\TestMaterial";
-			parameters._ID = "TestMaterial";
+			parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\TowerMaterial";
+			parameters._ID = "TowerMaterial";
 			parameters._MipmapLevels = 9;
-			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Test\\Albedo.png";
-			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Test\\NormalMap.png";
-			parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Test\\Roughness.png";
-			parameters._MetallicFile = "..\\..\\..\\Resources\\Raw\\Textures\\Test\\Metallic.png";
+			parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\General\\Tower\\Albedo.png";
+			parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\General\\Tower\\NormalMap.png";
+			parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\General\\Tower\\Roughness.png";
+			parameters._MetallicFile = "..\\..\\..\\Resources\\Raw\\Textures\\General\\Tower\\Metallic.png";
 			parameters._AmbientOcclusionFile = nullptr;
 			parameters._ThicknessFile = nullptr;
 
@@ -433,6 +425,7 @@ namespace ClairvoyantResourceCreation
 		}
 #endif
 
+#if CREATE_RESOURCE_COLLECTION
 		{
 			//Create the resource collection.
 			ResourceCollectionCreator::ResourceCollectionCreationParameters parameters;
@@ -455,7 +448,7 @@ namespace ClairvoyantResourceCreation
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailDefaultGrassModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailDefaultGrassModel.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailDefaultGrassModel.cr");
-			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TestMaterial.cr");
+			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TowerMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\RockVolcanicMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TreeStumpMaterial.cr");
 			parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\TestModel.cr");
@@ -469,6 +462,7 @@ namespace ClairvoyantResourceCreation
 
 			ResourceCollectionCreator::CreateResourceCollection(parameters);
 		}
+#endif
 	}
 
 }

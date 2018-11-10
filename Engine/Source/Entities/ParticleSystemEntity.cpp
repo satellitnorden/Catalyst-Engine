@@ -24,7 +24,7 @@ bool ParticleSystemEntity::ShouldAutomaticallyTerminate() const NOEXCEPT
 {
 	//Return whether or not this entity should automatically terminate.
 	const ParticleSystemProperties &properties{ ComponentManager::GetParticleSystemParticleSystemComponents()[_ComponentsIndex]._Properties };
-	const bool isLooping{ (properties._Properties & static_cast<uint8>(ParticleSystemProperties::ParticleSystemProperty::Looping)) == static_cast<uint8>(ParticleSystemProperties::ParticleSystemProperty::Looping) };
+	const bool isLooping{ TEST_BIT(properties._Properties, ParticleSystemProperty::Looping) };
 
 	if (isLooping)
 	{

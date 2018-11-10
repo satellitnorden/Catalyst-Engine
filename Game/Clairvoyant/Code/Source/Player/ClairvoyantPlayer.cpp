@@ -61,7 +61,7 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 	const GamepadState *const RESTRICT state{ InputSystem::Instance->GetGamepadState() };
 
 	//Switch whether or not to constraint the viewer to the ground.
-	static bool constrainToTerrain{ false };
+	static bool constrainToTerrain{ true };
 
 	if (state->_A == ButtonState::Pressed)
 	{
