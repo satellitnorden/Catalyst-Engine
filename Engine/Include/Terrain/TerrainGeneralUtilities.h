@@ -202,9 +202,12 @@ namespace TerrainGeneralUtilities
 		vertices->Reserve(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 		indices->Reserve((TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) * (TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) * 6);
 
-		for (uint32 i = 0; i < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++i)
+		uint32 x{ 0 };
+		uint32 y{ 0 };
+
+		for (uint32 i{ 0 }; i < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++i, x = x < 3 ? x + 1 : 0)
 		{
-			for (uint32 j = 0; j < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++j)
+			for (uint32 j{ 0 }; j < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++j, y = y < 3 ? y + 1 : 0)
 			{
 				TerrainVertex vertex;
 
@@ -213,35 +216,59 @@ namespace TerrainGeneralUtilities
 
 				vertex._Borders = 0;
 
+				//Left.
 				if (i == 0)
 				{
-					if (j & static_cast<uint32>(1))
+					if (y == 1 || y == 3)
 					{
-						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_LEFT;
+						vertex._Borders |= BIT(6);
+					}
+
+					if (y == 2 || y == 3)
+					{
+						vertex._Borders |= BIT(7);
 					}
 				}
 
+				//Right.
 				else if (i == TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 				{
-					if (j & static_cast<uint32>(1))
+					if (y == 1 || y == 3)
 					{
-						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_RIGHT;
+						vertex._Borders |= BIT(2);
+					}
+
+					if (y == 2 || y == 3)
+					{
+						vertex._Borders |= BIT(3);
 					}
 				}
 
+				//Upper.
 				if (j == 0)
 				{
-					if (i & static_cast<uint32>(1))
+					if (x == 1 || x == 3)
 					{
-						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_UPPER;
+						vertex._Borders |= BIT(0);
+					}
+
+					if (x == 2 || x == 3)
+					{
+						vertex._Borders |= BIT(1);
 					}
 				}
 
+				//Lower.
 				else if (j == TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 				{
-					if (i & static_cast<uint32>(1))
+					if (x == 1 || x == 3)
 					{
-						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_LOWER;
+						vertex._Borders |= BIT(4);
+					}
+
+					if (x == 2 || x == 3)
+					{
+						vertex._Borders |= BIT(5);
 					}
 				}
 

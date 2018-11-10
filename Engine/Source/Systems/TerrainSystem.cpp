@@ -619,24 +619,80 @@ void TerrainSystem::CalculateNewborders(TerrainQuadTreeNode *const RESTRICT node
 		//Calculate new borders.
 		int32 borders{ 0 };
 
-		if (neighboringNodes[0] && neighboringNodes[0]->_Depth < node->_Depth)
 		{
-			borders |= TerrainConstants::TERRAIN_BORDER_UPPER;
+			const int32 delta{ neighboringNodes[0] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboringNodes[0]->_Depth) : 0 };
+
+			if (delta >= 1)
+			{
+				borders |= BIT(0);
+			}
+
+			if (delta >= 2)
+			{
+				borders |= BIT(1);
+			}
+
+			if (delta >= 3)
+			{
+				ASSERT(false, "Add support for higher deltas!");
+			}
 		}
 
-		if (neighboringNodes[1] && neighboringNodes[1]->_Depth < node->_Depth)
 		{
-			borders |= TerrainConstants::TERRAIN_BORDER_RIGHT;
+			const int32 delta{ neighboringNodes[1] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboringNodes[1]->_Depth) : 0 };
+
+			if (delta >= 1)
+			{
+				borders |= BIT(2);
+			}
+
+			if (delta >= 2)
+			{
+				borders |= BIT(3);
+			}
+
+			if (delta >= 3)
+			{
+				ASSERT(false, "Add support for higher deltas!");
+			}
 		}
 
-		if (neighboringNodes[2] && neighboringNodes[2]->_Depth < node->_Depth)
 		{
-			borders |= TerrainConstants::TERRAIN_BORDER_LOWER;
+			const int32 delta{ neighboringNodes[2] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboringNodes[2]->_Depth) : 0 };
+
+			if (delta >= 1)
+			{
+				borders |= BIT(4);
+			}
+
+			if (delta >= 2)
+			{
+				borders |= BIT(5);
+			}
+
+			if (delta >= 3)
+			{
+				ASSERT(false, "Add support for higher deltas!");
+			}
 		}
 
-		if (neighboringNodes[3] && neighboringNodes[3]->_Depth < node->_Depth)
 		{
-			borders |= TerrainConstants::TERRAIN_BORDER_LEFT;
+			const int32 delta{ neighboringNodes[3] ? static_cast<int32>(node->_Depth) - static_cast<int32>(neighboringNodes[3]->_Depth) : 0 };
+
+			if (delta >= 1)
+			{
+				borders |= BIT(6);
+			}
+
+			if (delta >= 2)
+			{
+				borders |= BIT(7);
+			}
+
+			if (delta >= 3)
+			{
+				ASSERT(false, "Add support for higher deltas!");
+			}
 		}
 
 		//Find the terrain patch render information index for this node.

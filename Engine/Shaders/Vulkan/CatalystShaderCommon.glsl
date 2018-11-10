@@ -65,6 +65,11 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
 /*
+*   Defines the bit at the specified index.
+*/
+#define BIT(index) (1 << (index))
+
+/*
 *   Calculates the average of a fragment.
 */
 float CalculateAverage(vec3 fragment)
