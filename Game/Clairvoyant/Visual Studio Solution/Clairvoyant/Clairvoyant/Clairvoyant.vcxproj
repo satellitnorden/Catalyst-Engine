@@ -195,9 +195,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Core\Utilities\DebugUtilities.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\DynamicPhysicalEntity.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Entity.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\ParticleSystemEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\DynamicPhysicalEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\Entity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\ParticleSystemEntity.cpp" />
+    <ClCompile Include="..\..\..\..\..\Engine\Source\Entities\Types\PointLightEntity.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Managers\RenderingConfigurationManager.cpp" />

@@ -235,6 +235,9 @@
     <Filter Include="Entities\Include\Creation">
       <UniqueIdentifier>{121f9da9-25c9-4b47-bf36-868c26fa0ba9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entities\Source\Types">
+      <UniqueIdentifier>{0d438a91-5012-47eb-bb85-16d016f8be17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Components\ComponentManager.h">
@@ -996,9 +999,6 @@
     <ClInclude Include="..\..\..\Include\Lighting\DirectionalLight.h">
       <Filter>Lighting\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Lighting\PointLight.h">
-      <Filter>Lighting\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Lighting\SpotLight.h">
       <Filter>Lighting\Include</Filter>
     </ClInclude>
@@ -1092,22 +1092,16 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\ParticleSystemInitializationData.h">
       <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\PointLightEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\PointLightInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
       <Filter>Components\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\Entity.cpp">
-      <Filter>Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\ParticleSystemEntity.cpp">
-      <Filter>Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\PointLightEntity.cpp">
-      <Filter>Entities\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\SpotLightEntity.cpp">
-      <Filter>Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp">
       <Filter>Managers\Source</Filter>
@@ -1261,9 +1255,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\SkyRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Source\Entities\DynamicPhysicalEntity.cpp">
-      <Filter>Entities\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DynamicPhysicalRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
@@ -1528,6 +1519,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\BloomVerticalRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\DynamicPhysicalEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp">
+      <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\ParticleSystemEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Entities\Types\PointLightEntity.cpp">
+      <Filter>Entities\Source\Types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

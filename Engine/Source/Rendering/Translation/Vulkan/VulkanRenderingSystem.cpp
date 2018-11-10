@@ -4,6 +4,9 @@
 //Components.
 #include <Components/ComponentManager.h>
 
+//Lighting.
+#include <Lighting/LightingCore.h>
+
 //Managers.
 #include <Managers/EnvironmentManager.h>
 
@@ -2162,16 +2165,16 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 
 			else
 			{
-				currentPrimaryCommandBuffer->CommandBeginRenderPass(	_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
-																		_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
-																		renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
-																		VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
+			currentPrimaryCommandBuffer->CommandBeginRenderPass(_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
+				_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
+				renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
+				VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 			}
 		}
 
 		else
 		{
-			currentPrimaryCommandBuffer->CommandNextSubpass();
+		currentPrimaryCommandBuffer->CommandNextSubpass();
 		}
 
 		//Record the execute commands.
@@ -2259,7 +2262,10 @@ void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
 		_DynamicUniformData._PointLightColors[counter] = pointLightComponent->_Color;
 		_DynamicUniformData._PointLightWorldPositions[counter] = pointLightComponent->_Position;
 
-		++counter;
+		if (++counter == LightingConstants::MAXIMUM_NUMBER_OF_POINT_LIGHTS)
+		{
+			break;
+		}
 	}
 
 	counter = 0;

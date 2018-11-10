@@ -177,9 +177,14 @@ private:
 	void InitializeDynamicPhysicalEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
 
 	/*
-	*	Initializes a particle system physical entity.
+	*	Initializes a particle system entity.
 	*/
 	void InitializeParticleSystemEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
+
+	/*
+	*	Initializes a point light entity.
+	*/
+	void InitializePointLightEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT;
 
 	/*
 	*	Processes the termination queue.
@@ -195,6 +200,11 @@ private:
 	*	Terminates a particle system entity.
 	*/
 	void TerminateParticleSystemEntity(Entity* const RESTRICT entity) NOEXCEPT;
+
+	/*
+	*	Terminates a point light entity.
+	*/
+	void TerminatePointLightEntity(Entity* const RESTRICT entity) NOEXCEPT;
 
 	/*
 	*	Processes the destruction queue.

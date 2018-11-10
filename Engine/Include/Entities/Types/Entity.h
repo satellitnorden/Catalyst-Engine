@@ -20,6 +20,7 @@ public:
 	{
 		DynamicPhysical,
 		ParticleSystem,
+		PointLight,
 
 		NumberOfEntityTypes
 	};

@@ -8,7 +8,6 @@
 //Lighting.
 #include <Lighting/DirectionalLight.h>
 #include <Lighting/LightingCore.h>
-#include <Lighting/PointLight.h>
 #include <Lighting/SpotLight.h>
 
 class LightingSystem final
@@ -36,9 +35,6 @@ private:
 
 	//The directional light.
 	DirectionalLight _DirectionalLight;
-
-	//The point lights.
-	StaticArray<PointLight, LightingConstants::MAXIMUM_NUMBER_OF_POINT_LIGHTS> _PointLights;
 	
 	//The spot lights.
 	StaticArray<SpotLight, LightingConstants::MAXIMUM_NUMBER_OF_POINT_LIGHTS> _SpotLights;

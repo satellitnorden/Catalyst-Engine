@@ -3,9 +3,9 @@
 
 //Entities.
 #include <Entities/Creation/DynamicPhysicalInitializationData.h>
-#include <Entities/Creation/ParticleSystemInitializationData.h>
+#include <Entities/Creation/PointLightInitializationData.h>
 #include <Entities/Types/DynamicPhysicalEntity.h>
-#include <Entities/Types/ParticleSystemEntity.h>
+#include <Entities/Types/PointLightEntity.h>
 
 //Resources.
 #include <Resources/ResourceLoader.h>
@@ -71,22 +71,51 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			}
 		}
 
-		//Create the tower!
-		DynamicPhysicalEntity *const RESTRICT cube{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
+		{
+			//Create the tower!
+			DynamicPhysicalEntity *const RESTRICT cube{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
 
-		DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+			DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
 
-		data->_Properties = EntityInitializationData::EntityProperty::None;
-		data->_PhysicalFlags = PhysicalFlag::Physical;
-		data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
-		data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("TowerMaterial"));
-		data->_Position = bestPosition;
-		data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
-		data->_Scale = Vector3(100.0f, 1'000.0f, 100.0f);
-		data->_OutlineColor = Vector3(0.0f, 0.0f, 0.0f);
+			data->_Properties = EntityInitializationData::EntityProperty::None;
+			data->_PhysicalFlags = PhysicalFlag::Physical;
+			data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
+			data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("TowerMaterial"));
+			data->_Position = bestPosition;
+			data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
+			data->_Scale = Vector3(100.0f, 1'000.0f, 100.0f);
+			data->_OutlineColor = Vector3(0.0f, 0.0f, 0.0f);
 
-		EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
+			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
 
-		entities->EmplaceSlow(cube);
+			entities->EmplaceSlow(cube);
+		}
+
+		{
+			constexpr StaticArray<Vector3, 4> colors
+			{
+				Vector3(1.0f, 0.0f, 0.0f),
+				Vector3(0.0f, 1.0f, 1.0f),
+				Vector3(1.0f, 0.1f, 0.0f),
+				Vector3(0.1f, 0.0f, 1.0f)
+			};
+
+			//Create the light!
+			PointLightEntity *const RESTRICT light{ EntityCreationSystem::Instance->CreateEntity<PointLightEntity>() };
+
+			PointLightInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<PointLightInitializationData>() };
+
+			data->_Enabled = true;
+			data->_Properties = EntityInitializationData::EntityProperty::None;
+			data->_Color = colors[CatalystBaseMath::RandomIntegerInRange<uint64>(0, 3)];
+			data->_Position = bestPosition + Vector3(0.0f, 600.0f, 0.0f);
+			data->_Intensity = 1.0f;
+			data->_AttenuationDistance = 2'500.0f;
+
+			EntityCreationSystem::Instance->RequestInitialization(light, data, false);
+
+			entities->EmplaceSlow(light);
+		}
+
 	}, 10'000.0f);
 }

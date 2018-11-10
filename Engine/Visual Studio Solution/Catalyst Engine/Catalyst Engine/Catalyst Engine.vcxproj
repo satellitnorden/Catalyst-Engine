@@ -86,6 +86,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicPhysicalInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Creation\ParticleSystemInitializationData.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Creation\PointLightInitializationData.h" />
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementCore.h" />
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityThreeDimensionalGridPoint.h" />
     <ClInclude Include="..\..\..\Include\Entities\Placement\EntityThreeDimensionalPlacementData.h" />
@@ -94,6 +95,7 @@
     <ClInclude Include="..\..\..\Include\Entities\Types\DynamicPhysicalEntity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h" />
     <ClInclude Include="..\..\..\Include\Entities\Types\ParticleSystemEntity.h" />
+    <ClInclude Include="..\..\..\Include\Entities\Types\PointLightEntity.h" />
     <ClInclude Include="..\..\..\Include\Input\GamepadState.h" />
     <ClInclude Include="..\..\..\Include\Input\InputCore.h" />
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h" />
@@ -101,7 +103,6 @@
     <ClInclude Include="..\..\..\Include\Input\TouchState.h" />
     <ClInclude Include="..\..\..\Include\Lighting\DirectionalLight.h" />
     <ClInclude Include="..\..\..\Include\Lighting\LightingCore.h" />
-    <ClInclude Include="..\..\..\Include\Lighting\PointLight.h" />
     <ClInclude Include="..\..\..\Include\Lighting\SpotLight.h" />
     <ClInclude Include="..\..\..\Include\Managers\EnvironmentManager.h" />
     <ClInclude Include="..\..\..\Include\Managers\RenderingConfigurationManager.h" />
@@ -335,11 +336,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Core\Utilities\DebugUtilities.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\DynamicPhysicalEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\Entity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\ParticleSystemEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\PointLightEntity.cpp" />
-    <ClCompile Include="..\..\..\Source\Entities\SpotLightEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Types\DynamicPhysicalEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Types\Entity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Types\ParticleSystemEntity.cpp" />
+    <ClCompile Include="..\..\..\Source\Entities\Types\PointLightEntity.cpp" />
     <ClCompile Include="..\..\..\Source\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\EnvironmentManager.cpp" />
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />

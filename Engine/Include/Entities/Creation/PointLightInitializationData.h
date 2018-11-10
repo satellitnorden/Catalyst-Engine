@@ -3,10 +3,13 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Entities.
+#include <Entities/Creation/EntityInitializationData.h>
+
 //Math.
 #include <Math/Vector3.h>
 
-class PointLight final
+class PointLightInitializationData final : public EntityInitializationData
 {
 
 public:

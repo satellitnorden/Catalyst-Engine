@@ -7,6 +7,7 @@
 //Entities.
 #include <Entities/Creation/DynamicPhysicalInitializationData.h>
 #include <Entities/Creation/ParticleSystemInitializationData.h>
+#include <Entities/Creation/PointLightInitializationData.h>
 
 //Multithreading.
 #include <Multithreading/ScopedLock.h>
@@ -80,6 +81,13 @@ void EntityCreationSystem::InitializeEntity(Entity* const RESTRICT entity, Entit
 			break;
 		}
 
+		case Entity::EntityType::PointLight:
+		{
+			InitializePointLightEntity(entity, data);
+
+			break;
+		}
+
 #if !defined(CATALYST_FINAL)
 		default:
 		{
@@ -109,6 +117,13 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 		case Entity::EntityType::ParticleSystem:
 		{
 			TerminateParticleSystemEntity(entity);
+
+			break;
+		}
+
+		case Entity::EntityType::PointLight:
+		{
+			TerminatePointLightEntity(entity);
 
 			break;
 		}
@@ -253,6 +268,28 @@ void EntityCreationSystem::InitializeParticleSystemEntity(Entity* const RESTRICT
 }
 
 /*
+*	Initializes a point light entity.
+*/
+void EntityCreationSystem::InitializePointLightEntity(Entity* const RESTRICT entity, EntityInitializationData* const RESTRICT data) NOEXCEPT
+{
+	//Retrieve a new components index for this point light entity.
+	entity->_ComponentsIndex = ComponentManager::GetNewPointLightComponentsIndex(entity);
+
+	//Copy the data over to the component.
+	PointLightComponent &component{ ComponentManager::GetPointLightPointLightComponents()[entity->_ComponentsIndex] };
+	const PointLightInitializationData *const RESTRICT pointLightInitializationData{ static_cast<const PointLightInitializationData *const RESTRICT>(data) };
+
+	component._Enabled = pointLightInitializationData->_Enabled;
+	component._Color = pointLightInitializationData->_Color;
+	component._Position = pointLightInitializationData->_Position;
+	component._Intensity = pointLightInitializationData->_Intensity;
+	component._AttenuationDistance = pointLightInitializationData->_AttenuationDistance;
+
+	//Destroy the initialization data.
+	DestroyInitializationData<PointLightInitializationData>(data);
+}
+
+/*
 *	Processes the termination queue.
 */
 void EntityCreationSystem::ProcessTerminationQueue() NOEXCEPT
@@ -289,6 +326,15 @@ void EntityCreationSystem::TerminateParticleSystemEntity(Entity* const RESTRICT 
 
 	//Return this entitiy's components index.
 	ComponentManager::ReturnParticleSystemComponentsIndex(entity->_ComponentsIndex);
+}
+
+/*
+*	Terminates a point light entity.
+*/
+void EntityCreationSystem::TerminatePointLightEntity(Entity* const RESTRICT entity) NOEXCEPT
+{
+	//Return this entitiy's components index.
+	ComponentManager::ReturnPointLightComponentsIndex(entity->_ComponentsIndex);
 }
 
 /*
