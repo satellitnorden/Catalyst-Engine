@@ -8,7 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define VERTEX_BORDER_OFFSET (1.0f / (63.0f))
+#define VERTEX_BORDER_OFFSET (1.0f / (64.0f))
 
 //Push constant data.
 layout (push_constant) uniform PushConstantData
@@ -30,26 +30,19 @@ layout (location = 0) out vec2 fragmentTextureCoordinate;
 
 void main()
 {	
-	/*
 	//Calculate the horizontal border offset multiplier.
-	float isUpperMultiplier = float(vertexBorders & (1 << 0));
-	float isLowerMultiplier = float(vertexBorders & (1 << 2));
-	float isFirstMultipleOfMultiplier = float(mod(gl_VertexIndex, 128) == 0);
-	float isSecondMultipleOfMultiplier = float(mod(gl_VertexIndex + 64, 128) == 0);
-	float horizontalBorderOffsetWeight = min(isUpperMultiplier + isLowerMultiplier, 1.0f) * (isFirstMultipleOfMultiplier + isSecondMultipleOfMultiplier);
+	float isUpperMultiplier = float((vertexBorders & (1 << 0)) & (borders & (1 << 0)));
+	float isLowerMultiplier = float((vertexBorders & (1 << 2)) & (borders & (1 << 2)));
+	float horizontalBorderOffsetWeight = min(isUpperMultiplier + isLowerMultiplier, 1.0f);
 
 	//Calculate the vertical border offset multiplier.
-	float isRightMultiplier = float(vertexBorders & (1 << 1));
-	float isLeftMultiplier = float(vertexBorders & (1 << 3));
-	float isOddMultiplier = float(gl_VertexIndex & 1);
-	float verticalBorderOffsetWeight = min(isRightMultiplier + isLeftMultiplier, 1.0f) * isOddMultiplier;
+	float isRightMultiplier = float((vertexBorders & (1 << 1)) & (borders & (1 << 1)));
+	float isLeftMultiplier = float((vertexBorders & (1 << 3)) & (borders & (1 << 3)));
+	float verticalBorderOffsetWeight = min(isRightMultiplier + isLeftMultiplier, 1.0f);
 
 	vec2 position = vertexPosition;
 	position.x -= VERTEX_BORDER_OFFSET * horizontalBorderOffsetWeight;
 	position.y -= VERTEX_BORDER_OFFSET * verticalBorderOffsetWeight;
-	*/
-
-	vec2 position = vertexPosition;
 
     //Calculate the texture coordinate.
     fragmentTextureCoordinate = position + 0.5f;

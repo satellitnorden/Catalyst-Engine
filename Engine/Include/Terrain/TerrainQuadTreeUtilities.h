@@ -83,7 +83,7 @@ public:
 			const Vector3 middlePoint{ MiddlePoint(node) };
 			const float length{ CatalystBaseMath::Maximum<float>(CatalystBaseMath::Absolute(middlePoint._X - position._X), CatalystBaseMath::Absolute(middlePoint._Z - position._Z)) };
 
-			return length > TerrainConstants::TERRAIN_PATCH_SIZE * PatchSizeMultiplier(node) * 0.9f;
+			return length > TerrainConstants::TERRAIN_PATCH_SIZE * PatchSizeMultiplier(node);
 		}
 	}
 
@@ -96,7 +96,7 @@ public:
 		const float length{ CatalystBaseMath::Maximum<float>(CatalystBaseMath::Absolute(middlePoint._X - position._X), CatalystBaseMath::Absolute(middlePoint._Z - position._Z)) };
 
 		return	node._Depth < TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH
-				&& length <= TerrainConstants::TERRAIN_PATCH_SIZE * PatchSizeMultiplier(node) * 0.9f;
+				&& length <= TerrainConstants::TERRAIN_PATCH_SIZE * PatchSizeMultiplier(node);
 	}
 
 private:

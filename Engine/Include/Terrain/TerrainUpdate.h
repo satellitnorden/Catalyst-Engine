@@ -103,7 +103,7 @@ public:
 	};
 
 	//The borders updates.
-	DynamicArray<Pair<TerrainPatchRenderInformation *RESTRICT, const int32>> _BordersUpdates;
+	DynamicArray<Pair<const uint64, const int32>> _BordersUpdates;
 
 	/*
 	*	Default constructor

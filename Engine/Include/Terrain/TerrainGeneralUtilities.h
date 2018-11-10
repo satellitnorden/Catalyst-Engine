@@ -215,7 +215,7 @@ namespace TerrainGeneralUtilities
 
 				if (i == 0)
 				{
-					if (j != 0 && j != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
+					if (j & static_cast<uint32>(1))
 					{
 						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_LEFT;
 					}
@@ -223,7 +223,7 @@ namespace TerrainGeneralUtilities
 
 				else if (i == TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 				{
-					if (j != 0 && j != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
+					if (j & static_cast<uint32>(1))
 					{
 						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_RIGHT;
 					}
@@ -231,7 +231,7 @@ namespace TerrainGeneralUtilities
 
 				if (j == 0)
 				{
-					if (i != 0 && i != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
+					if (i & static_cast<uint32>(1))
 					{
 						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_UPPER;
 					}
@@ -239,7 +239,7 @@ namespace TerrainGeneralUtilities
 
 				else if (j == TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
 				{
-					if (i != 0 && i != TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1)
+					if (i & static_cast<uint32>(1))
 					{
 						vertex._Borders |= TerrainConstants::TERRAIN_BORDER_LOWER;
 					}

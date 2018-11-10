@@ -195,9 +195,10 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 	//Process the borders updats.
 	if (_Update._Type != TerrainUpdate::Type::Invalid)
 	{
-		for (Pair<TerrainPatchRenderInformation *RESTRICT, const int32> &pair : _Update._BordersUpdates)
+		for (Pair<const uint64, const int32> &pair : _Update._BordersUpdates)
 		{
-			pair._First->_Borders = pair._Second;
+			const uint64 patchInformationIndex{ GetPatchInformationIndex(pair._First) };
+			_PatchRenderInformations[patchInformationIndex]._Borders = pair._Second;
 		}
 
 		_Update._BordersUpdates.ClearFast();
@@ -479,19 +480,19 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 
 	const StaticArray<Vector3, 4> positions
 	{
-		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
+		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f,
 					0.0f,
 					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f),
 
+		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f,
+					0.0f,
+					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f),
+
 		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
 					0.0f,
 					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f),
 
-		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f,
-					0.0f,
-					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f),
-
-		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f,
+		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
 					0.0f,
 					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f)
 	};
@@ -599,7 +600,6 @@ void TerrainSystem::CalculateNewborders() NOEXCEPT
 */
 void TerrainSystem::CalculateNewborders(TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
-	/*
 	//If this node is subdivided, calculate new borders for it's child nodes.
 	if (node->_Subdivided)
 	{
@@ -642,10 +642,9 @@ void TerrainSystem::CalculateNewborders(TerrainQuadTreeNode *const RESTRICT node
 		const uint64 patchRenderInformationIndex{ GetPatchInformationIndex(node->_Identifier) };
 
 		//If the borders differ, add the new borders to the borders updates.
-		if (_PatchRenderInformations[patchRenderInformationIndex]._Borders != borders)
+		if (patchRenderInformationIndex == UINT64_MAX || _PatchRenderInformations[patchRenderInformationIndex]._Borders != borders)
 		{
-			_Update._BordersUpdates.EmplaceSlow(Pair<TerrainPatchRenderInformation *RESTRICT, const int32>(&_PatchRenderInformations[patchRenderInformationIndex], borders));
+			_Update._BordersUpdates.EmplaceSlow(Pair<const uint64, const int32>(node->_Identifier, borders));
 		}
 	}
-	*/
 }
