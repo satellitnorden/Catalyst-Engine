@@ -16,60 +16,23 @@
 #include <Systems/RenderingSystem.h>
 #include <Systems/TerrainSystem.h>
 
+//Static variable definitions.
+DynamicArray<Vector3> ClairvoyantLocationArchitect::_Offsets;
+
 /*
 *	Initializes the Clairvoyant location architect.
 */
 void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 {
+	//Initialize the offsets.
+	InitializeOffsets();
+
 	//Cuuubes...! Yaaay...!!!
 	EntityPlacementSystem::Instance->RegisterTwoDimensionalPlacementFunction([](const AxisAlignedBoundingBox &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities)
 	{
-		//Find a suitable location. (:
-		constexpr uint8 NUMBER_OF_TESTS{ 100 };
-
-		Vector3 bestPosition{ 0.0f, 0.0f, 0.0f };
-		float bestHeightDifference{ FLOAT_MAXIMUM };
-
-		for (uint8 i{ 0 }; i < NUMBER_OF_TESTS; ++i)
-		{
-			//Generate a random position within the box.
-			const Vector3 testPosition{ CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X) , 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z) };
-
-			//Calculate the height difference at the test position.
-			float lowestTerrainHeight{ FLOAT_MAXIMUM };
-			float highestTerrainHeight{ -FLOAT_MAXIMUM };
-
-			float terrainHeight;
-
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(testPosition, &terrainHeight);
-			lowestTerrainHeight = CatalystBaseMath::Minimum<float>(lowestTerrainHeight, terrainHeight);
-			highestTerrainHeight = CatalystBaseMath::Maximum<float>(highestTerrainHeight, terrainHeight);
-
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(testPosition + Vector3(-50.0f, 0.0f, -50.0f), &terrainHeight);
-			lowestTerrainHeight = CatalystBaseMath::Minimum<float>(lowestTerrainHeight, terrainHeight);
-			highestTerrainHeight = CatalystBaseMath::Maximum<float>(highestTerrainHeight, terrainHeight);
-
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(testPosition + Vector3(-50.0f, 0.0f, 50.0f), &terrainHeight);
-			lowestTerrainHeight = CatalystBaseMath::Minimum<float>(lowestTerrainHeight, terrainHeight);
-			highestTerrainHeight = CatalystBaseMath::Maximum<float>(highestTerrainHeight, terrainHeight);
-
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(testPosition + Vector3(50.0f, 0.0f, 50.0f), &terrainHeight);
-			lowestTerrainHeight = CatalystBaseMath::Minimum<float>(lowestTerrainHeight, terrainHeight);
-			highestTerrainHeight = CatalystBaseMath::Maximum<float>(highestTerrainHeight, terrainHeight);
-
-			TerrainSystem::Instance->GetTerrainHeightAtPosition(testPosition + Vector3(50.0f, 0.0f, -50.0f), &terrainHeight);
-			lowestTerrainHeight = CatalystBaseMath::Minimum<float>(lowestTerrainHeight, terrainHeight);
-			highestTerrainHeight = CatalystBaseMath::Maximum<float>(highestTerrainHeight, terrainHeight);
-
-			const float heightDifference{ highestTerrainHeight - lowestTerrainHeight };
-
-			if (bestHeightDifference > heightDifference)
-			{
-				bestHeightDifference = heightDifference;
-				bestPosition = testPosition;
-				bestPosition._Y = lowestTerrainHeight + 500.0f;
-			}
-		}
+		//Find the most appropriate position.
+		Vector3 position{ FindMostAppropriatePosition(box, 100.0f) };
+		position._Y += 500.0f;
 
 		{
 			//Create the tower!
@@ -81,7 +44,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			data->_PhysicalFlags = PhysicalFlag::Physical;
 			data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
 			data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("TowerMaterial"));
-			data->_Position = bestPosition;
+			data->_Position = position;
 			data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
 			data->_Scale = Vector3(100.0f, 1'000.0f, 100.0f);
 			data->_OutlineColor = Vector3(0.0f, 0.0f, 0.0f);
@@ -108,7 +71,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			data->_Enabled = true;
 			data->_Properties = EntityInitializationData::EntityProperty::None;
 			data->_Color = colors[CatalystBaseMath::RandomIntegerInRange<uint64>(0, 3)];
-			data->_Position = bestPosition + Vector3(0.0f, 600.0f, 0.0f);
+			data->_Position = position + Vector3(0.0f, 600.0f, 0.0f);
 			data->_Intensity = 1.0f;
 			data->_AttenuationDistance = 2'500.0f;
 
@@ -118,4 +81,75 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 		}
 
 	}, 10'000.0f);
+}
+
+/*
+*	Initializes the offsets.
+*/
+void ClairvoyantLocationArchitect::InitializeOffsets() NOEXCEPT
+{
+	//Reserve the appropriate amount of memory.
+	_Offsets.UpsizeFast(OFFSETS_RESOLUTION * OFFSETS_RESOLUTION);
+
+	for (uint8 i{ 0 }; i < OFFSETS_RESOLUTION; ++i)
+	{
+		for (uint8 j{ 0 }; j < OFFSETS_RESOLUTION; ++j)
+		{
+			//Calculate the offset.
+			_Offsets[((j * OFFSETS_RESOLUTION) + i)] = Vector3(static_cast<float>(i) / static_cast<float>(OFFSETS_RESOLUTION - 1) - 0.5f, 0.0f, static_cast<float>(j) / static_cast<float>(OFFSETS_RESOLUTION - 1) - 0.5f);
+		}
+	}
+}
+
+/*
+*	Given an axis-aligned bounding box and an extent, find the most appropiate position.
+*/
+Vector3 ClairvoyantLocationArchitect::FindMostAppropriatePosition(const AxisAlignedBoundingBox &box, const float extent) NOEXCEPT
+{
+	//Calculate the box center.
+	const Vector3 boxCenter{ AxisAlignedBoundingBox::CalculateCenter(box) };
+
+	//Calculate the box extents.
+	const Vector3 boxExtents{ box._Maximum._X - box._Minimum._X, 0.0f, box._Maximum._Z - box._Minimum._Z };
+
+	//Find the best position with the best (least) height difference.
+	Vector3 bestPosition{ AxisAlignedBoundingBox::CalculateCenter(box) };
+	float bestHeightDifference{ FLOAT_MAXIMUM };
+
+	for (uint8 i{ 0 }; i < OFFSETS_RESOLUTION; ++i)
+	{
+		for (uint8 j{ 0 }; j < OFFSETS_RESOLUTION; ++j)
+		{
+			//Calculate the test position.
+			const Vector3 testPosition{ boxCenter + boxExtents * _Offsets[((j * OFFSETS_RESOLUTION) + i)] };
+
+			//Calculate the height difference.
+			float lowestTerrainHeight{ FLOAT_MAXIMUM };
+			float highestTerrainHeight{ -FLOAT_MAXIMUM };
+			float terrainHeight;
+
+			for (uint8 i{ 0 }; i < OFFSETS_RESOLUTION; ++i)
+			{
+				for (uint8 j{ 0 }; j < OFFSETS_RESOLUTION; ++j)
+				{
+					TerrainSystem::Instance->GetTerrainHeightAtPosition(testPosition + _Offsets[((j * OFFSETS_RESOLUTION) + i)] * extent, &terrainHeight);
+
+					lowestTerrainHeight = CatalystBaseMath::Minimum<float>(lowestTerrainHeight, terrainHeight);
+					highestTerrainHeight = CatalystBaseMath::Maximum<float>(highestTerrainHeight, terrainHeight);
+				}
+			}
+
+			const float heightDifference{ highestTerrainHeight - lowestTerrainHeight };
+
+			//Pick this position if the height difference is lower.
+			if (bestHeightDifference > heightDifference)
+			{
+				bestHeightDifference = heightDifference;
+				bestPosition = testPosition;
+				bestPosition._Y = lowestTerrainHeight;
+			}
+		}
+	}
+
+	return bestPosition;
 }
