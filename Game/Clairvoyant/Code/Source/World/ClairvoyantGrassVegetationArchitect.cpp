@@ -69,7 +69,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 
 		properties._MediumDetailDistance = ClairvoyantGrassVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantGrassVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
-		properties._Density = 5'250;
+		properties._Density = 5'500;
 		properties._Thickness = 0.5f;
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -98,7 +98,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 
 		properties._MediumDetailDistance = ClairvoyantGrassVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantGrassVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
-		properties._Density = 2'250;
+		properties._Density = 2'500;
 		properties._Thickness = 0.5f;
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
@@ -156,7 +156,7 @@ void ClairvoyantGrassVegetationArchitect::Initialize() NOEXCEPT
 
 		properties._MediumDetailDistance = ClairvoyantGrassVegetationArchitectConstants::MEDIUM_DETAIL_DISTANCE;
 		properties._LowDetailDistance = ClairvoyantGrassVegetationArchitectConstants::LOW_DETAIL_DISTANCE;
-		properties._Density = 2'250;
+		properties._Density = 2'500;
 		properties._Thickness = 0.5f;
 		properties._WindModulatorFactor = 0.15f;
 		properties._PlacementFunction = [](const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation)
