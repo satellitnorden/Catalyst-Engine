@@ -165,7 +165,8 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			//Destroy the existing child nodes.
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				DestroyPatch(_Update._CombineNodeUpdate._PatchInformationIdentifiers[i]);
+				const uint64 patchInformationIndex{ GetPatchInformationIndex(_Update._CombineNodeUpdate._PatchInformationIdentifiers[i]) };
+				DestroyPatch(patchInformationIndex);
 			}
 
 			//Add the new patch information.
