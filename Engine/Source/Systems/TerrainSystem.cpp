@@ -165,7 +165,8 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			//Destroy the existing child nodes.
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				DestroyPatch(_Update._CombineNodeUpdate._PatchInformationIndices[i]);
+				const uint64 patchInformationIndex{ GetPatchInformationIndex(_Update._CombineNodeUpdate._PatchInformationIdentifiers[i]) };
+				DestroyPatch(patchInformationIndex);
 			}
 
 			//Add the new patch information.
@@ -457,7 +458,7 @@ void TerrainSystem::CombineNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 	//Add the patch information identifiers.
 	for (uint8 i{ 0 }; i < 4; ++i)
 	{
-		_Update._CombineNodeUpdate._PatchInformationIndices[i] = GetPatchInformationIndex(node->_ChildNodes[i]._Identifier);
+		_Update._CombineNodeUpdate._PatchInformationIdentifiers[i] = node->_ChildNodes[i]._Identifier;
 	}
 
 	MemoryUtilities::FreeMemory(node->_ChildNodes);

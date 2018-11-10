@@ -48,8 +48,8 @@ public:
 	//The patch render information.
 	TerrainPatchRenderInformation _PatchRenderInformation;
 
-	//The indices for the patch informations to destroy.
-	StaticArray<uint64, 4> _PatchInformationIndices;
+	//The identifiers for the patch informations to destroy.
+	StaticArray<uint64, 4> _PatchInformationIdentifiers;
 
 };
 
