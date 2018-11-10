@@ -5,10 +5,10 @@
 #include <Core/Containers/StaticArray.h>
 
 //Entities.
-#include <Entities/EntityPlacement/EntityPlacementCore.h>
-#include <Entities/EntityPlacement/EntityTwoDimensionalGridPoint.h>
+#include <Entities/Placement/EntityPlacementCore.h>
+#include <Entities/Placement/EntityThreeDimensionalGridPoint.h>
 
-class EntityTwoDimensionalPlacementData final
+class EntityThreeDimensionalPlacementData final
 {
 
 public:
@@ -20,6 +20,6 @@ public:
 	float _GridSize;
 
 	//The grid points.
-	StaticArray<EntityTwoDimensionalGridPoint, 9> _GridPoints;
+	StaticArray<EntityThreeDimensionalGridPoint, 27> _GridPoints;
 
 };

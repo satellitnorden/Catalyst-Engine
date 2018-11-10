@@ -4,7 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Entities.
-#include <Entities/Entity.h>
+#include <Entities/Types/Entity.h>
 
 //Math.
 #include <Math/Vector3.h>

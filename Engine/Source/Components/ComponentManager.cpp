@@ -2,7 +2,7 @@
 #include <Components/ComponentManager.h>
 
 //Entities.
-#include <Entities/Entity.h>
+#include <Entities/Types/Entity.h>
 
 /*
 *	Defines an entity class with with one component.

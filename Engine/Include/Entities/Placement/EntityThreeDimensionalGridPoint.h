@@ -5,12 +5,12 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Entities.
-#include <Entities/Entity.h>
+#include <Entities/Types/Entity.h>
 
 //Math.
-#include <Math/GridPoint2.h>
+#include <Math/GridPoint3.h>
 
-class EntityTwoDimensionalGridPoint final
+class EntityThreeDimensionalGridPoint final
 {
 
 public:
@@ -19,7 +19,7 @@ public:
 	bool _Valid;
 
 	//The grid point.
-	GridPoint2 _GridPoint;
+	GridPoint3 _GridPoint;
 
 	//Container for all entities contained in this grid point.
 	DynamicArray<Entity *RESTRICT> _Entities;

@@ -1,5 +1,5 @@
 //Header file.
-#include <Entities/ParticleSystemEntity.h>
+#include <Entities/Types/ParticleSystemEntity.h>
 
 //Components.
 #include <Components/ComponentManager.h>

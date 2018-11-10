@@ -5,7 +5,7 @@
 #include <Components/ComponentManager.h>
 
 //Entities.
-#include <Entities/Entity.h>
+#include <Entities/Types/Entity.h>
 
 //Math.
 #include <Math/CatalystBaseMath.h>

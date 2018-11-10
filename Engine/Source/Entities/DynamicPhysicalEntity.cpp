@@ -1,5 +1,5 @@
 //Header file.
-#include <Entities/DynamicPhysicalEntity.h>
+#include <Entities/Types/DynamicPhysicalEntity.h>
 
 //Components.
 #include <Components/ComponentManager.h>

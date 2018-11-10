@@ -2,8 +2,8 @@
 #include <Player/ClairvoyantPlayer.h>
 
 //Entities.
-#include <Entities/DynamicPhysicalEntity.h>
-#include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
+#include <Entities/Creation/DynamicPhysicalInitializationData.h>
+#include <Entities/Types/DynamicPhysicalEntity.h>
 
 //Math.
 #include <Math/CatalystBaseMath.h>

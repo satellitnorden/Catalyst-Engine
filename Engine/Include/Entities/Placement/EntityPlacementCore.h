@@ -5,7 +5,7 @@
 #include <Core/Containers/DynamicArray.h>
 
 //Entities.
-#include <Entities/Entity.h>
+#include <Entities/Types/Entity.h>
 
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>

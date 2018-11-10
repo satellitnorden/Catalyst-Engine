@@ -5,8 +5,8 @@
 #include <Components/ComponentManager.h>
 
 //Entities.
-#include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
-#include <Entities/InitializationData/ParticleSystemInitializationData.h>
+#include <Entities/Creation/DynamicPhysicalInitializationData.h>
+#include <Entities/Creation/ParticleSystemInitializationData.h>
 
 //Multithreading.
 #include <Multithreading/ScopedLock.h>

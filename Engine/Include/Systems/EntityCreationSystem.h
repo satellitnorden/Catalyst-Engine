@@ -6,8 +6,8 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Entities.
-#include <Entities/Entity.h>
-#include <Entities/InitializationData/EntityInitializationData.h>
+#include <Entities/Creation/EntityInitializationData.h>
+#include <Entities/Types/Entity.h>
 
 //Multithreading.
 #include <Multithreading/Spinlock.h>

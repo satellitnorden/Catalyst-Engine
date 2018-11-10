@@ -1,5 +1,5 @@
 //Header file.
-#include <Entities/Entity.h>
+#include <Entities/Types/Entity.h>
 
 //Systems.
 #include <Systems/EntityCreationSystem.h>

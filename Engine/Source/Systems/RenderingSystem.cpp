@@ -2,9 +2,9 @@
 #include <Systems/RenderingSystem.h>
 
 //Entities.
-#include <Entities/Entity.h>
-#include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
-#include <Entities/InitializationData/ParticleSystemInitializationData.h>
+#include <Entities/Creation/DynamicPhysicalInitializationData.h>
+#include <Entities/Creation/ParticleSystemInitializationData.h>
+#include <Entities/Types/Entity.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>

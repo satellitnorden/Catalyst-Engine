@@ -2,10 +2,10 @@
 #include <World/ClairvoyantLocationArchitect.h>
 
 //Entities.
-#include <Entities/DynamicPhysicalEntity.h>
-#include <Entities/ParticleSystemEntity.h>
-#include <Entities/InitializationData/DynamicPhysicalInitializationData.h>
-#include <Entities/InitializationData/ParticleSystemInitializationData.h>
+#include <Entities/Creation/DynamicPhysicalInitializationData.h>
+#include <Entities/Creation/ParticleSystemInitializationData.h>
+#include <Entities/Types/DynamicPhysicalEntity.h>
+#include <Entities/Types/ParticleSystemEntity.h>
 
 //Resources.
 #include <Resources/ResourceLoader.h>

@@ -118,9 +118,6 @@
     <Filter Include="Systems\Source">
       <UniqueIdentifier>{cb82a27b-e457-408a-a466-f567e2daa9ce}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entities\Include\InitializationData">
-      <UniqueIdentifier>{121f9da9-25c9-4b47-bf36-868c26fa0ba9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering\Include\API">
       <UniqueIdentifier>{d8e8b5a1-1a92-4421-8d87-b6f68abad040}</UniqueIdentifier>
     </Filter>
@@ -229,8 +226,14 @@
     <Filter Include="Terrain\Source">
       <UniqueIdentifier>{b5ff2ff7-b5ae-4d25-8b73-1e927966183b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entities\Include\EntityPlacement">
+    <Filter Include="Entities\Include\Placement">
       <UniqueIdentifier>{3a3a3283-6f7c-4153-86a6-b8a6bd69fc84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Include\Types">
+      <UniqueIdentifier>{a68292aa-8de6-444c-a00c-bc9f8f1ac8e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entities\Include\Creation">
+      <UniqueIdentifier>{121f9da9-25c9-4b47-bf36-868c26fa0ba9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -278,12 +281,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Core\Utilities\MemoryUtilities.h">
       <Filter>Core\Include\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\Entity.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\ParticleSystemEntity.h">
-      <Filter>Entities\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Input\KeyboardState.h">
       <Filter>Input\Include</Filter>
@@ -630,14 +627,8 @@
     <ClInclude Include="..\..\..\Include\Core\Core\CatalystPreDefines.h">
       <Filter>Core\Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\DynamicPhysicalEntity.h">
-      <Filter>Entities\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Components\DynamicPhysicalRenderComponent.h">
       <Filter>Components\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\InitializationData\DynamicPhysicalInitializationData.h">
-      <Filter>Entities\Include\InitializationData</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\DynamicPhysicalRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
@@ -704,12 +695,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Physics\RayCastResult.h">
       <Filter>Physics\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\InitializationData\ParticleSystemInitializationData.h">
-      <Filter>Entities\Include\InitializationData</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\InitializationData\EntityInitializationData.h">
-      <Filter>Entities\Include\InitializationData</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Memory\PoolAllocator.h">
       <Filter>Memory\Include</Filter>
@@ -1047,21 +1032,6 @@
     <ClInclude Include="..\..\..\Include\Systems\EntityCreationSystem.h">
       <Filter>Systems\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityPlacementCore.h">
-      <Filter>Entities\Include\EntityPlacement</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityTwoDimensionalPlacementData.h">
-      <Filter>Entities\Include\EntityPlacement</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityTwoDimensionalGridPoint.h">
-      <Filter>Entities\Include\EntityPlacement</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityThreeDimensionalGridPoint.h">
-      <Filter>Entities\Include\EntityPlacement</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Entities\EntityPlacement\EntityThreeDimensionalPlacementData.h">
-      <Filter>Entities\Include\EntityPlacement</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\DepthOfFieldFragmentShader.h">
       <Filter>Rendering\Include\ShaderData\Vulkan</Filter>
     </ClInclude>
@@ -1088,6 +1058,39 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Terrain\TerrainGeneralUtilities.h">
       <Filter>Terrain\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityPlacementCore.h">
+      <Filter>Entities\Include\Placement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityThreeDimensionalGridPoint.h">
+      <Filter>Entities\Include\Placement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityThreeDimensionalPlacementData.h">
+      <Filter>Entities\Include\Placement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityTwoDimensionalGridPoint.h">
+      <Filter>Entities\Include\Placement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Placement\EntityTwoDimensionalPlacementData.h">
+      <Filter>Entities\Include\Placement</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\DynamicPhysicalEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\Entity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Types\ParticleSystemEntity.h">
+      <Filter>Entities\Include\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\DynamicPhysicalInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\EntityInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Entities\Creation\ParticleSystemInitializationData.h">
+      <Filter>Entities\Include\Creation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

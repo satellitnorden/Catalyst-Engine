@@ -5,9 +5,9 @@
 #include <Core/Pointers/UniquePointer.h>
 
 //Entities.
-#include <Entities/EntityPlacement/EntityPlacementCore.h>
-#include <Entities/EntityPlacement/EntityTwoDimensionalPlacementData.h>
-#include <Entities/EntityPlacement/EntityThreeDimensionalPlacementData.h>
+#include <Entities/Placement/EntityPlacementCore.h>
+#include <Entities/Placement/EntityTwoDimensionalPlacementData.h>
+#include <Entities/Placement/EntityThreeDimensionalPlacementData.h>
 
 //Multithreading.
 #include <Multithreading/Task.h>

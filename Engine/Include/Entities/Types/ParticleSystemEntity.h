@@ -4,7 +4,7 @@
 #include <Core/Core/CatalystCore.h>
 
 //Entity.
-#include <Entities/Entity.h>
+#include <Entities/Types/Entity.h>
 
 //Rendering.
 #include <Rendering/Engine/ParticleMaterial.h>

@@ -8,8 +8,8 @@
 #include <Core/General/HashString.h>
 
 //Entities.
-#include <Entities/ParticleSystemEntity.h>
-#include <Entities/InitializationData/ParticleSystemInitializationData.h>
+#include <Entities/Creation/ParticleSystemInitializationData.h>
+#include <Entities/Types/ParticleSystemEntity.h>
 
 //Math.
 #include <Math/CatalystBaseMath.h>
