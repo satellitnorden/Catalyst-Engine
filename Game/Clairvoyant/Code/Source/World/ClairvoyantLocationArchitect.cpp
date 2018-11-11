@@ -33,7 +33,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 	EntityPlacementSystem::Instance->RegisterTwoDimensionalPlacementFunction([](const AxisAlignedBoundingBox &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities)
 	{
 		//Find the most appropriate position.
-		Vector3 position{ FindMostAppropriatePosition(box, 100.0f) };
+		Vector3 position{ FindMostAppropriatePosition(box, 1'000.0f) };
 		position._Y += 500.0f;
 
 		{
@@ -54,6 +54,63 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
 
 			entities->EmplaceSlow(cube);
+		}
+
+		{
+			constexpr uint8 NUMBER_OF_BUILDINGS{ 10 };
+
+			//Create some more "buildings"!
+			DynamicArray<Vector3> previousPositions;
+
+			previousPositions.EmplaceSlow(position);
+
+			for (uint8 i{ 0 }; i < NUMBER_OF_BUILDINGS; ++i)
+			{
+				for (uint8 j{ 0 }; j < 10; ++j)
+				{
+					//Generate a random position.
+					const Vector3 testPosition{ CatalystBaseMath::RandomFloatInRange(position._X - 500.0f, position._X + 500.0f), 0.0f, CatalystBaseMath::RandomFloatInRange(position._Z - 500.0f, position._Z + 500.0f) };
+
+					//If this position is too close to any other position, discard it.
+					bool tooClose{ false };
+
+					for (const Vector3 &previousPosition : previousPositions)
+					{
+						if (Vector3::LengthSquaredXZ(previousPosition - testPosition) < 150.0f * 150.0f)
+						{
+							tooClose = true;
+
+							break;
+						}
+					}
+
+					if (!tooClose)
+					{
+						//Create a "building" at this position.
+						DynamicPhysicalEntity *const RESTRICT building{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
+
+						DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+
+						data->_Properties = EntityInitializationData::EntityProperty::None;
+						data->_PhysicalFlags = PhysicalFlag::Physical;
+						data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
+						data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("TowerMaterial"));
+						data->_Position = testPosition;
+						TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &data->_Position._Y);
+						data->_Position._Y += 50.0f;
+						data->_Rotation = Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f);
+						data->_Scale = Vector3(100.0f, 100.0f, 100.0f);
+						data->_OutlineColor = Vector3(0.0f, 0.0f, 0.0f);
+
+						EntityCreationSystem::Instance->RequestInitialization(building, data, false);
+
+						entities->EmplaceSlow(building);
+						previousPositions.EmplaceSlow(data->_Position);
+
+						break;
+					}
+				}
+			}
 		}
 
 		{
