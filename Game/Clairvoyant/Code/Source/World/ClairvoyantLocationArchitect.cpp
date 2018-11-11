@@ -101,14 +101,14 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			data->_ParticleSystemProperties._Properties = ParticleSystemProperty::AffectedByWind | ParticleSystemProperty::Looping;
 			data->_ParticleSystemProperties._FadeTime = 0.1f;
 			data->_ParticleSystemProperties._Lifetime = 1.0f;
-			data->_ParticleSystemProperties._SpawnFrequency = 0.001f;
-			data->_ParticleSystemProperties._MinimumScale = Vector2(1.0f, 1.0f);
-			data->_ParticleSystemProperties._MaximumScale = Vector2(5.0f, 5.0f);
-			data->_ParticleSystemProperties._MinimumPosition = Vector3(0.0f, 0.0f, 0.0f);
-			data->_ParticleSystemProperties._MaximumPosition = Vector3(0.0f, 0.0f, 0.0f);
-			data->_ParticleSystemProperties._MinimumVelocity = Vector3(-125.0f, -125.0f, -125.0f);
-			data->_ParticleSystemProperties._MaximumVelocity = Vector3(125.0f, 125.0f, 125.0f);
-			data->_Position = position + Vector3(0.0f, 600.0f, 0.0f);
+			data->_ParticleSystemProperties._SpawnFrequency = 0.0001f;
+			data->_ParticleSystemProperties._MinimumScale = Vector2(1.25f, 1.25f);
+			data->_ParticleSystemProperties._MaximumScale = Vector2(2.5f, 2.5f);
+			data->_ParticleSystemProperties._MinimumPosition = Vector3(-50.0f, 0.0f, -50.0f);
+			data->_ParticleSystemProperties._MaximumPosition = Vector3(50.0f, 0.0f, 50.0f);
+			data->_ParticleSystemProperties._MinimumVelocity = Vector3(0.0f, 0.0f, 0.0f);
+			data->_ParticleSystemProperties._MaximumVelocity = Vector3(0.0f, 500.0f, 0.0f);
+			data->_Position = position + Vector3(0.0f, 500.0f, 0.0f);
 
 			EntityCreationSystem::Instance->RequestInitialization(particles, data, false);
 
