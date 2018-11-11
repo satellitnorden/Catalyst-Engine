@@ -3,8 +3,10 @@
 
 //Entities.
 #include <Entities/Creation/DynamicPhysicalInitializationData.h>
+#include <Entities/Creation/ParticleSystemInitializationData.h>
 #include <Entities/Creation/PointLightInitializationData.h>
 #include <Entities/Types/DynamicPhysicalEntity.h>
+#include <Entities/Types/ParticleSystemEntity.h>
 #include <Entities/Types/PointLightEntity.h>
 
 //Resources.
@@ -55,6 +57,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 		}
 
 		{
+			//Create the light!
 			constexpr StaticArray<Vector3, 4> colors
 			{
 				Vector3(1.0f, 0.0f, 0.0f),
@@ -63,7 +66,6 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 				Vector3(0.1f, 0.0f, 1.0f)
 			};
 
-			//Create the light!
 			PointLightEntity *const RESTRICT light{ EntityCreationSystem::Instance->CreateEntity<PointLightEntity>() };
 
 			PointLightInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<PointLightInitializationData>() };
@@ -78,6 +80,39 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			EntityCreationSystem::Instance->RequestInitialization(light, data, false);
 
 			entities->EmplaceSlow(light);
+		}
+
+		{
+			constexpr StaticArray<Vector3, 4> colors
+			{
+				Vector3(1.0f, 0.0f, 0.0f),
+				Vector3(0.0f, 1.0f, 1.0f),
+				Vector3(1.0f, 0.1f, 0.0f),
+				Vector3(0.1f, 0.0f, 1.0f)
+			};
+
+			//Create a particle system!
+			ParticleSystemEntity *const RESTRICT particles{ EntityCreationSystem::Instance->CreateEntity<ParticleSystemEntity>() };
+
+			ParticleSystemInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<ParticleSystemInitializationData>() };
+
+			data->_Properties = EntityInitializationData::EntityProperty::None;
+			data->_Material = RenderingSystem::Instance->GetCommonParticleMaterial(RenderingSystem::CommonParticleMaterial::WhiteCircle);
+			data->_ParticleSystemProperties._Properties = ParticleSystemProperty::AffectedByWind | ParticleSystemProperty::Looping;
+			data->_ParticleSystemProperties._FadeTime = 0.1f;
+			data->_ParticleSystemProperties._Lifetime = 1.0f;
+			data->_ParticleSystemProperties._SpawnFrequency = 0.001f;
+			data->_ParticleSystemProperties._MinimumScale = Vector2(1.0f, 1.0f);
+			data->_ParticleSystemProperties._MaximumScale = Vector2(5.0f, 5.0f);
+			data->_ParticleSystemProperties._MinimumPosition = Vector3(0.0f, 0.0f, 0.0f);
+			data->_ParticleSystemProperties._MaximumPosition = Vector3(0.0f, 0.0f, 0.0f);
+			data->_ParticleSystemProperties._MinimumVelocity = Vector3(-125.0f, -125.0f, -125.0f);
+			data->_ParticleSystemProperties._MaximumVelocity = Vector3(125.0f, 125.0f, 125.0f);
+			data->_Position = position + Vector3(0.0f, 600.0f, 0.0f);
+
+			EntityCreationSystem::Instance->RequestInitialization(particles, data, false);
+
+			entities->EmplaceSlow(particles);
 		}
 
 	}, 10'000.0f);

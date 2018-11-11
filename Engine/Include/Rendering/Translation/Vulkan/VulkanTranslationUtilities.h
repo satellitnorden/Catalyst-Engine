@@ -50,6 +50,10 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::AboveOcean);
 			}
 #endif
+			case RenderPassMainStage::ParticleSystem:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ParticleSystem);
+			}
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 			case RenderPassMainStage::VolumetricFog:
 			{

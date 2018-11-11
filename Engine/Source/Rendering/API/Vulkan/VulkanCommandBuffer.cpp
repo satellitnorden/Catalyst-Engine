@@ -81,7 +81,7 @@ void VulkanCommandBuffer::CommandBeginRenderPassAndClear(const float depth, cons
 
 	for (uint32 i = 0; i < numberOfClearValues; ++i)
 	{
-		clearValues[i].color = { 1.0f, 1.0f, 1.0f, 0.0f };
+		clearValues[i].color = { 0.0f, 0.0f, 0.0f, 0.0f };
 		clearValues[i].depthStencil = { depth, 0 };
 	}
 

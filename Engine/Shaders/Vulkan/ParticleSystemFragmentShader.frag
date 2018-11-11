@@ -14,9 +14,7 @@ layout (location = 2) in vec2 fragmentSceneTextureCoordinate;
 layout (location = 3) in vec3 fragmentWorldPosition;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D sceneTexture;
-layout (set = 1, binding = 1) uniform sampler2D normalDepthTexture;
-layout (set = 2, binding = 1) uniform sampler2D albedoTexture;
+layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 fragment;
@@ -105,10 +103,6 @@ void main()
     //Calculate the blend factor.
     float blendFactor = albedoTextureSampler.a * fragmentFadeFactor;
 
-    //Write the fragment and normal depth.
-    vec4 sceneTextureSampler = texture(sceneTexture, fragmentSceneTextureCoordinate);
-    vec4 normalDepthTextureSampler = texture(normalDepthTexture, fragmentSceneTextureCoordinate);
-
-    fragment = vec4(mix(sceneTextureSampler.rgb, finalFragment, blendFactor), 1.0f);
-    normalDepth = vec4(normalDepthTextureSampler.xyz, mix(normalDepthTextureSampler.a, gl_FragCoord.z, blendFactor));
+    //Write the fragment.
+    fragment = vec4(finalFragment, blendFactor);
 }
