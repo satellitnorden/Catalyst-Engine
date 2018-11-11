@@ -57,3 +57,4 @@
 #include <Rendering/ShaderData/Vulkan/ToneMappingFragmentShader.h>
 #include <Rendering/ShaderData/Vulkan/ViewportVertexShader.h>
 #include <Rendering/ShaderData/Vulkan/VolumetricFogFragmentShader.h>
+#include <Rendering/ShaderData/Vulkan/WorldPositionFragmentShader.h>

@@ -28,27 +28,10 @@ layout (set = 1, binding = 1) uniform sampler2D directionalShadowMap;
 //Out parameters.
 layout (location = 0) out vec4 fragment;
 
-/*
-*   Calculates the world position given a texture coordinate and depth.
-*/
-vec3 CalculateWorldPosition(vec2 textureCoordinate, float depth)
-{
-    vec2 nearPlaneCoordinate = textureCoordinate * 2.0f - 1.0f;
-    vec3 fragmentScreenSpacePosition = vec3(nearPlaneCoordinate, depth);
-    vec4 viewSpacePosition = inverseProjectionMatrix * vec4(fragmentScreenSpacePosition, 1.0f);
-    viewSpacePosition /= viewSpacePosition.w;
-    vec4 worldSpacePosition = inverseCameraMatrix * viewSpacePosition;
-
-    return worldSpacePosition.xyz;
-}
-
 void main()
 {
-	 //Sample the depth of the scene at this point.
-    float sceneDepth = texture(sceneNormalDepthTexture, fragmentTextureCoordinate).w;
-
     //Calculate the scene world position.
-    vec3 sceneWorldPosition = CalculateWorldPosition(fragmentTextureCoordinate, sceneDepth);
+    vec3 sceneWorldPosition = texture(sceneNormalDepthTexture, fragmentTextureCoordinate).xyz;
 
     //Calculate the distance to the scene world position.
     float distanceToSceneWorldPosition = LengthSquared3(sceneWorldPosition - cameraWorldPosition);

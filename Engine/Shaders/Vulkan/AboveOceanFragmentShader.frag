@@ -230,11 +230,8 @@ vec2 CalculateSceneTextureCoordinate(vec3 normal, float distanceToBottomSquared)
 */
 vec3 CalculateSceneWorldPosition()
 {
-    //Sample the depth of the scene at this point.
-    float sceneDepth = texture(sceneNormalDepthTexture, fragmentTextureCoordinate).w;
-
     //Calculate the scene world position.
-    return CalculateWorldPosition(fragmentTextureCoordinate, sceneDepth);
+    return texture(sceneNormalDepthTexture, fragmentTextureCoordinate).xyz;
 }
 
 /*

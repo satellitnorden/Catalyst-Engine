@@ -51,8 +51,9 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(1);
+	SetNumberOfRenderTargets(2);
 	AddRenderTarget(RenderTarget::Scene);
+	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
@@ -70,8 +71,8 @@ void ParticleSystemRenderPass::InitializeInternal() NOEXCEPT
 	SetBlendEnabled(true);
 	SetBlendFactorSourceColor(BlendFactor::SourceAlpha);
 	SetBlendFactorDestinationColor(BlendFactor::OneMinusSourceAlpha);
-	SetBlendFactorSourceAlpha(BlendFactor::One);
-	SetBlendFactorDestinationAlpha(BlendFactor::Zero);
+	SetBlendFactorSourceAlpha(BlendFactor::Zero);
+	SetBlendFactorDestinationAlpha(BlendFactor::OneMinusSourceAlpha);
 	SetCullMode(CullMode::Front);
 	SetDepthCompareOperator(CompareOperator::Greater);
 	SetDepthTestEnabled(true);

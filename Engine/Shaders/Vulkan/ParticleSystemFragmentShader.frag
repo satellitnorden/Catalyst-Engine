@@ -105,4 +105,5 @@ void main()
 
     //Write the fragment.
     fragment = vec4(finalFragment, blendFactor);
+    normalDepth = vec4(fragmentWorldPosition, blendFactor);
 }

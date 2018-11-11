@@ -38,6 +38,14 @@ public:
 			{
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::TerrainDepth);
 			}
+			case RenderPassMainStage::ParticleSystem:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ParticleSystem);
+			}
+			case RenderPassMainStage::WorldPosition:
+			{
+				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::WorldPosition);
+			}
 #if !defined(CATALYST_FINAL)
 			case RenderPassMainStage::Debug:
 			{
@@ -50,10 +58,6 @@ public:
 				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::AboveOcean);
 			}
 #endif
-			case RenderPassMainStage::ParticleSystem:
-			{
-				return UNDERLYING(sub) - UNDERLYING(RenderPassSubStage::ParticleSystem);
-			}
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 			case RenderPassMainStage::VolumetricFog:
 			{

@@ -38,17 +38,17 @@ vec4 SampleDepthOfField(vec2 textureCoordinate)
     //Sample the scene texture.
     vec4 sceneTexture = texture(sceneTexture, textureCoordinate);
 
-    //Sample the depth.
-    float depth = texture(normalDepthTexture, textureCoordinate).w;
+    //Sample the normal depth texture.
+    vec4 normalDepthTextureSampler = texture(normalDepthTexture, textureCoordinate);
 
     //Calculate the fragment world position.
-    vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(textureCoordinate, depth == 0.0f ? 1.0f : depth);
+    vec3 fragmentWorldPosition = normalDepthTextureSampler.xyz;
 
     //Calculate the distance to the fragment world position squared.
     float distanceSquared = LengthSquared3(cameraWorldPosition - fragmentWorldPosition);
 
     //Calculate the depth of field weight.
-    float depthOfFieldWeight = min(distanceSquared * pushConstantData.z, 1.0f);
+    float depthOfFieldWeight = min(distanceSquared * pushConstantData.z, 1.0f) * (1.0f - normalDepthTextureSampler.w);
 
     //Write the fragment.
     return vec4(sceneTexture.rgb, depthOfFieldWeight);

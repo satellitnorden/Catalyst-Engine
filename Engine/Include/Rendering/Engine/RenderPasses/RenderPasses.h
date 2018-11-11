@@ -41,3 +41,4 @@
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 #include <Rendering/Engine/RenderPasses/VolumetricFogRenderPass.h>
 #endif
+#include <Rendering/Engine/RenderPasses/WorldPositionRenderPass.h>

@@ -28,6 +28,8 @@ enum class RenderPassMainStage : uint8
 	None,
 	DirectionalShadow,
 	Scene,
+	WorldPosition,
+	ParticleSystem,
 #if defined(CATALYST_ENABLE_OCEAN)
 	Ocean,
 #endif
@@ -41,7 +43,6 @@ enum class RenderPassMainStage : uint8
 	BloomVertical,
 	DepthOfFieldHorizontal,
 	DepthOfFieldVertical,
-	ParticleSystem,
 	ToneMapping,
 	AntiAliasing,
 
@@ -77,6 +78,12 @@ enum class RenderPassSubStage : uint8
 	Sky,
 	DynamicOutline,
 
+	//World position main stage.
+	WorldPosition,
+
+	//Particle system main stage.
+	ParticleSystem,
+
 #if defined(CATALYST_ENABLE_OCEAN)
 	//Ocean main stage.
 	AboveOcean,
@@ -105,9 +112,6 @@ enum class RenderPassSubStage : uint8
 
 	//Depth of field vertical main stage.
 	DepthOfFieldVertical,
-
-	//Particle system main stage.
-	ParticleSystem,
 
 	//Tone mapping main stage.
 	ToneMapping,
@@ -272,6 +276,7 @@ enum class Shader : uint8
 #if defined(CATALYST_ENABLE_VOLUMETRIC_FOG)
 	VolumetricFogFragment,
 #endif
+	WorldPositionFragment,
 
 	NumberOfShaders,
 
