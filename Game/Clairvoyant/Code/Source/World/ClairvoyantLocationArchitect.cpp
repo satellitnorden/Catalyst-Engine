@@ -131,7 +131,7 @@ void ClairvoyantLocationArchitect::InitializeOffsets() NOEXCEPT
 		for (uint8 j{ 0 }; j < OFFSETS_RESOLUTION; ++j)
 		{
 			//Calculate the offset.
-			_Offsets[((j * OFFSETS_RESOLUTION) + i)] = Vector3(static_cast<float>(i) / static_cast<float>(OFFSETS_RESOLUTION - 1) - 0.5f, 0.0f, static_cast<float>(j) / static_cast<float>(OFFSETS_RESOLUTION - 1) - 0.5f);
+			_Offsets[((j * OFFSETS_RESOLUTION) + i)] = Vector3(static_cast<float>(i) / static_cast<float>(OFFSETS_RESOLUTION) - 0.5f, 0.0f, static_cast<float>(j) / static_cast<float>(OFFSETS_RESOLUTION) - 0.5f);
 		}
 	}
 }
@@ -177,7 +177,7 @@ Vector3 ClairvoyantLocationArchitect::FindMostAppropriatePosition(const AxisAlig
 			const float heightDifference{ highestTerrainHeight - lowestTerrainHeight };
 
 			//Pick this position if the height difference is lower.
-			if (bestHeightDifference > heightDifference)
+			if (bestHeightDifference > heightDifference && lowestTerrainHeight > 0.0f)
 			{
 				bestHeightDifference = heightDifference;
 				bestPosition = testPosition;

@@ -60,6 +60,10 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 
 	//Initialize the quad tree.
 	_QuadTree.Initialize();
+
+	//Allocate memory.
+	_PatchInformations.Reserve(TerrainConstants::MAXIMUM_AMOUNT_OF_TERRAIN_PATCHES);
+	_PatchRenderInformations.Reserve(TerrainConstants::MAXIMUM_AMOUNT_OF_TERRAIN_PATCHES);
 }
 
 /*
@@ -145,8 +149,8 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 				}
 			}
 
-			_PatchInformations.EmplaceSlow(_Update._AddRootNodeUpdate._PatchInformation);
-			_PatchRenderInformations.EmplaceSlow(_Update._AddRootNodeUpdate._PatchRenderInformation);
+			_PatchInformations.EmplaceFast(_Update._AddRootNodeUpdate._PatchInformation);
+			_PatchRenderInformations.EmplaceFast(_Update._AddRootNodeUpdate._PatchRenderInformation);
 
 			break;
 		}
@@ -170,8 +174,8 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			}
 
 			//Add the new patch information.
-			_PatchInformations.EmplaceSlow(_Update._CombineNodeUpdate._PatchInformation);
-			_PatchRenderInformations.EmplaceSlow(_Update._CombineNodeUpdate._PatchRenderInformation);
+			_PatchInformations.EmplaceFast(_Update._CombineNodeUpdate._PatchInformation);
+			_PatchRenderInformations.EmplaceFast(_Update._CombineNodeUpdate._PatchRenderInformation);
 
 			break;
 		}
@@ -185,8 +189,8 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			//Add the new patch informations.
 			for (uint8 i{ 0 }; i < 4; ++i)
 			{
-				_PatchInformations.EmplaceSlow(_Update._SubdivideNodeUpdate._PatchInformations[i]);
-				_PatchRenderInformations.EmplaceSlow(_Update._SubdivideNodeUpdate._PatchRenderInformations[i]);
+				_PatchInformations.EmplaceFast(_Update._SubdivideNodeUpdate._PatchInformations[i]);
+				_PatchRenderInformations.EmplaceFast(_Update._SubdivideNodeUpdate._PatchRenderInformations[i]);
 			}
 
 			break;
