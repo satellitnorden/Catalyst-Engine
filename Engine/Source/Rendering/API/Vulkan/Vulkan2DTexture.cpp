@@ -64,7 +64,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureMipmapLevels, const uint32 
 	VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, textureMipmapLevels, 1, _VulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(_VulkanSampler, magnificationFilter, mipmapMode, addressMode, static_cast<float>(textureMipmapLevels));
+	VulkanUtilities::CreateVulkanSampler(_VulkanSampler, magnificationFilter, mipmapMode, addressMode);
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();
@@ -133,7 +133,7 @@ void Vulkan2DTexture::Initialize(const uint32 textureWidth, const uint32 texture
 	VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, textureMipmapLevels, 1, _VulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(_VulkanSampler, magnificationFilter, mipmapMode, addressMode, static_cast<float>(textureMipmapLevels));
+	VulkanUtilities::CreateVulkanSampler(_VulkanSampler, magnificationFilter, mipmapMode, addressMode);
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();

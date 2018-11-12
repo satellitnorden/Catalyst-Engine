@@ -461,7 +461,7 @@ public:
 	/*
 	*	Creates a Vulkan sampler.
 	*/
-	static void CreateVulkanSampler(VkSampler &vulkanSampler, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode, const float maxLod) NOEXCEPT
+	static void CreateVulkanSampler(VkSampler &vulkanSampler, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
 	{
 		//Create the image view create info.
 		VkSamplerCreateInfo samplerCreateInfo;
@@ -477,11 +477,11 @@ public:
 		samplerCreateInfo.addressModeW = addressMode;
 		samplerCreateInfo.mipLodBias = 0.0f;
 		samplerCreateInfo.anisotropyEnable = VK_FALSE;
-		samplerCreateInfo.maxAnisotropy = 1;
+		samplerCreateInfo.maxAnisotropy = 1.0f;
 		samplerCreateInfo.compareEnable = VK_FALSE;
 		samplerCreateInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 		samplerCreateInfo.minLod = 0.0f;
-		samplerCreateInfo.maxLod = maxLod;
+		samplerCreateInfo.maxLod = FLOAT_MAXIMUM;
 		samplerCreateInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 		samplerCreateInfo.unnormalizedCoordinates = VK_FALSE;
 

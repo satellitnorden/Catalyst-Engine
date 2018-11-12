@@ -25,7 +25,7 @@ void VulkanRenderTarget::Initialize(const VkExtent2D extent, const VkFormat form
 	VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_2D, format, VK_IMAGE_ASPECT_COLOR_BIT, 1, 1, _VulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(_VulkanSampler, magnificationFilter, VK_SAMPLER_MIPMAP_MODE_NEAREST, addressMode, 0.0f);
+	VulkanUtilities::CreateVulkanSampler(_VulkanSampler, magnificationFilter, VK_SAMPLER_MIPMAP_MODE_NEAREST, addressMode);
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();

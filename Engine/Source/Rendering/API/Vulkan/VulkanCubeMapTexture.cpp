@@ -51,7 +51,7 @@ void VulkanCubeMapTexture::Initialize(const float *const RESTRICT data, const ui
 	VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, 1, 6, _VulkanImageView);
 
 	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(_VulkanSampler, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT, 0.0f);
+	VulkanUtilities::CreateVulkanSampler(_VulkanSampler, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 	//Create the descriptor image info.
 	CreateDescriptorImageInfo();
