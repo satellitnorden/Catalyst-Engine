@@ -159,6 +159,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanRenderPassCreationParameters.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanRenderTarget.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanSampler.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanSemaphore.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanShaderModule.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanStorageBuffer.h" />
@@ -374,6 +375,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanQueue.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanRenderPass.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanRenderTarget.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanSampler.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanSemaphore.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanShaderModule.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanStorageBuffer.cpp" />

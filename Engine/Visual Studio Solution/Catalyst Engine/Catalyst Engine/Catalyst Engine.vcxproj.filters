@@ -1104,6 +1104,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\WorldPositionRenderPass.h">
       <Filter>Rendering\Include\Engine\RenderPasses</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanSampler.h">
+      <Filter>Rendering\Include\API\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1543,6 +1546,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\WorldPositionRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanSampler.cpp">
+      <Filter>Rendering\Source\API\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
