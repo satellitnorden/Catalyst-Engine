@@ -11,6 +11,9 @@ class ParticleSystemRenderComponent final
 
 public:
 
+	//The visibility.
+	VisibilityFlag _Visibility;
+
 	//The render data table.
 	RenderDataTableHandle _RenderDataTable;
 

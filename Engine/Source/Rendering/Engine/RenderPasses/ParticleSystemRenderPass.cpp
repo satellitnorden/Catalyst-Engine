@@ -11,6 +11,7 @@
 #include <Rendering/Engine/CommandBuffer.h>
 
 //Systems.
+#include <Systems/CullingSystem.h>
 #include <Systems/EngineSystem.h>
 #include <Systems/RenderingSystem.h>
 
@@ -124,8 +125,16 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data table.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
 
+	//Wait for particle systems culling to finish.
+	CullingSystem::Instance->WaitForParticleSystemsCulling();
+
 	for (uint64 i = 0; i < numberOfParticleSystemComponents; ++i, ++component)
 	{
+		if (!TEST_BIT(component->_Visibility, VisibilityFlag::Viewer))
+		{
+			continue;
+		}
+
 		struct ParticleSystemData
 		{
 			Vector3 _WorldPosition;

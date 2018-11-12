@@ -549,6 +549,7 @@ void RenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRIC
 	ParticleSystemRenderComponent &renderComponent{ ComponentManager::GetParticleSystemParticleSystemRenderComponents()[entity->_ComponentsIndex] };
 
 	//Fill in the components.
+	RenderingUtilities::CalculateAxisAlignedBoundingBoxForParticleSystem(data->_Position, data->_ParticleSystemProperties, &component._AxisAlignedBoundingBox);
 	component._Properties = data->_ParticleSystemProperties;
 	component._PropertiesUniformBuffer = CreateUniformBuffer(sizeof(ParticleSystemProperties));
 	UploadDataToUniformBuffer(component._PropertiesUniformBuffer, &component._Properties);

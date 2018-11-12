@@ -30,6 +30,12 @@ void CullingSystem::InitializeSystem() NOEXCEPT
 	};
 	_CullingTasks[UNDERLYING(CullingTask::GrassVegetation)]._Arguments = nullptr;
 
+	_CullingTasks[UNDERLYING(CullingTask::ParticleSystems)]._Function = [](void *const RESTRICT)
+	{
+		CullingSystem::Instance->CullParticleSystems();
+	};
+	_CullingTasks[UNDERLYING(CullingTask::ParticleSystems)]._Arguments = nullptr;
+
 	_CullingTasks[UNDERLYING(CullingTask::SolidVegetation)]._Function = [](void *const RESTRICT)
 	{
 		CullingSystem::Instance->CullSolidVegetation();
@@ -84,6 +90,34 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 			{
 				CLEAR_BIT(information._PatchRenderInformations[i]._Visibility, VisibilityFlag::Viewer);
 			}
+		}
+	}
+}
+
+/*
+*	Culls particle systems.
+*/
+void CullingSystem::CullParticleSystems() NOEXCEPT
+{
+	//Get the current frustum planes.
+	const StaticArray<Vector4, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+
+	//Retrieve component data.
+	const ParticleSystemComponent *RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemComponents() };
+	ParticleSystemRenderComponent *RESTRICT renderComponent{ ComponentManager::GetParticleSystemParticleSystemRenderComponents() };
+	const uint64 numberOfComponents{ ComponentManager::GetNumberOfParticleSystemComponents() };
+
+	for (uint64 i{ 0 }; i < numberOfComponents; ++i, ++component, ++renderComponent)
+	{
+		//Test this particle system's axis-aligned bounding box against the current frustum planes.
+		if (RenderingUtilities::IsWithinViewFrustum(*frustumPlanes, component->_AxisAlignedBoundingBox))
+		{
+			SET_BIT(renderComponent->_Visibility, VisibilityFlag::Viewer);
+		}
+
+		else
+		{
+			CLEAR_BIT(renderComponent->_Visibility, VisibilityFlag::Viewer);
 		}
 	}
 }

@@ -26,6 +26,23 @@ namespace RenderingUtilities
 {
 
 	/*
+	*	Calculates an axis-aligned bounding box for a particle system.
+	*/
+	static void CalculateAxisAlignedBoundingBoxForParticleSystem(const Vector3 &position, const ParticleSystemProperties &properties, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	{
+		float minimumScale{ FLOAT_MAXIMUM };
+		float maximumScale{ -FLOAT_MAXIMUM };
+
+		minimumScale = CatalystBaseMath::Minimum<float>(minimumScale, properties._MinimumScale._X);
+		minimumScale = CatalystBaseMath::Minimum<float>(minimumScale, properties._MinimumScale._Y);
+		maximumScale = CatalystBaseMath::Maximum<float>(maximumScale, properties._MaximumScale._X);
+		maximumScale = CatalystBaseMath::Maximum<float>(maximumScale, properties._MaximumScale._Y);
+
+		box->_Minimum = position + properties._MinimumPosition + properties._MinimumVelocity * properties._Lifetime - Vector3(minimumScale, minimumScale, minimumScale);
+		box->_Maximum = position + properties._MaximumPosition + properties._MaximumVelocity * properties._Lifetime + Vector3(maximumScale, maximumScale, maximumScale);
+	}
+
+	/*
 	*	Calculates an axis-aligned bounding box from a set of transformations.
 	*/
 	static void CalculateAxisAlignedBoundingBoxFromTransformations(const DynamicArray<Matrix4> &transformations, const AxisAlignedBoundingBox &modelBox, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT

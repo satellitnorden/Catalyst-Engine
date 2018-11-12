@@ -12,6 +12,9 @@ class ParticleSystemComponent final
 
 public:
 
+	//The axis-aligned bounding box.
+	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
+
 	//The particle system properties.
 	ParticleSystemProperties _Properties;
 

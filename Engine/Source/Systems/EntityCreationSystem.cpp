@@ -146,10 +146,14 @@ void EntityCreationSystem::TerminateEntity(Entity* const RESTRICT entity) NOEXCE
 void EntityCreationSystem::DestroyEntity(Entity *const RESTRICT entity) NOEXCEPT
 {
 	//The entity should already be terminated, so just deallocate the entity.
+	_AllocatorLock.Lock();
 	_Allocator.DeAllocate(entity);
+	_AllocatorLock.Unlock();
 
 	//Remove the entity from the list of entities.
+	_EntitiesLock.Lock();
 	_Entities.Erase(entity);
+	_EntitiesLock.Unlock();
 }
 
 /*
