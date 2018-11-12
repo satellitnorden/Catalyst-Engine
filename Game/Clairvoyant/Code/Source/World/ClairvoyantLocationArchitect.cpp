@@ -29,11 +29,10 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 	//Initialize the offsets.
 	InitializeOffsets();
 
-	//Cuuubes...! Yaaay...!!!
 	EntityPlacementSystem::Instance->RegisterTwoDimensionalPlacementFunction([](const AxisAlignedBoundingBox &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities)
 	{
 		//Find the most appropriate position.
-		Vector3 position{ FindMostAppropriatePosition(box, 1'000.0f) };
+		Vector3 position{ FindMostAppropriatePosition(AxisAlignedBoundingBox(box._Minimum + Vector3(500.0f, 0.0f, 500.0f), box._Maximum - Vector3(500.0f, 0.0f, 500.0f)), 1'000.0f) };
 		position._Y += 500.0f;
 
 		{
@@ -48,7 +47,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("TowerMaterial"));
 			data->_Position = position;
 			data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
-			data->_Scale = Vector3(100.0f, 1'000.0f, 100.0f);
+			data->_Scale = Vector3(50.0f, 1'000.0f, 50.0f);
 			data->_OutlineColor = Vector3(0.0f, 0.0f, 0.0f);
 
 			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
@@ -57,7 +56,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 		}
 
 		{
-			constexpr uint8 NUMBER_OF_BUILDINGS{ 10 };
+			constexpr uint8 NUMBER_OF_BUILDINGS{ 20 };
 
 			//Create some more "buildings"!
 			DynamicArray<Vector3> previousPositions;
@@ -76,7 +75,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 
 					for (const Vector3 &previousPosition : previousPositions)
 					{
-						if (Vector3::LengthSquaredXZ(previousPosition - testPosition) < 150.0f * 150.0f)
+						if (Vector3::LengthSquaredXZ(previousPosition - testPosition) < 52.5f * 52.5f)
 						{
 							tooClose = true;
 
@@ -97,9 +96,9 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 						data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("TowerMaterial"));
 						data->_Position = testPosition;
 						TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &data->_Position._Y);
-						data->_Position._Y += 50.0f;
+						data->_Position._Y += 25.0f;
 						data->_Rotation = Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f);
-						data->_Scale = Vector3(100.0f, 100.0f, 100.0f);
+						data->_Scale = Vector3(50.0f, 50.0f, 50.0f);
 						data->_OutlineColor = Vector3(0.0f, 0.0f, 0.0f);
 
 						EntityCreationSystem::Instance->RequestInitialization(building, data, false);
@@ -161,8 +160,8 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			data->_ParticleSystemProperties._SpawnFrequency = 0.0001f;
 			data->_ParticleSystemProperties._MinimumScale = Vector2(1.25f, 1.25f);
 			data->_ParticleSystemProperties._MaximumScale = Vector2(2.5f, 2.5f);
-			data->_ParticleSystemProperties._MinimumPosition = Vector3(-50.0f, 0.0f, -50.0f);
-			data->_ParticleSystemProperties._MaximumPosition = Vector3(50.0f, 0.0f, 50.0f);
+			data->_ParticleSystemProperties._MinimumPosition = Vector3(-25.0f, 0.0f, -25.0f);
+			data->_ParticleSystemProperties._MaximumPosition = Vector3(25.0f, 0.0f, 25.0f);
 			data->_ParticleSystemProperties._MinimumVelocity = Vector3(0.0f, 0.0f, 0.0f);
 			data->_ParticleSystemProperties._MaximumVelocity = Vector3(0.0f, 500.0f, 0.0f);
 			data->_Position = position + Vector3(0.0f, 500.0f, 0.0f);

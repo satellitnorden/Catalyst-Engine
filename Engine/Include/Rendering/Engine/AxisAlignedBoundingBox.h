@@ -19,6 +19,25 @@ public:
 	Vector3 _Maximum;
 
 	/*
+	*	Default constructor.
+	*/
+	AxisAlignedBoundingBox() NOEXCEPT
+	{
+
+	}
+
+	/*
+	*	Constructor taking the minimum and maximum values.
+	*/
+	AxisAlignedBoundingBox(const Vector3 &initialMinimum, const Vector3 &initialMaximum) NOEXCEPT
+		:
+		_Minimum(initialMinimum),
+		_Maximum(initialMaximum)
+	{
+
+	}
+
+	/*
 	*	Calcules the center of an axis-aligned bounding box.
 	*/
 	static Vector3 CalculateCenter(const AxisAlignedBoundingBox &box) NOEXCEPT
