@@ -381,34 +381,6 @@ void VulkanRenderingSystem::CreateRenderDataTable(const RenderDataTableLayoutHan
 }
 
 /*
-*	Updates a render data table.
-*/
-void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT
-{
-	VulkanDescriptorSet *const RESTRICT descriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(handle) };
-	VkWriteDescriptorSet writeDescriptorSet;
-
-	switch (information._Type)
-	{
-		case RenderDataTableUpdateInformation::Type::Texture2D:
-		{
-			writeDescriptorSet = static_cast<Vulkan2DTexture *const RESTRICT>(information._Handle)->GetWriteDescriptorSet(*descriptorSet, information._Binding);
-
-			break;
-		}
-
-#if !defined(CATALYST_FINAL)
-		default:
-		{
-			BREAKPOINT();
-		}
-#endif
-	}
-
-	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &writeDescriptorSet, 0, nullptr);
-}
-
-/*
 *	Binds a combined image sampler to a render data table.
 *	Accepts render target, texture 2D and texture cube handles.
 */

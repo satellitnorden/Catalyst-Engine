@@ -103,11 +103,6 @@ public:
 	void CreateRenderDataTable(const RenderDataTableLayoutHandle renderDataTableLayout, RenderDataTableHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
-	*	Updates a render data table.
-	*/
-	void UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT;
-
-	/*
 	*	Binds a combined image sampler to a render data table.
 	*	Accepts render target, texture 2D and texture cube handles.
 	*/
