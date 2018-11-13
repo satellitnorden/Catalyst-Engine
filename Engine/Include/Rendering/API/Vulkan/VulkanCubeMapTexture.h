@@ -37,35 +37,4 @@ public:
 	*/
 	const VkImageView& GetImageView() const NOEXCEPT { return _VulkanImageView; }
 
-	/*
-	*	Returns the Vulkan sampler.
-	*/
-	const VkSampler& GetSampler() const NOEXCEPT { return _VulkanSampler; }
-
-	/*
-	*	Returns the write descriptor set for this texture.
-	*/
-	VkWriteDescriptorSet GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT;
-
-private:
-
-	//The Vulkan sampler.
-	VkSampler _VulkanSampler;
-
-	//The descriptor image info for this texture.
-	VkDescriptorImageInfo _VulkanDescriptorImageInfo;
-
-	//The write descriptor set for this texture.
-	VkWriteDescriptorSet _VulkanWriteDescriptorSet;
-
-	/*
-	*	Creates the descriptor image info.
-	*/
-	void CreateDescriptorImageInfo() NOEXCEPT;
-
-	/*
-	*	Creates the write descriptor set.
-	*/
-	void CreateWriteDescriptorSet() NOEXCEPT;
-
 };

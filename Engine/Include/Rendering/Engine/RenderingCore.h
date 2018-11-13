@@ -470,8 +470,7 @@ public:
 	enum class Type : uint8
 	{
 		RenderTarget,
-		Texture2D,
-		TextureCube
+		Texture2D
 	};
 
 	//The binding.
@@ -512,6 +511,18 @@ public:
 
 	//The address mode.
 	AddressMode _AddressMode;
+
+	/*
+	*	Constructor taking all values as arguments.
+	*/
+	SamplerProperties(const TextureFilter initialMagnificationFilter, const MipmapMode initialMipmapMode, const AddressMode initialAddressMode) NOEXCEPT
+		:
+		_MagnificationFilter(initialMagnificationFilter),
+		_MipmapMode(initialMipmapMode),
+		_AddressMode(initialAddressMode)
+	{
+
+	}
 
 	/*
 	*	Equality operator overload.

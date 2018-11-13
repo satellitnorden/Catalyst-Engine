@@ -404,13 +404,6 @@ void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInf
 			break;
 		}
 
-		case RenderDataTableUpdateInformation::Type::TextureCube:
-		{
-			writeDescriptorSet = static_cast<VulkanCubeMapTexture *const RESTRICT>(information._Handle)->GetWriteDescriptorSet(*descriptorSet, information._Binding);
-
-			break;
-		}
-
 #if !defined(CATALYST_FINAL)
 		default:
 		{

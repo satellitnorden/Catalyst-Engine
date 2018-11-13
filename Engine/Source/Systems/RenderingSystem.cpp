@@ -369,8 +369,8 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &d
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::EnvironmentMaterial), &material._RenderDataTable);
 
 	//Update the render data table.
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::TextureCube, material._DiffuseTexture), material._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::TextureCube, material._DiffuseIrradianceTexture), material._RenderDataTable);
+	BindCombinedImageSamplerToRenderDataTable(0, material._RenderDataTable, material._DiffuseTexture, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat)));
+	BindCombinedImageSamplerToRenderDataTable(1, material._RenderDataTable, material._DiffuseIrradianceTexture, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat)));
 }
 
 /*
@@ -659,7 +659,7 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 */
 void RenderingSystem::InitializeSamplers() NOEXCEPT
 {
-	//Well.
+	_Samplers[SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat));
 }
 
 /*

@@ -49,15 +49,6 @@ void VulkanCubeMapTexture::Initialize(const float *const RESTRICT data, const ui
 
 	//Create the image view.
 	VulkanUtilities::CreateVulkanImageView(_VulkanImage, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, 1, 6, _VulkanImageView);
-
-	//Create the Vulkan sampler.
-	VulkanUtilities::CreateVulkanSampler(_VulkanSampler, VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST, VK_SAMPLER_ADDRESS_MODE_REPEAT);
-
-	//Create the descriptor image info.
-	CreateDescriptorImageInfo();
-
-	//Create the write descriptor set.
-	CreateWriteDescriptorSet();
 }
 
 /*
@@ -65,9 +56,6 @@ void VulkanCubeMapTexture::Initialize(const float *const RESTRICT data, const ui
 */
 void VulkanCubeMapTexture::Release() NOEXCEPT
 {
-	//Destroy Vulkan sampler.
-	vkDestroySampler(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanSampler, nullptr);
-
 	//Destroy the Vulkan image view.
 	vkDestroyImageView(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImageView, nullptr);
 
@@ -76,45 +64,4 @@ void VulkanCubeMapTexture::Release() NOEXCEPT
 
 	//Destroy the Vulkan image.
 	vkDestroyImage(VulkanInterface::Instance->GetLogicalDevice().Get(), _VulkanImage, nullptr);
-}
-
-/*
-*	Returns the write descriptor set for this texture.
-*/
-VkWriteDescriptorSet VulkanCubeMapTexture::GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT
-{
-	VkWriteDescriptorSet vulkanWriteDescriptorSetCopy{ _VulkanWriteDescriptorSet };
-
-	vulkanWriteDescriptorSetCopy.dstSet = vulkanDescriptorSet.Get();
-	vulkanWriteDescriptorSetCopy.dstBinding = binding;
-	vulkanWriteDescriptorSetCopy.pImageInfo = &_VulkanDescriptorImageInfo;
-
-	return vulkanWriteDescriptorSetCopy;
-}
-
-/*
-*	Creates the descriptor image info.
-*/
-void VulkanCubeMapTexture::CreateDescriptorImageInfo() NOEXCEPT
-{
-	_VulkanDescriptorImageInfo.sampler = _VulkanSampler;
-	_VulkanDescriptorImageInfo.imageView = _VulkanImageView;
-	_VulkanDescriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-}
-
-/*
-*	Creates the write descriptor set.
-*/
-void VulkanCubeMapTexture::CreateWriteDescriptorSet() NOEXCEPT
-{
-	_VulkanWriteDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-	_VulkanWriteDescriptorSet.pNext = nullptr;
-	_VulkanWriteDescriptorSet.dstSet = VK_NULL_HANDLE;
-	_VulkanWriteDescriptorSet.dstBinding = 0;
-	_VulkanWriteDescriptorSet.dstArrayElement = 0;
-	_VulkanWriteDescriptorSet.descriptorCount = 1;
-	_VulkanWriteDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	_VulkanWriteDescriptorSet.pImageInfo = &_VulkanDescriptorImageInfo;
-	_VulkanWriteDescriptorSet.pBufferInfo = nullptr;
-	_VulkanWriteDescriptorSet.pTexelBufferView = nullptr;
 }
