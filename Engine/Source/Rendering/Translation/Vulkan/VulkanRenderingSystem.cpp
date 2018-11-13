@@ -60,6 +60,13 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 	//Initialize the Vulkan frame data.
 	_FrameData.Initialize(	VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(),
 							*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData)));
+
+	for (uint32 i{ 0 }; i < VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(); ++i)
+	{
+		_FrameData.SetCurrentFrame(i);
+
+		BindUniformBufferToRenderDataTable(0, _FrameData.GetCurrentDynamicUniformDataRenderDataTable(), _FrameData.GetCurrentDynamicUniformDataBuffer());
+	}
 }
 
 /*
@@ -394,13 +401,6 @@ void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInf
 			break;
 		}
 
-		case RenderDataTableUpdateInformation::Type::UniformBuffer:
-		{
-			writeDescriptorSet = static_cast<VulkanUniformBuffer *const RESTRICT>(information._Handle)->GetWriteDescriptorSet(*descriptorSet, information._Binding);
-
-			break;
-		}
-
 #if !defined(CATALYST_FINAL)
 		default:
 		{
@@ -409,6 +409,40 @@ void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInf
 #endif
 	}
 
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &writeDescriptorSet, 0, nullptr);
+}
+
+/*
+*	Binds a uniform buffer to a render data table.
+*/
+void VulkanRenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT
+{
+	//Cache the Vulkan types.
+	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(renderDataTable) };
+	VulkanUniformBuffer *const RESTRICT vulkanUniformBuffer{ static_cast<VulkanUniformBuffer *const RESTRICT>(uniformBuffer) };
+
+	//Create the destriptor buffer info.
+	VkDescriptorBufferInfo descriptorBufferInfo;
+
+	descriptorBufferInfo.buffer = vulkanUniformBuffer->Get();
+	descriptorBufferInfo.offset = 0;
+	descriptorBufferInfo.range = vulkanUniformBuffer->GetSize();
+
+	//Create the write descriptor set.
+	VkWriteDescriptorSet writeDescriptorSet;
+
+	writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeDescriptorSet.pNext = nullptr;
+	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
+	writeDescriptorSet.dstBinding = binding;
+	writeDescriptorSet.dstArrayElement = 0;
+	writeDescriptorSet.descriptorCount = 1;
+	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	writeDescriptorSet.pImageInfo = nullptr;
+	writeDescriptorSet.pBufferInfo = &descriptorBufferInfo;
+	writeDescriptorSet.pTexelBufferView = nullptr;
+
+	//Update the descriptor set.
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &writeDescriptorSet, 0, nullptr);
 }
 

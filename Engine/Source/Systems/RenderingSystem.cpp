@@ -218,6 +218,15 @@ void RenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInformati
 }
 
 /*
+*	Binds a uniform buffer to a render data table.
+*/
+void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT
+{
+	//Bind the uniform buffer to a render data table via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->BindUniformBufferToRenderDataTable(binding, renderDataTable, uniformBuffer);
+}
+
+/*
 *	Destroys a render data table.
 */
 void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle handle) const NOEXCEPT
@@ -554,7 +563,7 @@ void RenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRIC
 	component._PropertiesUniformBuffer = CreateUniformBuffer(sizeof(ParticleSystemProperties));
 	UploadDataToUniformBuffer(component._PropertiesUniformBuffer, &component._Properties);
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem), &renderComponent._RenderDataTable);
-	UpdateRenderDataTable(RenderDataTableUpdateInformation(0, RenderDataTableUpdateInformation::Type::UniformBuffer, component._PropertiesUniformBuffer), renderComponent._RenderDataTable);
+	BindUniformBufferToRenderDataTable(0, renderComponent._RenderDataTable, component._PropertiesUniformBuffer);
 	UpdateRenderDataTable(RenderDataTableUpdateInformation(1, RenderDataTableUpdateInformation::Type::Texture2D, data->_Material._AlbedoTexture), renderComponent._RenderDataTable);
 	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(data->_ParticleSystemProperties._Lifetime / data->_ParticleSystemProperties._SpawnFrequency);
 	renderComponent._WorldPosition = data->_Position;

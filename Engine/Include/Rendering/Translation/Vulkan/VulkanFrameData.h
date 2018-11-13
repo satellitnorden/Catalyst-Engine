@@ -49,14 +49,6 @@ public:
 		for (uint64 i = 0, size = _DynamicUniformDataDescriptorSets.Size(); i < size; ++i)
 		{
 			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(_DynamicUniformDataDescriptorSets[i], dynamicUniformDataDescriptorSetLayout);
-
-			//Update the write descriptor sets.
-			StaticArray<VkWriteDescriptorSet, 1> writeDescriptorSets
-			{
-				_DynamicUniformDataBuffers[i]->GetWriteDescriptorSet(_DynamicUniformDataDescriptorSets[i], 0)
-			};
-
-			vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), static_cast<uint32>(writeDescriptorSets.Size()), writeDescriptorSets.Data(), 0, nullptr);
 		}
 	}
 

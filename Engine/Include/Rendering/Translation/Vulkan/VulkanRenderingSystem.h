@@ -108,6 +108,11 @@ public:
 	void UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT;
 
 	/*
+	*	Binds a uniform buffer to a render data table.
+	*/
+	void BindUniformBufferToRenderDataTable(const uint32 binding, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT;
+
+	/*
 	*	Destroys a render data table.
 	*/
 	void DestroyRenderDataTable(RenderDataTableHandle handle) NOEXCEPT;

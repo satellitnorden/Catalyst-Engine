@@ -470,8 +470,7 @@ public:
 	{
 		RenderTarget,
 		Texture2D,
-		TextureCube,
-		UniformBuffer
+		TextureCube
 	};
 
 	//The binding.
