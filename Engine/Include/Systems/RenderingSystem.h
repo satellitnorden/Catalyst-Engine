@@ -261,6 +261,12 @@ public:
 	void UpdateRenderDataTable(const RenderDataTableUpdateInformation information, RenderDataTableHandle handle) const NOEXCEPT;
 
 	/*
+	*	Binds a combined image sampler to a render data table.
+	*	Accepts render target, texture 2D and texture cube handles. 
+	*/
+	void BindCombinedImageSamplerToRenderDataTable(const uint32 binding, RenderDataTableHandle renderDataTable, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT;
+
+	/*
 	*	Binds a uniform buffer to a render data table.
 	*/
 	void BindUniformBufferToRenderDataTable(const uint32 binding, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT;

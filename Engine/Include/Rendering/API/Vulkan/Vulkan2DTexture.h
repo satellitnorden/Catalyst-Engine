@@ -3,21 +3,19 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Rendering.
+#include <Rendering/API/Vulkan/VulkanImage.h>
+
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>
 
 //Forward declarations.
 class VulkanDescriptorSet;
 
-class Vulkan2DTexture final
+class Vulkan2DTexture final : public VulkanImage
 {
 
 public:
-
-	/*
-	*	Returns the underlying Vulkan image.
-	*/
-	const VkImage& Get() const NOEXCEPT { return _VulkanImage; }
 
 	/*
 	*	Initializes this texture with void data.
@@ -35,11 +33,6 @@ public:
 	void Release() NOEXCEPT;
 
 	/*
-	*	Returns the Vulkan image view.
-	*/
-	const VkImageView& GetImageView() const NOEXCEPT { return _VulkanImageView; }
-
-	/*
 	*	Returns the Vulkan sampler.
 	*/
 	const VkSampler& GetSampler() const NOEXCEPT { return _VulkanSampler; }
@@ -50,15 +43,6 @@ public:
 	VkWriteDescriptorSet GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT;
 
 private:
-
-	//The underlying Vulkan image.
-	VkImage _VulkanImage;
-
-	//The Vulkan device memory.
-	VkDeviceMemory _VulkanDeviceMemory;
-
-	//The Vulkan image view.
-	VkImageView _VulkanImageView;
 
 	//The Vulkan sampler.
 	VkSampler _VulkanSampler;

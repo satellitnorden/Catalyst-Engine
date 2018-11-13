@@ -3,13 +3,16 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Rendering.
+#include <Rendering/API/Vulkan/VulkanImage.h>
+
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>
 
 //Forward declarations.
 class VulkanDescriptorSet;
 
-class VulkanCubeMapTexture final
+class VulkanCubeMapTexture final : public VulkanImage
 {
 
 public:
@@ -45,15 +48,6 @@ public:
 	VkWriteDescriptorSet GetWriteDescriptorSet(const VulkanDescriptorSet &vulkanDescriptorSet, const uint32 binding) const NOEXCEPT;
 
 private:
-
-	//The underlying Vulkan image.
-	VkImage _VulkanImage;
-
-	//The Vulkan device memory.
-	VkDeviceMemory _VulkanDeviceMemory;
-
-	//The Vulkan image view.
-	VkImageView _VulkanImageView;
 
 	//The Vulkan sampler.
 	VkSampler _VulkanSampler;

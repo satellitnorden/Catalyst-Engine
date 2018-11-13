@@ -423,6 +423,42 @@ void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInf
 }
 
 /*
+*	Binds a combined image sampler to a render data table.
+*	Accepts render target, texture 2D and texture cube handles.
+*/
+void VulkanRenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint32 binding, RenderDataTableHandle renderDataTable, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT
+{
+	//Cache the Vulkan types.
+	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(renderDataTable) };
+	VulkanImage *const RESTRICT vulkanImage{ static_cast<VulkanImage *const RESTRICT>(image) };
+	VulkanSampler *const RESTRICT vulkanSampler{ static_cast<VulkanSampler *const RESTRICT>(sampler) };
+
+	//Create the destriptor image info.
+	VkDescriptorImageInfo descriptorImageInfo;
+
+	descriptorImageInfo.sampler = vulkanSampler->Get();
+	descriptorImageInfo.imageView = vulkanImage->GetImageView();
+	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+	//Create the write descriptor set.
+	VkWriteDescriptorSet writeDescriptorSet;
+
+	writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeDescriptorSet.pNext = nullptr;
+	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
+	writeDescriptorSet.dstBinding = binding;
+	writeDescriptorSet.dstArrayElement = 0;
+	writeDescriptorSet.descriptorCount = 1;
+	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	writeDescriptorSet.pImageInfo = &descriptorImageInfo;
+	writeDescriptorSet.pBufferInfo = nullptr;
+	writeDescriptorSet.pTexelBufferView = nullptr;
+
+	//Update the descriptor set.
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &writeDescriptorSet, 0, nullptr);
+}
+
+/*
 *	Binds a uniform buffer to a render data table.
 */
 void VulkanRenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT

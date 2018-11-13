@@ -149,6 +149,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFence.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFramebuffer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFramebufferCreationParameters.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanImage.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanInstance.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanInterface.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanLogicalDevice.h" />
@@ -221,7 +222,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\WorldPositionRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\SamplerProperties.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h" />

@@ -237,11 +237,21 @@ void RenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInformati
 }
 
 /*
+*	Binds a combined image sampler to a render data table.
+*	Accepts render target, texture 2D and texture cube handles.
+*/
+void RenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint32 binding, RenderDataTableHandle renderDataTable, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT
+{
+	//Bind the combined image sampler to the render data table via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->BindCombinedImageSamplerToRenderDataTable(binding, renderDataTable, image, sampler);
+}
+
+/*
 *	Binds a uniform buffer to a render data table.
 */
 void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT
 {
-	//Bind the uniform buffer to a render data table via the current rendering system.
+	//Bind the uniform buffer to the render data table via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->BindUniformBufferToRenderDataTable(binding, renderDataTable, uniformBuffer);
 }
 

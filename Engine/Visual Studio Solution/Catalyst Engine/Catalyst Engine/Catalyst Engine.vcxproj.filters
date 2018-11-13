@@ -1107,8 +1107,8 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanSampler.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\SamplerProperties.h">
-      <Filter>Rendering\Include\Engine</Filter>
+    <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanImage.h">
+      <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

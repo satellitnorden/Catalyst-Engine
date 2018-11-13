@@ -3,13 +3,16 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Rendering.
+#include <Rendering/API/Vulkan/VulkanImage.h>
+
 //Vulkan.
 #include <Rendering/API/Vulkan/VulkanCore.h>
 
 //Forward declarations.
 class VulkanDescriptorSet;
 
-class VulkanRenderTarget final
+class VulkanRenderTarget final : public VulkanImage
 {
 
 public:
@@ -23,16 +26,6 @@ public:
 	*	Releases this Vulkan render target.
 	*/
 	void Release() NOEXCEPT;
-
-	/*
-	*	Returns the Vulkan image.
-	*/
-	const VkImage GetImage() const NOEXCEPT { return _VulkanImage; }
-
-	/*
-	*	Returns the Vulkan image view.
-	*/
-	const VkImageView GetImageView() const NOEXCEPT { return _VulkanImageView; }
 
 	/*
 	*	Returns the Vulkan sampler.
@@ -55,15 +48,6 @@ public:
 	VkFormat GetFormat() const NOEXCEPT { return _Format; }
 
 private:
-
-	//The Vulkan image.
-	VkImage _VulkanImage;
-
-	//The Vulkan device memory.
-	VkDeviceMemory _VulkanDeviceMemory;
-
-	//The Vulkan image view.
-	VkImageView _VulkanImageView;
 
 	//The Vulkan sampler.
 	VkSampler _VulkanSampler;
