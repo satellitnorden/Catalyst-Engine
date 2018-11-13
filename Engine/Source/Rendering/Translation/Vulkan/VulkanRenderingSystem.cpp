@@ -390,13 +390,6 @@ void VulkanRenderingSystem::UpdateRenderDataTable(const RenderDataTableUpdateInf
 
 	switch (information._Type)
 	{
-		case RenderDataTableUpdateInformation::Type::RenderTarget:
-		{
-			writeDescriptorSet = static_cast<VulkanRenderTarget *const RESTRICT>(information._Handle)->GetWriteDescriptorSet(*descriptorSet, information._Binding);
-
-			break;
-		}
-
 		case RenderDataTableUpdateInformation::Type::Texture2D:
 		{
 			writeDescriptorSet = static_cast<Vulkan2DTexture *const RESTRICT>(information._Handle)->GetWriteDescriptorSet(*descriptorSet, information._Binding);
@@ -431,7 +424,7 @@ void VulkanRenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint
 
 	descriptorImageInfo.sampler = vulkanSampler->Get();
 	descriptorImageInfo.imageView = vulkanImage->GetImageView();
-	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	descriptorImageInfo.imageLayout = vulkanImage->GetImageLayout();
 
 	//Create the write descriptor set.
 	VkWriteDescriptorSet writeDescriptorSet;

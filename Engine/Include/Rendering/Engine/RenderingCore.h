@@ -469,7 +469,6 @@ public:
 	//Enumeration covering all types.
 	enum class Type : uint8
 	{
-		RenderTarget,
 		Texture2D
 	};
 

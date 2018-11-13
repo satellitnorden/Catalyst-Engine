@@ -12,6 +12,12 @@
 */
 void VulkanCubeMapTexture::Initialize(const float *const RESTRICT data, const uint32 width, const uint32 height) NOEXCEPT
 {
+	//Set the format.
+	_VulkanFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+
+	//Set the image layout.
+	_VulkanImageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
 	//Calculate the image size and the side size.
 	const VkDeviceSize layerSize{ width * height * 4 * sizeof(float) };
 	const VkDeviceSize imageSize{ layerSize * 6 };

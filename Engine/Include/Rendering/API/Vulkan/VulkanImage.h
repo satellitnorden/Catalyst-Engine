@@ -21,6 +21,16 @@ public:
 	*/
 	const VkImageView GetImageView() const NOEXCEPT { return _VulkanImageView; }
 
+	/*
+	*	Returns the Vulkan format.
+	*/
+	const VkFormat GetFormat() const NOEXCEPT { return _VulkanFormat; }
+
+	/*
+	*	Returns the Vulkan image layout.
+	*/
+	const VkImageLayout GetImageLayout() const NOEXCEPT { return _VulkanImageLayout; }
+
 protected:
 
 	//The Vulkan image.
@@ -32,5 +42,10 @@ protected:
 	//The Vulkan image view.
 	VkImageView _VulkanImageView;
 
+	//The underlying Vulkan format.
+	VkFormat _VulkanFormat;
+
+	//The underlying Vulkan image layout.
+	VkImageLayout _VulkanImageLayout;
 
 };

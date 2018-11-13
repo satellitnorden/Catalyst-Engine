@@ -660,6 +660,8 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 void RenderingSystem::InitializeSamplers() NOEXCEPT
 {
 	_Samplers[SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat));
+	_Samplers[SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge)] = CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge));
+	_Samplers[SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToBorder)] = CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToBorder));
 }
 
 /*
