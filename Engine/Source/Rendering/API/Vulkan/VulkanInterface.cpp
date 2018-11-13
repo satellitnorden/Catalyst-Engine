@@ -161,6 +161,13 @@ void VulkanInterface::Release() NOEXCEPT
 		MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanSemaphore)>(vulkanSemaphore);
 	}
 
+	//Release all Vulkan samplers.
+	for (VulkanSampler *const RESTRICT vulkanSampler : _VulkanSamplers)
+	{
+		vulkanSampler->Release();
+		MemoryUtilities::GlobalPoolDeAllocate<sizeof(VulkanSampler)>(vulkanSampler);
+	}
+
 	//Release all Vulkan shader modules.
 	for (VulkanShaderModule *const RESTRICT vulkanShaderModule : _VulkanShaderModules)
 	{
@@ -465,6 +472,22 @@ RESTRICTED VulkanSemaphore *const RESTRICT VulkanInterface::CreateSemaphore() NO
 	_VulkanSemaphores.EmplaceSlow(newSemaphore);
 
 	return newSemaphore;
+}
+
+/*
+*	Creates and returns a sampler.
+*/
+RESTRICTED VulkanSampler *const RESTRICT VulkanInterface::CreateSampler(const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
+{
+	VulkanSampler *const RESTRICT newSampler = static_cast<VulkanSampler *const RESTRICT>(MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanSampler)>());
+	newSampler->Initialize(magnificationFilter, mipmapMode, addressMode);
+
+	static Spinlock lock;
+	ScopedLock<Spinlock> scopedLock{ lock };
+
+	_VulkanSamplers.EmplaceSlow(newSampler);
+
+	return newSampler;
 }
 
 /*

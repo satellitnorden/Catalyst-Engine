@@ -123,6 +123,11 @@ public:
 	void CreateRenderTarget(const Resolution resolution, const TextureFormat format, const TextureFilter filter, const AddressMode addressMode, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
+	*	Creates and returns a sampler.
+	*/
+	SamplerHandle CreateSampler(const SamplerProperties &properties) const NOEXCEPT;
+
+	/*
 	*	Creates and returns a uniform buffer.
 	*/
 	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;

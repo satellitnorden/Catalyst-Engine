@@ -1107,6 +1107,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanSampler.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\SamplerProperties.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

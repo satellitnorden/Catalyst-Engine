@@ -27,6 +27,7 @@
 #include <Rendering/API/Vulkan/VulkanRenderPass.h>
 #include <Rendering/API/Vulkan/VulkanRenderPassCreationParameters.h>
 #include <Rendering/API/Vulkan/VulkanRenderTarget.h>
+#include <Rendering/API/Vulkan/VulkanSampler.h>
 #include <Rendering/API/Vulkan/VulkanSemaphore.h>
 #include <Rendering/API/Vulkan/VulkanShaderModule.h>
 #include <Rendering/API/Vulkan/VulkanStorageBuffer.h>
@@ -208,6 +209,11 @@ public:
 	RESTRICTED VulkanSemaphore *const RESTRICT CreateSemaphore() NOEXCEPT;
 
 	/*
+	*	Creates and returns a sampler.
+	*/
+	RESTRICTED VulkanSampler *const RESTRICT CreateSampler(const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT;
+
+	/*
 	*	Creates and returns a shader module.
 	*/
 	RESTRICTED VulkanShaderModule *const RESTRICT CreateShaderModule(const void* const shaderData, const uint64 shaderDataSize, const VkShaderStageFlagBits stage) NOEXCEPT;
@@ -291,6 +297,9 @@ private:
 
 	//Container for all Vulkan semaphores.
 	DynamicArray<VulkanSemaphore *RESTRICT> _VulkanSemaphores;
+
+	//Container for all Vulkan samplers.
+	DynamicArray<VulkanSampler *RESTRICT> _VulkanSamplers;
 
 	//Container for all Vulkan shader modules.
 	DynamicArray<VulkanShaderModule *RESTRICT> _VulkanShaderModules;

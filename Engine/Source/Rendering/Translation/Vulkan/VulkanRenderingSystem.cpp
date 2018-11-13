@@ -195,6 +195,16 @@ TextureCubeHandle VulkanRenderingSystem::CreateTextureCube(const float *const RE
 }
 
 /*
+*	Creates and returns a sampler.
+*/
+SamplerHandle VulkanRenderingSystem::CreateSampler(const SamplerProperties &properties) const NOEXCEPT
+{
+	return VulkanInterface::Instance->CreateSampler(	VulkanTranslationUtilities::GetVulkanTextureFilter(properties._MagnificationFilter),
+														VulkanTranslationUtilities::GetVulkanMipmapMode(properties._MipmapMode),
+														VulkanTranslationUtilities::GetVulkanAddressMode(properties._AddressMode));
+}
+
+/*
 *	Creates a uniform buffer and returns the identifier for the uniform buffer.
 */
 UniformBufferHandle VulkanRenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT

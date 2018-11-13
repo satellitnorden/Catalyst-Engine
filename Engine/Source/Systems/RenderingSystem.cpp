@@ -84,6 +84,9 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 	//Initialize all render targets.
 	InitializeRenderTargets();
 
+	//Initialize all samplers.
+	InitializeSamplers();
+
 	//Initialize all common render data table layouts.
 	InitializeCommonRenderDataTableLayouts();
 
@@ -161,6 +164,22 @@ uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
 {
 	//Return the current frame index via the current rendering system.
 	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentFrameIndex();
+}
+
+/*
+*	Returns a sampler with the given sampler properties.
+*/
+SamplerHandle RenderingSystem::GetSampler(const SamplerProperties &properties) const NOEXCEPT
+{
+#if !defined(CATALYST_FINAL)
+	const SamplerHandle *const RESTRICT sampler{ _Samplers.Find(properties) };
+
+	ASSERT(sampler, "A sampler with these sampler properties needs to be created!");
+
+	return *sampler;
+#else
+	return _Samplers.Find(properties);
+#endif
 }
 
 /*
@@ -242,6 +261,15 @@ void RenderingSystem::CreateRenderTarget(const Resolution resolution, const Text
 {
 	//Create the render target via the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->CreateRenderTarget(resolution, format, filter, addressMode, handle);
+}
+
+/*
+*	Creates and returns a sampler.
+*/
+SamplerHandle RenderingSystem::CreateSampler(const SamplerProperties &properties) const NOEXCEPT
+{
+	//Create the sampler via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->CreateSampler(properties);
 }
 
 /*
@@ -614,6 +642,14 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferMaterialProperties)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]);
 	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Linear, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::Scene)]);
+}
+
+/*
+*	Initializes all samplers.
+*/
+void RenderingSystem::InitializeSamplers() NOEXCEPT
+{
+	//Well.
 }
 
 /*

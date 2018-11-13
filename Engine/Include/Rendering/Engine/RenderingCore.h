@@ -16,6 +16,7 @@ using DepthBufferHandle = void *RESTRICT;
 using RenderDataTableHandle = void *RESTRICT;
 using RenderDataTableLayoutHandle = void *RESTRICT;
 using RenderTargetHandle = void *RESTRICT;
+using SamplerHandle = void *RESTRICT;
 using Texture2DHandle = void *RESTRICT;
 using TextureCubeHandle = void *RESTRICT;
 using UniformBufferHandle = void *RESTRICT;
@@ -493,6 +494,35 @@ public:
 	{
 
 	}
+};
+
+/*
+*	Sampler properties.
+*/
+class SamplerProperties final
+{
+
+public:
+
+	//The magnification filter.
+	TextureFilter _MagnificationFilter;
+
+	//The mipmap mode.
+	MipmapMode _MipmapMode;
+
+	//The address mode.
+	AddressMode _AddressMode;
+
+	/*
+	*	Equality operator overload.
+	*/
+	bool operator==(const SamplerProperties &other) const NOEXCEPT
+	{
+		return	_MagnificationFilter == other._MagnificationFilter
+				&& _MipmapMode == other._MipmapMode
+				&& _AddressMode == other._AddressMode;
+	}
+
 };
 
 /*

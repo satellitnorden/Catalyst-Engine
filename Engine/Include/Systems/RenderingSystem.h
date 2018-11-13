@@ -3,6 +3,7 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 #include <Core/Containers/DynamicArray.h>
+#include <Core/Containers/Map.h>
 #include <Core/Containers/StaticArray.h>
 #include <Core/General/UpdateContext.h>
 #include <Core/Pointers/UniquePointer.h>
@@ -183,6 +184,11 @@ public:
 	}
 
 	/*
+	*	Returns a sampler with the given sampler properties.
+	*/
+	SamplerHandle GetSampler(const SamplerProperties &properties) const NOEXCEPT;
+
+	/*
 	*	Returns the given common environment material.
 	*/
 	const EnvironmentMaterial& GetCommonEnvironmentMaterial(const CommonEnvironmentMaterial commonEnvironmentMaterial) const NOEXCEPT
@@ -268,6 +274,11 @@ public:
 	*	Creates a render target.
 	*/
 	void CreateRenderTarget(const Resolution resolution, const TextureFormat format, const TextureFilter filter, const AddressMode addressMode, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT;
+
+	/*
+	*	Creates and returns a sampler.
+	*/
+	SamplerHandle CreateSampler(const SamplerProperties &properties) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a texture 2D given the texture data.
@@ -391,6 +402,9 @@ private:
 	//Container for all render targets.
 	StaticArray<RenderTargetHandle, UNDERLYING(RenderTarget::NumberOfRenderTargets)> _RenderTargets;
 
+	//Container for all samplers.
+	Map<SamplerProperties, SamplerHandle> _Samplers;
+
 	//Container for all common render data table layouts.
 	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;
 
@@ -426,6 +440,11 @@ private:
 	*	Initializes all render targets.
 	*/
 	void InitializeRenderTargets() NOEXCEPT;
+
+	/*
+	*	Initializes all samplers.
+	*/
+	void InitializeSamplers() NOEXCEPT;
 
 	/*
 	*	Registers all render passes.
