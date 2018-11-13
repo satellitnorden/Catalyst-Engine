@@ -208,10 +208,10 @@ void VulkanInterface::Release() NOEXCEPT
 /*
 *	Creates and returns a 2D texture.
 */
-RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerMipmapMode mipmapMode, const VkSamplerAddressMode addressMode) NOEXCEPT
+RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(const uint32 textureMipmapLevels, const uint32 textureWidth, const uint32 textureHeight, const uint32 textureChannels, const uint32 textureTexelSize, const void *RESTRICT const *RESTRICT textureData, const VkFormat format) NOEXCEPT
 {
 	Vulkan2DTexture *const RESTRICT new2DTexture = static_cast<Vulkan2DTexture *const RESTRICT>(MemoryUtilities::GlobalPoolAllocate<sizeof(Vulkan2DTexture)>());
-	new2DTexture->Initialize(textureMipmapLevels, textureWidth, textureHeight, textureChannels, textureTexelSize, textureData, format, magnificationFilter, mipmapMode, addressMode);
+	new2DTexture->Initialize(textureMipmapLevels, textureWidth, textureHeight, textureChannels, textureTexelSize, textureData, format);
 
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };

@@ -171,7 +171,7 @@ void VulkanRenderingSystem::CreateRenderTarget(const Resolution resolution, cons
 Texture2DHandle VulkanRenderingSystem::Create2DTexture(const TextureData &textureData) const NOEXCEPT
 {
 	//Create the Vulkan 2D texture.
-	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(textureData._TextureDataContainer._TextureData.Size()), textureData._TextureDataContainer._TextureWidth, textureData._TextureDataContainer._TextureHeight, textureData._TextureDataContainer._TextureChannels, textureData._TextureDataContainer._TextureTexelSize, textureData._TextureDataContainer._TextureData.Data(), VulkanTranslationUtilities::GetVulkanFormat(textureData._TextureFormat), VulkanTranslationUtilities::GetVulkanTextureFilter(textureData._MagnificationFilter), VulkanTranslationUtilities::GetVulkanMipmapMode(textureData._MipmapMode), VulkanTranslationUtilities::GetVulkanAddressMode(textureData._AddressMode));
+	Vulkan2DTexture *RESTRICT new2DTexture = VulkanInterface::Instance->Create2DTexture(static_cast<uint32>(textureData._TextureDataContainer._TextureData.Size()), textureData._TextureDataContainer._TextureWidth, textureData._TextureDataContainer._TextureHeight, textureData._TextureDataContainer._TextureChannels, textureData._TextureDataContainer._TextureTexelSize, textureData._TextureDataContainer._TextureData.Data(), VulkanTranslationUtilities::GetVulkanFormat(textureData._TextureFormat));
 
 	//Return the texture.
 	return static_cast<Texture2DHandle>(new2DTexture);

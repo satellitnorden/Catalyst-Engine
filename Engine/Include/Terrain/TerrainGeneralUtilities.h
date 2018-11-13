@@ -79,9 +79,6 @@ namespace TerrainGeneralUtilities
 																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
 																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
 																				1),
-																				AddressMode::ClampToEdge,
-																				TextureFilter::Nearest,
-																				MipmapMode::Nearest,
 																				TextureFormat::R32_Float));
 
 		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, *renderDataTable, *texture, RenderingSystem::Instance->GetSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge)));
@@ -124,9 +121,6 @@ namespace TerrainGeneralUtilities
 																									resolution,
 																									resolution,
 																									4),
-																			AddressMode::ClampToEdge,
-																			TextureFilter::Linear,
-																			MipmapMode::Nearest,
 																			TextureFormat::R8G8B8A8_Byte));
 
 		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, *renderDataTable, *texture, RenderingSystem::Instance->GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::ClampToEdge)));
@@ -167,9 +161,6 @@ namespace TerrainGeneralUtilities
 																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
 																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
 																				4),
-																AddressMode::ClampToEdge,
-																TextureFilter::Linear,
-																MipmapMode::Nearest,
 																TextureFormat::R8G8B8A8_Byte));
 
 		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, *renderDataTable, *texture, RenderingSystem::Instance->GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::ClampToEdge)));
