@@ -364,7 +364,7 @@ void VulkanRenderingSystem::CreateRenderDataTableLayout(const RenderDataTableLay
 	{
 		const RenderDataTableLayoutBinding &binding{ bindings[i] };
 
-		vulkanBindings.EmplaceFast(VulkanUtilities::CreateDescriptorSetLayoutBinding(binding._Binding, VulkanTranslationUtilities::GetVulkanDescriptorType(binding._Type), VulkanTranslationUtilities::GetVulkanShaderStages(binding._ShaderStage)));
+		vulkanBindings.EmplaceFast(VulkanUtilities::CreateDescriptorSetLayoutBinding(binding._Binding, VulkanTranslationUtilities::GetVulkanDescriptorType(binding._Type), binding._NumberOfArrayElements, VulkanTranslationUtilities::GetVulkanShaderStages(binding._ShaderStage)));
 	}
 
 	*handle = VulkanInterface::Instance->CreateDescriptorSetLayout(vulkanBindings.Data(), numberOfBindings);

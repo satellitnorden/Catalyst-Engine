@@ -259,9 +259,9 @@ public:
 	/*
 	*	Creates a descriptor set layout binding.
 	*/
-	static constexpr VkDescriptorSetLayoutBinding CreateDescriptorSetLayoutBinding(const uint32 binding, const VkDescriptorType descriptorType, const VkShaderStageFlags stageFlags) NOEXCEPT
+	static constexpr VkDescriptorSetLayoutBinding CreateDescriptorSetLayoutBinding(const uint32 binding, const VkDescriptorType descriptorType, const uint32 descriptorCount, const VkShaderStageFlags stageFlags) NOEXCEPT
 	{
-		return VkDescriptorSetLayoutBinding{ binding, descriptorType, 1, stageFlags, nullptr };
+		return VkDescriptorSetLayoutBinding{ binding, descriptorType, descriptorCount, stageFlags, nullptr };
 	}
 
 	/*

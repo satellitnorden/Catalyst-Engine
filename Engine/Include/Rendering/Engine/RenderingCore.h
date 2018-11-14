@@ -441,16 +441,20 @@ public:
 	//The type.
 	Type _Type;
 
+	//The number of array elements.
+	uint32 _NumberOfArrayElements;
+
 	//The shader stage.
 	ShaderStage _ShaderStage;
 
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	constexpr RenderDataTableLayoutBinding(const uint32 initialBinding, const Type initialType, const ShaderStage initialShaderStage) NOEXCEPT
+	constexpr RenderDataTableLayoutBinding(const uint32 initialBinding, const Type initialType, const uint32 initialNumberOfArrayElements, const ShaderStage initialShaderStage) NOEXCEPT
 		:
 		_Binding(initialBinding),
 		_Type(initialType),
+		_NumberOfArrayElements(initialNumberOfArrayElements),
 		_ShaderStage(initialShaderStage)
 	{
 
