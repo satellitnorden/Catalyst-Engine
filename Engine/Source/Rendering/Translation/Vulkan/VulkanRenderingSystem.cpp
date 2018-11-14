@@ -65,7 +65,7 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 	{
 		_FrameData.SetCurrentFrame(i);
 
-		BindUniformBufferToRenderDataTable(0, _FrameData.GetCurrentDynamicUniformDataRenderDataTable(), _FrameData.GetCurrentDynamicUniformDataBuffer());
+		BindUniformBufferToRenderDataTable(0, 0, _FrameData.GetCurrentDynamicUniformDataRenderDataTable(), _FrameData.GetCurrentDynamicUniformDataBuffer());
 	}
 }
 
@@ -382,7 +382,7 @@ void VulkanRenderingSystem::CreateRenderDataTable(const RenderDataTableLayoutHan
 *	Binds a combined image sampler to a render data table.
 *	Accepts render target, texture 2D and texture cube handles.
 */
-void VulkanRenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint32 binding, RenderDataTableHandle renderDataTable, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT
+void VulkanRenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT
 {
 	//Cache the Vulkan types.
 	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(renderDataTable) };
@@ -403,7 +403,7 @@ void VulkanRenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint
 	writeDescriptorSet.pNext = nullptr;
 	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
 	writeDescriptorSet.dstBinding = binding;
-	writeDescriptorSet.dstArrayElement = 0;
+	writeDescriptorSet.dstArrayElement = arrayElement;
 	writeDescriptorSet.descriptorCount = 1;
 	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	writeDescriptorSet.pImageInfo = &descriptorImageInfo;
@@ -417,7 +417,7 @@ void VulkanRenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint
 /*
 *	Binds a uniform buffer to a render data table.
 */
-void VulkanRenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT
+void VulkanRenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT
 {
 	//Cache the Vulkan types.
 	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(renderDataTable) };
@@ -437,7 +437,7 @@ void VulkanRenderingSystem::BindUniformBufferToRenderDataTable(const uint32 bind
 	writeDescriptorSet.pNext = nullptr;
 	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
 	writeDescriptorSet.dstBinding = binding;
-	writeDescriptorSet.dstArrayElement = 0;
+	writeDescriptorSet.dstArrayElement = arrayElement;
 	writeDescriptorSet.descriptorCount = 1;
 	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	writeDescriptorSet.pImageInfo = nullptr;
