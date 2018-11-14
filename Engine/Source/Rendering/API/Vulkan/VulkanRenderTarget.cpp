@@ -7,7 +7,7 @@
 /*
 *	Initializes this Vulkan render target.
 */
-void VulkanRenderTarget::Initialize(const VkExtent2D extent, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerAddressMode addressMode) NOEXCEPT
+void VulkanRenderTarget::Initialize(const VkExtent2D extent, const VkFormat format) NOEXCEPT
 {
 	//Set the extent
 	this->_Extent = extent;

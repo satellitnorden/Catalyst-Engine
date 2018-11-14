@@ -258,10 +258,10 @@ void RenderingSystem::DestroyRenderDataTable(RenderDataTableHandle handle) const
 /*
 *	Creates a render target.
 */
-void RenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, const TextureFilter filter, const AddressMode addressMode, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
+void RenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the render target via the current rendering system.
-	CURRENT_RENDERING_SYSTEM::Instance->CreateRenderTarget(resolution, format, filter, addressMode, handle);
+	CURRENT_RENDERING_SYSTEM::Instance->CreateRenderTarget(resolution, format, handle);
 }
 
 /*
@@ -636,13 +636,13 @@ void RenderingSystem::InitializeDepthBuffers() NOEXCEPT
 void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 {
 	//Initialize all render targets.
-	CreateRenderTarget(GetDirectionalShadowMapResolution(), TextureFormat::R8_Byte, TextureFilter::Nearest, AddressMode::ClampToBorder, &_RenderTargets[UNDERLYING(RenderTarget::DirectionalShadowMap)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8_Byte, TextureFilter::Nearest, AddressMode::ClampToBorder, &_RenderTargets[UNDERLYING(RenderTarget::DirectionalShadow)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, TextureFilter::Linear, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferAlbedo)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferNormalDepth)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferMaterialProperties)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Nearest, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]);
-	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, TextureFilter::Linear, AddressMode::ClampToEdge, &_RenderTargets[UNDERLYING(RenderTarget::Scene)]);
+	CreateRenderTarget(GetDirectionalShadowMapResolution(), TextureFormat::R8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::DirectionalShadowMap)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::DirectionalShadow)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferAlbedo)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferNormalDepth)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R8G8B8A8_Byte, &_RenderTargets[UNDERLYING(RenderTarget::SceneBufferMaterialProperties)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::SceneIntermediate)]);
+	CreateRenderTarget(GetScaledResolution(), TextureFormat::R32G32B32A32_Float, &_RenderTargets[UNDERLYING(RenderTarget::Scene)]);
 }
 
 /*

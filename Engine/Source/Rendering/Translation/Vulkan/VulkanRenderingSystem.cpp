@@ -156,13 +156,11 @@ void VulkanRenderingSystem::DestroyRenderDataTable(RenderDataTableHandle handle)
 /*
 *	Creates a render target.
 */
-void VulkanRenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, const TextureFilter filter, const AddressMode addressMode, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
+void VulkanRenderingSystem::CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT
 {
 	//Create the render target.
 	*handle = static_cast<RenderTargetHandle>(VulkanInterface::Instance->CreateRenderTarget(	VulkanTranslationUtilities::GetVulkanExtent(resolution),
-																								VulkanTranslationUtilities::GetVulkanFormat(format),
-																								VulkanTranslationUtilities::GetVulkanTextureFilter(filter),
-																								VulkanTranslationUtilities::GetVulkanAddressMode(addressMode)));
+																								VulkanTranslationUtilities::GetVulkanFormat(format)));
 }
 
 /*

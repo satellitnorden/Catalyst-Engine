@@ -20,7 +20,7 @@ public:
 	/*
 	*	Initializes this Vulkan render target.
 	*/
-	void Initialize(const VkExtent2D extent, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerAddressMode addressMode) NOEXCEPT;
+	void Initialize(const VkExtent2D extent, const VkFormat format) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan render target.

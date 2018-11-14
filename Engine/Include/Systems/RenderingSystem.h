@@ -274,7 +274,7 @@ public:
 	/*
 	*	Creates a render target.
 	*/
-	void CreateRenderTarget(const Resolution resolution, const TextureFormat format, const TextureFilter filter, const AddressMode addressMode, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT;
+	void CreateRenderTarget(const Resolution resolution, const TextureFormat format, RenderTargetHandle *const RESTRICT handle) const NOEXCEPT;
 
 	/*
 	*	Creates and returns a sampler.

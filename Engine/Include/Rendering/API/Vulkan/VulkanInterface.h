@@ -201,7 +201,7 @@ public:
 	/*
 	*	Creates and returns a render target.
 	*/
-	RESTRICTED VulkanRenderTarget *const RESTRICT CreateRenderTarget(const VkExtent2D extent, const VkFormat format, const VkFilter magnificationFilter, const VkSamplerAddressMode addressMode) NOEXCEPT;
+	RESTRICTED VulkanRenderTarget *const RESTRICT CreateRenderTarget(const VkExtent2D extent, const VkFormat format) NOEXCEPT;
 
 	/*
 	*	Creates and returns a semaphore.
