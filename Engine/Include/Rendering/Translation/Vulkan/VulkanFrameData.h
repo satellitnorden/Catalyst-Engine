@@ -14,7 +14,7 @@ public:
 	/*
 	*	Initializes the Vulkan frame data.
 	*/
-	void Initialize(const uint32 frameDataCount, const VulkanDescriptorSetLayout dynamicUniformDataDescriptorSetLayout) NOEXCEPT
+	void Initialize(const uint32 frameDataCount) NOEXCEPT
 	{
 		//Create the primary command pool.
 		_PrimaryCommandPool = VulkanInterface::Instance->CreateGraphicsCommandPool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
@@ -33,22 +33,6 @@ public:
 		for (VulkanFence *RESTRICT &fence : _Fences)
 		{
 			fence = VulkanInterface::Instance->CreateFence(VK_FENCE_CREATE_SIGNALED_BIT);
-		}
-
-		//Create the dynamic uniform data buffers.
-		_DynamicUniformDataBuffers.UpsizeFast(frameDataCount);
-
-		for (VulkanUniformBuffer *RESTRICT &dynamicUniformDataBuffer : _DynamicUniformDataBuffers)
-		{
-			dynamicUniformDataBuffer = VulkanInterface::Instance->CreateUniformBuffer(sizeof(VulkanDynamicUniformData));
-		}
-
-		//Create the dynamic uniform data descriptor sets.
-		_DynamicUniformDataDescriptorSets.UpsizeFast(frameDataCount);
-
-		for (uint64 i = 0, size = _DynamicUniformDataDescriptorSets.Size(); i < size; ++i)
-		{
-			VulkanInterface::Instance->GetDescriptorPool().AllocateDescriptorSet(_DynamicUniformDataDescriptorSets[i], dynamicUniformDataDescriptorSetLayout);
 		}
 	}
 
@@ -82,24 +66,6 @@ public:
 		return _Fences[_CurrentFrame];
 	}
 
-	/*
-	*	Returns the current dynamic uniform data buffer.
-	*/
-	VulkanUniformBuffer *RESTRICT GetCurrentDynamicUniformDataBuffer() NOEXCEPT
-	{
-		//Return the current dynamic uniform data buffer.
-		return _DynamicUniformDataBuffers[_CurrentFrame];
-	}
-
-	/*
-	*	Returns the current dynamic uniform data descriptor set.
-	*/
-	VulkanDescriptorSet *RESTRICT GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT
-	{
-		//Return the current dynamic uniform data buffer.
-		return &_DynamicUniformDataDescriptorSets[_CurrentFrame];
-	}
-
 private:
 
 	//Keeps track of the current frame.
@@ -113,11 +79,5 @@ private:
 
 	//The fences.
 	DynamicArray<VulkanFence *RESTRICT> _Fences;
-
-	//The dynamic uniform data buffers.
-	DynamicArray<VulkanUniformBuffer *RESTRICT> _DynamicUniformDataBuffers;
-
-	//The dynamic uniform data descriptor sets.
-	DynamicArray<VulkanDescriptorSet> _DynamicUniformDataDescriptorSets;
 
 };

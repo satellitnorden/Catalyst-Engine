@@ -177,6 +177,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CommonPhysicalModelData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CPUTexture2D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CPUTextureCube.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\DynamicUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\EnvironmentMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\GlobalRenderData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\OceanMaterial.h" />
@@ -280,7 +281,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VolumetricFogFragmentShader.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\VulkanShaderData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\ShaderData\Vulkan\WorldPositionFragmentShader.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanDynamicUniformData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanFrameData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderingSystem.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanRenderPassMainStageData.h" />

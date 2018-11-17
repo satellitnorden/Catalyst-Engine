@@ -318,9 +318,9 @@ public:
 	void DestroyUniformBuffer(UniformBufferHandle handle) const NOEXCEPT;
 
 	/*
-	*	Returns the current dynamic uniform data render data table.
+	*	Returns the global render data table.
 	*/
-	RenderDataTableHandle GetCurrentDynamicUniformDataRenderDataTable() const NOEXCEPT;
+	RenderDataTableHandle GetGlobalRenderDataTable() const NOEXCEPT;
 
 	/*
 	*	Returns the given common render data table layout.
@@ -502,5 +502,15 @@ private:
 	*	Initializes all common render data table layouts.
 	*/
 	void InitializeCommonRenderDataTableLayouts() NOEXCEPT;
+
+	/*
+	*	Updates the global render data.
+	*/
+	void UpdateGlobalRenderData() NOEXCEPT;
+
+	/*
+	*	Updates the dynamic uniform data.
+	*/
+	void UpdateDynamicUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT;
 
 };

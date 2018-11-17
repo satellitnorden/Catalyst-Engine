@@ -58,15 +58,7 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 	InitializeVulkanRenderPasses();
 
 	//Initialize the Vulkan frame data.
-	_FrameData.Initialize(	VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(),
-							*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global)));
-
-	for (uint32 i{ 0 }; i < VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(); ++i)
-	{
-		_FrameData.SetCurrentFrame(i);
-
-		BindUniformBufferToRenderDataTable(0, 0, _FrameData.GetCurrentDynamicUniformDataRenderDataTable(), _FrameData.GetCurrentDynamicUniformDataBuffer());
-	}
+	_FrameData.Initialize(VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages());
 }
 
 /*
@@ -82,9 +74,6 @@ void VulkanRenderingSystem::PreUpdateSystemSynchronous() NOEXCEPT
 
 	//Begin the frame.
 	BeginFrame();
-
-	//Update the dynamic uniform data.
-	UpdateDynamicUniformData();
 }
 
 /*
@@ -454,14 +443,6 @@ void VulkanRenderingSystem::BindUniformBufferToRenderDataTable(const uint32 bind
 
 	//Update the descriptor set.
 	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &writeDescriptorSet, 0, nullptr);
-}
-
-/*
-*	Returns the current dynamic uniform data descriptor set.
-*/
-RenderDataTableHandle VulkanRenderingSystem::GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT
-{
-	return reinterpret_cast<RenderDataTableHandle>(_FrameData.GetCurrentDynamicUniformDataRenderDataTable());
 }
 
 /*
@@ -2386,108 +2367,4 @@ void VulkanRenderingSystem::EndFrame() NOEXCEPT
 
 	//Submit current command buffer.
 	VulkanInterface::Instance->GetGraphicsQueue()->Submit(*_FrameData.GetCurrentPrimaryCommandBuffer(), 1, _Semaphores[UNDERLYING(GraphicsSemaphore::ImageAvailable)], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 1, _Semaphores[UNDERLYING(GraphicsSemaphore::RenderFinished)], _FrameData.GetCurrentFence()->Get());
-}
-
-/*
-*	Updates the dynamic uniform data.
-*/
-void VulkanRenderingSystem::UpdateDynamicUniformData() NOEXCEPT
-{
-	//Calculate the viewer data.
-	Vector3 viewerPosition = Viewer::Instance->GetPosition();
-	Vector3 forwardVector = Viewer::Instance->GetForwardVector();
-	Vector3 upVector = Viewer::Instance->GetUpVector();
-
-	const Matrix4 *const RESTRICT projectionMatrix{ Viewer::Instance->GetProjectionMatrix() };
-	const Matrix4 *const RESTRICT viewerMatrix{ Viewer::Instance->GetViewerMatrix() };
-	const Matrix4 *const RESTRICT viewMatrix{ Viewer::Instance->GetViewMatrix() };
-	const Matrix4 *const RESTRICT inverseProjectionMatrix{ Viewer::Instance->GetInverseProjectionMatrix() };
-	const Matrix4 *const RESTRICT inverseViewerMatrix{ Viewer::Instance->GetInverseViewerMatrix() };
-
-	Matrix4 viewerOriginMatrix{ *viewerMatrix };
-	viewerOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
-
-	_DynamicUniformData._ViewerFieldOfViewCosine = CatalystBaseMath::CosineRadians(Viewer::Instance->GetFieldOfViewRadians()) - 0.2f;
-	_DynamicUniformData._InverseViewerMatrix = *inverseViewerMatrix;
-	_DynamicUniformData._InverseProjectionMatrix = *inverseProjectionMatrix;
-	_DynamicUniformData._OriginViewMatrix = *projectionMatrix * viewerOriginMatrix;
-	_DynamicUniformData._ViewMatrix = *viewMatrix;
-	_DynamicUniformData._ViewerForwardVector = forwardVector;
-	_DynamicUniformData._ViewerWorldPosition = viewerPosition;
-
-	_DynamicUniformData._DirectionalLightIntensity = LightingSystem::Instance->GetDirectionalLight()->GetIntensity();
-	_DynamicUniformData._DirectionalLightViewMatrix = *LightingSystem::Instance->GetDirectionalLight()->GetViewMatrix();
-	_DynamicUniformData._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
-	_DynamicUniformData._DirectionalLightColor = LightingSystem::Instance->GetDirectionalLight()->GetColor();
-	_DynamicUniformData._DirectionalLightScreenSpacePosition = *viewMatrix * Vector4(-_DynamicUniformData._DirectionalLightDirection._X * 100.0f + viewerPosition._X, -_DynamicUniformData._DirectionalLightDirection._Y * 100.0f + viewerPosition._Y, -_DynamicUniformData._DirectionalLightDirection._Z * 100.0f + viewerPosition._Z, 1.0f);
-	_DynamicUniformData._DirectionalLightScreenSpacePosition._X /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;
-	_DynamicUniformData._DirectionalLightScreenSpacePosition._Y /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;
-	_DynamicUniformData._DirectionalLightScreenSpacePosition._Z /= _DynamicUniformData._DirectionalLightScreenSpacePosition._W;
-
-	_DynamicUniformData._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
-
-	_DynamicUniformData._DeltaTime = EngineSystem::Instance->GetDeltaTime();
-	_DynamicUniformData._TotalGameTime = EngineSystem::Instance->GetTotalTime();
-
-	uint64 counter = 0;
-
-	const uint64 numberOfPointLightEntityComponents{ ComponentManager::GetNumberOfPointLightComponents() };
-	const PointLightComponent *RESTRICT pointLightComponent{ ComponentManager::GetPointLightPointLightComponents() };
-
-	_DynamicUniformData._NumberOfPointLights = static_cast<int32>(numberOfPointLightEntityComponents);
-
-	for (uint64 i = 0; i < numberOfPointLightEntityComponents; ++i, ++pointLightComponent)
-	{
-		if (!pointLightComponent->_Enabled)
-		{
-			--_DynamicUniformData._NumberOfPointLights;
-
-			continue;
-		}
-
-		_DynamicUniformData._PointLightAttenuationDistances[counter] = pointLightComponent->_AttenuationDistance;
-		_DynamicUniformData._PointLightIntensities[counter] = pointLightComponent->_Intensity;
-		_DynamicUniformData._PointLightColors[counter] = pointLightComponent->_Color;
-		_DynamicUniformData._PointLightWorldPositions[counter] = pointLightComponent->_Position;
-
-		if (++counter == LightingConstants::MAXIMUM_NUMBER_OF_POINT_LIGHTS)
-		{
-			break;
-		}
-	}
-
-	counter = 0;
-
-	const uint64 numberOfSpotLightEntityComponents{ ComponentManager::GetNumberOfSpotLightComponents() };
-	const SpotLightComponent *RESTRICT spotLightComponent{ ComponentManager::GetSpotLightSpotLightComponents() };
-
-	_DynamicUniformData._NumberOfSpotLights = static_cast<int32>(numberOfSpotLightEntityComponents);
-
-	for (uint64 i = 0; i < numberOfSpotLightEntityComponents; ++i, ++spotLightComponent)
-	{
-		if (!spotLightComponent->_Enabled)
-		{
-			--_DynamicUniformData._NumberOfSpotLights;
-
-			continue;
-		}
-
-		_DynamicUniformData._SpotLightAttenuationDistances[counter] = spotLightComponent->_AttenuationDistance;
-		_DynamicUniformData._SpotLightIntensities[counter] = spotLightComponent->_Intensity;
-		_DynamicUniformData._SpotLightInnerCutoffAngles[counter] = CatalystBaseMath::CosineDegrees(spotLightComponent->_InnerCutoffAngle);
-		_DynamicUniformData._SpotLightOuterCutoffAngles[counter] = CatalystBaseMath::CosineDegrees(spotLightComponent->_OuterCutoffAngle);
-		_DynamicUniformData._SpotLightColors[counter] = spotLightComponent->_Color;
-		_DynamicUniformData._SpotLightDirections[counter] = Vector3(0.0f, -1.0f, 0.0f).Rotated(spotLightComponent->_Rotation);
-		_DynamicUniformData._SpotLightDirections[counter]._Y *= -1.0f;
-		_DynamicUniformData._SpotLightWorldPositions[counter] = spotLightComponent->_Position;
-
-		++counter;
-	}
-
-	//Update the physics data.
-	_DynamicUniformData._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
-	_DynamicUniformData._WindDirection = PhysicsSystem::Instance->GetWindDirection();
-
-	//Upload the dynamic uniform data to the uniform buffer.
-	_FrameData.GetCurrentDynamicUniformDataBuffer()->UploadData(static_cast<void*>(&_DynamicUniformData));
 }

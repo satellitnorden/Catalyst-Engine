@@ -143,8 +143,8 @@ void DirectionalDynamicPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 	//Begin the command buffer.
 	commandBuffer->Begin(this);
 
-	//Bind the render data table.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
+	//Bind the render data tables.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	//Track the previous state, so if two dynamic physical entities share the same state, it doesn't have to be rebound.
 	ConstantBufferHandle previousBuffer{ nullptr };

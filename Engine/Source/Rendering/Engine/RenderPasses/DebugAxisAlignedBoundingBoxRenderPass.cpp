@@ -138,8 +138,8 @@ void DebugAxisAlignedBoundingBoxRenderPass::RenderInternal() NOEXCEPT
 	//Begin the commandbuffer.
 	commandBuffer->Begin(this);
 
-	//Bind the render data table.
-	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetCurrentDynamicUniformDataRenderDataTable());
+	//Bind the render data tables.
+	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 
 	//Bind the cube model.
 	const PhysicalModel cubeModel{ RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube) };

@@ -552,9 +552,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanDynamicUniformData.h">
-      <Filter>Rendering\Include\Translation\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Translation\Vulkan\VulkanFrameData.h">
       <Filter>Rendering\Include\Translation\Vulkan</Filter>
     </ClInclude>
@@ -1111,6 +1108,9 @@
       <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\GlobalRenderData.h">
+      <Filter>Rendering\Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\DynamicUniformData.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
   </ItemGroup>

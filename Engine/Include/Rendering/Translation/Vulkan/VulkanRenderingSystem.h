@@ -5,7 +5,6 @@
 
 //Rendering.
 #include <Rendering/Engine/RenderingCore.h>
-#include <Rendering/Translation/Vulkan/VulkanDynamicUniformData.h>
 #include <Rendering/Translation/Vulkan/VulkanFrameData.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassMainStageData.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderPassSubStageData.h>
@@ -149,11 +148,6 @@ public:
 	void DestroyUniformBuffer(UniformBufferHandle handle) NOEXCEPT;
 
 	/*
-	*	Returns the current dynamic uniform data descriptor set.
-	*/
-	RenderDataTableHandle GetCurrentDynamicUniformDataRenderDataTable() NOEXCEPT;
-
-	/*
 	*	Finalizes the initialization of a render pass.
 	*/
 	void FinalizeRenderPassInitialization(RenderPass *const RESTRICT _RenderPass) NOEXCEPT;
@@ -207,9 +201,6 @@ private:
 
 	};
 
-	//The dynamic uniform data.
-	VulkanDynamicUniformData _DynamicUniformData;
-
 	//Container for all semaphores.
 	StaticArray<VulkanSemaphore *RESTRICT, UNDERLYING(GraphicsSemaphore::NumberOfSemaphores)> _Semaphores;
 
@@ -262,10 +253,5 @@ private:
 	*	Ends the frame.
 	*/
 	void EndFrame() NOEXCEPT;
-
-	/*
-	*	Updates the dynamic uniform data.
-	*/
-	void UpdateDynamicUniformData() NOEXCEPT;
 
 };
