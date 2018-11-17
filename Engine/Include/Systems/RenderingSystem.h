@@ -192,7 +192,10 @@ public:
 	/*
 	*	Returns a sampler with the given sampler properties.
 	*/
-	SamplerHandle GetSampler(const SamplerProperties &properties) const NOEXCEPT;
+	SamplerHandle GetSampler(const Sampler sampler) const NOEXCEPT
+	{
+		return _Samplers[UNDERLYING(sampler)];
+	}
 
 	/*
 	*	Returns the given common environment material.
@@ -423,7 +426,7 @@ private:
 	StaticArray<RenderTargetHandle, UNDERLYING(RenderTarget::NumberOfRenderTargets)> _RenderTargets;
 
 	//Container for all samplers.
-	Map<SamplerProperties, SamplerHandle> _Samplers;
+	StaticArray<SamplerHandle, UNDERLYING(Sampler::NumberOfSamplers)> _Samplers;
 
 	//Container for all common render data table layouts.
 	StaticArray<RenderDataTableLayoutHandle, UNDERLYING(CommonRenderDataTableLayout::NumberOfCommonRenderDataTableLayouts)> _CommonRenderDataTableLayouts;

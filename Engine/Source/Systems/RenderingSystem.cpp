@@ -185,22 +185,6 @@ uint8 RenderingSystem::GetCurrentFrameBufferIndex() const NOEXCEPT
 }
 
 /*
-*	Returns a sampler with the given sampler properties.
-*/
-SamplerHandle RenderingSystem::GetSampler(const SamplerProperties &properties) const NOEXCEPT
-{
-#if !defined(CATALYST_FINAL)
-	const SamplerHandle *const RESTRICT sampler{ _Samplers.Find(properties) };
-
-	ASSERT(sampler, "A sampler with these sampler properties needs to be created!");
-
-	return *sampler;
-#else
-	return *_Samplers.Find(properties);
-#endif
-}
-
-/*
 *	Creates a constant buffer.
 */
 ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
@@ -436,8 +420,8 @@ void RenderingSystem::CreateEnvironmentMaterial(const EnvironmentMaterialData &d
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::EnvironmentMaterial), &material._RenderDataTable);
 
 	//Update the render data table.
-	BindCombinedImageSamplerToRenderDataTable(0, 0, material._RenderDataTable, material._DiffuseTexture, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(1, 0, material._RenderDataTable, material._DiffuseIrradianceTexture, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat)));
+	BindCombinedImageSamplerToRenderDataTable(0, 0, material._RenderDataTable, material._DiffuseTexture, GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(1, 0, material._RenderDataTable, material._DiffuseIrradianceTexture, GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat));
 }
 
 /*
@@ -456,9 +440,9 @@ void RenderingSystem::CreateGrassVegetationMaterial(const GrassVegetationMateria
 
 	//Create the render data table.
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::GrassMaterial), &material._RenderDataTable);
-	BindCombinedImageSamplerToRenderDataTable(0, 0, material._RenderDataTable, material._MaskTexture, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::ClampToEdge)));
-	BindCombinedImageSamplerToRenderDataTable(1, 0, material._RenderDataTable, material._AlbedoTexture, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::ClampToEdge)));
-	BindCombinedImageSamplerToRenderDataTable(2, 0, material._RenderDataTable, material._NormalMapTexture, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::ClampToEdge)));
+	BindCombinedImageSamplerToRenderDataTable(0, 0, material._RenderDataTable, material._MaskTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+	BindCombinedImageSamplerToRenderDataTable(1, 0, material._RenderDataTable, material._AlbedoTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
+	BindCombinedImageSamplerToRenderDataTable(2, 0, material._RenderDataTable, material._NormalMapTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 }
 
 /*
@@ -495,8 +479,8 @@ void RenderingSystem::CreateOceanMaterial(const OceanMaterialData &data, OceanMa
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::OceanMaterial), &material._RenderDataTable);
 
 	//Update the render data table.
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, material._RenderDataTable, material._NormalTexture, RenderingSystem::Instance->GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, material._RenderDataTable, material._FoamTexture, RenderingSystem::Instance->GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, material._RenderDataTable, material._NormalTexture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, material._RenderDataTable, material._FoamTexture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
 }
 #endif
 
@@ -543,9 +527,9 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 
 	//Create the render data table.
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::PhysicalMaterial), &physicalMaterial._RenderDataTable);
-	BindCombinedImageSamplerToRenderDataTable(1, 0, physicalMaterial._RenderDataTable, physicalMaterial._AlbedoTexture, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(2, 0, physicalMaterial._RenderDataTable, physicalMaterial._NormalMapTexture, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(3, 0, physicalMaterial._RenderDataTable, physicalMaterial._MaterialPropertiesTexture, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
+	BindCombinedImageSamplerToRenderDataTable(1, 0, physicalMaterial._RenderDataTable, physicalMaterial._AlbedoTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(2, 0, physicalMaterial._RenderDataTable, physicalMaterial._NormalMapTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(3, 0, physicalMaterial._RenderDataTable, physicalMaterial._MaterialPropertiesTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
 }
 
 /*
@@ -600,21 +584,21 @@ void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMa
 
 	//Create the render data table.
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial), &terrainMaterial._RenderDataTable);
-	BindCombinedImageSamplerToRenderDataTable(0, 0, terrainMaterial._RenderDataTable, terrainMaterial._FirstLayerAlbedo, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(1, 0, terrainMaterial._RenderDataTable, terrainMaterial._FirstLayerNormalMap, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(2, 0, terrainMaterial._RenderDataTable, terrainMaterial._FirstLayerMaterialProperties, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(3, 0, terrainMaterial._RenderDataTable, terrainMaterial._SecondLayerAlbedo, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(4, 0, terrainMaterial._RenderDataTable, terrainMaterial._SecondLayerNormalMap, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(5, 0, terrainMaterial._RenderDataTable, terrainMaterial._SecondLayerMaterialProperties, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(6, 0, terrainMaterial._RenderDataTable, terrainMaterial._ThirdLayerAlbedo, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(7, 0, terrainMaterial._RenderDataTable, terrainMaterial._ThirdLayerNormalMap, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(8, 0, terrainMaterial._RenderDataTable, terrainMaterial._ThirdLayerMaterialProperties, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(9, 0, terrainMaterial._RenderDataTable, terrainMaterial._FourthLayerAlbedo, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(10, 0, terrainMaterial._RenderDataTable, terrainMaterial._FourthLayerNormalMap, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(11, 0, terrainMaterial._RenderDataTable, terrainMaterial._FourthLayerMaterialProperties, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(12, 0, terrainMaterial._RenderDataTable, terrainMaterial._FifthLayerAlbedo, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(13, 0, terrainMaterial._RenderDataTable, terrainMaterial._FifthLayerNormalMap, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
-	BindCombinedImageSamplerToRenderDataTable(14, 0, terrainMaterial._RenderDataTable, terrainMaterial._FifthLayerMaterialProperties, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)));
+	BindCombinedImageSamplerToRenderDataTable(0, 0, terrainMaterial._RenderDataTable, terrainMaterial._FirstLayerAlbedo, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(1, 0, terrainMaterial._RenderDataTable, terrainMaterial._FirstLayerNormalMap, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(2, 0, terrainMaterial._RenderDataTable, terrainMaterial._FirstLayerMaterialProperties, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(3, 0, terrainMaterial._RenderDataTable, terrainMaterial._SecondLayerAlbedo, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(4, 0, terrainMaterial._RenderDataTable, terrainMaterial._SecondLayerNormalMap, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(5, 0, terrainMaterial._RenderDataTable, terrainMaterial._SecondLayerMaterialProperties, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(6, 0, terrainMaterial._RenderDataTable, terrainMaterial._ThirdLayerAlbedo, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(7, 0, terrainMaterial._RenderDataTable, terrainMaterial._ThirdLayerNormalMap, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(8, 0, terrainMaterial._RenderDataTable, terrainMaterial._ThirdLayerMaterialProperties, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(9, 0, terrainMaterial._RenderDataTable, terrainMaterial._FourthLayerAlbedo, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(10, 0, terrainMaterial._RenderDataTable, terrainMaterial._FourthLayerNormalMap, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(11, 0, terrainMaterial._RenderDataTable, terrainMaterial._FourthLayerMaterialProperties, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(12, 0, terrainMaterial._RenderDataTable, terrainMaterial._FifthLayerAlbedo, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(13, 0, terrainMaterial._RenderDataTable, terrainMaterial._FifthLayerNormalMap, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	BindCombinedImageSamplerToRenderDataTable(14, 0, terrainMaterial._RenderDataTable, terrainMaterial._FifthLayerMaterialProperties, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
 }
 
 /*
@@ -669,7 +653,7 @@ void RenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRIC
 	UploadDataToUniformBuffer(component._PropertiesUniformBuffer, &component._Properties);
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem), &renderComponent._RenderDataTable);
 	BindUniformBufferToRenderDataTable(0, 0, renderComponent._RenderDataTable, component._PropertiesUniformBuffer);
-	BindCombinedImageSamplerToRenderDataTable(1, 0, renderComponent._RenderDataTable, data->_Material._AlbedoTexture, GetSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::ClampToEdge)));
+	BindCombinedImageSamplerToRenderDataTable(1, 0, renderComponent._RenderDataTable, data->_Material._AlbedoTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge));
 	renderComponent._InstanceCount = CatalystBaseMath::Round<uint32>(data->_ParticleSystemProperties._Lifetime / data->_ParticleSystemProperties._SpawnFrequency);
 	renderComponent._WorldPosition = data->_Position;
 	renderComponent._ParticleSystemRandomSeed = CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f);
@@ -725,7 +709,7 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 		//Bind a placeholder texture to all terrain height texture slots.
 		for (uint8 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES; ++j)
 		{
-			BindCombinedImageSamplerToRenderDataTable(1, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge)));
+			BindCombinedImageSamplerToRenderDataTable(1, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 		}
 	}
 
@@ -765,12 +749,12 @@ void RenderingSystem::InitializeRenderTargets() NOEXCEPT
 */
 void RenderingSystem::InitializeSamplers() NOEXCEPT
 {
-	_Samplers[SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat));
-	_Samplers[SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge)] = CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge));
-	_Samplers[SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToBorder)] = CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToBorder));
-	_Samplers[SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::ClampToEdge)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::ClampToEdge));
-	_Samplers[SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat));
-	_Samplers[SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::ClampToEdge)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::ClampToEdge));
+	_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeClampToEdge)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::ClampToEdge));
+	_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Linear, AddressMode::Repeat));
+	_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::ClampToEdge));
+	_Samplers[UNDERLYING(Sampler::FilterLinear_MipmapModeNearest_AddressModeRepeat)] = CreateSampler(SamplerProperties(TextureFilter::Linear, MipmapMode::Nearest, AddressMode::Repeat));
+	_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToBorder)] = CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToBorder));
+	_Samplers[UNDERLYING(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge)] = CreateSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge));
 }
 
 /*
@@ -1196,14 +1180,14 @@ void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBuffer
 	//Process all updates.
 	for (uint8 update : _GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex])
 	{
-		BindCombinedImageSamplerToRenderDataTable(1, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge)));
+		BindCombinedImageSamplerToRenderDataTable(1, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	}
 
 	_GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
 
 	for (Pair<uint8, Texture2DHandle> &update : _GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex])
 	{
-		BindCombinedImageSamplerToRenderDataTable(1, static_cast<uint32>(update._First), _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second, GetSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge)));
+		BindCombinedImageSamplerToRenderDataTable(1, static_cast<uint32>(update._First), _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	}
 
 	_GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();

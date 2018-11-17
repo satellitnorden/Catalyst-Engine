@@ -225,6 +225,19 @@ enum class RenderTarget : uint8
 	NumberOfRenderTargets
 };
 
+//Enumeration covering all samplers.
+enum class Sampler : uint8
+{
+	FilterLinear_MipmapModeLinear_AddressModeClampToEdge,
+	FilterLinear_MipmapModeLinear_AddressModeRepeat,
+	FilterLinear_MipmapModeNearest_AddressModeClampToEdge,
+	FilterLinear_MipmapModeNearest_AddressModeRepeat,
+	FilterNearest_MipmapModeNearest_AddressModeClampToBorder,
+	FilterNearest_MipmapModeNearest_AddressModeClampToEdge,
+
+	NumberOfSamplers
+};
+
 //Enumeration covering all shaders.
 enum class Shader : uint8
 {
