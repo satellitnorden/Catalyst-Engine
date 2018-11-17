@@ -21,6 +21,7 @@
 #include <Rendering/Engine/CommonParticleMaterialData.h>
 #include <Rendering/Engine/CommonPhysicalMaterialData.h>
 #include <Rendering/Engine/CommonPhysicalModelData.h>
+#include <Rendering/Engine/DynamicUniformData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/OceanMaterial.h>
 #endif
@@ -48,6 +49,8 @@
 //Systems.
 #include <Systems/EngineSystem.h>
 #include <Systems/InputSystem.h>
+#include <Systems/LightingSystem.h>
+#include <Systems/PhysicsSystem.h>
 
 //Vegetation.
 #include <Vegetation/GrassVegetationMaterial.h>
@@ -107,6 +110,9 @@ void RenderingSystem::InitializeSystem(const CatalystProjectRenderingConfigurati
 	//Initialize the common physical models.
 	InitializeCommonPhysicalModels();
 
+	//Initialize the global render data.
+	InitializeGlobalRenderData();
+
 	//Post-initialize the current rendering system.
 	CURRENT_RENDERING_SYSTEM::Instance->PostInitializeSystem();
 }
@@ -138,11 +144,16 @@ void RenderingSystem::RenderingUpdateSystemSynchronous(const UpdateContext *cons
 	//Render-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
+
+
 	//Render all render passes.
 	for (RenderPass *const RESTRICT _RenderPass : _RenderPasses)
 	{
 		_RenderPass->RenderAsynchronous();
 	}
+
+	//Update the global render data.
+	UpdateGlobalRenderData();
 
 	//Post-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();
@@ -337,12 +348,11 @@ void RenderingSystem::DestroyUniformBuffer(UniformBufferHandle handle) const NOE
 }
 
 /*
-*	Returns the current dynamic uniform data render data table.
+*	Returns the global render data table.
 */
-RenderDataTableHandle RenderingSystem::GetCurrentDynamicUniformDataRenderDataTable() const NOEXCEPT
+RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable() const NOEXCEPT
 {
-	//Return the current dynamic uniform data render data table via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentDynamicUniformDataRenderDataTable();
+	return _GlobalRenderData._RenderDataTables[GetCurrentFrameBufferIndex()];
 }
 
 /*
@@ -637,6 +647,22 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 {
 	//Get the number of frame buffers.
 	const uint8 numberOfFrameBuffers{ GetNumberOfFrameBuffers() };
+
+	//Upsize the buffers.
+	_GlobalRenderData._RenderDataTables.UpsizeFast(numberOfFrameBuffers);
+	_GlobalRenderData._DynamicUniformDataBuffers.UpsizeFast(numberOfFrameBuffers);
+
+	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
+	{
+		//Create the render data table.
+		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global), &_GlobalRenderData._RenderDataTables[i]);
+
+		//Create the dynamic uniform data buffer.
+		_GlobalRenderData._DynamicUniformDataBuffers[i] = CreateUniformBuffer(sizeof(DynamicUniformData));
+
+		//Bind the dynamic uniform data buffer to the render data table.
+		BindUniformBufferToRenderDataTable(0, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._DynamicUniformDataBuffers[i]);
+	}
 }
 
 /*
@@ -968,6 +994,123 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Terrain)]);
 	}
+}
+
+/*
+*	Updates the global render data.
+*/
+void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
+{
+	//Retrieve the current frame buffer index.
+	const uint8 currentFrameBufferIndex{ GetCurrentFrameBufferIndex() };
+
+	//Update the dynamic uniform data.
+	UpdateDynamicUniformData(currentFrameBufferIndex);
+}
+
+/*
+*	Updates the dynamic uniform data.
+*/
+void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT
+{
+	DynamicUniformData data;
+
+	//Calculate the viewer data.
+	Vector3 viewerPosition = Viewer::Instance->GetPosition();
+	Vector3 forwardVector = Viewer::Instance->GetForwardVector();
+	Vector3 upVector = Viewer::Instance->GetUpVector();
+
+	const Matrix4 *const RESTRICT projectionMatrix{ Viewer::Instance->GetProjectionMatrix() };
+	const Matrix4 *const RESTRICT viewerMatrix{ Viewer::Instance->GetViewerMatrix() };
+	const Matrix4 *const RESTRICT viewMatrix{ Viewer::Instance->GetViewMatrix() };
+	const Matrix4 *const RESTRICT inverseProjectionMatrix{ Viewer::Instance->GetInverseProjectionMatrix() };
+	const Matrix4 *const RESTRICT inverseViewerMatrix{ Viewer::Instance->GetInverseViewerMatrix() };
+
+	Matrix4 viewerOriginMatrix{ *viewerMatrix };
+	viewerOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
+
+	data._ViewerFieldOfViewCosine = CatalystBaseMath::CosineRadians(Viewer::Instance->GetFieldOfViewRadians()) - 0.2f;
+	data._InverseViewerMatrix = *inverseViewerMatrix;
+	data._InverseProjectionMatrix = *inverseProjectionMatrix;
+	data._OriginViewMatrix = *projectionMatrix * viewerOriginMatrix;
+	data._ViewMatrix = *viewMatrix;
+	data._ViewerForwardVector = forwardVector;
+	data._ViewerWorldPosition = viewerPosition;
+
+	data._DirectionalLightIntensity = LightingSystem::Instance->GetDirectionalLight()->GetIntensity();
+	data._DirectionalLightViewMatrix = *LightingSystem::Instance->GetDirectionalLight()->GetViewMatrix();
+	data._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
+	data._DirectionalLightColor = LightingSystem::Instance->GetDirectionalLight()->GetColor();
+	data._DirectionalLightScreenSpacePosition = *viewMatrix * Vector4(-data._DirectionalLightDirection._X * 100.0f + viewerPosition._X, -data._DirectionalLightDirection._Y * 100.0f + viewerPosition._Y, -data._DirectionalLightDirection._Z * 100.0f + viewerPosition._Z, 1.0f);
+	data._DirectionalLightScreenSpacePosition._X /= data._DirectionalLightScreenSpacePosition._W;
+	data._DirectionalLightScreenSpacePosition._Y /= data._DirectionalLightScreenSpacePosition._W;
+	data._DirectionalLightScreenSpacePosition._Z /= data._DirectionalLightScreenSpacePosition._W;
+
+	data._EnvironmentBlend = EnvironmentManager::Instance->GetEnvironmentBlend();
+
+	data._DeltaTime = EngineSystem::Instance->GetDeltaTime();
+	data._TotalGameTime = EngineSystem::Instance->GetTotalTime();
+
+	uint64 counter = 0;
+
+	const uint64 numberOfPointLightEntityComponents{ ComponentManager::GetNumberOfPointLightComponents() };
+	const PointLightComponent *RESTRICT pointLightComponent{ ComponentManager::GetPointLightPointLightComponents() };
+
+	data._NumberOfPointLights = static_cast<int32>(numberOfPointLightEntityComponents);
+
+	for (uint64 i = 0; i < numberOfPointLightEntityComponents; ++i, ++pointLightComponent)
+	{
+		if (!pointLightComponent->_Enabled)
+		{
+			--data._NumberOfPointLights;
+
+			continue;
+		}
+
+		data._PointLightAttenuationDistances[counter] = pointLightComponent->_AttenuationDistance;
+		data._PointLightIntensities[counter] = pointLightComponent->_Intensity;
+		data._PointLightColors[counter] = pointLightComponent->_Color;
+		data._PointLightWorldPositions[counter] = pointLightComponent->_Position;
+
+		if (++counter == LightingConstants::MAXIMUM_NUMBER_OF_POINT_LIGHTS)
+		{
+			break;
+		}
+	}
+
+	counter = 0;
+
+	const uint64 numberOfSpotLightEntityComponents{ ComponentManager::GetNumberOfSpotLightComponents() };
+	const SpotLightComponent *RESTRICT spotLightComponent{ ComponentManager::GetSpotLightSpotLightComponents() };
+
+	data._NumberOfSpotLights = static_cast<int32>(numberOfSpotLightEntityComponents);
+
+	for (uint64 i = 0; i < numberOfSpotLightEntityComponents; ++i, ++spotLightComponent)
+	{
+		if (!spotLightComponent->_Enabled)
+		{
+			--data._NumberOfSpotLights;
+
+			continue;
+		}
+
+		data._SpotLightAttenuationDistances[counter] = spotLightComponent->_AttenuationDistance;
+		data._SpotLightIntensities[counter] = spotLightComponent->_Intensity;
+		data._SpotLightInnerCutoffAngles[counter] = CatalystBaseMath::CosineDegrees(spotLightComponent->_InnerCutoffAngle);
+		data._SpotLightOuterCutoffAngles[counter] = CatalystBaseMath::CosineDegrees(spotLightComponent->_OuterCutoffAngle);
+		data._SpotLightColors[counter] = spotLightComponent->_Color;
+		data._SpotLightDirections[counter] = Vector3(0.0f, -1.0f, 0.0f).Rotated(spotLightComponent->_Rotation);
+		data._SpotLightDirections[counter]._Y *= -1.0f;
+		data._SpotLightWorldPositions[counter] = spotLightComponent->_Position;
+
+		++counter;
+	}
+
+	//Update the physics data.
+	data._WindSpeed = PhysicsSystem::Instance->GetWindSpeed();
+	data._WindDirection = PhysicsSystem::Instance->GetWindDirection();
+
+	UploadDataToUniformBuffer(_GlobalRenderData._DynamicUniformDataBuffers[currentFrameBufferIndex], &data);
 }
 
 //Undefine defines to keep them from leaking into other scopes.
