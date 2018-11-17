@@ -42,6 +42,7 @@ void main()
     float heightWeight = 1.0f - clamp((sceneWorldPosition.y - fogMinimumHeight) / (fogMaximumHeight - fogMinimumHeight), 0.0f, 1.0f);
 
     float fogWeight = distanceWeight * heightWeight;
+    fogWeight *= fogWeight;
 
     //Calculate the fog color.
     vec3 fogColor = vec3(1.0f, 1.0f, 1.0f) * 0.01f + directionalLightColor * (directionalLightIntensity * 0.25f);
