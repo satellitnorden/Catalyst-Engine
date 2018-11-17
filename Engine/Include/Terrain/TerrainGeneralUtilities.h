@@ -43,7 +43,7 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates a height texture.
 	*/
-	static void GenerateHeightTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3 &patchWorldPosition, float *const RESTRICT minimumHeight, float *const RESTRICT maximumHeight, Texture2DHandle *const RESTRICT texture, RenderDataTableHandle *const RESTRICT renderDataTable) NOEXCEPT
+	static void GenerateHeightTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3 &patchWorldPosition, float *const RESTRICT minimumHeight, float *const RESTRICT maximumHeight, Texture2DHandle *const RESTRICT texture) NOEXCEPT
 	{
 		*minimumHeight = FLOAT_MAXIMUM;
 		*maximumHeight = -FLOAT_MAXIMUM;
@@ -80,8 +80,6 @@ namespace TerrainGeneralUtilities
 																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
 																				1),
 																				TextureFormat::R32_Float));
-
-		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(0, 0, *renderDataTable, *texture, RenderingSystem::Instance->GetSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge)));
 	}
 
 	/*

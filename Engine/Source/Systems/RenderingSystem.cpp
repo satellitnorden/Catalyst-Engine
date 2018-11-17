@@ -144,16 +144,14 @@ void RenderingSystem::RenderingUpdateSystemSynchronous(const UpdateContext *cons
 	//Render-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
-
+	//Update the global render data.
+	UpdateGlobalRenderData();
 
 	//Render all render passes.
 	for (RenderPass *const RESTRICT _RenderPass : _RenderPasses)
 	{
 		_RenderPass->RenderAsynchronous();
 	}
-
-	//Update the global render data.
-	UpdateGlobalRenderData();
 
 	//Post-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PostUpdateSystemSynchronous();
@@ -353,6 +351,65 @@ void RenderingSystem::DestroyUniformBuffer(UniformBufferHandle handle) const NOE
 RenderDataTableHandle RenderingSystem::GetGlobalRenderDataTable() const NOEXCEPT
 {
 	return _GlobalRenderData._RenderDataTables[GetCurrentFrameBufferIndex()];
+}
+
+/*
+*	Adds a terrain height texture to the global render data and returns it's index.
+*/
+uint8 RenderingSystem::AddTerrainHeightTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT
+{
+	//Lock the terrain height texture slots.
+	_GlobalRenderData._TerrainHeightTexturesLock.Lock();
+
+	//Find the first available index and store it.
+	uint8 index{ UINT8_MAXIMUM };
+
+	for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES; ++i)
+	{
+		//If this is available, grab it!
+		if (!_GlobalRenderData._TerrainHeightTextureSlots[i])
+		{
+			index = i;
+			_GlobalRenderData._TerrainHeightTextureSlots[i] = true;
+
+			break;
+		}
+	}
+
+	ASSERT(index != UINT8_MAXIMUM, "If no index could be found, then, well... This is bad. ):");
+
+	//Add the terrain height texture updates.
+	for (DynamicArray<Pair<uint8, Texture2DHandle>> &terrainHeightTextureUpdate : _GlobalRenderData._AddTerrainHeightTextureUpdates)
+	{
+		terrainHeightTextureUpdate.EmplaceSlow(index, texture);
+	}
+
+	//Unlock the terrain height texture slots.
+	_GlobalRenderData._TerrainHeightTexturesLock.Unlock();
+
+	//Return the index.
+	return index;
+}
+
+/*
+*	Returns a terrain height texture to the global render data and marks it's index as available.
+*/
+void RenderingSystem::ReturnTerrainHeightTextureToGlobalRenderData(const uint8 index) NOEXCEPT
+{
+	//Lock the terrain height texture slots.
+	_GlobalRenderData._TerrainHeightTexturesLock.Lock();
+
+	//Add the terrain height texture updates.
+	for (DynamicArray<uint8> &terrainHeightTextureUpdate : _GlobalRenderData._RemoveTerrainHeightTextureUpdates)
+	{
+		terrainHeightTextureUpdate.EmplaceSlow(index);
+	}
+
+	//Mark the terrain height texture slot as available.
+	_GlobalRenderData._TerrainHeightTextureSlots[index] = false;
+
+	//Unlock the terrain height texture slots.
+	_GlobalRenderData._TerrainHeightTexturesLock.Unlock();
 }
 
 /*
@@ -651,6 +708,8 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	//Upsize the buffers.
 	_GlobalRenderData._RenderDataTables.UpsizeFast(numberOfFrameBuffers);
 	_GlobalRenderData._DynamicUniformDataBuffers.UpsizeFast(numberOfFrameBuffers);
+	_GlobalRenderData._RemoveTerrainHeightTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
+	_GlobalRenderData._AddTerrainHeightTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 
 	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
 	{
@@ -662,6 +721,18 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 
 		//Bind the dynamic uniform data buffer to the render data table.
 		BindUniformBufferToRenderDataTable(0, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._DynamicUniformDataBuffers[i]);
+
+		//Bind a placeholder texture to all terrain height texture slots.
+		for (uint8 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES; ++j)
+		{
+			BindCombinedImageSamplerToRenderDataTable(1, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge)));
+		}
+	}
+
+	//Mark all terrain height texture slots as free.
+	for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES; ++i)
+	{
+		_GlobalRenderData._TerrainHeightTextureSlots[i] = false;
 	}
 }
 
@@ -882,9 +953,10 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 1> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Geometry | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES, ShaderStage::Vertex),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -1006,6 +1078,9 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 
 	//Update the dynamic uniform data.
 	UpdateDynamicUniformData(currentFrameBufferIndex);
+
+	//Update the terrain height textures.
+	UpdateTerrainHeightTextures(currentFrameBufferIndex);
 }
 
 /*
@@ -1111,6 +1186,27 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	data._WindDirection = PhysicsSystem::Instance->GetWindDirection();
 
 	UploadDataToUniformBuffer(_GlobalRenderData._DynamicUniformDataBuffers[currentFrameBufferIndex], &data);
+}
+
+/*
+*	Updates the terrain height textures.
+*/
+void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
+{
+	//Process all updates.
+	for (uint8 update : _GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex])
+	{
+		BindCombinedImageSamplerToRenderDataTable(1, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge)));
+	}
+
+	_GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
+
+	for (Pair<uint8, Texture2DHandle> &update : _GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex])
+	{
+		BindCombinedImageSamplerToRenderDataTable(1, static_cast<uint32>(update._First), _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second, GetSampler(SamplerProperties(TextureFilter::Nearest, MipmapMode::Nearest, AddressMode::ClampToEdge)));
+	}
+
+	_GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
 }
 
 //Undefine defines to keep them from leaking into other scopes.

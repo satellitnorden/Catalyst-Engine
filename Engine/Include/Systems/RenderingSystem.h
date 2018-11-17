@@ -323,6 +323,16 @@ public:
 	RenderDataTableHandle GetGlobalRenderDataTable() const NOEXCEPT;
 
 	/*
+	*	Adds a terrain height texture to the global render data and returns it's index.
+	*/
+	uint8 AddTerrainHeightTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT;
+
+	/*
+	*	Returns a terrain height texture to the global render data and marks it's index as available.
+	*/
+	void ReturnTerrainHeightTextureToGlobalRenderData(const uint8 index) NOEXCEPT;
+
+	/*
 	*	Returns the given common render data table layout.
 	*/
 	RenderDataTableHandle GetCommonRenderDataTableLayout(const CommonRenderDataTableLayout commonRenderDataTableLayout) const NOEXCEPT;
@@ -512,5 +522,10 @@ private:
 	*	Updates the dynamic uniform data.
 	*/
 	void UpdateDynamicUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT;
+
+	/*
+	*	Updates the terrain height textures.
+	*/
+	void UpdateTerrainHeightTextures(const uint8 currentFrameBufferIndex) NOEXCEPT;
 
 };

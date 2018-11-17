@@ -6,6 +6,12 @@
 //Math.
 #include <Math/Vector2.h>
 
+//Rendering constants.
+namespace RenderingConstants
+{
+	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES{ 255 };
+}
+
 /*
 *	Type aliases.
 */

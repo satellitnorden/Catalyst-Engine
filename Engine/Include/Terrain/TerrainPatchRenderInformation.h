@@ -26,4 +26,7 @@ public:
 	//The borders.
 	int32 _Borders;
 
+	//The height texture index.
+	int32 _HeightTextureIndex;
+
 };

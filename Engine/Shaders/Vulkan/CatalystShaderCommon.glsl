@@ -58,6 +58,9 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     //Total size; 1904
 };
 
+//The terrain height textures.
+layout (set = 0, binding = 1) uniform sampler2D terrainHeightTextures[255];
+
 //Constants.
 #define EULERS_NUMBER (2.718281f)
 #define PHI (1.618033f)

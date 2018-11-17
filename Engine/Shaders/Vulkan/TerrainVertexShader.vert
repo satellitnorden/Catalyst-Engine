@@ -17,6 +17,7 @@ layout (push_constant) uniform PushConstantData
 	layout (offset = 0) vec2 patchWorldPosition;
 	layout (offset = 8) float patchSize;
 	layout (offset = 12) int borders;
+	layout (offset = 16) int heightTextureIndex;
 };
 
 //In parameters.
@@ -63,5 +64,5 @@ void main()
     fragmentTextureCoordinate = position + 0.5f;
 
     //Set the position.
-    gl_Position = viewMatrix * vec4(vec3(patchWorldPosition.x + (position.x * patchSize), texture(heightTexture, fragmentTextureCoordinate).r, patchWorldPosition.y + (position.y * patchSize)), 1.0f);
+    gl_Position = viewMatrix * vec4(vec3(patchWorldPosition.x + (position.x * patchSize), texture(terrainHeightTextures[heightTextureIndex], fragmentTextureCoordinate).r, patchWorldPosition.y + (position.y * patchSize)), 1.0f);
 }

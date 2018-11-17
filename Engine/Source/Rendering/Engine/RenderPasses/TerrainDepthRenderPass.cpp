@@ -23,6 +23,7 @@ public:
 	Vector2 _PatchWorldPosition;
 	float _PatchHalfSize;
 	int32 _Borders;
+	int32 _HeightTextureIndex;
 
 };
 
@@ -163,6 +164,7 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 		data._PatchWorldPosition = information._WorldPosition;
 		data._PatchHalfSize = information._PatchSize;
 		data._Borders = information._Borders;
+		data._HeightTextureIndex = information._HeightTextureIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
 
