@@ -61,11 +61,11 @@ void RenderPass::FinalizeInitialization() NOEXCEPT
 }
 
 /*
-*	Returns the current command buffer, non-const.
+*	Returns the current command buffer, const.
 */
 RESTRICTED const CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuffer() const NOEXCEPT
 {
-	return _CommandBuffers[RenderingSystem::Instance->GetCurrentFrameIndex()];
+	return _CommandBuffers[RenderingSystem::Instance->GetCurrentFrameBufferIndex()];
 }
 
 /*
@@ -73,5 +73,5 @@ RESTRICTED const CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuff
 */
 CommandBuffer *const RESTRICT RenderPass::GetCurrentCommandBuffer() NOEXCEPT
 {
-	return _CommandBuffers[RenderingSystem::Instance->GetCurrentFrameIndex()];
+	return _CommandBuffers[RenderingSystem::Instance->GetCurrentFrameBufferIndex()];
 }

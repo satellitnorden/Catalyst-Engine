@@ -52,7 +52,7 @@ void DebugAxisAlignedBoundingBoxRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);

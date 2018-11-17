@@ -58,7 +58,7 @@ void BloomVerticalRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Set the render resolution.

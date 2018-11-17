@@ -58,9 +58,14 @@ public:
 	void ReleaseSystem() NOEXCEPT;
 
 	/*
-	*	Returns the current frame index.
+	*	Returns the number of frame buffers
 	*/
-	uint8 GetCurrentFrameIndex() const NOEXCEPT;
+	uint8 GetNumberOfFrameBuffers() const NOEXCEPT;
+
+	/*
+	*	Returns the current frame buffer index.
+	*/
+	uint8 GetCurrentFrameBufferIndex() const NOEXCEPT;
 
 	/*
 	*	Creates and returns a 2D texture given the texture data.

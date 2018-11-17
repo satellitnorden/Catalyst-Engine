@@ -13,6 +13,7 @@
 
 //Rendering.
 #include <Rendering/Engine/EnvironmentMaterial.h>
+#include <Rendering/Engine/GlobalRenderData.h>
 #if defined(CATALYST_ENABLE_OCEAN)
 #include <Rendering/Engine/OceanMaterial.h>
 #endif
@@ -155,9 +156,14 @@ public:
 	}
 	
 	/*
-	*	Returns the current frame index.
+	*	Returns the number of frame buffers
 	*/
-	uint8 GetCurrentFrameIndex() const NOEXCEPT;
+	uint8 GetNumberOfFrameBuffers() const NOEXCEPT;
+
+	/*
+	*	Returns the current frame buffer index.
+	*/
+	uint8 GetCurrentFrameBufferIndex() const NOEXCEPT;
 
 	/*
 	*	Returns the render passes.
@@ -394,6 +400,9 @@ private:
 	//The directional shadow map resolution.
 	Resolution _DirectionalShadowMapResolution;
 
+	//The global render data.
+	GlobalRenderData _GlobalRenderData;
+
 	//Container for all render passes.
 	StaticArray<RenderPass *RESTRICT, UNDERLYING(RenderPassSubStage::NumberOfRenderPassSubStages)> _RenderPasses;
 
@@ -431,6 +440,11 @@ private:
 
 	//The default day environment material.
 	EnvironmentMaterial _DefaultDayEnvironmentMaterial;
+
+	/*
+	*	Initializes the global render data.
+	*/
+	void InitializeGlobalRenderData() NOEXCEPT;
 
 	/*
 	*	Initializes all depth buffers.

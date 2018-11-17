@@ -59,7 +59,7 @@ void VulkanRenderingSystem::PostInitializeSystem() NOEXCEPT
 
 	//Initialize the Vulkan frame data.
 	_FrameData.Initialize(	VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(),
-							*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData)));
+							*static_cast<VulkanDescriptorSetLayout *const RESTRICT>(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global)));
 
 	for (uint32 i{ 0 }; i < VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages(); ++i)
 	{
@@ -112,9 +112,17 @@ void VulkanRenderingSystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
-*	Returns the current frame index.
+*	Returns the number of frame buffers
 */
-uint8 VulkanRenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
+uint8 VulkanRenderingSystem::GetNumberOfFrameBuffers() const NOEXCEPT
+{
+	return VulkanInterface::Instance->GetSwapchain().GetNumberOfSwapChainImages();
+}
+
+/*
+*	Returns the current frame buffer index.
+*/
+uint8 VulkanRenderingSystem::GetCurrentFrameBufferIndex() const NOEXCEPT
 {
 	return VulkanInterface::Instance->GetSwapchain().GetCurrentImageIndex();
 }
@@ -2338,7 +2346,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 			{
 				currentPrimaryCommandBuffer->CommandBeginRenderPassAndClear(	currentStage == RenderPassMainStage::DirectionalShadow ? 1.0f : 0.0f,
 																				_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
-																				_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
+																				_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameBufferIndex() : 0]->Get(),
 																				renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
 																				VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS, _VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._NumberOfAttachments);
 			}
@@ -2346,7 +2354,7 @@ void VulkanRenderingSystem::ConcatenateCommandBuffers() NOEXCEPT
 			else
 			{
 				currentPrimaryCommandBuffer->CommandBeginRenderPass(_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._RenderPass->Get(),
-				_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameIndex() : 0]->Get(),
+				_VulkanRenderPassMainStageData[UNDERLYING(currentStage)]._FrameBuffers[renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? GetCurrentFrameBufferIndex() : 0]->Get(),
 				renderPass->GetRenderTargets()[0] == RenderTarget::Screen ? VulkanInterface::Instance->GetSwapchain().GetSwapExtent() : VkExtent2D{ renderPass->GetRenderResolution()._Width, renderPass->GetRenderResolution()._Height },
 				VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS);
 			}

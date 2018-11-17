@@ -55,7 +55,7 @@ void ToneMappingRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(2);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::DynamicUniformData));
+	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
 
 	//Add the push constant ranges.

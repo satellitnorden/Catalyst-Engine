@@ -183,7 +183,7 @@ enum class DepthBuffer : uint8
 //Enumeration covering all common render data table layouts.
 enum class CommonRenderDataTableLayout : uint8
 {
-	DynamicUniformData,
+	Global,
 	EnvironmentMaterial,
 	GrassMaterial,
 	TerrainMaterial,

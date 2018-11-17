@@ -158,12 +158,21 @@ void RenderingSystem::ReleaseSystem() NOEXCEPT
 }
 
 /*
-*	Returns the current frame index.
+*	Returns the number of frame buffers
 */
-uint8 RenderingSystem::GetCurrentFrameIndex() const NOEXCEPT
+uint8 RenderingSystem::GetNumberOfFrameBuffers() const NOEXCEPT
 {
-	//Return the current frame index via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentFrameIndex();
+	//Return the number of frame buffers via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetNumberOfFrameBuffers();
+}
+
+/*
+*	Returns the current frame buffer index.
+*/
+uint8 RenderingSystem::GetCurrentFrameBufferIndex() const NOEXCEPT
+{
+	//Return the current frame buffer index via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->GetCurrentFrameBufferIndex();
 }
 
 /*
@@ -622,6 +631,15 @@ void RenderingSystem::FinalizeRenderPassInitialization(RenderPass *const RESTRIC
 }
 
 /*
+*	Initializes the global render data.
+*/
+void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
+{
+	//Get the number of frame buffers.
+	const uint8 numberOfFrameBuffers{ GetNumberOfFrameBuffers() };
+}
+
+/*
 *	Initializes all depth buffers.
 */
 void RenderingSystem::InitializeDepthBuffers() NOEXCEPT
@@ -843,7 +861,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Geometry | ShaderStage::Fragment),
 		};
 
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::DynamicUniformData)]);
+		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
 	}
 
 	{

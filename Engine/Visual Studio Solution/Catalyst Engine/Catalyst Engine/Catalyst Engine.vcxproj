@@ -178,6 +178,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CPUTexture2D.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\CPUTextureCube.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\EnvironmentMaterial.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\Engine\GlobalRenderData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\OceanMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\OceanRenderingData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\ParticleMaterial.h" />
