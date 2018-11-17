@@ -88,6 +88,22 @@ public:
 	}
 
 	/*
+	*	Generates noise at the given coordinates and returns a value between 0.0f and 1.0f.
+	*/
+	static constexpr float GenerateNormalizedNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
+	{
+		return (GenerateNoise(X, Y, Z, randomOffset) + 1.0f) * 0.5f;
+	}
+
+	/*
+	*	Generates noise at the given coordinates and returns a value between 0.0f and 1.0f.
+	*/
+	static constexpr float GenerateRidgedNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
+	{
+		return 1.0f - CatalystBaseMath::Absolute(GenerateNoise(X, Y, Z, randomOffset));
+	}
+
+	/*
 	*	Generates octaved noise.
 	*/
 	static float constexpr GenerateOctavedNoise(float X, float Y, float Z, const uint8 octaves, const float persistence) NOEXCEPT
