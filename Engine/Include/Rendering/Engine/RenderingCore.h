@@ -10,6 +10,7 @@
 namespace RenderingConstants
 {
 	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES{ 255 };
+	constexpr uint64 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 512 };
 }
 
 /*
@@ -451,6 +452,8 @@ public:
 	enum class Type : uint8
 	{
 		CombinedImageSampler,
+		SampledImage,
+		Sampler,
 		UniformBuffer
 	};
 

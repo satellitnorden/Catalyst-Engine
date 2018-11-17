@@ -33,4 +33,16 @@ public:
 	//The add terrain height texture updates.
 	DynamicArray<DynamicArray<Pair<uint8, Texture2DHandle>>> _AddTerrainHeightTextureUpdates;
 
+	//The global texture lock.
+	Spinlock _GlobalTexturesLock;
+
+	//Theglobal texture slots.
+	StaticArray<bool, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _GlobalTextureSlots;
+
+	//The remove global texture updates.
+	DynamicArray<DynamicArray<uint64>> _RemoveGlobalTextureUpdates;
+
+	//The add global texture updates.
+	DynamicArray<DynamicArray<Pair<uint64, Texture2DHandle>>> _AddGlobalTextureUpdates;
+
 };

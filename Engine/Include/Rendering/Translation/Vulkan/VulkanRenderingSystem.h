@@ -113,6 +113,17 @@ public:
 	void BindCombinedImageSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, OpaqueHandle image, SamplerHandle sampler) const NOEXCEPT;
 
 	/*
+*	Binds a sampled image to a render data table.
+*	Accepts render target, texture 2D and texture cube handles.
+*/
+	void BindSampledImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, OpaqueHandle image) const NOEXCEPT;
+
+	/*
+	*	Binds a sampler to a render data table.
+	*/
+	void BindSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, SamplerHandle sampler) const NOEXCEPT;
+
+	/*
 	*	Binds a uniform buffer to a render data table.
 	*/
 	void BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT;

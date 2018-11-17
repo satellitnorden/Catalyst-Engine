@@ -61,7 +61,20 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 //The terrain height textures.
 layout (set = 0, binding = 1) uniform sampler2D terrainHeightTextures[255];
 
+//The samplers.
+layout (set = 0, binding = 2) uniform sampler samplers[5];
+
+//The global textures.
+layout (set = 0, binding = 3) uniform texture2D globalTextures[512];
+
 //Constants.
+#define FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index 0
+#define FilterLinear_MipmapModeLinear_AddressModeRepeat_Index 1
+#define FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index 2
+#define FilterLinear_MipmapModeNearest_AddressModeRepeat_Index 3
+#define FilterNearest_MipmapModeNearest_AddressModeClampToBorder_Index 4
+#define FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index 5
+
 #define EULERS_NUMBER (2.718281f)
 #define PHI (1.618033f)
 #define PI (3.141592f)

@@ -412,6 +412,75 @@ void VulkanRenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint
 }
 
 /*
+*	Binds a sampled image to a render data table.
+*	Accepts render target, texture 2D and texture cube handles.
+*/
+void VulkanRenderingSystem::BindSampledImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, OpaqueHandle image) const NOEXCEPT
+{
+	//Cache the Vulkan types.
+	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(renderDataTable) };
+	VulkanImage *const RESTRICT vulkanImage{ static_cast<VulkanImage *const RESTRICT>(image) };
+
+	//Create the destriptor image info.
+	VkDescriptorImageInfo descriptorImageInfo;
+
+	descriptorImageInfo.sampler = VK_NULL_HANDLE;
+	descriptorImageInfo.imageView = vulkanImage->GetImageView();
+	descriptorImageInfo.imageLayout = vulkanImage->GetImageLayout();
+
+	//Create the write descriptor set.
+	VkWriteDescriptorSet writeDescriptorSet;
+
+	writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeDescriptorSet.pNext = nullptr;
+	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
+	writeDescriptorSet.dstBinding = binding;
+	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.descriptorCount = 1;
+	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+	writeDescriptorSet.pImageInfo = &descriptorImageInfo;
+	writeDescriptorSet.pBufferInfo = nullptr;
+	writeDescriptorSet.pTexelBufferView = nullptr;
+
+	//Update the descriptor set.
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &writeDescriptorSet, 0, nullptr);
+}
+
+/*
+*	Binds a sampler to a render data table.
+*/
+void VulkanRenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, SamplerHandle sampler) const NOEXCEPT
+{
+	//Cache the Vulkan types.
+	VulkanDescriptorSet *const RESTRICT vulkanDescriptorSet{ static_cast<VulkanDescriptorSet *const RESTRICT>(renderDataTable) };
+	VulkanSampler *const RESTRICT vulkanSampler{ static_cast<VulkanSampler *const RESTRICT>(sampler) };
+
+	//Create the destriptor image info.
+	VkDescriptorImageInfo descriptorImageInfo;
+
+	descriptorImageInfo.sampler = vulkanSampler->Get();
+	descriptorImageInfo.imageView = VK_NULL_HANDLE;
+	descriptorImageInfo.imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+	//Create the write descriptor set.
+	VkWriteDescriptorSet writeDescriptorSet;
+
+	writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeDescriptorSet.pNext = nullptr;
+	writeDescriptorSet.dstSet = vulkanDescriptorSet->Get();
+	writeDescriptorSet.dstBinding = binding;
+	writeDescriptorSet.dstArrayElement = arrayElement;
+	writeDescriptorSet.descriptorCount = 1;
+	writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
+	writeDescriptorSet.pImageInfo = &descriptorImageInfo;
+	writeDescriptorSet.pBufferInfo = nullptr;
+	writeDescriptorSet.pTexelBufferView = nullptr;
+
+	//Update the descriptor set.
+	vkUpdateDescriptorSets(VulkanInterface::Instance->GetLogicalDevice().Get(), 1, &writeDescriptorSet, 0, nullptr);
+}
+
+/*
 *	Binds a uniform buffer to a render data table.
 */
 void VulkanRenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT

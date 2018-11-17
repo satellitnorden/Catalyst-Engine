@@ -240,6 +240,25 @@ void RenderingSystem::BindCombinedImageSamplerToRenderDataTable(const uint32 bin
 }
 
 /*
+*	Binds a sampled image to a render data table.
+*	Accepts render target, texture 2D and texture cube handles.
+*/
+void RenderingSystem::BindSampledImageToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, OpaqueHandle image) const NOEXCEPT
+{
+	//Bind the sampled image to the render data table via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->BindSampledImageToRenderDataTable(binding, arrayElement, renderDataTable, image);
+}
+
+/*
+*	Binds a sampler to a render data table.
+*/
+void RenderingSystem::BindSamplerToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, SamplerHandle sampler) const NOEXCEPT
+{
+	//Bind the sampler to the render data table via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->BindSamplerToRenderDataTable(binding, arrayElement, renderDataTable, sampler);
+}
+
+/*
 *	Binds a uniform buffer to a render data table.
 */
 void RenderingSystem::BindUniformBufferToRenderDataTable(const uint32 binding, const uint32 arrayElement, RenderDataTableHandle renderDataTable, UniformBufferHandle uniformBuffer) const NOEXCEPT
@@ -394,6 +413,65 @@ void RenderingSystem::ReturnTerrainHeightTextureToGlobalRenderData(const uint8 i
 
 	//Unlock the terrain height texture slots.
 	_GlobalRenderData._TerrainHeightTexturesLock.Unlock();
+}
+
+/*
+*	Adds a texture to the global render data and returns it's index.
+*/
+uint64 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT
+{
+	//Lock global texture slots.
+	_GlobalRenderData._GlobalTexturesLock.Lock();
+
+	//Find the first available index and store it.
+	uint64 index{ UINT64_MAXIMUM };
+
+	for (uint64 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++i)
+	{
+		//If this is available, grab it!
+		if (!_GlobalRenderData._GlobalTextureSlots[i])
+		{
+			index = i;
+			_GlobalRenderData._GlobalTextureSlots[i] = true;
+
+			break;
+		}
+	}
+
+	ASSERT(index != UINT64_MAXIMUM, "If no index could be found, then, well... This is bad. ):");
+
+	//Add the global texture updates.
+	for (DynamicArray<Pair<uint64, Texture2DHandle>> &globalTextureUpdate : _GlobalRenderData._AddGlobalTextureUpdates)
+	{
+		globalTextureUpdate.EmplaceSlow(index, texture);
+	}
+
+	//Unlock the global texture slots.
+	_GlobalRenderData._TerrainHeightTexturesLock.Unlock();
+
+	//Return the index.
+	return index;
+}
+
+/*
+*	Returns a texture to the global render data and marks it's index as available.
+*/
+void RenderingSystem::ReturnTextureToGlobalRenderData(const uint64 index) NOEXCEPT
+{
+	//Lock the global texture slots.
+	_GlobalRenderData._GlobalTexturesLock.Lock();
+
+	//Add the global texture updates.
+	for (DynamicArray<uint64> &globalTextureUpdate : _GlobalRenderData._RemoveGlobalTextureUpdates)
+	{
+		globalTextureUpdate.EmplaceSlow(index);
+	}
+
+	//Mark the global texture slot as available.
+	_GlobalRenderData._GlobalTextureSlots[index] = false;
+
+	//Unlock the global texture slots.
+	_GlobalRenderData._GlobalTexturesLock.Unlock();
 }
 
 /*
@@ -711,6 +789,18 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 		{
 			BindCombinedImageSamplerToRenderDataTable(1, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 		}
+
+		//Bind all samplers.
+		for (uint8 j{ 0 }; j < UNDERLYING(Sampler::NumberOfSamplers); ++j)
+		{
+			BindSamplerToRenderDataTable(2, j, _GlobalRenderData._RenderDataTables[i], _Samplers[j]);
+		}
+
+		//Bind a placeholder texture to all global texture slots.
+		for (uint64 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
+		{
+			BindSampledImageToRenderDataTable(3, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
+		}
 	}
 
 	//Mark all terrain height texture slots as free.
@@ -937,10 +1027,12 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 2> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 4> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Geometry | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES, ShaderStage::Vertex),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Vertex | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Vertex | ShaderStage::Fragment),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
