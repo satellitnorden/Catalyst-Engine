@@ -131,7 +131,8 @@ public:
 				+ PowerOf(temporary, 8) * InverseFactorial(8)
 				- PowerOf(temporary, 10) * InverseFactorial(10)
 				+ PowerOf(temporary, 12) * InverseFactorial(12)
-				- PowerOf(temporary, 14) * InverseFactorial(14);
+				- PowerOf(temporary, 14) * InverseFactorial(14)
+				+ PowerOf(temporary, 16) * InverseFactorial(16);
 	}
 
 	/*
