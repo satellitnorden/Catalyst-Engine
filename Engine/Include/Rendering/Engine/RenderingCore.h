@@ -10,7 +10,7 @@
 namespace RenderingConstants
 {
 	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES{ 255 };
-	constexpr uint64 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 512 };
+	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 512 };
 }
 
 /*
@@ -200,8 +200,6 @@ enum class CommonRenderDataTableLayout : uint8
 #endif
 	ParticleSystem,
 	GaussianBlur,
-
-	Terrain,
 
 	NumberOfCommonRenderDataTableLayouts
 };

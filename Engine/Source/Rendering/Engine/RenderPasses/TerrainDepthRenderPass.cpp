@@ -76,9 +76,8 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::SceneIntermediate);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
@@ -165,9 +164,6 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 		{
 			continue;
 		}
-
-		//Bind the normal texture.
-		commandBuffer->BindRenderDataTable(this, 1, information._RenderDataTable);
 
 		//Push constants.
 		VertexPushConstantData vertexData;

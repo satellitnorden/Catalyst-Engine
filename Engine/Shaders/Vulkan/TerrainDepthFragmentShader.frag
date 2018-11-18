@@ -20,10 +20,6 @@ layout (push_constant) uniform PushConstantData
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
-//Texture samplers.
-layout (set = 1, binding = 1) uniform sampler2D normalTexture;
-layout (set = 1, binding = 2) uniform sampler2D layerWeightsTexture;
-
 //Out parameters.
 layout (location = 0) out vec4 normalDepth;
 layout (location = 1) out vec4 layerWeights;

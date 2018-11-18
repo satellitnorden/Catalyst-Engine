@@ -40,9 +40,9 @@ public:
 	StaticArray<bool, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _GlobalTextureSlots;
 
 	//The remove global texture updates.
-	DynamicArray<DynamicArray<uint64>> _RemoveGlobalTextureUpdates;
+	DynamicArray<DynamicArray<uint32>> _RemoveGlobalTextureUpdates;
 
 	//The add global texture updates.
-	DynamicArray<DynamicArray<Pair<uint64, Texture2DHandle>>> _AddGlobalTextureUpdates;
+	DynamicArray<DynamicArray<Pair<uint32, Texture2DHandle>>> _AddGlobalTextureUpdates;
 
 };

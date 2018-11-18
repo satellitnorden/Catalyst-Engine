@@ -418,15 +418,15 @@ void RenderingSystem::ReturnTerrainHeightTextureToGlobalRenderData(const uint8 i
 /*
 *	Adds a texture to the global render data and returns it's index.
 */
-uint64 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT
+uint32 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT
 {
 	//Lock global texture slots.
 	_GlobalRenderData._GlobalTexturesLock.Lock();
 
 	//Find the first available index and store it.
-	uint64 index{ UINT64_MAXIMUM };
+	uint32 index{ UINT32_MAXIMUM };
 
-	for (uint64 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++i)
+	for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++i)
 	{
 		//If this is available, grab it!
 		if (!_GlobalRenderData._GlobalTextureSlots[i])
@@ -438,10 +438,10 @@ uint64 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NO
 		}
 	}
 
-	ASSERT(index != UINT64_MAXIMUM, "If no index could be found, then, well... This is bad. ):");
+	ASSERT(index != UINT32_MAXIMUM, "If no index could be found, then, well... This is bad. ):");
 
 	//Add the global texture updates.
-	for (DynamicArray<Pair<uint64, Texture2DHandle>> &globalTextureUpdate : _GlobalRenderData._AddGlobalTextureUpdates)
+	for (DynamicArray<Pair<uint32, Texture2DHandle>> &globalTextureUpdate : _GlobalRenderData._AddGlobalTextureUpdates)
 	{
 		globalTextureUpdate.EmplaceSlow(index, texture);
 	}
@@ -456,13 +456,13 @@ uint64 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NO
 /*
 *	Returns a texture to the global render data and marks it's index as available.
 */
-void RenderingSystem::ReturnTextureToGlobalRenderData(const uint64 index) NOEXCEPT
+void RenderingSystem::ReturnTextureToGlobalRenderData(const uint32 index) NOEXCEPT
 {
 	//Lock the global texture slots.
 	_GlobalRenderData._GlobalTexturesLock.Lock();
 
 	//Add the global texture updates.
-	for (DynamicArray<uint64> &globalTextureUpdate : _GlobalRenderData._RemoveGlobalTextureUpdates)
+	for (DynamicArray<uint32> &globalTextureUpdate : _GlobalRenderData._RemoveGlobalTextureUpdates)
 	{
 		globalTextureUpdate.EmplaceSlow(index);
 	}
@@ -799,7 +799,7 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 		}
 
 		//Bind a placeholder texture to all global texture slots.
-		for (uint64 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
+		for (uint32 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
 		{
 			BindSampledImageToRenderDataTable(3, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
 		}
@@ -812,7 +812,7 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	}
 
 	//Mark all global texture slots as free.
-	for (uint64 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++i)
+	for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++i)
 	{
 		_GlobalRenderData._GlobalTextureSlots[i] = false;
 	}
@@ -1138,18 +1138,6 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::GrassMaterial)]);
 	}
-
-	{
-		//Initialize the terrain render data table layout.
-		StaticArray<RenderDataTableLayoutBinding, 3> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Vertex),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Terrain)]);
-	}
 }
 
 /*
@@ -1302,16 +1290,16 @@ void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBuffer
 void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
 	//Process all updates.
-	for (uint64 update : _GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex])
+	for (uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex])
 	{
 		BindSampledImageToRenderDataTable(3, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
 	}
 
 	_GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
 
-	for (Pair<uint64, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex])
+	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex])
 	{
-		BindSampledImageToRenderDataTable(3, static_cast<uint32>(update._First), _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second);
+		BindSampledImageToRenderDataTable(3, update._First, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second);
 	}
 
 	_GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();

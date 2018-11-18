@@ -349,12 +349,12 @@ public:
 	/*
 	*	Adds a texture to the global render data and returns it's index.
 	*/
-	uint64 AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT;
+	uint32 AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT;
 
 	/*
 	*	Returns a texture to the global render data and marks it's index as available.
 	*/
-	void ReturnTextureToGlobalRenderData(const uint64 index) NOEXCEPT;
+	void ReturnTextureToGlobalRenderData(const uint32 index) NOEXCEPT;
 
 	/*
 	*	Returns the given common render data table layout.

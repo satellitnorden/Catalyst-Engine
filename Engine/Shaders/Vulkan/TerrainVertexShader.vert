@@ -24,9 +24,6 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec2 vertexPosition;
 layout (location = 1) in int vertexBorders;
 
-//Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D heightTexture;
-
 //Out parameters.
 layout (location = 0) out vec2 fragmentTextureCoordinate;
 
