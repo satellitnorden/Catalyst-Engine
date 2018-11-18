@@ -168,17 +168,17 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 		//Push constants.
 		VertexPushConstantData vertexData;
 
-		vertexData._PatchWorldPosition = information._WorldPosition;
-		vertexData._PatchHalfSize = information._PatchSize;
-		vertexData._Borders = information._Borders;
-		vertexData._HeightTextureIndex = information._HeightTextureIndex;
+		vertexData._PatchWorldPosition = information._InstanceInformation._WorldPosition;
+		vertexData._PatchHalfSize = information._InstanceInformation._PatchSize;
+		vertexData._Borders = information._InstanceInformation._Borders;
+		vertexData._HeightTextureIndex = information._InstanceInformation._HeightTextureIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 
 		FragmentPushConstantData fragmentData;
 
-		fragmentData._NormalTextureIndex = information._NormalTextureIndex;
-		fragmentData._LayerWeightsTextureIndex = information._LayerWeightsTextureIndex;
+		fragmentData._NormalTextureIndex = information._InstanceInformation._NormalTextureIndex;
+		fragmentData._LayerWeightsTextureIndex = information._InstanceInformation._LayerWeightsTextureIndex;
 
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 

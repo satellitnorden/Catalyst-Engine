@@ -1113,6 +1113,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\DynamicUniformData.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInstanceRenderInformation.h">
+      <Filter>Terrain\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

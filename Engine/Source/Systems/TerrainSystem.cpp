@@ -203,7 +203,7 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 		for (Pair<const uint64, const int32> &pair : _Update._BordersUpdates)
 		{
 			const uint64 patchInformationIndex{ GetPatchInformationIndex(pair._First) };
-			_PatchRenderInformations[patchInformationIndex]._Borders = pair._Second;
+			_PatchRenderInformations[patchInformationIndex]._InstanceInformation._Borders = pair._Second;
 		}
 
 		_Update._BordersUpdates.ClearFast();
@@ -540,9 +540,9 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 
 	//Fill in the details about the patch render information.
 	patchRenderInformation->_Visibility = VisibilityFlag::None;
-	patchRenderInformation->_WorldPosition = Vector2(worldPosition._X, worldPosition._Z);
-	patchRenderInformation->_PatchSize = TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier;
-	patchRenderInformation->_Borders = 0;
+	patchRenderInformation->_InstanceInformation._WorldPosition = Vector2(worldPosition._X, worldPosition._Z);
+	patchRenderInformation->_InstanceInformation._PatchSize = TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier;
+	patchRenderInformation->_InstanceInformation._Borders = 0;
 
 	float minimumHeight;
 	float maximumHeight;
@@ -554,7 +554,7 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 													&maximumHeight,
 													&patchInformation->_HeightTexture);
 
-	patchRenderInformation->_HeightTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTerrainHeightTextureToGlobalRenderData(patchInformation->_HeightTexture));
+	patchRenderInformation->_InstanceInformation._HeightTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTerrainHeightTextureToGlobalRenderData(patchInformation->_HeightTexture));
 
 	TerrainGeneralUtilities::GenerateNormalTexture(	_Properties,
 													patchSizeMultiplier,
@@ -562,14 +562,14 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 													worldPosition,
 													&patchInformation->_NormalTexture);
 
-	patchRenderInformation->_NormalTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalTexture));
+	patchRenderInformation->_InstanceInformation._NormalTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalTexture));
 
 	TerrainGeneralUtilities::GenerateLayerWeightsTexture(	_Properties,
 															patchSizeMultiplier,
 															worldPosition,
 															&patchInformation->_LayerWeightsTexture);
 
-	patchRenderInformation->_LayerWeightsTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_LayerWeightsTexture));
+	patchRenderInformation->_InstanceInformation._LayerWeightsTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_LayerWeightsTexture));
 
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(worldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, worldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
 	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(worldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, worldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
@@ -580,9 +580,9 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 */
 void TerrainSystem::DestroyPatch(const uint64 index) NOEXCEPT
 {
-	RenderingSystem::Instance->ReturnTerrainHeightTextureToGlobalRenderData(_PatchRenderInformations[index]._HeightTextureIndex);
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_PatchRenderInformations[index]._NormalTextureIndex);
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_PatchRenderInformations[index]._LayerWeightsTextureIndex);
+	RenderingSystem::Instance->ReturnTerrainHeightTextureToGlobalRenderData(_PatchRenderInformations[index]._InstanceInformation._HeightTextureIndex);
+	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_PatchRenderInformations[index]._InstanceInformation._NormalTextureIndex);
+	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_PatchRenderInformations[index]._InstanceInformation._LayerWeightsTextureIndex);
 	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._HeightTexture);
 	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._NormalTexture);
 	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._LayerWeightsTexture);
@@ -706,7 +706,7 @@ void TerrainSystem::CalculateNewborders(TerrainQuadTreeNode *const RESTRICT node
 		const uint64 patchRenderInformationIndex{ GetPatchInformationIndex(node->_Identifier) };
 
 		//If the borders differ, add the new borders to the borders updates.
-		if (patchRenderInformationIndex == UINT64_MAX || _PatchRenderInformations[patchRenderInformationIndex]._Borders != borders)
+		if (patchRenderInformationIndex == UINT64_MAX || _PatchRenderInformations[patchRenderInformationIndex]._InstanceInformation._Borders != borders)
 		{
 			_Update._BordersUpdates.EmplaceSlow(Pair<const uint64, const int32>(node->_Identifier, borders));
 		}

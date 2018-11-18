@@ -317,6 +317,7 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainGeneralUtilities.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInstanceRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainProperties.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainQuadTree.h" />
