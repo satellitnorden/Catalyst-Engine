@@ -18,17 +18,22 @@ public:
 
 	/*
 	*	Initializes this Vulkan buffer.
-	*
-	*	data - Pointer to an array of pointers to the data that should be copied into the buffer.
-	*	dataSizes - Pointer to an array of offsets for the data that should be copied into the buffer.
-	*	dataChunks - The number of data chunks that should be copied into the buffer.
 	*/
-	void Initialize(const void *const RESTRICT *const RESTRICT data, const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
+	void Initialize(const VkDeviceSize size) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan buffer.
 	*/
 	void Release() NOEXCEPT;
+
+	/*
+	*	Uploads data to this Vulkan buffer.
+	*
+	*	data - Pointer to an array of pointers to the data that should be copied into the buffer.
+	*	dataSizes - Pointer to an array of offsets for the data that should be copied into the buffer.
+	*	dataChunks - The number of data chunks that should be copied into the buffer.
+	*/
+	void UploadData(const void *const RESTRICT *const RESTRICT data, const VkDeviceSize *const RESTRICT dataSizes, const uint32 dataChunks) NOEXCEPT;
 
 private:
 

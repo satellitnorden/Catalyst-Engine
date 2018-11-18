@@ -53,6 +53,9 @@ void VulkanQueue::Present(const VulkanSemaphore *const RESTRICT renderFinishedSe
 */
 void VulkanQueue::WaitIdle() const NOEXCEPT
 {
+	//Lock the queue.
+	ScopedLock<Spinlock> scopedLock{ _Lock };
+
 	//Wait idle for this Vulkan queue.
 	VULKAN_ERROR_CHECK(vkQueueWaitIdle(_VulkanQueue));
 }

@@ -139,9 +139,9 @@ public:
 	RESTRICTED VulkanCommandPool *const RESTRICT CreateTransferCommandPool(const VkCommandPoolCreateFlags flags) NOEXCEPT;
 
 	/*
-	*	Creates and returns a constant buffer.
+	*	Creates and returns a buffer.
 	*/
-	RESTRICTED VulkanConstantBuffer *const RESTRICT CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT;
+	RESTRICTED VulkanConstantBuffer *const RESTRICT CreateBuffer(const VkDeviceSize size) NOEXCEPT;
 
 	/*
 	*	Destroys a constant buffer.
@@ -226,7 +226,7 @@ public:
 	/*
 	*	Creates and returns a uniform buffer.
 	*/
-	RESTRICTED VulkanUniformBuffer *const RESTRICT CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT;
+	RESTRICTED VulkanUniformBuffer *const RESTRICT CreateUniformBuffer(const uint64 newUniformBufferSize, const VkBufferUsageFlags usage) NOEXCEPT;
 
 	/*
 	*	Destroys a uniform buffer.

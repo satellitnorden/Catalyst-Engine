@@ -15,27 +15,6 @@
 //Singleton definition.
 DEFINE_SINGLETON(TerrainDepthRenderPass);
 
-class VertexPushConstantData final
-{
-
-public:
-
-	Vector2 _PatchWorldPosition;
-	float _PatchHalfSize;
-	int32 _Borders;
-	int32 _HeightTextureIndex;
-
-};
-
-class FragmentPushConstantData final
-{
-
-public:
-
-	int32 _NormalTextureIndex;
-	int32 _LayerWeightsTextureIndex;
-
-};
 
 /*
 *	Default constructor.
@@ -79,13 +58,8 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
-
 	//Add the vertex input attribute descriptions.
-	SetNumberOfVertexInputAttributeDescriptions(2);
+	SetNumberOfVertexInputAttributeDescriptions(8);
 	AddVertexInputAttributeDescription(	0,
 										0,
 										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
@@ -94,10 +68,35 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 										0,
 										VertexInputAttributeDescription::Format::X32SignedInt,
 										sizeof(Vector2));
+	AddVertexInputAttributeDescription(	2,
+										1,
+										VertexInputAttributeDescription::Format::X32Y32SignedFloat,
+										0);
+	AddVertexInputAttributeDescription(	3,
+										1,
+										VertexInputAttributeDescription::Format::X32SignedFloat,
+										sizeof(Vector2));
+	AddVertexInputAttributeDescription(	4,
+										1,
+										VertexInputAttributeDescription::Format::X32SignedInt,
+										sizeof(Vector2) + sizeof(float));
+	AddVertexInputAttributeDescription(	5,
+										1,
+										VertexInputAttributeDescription::Format::X32SignedInt,
+										sizeof(Vector2) + sizeof(float) + sizeof(int32));
+	AddVertexInputAttributeDescription(	6,
+										1,
+										VertexInputAttributeDescription::Format::X32SignedInt,
+										sizeof(Vector2) + sizeof(float) + sizeof(int32) + sizeof(int32));
+	AddVertexInputAttributeDescription(	7,
+										1,
+										VertexInputAttributeDescription::Format::X32SignedInt,
+										sizeof(Vector2) + sizeof(float) + sizeof(int32) + sizeof(int32) + sizeof(int32));
 
 	//Add the vertex input binding descriptions.
-	SetNumberOfVertexInputBindingDescriptions(1);
+	SetNumberOfVertexInputBindingDescriptions(2);
 	AddVertexInputBindingDescription(0, sizeof(TerrainVertex), VertexInputBindingDescription::InputRate::Vertex);
+	AddVertexInputBindingDescription(1, sizeof(TerrainPatchInstanceRenderInformation), VertexInputBindingDescription::InputRate::Instance);
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -128,8 +127,28 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 		TerrainDepthRenderPass::Instance->RenderInternal();
 	});
 
+	//Initialize the instance buffers.
+	InitializeInstanceBuffers();
+
 	//Finalize the initialization.
 	FinalizeInitialization();
+}
+
+/*
+*	Initializes the instance buffers.
+*/
+void TerrainDepthRenderPass::InitializeInstanceBuffers() NOEXCEPT
+{
+	//Get the number of framebuffers.
+	const uint8 numberOfFrameBuffers{ RenderingSystem::Instance->GetNumberOfFrameBuffers() };
+
+	//Create all instance buffers.
+	_InstanceBuffers.Reserve(numberOfFrameBuffers);
+
+	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
+	{
+		_InstanceBuffers.EmplaceFast(RenderingSystem::Instance->CreateUniformBuffer(sizeof(TerrainPatchInstanceRenderInformation) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::VertexBuffer));
+	}
 }
 
 /*
@@ -139,6 +158,14 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 {
 	//Iterate over all terrain render informations and draw them if they're low detail.
 	const DynamicArray<TerrainPatchRenderInformation> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
+
+	//If there's none to draw, draw none!
+	if (informations->Empty())
+	{
+		SetIncludeInRender(false);
+
+		return;
+	}
 
 	//Cache the command buffer
 	CommandBuffer *const RESTRICT commandBuffer{ GetCurrentCommandBuffer() };
@@ -158,6 +185,12 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 	//Wait for terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
 
+	//Create a list of non-culled patches and add them to the instances list.
+	StaticArray<TerrainPatchInstanceRenderInformation, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES> _InstanceInformations;
+	uint32 numberOfInstanceInformations{ 0 };
+
+	MemoryUtilities::SetMemory(_InstanceInformations.Data(), 0, sizeof(TerrainPatchInstanceRenderInformation) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES);
+
 	for (const TerrainPatchRenderInformation &information : *informations)
 	{
 		if (!TEST_BIT(information._Visibility, VisibilityFlag::Viewer))
@@ -165,25 +198,17 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 			continue;
 		}
 
-		//Push constants.
-		VertexPushConstantData vertexData;
-
-		vertexData._PatchWorldPosition = information._InstanceInformation._WorldPosition;
-		vertexData._PatchHalfSize = information._InstanceInformation._PatchSize;
-		vertexData._Borders = information._InstanceInformation._Borders;
-		vertexData._HeightTextureIndex = information._InstanceInformation._HeightTextureIndex;
-
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
-
-		FragmentPushConstantData fragmentData;
-
-		fragmentData._NormalTextureIndex = information._InstanceInformation._NormalTextureIndex;
-		fragmentData._LayerWeightsTextureIndex = information._InstanceInformation._LayerWeightsTextureIndex;
-
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
-
-		commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);
+		_InstanceInformations[numberOfInstanceInformations++] = information._InstanceInformation;
 	}
+
+	//Upload the instance informations to the current instance buffer.
+	RenderingSystem::Instance->UploadDataToUniformBuffer(_InstanceBuffers[RenderingSystem::Instance->GetCurrentFrameBufferIndex()], _InstanceInformations.Data());
+
+	//Bind the instance buffer!
+	commandBuffer->BindVertexBuffer(this, 1, _InstanceBuffers[RenderingSystem::Instance->GetCurrentFrameBufferIndex()], &offset);
+
+	//Draw all patches!
+	commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, numberOfInstanceInformations);
 
 	//End the command buffer.
 	commandBuffer->End(this);

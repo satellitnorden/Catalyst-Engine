@@ -20,7 +20,7 @@ public:
 	/*
 	*	Initializes this Vulkan uniform buffer.
 	*/
-	void Initialize(const VkDeviceSize newUniformBufferSize) NOEXCEPT;
+	void Initialize(const VkDeviceSize newUniformBufferSize, const VkBufferUsageFlags usage) NOEXCEPT;
 
 	/*
 	*	Releases this Vulkan uniform buffer.

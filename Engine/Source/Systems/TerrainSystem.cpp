@@ -54,7 +54,9 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 	bufferDataSizes[0] = sizeof(TerrainVertex) * vertices.Size();
 	bufferDataSizes[1] = sizeof(uint32) * indices.Size();
 
-	_Properties._Buffer = RenderingSystem::Instance->CreateConstantBuffer(bufferData.Data(), bufferDataSizes.Data(), 2);
+	_Properties._Buffer = RenderingSystem::Instance->CreateBuffer(bufferDataSizes[0] + bufferDataSizes[1]);
+	RenderingSystem::Instance->UploadDataToBuffer(bufferData.Data(), bufferDataSizes.Data(), 2, _Properties._Buffer);
+
 	_Properties._IndexOffset = bufferDataSizes[0];
 	_Properties._IndexCount = static_cast<uint32>(indices.Size());
 
@@ -62,8 +64,8 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 	_QuadTree.Initialize();
 
 	//Allocate memory.
-	_PatchInformations.Reserve(TerrainConstants::MAXIMUM_AMOUNT_OF_TERRAIN_PATCHES);
-	_PatchRenderInformations.Reserve(TerrainConstants::MAXIMUM_AMOUNT_OF_TERRAIN_PATCHES);
+	_PatchInformations.Reserve(RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES);
+	_PatchRenderInformations.Reserve(RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES);
 }
 
 /*

@@ -240,9 +240,14 @@ public:
 	}
 
 	/*
-	*	Creates a constant buffer.
+	*	Creates a buffer.
 	*/
-	ConstantBufferHandle CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT;
+	ConstantBufferHandle CreateBuffer(const uint64 size) const NOEXCEPT;
+
+	/*
+	*	Uploads data to a buffer.
+	*/
+	void UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, ConstantBufferHandle handle) const NOEXCEPT;
 
 	/*
 	*	Destroys a constant buffer.
@@ -319,7 +324,7 @@ public:
 	/*
 	*	Creates and returns a uniform buffer.
 	*/
-	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT;
+	UniformBufferHandle CreateUniformBuffer(const uint64 uniformBufferSize, const BufferUsage usage) const NOEXCEPT;
 
 	/*
 	*	Uploads data to a uniform buffer.

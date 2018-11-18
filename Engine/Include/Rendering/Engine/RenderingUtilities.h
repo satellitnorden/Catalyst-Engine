@@ -100,7 +100,8 @@ namespace RenderingUtilities
 	{
 		const void *RESTRICT data[]{ transformations.Data() };
 		const uint64 dataSizes[]{ sizeof(Matrix4) * transformations.Size() };
-		*buffer = RenderingSystem::Instance->CreateConstantBuffer(data, dataSizes, 1);
+		*buffer = RenderingSystem::Instance->CreateBuffer(dataSizes[0]);
+		RenderingSystem::Instance->UploadDataToBuffer(data, dataSizes, 1, *buffer);
 	}
 
 	/*

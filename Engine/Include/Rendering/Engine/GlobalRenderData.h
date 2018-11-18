@@ -25,7 +25,7 @@ public:
 	Spinlock _TerrainHeightTexturesLock;
 
 	//The terrain height texture slots.
-	StaticArray<bool, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES> _TerrainHeightTextureSlots;
+	StaticArray<bool, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES> _TerrainHeightTextureSlots;
 
 	//The remove terrain height texture updates.
 	DynamicArray<DynamicArray<uint8>> _RemoveTerrainHeightTextureUpdates;

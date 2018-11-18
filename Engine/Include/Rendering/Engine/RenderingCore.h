@@ -9,7 +9,7 @@
 //Rendering constants.
 namespace RenderingConstants
 {
-	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES{ 255 };
+	constexpr uint8 MAXIMUM_NUMBER_OF_TERRAIN_PATCHES{ UINT8_MAXIMUM };
 	constexpr uint32 MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES{ 512 };
 }
 
@@ -153,6 +153,15 @@ enum class BlendFactor : uint8
 	DestinationAlpha,
 	OneMinusDestinationAlpha,
 };
+
+//Enumeration covering all buffer usages.
+enum class BufferUsage : uint8
+{
+	UniformBuffer = BIT(0),
+	VertexBuffer = BIT(1)
+};
+
+ENUMERATION_BIT_OPERATIONS(BufferUsage);
 
 //Enumeration covering all compare operators.
 enum class CompareOperator : uint8

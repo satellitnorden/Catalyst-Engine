@@ -8,13 +8,13 @@
 /*
 *	Initializes this Vulkan uniform buffer.
 */
-void VulkanUniformBuffer::Initialize(const VkDeviceSize newUniformBufferSize) NOEXCEPT
+void VulkanUniformBuffer::Initialize(const VkDeviceSize newUniformBufferSize, const VkBufferUsageFlags usage) NOEXCEPT
 {
 	//Set the uniform buffer properties.
 	_UniformBufferSize = newUniformBufferSize;
 
 	//Create the Vulkan buffer.
-	VulkanUtilities::CreateVulkanBuffer(_UniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _VulkanBuffer, _VulkanDeviceMemory);
+	VulkanUtilities::CreateVulkanBuffer(_UniformBufferSize, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _VulkanBuffer, _VulkanDeviceMemory);
 }
 
 /*

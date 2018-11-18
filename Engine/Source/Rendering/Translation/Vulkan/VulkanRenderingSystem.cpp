@@ -117,11 +117,20 @@ uint8 VulkanRenderingSystem::GetCurrentFrameBufferIndex() const NOEXCEPT
 }
 
 /*
-*	Creates a constant buffer.
+*	Creates a buffer.
 */
-ConstantBufferHandle VulkanRenderingSystem::CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
+ConstantBufferHandle VulkanRenderingSystem::CreateBuffer(const uint64 size) const NOEXCEPT
 {
-	return reinterpret_cast<ConstantBufferHandle>(VulkanInterface::Instance->CreateConstantBuffer(data, reinterpret_cast<const VkDeviceSize *const RESTRICT>(dataSizes), dataChunks));
+	return reinterpret_cast<ConstantBufferHandle>(VulkanInterface::Instance->CreateBuffer(size));
+}
+
+/*
+*	Uploads data to a buffer.
+*/
+void VulkanRenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, ConstantBufferHandle handle) const NOEXCEPT
+{
+	//Upload the data to the buffer.
+	static_cast<VulkanConstantBuffer *const RESTRICT>(handle)->UploadData(data, static_cast<const VkDeviceSize *const RESTRICT>(dataSizes), dataChunks);
 }
 
 /*
@@ -202,9 +211,21 @@ SamplerHandle VulkanRenderingSystem::CreateSampler(const SamplerProperties &prop
 /*
 *	Creates a uniform buffer and returns the identifier for the uniform buffer.
 */
-UniformBufferHandle VulkanRenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT
+UniformBufferHandle VulkanRenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize, const BufferUsage usage) const NOEXCEPT
 {
-	return VulkanInterface::Instance->CreateUniformBuffer(uniformBufferSize);
+	VkBufferUsageFlags vulkanUsage{ 0 };
+
+	if (TEST_BIT(usage, BufferUsage::UniformBuffer))
+	{
+		vulkanUsage |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+	}
+
+	if (TEST_BIT(usage, BufferUsage::VertexBuffer))
+	{
+		vulkanUsage |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+	}
+
+	return VulkanInterface::Instance->CreateUniformBuffer(uniformBufferSize, vulkanUsage);
 }
 
 /*
@@ -2316,6 +2337,8 @@ void VulkanRenderingSystem::BeginFrame() NOEXCEPT
 
 	//Reset the current fence.
 	_FrameData.GetCurrentFence()->Reset();
+
+	VulkanInterface::Instance->GetGraphicsQueue()->WaitIdle();
 }
 
 /*

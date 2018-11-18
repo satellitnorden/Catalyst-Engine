@@ -185,12 +185,21 @@ uint8 RenderingSystem::GetCurrentFrameBufferIndex() const NOEXCEPT
 }
 
 /*
-*	Creates a constant buffer.
+*	Creates a buffer.
 */
-ConstantBufferHandle RenderingSystem::CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *dataSizes, const uint8 dataChunks) const NOEXCEPT
+ConstantBufferHandle RenderingSystem::CreateBuffer(const uint64 size) const NOEXCEPT
 {
-	//Create the constant buffer via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->CreateConstantBuffer(data, dataSizes, dataChunks);
+	//Create the buffer via the current rendering system.
+	return CURRENT_RENDERING_SYSTEM::Instance->CreateBuffer(size);
+}
+
+/*
+*	Uploads data to a buffer.
+*/
+void RenderingSystem::UploadDataToBuffer(const void *const RESTRICT *const RESTRICT data, const uint64 *const RESTRICT dataSizes, const uint8 dataChunks, ConstantBufferHandle handle) const NOEXCEPT
+{
+	//Upload the data to the buffer via the current rendering system.
+	CURRENT_RENDERING_SYSTEM::Instance->UploadDataToBuffer(data, dataSizes, dataChunks, handle);
 }
 
 /*
@@ -324,10 +333,10 @@ TextureCubeHandle RenderingSystem::CreateTextureCube(const float *const RESTRICT
 /*
 *	Creates and returns a uniform buffer.
 */
-UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize) const NOEXCEPT
+UniformBufferHandle RenderingSystem::CreateUniformBuffer(const uint64 uniformBufferSize, const BufferUsage usage) const NOEXCEPT
 {
 	//Create the uniform buffer via the current rendering system.
-	return CURRENT_RENDERING_SYSTEM::Instance->CreateUniformBuffer(uniformBufferSize);
+	return CURRENT_RENDERING_SYSTEM::Instance->CreateUniformBuffer(uniformBufferSize, usage);
 }
 
 /*
@@ -367,7 +376,7 @@ uint8 RenderingSystem::AddTerrainHeightTextureToGlobalRenderData(Texture2DHandle
 	//Find the first available index and store it.
 	uint8 index{ UINT8_MAXIMUM };
 
-	for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES; ++i)
+	for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES; ++i)
 	{
 		//If this is available, grab it!
 		if (!_GlobalRenderData._TerrainHeightTextureSlots[i])
@@ -531,7 +540,8 @@ void RenderingSystem::CreateGrassVegetationModel(const GrassVegetationModelData 
 	//Create the vertex and index buffer.
 	const void *RESTRICT modelData[]{ data._Vertices.Data(), data._Indices.Data() };
 	const uint64 modelDataSizes[]{ sizeof(GrassVegetationVertex) * data._Vertices.Size(), sizeof(uint32) * data._Indices.Size() };
-	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
+	ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
+	UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
 
 	//Set up the physical model.
 	model._AxisAlignedBoundingBox._Minimum = Vector3(-data._Extent * 0.5f, -data._Extent * 0.5f, -data._Extent * 0.5f);
@@ -570,7 +580,8 @@ void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModel
 	//Create the vertex and index buffer.
 	const void *RESTRICT modelData[]{ physicalModelData._Vertices.Data(), physicalModelData._Indices.Data() };
 	const uint64 modelDataSizes[]{ sizeof(PhysicalVertex) * physicalModelData._Vertices.Size(), sizeof(uint32) * physicalModelData._Indices.Size() };
-	ConstantBufferHandle buffer = CreateConstantBuffer(modelData, modelDataSizes, 2);
+	ConstantBufferHandle buffer = CreateBuffer(modelDataSizes[0] + modelDataSizes[1]);
+	UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
 
 	//Set up the physical model.
 	physicalModel._AxisAlignedBoundingBox._Minimum = Vector3(-physicalModelData._Extent * 0.5f, -physicalModelData._Extent * 0.5f, -physicalModelData._Extent * 0.5f);
@@ -727,7 +738,7 @@ void RenderingSystem::InitializeParticleSystemEntity(const Entity *const RESTRIC
 	//Fill in the components.
 	RenderingUtilities::CalculateAxisAlignedBoundingBoxForParticleSystem(data->_Position, data->_ParticleSystemProperties, &component._AxisAlignedBoundingBox);
 	component._Properties = data->_ParticleSystemProperties;
-	component._PropertiesUniformBuffer = CreateUniformBuffer(sizeof(ParticleSystemProperties));
+	component._PropertiesUniformBuffer = CreateUniformBuffer(sizeof(ParticleSystemProperties), BufferUsage::UniformBuffer);
 	UploadDataToUniformBuffer(component._PropertiesUniformBuffer, &component._Properties);
 	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::ParticleSystem), &renderComponent._RenderDataTable);
 	BindUniformBufferToRenderDataTable(0, 0, renderComponent._RenderDataTable, component._PropertiesUniformBuffer);
@@ -781,13 +792,13 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 		CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global), &_GlobalRenderData._RenderDataTables[i]);
 
 		//Create the dynamic uniform data buffer.
-		_GlobalRenderData._DynamicUniformDataBuffers[i] = CreateUniformBuffer(sizeof(DynamicUniformData));
+		_GlobalRenderData._DynamicUniformDataBuffers[i] = CreateUniformBuffer(sizeof(DynamicUniformData), BufferUsage::UniformBuffer);
 
 		//Bind the dynamic uniform data buffer to the render data table.
 		BindUniformBufferToRenderDataTable(0, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._DynamicUniformDataBuffers[i]);
 
 		//Bind a placeholder texture to all terrain height texture slots.
-		for (uint8 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES; ++j)
+		for (uint8 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES; ++j)
 		{
 			BindCombinedImageSamplerToRenderDataTable(1, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 		}
@@ -806,7 +817,7 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	}
 
 	//Mark all terrain height texture slots as free.
-	for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES; ++i)
+	for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES; ++i)
 	{
 		_GlobalRenderData._TerrainHeightTextureSlots[i] = false;
 	}
@@ -1038,7 +1049,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		constexpr StaticArray<RenderDataTableLayoutBinding, 4> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Geometry | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES, ShaderStage::Vertex),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, ShaderStage::Vertex),
 			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Vertex | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Vertex | ShaderStage::Fragment),
 		};

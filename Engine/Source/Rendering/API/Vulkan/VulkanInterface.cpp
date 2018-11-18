@@ -216,7 +216,6 @@ RESTRICTED Vulkan2DTexture *const RESTRICT VulkanInterface::Create2DTexture(cons
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
 
-
 	_Vulkan2DTextures.EmplaceSlow(new2DTexture);
 
 	return new2DTexture;
@@ -265,10 +264,10 @@ RESTRICTED VulkanCommandPool *const RESTRICT VulkanInterface::CreateTransferComm
 /*
 *	Creates and returns a constant buffer.
 */
-RESTRICTED VulkanConstantBuffer *const RESTRICT VulkanInterface::CreateConstantBuffer(const void *const RESTRICT *const RESTRICT data, const VkDeviceSize *dataSizes, const uint32 dataChunks) NOEXCEPT
+RESTRICTED VulkanConstantBuffer *const RESTRICT VulkanInterface::CreateBuffer(const VkDeviceSize size) NOEXCEPT
 {
 	VulkanConstantBuffer *const RESTRICT newBuffer = static_cast<VulkanConstantBuffer *const RESTRICT>(MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanConstantBuffer)>());
-	newBuffer->Initialize(data, dataSizes, dataChunks);
+	newBuffer->Initialize(size);
 
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
@@ -525,10 +524,10 @@ RESTRICTED VulkanStorageBuffer *const RESTRICT VulkanInterface::CreateStorageBuf
 /*
 *	Creates and returns a uniform buffer.
 */
-RESTRICTED VulkanUniformBuffer *const RESTRICT VulkanInterface::CreateUniformBuffer(const uint64 newUniformBufferSize) NOEXCEPT
+RESTRICTED VulkanUniformBuffer *const RESTRICT VulkanInterface::CreateUniformBuffer(const uint64 newUniformBufferSize, const VkBufferUsageFlags usage) NOEXCEPT
 {
 	VulkanUniformBuffer *const RESTRICT newUniformBuffer = static_cast<VulkanUniformBuffer *const RESTRICT>(MemoryUtilities::GlobalPoolAllocate<sizeof(VulkanUniformBuffer)>());
-	newUniformBuffer->Initialize(newUniformBufferSize);
+	newUniformBuffer->Initialize(newUniformBufferSize, usage);
 
 	static Spinlock lock;
 	ScopedLock<Spinlock> scopedLock{ lock };
