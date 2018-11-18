@@ -81,6 +81,10 @@ void VulkanInstance::CreateInstanceCreateInfo(VkInstanceCreateInfo &createInstan
 
 	PlatformVulkan::GetRequiredInstanceExtensions(extensions);
 
+#if VULKAN_DEBUGGING && !defined(CATALYST_ANDROID)
+	extensions.EmplaceSlow(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
+
 	createInstanceInfo.enabledExtensionCount = static_cast<uint32>(extensions.Size());
 	createInstanceInfo.ppEnabledExtensionNames = (const char *const *) extensions.Data();
 }

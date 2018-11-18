@@ -5,6 +5,9 @@
 #include <Multithreading/ScopedLock.h>
 #include <Multithreading/Spinlock.h>
 
+//Vulkan.
+#include <Rendering/API/Vulkan/VulkanErrorReporting.h>
+
 //Singleton definition.
 DEFINE_SINGLETON(VulkanInterface);
 
@@ -18,6 +21,11 @@ void VulkanInterface::Initialize() NOEXCEPT
 
 	//Initialize the Vulkan instance.
 	_VulkanInstance.Initialize();
+
+#if VULKAN_DEBUGGING
+	//Initialize the Vulkan error reporting.
+	VulkanErrorReporting::Initialize();
+#endif
 
 	//Initialize the Vulkan surface.
 	_VulkanSurface.Initialize();
@@ -200,6 +208,11 @@ void VulkanInterface::Release() NOEXCEPT
 
 	//Release the Vulkan surface.
 	_VulkanSurface.Release();
+
+#if VULKAN_DEBUGGING
+	//Release the Vulkan error reporting.
+	VulkanErrorReporting::Release();
+#endif
 
 	//Release the Vulkan instance.
 	_VulkanInstance.Release();

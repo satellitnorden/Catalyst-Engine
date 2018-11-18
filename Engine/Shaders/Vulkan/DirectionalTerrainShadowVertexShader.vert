@@ -13,11 +13,6 @@ layout (location = 1) in vec3 vertexNormal;
 layout (location = 2) in vec4 vertexLayerWeights;
 layout (location = 3) in vec2 vertexTextureCoordinate;
 
-//Out parameters.
-layout (location = 0) out vec3 fragmentNormal;
-layout (location = 1) out vec4 fragmentLayerWeights;
-layout (location = 2) out vec2 fragmentTextureCoordinate;
-
 void main()
 {	
     //Set the position.

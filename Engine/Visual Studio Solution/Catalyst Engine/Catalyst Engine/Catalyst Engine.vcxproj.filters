@@ -1116,6 +1116,9 @@
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInstanceRenderInformation.h">
       <Filter>Terrain\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanErrorReporting.h">
+      <Filter>Rendering\Include\API\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">
@@ -1557,6 +1560,9 @@
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanSampler.cpp">
+      <Filter>Rendering\Source\API\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanErrorReporting.cpp">
       <Filter>Rendering\Source\API\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>

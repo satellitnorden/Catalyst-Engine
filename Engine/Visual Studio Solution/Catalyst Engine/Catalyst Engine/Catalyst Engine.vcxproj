@@ -145,6 +145,7 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanDescriptorPool.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanDescriptorSet.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanDescriptorSetLayout.h" />
+    <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanErrorReporting.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanEvent.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFence.h" />
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanFramebuffer.h" />
@@ -367,6 +368,7 @@
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanDescriptorPool.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanDescriptorSet.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanDescriptorSetLayout.cpp" />
+    <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanErrorReporting.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanEvent.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanFence.cpp" />
     <ClCompile Include="..\..\..\Source\Rendering\API\Vulkan\VulkanFramebuffer.cpp" />

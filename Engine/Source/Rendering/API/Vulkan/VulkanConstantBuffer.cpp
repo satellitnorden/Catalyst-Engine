@@ -68,9 +68,9 @@ void VulkanConstantBuffer::UploadData(const void *const RESTRICT *const RESTRICT
 	//Copy the staging buffer data to the buffer.
 	VulkanUtilities::CopyBufferToBuffer(bufferSize, stagingBuffer, _VulkanBuffer);
 
-	//Free the staging device memory.
-	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, nullptr);
-
 	//Destroy the staging buffer.
 	vkDestroyBuffer(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingBuffer, nullptr);
+
+	//Free the staging device memory.
+	vkFreeMemory(VulkanInterface::Instance->GetLogicalDevice().Get(), stagingDeviceMemory, nullptr);
 }

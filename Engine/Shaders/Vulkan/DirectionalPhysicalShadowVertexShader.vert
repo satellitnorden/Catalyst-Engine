@@ -65,11 +65,6 @@ layout (location = 1) in vec3 vertexNormal;
 layout (location = 2) in vec3 vertexTangent;
 layout (location = 3) in vec2 vertexTextureCoordinate;
 
-//Out parameters.
-layout (location = 0) out vec3 fragmentWorldPosition;
-layout (location = 1) out mat3 fragmentTangentSpaceMatrix;
-layout (location = 4) out vec2 fragmentTextureCoordinate;
-
 void main()
 {
   gl_Position = directionalLightViewMatrix * modelMatrix * vec4(vertexPosition, 1.0);
