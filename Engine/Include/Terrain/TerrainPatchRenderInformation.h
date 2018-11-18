@@ -29,4 +29,10 @@ public:
 	//The height texture index.
 	int32 _HeightTextureIndex;
 
+	//The normal texture index.
+	int32 _NormalTextureIndex;
+
+	//The layer weights texture index.
+	int32 _LayerWeightsTextureIndex;
+
 };

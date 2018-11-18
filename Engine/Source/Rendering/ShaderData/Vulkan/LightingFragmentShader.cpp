@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetLightingFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(26028);
+		data.UpsizeFast(26032);
 
-		new (data.Data()) byte[26028]
+		new (data.Data()) byte[26032]
 		{
 			3,
 			2,
@@ -6881,13 +6881,19 @@ namespace VulkanShaderData
 			0,
 			5,
 			0,
-			5,
+			6,
 			0,
 			112,
 			3,
 			0,
 			0,
-			115,
+			103,
+			108,
+			111,
+			98,
+			97,
+			108,
+			83,
 			97,
 			109,
 			112,
@@ -6895,8 +6901,6 @@ namespace VulkanShaderData
 			101,
 			114,
 			115,
-			0,
-			0,
 			0,
 			0,
 			5,

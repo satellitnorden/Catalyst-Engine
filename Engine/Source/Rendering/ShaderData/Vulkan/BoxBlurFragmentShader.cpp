@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetBoxBlurFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(5900);
+		data.UpsizeFast(5904);
 
-		new (data.Data()) byte[5900]
+		new (data.Data()) byte[5904]
 		{
 			3,
 			2,
@@ -1545,13 +1545,19 @@ namespace VulkanShaderData
 			0,
 			5,
 			0,
-			5,
+			6,
 			0,
 			165,
 			0,
 			0,
 			0,
-			115,
+			103,
+			108,
+			111,
+			98,
+			97,
+			108,
+			83,
 			97,
 			109,
 			112,
@@ -1559,8 +1565,6 @@ namespace VulkanShaderData
 			101,
 			114,
 			115,
-			0,
-			0,
 			0,
 			0,
 			5,

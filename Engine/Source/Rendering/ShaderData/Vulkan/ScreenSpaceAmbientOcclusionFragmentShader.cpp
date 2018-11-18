@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetScreenSpaceAmbientOcclusionFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(9300);
+		data.UpsizeFast(9304);
 
-		new (data.Data()) byte[9300]
+		new (data.Data()) byte[9304]
 		{
 			3,
 			2,
@@ -2301,13 +2301,19 @@ namespace VulkanShaderData
 			0,
 			5,
 			0,
-			5,
+			6,
 			0,
 			28,
 			1,
 			0,
 			0,
-			115,
+			103,
+			108,
+			111,
+			98,
+			97,
+			108,
+			83,
 			97,
 			109,
 			112,
@@ -2315,8 +2321,6 @@ namespace VulkanShaderData
 			101,
 			114,
 			115,
-			0,
-			0,
 			0,
 			0,
 			5,

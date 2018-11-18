@@ -447,7 +447,7 @@ uint64 RenderingSystem::AddTextureToGlobalRenderData(Texture2DHandle texture) NO
 	}
 
 	//Unlock the global texture slots.
-	_GlobalRenderData._TerrainHeightTexturesLock.Unlock();
+	_GlobalRenderData._GlobalTexturesLock.Unlock();
 
 	//Return the index.
 	return index;
@@ -772,6 +772,8 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	_GlobalRenderData._DynamicUniformDataBuffers.UpsizeFast(numberOfFrameBuffers);
 	_GlobalRenderData._RemoveTerrainHeightTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 	_GlobalRenderData._AddTerrainHeightTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
+	_GlobalRenderData._RemoveGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
+	_GlobalRenderData._AddGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 
 	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
 	{
@@ -807,6 +809,12 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_HEIGHT_TEXTURES; ++i)
 	{
 		_GlobalRenderData._TerrainHeightTextureSlots[i] = false;
+	}
+
+	//Mark all global texture slots as free.
+	for (uint64 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++i)
+	{
+		_GlobalRenderData._GlobalTextureSlots[i] = false;
 	}
 }
 
@@ -1157,6 +1165,9 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 
 	//Update the terrain height textures.
 	UpdateTerrainHeightTextures(currentFrameBufferIndex);
+
+	//Update the global textures.
+	UpdateGlobalTextures(currentFrameBufferIndex);
 }
 
 /*
@@ -1283,6 +1294,27 @@ void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBuffer
 	}
 
 	_GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
+}
+
+/*
+*	Updates the global textures.
+*/
+void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
+{
+	//Process all updates.
+	for (uint64 update : _GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex])
+	{
+		BindSampledImageToRenderDataTable(3, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
+	}
+
+	_GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
+
+	for (Pair<uint64, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex])
+	{
+		BindSampledImageToRenderDataTable(3, static_cast<uint32>(update._First), _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second);
+	}
+
+	_GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
 }
 
 //Undefine defines to keep them from leaking into other scopes.

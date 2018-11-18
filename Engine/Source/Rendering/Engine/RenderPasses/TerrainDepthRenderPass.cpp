@@ -15,7 +15,7 @@
 //Singleton definition.
 DEFINE_SINGLETON(TerrainDepthRenderPass);
 
-class PushConstantData final
+class VertexPushConstantData final
 {
 
 public:
@@ -24,6 +24,16 @@ public:
 	float _PatchHalfSize;
 	int32 _Borders;
 	int32 _HeightTextureIndex;
+
+};
+
+class FragmentPushConstantData final
+{
+
+public:
+
+	int32 _NormalTextureIndex;
+	int32 _LayerWeightsTextureIndex;
 
 };
 
@@ -71,8 +81,9 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Terrain));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(PushConstantData));
+	SetNumberOfPushConstantRanges(2);
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(2);
@@ -159,14 +170,21 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 		commandBuffer->BindRenderDataTable(this, 1, information._RenderDataTable);
 
 		//Push constants.
-		PushConstantData data;
+		VertexPushConstantData vertexData;
 
-		data._PatchWorldPosition = information._WorldPosition;
-		data._PatchHalfSize = information._PatchSize;
-		data._Borders = information._Borders;
-		data._HeightTextureIndex = information._HeightTextureIndex;
+		vertexData._PatchWorldPosition = information._WorldPosition;
+		vertexData._PatchHalfSize = information._PatchSize;
+		vertexData._Borders = information._Borders;
+		vertexData._HeightTextureIndex = information._HeightTextureIndex;
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+
+		FragmentPushConstantData fragmentData;
+
+		fragmentData._NormalTextureIndex = information._NormalTextureIndex;
+		fragmentData._LayerWeightsTextureIndex = information._LayerWeightsTextureIndex;
+
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 		commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);
 	}

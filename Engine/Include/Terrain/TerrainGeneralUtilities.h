@@ -85,7 +85,7 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates a normal texture.
 	*/
-	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint8 resolutionMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture, RenderDataTableHandle *const RESTRICT renderDataTable) NOEXCEPT
+	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint8 resolutionMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture) NOEXCEPT
 	{
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 		const uint32 resolution{ TerrainConstants::TERRAIN_PATCH_RESOLUTION * resolutionMultiplier };
@@ -120,14 +120,12 @@ namespace TerrainGeneralUtilities
 																									resolution,
 																									4),
 																			TextureFormat::R8G8B8A8_Byte));
-
-		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(1, 0, *renderDataTable, *texture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 	}
 
 	/*
 	*	Generates a layer weights texture.
 	*/
-	static void GenerateLayerWeightsTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture, RenderDataTableHandle *const RESTRICT renderDataTable) NOEXCEPT
+	static void GenerateLayerWeightsTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture) NOEXCEPT
 	{
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 		DynamicArray<byte> data;
@@ -160,8 +158,6 @@ namespace TerrainGeneralUtilities
 																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
 																				4),
 																TextureFormat::R8G8B8A8_Byte));
-
-		RenderingSystem::Instance->BindCombinedImageSamplerToRenderDataTable(2, 0, *renderDataTable, *texture, RenderingSystem::Instance->GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 	}
 
 	/*

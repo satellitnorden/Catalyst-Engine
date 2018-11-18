@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetLowDetailGrassVegetationDepthVertexShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(6344);
+		data.UpsizeFast(6348);
 
-		new (data.Data()) byte[6344]
+		new (data.Data()) byte[6348]
 		{
 			3,
 			2,
@@ -1969,13 +1969,19 @@ namespace VulkanShaderData
 			0,
 			5,
 			0,
-			5,
+			6,
 			0,
 			147,
 			0,
 			0,
 			0,
-			115,
+			103,
+			108,
+			111,
+			98,
+			97,
+			108,
+			83,
 			97,
 			109,
 			112,
@@ -1983,8 +1989,6 @@ namespace VulkanShaderData
 			101,
 			114,
 			115,
-			0,
-			0,
 			0,
 			0,
 			5,

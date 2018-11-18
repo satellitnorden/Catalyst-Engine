@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetBloomVerticalFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(6632);
+		data.UpsizeFast(6636);
 
-		new (data.Data()) byte[6632]
+		new (data.Data()) byte[6636]
 		{
 			3,
 			2,
@@ -1861,13 +1861,19 @@ namespace VulkanShaderData
 			0,
 			5,
 			0,
-			5,
+			6,
 			0,
 			184,
 			0,
 			0,
 			0,
-			115,
+			103,
+			108,
+			111,
+			98,
+			97,
+			108,
+			83,
 			97,
 			109,
 			112,
@@ -1875,8 +1881,6 @@ namespace VulkanShaderData
 			101,
 			114,
 			115,
-			0,
-			0,
 			0,
 			0,
 			5,

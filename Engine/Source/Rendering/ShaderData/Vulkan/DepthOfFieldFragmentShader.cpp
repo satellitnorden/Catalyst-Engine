@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetDepthOfFieldFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(7428);
+		data.UpsizeFast(7432);
 
-		new (data.Data()) byte[7428]
+		new (data.Data()) byte[7432]
 		{
 			3,
 			2,
@@ -2021,13 +2021,19 @@ namespace VulkanShaderData
 			0,
 			5,
 			0,
-			5,
+			6,
 			0,
 			215,
 			0,
 			0,
 			0,
-			115,
+			103,
+			108,
+			111,
+			98,
+			97,
+			108,
+			83,
 			97,
 			109,
 			112,
@@ -2035,8 +2041,6 @@ namespace VulkanShaderData
 			101,
 			114,
 			115,
-			0,
-			0,
 			0,
 			0,
 			5,

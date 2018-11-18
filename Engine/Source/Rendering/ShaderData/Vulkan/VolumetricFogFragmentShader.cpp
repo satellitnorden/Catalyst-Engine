@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetVolumetricFogFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(5860);
+		data.UpsizeFast(5864);
 
-		new (data.Data()) byte[5860]
+		new (data.Data()) byte[5864]
 		{
 			3,
 			2,
@@ -1805,13 +1805,19 @@ namespace VulkanShaderData
 			0,
 			5,
 			0,
-			5,
+			6,
 			0,
 			142,
 			0,
 			0,
 			0,
-			115,
+			103,
+			108,
+			111,
+			98,
+			97,
+			108,
+			83,
 			97,
 			109,
 			112,
@@ -1819,8 +1825,6 @@ namespace VulkanShaderData
 			101,
 			114,
 			115,
-			0,
-			0,
 			0,
 			0,
 			5,

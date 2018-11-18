@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetDirectionalSolidVegetationShadowVertexShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(6192);
+		data.UpsizeFast(6196);
 
-		new (data.Data()) byte[6192]
+		new (data.Data()) byte[6196]
 		{
 			3,
 			2,
@@ -1889,13 +1889,19 @@ namespace VulkanShaderData
 			0,
 			5,
 			0,
-			5,
+			6,
 			0,
 			144,
 			0,
 			0,
 			0,
-			115,
+			103,
+			108,
+			111,
+			98,
+			97,
+			108,
+			83,
 			97,
 			109,
 			112,
@@ -1903,8 +1909,6 @@ namespace VulkanShaderData
 			101,
 			114,
 			115,
-			0,
-			0,
 			0,
 			0,
 			5,
