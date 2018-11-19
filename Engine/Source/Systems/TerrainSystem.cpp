@@ -564,14 +564,14 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 													worldPosition,
 													&patchInformation->_NormalTexture);
 
-	patchRenderInformation->_InstanceInformation._NormalTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalTexture));
+	patchRenderInformation->_InstanceInformation._NormalTextureIndex = static_cast<float>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalTexture)) + 0.5f;
 
 	TerrainGeneralUtilities::GenerateLayerWeightsTexture(	_Properties,
 															patchSizeMultiplier,
 															worldPosition,
 															&patchInformation->_LayerWeightsTexture);
 
-	patchRenderInformation->_InstanceInformation._LayerWeightsTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_LayerWeightsTexture));
+	patchRenderInformation->_InstanceInformation._LayerWeightsTextureIndex = static_cast<float>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_LayerWeightsTexture)) + 0.5f;
 
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(worldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, worldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
 	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(worldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, worldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
@@ -583,8 +583,8 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 void TerrainSystem::DestroyPatch(const uint64 index) NOEXCEPT
 {
 	RenderingSystem::Instance->ReturnTerrainHeightTextureToGlobalRenderData(_PatchRenderInformations[index]._InstanceInformation._HeightTextureIndex);
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_PatchRenderInformations[index]._InstanceInformation._NormalTextureIndex);
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(_PatchRenderInformations[index]._InstanceInformation._LayerWeightsTextureIndex);
+	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._InstanceInformation._NormalTextureIndex));
+	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._InstanceInformation._LayerWeightsTextureIndex));
 	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._HeightTexture);
 	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._NormalTexture);
 	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._LayerWeightsTexture);

@@ -24,9 +24,9 @@ public:
 	int32 _HeightTextureIndex;
 
 	//The normal texture index.
-	int32 _NormalTextureIndex;
+	float _NormalTextureIndex;
 
 	//The layer weights texture index.
-	int32 _LayerWeightsTextureIndex;
+	float _LayerWeightsTextureIndex;
 
 };

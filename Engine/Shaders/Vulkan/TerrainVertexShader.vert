@@ -18,13 +18,13 @@ layout (location = 2) in vec2 patchWorldPosition;
 layout (location = 3) in float patchSize;
 layout (location = 4) in int borders;
 layout (location = 5) in int heightTextureIndex;
-layout (location = 6) in int normalTextureIndex;
-layout (location = 7) in int layerWeightsTextureIndex;
+layout (location = 6) in float normalTextureIndex;
+layout (location = 7) in float layerWeightsTextureIndex;
 
 //Out parameters.
 layout (location = 0) out vec2 fragmentTextureCoordinate;
-layout (location = 1) out flat int fragmentNormalTextureIndex;
-layout (location = 2) out flat int fragmentLayerWeightsTextureIndex;
+layout (location = 1) out float fragmentNormalTextureIndex;
+layout (location = 2) out float fragmentLayerWeightsTextureIndex;
 
 void main()
 {	

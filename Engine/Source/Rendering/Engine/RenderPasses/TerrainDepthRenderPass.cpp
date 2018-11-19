@@ -86,12 +86,12 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 										sizeof(Vector2) + sizeof(float) + sizeof(int32));
 	AddVertexInputAttributeDescription(	6,
 										1,
-										VertexInputAttributeDescription::Format::X32SignedInt,
+										VertexInputAttributeDescription::Format::X32SignedFloat,
 										sizeof(Vector2) + sizeof(float) + sizeof(int32) + sizeof(int32));
 	AddVertexInputAttributeDescription(	7,
 										1,
-										VertexInputAttributeDescription::Format::X32SignedInt,
-										sizeof(Vector2) + sizeof(float) + sizeof(int32) + sizeof(int32) + sizeof(int32));
+										VertexInputAttributeDescription::Format::X32SignedFloat,
+										sizeof(Vector2) + sizeof(float) + sizeof(int32) + sizeof(int32) + sizeof(float));
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(2);
