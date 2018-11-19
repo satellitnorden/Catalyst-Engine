@@ -13,9 +13,11 @@
 //Vulkan descriptor pool constants.
 namespace VulkanDescriptorPoolConstants
 {
-	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS{ 1'024 };
-	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS{ 2'048 };
-	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS{ 1'024 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SETS{ 128 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS{ 1'024 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SAMPLED_IMAGES{ 1'024 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_SAMPLERS{ 16 };
+	constexpr uint32 VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS{ 64 };
 }
 
 /*
@@ -73,14 +75,7 @@ void VulkanDescriptorPool::FreeDescriptorSet(VkDescriptorSet descriptorSet) cons
 */
 void VulkanDescriptorPool::CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPoolSize> &descriptorPoolSizes) const NOEXCEPT
 {
-	descriptorPoolSizes.Reserve(2);
-
-	VkDescriptorPoolSize combinedImageSamplerDescriptorPoolSize;
-
-	combinedImageSamplerDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	combinedImageSamplerDescriptorPoolSize.descriptorCount = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS;
-
-	descriptorPoolSizes.EmplaceFast(combinedImageSamplerDescriptorPoolSize);
+	descriptorPoolSizes.Reserve(4);
 
 	VkDescriptorPoolSize uniformBufferDescriptorPoolSize;
 
@@ -88,6 +83,27 @@ void VulkanDescriptorPool::CreateDescriptorPoolSizes(DynamicArray<VkDescriptorPo
 	uniformBufferDescriptorPoolSize.descriptorCount = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_COMBINED_IMAGE_SAMPLERS;
 
 	descriptorPoolSizes.EmplaceFast(uniformBufferDescriptorPoolSize);
+
+	VkDescriptorPoolSize sampledImageDescriptorPoolSize;
+
+	sampledImageDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+	sampledImageDescriptorPoolSize.descriptorCount = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_SAMPLED_IMAGES;
+
+	descriptorPoolSizes.EmplaceFast(sampledImageDescriptorPoolSize);
+
+	VkDescriptorPoolSize samplersDescriptorPoolSize;
+
+	samplersDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_SAMPLER;
+	samplersDescriptorPoolSize.descriptorCount = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_SAMPLERS;
+
+	descriptorPoolSizes.EmplaceFast(samplersDescriptorPoolSize);
+
+	VkDescriptorPoolSize combinedImageSamplerDescriptorPoolSize;
+
+	combinedImageSamplerDescriptorPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	combinedImageSamplerDescriptorPoolSize.descriptorCount = VulkanDescriptorPoolConstants::VULKAN_DESCRIPTOR_POOL_MAXIMUM_UNIFORM_BUFFERS;
+
+	descriptorPoolSizes.EmplaceFast(combinedImageSamplerDescriptorPoolSize);
 }
 
 /*
