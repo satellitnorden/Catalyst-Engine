@@ -553,13 +553,13 @@ private:
 	void UpdateDynamicUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT;
 
 	/*
-	*	Updates the terrain height textures.
-	*/
-	void UpdateTerrainHeightTextures(const uint8 currentFrameBufferIndex) NOEXCEPT;
-
-	/*
 	*	Updates the global textures.
 	*/
 	void UpdateGlobalTextures(const uint8 currentFrameBufferIndex) NOEXCEPT;
+
+	/*
+	*	Updates the terrain height textures.
+	*/
+	void UpdateTerrainHeightTextures(const uint8 currentFrameBufferIndex) NOEXCEPT;
 
 };

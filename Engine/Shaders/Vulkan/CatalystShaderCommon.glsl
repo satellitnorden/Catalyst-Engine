@@ -58,14 +58,14 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
     //Total size; 1904
 };
 
-//The terrain height textures.
-layout (set = 0, binding = 1) uniform sampler2D terrainHeightTextures[255];
-
 //The global samplers.
-layout (set = 0, binding = 2) uniform sampler globalSamplers[5];
+layout (set = 0, binding = 1) uniform sampler globalSamplers[5];
 
 //The global textures.
-layout (set = 0, binding = 3) uniform texture2D globalTextures[512];
+layout (set = 0, binding = 2) uniform texture2D globalTextures[512];
+
+//The terrain height textures.
+layout (set = 0, binding = 3) uniform sampler2D terrainHeightTextures[255];
 
 //Constants.
 #define FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index 0

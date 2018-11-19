@@ -797,35 +797,35 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 		//Bind the dynamic uniform data buffer to the render data table.
 		BindUniformBufferToRenderDataTable(0, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._DynamicUniformDataBuffers[i]);
 
-		//Bind a placeholder texture to all terrain height texture slots.
-		for (uint8 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES; ++j)
-		{
-			BindCombinedImageSamplerToRenderDataTable(1, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-		}
-
 		//Bind all samplers.
 		for (uint8 j{ 0 }; j < UNDERLYING(Sampler::NumberOfSamplers); ++j)
 		{
-			BindSamplerToRenderDataTable(2, j, _GlobalRenderData._RenderDataTables[i], _Samplers[j]);
+			BindSamplerToRenderDataTable(1, j, _GlobalRenderData._RenderDataTables[i], _Samplers[j]);
 		}
 
 		//Bind a placeholder texture to all global texture slots.
 		for (uint32 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++j)
 		{
-			BindSampledImageToRenderDataTable(3, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
+			BindSampledImageToRenderDataTable(2, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
 		}
-	}
 
-	//Mark all terrain height texture slots as free.
-	for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES; ++i)
-	{
-		_GlobalRenderData._TerrainHeightTextureSlots[i] = false;
+		//Bind a placeholder texture to all terrain height texture slots.
+		for (uint8 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES; ++j)
+		{
+			BindCombinedImageSamplerToRenderDataTable(3, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+		}
 	}
 
 	//Mark all global texture slots as free.
 	for (uint32 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES; ++i)
 	{
 		_GlobalRenderData._GlobalTextureSlots[i] = false;
+	}
+
+	//Mark all terrain height texture slots as free.
+	for (uint8 i{ 0 }; i < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES; ++i)
+	{
+		_GlobalRenderData._TerrainHeightTextureSlots[i] = false;
 	}
 }
 
@@ -1049,9 +1049,9 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		constexpr StaticArray<RenderDataTableLayoutBinding, 4> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Geometry | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, ShaderStage::Vertex),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Vertex | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Vertex | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Vertex | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Vertex | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, ShaderStage::Vertex),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -1162,11 +1162,11 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 	//Update the dynamic uniform data.
 	UpdateDynamicUniformData(currentFrameBufferIndex);
 
-	//Update the terrain height textures.
-	UpdateTerrainHeightTextures(currentFrameBufferIndex);
-
 	//Update the global textures.
 	UpdateGlobalTextures(currentFrameBufferIndex);
+
+	//Update the terrain height textures.
+	UpdateTerrainHeightTextures(currentFrameBufferIndex);
 }
 
 /*
@@ -1275,27 +1275,6 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 }
 
 /*
-*	Updates the terrain height textures.
-*/
-void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
-{
-	//Process all updates.
-	for (uint8 update : _GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex])
-	{
-		BindCombinedImageSamplerToRenderDataTable(1, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	}
-
-	_GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
-
-	for (Pair<uint8, Texture2DHandle> &update : _GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex])
-	{
-		BindCombinedImageSamplerToRenderDataTable(1, static_cast<uint32>(update._First), _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
-	}
-
-	_GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
-}
-
-/*
 *	Updates the global textures.
 */
 void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
@@ -1303,17 +1282,38 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) 
 	//Process all updates.
 	for (uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex])
 	{
-		BindSampledImageToRenderDataTable(3, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
+		BindSampledImageToRenderDataTable(2, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture);
 	}
 
 	_GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
 
 	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex])
 	{
-		BindSampledImageToRenderDataTable(3, update._First, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second);
+		BindSampledImageToRenderDataTable(2, update._First, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second);
 	}
 
 	_GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
+}
+
+/*
+*	Updates the terrain height textures.
+*/
+void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
+{
+	//Process all updates.
+	for (uint8 update : _GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex])
+	{
+		BindCombinedImageSamplerToRenderDataTable(3, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	}
+
+	_GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
+
+	for (Pair<uint8, Texture2DHandle> &update : _GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex])
+	{
+		BindCombinedImageSamplerToRenderDataTable(3, static_cast<uint32>(update._First), _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
+	}
+
+	_GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
 }
 
 //Undefine defines to keep them from leaking into other scopes.
