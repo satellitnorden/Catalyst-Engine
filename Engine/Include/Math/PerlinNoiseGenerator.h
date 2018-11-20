@@ -88,6 +88,14 @@ public:
 	}
 
 	/*
+	*	Generates billowed noise at the given coordinates and returns a value between 0.0f and 1.0f.
+	*/
+	static constexpr float GenerateBillowedNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
+	{
+		return CatalystBaseMath::Absolute(GenerateNoise(X, Y, Z, randomOffset));
+	}
+
+	/*
 	*	Generates noise at the given coordinates and returns a value between 0.0f and 1.0f.
 	*/
 	static constexpr float GenerateNormalizedNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
@@ -96,11 +104,11 @@ public:
 	}
 
 	/*
-	*	Generates noise at the given coordinates and returns a value between 0.0f and 1.0f.
+	*	Generates ridged noise at the given coordinates and returns a value between 0.0f and 1.0f.
 	*/
 	static constexpr float GenerateRidgedNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
 	{
-		return 1.0f - CatalystBaseMath::Absolute(GenerateNoise(X, Y, Z, randomOffset));
+		return 1.0f - GenerateBillowedNoise(X, Y, Z, randomOffset);
 	}
 
 	/*

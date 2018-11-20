@@ -22,8 +22,7 @@
 //Clairvoyant terrain generation constants.
 namespace ClairvoyantTerrainGenerationConstants
 {
-	constexpr float TERRAIN_MINIMUM_HEIGHT{ 2'000.0f };
-	constexpr float TERRAIN_MAXIMUM_HEIGHT{ 32'000.0f };
+	constexpr float TERRAIN_HEIGHT{ 10'000.0f };
 }
 
 /*
@@ -125,6 +124,20 @@ float GetRandomOffset(const uint8 index) NOEXCEPT
 
 			return randomOffset;
 		}
+
+		case 13:
+		{
+			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
+
+			return randomOffset;
+		}
+
+		case 14:
+		{
+			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
+
+			return randomOffset;
+		}
 	}
 
 	ASSERT(false, "You should add a case here. ):");
@@ -138,32 +151,62 @@ float GetRandomOffset(const uint8 index) NOEXCEPT
 void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &properties, const Vector3 &worldPosition, float *const RESTRICT height) NOEXCEPT
 {
 	//Calculate the coordinates.
-	const float coordinateX{ worldPosition._X / 32'000.0f };
-	const float coordinateY{ worldPosition._Z / 32'000.0f };
+	const float coordinateX{ worldPosition._X / 100'000.0f };
+	const float coordinateY{ worldPosition._Z / 100'000.0f };
 
 	//Generate the noise.
-	*height = PerlinNoiseGenerator::GenerateNoise(coordinateX, coordinateY, GetRandomOffset(0));
+	constexpr float FREQUENCY_MULTIPLIER{ 2.175f };
+	constexpr float INFLUENCE_MULTIPLIER{ 0.5f };
 
 	float frequency{ 1.0f };
 	float influence{ 1.0f };
 
-	for (uint8 i = 0; i < 10; ++i)
-	{
-		frequency *= 2.0f;
-		influence *= 0.5f;
+	*height = PerlinNoiseGenerator::GenerateNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(0)) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += CatalystBaseMath::PowerOf(CatalystBaseMath::SmoothStep<7>(PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(1))), 16) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += CatalystBaseMath::PowerOf(CatalystBaseMath::SmoothStep<6>(PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(2))), 8) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += CatalystBaseMath::PowerOf(CatalystBaseMath::SmoothStep<5>(PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(3))), 4) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += CatalystBaseMath::PowerOf(CatalystBaseMath::SmoothStep<4>(PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(4))), 2) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += CatalystBaseMath::SmoothStep<3>(PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(5))) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += CatalystBaseMath::SmoothStep<2>(PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(6))) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += CatalystBaseMath::SmoothStep<1>(PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(7))) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(8)) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(9)) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(10)) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(11)) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(12)) * influence;
+	frequency *= FREQUENCY_MULTIPLIER;
+	influence *= INFLUENCE_MULTIPLIER;
+	*height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(13)) * influence;
 
-		*height += CatalystBaseMath::SmoothStep<2>((PerlinNoiseGenerator::GenerateNoise(coordinateX * frequency, coordinateY * frequency, GetRandomOffset(i + 1)) + 1.0f) * 0.5f) * influence;
-	}
-
-	//Calculate the height influence.
-	const float landscapeCoordinateX{ worldPosition._X / 32'000.0f };
-	const float landscapeCoordinateY{ worldPosition._Z / 32'000.0f };
-
-	float heightInfluence{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(11)) + 1.0f) * 0.5f) };
-	float flatness{ ((PerlinNoiseGenerator::GenerateNoise(landscapeCoordinateX, landscapeCoordinateY, GetRandomOffset(12)) + 1.0f) * 0.5f) };
+	//Calculate the flatness.
+	const float flatness{ PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX, coordinateY, GetRandomOffset(14)) };
 
 	//Apply the height.
-	*height *= CatalystBaseMath::LinearlyInterpolate(ClairvoyantTerrainGenerationConstants::TERRAIN_MINIMUM_HEIGHT, ClairvoyantTerrainGenerationConstants::TERRAIN_MAXIMUM_HEIGHT, flatness) * heightInfluence;
+	*height *= ClairvoyantTerrainGenerationConstants::TERRAIN_HEIGHT * flatness;
 }
 
 /*
