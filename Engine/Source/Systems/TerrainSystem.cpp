@@ -564,14 +564,14 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 													worldPosition,
 													&patchInformation->_NormalTexture);
 
-	patchRenderInformation->_InstanceInformation._NormalTextureIndex = static_cast<float>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalTexture)) + 0.5f;
+	patchRenderInformation->_InstanceInformation._NormalTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalTexture));
 
 	TerrainGeneralUtilities::GenerateLayerWeightsTexture(	_Properties,
 															patchSizeMultiplier,
 															worldPosition,
 															&patchInformation->_LayerWeightsTexture);
 
-	patchRenderInformation->_InstanceInformation._LayerWeightsTextureIndex = static_cast<float>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_LayerWeightsTexture)) + 0.5f;
+	patchRenderInformation->_InstanceInformation._LayerWeightsTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_LayerWeightsTexture));
 
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(worldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, worldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
 	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(worldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, worldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));

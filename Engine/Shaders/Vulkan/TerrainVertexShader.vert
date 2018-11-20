@@ -11,20 +11,21 @@
 #define VERTEX_BORDER_OFFSET_FIRST (1.0f / (64.0f))
 #define VERTEX_BORDER_OFFSET_SECOND (1.0f / (32.0f))
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+	layout (offset = 0) vec2 patchWorldPosition;
+	layout (offset = 8) float patchSize;
+	layout (offset = 12) int borders;
+	layout (offset = 16) int heightTextureIndex;
+};
+
 //In parameters.
 layout (location = 0) in vec2 vertexPosition;
 layout (location = 1) in int vertexBorders;
-layout (location = 2) in vec2 patchWorldPosition;
-layout (location = 3) in float patchSize;
-layout (location = 4) in int borders;
-layout (location = 5) in int heightTextureIndex;
-layout (location = 6) in float normalTextureIndex;
-layout (location = 7) in float layerWeightsTextureIndex;
 
 //Out parameters.
 layout (location = 0) out vec2 fragmentTextureCoordinate;
-layout (location = 1) out float fragmentNormalTextureIndex;
-layout (location = 2) out float fragmentLayerWeightsTextureIndex;
 
 void main()
 {	
@@ -58,8 +59,6 @@ void main()
 
     //Calculate the texture coordinate.
     fragmentTextureCoordinate = position + 0.5f;
-    fragmentNormalTextureIndex = normalTextureIndex;
-    fragmentLayerWeightsTextureIndex = layerWeightsTextureIndex;
 
     //Set the position.
     gl_Position = viewMatrix * vec4(vec3(patchWorldPosition.x + (position.x * patchSize), texture(terrainHeightTextures[heightTextureIndex], fragmentTextureCoordinate).r, patchWorldPosition.y + (position.y * patchSize)), 1.0f);
