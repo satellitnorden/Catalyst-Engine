@@ -45,12 +45,8 @@ public:
 	/*
 	*	Generates noise at the given coordinates and returns a value between -1.0f and 1.0f.
 	*/
-	static constexpr float GenerateNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
+	static constexpr float GenerateNoise(float X, float Y, float Z) NOEXCEPT
 	{
-		X += randomOffset;
-		Y += randomOffset;
-		Z += randomOffset;
-
 		int32 xInt = static_cast<int32>(CatalystBaseMath::Floor<float>(X)) & 255;
 		int32 yInt = static_cast<int32>(CatalystBaseMath::Floor<float>(Y)) & 255;
 		int32 zInt = static_cast<int32>(CatalystBaseMath::Floor<float>(Z)) & 255;
@@ -90,25 +86,25 @@ public:
 	/*
 	*	Generates billowed noise at the given coordinates and returns a value between 0.0f and 1.0f.
 	*/
-	static constexpr float GenerateBillowedNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
+	static constexpr float GenerateBillowedNoise(float X, float Y, float Z) NOEXCEPT
 	{
-		return CatalystBaseMath::Absolute(GenerateNoise(X, Y, Z, randomOffset));
+		return CatalystBaseMath::Absolute(GenerateNoise(X, Y, Z));
 	}
 
 	/*
 	*	Generates noise at the given coordinates and returns a value between 0.0f and 1.0f.
 	*/
-	static constexpr float GenerateNormalizedNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
+	static constexpr float GenerateNormalizedNoise(float X, float Y, float Z) NOEXCEPT
 	{
-		return (GenerateNoise(X, Y, Z, randomOffset) + 1.0f) * 0.5f;
+		return (GenerateNoise(X, Y, Z) + 1.0f) * 0.5f;
 	}
 
 	/*
 	*	Generates ridged noise at the given coordinates and returns a value between 0.0f and 1.0f.
 	*/
-	static constexpr float GenerateRidgedNoise(float X, float Y, float Z, const float randomOffset = 0.0f) NOEXCEPT
+	static constexpr float GenerateRidgedNoise(float X, float Y, float Z) NOEXCEPT
 	{
-		return 1.0f - GenerateBillowedNoise(X, Y, Z, randomOffset);
+		return 1.0f - GenerateBillowedNoise(X, Y, Z);
 	}
 
 	/*
