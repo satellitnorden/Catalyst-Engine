@@ -154,8 +154,8 @@ void VolumetricFogRenderPass::RenderInternal() NOEXCEPT
 	PushConstantData data;
 
 	data._FogLengthSquared = RenderingConfigurationManager::Instance->GetVolumetricFogDistance() * RenderingConfigurationManager::Instance->GetVolumetricFogDistance();
-	data._FogMinimumHeight = 7'500.0f;
-	data._FogMaximumHeight = 12'500.0f;
+	data._FogMinimumHeight = 5'000.0f;
+	data._FogMaximumHeight = 15'000.0f;
 	
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
