@@ -1119,6 +1119,9 @@
     <ClInclude Include="..\..\..\Include\Rendering\API\Vulkan\VulkanErrorReporting.h">
       <Filter>Rendering\Include\API\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Math\ValueNoise.h">
+      <Filter>Math\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Source\Components\ComponentManager.cpp">

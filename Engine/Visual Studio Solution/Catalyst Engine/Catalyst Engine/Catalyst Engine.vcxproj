@@ -113,6 +113,7 @@
     <ClInclude Include="..\..\..\Include\Math\Matrix3.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix4.h" />
     <ClInclude Include="..\..\..\Include\Math\PerlinNoiseGenerator.h" />
+    <ClInclude Include="..\..\..\Include\Math\ValueNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\Vector2.h" />
     <ClInclude Include="..\..\..\Include\Math\Vector3.h" />
     <ClInclude Include="..\..\..\Include\Math\Vector4.h" />
