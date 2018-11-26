@@ -14,10 +14,7 @@
 //Push constant data.
 layout (push_constant) uniform PushConstantData
 {
-	layout (offset = 0) vec2 patchWorldPosition;
-	layout (offset = 8) float patchSize;
-	layout (offset = 12) int borders;
-	layout (offset = 16) int heightTextureIndex;
+	layout (offset = 0) int patchIndex;
 };
 
 //In parameters.
@@ -32,26 +29,26 @@ void main()
 	vec2 position = vertexPosition;
 
 	//Calculate the horizontal border offset multiplier.
-	float isUpperMultiplier = float((vertexBorders & BIT(0)) & (borders & BIT(0)));
-	float isLowerMultiplier = float((vertexBorders & BIT(4)) & (borders & BIT(4)));
+	float isUpperMultiplier = float((vertexBorders & BIT(0)) & (terrainData[patchIndex].borders & BIT(0)));
+	float isLowerMultiplier = float((vertexBorders & BIT(4)) & (terrainData[patchIndex].borders & BIT(4)));
 	float horizontalBorderOffsetWeight = min(isUpperMultiplier + isLowerMultiplier, 1.0f);
 
 	//Calculate the vertical border offset multiplier.
-	float isRightMultiplier = float((vertexBorders & BIT(2)) & (borders & BIT(2)));
-	float isLeftMultiplier = float((vertexBorders & BIT(6)) & (borders & BIT(6)));
+	float isRightMultiplier = float((vertexBorders & BIT(2)) & (terrainData[patchIndex].borders & BIT(2)));
+	float isLeftMultiplier = float((vertexBorders & BIT(6)) & (terrainData[patchIndex].borders & BIT(6)));
 	float verticalBorderOffsetWeight = min(isRightMultiplier + isLeftMultiplier, 1.0f);
 
 	position.x -= VERTEX_BORDER_OFFSET_FIRST * horizontalBorderOffsetWeight;
 	position.y -= VERTEX_BORDER_OFFSET_FIRST * verticalBorderOffsetWeight;
 
 	//Calculate the horizontal border offset multiplier.
-	isUpperMultiplier = float((vertexBorders & BIT(1)) & (borders & BIT(1)));
-	isLowerMultiplier = float((vertexBorders & BIT(5)) & (borders & BIT(5)));
+	isUpperMultiplier = float((vertexBorders & BIT(1)) & (terrainData[patchIndex].borders & BIT(1)));
+	isLowerMultiplier = float((vertexBorders & BIT(5)) & (terrainData[patchIndex].borders & BIT(5)));
 	horizontalBorderOffsetWeight = min(isUpperMultiplier + isLowerMultiplier, 1.0f);
 
 	//Calculate the vertical border offset multiplier.
-	isRightMultiplier = float((vertexBorders & BIT(3)) & (borders & BIT(3)));
-	isLeftMultiplier = float((vertexBorders & BIT(7)) & (borders & BIT(7)));
+	isRightMultiplier = float((vertexBorders & BIT(3)) & (terrainData[patchIndex].borders & BIT(3)));
+	isLeftMultiplier = float((vertexBorders & BIT(7)) & (terrainData[patchIndex].borders & BIT(7)));
 	verticalBorderOffsetWeight = min(isRightMultiplier + isLeftMultiplier, 1.0f);
 
 	position.x -= VERTEX_BORDER_OFFSET_SECOND * horizontalBorderOffsetWeight;
@@ -61,5 +58,5 @@ void main()
     fragmentTextureCoordinate = position + 0.5f;
 
     //Set the position.
-    gl_Position = viewMatrix * vec4(vec3(patchWorldPosition.x + (position.x * patchSize), texture(terrainHeightTextures[heightTextureIndex], fragmentTextureCoordinate).r, patchWorldPosition.y + (position.y * patchSize)), 1.0f);
+    gl_Position = viewMatrix * vec4(vec3(terrainData[patchIndex].worldPosition.x + (position.x * terrainData[patchIndex].patchSize), texture(terrainHeightTextures[terrainData[patchIndex].heightTextureIndex], fragmentTextureCoordinate).r, terrainData[patchIndex].worldPosition.y + (position.y * terrainData[patchIndex].patchSize)), 1.0f);
 }

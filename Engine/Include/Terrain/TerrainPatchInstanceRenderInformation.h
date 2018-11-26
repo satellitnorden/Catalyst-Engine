@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/General/Padding.h>
 
 //Rendering.
 #include <Rendering/Engine/RenderingCore.h>
@@ -28,5 +29,8 @@ public:
 
 	//The layer weights texture index.
 	int32 _LayerWeightsTextureIndex;
+
+	//Some padding.
+	Padding<4> _Padding;
 
 };

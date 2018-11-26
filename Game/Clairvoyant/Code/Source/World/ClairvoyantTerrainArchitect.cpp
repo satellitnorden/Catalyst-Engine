@@ -138,6 +138,13 @@ float GetRandomOffset(const uint8 index) NOEXCEPT
 
 			return randomOffset;
 		}
+
+		case 15:
+		{
+			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
+
+			return randomOffset;
+		}
 	}
 
 	ASSERT(false, "You should add a case here. ):");

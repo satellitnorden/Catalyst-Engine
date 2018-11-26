@@ -7,6 +7,18 @@
 //Preprocessor defines.
 #define MaximumNumberOfPointLights 8
 #define MaximumNumberOfSpotLights 8
+#define MAXIMUM_NUMBER_OF_TERRAIN_PATCHES 255
+
+//Terrain data definition.
+struct TerrainData
+{
+    vec2 worldPosition;
+    float patchSize;
+    int borders;
+    int heightTextureIndex;
+    int normalTextureIndex;
+    int layerWeightsTextureIndex;
+};
 
 //Global uniform data.
 layout (std140, set = 0, binding = 0) uniform GlobalUniformData
@@ -65,7 +77,13 @@ layout (set = 0, binding = 1) uniform sampler globalSamplers[5];
 layout (set = 0, binding = 2) uniform texture2D globalTextures[512];
 
 //The terrain height textures.
-layout (set = 0, binding = 3) uniform sampler2D terrainHeightTextures[255];
+layout (set = 0, binding = 3) uniform sampler2D terrainHeightTextures[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
+
+//The terrain data.
+layout (std140, set = 0, binding = 4) uniform TerrainUniformData
+{
+    layout (offset = 0) TerrainData terrainData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
+};
 
 //Constants.
 #define FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index 0

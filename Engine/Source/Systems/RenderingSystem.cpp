@@ -785,6 +785,7 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	_GlobalRenderData._AddTerrainHeightTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 	_GlobalRenderData._RemoveGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 	_GlobalRenderData._AddGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
+	_GlobalRenderData._TerrainUniformDataBuffers.UpsizeFast(numberOfFrameBuffers);
 
 	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
 	{
@@ -814,6 +815,12 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 		{
 			BindCombinedImageSamplerToRenderDataTable(3, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 		}
+
+		//Create the terrain uniform data buffer.
+		_GlobalRenderData._TerrainUniformDataBuffers[i] = CreateUniformBuffer(sizeof(TerrainPatchInstanceRenderInformation) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer);
+	
+		//Bind the terrain uniform data buffer to the render data table.
+		BindUniformBufferToRenderDataTable(4, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainUniformDataBuffers[i]);
 	}
 
 	//Mark all global texture slots as free.
@@ -1046,12 +1053,13 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 4> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 5> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Geometry | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Vertex | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Vertex | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, ShaderStage::Vertex),
+			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::Fragment),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -1167,6 +1175,9 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 
 	//Update the terrain height textures.
 	UpdateTerrainHeightTextures(currentFrameBufferIndex);
+
+	//Update the terrain uniform data.
+	UpdateTerrainUniformData(currentFrameBufferIndex);
 }
 
 /*
@@ -1314,6 +1325,23 @@ void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBuffer
 	}
 
 	_GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
+}
+
+/*
+*	Updates the terrain uniform data.
+*/
+void RenderingSystem::UpdateTerrainUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT
+{
+	StaticArray<TerrainPatchInstanceRenderInformation, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES> terrainUniformData;
+
+	const DynamicArray<TerrainPatchRenderInformation> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
+
+	for (uint64 i{ 0 }, size{ informations->Size() }; i < size; ++i)
+	{
+		terrainUniformData[i] = informations->At(i)._InstanceInformation;
+	}
+
+	UploadDataToUniformBuffer(_GlobalRenderData._TerrainUniformDataBuffers[currentFrameBufferIndex], terrainUniformData.Data());
 }
 
 //Undefine defines to keep them from leaking into other scopes.

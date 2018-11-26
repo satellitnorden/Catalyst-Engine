@@ -21,6 +21,18 @@ public:
 	//The dynamic uniform data buffers.
 	DynamicArray<UniformBufferHandle> _DynamicUniformDataBuffers;
 
+	//The global texture lock.
+	Spinlock _GlobalTexturesLock;
+
+	//Theglobal texture slots.
+	StaticArray<bool, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _GlobalTextureSlots;
+
+	//The remove global texture updates.
+	DynamicArray<DynamicArray<uint32>> _RemoveGlobalTextureUpdates;
+
+	//The add global texture updates.
+	DynamicArray<DynamicArray<Pair<uint32, Texture2DHandle>>> _AddGlobalTextureUpdates;
+
 	//The terrain height texture lock.
 	Spinlock _TerrainHeightTexturesLock;
 
@@ -33,16 +45,7 @@ public:
 	//The add terrain height texture updates.
 	DynamicArray<DynamicArray<Pair<uint8, Texture2DHandle>>> _AddTerrainHeightTextureUpdates;
 
-	//The global texture lock.
-	Spinlock _GlobalTexturesLock;
-
-	//Theglobal texture slots.
-	StaticArray<bool, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES> _GlobalTextureSlots;
-
-	//The remove global texture updates.
-	DynamicArray<DynamicArray<uint32>> _RemoveGlobalTextureUpdates;
-
-	//The add global texture updates.
-	DynamicArray<DynamicArray<Pair<uint32, Texture2DHandle>>> _AddGlobalTextureUpdates;
+	//The terrain uniform data buffers.
+	DynamicArray<UniformBufferHandle> _TerrainUniformDataBuffers;
 
 };

@@ -16,30 +16,14 @@
 DEFINE_SINGLETON(TerrainDepthRenderPass);
 
 /*
-*	Vertex push constant data.
+*	Push constant data.
 */
-class VertexPushConstantData final
+class PushConstantData final
 {
 
 public:
 
-	Vector2 _PatchWorldPosition;
-	float _PatchSize;
-	int32 _Borders;
-	int32 _HeightTextureIndex;
-
-};
-
-/*
-*	Fragment push constant data.
-*/
-class FragmentPushConstantData final
-{
-
-public:
-
-	int32 _NormalTextureIndex;
-	int32 _LayerWeightsTextureIndex;
+	int32 _PatchIndex;
 
 };
 
@@ -86,9 +70,8 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
+	SetNumberOfPushConstantRanges(1);
+	AddPushConstantRange(ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(2);
@@ -172,31 +155,27 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 	//Wait for terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
 
+	int32 counter{ 0 };
+
 	for (const TerrainPatchRenderInformation &information : *informations)
 	{
 		if (!TEST_BIT(information._Visibility, VisibilityFlag::Viewer))
 		{
+			++counter;
+
 			continue;
 		}
 
 		//Push constants.
-		VertexPushConstantData vertexData;
+		PushConstantData data;
 
-		vertexData._PatchWorldPosition = information._InstanceInformation._WorldPosition;
-		vertexData._PatchSize = information._InstanceInformation._PatchSize;
-		vertexData._Borders = information._InstanceInformation._Borders;
-		vertexData._HeightTextureIndex = information._InstanceInformation._HeightTextureIndex;
+		data._PatchIndex = counter++;
 
-		FragmentPushConstantData fragmentData;
-
-		fragmentData._NormalTextureIndex = information._InstanceInformation._NormalTextureIndex;
-		fragmentData._LayerWeightsTextureIndex = information._InstanceInformation._LayerWeightsTextureIndex;
-
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+		commandBuffer->PushConstants(this, ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 		//Draw the patch!
 		commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);
+
 	}
 
 	//End the command buffer.

@@ -562,4 +562,9 @@ private:
 	*/
 	void UpdateTerrainHeightTextures(const uint8 currentFrameBufferIndex) NOEXCEPT;
 
+	/*
+	*	Updates the terrain uniform data.
+	*/
+	void UpdateTerrainUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT;
+
 };
