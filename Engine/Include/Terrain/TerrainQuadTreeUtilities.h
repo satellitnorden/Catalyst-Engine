@@ -57,7 +57,6 @@ public:
 	*/
 	static uint8 ResolutionMultiplier(const uint8 depth) NOEXCEPT
 	{
-		return 1;
 		return CatalystBaseMath::Maximum<uint8>(TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH - depth, 1);
 	}
 
