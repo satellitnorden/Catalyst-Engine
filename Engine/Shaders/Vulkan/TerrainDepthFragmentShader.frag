@@ -21,14 +21,10 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Out parameters.
-layout (location = 0) out vec4 normalDepth;
-layout (location = 1) out vec4 layerWeights;
+layout (location = 0) out vec4 terrainInformation;
 
 void main()
 {
-    //Write the normal/depth.
-    normalDepth = vec4(texture(sampler2D(globalTextures[terrainData[patchIndex].normalTextureIndex], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), fragmentTextureCoordinate).xyz * 2.0f - 1.0f, gl_FragCoord.z);
-
-    //Write the layer weights.
-    layerWeights = texture(sampler2D(globalTextures[terrainData[patchIndex].layerWeightsTextureIndex], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
+    //Write the terrain information.
+    terrainInformation = vec4(float(patchIndex), fragmentTextureCoordinate, gl_FragCoord.z);
 }

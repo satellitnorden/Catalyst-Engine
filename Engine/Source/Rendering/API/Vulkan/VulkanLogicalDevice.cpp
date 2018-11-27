@@ -26,7 +26,7 @@ void VulkanLogicalDevice::Initialize() NOEXCEPT
 	CreatePhysicalDeviceFeatures(physicalDeviceFeatures);
 
 	//Create the device create info.
-	const DynamicArray<const char *RESTRICT> requiredExtensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+	const DynamicArray<const char *RESTRICT> requiredExtensions{ VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME };
 
 	VkDeviceCreateInfo deviceCreateInfo;
 	CreateDeviceCreateInfo(deviceCreateInfo, deviceQueueCreateInfos, requiredExtensions, &physicalDeviceFeatures);

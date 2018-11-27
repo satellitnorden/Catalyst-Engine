@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetSolidVegetationVertexShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(8228);
+		data.UpsizeFast(8260);
 
-		new (data.Data()) byte[8228]
+		new (data.Data()) byte[8260]
 		{
 			3,
 			2,
@@ -182,6 +182,38 @@ namespace VulkanShaderData
 			116,
 			115,
 			0,
+			0,
+			4,
+			0,
+			8,
+			0,
+			71,
+			76,
+			95,
+			69,
+			88,
+			84,
+			95,
+			110,
+			111,
+			110,
+			117,
+			110,
+			105,
+			102,
+			111,
+			114,
+			109,
+			95,
+			113,
+			117,
+			97,
+			108,
+			105,
+			102,
+			105,
+			101,
+			114,
 			0,
 			4,
 			0,

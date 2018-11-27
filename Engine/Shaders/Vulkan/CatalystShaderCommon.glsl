@@ -2,7 +2,8 @@
 #define CATALYST_SHADER_COMMON
 
 //Extensions.
-#extension GL_ARB_separate_shader_objects : enable
+#extension GL_ARB_separate_shader_objects : require
+#extension GL_EXT_nonuniform_qualifier : require
 
 //Preprocessor defines.
 #define MaximumNumberOfPointLights 8

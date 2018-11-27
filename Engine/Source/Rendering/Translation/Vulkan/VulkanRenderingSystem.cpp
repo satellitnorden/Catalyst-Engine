@@ -1105,18 +1105,10 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 			VkAttachmentReference{ MATERIAL_PROPERTIES_INDEX, VK_IMAGE_LAYOUT_GENERAL }
 		};
 
-		constexpr StaticArray<const VkAttachmentReference, 2> terrainDepthAttachmentReferences
-		{
-			VkAttachmentReference{ NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL },
-			VkAttachmentReference{ SCENE_INTERMEDIATE_INDEX, VK_IMAGE_LAYOUT_GENERAL }
-		};
-
+		constexpr VkAttachmentReference terrainDepthAttachmentReference{ SCENE_INTERMEDIATE_INDEX, VK_IMAGE_LAYOUT_GENERAL };
 		constexpr VkAttachmentReference normalDepthAttachmentReference{  NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL };
-
 		constexpr VkAttachmentReference depthAttachmentReference{ DEPTH_BUFFER_INDEX, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
-
 		constexpr VkAttachmentReference normalDepthInputAttachmentReference{ VulkanUtilities::CreateAttachmentReference(NORMAL_DEPTH_INDEX, VK_IMAGE_LAYOUT_GENERAL) };
-
 		constexpr VkAttachmentReference directionalShadowColorAttachmentReference{ VulkanUtilities::CreateAttachmentReference(DIRECTIONAL_SHADOW_INDEX, VK_IMAGE_LAYOUT_GENERAL) };
 
 		StaticArray<VkSubpassDescription, NUMBER_OF_SCENE_BUFFER_SUBPASSES> subpassDescriptions;
@@ -1124,8 +1116,8 @@ void VulkanRenderingSystem::InitializeVulkanRenderPasses() NOEXCEPT
 		subpassDescriptions[VulkanTranslationUtilities::GetSubStageIndex(RenderPassMainStage::Scene, RenderPassSubStage::TerrainDepth)]
 			= VulkanUtilities::CreateSubpassDescription(	0,
 															nullptr,
-															static_cast<uint32>(terrainDepthAttachmentReferences.Size()),
-															terrainDepthAttachmentReferences.Data(),
+															1,
+															&terrainDepthAttachmentReference,
 															&depthAttachmentReference,
 															0,
 															nullptr);

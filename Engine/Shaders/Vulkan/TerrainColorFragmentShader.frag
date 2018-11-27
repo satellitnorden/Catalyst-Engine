@@ -23,8 +23,7 @@ layout (push_constant) uniform PushConstantData
 layout (location = 0) in vec2 fragmentTextureCoordinate;
 
 //Texture samplers.
-layout (set = 1, binding = 0) uniform sampler2D normalDepthTexture;
-layout (set = 1, binding = 1) uniform sampler2D layerWeightsTexture;
+layout (set = 1, binding = 0) uniform sampler2D terrainDataTexture;
 layout (set = 2, binding = 0) uniform sampler2D layer1AlbedoTexture;
 layout (set = 2, binding = 1) uniform sampler2D layer1NormalMapTexture;
 layout (set = 2, binding = 2) uniform sampler2D layer1MaterialPropertiesTexture;
@@ -54,8 +53,6 @@ vec4 layer4MaterialPropertiesSampler;
 vec4 layer5MaterialPropertiesSampler;
 
 vec3 fragmentWorldPosition;
-vec3 fragmentWorldNormal;
-vec4 fragmentLayerWeights;
 
 vec2 textureCoordinates[5];
 
@@ -186,7 +183,7 @@ float Blend(float first, float firstHeight, float second, float secondHeight, fl
 /*
 *	Returns the albedo.
 */
-vec3 GetAlbedo()
+vec3 GetAlbedo(vec4 patchLayerWeights)
 {
     vec3 layer1Albedo = texture(layer1AlbedoTexture, textureCoordinates[0]).rgb;
     vec3 layer2Albedo = texture(layer2AlbedoTexture, textureCoordinates[1]).rgb;
@@ -194,17 +191,17 @@ vec3 GetAlbedo()
     vec3 layer4Albedo = texture(layer4AlbedoTexture, textureCoordinates[3]).rgb;
     vec3 layer5Albedo = texture(layer5AlbedoTexture, textureCoordinates[4]).rgb;
 
-    vec3 blend1 = Blend(layer1Albedo, layer1MaterialPropertiesSampler.w, layer2Albedo, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
-    vec3 blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3Albedo, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
-    vec3 blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4Albedo, layer4MaterialPropertiesSampler.w, fragmentLayerWeights.z);
+    vec3 blend1 = Blend(layer1Albedo, layer1MaterialPropertiesSampler.w, layer2Albedo, layer2MaterialPropertiesSampler.w, patchLayerWeights.x);
+    vec3 blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3Albedo, layer3MaterialPropertiesSampler.w, patchLayerWeights.y);
+    vec3 blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4Albedo, layer4MaterialPropertiesSampler.w, patchLayerWeights.z);
 
-    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5Albedo, layer5MaterialPropertiesSampler.w, fragmentLayerWeights.w);
+    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5Albedo, layer5MaterialPropertiesSampler.w, patchLayerWeights.w);
 }
 
 /*
 *	Returns the normal direction.
 */
-vec3 GetNormalDirection()
+vec3 GetNormalDirection(vec4 patchLayerWeights)
 {
 	vec3 layer1NormalDirection = texture(layer1NormalMapTexture, textureCoordinates[0]).rgb;
     vec3 layer2NormalDirection = texture(layer2NormalMapTexture, textureCoordinates[1]).rgb;
@@ -212,17 +209,17 @@ vec3 GetNormalDirection()
     vec3 layer4NormalDirection = texture(layer4NormalMapTexture, textureCoordinates[3]).rgb;
     vec3 layer5NormalDirection = texture(layer5NormalMapTexture, textureCoordinates[4]).rgb;
 
-    vec3 blend1 = Blend(layer1NormalDirection, layer1MaterialPropertiesSampler.w, layer2NormalDirection, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
-    vec3 blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3NormalDirection, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
-    vec3 blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4NormalDirection, layer4MaterialPropertiesSampler.w, fragmentLayerWeights.z);
+    vec3 blend1 = Blend(layer1NormalDirection, layer1MaterialPropertiesSampler.w, layer2NormalDirection, layer2MaterialPropertiesSampler.w, patchLayerWeights.x);
+    vec3 blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3NormalDirection, layer3MaterialPropertiesSampler.w, patchLayerWeights.y);
+    vec3 blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4NormalDirection, layer4MaterialPropertiesSampler.w, patchLayerWeights.z);
 
-    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5NormalDirection, layer5MaterialPropertiesSampler.w, fragmentLayerWeights.w) * 2.0f - 1.0f;
+    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5NormalDirection, layer5MaterialPropertiesSampler.w, patchLayerWeights.w) * 2.0f - 1.0f;
 }
 
 /*
 *	Returns the roughness.
 */
-float GetRoughness()
+float GetRoughness(vec4 patchLayerWeights)
 {
 	float layer1Roughness = layer1MaterialPropertiesSampler.r;
     float layer2Roughness = layer2MaterialPropertiesSampler.r;
@@ -230,17 +227,17 @@ float GetRoughness()
     float layer4Roughness = layer4MaterialPropertiesSampler.r;
     float layer5Roughness = layer5MaterialPropertiesSampler.r;
 
-    float blend1 = Blend(layer1Roughness, layer1MaterialPropertiesSampler.w, layer2Roughness, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
-    float blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3Roughness, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
-    float blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4Roughness, layer4MaterialPropertiesSampler.w, fragmentLayerWeights.z);
+    float blend1 = Blend(layer1Roughness, layer1MaterialPropertiesSampler.w, layer2Roughness, layer2MaterialPropertiesSampler.w, patchLayerWeights.x);
+    float blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3Roughness, layer3MaterialPropertiesSampler.w, patchLayerWeights.y);
+    float blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4Roughness, layer4MaterialPropertiesSampler.w, patchLayerWeights.z);
 
-    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5Roughness, layer5MaterialPropertiesSampler.w, fragmentLayerWeights.w);
+    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5Roughness, layer5MaterialPropertiesSampler.w, patchLayerWeights.w);
 }
 
 /*
 *	Returns the metallic.
 */
-float GetMetallic()
+float GetMetallic(vec4 patchLayerWeights)
 {
 	float layer1Metallic = layer1MaterialPropertiesSampler.y;
     float layer2Metallic = layer2MaterialPropertiesSampler.y;
@@ -248,17 +245,17 @@ float GetMetallic()
     float layer4Metallic = layer4MaterialPropertiesSampler.y;
     float layer5Metallic = layer5MaterialPropertiesSampler.y;
 
-    float blend1 = Blend(layer1Metallic, layer1MaterialPropertiesSampler.w, layer2Metallic, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
-    float blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3Metallic, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
-    float blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4Metallic, layer4MaterialPropertiesSampler.w, fragmentLayerWeights.z);
+    float blend1 = Blend(layer1Metallic, layer1MaterialPropertiesSampler.w, layer2Metallic, layer2MaterialPropertiesSampler.w, patchLayerWeights.x);
+    float blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3Metallic, layer3MaterialPropertiesSampler.w, patchLayerWeights.y);
+    float blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4Metallic, layer4MaterialPropertiesSampler.w, patchLayerWeights.z);
 
-    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5Metallic, layer5MaterialPropertiesSampler.w, fragmentLayerWeights.w);
+    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5Metallic, layer5MaterialPropertiesSampler.w, patchLayerWeights.w);
 }
 
 /*
 *	Returns the ambient occlusion.
 */
-float GetAmbientOcclusion()
+float GetAmbientOcclusion(vec4 patchLayerWeights)
 {
 	float layer1AmbientOcclusion = layer1MaterialPropertiesSampler.z;
     float layer2AmbientOcclusion = layer2MaterialPropertiesSampler.z;
@@ -266,33 +263,42 @@ float GetAmbientOcclusion()
     float layer4AmbientOcclusion = layer4MaterialPropertiesSampler.z;
     float layer5AmbientOcclusion = layer5MaterialPropertiesSampler.z;
 
-    float blend1 = Blend(layer1AmbientOcclusion, layer1MaterialPropertiesSampler.w, layer2AmbientOcclusion, layer2MaterialPropertiesSampler.w, fragmentLayerWeights.x);
-    float blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3AmbientOcclusion, layer3MaterialPropertiesSampler.w, fragmentLayerWeights.y);
-    float blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4AmbientOcclusion, layer4MaterialPropertiesSampler.w, fragmentLayerWeights.z);
+    float blend1 = Blend(layer1AmbientOcclusion, layer1MaterialPropertiesSampler.w, layer2AmbientOcclusion, layer2MaterialPropertiesSampler.w, patchLayerWeights.x);
+    float blend2 = Blend(blend1, layer2MaterialPropertiesSampler.w, layer3AmbientOcclusion, layer3MaterialPropertiesSampler.w, patchLayerWeights.y);
+    float blend3 = Blend(blend2, layer3MaterialPropertiesSampler.w, layer4AmbientOcclusion, layer4MaterialPropertiesSampler.w, patchLayerWeights.z);
 
-    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5AmbientOcclusion, layer5MaterialPropertiesSampler.w, fragmentLayerWeights.w);
+    return Blend(blend3, layer4MaterialPropertiesSampler.w, layer5AmbientOcclusion, layer5MaterialPropertiesSampler.w, patchLayerWeights.w);
 }
 
 void main()
 {
-    //Sample the normal depth texture.
-    vec4 normalDepthTextureSampler = texture(normalDepthTexture, fragmentTextureCoordinate);
+    //Sample the terrain data texture.
+    vec4 terrainDataTextureSampler = texture(terrainDataTexture, fragmentTextureCoordinate);
+
+    //Retrieve the patch index.
+    int patchIndex = int(terrainDataTextureSampler.x);
+
+    //Retrieve the patch coordinates.
+    vec2 patchCoordinates = terrainDataTextureSampler.yz;
+
+    //Retrieve the patch depth.
+    float patchDepth = terrainDataTextureSampler.w; 
+
+    //Sample the patch normal.
+    vec3 patchNormal = texture(sampler2D(globalTextures[terrainData[nonuniformEXT(patchIndex)].normalTextureIndex], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).xyz * 2.0f - 1.0f;
+
+    //Sample the patch layer weights.
+    vec4 patchLayerWeights = texture(sampler2D(globalTextures[terrainData[nonuniformEXT(patchIndex)].layerWeightsTextureIndex], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates);
 
     //Calculate the fragment world position.
-    fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, normalDepthTextureSampler.w);
-
-    //Set the fragment world normal.
-    fragmentWorldNormal = normalDepthTextureSampler.xyz;
+    fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth);
 
     //Calculate the tangent space matrix.
-    vec3 normal = fragmentWorldNormal;
+    vec3 normal = patchNormal;
     vec3 tangent = cross(vec3(0.0f, 0.0f, 1.0f), normal);
     vec3 bitangent = cross(tangent, normal);
 
     mat3 tangentSpaceMatrix = mat3(tangent, bitangent, normal);
-
-    //Set the fragment layer weights.
-    fragmentLayerWeights = texture(layerWeightsTexture, fragmentTextureCoordinate);
 
 	//Calculate the texture coordinates.
 	CalculateTextureCoordinates(tangentSpaceMatrix);
@@ -305,22 +311,22 @@ void main()
     layer5MaterialPropertiesSampler = texture(layer5MaterialPropertiesTexture, textureCoordinates[4]);
 
 	//Set the albedo color.
-	albedoColor = vec4(GetAlbedo(), 1.0f);
+	albedoColor = vec4(GetAlbedo(patchLayerWeights), 1.0f);
 
 	//Set the normal.
-    vec3 normalDirection = GetNormalDirection();
+    vec3 normalDirection = GetNormalDirection(patchLayerWeights);
     normalDirection = tangentSpaceMatrix * normalDirection;
     normalDirection = normalize(normalDirection);
-    normalDirectionDepth = vec4(normalDirection, normalDepthTextureSampler.w);
+    normalDirectionDepth = vec4(normalDirection, patchDepth);
 
 	//Set the roughness.
-    materialProperties.r = GetRoughness();
+    materialProperties.r = GetRoughness(patchLayerWeights);
 
     //Set the metallic.
-    materialProperties.g = GetMetallic();
+    materialProperties.g = GetMetallic(patchLayerWeights);
 
     //Set the ambient occlusion.
-    materialProperties.b = GetAmbientOcclusion();
+    materialProperties.b = GetAmbientOcclusion(patchLayerWeights);
 
     //Write the thickness.
     materialProperties.a = 1.0f;

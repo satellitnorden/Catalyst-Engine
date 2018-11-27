@@ -61,8 +61,7 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 	SetDepthBuffer(DepthBuffer::SceneBuffer);
 
 	//Add the render targets.
-	SetNumberOfRenderTargets(2);
-	AddRenderTarget(RenderTarget::SceneBufferNormalDepth);
+	SetNumberOfRenderTargets(1);
 	AddRenderTarget(RenderTarget::SceneIntermediate);
 
 	//Add the render data table layouts.
