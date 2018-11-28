@@ -1336,9 +1336,16 @@ void RenderingSystem::UpdateTerrainUniformData(const uint8 currentFrameBufferInd
 
 	const DynamicArray<TerrainPatchRenderInformation> *const RESTRICT informations{ TerrainSystem::Instance->GetTerrainPatchRenderInformations() };
 
+	uint64 counter{ 0 };
+
 	for (uint64 i{ 0 }, size{ informations->Size() }; i < size; ++i)
 	{
-		terrainUniformData[i] = informations->At(i)._InstanceInformation;
+		if (!TEST_BIT(informations->At(i)._Visibility, VisibilityFlag::Viewer))
+		{
+			continue;
+		}
+
+		terrainUniformData[counter++] = informations->At(i)._InstanceInformation;
 	}
 
 	UploadDataToUniformBuffer(_GlobalRenderData._TerrainUniformDataBuffers[currentFrameBufferIndex], terrainUniformData.Data());

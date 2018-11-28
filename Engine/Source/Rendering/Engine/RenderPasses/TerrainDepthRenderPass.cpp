@@ -16,18 +16,6 @@
 DEFINE_SINGLETON(TerrainDepthRenderPass);
 
 /*
-*	Push constant data.
-*/
-class PushConstantData final
-{
-
-public:
-
-	int32 _PatchIndex;
-
-};
-
-/*
 *	Default constructor.
 */
 TerrainDepthRenderPass::TerrainDepthRenderPass() NOEXCEPT
@@ -67,10 +55,6 @@ void TerrainDepthRenderPass::InitializeInternal() NOEXCEPT
 	//Add the render data table layouts.
 	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(2);
@@ -154,28 +138,19 @@ void TerrainDepthRenderPass::RenderInternal() NOEXCEPT
 	//Wait for terrain culling to finish.
 	CullingSystem::Instance->WaitForTerrainCulling();
 
-	int32 counter{ 0 };
+	//Determine the number of instances to draw.
+	uint32 numberofInstances{ 0 };
 
 	for (const TerrainPatchRenderInformation &information : *informations)
 	{
-		if (!TEST_BIT(information._Visibility, VisibilityFlag::Viewer))
+		if (TEST_BIT(information._Visibility, VisibilityFlag::Viewer))
 		{
-			++counter;
-
-			continue;
+			++numberofInstances;
 		}
-
-		//Push constants.
-		PushConstantData data;
-
-		data._PatchIndex = counter++;
-
-		commandBuffer->PushConstants(this, ShaderStage::Vertex | ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
-
-		//Draw the patch!
-		commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);
-
 	}
+
+	//Draw the patches!
+	commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, numberofInstances);
 
 	//End the command buffer.
 	commandBuffer->End(this);

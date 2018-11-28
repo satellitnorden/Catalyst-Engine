@@ -10,15 +10,9 @@
 //Layout specification.
 layout (early_fragment_tests) in;
 
-//Push constant data.
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) int patchIndex;
-};
-
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
+layout (location = 1) in flat int patchIndex;
 
 //Out parameters.
 layout (location = 0) out vec4 terrainInformation;

@@ -11,21 +11,20 @@
 #define VERTEX_BORDER_OFFSET_FIRST (1.0f / (64.0f))
 #define VERTEX_BORDER_OFFSET_SECOND (1.0f / (32.0f))
 
-//Push constant data.
-layout (push_constant) uniform PushConstantData
-{
-	layout (offset = 0) int patchIndex;
-};
-
 //In parameters.
 layout (location = 0) in vec2 vertexPosition;
 layout (location = 1) in int vertexBorders;
 
 //Out parameters.
 layout (location = 0) out vec2 fragmentTextureCoordinate;
+layout (location = 1) out flat int patchIndex;
 
 void main()
 {	
+	//Determine the patch index.
+	patchIndex = gl_InstanceIndex;
+
+	//Set the position.
 	vec2 position = vertexPosition;
 
 	//Calculate the horizontal border offset multiplier.
