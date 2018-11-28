@@ -43,6 +43,13 @@ static void PrintResultAndBreak(const char *const RESTRICT function, const VkRes
 			break;
 		}
 
+		case VK_ERROR_EXTENSION_NOT_PRESENT:
+		{
+			ASSERT(false, "Result was VK_ERROR_EXTENSION_NOT_PRESENT.");
+
+			break;
+		}
+
 		case VK_ERROR_FEATURE_NOT_PRESENT:
 		{
 			ASSERT(false, "Result was VK_ERROR_FEATURE_NOT_PRESENT.");
