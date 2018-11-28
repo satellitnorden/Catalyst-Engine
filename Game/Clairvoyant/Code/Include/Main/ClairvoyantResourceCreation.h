@@ -3,12 +3,26 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
-namespace ClairvoyantResourceCreation
+class ClairvoyantResourceCreation
 {
+
+public:
 
 	/*
 	*	Creates resources for the Clairvoyant project.
 	*/
-	void CreateResources() NOEXCEPT;
+	static void CreateResources() NOEXCEPT;
 
-}
+private:
+
+	/*
+	*	Creates the terrain intermediate resources.
+	*/
+	static void CreateTerrainIntermediateResources() NOEXCEPT;
+
+	/*
+	*	Creates the terrain resource collection.
+	*/
+	static void CreateTerrainResourceCollection() NOEXCEPT;
+
+};
