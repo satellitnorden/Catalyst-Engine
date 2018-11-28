@@ -6,7 +6,7 @@
 //Rendering.
 #include <Rendering/Engine/AxisAlignedBoundingBox.h>
 #include <Rendering/Engine/CPUTexture2D.h>
-#include <Rendering/Engine/TerrainMaterial.h>
+#include <Rendering/Engine/RenderingCore.h>
 
 class TerrainPatchInformation final
 {
@@ -21,9 +21,6 @@ public:
 
 	//The axis-aligned bounding box for this terrain patch.
 	AxisAlignedBoundingBox _AxisAlignedBoundingBox;
-
-	//The material.
-	TerrainMaterial _Material;
 
 	//The height texture.
 	Texture2DHandle _HeightTexture;

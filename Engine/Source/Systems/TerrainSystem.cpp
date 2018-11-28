@@ -28,7 +28,6 @@ void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &
 	//Copy over the relevant properties.
 	_Properties._HeightGenerationFunction = configuration._HeightGenerationFunction;
 	_Properties._LayerWeightsGenerationFunction = configuration._LayerWeightsGenerationFunction;
-	_Properties._PatchPropertiesGenerationFunction = configuration._PatchPropertiesGenerationFunction;
 
 	//Set the function for the update task.
 	_UpdateTask._Function = [](void *const RESTRICT)
@@ -82,6 +81,16 @@ void TerrainSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 		//Fire off another asynchronous update.
 		TaskSystem::Instance->ExecuteTask(&_UpdateTask);
 	}
+}
+
+/*
+*	Registers a terrain material at the given index.
+*/
+void TerrainSystem::RegisterTerrainMaterial(const uint8 index, const PhysicalMaterial &material) NOEXCEPT
+{
+	_TerrainMaterials[index]._AlbedoTextureIndex = material._AlbedoTextureIndex;
+	_TerrainMaterials[index]._NormalMapTextureIndex = material._NormalMapTextureIndex;
+	_TerrainMaterials[index]._MaterialPropertiesTextureIndex = material._MaterialPropertiesTextureIndex;
 }
 
 /*
@@ -531,11 +540,6 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 */
 void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patchSizeMultiplier, const uint8 resolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
-	//Get the material and the displacement information.
-	TerrainMaterial material;
-
-	_Properties._PatchPropertiesGenerationFunction(_Properties, worldPosition, &material);
-
 	//Fill in the details about the patch information.
 	patchInformation->_Identifier = TerrainGeneralUtilities::GeneratePatchIdentifier();
 	patchInformation->_Valid = true;

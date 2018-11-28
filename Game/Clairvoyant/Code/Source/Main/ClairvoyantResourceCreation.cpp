@@ -9,11 +9,10 @@
 #include <PhysicalModelCreator.h>
 #include <ResourceCollectionCreator.h>
 #include <OceanMaterialCreator.h>
-#include <TerrainMaterialCreator.h>
 
 //Preprocessor defines.
-#define CREATE_INTERMEDIATE_RESOURCES true
-#define CREATE_RESOURCE_COLLECTION true
+#define CREATE_INTERMEDIATE_RESOURCES false
+#define CREATE_RESOURCE_COLLECTION false
 
 /*
 *	Creates resources for the Clairvoyant project.
@@ -411,7 +410,6 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\LowDetailTreeStumpModel.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\MediumDetailTreeStumpModel.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\HighDetailTreeStumpModel.cr");
-		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultTerrainMaterial.cr");
 
 		ResourceCollectionCreator::CreateResourceCollection(parameters);
 	}

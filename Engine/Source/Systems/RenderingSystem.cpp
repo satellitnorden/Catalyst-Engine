@@ -30,7 +30,6 @@
 #include <Rendering/Engine/RenderingUtilities.h>
 #include <Rendering/Engine/Resolution.h>
 #include <Rendering/Engine/RenderPasses/RenderPasses.h>
-#include <Rendering/Engine/TerrainMaterial.h>
 #include <Rendering/Engine/TextureData.h>
 #include <Rendering/Engine/Viewer.h>
 #include <Rendering/Translation/Vulkan/VulkanRenderingSystem.h>
@@ -44,7 +43,6 @@
 #endif
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
-#include <Resources/TerrainMaterialData.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
@@ -136,11 +134,6 @@ void RenderingSystem::PostInitializeSystem()
 */
 void RenderingSystem::RenderingUpdateSystemSynchronous(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
-	//TEMP: Update the terrain material.
-	TerrainMaterial material;
-	TerrainSystem::Instance->GetTerrainProperties()->_PatchPropertiesGenerationFunction(*TerrainSystem::Instance->GetTerrainProperties(), Vector3(0.0f, 0.0f, 0.0f), &material);
-	TerrainSystem::Instance->GetTerrainProperties()->_RenderDataTable = material._RenderDataTable;
-
 	//Render-update the current rendering system synchronously.
 	CURRENT_RENDERING_SYSTEM::Instance->PreUpdateSystemSynchronous();
 
@@ -621,75 +614,6 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 }
 
 /*
-*	Creates a terrain material.
-*/
-void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT
-{
-	//Create the first layer albedo.
-	terrainMaterial._FirstLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FirstLayerAlbedoData, terrainMaterialData._FirstLayerWidth, terrainMaterialData._FirstLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the first layer normal map.
-	terrainMaterial._FirstLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FirstLayerNormalMapData, terrainMaterialData._FirstLayerWidth, terrainMaterialData._FirstLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the first layer material properties.
-	terrainMaterial._FirstLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FirstLayerMaterialPropertiesData, terrainMaterialData._FirstLayerWidth, terrainMaterialData._FirstLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the second layer albedo.
-	terrainMaterial._SecondLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._SecondLayerAlbedoData, terrainMaterialData._SecondLayerWidth, terrainMaterialData._SecondLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the second layer normal map.
-	terrainMaterial._SecondLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._SecondLayerNormalMapData, terrainMaterialData._SecondLayerWidth, terrainMaterialData._SecondLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the second layer material properties.
-	terrainMaterial._SecondLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._SecondLayerMaterialPropertiesData, terrainMaterialData._SecondLayerWidth, terrainMaterialData._SecondLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the third layer albedo.
-	terrainMaterial._ThirdLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._ThirdLayerAlbedoData, terrainMaterialData._ThirdLayerWidth, terrainMaterialData._ThirdLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the third layer normal map.
-	terrainMaterial._ThirdLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._ThirdLayerNormalMapData, terrainMaterialData._ThirdLayerWidth, terrainMaterialData._ThirdLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the third layer material properties.
-	terrainMaterial._ThirdLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._ThirdLayerMaterialPropertiesData, terrainMaterialData._ThirdLayerWidth, terrainMaterialData._ThirdLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the fourth layer albedo.
-	terrainMaterial._FourthLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FourthLayerAlbedoData, terrainMaterialData._FourthLayerWidth, terrainMaterialData._FourthLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the fourth layer normal map.
-	terrainMaterial._FourthLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FourthLayerNormalMapData, terrainMaterialData._FourthLayerWidth, terrainMaterialData._FourthLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the fourth layer material properties.
-	terrainMaterial._FourthLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FourthLayerMaterialPropertiesData, terrainMaterialData._FourthLayerWidth, terrainMaterialData._FourthLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the fifth layer albedo.
-	terrainMaterial._FifthLayerAlbedo = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FifthLayerAlbedoData, terrainMaterialData._FifthLayerWidth, terrainMaterialData._FifthLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the fifth layer normal map.
-	terrainMaterial._FifthLayerNormalMap = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FifthLayerNormalMapData, terrainMaterialData._FifthLayerWidth, terrainMaterialData._FifthLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the fifth layer material properties.
-	terrainMaterial._FifthLayerMaterialProperties = CreateTexture2D(TextureData(TextureDataContainer(terrainMaterialData._FifthLayerMaterialPropertiesData, terrainMaterialData._FifthLayerWidth, terrainMaterialData._FifthLayerHeight, 4), TextureFormat::R8G8B8A8_Byte));
-
-	//Create the render data table.
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial), &terrainMaterial._RenderDataTable);
-	BindCombinedImageSamplerToRenderDataTable(0, 0, terrainMaterial._RenderDataTable, terrainMaterial._FirstLayerAlbedo, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(1, 0, terrainMaterial._RenderDataTable, terrainMaterial._FirstLayerNormalMap, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(2, 0, terrainMaterial._RenderDataTable, terrainMaterial._FirstLayerMaterialProperties, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(3, 0, terrainMaterial._RenderDataTable, terrainMaterial._SecondLayerAlbedo, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(4, 0, terrainMaterial._RenderDataTable, terrainMaterial._SecondLayerNormalMap, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(5, 0, terrainMaterial._RenderDataTable, terrainMaterial._SecondLayerMaterialProperties, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(6, 0, terrainMaterial._RenderDataTable, terrainMaterial._ThirdLayerAlbedo, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(7, 0, terrainMaterial._RenderDataTable, terrainMaterial._ThirdLayerNormalMap, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(8, 0, terrainMaterial._RenderDataTable, terrainMaterial._ThirdLayerMaterialProperties, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(9, 0, terrainMaterial._RenderDataTable, terrainMaterial._FourthLayerAlbedo, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(10, 0, terrainMaterial._RenderDataTable, terrainMaterial._FourthLayerNormalMap, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(11, 0, terrainMaterial._RenderDataTable, terrainMaterial._FourthLayerMaterialProperties, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(12, 0, terrainMaterial._RenderDataTable, terrainMaterial._FifthLayerAlbedo, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(13, 0, terrainMaterial._RenderDataTable, terrainMaterial._FifthLayerNormalMap, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(14, 0, terrainMaterial._RenderDataTable, terrainMaterial._FifthLayerMaterialProperties, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-}
-
-/*
 *	Initializes a dynamic physical entity.
 */
 void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT
@@ -782,7 +706,8 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	_GlobalRenderData._AddTerrainHeightTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 	_GlobalRenderData._RemoveGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 	_GlobalRenderData._AddGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
-	_GlobalRenderData._TerrainUniformDataBuffers.UpsizeFast(numberOfFrameBuffers);
+	_GlobalRenderData._TerrainPatchDataBuffers.UpsizeFast(numberOfFrameBuffers);
+	_GlobalRenderData._TerrainMaterialDataBuffers.UpsizeFast(numberOfFrameBuffers);
 
 	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
 	{
@@ -813,11 +738,17 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 			BindCombinedImageSamplerToRenderDataTable(3, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 		}
 
-		//Create the terrain uniform data buffer.
-		_GlobalRenderData._TerrainUniformDataBuffers[i] = CreateUniformBuffer(sizeof(TerrainPatchInstanceRenderInformation) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer);
+		//Create the terrain patch data buffer.
+		_GlobalRenderData._TerrainPatchDataBuffers[i] = CreateUniformBuffer(sizeof(TerrainPatchInstanceRenderInformation) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer);
 	
-		//Bind the terrain uniform data buffer to the render data table.
-		BindUniformBufferToRenderDataTable(4, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainUniformDataBuffers[i]);
+		//Bind the terrain patch data buffer to the render data table.
+		BindUniformBufferToRenderDataTable(4, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainPatchDataBuffers[i]);
+
+		//Create the terrain material data buffer.
+		_GlobalRenderData._TerrainMaterialDataBuffers[i] = CreateUniformBuffer(sizeof(TerrainMaterial) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer);
+
+		//Bind the terrain material data buffer to the render data table.
+		BindUniformBufferToRenderDataTable(5, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainMaterialDataBuffers[i]);
 	}
 
 	//Mark all global texture slots as free.
@@ -1050,13 +981,14 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 5> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 6> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Geometry | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Vertex | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Vertex | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, ShaderStage::Vertex),
 			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -1071,30 +1003,6 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::EnvironmentMaterial)]);
-	}
-
-	{
-		//Initialize the physical render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 15> bindings
-		{
-			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(7, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(8, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(9, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(10, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(11, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::TessellationEvaluation | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(12, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(13, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(14, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::TessellationEvaluation | ShaderStage::Fragment)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::TerrainMaterial)]);
 	}
 
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -1161,8 +1069,11 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 	//Update the terrain height textures.
 	UpdateTerrainHeightTextures(currentFrameBufferIndex);
 
-	//Update the terrain uniform data.
-	UpdateTerrainUniformData(currentFrameBufferIndex);
+	//Update the terrain patch data.
+	UpdateTerrainPatchData(currentFrameBufferIndex);
+
+	//Update the terrain material data.
+	UpdateTerrainMaterialData(currentFrameBufferIndex);
 }
 
 /*
@@ -1313,9 +1224,9 @@ void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBuffer
 }
 
 /*
-*	Updates the terrain uniform data.
+*	Updates the terrain patch data.
 */
-void RenderingSystem::UpdateTerrainUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT
+void RenderingSystem::UpdateTerrainPatchData(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
 	StaticArray<TerrainPatchInstanceRenderInformation, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES> terrainUniformData;
 
@@ -1333,7 +1244,16 @@ void RenderingSystem::UpdateTerrainUniformData(const uint8 currentFrameBufferInd
 		terrainUniformData[counter++] = informations->At(i)._InstanceInformation;
 	}
 
-	UploadDataToUniformBuffer(_GlobalRenderData._TerrainUniformDataBuffers[currentFrameBufferIndex], terrainUniformData.Data());
+	UploadDataToUniformBuffer(_GlobalRenderData._TerrainPatchDataBuffers[currentFrameBufferIndex], terrainUniformData.Data());
+}
+
+/*
+*	Updates the terrain material data.
+*/
+void RenderingSystem::UpdateTerrainMaterialData(const uint8 currentFrameBufferIndex) NOEXCEPT
+{
+	//Copy the terrain material data to the buffer.
+	UploadDataToUniformBuffer(_GlobalRenderData._TerrainMaterialDataBuffers[currentFrameBufferIndex], TerrainSystem::Instance->GetTerrainMaterials()->Data());
 }
 
 //Undefine defines to keep them from leaking into other scopes.

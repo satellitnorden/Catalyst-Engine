@@ -226,7 +226,6 @@
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\VolumetricFogRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\RenderPasses\WorldPositionRenderPass.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h" />
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainMaterial.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureDataContainer.h" />
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Viewer.h" />
@@ -299,7 +298,6 @@
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoader.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoaderUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h" />
-    <ClInclude Include="..\..\..\Include\Resources\TerrainMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\DebugRenderingSystem.h" />
@@ -318,6 +316,7 @@
     <ClInclude Include="..\..\..\Include\Systems\VegetationSystem.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainCore.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainGeneralUtilities.h" />
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainMaterial.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchInstanceRenderInformation.h" />
     <ClInclude Include="..\..\..\Include\Terrain\TerrainPatchRenderInformation.h" />

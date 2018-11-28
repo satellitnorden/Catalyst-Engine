@@ -23,7 +23,6 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 
 	configuration->_TerrainConfiguration._HeightGenerationFunction = ClairvoyantTerrainArchitect::GenerateHeight;
 	configuration->_TerrainConfiguration._LayerWeightsGenerationFunction = ClairvoyantTerrainArchitect::GenerateLayerWeights;
-	configuration->_TerrainConfiguration._PatchPropertiesGenerationFunction = ClairvoyantTerrainArchitect::GeneratePatchProperties;
 }
 
 MAIN_FUNCTION

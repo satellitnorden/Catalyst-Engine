@@ -56,9 +56,8 @@ void DirectionalTerrainShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::DirectionalShadowMap);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -159,7 +158,6 @@ void DirectionalTerrainShadowRenderPass::RenderInternal() NOEXCEPT
 			continue;
 		}
 
-		commandBuffer->BindRenderDataTable(this, 1, TerrainSystem::Instance->GetTerrainProperties()->_RenderDataTable);
 		commandBuffer->PushConstants(this, ShaderStage::TessellationEvaluation, 0, sizeof(float) * 5, nullptr);
 
 		commandBuffer->DrawIndexed(this, TerrainSystem::Instance->GetTerrainProperties()->_IndexCount, 1);

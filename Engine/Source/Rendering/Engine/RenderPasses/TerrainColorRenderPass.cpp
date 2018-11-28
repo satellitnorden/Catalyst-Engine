@@ -13,18 +13,6 @@
 DEFINE_SINGLETON(TerrainColorRenderPass);
 
 /*
-*	Push constant data.
-*/
-class PushConstantData final
-{
-
-public:
-
-	int32 _ParalloxOcclusionMappingEnabled;
-
-};
-
-/*
 *	Default constructor.
 */
 TerrainColorRenderPass::TerrainColorRenderPass() NOEXCEPT
@@ -70,14 +58,9 @@ void TerrainColorRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(3);
+	SetNumberOfRenderDataTableLayouts(2);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
 	AddRenderDataTableLayout(_RenderDataTableLayout);
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::TerrainMaterial));
-
-	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Fragment, 0, sizeof(PushConstantData));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -149,21 +132,6 @@ void TerrainColorRenderPass::RenderInternal() NOEXCEPT
 	//Bind the render data tables.
 	commandBuffer->BindRenderDataTable(this, 0, RenderingSystem::Instance->GetGlobalRenderDataTable());
 	commandBuffer->BindRenderDataTable(this, 1, _RenderDataTable);
-	commandBuffer->BindRenderDataTable(this, 2, TerrainSystem::Instance->GetTerrainProperties()->_RenderDataTable);
-
-	//Push constants.
-	static bool enabled{ false };
-
-	if (InputSystem::Instance->GetGamepadState()->_B == ButtonState::Pressed)
-	{
-		enabled = !enabled;
-	}
-
-	PushConstantData data;
-
-	data._ParalloxOcclusionMappingEnabled = enabled;
-
-	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);
 
 	//Draw!
 	commandBuffer->Draw(this, 3, 1);

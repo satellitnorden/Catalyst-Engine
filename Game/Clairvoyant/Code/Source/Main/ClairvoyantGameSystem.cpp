@@ -7,6 +7,7 @@
 #include <World/ClairvoyantGrassVegetationArchitect.h>
 #include <World/ClairvoyantLocationArchitect.h>
 #include <World/ClairvoyantSolidVegetationArchitect.h>
+#include <World/ClairvoyantTerrainArchitect.h>
 #include <World/ClairvoyantWorldArchitect.h>
 #include <World/TimeOfDaySystem.h>
 
@@ -29,6 +30,7 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 {
 	//Load the resource collection.
 	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\ClairvoyantResourceCollection.crc");
+	ResourceLoader::LoadResourceCollection("..\\..\\..\\Resources\\Final\\TerrainResourceCollection.crc");
 
 	//Set the environment materials/blend.
 #if defined(CATALYST_ENABLE_OCEAN)
@@ -36,13 +38,16 @@ void ClairvoyantGameSystem::InitializeSystem() NOEXCEPT
 #endif
 
 	//Initialize the Clairvoyant grass vegetation architect.
-	ClairvoyantGrassVegetationArchitect::Initialize();
+	//ClairvoyantGrassVegetationArchitect::Initialize();
 
 	//Initialize the Clairvoyant location architect.
-	ClairvoyantLocationArchitect::Initialize();
+	//ClairvoyantLocationArchitect::Initialize();
 
 	//Initialize the Clairvoyant solid vegetation architect.
-	ClairvoyantSolidVegetationArchitect::Initialize();
+	//ClairvoyantSolidVegetationArchitect::Initialize();
+
+	//Initialize the Clairvoyant terrain architect.
+	ClairvoyantTerrainArchitect::Initialize();
 
 	//Initialize the world architect.
 	ClairvoyantWorldArchitect::Instance->Initialize();

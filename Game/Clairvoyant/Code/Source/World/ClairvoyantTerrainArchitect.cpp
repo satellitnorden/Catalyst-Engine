@@ -153,6 +153,15 @@ float GetRandomOffset(const uint8 index) NOEXCEPT
 }
 
 /*
+*	Initializes the Clairvoyant terrain architect.
+*/
+void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
+{
+	//Register the terrain materials.
+	TerrainSystem::Instance->RegisterTerrainMaterial(0, ResourceLoader::GetPhysicalMaterial(HashString("TerrainSandMaterial")));
+}
+
+/*
 *	Generates the height.
 */
 void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &properties, const Vector3 &worldPosition, float *const RESTRICT height) NOEXCEPT
@@ -310,12 +319,4 @@ void ClairvoyantTerrainArchitect::GenerateLayerWeights(const TerrainProperties &
 
 	//Determine the weight of the rock layer.
 	layerWeights->_W = 1.0f - CatalystBaseMath::Clamp<float>(Vector3::DotProduct(normal, Vector3::UP), 0.0f, 1.0f);
-}
-
-/*
-*	Generates the patch properties.
-*/
-void ClairvoyantTerrainArchitect::GeneratePatchProperties(const TerrainProperties &properties, const Vector3 &worldPosition, TerrainMaterial *const RESTRICT material) NOEXCEPT
-{
-	*material = ResourceLoader::GetTerrainMaterial(HashString("DefaultTerrainMaterial"));
 }

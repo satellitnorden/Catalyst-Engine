@@ -10,8 +10,8 @@
 #define MaximumNumberOfSpotLights 8
 #define MAXIMUM_NUMBER_OF_TERRAIN_PATCHES 255
 
-//Terrain data definition.
-struct TerrainData
+//Terrain patch data definition.
+struct TerrainPatchData
 {
     vec2 worldPosition;
     float patchSize;
@@ -19,6 +19,15 @@ struct TerrainData
     int heightTextureIndex;
     int normalTextureIndex;
     int layerWeightsTextureIndex;
+};
+
+//Terrain material data definition.
+struct TerrainMaterialData
+{
+    int albedoTextureIndex;
+    int normalMapTextureIndex;
+    int materialPropertiesIndex;
+    int padding;
 };
 
 //Global uniform data.
@@ -80,10 +89,16 @@ layout (set = 0, binding = 2) uniform texture2D globalTextures[512];
 //The terrain height textures.
 layout (set = 0, binding = 3) uniform sampler2D terrainHeightTextures[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
 
-//The terrain data.
-layout (std140, set = 0, binding = 4) uniform TerrainUniformData
+//The terrain patch uniform data.
+layout (std140, set = 0, binding = 4) uniform TerrainPatchUniformData
 {
-    layout (offset = 0) TerrainData terrainData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
+    layout (offset = 0) TerrainPatchData terrainPatchData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
+};
+
+//The terrain material uniform data.
+layout (std140, set = 0, binding = 5) uniform TerrainMaterialUniformData
+{
+    layout (offset = 0) TerrainMaterialData terrainMaterialData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
 };
 
 //Constants.

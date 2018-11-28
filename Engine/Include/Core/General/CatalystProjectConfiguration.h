@@ -73,9 +73,6 @@ public:
 	//The layer weights generation function.
 	LayerWeightsGenerationFunction _LayerWeightsGenerationFunction;
 
-	//The patch properties generation function.
-	PatchPropertiesGenerationFunction _PatchPropertiesGenerationFunction;
-
 	/*
 	*	Default constructor.
 	*/

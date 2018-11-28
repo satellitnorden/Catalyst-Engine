@@ -45,7 +45,10 @@ public:
 	//The add terrain height texture updates.
 	DynamicArray<DynamicArray<Pair<uint8, Texture2DHandle>>> _AddTerrainHeightTextureUpdates;
 
-	//The terrain uniform data buffers.
-	DynamicArray<UniformBufferHandle> _TerrainUniformDataBuffers;
+	//The terrain patch data buffers.
+	DynamicArray<UniformBufferHandle> _TerrainPatchDataBuffers;
+
+	//The terrain material data buffers.
+	DynamicArray<UniformBufferHandle> _TerrainMaterialDataBuffers;
 
 };

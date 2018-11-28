@@ -46,8 +46,6 @@ class PhysicalMaterialData;
 class PhysicalModelData;
 class RenderPass;
 class Resolution;
-class TerrainMaterial;
-class TerrainMaterialData;
 class TextureData;
 
 class RenderingSystem final
@@ -404,11 +402,6 @@ public:
 	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) NOEXCEPT;
 
 	/*
-	*	Creates a terrain material.
-	*/
-	void CreateTerrainMaterial(const TerrainMaterialData &terrainMaterialData, TerrainMaterial &terrainMaterial) NOEXCEPT;
-
-	/*
 	*	Initializes a dynamic physical entity.
 	*/
 	void InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT;
@@ -563,8 +556,13 @@ private:
 	void UpdateTerrainHeightTextures(const uint8 currentFrameBufferIndex) NOEXCEPT;
 
 	/*
-	*	Updates the terrain uniform data.
+	*	Updates the terrain patch data.
 	*/
-	void UpdateTerrainUniformData(const uint8 currentFrameBufferIndex) NOEXCEPT;
+	void UpdateTerrainPatchData(const uint8 currentFrameBufferIndex) NOEXCEPT;
+
+	/*
+	*	Updates the terrain material data.
+	*/
+	void UpdateTerrainMaterialData(const uint8 currentFrameBufferIndex) NOEXCEPT;
 
 };

@@ -354,9 +354,6 @@
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h">
       <Filter>Resources\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Resources\TerrainMaterialData.h">
-      <Filter>Resources\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h">
       <Filter>Sound\Include</Filter>
     </ClInclude>
@@ -541,9 +538,6 @@
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\Resolution.h">
-      <Filter>Rendering\Include\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Rendering\Engine\TerrainMaterial.h">
       <Filter>Rendering\Include\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Rendering\Engine\TextureData.h">
@@ -1121,6 +1115,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\ValueNoise.h">
       <Filter>Math\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Terrain\TerrainMaterial.h">
+      <Filter>Terrain\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

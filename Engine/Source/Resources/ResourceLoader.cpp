@@ -16,7 +16,6 @@
 #include <Resources/PhysicalModelData.h>
 #include <Resources/ResourceLoaderUtilities.h>
 #include <Resources/ResourcesCore.h>
-#include <Resources/TerrainMaterialData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -32,7 +31,6 @@ Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
 Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::_PhysicalModels;
-Map<HashString, TerrainMaterial> ResourceLoader::_TerrainMaterials;
 
 /*
 *	Given a file path, load a resource collection.
@@ -118,13 +116,6 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			case ResourceType::PhysicalModel:
 			{
 				LoadPhysicalModel(file);
-
-				break;
-			}
-
-			case ResourceType::TerrainMaterial:
-			{
-				LoadTerrainMaterial(file);
 
 				break;
 			}
@@ -459,38 +450,4 @@ void ResourceLoader::LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the physical model via the rendering system.
 	RenderingSystem::Instance->CreatePhysicalModel(physicalModelData, _PhysicalModels[resourceID]);
-}
-
-/*
-*	Given a file, load a terrain material.
-*/
-void ResourceLoader::LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
-{
-	//Store the terrain material data in the terrain material data structure.
-	TerrainMaterialData terrainMaterialData;
-
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
-
-	//Read the number of mipmap levels.
-	file.Read(&terrainMaterialData._MipmapLevels, sizeof(uint8));
-
-	//Load the first layer.
-	ResourceLoaderUtilities::LoadTerrainLayerData(file, terrainMaterialData._FirstLayerWidth, terrainMaterialData._FirstLayerHeight, terrainMaterialData._MipmapLevels, terrainMaterialData._FirstLayerAlbedoData, terrainMaterialData._FirstLayerNormalMapData, terrainMaterialData._FirstLayerMaterialPropertiesData);
-
-	//Load the second layer.
-	ResourceLoaderUtilities::LoadTerrainLayerData(file, terrainMaterialData._SecondLayerWidth, terrainMaterialData._SecondLayerHeight, terrainMaterialData._MipmapLevels, terrainMaterialData._SecondLayerAlbedoData, terrainMaterialData._SecondLayerNormalMapData, terrainMaterialData._SecondLayerMaterialPropertiesData);
-
-	//Load the third layer.
-	ResourceLoaderUtilities::LoadTerrainLayerData(file, terrainMaterialData._ThirdLayerWidth, terrainMaterialData._ThirdLayerHeight, terrainMaterialData._MipmapLevels, terrainMaterialData._ThirdLayerAlbedoData, terrainMaterialData._ThirdLayerNormalMapData, terrainMaterialData._ThirdLayerMaterialPropertiesData);
-
-	//Load the fourth layer.
-	ResourceLoaderUtilities::LoadTerrainLayerData(file, terrainMaterialData._FourthLayerWidth, terrainMaterialData._FourthLayerHeight, terrainMaterialData._MipmapLevels, terrainMaterialData._FourthLayerAlbedoData, terrainMaterialData._FourthLayerNormalMapData, terrainMaterialData._FourthLayerMaterialPropertiesData);
-
-	//Load the fifth layer.
-	ResourceLoaderUtilities::LoadTerrainLayerData(file, terrainMaterialData._FifthLayerWidth, terrainMaterialData._FifthLayerHeight, terrainMaterialData._MipmapLevels, terrainMaterialData._FifthLayerAlbedoData, terrainMaterialData._FifthLayerNormalMapData, terrainMaterialData._FifthLayerMaterialPropertiesData);
-
-	//Create the terrain material via the rendering system.
-	RenderingSystem::Instance->CreateTerrainMaterial(terrainMaterialData, _TerrainMaterials[resourceID]);
 }

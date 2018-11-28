@@ -12,7 +12,11 @@
 #include <Multithreading/Spinlock.h>
 #include <Multithreading/Task.h>
 
+//Rendering.
+#include <Rendering/Engine/PhysicalMaterial.h>
+
 //Terrain.
+#include <Terrain/TerrainMaterial.h>
 #include <Terrain/TerrainPatchInformation.h>
 #include <Terrain/TerrainPatchRenderInformation.h>
 #include <Terrain/TerrainProperties.h>
@@ -81,6 +85,19 @@ public:
 	}
 
 	/*
+	*	Returns the terrain materials.
+	*/
+	RESTRICTED NO_DISCARD const StaticArray<TerrainMaterial, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES> *const RESTRICT GetTerrainMaterials() const NOEXCEPT
+	{
+		return &_TerrainMaterials;
+	}
+
+	/*
+	*	Registers a terrain material at the given index.
+	*/
+	void RegisterTerrainMaterial(const uint8 index, const PhysicalMaterial &material) NOEXCEPT;
+
+	/*
 	*	Returns the terrain height at the given position.
 	*/
 	bool GetTerrainHeightAtPosition(const Vector3 &position, float *const RESTRICT height) const NOEXCEPT;
@@ -109,6 +126,9 @@ private:
 
 	//The patch render informations.
 	DynamicArray<TerrainPatchRenderInformation> _PatchRenderInformations;
+
+	//The terrain materials.
+	StaticArray<TerrainMaterial, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES> _TerrainMaterials;
 
 	/*
 	*	Returns the patch information index for the identifier.

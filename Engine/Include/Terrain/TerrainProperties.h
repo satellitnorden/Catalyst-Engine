@@ -23,16 +23,10 @@ public:
 	//The index count.
 	uint32 _IndexCount;
 
-	//The render data table for the terrain material.
-	RenderDataTableHandle _RenderDataTable;
-
 	//The height generation function.
 	HeightGenerationFunction _HeightGenerationFunction;
 
 	//The layer weights generation function.
 	LayerWeightsGenerationFunction _LayerWeightsGenerationFunction;
-
-	//The patch properties generation function.
-	PatchPropertiesGenerationFunction _PatchPropertiesGenerationFunction;
 
 };
