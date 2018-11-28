@@ -45,8 +45,8 @@ public:
 		//The ambient occlusion file path.
 		const char *RESTRICT _AmbientOcclusionFile;
 
-		//The thickness file path.
-		const char *RESTRICT _ThicknessFile;
+		//The variant file path.
+		const char *RESTRICT _VariantFile;
 
 	};
 
@@ -139,17 +139,17 @@ public:
 		//Free the layer normal map data.
 		stbi_image_free(data);
 
-		//Load the roughness, metallic, ambient occlusion and thickness data.
+		//Load the roughness, metallic, ambient occlusion and variant data.
 		byte *RESTRICT roughnessData = parameters._RoughnessFile ? stbi_load(parameters._RoughnessFile, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr;
 		byte *RESTRICT metallicData = parameters._MetallicFile ? stbi_load(parameters._MetallicFile, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr;
 		byte *RESTRICT ambientOcclusionData = parameters._AmbientOcclusionFile ? stbi_load(parameters._AmbientOcclusionFile, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr;
-		byte *RESTRICT thicknessData = parameters._ThicknessFile ? stbi_load(parameters._ThicknessFile, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr;
+		byte *RESTRICT variantData = parameters._VariantFile ? stbi_load(parameters._VariantFile, &width, &height, &numberOfChannels, STBI_rgb_alpha) : nullptr;
 
-		//Write the roughness, metallic, ambient occlusion and thickness data to the file.
+		//Write the roughness, metallic, ambient occlusion and variant data to the file.
 		constexpr byte defaultRoughness{ 255 };
 		constexpr byte defaultMetallic{ 0 };
 		constexpr byte defaultAmbientOcclusion{ 255 };
-		constexpr byte defaultThickness{ 255 };
+		constexpr byte defaultVariant{ 255 };
 
 		for (uint8 i = 0; i < parameters._MipmapLevels; ++i)
 		{
@@ -163,7 +163,7 @@ public:
 					file.Write(roughnessData ? &roughnessData[j * 4] : &defaultRoughness, sizeof(byte));
 					file.Write(metallicData ? &metallicData[j * 4] : &defaultMetallic, sizeof(byte));
 					file.Write(ambientOcclusionData ? &ambientOcclusionData[j * 4] : &defaultAmbientOcclusion, sizeof(byte));
-					file.Write(thicknessData ? &thicknessData[j * 4] : &defaultThickness, sizeof(byte));
+					file.Write(variantData ? &variantData[j * 4] : &defaultVariant, sizeof(byte));
 				}
 			}
 
@@ -172,25 +172,25 @@ public:
 				byte *RESTRICT downsampledRoughnessData = roughnessData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
 				byte *RESTRICT downsampledMetallicData = metallicData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
 				byte *RESTRICT downsampledAmbientOcclusionData = ambientOcclusionData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
-				byte *RESTRICT downsampledThicknessData = thicknessData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
+				byte *RESTRICT downsampledVariantData = variantData ? static_cast<byte *RESTRICT >(MemoryUtilities::AllocateMemory(textureSize * 4)) : nullptr;
 
 				if (roughnessData) stbir_resize_uint8(roughnessData, width, height, 0, downsampledRoughnessData, uWidth >> i, uHeight >> i, 0, 4);
 				if (metallicData) stbir_resize_uint8(metallicData, width, height, 0, downsampledMetallicData, uWidth >> i, uHeight >> i, 0, 4);
 				if (ambientOcclusionData) stbir_resize_uint8(ambientOcclusionData, width, height, 0, downsampledAmbientOcclusionData, uWidth >> i, uHeight >> i, 0, 4);
-				if (thicknessData) stbir_resize_uint8(thicknessData, width, height, 0, downsampledThicknessData, uWidth >> i, uHeight >> i, 0, 4);
+				if (variantData) stbir_resize_uint8(variantData, width, height, 0, downsampledVariantData, uWidth >> i, uHeight >> i, 0, 4);
 
 				for (uint64 j = 0; j < textureSize; ++j)
 				{
 					file.Write(downsampledRoughnessData ? &downsampledRoughnessData[j * 4] : &defaultRoughness, sizeof(byte));
 					file.Write(downsampledMetallicData ? &downsampledMetallicData[j * 4] : &defaultMetallic, sizeof(byte));
 					file.Write(downsampledAmbientOcclusionData ? &downsampledAmbientOcclusionData[j * 4] : &defaultAmbientOcclusion, sizeof(byte));
-					file.Write(downsampledThicknessData ? &downsampledThicknessData[j * 4] : &defaultThickness, sizeof(byte));
+					file.Write(downsampledVariantData ? &downsampledVariantData[j * 4] : &defaultVariant, sizeof(byte));
 				}
 
 				MemoryUtilities::FreeMemory(downsampledRoughnessData);
 				MemoryUtilities::FreeMemory(downsampledMetallicData);
 				MemoryUtilities::FreeMemory(downsampledAmbientOcclusionData);
-				MemoryUtilities::FreeMemory(downsampledThicknessData);
+				MemoryUtilities::FreeMemory(downsampledVariantData);
 			}
 		}
 
@@ -198,7 +198,7 @@ public:
 		stbi_image_free(roughnessData);
 		stbi_image_free(metallicData);
 		stbi_image_free(ambientOcclusionData);
-		stbi_image_free(thicknessData);
+		stbi_image_free(variantData);
 
 		//Close the file.
 		file.Close();

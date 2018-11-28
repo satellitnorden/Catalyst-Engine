@@ -12,8 +12,8 @@
 #include <TerrainMaterialCreator.h>
 
 //Preprocessor defines.
-#define CREATE_INTERMEDIATE_RESOURCES false
-#define CREATE_RESOURCE_COLLECTION false
+#define CREATE_INTERMEDIATE_RESOURCES true
+#define CREATE_RESOURCE_COLLECTION true
 
 namespace ClairvoyantResourceCreation
 {
@@ -262,7 +262,7 @@ namespace ClairvoyantResourceCreation
 			parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\General\\Tower\\Roughness.png";
 			parameters._MetallicFile = "..\\..\\..\\Resources\\Raw\\Textures\\General\\Tower\\Metallic.png";
 			parameters._AmbientOcclusionFile = nullptr;
-			parameters._ThicknessFile = nullptr;
+			parameters._VariantFile = nullptr;
 
 			PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
 		}
@@ -279,7 +279,7 @@ namespace ClairvoyantResourceCreation
 			parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\RockVolcanic\\Roughness.png";
 			parameters._MetallicFile = nullptr;
 			parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\RockVolcanic\\AmbientOcclusion.png";
-			parameters._ThicknessFile = nullptr;
+			parameters._VariantFile = nullptr;
 
 			PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
 		}
@@ -296,7 +296,7 @@ namespace ClairvoyantResourceCreation
 			parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\TreeStump\\Roughness.png";
 			parameters._MetallicFile = nullptr;
 			parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Vegetation\\TreeStump\\AmbientOcclusion.png";
-			parameters._ThicknessFile = nullptr;
+			parameters._VariantFile = nullptr;
 
 			PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
 		}
