@@ -9,15 +9,18 @@
 
 layout (early_fragment_tests) in;
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 64) int albedoTextureIndex;
+    layout (offset = 68) int normalMapTextureIndex;
+    layout (offset = 72) int materialPropertiesIndex;
+};
+
 //In parameters.
 layout (location = 0) in vec3 fragmentWorldPosition;
 layout (location = 1) in mat3 fragmentTangentSpaceMatrix;
 layout (location = 4) in vec2 fragmentTextureCoordinate;
-
-//Texture samplers.
-layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
-layout (set = 1, binding = 2) uniform sampler2D normalMapTexture;
-layout (set = 1, binding = 3) uniform sampler2D materialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedoColor;
@@ -27,16 +30,16 @@ layout (location = 2) out vec4 materialProperties;
 void main()
 {
     //Set the albedo color.
-    albedoColor = texture(albedoTexture, fragmentTextureCoordinate);
+    albedoColor = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
 
     //Set the normal.
-    vec3 normalDirection = texture(normalMapTexture, fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
+    vec3 normalDirection = texture(sampler2D(globalTextures[normalMapTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate).xyz * 2.0f - 1.0f;
     normalDirection = fragmentTangentSpaceMatrix * normalDirection;
     normalDirection = normalize(normalDirection);
     normalDirectionDepth = vec4(normalDirection, gl_FragCoord.z);
 
     //Sample the material properties.
-    vec4 materialPropertiesSampler = texture(materialPropertiesTexture, fragmentTextureCoordinate);
+    vec4 materialPropertiesSampler = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
 
     //Set the roughness.
     materialProperties.r = materialPropertiesSampler.r;

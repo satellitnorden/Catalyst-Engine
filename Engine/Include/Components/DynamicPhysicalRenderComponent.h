@@ -4,7 +4,8 @@
 #include <Core/Core/CatalystCore.h>
 
 //Rendering.
-#include <Rendering/Engine/RenderingCore.h>
+#include <Rendering/Engine/PhysicalMaterial.h>
+#include <Rendering/Engine/PhysicalModel.h>
 
 class DynamicPhysicalRenderComponent final
 {
@@ -14,17 +15,11 @@ public:
 	//The physical flags.
 	PhysicalFlag _PhysicalFlags;
 
-	//The buffer.
-	ConstantBufferHandle _Buffer;
+	//The model.
+	PhysicalModel _Model;
 
-	//The offset for the indices in the buffer.
-	uint64 _IndexOffset;
-
-	//The render data table.
-	RenderDataTableHandle _RenderDataTable;
-
-	//The index count.
-	uint32 _IndexCount;
+	//The model.
+	PhysicalMaterial _Material;
 
 	//Denotes whether or not this static physical model is in the view frustum.
 	bool _IsInViewFrustum;

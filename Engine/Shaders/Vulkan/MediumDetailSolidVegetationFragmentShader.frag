@@ -10,15 +10,17 @@
 //Layout specification.
 layout (early_fragment_tests) in;
 
+//Push constant data.
+layout (push_constant) uniform PushConstantData
+{
+    layout (offset = 12) int albedoTextureIndex;
+    layout (offset = 16) int materialPropertiesIndex;
+};
+
 //In parameters.
 layout (location = 0) in float fragmentLengthFactor;
 layout (location = 1) in vec2 fragmentTextureCoordinate;
 layout (location = 2) in mat3 fragmentTangentSpaceMatrix;
-
-//Texture samplers.
-layout (set = 1, binding = 1) uniform sampler2D albedoTexture;
-layout (set = 1, binding = 2) uniform sampler2D normalMapTexture;
-layout (set = 1, binding = 3) uniform sampler2D materialPropertiesTexture;
 
 //Out parameters.
 layout (location = 0) out vec4 albedo;
@@ -35,13 +37,13 @@ void main()
     }
 
     //Write the albedo.
-    albedo = texture(albedoTexture, fragmentTextureCoordinate);
+    albedo = texture(sampler2D(globalTextures[albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
 
     //Write the normal/depth.
     normalDepth = vec4(fragmentTangentSpaceMatrix[2], gl_FragCoord.z);
 
     //Sample the material properties.
-    vec4 materialPropertiesSampler = texture(materialPropertiesTexture, fragmentTextureCoordinate);
+    vec4 materialPropertiesSampler = texture(sampler2D(globalTextures[materialPropertiesIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index]), fragmentTextureCoordinate);
 
     //Write the roughness.
     materialProperties.r = materialPropertiesSampler.r;

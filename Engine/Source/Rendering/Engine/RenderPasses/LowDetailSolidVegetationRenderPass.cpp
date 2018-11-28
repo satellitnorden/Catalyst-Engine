@@ -14,7 +14,10 @@
 //Singleton definition.
 DEFINE_SINGLETON(LowDetailSolidVegetationRenderPass);
 
-class PushConstantData final
+/*
+*	Vertex push constant data definition.
+*/
+class VertexPushConstantData final
 {
 
 public:
@@ -22,6 +25,18 @@ public:
 	float _CutoffDistanceSquared;
 	float _HalfCutoffDistanceSquared;
 	float _InverseHalfCutoffDistanceSquared;
+
+};
+
+/*
+*	Fragment push constant data definition.
+*/
+class FragmentPushConstantData final
+{
+
+public:
+
+	int32 _AlbedoTextureIndex;
 
 };
 
@@ -65,13 +80,13 @@ void LowDetailSolidVegetationRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::PhysicalMaterial));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(PushConstantData));
+	SetNumberOfPushConstantRanges(2);
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(8);
@@ -186,17 +201,20 @@ void LowDetailSolidVegetationRenderPass::RenderInternal() NOEXCEPT
 		commandBuffer->BindVertexBuffer(this, 0, information._Models[UNDERLYING(VegetationLevelOfDetail::Low)]._Buffer, &offset);
 		commandBuffer->BindIndexBuffer(this, information._Models[UNDERLYING(VegetationLevelOfDetail::Low)]._Buffer, information._Models[UNDERLYING(VegetationLevelOfDetail::Low)]._IndexOffset);
 
-		//Bind the render data table.
-		commandBuffer->BindRenderDataTable(this, 1, information._Material._RenderDataTable);
+		//Push constants.
+		VertexPushConstantData vertexData;
 
-		//Pust constants.
-		PushConstantData data;
+		vertexData._CutoffDistanceSquared = (information._Properties._CutoffDistance) * (information._Properties._CutoffDistance);
+		vertexData._HalfCutoffDistanceSquared = (information._Properties._CutoffDistance * 0.5f) * (information._Properties._CutoffDistance * 0.5f);
+		vertexData._InverseHalfCutoffDistanceSquared = 1.0f / vertexData._HalfCutoffDistanceSquared;
 
-		data._CutoffDistanceSquared = (information._Properties._CutoffDistance) * (information._Properties._CutoffDistance);
-		data._HalfCutoffDistanceSquared = (information._Properties._CutoffDistance * 0.5f) * (information._Properties._CutoffDistance * 0.5f);
-		data._InverseHalfCutoffDistanceSquared = 1.0f / data._HalfCutoffDistanceSquared;
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(PushConstantData), &data);
+		FragmentPushConstantData fragmentData;
+
+		fragmentData._AlbedoTextureIndex = information._Material._AlbedoTextureIndex;
+
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
 
 		for (const VegetationPatchRenderInformation &renderInformation : information._PatchRenderInformations)
 		{

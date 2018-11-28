@@ -54,9 +54,8 @@ void DirectionalDynamicPhysicalShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::DirectionalShadowMap);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::PhysicalMaterial));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -157,22 +156,15 @@ void DirectionalDynamicPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 		Matrix4 modelMatrix{ transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale };
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
 
-		if (previousBuffer != renderComponent->_Buffer)
+		if (previousBuffer != renderComponent->_Model._Buffer)
 		{
-			previousBuffer = renderComponent->_Buffer;
+			previousBuffer = renderComponent->_Model._Buffer;
 
-			commandBuffer->BindVertexBuffer(this, 0, renderComponent->_Buffer, &offset);
-			commandBuffer->BindIndexBuffer(this, renderComponent->_Buffer, renderComponent->_IndexOffset);
+			commandBuffer->BindVertexBuffer(this, 0, renderComponent->_Model._Buffer, &offset);
+			commandBuffer->BindIndexBuffer(this, renderComponent->_Model._Buffer, renderComponent->_Model._IndexOffset);
 		}
 
-		if (previousRenderDataTable != renderComponent->_RenderDataTable)
-		{
-			previousRenderDataTable = renderComponent->_RenderDataTable;
-
-			commandBuffer->BindRenderDataTable(this, 1, renderComponent->_RenderDataTable);
-		}
-
-		commandBuffer->DrawIndexed(this, renderComponent->_IndexCount, 1);
+		commandBuffer->DrawIndexed(this, renderComponent->_Model._IndexCount, 1);
 	}
 
 	//End the command buffer.

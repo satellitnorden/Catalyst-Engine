@@ -20,7 +20,13 @@ public:
 	//The material properties texture.
 	Texture2DHandle _MaterialPropertiesTexture;
 
-	//The render data table.
-	RenderDataTableHandle _RenderDataTable;
+	//The index for the albedo texture in the global textures.
+	uint32 _AlbedoTextureIndex;
+
+	//The index for the normal map texture in the global textures.
+	uint32 _NormalMapTextureIndex;
+
+	//The index for the material properties texture in the global textures.
+	uint32 _MaterialPropertiesTextureIndex;
 
 };

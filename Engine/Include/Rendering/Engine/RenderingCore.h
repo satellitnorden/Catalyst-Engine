@@ -203,7 +203,6 @@ enum class CommonRenderDataTableLayout : uint8
 	EnvironmentMaterial,
 	GrassMaterial,
 	TerrainMaterial,
-	PhysicalMaterial,
 #if defined(CATALYST_ENABLE_OCEAN)
 	OceanMaterial,
 #endif

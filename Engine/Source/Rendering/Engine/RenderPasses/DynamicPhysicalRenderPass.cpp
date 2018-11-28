@@ -16,6 +16,32 @@
 DEFINE_SINGLETON(DynamicPhysicalRenderPass);
 
 /*
+*	Vertex push constant data definition.
+*/
+class VertexPushConstantData final
+{
+
+public:
+
+	Matrix4 _ModelMatrix;
+
+};
+
+/*
+*	Fragment push constant data definition.
+*/
+class FragmentPushConstantData final
+{
+
+public:
+
+	int32 _AlbedoTextureIndex;
+	int32 _NormalMapTextureIndex;
+	int32 _MaterialPropertiesTextureIndex;
+
+};
+
+/*
 *	Default constructor.
 */
 DynamicPhysicalRenderPass::DynamicPhysicalRenderPass() NOEXCEPT
@@ -55,13 +81,13 @@ void DynamicPhysicalRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::SceneBufferMaterialProperties);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::PhysicalMaterial));
 
 	//Add the push constant ranges.
-	SetNumberOfPushConstantRanges(1);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(Matrix4));
+	SetNumberOfPushConstantRanges(2);
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(VertexPushConstantData));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -161,25 +187,30 @@ void DynamicPhysicalRenderPass::RenderInternal() NOEXCEPT
 
 		const uint64 offset{ 0 };
 
-		Matrix4 modelMatrix{ transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale };
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
+		//Push constants.
+		VertexPushConstantData vertexData;
 
-		if (previousBuffer != renderComponent->_Buffer)
+		vertexData._ModelMatrix = Matrix4(transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale);
+
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(VertexPushConstantData), &vertexData);
+
+		FragmentPushConstantData fragmentData;
+
+		fragmentData._AlbedoTextureIndex = renderComponent->_Material._AlbedoTextureIndex;
+		fragmentData._NormalMapTextureIndex = renderComponent->_Material._NormalMapTextureIndex;
+		fragmentData._MaterialPropertiesTextureIndex = renderComponent->_Material._MaterialPropertiesTextureIndex;
+
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(VertexPushConstantData), sizeof(FragmentPushConstantData), &fragmentData);
+
+		if (previousBuffer != renderComponent->_Model._Buffer)
 		{
-			previousBuffer = renderComponent->_Buffer;
+			previousBuffer = renderComponent->_Model._Buffer;
 
-			commandBuffer->BindVertexBuffer(this, 0, renderComponent->_Buffer, &offset);
-			commandBuffer->BindIndexBuffer(this, renderComponent->_Buffer, renderComponent->_IndexOffset);
+			commandBuffer->BindVertexBuffer(this, 0, renderComponent->_Model._Buffer, &offset);
+			commandBuffer->BindIndexBuffer(this, renderComponent->_Model._Buffer, renderComponent->_Model._IndexOffset);
 		}
 
-		if (previousRenderDataTable != renderComponent->_RenderDataTable)
-		{
-			previousRenderDataTable = renderComponent->_RenderDataTable;
-
-			commandBuffer->BindRenderDataTable(this, 1, renderComponent->_RenderDataTable);
-		}
-
-		commandBuffer->DrawIndexed(this, renderComponent->_IndexCount, 1);
+		commandBuffer->DrawIndexed(this, renderComponent->_Model._IndexCount, 1);
 	}
 
 	//End the command buffer.

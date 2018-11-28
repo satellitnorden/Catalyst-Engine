@@ -603,7 +603,7 @@ void RenderingSystem::CreateParticleMaterial(const ParticleMaterialData &particl
 /*
 *	Creates a physical material.
 */
-void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT
+void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) NOEXCEPT
 {
 	//Create the albedo texture.
 	physicalMaterial._AlbedoTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData._AlbedoData, physicalMaterialData._Width, physicalMaterialData._Height, 4), TextureFormat::R8G8B8A8_Byte));
@@ -614,11 +614,10 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 	//Create the material properties texture.
 	physicalMaterial._MaterialPropertiesTexture = CreateTexture2D(TextureData(TextureDataContainer(physicalMaterialData._MaterialPropertiesData, physicalMaterialData._Width, physicalMaterialData._Height, 4), TextureFormat::R8G8B8A8_Byte));
 
-	//Create the render data table.
-	CreateRenderDataTable(GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::PhysicalMaterial), &physicalMaterial._RenderDataTable);
-	BindCombinedImageSamplerToRenderDataTable(1, 0, physicalMaterial._RenderDataTable, physicalMaterial._AlbedoTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(2, 0, physicalMaterial._RenderDataTable, physicalMaterial._NormalMapTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
-	BindCombinedImageSamplerToRenderDataTable(3, 0, physicalMaterial._RenderDataTable, physicalMaterial._MaterialPropertiesTexture, GetSampler(Sampler::FilterLinear_MipmapModeLinear_AddressModeRepeat));
+	//Add the textures to the global render data table.
+	physicalMaterial._AlbedoTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._AlbedoTexture);
+	physicalMaterial._NormalMapTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._NormalMapTexture);
+	physicalMaterial._MaterialPropertiesTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._MaterialPropertiesTexture);
 }
 
 /*
@@ -712,10 +711,8 @@ void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRI
 	//Initialize the physical render component.
 	physicalRenderComponent._PhysicalFlags = data->_PhysicalFlags;
 	physicalRenderComponent._IsInViewFrustum = true;
-	physicalRenderComponent._RenderDataTable = data->_Material._RenderDataTable;
-	physicalRenderComponent._Buffer = data->_Model._Buffer;
-	physicalRenderComponent._IndexOffset = data->_Model._IndexOffset;
-	physicalRenderComponent._IndexCount = data->_Model._IndexCount;
+	physicalRenderComponent._Model = data->_Model;
+	physicalRenderComponent._Material = data->_Material;
 
 	//Initialize the culling component.
 	cullingComponent._ModelSpaceAxisAlignedBoundingBox = data->_Model._AxisAlignedBoundingBox;
@@ -1098,18 +1095,6 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::TerrainMaterial)]);
-	}
-
-	{
-		//Initialize the physical material render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 3> bindings
-		{
-			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, 1, ShaderStage::Fragment)
-		};
-
-		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::PhysicalMaterial)]);
 	}
 
 #if defined(CATALYST_ENABLE_OCEAN)

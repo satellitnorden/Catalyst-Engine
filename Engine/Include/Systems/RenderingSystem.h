@@ -401,7 +401,7 @@ public:
 	/*
 	*	Creates a physical material.
 	*/
-	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) const NOEXCEPT;
+	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) NOEXCEPT;
 
 	/*
 	*	Creates a terrain material.

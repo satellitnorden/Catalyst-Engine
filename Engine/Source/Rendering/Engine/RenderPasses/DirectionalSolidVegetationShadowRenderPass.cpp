@@ -63,9 +63,8 @@ void DirectionalSolidVegetationShadowRenderPass::InitializeInternal() NOEXCEPT
 	AddRenderTarget(RenderTarget::DirectionalShadowMap);
 
 	//Add the render data table layouts.
-	SetNumberOfRenderDataTableLayouts(2);
+	SetNumberOfRenderDataTableLayouts(1);
 	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::Global));
-	AddRenderDataTableLayout(RenderingSystem::Instance->GetCommonRenderDataTableLayout(CommonRenderDataTableLayout::PhysicalMaterial));
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(1);
@@ -180,9 +179,6 @@ void DirectionalSolidVegetationShadowRenderPass::RenderInternal() NOEXCEPT
 	{
 		//Bind the model vertex and index buffer.
 		const uint64 offset{ 0 };
-
-		//Bind the render data table.
-		commandBuffer->BindRenderDataTable(this, 1, information._Material._RenderDataTable);
 
 		//Pust constants.
 		PushConstantData data;
