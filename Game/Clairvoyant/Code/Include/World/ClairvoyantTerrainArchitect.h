@@ -24,8 +24,8 @@ public:
 	static void GenerateHeight(const TerrainProperties &properties, const Vector3 &worldPosition, float *const RESTRICT height) NOEXCEPT;
 
 	/*
-	*	Generates the layer weights.
+	*	Generates the material.
 	*/
-	static void GenerateLayerWeights(const TerrainProperties &properties, const Vector3 &worldPosition, Vector4 *const RESTRICT layerWeights) NOEXCEPT;
+	static void GenerateMaterial(const TerrainProperties &properties, const Vector3 &worldPosition, uint8 *const RESTRICT material) NOEXCEPT;
 
 };

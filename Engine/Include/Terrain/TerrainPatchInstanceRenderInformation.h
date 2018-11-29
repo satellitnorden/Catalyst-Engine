@@ -27,8 +27,8 @@ public:
 	//The normal texture index.
 	int32 _NormalTextureIndex;
 
-	//The layer weights texture index.
-	int32 _LayerWeightsTextureIndex;
+	//The material texture index.
+	int32 _MaterialTextureIndex;
 
 	//Some padding.
 	Padding<4> _Padding;

@@ -22,7 +22,7 @@ void CreateCatalystProjectConfiguration(CatalystProjectConfiguration *const REST
 	configuration->_RenderingConfiguration._ShadowMapResolution = 2'048;
 
 	configuration->_TerrainConfiguration._HeightGenerationFunction = ClairvoyantTerrainArchitect::GenerateHeight;
-	configuration->_TerrainConfiguration._LayerWeightsGenerationFunction = ClairvoyantTerrainArchitect::GenerateLayerWeights;
+	configuration->_TerrainConfiguration._MaterialGenerationFunction = ClairvoyantTerrainArchitect::GenerateMaterial;
 }
 
 MAIN_FUNCTION

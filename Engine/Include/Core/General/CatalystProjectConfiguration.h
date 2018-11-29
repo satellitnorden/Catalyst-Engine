@@ -70,8 +70,8 @@ public:
 	//The height generation function.
 	HeightGenerationFunction _HeightGenerationFunction;
 
-	//The layer weights generation function.
-	LayerWeightsGenerationFunction _LayerWeightsGenerationFunction;
+	//The material generation function.
+	MaterialGenerationFunction _MaterialGenerationFunction;
 
 	/*
 	*	Default constructor.

@@ -438,6 +438,23 @@ void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
 
 		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
 	}
+
+	{
+		//Create the terrain sand rock material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\Terrain\\TerrainSandRockMaterial";
+		parameters._ID = "TerrainSandRockMaterial";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\SandRock\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\SandRock\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\SandRock\\Roughness.png";
+		parameters._MetallicFile = nullptr;
+		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\SandRock\\AmbientOcclusion.png";
+		parameters._VariantFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\SandRock\\Displacement.png";
+
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
 }
 
 /*
@@ -450,6 +467,7 @@ void ClairvoyantResourceCreation::CreateTerrainResourceCollection() NOEXCEPT
 
 	parameters._Output = "..\\..\\..\\Resources\\Final\\TerrainResourceCollection";
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\Terrain\\TerrainSandMaterial.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\Terrain\\TerrainSandRockMaterial.cr");
 
 	ResourceCollectionCreator::CreateResourceCollection(parameters);
 }

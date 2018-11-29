@@ -123,13 +123,13 @@ namespace TerrainGeneralUtilities
 	}
 
 	/*
-	*	Generates a layer weights texture.
+	*	Generates a material texture.
 	*/
-	static void GenerateLayerWeightsTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture) NOEXCEPT
+	static void GenerateMaterialTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture) NOEXCEPT
 	{
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 		DynamicArray<byte> data;
-		data.UpsizeFast(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION * 4);
+		data.UpsizeFast(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION);
 
 		for (uint32 i = 0; i < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++i)
 		{
@@ -142,22 +142,19 @@ namespace TerrainGeneralUtilities
 												0.0f,
 												patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
 
-				Vector4 layerWeights;
+				uint8 material;
 
-				properties._LayerWeightsGenerationFunction(properties, worldPosition, &layerWeights);
+				properties._MaterialGenerationFunction(properties, worldPosition, &material);
 
-				data[((j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i) * 4] = static_cast<byte>(layerWeights._X * 255.0f);
-				data[((j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i) * 4 + 1] = static_cast<byte>(layerWeights._Y * 255.0f);
-				data[((j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i) * 4 + 2] = static_cast<byte>(layerWeights._Z * 255.0f);
-				data[((j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i) * 4 + 3] = static_cast<byte>(layerWeights._W * 255.0f);
+				data[(j * TerrainConstants::TERRAIN_PATCH_RESOLUTION) + i] = material;
 			}
 		}
 
 		*texture = RenderingSystem::Instance->CreateTexture2D(	TextureData(	TextureDataContainer(data.Data(),
 																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
 																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
-																				4),
-																TextureFormat::R8G8B8A8_Byte));
+																				1),
+																TextureFormat::R8_Byte));
 	}
 
 	/*

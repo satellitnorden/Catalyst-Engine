@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetBelowOceanFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(13764);
+		data.UpsizeFast(13760);
 
-		new (data.Data()) byte[13764]
+		new (data.Data()) byte[13760]
 		{
 			3,
 			2,
@@ -3937,7 +3937,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			10,
+			9,
 			0,
 			152,
 			1,
@@ -3947,18 +3947,14 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			108,
+			109,
 			97,
-			121,
+			116,
 			101,
 			114,
-			87,
-			101,
 			105,
-			103,
-			104,
-			116,
-			115,
+			97,
+			108,
 			84,
 			101,
 			120,

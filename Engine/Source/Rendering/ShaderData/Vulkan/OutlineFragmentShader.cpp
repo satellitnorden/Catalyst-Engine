@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetOutlineFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(5308);
+		data.UpsizeFast(5304);
 
-		new (data.Data()) byte[5308]
+		new (data.Data()) byte[5304]
 		{
 			3,
 			2,
@@ -1717,7 +1717,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			10,
+			9,
 			0,
 			72,
 			0,
@@ -1727,18 +1727,14 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			108,
+			109,
 			97,
-			121,
+			116,
 			101,
 			114,
-			87,
-			101,
 			105,
-			103,
-			104,
-			116,
-			115,
+			97,
+			108,
 			84,
 			101,
 			120,

@@ -126,17 +126,17 @@ float Blend(float first, float firstHeight, float second, float secondHeight, fl
 /*
 *	Returns the albedo.
 */
-vec3 GetAlbedo()
+vec3 GetAlbedo(int patchMaterial)
 {
-    return texture(sampler2D(globalTextures[terrainMaterialData[0].albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    return texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterial)].albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
 }
 
 /*
 *	Returns the normal direction.
 */
-vec3 GetNormalDirection()
+vec3 GetNormalDirection(int patchMaterial)
 {
-    return texture(sampler2D(globalTextures[terrainMaterialData[0].normalMapTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    return texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterial)].normalMapTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
 }
 
 void main()
@@ -156,8 +156,8 @@ void main()
     //Sample the patch normal.
     vec3 patchNormal = texture(sampler2D(globalTextures[terrainPatchData[nonuniformEXT(patchIndex)].normalTextureIndex], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).xyz * 2.0f - 1.0f;
 
-    //Sample the patch layer weights.
-    vec4 patchLayerWeights = texture(sampler2D(globalTextures[terrainPatchData[nonuniformEXT(patchIndex)].layerWeightsTextureIndex], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates);
+    //Sample the patch material.
+    int patchMaterial = int(texture(sampler2D(globalTextures[terrainPatchData[nonuniformEXT(patchIndex)].materialTextureIndex], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).x * 255.0f);
 
     //Calculate the fragment world position.
     fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth);
@@ -173,14 +173,14 @@ void main()
 	CalculateTextureCoordinates(tangentSpaceMatrix);
 
 	//Set the albedo color.
-	albedoColor = vec4(GetAlbedo(), 1.0f);
+	albedoColor = vec4(GetAlbedo(patchMaterial), 1.0f);
 
 	//Set the normal.
-    vec3 normalDirection = GetNormalDirection();
+    vec3 normalDirection = GetNormalDirection(patchMaterial);
     normalDirection = tangentSpaceMatrix * normalDirection;
     normalDirection = normalize(normalDirection);
     normalDirectionDepth = vec4(normalDirection, patchDepth);
 
 	//Write the material properties.
-    materialProperties = texture(sampler2D(globalTextures[terrainMaterialData[0].materialPropertiesIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialProperties = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterial)].materialPropertiesIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
 }

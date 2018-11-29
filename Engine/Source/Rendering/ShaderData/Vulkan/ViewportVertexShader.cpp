@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetViewportVertexShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(5516);
+		data.UpsizeFast(5512);
 
-		new (data.Data()) byte[5516]
+		new (data.Data()) byte[5512]
 		{
 			3,
 			2,
@@ -1829,7 +1829,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			10,
+			9,
 			0,
 			87,
 			0,
@@ -1839,18 +1839,14 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			108,
+			109,
 			97,
-			121,
+			116,
 			101,
 			114,
-			87,
-			101,
 			105,
-			103,
-			104,
-			116,
-			115,
+			97,
+			108,
 			84,
 			101,
 			120,

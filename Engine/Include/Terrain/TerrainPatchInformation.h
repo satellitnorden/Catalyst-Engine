@@ -28,7 +28,7 @@ public:
 	//The normal texture.
 	Texture2DHandle _NormalTexture;
 
-	//The layer weights texture.
-	Texture2DHandle _LayerWeightsTexture;
+	//The material texture.
+	Texture2DHandle _MaterialTexture;
 
 };

@@ -18,7 +18,7 @@ struct TerrainPatchData
     int borders;
     int heightTextureIndex;
     int normalTextureIndex;
-    int layerWeightsTextureIndex;
+    int materialTextureIndex;
 };
 
 //Terrain material data definition.
