@@ -28,4 +28,11 @@ public:
 	*/
 	static void GenerateMaterial(const TerrainProperties &properties, const Vector3 &worldPosition, uint8 *const RESTRICT material) NOEXCEPT;
 
+private:
+
+	/*
+	*	Returns whether or not a position is within the test area.
+	*/
+	static bool IsWithinTestArea(const Vector3 &worldPosition) NOEXCEPT;
+
 };
