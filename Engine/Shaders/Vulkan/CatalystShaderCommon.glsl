@@ -112,6 +112,7 @@ layout (std140, set = 0, binding = 5) uniform TerrainMaterialUniformData
 #define EULERS_NUMBER (2.718281f)
 #define PHI (1.618033f)
 #define PI (3.141592f)
+#define INVERSE_PI (0.318309f)
 #define SQUARE_ROOT_OF_TWO (1.414213f)
 
 /*
