@@ -2,6 +2,7 @@
 #include <World/ClairvoyantTerrainArchitect.h>
 
 //Clairvoyant.
+#include <World/BiomeDesert.h>
 #include <World/ClairvoyantWorldConstants.h>
 
 //Math.
@@ -236,27 +237,17 @@ void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 /*
 *	Generates the height.
 */
-void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &properties, const Vector3 &worldPosition, float *const RESTRICT height) NOEXCEPT
+void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &properties, const Vector3 &position, float *const RESTRICT height) NOEXCEPT
 {
-	if (IsWithinTestArea(worldPosition))
+	if (IsWithinTestArea(position))
 	{
 		*height = ClairvoyantTerrainGenerationConstants::TERRAIN_HEIGHT;
 
 		return;
 	}
 
-	//Calculate the coordinates.
-	const float coordinateX{ worldPosition._X / 100'000.0f };
-	const float coordinateY{ worldPosition._Z / 100'000.0f };
-
-	//Base height.
-	*height = 0.0f;
-
-	*height += PerlinNoiseGenerator::GenerateRidgedNoise(coordinateX, coordinateY, GetRandomOffset(0));
-	*height += PerlinNoiseGenerator::GenerateRidgedNoise(coordinateX * 2.0f, coordinateY * 2.0f, GetRandomOffset(1)) * 0.5f;
-	*height += PerlinNoiseGenerator::GenerateNoise(coordinateX * 4.0f, coordinateY * 4.0f, GetRandomOffset(2)) * 0.25f;
-	*height += PerlinNoiseGenerator::GenerateNoise(coordinateX * 8.0f, coordinateY * 8.0f, GetRandomOffset(3)) * 0.125f;
-	*height += PerlinNoiseGenerator::GenerateNoise(coordinateX * 16.0f, coordinateY * 16.0f, GetRandomOffset(4)) * 0.0625f;
+	//Apply the biomes.
+	*height = BiomeDesert::Height(position) * BiomeDesert::Weight(position);
 
 	//Apply the height.
 	*height *= ClairvoyantTerrainGenerationConstants::TERRAIN_HEIGHT;
@@ -265,9 +256,9 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 /*
 *	Generates the material.
 */
-void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3 &worldPosition, uint8 *const RESTRICT material) NOEXCEPT
+void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3 &position, uint8 *const RESTRICT material) NOEXCEPT
 {
-	if (IsWithinTestArea(worldPosition))
+	if (IsWithinTestArea(position))
 	{
 		*material = 0;
 
@@ -275,8 +266,8 @@ void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &prop
 	}
 
 	//Calculate the coordinates.
-	const float coordinateX{ worldPosition._X / 10'000.0f };
-	const float coordinateY{ worldPosition._Z / 10'000.0f };
+	const float coordinateX{ position._X / 10'000.0f };
+	const float coordinateY{ position._Z / 10'000.0f };
 
 	//General landscape shape.
 	if (PerlinNoiseGenerator::GenerateNoise(coordinateX, coordinateY, GetRandomOffset(0)) > 0.0f)

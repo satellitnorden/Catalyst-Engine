@@ -572,5 +572,8 @@
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantLocationArchitect.h">
       <Filter>Clairvoyant Code\World\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Code\Include\World\BiomeDesert.h">
+      <Filter>Clairvoyant Code\World\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

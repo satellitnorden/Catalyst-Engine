@@ -21,12 +21,12 @@ public:
 	/*
 	*	Generates the height.
 	*/
-	static void GenerateHeight(const TerrainProperties &properties, const Vector3 &worldPosition, float *const RESTRICT height) NOEXCEPT;
+	static void GenerateHeight(const TerrainProperties &properties, const Vector3 &position, float *const RESTRICT height) NOEXCEPT;
 
 	/*
 	*	Generates the material.
 	*/
-	static void GenerateMaterial(const TerrainProperties &properties, const Vector3 &worldPosition, uint8 *const RESTRICT material) NOEXCEPT;
+	static void GenerateMaterial(const TerrainProperties &properties, const Vector3 &position, uint8 *const RESTRICT material) NOEXCEPT;
 
 private:
 
