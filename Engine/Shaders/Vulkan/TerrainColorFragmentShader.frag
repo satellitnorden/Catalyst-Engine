@@ -27,55 +27,32 @@ layout (location = 1) out vec4 normalDepth;
 layout (location = 2) out vec4 materialProperties;
 
 //Globals.
-vec3 fragmentWorldPosition;
-
 vec2 textureCoordinate;
+
 int patchMaterials[4];
+vec3 materialAlbedos[4];
+vec3 materialNormalMaps[4];
+vec4 materialMaterialProperties[4];
 float blendAlphas[2];
-
-//Forward declarations.
-vec2 CalculateParallaxOcclusionMapping(vec2 originalTextureCoordinate, sampler2D heightTexture);
-void CalculateTextureCoordinates(mat3 tangentSpaceMatrix);
+float verticalDisplacementBlends[2];
 
 /*
-*   Calculates the parallax occlusion mapping at the given texture coordinate.
+*   Blends two terrain values.
 */
-vec2 CalculateParallaxOcclusionMapping(vec3 tangentSpaceViewDirection, vec2 originalTextureCoordinate, sampler2D heightTexture)
+float Blend(float first, float firstHeight, float second, float secondHeight, float alpha)
 {
-    vec2 offset = tangentSpaceViewDirection.xy * PARALLAX_OCCLUSION_MAPPING_HEIGHT_SCALE;
-    vec2 offsetStep = offset / PARALLAX_OCCLUSION_MAPPING_SAMPLES;
+    float firstWeight = (1.0f - alpha) * firstHeight;
+    float secondWeight = alpha * secondHeight;
 
-    vec2 currentTextureCoordinate = originalTextureCoordinate;
-    float currentDepth = 1.0f - texture(heightTexture, currentTextureCoordinate).w;
-    float accumulatedDepth = 0.0f;
+    float total = 1.0f / (firstWeight + secondWeight);
 
-    while(accumulatedDepth < currentDepth)
-    {
-        currentTextureCoordinate -= offsetStep;
+    firstWeight *= total;
+    secondWeight *= total;
 
-        currentDepth = 1.0f - texture(heightTexture, currentTextureCoordinate).w;  
+    float difference = abs(firstWeight - secondWeight);
+    float newAlpha = mix(0.5f, 1.0f, min(difference / BLEND_SMOOTHING, 1.0f));
 
-        accumulatedDepth += PARALLAX_OCCLUSION_MAPPING_SAMPLE_STEP;  
-    }
-
-    vec2 previousTextureCoordinate = currentTextureCoordinate + offsetStep;
-
-    float afterDepth  = currentDepth - accumulatedDepth;
-    float beforeDepth = 1.0f - texture(heightTexture, previousTextureCoordinate).w - accumulatedDepth + PARALLAX_OCCLUSION_MAPPING_SAMPLE_STEP;
-     
-    // interpolation of texture coordinates
-    float weight = afterDepth / (afterDepth - beforeDepth);
-    vec2 finalTextureCoordinate = previousTextureCoordinate * weight + currentTextureCoordinate * (1.0 - weight);
-
-    return finalTextureCoordinate;  
-}
-
-/*
-*   Calculates the texture coordinates for all layers.
-*/
-void CalculateTextureCoordinates(mat3 tangentSpaceMatrix)
-{
-    textureCoordinate = fragmentWorldPosition.xz * 0.25f;
+    return firstWeight > secondWeight ? mix(second, first, newAlpha) : mix(first, second, newAlpha);
 }
 
 /*
@@ -98,12 +75,12 @@ vec3 Blend(vec3 first, float firstHeight, vec3 second, float secondHeight, float
 }
 
 /*
-*	Blends two terrain values.
+*   Blends two terrain values.
 */
-float Blend(float first, float firstHeight, float second, float secondHeight, float alpha)
+vec4 Blend(vec4 first, float firstHeight, vec4 second, float secondHeight, float alpha)
 {
-	float firstWeight = (1.0f - alpha) * firstHeight;
-	float secondWeight = alpha * secondHeight;
+    float firstWeight = (1.0f - alpha) * firstHeight;
+    float secondWeight = alpha * secondHeight;
 
     float total = 1.0f / (firstWeight + secondWeight);
 
@@ -117,27 +94,60 @@ float Blend(float first, float firstHeight, float second, float secondHeight, fl
 }
 
 /*
-*	Returns the albedo.
+*	Blends the albedo.
 */
-vec3 GetAlbedo()
+vec3 BlendAlbedo()
 {
-    vec3 albedo1 = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[0])].albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
-    vec3 albedo2 = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[1])].albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
-    vec3 albedo3 = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[2])].albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
-    vec3 albedo4 = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[3])].albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    vec3 blend1 = Blend(materialAlbedos[0], materialMaterialProperties[0].w, materialAlbedos[1], materialMaterialProperties[1].w, blendAlphas[0]);
+    vec3 blend2 = Blend(materialAlbedos[2], materialMaterialProperties[2].w, materialAlbedos[3], materialMaterialProperties[3].w, blendAlphas[0]);
 
-    vec3 blend1 = mix(albedo2, albedo1, blendAlphas[0]);
-    vec3 blend2 = mix(albedo3, albedo2, blendAlphas[0]);
-
-    return mix(blend1, blend2, blendAlphas[1]);
+    return Blend(blend1, verticalDisplacementBlends[0], blend2, verticalDisplacementBlends[1], blendAlphas[1]);
 }
 
 /*
-*	Returns the normal.
+*	Blends the normal map.
 */
-vec3 GetNormal(int patchMaterial)
+vec3 BlendNormalMap()
 {
-    return texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterial)].normalMapTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    vec3 blend1 = Blend(materialNormalMaps[0], materialMaterialProperties[0].w, materialNormalMaps[1], materialMaterialProperties[1].w, blendAlphas[0]);
+    vec3 blend2 = Blend(materialNormalMaps[2], materialMaterialProperties[2].w, materialNormalMaps[3], materialMaterialProperties[3].w, blendAlphas[0]);
+
+    return Blend(blend1, verticalDisplacementBlends[0], blend2, verticalDisplacementBlends[1], blendAlphas[1]);
+}
+
+/*
+*   Blends the material properties.
+*/
+vec4 BlendMaterialProperties()
+{
+    vec4 blend1 = Blend(materialMaterialProperties[0], materialMaterialProperties[0].w, materialMaterialProperties[1], materialMaterialProperties[1].w, blendAlphas[0]);
+    vec4 blend2 = Blend(materialMaterialProperties[2], materialMaterialProperties[2].w, materialMaterialProperties[3], materialMaterialProperties[3].w, blendAlphas[0]);
+
+    return Blend(blend1, verticalDisplacementBlends[0], blend2, verticalDisplacementBlends[1], blendAlphas[1]);
+}
+
+/*
+*   Samples the materials.
+*/
+void SampleMaterials()
+{
+    //Sample the albedos.
+    materialAlbedos[0] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[0])].albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[1] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[1])].albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[2] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[2])].albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[3] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[3])].albedoTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+
+    //Sample the normal maps.
+    materialNormalMaps[0] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[0])].normalMapTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[1] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[1])].normalMapTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[2] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[2])].normalMapTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[3] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[3])].normalMapTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+
+    //Sample the material properties.
+    materialMaterialProperties[0] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[0])].materialPropertiesTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[1] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[1])].materialPropertiesTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[2] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[2])].materialPropertiesTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[3] = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[3])].materialPropertiesTextureIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
 }
 
 void main()
@@ -154,8 +164,8 @@ void main()
     //Retrieve the patch depth.
     float patchDepth = terrainDataTextureSampler.w; 
 
-    //Sample the patch normal.
-    vec3 patchNormal = texture(sampler2D(globalTextures[terrainPatchData[nonuniformEXT(patchIndex)].normalTextureIndex], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).xyz * 2.0f - 1.0f;
+    //Calculate the texture coordinate.
+    textureCoordinate = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth).xz * 0.25f;
 
     //Sample the patch materials.
     patchMaterials[0] = int(texture(sampler2D(globalTextures[terrainPatchData[nonuniformEXT(patchIndex)].materialTextureIndex], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).x * 255.0f);
@@ -163,12 +173,19 @@ void main()
     patchMaterials[2] = int(texture(sampler2D(globalTextures[terrainPatchData[nonuniformEXT(patchIndex)].materialTextureIndex], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates + vec2(0.0f, MATERIAL_TEXTURE_RESOLUTION_STEP)).x * 255.0f);
     patchMaterials[3] = int(texture(sampler2D(globalTextures[terrainPatchData[nonuniformEXT(patchIndex)].materialTextureIndex], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates + vec2(MATERIAL_TEXTURE_RESOLUTION_STEP, MATERIAL_TEXTURE_RESOLUTION_STEP)).x * 255.0f);
 
+    //Sample the materials.
+    SampleMaterials();
+
     //Calculate the blend alphas.
     blendAlphas[0] = fract(patchCoordinates.x * MATERIAL_TEXTURE_RESOLUTION);
     blendAlphas[1] = fract(patchCoordinates.y * MATERIAL_TEXTURE_RESOLUTION);
 
-    //Calculate the fragment world position.
-    fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth);
+    //Calculate the vertical displacement blends.
+    verticalDisplacementBlends[0] = mix(materialMaterialProperties[0].w, materialMaterialProperties[1].w, blendAlphas[0]);
+    verticalDisplacementBlends[1] = mix(materialMaterialProperties[2].w, materialMaterialProperties[3].w, blendAlphas[0]);
+
+    //Sample the patch normal.
+    vec3 patchNormal = texture(sampler2D(globalTextures[terrainPatchData[nonuniformEXT(patchIndex)].normalTextureIndex], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).xyz * 2.0f - 1.0f;
 
     //Calculate the tangent space matrix.
     vec3 tangent = cross(vec3(0.0f, 0.0f, 1.0f), patchNormal);
@@ -176,18 +193,15 @@ void main()
 
     mat3 tangentSpaceMatrix = mat3(tangent, bitangent, patchNormal);
 
-	//Calculate the texture coordinates.
-	CalculateTextureCoordinates(tangentSpaceMatrix);
-
 	//Write the albedo.
-	albedo = vec4(GetAlbedo(), 1.0f);
+	albedo = vec4(BlendAlbedo(), 1.0f);
 
-	//Set the normal.
-    vec3 normal = GetNormal(patchMaterials[0]);
+	//Write the normal.
+    vec3 normal = BlendNormalMap();
     normal = tangentSpaceMatrix * normal;
     normal = normalize(normal);
     normalDepth = vec4(normal, patchDepth);
 
 	//Write the material properties.
-    materialProperties = texture(sampler2D(globalTextures[terrainMaterialData[nonuniformEXT(patchMaterials[0])].materialPropertiesIndex], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialProperties = BlendMaterialProperties();
 }

@@ -26,7 +26,7 @@ struct TerrainMaterialData
 {
     int albedoTextureIndex;
     int normalMapTextureIndex;
-    int materialPropertiesIndex;
+    int materialPropertiesTextureIndex;
     int padding;
 };
 

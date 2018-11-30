@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetToneMappingFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(5456);
+		data.UpsizeFast(5464);
 
-		new (data.Data()) byte[5456]
+		new (data.Data()) byte[5464]
 		{
 			3,
 			2,
@@ -2069,7 +2069,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			9,
+			11,
 			0,
 			92,
 			0,
@@ -2097,11 +2097,19 @@ namespace VulkanShaderData
 			105,
 			101,
 			115,
+			84,
+			101,
+			120,
+			116,
+			117,
+			114,
+			101,
 			73,
 			110,
 			100,
 			101,
 			120,
+			0,
 			0,
 			6,
 			0,

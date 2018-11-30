@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetWorldPositionFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(6228);
+		data.UpsizeFast(6236);
 
-		new (data.Data()) byte[6228]
+		new (data.Data()) byte[6236]
 		{
 			3,
 			2,
@@ -2201,7 +2201,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			9,
+			11,
 			0,
 			124,
 			0,
@@ -2229,11 +2229,19 @@ namespace VulkanShaderData
 			105,
 			101,
 			115,
+			84,
+			101,
+			120,
+			116,
+			117,
+			114,
+			101,
 			73,
 			110,
 			100,
 			101,
 			120,
+			0,
 			0,
 			6,
 			0,

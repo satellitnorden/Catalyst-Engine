@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetHighDetailSolidVegetationFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(7280);
+		data.UpsizeFast(7288);
 
-		new (data.Data()) byte[7280]
+		new (data.Data()) byte[7288]
 		{
 			3,
 			2,
@@ -2297,7 +2297,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			9,
+			11,
 			0,
 			169,
 			0,
@@ -2325,11 +2325,19 @@ namespace VulkanShaderData
 			105,
 			101,
 			115,
+			84,
+			101,
+			120,
+			116,
+			117,
+			114,
+			101,
 			73,
 			110,
 			100,
 			101,
 			120,
+			0,
 			0,
 			6,
 			0,

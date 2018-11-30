@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetGaussianBlurFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(6912);
+		data.UpsizeFast(6920);
 
-		new (data.Data()) byte[6912]
+		new (data.Data()) byte[6920]
 		{
 			3,
 			2,
@@ -2073,7 +2073,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			9,
+			11,
 			0,
 			166,
 			0,
@@ -2101,11 +2101,19 @@ namespace VulkanShaderData
 			105,
 			101,
 			115,
+			84,
+			101,
+			120,
+			116,
+			117,
+			114,
+			101,
 			73,
 			110,
 			100,
 			101,
 			120,
+			0,
 			0,
 			6,
 			0,
