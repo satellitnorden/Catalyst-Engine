@@ -81,7 +81,7 @@ layout (std140, set = 0, binding = 0) uniform GlobalUniformData
 };
 
 //The global samplers.
-layout (set = 0, binding = 1) uniform sampler globalSamplers[5];
+layout (set = 0, binding = 1) uniform sampler globalSamplers[6];
 
 //The global textures.
 layout (set = 0, binding = 2) uniform texture2D globalTextures[512];

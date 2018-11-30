@@ -277,7 +277,7 @@ void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &prop
 
 	else
 	{
-		*material = 1;
+		*material = 2;
 	}
 }
 
