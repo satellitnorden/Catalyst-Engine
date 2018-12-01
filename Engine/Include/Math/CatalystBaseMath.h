@@ -356,21 +356,33 @@ public:
 	/*
 	*	Given a number, returns the square root.
 	*/
-	FORCE_INLINE constexpr static NO_DISCARD float SquareRoot(const float number) NOEXCEPT
+	FORCE_INLINE constexpr static NO_DISCARD float SquareRoot(float number) NOEXCEPT
 	{
 		if (number == 0.0f)
 		{
-			return 0.0;
+			return 0.0f;
 		}
 
-		float squareRoot = number * 0.25f;
+		int32 exponent{ 0 };
 
-		for (uint8 i = 0; i < 10; ++i)
+		number = frexp(number, &exponent);
+
+		if (exponent & 1)
+		{ 
+			--exponent;
+			number *= 2.0f;
+		}
+
+		float approximation{ (1.0f + number) * 0.5f };
+		float target{ 0.0f };
+
+		while (approximation != target)
 		{
-			squareRoot = (squareRoot + (number / squareRoot)) * 0.5f;
+			target = approximation;
+			approximation = (approximation + number / approximation) * 0.5f;
 		}
 
-		return squareRoot;
+		return ldexp(approximation, exponent / 2);
 	}
 
 	/*

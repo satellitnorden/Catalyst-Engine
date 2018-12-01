@@ -12,3 +12,13 @@ namespace ClairvoyantWorldConstants
 	constexpr float SNOW_BLEND_BEGIN{ 7'500.0f };
 	constexpr float SNOW_BLEND_END{ 8'500.0f };
 }
+
+//Enumeration covering all Clairvoyant biomes.
+enum class ClairvoyantBiome : uint8
+{
+	Desert,
+	Grass,
+	Snow,
+
+	NumberOfClairvoyantBiomes
+};

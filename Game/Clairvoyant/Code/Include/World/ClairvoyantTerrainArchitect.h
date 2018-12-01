@@ -2,6 +2,10 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/StaticArray.h>
+
+//World.
+#include <World/ClairvoyantWorldConstants.h>
 
 //Forward declarations.
 class TerrainProperties;
@@ -34,5 +38,10 @@ private:
 	*	Returns whether or not a position is within the test area.
 	*/
 	static bool IsWithinTestArea(const Vector3 &worldPosition) NOEXCEPT;
+
+	/*
+	*	Returns the weight for the given material.
+	*/
+	static float GetMaterialWeight(const uint8 material, const float coordinateX, const float coordinateY, const StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> &biomWeights, const Vector3 &normal) NOEXCEPT;
 
 };

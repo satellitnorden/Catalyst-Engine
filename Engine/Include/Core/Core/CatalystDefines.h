@@ -56,28 +56,28 @@
 /*
 *	Type maximums/minimums.
 */
-#define DOUBLE_MAXIMUM std::numeric_limits<double>::max()
-#define DOUBLE_MINIMUM std::numeric_limits<double>::min()
+#define DOUBLE_MAXIMUM (std::numeric_limits<double>::max())
+#define DOUBLE_MINIMUM (std::numeric_limits<double>::min())
 
-#define FLOAT_MAXIMUM std::numeric_limits<float>::max()
-#define FLOAT_MINIMUM std::numeric_limits<float>::min()
+#define FLOAT_MAXIMUM (std::numeric_limits<float>::max())
+#define FLOAT_MINIMUM (std::numeric_limits<float>::min())
 
-#define INT8_MAXIMUM std::numeric_limits<int8>::max()
-#define INT16_MAXIMUM std::numeric_limits<int16>::max()
-#define INT32_MAXIMUM std::numeric_limits<int32>::max()
-#define INT64_MAXIMUM std::numeric_limits<int64>::max()
+#define INT8_MAXIMUM (std::numeric_limits<int8>::max())
+#define INT16_MAXIMUM (std::numeric_limits<int16>::max())
+#define INT32_MAXIMUM (std::numeric_limits<int32>::max())
+#define INT64_MAXIMUM (std::numeric_limits<int64>::max())
 
-#define INT8_MINIMUM std::numeric_limits<int8>::min()
-#define INT16_MINIMUM std::numeric_limits<int16>::min()
-#define INT32_MINIMUM std::numeric_limits<int32>::min()
-#define INT64_MINIMUM std::numeric_limits<int64>::min()
+#define INT8_MINIMUM (std::numeric_limits<int8>::min())
+#define INT16_MINIMUM (std::numeric_limits<int16>::min())
+#define INT32_MINIMUM (std::numeric_limits<int32>::min())
+#define INT64_MINIMUM (std::numeric_limits<int64>::min())
 
-#define UINT8_MAXIMUM std::numeric_limits<uint8>::max()
-#define UINT16_MAXIMUM std::numeric_limits<uint16>::max()
-#define UINT32_MAXIMUM std::numeric_limits<uint32>::max()
-#define UINT64_MAXIMUM std::numeric_limits<uint64>::max()
+#define UINT8_MAXIMUM (std::numeric_limits<uint8>::max())
+#define UINT16_MAXIMUM (std::numeric_limits<uint16>::max())
+#define UINT32_MAXIMUM (std::numeric_limits<uint32>::max())
+#define UINT64_MAXIMUM (std::numeric_limits<uint64>::max())
 
-#define UINT8_MINIMUM std::numeric_limits<uint8>::min()
-#define UINT16_MINIMUM std::numeric_limits<uint16>::min()
-#define UINT32_MINIMUM std::numeric_limits<uint32>::min()
-#define UINT64_MINIMUM std::numeric_limits<uint64>::min()
+#define UINT8_MINIMUM (std::numeric_limits<uint8>::min())
+#define UINT16_MINIMUM (std::numeric_limits<uint16>::min())
+#define UINT32_MINIMUM (std::numeric_limits<uint32>::min())
+#define UINT64_MINIMUM (std::numeric_limits<uint64>::min())

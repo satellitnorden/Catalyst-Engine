@@ -20,207 +20,23 @@
 //Terrain.
 #include <Terrain/TerrainProperties.h>
 
+//World.
+#include <World/ClairvoyantBiomeArchitect.h>
+
 //Clairvoyant terrain generation constants.
-namespace ClairvoyantTerrainGenerationConstants
+namespace ClairvoyantTerrainArchitectConstants
 {
 	constexpr float TERRAIN_HEIGHT{ 10'000.0f };
-}
 
-/*
-*	Returns the random offset.
-*/
-float GetRandomOffset(const uint8 index) NOEXCEPT
-{
-	constexpr float MAXIMUM_OFFSET{ 1'000.0f };
+	constexpr uint8 TERRAIN_TEST_MATERIAL_INDEX{ 0 };
 
-	switch (index)
-	{
-		case 0:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
+	constexpr uint8 TERRAIN_CLIFF_SNOW_1_MATERIAL_INDEX{ 1 };
+	constexpr uint8 TERRAIN_GRASS_1_MATERIAL_INDEX{ 2 };
+	constexpr uint8 TERRAIN_GRASS_2_MATERIAL_INDEX{ 3 };
+	constexpr uint8 TERRAIN_SAND_1_MATERIAL_INDEX{ 4 };
+	constexpr uint8 TERRAIN_SNOW_1_MATERIAL_INDEX{ 5 };
 
-			return randomOffset;
-		}
-
-		case 1:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 2:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 3:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 4:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 5:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 6:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 7:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f) };
-
-			return randomOffset;
-		}
-
-		case 8:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 9:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 10:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 11:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 12:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 13:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 14:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 15:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 16:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 17:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 18:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 19:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 20:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 21:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 22:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 23:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 24:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-
-		case 25:
-		{
-			static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
-
-			return randomOffset;
-		}
-	}
-
-	ASSERT(false, "You should add a case here. ):");
-
-	return 0.0f;
+	constexpr uint8 NUMBER_OF_TERRAIN_MATERIALS{ 6 };
 }
 
 /*
@@ -229,9 +45,12 @@ float GetRandomOffset(const uint8 index) NOEXCEPT
 void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 {
 	//Register the terrain materials.
-	TerrainSystem::Instance->RegisterTerrainMaterial(0, ResourceLoader::GetPhysicalMaterial(HashString("TerrainTestMaterial")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(1, ResourceLoader::GetPhysicalMaterial(HashString("TerrainSandMaterial")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(2, ResourceLoader::GetPhysicalMaterial(HashString("TerrainSandRockMaterial")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_TEST_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Test_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_CLIFF_SNOW_1_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_Snow_1_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_GRASS_1_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_1_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_GRASS_2_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_2_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_SAND_1_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_1_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_SNOW_1_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Snow_1_Material")));
 }
 
 /*
@@ -241,16 +60,27 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 {
 	if (IsWithinTestArea(position))
 	{
-		*height = ClairvoyantTerrainGenerationConstants::TERRAIN_HEIGHT;
+		*height = ClairvoyantTerrainArchitectConstants::TERRAIN_HEIGHT;
 
 		return;
 	}
 
-	//Apply the biomes.
-	*height = BiomeDesert::Height(position) * BiomeDesert::Weight(position);
+	//Start off at zero.
+	*height = 0.0f;
+
+	//Apply all biomes.
+	for (uint8 biome{ 0 }; biome < UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes); ++biome)
+	{
+		const float biomeWeight{ ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(static_cast<ClairvoyantBiome>(biome), position) };
+
+		if (biomeWeight > 0.0f)
+		{
+			*height += ClairvoyantBiomeArchitect::GetBiomeHeightAtPosition(static_cast<ClairvoyantBiome>(biome), position) * biomeWeight;
+		}
+	}
 
 	//Apply the height.
-	*height *= ClairvoyantTerrainGenerationConstants::TERRAIN_HEIGHT;
+	*height *= ClairvoyantTerrainArchitectConstants::TERRAIN_HEIGHT;
 }
 
 /*
@@ -260,25 +90,43 @@ void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &prop
 {
 	if (IsWithinTestArea(position))
 	{
-		*material = 0;
+		*material = ClairvoyantTerrainArchitectConstants::TERRAIN_TEST_MATERIAL_INDEX;
 
 		return;
 	}
 
 	//Calculate the coordinates.
-	const float coordinateX{ position._X / 10'000.0f };
-	const float coordinateY{ position._Z / 10'000.0f };
+	const float coordinateX{ position._X / 100'000.0f };
+	const float coordinateY{ position._Z / 100'000.0f };
 
-	//General landscape shape.
-	if (PerlinNoiseGenerator::GenerateNoise(coordinateX, coordinateY, GetRandomOffset(0)) > 0.0f)
+	//Calculate the biome weights.
+	StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> biomeWeights;
+
+	for (uint8 biome{ 0 }; biome < UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes); ++biome)
 	{
-		*material = 1;
+		biomeWeights[biome] = ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(static_cast<ClairvoyantBiome>(biome), position);
 	}
 
-	else
+	//Calculate the material with the highest weight.
+	uint8 chosenMaterial{ 0 };
+	float highestWeight{ -FLOAT_MAXIMUM };
+
+	//Retrieve the normal.
+	Vector3 normal;
+	TerrainSystem::Instance->GetTerrainNormalAtPosition(position, &normal);
+
+	for (uint8 i{ 1 }; i < ClairvoyantTerrainArchitectConstants::NUMBER_OF_TERRAIN_MATERIALS; ++i)
 	{
-		*material = 2;
+		const float materialWeight{ GetMaterialWeight(i, coordinateX, coordinateY, biomeWeights, normal) };
+
+		if (highestWeight < materialWeight)
+		{
+			chosenMaterial = i;
+			highestWeight = materialWeight;
+		}
 	}
+
+	*material = chosenMaterial;
 }
 
 /*
@@ -288,4 +136,45 @@ bool ClairvoyantTerrainArchitect::IsWithinTestArea(const Vector3 &worldPosition)
 {
 	return	CatalystBaseMath::Absolute(worldPosition._X) < 1'000.0f
 			&& CatalystBaseMath::Absolute(worldPosition._Z) < 1'000.0f;
+}
+
+/*
+*	Returns the weight for the given material.
+*/
+float ClairvoyantTerrainArchitect::GetMaterialWeight(const uint8 material, const float coordinateX, const float coordinateY, const StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> &biomWeights, const Vector3 &normal) NOEXCEPT
+{
+	switch (material)
+	{
+		case ClairvoyantTerrainArchitectConstants::TERRAIN_CLIFF_SNOW_1_MATERIAL_INDEX:
+		{
+			return (1.0f - Vector3::DotProduct(normal, Vector3::UP)) * biomWeights[UNDERLYING(ClairvoyantBiome::Snow)];
+		}
+
+		case ClairvoyantTerrainArchitectConstants::TERRAIN_GRASS_1_MATERIAL_INDEX:
+		{
+			return PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX, coordinateY, 0.0f) * biomWeights[UNDERLYING(ClairvoyantBiome::Grass)];
+		}
+
+		case ClairvoyantTerrainArchitectConstants::TERRAIN_GRASS_2_MATERIAL_INDEX:
+		{
+			return PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * 2.0f, coordinateY * 2.0f, 0.0f) * biomWeights[UNDERLYING(ClairvoyantBiome::Grass)];
+		}
+
+		case ClairvoyantTerrainArchitectConstants::TERRAIN_SAND_1_MATERIAL_INDEX:
+		{
+			return biomWeights[UNDERLYING(ClairvoyantBiome::Desert)];
+		}
+
+		case ClairvoyantTerrainArchitectConstants::TERRAIN_SNOW_1_MATERIAL_INDEX:
+		{
+			return Vector3::DotProduct(normal, Vector3::UP) * biomWeights[UNDERLYING(ClairvoyantBiome::Snow)];
+		}
+
+		default:
+		{
+			ASSERT(false, "A case should be added here. ):");
+
+			return 0.0f;
+		}
+	}
 }

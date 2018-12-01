@@ -350,6 +350,7 @@
     <ClCompile Include="..\..\..\Code\Source\Main\ClairvoyantResourceCreation.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Player\ClairvoyantPlayer.cpp" />
     <ClCompile Include="..\..\..\Code\Source\Player\SoakCamera.cpp" />
+    <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantBiomeArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantGrassVegetationArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantLocationArchitect.cpp" />
     <ClCompile Include="..\..\..\Code\Source\World\ClairvoyantSolidVegetationArchitect.cpp" />
@@ -364,6 +365,9 @@
     <ClInclude Include="..\..\..\Code\Include\Player\ClairvoyantPlayer.h" />
     <ClInclude Include="..\..\..\Code\Include\Player\SoakCamera.h" />
     <ClInclude Include="..\..\..\Code\Include\World\BiomeDesert.h" />
+    <ClInclude Include="..\..\..\Code\Include\World\BiomeGrass.h" />
+    <ClInclude Include="..\..\..\Code\Include\World\BiomeSnow.h" />
+    <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantBiomeArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantGrassVegetationArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantLocationArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantSolidVegetationArchitect.h" />
