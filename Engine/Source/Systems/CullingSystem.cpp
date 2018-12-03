@@ -67,7 +67,7 @@ void CullingSystem::CullingUpdateSystemSynchronous(const UpdateContext *const RE
 void CullingSystem::CullGrassVegetation() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
 
 	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the viewer.
 	for (GrassVegetationTypeInformation &information : *VegetationSystem::Instance->GetGrassVegetationTypeInformations())
@@ -100,7 +100,7 @@ void CullingSystem::CullGrassVegetation() NOEXCEPT
 void CullingSystem::CullParticleSystems() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
 
 	//Retrieve component data.
 	const ParticleSystemComponent *RESTRICT component{ ComponentManager::GetParticleSystemParticleSystemComponents() };
@@ -128,8 +128,8 @@ void CullingSystem::CullParticleSystems() NOEXCEPT
 void CullingSystem::CullSolidVegetation() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4, 6> *const RESTRICT directionalLightFrustumPlanes{ LightingSystem::Instance->GetDirectionalLight()->GetFrustumPlanes() };
-	const StaticArray<Vector4, 6> *const RESTRICT viewerFrustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT directionalLightFrustumPlanes{ LightingSystem::Instance->GetDirectionalLight()->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT viewerFrustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
 
 	//Iterate over all grass vegetation type informations, and cull the grid points that is too far away from the viewer.
 	for (SolidVegetationTypeInformation &information : *VegetationSystem::Instance->GetSolidVegetationTypeInformations())
@@ -172,7 +172,7 @@ void CullingSystem::CullSolidVegetation() NOEXCEPT
 void CullingSystem::CullTerrain() NOEXCEPT
 {
 	//Get the current frustum planes.
-	const StaticArray<Vector4, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
+	const StaticArray<Vector4<float>, 6> *const RESTRICT frustumPlanes{ Viewer::Instance->GetFrustumPlanes() };
 
 	//Iterate over all terrain patches and cull them.
 	DynamicArray<TerrainPatchInformation> *const RESTRICT patchInformations{ TerrainSystem::Instance->GetTerrainPatchInformations() };

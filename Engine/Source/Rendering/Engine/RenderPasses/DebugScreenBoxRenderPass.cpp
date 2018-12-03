@@ -55,8 +55,8 @@ void DebugScreenBoxRenderPass::InitializeInternal() NOEXCEPT
 
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
-	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(Vector4));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(Vector4), sizeof(Vector4));
+	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(Vector4<float>));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(Vector4<float>), sizeof(Vector4<float>));
 
 	//Set the render resolution.
 	SetRenderResolution(RenderingSystem::Instance->GetScaledResolution());
@@ -119,10 +119,10 @@ void DebugScreenBoxRenderPass::RenderInternal() NOEXCEPT
 
 	for (const DebugRenderingSystem::ScreenBoxDebugRenderData &renderData : *data)
 	{
-		const Vector4 box{ renderData._Minimum._X , renderData._Minimum._Y , renderData._Maximum._X , renderData._Maximum._Y };
+		const Vector4<float> box{ renderData._Minimum._X , renderData._Minimum._Y , renderData._Maximum._X , renderData._Maximum._Y };
 
-		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Vector4), &box);
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Vector4), sizeof(Vector4), &renderData._Color);
+		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Vector4<float>), &box);
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Vector4<float>), sizeof(Vector4<float>), &renderData._Color);
 
 		commandBuffer->Draw(this, 4, 1);
 	}

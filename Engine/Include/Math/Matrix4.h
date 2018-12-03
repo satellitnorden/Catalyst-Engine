@@ -17,7 +17,7 @@ class Matrix4 final
 public:
 
 	//The matrix.
-	Vector4 _Matrix[4];
+	Vector4<float> _Matrix[4];
 
 	/*
 	*	Calculates a look at matrix.
@@ -67,7 +67,7 @@ public:
 	/*
 	*	Constructor taking the four vectors as arguments.
 	*/
-	Matrix4(const Vector4 &vector1, const Vector4 &vector2, const Vector4 &vector3, const Vector4 &vector4) NOEXCEPT;
+	Matrix4(const Vector4<float> &vector1, const Vector4<float> &vector2, const Vector4<float> &vector3, const Vector4<float> &vector4) NOEXCEPT;
 
 	/*
 	*	Constructor taking in position, rotation and scale as arguments.
@@ -87,7 +87,7 @@ public:
 	/*
 	*	Matrix4 by Vector4 multiplication overload.
 	*/
-	Vector4 operator*(const Vector4 &vector) const NOEXCEPT;
+	Vector4<float> operator*(const Vector4<float> &vector) const NOEXCEPT;
 
 	/*
 	*	Returns a data to the pointer of this matrix.

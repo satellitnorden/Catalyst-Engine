@@ -32,7 +32,7 @@ public:
 		AxisAlignedBoundingBox _Box;
 
 		//The color.
-		Vector4 _Color;
+		Vector4<float> _Color;
 
 		/*
 		*	Default constructor.
@@ -45,7 +45,7 @@ public:
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		AxisAlignedBoundingBoxDebugRenderData(const AxisAlignedBoundingBox &initialBox, const Vector4 &initialColor) NOEXCEPT
+		AxisAlignedBoundingBoxDebugRenderData(const AxisAlignedBoundingBox &initialBox, const Vector4<float> &initialColor) NOEXCEPT
 			:
 			_Box(initialBox),
 			_Color(initialColor)
@@ -70,7 +70,7 @@ public:
 		Vector2<float> _Maximum;
 
 		//The color.
-		Vector4 _Color;
+		Vector4<float> _Color;
 
 		/*
 		*	Default constructor.
@@ -83,7 +83,7 @@ public:
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		ScreenBoxDebugRenderData(const Vector2<float> &initialMinimum, const Vector2<float> &initialMaximum, const Vector4 &initialColor) NOEXCEPT
+		ScreenBoxDebugRenderData(const Vector2<float> &initialMinimum, const Vector2<float> &initialMaximum, const Vector4<float> &initialColor) NOEXCEPT
 			:
 			_Minimum(initialMinimum),
 			_Maximum(initialMaximum),

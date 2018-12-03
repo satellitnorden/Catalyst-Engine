@@ -170,7 +170,7 @@ Matrix4::Matrix4(const Matrix3 &otherMatrix) NOEXCEPT
 /*
 *	Constructor taking the four vectors as arguments.
 */
-Matrix4::Matrix4(const Vector4 &vector1, const Vector4 &vector2, const Vector4 &vector3, const Vector4 &vector4) NOEXCEPT
+Matrix4::Matrix4(const Vector4<float> &vector1, const Vector4<float> &vector2, const Vector4<float> &vector3, const Vector4<float> &vector4) NOEXCEPT
 	:
 	_Matrix{ vector1, vector2, vector3, vector4 }
 {
@@ -247,9 +247,9 @@ void Matrix4::operator*=(const float scalar) NOEXCEPT
 /*
 *	Matrix/Vector multiplication overload.
 */
-Vector4 Matrix4::operator*(const Vector4 &vector) const NOEXCEPT
+Vector4<float> Matrix4::operator*(const Vector4<float> &vector) const NOEXCEPT
 {
-	Vector4 multipliedVector{ };
+	Vector4<float> multipliedVector{ };
 
 	multipliedVector._X = (_Matrix[0]._X * vector._X) + (_Matrix[1]._X * vector._Y) + (_Matrix[2]._X * vector._Z) + (_Matrix[3]._X * vector._W);
 	multipliedVector._Y = (_Matrix[0]._Y * vector._X) + (_Matrix[1]._Y * vector._Y) + (_Matrix[2]._Y * vector._Z) + (_Matrix[3]._Y * vector._W);
@@ -324,30 +324,30 @@ void Matrix4::Inverse() NOEXCEPT
 	float Coef22 = _Matrix[1]._X * _Matrix[3]._Y - _Matrix[3]._X * _Matrix[1]._Y;
 	float Coef23 = _Matrix[1]._X * _Matrix[2]._Y - _Matrix[2]._X * _Matrix[1]._Y;
 
-	Vector4 Fac0(Coef00, Coef00, Coef02, Coef03);
-	Vector4 Fac1(Coef04, Coef04, Coef06, Coef07);
-	Vector4 Fac2(Coef08, Coef08, Coef10, Coef11);
-	Vector4 Fac3(Coef12, Coef12, Coef14, Coef15);
-	Vector4 Fac4(Coef16, Coef16, Coef18, Coef19);
-	Vector4 Fac5(Coef20, Coef20, Coef22, Coef23);
+	Vector4<float> Fac0(Coef00, Coef00, Coef02, Coef03);
+	Vector4<float> Fac1(Coef04, Coef04, Coef06, Coef07);
+	Vector4<float> Fac2(Coef08, Coef08, Coef10, Coef11);
+	Vector4<float> Fac3(Coef12, Coef12, Coef14, Coef15);
+	Vector4<float> Fac4(Coef16, Coef16, Coef18, Coef19);
+	Vector4<float> Fac5(Coef20, Coef20, Coef22, Coef23);
 
-	Vector4 Vec0(_Matrix[1]._X, _Matrix[0]._X, _Matrix[0]._X, _Matrix[0]._X);
-	Vector4 Vec1(_Matrix[1]._Y, _Matrix[0]._Y, _Matrix[0]._Y, _Matrix[0]._Y);
-	Vector4 Vec2(_Matrix[1]._Z, _Matrix[0]._Z, _Matrix[0]._Z, _Matrix[0]._Z);
-	Vector4 Vec3(_Matrix[1]._W, _Matrix[0]._W, _Matrix[0]._W, _Matrix[0]._W);
+	Vector4<float> Vec0(_Matrix[1]._X, _Matrix[0]._X, _Matrix[0]._X, _Matrix[0]._X);
+	Vector4<float> Vec1(_Matrix[1]._Y, _Matrix[0]._Y, _Matrix[0]._Y, _Matrix[0]._Y);
+	Vector4<float> Vec2(_Matrix[1]._Z, _Matrix[0]._Z, _Matrix[0]._Z, _Matrix[0]._Z);
+	Vector4<float> Vec3(_Matrix[1]._W, _Matrix[0]._W, _Matrix[0]._W, _Matrix[0]._W);
 
-	Vector4 Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
-	Vector4 Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
-	Vector4 Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
-	Vector4 Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+	Vector4<float> Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+	Vector4<float> Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+	Vector4<float> Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+	Vector4<float> Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
 
-	Vector4 SignA(+1, -1, +1, -1);
-	Vector4 SignB(-1, +1, -1, +1);
+	Vector4<float> SignA(+1, -1, +1, -1);
+	Vector4<float> SignB(-1, +1, -1, +1);
 	Matrix4 Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
 
-	Vector4 Row0(Inverse._Matrix[0]._X, Inverse._Matrix[1]._X, Inverse._Matrix[2]._X, Inverse._Matrix[3]._X);
+	Vector4<float> Row0(Inverse._Matrix[0]._X, Inverse._Matrix[1]._X, Inverse._Matrix[2]._X, Inverse._Matrix[3]._X);
 
-	Vector4 Dot0(_Matrix[0] * Row0);
+	Vector4<float> Dot0(_Matrix[0] * Row0);
 	float Dot1 = (Dot0._X + Dot0._Y) + (Dot0._Z + Dot0._W);
 
 	float OneOverDeterminant = 1.0f / Dot1;
@@ -372,7 +372,7 @@ void Matrix4::Rotate(const Vector3<float> &rotation) NOEXCEPT
 		const float xSine = CatalystBaseMath::SineRadians(xRadians);
 		const float xCosine = CatalystBaseMath::CosineRadians(xRadians);
 
-		const Matrix4 xRotationMatrix{ Vector4(1.0f, 0.0f, 0.0f, 0.0f), Vector4(0.0f, xCosine, xSine, 0.0f), Vector4(0.0f, -xSine, xCosine, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
+		const Matrix4 xRotationMatrix{ Vector4<float>(1.0f, 0.0f, 0.0f, 0.0f), Vector4<float>(0.0f, xCosine, xSine, 0.0f), Vector4<float>(0.0f, -xSine, xCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 
 		*this = *this * xRotationMatrix;
 	}
@@ -384,7 +384,7 @@ void Matrix4::Rotate(const Vector3<float> &rotation) NOEXCEPT
 		const float ySine = CatalystBaseMath::SineRadians(yRadians);
 		const float yCosine = CatalystBaseMath::CosineRadians(yRadians);
 
-		const Matrix4 yRotationMatrix{ Vector4(yCosine, 0.0f, -ySine, 0.0f), Vector4(0.0f, 1.0f, 0.0f, 0.0f), Vector4(ySine, 0.0f, yCosine, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
+		const Matrix4 yRotationMatrix{ Vector4<float>(yCosine, 0.0f, -ySine, 0.0f), Vector4<float>(0.0f, 1.0f, 0.0f, 0.0f), Vector4<float>(ySine, 0.0f, yCosine, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 
 		*this = *this * yRotationMatrix;
 	}
@@ -396,7 +396,7 @@ void Matrix4::Rotate(const Vector3<float> &rotation) NOEXCEPT
 		const float zSine = CatalystBaseMath::SineRadians(zRadians);
 		const float zCosine = CatalystBaseMath::CosineRadians(zRadians);
 
-		const Matrix4 zRotationMatrix{ Vector4(zCosine, zSine, 0.0f, 0.0f), Vector4(-zSine, zCosine, 0.0f, 0.0f), Vector4(0.0f, 0.0f, 1.0f, 0.0f), Vector4(0.0f, 0.0f, 0.0f, 1.0f) };
+		const Matrix4 zRotationMatrix{ Vector4<float>(zCosine, zSine, 0.0f, 0.0f), Vector4<float>(-zSine, zCosine, 0.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 1.0f, 0.0f), Vector4<float>(0.0f, 0.0f, 0.0f, 1.0f) };
 
 		*this = *this * zRotationMatrix;
 	}
@@ -407,7 +407,7 @@ void Matrix4::Rotate(const Vector3<float> &rotation) NOEXCEPT
 */
 void Matrix4::Transpose() NOEXCEPT
 {
-	Vector4 transposedMatrix[4];
+	Vector4<float> transposedMatrix[4];
 
 	transposedMatrix[0]._X = _Matrix[0]._X;
 	transposedMatrix[1]._X = _Matrix[0]._Y;

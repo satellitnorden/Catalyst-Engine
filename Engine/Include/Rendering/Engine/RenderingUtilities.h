@@ -107,7 +107,7 @@ namespace RenderingUtilities
 	/*
 	*	Returns whether or not an axis-aligned bounding box is within the view frustum.
 	*/
-	static bool IsWithinViewFrustum(const StaticArray<Vector4, 6> &planes, const AxisAlignedBoundingBox &box) NOEXCEPT
+	static bool IsWithinViewFrustum(const StaticArray<Vector4<float>, 6> &planes, const AxisAlignedBoundingBox &box) NOEXCEPT
 	{
 		for (uint8 i = 0; i < 6; ++i)
 		{

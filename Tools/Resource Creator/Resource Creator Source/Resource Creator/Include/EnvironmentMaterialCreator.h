@@ -288,7 +288,7 @@ private:
 						Vector3<float> tangentSample{ Vector3<float>(CatalystBaseMath::SineRadians(theta) * CatalystBaseMath::CosineRadians(phi), CatalystBaseMath::SineRadians(theta) * CatalystBaseMath::SineRadians(phi), CatalystBaseMath::CosineRadians(theta)) };
 						Vector3<float> sampleVector{ tangentSample._X * rightVector + tangentSample._Y * upVector + tangentSample._Z * direction };
 
-						Vector4 sampledValue{ parameters.diffuseTexture.At(sampleVector) };
+						Vector4<float> sampledValue{ parameters.diffuseTexture.At(sampleVector) };
 
 						finalIrradiance += Vector3<float>(sampledValue._X, sampledValue._Y, sampledValue._Z) * CatalystBaseMath::CosineRadians(theta) * CatalystBaseMath::SineRadians(theta);
 

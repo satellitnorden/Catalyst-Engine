@@ -20,20 +20,20 @@ public:
 	static constexpr uint8 MAXIMUM_NUMBER_OF_SPOT_LIGHTS{ 8 };
 
 	//Viewer data.
-	Vector4 _ViewerFieldOfViewCosine;
+	Vector4<float> _ViewerFieldOfViewCosine;
 	Matrix4 _InverseViewerMatrix;
 	Matrix4 _InverseProjectionMatrix;
 	Matrix4 _OriginViewMatrix;
 	Matrix4 _ViewMatrix;
-	Vector4 _ViewerForwardVector;
-	Vector4 _ViewerWorldPosition;
+	Vector4<float> _ViewerForwardVector;
+	Vector4<float> _ViewerWorldPosition;
 
 	//Directional light data.
-	Vector4 _DirectionalLightIntensity;
+	Vector4<float> _DirectionalLightIntensity;
 	Matrix4 _DirectionalLightViewMatrix;
-	Vector4 _DirectionalLightDirection;
-	Vector4 _DirectionalLightColor;
-	Vector4 _DirectionalLightScreenSpacePosition;
+	Vector4<float> _DirectionalLightDirection;
+	Vector4<float> _DirectionalLightColor;
+	Vector4<float> _DirectionalLightScreenSpacePosition;
 
 	//Environment data.
 	float _EnvironmentBlend;
@@ -44,26 +44,26 @@ public:
 
 	//Point light data.
 	int32 _NumberOfPointLights;
-	StaticArray<Vector4, MAXIMUM_NUMBER_OF_POINT_LIGHTS> _PointLightAttenuationDistances;
-	StaticArray<Vector4, MAXIMUM_NUMBER_OF_POINT_LIGHTS> _PointLightIntensities;
-	StaticArray<Vector4, MAXIMUM_NUMBER_OF_POINT_LIGHTS> _PointLightColors;
-	StaticArray<Vector4, MAXIMUM_NUMBER_OF_POINT_LIGHTS> _PointLightWorldPositions;
+	StaticArray<Vector4<float>, MAXIMUM_NUMBER_OF_POINT_LIGHTS> _PointLightAttenuationDistances;
+	StaticArray<Vector4<float>, MAXIMUM_NUMBER_OF_POINT_LIGHTS> _PointLightIntensities;
+	StaticArray<Vector4<float>, MAXIMUM_NUMBER_OF_POINT_LIGHTS> _PointLightColors;
+	StaticArray<Vector4<float>, MAXIMUM_NUMBER_OF_POINT_LIGHTS> _PointLightWorldPositions;
 
 	//Spot light data.
 	int32 _NumberOfSpotLights;
 	uint32 _Padding2{ 0 };
 	uint64 _Padding3{ 0 };
-	StaticArray<Vector4, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightAttenuationDistances;
-	StaticArray<Vector4, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightIntensities;
-	StaticArray<Vector4, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightInnerCutoffAngles;
-	StaticArray<Vector4, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightOuterCutoffAngles;
-	StaticArray<Vector4, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightColors;
-	StaticArray<Vector4, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightDirections;
-	StaticArray<Vector4, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightWorldPositions;
+	StaticArray<Vector4<float>, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightAttenuationDistances;
+	StaticArray<Vector4<float>, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightIntensities;
+	StaticArray<Vector4<float>, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightInnerCutoffAngles;
+	StaticArray<Vector4<float>, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightOuterCutoffAngles;
+	StaticArray<Vector4<float>, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightColors;
+	StaticArray<Vector4<float>, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightDirections;
+	StaticArray<Vector4<float>, MAXIMUM_NUMBER_OF_SPOT_LIGHTS> _SpotLightWorldPositions;
 
 	//Physics data.
-	Vector4 _WindSpeed;
-	Vector4 _WindDirection;
+	Vector4<float> _WindSpeed;
+	Vector4<float> _WindDirection;
 
 };
 

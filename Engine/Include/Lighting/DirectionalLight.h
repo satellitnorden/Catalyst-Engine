@@ -76,7 +76,7 @@ public:
 	/*
 	*	Returns the frustum planes.
 	*/
-	RESTRICTED const StaticArray<Vector4, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
+	RESTRICTED const StaticArray<Vector4<float>, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -193,7 +193,7 @@ private:
 	bool _FrustumPlanesDirty{ true };
 
 	//The frustum planes.
-	StaticArray<Vector4, 6> _FrustumPlanes;
+	StaticArray<Vector4<float>, 6> _FrustumPlanes;
 
 	//The rotation.
 	Vector3<float> _Rotation{ 0.0f, 0.0f, 0.0f };

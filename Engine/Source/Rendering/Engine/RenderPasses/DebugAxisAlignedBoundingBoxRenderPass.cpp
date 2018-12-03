@@ -57,7 +57,7 @@ void DebugAxisAlignedBoundingBoxRenderPass::InitializeInternal() NOEXCEPT
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
 	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(Matrix4));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector4));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector4<float>));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -156,7 +156,7 @@ void DebugAxisAlignedBoundingBoxRenderPass::RenderInternal() NOEXCEPT
 		const Matrix4 modelMatrix{ position, Vector3<float>(0.0f, 0.0f, 0.0f), scale };
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector4), &renderData._Color);
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector4<float>), &renderData._Color);
 
 		commandBuffer->DrawIndexed(this, cubeModel._IndexCount, 1);
 	}

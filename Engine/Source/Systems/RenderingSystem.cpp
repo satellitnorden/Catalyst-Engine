@@ -1109,7 +1109,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	data._DirectionalLightViewMatrix = *LightingSystem::Instance->GetDirectionalLight()->GetViewMatrix();
 	data._DirectionalLightDirection = LightingSystem::Instance->GetDirectionalLight()->GetDirection();
 	data._DirectionalLightColor = LightingSystem::Instance->GetDirectionalLight()->GetColor();
-	data._DirectionalLightScreenSpacePosition = *viewMatrix * Vector4(-data._DirectionalLightDirection._X * 100.0f + viewerPosition._X, -data._DirectionalLightDirection._Y * 100.0f + viewerPosition._Y, -data._DirectionalLightDirection._Z * 100.0f + viewerPosition._Z, 1.0f);
+	data._DirectionalLightScreenSpacePosition = *viewMatrix * Vector4<float>(-data._DirectionalLightDirection._X * 100.0f + viewerPosition._X, -data._DirectionalLightDirection._Y * 100.0f + viewerPosition._Y, -data._DirectionalLightDirection._Z * 100.0f + viewerPosition._Z, 1.0f);
 	data._DirectionalLightScreenSpacePosition._X /= data._DirectionalLightScreenSpacePosition._W;
 	data._DirectionalLightScreenSpacePosition._Y /= data._DirectionalLightScreenSpacePosition._W;
 	data._DirectionalLightScreenSpacePosition._Z /= data._DirectionalLightScreenSpacePosition._W;

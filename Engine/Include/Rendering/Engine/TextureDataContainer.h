@@ -130,7 +130,7 @@ public:
 	*	Constructor taking a static array of Vector.
 	*/
 	template <uint64 NumberOfTexels>
-	TextureDataContainer(const StaticArray<Vector4, NumberOfTexels> &initialTextureData, const uint32 initialTextureWidth, const uint32 initialTextureHeight) NOEXCEPT
+	TextureDataContainer(const StaticArray<Vector4<float>, NumberOfTexels> &initialTextureData, const uint32 initialTextureWidth, const uint32 initialTextureHeight) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
 		_TextureData.EmplaceFast(initialTextureData.Data());

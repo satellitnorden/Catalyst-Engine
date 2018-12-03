@@ -115,15 +115,15 @@ void HighDetailSolidVegetationRenderPass::InitializeInternal() NOEXCEPT
 	AddVertexInputAttributeDescription(	5,
 										1,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										sizeof(Vector4));
+										sizeof(Vector4<float>));
 	AddVertexInputAttributeDescription(	6,
 										1,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										sizeof(Vector4) * 2);
+										sizeof(Vector4<float>) * 2);
 	AddVertexInputAttributeDescription(	7,
 										1,
 										VertexInputAttributeDescription::Format::X32Y32Z32W32SignedFloat,
-										sizeof(Vector4) * 3);
+										sizeof(Vector4<float>) * 3);
 
 	//Add the vertex input binding descriptions.
 	SetNumberOfVertexInputBindingDescriptions(2);

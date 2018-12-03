@@ -232,7 +232,7 @@ public:
 	/*
 	*	Returns the frustum planes.
 	*/
-	RESTRICTED const StaticArray<Vector4, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
+	RESTRICTED const StaticArray<Vector4<float>, 6> *const RESTRICT GetFrustumPlanes() NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -288,7 +288,7 @@ private:
 	//The view matrix.
 	Matrix4 _ViewMatrix;
 
-	StaticArray<Vector4, 6> _FrustumPlanes;
+	StaticArray<Vector4<float>, 6> _FrustumPlanes;
 
 	/*
 	*	Checks for updates.

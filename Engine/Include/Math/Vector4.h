@@ -6,6 +6,7 @@
 //Math.
 #include <Math/Vector3.h>
 
+template <typename Type>
 class Vector4 final
 {
 
@@ -16,20 +17,20 @@ public:
 		struct
 		{
 			//The X component.
-			float _X;
+			Type _X;
 
 			//The Y component.
-			float _Y;
+			Type _Y;
 
 			//The Z component.
-			float _Z;
+			Type _Z;
 
 			//The W component.
-			float _W;
+			Type _W;
 		};
 
 		//The data.
-		float _Data[4];
+		Type _Data[4];
 
 	};
 
@@ -46,10 +47,10 @@ public:
 	*/
 	constexpr Vector4() NOEXCEPT
 		:
-		_X(0.0f),
-		_Y(0.0f),
-		_Z(0.0f),
-		_W(0.0f)
+		_X(static_cast<Type>(0)),
+		_Y(static_cast<Type>(0)),
+		_Z(static_cast<Type>(0)),
+		_W(static_cast<Type>(0))
 	{
 
 	}
@@ -89,7 +90,7 @@ public:
 		_X(otherVector._X),
 		_Y(otherVector._Y),
 		_Z(otherVector._Z),
-		_W(1.0f)
+		_W(static_cast<Type>(1))
 	{
 
 	}
@@ -110,7 +111,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	const float& operator[](const uint64 index) const NOEXCEPT
+	Type operator[](const uint64 index) const NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -118,7 +119,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	float& operator[](const uint64 index)  NOEXCEPT
+	Type& operator[](const uint64 index)  NOEXCEPT
 	{
 		return _Data[index];
 	}

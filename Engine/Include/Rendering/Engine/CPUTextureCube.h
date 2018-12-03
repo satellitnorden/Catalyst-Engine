@@ -42,7 +42,7 @@ public:
 	/*
 	*	Returns the value at the specified direction.
 	*/
-	Vector4 At(const Vector3<float> &direction) const NOEXCEPT
+		Vector4<float> At(const Vector3<float> &direction) const NOEXCEPT
 	{
 		//Determine the texture coordinate and the face index.
 		uint8 faceIndex;

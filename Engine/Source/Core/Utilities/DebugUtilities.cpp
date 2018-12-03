@@ -16,19 +16,19 @@ namespace DebugUtilities
 	/*
 	*	Given an index, returns a random color.
 	*/
-	Vector4 GetRandomColor(const uint64 index) NOEXCEPT
+	Vector4<float> GetRandomColor(const uint64 index) NOEXCEPT
 	{
 		constexpr float ALPHA{ 0.25f };
 
-		constexpr StaticArray<Vector4, 6> colors
+		constexpr StaticArray<Vector4<float>, 6> colors
 		{
-			Vector4(1.0f, 0.0f, 0.0f, ALPHA),
-			Vector4(0.0f, 1.0f, 0.0f, ALPHA),
-			Vector4(0.0f, 0.0f, 1.0f, ALPHA),
+			Vector4<float>(1.0f, 0.0f, 0.0f, ALPHA),
+			Vector4<float>(0.0f, 1.0f, 0.0f, ALPHA),
+			Vector4<float>(0.0f, 0.0f, 1.0f, ALPHA),
 
-			Vector4(1.0f, 1.0f, 0.0f, ALPHA),
-			Vector4(1.0f, 0.0f, 1.0f, ALPHA),
-			Vector4(0.0f, 1.0f, 1.0f, ALPHA),
+			Vector4<float>(1.0f, 1.0f, 0.0f, ALPHA),
+			Vector4<float>(1.0f, 0.0f, 1.0f, ALPHA),
+			Vector4<float>(0.0f, 1.0f, 1.0f, ALPHA),
 		};
 
 		return colors[index % colors.Size()];
