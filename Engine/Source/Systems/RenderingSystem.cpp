@@ -707,7 +707,6 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	_GlobalRenderData._RemoveGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 	_GlobalRenderData._AddGlobalTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 	_GlobalRenderData._TerrainPatchDataBuffers.UpsizeFast(numberOfFrameBuffers);
-	_GlobalRenderData._TerrainMaterialDataBuffers.UpsizeFast(numberOfFrameBuffers);
 
 	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
 	{
@@ -743,12 +742,6 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	
 		//Bind the terrain patch data buffer to the render data table.
 		BindUniformBufferToRenderDataTable(4, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainPatchDataBuffers[i]);
-
-		//Create the terrain material data buffer.
-		_GlobalRenderData._TerrainMaterialDataBuffers[i] = CreateUniformBuffer(sizeof(TerrainMaterial) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer);
-
-		//Bind the terrain material data buffer to the render data table.
-		BindUniformBufferToRenderDataTable(5, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainMaterialDataBuffers[i]);
 	}
 
 	//Mark all global texture slots as free.
@@ -981,14 +974,13 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 6> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 5> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Geometry | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Vertex | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(2, RenderDataTableLayoutBinding::Type::SampledImage, RenderingConstants::MAXIMUM_NUMBER_OF_GLOBAL_TEXTURES, ShaderStage::Vertex | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, ShaderStage::Vertex),
 			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::Fragment),
-			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -1071,9 +1063,6 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 
 	//Update the terrain patch data.
 	UpdateTerrainPatchData(currentFrameBufferIndex);
-
-	//Update the terrain material data.
-	UpdateTerrainMaterialData(currentFrameBufferIndex);
 }
 
 /*
@@ -1245,15 +1234,6 @@ void RenderingSystem::UpdateTerrainPatchData(const uint8 currentFrameBufferIndex
 	}
 
 	UploadDataToUniformBuffer(_GlobalRenderData._TerrainPatchDataBuffers[currentFrameBufferIndex], terrainUniformData.Data());
-}
-
-/*
-*	Updates the terrain material data.
-*/
-void RenderingSystem::UpdateTerrainMaterialData(const uint8 currentFrameBufferIndex) NOEXCEPT
-{
-	//Copy the terrain material data to the buffer.
-	UploadDataToUniformBuffer(_GlobalRenderData._TerrainMaterialDataBuffers[currentFrameBufferIndex], TerrainSystem::Instance->GetTerrainMaterials()->Data());
 }
 
 //Undefine defines to keep them from leaking into other scopes.

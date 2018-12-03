@@ -1113,9 +1113,6 @@
     <ClInclude Include="..\..\..\Include\Math\ValueNoise.h">
       <Filter>Math\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Terrain\TerrainMaterial.h">
-      <Filter>Terrain\Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Math\PerlinNoise.h">
       <Filter>Math\Include</Filter>
     </ClInclude>

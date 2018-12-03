@@ -95,12 +95,6 @@ layout (std140, set = 0, binding = 4) uniform TerrainPatchUniformData
     layout (offset = 0) TerrainPatchData terrainPatchData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
 };
 
-//The terrain material uniform data.
-layout (std140, set = 0, binding = 5) uniform TerrainMaterialUniformData
-{
-    layout (offset = 0) TerrainMaterialData terrainMaterialData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
-};
-
 //Constants.
 #define FilterLinear_MipmapModeLinear_AddressModeClampToEdge_Index 0
 #define FilterLinear_MipmapModeLinear_AddressModeRepeat_Index 1

@@ -44,13 +44,7 @@ namespace ClairvoyantTerrainArchitectConstants
 */
 void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 {
-	//Register the terrain materials.
-	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_TEST_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Test_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_CLIFF_SNOW_1_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_Snow_1_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_GRASS_1_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_1_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_GRASS_2_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_2_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_SAND_1_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_1_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(ClairvoyantTerrainArchitectConstants::TERRAIN_SNOW_1_MATERIAL_INDEX, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Snow_1_Material")));
+
 }
 
 /*

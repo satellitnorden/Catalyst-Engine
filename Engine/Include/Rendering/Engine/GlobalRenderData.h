@@ -48,7 +48,4 @@ public:
 	//The terrain patch data buffers.
 	DynamicArray<UniformBufferHandle> _TerrainPatchDataBuffers;
 
-	//The terrain material data buffers.
-	DynamicArray<UniformBufferHandle> _TerrainMaterialDataBuffers;
-
 };

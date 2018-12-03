@@ -559,9 +559,4 @@ private:
 	*/
 	void UpdateTerrainPatchData(const uint8 currentFrameBufferIndex) NOEXCEPT;
 
-	/*
-	*	Updates the terrain material data.
-	*/
-	void UpdateTerrainMaterialData(const uint8 currentFrameBufferIndex) NOEXCEPT;
-
 };
