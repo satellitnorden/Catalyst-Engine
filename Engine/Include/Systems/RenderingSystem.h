@@ -45,6 +45,8 @@ class PhysicalMaterialData;
 class PhysicalModelData;
 class RenderPass;
 class Resolution;
+class TerrainMaterial;
+class TerrainMaterialData;
 class TextureData;
 
 class RenderingSystem final
@@ -399,6 +401,11 @@ public:
 	*	Creates a physical material.
 	*/
 	void CreatePhysicalMaterial(const PhysicalMaterialData &physicalMaterialData, PhysicalMaterial &physicalMaterial) NOEXCEPT;
+
+	/*
+	*	Creates a terrain material.
+	*/
+	void CreateTerrainMaterial(const TerrainMaterialData &data, TerrainMaterial &material) NOEXCEPT;
 
 	/*
 	*	Initializes a dynamic physical entity.

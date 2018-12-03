@@ -43,12 +43,16 @@
 #endif
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
+#include <Resources/TerrainMaterialData.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
+
+//Terrain.
+#include <Terrain/TerrainMaterial.h>
 
 //Vegetation.
 #include <Vegetation/GrassVegetationMaterial.h>
@@ -611,6 +615,21 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 	physicalMaterial._AlbedoTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._AlbedoTexture);
 	physicalMaterial._NormalMapTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._NormalMapTexture);
 	physicalMaterial._MaterialPropertiesTextureIndex = AddTextureToGlobalRenderData(physicalMaterial._MaterialPropertiesTexture);
+}
+
+/*
+*	Creates a terrain material.
+*/
+void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &data, TerrainMaterial &material) NOEXCEPT
+{
+	//Initialize the albedo.
+	material._Albedo.Initialize(data._Width, data._Height, data._AlbedoData.Data());
+
+	//Initialize the normal map.
+	material._NormalMap.Initialize(data._Width, data._Height, data._NormalMapData.Data());
+
+	//Initialize the material properties..
+	material._MaterialProperties.Initialize(data._Width, data._Height, data._MaterialPropertiesData.Data());
 }
 
 /*

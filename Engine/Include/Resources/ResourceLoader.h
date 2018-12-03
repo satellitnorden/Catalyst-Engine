@@ -18,6 +18,9 @@
 //Resources.
 #include <Resources/ResourcesCore.h>
 
+//Terrain.
+#include <Terrain/TerrainMaterial.h>
+
 //Vegetation.
 #include <Vegetation/GrassVegetationMaterial.h>
 #include <Vegetation/GrassVegetationModel.h>
@@ -69,6 +72,11 @@ public:
 	*/
 	static const PhysicalModel& GetPhysicalModel(const HashString resourceID) { return _PhysicalModels[resourceID]; }
 
+	/*
+	*	Given a resource ID, return the corresponding terrain material.
+	*/
+	static const TerrainMaterial& GetTerrainMaterial(const HashString resourceID) { return _TerrainMaterials[resourceID]; }
+
 private:
 
 	//Container for all environment materials.
@@ -93,6 +101,9 @@ private:
 
 	//Container for all physical models.
 	static Map<HashString, PhysicalModel> _PhysicalModels;
+
+	//Container for all terrain materials.
+	static Map<HashString, TerrainMaterial> _TerrainMaterials;
 
 	/*
 	*	Loads a resource collection, internal implementation.
@@ -135,5 +146,10 @@ private:
 	*	Given a file, load a physical model.
 	*/
 	static void LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT;
+
+	/*
+	*	Given a file, load a terrain material.
+	*/
+	static void LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT;
 
 };

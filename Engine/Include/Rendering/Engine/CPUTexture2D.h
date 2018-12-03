@@ -120,6 +120,22 @@ public:
 	}
 
 	/*
+	*	Initializes this CPU texture 2D.
+	*/
+	void Initialize(const uint64 initialWidth, const uint64 initialHeight, const void *const RESTRICT data) NOEXCEPT
+	{
+		//Set the width and height.
+		_Width = initialWidth;
+		_Height = initialHeight;
+
+		//Resize the underlying texture data to be able to hold all the data.
+		_Data.UpsizeFast(_Width * _Height);
+
+		//Copy the data.
+		MemoryUtilities::CopyMemory(_Data.Data(), data, sizeof(Type) * _Width * _Height);
+	}
+
+	/*
 	*	Returns the texture data, const.
 	*/
 	RESTRICTED const Type* Data() const NOEXCEPT { return _Data.Data(); }
