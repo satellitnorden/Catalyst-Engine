@@ -6,7 +6,7 @@
 #include <Core/Containers/StaticArray.h>
 
 //Math.
-#include <Math/PerlinNoiseGenerator.h>
+#include <Math/PerlinNoise.h>
 
 //World.
 #include <World/BiomeDesert.h>
@@ -34,7 +34,7 @@ float ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(const ClairvoyantBiome
 	const float coordinateY{ position._Z / (ClairvoyantBiomeArchitectConstants::BIOME_SIZE) };
 
 	//Calculate the noise.
-	const float noise{ CatalystBaseMath::SmoothStep<1>(PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX, coordinateY, randomOffset)) };
+	const float noise{ CatalystBaseMath::SmoothStep<1>(PerlinNoise::GenerateNormalized(coordinateX, coordinateY, randomOffset)) };
 
 	//Calculate the biome value.
 	const float biomeValue{ static_cast<float>(UNDERLYING(biome)) / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1) };

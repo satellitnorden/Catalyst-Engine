@@ -13,7 +13,6 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
-#include <Math/PerlinNoiseGenerator.h>
 
 //Managers.
 #include <Managers/EnvironmentManager.h>

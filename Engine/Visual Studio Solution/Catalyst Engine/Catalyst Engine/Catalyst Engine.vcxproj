@@ -112,7 +112,7 @@
     <ClInclude Include="..\..\..\Include\Math\GridPoint3.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix3.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix4.h" />
-    <ClInclude Include="..\..\..\Include\Math\PerlinNoiseGenerator.h" />
+    <ClInclude Include="..\..\..\Include\Math\PerlinNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\ValueNoise.h" />
     <ClInclude Include="..\..\..\Include\Math\Vector2.h" />
     <ClInclude Include="..\..\..\Include\Math\Vector3.h" />
@@ -352,7 +352,6 @@
     <ClCompile Include="..\..\..\Source\Managers\RenderingConfigurationManager.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix4.cpp" />
-    <ClCompile Include="..\..\..\Source\Math\PerlinNoiseGenerator.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\VulkanCoreAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />

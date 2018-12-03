@@ -7,7 +7,7 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
-#include <Math/PerlinNoiseGenerator.h>
+#include <Math/PerlinNoise.h>
 #include <Math/Vector3.h>
 #include <Math/Vector4.h>
 
@@ -152,12 +152,12 @@ float ClairvoyantTerrainArchitect::GetMaterialWeight(const uint8 material, const
 
 		case ClairvoyantTerrainArchitectConstants::TERRAIN_GRASS_1_MATERIAL_INDEX:
 		{
-			return PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX, coordinateY, 0.0f) * biomWeights[UNDERLYING(ClairvoyantBiome::Grass)];
+			return PerlinNoise::GenerateNormalized(coordinateX, coordinateY, 0.0f) * biomWeights[UNDERLYING(ClairvoyantBiome::Grass)];
 		}
 
 		case ClairvoyantTerrainArchitectConstants::TERRAIN_GRASS_2_MATERIAL_INDEX:
 		{
-			return PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * 2.0f, coordinateY * 2.0f, 0.0f) * biomWeights[UNDERLYING(ClairvoyantBiome::Grass)];
+			return PerlinNoise::GenerateNormalized(coordinateX * 2.0f, coordinateY * 2.0f, 0.0f) * biomWeights[UNDERLYING(ClairvoyantBiome::Grass)];
 		}
 
 		case ClairvoyantTerrainArchitectConstants::TERRAIN_SAND_1_MATERIAL_INDEX:

@@ -108,9 +108,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix4.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Math\PerlinNoiseGenerator.cpp">
-      <Filter>Engine Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\CatalystAndroid.cpp">
       <Filter>Engine Source</Filter>
     </ClCompile>

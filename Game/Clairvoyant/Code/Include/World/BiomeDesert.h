@@ -5,7 +5,7 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
-#include <Math/PerlinNoiseGenerator.h>
+#include <Math/PerlinNoise.h>
 #include <Math/Vector3.h>
 
 class BiomeDesert final
@@ -25,10 +25,10 @@ public:
 		//Calculate the height.
 		float height{ -1.0f };
 
-		height += PerlinNoiseGenerator::GenerateRidgedNoise(coordinateX * 2.0f, coordinateY * 2.0f, GetRandomOffset(0));
-		height += PerlinNoiseGenerator::GenerateRidgedNoise(coordinateX * 4.0f, coordinateY * 4.0f, GetRandomOffset(1)) * 0.5f;
-		height += PerlinNoiseGenerator::GenerateRidgedNoise(coordinateX * 8.0f, coordinateY * 8.0f, GetRandomOffset(2)) * 0.25f;
-		height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * 16.0f, coordinateY * 16.0f, GetRandomOffset(3)) * 0.125f;
+		height += PerlinNoise::GenerateRidged(coordinateX * 2.0f, coordinateY * 2.0f, GetRandomOffset(0));
+		height += PerlinNoise::GenerateRidged(coordinateX * 4.0f, coordinateY * 4.0f, GetRandomOffset(1)) * 0.5f;
+		height += PerlinNoise::GenerateRidged(coordinateX * 8.0f, coordinateY * 8.0f, GetRandomOffset(2)) * 0.25f;
+		height += PerlinNoise::GenerateNormalized(coordinateX * 16.0f, coordinateY * 16.0f, GetRandomOffset(3)) * 0.125f;
 
 		return height;
 	}

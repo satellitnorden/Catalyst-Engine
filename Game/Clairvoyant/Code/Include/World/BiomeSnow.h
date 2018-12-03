@@ -5,7 +5,7 @@
 
 //Math.
 #include <Math/CatalystBaseMath.h>
-#include <Math/PerlinNoiseGenerator.h>
+#include <Math/PerlinNoise.h>
 #include <Math/Vector3.h>
 
 class BiomeSnow final
@@ -25,14 +25,14 @@ public:
 		//Calculate the height.
 		float height{ 1.0f };
 
-		height += PerlinNoiseGenerator::GenerateRidgedNoise(coordinateX * 4.0f, coordinateY * 4.0f, GetRandomOffset(0)) * 2.0f;
-		height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * 8.0f, coordinateY * 8.0f, GetRandomOffset(1));
-		height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * 16.0f, coordinateY * 16.0f, GetRandomOffset(2)) * 0.5f;
-		height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * 32.0f, coordinateY * 32.0f, GetRandomOffset(3)) * 0.25f;
-		height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * 64.0f, coordinateY * 64.0f, GetRandomOffset(4)) * 0.125f;
-		height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * 128.0f, coordinateY * 128.0f, GetRandomOffset(5)) * 0.065f;
-		height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * 256.0f, coordinateY * 256.0f, GetRandomOffset(6)) * 0.03125f;
-		height += PerlinNoiseGenerator::GenerateNormalizedNoise(coordinateX * 512.0f, coordinateY * 512.0f, GetRandomOffset(7)) * 0.015625f;
+		height += PerlinNoise::GenerateRidged(coordinateX * 4.0f, coordinateY * 4.0f, GetRandomOffset(0)) * 2.0f;
+		height += PerlinNoise::GenerateNormalized(coordinateX * 8.0f, coordinateY * 8.0f, GetRandomOffset(1));
+		height += PerlinNoise::GenerateNormalized(coordinateX * 16.0f, coordinateY * 16.0f, GetRandomOffset(2)) * 0.5f;
+		height += PerlinNoise::GenerateNormalized(coordinateX * 32.0f, coordinateY * 32.0f, GetRandomOffset(3)) * 0.25f;
+		height += PerlinNoise::GenerateNormalized(coordinateX * 64.0f, coordinateY * 64.0f, GetRandomOffset(4)) * 0.125f;
+		height += PerlinNoise::GenerateNormalized(coordinateX * 128.0f, coordinateY * 128.0f, GetRandomOffset(5)) * 0.065f;
+		height += PerlinNoise::GenerateNormalized(coordinateX * 256.0f, coordinateY * 256.0f, GetRandomOffset(6)) * 0.03125f;
+		height += PerlinNoise::GenerateNormalized(coordinateX * 512.0f, coordinateY * 512.0f, GetRandomOffset(7)) * 0.015625f;
 
 		return height;
 	}
