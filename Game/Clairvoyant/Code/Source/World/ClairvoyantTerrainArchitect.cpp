@@ -52,6 +52,7 @@ void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 */
 void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &properties, const Vector3<float> &position, float *const RESTRICT height) NOEXCEPT
 {
+	/*
 	if (IsWithinTestArea(position))
 	{
 		*height = ClairvoyantTerrainArchitectConstants::TERRAIN_HEIGHT;
@@ -72,6 +73,18 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 			*height += ClairvoyantBiomeArchitect::GetBiomeHeightAtPosition(static_cast<ClairvoyantBiome>(biome), position) * biomeWeight;
 		}
 	}
+
+	//Apply the height.
+	*height *= ClairvoyantTerrainArchitectConstants::TERRAIN_HEIGHT;
+	*/
+
+	//Calculate the coordinates.
+	const float coordinateX{ position._X / 100'000.0f };
+	const float coordinateY{ position._Z / 100'000.0f };
+
+	//Generate the noise.
+	static float offset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1'000.0f) };
+	*height = PerlinNoise::GenerateOctaved(coordinateX, coordinateY, offset, 10, 2.25f, 0.5f) + 0.25f;
 
 	//Apply the height.
 	*height *= ClairvoyantTerrainArchitectConstants::TERRAIN_HEIGHT;

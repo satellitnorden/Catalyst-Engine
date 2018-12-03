@@ -296,7 +296,6 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 
 			GeneratePatch(	GridPoint2::GridPointToWorldPosition(validGridPoint, TerrainConstants::TERRAIN_PATCH_SIZE),
 							1.0f,
-							TerrainQuadTreeUtilities::ResolutionMultiplier(0),
 							&_Update._AddRootNodeUpdate._PatchInformation,
 							&_Update._AddRootNodeUpdate._PatchRenderInformation);
 
@@ -453,7 +452,6 @@ void TerrainSystem::CombineNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 
 	GeneratePatch(	worldPosition,
 					patchSizeMultiplier,
-					TerrainQuadTreeUtilities::ResolutionMultiplier(node->_Depth),
 					&_Update._CombineNodeUpdate._PatchInformation,
 					&_Update._CombineNodeUpdate._PatchRenderInformation);
 
@@ -510,7 +508,6 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 	{
 		GeneratePatch(	positions[i],
 						patchSizeMultiplier,
-						TerrainQuadTreeUtilities::ResolutionMultiplier(node->_Depth),
 						&_Update._SubdivideNodeUpdate._PatchInformations[i],
 						&_Update._SubdivideNodeUpdate._PatchRenderInformations[i]);
 
@@ -528,7 +525,7 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 /*
 *	Generates a patch.
 */
-void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const float patchSizeMultiplier, const uint8 resolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
+void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const float patchSizeMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
 	//Fill in the details about the patch information.
 	patchInformation->_Identifier = TerrainGeneralUtilities::GeneratePatchIdentifier();
@@ -554,7 +551,6 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 
 	TerrainGeneralUtilities::GenerateNormalTexture(	_Properties,
 													patchSizeMultiplier,
-													resolutionMultiplier,
 													worldPosition,
 													&patchInformation->_NormalTexture);
 

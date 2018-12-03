@@ -113,24 +113,21 @@ public:
 	/*
 	*	Generates octaved noise.
 	*/
-	static float constexpr GenerateOctaved(float X, float Y, float Z, const uint8 octaves, const float persistence) NOEXCEPT
+	static float constexpr GenerateOctaved(float X, float Y, float Z, const uint8 octaves, const float frequencyMultiplier, const float influenceMultiplier) NOEXCEPT
 	{
 		float total{ 0.0f };
 		float frequency{ 1.0f };
-		float amplitude{ 1.0f };
-		float max{ 0.0f };
+		float influence{ 1.0f };
 
 		for (uint8 i = 0; i < octaves; ++i)
 		{
-			total += Generate(X * frequency, Y * frequency, Z * frequency) * amplitude;
+			total += Generate(X * frequency, Y * frequency, Z * frequency) * influence;
 
-			max += amplitude;
-
-			amplitude *= persistence;
-			frequency *= 2.0f;
+			frequency *= frequencyMultiplier;
+			influence *= influenceMultiplier;
 		}
 
-		return total / max;
+		return total;
 	}
 
 private:

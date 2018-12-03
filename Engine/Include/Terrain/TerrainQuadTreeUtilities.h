@@ -53,15 +53,6 @@ public:
 	}
 
 	/*
-	*	Given a node, return it's resolution multiplier.
-	*/
-	static uint8 ResolutionMultiplier(const uint8 depth) NOEXCEPT
-	{
-		return 1;
-		return CatalystBaseMath::Maximum<uint8>(TerrainConstants::TERRAIN_QUAD_TREE_MAX_DEPTH - depth, 1);
-	}
-
-	/*
 	*	Given a node, return it's patch size multiplier.
 	*/
 	static float PatchSizeMultiplier(const TerrainQuadTreeNode &node) NOEXCEPT

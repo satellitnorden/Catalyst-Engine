@@ -85,20 +85,19 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates a normal texture.
 	*/
-	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint8 resolutionMultiplier, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT texture) NOEXCEPT
+	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT texture) NOEXCEPT
 	{
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
-		const uint32 resolution{ TerrainConstants::TERRAIN_PATCH_RESOLUTION * resolutionMultiplier };
 
 		DynamicArray<byte> data;
-		data.UpsizeFast(resolution * resolution * 4);
+		data.UpsizeFast(TerrainConstants::TERRAIN_MATERIAL_RESOLUTION * TerrainConstants::TERRAIN_MATERIAL_RESOLUTION * 4);
 
-		for (uint32 i = 0; i < resolution; ++i)
+		for (uint32 i = 0; i < TerrainConstants::TERRAIN_MATERIAL_RESOLUTION; ++i)
 		{
-			for (uint32 j = 0; j < resolution; ++j)
+			for (uint32 j = 0; j < TerrainConstants::TERRAIN_MATERIAL_RESOLUTION; ++j)
 			{
-				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution - 1) };
-				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution - 1) };
+				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_MATERIAL_RESOLUTION - 1) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_MATERIAL_RESOLUTION - 1) };
 			
 				const Vector3<float> worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 													0.0f,
@@ -108,16 +107,16 @@ namespace TerrainGeneralUtilities
 
 				GenerateNormal(properties, worldPosition, &normal);
 
-				data[((j * resolution) + i) * 4] = static_cast<byte>(((normal._X + 1.0f) * 0.5f) * 255.0f);
-				data[((j * resolution) + i) * 4 + 1] = static_cast<byte>(((normal._Y + 1.0f) * 0.5f) * 255.0f);
-				data[((j * resolution) + i) * 4 + 2] = static_cast<byte>(((normal._Z + 1.0f) * 0.5f) * 255.0f);
-				data[((j * resolution) + i) * 4 + 3] = 255;
+				data[((j * TerrainConstants::TERRAIN_MATERIAL_RESOLUTION) + i) * 4] = static_cast<byte>(((normal._X + 1.0f) * 0.5f) * 255.0f);
+				data[((j * TerrainConstants::TERRAIN_MATERIAL_RESOLUTION) + i) * 4 + 1] = static_cast<byte>(((normal._Y + 1.0f) * 0.5f) * 255.0f);
+				data[((j * TerrainConstants::TERRAIN_MATERIAL_RESOLUTION) + i) * 4 + 2] = static_cast<byte>(((normal._Z + 1.0f) * 0.5f) * 255.0f);
+				data[((j * TerrainConstants::TERRAIN_MATERIAL_RESOLUTION) + i) * 4 + 3] = 255;
 			}
 		}
 
 		*texture = RenderingSystem::Instance->CreateTexture2D(TextureData(	TextureDataContainer(	data.Data(),
-																									resolution,
-																									resolution,
+																									TerrainConstants::TERRAIN_MATERIAL_RESOLUTION,
+																									TerrainConstants::TERRAIN_MATERIAL_RESOLUTION,
 																									4),
 																			TextureFormat::R8G8B8A8_Byte));
 	}
