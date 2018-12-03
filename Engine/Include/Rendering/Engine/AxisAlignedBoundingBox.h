@@ -13,10 +13,10 @@ class AxisAlignedBoundingBox final
 public:
 
 	//The minimum corner.
-	Vector3 _Minimum;
+	Vector3<float> _Minimum;
 
 	//The maximum corner.
-	Vector3 _Maximum;
+	Vector3<float> _Maximum;
 
 	/*
 	*	Default constructor.
@@ -29,7 +29,7 @@ public:
 	/*
 	*	Constructor taking the minimum and maximum values.
 	*/
-	AxisAlignedBoundingBox(const Vector3 &initialMinimum, const Vector3 &initialMaximum) NOEXCEPT
+	AxisAlignedBoundingBox(const Vector3<float> &initialMinimum, const Vector3<float> &initialMaximum) NOEXCEPT
 		:
 		_Minimum(initialMinimum),
 		_Maximum(initialMaximum)
@@ -40,7 +40,7 @@ public:
 	/*
 	*	Calcules the center of an axis-aligned bounding box.
 	*/
-	static Vector3 CalculateCenter(const AxisAlignedBoundingBox &box) NOEXCEPT
+	static Vector3<float> CalculateCenter(const AxisAlignedBoundingBox &box) NOEXCEPT
 	{
 		return box._Minimum + ((box._Maximum - box._Minimum) * 0.5f);
 	}

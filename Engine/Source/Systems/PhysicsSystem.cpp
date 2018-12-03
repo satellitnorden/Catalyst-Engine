@@ -73,7 +73,7 @@ void PhysicsSystem::CastRayDynamicPhysical(const Ray &ray, RayCastResult *const 
 
 	//If there was not hit, update the result.
 	result->_HasHit = false;
-	result->_HitPosition = Vector3(0.0f, 0.0f, 0.0f);
+	result->_HitPosition = Vector3<float>(0.0f, 0.0f, 0.0f);
 	result->_HitEntity = nullptr;
 }
 
@@ -84,7 +84,7 @@ void PhysicsSystem::CastRayOcean(const Ray &ray, RayCastResult *const RESTRICT r
 {
 	//Just do a simple line-plane intersection.
 	result->_HasHit = true;
-	result->_HitPosition = CatalystVectorMath::LinePlaneIntersection(Vector3(0.0f, GetOceanHeight(), 0.0f), ray._Origin, Vector3::UP, ray._Direction);
+	result->_HitPosition = CatalystVectorMath::LinePlaneIntersection(Vector3<float>(0.0f, GetOceanHeight(), 0.0f), ray._Origin, Vector3<float>::UP, ray._Direction);
 	result->_HitEntity = nullptr;
 }
 

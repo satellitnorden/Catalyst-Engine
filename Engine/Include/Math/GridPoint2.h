@@ -77,16 +77,16 @@ public:
 	/*
 	*	Calculates the world position from a grid point.
 	*/
-	constexpr static NO_DISCARD Vector3 GridPointToWorldPosition(const GridPoint2 &gridPoint, const float gridSize) NOEXCEPT
+	constexpr static NO_DISCARD Vector3<float> GridPointToWorldPosition(const GridPoint2 &gridPoint, const float gridSize) NOEXCEPT
 	{
-		return Vector3(	gridPoint._X * gridSize , 0.0f,
-						gridPoint._Y * gridSize);
+		return Vector3<float>(	gridPoint._X * gridSize , 0.0f,
+								gridPoint._Y * gridSize);
 	}
 
 	/*
 	*	Calculates the grid point from a world position.
 	*/
-	constexpr static NO_DISCARD GridPoint2 WorldPositionToGridPoint(const Vector3 &worldPosition, const float gridSize) NOEXCEPT
+	constexpr static NO_DISCARD GridPoint2 WorldPositionToGridPoint(const Vector3<float> &worldPosition, const float gridSize) NOEXCEPT
 	{
 		return GridPoint2(	CatalystBaseMath::Round<int32>(worldPosition._X / gridSize),
 							CatalystBaseMath::Round<int32>(worldPosition._Z / gridSize));

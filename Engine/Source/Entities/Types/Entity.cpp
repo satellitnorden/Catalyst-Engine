@@ -6,17 +6,17 @@
 #include <Systems/PhysicsSystem.h>
 
 //Static variable definitions.
-constexpr Vector3 Entity::_DefaultPosition;
-constexpr Vector3 Entity::_DefaultRotation;
-constexpr Vector3 Entity::_DefaultScale;
+constexpr Vector3<float> Entity::_DefaultPosition;
+constexpr Vector3<float> Entity::_DefaultRotation;
+constexpr Vector3<float> Entity::_DefaultScale;
 
 /*
 *	Returns the position of this entity.
 */
-const Vector3& Entity::GetPosition() const NOEXCEPT
+const Vector3<float>& Entity::GetPosition() const NOEXCEPT
 {
 	//Return the position of this entity.
-	if (const Vector3 *const RESTRICT position{ const_cast<Entity *const RESTRICT>(this)->GetPositionInternal() })
+	if (const Vector3<float> *const RESTRICT position{ const_cast<Entity *const RESTRICT>(this)->GetPositionInternal() })
 	{
 		return *position;
 	}
@@ -30,10 +30,10 @@ const Vector3& Entity::GetPosition() const NOEXCEPT
 /*
 *	Returns the rotation of this entity.
 */
-const Vector3& Entity::GetRotation() const NOEXCEPT
+const Vector3<float>& Entity::GetRotation() const NOEXCEPT
 {
 	//Return the rotation of this entity.
-	if (const Vector3 *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
+	if (const Vector3<float> *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
 	{
 		return *rotation;
 	}
@@ -47,10 +47,10 @@ const Vector3& Entity::GetRotation() const NOEXCEPT
 /*
 *	Returns the scale of this entity.
 */
-const Vector3& Entity::GetScale() const NOEXCEPT
+const Vector3<float>& Entity::GetScale() const NOEXCEPT
 {
 	//Return the scale of this entity.
-	if (const Vector3 *const RESTRICT scale{ const_cast<Entity *const RESTRICT>(this)->GetScaleInternal() })
+	if (const Vector3<float> *const RESTRICT scale{ const_cast<Entity *const RESTRICT>(this)->GetScaleInternal() })
 	{
 		return *scale;
 	}
@@ -64,13 +64,13 @@ const Vector3& Entity::GetScale() const NOEXCEPT
 /*
 *	Sets the position of this entity.
 */
-void Entity::SetPosition(const Vector3 &newPosition) NOEXCEPT
+void Entity::SetPosition(const Vector3<float> &newPosition) NOEXCEPT
 {
 	//Set the position of this entity.
-	if (Vector3 *const RESTRICT position{ GetPositionInternal() })
+	if (Vector3<float> *const RESTRICT position{ GetPositionInternal() })
 	{
 		//Calculate the amount to move and move all children.
-		const Vector3 moveVector{ newPosition - *position };
+		const Vector3<float> moveVector{ newPosition - *position };
 
 		for (Entity *const RESTRICT child : _Children)
 		{
@@ -88,13 +88,13 @@ void Entity::SetPosition(const Vector3 &newPosition) NOEXCEPT
 /*
 *	Sets the rotation of this entity.
 */
-void Entity::SetRotation(const Vector3 &newRotation) NOEXCEPT
+void Entity::SetRotation(const Vector3<float> &newRotation) NOEXCEPT
 {
 	//Set the rotation of this entity.
-	if (Vector3 *const RESTRICT rotation{ GetRotationInternal() })
+	if (Vector3<float> *const RESTRICT rotation{ GetRotationInternal() })
 	{
 		//Calculate the amount to rotate and rotate all children.
-		const Vector3 rotateVector{ newRotation - *rotation };
+		const Vector3<float> rotateVector{ newRotation - *rotation };
 
 		for (Entity *const RESTRICT child : _Children)
 		{
@@ -112,13 +112,13 @@ void Entity::SetRotation(const Vector3 &newRotation) NOEXCEPT
 /*
 *	Sets the scale of this entity.
 */
-void Entity::SetScale(const Vector3 &newScale) NOEXCEPT
+void Entity::SetScale(const Vector3<float> &newScale) NOEXCEPT
 {
 	//Set the scale of this entity.
-	if (Vector3 *const RESTRICT scale{ GetScaleInternal() })
+	if (Vector3<float> *const RESTRICT scale{ GetScaleInternal() })
 	{
 		//Calculate the amount to scale and scale all children.
-		const Vector3 scaleVector{ newScale - *scale };
+		const Vector3<float> scaleVector{ newScale - *scale };
 
 		for (Entity *const RESTRICT child : _Children)
 		{
@@ -136,10 +136,10 @@ void Entity::SetScale(const Vector3 &newScale) NOEXCEPT
 /*
 *	Moves this entity.
 */
-void Entity::Move(const Vector3 &amount) NOEXCEPT
+void Entity::Move(const Vector3<float> &amount) NOEXCEPT
 {
 	//Move this entity.
-	if (Vector3 *const RESTRICT position{ GetPositionInternal() })
+	if (Vector3<float> *const RESTRICT position{ GetPositionInternal() })
 	{
 		*position += amount;
 	}
@@ -157,10 +157,10 @@ void Entity::Move(const Vector3 &amount) NOEXCEPT
 /*
 *	Rotates this entity.
 */
-void Entity::Rotate(const Vector3 &amount) NOEXCEPT
+void Entity::Rotate(const Vector3<float> &amount) NOEXCEPT
 {
 	//Rotate this entity.
-	if (Vector3 *const RESTRICT rotation{ GetRotationInternal() })
+	if (Vector3<float> *const RESTRICT rotation{ GetRotationInternal() })
 	{
 		*rotation += amount;
 	}
@@ -178,10 +178,10 @@ void Entity::Rotate(const Vector3 &amount) NOEXCEPT
 /*
 *	Scales this entity.
 */
-void Entity::Scale(const Vector3 &amount) NOEXCEPT
+void Entity::Scale(const Vector3<float> &amount) NOEXCEPT
 {
 	//Scale this entity.
-	if (Vector3 *const RESTRICT scale{ GetScaleInternal() })
+	if (Vector3<float> *const RESTRICT scale{ GetScaleInternal() })
 	{
 		*scale *= amount;
 	}
@@ -199,12 +199,12 @@ void Entity::Scale(const Vector3 &amount) NOEXCEPT
 /*
 *	Returns the forward vector of this entity.
 */
-NO_DISCARD Vector3 Entity::GetForwardVector() const NOEXCEPT
+NO_DISCARD Vector3<float> Entity::GetForwardVector() const NOEXCEPT
 {
 	//Return the forward vector of this entity.
-	if (const Vector3 *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
+	if (const Vector3<float> *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
 	{
-		Vector3 forward{ Vector3::FORWARD };
+		Vector3<float> forward{ Vector3<float>::FORWARD };
 		forward.Rotate(*rotation);
 
 		return forward;
@@ -212,19 +212,19 @@ NO_DISCARD Vector3 Entity::GetForwardVector() const NOEXCEPT
 
 	else
 	{
-		return Vector3::FORWARD;
+		return Vector3<float>::FORWARD;
 	}
 }
 
 /*
 *	Returns the up vector of this entity.
 */
-NO_DISCARD Vector3 Entity::GetUpVector() const NOEXCEPT
+NO_DISCARD Vector3<float> Entity::GetUpVector() const NOEXCEPT
 {
 	//Return the up vector of this entity.
-	if (const Vector3 *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
+	if (const Vector3<float> *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
 	{
-		Vector3 up{ Vector3::UP };
+		Vector3<float> up{ Vector3<float>::UP };
 		up.Rotate(*rotation);
 
 		return up;
@@ -232,19 +232,19 @@ NO_DISCARD Vector3 Entity::GetUpVector() const NOEXCEPT
 
 	else
 	{
-		return Vector3::UP;
+		return Vector3<float>::UP;
 	}
 }
 
 /*
 *	Returns the right vector of this entity.
 */
-NO_DISCARD Vector3 Entity::GetRightVector() const NOEXCEPT
+NO_DISCARD Vector3<float> Entity::GetRightVector() const NOEXCEPT
 {
 	//Return the right vector of this entity.
-	if (const Vector3 *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
+	if (const Vector3<float> *const RESTRICT rotation{ const_cast<Entity *const RESTRICT>(this)->GetRotationInternal() })
 	{
-		Vector3 right{ Vector3::RIGHT };
+		Vector3<float> right{ Vector3<float>::RIGHT };
 		right.Rotate(*rotation);
 
 		return right;
@@ -252,6 +252,6 @@ NO_DISCARD Vector3 Entity::GetRightVector() const NOEXCEPT
 
 	else
 	{
-		return Vector3::RIGHT;
+		return Vector3<float>::RIGHT;
 	}
 }

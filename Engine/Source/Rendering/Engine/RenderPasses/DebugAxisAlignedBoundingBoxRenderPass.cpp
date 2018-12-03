@@ -150,10 +150,10 @@ void DebugAxisAlignedBoundingBoxRenderPass::RenderInternal() NOEXCEPT
 	for (const DebugRenderingSystem::AxisAlignedBoundingBoxDebugRenderData &renderData : *data)
 	{
 		//Calculate the model matrix.
-		const Vector3 position{ AxisAlignedBoundingBox::CalculateCenter(renderData._Box) };
-		const Vector3 scale{ renderData._Box._Maximum._X - renderData._Box._Minimum._X, renderData._Box._Maximum._Y - renderData._Box._Minimum._Y, renderData._Box._Maximum._Z - renderData._Box._Minimum._Z };
+		const Vector3<float> position{ AxisAlignedBoundingBox::CalculateCenter(renderData._Box) };
+		const Vector3<float> scale{ renderData._Box._Maximum._X - renderData._Box._Minimum._X, renderData._Box._Maximum._Y - renderData._Box._Minimum._Y, renderData._Box._Maximum._Z - renderData._Box._Minimum._Z };
 
-		const Matrix4 modelMatrix{ position, Vector3(0.0f, 0.0f, 0.0f), scale };
+		const Matrix4 modelMatrix{ position, Vector3<float>(0.0f, 0.0f, 0.0f), scale };
 
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
 		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector4), &renderData._Color);

@@ -226,17 +226,17 @@ private:
 	/*
 	*	Given an index and two weights, return the corresponding position vector.
 	*/
-	static Vector3 GetPositionVector(const uint8 index, const float xWeight, const float yWeight) NOEXCEPT
+	static Vector3<float> GetPositionVector(const uint8 index, const float xWeight, const float yWeight) NOEXCEPT
 	{
 		switch (index)
 		{
-			default: return Vector3();
-			case 0: return Vector3(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight));
-			case 1: return Vector3(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight));
-			case 2: return Vector3(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, yWeight));
-			case 3: return Vector3(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight));
-			case 4: return Vector3(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), -1.0f);
-			case 5: return Vector3(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), 1.0f);
+			default: return Vector3<float>();
+			case 0: return Vector3<float>(-1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight));
+			case 1: return Vector3<float>(1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight));
+			case 2: return Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), -1.0f, CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, yWeight));
+			case 3: return Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), 1.0f, CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight));
+			case 4: return Vector3<float>(CatalystBaseMath::LinearlyInterpolate(1.0f, -1.0f, xWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), -1.0f);
+			case 5: return Vector3<float>(CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, xWeight), CatalystBaseMath::LinearlyInterpolate(-1.0f, 1.0f, yWeight), 1.0f);
 		}
 	}
 
@@ -249,7 +249,7 @@ private:
 		{
 			for (uint32 k = 0; k < parameters.outputResolution; ++k)
 			{
-				Vector3 position{ GetPositionVector(parameters.index, static_cast<float>(j) / static_cast<float>(parameters.outputResolution), static_cast<float>(k) / static_cast<float>(parameters.outputResolution)) };
+				Vector3<float> position{ GetPositionVector(parameters.index, static_cast<float>(j) / static_cast<float>(parameters.outputResolution), static_cast<float>(k) / static_cast<float>(parameters.outputResolution)) };
 				position.Normalize();
 
 				Vector2<float> textureCoordinate{ CatalystBaseMath::ArctangentRadians(position._Z, position._X), CatalystBaseMath::ArcsineRadians(position._Y) };
@@ -270,27 +270,27 @@ private:
 		{
 			for (uint32 k = 0; k < parameters.outputResolution; ++k)
 			{
-				Vector3 direction{ GetPositionVector(parameters.index, static_cast<float>(j) / static_cast<float>(parameters.outputResolution), static_cast<float>(k) / static_cast<float>(parameters.outputResolution)) };
+				Vector3<float> direction{ GetPositionVector(parameters.index, static_cast<float>(j) / static_cast<float>(parameters.outputResolution), static_cast<float>(k) / static_cast<float>(parameters.outputResolution)) };
 				direction *= -1.0f;
 
-				Vector3 rightVector{ Vector3::CrossProduct(Vector3(0.0f, 1.0f, 0.0f), direction) };
-				Vector3 upVector{ Vector3::CrossProduct(direction, rightVector) };
+				Vector3<float> rightVector{ Vector3<float>::CrossProduct(Vector3<float>(0.0f, 1.0f, 0.0f), direction) };
+				Vector3<float> upVector{ Vector3<float>::CrossProduct(direction, rightVector) };
 
 				float sampleDelta{ 0.025f };
 				float numberOfSamples{ 0.0f };
 
-				Vector3 finalIrradiance{ 0.0f, 0.0f, 0.0f };
+				Vector3<float> finalIrradiance{ 0.0f, 0.0f, 0.0f };
 
 				for (float phi = 0.0f; phi < (2.0f * CatalystBaseMathConstants::PI); phi += sampleDelta)
 				{
 					for (float theta = 0.0f; theta < (0.5f * CatalystBaseMathConstants::PI); theta += sampleDelta)
 					{
-						Vector3 tangentSample{ Vector3(CatalystBaseMath::SineRadians(theta) * CatalystBaseMath::CosineRadians(phi), CatalystBaseMath::SineRadians(theta) * CatalystBaseMath::SineRadians(phi), CatalystBaseMath::CosineRadians(theta)) };
-						Vector3 sampleVector{ tangentSample._X * rightVector + tangentSample._Y * upVector + tangentSample._Z * direction };
+						Vector3<float> tangentSample{ Vector3<float>(CatalystBaseMath::SineRadians(theta) * CatalystBaseMath::CosineRadians(phi), CatalystBaseMath::SineRadians(theta) * CatalystBaseMath::SineRadians(phi), CatalystBaseMath::CosineRadians(theta)) };
+						Vector3<float> sampleVector{ tangentSample._X * rightVector + tangentSample._Y * upVector + tangentSample._Z * direction };
 
 						Vector4 sampledValue{ parameters.diffuseTexture.At(sampleVector) };
 
-						finalIrradiance += Vector3(sampledValue._X, sampledValue._Y, sampledValue._Z) * CatalystBaseMath::CosineRadians(theta) * CatalystBaseMath::SineRadians(theta);
+						finalIrradiance += Vector3<float>(sampledValue._X, sampledValue._Y, sampledValue._Z) * CatalystBaseMath::CosineRadians(theta) * CatalystBaseMath::SineRadians(theta);
 
 						numberOfSamples += 1.0f;
 					}

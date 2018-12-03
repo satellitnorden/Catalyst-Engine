@@ -36,7 +36,7 @@ public:
 	/*
 	*	Returns the wind direction.
 	*/
-	const Vector3& GetWindDirection() const NOEXCEPT { return _WindDirection; }
+	const Vector3<float>& GetWindDirection() const NOEXCEPT { return _WindDirection; }
 
 	/*
 	*	Returns the wind speed.
@@ -58,7 +58,7 @@ public:
 private:
 
 	//The wind direction.
-	Vector3 _WindDirection{ Vector3::Normalize(Vector3::RIGHT + Vector3::FORWARD) };
+	Vector3<float> _WindDirection{ Vector3<float>::Normalize(Vector3<float>::RIGHT + Vector3<float>::FORWARD) };
 
 	//The wind speed.
 	float _WindSpeed{ 4.0f };

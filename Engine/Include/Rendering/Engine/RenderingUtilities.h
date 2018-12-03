@@ -28,7 +28,7 @@ namespace RenderingUtilities
 	/*
 	*	Calculates an axis-aligned bounding box for a particle system.
 	*/
-	static void CalculateAxisAlignedBoundingBoxForParticleSystem(const Vector3 &position, const ParticleSystemProperties &properties, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
+	static void CalculateAxisAlignedBoundingBoxForParticleSystem(const Vector3<float> &position, const ParticleSystemProperties &properties, AxisAlignedBoundingBox *const RESTRICT box) NOEXCEPT
 	{
 		float minimumScale{ FLOAT_MAXIMUM };
 		float maximumScale{ -FLOAT_MAXIMUM };
@@ -38,8 +38,8 @@ namespace RenderingUtilities
 		maximumScale = CatalystBaseMath::Maximum<float>(maximumScale, properties._MaximumScale._X);
 		maximumScale = CatalystBaseMath::Maximum<float>(maximumScale, properties._MaximumScale._Y);
 
-		box->_Minimum = position + properties._MinimumPosition + properties._MinimumVelocity * properties._Lifetime - Vector3(minimumScale, minimumScale, minimumScale);
-		box->_Maximum = position + properties._MaximumPosition + properties._MaximumVelocity * properties._Lifetime + Vector3(maximumScale, maximumScale, maximumScale);
+		box->_Minimum = position + properties._MinimumPosition + properties._MinimumVelocity * properties._Lifetime - Vector3<float>(minimumScale, minimumScale, minimumScale);
+		box->_Maximum = position + properties._MaximumPosition + properties._MaximumVelocity * properties._Lifetime + Vector3<float>(maximumScale, maximumScale, maximumScale);
 	}
 
 	/*
@@ -68,8 +68,8 @@ namespace RenderingUtilities
 
 		for (const Matrix4 &transformation : transformations)
 		{
-			const Vector3 position{ transformation.GetTranslation() };
-			const Vector3 scale{ transformation.GetScale() };
+			const Vector3<float> position{ transformation.GetTranslation() };
+			const Vector3<float> scale{ transformation.GetScale() };
 
 			box->_Minimum._X = CatalystBaseMath::Minimum<float>(box->_Minimum._X, position._X);
 			box->_Minimum._Y = CatalystBaseMath::Minimum<float>(box->_Minimum._Y, position._Y);
@@ -111,7 +111,7 @@ namespace RenderingUtilities
 	{
 		for (uint8 i = 0; i < 6; ++i)
 		{
-			Vector3 axis;
+			Vector3<float> axis;
 
 			if (planes[i]._X < 0.0f)
 			{
@@ -143,9 +143,9 @@ namespace RenderingUtilities
 				axis._Z = box._Maximum._Z;
 			}
 
-			const Vector3 planeNormal{ Vector3(planes[i]._X, planes[i]._Y, planes[i]._Z) };
+			const Vector3<float> planeNormal{ Vector3<float>(planes[i]._X, planes[i]._Y, planes[i]._Z) };
 
-			if (Vector3::DotProduct(planeNormal, axis) + planes[i]._W < 0.0f)
+			if (Vector3<float>::DotProduct(planeNormal, axis) + planes[i]._W < 0.0f)
 			{
 				return false;
 			}

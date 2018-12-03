@@ -12,16 +12,16 @@ class PhysicalVertex final
 
 public:
 
-	//The position of this PhysicalVertex.
-	Vector3 _Position;
+	//The position of this physical vertex.
+	Vector3<float> _Position;
 
-	//The normal of this PhysicalVertex.
-	Vector3 _Normal;
+	//The normal of this physical vertex.
+	Vector3<float> _Normal;
 
-	//The tangent of this PhysicalVertex.
-	Vector3 _Tangent;
+	//The tangent of this physical vertex.
+	Vector3<float> _Tangent;
 
-	//The texture coordinate of this PhysicalVertex.
+	//The texture coordinate of this physical vertex.
 	Vector2<float> _TextureCoordinate;
 
 	/*
@@ -30,9 +30,9 @@ public:
 	PhysicalVertex() NOEXCEPT = delete;
 
 	/*
-	*	Constructor taking the position, normal and the color of the PhysicalVertex.
+	*	Constructor taking the position, normal and the color of the physical vertex.
 	*/
-	PhysicalVertex(const Vector3 &newPosition, const Vector3 &newNormal, const Vector3 &newTangent, const Vector2<float> &newTextureCoordinate) NOEXCEPT
+	PhysicalVertex(const Vector3<float> &newPosition, const Vector3<float> &newNormal, const Vector3<float> &newTangent, const Vector2<float> &newTextureCoordinate) NOEXCEPT
 		:
 		_Position(newPosition),
 		_Normal(newNormal),
@@ -43,7 +43,7 @@ public:
 	}
 
 	/*
-	*	Constructor taking the position and the color of the PhysicalVertex as separate values.
+	*	Constructor taking the position and the color of the physical vertex as separate values.
 	*/
 		PhysicalVertex(const float newPositionX, const float newPositionY, const float newPositionZ, const float newNormalX, const float newNormalY, const float newNormalZ, const float newTangentX, const float newTangentY, const float newTangentZ, const float newTextureCoordinateX, const float newTextureCoordinateY) NOEXCEPT
 			:

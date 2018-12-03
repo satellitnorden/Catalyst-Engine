@@ -18,7 +18,7 @@ public:
 	bool _HasHit;
 
 	//The hit position.
-	Vector3 _HitPosition;
+	Vector3<float> _HitPosition;
 
 	//The hit entity.
 	Entity *RESTRICT _HitEntity;

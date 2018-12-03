@@ -7,6 +7,7 @@
 #include <Math/CatalystBaseMath.h>
 #include <Math/Vector2.h>
 
+template <typename Type>
 class Vector3 final
 {
 
@@ -25,17 +26,17 @@ public:
 		struct
 		{
 			//The X component.
-			float _X;
+			Type _X;
 
 			//The Y component.
-			float _Y;
+			Type _Y;
 
 			//The Z component.
-			float _Z;
+			Type _Z;
 		};
 
 		//The data.
-		float _Data[3];
+		Type _Data[3];
 	};
 
 	/*
@@ -147,9 +148,9 @@ public:
 	*/
 	FORCE_INLINE constexpr Vector3() NOEXCEPT
 		:
-		_X(0.0f),
-		_Y(0.0f),
-		_Z(0.0f)
+		_X(static_cast<Type>(0)),
+		_Y(static_cast<Type>(0)),
+		_Z(static_cast<Type>(0))
 	{
 
 	}
@@ -215,7 +216,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	const float& operator[](const uint64 index) const NOEXCEPT
+	Type operator[](const uint64 index) const NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -223,7 +224,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	float& operator[](const uint64 index)  NOEXCEPT
+	Type& operator[](const uint64 index)  NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -379,7 +380,7 @@ public:
 	/*
 	*	Returns a pointer to this vector's data, const.
 	*/
-	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const float* const RESTRICT Data() const NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const Type* const RESTRICT Data() const NOEXCEPT
 	{
 		return &_X;
 	}
@@ -387,7 +388,7 @@ public:
 	/*
 	*	Returns a pointer to this vector's data, non-const.
 	*/
-	FORCE_INLINE RESTRICTED constexpr NO_DISCARD float* RESTRICT Data() NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD Type* RESTRICT Data() NOEXCEPT
 	{
 		return &_X;
 	}

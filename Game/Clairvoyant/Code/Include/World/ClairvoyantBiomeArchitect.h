@@ -18,11 +18,11 @@ public:
 	/*
 	*	Returns the biome weight at the given position.
 	*/
-	static float GetBiomeWeightAtPosition(const ClairvoyantBiome biome, const Vector3 &position) NOEXCEPT;
+	static float GetBiomeWeightAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT;
 
 	/*
 	*	Returns the biome height at the given position.
 	*/
-	static float GetBiomeHeightAtPosition(const ClairvoyantBiome biome, const Vector3 &position) NOEXCEPT;
+	static float GetBiomeHeightAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT;
 
 };

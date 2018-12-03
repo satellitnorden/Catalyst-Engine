@@ -32,7 +32,7 @@ public:
 	/*
 	*	Returns whether or not a world position is within this node.
 	*/
-	bool IsWithin(const Vector3 &worldPosition) const NOEXCEPT
+	bool IsWithin(const Vector3<float> &worldPosition) const NOEXCEPT
 	{
 		return	worldPosition._X >= _Minimum._X
 				&& worldPosition._X < _Maximum._X

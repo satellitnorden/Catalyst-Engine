@@ -21,7 +21,7 @@ namespace ClairvoyantBiomeArchitectConstants
 /*
 *	Returns the biome weight at the given position.
 */
-float ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(const ClairvoyantBiome biome, const Vector3 &position) NOEXCEPT
+float ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT
 {
 	//Calculate the biome step.
 	constexpr float BIOME_STEP{ 1.0f / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1) };
@@ -46,7 +46,7 @@ float ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(const ClairvoyantBiome
 /*
 *	Returns the biome height at the given position.
 */
-float ClairvoyantBiomeArchitect::GetBiomeHeightAtPosition(const ClairvoyantBiome biome, const Vector3 &position) NOEXCEPT
+float ClairvoyantBiomeArchitect::GetBiomeHeightAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT
 {
 	switch (biome)
 	{

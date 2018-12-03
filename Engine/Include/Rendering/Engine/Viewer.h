@@ -30,7 +30,7 @@ public:
 	/*
 	*	Returns the position of the viewer.
 	*/
-	const Vector3& GetPosition() const NOEXCEPT
+	const Vector3<float>& GetPosition() const NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -40,7 +40,7 @@ public:
 	/*
 	*	Moves the viewer.
 	*/
-	void Move(const Vector3 &amount) NOEXCEPT
+	void Move(const Vector3<float> &amount) NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -53,7 +53,7 @@ public:
 	/*
 	*	Sets the position of the viewer.
 	*/
-	void SetPosition(const Vector3 &newPosition) NOEXCEPT
+	void SetPosition(const Vector3<float> &newPosition) NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -66,7 +66,7 @@ public:
 	/*
 	*	Returns the rotation of the viewer.
 	*/
-	const Vector3& GetRotation() const NOEXCEPT
+	const Vector3<float>& GetRotation() const NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -76,7 +76,7 @@ public:
 	/*
 	*	Rotates the viewer.
 	*/
-	void Rotate(const Vector3 &amount) NOEXCEPT
+	void Rotate(const Vector3<float> &amount) NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -89,7 +89,7 @@ public:
 	/*
 	*	Sets the rotation of the viewer.
 	*/
-	void SetRotation(const Vector3 &newRotation) NOEXCEPT
+	void SetRotation(const Vector3<float> &newRotation) NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -102,31 +102,31 @@ public:
 	/*
 	*	Returns the forward vector of the viewer.
 	*/
-	Vector3 GetForwardVector() const NOEXCEPT
+	Vector3<float> GetForwardVector() const NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
-		return Vector3::Normalize(Vector3(Vector3::FORWARD).Rotated(_Rotation));
+		return Vector3<float>::Normalize(Vector3<float>(Vector3<float>::FORWARD).Rotated(_Rotation));
 	}
 
 	/*
 	*	Returns the right vector of the viewer.
 	*/
-	Vector3 GetRightVector() const NOEXCEPT
+	Vector3<float> GetRightVector() const NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
-		return Vector3::Normalize(Vector3(Vector3::RIGHT).Rotated(_Rotation));
+		return Vector3<float>::Normalize(Vector3<float>(Vector3<float>::RIGHT).Rotated(_Rotation));
 	}
 
 	/*
 	*	Returns the up vector of the viewer.
 	*/
-	Vector3 GetUpVector() const NOEXCEPT
+	Vector3<float> GetUpVector() const NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
-		return Vector3::Normalize(Vector3(Vector3::UP).Rotated(_Rotation));
+		return Vector3<float>::Normalize(Vector3<float>(Vector3<float>::UP).Rotated(_Rotation));
 	}
 
 	/*
@@ -247,10 +247,10 @@ private:
 	mutable Spinlock _Lock;
 
 	//The position.
-	Vector3 _Position{ 0.0f, 0.0f, 0.0f };
+	Vector3<float> _Position{ 0.0f, 0.0f, 0.0f };
 
 	//The rotation.
-	Vector3 _Rotation{ 0.0f, 0.0f, 0.0f };
+	Vector3<float> _Rotation{ 0.0f, 0.0f, 0.0f };
 
 	//The field of view in degrees.
 	float _FieldOfViewDegrees{ 60.0f };

@@ -33,7 +33,7 @@ void SoakCamera::Initialize() NOEXCEPT
 	Randomize();
 
 	//Constrain the viewer to the ground.
-	Vector3 position{ Viewer::Instance->GetPosition() };
+	Vector3<float> position{ Viewer::Instance->GetPosition() };
 
 	float terrainHeight;
 
@@ -96,7 +96,7 @@ void SoakCamera::UpdateForwardMovement(const UpdateContext *const RESTRICT conte
 void SoakCamera::UpdateAltitude(const UpdateContext *const RESTRICT context) NOEXCEPT
 {
 	//Get the current position of the viewer.
-	Vector3 position{ Viewer::Instance->GetPosition() };
+	Vector3<float> position{ Viewer::Instance->GetPosition() };
 
 	//Look ahead at the terrain height at a position in front of the viewer to determine how the velocity should be affected.
 	float terrainHeightAhead;
@@ -147,7 +147,7 @@ void SoakCamera::UpdateRotation(const UpdateContext *const RESTRICT context) NOE
 	}
 
 	//Rotate the viewer.
-	Viewer::Instance->Rotate(Vector3(0.0f, _CurrentRotation * context->_DeltaTime, 0.0f));
+	Viewer::Instance->Rotate(Vector3<float>(0.0f, _CurrentRotation * context->_DeltaTime, 0.0f));
 }
 
 /*

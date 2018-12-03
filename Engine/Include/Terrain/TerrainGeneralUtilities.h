@@ -17,33 +17,33 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates a normal at the given position.
 	*/
-	static void GenerateNormal(const TerrainProperties &properties, const Vector3 &position, Vector3 *const RESTRICT normal) NOEXCEPT
+	static void GenerateNormal(const TerrainProperties &properties, const Vector3<float> &position, Vector3<float> *const RESTRICT normal) NOEXCEPT
 	{
 		constexpr float offset{ 1.0f };
 
-		Vector3 left{ position._X - offset, 0.0f, position._Z };
+		Vector3<float> left{ position._X - offset, 0.0f, position._Z };
 		properties._HeightGenerationFunction(properties, left, &left._Y);
-		Vector3 right{ position._X + offset, 0.0f, position._Z };
+		Vector3<float> right{ position._X + offset, 0.0f, position._Z };
 		properties._HeightGenerationFunction(properties, right, &right._Y);
-		Vector3 up{ position._X, 0.0f, position._Z - offset };
+		Vector3<float> up{ position._X, 0.0f, position._Z - offset };
 		properties._HeightGenerationFunction(properties, up, &up._Y);
-		Vector3 down{ position._X, 0.0f, position._Z + offset };
+		Vector3<float> down{ position._X, 0.0f, position._Z + offset };
 		properties._HeightGenerationFunction(properties, down, &down._Y);
-		Vector3 center{ position._X, 0.0f, position._Z };
+		Vector3<float> center{ position._X, 0.0f, position._Z };
 		properties._HeightGenerationFunction(properties, center, &center._Y);
 
-		const Vector3 normal1{ Vector3::CrossProduct(up - center, left - center) };
-		const Vector3 normal2{ Vector3::CrossProduct(right - center, up - center) };
-		const Vector3 normal3{ Vector3::CrossProduct(down - center, right - center) };
-		const Vector3 normal4{ Vector3::CrossProduct(left - center, down - center) };
+		const Vector3<float> normal1{ Vector3<float>::CrossProduct(up - center, left - center) };
+		const Vector3<float> normal2{ Vector3<float>::CrossProduct(right - center, up - center) };
+		const Vector3<float> normal3{ Vector3<float>::CrossProduct(down - center, right - center) };
+		const Vector3<float> normal4{ Vector3<float>::CrossProduct(left - center, down - center) };
 
-		*normal = Vector3::Normalize(normal1 + normal2 + normal3 + normal4);
+		*normal = Vector3<float>::Normalize(normal1 + normal2 + normal3 + normal4);
 	}
 
 	/*
 	*	Generates a height texture.
 	*/
-	static void GenerateHeightTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3 &patchWorldPosition, float *const RESTRICT minimumHeight, float *const RESTRICT maximumHeight, Texture2DHandle *const RESTRICT texture) NOEXCEPT
+	static void GenerateHeightTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, float *const RESTRICT minimumHeight, float *const RESTRICT maximumHeight, Texture2DHandle *const RESTRICT texture) NOEXCEPT
 	{
 		*minimumHeight = FLOAT_MAXIMUM;
 		*maximumHeight = -FLOAT_MAXIMUM;
@@ -60,9 +60,9 @@ namespace TerrainGeneralUtilities
 				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) };
 				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) };
 
-				const Vector3 worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
-												0.0f,
-												patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
+				const Vector3<float> worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
+													0.0f,
+													patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
 
 				float height;
 
@@ -85,7 +85,7 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates a normal texture.
 	*/
-	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint8 resolutionMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture) NOEXCEPT
+	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint8 resolutionMultiplier, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT texture) NOEXCEPT
 	{
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 		const uint32 resolution{ TerrainConstants::TERRAIN_PATCH_RESOLUTION * resolutionMultiplier };
@@ -100,11 +100,11 @@ namespace TerrainGeneralUtilities
 				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution - 1) };
 				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution - 1) };
 			
-				const Vector3 worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
-												0.0f,
-												patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
+				const Vector3<float> worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
+													0.0f,
+													patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
 
-				Vector3 normal;
+				Vector3<float> normal;
 
 				GenerateNormal(properties, worldPosition, &normal);
 
@@ -125,7 +125,7 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates a material texture.
 	*/
-	static void GenerateMaterialTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3 &patchWorldPosition, Texture2DHandle *const RESTRICT texture) NOEXCEPT
+	static void GenerateMaterialTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT texture) NOEXCEPT
 	{
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 		DynamicArray<byte> data;
@@ -138,9 +138,9 @@ namespace TerrainGeneralUtilities
 				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) };
 				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) };
 
-				const Vector3 worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
-												0.0f,
-												patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
+				const Vector3<float> worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
+													0.0f,
+													patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
 
 				uint8 material;
 

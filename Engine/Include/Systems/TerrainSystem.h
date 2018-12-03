@@ -100,12 +100,12 @@ public:
 	/*
 	*	Returns the terrain height at the given position.
 	*/
-	bool GetTerrainHeightAtPosition(const Vector3 &position, float *const RESTRICT height) const NOEXCEPT;
+	bool GetTerrainHeightAtPosition(const Vector3<float> &position, float *const RESTRICT height) const NOEXCEPT;
 
 	/*
 	*	Returns the terrain normal at the given position.
 	*/
-	bool GetTerrainNormalAtPosition(const Vector3 &position, Vector3 *const RESTRICT normal) const NOEXCEPT;
+	bool GetTerrainNormalAtPosition(const Vector3<float> &position, Vector3<float> *const RESTRICT normal) const NOEXCEPT;
 
 private:
 
@@ -153,12 +153,12 @@ private:
 	/*
 	*	Checks combination of a node. Returns whether or not the node was combined.
 	*/
-	bool CheckCombination(const uint8 depth, const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+	bool CheckCombination(const uint8 depth, const Vector3<float> &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Checks subdivisions of a node. Returns whether or not the node was subdivided.
 	*/
-	bool CheckSubdivision(const uint8 depth, const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
+	bool CheckSubdivision(const uint8 depth, const Vector3<float> &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT;
 
 	/*
 	*	Combines a node.
@@ -173,7 +173,7 @@ private:
 	/*
 	*	Generates a patch.
 	*/
-	void GeneratePatch(const Vector3 &worldPosition, const float patchSizeMultiplier, const uint8 resolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
+	void GeneratePatch(const Vector3<float> &worldPosition, const float patchSizeMultiplier, const uint8 resolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT;
 
 	/*
 	*	Destroys a patch.

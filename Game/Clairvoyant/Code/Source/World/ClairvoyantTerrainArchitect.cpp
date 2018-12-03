@@ -56,7 +56,7 @@ void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 /*
 *	Generates the height.
 */
-void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &properties, const Vector3 &position, float *const RESTRICT height) NOEXCEPT
+void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &properties, const Vector3<float> &position, float *const RESTRICT height) NOEXCEPT
 {
 	if (IsWithinTestArea(position))
 	{
@@ -86,7 +86,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 /*
 *	Generates the material.
 */
-void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3 &position, uint8 *const RESTRICT material) NOEXCEPT
+void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &position, uint8 *const RESTRICT material) NOEXCEPT
 {
 	if (IsWithinTestArea(position))
 	{
@@ -112,7 +112,7 @@ void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &prop
 	float highestWeight{ -FLOAT_MAXIMUM };
 
 	//Retrieve the normal.
-	Vector3 normal;
+	Vector3<float> normal;
 	TerrainSystem::Instance->GetTerrainNormalAtPosition(position, &normal);
 
 	for (uint8 i{ 1 }; i < ClairvoyantTerrainArchitectConstants::NUMBER_OF_TERRAIN_MATERIALS; ++i)
@@ -132,7 +132,7 @@ void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &prop
 /*
 *	Returns whether or not a position is within the test area.
 */
-bool ClairvoyantTerrainArchitect::IsWithinTestArea(const Vector3 &worldPosition) NOEXCEPT
+bool ClairvoyantTerrainArchitect::IsWithinTestArea(const Vector3<float> &worldPosition) NOEXCEPT
 {
 	return	CatalystBaseMath::Absolute(worldPosition._X) < 1'000.0f
 			&& CatalystBaseMath::Absolute(worldPosition._Z) < 1'000.0f;
@@ -141,13 +141,13 @@ bool ClairvoyantTerrainArchitect::IsWithinTestArea(const Vector3 &worldPosition)
 /*
 *	Returns the weight for the given material.
 */
-float ClairvoyantTerrainArchitect::GetMaterialWeight(const uint8 material, const float coordinateX, const float coordinateY, const StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> &biomWeights, const Vector3 &normal) NOEXCEPT
+float ClairvoyantTerrainArchitect::GetMaterialWeight(const uint8 material, const float coordinateX, const float coordinateY, const StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> &biomWeights, const Vector3<float> &normal) NOEXCEPT
 {
 	switch (material)
 	{
 		case ClairvoyantTerrainArchitectConstants::TERRAIN_CLIFF_SNOW_1_MATERIAL_INDEX:
 		{
-			return (1.0f - Vector3::DotProduct(normal, Vector3::UP)) * biomWeights[UNDERLYING(ClairvoyantBiome::Snow)];
+			return (1.0f - Vector3<float>::DotProduct(normal, Vector3<float>::UP)) * biomWeights[UNDERLYING(ClairvoyantBiome::Snow)];
 		}
 
 		case ClairvoyantTerrainArchitectConstants::TERRAIN_GRASS_1_MATERIAL_INDEX:
@@ -167,7 +167,7 @@ float ClairvoyantTerrainArchitect::GetMaterialWeight(const uint8 material, const
 
 		case ClairvoyantTerrainArchitectConstants::TERRAIN_SNOW_1_MATERIAL_INDEX:
 		{
-			return Vector3::DotProduct(normal, Vector3::UP) * biomWeights[UNDERLYING(ClairvoyantBiome::Snow)];
+			return Vector3<float>::DotProduct(normal, Vector3<float>::UP) * biomWeights[UNDERLYING(ClairvoyantBiome::Snow)];
 		}
 
 		default:

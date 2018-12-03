@@ -4,13 +4,14 @@
 #include <Core/Core/CatalystCore.h>
 #include <Core/Containers/StaticArray.h>
 
+//Math.
+#include <Math/Vector3.h>
+
 //World.
 #include <World/ClairvoyantWorldConstants.h>
 
 //Forward declarations.
 class TerrainProperties;
-class Vector3;
-class Vector4;
 
 class ClairvoyantTerrainArchitect final
 {
@@ -25,23 +26,23 @@ public:
 	/*
 	*	Generates the height.
 	*/
-	static void GenerateHeight(const TerrainProperties &properties, const Vector3 &position, float *const RESTRICT height) NOEXCEPT;
+	static void GenerateHeight(const TerrainProperties &properties, const Vector3<float> &position, float *const RESTRICT height) NOEXCEPT;
 
 	/*
 	*	Generates the material.
 	*/
-	static void GenerateMaterial(const TerrainProperties &properties, const Vector3 &position, uint8 *const RESTRICT material) NOEXCEPT;
+	static void GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &position, uint8 *const RESTRICT material) NOEXCEPT;
 
 private:
 
 	/*
 	*	Returns whether or not a position is within the test area.
 	*/
-	static bool IsWithinTestArea(const Vector3 &worldPosition) NOEXCEPT;
+	static bool IsWithinTestArea(const Vector3<float> &worldPosition) NOEXCEPT;
 
 	/*
 	*	Returns the weight for the given material.
 	*/
-	static float GetMaterialWeight(const uint8 material, const float coordinateX, const float coordinateY, const StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> &biomWeights, const Vector3 &normal) NOEXCEPT;
+	static float GetMaterialWeight(const uint8 material, const float coordinateX, const float coordinateY, const StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> &biomWeights, const Vector3<float> &normal) NOEXCEPT;
 
 };

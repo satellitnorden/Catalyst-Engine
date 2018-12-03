@@ -15,7 +15,7 @@ class Matrix3 final
 public:
 
 	//The matrix.
-	Vector3 _Matrix[3];
+	Vector3<float> _Matrix[3];
 
 	/*
 	*	Default constructor.
@@ -35,6 +35,6 @@ public:
 	/*
 	*	Matrix3 by vector3 multiplcation overload.
 	*/
-	Vector3 operator*(const Vector3 &vector) NOEXCEPT;
+	Vector3<float> operator*(const Vector3<float> &vector) NOEXCEPT;
 
 };

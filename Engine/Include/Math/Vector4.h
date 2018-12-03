@@ -84,7 +84,7 @@ public:
 	/*
 	*	Constructor taking a Vector3 as argument.
 	*/
-	constexpr Vector4(const Vector3 &otherVector) NOEXCEPT
+	constexpr Vector4(const Vector3<float> &otherVector) NOEXCEPT
 		:
 		_X(otherVector._X),
 		_Y(otherVector._Y),
@@ -97,7 +97,7 @@ public:
 	/*
 	*	Constructor taking a Vector3 and a scalar as argument.
 	*/
-	constexpr Vector4(const Vector3 &otherVector, const float scalar) NOEXCEPT
+	constexpr Vector4(const Vector3<float> &otherVector, const float scalar) NOEXCEPT
 		:
 		_X(otherVector._X),
 		_Y(otherVector._Y),

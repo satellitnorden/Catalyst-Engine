@@ -22,6 +22,6 @@ public:
 	ParticleSystemProperties _ParticleSystemProperties;
 
 	//The position.
-	Vector3 _Position;
+	Vector3<float> _Position;
 
 };

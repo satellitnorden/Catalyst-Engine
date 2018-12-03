@@ -50,62 +50,62 @@ public:
 	/*
 	*	Returns the position of this entity.
 	*/
-	const Vector3& GetPosition() const NOEXCEPT;
+	const Vector3<float>& GetPosition() const NOEXCEPT;
 
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	const Vector3& GetRotation() const NOEXCEPT;
+	const Vector3<float>& GetRotation() const NOEXCEPT;
 
 	/*
 	*	Returns the scale of this entity.
 	*/
-	const Vector3& GetScale() const NOEXCEPT;
+	const Vector3<float>& GetScale() const NOEXCEPT;
 
 	/*
 	*	Sets the position of this entity.
 	*/
-	void SetPosition(const Vector3 &newPosition) NOEXCEPT;
+	void SetPosition(const Vector3<float> &newPosition) NOEXCEPT;
 
 	/*
 	*	Sets the rotation of this entity.
 	*/
-	void SetRotation(const Vector3 &newRotation) NOEXCEPT;
+	void SetRotation(const Vector3<float> &newRotation) NOEXCEPT;
 
 	/*
 	*	Sets the scale of this entity.
 	*/
-	void SetScale(const Vector3 &newScale) NOEXCEPT;
+	void SetScale(const Vector3<float> &newScale) NOEXCEPT;
 
 	/*
 	*	Moves this entity.
 	*/
-	void Move(const Vector3 &amount) NOEXCEPT;
+	void Move(const Vector3<float> &amount) NOEXCEPT;
 
 	/*
 	*	Rotates this entity.
 	*/
-	void Rotate(const Vector3 &amount) NOEXCEPT;
+	void Rotate(const Vector3<float> &amount) NOEXCEPT;
 
 	/*
 	*	Scales this entity.
 	*/
-	void Scale(const Vector3 &amount) NOEXCEPT;
+	void Scale(const Vector3<float> &amount) NOEXCEPT;
 
 	/*
 	*	Returns the forward vector of this entity.
 	*/
-	NO_DISCARD Vector3 GetForwardVector() const NOEXCEPT;
+	NO_DISCARD Vector3<float> GetForwardVector() const NOEXCEPT;
 
 	/*
 *	Returns the up vector of this entity.
 */
-	NO_DISCARD Vector3 GetUpVector() const NOEXCEPT;
+	NO_DISCARD Vector3<float> GetUpVector() const NOEXCEPT;
 
 	/*
 	*	Returns the right vector of this entity.
 	*/
-	NO_DISCARD Vector3 GetRightVector() const NOEXCEPT;
+	NO_DISCARD Vector3<float> GetRightVector() const NOEXCEPT;
 
 protected:
 
@@ -120,7 +120,7 @@ protected:
 	/*
 	*	Returns the position of this entity.
 	*/
-	RESTRICTED virtual NO_DISCARD Vector3 *const RESTRICT GetPositionInternal() NOEXCEPT
+	RESTRICTED virtual NO_DISCARD Vector3<float> *const RESTRICT GetPositionInternal() NOEXCEPT
 	{
 		return nullptr;
 	}
@@ -128,7 +128,7 @@ protected:
 	/*
 	*	Returns the rotation of this entity.
 	*/
-	RESTRICTED virtual NO_DISCARD Vector3 *const RESTRICT GetRotationInternal() NOEXCEPT
+	RESTRICTED virtual NO_DISCARD Vector3<float> *const RESTRICT GetRotationInternal() NOEXCEPT
 	{
 		return nullptr;
 	}
@@ -136,7 +136,7 @@ protected:
 	/*
 	*	Returns the scale of this entity.
 	*/
-	RESTRICTED virtual NO_DISCARD Vector3 *const RESTRICT GetScaleInternal() NOEXCEPT
+	RESTRICTED virtual NO_DISCARD Vector3<float> *const RESTRICT GetScaleInternal() NOEXCEPT
 	{
 		return nullptr;
 	}
@@ -171,12 +171,12 @@ private:
 	friend class EntityCreationSystem;
 
 	//The default position.
-	static constexpr Vector3 _DefaultPosition{ 0.0f, 0.0f, 0.0f };
+	static constexpr Vector3<float> _DefaultPosition{ 0.0f, 0.0f, 0.0f };
 
 	//The default rotation.
-	static constexpr Vector3 _DefaultRotation{ 0.0f, 0.0f, 0.0f };
+	static constexpr Vector3<float> _DefaultRotation{ 0.0f, 0.0f, 0.0f };
 
 	//The default scale.
-	static constexpr Vector3 _DefaultScale{ 1.0f, 1.0f, 1.0f };
+	static constexpr Vector3<float> _DefaultScale{ 1.0f, 1.0f, 1.0f };
 
 };

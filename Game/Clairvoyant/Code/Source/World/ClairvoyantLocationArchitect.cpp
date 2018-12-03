@@ -19,7 +19,7 @@
 #include <Systems/TerrainSystem.h>
 
 //Static variable definitions.
-DynamicArray<Vector3> ClairvoyantLocationArchitect::_Offsets;
+DynamicArray<Vector3<float>> ClairvoyantLocationArchitect::_Offsets;
 
 /*
 *	Initializes the Clairvoyant location architect.
@@ -32,7 +32,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 	EntityPlacementSystem::Instance->RegisterTwoDimensionalPlacementFunction([](const AxisAlignedBoundingBox &box, DynamicArray<Entity *RESTRICT> *const RESTRICT entities)
 	{
 		//Find the most appropriate position.
-		Vector3 position{ FindMostAppropriatePosition(AxisAlignedBoundingBox(box._Minimum + Vector3(500.0f, 0.0f, 500.0f), box._Maximum - Vector3(500.0f, 0.0f, 500.0f)), 1'000.0f) };
+		Vector3<float> position{ FindMostAppropriatePosition(AxisAlignedBoundingBox(box._Minimum + Vector3<float>(500.0f, 0.0f, 500.0f), box._Maximum - Vector3<float>(500.0f, 0.0f, 500.0f)), 1'000.0f) };
 		position._Y += 500.0f;
 
 		{
@@ -46,9 +46,9 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
 			data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("TowerMaterial"));
 			data->_Position = position;
-			data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
-			data->_Scale = Vector3(50.0f, 1'000.0f, 50.0f);
-			data->_OutlineColor = Vector3(0.0f, 0.0f, 0.0f);
+			data->_Rotation = Vector3<float>(0.0f, 0.0f, 0.0f);
+			data->_Scale = Vector3<float>(50.0f, 1'000.0f, 50.0f);
+			data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
 
 			EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
 
@@ -59,7 +59,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			constexpr uint8 NUMBER_OF_BUILDINGS{ 20 };
 
 			//Create some more "buildings"!
-			DynamicArray<Vector3> previousPositions;
+			DynamicArray<Vector3<float>> previousPositions;
 
 			previousPositions.EmplaceSlow(position);
 
@@ -68,14 +68,14 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 				for (uint8 j{ 0 }; j < 10; ++j)
 				{
 					//Generate a random position.
-					const Vector3 testPosition{ CatalystBaseMath::RandomFloatInRange(position._X - 500.0f, position._X + 500.0f), 0.0f, CatalystBaseMath::RandomFloatInRange(position._Z - 500.0f, position._Z + 500.0f) };
+					const Vector3<float> testPosition{ CatalystBaseMath::RandomFloatInRange(position._X - 500.0f, position._X + 500.0f), 0.0f, CatalystBaseMath::RandomFloatInRange(position._Z - 500.0f, position._Z + 500.0f) };
 
 					//If this position is too close to any other position, discard it.
 					bool tooClose{ false };
 
-					for (const Vector3 &previousPosition : previousPositions)
+					for (const Vector3<float> &previousPosition : previousPositions)
 					{
-						if (Vector3::LengthSquaredXZ(previousPosition - testPosition) < 52.5f * 52.5f)
+						if (Vector3<float>::LengthSquaredXZ(previousPosition - testPosition) < 52.5f * 52.5f)
 						{
 							tooClose = true;
 
@@ -97,9 +97,9 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 						data->_Position = testPosition;
 						TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &data->_Position._Y);
 						data->_Position._Y += 25.0f;
-						data->_Rotation = Vector3(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f);
-						data->_Scale = Vector3(50.0f, 50.0f, 50.0f);
-						data->_OutlineColor = Vector3(0.0f, 0.0f, 0.0f);
+						data->_Rotation = Vector3<float>(0.0f, CatalystBaseMath::RandomFloatInRange(-180.0f, 180.0f), 0.0f);
+						data->_Scale = Vector3<float>(50.0f, 50.0f, 50.0f);
+						data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
 
 						EntityCreationSystem::Instance->RequestInitialization(building, data, false);
 
@@ -114,12 +114,12 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 
 		{
 			//Create the light!
-			constexpr StaticArray<Vector3, 4> colors
+			constexpr StaticArray<Vector3<float>, 4> colors
 			{
-				Vector3(1.0f, 0.0f, 0.0f),
-				Vector3(0.0f, 1.0f, 1.0f),
-				Vector3(1.0f, 0.1f, 0.0f),
-				Vector3(0.1f, 0.0f, 1.0f)
+				Vector3<float>(1.0f, 0.0f, 0.0f),
+				Vector3<float>(0.0f, 1.0f, 1.0f),
+				Vector3<float>(1.0f, 0.1f, 0.0f),
+				Vector3<float>(0.1f, 0.0f, 1.0f)
 			};
 
 			PointLightEntity *const RESTRICT light{ EntityCreationSystem::Instance->CreateEntity<PointLightEntity>() };
@@ -129,7 +129,7 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			data->_Enabled = true;
 			data->_Properties = EntityInitializationData::EntityProperty::None;
 			data->_Color = colors[CatalystBaseMath::RandomIntegerInRange<uint64>(0, 3)];
-			data->_Position = position + Vector3(0.0f, 600.0f, 0.0f);
+			data->_Position = position + Vector3<float>(0.0f, 600.0f, 0.0f);
 			data->_Intensity = 1.0f;
 			data->_AttenuationDistance = 2'500.0f;
 
@@ -139,12 +139,12 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 		}
 
 		{
-			constexpr StaticArray<Vector3, 4> colors
+			constexpr StaticArray<Vector3<float>, 4> colors
 			{
-				Vector3(1.0f, 0.0f, 0.0f),
-				Vector3(0.0f, 1.0f, 1.0f),
-				Vector3(1.0f, 0.1f, 0.0f),
-				Vector3(0.1f, 0.0f, 1.0f)
+				Vector3<float>(1.0f, 0.0f, 0.0f),
+				Vector3<float>(0.0f, 1.0f, 1.0f),
+				Vector3<float>(1.0f, 0.1f, 0.0f),
+				Vector3<float>(0.1f, 0.0f, 1.0f)
 			};
 
 			//Create a particle system!
@@ -160,11 +160,11 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			data->_ParticleSystemProperties._SpawnFrequency = 0.0001f;
 			data->_ParticleSystemProperties._MinimumScale = Vector2<float>(1.25f, 1.25f);
 			data->_ParticleSystemProperties._MaximumScale = Vector2<float>(2.5f, 2.5f);
-			data->_ParticleSystemProperties._MinimumPosition = Vector3(-25.0f, 0.0f, -25.0f);
-			data->_ParticleSystemProperties._MaximumPosition = Vector3(25.0f, 0.0f, 25.0f);
-			data->_ParticleSystemProperties._MinimumVelocity = Vector3(0.0f, 0.0f, 0.0f);
-			data->_ParticleSystemProperties._MaximumVelocity = Vector3(0.0f, 500.0f, 0.0f);
-			data->_Position = position + Vector3(0.0f, 500.0f, 0.0f);
+			data->_ParticleSystemProperties._MinimumPosition = Vector3<float>(-25.0f, 0.0f, -25.0f);
+			data->_ParticleSystemProperties._MaximumPosition = Vector3<float>(25.0f, 0.0f, 25.0f);
+			data->_ParticleSystemProperties._MinimumVelocity = Vector3<float>(0.0f, 0.0f, 0.0f);
+			data->_ParticleSystemProperties._MaximumVelocity = Vector3<float>(0.0f, 500.0f, 0.0f);
+			data->_Position = position + Vector3<float>(0.0f, 500.0f, 0.0f);
 
 			EntityCreationSystem::Instance->RequestInitialization(particles, data, false);
 
@@ -187,7 +187,7 @@ void ClairvoyantLocationArchitect::InitializeOffsets() NOEXCEPT
 		for (uint8 j{ 0 }; j < OFFSETS_RESOLUTION; ++j)
 		{
 			//Calculate the offset.
-			_Offsets[((j * OFFSETS_RESOLUTION) + i)] = Vector3(static_cast<float>(i) / static_cast<float>(OFFSETS_RESOLUTION) - 0.5f, 0.0f, static_cast<float>(j) / static_cast<float>(OFFSETS_RESOLUTION) - 0.5f);
+			_Offsets[((j * OFFSETS_RESOLUTION) + i)] = Vector3<float>(static_cast<float>(i) / static_cast<float>(OFFSETS_RESOLUTION) - 0.5f, 0.0f, static_cast<float>(j) / static_cast<float>(OFFSETS_RESOLUTION) - 0.5f);
 		}
 	}
 }
@@ -195,16 +195,16 @@ void ClairvoyantLocationArchitect::InitializeOffsets() NOEXCEPT
 /*
 *	Given an axis-aligned bounding box and an extent, find the most appropiate position.
 */
-Vector3 ClairvoyantLocationArchitect::FindMostAppropriatePosition(const AxisAlignedBoundingBox &box, const float extent) NOEXCEPT
+Vector3<float> ClairvoyantLocationArchitect::FindMostAppropriatePosition(const AxisAlignedBoundingBox &box, const float extent) NOEXCEPT
 {
 	//Calculate the box center.
-	const Vector3 boxCenter{ AxisAlignedBoundingBox::CalculateCenter(box) };
+	const Vector3<float> boxCenter{ AxisAlignedBoundingBox::CalculateCenter(box) };
 
 	//Calculate the box extents.
-	const Vector3 boxExtents{ box._Maximum._X - box._Minimum._X, 0.0f, box._Maximum._Z - box._Minimum._Z };
+	const Vector3<float> boxExtents{ box._Maximum._X - box._Minimum._X, 0.0f, box._Maximum._Z - box._Minimum._Z };
 
 	//Find the best position with the best (least) height difference.
-	Vector3 bestPosition{ AxisAlignedBoundingBox::CalculateCenter(box) };
+	Vector3<float> bestPosition{ AxisAlignedBoundingBox::CalculateCenter(box) };
 	float bestHeightDifference{ FLOAT_MAXIMUM };
 
 	for (uint8 i{ 0 }; i < OFFSETS_RESOLUTION; ++i)
@@ -212,7 +212,7 @@ Vector3 ClairvoyantLocationArchitect::FindMostAppropriatePosition(const AxisAlig
 		for (uint8 j{ 0 }; j < OFFSETS_RESOLUTION; ++j)
 		{
 			//Calculate the test position.
-			const Vector3 testPosition{ boxCenter + boxExtents * _Offsets[((j * OFFSETS_RESOLUTION) + i)] };
+			const Vector3<float> testPosition{ boxCenter + boxExtents * _Offsets[((j * OFFSETS_RESOLUTION) + i)] };
 
 			//Calculate the height difference.
 			float lowestTerrainHeight{ FLOAT_MAXIMUM };

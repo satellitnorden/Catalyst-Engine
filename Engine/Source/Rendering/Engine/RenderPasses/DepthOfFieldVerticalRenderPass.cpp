@@ -21,7 +21,7 @@ class PushConstantData final
 
 public:
 
-	Vector2 _InverseResolution;
+	Vector2<float> _InverseResolution;
 	float _InverseDepthOfFieldDistanceSquared;
 
 };
@@ -156,7 +156,7 @@ void DepthOfFieldVerticalRenderPass::RenderInternal() NOEXCEPT
 
 	PushConstantData data;
 
-	data._InverseResolution = Vector2(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height));
+	data._InverseResolution = Vector2<float>(0.0f, 1.0f / static_cast<float>(RenderingSystem::Instance->GetScaledResolution()._Height));
 	data._InverseDepthOfFieldDistanceSquared = 1.0f / (depthOfFieldDistance * depthOfFieldDistance);
 
 	commandBuffer->PushConstants(this, ShaderStage::Fragment, 0, sizeof(PushConstantData), &data);

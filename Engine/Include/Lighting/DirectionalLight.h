@@ -106,17 +106,17 @@ public:
 	/*
 	*	Returns the direction of the directional light.
 	*/
-	Vector3 GetDirection() const NOEXCEPT
+	Vector3<float> GetDirection() const NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
-		return Vector3::FORWARD.Rotated(_Rotation);
+		return Vector3<float>::FORWARD.Rotated(_Rotation);
 	}
 
 	/*
 	*	Sets the rotation of the directional light.
 	*/
-	void SetRotation(const Vector3 &newRotation) NOEXCEPT
+	void SetRotation(const Vector3<float> &newRotation) NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -129,7 +129,7 @@ public:
 	/*
 	*	Returns the color of the directional light.
 	*/
-	const Vector3& GetColor() const NOEXCEPT
+	const Vector3<float>& GetColor() const NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -139,7 +139,7 @@ public:
 	/*
 	*	Sets the color of the directional light.
 	*/
-	void SetColor(const Vector3 &newColor) NOEXCEPT
+	void SetColor(const Vector3<float> &newColor) NOEXCEPT
 	{
 		ScopedLock<Spinlock> scopedLock{ _Lock };
 
@@ -196,10 +196,10 @@ private:
 	StaticArray<Vector4, 6> _FrustumPlanes;
 
 	//The rotation.
-	Vector3 _Rotation{ 0.0f, 0.0f, 0.0f };
+	Vector3<float> _Rotation{ 0.0f, 0.0f, 0.0f };
 
 	//The color.
-	Vector3 _Color{ 1.0f, 1.0f, 1.0f };
+	Vector3<float> _Color{ 1.0f, 1.0f, 1.0f };
 
 	//The intensity.
 	float _Intensity{ 1.0f };

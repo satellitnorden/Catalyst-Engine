@@ -8,6 +8,7 @@
 
 //Forward declarations.
 class Matrix3;
+template <typename Type>
 class Vector3;
 
 class Matrix4 final
@@ -21,12 +22,12 @@ public:
 	/*
 	*	Calculates a look at matrix.
 	*/
-	static NO_DISCARD Matrix4 LookAt(const Vector3 &position, const Vector3 &direction, const Vector3 &up) NOEXCEPT;
+	static NO_DISCARD Matrix4 LookAt(const Vector3<float> &position, const Vector3<float> &direction, const Vector3<float> &up) NOEXCEPT;
 
 	/*
 	*	Given a normal and an up vector, constructs a rotation matrix.
 	*/
-	static NO_DISCARD Matrix4 Orientation(const Vector3 &normal, const Vector3 & up) NOEXCEPT;
+	static NO_DISCARD Matrix4 Orientation(const Vector3<float> &normal, const Vector3<float> & up) NOEXCEPT;
 
 	/*
 	*	Calculates an ortographic projection matrix.
@@ -71,7 +72,7 @@ public:
 	/*
 	*	Constructor taking in position, rotation and scale as arguments.
 	*/
-	Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) NOEXCEPT;
+	Matrix4(const Vector3<float> &position, const Vector3<float> &rotation, const Vector3<float> &scale) NOEXCEPT;
 
 	/*
 	*	Matrix4 by Matrix4 multiplication overload.
@@ -96,22 +97,22 @@ public:
 	/*
 	*	Returns the translation.
 	*/
-	Vector3 GetTranslation() const NOEXCEPT;
+	Vector3<float> GetTranslation() const NOEXCEPT;
 
 	/*
 	*	Returns the scale.
 	*/
-	Vector3 GetScale() const NOEXCEPT;
+	Vector3<float> GetScale() const NOEXCEPT;
 
 	/*
 	*	Sets the translation.
 	*/
-	void SetTranslation(const Vector3 &newTranslation) NOEXCEPT;
+	void SetTranslation(const Vector3<float> &newTranslation) NOEXCEPT;
 
 	/*
 	*	Sets the scale.
 	*/
-	void SetScale(const Vector3 &newScale) NOEXCEPT;
+	void SetScale(const Vector3<float> &newScale) NOEXCEPT;
 	
 	/*
 	*	Inverses this matrix.
@@ -121,7 +122,8 @@ public:
 	/*
 	*	Rotates this matrix.
 	*/
-	void Rotate(const Vector3 &rotation) NOEXCEPT;
+	void Rotate(const Vector3<float>
+		&rotation) NOEXCEPT;
 
 	/*
 	*	Transposes this matrix.

@@ -83,8 +83,8 @@ void LevelOfDetailSystem::LevelOfDetailSolidVegetation() NOEXCEPT
 				continue;
 			}
 
-			const Vector3 gridMiddlePoint{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, gridSize) };
-			const float distanceToGridPoint{ Vector3::LengthSquaredXZ(Viewer::Instance->GetPosition() - gridMiddlePoint) };
+			const Vector3<float> gridMiddlePoint{ GridPoint2::GridPointToWorldPosition(information._PatchInformations[i]._GridPoint, gridSize) };
+			const float distanceToGridPoint{ Vector3<float>::LengthSquaredXZ(Viewer::Instance->GetPosition() - gridMiddlePoint) };
 
 			if (distanceToGridPoint < information._Properties._MediumDetailDistance * information._Properties._MediumDetailDistance)
 			{

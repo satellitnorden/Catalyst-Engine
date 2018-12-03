@@ -9,11 +9,11 @@
 /*
 *	Calculates a look at matrix.
 */
-Matrix4 Matrix4::LookAt(const Vector3 &position, const Vector3 &direction, const Vector3 &up) NOEXCEPT
+Matrix4 Matrix4::LookAt(const Vector3<float> &position, const Vector3<float> &direction, const Vector3<float> &up) NOEXCEPT
 {
-	Vector3 F{ Vector3::Normalize(direction - position) };
-	Vector3 S{ Vector3::CrossProduct(F, up) };
-	Vector3 U{ Vector3::CrossProduct(S, F) };
+	Vector3<float> F{ Vector3<float>::Normalize(direction - position) };
+	Vector3<float> S{ Vector3<float>::CrossProduct(F, up) };
+	Vector3<float> U{ Vector3<float>::CrossProduct(S, F) };
 
 	Matrix4 result;
 
@@ -29,9 +29,9 @@ Matrix4 Matrix4::LookAt(const Vector3 &position, const Vector3 &direction, const
 	result._Matrix[1]._Z = -F._Y;
 	result._Matrix[2]._Z = -F._Z;
 
-	result._Matrix[3]._X = -Vector3::DotProduct(S, position);
-	result._Matrix[3]._Y = -Vector3::DotProduct(U, position);
-	result._Matrix[3]._Z = Vector3::DotProduct(F, position);
+	result._Matrix[3]._X = -Vector3<float>::DotProduct(S, position);
+	result._Matrix[3]._Y = -Vector3<float>::DotProduct(U, position);
+	result._Matrix[3]._Z = Vector3<float>::DotProduct(F, position);
 
 	return result;
 }
@@ -39,17 +39,17 @@ Matrix4 Matrix4::LookAt(const Vector3 &position, const Vector3 &direction, const
 /*
 *	Given a normal and an up vector, constructs a rotation matrix.
 */
-NO_DISCARD Matrix4 Matrix4::Orientation(const Vector3 &normal, const Vector3 & up) NOEXCEPT
+NO_DISCARD Matrix4 Matrix4::Orientation(const Vector3<float> &normal, const Vector3<float> & up) NOEXCEPT
 {
-	const Vector3 rotationAxis{ Vector3::CrossProduct(up, normal) };
-	const float rotationAngle{ CatalystBaseMath::ArcCosineRadians(Vector3::DotProduct(normal, up)) };
+	const Vector3<float> rotationAxis{ Vector3<float>::CrossProduct(up, normal) };
+	const float rotationAngle{ CatalystBaseMath::ArcCosineRadians(Vector3<float>::DotProduct(normal, up)) };
 
 	const float a = rotationAngle;
 	const float c = CatalystBaseMath::CosineRadians(a);
 	const float s = CatalystBaseMath::SineRadians(a);
 
-	Vector3 axis{ Vector3::Normalize(rotationAxis) };
-	Vector3 temp{ (1.0f - c) * axis };
+	Vector3<float> axis{ Vector3<float>::Normalize(rotationAxis) };
+	Vector3<float> temp{ (1.0f - c) * axis };
 
 	Matrix4 Rotate;
 	Rotate._Matrix[0]._X = c + temp._X * axis._X;
@@ -180,7 +180,7 @@ Matrix4::Matrix4(const Vector4 &vector1, const Vector4 &vector2, const Vector4 &
 /*
 *	Constructor taking in position, rotation and scale as arguments.
 */
-Matrix4::Matrix4(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale) NOEXCEPT
+Matrix4::Matrix4(const Vector3<float> &position, const Vector3<float> &rotation, const Vector3<float> &scale) NOEXCEPT
 	:
 	_Matrix{ { scale._X, 0.0f, 0.0f, 0.0f },{ 0.0f, scale._Y, 0.0f, 0.0f },{ 0.0f, 0.0f, scale._Z, 0.0f },{ position._X, position._Y, position._Z, 1.0f } }
 {
@@ -262,23 +262,23 @@ Vector4 Matrix4::operator*(const Vector4 &vector) const NOEXCEPT
 /*
 *	Returns the translation.
 */
-Vector3 Matrix4::GetTranslation() const NOEXCEPT
+Vector3<float> Matrix4::GetTranslation() const NOEXCEPT
 {
-	return Vector3(_Matrix[3]._X, _Matrix[3]._Y, _Matrix[3]._Z);
+	return Vector3<float>(_Matrix[3]._X, _Matrix[3]._Y, _Matrix[3]._Z);
 }
 
 /*
 *	Returns the scale.
 */
-Vector3 Matrix4::GetScale() const NOEXCEPT
+Vector3<float> Matrix4::GetScale() const NOEXCEPT
 {
-	return Vector3(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
+	return Vector3<float>(_Matrix[0]._X, _Matrix[1]._Y, _Matrix[2]._Z);
 }
 
 /*
 *	Sets the translation.
 */
-void Matrix4::SetTranslation(const Vector3 &newTranslation) NOEXCEPT
+void Matrix4::SetTranslation(const Vector3<float> &newTranslation) NOEXCEPT
 {
 	_Matrix[3]._X = newTranslation._X;
 	_Matrix[3]._Y = newTranslation._Y;
@@ -288,7 +288,7 @@ void Matrix4::SetTranslation(const Vector3 &newTranslation) NOEXCEPT
 /*
 *	Sets the scale.
 */
-void Matrix4::SetScale(const Vector3 & newScale) NOEXCEPT
+void Matrix4::SetScale(const Vector3<float> & newScale) NOEXCEPT
 {
 	_Matrix[0]._X = newScale._X;
 	_Matrix[1]._Y = newScale._Y;
@@ -363,7 +363,7 @@ void Matrix4::Inverse() NOEXCEPT
 /*
 *	Rotates this matrix.
 */
-void Matrix4::Rotate(const Vector3 &rotation) NOEXCEPT
+void Matrix4::Rotate(const Vector3<float> &rotation) NOEXCEPT
 {
 	//Create a rotation matrix for the X axis.
 	if (rotation._X != 0.0f)

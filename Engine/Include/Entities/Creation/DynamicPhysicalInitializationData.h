@@ -28,15 +28,15 @@ public:
 	PhysicalMaterial _Material;
 
 	//The position.
-	Vector3 _Position;
+	Vector3<float> _Position;
 
 	//The rotation.
-	Vector3 _Rotation;
+	Vector3<float> _Rotation;
 
 	//The scale.
-	Vector3 _Scale;
+	Vector3<float> _Scale;
 
 	//The outline color.
-	Vector3 _OutlineColor;
+	Vector3<float> _OutlineColor;
 
 };

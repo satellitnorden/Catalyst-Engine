@@ -42,7 +42,7 @@ public:
 	/*
 	*	Returns the value at the specified direction.
 	*/
-	Vector4 At(const Vector3 &direction) const NOEXCEPT
+	Vector4 At(const Vector3<float> &direction) const NOEXCEPT
 	{
 		//Determine the texture coordinate and the face index.
 		uint8 faceIndex;
@@ -62,9 +62,9 @@ private:
 	/*
 	*	Function to determine the face index as well as the texture coordinate from a direction vector.
 	*/
-	void CubeSampling(const Vector3 &direction, uint8 &faceIndex, Vector2<float> &textureCoordinate) const NOEXCEPT
+	void CubeSampling(const Vector3<float> &direction, uint8 &faceIndex, Vector2<float> &textureCoordinate) const NOEXCEPT
 	{
-		const Vector3 absoluteDirection{ Vector3::Absolute(direction) };
+		const Vector3<float> absoluteDirection{ Vector3<float>::Absolute(direction) };
 
 		float ma;
 

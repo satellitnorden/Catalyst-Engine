@@ -96,7 +96,7 @@ void TerrainSystem::RegisterTerrainMaterial(const uint8 index, const PhysicalMat
 /*
 *	Returns the terrain height at the given position.
 */
-bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3 &position, float *const RESTRICT height) const NOEXCEPT
+bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float> &position, float *const RESTRICT height) const NOEXCEPT
 {
 	//Just ask the height generation function what the height at the position are.
 	_Properties._HeightGenerationFunction(_Properties, position, height);
@@ -108,7 +108,7 @@ bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3 &position, float *c
 /*
 *	Returns the terrain normal at the given position.
 */
-bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3 &position, Vector3 *const RESTRICT normal) const NOEXCEPT
+bool TerrainSystem::GetTerrainNormalAtPosition(const Vector3<float> &position, Vector3<float> *const RESTRICT normal) const NOEXCEPT
 {
 	//Generate a normal at the position.
 	TerrainGeneralUtilities::GenerateNormal(_Properties, position, normal);
@@ -146,7 +146,7 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 			{
 				if (_QuadTree._RootGridPoints[i] == GridPoint2(INT32_MAXIMUM, INT32_MAXIMUM))
 				{
-					const Vector3 gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(_Update._AddRootNodeUpdate._GridPoint, TerrainConstants::TERRAIN_PATCH_SIZE) };
+					const Vector3<float> gridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(_Update._AddRootNodeUpdate._GridPoint, TerrainConstants::TERRAIN_PATCH_SIZE) };
 
 					_QuadTree._RootGridPoints[i] = _Update._AddRootNodeUpdate._GridPoint;
 					_QuadTree._RootNodes[i]._Depth = 0;
@@ -230,7 +230,7 @@ void TerrainSystem::UpdateSystemAsynchronous() NOEXCEPT
 	_Update._Type = TerrainUpdate::Type::Invalid;
 
 	//Get the current viewer position.
-	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
+	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
 
 	//Calculate the viewer grid point.
 	const GridPoint2 currentGridPoint{ GridPoint2::WorldPositionToGridPoint(viewerPosition, TerrainConstants::TERRAIN_PATCH_SIZE) };
@@ -383,7 +383,7 @@ void TerrainSystem::RemoveNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCEP
 /*
 *	Checks combination of a node. Returns whether or not the node was combined.
 */
-bool TerrainSystem::CheckCombination(const uint8 depth, const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+bool TerrainSystem::CheckCombination(const uint8 depth, const Vector3<float> &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//If this node is already subdivided, check all of it's child nodes.
 	if (node->_Subdivided)
@@ -413,7 +413,7 @@ bool TerrainSystem::CheckCombination(const uint8 depth, const Vector3 &viewerPos
 /*
 *	Checks subdivisions of a node. Returns whether or not the node was subdivided.
 */
-bool TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3 &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
+bool TerrainSystem::CheckSubdivision(const uint8 depth, const Vector3<float> &viewerPosition, TerrainQuadTreeNode *const RESTRICT node) NOEXCEPT
 {
 	//Don't go further down than the depth.
 	if (node->_Depth > depth)
@@ -457,9 +457,9 @@ void TerrainSystem::CombineNode(TerrainQuadTreeNode *const RESTRICT node) NOEXCE
 
 	const float patchSizeMultiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) };
 
-	const Vector3 worldPosition{	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
-									0.0f,
-									node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f };
+	const Vector3<float> worldPosition{	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
+										0.0f,
+										node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f };
 
 	GeneratePatch(	worldPosition,
 					patchSizeMultiplier,
@@ -494,23 +494,23 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 
 	const float patchSizeMultiplier{ TerrainQuadTreeUtilities::PatchSizeMultiplier(*node) * 0.5f };
 
-	const StaticArray<Vector3, 4> positions
+	const StaticArray<Vector3<float>, 4> positions
 	{
-		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f,
-					0.0f,
-					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f),
+		Vector3<float>(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f,
+						0.0f,
+						node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f),
 
-		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f,
-					0.0f,
-					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f),
+		Vector3<float>(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f,
+						0.0f,
+						node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f),
 
-		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
-					0.0f,
-					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f),
+		Vector3<float>(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
+						0.0f,
+						node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 1.5f),
 
-		Vector3(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
-					0.0f,
-					node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f)
+		Vector3<float>(	node->_Minimum._X + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f,
+						0.0f,
+						node->_Minimum._Y + TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f)
 	};
 
 	node->_Subdivided = true;
@@ -538,7 +538,7 @@ void TerrainSystem::SubdivideNode(TerrainQuadTreeNode *const RESTRICT node) NOEX
 /*
 *	Generates a patch.
 */
-void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patchSizeMultiplier, const uint8 resolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
+void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const float patchSizeMultiplier, const uint8 resolutionMultiplier, TerrainPatchInformation *const RESTRICT patchInformation, TerrainPatchRenderInformation *const RESTRICT patchRenderInformation) NOEXCEPT
 {
 	//Fill in the details about the patch information.
 	patchInformation->_Identifier = TerrainGeneralUtilities::GeneratePatchIdentifier();
@@ -577,8 +577,8 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 
 	patchRenderInformation->_InstanceInformation._MaterialTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_MaterialTexture));
 
-	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3(worldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, worldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
-	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3(worldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, worldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
+	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3<float>(worldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, worldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
+	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3<float>(worldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, worldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
 }
 
 /*

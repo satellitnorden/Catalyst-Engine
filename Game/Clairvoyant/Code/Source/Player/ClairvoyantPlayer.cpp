@@ -78,19 +78,19 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 	if (state->_LeftShoulder == ButtonState::Pressed
 		|| state->_LeftShoulder == ButtonState::PressedHold)
 	{
-		Viewer::Instance->Move(Vector3::DOWN * context->_DeltaTime * speed);
+		Viewer::Instance->Move(Vector3<float>::DOWN * context->_DeltaTime * speed);
 	}
 
 	if (state->_RightShoulder == ButtonState::Pressed
 		|| state->_RightShoulder == ButtonState::PressedHold)
 	{
-		Viewer::Instance->Move(Vector3::UP * context->_DeltaTime * speed);
+		Viewer::Instance->Move(Vector3<float>::UP * context->_DeltaTime * speed);
 	}
 
 	//Constrain the viewer to the terrain.
 	if (constrainToTerrain)
 	{
-		Vector3 position{ Viewer::Instance->GetPosition() };
+		Vector3<float> position{ Viewer::Instance->GetPosition() };
 
 		float terrainHeight;
 
@@ -103,9 +103,9 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 	}
 
 	//Rotate the viewer.
-	Viewer::Instance->Rotate(Vector3(state->_RightThumbstickY * ROTATION_SPEED * context->_DeltaTime, -state->_RightThumbstickX * ROTATION_SPEED * context->_DeltaTime, 0.0f));
+	Viewer::Instance->Rotate(Vector3<float>(state->_RightThumbstickY * ROTATION_SPEED * context->_DeltaTime, -state->_RightThumbstickX * ROTATION_SPEED * context->_DeltaTime, 0.0f));
 
-	Vector3 rotation{ Viewer::Instance->GetRotation() };
+	Vector3<float> rotation{ Viewer::Instance->GetRotation() };
 	rotation._X = CatalystBaseMath::Clamp<float>(rotation._X, -89.0f, 89.0f);
 	Viewer::Instance->SetRotation(rotation);
 
@@ -126,9 +126,9 @@ void ClairvoyantPlayer::ApplyGamepadControls(const UpdateContext *const RESTRICT
 		data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
 		data->_Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
 		data->_Position = result._HitPosition;
-		data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
-		data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
-		data->_OutlineColor = Vector3(CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f));
+		data->_Rotation = Vector3<float>(0.0f, 0.0f, 0.0f);
+		data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
+		data->_OutlineColor = Vector3<float>(CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f));
 
 		EntityCreationSystem::Instance->RequestInitialization(box, data, false);
 	}
@@ -188,19 +188,19 @@ void ClairvoyantPlayer::ApplyKeyboardControls(const UpdateContext *const RESTRIC
 	if (keyboardState->GetButtonState(KeyboardButton::F) == ButtonState::Pressed
 		|| keyboardState->GetButtonState(KeyboardButton::F) == ButtonState::PressedHold)
 	{
-		Viewer::Instance->Move(Vector3::DOWN * context->_DeltaTime * speed);
+		Viewer::Instance->Move(Vector3<float>::DOWN * context->_DeltaTime * speed);
 	}
 
 	if (keyboardState->GetButtonState(KeyboardButton::R) == ButtonState::Pressed
 		|| keyboardState->GetButtonState(KeyboardButton::R) == ButtonState::PressedHold)
 	{
-		Viewer::Instance->Move(Vector3::UP * context->_DeltaTime * speed);
+		Viewer::Instance->Move(Vector3<float>::UP * context->_DeltaTime * speed);
 	}
 
 	//Constrain the viewer to the terrain.
 	if (constrainToTerrain)
 	{
-		Vector3 position{ Viewer::Instance->GetPosition() };
+		Vector3<float> position{ Viewer::Instance->GetPosition() };
 
 		float terrainHeight;
 
@@ -213,9 +213,9 @@ void ClairvoyantPlayer::ApplyKeyboardControls(const UpdateContext *const RESTRIC
 	}
 
 	//Rotate the viewer.
-	Viewer::Instance->Rotate(Vector3(mouseState->_DeltaY * ROTATION_SPEED, -mouseState->_DeltaX * ROTATION_SPEED, 0.0f));
+	Viewer::Instance->Rotate(Vector3<float>(mouseState->_DeltaY * ROTATION_SPEED, -mouseState->_DeltaX * ROTATION_SPEED, 0.0f));
 
-	Vector3 rotation{ Viewer::Instance->GetRotation() };
+	Vector3<float> rotation{ Viewer::Instance->GetRotation() };
 	rotation._X = CatalystBaseMath::Clamp<float>(rotation._X, -89.0f, 89.0f);
 	Viewer::Instance->SetRotation(rotation);
 
@@ -236,9 +236,9 @@ void ClairvoyantPlayer::ApplyKeyboardControls(const UpdateContext *const RESTRIC
 		data->_Model = RenderingSystem::Instance->GetCommonPhysicalModel(RenderingSystem::CommonPhysicalModel::Cube);
 		data->_Material = RenderingSystem::Instance->GetCommonPhysicalMaterial(RenderingSystem::CommonPhysicalMaterial::Red);
 		data->_Position = result._HitPosition;
-		data->_Rotation = Vector3(0.0f, 0.0f, 0.0f);
-		data->_Scale = Vector3(1.0f, 1.0f, 1.0f);
-		data->_OutlineColor = Vector3(CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f));
+		data->_Rotation = Vector3<float>(0.0f, 0.0f, 0.0f);
+		data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
+		data->_OutlineColor = Vector3<float>(CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f), CatalystBaseMath::RandomFloatInRange(0.0f, 1.0f));
 
 		EntityCreationSystem::Instance->RequestInitialization(box, data, false);
 	}

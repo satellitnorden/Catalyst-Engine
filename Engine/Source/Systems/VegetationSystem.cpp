@@ -205,7 +205,7 @@ void VegetationSystem::UpdateSystemAsynchronous() NOEXCEPT
 void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 {
 	//Cache the viewer position.
-	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
+	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
 
 	//Reset vegetation type information update.
 	_GrassVegetationTypeInformationUpdate._Information = nullptr;
@@ -239,7 +239,7 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 		public:
 
 			//The current viewer position.
-			Vector3 _ViewerPosition;
+			Vector3<float> _ViewerPosition;
 
 			//The cutoff distance.
 			float _CutoffDistance;
@@ -255,10 +255,10 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 		{
 			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
 
-			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE) };
-			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE) };
+			const Vector3<float> firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE) };
+			const Vector3<float> secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::GRASS_VEGETATION_GRID_SIZE) };
 
-			return Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
+			return Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
 		});
 
 		//Construct the update.
@@ -347,7 +347,7 @@ void VegetationSystem::UpdateGrassVegetationAsynchronous() NOEXCEPT
 void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 {
 	//Cache the viewer position.
-	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
+	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
 
 	//Reset the solid vegetation type information update.
 	_SolidVegetationTypeInformationUpdate._Information = nullptr;
@@ -400,7 +400,7 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 		public:
 
 			//The current viewer position.
-			Vector3 _ViewerPosition;
+			Vector3<float> _ViewerPosition;
 
 			//The cutoff distance.
 			float _CutoffDistance;
@@ -416,10 +416,10 @@ void VegetationSystem::UpdateSolidVegetationAsynchronous() NOEXCEPT
 		{
 			const SortingData *const RESTRICT sortingData{ static_cast<const SortingData *const RESTRICT>(userData) };
 
-			const Vector3 firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::SOLID_VEGETATION_GRID_SIZE) };
-			const Vector3 secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::SOLID_VEGETATION_GRID_SIZE) };
+			const Vector3<float> firstGridPosition{ GridPoint2::GridPointToWorldPosition(*first, sortingData->_CutoffDistance * VegetationConstants::SOLID_VEGETATION_GRID_SIZE) };
+			const Vector3<float> secondGridPosition{ GridPoint2::GridPointToWorldPosition(*second, sortingData->_CutoffDistance * VegetationConstants::SOLID_VEGETATION_GRID_SIZE) };
 
-			return Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
+			return Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - firstGridPosition) < Vector3<float>::LengthSquaredXZ(sortingData->_ViewerPosition - secondGridPosition);
 		});
 
 		//Construct the update.

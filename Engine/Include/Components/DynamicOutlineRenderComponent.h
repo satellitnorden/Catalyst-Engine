@@ -18,7 +18,7 @@ public:
 	PhysicalFlag _PhysicalFlags;
 
 	//The outline color.
-	Vector3 _Color;
+	Vector3<float> _Color;
 
 	//The buffer.
 	ConstantBufferHandle _Buffer;

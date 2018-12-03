@@ -23,7 +23,7 @@ private:
 	constexpr static uint8 OFFSETS_RESOLUTION{ 10 };
 
 	//The offsets.
-	static DynamicArray<Vector3> _Offsets;
+	static DynamicArray<Vector3<float>> _Offsets;
 
 	/*
 	*	Initializes the offsets.
@@ -33,6 +33,6 @@ private:
 	/*
 	*	Given an axis-aligned bounding box and an extent, find the most appropiate position.
 	*/
-	static Vector3 FindMostAppropriatePosition(const AxisAlignedBoundingBox &box, const float extent) NOEXCEPT;
+	static Vector3<float> FindMostAppropriatePosition(const AxisAlignedBoundingBox &box, const float extent) NOEXCEPT;
 
 };

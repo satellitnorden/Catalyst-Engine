@@ -137,7 +137,7 @@ void ParticleSystemRenderPass::RenderInternal() NOEXCEPT
 
 		struct ParticleSystemData
 		{
-			Vector3 _WorldPosition;
+			Vector3<float> _WorldPosition;
 			Padding<4> _Padding;
 			float _ParticleSystemRandomSeed;
 			float _ParticleSystemTotalTime;

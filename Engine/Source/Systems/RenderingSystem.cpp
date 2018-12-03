@@ -537,8 +537,8 @@ void RenderingSystem::CreateGrassVegetationModel(const GrassVegetationModelData 
 	UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
 
 	//Set up the physical model.
-	model._AxisAlignedBoundingBox._Minimum = Vector3(-data._Extent * 0.5f, -data._Extent * 0.5f, -data._Extent * 0.5f);
-	model._AxisAlignedBoundingBox._Maximum = Vector3(data._Extent * 0.5f, data._Extent * 0.5f, data._Extent * 0.5f);
+	model._AxisAlignedBoundingBox._Minimum = Vector3<float>(-data._Extent * 0.5f, -data._Extent * 0.5f, -data._Extent * 0.5f);
+	model._AxisAlignedBoundingBox._Maximum = Vector3<float>(data._Extent * 0.5f, data._Extent * 0.5f, data._Extent * 0.5f);
 	model._Buffer = buffer;
 	model._IndexOffset = modelDataSizes[0];
 	model._IndexCount = static_cast<uint32>(data._Indices.Size());
@@ -577,8 +577,8 @@ void RenderingSystem::CreatePhysicalModel(const PhysicalModelData &physicalModel
 	UploadDataToBuffer(modelData, modelDataSizes, 2, buffer);
 
 	//Set up the physical model.
-	physicalModel._AxisAlignedBoundingBox._Minimum = Vector3(-physicalModelData._Extent * 0.5f, -physicalModelData._Extent * 0.5f, -physicalModelData._Extent * 0.5f);
-	physicalModel._AxisAlignedBoundingBox._Maximum = Vector3(physicalModelData._Extent * 0.5f, physicalModelData._Extent * 0.5f, physicalModelData._Extent * 0.5f);
+	physicalModel._AxisAlignedBoundingBox._Minimum = Vector3<float>(-physicalModelData._Extent * 0.5f, -physicalModelData._Extent * 0.5f, -physicalModelData._Extent * 0.5f);
+	physicalModel._AxisAlignedBoundingBox._Maximum = Vector3<float>(physicalModelData._Extent * 0.5f, physicalModelData._Extent * 0.5f, physicalModelData._Extent * 0.5f);
 	physicalModel._Buffer = buffer;
 	physicalModel._IndexOffset = modelDataSizes[0];
 	physicalModel._IndexCount = static_cast<uint32>(physicalModelData._Indices.Size());
@@ -1084,9 +1084,9 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	DynamicUniformData data;
 
 	//Calculate the viewer data.
-	Vector3 viewerPosition = Viewer::Instance->GetPosition();
-	Vector3 forwardVector = Viewer::Instance->GetForwardVector();
-	Vector3 upVector = Viewer::Instance->GetUpVector();
+	Vector3<float> viewerPosition = Viewer::Instance->GetPosition();
+	Vector3<float> forwardVector = Viewer::Instance->GetForwardVector();
+	Vector3<float> upVector = Viewer::Instance->GetUpVector();
 
 	const Matrix4 *const RESTRICT projectionMatrix{ Viewer::Instance->GetProjectionMatrix() };
 	const Matrix4 *const RESTRICT viewerMatrix{ Viewer::Instance->GetViewerMatrix() };
@@ -1095,7 +1095,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 	const Matrix4 *const RESTRICT inverseViewerMatrix{ Viewer::Instance->GetInverseViewerMatrix() };
 
 	Matrix4 viewerOriginMatrix{ *viewerMatrix };
-	viewerOriginMatrix.SetTranslation(Vector3(0.0f, 0.0f, 0.0f));
+	viewerOriginMatrix.SetTranslation(Vector3<float>(0.0f, 0.0f, 0.0f));
 
 	data._ViewerFieldOfViewCosine = CatalystBaseMath::CosineRadians(Viewer::Instance->GetFieldOfViewRadians()) - 0.2f;
 	data._InverseViewerMatrix = *inverseViewerMatrix;
@@ -1167,7 +1167,7 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 		data._SpotLightInnerCutoffAngles[counter] = CatalystBaseMath::CosineDegrees(spotLightComponent->_InnerCutoffAngle);
 		data._SpotLightOuterCutoffAngles[counter] = CatalystBaseMath::CosineDegrees(spotLightComponent->_OuterCutoffAngle);
 		data._SpotLightColors[counter] = spotLightComponent->_Color;
-		data._SpotLightDirections[counter] = Vector3(0.0f, -1.0f, 0.0f).Rotated(spotLightComponent->_Rotation);
+		data._SpotLightDirections[counter] = Vector3<float>(0.0f, -1.0f, 0.0f).Rotated(spotLightComponent->_Rotation);
 		data._SpotLightDirections[counter]._Y *= -1.0f;
 		data._SpotLightWorldPositions[counter] = spotLightComponent->_Position;
 

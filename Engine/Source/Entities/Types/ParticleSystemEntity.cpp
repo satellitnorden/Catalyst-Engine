@@ -44,7 +44,7 @@ bool ParticleSystemEntity::ShouldAutomaticallyTerminate() const NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-RESTRICTED NO_DISCARD Vector3 *const RESTRICT ParticleSystemEntity::GetPositionInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT ParticleSystemEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
 	return &ComponentManager::GetParticleSystemParticleSystemRenderComponents()[_ComponentsIndex]._WorldPosition;

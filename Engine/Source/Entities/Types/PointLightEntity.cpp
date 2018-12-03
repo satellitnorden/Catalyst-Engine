@@ -16,7 +16,7 @@ PointLightEntity::PointLightEntity() NOEXCEPT
 /*
 *	Returns the position of this entity.
 */
-RESTRICTED NO_DISCARD Vector3 *const RESTRICT PointLightEntity::GetPositionInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT PointLightEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
 	return &ComponentManager::GetPointLightPointLightComponents()[_ComponentsIndex]._Position;

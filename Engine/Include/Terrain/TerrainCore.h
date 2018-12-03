@@ -13,8 +13,9 @@ namespace TerrainConstants
 
 //Forward declarations.
 class TerrainProperties;
+template <typename Type>
 class Vector3;
 
 //Type aliases.
-using HeightGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3 &worldPosition, float *const RESTRICT height);
-using MaterialGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3 &worldPosition, uint8 *const RESTRICT material);
+using HeightGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3<float> &worldPosition, float *const RESTRICT height);
+using MaterialGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3<float> &worldPosition, uint8 *const RESTRICT material);

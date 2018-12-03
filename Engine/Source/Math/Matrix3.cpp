@@ -27,9 +27,9 @@ Matrix3::Matrix3(const Matrix4 &otherMatrix) NOEXCEPT
 /*
 *	Matrix3 by vector3 multiplcation overload.
 */
-Vector3 Matrix3::operator*(const Vector3 &vector) NOEXCEPT
+	Vector3<float> Matrix3::operator*(const Vector3<float> &vector) NOEXCEPT
 {
-	Vector3 multipliedVector{ vector };
+		Vector3<float> multipliedVector{ vector };
 
 	multipliedVector._X = (_Matrix[0]._X * vector._X) + (_Matrix[1]._X * vector._Y) + (_Matrix[2]._X * vector._Z);
 	multipliedVector._Y = (_Matrix[0]._Y * vector._X) + (_Matrix[1]._Y * vector._Y) + (_Matrix[2]._Y * vector._Z);

@@ -10,7 +10,7 @@ namespace CommonPhysicalModelData
 {
 
 	/*
-	*	Generates cube physical model data->
+	*	Generates cube physical model data.
 	*/
 	static void GetCubePhysicalModelData(PhysicalModelData *const RESTRICT data) NOEXCEPT
 	{
@@ -19,40 +19,40 @@ namespace CommonPhysicalModelData
 		data->_Vertices.Reserve(24);
 
 		//Left side.
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, -0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, -0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, 0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, 0.5f), Vector3(-1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, -0.5f, -0.5f), Vector3<float>(-1.0f, 0.0f, 0.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.5f, -0.5f), Vector3<float>(-1.0f, 0.0f, 0.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.5f, 0.5f), Vector3<float>(-1.0f, 0.0f, 0.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, -0.5f, 0.5f), Vector3<float>(-1.0f, 0.0f, 0.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 0.0f));
 
 		//Front side.
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, -0.5f, 0.5f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, -0.5f, 0.5f), Vector3<float>(0.0f, 0.0f, 1.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.5f, 0.5f), Vector3<float>(0.0f, 0.0f, 1.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.5f, 0.5f), Vector3<float>(0.0f, 0.0f, 1.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, -0.5f, 0.5f), Vector3<float>(0.0f, 0.0f, 1.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 0.0f));
 
 		//Right side.
-		data->_Vertices.EmplaceFast(Vector3(0.5f, -0.5f, 0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.5f, 0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.5f, -0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, -0.5f, -0.5f), Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, -0.5f, 0.5f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.5f, 0.5f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.5f, -0.5f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, -0.5f, -0.5f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 0.0f));
 
 		//Back side.
-		data->_Vertices.EmplaceFast(Vector3(0.5f, -0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, -0.5f, -0.5f), Vector3<float>(0.0f, 0.0f, -1.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.5f, -0.5f), Vector3<float>(0.0f, 0.0f, -1.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(0.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.5f, -0.5f), Vector3<float>(0.0f, 0.0f, -1.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, -0.5f, -0.5f), Vector3<float>(0.0f, 0.0f, -1.0f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector2<float>(1.0f, 0.0f));
 
 		//Down side.
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, -0.5f, 0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2<float>(0.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, -0.5f, 0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2<float>(1.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, -0.5f, -0.5f), Vector3(0.0f, -1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, -0.5f, -0.5f), Vector3<float>(0.0f, -1.0f, 0.0f), Vector3<float>(0.0f, 0.0f, 1.0f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, -0.5f, 0.5f), Vector3<float>(0.0f, -1.0f, 0.0f), Vector3<float>(0.0f, 0.0f, 1.0f), Vector2<float>(0.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, -0.5f, 0.5f), Vector3<float>(0.0f, -1.0f, 0.0f), Vector3<float>(0.0f, 0.0f, 1.0f), Vector2<float>(1.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, -0.5f, -0.5f), Vector3<float>(0.0f, -1.0f, 0.0f), Vector3<float>(0.0f, 0.0f, 1.0f), Vector2<float>(1.0f, 0.0f));
 
 		//Up side.
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.5f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2<float>(0.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.5f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2<float>(1.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.5f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.5f, 0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(0.0f, 0.0f, -1.0f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.5f, -0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(0.0f, 0.0f, -1.0f), Vector2<float>(0.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.5f, -0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(0.0f, 0.0f, -1.0f), Vector2<float>(1.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.5f, 0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(0.0f, 0.0f, -1.0f), Vector2<float>(1.0f, 0.0f));
 
 		data->_Indices.Reserve(36);
 
@@ -106,7 +106,7 @@ namespace CommonPhysicalModelData
 	}
 
 	/*
-	*	Generates octahedron physical model data->
+	*	Generates octahedron physical model data.
 	*/
 	static void GetOctahedronPhysicalModelData(PhysicalModelData *const RESTRICT data) NOEXCEPT
 	{
@@ -115,44 +115,44 @@ namespace CommonPhysicalModelData
 		data->_Vertices.Reserve(24);
 
 		//Bottom left side.
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(1.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(0.5f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.0f, -0.5f), Vector3<float>(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3<float>(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.0f, 0.5f), Vector3<float>(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3<float>(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.0f, -0.5f, 0.0f), Vector3<float>(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector3<float>(0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(0.5f, 1.0f));
 
 		//Bottom front side.
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2<float>(1.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2<float>(0.5f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.0f, 0.5f), Vector3<float>(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3<float>(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.0f, 0.5f), Vector3<float>(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3<float>(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.0f, -0.5f, 0.0f), Vector3<float>(0.0f, -0.707'106'769f, 0.707'106'769f), Vector3<float>(0.0f, -0.707'106'769f, -0.707'106'769f), Vector2<float>(0.5f, 1.0f));
 
 		//Bottom right side.
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(1.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(0.5f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.0f, 0.5f), Vector3<float>(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3<float>(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.0f, -0.5f), Vector3<float>(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3<float>(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.0f, -0.5f, 0.0f), Vector3<float>(0.707'106'769f, -0.707'106'769f, 0.0f), Vector3<float>(-0.707'106'769f, -0.707'106'769f, 0.0f), Vector2<float>(0.5f, 1.0f));
 
 		//Bottom back side.
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2<float>(1.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.0f, -0.5f, 0.0f), Vector3(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2<float>(0.5f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.0f, -0.5f), Vector3<float>(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3<float>(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.0f, -0.5f), Vector3<float>(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3<float>(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.0f, -0.5f, 0.0f), Vector3<float>(0.0f, -0.707'106'769f, -0.707'106'769f), Vector3<float>(0.0f, -0.707'106'769f, 0.707'106'769f), Vector2<float>(0.5f, 1.0f));
 
 		//Top left side.
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(0.5f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.0f, -0.5f), Vector3<float>(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3<float>(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.0f, 0.5f, 0.0f), Vector3<float>(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3<float>(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(0.5f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.0f, 0.5f), Vector3<float>(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector3<float>(0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(1.0f, 0.0f));
 
 		//Top front side.
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2<float>(0.5f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.0f, 0.5f), Vector3<float>(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3<float>(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.0f, 0.5f, 0.0f), Vector3<float>(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3<float>(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2<float>(0.5f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.0f, 0.5f), Vector3<float>(0.0f, 0.707'106'769f, 0.707'106'769f), Vector3<float>(0.0f, 0.707'106'769f, -0.707'106'769f), Vector2<float>(1.0f, 0.0f));
 
 		//Top right side.
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(0.5f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.0f, 0.5f), Vector3<float>(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3<float>(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.0f, 0.5f, 0.0f), Vector3<float>(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3<float>(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(0.5f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.0f, -0.5f), Vector3<float>(0.707'106'769f, 0.707'106'769f, 0.0f), Vector3<float>(-0.707'106'769f, 0.707'106'769f, 0.0f), Vector2<float>(1.0f, 0.0f));
 
 		//Top back side.
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.0f, 0.5f, 0.0f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2<float>(0.5f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.0f, -0.5f), Vector3<float>(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3<float>(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.0f, 0.5f, 0.0f), Vector3<float>(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3<float>(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2<float>(0.5f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.0f, -0.5f), Vector3<float>(0.0f, 0.707'106'769f, -0.707'106'769f), Vector3<float>(0.0f, 0.707'106'769f, 0.707'106'769f), Vector2<float>(1.0f, 0.0f));
 
 		data->_Indices.Reserve(24);
 
@@ -190,17 +190,17 @@ namespace CommonPhysicalModelData
 	}
 
 	/*
-	*	Generates plane physical model data->
+	*	Generates plane physical model data.
 	*/
 	static void GetPlanePhysicalModelData(PhysicalModelData *const RESTRICT data) NOEXCEPT
 	{
 		data->_Extent = 1.0f;
 
 		data->_Vertices.Reserve(4);
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2<float>(0.0f, 0.0f));
-		data->_Vertices.EmplaceFast(Vector3(-0.5f, 0.0f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2<float>(0.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.0f, -0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2<float>(1.0f, 1.0f));
-		data->_Vertices.EmplaceFast(Vector3(0.5f, 0.0f, 0.5f), Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 0.0f, 0.0f), Vector2<float>(1.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.0f, 0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector2<float>(0.0f, 0.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(-0.5f, 0.0f, -0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector2<float>(0.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.0f, -0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector2<float>(1.0f, 1.0f));
+		data->_Vertices.EmplaceFast(Vector3<float>(0.5f, 0.0f, 0.5f), Vector3<float>(0.0f, 1.0f, 0.0f), Vector3<float>(1.0f, 0.0f, 0.0f), Vector2<float>(1.0f, 0.0f));
 
 		data->_Indices.Reserve(6);
 		data->_Indices.EmplaceFast(0);

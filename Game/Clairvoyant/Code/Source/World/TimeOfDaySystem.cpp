@@ -44,7 +44,7 @@ bool TimeOfDaySystem::OpeningUpdateAsynchronous(const UpdateContext *const RESTR
 	}
 
 	//Rotate the sun.
-	LightingSystem::Instance->GetDirectionalLight()->SetRotation(Vector3(90.0f + _CurrentTime * 15.0f, 45.0f, 0.0f));
+	LightingSystem::Instance->GetDirectionalLight()->SetRotation(Vector3<float>(90.0f + _CurrentTime * 15.0f, 45.0f, 0.0f));
 
 	//Return that the time of day system wants to continue being updated.
 	return true;

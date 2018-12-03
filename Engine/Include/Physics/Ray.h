@@ -12,10 +12,10 @@ class Ray final
 public:
 
 	//The origin.
-	Vector3 _Origin;
+	Vector3<float> _Origin;
 
 	//The direction.
-	Vector3 _Direction;
+	Vector3<float> _Direction;
 
 	//The distance.
 	float _Distance;
@@ -23,7 +23,7 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	Ray(const Vector3 &initalOrigin, const Vector3 &initialDirection, const float initialDistance) NOEXCEPT
+	Ray(const Vector3<float> &initalOrigin, const Vector3<float> &initialDirection, const float initialDistance) NOEXCEPT
 		:
 		_Origin(initalOrigin),
 		_Direction(initialDirection),

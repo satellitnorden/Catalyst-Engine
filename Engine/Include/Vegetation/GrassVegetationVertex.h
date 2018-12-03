@@ -13,13 +13,13 @@ class GrassVegetationVertex final
 public:
 
 	//The position of this grass vegetation vertex.
-	Vector3 _Position;
+	Vector3<float> _Position;
 
 	//The normal of this grass vegetation vertex.
-	Vector3 _Normal;
+	Vector3<float> _Normal;
 
 	//The tangent of this grass vegetation vertex.
-	Vector3 _Tangent;
+	Vector3<float> _Tangent;
 
 	//The texture coordinate of this grass vegetation vertex.
 	Vector2<float> _TextureCoordinate;
@@ -35,9 +35,9 @@ public:
 	/*
 	*	Constructor taking all values as arguments.
 	*/
-	GrassVegetationVertex(	const Vector3 &initialPosition,
-							const Vector3 &initialNormal,
-							const Vector3 &initialTangent,
+	GrassVegetationVertex(	const Vector3<float> &initialPosition,
+							const Vector3<float> &initialNormal,
+							const Vector3<float> &initialTangent,
 							const Vector2<float> &initialTextureCoordinate,
 							const float initialModulatorFactor) NOEXCEPT
 		:

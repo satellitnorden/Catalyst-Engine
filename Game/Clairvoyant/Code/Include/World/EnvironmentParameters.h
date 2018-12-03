@@ -18,7 +18,7 @@ public:
 	EnvironmentMaterial _EnvironmentMaterial;
 
 	//The sun color.
-	Vector3 _SunColor;
+	Vector3<float> _SunColor;
 
 	//The sun intensity.
 	float _SunIntensity;

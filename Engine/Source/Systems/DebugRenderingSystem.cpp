@@ -27,9 +27,9 @@ void DebugRenderingSystem::RenderingUpdateSystemSynchronous(const UpdateContext 
 	{
 		SortingAlgorithms::InsertionSort<AxisAlignedBoundingBoxDebugRenderData>(_AxisAlignedBoundingBoxDebugRenderData.Begin(), _AxisAlignedBoundingBoxDebugRenderData.End(), nullptr, [](const void *const RESTRICT userData, const AxisAlignedBoundingBoxDebugRenderData *const RESTRICT first, const AxisAlignedBoundingBoxDebugRenderData *const RESTRICT second)
 		{
-			const Vector3 &viewerPosition{ Viewer::Instance->GetPosition() };
+			const Vector3<float> &viewerPosition{ Viewer::Instance->GetPosition() };
 
-			return Vector3::LengthSquared(viewerPosition - AxisAlignedBoundingBox::CalculateCenter(first->_Box)) < Vector3::LengthSquared(viewerPosition - AxisAlignedBoundingBox::CalculateCenter(second->_Box));
+			return Vector3<float>::LengthSquared(viewerPosition - AxisAlignedBoundingBox::CalculateCenter(first->_Box)) < Vector3<float>::LengthSquared(viewerPosition - AxisAlignedBoundingBox::CalculateCenter(second->_Box));
 		});
 	}
 }

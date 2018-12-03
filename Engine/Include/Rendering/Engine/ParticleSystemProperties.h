@@ -41,25 +41,25 @@ public:
 	Vector2<float> _MaximumScale;
 
 	//The minimum position.
-	Vector3 _MinimumPosition;
+	Vector3<float> _MinimumPosition;
 
 	//Some padding.
 	Padding<1> _Padding1;
 
 	//The maximum position.
-	Vector3 _MaximumPosition;
+	Vector3<float> _MaximumPosition;
 
 	//Some padding.
 	Padding<1> _Padding2;
 
 	//The minimum velocity.
-	Vector3 _MinimumVelocity;
+	Vector3<float> _MinimumVelocity;
 
 	//Some padding.
 	Padding<1> _Padding3;
 
 	//The maximum velocity.
-	Vector3 _MaximumVelocity;
+	Vector3<float> _MaximumVelocity;
 
 	//Some padding.
 	Padding<1> _Padding4;

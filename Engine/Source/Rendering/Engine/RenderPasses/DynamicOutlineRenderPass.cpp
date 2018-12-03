@@ -59,7 +59,7 @@ void DynamicOutlineRenderPass::InitializeInternal() NOEXCEPT
 	//Add the push constant ranges.
 	SetNumberOfPushConstantRanges(2);
 	AddPushConstantRange(ShaderStage::Vertex, 0, sizeof(Matrix4));
-	AddPushConstantRange(ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector3));
+	AddPushConstantRange(ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector3<float>));
 
 	//Add the vertex input attribute descriptions.
 	SetNumberOfVertexInputAttributeDescriptions(4);
@@ -160,7 +160,7 @@ void DynamicOutlineRenderPass::RenderInternal() NOEXCEPT
 
 		const Matrix4 modelMatrix{ transformComponent->_Position, transformComponent->_Rotation, transformComponent->_Scale };
 		commandBuffer->PushConstants(this, ShaderStage::Vertex, 0, sizeof(Matrix4), &modelMatrix);
-		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector3), &renderComponent->_Color);
+		commandBuffer->PushConstants(this, ShaderStage::Fragment, sizeof(Matrix4), sizeof(Vector3<float>), &renderComponent->_Color);
 
 		if (previousBuffer != renderComponent->_Buffer)
 		{

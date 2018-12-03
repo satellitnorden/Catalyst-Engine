@@ -16,7 +16,7 @@ public:
 	/*
 	*	Returns the biome height.
 	*/
-	static float Height(const Vector3 &position) NOEXCEPT
+	static float Height(const Vector3<float> &position) NOEXCEPT
 	{
 		//Calculate the coordinates.
 		const float coordinateX{ position._X / 100'000.0f };

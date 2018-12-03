@@ -13,10 +13,10 @@ namespace ClairvoyantWorldUtilities
 	/*
 	*	Generates a transformation.
 	*/
-	bool GenerateTransformation(const bool grass, const bool sand, const bool snow, const bool underwater, const float minimumAngle, const float height, const float minimumScale, const float maximumScale, const Vector3 &rotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
+	bool GenerateTransformation(const bool grass, const bool sand, const bool snow, const bool underwater, const float minimumAngle, const float height, const float minimumScale, const float maximumScale, const Vector3<float> &rotation, const AxisAlignedBoundingBox &box, Matrix4 *const RESTRICT transformation) NOEXCEPT
 	{
 		//Generate a random position.
-		Vector3 position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
+		Vector3<float> position(CatalystBaseMath::RandomFloatInRange(box._Minimum._X, box._Maximum._X), 0.0f, CatalystBaseMath::RandomFloatInRange(box._Minimum._Z, box._Maximum._Z));
 
 		//Get the terrain height.
 		if (!TerrainSystem::Instance->GetTerrainHeightAtPosition(position, &position._Y))
@@ -63,7 +63,7 @@ namespace ClairvoyantWorldUtilities
 		}
 
 		//Get the terrain normal.
-		Vector3 terrainNormal;
+		Vector3<float> terrainNormal;
 
 		if (!TerrainSystem::Instance->GetTerrainNormalAtPosition(position, &terrainNormal))
 		{
@@ -71,7 +71,7 @@ namespace ClairvoyantWorldUtilities
 		}
 
 		//Handle spawning based on angle.
-		const float angle{ CatalystBaseMath::Maximum<float>(Vector3::DotProduct(terrainNormal, Vector3::UP), 0.0f) };
+		const float angle{ CatalystBaseMath::Maximum<float>(Vector3<float>::DotProduct(terrainNormal, Vector3<float>::UP), 0.0f) };
 
 		if (angle < minimumAngle)
 		{
@@ -92,9 +92,9 @@ namespace ClairvoyantWorldUtilities
 		const float scale{ CatalystBaseMath::RandomFloatInRange(minimumScale, maximumScale) };
 
 		transformation->SetTranslation(position);
-		transformation->SetScale(Vector3(scale, scale, scale));
+		transformation->SetScale(Vector3<float>(scale, scale, scale));
 
-		Matrix4 rotationMatrix{ Matrix4::Orientation(terrainNormal, Vector3::UP) };
+		Matrix4 rotationMatrix{ Matrix4::Orientation(terrainNormal, Vector3<float>::UP) };
 		rotationMatrix.Rotate(rotation);
 
 		*transformation = *transformation * rotationMatrix;

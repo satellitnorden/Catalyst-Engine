@@ -12,13 +12,13 @@ class SpotLightComponent final
 public:
 
 	//The color.
-	Vector3 _Color{ 1.0f, 1.0f, 1.0f };
+	Vector3<float> _Color{ 1.0f, 1.0f, 1.0f };
 
 	//The position.
-	Vector3 _Position{ 0.0f, 0.0f, 0.0f };
+	Vector3<float> _Position{ 0.0f, 0.0f, 0.0f };
 
 	//The rotation.
-	Vector3 _Rotation{ 0.0f, 0.0f, 0.0f };
+	Vector3<float> _Rotation{ 0.0f, 0.0f, 0.0f };
 
 	//The attenuation distance.
 	float _AttenuationDistance{ 25.0f };

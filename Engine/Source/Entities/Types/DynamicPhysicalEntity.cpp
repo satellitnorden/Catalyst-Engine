@@ -34,7 +34,7 @@ RESTRICTED NO_DISCARD AxisAlignedBoundingBox *const RESTRICT DynamicPhysicalEnti
 /*
 *	Returns the position of this entity.
 */
-RESTRICTED NO_DISCARD Vector3 *const RESTRICT DynamicPhysicalEntity::GetPositionInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT DynamicPhysicalEntity::GetPositionInternal() NOEXCEPT
 {
 	//Return the position of this entity.
 	return &ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Position;
@@ -43,7 +43,7 @@ RESTRICTED NO_DISCARD Vector3 *const RESTRICT DynamicPhysicalEntity::GetPosition
 /*
 *	Returns the rotation of this entity.
 */
-RESTRICTED NO_DISCARD Vector3 *const RESTRICT DynamicPhysicalEntity::GetRotationInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT DynamicPhysicalEntity::GetRotationInternal() NOEXCEPT
 {
 	//Return the rotation of this entity.
 	return &ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Rotation;
@@ -52,7 +52,7 @@ RESTRICTED NO_DISCARD Vector3 *const RESTRICT DynamicPhysicalEntity::GetRotation
 /*
 *	Returns the scale of this entity.
 */
-RESTRICTED NO_DISCARD Vector3 *const RESTRICT DynamicPhysicalEntity::GetScaleInternal() NOEXCEPT
+RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT DynamicPhysicalEntity::GetScaleInternal() NOEXCEPT
 {
 	//Return the scale of this entity.
 	return &ComponentManager::GetDynamicPhysicalTransformComponents()[_ComponentsIndex]._Scale;
@@ -77,8 +77,8 @@ void DynamicPhysicalEntity::UpdateWorldSpaceAxisAlignedBoundingBox() NOEXCEPT
 		return;
 	}
 
-	const Vector3 *const RESTRICT position{ GetPositionInternal() };
-	const Vector3 *const RESTRICT scale{ GetScaleInternal() };
+	const Vector3<float> *const RESTRICT position{ GetPositionInternal() };
+	const Vector3<float> *const RESTRICT scale{ GetScaleInternal() };
 
 	worldSpaceAxisAlignedBoundingBox->_Minimum = modelSpaceAxisAlignedBoundingBox->_Minimum * *scale + *position;
 	worldSpaceAxisAlignedBoundingBox->_Maximum = modelSpaceAxisAlignedBoundingBox->_Maximum * *scale + *position;

@@ -95,7 +95,7 @@ void EntityPlacementSystem::UpdatePlacement() NOEXCEPT
 void EntityPlacementSystem::UpdateTwoDimensionalPlacement() NOEXCEPT
 {
 	//Cache the current viewer position.
-	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
+	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
 
 	//Update all two dimensional placement data.
 	for (EntityTwoDimensionalPlacementData &data : _TwoDimensionalPlacementData)
@@ -181,7 +181,7 @@ void EntityPlacementSystem::UpdateTwoDimensionalPlacement() NOEXCEPT
 						gridPoint._GridPoint = validGridPoint;
 
 						//Construct the axis aligned bounding box.
-						const Vector3 currentGridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint._GridPoint, data._GridSize) };
+						const Vector3<float> currentGridPointWorldPosition{ GridPoint2::GridPointToWorldPosition(gridPoint._GridPoint, data._GridSize) };
 
 						AxisAlignedBoundingBox box;
 
@@ -209,7 +209,7 @@ void EntityPlacementSystem::UpdateTwoDimensionalPlacement() NOEXCEPT
 void EntityPlacementSystem::UpdateThreeDimensionalPlacement() NOEXCEPT
 {
 	//Cache the current viewer position.
-	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
+	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
 
 	//Update all three dimensional placement data.
 	for (EntityThreeDimensionalPlacementData &data : _ThreeDimensionalPlacementData)
@@ -313,7 +313,7 @@ void EntityPlacementSystem::UpdateThreeDimensionalPlacement() NOEXCEPT
 						gridPoint._GridPoint = validGridPoint;
 
 						//Construct the axis aligned bounding box.
-						const Vector3 currentGridPointWorldPosition{ GridPoint3::GridPointToWorldPosition(gridPoint._GridPoint, data._GridSize) };
+						const Vector3<float> currentGridPointWorldPosition{ GridPoint3::GridPointToWorldPosition(gridPoint._GridPoint, data._GridSize) };
 
 						AxisAlignedBoundingBox box;
 

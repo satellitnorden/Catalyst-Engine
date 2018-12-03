@@ -30,10 +30,10 @@ void DirectionalLight::UpdateProjectionMatrix() NOEXCEPT
 void DirectionalLight::UpdateLightMatrix() NOEXCEPT
 {
 	//Update the light matrix.
-	const Vector3 viewerPosition{ Viewer::Instance->GetPosition() };
-	const Vector3 directionalLightForwardVector{ Vector3::FORWARD.Rotated(_Rotation) };
-	const Vector3 directionalLightUpVector{ Vector3::UP.Rotated(_Rotation) };
-	const Vector3 directionalLightPosition{ viewerPosition + (directionalLightForwardVector * -1.0f) * (LightingConstants::DIRECTIONAL_SHADOW_VIEW_DISTANCE * 1.0f) };
+	const Vector3<float> viewerPosition{ Viewer::Instance->GetPosition() };
+	const Vector3<float> directionalLightForwardVector{ Vector3<float>::FORWARD.Rotated(_Rotation) };
+	const Vector3<float> directionalLightUpVector{ Vector3<float>::UP.Rotated(_Rotation) };
+	const Vector3<float> directionalLightPosition{ viewerPosition + (directionalLightForwardVector * -1.0f) * (LightingConstants::DIRECTIONAL_SHADOW_VIEW_DISTANCE * 1.0f) };
 
 	_LightMatrix = Matrix4::LookAt(directionalLightPosition, directionalLightPosition + directionalLightForwardVector, directionalLightUpVector);
 

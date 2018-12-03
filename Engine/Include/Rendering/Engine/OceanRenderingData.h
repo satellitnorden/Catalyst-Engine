@@ -14,7 +14,7 @@ class OceanRenderingData final
 public:
 
 	//The color.
-	Vector3 _Color;
+	Vector3<float> _Color;
 
 	//Padding.
 	Padding<4> _Padding;
@@ -43,7 +43,7 @@ static OceanRenderingData GetDefaultOceanRenderingData() NOEXCEPT
 {
 	OceanRenderingData data;
 
-	data._Color = Vector3(0.0f, 1.0f, 1.0f);
+	data._Color = Vector3<float>(0.0f, 1.0f, 1.0f);
 	data._DeformationWeightDistanceSquared = 250.0f * 250.0f;
 	data._ColorWeightDistanceSquared = 250.0f * 250.0f;
 	data._FoamWeightDistanceSquared = 5.0f * 5.0f;

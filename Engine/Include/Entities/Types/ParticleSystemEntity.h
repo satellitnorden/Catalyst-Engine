@@ -30,6 +30,6 @@ protected:
 	/*
 	*	Returns the position of this entity.
 	*/
-	RESTRICTED NO_DISCARD Vector3 *const RESTRICT GetPositionInternal() NOEXCEPT final override;
+	RESTRICTED NO_DISCARD Vector3<float> *const RESTRICT GetPositionInternal() NOEXCEPT final override;
 
 };

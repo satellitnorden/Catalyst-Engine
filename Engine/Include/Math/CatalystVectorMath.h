@@ -39,7 +39,7 @@ public:
 	constexpr static NO_DISCARD bool LineBoxIntersection(const AxisAlignedBoundingBox &box, const Ray &ray) NOEXCEPT
 	{
 		//Pre-calculate the inverse direction of the ray to avoid costly divisions.
-		const Vector3 inverseDirection{ Vector3(1.0f) / ray._Direction };
+		const Vector3<float> inverseDirection{ Vector3<float>(1.0f) / ray._Direction };
 
 		float minimum{ 0.0f };
 		float maximum{ 0.0f };
@@ -68,9 +68,9 @@ public:
 	/*
 	*	Performs a line-plane intersection and returns the intersection point.
 	*/
-	constexpr static NO_DISCARD Vector3 LinePlaneIntersection(const Vector3 &pointOnPlane, const Vector3 pointOnLine, const Vector3 &normal, const Vector3 &line) NOEXCEPT
+	constexpr static NO_DISCARD Vector3<float> LinePlaneIntersection(const Vector3<float> &pointOnPlane, const Vector3<float> pointOnLine, const Vector3<float> &normal, const Vector3<float> &line) NOEXCEPT
 	{
-		return Vector3::DotProduct(pointOnPlane - pointOnLine, normal) / Vector3::DotProduct(line, normal) * line + pointOnLine;
+		return Vector3<float>::DotProduct(pointOnPlane - pointOnLine, normal) / Vector3<float>::DotProduct(line, normal) * line + pointOnLine;
 	}
 
 };
