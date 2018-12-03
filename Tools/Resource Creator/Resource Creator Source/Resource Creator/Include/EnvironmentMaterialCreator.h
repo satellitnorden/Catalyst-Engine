@@ -87,20 +87,20 @@ public:
 		float *const RESTRICT data{ stbi_loadf(parameters._File, &width, &height, &numberOfChannels, STBI_rgb_alpha) };
 
 		//Wrap the data into a cpu texture for easier manipulation.
-		CPUTexture2D hdrTexture{ static_cast<uint64>(width), static_cast<uint64>(height) };
+		CPUTexture2D<Vector4<float>> hdrTexture{ static_cast<uint64>(width), static_cast<uint64>(height) };
 
 		//Copy the data into the cpu texture.
 		MemoryUtilities::CopyMemory(hdrTexture.Data(), data, width * height * 4 * sizeof(float));
 
 		//Create the diffuse output textures.
-		StaticArray<CPUTexture2D, 6> diffuseOutputTextures
+		StaticArray<CPUTexture2D<Vector4<float>>, 6> diffuseOutputTextures
 		{
-			CPUTexture2D(parameters._DiffuseResolution),
-			CPUTexture2D(parameters._DiffuseResolution),
-			CPUTexture2D(parameters._DiffuseResolution),
-			CPUTexture2D(parameters._DiffuseResolution),
-			CPUTexture2D(parameters._DiffuseResolution),
-			CPUTexture2D(parameters._DiffuseResolution)
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution),
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution),
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution),
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution),
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution),
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseResolution)
 		};
 
 		StaticArray<DiffuseLayerCreationParameters, 6> diffuseLayerCreationParameters
@@ -123,14 +123,14 @@ public:
 		CPUTextureCube diffuseTexture{ diffuseOutputTextures };
 
 		//Create the diffuse irradiance output textures.
-		StaticArray<CPUTexture2D, 6> diffuseIrradianceOutputTextures
+		StaticArray<CPUTexture2D<Vector4<float>>, 6> diffuseIrradianceOutputTextures
 		{
-			CPUTexture2D(parameters._DiffuseIrradianceResolution),
-			CPUTexture2D(parameters._DiffuseIrradianceResolution),
-			CPUTexture2D(parameters._DiffuseIrradianceResolution),
-			CPUTexture2D(parameters._DiffuseIrradianceResolution),
-			CPUTexture2D(parameters._DiffuseIrradianceResolution),
-			CPUTexture2D(parameters._DiffuseIrradianceResolution)
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution),
+			CPUTexture2D<Vector4<float>>(parameters._DiffuseIrradianceResolution)
 		};
 
 		StaticArray<IrradianceLayerCreationParameters, 6> diffuseIrradianceLayerCreationParameters
@@ -181,7 +181,7 @@ private:
 
 	public:
 
-		DiffuseLayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, CPUTexture2D &initialOutputTexture, const CPUTexture2D &initialHdrTexture) NOEXCEPT
+		DiffuseLayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, CPUTexture2D<Vector4<float>> &initialOutputTexture, const CPUTexture2D<Vector4<float>> &initialHdrTexture) NOEXCEPT
 			:
 			index(initialIndex),
 			outputResolution(initialOutputResolution),
@@ -193,8 +193,8 @@ private:
 
 		const uint8 index;
 		const uint32 outputResolution;
-		CPUTexture2D &outputTexture;
-		const CPUTexture2D &hdrTexture;
+		CPUTexture2D<Vector4<float>> &outputTexture;
+		const CPUTexture2D<Vector4<float>> &hdrTexture;
 
 	};
 
@@ -206,7 +206,7 @@ private:
 
 	public:
 
-		IrradianceLayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, CPUTexture2D &initialOutputTexture, const CPUTextureCube &initialDiffuseTexture) NOEXCEPT
+		IrradianceLayerCreationParameters(const uint8 initialIndex, const uint32 initialOutputResolution, CPUTexture2D<Vector4<float>> &initialOutputTexture, const CPUTextureCube &initialDiffuseTexture) NOEXCEPT
 			:
 			index(initialIndex),
 			outputResolution(initialOutputResolution),
@@ -218,7 +218,7 @@ private:
 
 		const uint8 index;
 		const uint32 outputResolution;
-		CPUTexture2D &outputTexture;
+		CPUTexture2D<Vector4<float>> &outputTexture;
 		const CPUTextureCube &diffuseTexture;
 
 	};

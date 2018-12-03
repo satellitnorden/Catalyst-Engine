@@ -26,7 +26,6 @@
 //Forward declarations.
 class AxisAlignedBoundingBox;
 class CatalystProjectRenderingConfiguration;
-class CPUTexture2D;
 class DynamicPhysicalInitializationData;
 class Entity;
 class EnvironmentMaterialData;

@@ -7,11 +7,11 @@
 //Math.
 #include <Math/CatalystBaseMath.h>
 #include <Math/Vector2.h>
-#include <Math/Vector4.h>
 
 /*
 *	Class representing a 2D texture with 4 channels that can be constructed on the CPU.
 */
+template <typename Type>
 class CPUTexture2D final
 {
 
@@ -89,22 +89,22 @@ public:
 	/*
 	*	Begin iterator, const.
 	*/
-	RESTRICTED const Vector4<float> *const RESTRICT begin() const NOEXCEPT { return _Data.begin(); }
+	RESTRICTED const Type *const RESTRICT begin() const NOEXCEPT { return _Data.begin(); }
 
 	/*
 	*	Begin iterator, non-const.
 	*/
-	RESTRICTED Vector4<float> *const RESTRICT begin() NOEXCEPT { return _Data.begin(); }
+	RESTRICTED Type *const RESTRICT begin() NOEXCEPT { return _Data.begin(); }
 
 	/*
 	*	End iterator, const.
 	*/
-	RESTRICTED const Vector4<float> *const RESTRICT end() const NOEXCEPT { return _Data.end(); }
+	RESTRICTED const Type *const RESTRICT end() const NOEXCEPT { return _Data.end(); }
 
 	/*
 	*	End iterator, non-const.
 	*/
-	RESTRICTED Vector4<float> *const RESTRICT end() NOEXCEPT { return _Data.end(); }
+	RESTRICTED Type *const RESTRICT end() NOEXCEPT { return _Data.end(); }
 
 	/*
 	*	Initializes this CPU texture 2D.
@@ -122,33 +122,33 @@ public:
 	/*
 	*	Returns the texture data, const.
 	*/
-	RESTRICTED const Vector4<float>* Data() const NOEXCEPT { return _Data.Data(); }
+	RESTRICTED const Type* Data() const NOEXCEPT { return _Data.Data(); }
 
 	/*
 	*	Returns the texture data, non-const.
 	*/
-	RESTRICTED Vector4<float>* Data() NOEXCEPT { return _Data.Data(); }
+	RESTRICTED Type* Data() NOEXCEPT { return _Data.Data(); }
 
 	/*
 	*	Returns the texture value at the specified indices, const.
 	*/
-	const Vector4<float>& At(const uint64 xIndex, const uint64 yIndex) const NOEXCEPT
+	const Type& At(const uint64 X, const uint64 Y) const NOEXCEPT
 	{
-		return _Data[(yIndex * _Width) + xIndex];
+		return _Data[(Y * _Width) + X];
 	}
 
 	/*
 	*	Returns the texture value at the specified indices, non-const.
 	*/
-	Vector4<float>& At(const uint64 xIndex, const uint64 yIndex) NOEXCEPT
+	Type& At(const uint64 X, const uint64 Y) NOEXCEPT
 	{
-		return _Data[(yIndex * _Width) + xIndex];
+		return _Data[(Y * _Width) + X];
 	}
 
 	/*
 	*	Returns the texture value at the specified coordinates, const, using linear sampling.
 	*/
-	const Vector4<float> At(const Vector2<float> &textureCoordinate) const NOEXCEPT
+	const Type At(const Vector2<float> &textureCoordinate) const NOEXCEPT
 	{
 		return At(textureCoordinate._X, textureCoordinate._Y);
 	}
@@ -156,7 +156,7 @@ public:
 	/*
 	*	Returns the texture value at the specified coordinates, const, using linear sampling.
 	*/
-	const Vector4<float> At(const float xIndex, const float yIndex) const NOEXCEPT
+	const Type At(const float xIndex, const float yIndex) const NOEXCEPT
 	{
 		const float xTexelSize{ 1.0f / static_cast<float>(_Width) };
 		const float yTexelSize{ 1.0f / static_cast<float>(_Height) };
@@ -181,15 +181,15 @@ public:
 		const uint64 xTopRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((xStartTexel + xTexelSize) * static_cast<float>(_Width)), 0, _Width - 1) };
 		const uint64 yTopRightCoordinate{ CatalystBaseMath::Clamp<uint64>(static_cast<uint64>((yStartTexel + yTexelSize) * static_cast<float>(_Height)), 0, _Height - 1) };
 
-		const Vector4<float> &bottomLeftValue{ _Data[(yBottomLeftCoordinate * _Width) + xBottomLeftCoordinate] };
-		const Vector4<float> &bottomRightValue{ _Data[(yBottomRightCoordinate * _Width) + xBottomRightCoordinate] };
-		const Vector4<float> &topLeftValue{ _Data[(yTopLeftCoordinate * _Width) + xTopLeftCoordinate ] };
-		const Vector4<float> &topRightValue{ _Data[(yTopRightCoordinate * _Width) + xTopRightCoordinate] };
+		const Type &bottomLeftValue{ _Data[(yBottomLeftCoordinate * _Width) + xBottomLeftCoordinate] };
+		const Type &bottomRightValue{ _Data[(yBottomRightCoordinate * _Width) + xBottomRightCoordinate] };
+		const Type &topLeftValue{ _Data[(yTopLeftCoordinate * _Width) + xTopLeftCoordinate ] };
+		const Type &topRightValue{ _Data[(yTopRightCoordinate * _Width) + xTopRightCoordinate] };
 
-		const Vector4<float> mixA{ Vector4<float>::LinearlyInterpolate(bottomLeftValue, topLeftValue, yFractional) };
-		const Vector4<float> mixB{ Vector4<float>::LinearlyInterpolate(bottomRightValue, topRightValue, yFractional) };
+		const Type mixA{ Type::LinearlyInterpolate(bottomLeftValue, topLeftValue, yFractional) };
+		const Type mixB{ Type::LinearlyInterpolate(bottomRightValue, topRightValue, yFractional) };
 
-		return Vector4<float>::LinearlyInterpolate(mixA, mixB, xFractional);
+		return Type::LinearlyInterpolate(mixA, mixB, xFractional);
 	}
 
 	/*
@@ -205,7 +205,7 @@ public:
 private:
 
 	//The underlying texture data.
-	DynamicArray<Vector4<float>> _Data;
+	DynamicArray<Type> _Data;
 
 	//The width of the texture.
 	uint64 _Width;

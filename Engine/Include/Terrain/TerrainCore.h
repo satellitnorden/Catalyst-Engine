@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Math.
+#include <Math/Vector3.h>
+
 //Terrain constants.
 namespace TerrainConstants
 {
@@ -13,8 +16,6 @@ namespace TerrainConstants
 
 //Forward declarations.
 class TerrainProperties;
-template <typename Type>
-class Vector3;
 
 //Type aliases.
 using HeightGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3<float> &worldPosition, float *const RESTRICT height);
