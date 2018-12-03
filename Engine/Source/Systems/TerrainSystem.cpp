@@ -153,8 +153,8 @@ void TerrainSystem::ProcessUpdate() NOEXCEPT
 					_QuadTree._RootNodes[i]._Subdivided = false;
 					_QuadTree._RootNodes[i]._Identifier = _Update._AddRootNodeUpdate._PatchInformation._Identifier;
 					_QuadTree._RootNodes[i]._ChildNodes = nullptr;
-					_QuadTree._RootNodes[i]._Minimum = Vector2(gridPointWorldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f), gridPointWorldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f));
-					_QuadTree._RootNodes[i]._Maximum = Vector2(gridPointWorldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f), gridPointWorldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f));
+					_QuadTree._RootNodes[i]._Minimum = Vector2<float>(gridPointWorldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f), gridPointWorldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f));
+					_QuadTree._RootNodes[i]._Maximum = Vector2<float>(gridPointWorldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f), gridPointWorldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * 0.5f));
 
 					break;
 				}
@@ -546,7 +546,7 @@ void TerrainSystem::GeneratePatch(const Vector3 &worldPosition, const float patc
 
 	//Fill in the details about the patch render information.
 	patchRenderInformation->_Visibility = VisibilityFlag::None;
-	patchRenderInformation->_InstanceInformation._WorldPosition = Vector2(worldPosition._X, worldPosition._Z);
+	patchRenderInformation->_InstanceInformation._WorldPosition = Vector2<float>(worldPosition._X, worldPosition._Z);
 	patchRenderInformation->_InstanceInformation._PatchSize = TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier;
 	patchRenderInformation->_InstanceInformation._Borders = 0;
 

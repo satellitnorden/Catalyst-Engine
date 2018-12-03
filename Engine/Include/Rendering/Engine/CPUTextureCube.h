@@ -46,7 +46,7 @@ public:
 	{
 		//Determine the texture coordinate and the face index.
 		uint8 faceIndex;
-		Vector2 textureCoordinate;
+		Vector2<float> textureCoordinate;
 
 		CubeSampling(direction, faceIndex, textureCoordinate);
 
@@ -62,7 +62,7 @@ private:
 	/*
 	*	Function to determine the face index as well as the texture coordinate from a direction vector.
 	*/
-	void CubeSampling(const Vector3 &direction, uint8 &faceIndex, Vector2 &textureCoordinate) const NOEXCEPT
+	void CubeSampling(const Vector3 &direction, uint8 &faceIndex, Vector2<float> &textureCoordinate) const NOEXCEPT
 	{
 		const Vector3 absoluteDirection{ Vector3::Absolute(direction) };
 
@@ -72,21 +72,21 @@ private:
 		{
 			faceIndex = direction._Z < 0.0f ? 5 : 4;
 			ma = 0.5f / absoluteDirection._Z;
-			textureCoordinate = Vector2(direction._Z < 0.0f ? -direction._X : direction._X, -direction._Y);
+			textureCoordinate = Vector2<float>(direction._Z < 0.0f ? -direction._X : direction._X, -direction._Y);
 		}
 
 		else if (absoluteDirection._Y >= absoluteDirection._X)
 		{
 			faceIndex = direction._Y < 0.0f ? 3 : 2;
 			ma = 0.5f / absoluteDirection._Y;
-			textureCoordinate = Vector2(direction._X, direction._Y < 0.0f ? -direction._Z : direction._Z);
+			textureCoordinate = Vector2<float>(direction._X, direction._Y < 0.0f ? -direction._Z : direction._Z);
 		}
 
 		else
 		{
 			faceIndex = direction._X < 0.0f ? 1 : 0;
 			ma = 0.5f / absoluteDirection._X;
-			textureCoordinate = Vector2(direction._X < 0.0f ? direction._Z : -direction._Z, -direction._Y);
+			textureCoordinate = Vector2<float>(direction._X < 0.0f ? direction._Z : -direction._Z, -direction._Y);
 		}
 
 		textureCoordinate = textureCoordinate * ma + 0.5f;

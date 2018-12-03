@@ -6,6 +6,7 @@
 //Math.
 #include <Math/CatalystBaseMath.h>
 
+template <typename Type>
 class Vector2 final
 {
 
@@ -16,14 +17,14 @@ public:
 		struct
 		{
 			//The X component.
-			float _X;
+			Type _X;
 
 			//The Y component.
-			float _Y;
+			Type _Y;
 		};
 
 		//The data.
-		float _Data[2];
+		Type _Data[2];
 	};
 
 	/*
@@ -31,7 +32,7 @@ public:
 	*/
 	FORCE_INLINE constexpr static NO_DISCARD float Length(const Vector2 &vector) NOEXCEPT
 	{
-		return CatalystBaseMath::SquareRoot(vector._X * vector._X + vector._Y * vector._Y);
+		return CatalystBaseMath::SquareRoot(LengthSquared(vector));
 	}
 
 	/*
@@ -47,8 +48,8 @@ public:
 	*/
 	FORCE_INLINE constexpr Vector2() NOEXCEPT
 		:
-		_X(0.0f),
-		_Y(0.0f)
+		_X(static_cast<Type>(0)),
+		_Y(static_cast<Type>(0))
 	{
 
 	}
@@ -56,10 +57,10 @@ public:
 	/*
 	*	Constructor taking X and Y arguments.
 	*/
-	FORCE_INLINE constexpr Vector2(const float newX, const float newY) NOEXCEPT
+	FORCE_INLINE constexpr Vector2(const Type initialX, const Type initialY) NOEXCEPT
 		:
-		_X(newX),
-		_Y(newY)
+		_X(initialX),
+		_Y(initialY)
 	{
 
 	}
@@ -67,7 +68,7 @@ public:
 	/*
 	*	Subscript operator overload, const.
 	*/
-	const float& operator[](const uint64 index) const NOEXCEPT
+	Type operator[](const uint64 index) const NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -75,7 +76,7 @@ public:
 	/*
 	*	Subscript operator overload, non-const.
 	*/
-	float& operator[](const uint64 index)  NOEXCEPT
+	Type& operator[](const uint64 index)  NOEXCEPT
 	{
 		return _Data[index];
 	}
@@ -223,7 +224,7 @@ public:
 	/*
 	*	Returns a pointer to this vector's data, const.
 	*/
-	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const float* const RESTRICT Data() const NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD const Type* const RESTRICT Data() const NOEXCEPT
 	{
 		return &_X;
 	}
@@ -231,7 +232,7 @@ public:
 	/*
 	*	Returns a pointer to this vector's data, non-const.
 	*/
-	FORCE_INLINE RESTRICTED constexpr NO_DISCARD float* RESTRICT Data() NOEXCEPT
+	FORCE_INLINE RESTRICTED constexpr NO_DISCARD Type* RESTRICT Data() NOEXCEPT
 	{
 		return &_X;
 	}
@@ -249,7 +250,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD float LengthSquared() const NOEXCEPT
 	{
-		return (_X * _X) + (_Y * _Y);
+		return _X * _X + _Y * _Y;
 	}
 
 	/*

@@ -148,7 +148,7 @@ public:
 	/*
 	*	Returns the texture value at the specified coordinates, const, using linear sampling.
 	*/
-	const Vector4 At(const Vector2 &textureCoordinate) const NOEXCEPT
+	const Vector4 At(const Vector2<float> &textureCoordinate) const NOEXCEPT
 	{
 		return At(textureCoordinate._X, textureCoordinate._Y);
 	}

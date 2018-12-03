@@ -13,7 +13,7 @@ class TerrainPatchInstanceRenderInformation final
 public:
 
 	//The world position.
-	Vector2 _WorldPosition;
+	Vector2<float> _WorldPosition;
 
 	//The patch size.
 	float _PatchSize;

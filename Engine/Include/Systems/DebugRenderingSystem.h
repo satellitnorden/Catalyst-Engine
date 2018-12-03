@@ -64,10 +64,10 @@ public:
 	public:
 
 		//The minimum of the box.
-		Vector2 _Minimum;
+		Vector2<float> _Minimum;
 
 		//The maximum of the box.
-		Vector2 _Maximum;
+		Vector2<float> _Maximum;
 
 		//The color.
 		Vector4 _Color;
@@ -83,7 +83,7 @@ public:
 		/*
 		*	Constructor taking all values as arguments.
 		*/
-		ScreenBoxDebugRenderData(const Vector2 &initialMinimum, const Vector2 &initialMaximum, const Vector4 &initialColor) NOEXCEPT
+		ScreenBoxDebugRenderData(const Vector2<float> &initialMinimum, const Vector2<float> &initialMaximum, const Vector4 &initialColor) NOEXCEPT
 			:
 			_Minimum(initialMinimum),
 			_Maximum(initialMaximum),

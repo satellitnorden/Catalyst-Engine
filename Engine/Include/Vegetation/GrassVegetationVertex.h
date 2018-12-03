@@ -22,7 +22,7 @@ public:
 	Vector3 _Tangent;
 
 	//The texture coordinate of this grass vegetation vertex.
-	Vector2 _TextureCoordinate;
+	Vector2<float> _TextureCoordinate;
 
 	//The modulator factor of this grass vegetation vertex.
 	float _ModulatorFactor;
@@ -38,7 +38,7 @@ public:
 	GrassVegetationVertex(	const Vector3 &initialPosition,
 							const Vector3 &initialNormal,
 							const Vector3 &initialTangent,
-							const Vector2 &initialTextureCoordinate,
+							const Vector2<float> &initialTextureCoordinate,
 							const float initialModulatorFactor) NOEXCEPT
 		:
 		_Position(initialPosition),

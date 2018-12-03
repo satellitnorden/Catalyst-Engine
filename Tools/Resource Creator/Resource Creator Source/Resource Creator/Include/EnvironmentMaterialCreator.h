@@ -32,7 +32,7 @@
 //Environment material creator constants.
 namespace EnvironmentMaterialCreatorConstants
 {
-	constexpr Vector2 INVERSE_ATAN{ 0.1591f, 0.3183f };
+	constexpr Vector2<float> INVERSE_ATAN{ 0.1591f, 0.3183f };
 }
 
 class EnvironmentMaterialCreator final
@@ -252,7 +252,7 @@ private:
 				Vector3 position{ GetPositionVector(parameters.index, static_cast<float>(j) / static_cast<float>(parameters.outputResolution), static_cast<float>(k) / static_cast<float>(parameters.outputResolution)) };
 				position.Normalize();
 
-				Vector2 textureCoordinate{ CatalystBaseMath::ArctangentRadians(position._Z, position._X), CatalystBaseMath::ArcsineRadians(position._Y) };
+				Vector2<float> textureCoordinate{ CatalystBaseMath::ArctangentRadians(position._Z, position._X), CatalystBaseMath::ArcsineRadians(position._Y) };
 				textureCoordinate *= EnvironmentMaterialCreatorConstants::INVERSE_ATAN;
 				textureCoordinate += 0.5f;
 

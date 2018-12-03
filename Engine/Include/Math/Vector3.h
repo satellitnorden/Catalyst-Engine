@@ -181,7 +181,7 @@ public:
 	/*
 	*	Constructor taking a Vector2 and a float.
 	*/
-	FORCE_INLINE constexpr Vector3(const Vector2 &initialXY, const float initialZ) NOEXCEPT
+	FORCE_INLINE constexpr Vector3(const Vector2<float> &initialXY, const float initialZ) NOEXCEPT
 		:
 		_X(initialXY._X),
 		_Y(initialXY._Y),

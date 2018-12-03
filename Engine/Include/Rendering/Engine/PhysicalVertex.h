@@ -22,7 +22,7 @@ public:
 	Vector3 _Tangent;
 
 	//The texture coordinate of this PhysicalVertex.
-	Vector2 _TextureCoordinate;
+	Vector2<float> _TextureCoordinate;
 
 	/*
 	*	Default constructor - prohibited, must be constructed with the proper arguments.
@@ -32,7 +32,7 @@ public:
 	/*
 	*	Constructor taking the position, normal and the color of the PhysicalVertex.
 	*/
-	PhysicalVertex(const Vector3 &newPosition, const Vector3 &newNormal, const Vector3 &newTangent, const Vector2 &newTextureCoordinate) NOEXCEPT
+	PhysicalVertex(const Vector3 &newPosition, const Vector3 &newNormal, const Vector3 &newTangent, const Vector2<float> &newTextureCoordinate) NOEXCEPT
 		:
 		_Position(newPosition),
 		_Normal(newNormal),

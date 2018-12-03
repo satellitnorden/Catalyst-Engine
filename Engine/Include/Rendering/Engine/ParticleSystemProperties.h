@@ -35,10 +35,10 @@ public:
 	float _SpawnFrequency;
 
 	//The minimum scale.
-	Vector2 _MinimumScale;
+	Vector2<float> _MinimumScale;
 
 	//The maximum scale.
-	Vector2 _MaximumScale;
+	Vector2<float> _MaximumScale;
 
 	//The minimum position.
 	Vector3 _MinimumPosition;

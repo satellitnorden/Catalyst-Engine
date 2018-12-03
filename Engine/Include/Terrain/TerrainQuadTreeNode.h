@@ -24,10 +24,10 @@ public:
 	TerrainQuadTreeNode *RESTRICT _ChildNodes;
 
 	//The minimum world position of this node.
-	Vector2 _Minimum;
+	Vector2<float> _Minimum;
 
 	//The maximum world position of this node.
-	Vector2 _Maximum;
+	Vector2<float> _Maximum;
 
 	/*
 	*	Returns whether or not a world position is within this node.

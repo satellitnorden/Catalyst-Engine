@@ -158,8 +158,8 @@ void ClairvoyantLocationArchitect::Initialize() NOEXCEPT
 			data->_ParticleSystemProperties._FadeTime = 0.1f;
 			data->_ParticleSystemProperties._Lifetime = 1.0f;
 			data->_ParticleSystemProperties._SpawnFrequency = 0.0001f;
-			data->_ParticleSystemProperties._MinimumScale = Vector2(1.25f, 1.25f);
-			data->_ParticleSystemProperties._MaximumScale = Vector2(2.5f, 2.5f);
+			data->_ParticleSystemProperties._MinimumScale = Vector2<float>(1.25f, 1.25f);
+			data->_ParticleSystemProperties._MaximumScale = Vector2<float>(2.5f, 2.5f);
 			data->_ParticleSystemProperties._MinimumPosition = Vector3(-25.0f, 0.0f, -25.0f);
 			data->_ParticleSystemProperties._MaximumPosition = Vector3(25.0f, 0.0f, 25.0f);
 			data->_ParticleSystemProperties._MinimumVelocity = Vector3(0.0f, 0.0f, 0.0f);

@@ -403,10 +403,10 @@ class GaussianBlurData final
 public:
 
 	//The direction.
-	Vector2 direction;
+	Vector2<float> direction;
 
 	//The inverse resolution.
-	Vector2 inverseResolution;
+	Vector2<float> inverseResolution;
 };
 
 /*
