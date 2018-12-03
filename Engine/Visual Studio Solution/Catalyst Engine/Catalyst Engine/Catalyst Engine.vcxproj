@@ -353,7 +353,6 @@
     <ClCompile Include="..\..\..\Source\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\..\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\Source\Math\PerlinNoiseGenerator.cpp" />
-    <ClCompile Include="..\..\..\Source\Math\Vector3.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Android\VulkanCoreAndroid.cpp" />
     <ClCompile Include="..\..\..\Source\Platform\Windows\CatalystWindows.cpp" />

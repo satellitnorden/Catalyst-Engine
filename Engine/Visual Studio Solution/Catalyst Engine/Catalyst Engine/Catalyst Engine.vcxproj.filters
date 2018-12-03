@@ -1283,9 +1283,6 @@
     <ClCompile Include="..\..\..\Source\Rendering\Engine\RenderPasses\DynamicOutlineRenderPass.cpp">
       <Filter>Rendering\Source\Engine\RenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Source\Math\Vector3.cpp">
-      <Filter>Math\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Source\Systems\UpdateSystem.cpp">
       <Filter>Systems\Source</Filter>
     </ClCompile>

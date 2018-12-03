@@ -205,7 +205,6 @@
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix3.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Matrix4.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Math\PerlinNoiseGenerator.cpp" />
-    <ClCompile Include="..\..\..\..\..\Engine\Source\Math\Vector3.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\CatalystAndroid.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Android\VulkanCoreAndroid.cpp" />
     <ClCompile Include="..\..\..\..\..\Engine\Source\Platform\Windows\CatalystWindows.cpp" />
