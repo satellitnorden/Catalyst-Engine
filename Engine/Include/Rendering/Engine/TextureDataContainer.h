@@ -80,14 +80,15 @@ public:
 	/*
 	*	Constructor taking a CPUTexture2D.
 	*/
-	TextureDataContainer(const CPUTexture2D<Vector4<float>> &texture) NOEXCEPT
+	template <typename Type>
+	TextureDataContainer(const CPUTexture2D<Vector4<Type>> &texture) NOEXCEPT
 	{
 		_TextureData.Reserve(1);
 		_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(texture.Data()));
 		_TextureWidth = static_cast<uint32>(texture.GetWidth());
 		_TextureHeight = static_cast<uint32>(texture.GetHeight());
 		_TextureChannels = 4;
-		_TextureTexelSize = sizeof(float);
+		_TextureTexelSize = sizeof(Type);
 	}
 
 	/*

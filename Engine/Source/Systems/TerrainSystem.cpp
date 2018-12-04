@@ -26,8 +26,8 @@ DEFINE_SINGLETON(TerrainSystem);
 void TerrainSystem::InitializeSystem(const CatalystProjectTerrainConfiguration &configuration) NOEXCEPT
 {
 	//Copy over the relevant properties.
-	_Properties._HeightGenerationFunction = configuration._HeightGenerationFunction;
-	_Properties._MaterialGenerationFunction = configuration._MaterialGenerationFunction;
+	_Properties._HeightFunction = configuration._HeightFunction;
+	_Properties._MaterialFunction = configuration._MaterialFunction;
 
 	//Set the function for the update task.
 	_UpdateTask._Function = [](void *const RESTRICT)
@@ -88,8 +88,8 @@ void TerrainSystem::SequentialUpdateSystemSynchronous() NOEXCEPT
 */
 bool TerrainSystem::GetTerrainHeightAtPosition(const Vector3<float> &position, float *const RESTRICT height) const NOEXCEPT
 {
-	//Just ask the height generation function what the height at the position are.
-	_Properties._HeightGenerationFunction(_Properties, position, height);
+	//Just ask the height function what the height at the position are.
+	_Properties._HeightFunction(_Properties, position, height);
 
 	//Return that the retrieval succeeded.
 	return true;
@@ -537,6 +537,7 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 	patchRenderInformation->_InstanceInformation._PatchSize = TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier;
 	patchRenderInformation->_InstanceInformation._Borders = 0;
 
+	//Generate the height texture.
 	float minimumHeight;
 	float maximumHeight;
 
@@ -549,19 +550,17 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 
 	patchRenderInformation->_InstanceInformation._HeightTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTerrainHeightTextureToGlobalRenderData(patchInformation->_HeightTexture));
 
-	TerrainGeneralUtilities::GenerateNormalTexture(	_Properties,
-													patchSizeMultiplier,
-													worldPosition,
-													&patchInformation->_NormalTexture);
-
-	patchRenderInformation->_InstanceInformation._NormalTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalTexture));
-
-	TerrainGeneralUtilities::GenerateMaterialTexture(	_Properties,
+	//Generate the material textures.
+	TerrainGeneralUtilities::GenerateMaterialTextures(	_Properties,
 														patchSizeMultiplier,
 														worldPosition,
-														&patchInformation->_MaterialTexture);
+														&patchInformation->_AlbedoTexture,
+														&patchInformation->_NormalTexture,
+														&patchInformation->_MaterialPropertiesTexture);
 
-	patchRenderInformation->_InstanceInformation._MaterialTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_MaterialTexture));
+	patchRenderInformation->_InstanceInformation._AlbedoTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTerrainMaterialTextureToGlobalRenderData(patchInformation->_AlbedoTexture));
+	patchRenderInformation->_InstanceInformation._NormalTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTerrainMaterialTextureToGlobalRenderData(patchInformation->_NormalTexture));
+	//patchRenderInformation->_InstanceInformation._MaterialProprtiesTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTerrainMaterialTextureToGlobalRenderData(patchInformation->_MaterialPropertiesTexture));
 
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3<float>(worldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, worldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
 	patchInformation->_AxisAlignedBoundingBox._Maximum = Vector3<float>(worldPosition._X + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), maximumHeight, worldPosition._Z + (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));
@@ -573,11 +572,13 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 void TerrainSystem::DestroyPatch(const uint64 index) NOEXCEPT
 {
 	RenderingSystem::Instance->ReturnTerrainHeightTextureToGlobalRenderData(_PatchRenderInformations[index]._InstanceInformation._HeightTextureIndex);
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._InstanceInformation._NormalTextureIndex));
-	RenderingSystem::Instance->ReturnTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._InstanceInformation._MaterialTextureIndex));
+	RenderingSystem::Instance->ReturnTerrainMaterialTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._InstanceInformation._AlbedoTextureIndex));
+	RenderingSystem::Instance->ReturnTerrainMaterialTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._InstanceInformation._NormalTextureIndex));
+	//RenderingSystem::Instance->ReturnTerrainMaterialTextureToGlobalRenderData(static_cast<uint32>(_PatchRenderInformations[index]._InstanceInformation._MaterialProprtiesTextureIndex));
 	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._HeightTexture);
+	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._AlbedoTexture);
 	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._NormalTexture);
-	RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._MaterialTexture);
+	//RenderingSystem::Instance->DestroyTexture2D(_PatchInformations[index]._MaterialPropertiesTexture);
 
 	_PatchInformations.EraseAt(index);
 	_PatchRenderInformations.EraseAt(index);

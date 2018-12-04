@@ -24,13 +24,13 @@ public:
 	//The height texture index.
 	int32 _HeightTextureIndex;
 
+	//The albedo texture index.
+	int32 _AlbedoTextureIndex;
+
 	//The normal texture index.
 	int32 _NormalTextureIndex;
 
-	//The material texture index.
-	int32 _MaterialTextureIndex;
-
-	//Some padding.
-	Padding<4> _Padding;
+	//The material properties texture index.
+	int32 _MaterialProprtiesTextureIndex;
 
 };

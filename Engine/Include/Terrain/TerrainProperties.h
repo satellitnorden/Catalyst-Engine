@@ -23,10 +23,10 @@ public:
 	//The index count.
 	uint32 _IndexCount;
 
-	//The height generation function.
-	HeightGenerationFunction _HeightGenerationFunction;
+	//The height function.
+	HeightFunction _HeightFunction;
 
-	//The material generation function.
-	MaterialGenerationFunction _MaterialGenerationFunction;
+	//The material function.
+	MaterialFunction _MaterialFunction;
 
 };

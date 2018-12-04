@@ -93,47 +93,9 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 /*
 *	Generates the material.
 */
-void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &position, uint8 *const RESTRICT material) NOEXCEPT
+void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, Vector4<byte> *const RESTRICT albedo) NOEXCEPT
 {
-	if (IsWithinTestArea(position))
-	{
-		*material = ClairvoyantTerrainArchitectConstants::TERRAIN_TEST_MATERIAL_INDEX;
-
-		return;
-	}
-
-	//Calculate the coordinates.
-	const float coordinateX{ position._X / 100'000.0f };
-	const float coordinateY{ position._Z / 100'000.0f };
-
-	//Calculate the biome weights.
-	StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> biomeWeights;
-
-	for (uint8 biome{ 0 }; biome < UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes); ++biome)
-	{
-		biomeWeights[biome] = ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(static_cast<ClairvoyantBiome>(biome), position);
-	}
-
-	//Calculate the material with the highest weight.
-	uint8 chosenMaterial{ 0 };
-	float highestWeight{ -FLOAT_MAXIMUM };
-
-	//Retrieve the normal.
-	Vector3<float> normal;
-	TerrainSystem::Instance->GetTerrainNormalAtPosition(position, &normal);
-
-	for (uint8 i{ 1 }; i < ClairvoyantTerrainArchitectConstants::NUMBER_OF_TERRAIN_MATERIALS; ++i)
-	{
-		const float materialWeight{ GetMaterialWeight(i, coordinateX, coordinateY, biomeWeights, normal) };
-
-		if (highestWeight < materialWeight)
-		{
-			chosenMaterial = i;
-			highestWeight = materialWeight;
-		}
-	}
-
-	*material = chosenMaterial;
+	*albedo = Vector4<byte>(255, 140, 0, 255);
 }
 
 /*

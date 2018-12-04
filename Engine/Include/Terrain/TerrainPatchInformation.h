@@ -25,10 +25,13 @@ public:
 	//The height texture.
 	Texture2DHandle _HeightTexture;
 
+	//The albedo texture.
+	Texture2DHandle _AlbedoTexture;
+
 	//The normal texture.
 	Texture2DHandle _NormalTexture;
 
-	//The material texture.
-	Texture2DHandle _MaterialTexture;
+	//The material properties texture.
+	Texture2DHandle _MaterialPropertiesTexture;
 
 };

@@ -96,7 +96,7 @@ void main()
     float patchDepth = terrainDataTextureSampler.w; 
 
     //Sample the patch normal.
-    vec3 patchNormal = texture(sampler2D(globalTextures[terrainPatchData[nonuniformEXT(patchIndex)].normalTextureIndex], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).xyz * 2.0f - 1.0f;
+    vec3 patchNormal = texture(terrainMaterialTextures[terrainPatchData[nonuniformEXT(patchIndex)].normalTextureIndex], patchCoordinates).xyz * 2.0f - 1.0f;
 
     //Calculate the tangent space matrix.
     vec3 tangent = cross(vec3(0.0f, 0.0f, 1.0f), patchNormal);
@@ -105,7 +105,7 @@ void main()
     mat3 tangentSpaceMatrix = mat3(tangent, bitangent, patchNormal);
 
 	//Write the albedo.
-	albedo = vec4(vec3(0.0f, 0.5f, 0.0f), 1.0f);
+	albedo = vec4(texture(terrainMaterialTextures[terrainPatchData[nonuniformEXT(patchIndex)].albedoTextureIndex], patchCoordinates).rgb, 1.0f);
 
 	//Write the normal.
     vec3 normal = vec3(0.0f, 0.0f, 1.0f);

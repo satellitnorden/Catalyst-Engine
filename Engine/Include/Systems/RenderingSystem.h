@@ -351,6 +351,16 @@ public:
 	void ReturnTerrainHeightTextureToGlobalRenderData(const uint8 index) NOEXCEPT;
 
 	/*
+	*	Adds a terrain material texture to the global render data and returns it's index.
+	*/
+	uint8 AddTerrainMaterialTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT;
+
+	/*
+	*	Returns a terrain material texture to the global render data and marks it's index as available.
+	*/
+	void ReturnTerrainMaterialTextureToGlobalRenderData(const uint8 index) NOEXCEPT;
+
+	/*
 	*	Adds a texture to the global render data and returns it's index.
 	*/
 	uint32 AddTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT;
@@ -560,6 +570,11 @@ private:
 	*	Updates the terrain height textures.
 	*/
 	void UpdateTerrainHeightTextures(const uint8 currentFrameBufferIndex) NOEXCEPT;
+
+	/*
+	*	Updates the terrain material textures.
+	*/
+	void UpdateTerrainMaterialTextures(const uint8 currentFrameBufferIndex) NOEXCEPT;
 
 	/*
 	*	Updates the terrain patch data.

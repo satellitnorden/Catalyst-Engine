@@ -71,13 +71,13 @@ public:
 	/*
 	*	Constructor taking the X, Y, Z and W components as arguments.
 	*/
-	constexpr Vector4(const float newX, const float newY, const float newZ, const float newW) NOEXCEPT
+	constexpr Vector4(const Type initialX, const Type initialY, const Type initialZ, const Type initialW) NOEXCEPT
 
 		:
-		_X(newX),
-		_Y(newY),
-		_Z(newZ),
-		_W(newW)
+		_X(initialX),
+		_Y(initialY),
+		_Z(initialZ),
+		_W(initialW)
 	{
 
 	}

@@ -5,6 +5,7 @@
 
 //Math.
 #include <Math/Vector3.h>
+#include <Math/Vector4.h>
 
 //Terrain constants.
 namespace TerrainConstants
@@ -23,5 +24,5 @@ namespace TerrainConstants
 class TerrainProperties;
 
 //Type aliases.
-using HeightGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3<float> &worldPosition, float *const RESTRICT height);
-using MaterialGenerationFunction = void(*)(const TerrainProperties &properties, const Vector3<float> &worldPosition, uint8 *const RESTRICT material);
+using HeightFunction = void(*)(const TerrainProperties &properties, const Vector3<float> &worldPosition, float *const RESTRICT height);
+using MaterialFunction = void(*)(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, Vector4<byte> *const RESTRICT albedo);

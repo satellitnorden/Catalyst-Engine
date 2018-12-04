@@ -170,11 +170,11 @@ public:
 	/*
 	*	Constructor taking X, Y and Z as arguments.
 	*/
-	FORCE_INLINE constexpr Vector3(const float newX, const float newY, const float newZ) NOEXCEPT
+	FORCE_INLINE constexpr Vector3(const Type initialX, const Type initialY, const Type initialZ) NOEXCEPT
 		:
-		_X(newX),
-		_Y(newY),
-		_Z(newZ)
+		_X(initialX),
+		_Y(initialY),
+		_Z(initialZ)
 	{
 
 	}
