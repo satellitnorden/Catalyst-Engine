@@ -171,6 +171,8 @@ public:
 		Vector2<float> lowerRightCoordinate{ coordinate + Vector2<float>(textelStep._X, 0.0f) };
 
 		//Apply the address mode.
+		Vector2<float> thing{1.3f, 1.3f};
+		ApplyAddressMode(addressMode, &thing);
 		ApplyAddressMode(addressMode, &lowerLeftCoordinate);
 		ApplyAddressMode(addressMode, &upperLeftCoordinate);
 		ApplyAddressMode(addressMode, &upperRightCoordinate);
@@ -245,8 +247,8 @@ private:
 
 			case AddressMode::Repeat:
 			{
-				coordinate->_X = coordinate->_X > 0.0f ? CatalystBaseMath::Fractional(coordinate->_X) : 1.0f + CatalystBaseMath::Fractional(coordinate->_X);
-				coordinate->_Y = coordinate->_Y > 0.0f ? CatalystBaseMath::Fractional(coordinate->_Y) : 1.0f + CatalystBaseMath::Fractional(coordinate->_Y);
+				coordinate->_X = coordinate->_X >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_X) : 1.0f + CatalystBaseMath::Fractional(coordinate->_X);
+				coordinate->_Y = coordinate->_Y >= 0.0f ? CatalystBaseMath::Fractional(coordinate->_Y) : 1.0f + CatalystBaseMath::Fractional(coordinate->_Y);
 
 				break;
 			}

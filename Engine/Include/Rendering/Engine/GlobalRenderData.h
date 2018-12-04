@@ -52,10 +52,10 @@ public:
 	StaticArray<bool, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_MATERIAL_TEXTURES> _TerrainMaterialTextureSlots;
 
 	//The remove terrain material texture updates.
-	DynamicArray<DynamicArray<uint8>> _RemoveTerrainMaterialTextureUpdates;
+	DynamicArray<DynamicArray<uint32>> _RemoveTerrainMaterialTextureUpdates;
 
 	//The add terrain material texture updates.
-	DynamicArray<DynamicArray<Pair<uint8, Texture2DHandle>>> _AddTerrainMaterialTextureUpdates;
+	DynamicArray<DynamicArray<Pair<uint32, Texture2DHandle>>> _AddTerrainMaterialTextureUpdates;
 
 	//The terrain patch data buffers.
 	DynamicArray<UniformBufferHandle> _TerrainPatchDataBuffers;

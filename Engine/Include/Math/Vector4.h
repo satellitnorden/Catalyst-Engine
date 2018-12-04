@@ -167,7 +167,10 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector4 operator*(const float scalar) const NOEXCEPT
 	{
-		return Vector4{ _X * scalar, _Y * scalar, _Z * scalar, _W * scalar };
+		return Vector4{	static_cast<Type>(static_cast<float>(_X) * scalar),
+						static_cast<Type>(static_cast<float>(_Y) * scalar),
+						static_cast<Type>(static_cast<float>(_Z) * scalar),
+						static_cast<Type>(static_cast<float>(_W) * scalar) };
 	}
 
 	/*
@@ -209,7 +212,7 @@ public:
 	*/
 	FORCE_INLINE constexpr NO_DISCARD Vector4 operator+(const Vector4 &otherVector) const NOEXCEPT
 	{
-		return Vector4{ _X + otherVector._X, _Y + otherVector._Y, _Z + otherVector._Z, _W + otherVector._W };
+		return Vector4{ static_cast<Type>(_X + otherVector._X), static_cast<Type>(_Y + otherVector._Y), static_cast<Type>(_Z + otherVector._Z), static_cast<Type>(_W + otherVector._W) };
 	}
 
 	/*

@@ -424,7 +424,7 @@ void RenderingSystem::ReturnTerrainHeightTextureToGlobalRenderData(const uint8 i
 /*
 *	Adds a terrain material texture to the global render data and returns it's index.
 */
-uint8 RenderingSystem::AddTerrainMaterialTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT
+uint32 RenderingSystem::AddTerrainMaterialTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT
 {
 	//Lock the terrain material texture slots.
 	_GlobalRenderData._TerrainMaterialTexturesLock.Lock();
@@ -447,7 +447,7 @@ uint8 RenderingSystem::AddTerrainMaterialTextureToGlobalRenderData(Texture2DHand
 	ASSERT(index != UINT32_MAXIMUM, "If no index could be found, then, well... This is bad. ):");
 
 	//Add the terrain material texture updates.
-	for (DynamicArray<Pair<uint8, Texture2DHandle>> &terrainMaterialTextureUpdate : _GlobalRenderData._AddTerrainMaterialTextureUpdates)
+	for (DynamicArray<Pair<uint32, Texture2DHandle>> &terrainMaterialTextureUpdate : _GlobalRenderData._AddTerrainMaterialTextureUpdates)
 	{
 		terrainMaterialTextureUpdate.EmplaceSlow(index, texture);
 	}
@@ -462,13 +462,13 @@ uint8 RenderingSystem::AddTerrainMaterialTextureToGlobalRenderData(Texture2DHand
 /*
 *	Returns a terrain material texture to the global render data and marks it's index as available.
 */
-void RenderingSystem::ReturnTerrainMaterialTextureToGlobalRenderData(const uint8 index) NOEXCEPT
+void RenderingSystem::ReturnTerrainMaterialTextureToGlobalRenderData(const uint32 index) NOEXCEPT
 {
 	//Lock the terrain material texture slots.
 	_GlobalRenderData._TerrainMaterialTexturesLock.Lock();
 
 	//Add the terrain material texture updates.
-	for (DynamicArray<uint8> &terrainMaterialTextureUpdate : _GlobalRenderData._RemoveTerrainMaterialTextureUpdates)
+	for (DynamicArray<uint32> &terrainMaterialTextureUpdate : _GlobalRenderData._RemoveTerrainMaterialTextureUpdates)
 	{
 		terrainMaterialTextureUpdate.EmplaceSlow(index);
 	}
@@ -820,7 +820,7 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 		//Bind a placeholder texture to all terrain material texture slots.
 		for (uint32 j{ 0 }; j < RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_MATERIAL_TEXTURES; ++j)
 		{
-			BindCombinedImageSamplerToRenderDataTable(4, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Teal)._AlbedoTexture, GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
+			BindCombinedImageSamplerToRenderDataTable(4, j, _GlobalRenderData._RenderDataTables[i], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 		}
 
 		//Create the terrain patch data buffer.
@@ -1271,6 +1271,9 @@ void RenderingSystem::UpdateDynamicUniformData(const uint8 currentFrameBufferInd
 */
 void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
+	//Lock the global textures.
+	_GlobalRenderData._GlobalTexturesLock.Lock();
+
 	//Process all updates.
 	for (uint32 update : _GlobalRenderData._RemoveGlobalTextureUpdates[currentFrameBufferIndex])
 	{
@@ -1285,6 +1288,9 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) 
 	}
 
 	_GlobalRenderData._AddGlobalTextureUpdates[currentFrameBufferIndex].ClearFast();
+
+	//Unlock the global textures.
+	_GlobalRenderData._GlobalTexturesLock.Unlock();
 }
 
 /*
@@ -1292,6 +1298,9 @@ void RenderingSystem::UpdateGlobalTextures(const uint8 currentFrameBufferIndex) 
 */
 void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
+	//Lock the terrain height textures.
+	_GlobalRenderData._TerrainHeightTexturesLock.Lock();
+
 	//Process all updates.
 	for (uint8 update : _GlobalRenderData._RemoveTerrainHeightTextureUpdates[currentFrameBufferIndex])
 	{
@@ -1306,6 +1315,9 @@ void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBuffer
 	}
 
 	_GlobalRenderData._AddTerrainHeightTextureUpdates[currentFrameBufferIndex].ClearFast();
+
+	//Unlock the terrain height textures.
+	_GlobalRenderData._TerrainHeightTexturesLock.Unlock();
 }
 
 /*
@@ -1313,20 +1325,26 @@ void RenderingSystem::UpdateTerrainHeightTextures(const uint8 currentFrameBuffer
 */
 void RenderingSystem::UpdateTerrainMaterialTextures(const uint8 currentFrameBufferIndex) NOEXCEPT
 {
+	//Lock the terrain material textures.
+	_GlobalRenderData._TerrainMaterialTexturesLock.Lock();
+
 	//Process all updates.
-	for (uint8 update : _GlobalRenderData._RemoveTerrainMaterialTextureUpdates[currentFrameBufferIndex])
+	for (uint32 update : _GlobalRenderData._RemoveTerrainMaterialTextureUpdates[currentFrameBufferIndex])
 	{
 		BindCombinedImageSamplerToRenderDataTable(4, update, _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], GetCommonPhysicalMaterial(CommonPhysicalMaterial::Black)._AlbedoTexture, GetSampler(Sampler::FilterNearest_MipmapModeNearest_AddressModeClampToEdge));
 	}
 
 	_GlobalRenderData._RemoveTerrainMaterialTextureUpdates[currentFrameBufferIndex].ClearFast();
 
-	for (Pair<uint8, Texture2DHandle> &update : _GlobalRenderData._AddTerrainMaterialTextureUpdates[currentFrameBufferIndex])
+	for (Pair<uint32, Texture2DHandle> &update : _GlobalRenderData._AddTerrainMaterialTextureUpdates[currentFrameBufferIndex])
 	{
 		BindCombinedImageSamplerToRenderDataTable(4, static_cast<uint32>(update._First), _GlobalRenderData._RenderDataTables[currentFrameBufferIndex], update._Second, GetSampler(Sampler::FilterLinear_MipmapModeNearest_AddressModeClampToEdge));
 	}
 
 	_GlobalRenderData._AddTerrainMaterialTextureUpdates[currentFrameBufferIndex].ClearFast();
+
+	//Unlock the terrain material textures.
+	_GlobalRenderData._TerrainMaterialTexturesLock.Unlock();
 }
 
 /*

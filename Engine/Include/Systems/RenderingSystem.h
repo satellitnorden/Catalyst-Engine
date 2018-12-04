@@ -353,12 +353,12 @@ public:
 	/*
 	*	Adds a terrain material texture to the global render data and returns it's index.
 	*/
-	uint8 AddTerrainMaterialTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT;
+	uint32 AddTerrainMaterialTextureToGlobalRenderData(Texture2DHandle texture) NOEXCEPT;
 
 	/*
 	*	Returns a terrain material texture to the global render data and marks it's index as available.
 	*/
-	void ReturnTerrainMaterialTextureToGlobalRenderData(const uint8 index) NOEXCEPT;
+	void ReturnTerrainMaterialTextureToGlobalRenderData(const uint32 index) NOEXCEPT;
 
 	/*
 	*	Adds a texture to the global render data and returns it's index.

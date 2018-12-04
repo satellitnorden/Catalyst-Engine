@@ -95,7 +95,9 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 */
 void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, Vector4<byte> *const RESTRICT albedo) NOEXCEPT
 {
-	*albedo = Vector4<byte>(255, 140, 0, 255);
+	const TerrainMaterial &material{ ResourceLoader::GetTerrainMaterial(HashString("Terrain_Grass_2_Material")) };
+
+	*albedo = material._Albedo.Sample(Vector2<float>(worldPosition._X * 0.2f, worldPosition._Z * 0.2f), AddressMode::Repeat);
 }
 
 /*
