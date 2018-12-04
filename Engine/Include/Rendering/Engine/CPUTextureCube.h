@@ -51,7 +51,7 @@ public:
 		CubeSampling(direction, faceIndex, textureCoordinate);
 
 		//Return the sampled texture.
-		return _Data[faceIndex].At(textureCoordinate);
+		return _Data[faceIndex].Sample(textureCoordinate, AddressMode::ClampToEdge);
 	}
 
 private:

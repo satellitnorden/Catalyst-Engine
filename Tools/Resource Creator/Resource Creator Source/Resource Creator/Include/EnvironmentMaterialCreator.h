@@ -256,7 +256,7 @@ private:
 				textureCoordinate *= EnvironmentMaterialCreatorConstants::INVERSE_ATAN;
 				textureCoordinate += 0.5f;
 
-				parameters.outputTexture.At(j, k) = parameters.hdrTexture.At(textureCoordinate);
+				parameters.outputTexture.At(j, k) = parameters.hdrTexture.Sample(textureCoordinate, AddressMode::ClampToEdge);
 			}
 		}
 	}
