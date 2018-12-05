@@ -149,6 +149,14 @@ public:
 	RESTRICTED Type* Data() NOEXCEPT { return _Data.Data(); }
 
 	/*
+	*	Returns the texture value at the specified indices, const.
+	*/
+	const Type& At(const uint32 X, const uint32 Y) const NOEXCEPT
+	{
+		return _Data[(Y * _Width) + X];
+	}
+
+	/*
 	*	Returns the texture value at the specified indices, non-const.
 	*/
 	Type& At(const uint32 X, const uint32 Y) NOEXCEPT
@@ -171,8 +179,6 @@ public:
 		Vector2<float> lowerRightCoordinate{ coordinate + Vector2<float>(textelStep._X, 0.0f) };
 
 		//Apply the address mode.
-		Vector2<float> thing{1.3f, 1.3f};
-		ApplyAddressMode(addressMode, &thing);
 		ApplyAddressMode(addressMode, &lowerLeftCoordinate);
 		ApplyAddressMode(addressMode, &upperLeftCoordinate);
 		ApplyAddressMode(addressMode, &upperRightCoordinate);
@@ -191,8 +197,8 @@ public:
 		const Type& lowerRightValue{ _Data[(lowerRightIntegerCoordinate._Y * _Width) + lowerRightIntegerCoordinate._X] };
 
 		//Calculate the blend values.
-		const float horizontalBlend{ CatalystBaseMath::Fractional(coordinate._X * static_cast<float>(_Width)) };
-		const float verticalBlend{ CatalystBaseMath::Fractional(coordinate._Y * static_cast<float>(_Height)) };
+		const float horizontalBlend{ CatalystBaseMath::Fractional(lowerLeftCoordinate._X * static_cast<float>(_Width)) };
+		const float verticalBlend{ CatalystBaseMath::Fractional(lowerLeftCoordinate._Y * static_cast<float>(_Height)) };
 
 		//Perform the blends.
 		const Type blend1{ Type::LinearlyInterpolate(lowerLeftValue, lowerRightValue, horizontalBlend) };
