@@ -90,17 +90,14 @@ layout (set = 0, binding = 2) uniform texture2D globalTextures[512];
 //The terrain height textures.
 layout (set = 0, binding = 3) uniform sampler2D terrainHeightTextures[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
 
-//The terrain material textures.
-layout (set = 0, binding = 4) uniform sampler2D terrainMaterialTextures[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
-
 //The terrain patch uniform data.
-layout (std140, set = 0, binding = 5) uniform TerrainPatchUniformData
+layout (std140, set = 0, binding = 4) uniform TerrainPatchUniformData
 {
     layout (offset = 0) TerrainPatchData terrainPatchData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
 };
 
 //The terrain material uniform data.
-layout (std140, set = 0, binding = 6) uniform TerrainMaterialUniformData
+layout (std140, set = 0, binding = 5) uniform TerrainMaterialUniformData
 {
     layout (offset = 0) TerrainMaterialData terrainMaterialData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
 };

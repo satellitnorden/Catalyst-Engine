@@ -96,10 +96,10 @@ void main()
     float patchDepth = terrainDataTextureSampler.w; 
 
     //Sample the patch normal.
-    vec3 patchNormal = texture(terrainMaterialTextures[terrainPatchData[nonuniformEXT(patchIndex)].normalTextureIndex], patchCoordinates).xyz * 2.0f - 1.0f;
+    vec3 patchNormal = texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].normalTextureIndex)], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).xyz * 2.0f - 1.0f;
 
     //Sample the patch material.
-    int patchMaterial = int(texture(terrainMaterialTextures[terrainPatchData[nonuniformEXT(patchIndex)].materialTextureIndex], patchCoordinates).x * 255.0f);
+    int patchMaterial = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).x * 255.0f);
 
     //Calculate the texture coordinate.
     vec2 textureCoordinate = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth).xz * 0.25f;
