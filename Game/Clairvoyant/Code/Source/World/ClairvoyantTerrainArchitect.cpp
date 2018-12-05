@@ -23,6 +23,9 @@
 //World.
 #include <World/ClairvoyantBiomeArchitect.h>
 
+//Static variable definitions.
+StaticArray<const TerrainMaterial *RESTRICT, UNDERLYING(ClairvoyantTerrainArchitect::ClairvoyantTerrainMaterial::NumberOfClairvoyantTerrainMaterials)> ClairvoyantTerrainArchitect::_ClairvoyantTerrainMaterials;
+
 //Clairvoyant terrain generation constants.
 namespace ClairvoyantTerrainArchitectConstants
 {
@@ -44,7 +47,8 @@ namespace ClairvoyantTerrainArchitectConstants
 */
 void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 {
-
+	//Retrieve all terrain materials.
+	_ClairvoyantTerrainMaterials[UNDERLYING(ClairvoyantTerrainMaterial::Grass)] = &ResourceLoader::GetTerrainMaterial(HashString("Terrain_Grass_1_Material"));
 }
 
 /*
@@ -95,9 +99,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 */
 void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, Vector4<byte> *const RESTRICT albedo) NOEXCEPT
 {
-	const TerrainMaterial &material{ ResourceLoader::GetTerrainMaterial(HashString("Terrain_Grass_2_Material")) };
-
-	*albedo = material._Albedo.Sample(Vector2<float>(worldPosition._X * 0.2f, worldPosition._Z * 0.2f), AddressMode::Repeat);
+	*albedo = _ClairvoyantTerrainMaterials[UNDERLYING(ClairvoyantTerrainMaterial::Grass)]->_Albedo.Sample(Vector2<float>(worldPosition._X * 0.2f, worldPosition._Z * 0.2f), AddressMode::Repeat);
 }
 
 /*
