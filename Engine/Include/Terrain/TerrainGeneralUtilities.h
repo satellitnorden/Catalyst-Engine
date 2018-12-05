@@ -3,6 +3,9 @@
 //Core.
 #include <Core/Core/CatalystCore.h>
 
+//Math.
+#include <Math/Matrix3.h>
+
 //Rendering.
 #include <Rendering/Engine/CPUTexture2D.h>
 #include <Rendering/Engine/TextureData.h>
@@ -115,9 +118,23 @@ namespace TerrainGeneralUtilities
 				GenerateNormal(properties, worldPosition, &normal);
 
 				//Generate the texture values.
-				properties._MaterialFunction(properties, worldPosition, height, normal, &albedoTexture.At(i, j));
+				Vector4<byte> normalMapValue;
+				properties._MaterialFunction(properties, worldPosition, height, normal, &albedoTexture.At(i, j), &normalMapValue);
 
-				//TEMP: Set normal.
+				//Create the tangent space matrix.
+				const Vector3<float> tangent{ Vector3<float>::CrossProduct(Vector3<float>::RIGHT, normal) };
+				const Vector3<float> bitangent{ Vector3<float>::CrossProduct(tangent, normal) };
+
+				const Matrix3 tangentSpaceMatrix{ tangent, bitangent, normal };
+
+				//Convert the normal map to a Vector3 of floats.
+				Vector3<float> normalMap{ static_cast<float>(normalMapValue._X) / 255.0f , static_cast<float>(normalMapValue._Y) / 255.0f , static_cast<float>(normalMapValue._Z) / 255.0f };
+				normalMap = normalMap * 2.0f - 1.0f;
+
+				//Apply the normal map.
+				normal = Vector3<float>::Normalize(tangentSpaceMatrix * normalMap);
+
+				//Write the normal.
 				Vector4<byte> &normalTextureValue{ normalTexture.At(i, j) };
 
 				normalTextureValue._X = static_cast<byte>(((normal._X + 1.0f) * 0.5f) * 255.0f);

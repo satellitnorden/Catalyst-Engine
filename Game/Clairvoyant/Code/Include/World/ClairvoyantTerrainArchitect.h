@@ -33,7 +33,7 @@ public:
 	/*
 	*	Generates the material.
 	*/
-	static void GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, Vector4<byte> *const RESTRICT albedo) NOEXCEPT;
+	static void GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, Vector4<byte> *const RESTRICT albedo, Vector4<byte> *const RESTRICT normalMap) NOEXCEPT;
 
 private:
 

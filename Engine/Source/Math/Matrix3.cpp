@@ -25,9 +25,19 @@ Matrix3::Matrix3(const Matrix4 &otherMatrix) NOEXCEPT
 }
 
 /*
+*	Constructor taking the three vectors as arguments.
+*/
+Matrix3::Matrix3(const Vector3<float> &first, const Vector3<float> &second, const Vector3<float> &third) NOEXCEPT
+	:
+	_Matrix{ first, second, third }
+{
+
+}
+
+/*
 *	Matrix3 by vector3 multiplcation overload.
 */
-	Vector3<float> Matrix3::operator*(const Vector3<float> &vector) NOEXCEPT
+Vector3<float> Matrix3::operator*(const Vector3<float> &vector) const NOEXCEPT
 {
 		Vector3<float> multipliedVector{ vector };
 

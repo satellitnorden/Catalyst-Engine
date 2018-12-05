@@ -28,6 +28,11 @@ public:
 	Matrix3(const Matrix4 &otherMatrix) NOEXCEPT;
 
 	/*
+	*	Constructor taking the three vectors as arguments.
+	*/
+	Matrix3(const Vector3<float> &first, const Vector3<float> &second, const Vector3<float> &third) NOEXCEPT;
+
+	/*
 	*	Returns a data to the pointer of this matrix.
 	*/
 	RESTRICTED float* Data() NOEXCEPT { return &(_Matrix[0]._X); }
@@ -35,6 +40,6 @@ public:
 	/*
 	*	Matrix3 by vector3 multiplcation overload.
 	*/
-	Vector3<float> operator*(const Vector3<float> &vector) NOEXCEPT;
+	Vector3<float> operator*(const Vector3<float> &vector) const NOEXCEPT;
 
 };
