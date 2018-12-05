@@ -98,6 +98,12 @@ void main()
     //Sample the patch normal.
     vec3 patchNormal = texture(terrainMaterialTextures[terrainPatchData[nonuniformEXT(patchIndex)].normalTextureIndex], patchCoordinates).xyz * 2.0f - 1.0f;
 
+    //Sample the patch material.
+    int patchMaterial = int(texture(terrainMaterialTextures[terrainPatchData[nonuniformEXT(patchIndex)].materialTextureIndex], patchCoordinates).x * 255.0f);
+
+    //Calculate the texture coordinate.
+    vec2 textureCoordinate = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth).xz * 0.25f;
+
     //Calculate the tangent space matrix.
     vec3 tangent = cross(vec3(0.0f, 0.0f, 1.0f), patchNormal);
     vec3 bitangent = cross(tangent, patchNormal);
@@ -105,14 +111,14 @@ void main()
     mat3 tangentSpaceMatrix = mat3(tangent, bitangent, patchNormal);
 
 	//Write the albedo.
-	albedo = vec4(texture(terrainMaterialTextures[terrainPatchData[nonuniformEXT(patchIndex)].albedoTextureIndex], patchCoordinates).rgb, 1.0f);
+	albedo = vec4(texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[patchMaterial].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb, 1.0f);
 
 	//Write the normal.
-    vec3 normal = vec3(0.0f, 0.0f, 1.0f);
+    vec3 normal = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[patchMaterial].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
     normal = tangentSpaceMatrix * normal;
     normal = normalize(normal);
     normalDepth = vec4(normal, patchDepth);
 
 	//Write the material properties.
-    materialProperties = vec4(1.0f, 0.0f, 1.0f, 1.0f);
+    materialProperties = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[patchMaterial].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
 }

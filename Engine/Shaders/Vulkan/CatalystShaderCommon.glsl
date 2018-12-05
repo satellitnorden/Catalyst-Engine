@@ -17,9 +17,9 @@ struct TerrainPatchData
     float patchSize;
     int borders;
     int heightTextureIndex;
-    int albedoTextureIndex;
     int normalTextureIndex;
     int materialTextureIndex;
+    int padding;
 };
 
 //Terrain material data definition.
@@ -97,6 +97,12 @@ layout (set = 0, binding = 4) uniform sampler2D terrainMaterialTextures[MAXIMUM_
 layout (std140, set = 0, binding = 5) uniform TerrainPatchUniformData
 {
     layout (offset = 0) TerrainPatchData terrainPatchData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
+};
+
+//The terrain material uniform data.
+layout (std140, set = 0, binding = 6) uniform TerrainMaterialUniformData
+{
+    layout (offset = 0) TerrainMaterialData terrainMaterialData[MAXIMUM_NUMBER_OF_TERRAIN_PATCHES];
 };
 
 //Constants.

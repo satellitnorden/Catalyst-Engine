@@ -23,9 +23,6 @@
 //World.
 #include <World/ClairvoyantBiomeArchitect.h>
 
-//Static variable definitions.
-StaticArray<const TerrainMaterial *RESTRICT, UNDERLYING(ClairvoyantTerrainArchitect::ClairvoyantTerrainMaterial::NumberOfClairvoyantTerrainMaterials)> ClairvoyantTerrainArchitect::_ClairvoyantTerrainMaterials;
-
 //Clairvoyant terrain generation constants.
 namespace ClairvoyantTerrainArchitectConstants
 {
@@ -47,8 +44,9 @@ namespace ClairvoyantTerrainArchitectConstants
 */
 void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 {
-	//Retrieve all terrain materials.
-	_ClairvoyantTerrainMaterials[UNDERLYING(ClairvoyantTerrainMaterial::Grass)] = &ResourceLoader::GetTerrainMaterial(HashString("Terrain_Grass_1_Material"));
+	//Register all terrain materials.
+	TerrainSystem::Instance->RegisterTerrainMaterial(0, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_1_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(1, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_2_Material")));
 }
 
 /*
@@ -97,10 +95,17 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 /*
 *	Generates the material.
 */
-void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, Vector4<byte> *const RESTRICT albedo, Vector4<byte> *const RESTRICT normalMap) NOEXCEPT
+void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, uint8 *const RESTRICT material) NOEXCEPT
 {
-	*albedo = _ClairvoyantTerrainMaterials[UNDERLYING(ClairvoyantTerrainMaterial::Grass)]->_Albedo.Sample(Vector2<float>(worldPosition._X * 0.2f, worldPosition._Z * 0.2f), AddressMode::Repeat);
-	*normalMap = _ClairvoyantTerrainMaterials[UNDERLYING(ClairvoyantTerrainMaterial::Grass)]->_NormalMap.Sample(Vector2<float>(worldPosition._X * 0.2f, worldPosition._Z * 0.2f), AddressMode::Repeat);
+	if (height < 100.0f)
+	{
+		*material = 0;
+	}
+
+	else
+	{
+		*material = 1;
+	}
 }
 
 /*

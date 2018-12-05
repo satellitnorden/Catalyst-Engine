@@ -78,7 +78,21 @@ public:
 	}
 
 	/*
-	*	Constructor taking a CPUTexture2D.
+	*	Constructor taking a CPUTexture2D with 1 channel.
+	*/
+	template <typename Type>
+	TextureDataContainer(const CPUTexture2D<Type> &texture) NOEXCEPT
+	{
+		_TextureData.Reserve(1);
+		_TextureData.EmplaceFast(reinterpret_cast<const void *RESTRICT>(texture.Data()));
+		_TextureWidth = static_cast<uint32>(texture.GetWidth());
+		_TextureHeight = static_cast<uint32>(texture.GetHeight());
+		_TextureChannels = 1;
+		_TextureTexelSize = sizeof(Type);
+	}
+
+	/*
+	*	Constructor taking a CPUTexture2D with 4 channels.
 	*/
 	template <typename Type>
 	TextureDataContainer(const CPUTexture2D<Vector4<Type>> &texture) NOEXCEPT

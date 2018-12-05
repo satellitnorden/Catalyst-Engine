@@ -43,16 +43,13 @@
 #endif
 #include <Resources/ParticleMaterialData.h>
 #include <Resources/PhysicalMaterialData.h>
-#include <Resources/TerrainMaterialData.h>
 
 //Systems.
 #include <Systems/EngineSystem.h>
 #include <Systems/InputSystem.h>
 #include <Systems/LightingSystem.h>
 #include <Systems/PhysicsSystem.h>
-
-//Terrain.
-#include <Terrain/TerrainMaterial.h>
+#include <Systems/TerrainSystem.h>
 
 //Vegetation.
 #include <Vegetation/GrassVegetationMaterial.h>
@@ -130,8 +127,6 @@ void RenderingSystem::PostInitializeSystem()
 	//Initialize all render passes.
 	InitializeRenderPasses();
 }
-
-#include <Systems/TerrainSystem.h>
 
 /*
 *	Updates the rendering system synchronously during the rendering update phase.
@@ -677,21 +672,6 @@ void RenderingSystem::CreatePhysicalMaterial(const PhysicalMaterialData &physica
 }
 
 /*
-*	Creates a terrain material.
-*/
-void RenderingSystem::CreateTerrainMaterial(const TerrainMaterialData &data, TerrainMaterial &material) NOEXCEPT
-{
-	//Initialize the albedo.
-	material._Albedo.Initialize(data._Width, data._Height, data._AlbedoData.Data());
-
-	//Initialize the normal map.
-	material._NormalMap.Initialize(data._Width, data._Height, data._NormalMapData.Data());
-
-	//Initialize the material properties..
-	material._MaterialProperties.Initialize(data._Width, data._Height, data._MaterialPropertiesData.Data());
-}
-
-/*
 *	Initializes a dynamic physical entity.
 */
 void RenderingSystem::InitializeDynamicPhysicalEntity(const Entity *const RESTRICT entity, const DynamicPhysicalInitializationData *const RESTRICT data) const NOEXCEPT
@@ -787,6 +767,7 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	_GlobalRenderData._RemoveTerrainMaterialTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 	_GlobalRenderData._AddTerrainMaterialTextureUpdates.UpsizeSlow(numberOfFrameBuffers);
 	_GlobalRenderData._TerrainPatchDataBuffers.UpsizeFast(numberOfFrameBuffers);
+	_GlobalRenderData._TerrainMaterialDataBuffers.UpsizeFast(numberOfFrameBuffers);
 
 	for (uint8 i{ 0 }; i < numberOfFrameBuffers; ++i)
 	{
@@ -828,6 +809,12 @@ void RenderingSystem::InitializeGlobalRenderData() NOEXCEPT
 	
 		//Bind the terrain patch data buffer to the render data table.
 		BindUniformBufferToRenderDataTable(5, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainPatchDataBuffers[i]);
+
+		//Create the terrain material data buffer.
+		_GlobalRenderData._TerrainMaterialDataBuffers[i] = CreateUniformBuffer(sizeof(TerrainMaterial) * RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, BufferUsage::UniformBuffer);
+
+		//Bind the terrain material data buffer to the render data table.
+		BindUniformBufferToRenderDataTable(6, 0, _GlobalRenderData._RenderDataTables[i], _GlobalRenderData._TerrainMaterialDataBuffers[i]);
 	}
 
 	//Mark all global texture slots as free.
@@ -1066,7 +1053,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 {
 	{
 		//Initialize the dynamic uniform data render data table layout.
-		constexpr StaticArray<RenderDataTableLayoutBinding, 6> bindings
+		constexpr StaticArray<RenderDataTableLayoutBinding, 7> bindings
 		{
 			RenderDataTableLayoutBinding(0, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::TessellationControl | ShaderStage::TessellationEvaluation | ShaderStage::Geometry | ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(1, RenderDataTableLayoutBinding::Type::Sampler, UNDERLYING(Sampler::NumberOfSamplers), ShaderStage::Vertex | ShaderStage::Fragment),
@@ -1074,6 +1061,7 @@ void RenderingSystem::InitializeCommonRenderDataTableLayouts() NOEXCEPT
 			RenderDataTableLayoutBinding(3, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES, ShaderStage::Vertex),
 			RenderDataTableLayoutBinding(4, RenderDataTableLayoutBinding::Type::CombinedImageSampler, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_MATERIAL_TEXTURES, ShaderStage::Fragment),
 			RenderDataTableLayoutBinding(5, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Vertex | ShaderStage::Fragment),
+			RenderDataTableLayoutBinding(6, RenderDataTableLayoutBinding::Type::UniformBuffer, 1, ShaderStage::Fragment),
 		};
 
 		CreateRenderDataTableLayout(bindings.Data(), static_cast<uint32>(bindings.Size()), &_CommonRenderDataTableLayouts[UNDERLYING(CommonRenderDataTableLayout::Global)]);
@@ -1159,6 +1147,9 @@ void RenderingSystem::UpdateGlobalRenderData() NOEXCEPT
 
 	//Update the terrain patch data.
 	UpdateTerrainPatchData(currentFrameBufferIndex);
+
+	//Update the terrain material data.
+	UpdateTerrainMaterialData(currentFrameBufferIndex);
 }
 
 /*
@@ -1369,6 +1360,14 @@ void RenderingSystem::UpdateTerrainPatchData(const uint8 currentFrameBufferIndex
 	}
 
 	UploadDataToUniformBuffer(_GlobalRenderData._TerrainPatchDataBuffers[currentFrameBufferIndex], terrainUniformData.Data());
+}
+
+/*
+*	Updates the terrain material data.
+*/
+void RenderingSystem::UpdateTerrainMaterialData(const uint8 currentFrameBufferIndex) NOEXCEPT
+{
+	UploadDataToUniformBuffer(_GlobalRenderData._TerrainMaterialDataBuffers[currentFrameBufferIndex], TerrainSystem::Instance->GetTerrainMaterials()->Data());
 }
 
 //Undefine defines to keep them from leaking into other scopes.

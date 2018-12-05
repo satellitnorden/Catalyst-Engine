@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/General/Padding.h>
 
 //Math.
 #include <Math/Vector4.h>
@@ -14,13 +15,16 @@ class TerrainMaterial final
 
 public:
 
-	//The albedo.
-	CPUTexture2D<Vector4<byte>> _Albedo;
+	//The albedo texture index.
+	int32 _AlbedoTextureIndex;
 
-	//The normal map.
-	CPUTexture2D<Vector4<byte>> _NormalMap;
+	//The normal map texture index.
+	int32 _NormalMapTextureIndex;
 
-	//The material properties.
-	CPUTexture2D<Vector4<byte>> _MaterialProperties;
+	//The material properties texture index.
+	int32 _MaterialPropertiesTextureIndex;
+
+	//Padding.
+	Padding<4> _Padding;
 
 };

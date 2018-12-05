@@ -16,7 +16,6 @@
 #include <Resources/PhysicalModelData.h>
 #include <Resources/ResourceLoaderUtilities.h>
 #include <Resources/ResourcesCore.h>
-#include <Resources/TerrainMaterialData.h>
 
 //Systems.
 #include <Systems/RenderingSystem.h>
@@ -32,7 +31,6 @@ Map<HashString, OceanMaterial> ResourceLoader::_OceanMaterials;
 Map<HashString, ParticleMaterial> ResourceLoader::_ParticleMaterials;
 Map<HashString, PhysicalMaterial> ResourceLoader::_PhysicalMaterials;
 Map<HashString, PhysicalModel> ResourceLoader::_PhysicalModels;
-Map<HashString, TerrainMaterial> ResourceLoader::_TerrainMaterials;
 
 /*
 *	Given a file path, load a resource collection.
@@ -118,13 +116,6 @@ void ResourceLoader::LoadResourceCollectionInternal(const char *RESTRICT filePat
 			case ResourceType::PhysicalModel:
 			{
 				LoadPhysicalModel(file);
-
-				break;
-			}
-
-			case ResourceType::TerrainMaterial:
-			{
-				LoadTerrainMaterial(file);
 
 				break;
 			}
@@ -459,41 +450,4 @@ void ResourceLoader::LoadPhysicalModel(BinaryFile<IOMode::In> &file) NOEXCEPT
 
 	//Create the physical model via the rendering system.
 	RenderingSystem::Instance->CreatePhysicalModel(physicalModelData, _PhysicalModels[resourceID]);
-}
-
-/*
-*	Given a file, load a terrain material.
-*/
-void ResourceLoader::LoadTerrainMaterial(BinaryFile<IOMode::In> &file) NOEXCEPT
-{
-	//Store the terrain material data in the terrain material data structure.
-	TerrainMaterialData data;
-
-	//Read the resource ID.
-	HashString resourceID;
-	file.Read(&resourceID, sizeof(HashString));
-
-	//Read the width.
-	file.Read(&data._Width, sizeof(uint32));
-
-	//Read the height.
-	file.Read(&data._Height, sizeof(uint32));
-
-	//Calculate the texture size.
-	const uint64 textureSize{ data._Width * data._Height * 4 };
-
-	//Read the albedo.
-	data._AlbedoData.UpsizeFast(textureSize);
-	file.Read(data._AlbedoData.Data(), textureSize);
-
-	//Read the normal map.
-	data._NormalMapData.UpsizeFast(textureSize);
-	file.Read(data._NormalMapData.Data(), textureSize);
-
-	//Read the material properties.
-	data._MaterialPropertiesData.UpsizeFast(textureSize);
-	file.Read(data._MaterialPropertiesData.Data(), textureSize);
-
-	//Create the terrain material via the rendering system.
-	RenderingSystem::Instance->CreateTerrainMaterial(data, _TerrainMaterials[resourceID]);
 }

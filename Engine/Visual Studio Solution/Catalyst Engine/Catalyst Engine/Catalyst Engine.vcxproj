@@ -298,7 +298,6 @@
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoader.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourceLoaderUtilities.h" />
     <ClInclude Include="..\..\..\Include\Resources\ResourcesCore.h" />
-    <ClInclude Include="..\..\..\Include\Resources\TerrainMaterialData.h" />
     <ClInclude Include="..\..\..\Include\Sound\SoundCore.h" />
     <ClInclude Include="..\..\..\Include\Systems\CullingSystem.h" />
     <ClInclude Include="..\..\..\Include\Systems\DebugRenderingSystem.h" />

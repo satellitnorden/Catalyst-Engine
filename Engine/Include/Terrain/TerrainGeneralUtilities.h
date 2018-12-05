@@ -88,15 +88,14 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates the material textures.
 	*/
-	static void GenerateMaterialTextures(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT albedoTextureHandle, Texture2DHandle *const RESTRICT normalTextureHandle, Texture2DHandle *const RESTRICT materialPropertiesTextureHandle) NOEXCEPT
+	static void GenerateMaterialTextures(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT normalTextureHandle, Texture2DHandle *const RESTRICT materialTextureHandle) NOEXCEPT
 	{
 		//Calculate the patch size.
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 
 		//Store the intermediate data in CPU textures.
-		CPUTexture2D<Vector4<byte>> albedoTexture{ TerrainConstants::TERRAIN_MATERIAL_RESOLUTION };
 		CPUTexture2D<Vector4<byte>> normalTexture{ TerrainConstants::TERRAIN_MATERIAL_RESOLUTION };
-		//CPUTexture2D<Vector4<byte>> materialProperties{ TerrainConstants::TERRAIN_MATERIAL_RESOLUTION };
+		CPUTexture2D<byte> materialTexture{ TerrainConstants::TERRAIN_MATERIAL_RESOLUTION };
 
 		for (uint32 i = 0; i < TerrainConstants::TERRAIN_MATERIAL_RESOLUTION; ++i)
 		{
@@ -117,22 +116,8 @@ namespace TerrainGeneralUtilities
 				Vector3<float> normal;
 				GenerateNormal(properties, worldPosition, &normal);
 
-				//Generate the texture values.
-				Vector4<byte> normalMapValue;
-				properties._MaterialFunction(properties, worldPosition, height, normal, &albedoTexture.At(i, j), &normalMapValue);
-
-				//Create the tangent space matrix.
-				const Vector3<float> tangent{ Vector3<float>::CrossProduct(Vector3<float>::RIGHT, normal) };
-				const Vector3<float> bitangent{ Vector3<float>::CrossProduct(tangent, normal) };
-
-				const Matrix3 tangentSpaceMatrix{ tangent, bitangent, normal };
-
-				//Convert the normal map to a Vector3 of floats.
-				Vector3<float> normalMap{ static_cast<float>(normalMapValue._X) / 255.0f , static_cast<float>(normalMapValue._Y) / 255.0f , static_cast<float>(normalMapValue._Z) / 255.0f };
-				normalMap = normalMap * 2.0f - 1.0f;
-
-				//Apply the normal map.
-				normal = Vector3<float>::Normalize(tangentSpaceMatrix * normalMap);
+				//Retrieve the material.
+				properties._MaterialFunction(properties, worldPosition, height, normal, &materialTexture.At(i, j));
 
 				//Write the normal.
 				Vector4<byte> &normalTextureValue{ normalTexture.At(i, j) };
@@ -145,11 +130,11 @@ namespace TerrainGeneralUtilities
 		}
 
 		//Create the textures.
-		*albedoTextureHandle = RenderingSystem::Instance->CreateTexture2D(TextureData(	TextureDataContainer(albedoTexture),
-																						TextureFormat::R8G8B8A8_Byte));
-
 		*normalTextureHandle = RenderingSystem::Instance->CreateTexture2D(TextureData(	TextureDataContainer(normalTexture),
 																						TextureFormat::R8G8B8A8_Byte));
+
+		*materialTextureHandle = RenderingSystem::Instance->CreateTexture2D(TextureData(	TextureDataContainer(materialTexture),
+																							TextureFormat::R8_Byte));
 	}
 
 	/*

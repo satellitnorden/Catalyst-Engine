@@ -12,7 +12,6 @@
 #include <World/ClairvoyantWorldConstants.h>
 
 //Forward declarations.
-class TerrainMaterial;
 class TerrainProperties;
 
 class ClairvoyantTerrainArchitect final
@@ -33,20 +32,9 @@ public:
 	/*
 	*	Generates the material.
 	*/
-	static void GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, Vector4<byte> *const RESTRICT albedo, Vector4<byte> *const RESTRICT normalMap) NOEXCEPT;
+	static void GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, uint8 *const RESTRICT material) NOEXCEPT;
 
 private:
-
-	//Enumeration covering all Clairvoyant terrain materials.
-	enum class ClairvoyantTerrainMaterial : uint8
-	{
-		Grass,
-
-		NumberOfClairvoyantTerrainMaterials
-	};
-
-	//Container for all Clairvoyant terrain materials.
-	static StaticArray<const TerrainMaterial *RESTRICT, UNDERLYING(ClairvoyantTerrainMaterial::NumberOfClairvoyantTerrainMaterials)> _ClairvoyantTerrainMaterials;
 
 	/*
 	*	Returns whether or not a position is within the test area.

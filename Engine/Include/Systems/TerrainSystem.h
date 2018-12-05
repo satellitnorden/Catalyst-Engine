@@ -16,6 +16,7 @@
 #include <Rendering/Engine/PhysicalMaterial.h>
 
 //Terrain.
+#include <Terrain/TerrainMaterial.h>
 #include <Terrain/TerrainPatchInformation.h>
 #include <Terrain/TerrainPatchRenderInformation.h>
 #include <Terrain/TerrainProperties.h>
@@ -68,7 +69,7 @@ public:
 	}
 
 	/*
-	*	Returns the low detail terrain patch informations.
+	*	Returns the terrain patch informations.
 	*/
 	RESTRICTED NO_DISCARD DynamicArray<TerrainPatchInformation> *const RESTRICT GetTerrainPatchInformations() NOEXCEPT
 	{
@@ -76,12 +77,25 @@ public:
 	}
 
 	/*
-	*	Returns the low detail terrain patch render informations.
+	*	Returns the terrain patch render informations.
 	*/
 	RESTRICTED NO_DISCARD DynamicArray<TerrainPatchRenderInformation> *const RESTRICT GetTerrainPatchRenderInformations() NOEXCEPT
 	{
 		return &_PatchRenderInformations;
 	}
+
+	/*
+	*	Returns the terrain materials.
+	*/
+	RESTRICTED NO_DISCARD StaticArray<TerrainMaterial, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES> *const RESTRICT GetTerrainMaterials() NOEXCEPT
+	{
+		return &_TerrainMaterials;
+	}
+
+	/*
+	*	Registers a terrain material at the given index.
+	*/
+	void RegisterTerrainMaterial(const uint8 index, const PhysicalMaterial &material) NOEXCEPT;
 
 	/*
 	*	Returns the terrain height at the given position.
@@ -112,6 +126,9 @@ private:
 
 	//The patch render informations.
 	DynamicArray<TerrainPatchRenderInformation> _PatchRenderInformations;
+
+	//Container for all terrain materials.
+	StaticArray<TerrainMaterial, RenderingConstants::MAXIMUM_NUMBER_OF_TERRAIN_PATCHES> _TerrainMaterials;
 
 	/*
 	*	Returns the patch information index for the identifier.
