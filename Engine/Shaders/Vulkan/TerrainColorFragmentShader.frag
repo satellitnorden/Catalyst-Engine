@@ -12,6 +12,7 @@
 #define MATERIAL_TEXTURE_RESOLUTION (64.0f)
 #define INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.015625f)
 #define HALF_INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.0078125f)
+#define HEIGHT_INFLUENCE (10.0f)
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
@@ -25,17 +26,15 @@ layout (location = 1) out vec4 normalDepth;
 layout (location = 2) out vec4 materialProperties;
 
 //Globals.
-float blendedHeights[2];
-float horizontalBlend;
-float verticalBlend;
-
-int terrainMaterials[4];
-
 vec2 textureCoordinate;
 
-vec3 materialAlbedos[4];
-vec3 materialNormalMaps[4];
-vec4 materialMaterialProperties[4];
+int terrainMaterials[9];
+
+float materialWeights[9];
+
+vec3 materialAlbedos[9];
+vec3 materialNormalMaps[9];
+vec4 materialMaterialProperties[9];
 
 /*
 *   Blends two terrain values.
@@ -99,10 +98,15 @@ vec4 Blend(vec4 first, float firstHeight, vec4 second, float secondHeight, float
 */
 vec3 BlendAlbedo()
 {
-    vec3 blend1 = Blend(materialAlbedos[0], materialMaterialProperties[0].w, materialAlbedos[1], materialMaterialProperties[1].w, horizontalBlend);
-    vec3 blend2 = Blend(materialAlbedos[2], materialMaterialProperties[2].w, materialAlbedos[3], materialMaterialProperties[3].w, horizontalBlend);
-    
-    return Blend(blend1, blendedHeights[0], blend2, blendedHeights[1], verticalBlend);
+    return  materialAlbedos[0] * materialWeights[0] + 
+            materialAlbedos[1] * materialWeights[1] + 
+            materialAlbedos[2] * materialWeights[2] + 
+            materialAlbedos[3] * materialWeights[3] + 
+            materialAlbedos[4] * materialWeights[4] + 
+            materialAlbedos[5] * materialWeights[5] + 
+            materialAlbedos[6] * materialWeights[6] + 
+            materialAlbedos[7] * materialWeights[7] + 
+            materialAlbedos[8] * materialWeights[8];
 }
 
 /*
@@ -110,10 +114,15 @@ vec3 BlendAlbedo()
 */
 vec3 BlendNormalMap()
 {
-    vec3 blend1 = Blend(materialNormalMaps[0], materialMaterialProperties[0].w, materialNormalMaps[1], materialMaterialProperties[1].w, horizontalBlend);
-    vec3 blend2 = Blend(materialNormalMaps[2], materialMaterialProperties[2].w, materialNormalMaps[3], materialMaterialProperties[3].w, horizontalBlend);
-    
-    return Blend(blend1, blendedHeights[0], blend2, blendedHeights[1], verticalBlend);
+    return  materialNormalMaps[0] * materialWeights[0] + 
+            materialNormalMaps[1] * materialWeights[1] + 
+            materialNormalMaps[2] * materialWeights[2] + 
+            materialNormalMaps[3] * materialWeights[3] + 
+            materialNormalMaps[4] * materialWeights[4] + 
+            materialNormalMaps[5] * materialWeights[5] + 
+            materialNormalMaps[6] * materialWeights[6] + 
+            materialNormalMaps[7] * materialWeights[7] + 
+            materialNormalMaps[8] * materialWeights[8];
 }
 
 /*
@@ -121,10 +130,15 @@ vec3 BlendNormalMap()
 */
 vec4 BlendMaterialProperties()
 {
-    vec4 blend1 = Blend(materialMaterialProperties[0], materialMaterialProperties[0].w, materialMaterialProperties[1], materialMaterialProperties[1].w, horizontalBlend);
-    vec4 blend2 = Blend(materialMaterialProperties[2], materialMaterialProperties[2].w, materialMaterialProperties[3], materialMaterialProperties[3].w, horizontalBlend);
-    
-    return Blend(blend1, blendedHeights[0], blend2, blendedHeights[1], verticalBlend);
+    return  materialMaterialProperties[0] * materialWeights[0] + 
+            materialMaterialProperties[1] * materialWeights[1] + 
+            materialMaterialProperties[2] * materialWeights[2] + 
+            materialMaterialProperties[3] * materialWeights[3] + 
+            materialMaterialProperties[4] * materialWeights[4] + 
+            materialMaterialProperties[5] * materialWeights[5] + 
+            materialMaterialProperties[6] * materialWeights[6] + 
+            materialMaterialProperties[7] * materialWeights[7] + 
+            materialMaterialProperties[8] * materialWeights[8];
 }
 
 /*
@@ -137,18 +151,33 @@ void SampleMaterials()
     materialAlbedos[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
     materialAlbedos[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
     materialAlbedos[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[4] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[4]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[5] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[5]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[6] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[6]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[7] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[7]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[8] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[8]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
 
     //Sample the normal maps.
     materialNormalMaps[0] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[0]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
     materialNormalMaps[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
     materialNormalMaps[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
     materialNormalMaps[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[4] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[4]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[5] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[5]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[6] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[6]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[7] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[7]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[8] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[8]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
 
     //Sample the material properties.
     materialMaterialProperties[0] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[0]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
     materialMaterialProperties[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
     materialMaterialProperties[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
     materialMaterialProperties[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[4] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[4]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[5] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[5]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[6] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[6]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[7] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[7]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[8] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[8]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
 }
 
 void main()
@@ -166,22 +195,31 @@ void main()
     float patchDepth = terrainDataTextureSampler.w; 
 
     //Calculate all corners.
-    vec2 corners[4];
+    vec2 corners[9];
 
-    corners[0] = patchCoordinates - vec2(horizontalBlend * INVERSE_MATERIAL_TEXTURE_RESOLUTION, verticalBlend * INVERSE_MATERIAL_TEXTURE_RESOLUTION);
-    corners[1] = corners[0] + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, 0.0f);
-    corners[2] = corners[0] + vec2(0.0f, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
-    corners[3] = corners[0] + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[0] = patchCoordinates - vec2(fract(patchCoordinates.x * MATERIAL_TEXTURE_RESOLUTION) * INVERSE_MATERIAL_TEXTURE_RESOLUTION, fract(patchCoordinates.y * MATERIAL_TEXTURE_RESOLUTION) * INVERSE_MATERIAL_TEXTURE_RESOLUTION);
 
-    //Smooth the horizontal and vertical blends.
-    horizontalBlend = SmoothStep(horizontalBlend);
-    verticalBlend = SmoothStep(verticalBlend);
+    corners[1] = corners[0] + vec2(-INVERSE_MATERIAL_TEXTURE_RESOLUTION, -INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[2] = corners[0] + vec2(-INVERSE_MATERIAL_TEXTURE_RESOLUTION, 0.0f);
+    corners[3] = corners[0] + vec2(-INVERSE_MATERIAL_TEXTURE_RESOLUTION, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+
+    corners[4] = corners[0] + vec2(0.0f, -INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[5] = corners[0] + vec2(0.0f, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+
+    corners[6] = corners[0] + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, -INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[7] = corners[0] + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, 0.0f);
+    corners[8] = corners[0] + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
 
     //Sample the terrain materials.
     terrainMaterials[0] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[0]).x * 255.0f);
     terrainMaterials[1] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[1]).x * 255.0f);
     terrainMaterials[2] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[2]).x * 255.0f);
     terrainMaterials[3] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[3]).x * 255.0f);
+    terrainMaterials[4] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[4]).x * 255.0f);
+    terrainMaterials[5] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[5]).x * 255.0f);
+    terrainMaterials[6] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[6]).x * 255.0f);
+    terrainMaterials[7] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[7]).x * 255.0f);
+    terrainMaterials[8] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[8]).x * 255.0f);
 
     //Calculate the fragment world position.
     vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth);
@@ -189,16 +227,32 @@ void main()
     //Calculate the texture coordinate.
     textureCoordinate = fragmentWorldPosition.xz * 0.2f;
 
-    //Calculate the horizontal and vertical blend.
-    horizontalBlend = fract(patchCoordinates.x * MATERIAL_TEXTURE_RESOLUTION);
-    verticalBlend = fract(patchCoordinates.y * MATERIAL_TEXTURE_RESOLUTION);
-
     //Sample all materials.
     SampleMaterials();
 
-    //Calculate the blended heights.
-    blendedHeights[0] = Blend(materialMaterialProperties[0].w, materialMaterialProperties[0].w, materialMaterialProperties[1].w, materialMaterialProperties[1].w, horizontalBlend);
-    blendedHeights[1] = Blend(materialMaterialProperties[2].w, materialMaterialProperties[2].w, materialMaterialProperties[3].w, materialMaterialProperties[3].w, horizontalBlend);
+    //Calculate the material weights.
+    materialWeights[0] = SmoothStep(1.0f - min(length(patchCoordinates - corners[0]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[0].w, HEIGHT_INFLUENCE);
+    materialWeights[1] = SmoothStep(1.0f - min(length(patchCoordinates - corners[1]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[1].w, HEIGHT_INFLUENCE);
+    materialWeights[2] = SmoothStep(1.0f - min(length(patchCoordinates - corners[2]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[2].w, HEIGHT_INFLUENCE);
+    materialWeights[3] = SmoothStep(1.0f - min(length(patchCoordinates - corners[3]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[3].w, HEIGHT_INFLUENCE);
+    materialWeights[4] = SmoothStep(1.0f - min(length(patchCoordinates - corners[4]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[4].w, HEIGHT_INFLUENCE);
+    materialWeights[5] = SmoothStep(1.0f - min(length(patchCoordinates - corners[5]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[5].w, HEIGHT_INFLUENCE);
+    materialWeights[6] = SmoothStep(1.0f - min(length(patchCoordinates - corners[6]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[6].w, HEIGHT_INFLUENCE);
+    materialWeights[7] = SmoothStep(1.0f - min(length(patchCoordinates - corners[7]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[7].w, HEIGHT_INFLUENCE);
+    materialWeights[8] = SmoothStep(1.0f - min(length(patchCoordinates - corners[8]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[8].w, HEIGHT_INFLUENCE);
+
+    //Normalize the material weights.
+    float materialWeightsTotal = 1.0f / (materialWeights[0] + materialWeights[1] + materialWeights[2] + materialWeights[3] + materialWeights[4] + materialWeights[5] + materialWeights[6] + materialWeights[7] + materialWeights[8]);
+
+    materialWeights[0] *= materialWeightsTotal;
+    materialWeights[1] *= materialWeightsTotal;
+    materialWeights[2] *= materialWeightsTotal;
+    materialWeights[3] *= materialWeightsTotal;
+    materialWeights[4] *= materialWeightsTotal;
+    materialWeights[5] *= materialWeightsTotal;
+    materialWeights[6] *= materialWeightsTotal;
+    materialWeights[7] *= materialWeightsTotal;
+    materialWeights[8] *= materialWeightsTotal;
 
 	//Write the albedo.
 	albedo = vec4(BlendAlbedo(), 1.0f);

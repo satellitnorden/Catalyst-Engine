@@ -560,14 +560,20 @@ void TerrainSystem::GeneratePatch(const Vector3<float> &worldPosition, const flo
 
 	patchRenderInformation->_InstanceInformation._HeightTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTerrainHeightTextureToGlobalRenderData(patchInformation->_HeightTexture));
 
-	//Generate the material textures.
-	TerrainGeneralUtilities::GenerateMaterialTextures(	_Properties,
-														patchSizeMultiplier,
-														worldPosition,
-														&patchInformation->_NormalTexture,
-														&patchInformation->_MaterialTexture);
+	//Generate the normal texture.
+	TerrainGeneralUtilities::GenerateNormalTexture(	_Properties,
+													patchSizeMultiplier,
+													worldPosition,
+													&patchInformation->_NormalTexture);
 
 	patchRenderInformation->_InstanceInformation._NormalTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_NormalTexture));
+
+	//Generate the material texture.
+	TerrainGeneralUtilities::GenerateMaterialTexture(	_Properties,
+														patchSizeMultiplier,
+														worldPosition,
+														&patchInformation->_MaterialTexture);
+
 	patchRenderInformation->_InstanceInformation._MaterialTextureIndex = static_cast<int32>(RenderingSystem::Instance->AddTextureToGlobalRenderData(patchInformation->_MaterialTexture));
 
 	patchInformation->_AxisAlignedBoundingBox._Minimum = Vector3<float>(worldPosition._X - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f), minimumHeight, worldPosition._Z - (TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier * 0.5f));

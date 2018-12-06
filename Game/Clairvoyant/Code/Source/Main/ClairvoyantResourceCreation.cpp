@@ -440,6 +440,23 @@ void ClairvoyantResourceCreation::CreateTerrainIntermediateResources() NOEXCEPT
 	}
 
 	{
+		//Create the terrain cliff snow 2 material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\Terrain\\Terrain_Cliff_Snow_2_Material";
+		parameters._ID = "Terrain_Cliff_Snow_2_Material";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_Snow_2\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_Snow_2\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_Snow_2\\Roughness.png";
+		parameters._MetallicFile = nullptr;
+		parameters._AmbientOcclusionFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_Snow_2\\AmbientOcclusion.png";
+		parameters._VariantFile = "..\\..\\..\\Resources\\Raw\\Textures\\Terrain\\Cliff_Snow_2\\Displacement.png";
+
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
+
+	{
 		//Create the terrain grass 1 material.
 		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
 
@@ -535,6 +552,7 @@ void ClairvoyantResourceCreation::CreateTerrainResourceCollection() NOEXCEPT
 
 	parameters._Output = "..\\..\\..\\Resources\\Final\\TerrainResourceCollection";
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\Terrain\\Terrain_Cliff_Snow_1_Material.cr");
+	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\Terrain\\Terrain_Cliff_Snow_2_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\Terrain\\Terrain_Grass_1_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\Terrain\\Terrain_Grass_2_Material.cr");
 	parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\Terrain\\Terrain_Sand_1_Material.cr");

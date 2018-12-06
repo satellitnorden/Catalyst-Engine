@@ -49,7 +49,8 @@ void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 	TerrainSystem::Instance->RegisterTerrainMaterial(1, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_1_Material")));
 	TerrainSystem::Instance->RegisterTerrainMaterial(2, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_2_Material")));
 	TerrainSystem::Instance->RegisterTerrainMaterial(3, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_Snow_1_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(4, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Snow_1_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(4, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_Snow_2_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(5, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Snow_1_Material")));
 }
 
 /*
@@ -89,7 +90,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 
 	//Generate the noise.
 	static float offset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1'000.0f) };
-	*height = PerlinNoise::GenerateOctaved(coordinateX, coordinateY, offset, 10, 2.25f, 0.5f) + 0.25f;
+	*height = PerlinNoise::GenerateOctaved(coordinateX, coordinateY, offset, 10, 2.5f, 0.5f) + 0.25f;
 
 	//Apply the height.
 	*height *= ClairvoyantTerrainArchitectConstants::TERRAIN_HEIGHT;
@@ -100,29 +101,32 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 */
 void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, uint8 *const RESTRICT material) NOEXCEPT
 {
-	if (height < 500.0f)
+	if (height < 1'000.0f)
 	{
 		*material = 0;
 	}
 
-	else if (height < 1'000.0f)
+	else if (height < 2'000.0f)
 	{
 		*material = 1;
 	}
 
-	else if (height < 1'500.0f)
+	else if (height < 3'000.0f)
 	{
 		*material = 2;
 	}
 
-	else if (height < 2'000.0f)
-	{
-		*material = 3;
-	}
-
 	else
 	{
-		*material = 4;
+		if (Vector3<float>::DotProduct(normal, Vector3<float>::UP) > 0.6f)
+		{
+			*material = 5;
+		}
+
+		else
+		{
+			*material = 3;
+		}
 	}
 }
 

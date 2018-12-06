@@ -54,14 +54,14 @@ namespace TerrainGeneralUtilities
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 
 		DynamicArray<float> data;
-		data.UpsizeFast(TerrainConstants::TERRAIN_PATCH_RESOLUTION * TerrainConstants::TERRAIN_PATCH_RESOLUTION);
+		data.UpsizeFast(TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION * TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION);
 
-		for (uint32 i = 0; i < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++i)
+		for (uint32 i = 0; i < TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION; ++i)
 		{
-			for (uint32 j = 0; j < TerrainConstants::TERRAIN_PATCH_RESOLUTION; ++j)
+			for (uint32 j = 0; j < TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION; ++j)
 			{
-				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) };
-				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_PATCH_RESOLUTION - 1) };
+				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION - 1) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION - 1) };
 
 				const Vector3<float> worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 													0.0f,
@@ -79,32 +79,72 @@ namespace TerrainGeneralUtilities
 		}
 
 		*texture = RenderingSystem::Instance->CreateTexture2D(	TextureData(	TextureDataContainer(data.Data(),
-																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
-																				TerrainConstants::TERRAIN_PATCH_RESOLUTION,
+																				TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION,
+																				TerrainConstants::TERRAIN_HEIGHT_TEXTURE_RESOLUTION,
 																				1),
 																				TextureFormat::R32_Float));
 	}
 
 	/*
-	*	Generates the material textures.
+	*	Generates the normal texture.
 	*/
-	static void GenerateMaterialTextures(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT normalTextureHandle, Texture2DHandle *const RESTRICT materialTextureHandle) NOEXCEPT
+	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT textureHandle) NOEXCEPT
 	{
 		//Calculate the patch size.
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 
-		//Store the intermediate data in CPU textures.
-		CPUTexture2D<Vector4<byte>> normalTexture{ TerrainConstants::TERRAIN_MATERIAL_RESOLUTION };
-		CPUTexture2D<byte> materialTexture{ TerrainConstants::TERRAIN_MATERIAL_RESOLUTION };
+		//Store the intermediate data in a CPU texture.
+		CPUTexture2D<Vector4<byte>> normalTexture{ TerrainConstants::TERRAIN_NORMAL_TEXTURE_RESOLUTION };
 
-		for (uint32 i = 0; i < TerrainConstants::TERRAIN_MATERIAL_RESOLUTION; ++i)
+		for (uint32 i = 0; i < TerrainConstants::TERRAIN_NORMAL_TEXTURE_RESOLUTION; ++i)
 		{
-			for (uint32 j = 0; j < TerrainConstants::TERRAIN_MATERIAL_RESOLUTION; ++j)
+			for (uint32 j = 0; j < TerrainConstants::TERRAIN_NORMAL_TEXTURE_RESOLUTION; ++j)
 			{
-				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_MATERIAL_RESOLUTION - 1) };
-				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_MATERIAL_RESOLUTION - 1) };
+				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_NORMAL_TEXTURE_RESOLUTION - 1) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_NORMAL_TEXTURE_RESOLUTION - 1) };
 			
 				const Vector3<float> worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
+													0.0f,
+													patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
+
+				//Generate the normal.
+				Vector3<float> normal;
+				GenerateNormal(properties, worldPosition, &normal);
+
+				//Write the normal.
+				Vector4<byte> &normalTextureValue{ normalTexture.At(i, j) };
+
+				normalTextureValue._X = static_cast<byte>(((normal._X + 1.0f) * 0.5f) * 255.0f);
+				normalTextureValue._Y = static_cast<byte>(((normal._Y + 1.0f) * 0.5f) * 255.0f);
+				normalTextureValue._Z = static_cast<byte>(((normal._Z + 1.0f) * 0.5f) * 255.0f);
+				normalTextureValue._W = 255;
+			}
+		}
+
+		//Create the texture.
+		*textureHandle = RenderingSystem::Instance->CreateTexture2D(TextureData(	TextureDataContainer(normalTexture),
+																						TextureFormat::R8G8B8A8_Byte));
+	}
+
+	/*
+	*	Generates the material texture.
+	*/
+	static void GenerateMaterialTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT textureHandle) NOEXCEPT
+	{
+		//Calculate the patch size.
+		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
+
+		//Store the intermediate data in a CPU texture.
+		CPUTexture2D<byte> materialTexture{ TerrainConstants::TERRAIN_MATERIAL_TEXTURE_RESOLUTION };
+
+		for (uint32 i = 0; i < TerrainConstants::TERRAIN_MATERIAL_TEXTURE_RESOLUTION; ++i)
+		{
+			for (uint32 j = 0; j < TerrainConstants::TERRAIN_MATERIAL_TEXTURE_RESOLUTION; ++j)
+			{
+				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_MATERIAL_TEXTURE_RESOLUTION - 1) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_MATERIAL_TEXTURE_RESOLUTION - 1) };
+
+				const Vector3<float> worldPosition{ patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 													0.0f,
 													patchWorldPosition._Z + ((-1.0f + (2.0f * coordinateY)) * (patchSize * 0.5f)) };
 
@@ -118,23 +158,12 @@ namespace TerrainGeneralUtilities
 
 				//Retrieve the material.
 				properties._MaterialFunction(properties, worldPosition, height, normal, &materialTexture.At(i, j));
-
-				//Write the normal.
-				Vector4<byte> &normalTextureValue{ normalTexture.At(i, j) };
-
-				normalTextureValue._X = static_cast<byte>(((normal._X + 1.0f) * 0.5f) * 255.0f);
-				normalTextureValue._Y = static_cast<byte>(((normal._Y + 1.0f) * 0.5f) * 255.0f);
-				normalTextureValue._Z = static_cast<byte>(((normal._Z + 1.0f) * 0.5f) * 255.0f);
-				normalTextureValue._W = 255;
 			}
 		}
 
-		//Create the textures.
-		*normalTextureHandle = RenderingSystem::Instance->CreateTexture2D(TextureData(	TextureDataContainer(normalTexture),
-																						TextureFormat::R8G8B8A8_Byte));
-
-		*materialTextureHandle = RenderingSystem::Instance->CreateTexture2D(TextureData(	TextureDataContainer(materialTexture),
-																							TextureFormat::R8_Byte));
+		//Create the texture.
+		*textureHandle = RenderingSystem::Instance->CreateTexture2D(	TextureData(	TextureDataContainer(materialTexture),
+																								TextureFormat::R8_Byte));
 	}
 
 	/*
