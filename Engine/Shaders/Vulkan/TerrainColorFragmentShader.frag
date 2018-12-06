@@ -8,7 +8,7 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define BLEND_SMOOTHING (0.2f)
+#define BLEND_SMOOTHING (1.0f)
 #define MATERIAL_TEXTURE_RESOLUTION (64.0f)
 #define INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.015625f)
 
