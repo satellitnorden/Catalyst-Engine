@@ -46,7 +46,10 @@ void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 {
 	//Register all terrain materials.
 	TerrainSystem::Instance->RegisterTerrainMaterial(0, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_1_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(1, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_2_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(1, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_1_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(2, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_2_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(3, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_Snow_1_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(4, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Snow_1_Material")));
 }
 
 /*
@@ -97,14 +100,29 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 */
 void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, uint8 *const RESTRICT material) NOEXCEPT
 {
-	if (height < 200.0f)
+	if (height < 500.0f)
 	{
 		*material = 0;
 	}
 
-	else
+	else if (height < 1'000.0f)
 	{
 		*material = 1;
+	}
+
+	else if (height < 1'500.0f)
+	{
+		*material = 2;
+	}
+
+	else if (height < 2'000.0f)
+	{
+		*material = 3;
+	}
+
+	else
+	{
+		*material = 4;
 	}
 }
 
