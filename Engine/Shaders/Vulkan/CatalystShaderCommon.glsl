@@ -159,6 +159,15 @@ float LengthSquared3(vec3 vector)
     return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 }
 
+
+/*
+*	Linear interpolation between three values.
+*/
+float LinearInterpolation(float a, float b, float c, float alpha)
+{
+	return alpha >= 0.5f ? mix(b, c, (alpha - 0.5f) * 2.0f) : mix(a, b, alpha  * 2.0f);
+}
+
 /*
 *   Given a seed, returns a random number.
 */

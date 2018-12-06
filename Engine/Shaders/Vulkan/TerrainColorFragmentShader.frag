@@ -11,6 +11,7 @@
 #define BLEND_SMOOTHING (1.0f)
 #define MATERIAL_TEXTURE_RESOLUTION (64.0f)
 #define INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.015625f)
+#define HALF_INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.0078125f)
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
@@ -167,10 +168,14 @@ void main()
     //Calculate all corners.
     vec2 corners[4];
 
-    corners[0] = patchCoordinates;
-    corners[1] = patchCoordinates + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, 0.0f);
-    corners[2] = patchCoordinates + vec2(0.0f, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
-    corners[3] = patchCoordinates + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[0] = patchCoordinates - vec2(horizontalBlend * INVERSE_MATERIAL_TEXTURE_RESOLUTION, verticalBlend * INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[1] = corners[0] + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, 0.0f);
+    corners[2] = corners[0] + vec2(0.0f, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[3] = corners[0] + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+
+    //Smooth the horizontal and vertical blends.
+    horizontalBlend = SmoothStep(horizontalBlend);
+    verticalBlend = SmoothStep(verticalBlend);
 
     //Sample the terrain materials.
     terrainMaterials[0] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[0]).x * 255.0f);
@@ -178,15 +183,18 @@ void main()
     terrainMaterials[2] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[2]).x * 255.0f);
     terrainMaterials[3] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[3]).x * 255.0f);
 
+    //Calculate the fragment world position.
+    vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth);
+
     //Calculate the texture coordinate.
-    textureCoordinate = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth).xz * 0.25f;
+    textureCoordinate = fragmentWorldPosition.xz * 0.2f;
+
+    //Calculate the horizontal and vertical blend.
+    horizontalBlend = fract(patchCoordinates.x * MATERIAL_TEXTURE_RESOLUTION);
+    verticalBlend = fract(patchCoordinates.y * MATERIAL_TEXTURE_RESOLUTION);
 
     //Sample all materials.
     SampleMaterials();
-
-    //Calculate the horizontal blend.
-    horizontalBlend = fract(patchCoordinates.x * MATERIAL_TEXTURE_RESOLUTION);
-    verticalBlend = fract(patchCoordinates.y * MATERIAL_TEXTURE_RESOLUTION);
 
     //Calculate the blended heights.
     blendedHeights[0] = Blend(materialMaterialProperties[0].w, materialMaterialProperties[0].w, materialMaterialProperties[1].w, materialMaterialProperties[1].w, horizontalBlend);
