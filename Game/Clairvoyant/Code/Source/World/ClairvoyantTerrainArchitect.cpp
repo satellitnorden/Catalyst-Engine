@@ -97,7 +97,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 */
 void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, uint8 *const RESTRICT material) NOEXCEPT
 {
-	if (height < 100.0f)
+	if (height < 200.0f)
 	{
 		*material = 0;
 	}

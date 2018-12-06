@@ -8,10 +8,9 @@
 #include "CatalystShaderCommon.glsl"
 
 //Preprocessor defines.
-#define BLEND_SMOOTHING (0.1f)
-#define MATERIAL_TEXTURE_RESOLUTION (65.0f)
-#define INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.0153846153846152f)
-#define HALF_INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.0076923076923077f)
+#define BLEND_SMOOTHING (0.2f)
+#define MATERIAL_TEXTURE_RESOLUTION (64.0f)
+#define INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.015625f)
 
 //In parameters.
 layout (location = 0) in vec2 fragmentTextureCoordinate;
@@ -23,6 +22,19 @@ layout (set = 1, binding = 0) uniform sampler2D terrainDataTexture;
 layout (location = 0) out vec4 albedo;
 layout (location = 1) out vec4 normalDepth;
 layout (location = 2) out vec4 materialProperties;
+
+//Globals.
+float blendedHeights[2];
+float horizontalBlend;
+float verticalBlend;
+
+int terrainMaterials[4];
+
+vec2 textureCoordinate;
+
+vec3 materialAlbedos[4];
+vec3 materialNormalMaps[4];
+vec4 materialMaterialProperties[4];
 
 /*
 *   Blends two terrain values.
@@ -81,6 +93,63 @@ vec4 Blend(vec4 first, float firstHeight, vec4 second, float secondHeight, float
     return firstWeight > secondWeight ? mix(second, first, newAlpha) : mix(first, second, newAlpha);
 }
 
+/*
+*   Blends the albedo.
+*/
+vec3 BlendAlbedo()
+{
+    vec3 blend1 = Blend(materialAlbedos[0], materialMaterialProperties[0].w, materialAlbedos[1], materialMaterialProperties[1].w, horizontalBlend);
+    vec3 blend2 = Blend(materialAlbedos[2], materialMaterialProperties[2].w, materialAlbedos[3], materialMaterialProperties[3].w, horizontalBlend);
+    
+    return Blend(blend1, blendedHeights[0], blend2, blendedHeights[1], verticalBlend);
+}
+
+/*
+*   Blends the normal map.
+*/
+vec3 BlendNormalMap()
+{
+    vec3 blend1 = Blend(materialNormalMaps[0], materialMaterialProperties[0].w, materialNormalMaps[1], materialMaterialProperties[1].w, horizontalBlend);
+    vec3 blend2 = Blend(materialNormalMaps[2], materialMaterialProperties[2].w, materialNormalMaps[3], materialMaterialProperties[3].w, horizontalBlend);
+    
+    return Blend(blend1, blendedHeights[0], blend2, blendedHeights[1], verticalBlend);
+}
+
+/*
+*   Blends the material properties.
+*/
+vec4 BlendMaterialProperties()
+{
+    vec4 blend1 = Blend(materialMaterialProperties[0], materialMaterialProperties[0].w, materialMaterialProperties[1], materialMaterialProperties[1].w, horizontalBlend);
+    vec4 blend2 = Blend(materialMaterialProperties[2], materialMaterialProperties[2].w, materialMaterialProperties[3], materialMaterialProperties[3].w, horizontalBlend);
+    
+    return Blend(blend1, blendedHeights[0], blend2, blendedHeights[1], verticalBlend);
+}
+
+/*
+*   Samples all materials.
+*/
+void SampleMaterials()
+{
+    //Sample the albedos.
+    materialAlbedos[0] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[0]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+
+    //Sample the normal maps.
+    materialNormalMaps[0] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[0]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+
+    //Sample the material properties.
+    materialMaterialProperties[0] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[0]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+}
+
 void main()
 {
     //Sample the terrain data texture.
@@ -95,30 +164,48 @@ void main()
     //Retrieve the patch depth.
     float patchDepth = terrainDataTextureSampler.w; 
 
-    //Sample the patch normal.
-    vec3 patchNormal = texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].normalTextureIndex)], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).xyz * 2.0f - 1.0f;
+    //Calculate all corners.
+    vec2 corners[4];
 
-    //Sample the patch material.
-    int patchMaterial = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).x * 255.0f);
+    corners[0] = patchCoordinates;
+    corners[1] = patchCoordinates + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, 0.0f);
+    corners[2] = patchCoordinates + vec2(0.0f, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[3] = patchCoordinates + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+
+    //Sample the terrain materials.
+    terrainMaterials[0] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[0]).x * 255.0f);
+    terrainMaterials[1] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[1]).x * 255.0f);
+    terrainMaterials[2] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[2]).x * 255.0f);
+    terrainMaterials[3] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[3]).x * 255.0f);
 
     //Calculate the texture coordinate.
-    vec2 textureCoordinate = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth).xz * 0.25f;
+    textureCoordinate = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth).xz * 0.25f;
 
-    //Calculate the tangent space matrix.
-    vec3 tangent = cross(vec3(0.0f, 0.0f, 1.0f), patchNormal);
-    vec3 bitangent = cross(tangent, patchNormal);
+    //Sample all materials.
+    SampleMaterials();
 
-    mat3 tangentSpaceMatrix = mat3(tangent, bitangent, patchNormal);
+    //Calculate the horizontal blend.
+    horizontalBlend = fract(patchCoordinates.x * MATERIAL_TEXTURE_RESOLUTION);
+    verticalBlend = fract(patchCoordinates.y * MATERIAL_TEXTURE_RESOLUTION);
+
+    //Calculate the blended heights.
+    blendedHeights[0] = Blend(materialMaterialProperties[0].w, materialMaterialProperties[0].w, materialMaterialProperties[1].w, materialMaterialProperties[1].w, horizontalBlend);
+    blendedHeights[1] = Blend(materialMaterialProperties[2].w, materialMaterialProperties[2].w, materialMaterialProperties[3].w, materialMaterialProperties[3].w, horizontalBlend);
 
 	//Write the albedo.
-	albedo = vec4(texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[patchMaterial].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb, 1.0f);
+	albedo = vec4(BlendAlbedo(), 1.0f);
 
-	//Write the normal.
-    vec3 normal = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[patchMaterial].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
-    normal = tangentSpaceMatrix * normal;
-    normal = normalize(normal);
+	//Write the normal/depth.
+    vec3 terrainNormal = texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].normalTextureIndex)], globalSamplers[FilterLinear_MipmapModeNearest_AddressModeClampToEdge_Index]), patchCoordinates).xyz * 2.0f - 1.0f;
+
+    vec3 tangent = cross(vec3(0.0f, 0.0f, 1.0f), terrainNormal);
+    vec3 bitangent = cross(tangent, terrainNormal);
+    mat3 tangentSpaceMatrix = mat3(tangent, bitangent, terrainNormal);
+
+    vec3 normalMap = BlendNormalMap();
+    vec3 normal = normalize(tangentSpaceMatrix * normalMap);
     normalDepth = vec4(normal, patchDepth);
 
 	//Write the material properties.
-    materialProperties = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[patchMaterial].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialProperties = BlendMaterialProperties();
 }
