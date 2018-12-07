@@ -19,7 +19,11 @@ struct TerrainPatchData
     int heightTextureIndex;
     int normalTextureIndex;
     int materialTextureIndex;
-    int padding;
+    float materialTextureResolution;
+    float inverseMaterialTextureResolution;
+    int padding1;
+    int padding2;
+    int padding3;
 };
 
 //Terrain material data definition.

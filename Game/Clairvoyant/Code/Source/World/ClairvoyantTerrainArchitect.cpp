@@ -118,7 +118,7 @@ void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &prop
 
 	else
 	{
-		if (Vector3<float>::DotProduct(normal, Vector3<float>::UP) > 0.6f)
+		if (Vector3<float>::DotProduct(normal, Vector3<float>::UP) > 0.5f)
 		{
 			*material = 5;
 		}

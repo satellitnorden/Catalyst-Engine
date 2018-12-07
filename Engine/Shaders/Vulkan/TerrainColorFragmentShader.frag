@@ -9,9 +9,6 @@
 
 //Preprocessor defines.
 #define BLEND_SMOOTHING (1.0f)
-#define MATERIAL_TEXTURE_RESOLUTION (64.0f)
-#define INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.015625f)
-#define HALF_INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.0078125f)
 #define HEIGHT_INFLUENCE (10.0f)
 
 //In parameters.
@@ -197,18 +194,18 @@ void main()
     //Calculate all corners.
     vec2 corners[9];
 
-    corners[0] = patchCoordinates - vec2(fract(patchCoordinates.x * MATERIAL_TEXTURE_RESOLUTION) * INVERSE_MATERIAL_TEXTURE_RESOLUTION, fract(patchCoordinates.y * MATERIAL_TEXTURE_RESOLUTION) * INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[0] = patchCoordinates - vec2(fract(patchCoordinates.x * terrainPatchData[patchIndex].materialTextureResolution) * terrainPatchData[patchIndex].inverseMaterialTextureResolution, fract(patchCoordinates.y * terrainPatchData[patchIndex].materialTextureResolution) * terrainPatchData[patchIndex].inverseMaterialTextureResolution);
 
-    corners[1] = corners[0] + vec2(-INVERSE_MATERIAL_TEXTURE_RESOLUTION, -INVERSE_MATERIAL_TEXTURE_RESOLUTION);
-    corners[2] = corners[0] + vec2(-INVERSE_MATERIAL_TEXTURE_RESOLUTION, 0.0f);
-    corners[3] = corners[0] + vec2(-INVERSE_MATERIAL_TEXTURE_RESOLUTION, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[1] = corners[0] + vec2(-terrainPatchData[patchIndex].inverseMaterialTextureResolution, -terrainPatchData[patchIndex].inverseMaterialTextureResolution);
+    corners[2] = corners[0] + vec2(-terrainPatchData[patchIndex].inverseMaterialTextureResolution, 0.0f);
+    corners[3] = corners[0] + vec2(-terrainPatchData[patchIndex].inverseMaterialTextureResolution, terrainPatchData[patchIndex].inverseMaterialTextureResolution);
 
-    corners[4] = corners[0] + vec2(0.0f, -INVERSE_MATERIAL_TEXTURE_RESOLUTION);
-    corners[5] = corners[0] + vec2(0.0f, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[4] = corners[0] + vec2(0.0f, -terrainPatchData[patchIndex].inverseMaterialTextureResolution);
+    corners[5] = corners[0] + vec2(0.0f, terrainPatchData[patchIndex].inverseMaterialTextureResolution);
 
-    corners[6] = corners[0] + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, -INVERSE_MATERIAL_TEXTURE_RESOLUTION);
-    corners[7] = corners[0] + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, 0.0f);
-    corners[8] = corners[0] + vec2(INVERSE_MATERIAL_TEXTURE_RESOLUTION, INVERSE_MATERIAL_TEXTURE_RESOLUTION);
+    corners[6] = corners[0] + vec2(terrainPatchData[patchIndex].inverseMaterialTextureResolution, -terrainPatchData[patchIndex].inverseMaterialTextureResolution);
+    corners[7] = corners[0] + vec2(terrainPatchData[patchIndex].inverseMaterialTextureResolution, 0.0f);
+    corners[8] = corners[0] + vec2(terrainPatchData[patchIndex].inverseMaterialTextureResolution, terrainPatchData[patchIndex].inverseMaterialTextureResolution);
 
     //Sample the terrain materials.
     terrainMaterials[0] = int(texture(sampler2D(globalTextures[nonuniformEXT(terrainPatchData[patchIndex].materialTextureIndex)], globalSamplers[FilterNearest_MipmapModeNearest_AddressModeClampToEdge_Index]), corners[0]).x * 255.0f);
@@ -231,15 +228,15 @@ void main()
     SampleMaterials();
 
     //Calculate the material weights.
-    materialWeights[0] = SmoothStep(1.0f - min(length(patchCoordinates - corners[0]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[0].w, HEIGHT_INFLUENCE);
-    materialWeights[1] = SmoothStep(1.0f - min(length(patchCoordinates - corners[1]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[1].w, HEIGHT_INFLUENCE);
-    materialWeights[2] = SmoothStep(1.0f - min(length(patchCoordinates - corners[2]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[2].w, HEIGHT_INFLUENCE);
-    materialWeights[3] = SmoothStep(1.0f - min(length(patchCoordinates - corners[3]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[3].w, HEIGHT_INFLUENCE);
-    materialWeights[4] = SmoothStep(1.0f - min(length(patchCoordinates - corners[4]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[4].w, HEIGHT_INFLUENCE);
-    materialWeights[5] = SmoothStep(1.0f - min(length(patchCoordinates - corners[5]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[5].w, HEIGHT_INFLUENCE);
-    materialWeights[6] = SmoothStep(1.0f - min(length(patchCoordinates - corners[6]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[6].w, HEIGHT_INFLUENCE);
-    materialWeights[7] = SmoothStep(1.0f - min(length(patchCoordinates - corners[7]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[7].w, HEIGHT_INFLUENCE);
-    materialWeights[8] = SmoothStep(1.0f - min(length(patchCoordinates - corners[8]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[8].w, HEIGHT_INFLUENCE);
+    materialWeights[0] = SmoothStep(1.0f - min(length(patchCoordinates - corners[0]) * terrainPatchData[patchIndex].materialTextureResolution, 1.0f)) * pow(materialMaterialProperties[0].w, HEIGHT_INFLUENCE);
+    materialWeights[1] = SmoothStep(1.0f - min(length(patchCoordinates - corners[1]) * terrainPatchData[patchIndex].materialTextureResolution, 1.0f)) * pow(materialMaterialProperties[1].w, HEIGHT_INFLUENCE);
+    materialWeights[2] = SmoothStep(1.0f - min(length(patchCoordinates - corners[2]) * terrainPatchData[patchIndex].materialTextureResolution, 1.0f)) * pow(materialMaterialProperties[2].w, HEIGHT_INFLUENCE);
+    materialWeights[3] = SmoothStep(1.0f - min(length(patchCoordinates - corners[3]) * terrainPatchData[patchIndex].materialTextureResolution, 1.0f)) * pow(materialMaterialProperties[3].w, HEIGHT_INFLUENCE);
+    materialWeights[4] = SmoothStep(1.0f - min(length(patchCoordinates - corners[4]) * terrainPatchData[patchIndex].materialTextureResolution, 1.0f)) * pow(materialMaterialProperties[4].w, HEIGHT_INFLUENCE);
+    materialWeights[5] = SmoothStep(1.0f - min(length(patchCoordinates - corners[5]) * terrainPatchData[patchIndex].materialTextureResolution, 1.0f)) * pow(materialMaterialProperties[5].w, HEIGHT_INFLUENCE);
+    materialWeights[6] = SmoothStep(1.0f - min(length(patchCoordinates - corners[6]) * terrainPatchData[patchIndex].materialTextureResolution, 1.0f)) * pow(materialMaterialProperties[6].w, HEIGHT_INFLUENCE);
+    materialWeights[7] = SmoothStep(1.0f - min(length(patchCoordinates - corners[7]) * terrainPatchData[patchIndex].materialTextureResolution, 1.0f)) * pow(materialMaterialProperties[7].w, HEIGHT_INFLUENCE);
+    materialWeights[8] = SmoothStep(1.0f - min(length(patchCoordinates - corners[8]) * terrainPatchData[patchIndex].materialTextureResolution, 1.0f)) * pow(materialMaterialProperties[8].w, HEIGHT_INFLUENCE);
 
     //Normalize the material weights.
     float materialWeightsTotal = 1.0f / (materialWeights[0] + materialWeights[1] + materialWeights[2] + materialWeights[3] + materialWeights[4] + materialWeights[5] + materialWeights[6] + materialWeights[7] + materialWeights[8]);
