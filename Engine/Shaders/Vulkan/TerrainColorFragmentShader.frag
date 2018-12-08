@@ -10,6 +10,7 @@
 //Preprocessor defines.
 #define BLEND_SMOOTHING (1.0f)
 #define MATERIAL_TEXTURE_RESOLUTION (64.0f)
+#define MATERIAL_TEXTURE_RESOLUTION_SQUARED (4096.0f)
 #define INVERSE_MATERIAL_TEXTURE_RESOLUTION (0.015625f)
 #define HEIGHT_INFLUENCE (10.0f)
 
@@ -230,15 +231,15 @@ void main()
     SampleMaterials();
 
     //Calculate the material weights.
-    materialWeights[0] = SmoothStep(1.0f - min(length(patchCoordinates - corners[0]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[0].w, HEIGHT_INFLUENCE);
-    materialWeights[1] = SmoothStep(1.0f - min(length(patchCoordinates - corners[1]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[1].w, HEIGHT_INFLUENCE);
-    materialWeights[2] = SmoothStep(1.0f - min(length(patchCoordinates - corners[2]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[2].w, HEIGHT_INFLUENCE);
-    materialWeights[3] = SmoothStep(1.0f - min(length(patchCoordinates - corners[3]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[3].w, HEIGHT_INFLUENCE);
-    materialWeights[4] = SmoothStep(1.0f - min(length(patchCoordinates - corners[4]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[4].w, HEIGHT_INFLUENCE);
-    materialWeights[5] = SmoothStep(1.0f - min(length(patchCoordinates - corners[5]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[5].w, HEIGHT_INFLUENCE);
-    materialWeights[6] = SmoothStep(1.0f - min(length(patchCoordinates - corners[6]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[6].w, HEIGHT_INFLUENCE);
-    materialWeights[7] = SmoothStep(1.0f - min(length(patchCoordinates - corners[7]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[7].w, HEIGHT_INFLUENCE);
-    materialWeights[8] = SmoothStep(1.0f - min(length(patchCoordinates - corners[8]) * MATERIAL_TEXTURE_RESOLUTION, 1.0f)) * pow(materialMaterialProperties[8].w, HEIGHT_INFLUENCE);
+    materialWeights[0] = SmoothStep(1.0f - min(LengthSquared2(patchCoordinates - corners[0]) * MATERIAL_TEXTURE_RESOLUTION_SQUARED, 1.0f)) * pow(materialMaterialProperties[0].w, HEIGHT_INFLUENCE);
+    materialWeights[1] = SmoothStep(1.0f - min(LengthSquared2(patchCoordinates - corners[1]) * MATERIAL_TEXTURE_RESOLUTION_SQUARED, 1.0f)) * pow(materialMaterialProperties[1].w, HEIGHT_INFLUENCE);
+    materialWeights[2] = SmoothStep(1.0f - min(LengthSquared2(patchCoordinates - corners[2]) * MATERIAL_TEXTURE_RESOLUTION_SQUARED, 1.0f)) * pow(materialMaterialProperties[2].w, HEIGHT_INFLUENCE);
+    materialWeights[3] = SmoothStep(1.0f - min(LengthSquared2(patchCoordinates - corners[3]) * MATERIAL_TEXTURE_RESOLUTION_SQUARED, 1.0f)) * pow(materialMaterialProperties[3].w, HEIGHT_INFLUENCE);
+    materialWeights[4] = SmoothStep(1.0f - min(LengthSquared2(patchCoordinates - corners[4]) * MATERIAL_TEXTURE_RESOLUTION_SQUARED, 1.0f)) * pow(materialMaterialProperties[4].w, HEIGHT_INFLUENCE);
+    materialWeights[5] = SmoothStep(1.0f - min(LengthSquared2(patchCoordinates - corners[5]) * MATERIAL_TEXTURE_RESOLUTION_SQUARED, 1.0f)) * pow(materialMaterialProperties[5].w, HEIGHT_INFLUENCE);
+    materialWeights[6] = SmoothStep(1.0f - min(LengthSquared2(patchCoordinates - corners[6]) * MATERIAL_TEXTURE_RESOLUTION_SQUARED, 1.0f)) * pow(materialMaterialProperties[6].w, HEIGHT_INFLUENCE);
+    materialWeights[7] = SmoothStep(1.0f - min(LengthSquared2(patchCoordinates - corners[7]) * MATERIAL_TEXTURE_RESOLUTION_SQUARED, 1.0f)) * pow(materialMaterialProperties[7].w, HEIGHT_INFLUENCE);
+    materialWeights[8] = SmoothStep(1.0f - min(LengthSquared2(patchCoordinates - corners[8]) * MATERIAL_TEXTURE_RESOLUTION_SQUARED, 1.0f)) * pow(materialMaterialProperties[8].w, HEIGHT_INFLUENCE);
 
     //Normalize the material weights.
     float materialWeightsTotal = 1.0f / (materialWeights[0] + materialWeights[1] + materialWeights[2] + materialWeights[3] + materialWeights[4] + materialWeights[5] + materialWeights[6] + materialWeights[7] + materialWeights[8]);
