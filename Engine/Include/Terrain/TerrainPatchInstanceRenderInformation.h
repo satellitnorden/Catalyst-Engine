@@ -30,13 +30,7 @@ public:
 	//The material texture index.
 	int32 _MaterialTextureIndex;
 
-	//The material texture resolution.
-	float _MaterialTextureResolution;
-
-	//The interse material texture resolution.
-	float _InverseMaterialTextureResolution;
-
 	//Padding.
-	Padding<12> _Padding;
+	Padding<4> _Padding;
 
 };

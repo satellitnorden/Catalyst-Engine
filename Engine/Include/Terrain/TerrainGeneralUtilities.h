@@ -88,20 +88,20 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates the normal texture.
 	*/
-	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT textureHandle) NOEXCEPT
+	static void GenerateNormalTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint32 resolution, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT textureHandle) NOEXCEPT
 	{
 		//Calculate the patch size.
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 
 		//Store the intermediate data in a CPU texture.
-		CPUTexture2D<Vector4<byte>> normalTexture{ TerrainConstants::TERRAIN_NORMAL_TEXTURE_RESOLUTION };
+		CPUTexture2D<Vector4<byte>> normalTexture{ resolution };
 
-		for (uint32 i = 0; i < TerrainConstants::TERRAIN_NORMAL_TEXTURE_RESOLUTION; ++i)
+		for (uint32 i = 0; i < resolution; ++i)
 		{
-			for (uint32 j = 0; j < TerrainConstants::TERRAIN_NORMAL_TEXTURE_RESOLUTION; ++j)
+			for (uint32 j = 0; j < resolution; ++j)
 			{
-				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_NORMAL_TEXTURE_RESOLUTION - 1) };
-				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_NORMAL_TEXTURE_RESOLUTION - 1) };
+				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution - 1) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution - 1) };
 			
 				const Vector3<float> worldPosition{	patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 													0.0f,
@@ -129,20 +129,20 @@ namespace TerrainGeneralUtilities
 	/*
 	*	Generates the material texture.
 	*/
-	static void GenerateMaterialTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const uint32 resolution, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT textureHandle) NOEXCEPT
+	static void GenerateMaterialTexture(const TerrainProperties &properties, const float patchSizeMultiplier, const Vector3<float> &patchWorldPosition, Texture2DHandle *const RESTRICT textureHandle) NOEXCEPT
 	{
 		//Calculate the patch size.
 		const float patchSize{ TerrainConstants::TERRAIN_PATCH_SIZE * patchSizeMultiplier };
 
 		//Store the intermediate data in a CPU texture.
-		CPUTexture2D<byte> materialTexture{ resolution };
+		CPUTexture2D<byte> materialTexture{ TerrainConstants::TERRAIN_MATERIAL_TEXTURE_RESOLUTION };
 
-		for (uint32 i = 0; i < resolution; ++i)
+		for (uint32 i = 0; i < TerrainConstants::TERRAIN_MATERIAL_TEXTURE_RESOLUTION; ++i)
 		{
-			for (uint32 j = 0; j < resolution; ++j)
+			for (uint32 j = 0; j < TerrainConstants::TERRAIN_MATERIAL_TEXTURE_RESOLUTION; ++j)
 			{
-				const float coordinateX{ static_cast<float>(i) / static_cast<float>(resolution - 1) };
-				const float coordinateY{ static_cast<float>(j) / static_cast<float>(resolution - 1) };
+				const float coordinateX{ static_cast<float>(i) / static_cast<float>(TerrainConstants::TERRAIN_MATERIAL_TEXTURE_RESOLUTION - 1) };
+				const float coordinateY{ static_cast<float>(j) / static_cast<float>(TerrainConstants::TERRAIN_MATERIAL_TEXTURE_RESOLUTION - 1) };
 
 				const Vector3<float> worldPosition{ patchWorldPosition._X + ((-1.0f + (2.0f * coordinateX)) * (patchSize * 0.5f)),
 													0.0f,
