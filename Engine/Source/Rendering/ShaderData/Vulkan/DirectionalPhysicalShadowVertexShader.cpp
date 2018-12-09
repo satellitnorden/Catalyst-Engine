@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetDirectionalPhysicalShadowVertexShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(5948);
+		data.UpsizeFast(5964);
 
-		new (data.Data()) byte[5948]
+		new (data.Data()) byte[5964]
 		{
 			3,
 			2,
@@ -2129,7 +2129,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			5,
+			9,
 			0,
 			90,
 			0,
@@ -2139,13 +2139,29 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			112,
+			116,
+			101,
+			120,
+			116,
+			117,
+			114,
+			101,
+			83,
+			99,
 			97,
-			100,
-			100,
+			108,
 			105,
 			110,
 			103,
+			70,
+			97,
+			99,
+			116,
+			111,
+			114,
+			0,
+			0,
+			0,
 			0,
 			5,
 			0,
@@ -5539,7 +5555,7 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			30,
+			6,
 			0,
 			0,
 			0,

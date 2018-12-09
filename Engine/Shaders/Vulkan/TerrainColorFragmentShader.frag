@@ -26,11 +26,11 @@ layout (location = 1) out vec4 normalDepth;
 layout (location = 2) out vec4 materialProperties;
 
 //Globals.
-vec2 textureCoordinate;
-
 int terrainMaterials[9];
 
 float materialWeights[9];
+
+vec2 textureCoordinates[9];
 
 vec3 materialAlbedos[9];
 vec3 materialNormalMaps[9];
@@ -147,37 +147,37 @@ vec4 BlendMaterialProperties()
 void SampleMaterials()
 {
     //Sample the albedos.
-    materialAlbedos[0] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[0]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
-    materialAlbedos[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
-    materialAlbedos[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
-    materialAlbedos[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
-    materialAlbedos[4] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[4]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
-    materialAlbedos[5] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[5]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
-    materialAlbedos[6] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[6]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
-    materialAlbedos[7] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[7]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
-    materialAlbedos[8] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[8]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).rgb;
+    materialAlbedos[0] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[0]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[0]).rgb;
+    materialAlbedos[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[1]).rgb;
+    materialAlbedos[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[2]).rgb;
+    materialAlbedos[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[3]).rgb;
+    materialAlbedos[4] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[4]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[4]).rgb;
+    materialAlbedos[5] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[5]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[5]).rgb;
+    materialAlbedos[6] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[6]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[6]).rgb;
+    materialAlbedos[7] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[7]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[7]).rgb;
+    materialAlbedos[8] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[8]].albedoTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[8]).rgb;
 
     //Sample the normal maps.
-    materialNormalMaps[0] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[0]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
-    materialNormalMaps[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
-    materialNormalMaps[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
-    materialNormalMaps[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
-    materialNormalMaps[4] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[4]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
-    materialNormalMaps[5] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[5]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
-    materialNormalMaps[6] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[6]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
-    materialNormalMaps[7] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[7]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
-    materialNormalMaps[8] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[8]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate).xyz * 2.0f - 1.0f;
+    materialNormalMaps[0] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[0]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[0]).xyz * 2.0f - 1.0f;
+    materialNormalMaps[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[1]).xyz * 2.0f - 1.0f;
+    materialNormalMaps[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[2]).xyz * 2.0f - 1.0f;
+    materialNormalMaps[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[3]).xyz * 2.0f - 1.0f;
+    materialNormalMaps[4] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[4]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[4]).xyz * 2.0f - 1.0f;
+    materialNormalMaps[5] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[5]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[5]).xyz * 2.0f - 1.0f;
+    materialNormalMaps[6] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[6]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[6]).xyz * 2.0f - 1.0f;
+    materialNormalMaps[7] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[7]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[7]).xyz * 2.0f - 1.0f;
+    materialNormalMaps[8] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[8]].normalMapTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[8]).xyz * 2.0f - 1.0f;
 
     //Sample the material properties.
-    materialMaterialProperties[0] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[0]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
-    materialMaterialProperties[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
-    materialMaterialProperties[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
-    materialMaterialProperties[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
-    materialMaterialProperties[4] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[4]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
-    materialMaterialProperties[5] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[5]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
-    materialMaterialProperties[6] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[6]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
-    materialMaterialProperties[7] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[7]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
-    materialMaterialProperties[8] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[8]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinate);
+    materialMaterialProperties[0] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[0]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[0]);
+    materialMaterialProperties[1] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[1]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[1]);
+    materialMaterialProperties[2] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[2]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[2]);
+    materialMaterialProperties[3] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[3]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[3]);
+    materialMaterialProperties[4] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[4]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[4]);
+    materialMaterialProperties[5] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[5]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[5]);
+    materialMaterialProperties[6] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[6]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[6]);
+    materialMaterialProperties[7] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[7]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[7]);
+    materialMaterialProperties[8] = texture(sampler2D(globalTextures[nonuniformEXT(terrainMaterialData[terrainMaterials[8]].materialPropertiesTextureIndex)], globalSamplers[FilterLinear_MipmapModeLinear_AddressModeRepeat_Index]), textureCoordinates[8]);
 }
 
 void main()
@@ -224,8 +224,16 @@ void main()
     //Calculate the fragment world position.
     vec3 fragmentWorldPosition = CalculateFragmentWorldPosition(fragmentTextureCoordinate, patchDepth);
 
-    //Calculate the texture coordinate.
-    textureCoordinate = fragmentWorldPosition.xz * 0.2f;
+    //Calculate the texture coordinates.
+    textureCoordinates[0] = fragmentWorldPosition.xz * terrainMaterialData[terrainMaterials[0]].textureScalingFactor;
+    textureCoordinates[1] = fragmentWorldPosition.xz * terrainMaterialData[terrainMaterials[1]].textureScalingFactor;
+    textureCoordinates[2] = fragmentWorldPosition.xz * terrainMaterialData[terrainMaterials[2]].textureScalingFactor;
+    textureCoordinates[3] = fragmentWorldPosition.xz * terrainMaterialData[terrainMaterials[3]].textureScalingFactor;
+    textureCoordinates[4] = fragmentWorldPosition.xz * terrainMaterialData[terrainMaterials[4]].textureScalingFactor;
+    textureCoordinates[5] = fragmentWorldPosition.xz * terrainMaterialData[terrainMaterials[5]].textureScalingFactor;
+    textureCoordinates[6] = fragmentWorldPosition.xz * terrainMaterialData[terrainMaterials[6]].textureScalingFactor;
+    textureCoordinates[7] = fragmentWorldPosition.xz * terrainMaterialData[terrainMaterials[7]].textureScalingFactor;
+    textureCoordinates[8] = fragmentWorldPosition.xz * terrainMaterialData[terrainMaterials[8]].textureScalingFactor;
 
     //Sample all materials.
     SampleMaterials();

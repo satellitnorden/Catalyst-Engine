@@ -27,6 +27,8 @@ enum class ClairvoyantBiome : uint8
 enum class ClairvoyantTerrainMaterial : uint8
 {
 	Sand_1,
+	Sand_2,
+	Sand_3,
 
 	NumberOfClairvoyantTerrainMaterials
 };

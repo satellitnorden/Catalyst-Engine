@@ -39,7 +39,15 @@ void ClairvoyantBiomeArchitect::GetBiomeWeightsAtPosition(const Vector3<float> &
 	//Calculate the weights.
 	for (uint8 biome{ 0 }; biome < UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes); ++biome)
 	{
-		weights->At(biome) = 1.0f - (CatalystBaseMath::Minimum<float>(CatalystBaseMath::Absolute((static_cast<float>(biome) / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1)) - noise) / BIOME_STEP, 1.0f));
+		if (true)
+		{
+			weights->At(biome) = biome == UNDERLYING(ClairvoyantBiome::Desert) ? 1.0f : 0.0f;
+		}
+
+		else
+		{
+			weights->At(biome) = 1.0f - (CatalystBaseMath::Minimum<float>(CatalystBaseMath::Absolute((static_cast<float>(biome) / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1)) - noise) / BIOME_STEP, 1.0f));
+		}
 	}
 }
 

@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetParticleSystemFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(9672);
+		data.UpsizeFast(9688);
 
-		new (data.Data()) byte[9672]
+		new (data.Data()) byte[9688]
 		{
 			3,
 			2,
@@ -2553,7 +2553,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			5,
+			9,
 			0,
 			21,
 			1,
@@ -2563,13 +2563,29 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			112,
+			116,
+			101,
+			120,
+			116,
+			117,
+			114,
+			101,
+			83,
+			99,
 			97,
-			100,
-			100,
+			108,
 			105,
 			110,
 			103,
+			70,
+			97,
+			99,
+			116,
+			111,
+			114,
+			0,
+			0,
+			0,
 			0,
 			5,
 			0,
@@ -5843,7 +5859,7 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			11,
+			6,
 			0,
 			0,
 			0,

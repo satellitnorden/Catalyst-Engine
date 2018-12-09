@@ -95,7 +95,7 @@ public:
 	/*
 	*	Registers a terrain material at the given index.
 	*/
-	void RegisterTerrainMaterial(const uint8 index, const PhysicalMaterial &material) NOEXCEPT;
+	void RegisterTerrainMaterial(const uint8 index, const PhysicalMaterial &material, const float textureScalingFactor) NOEXCEPT;
 
 	/*
 	*	Returns the terrain height at the given position.

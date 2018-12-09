@@ -45,7 +45,9 @@ namespace ClairvoyantTerrainArchitectConstants
 void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 {
 	//Register all terrain materials.
-	TerrainSystem::Instance->RegisterTerrainMaterial(0, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_1_Material")));
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Sand_1), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_1_Material")), 0.1f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Sand_2), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_2_Material")), 0.1f);
+	TerrainSystem::Instance->RegisterTerrainMaterial(UNDERLYING(ClairvoyantTerrainMaterial::Sand_3), ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_3_Material")), 0.1f);
 }
 
 /*
@@ -79,7 +81,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 */
 void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, uint8 *const RESTRICT material) NOEXCEPT
 {
-	*material = UNDERLYING(ClairvoyantTerrainMaterial::Sand_1);
+	*material = UNDERLYING(ClairvoyantTerrainMaterial::Sand_2);
 }
 
 /*

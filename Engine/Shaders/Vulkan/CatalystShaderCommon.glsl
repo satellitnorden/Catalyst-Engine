@@ -28,7 +28,7 @@ struct TerrainMaterialData
     int albedoTextureIndex;
     int normalMapTextureIndex;
     int materialPropertiesTextureIndex;
-    int padding;
+    float textureScalingFactor;
 };
 
 //Global uniform data.

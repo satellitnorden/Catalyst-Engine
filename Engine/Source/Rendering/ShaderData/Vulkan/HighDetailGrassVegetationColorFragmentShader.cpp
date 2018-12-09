@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetHighDetailGrassVegetationColorFragmentShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(6000);
+		data.UpsizeFast(6016);
 
-		new (data.Data()) byte[6000]
+		new (data.Data()) byte[6016]
 		{
 			3,
 			2,
@@ -2217,7 +2217,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			5,
+			9,
 			0,
 			105,
 			0,
@@ -2227,13 +2227,29 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			112,
+			116,
+			101,
+			120,
+			116,
+			117,
+			114,
+			101,
+			83,
+			99,
 			97,
-			100,
-			100,
+			108,
 			105,
 			110,
 			103,
+			70,
+			97,
+			99,
+			116,
+			111,
+			114,
+			0,
+			0,
+			0,
 			0,
 			5,
 			0,
@@ -5295,7 +5311,7 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			65,
+			6,
 			0,
 			0,
 			0,

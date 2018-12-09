@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetDebugAxisAlignedBoundingBoxVertexShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(5492);
+		data.UpsizeFast(5508);
 
-		new (data.Data()) byte[5492]
+		new (data.Data()) byte[5508]
 		{
 			3,
 			2,
@@ -2113,7 +2113,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			5,
+			9,
 			0,
 			76,
 			0,
@@ -2123,13 +2123,29 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			112,
+			116,
+			101,
+			120,
+			116,
+			117,
+			114,
+			101,
+			83,
+			99,
 			97,
-			100,
-			100,
+			108,
 			105,
 			110,
 			103,
+			70,
+			97,
+			99,
+			116,
+			111,
+			114,
+			0,
+			0,
+			0,
 			0,
 			5,
 			0,
@@ -5095,7 +5111,7 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			14,
+			6,
 			0,
 			0,
 			0,

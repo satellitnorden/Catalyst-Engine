@@ -11,9 +11,9 @@ namespace VulkanShaderData
 {
 	void GetDirectionalTerrainShadowVertexShaderData(DynamicArray<byte> &data)
 	{
-		data.UpsizeFast(5264);
+		data.UpsizeFast(5280);
 
-		new (data.Data()) byte[5264]
+		new (data.Data()) byte[5280]
 		{
 			3,
 			2,
@@ -2049,7 +2049,7 @@ namespace VulkanShaderData
 			0,
 			6,
 			0,
-			5,
+			9,
 			0,
 			69,
 			0,
@@ -2059,13 +2059,29 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			112,
+			116,
+			101,
+			120,
+			116,
+			117,
+			114,
+			101,
+			83,
+			99,
 			97,
-			100,
-			100,
+			108,
 			105,
 			110,
 			103,
+			70,
+			97,
+			99,
+			116,
+			111,
+			114,
+			0,
+			0,
+			0,
 			0,
 			5,
 			0,
@@ -4907,7 +4923,7 @@ namespace VulkanShaderData
 			0,
 			0,
 			0,
-			14,
+			6,
 			0,
 			0,
 			0,

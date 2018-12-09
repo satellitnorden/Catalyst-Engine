@@ -24,7 +24,7 @@ public:
 	//The material properties texture index.
 	int32 _MaterialPropertiesTextureIndex;
 
-	//Padding.
-	Padding<4> _Padding;
+	//The texture scaling factor.
+	float _TextureScalingFactor;
 
 };
