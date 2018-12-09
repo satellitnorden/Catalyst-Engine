@@ -22,3 +22,11 @@ enum class ClairvoyantBiome : uint8
 
 	NumberOfClairvoyantBiomes
 };
+
+//Enumeration covering all Clairvoyant terrain materials.
+enum class ClairvoyantTerrainMaterial : uint8
+{
+	Sand_1,
+
+	NumberOfClairvoyantTerrainMaterials
+};

@@ -23,14 +23,23 @@ public:
 		const float coordinateY{ position._Z / 100'000.0f };
 
 		//Calculate the height.
-		float height{ -1.0f };
+		float height{ 0.0f };
 
-		height += PerlinNoise::GenerateRidged(coordinateX * 2.0f, coordinateY * 2.0f, GetRandomOffset(0));
-		height += PerlinNoise::GenerateRidged(coordinateX * 4.0f, coordinateY * 4.0f, GetRandomOffset(1)) * 0.5f;
-		height += PerlinNoise::GenerateRidged(coordinateX * 8.0f, coordinateY * 8.0f, GetRandomOffset(2)) * 0.25f;
-		height += PerlinNoise::GenerateNormalized(coordinateX * 16.0f, coordinateY * 16.0f, GetRandomOffset(3)) * 0.125f;
+		height += PerlinNoise::Generate(coordinateX * 16.0f, coordinateY * 16.0f, GetRandomOffset(0)) * 0.125f;
+		height += PerlinNoise::GenerateRidged(coordinateX * 32.0f, coordinateY * 32.0f, GetRandomOffset(1)) * 0.0625f;
+		height += PerlinNoise::GenerateNormalized(coordinateX * 64.0f, coordinateY * 64.0f, GetRandomOffset(2)) * 0.03125f;
+		height += PerlinNoise::GenerateNormalized(coordinateX * 128.0f, coordinateY * 128.0f, GetRandomOffset(3)) * 0.015625f;
+		height += PerlinNoise::GenerateNormalized(coordinateX * 256.0f, coordinateY * 256.0f, GetRandomOffset(4)) * 0.0078125f;
 
 		return height;
+	}
+
+	/*
+	*	Returns the biome material.
+	*/
+	uint8 Material(const Vector3<float> &position) NOEXCEPT
+	{
+
 	}
 
 private:
@@ -66,6 +75,13 @@ private:
 			}
 
 			case 3:
+			{
+				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
+
+				return randomOffset;
+			}
+
+			case 4:
 			{
 				static float randomOffset{ CatalystBaseMath::RandomFloatInRange(0.0f, MAXIMUM_OFFSET) };
 

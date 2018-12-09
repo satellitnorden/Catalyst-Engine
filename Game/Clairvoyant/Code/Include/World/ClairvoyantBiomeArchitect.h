@@ -2,6 +2,7 @@
 
 //Core.
 #include <Core/Core/CatalystCore.h>
+#include <Core/Containers/StaticArray.h>
 
 //Math.
 #include <Math/GridPoint2.h>
@@ -16,9 +17,9 @@ class ClairvoyantBiomeArchitect final
 public:
 
 	/*
-	*	Returns the biome weight at the given position.
+	*	Returns the biome weights at the given position.
 	*/
-	static float GetBiomeWeightAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT;
+	static void GetBiomeWeightsAtPosition(const Vector3<float> &position, StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> *const RESTRICT weights) NOEXCEPT;
 
 	/*
 	*	Returns the biome height at the given position.

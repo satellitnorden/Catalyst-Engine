@@ -46,11 +46,6 @@ void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 {
 	//Register all terrain materials.
 	TerrainSystem::Instance->RegisterTerrainMaterial(0, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Sand_1_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(1, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_1_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(2, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Grass_2_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(3, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_Snow_1_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(4, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Cliff_Snow_2_Material")));
-	TerrainSystem::Instance->RegisterTerrainMaterial(5, ResourceLoader::GetPhysicalMaterial(HashString("Terrain_Snow_1_Material")));
 }
 
 /*
@@ -58,39 +53,22 @@ void ClairvoyantTerrainArchitect::Initialize() NOEXCEPT
 */
 void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &properties, const Vector3<float> &position, float *const RESTRICT height) NOEXCEPT
 {
-	/*
-	if (IsWithinTestArea(position))
-	{
-		*height = ClairvoyantTerrainArchitectConstants::TERRAIN_HEIGHT;
-
-		return;
-	}
-
 	//Start off at zero.
 	*height = 0.0f;
+
+	//Retrieve the biome weights.
+	StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> weights;
+
+	ClairvoyantBiomeArchitect::GetBiomeWeightsAtPosition(position, &weights);
 
 	//Apply all biomes.
 	for (uint8 biome{ 0 }; biome < UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes); ++biome)
 	{
-		const float biomeWeight{ ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(static_cast<ClairvoyantBiome>(biome), position) };
-
-		if (biomeWeight > 0.0f)
+		if (weights[biome] > 0.0f)
 		{
-			*height += ClairvoyantBiomeArchitect::GetBiomeHeightAtPosition(static_cast<ClairvoyantBiome>(biome), position) * biomeWeight;
+			*height += ClairvoyantBiomeArchitect::GetBiomeHeightAtPosition(static_cast<ClairvoyantBiome>(biome), position) * weights[biome];
 		}
 	}
-
-	//Apply the height.
-	*height *= ClairvoyantTerrainArchitectConstants::TERRAIN_HEIGHT;
-	*/
-
-	//Calculate the coordinates.
-	const float coordinateX{ position._X / 100'000.0f };
-	const float coordinateY{ position._Z / 100'000.0f };
-
-	//Generate the noise.
-	static float offset{ CatalystBaseMath::RandomFloatInRange(0.0f, 1'000.0f) };
-	*height = PerlinNoise::GenerateOctaved(coordinateX, coordinateY, offset, 10, 2.5f, 0.5f) + 0.25f;
 
 	//Apply the height.
 	*height *= ClairvoyantTerrainArchitectConstants::TERRAIN_HEIGHT;
@@ -101,33 +79,7 @@ void ClairvoyantTerrainArchitect::GenerateHeight(const TerrainProperties &proper
 */
 void ClairvoyantTerrainArchitect::GenerateMaterial(const TerrainProperties &properties, const Vector3<float> &worldPosition, const float height, const Vector3<float> &normal, uint8 *const RESTRICT material) NOEXCEPT
 {
-	if (height < 1'000.0f)
-	{
-		*material = 0;
-	}
-
-	else if (height < 2'000.0f)
-	{
-		*material = 1;
-	}
-
-	else if (height < 3'000.0f)
-	{
-		*material = 2;
-	}
-
-	else
-	{
-		if (Vector3<float>::DotProduct(normal, Vector3<float>::UP) > 0.5f)
-		{
-			*material = 5;
-		}
-
-		else
-		{
-			*material = 3;
-		}
-	}
+	*material = UNDERLYING(ClairvoyantTerrainMaterial::Sand_1);
 }
 
 /*

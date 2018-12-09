@@ -21,7 +21,7 @@ namespace ClairvoyantBiomeArchitectConstants
 /*
 *	Returns the biome weight at the given position.
 */
-float ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(const ClairvoyantBiome biome, const Vector3<float> &position) NOEXCEPT
+void ClairvoyantBiomeArchitect::GetBiomeWeightsAtPosition(const Vector3<float> &position, StaticArray<float, UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes)> *const RESTRICT weights) NOEXCEPT
 {
 	//Calculate the biome step.
 	constexpr float BIOME_STEP{ 1.0f / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1) };
@@ -36,11 +36,11 @@ float ClairvoyantBiomeArchitect::GetBiomeWeightAtPosition(const ClairvoyantBiome
 	//Calculate the noise.
 	const float noise{ CatalystBaseMath::SmoothStep<1>(PerlinNoise::GenerateNormalized(coordinateX, coordinateY, randomOffset)) };
 
-	//Calculate the biome value.
-	const float biomeValue{ static_cast<float>(UNDERLYING(biome)) / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1) };
-
-	//Calculate the biome weight.
-	return CatalystBaseMath::SmoothStep<2>(1.0f - CatalystBaseMath::Minimum<float>(CatalystBaseMath::Absolute(biomeValue - noise) / BIOME_STEP, 1.0f));
+	//Calculate the weights.
+	for (uint8 biome{ 0 }; biome < UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes); ++biome)
+	{
+		weights->At(biome) = 1.0f - (CatalystBaseMath::Minimum<float>(CatalystBaseMath::Absolute((static_cast<float>(biome) / static_cast<float>(UNDERLYING(ClairvoyantBiome::NumberOfClairvoyantBiomes) - 1)) - noise) / BIOME_STEP, 1.0f));
+	}
 }
 
 /*
