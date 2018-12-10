@@ -64,8 +64,8 @@ void ClairvoyantWorldArchitect::Initialize() NOEXCEPT
 	data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("BarrelMaterial"));
 	data->_Position = Vector3<float>(0.0f, 0.0f, 0.0f);
 	TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &data->_Position._Y);
-	data->_Rotation = Vector3<float>(0.0f, 0.0f, 0.0f);
-	data->_Scale = Vector3<float>(50.0f, 1'000.0f, 50.0f);
+	data->_Rotation = Vector3<float>(-90.0f, 0.0f, 0.0f);
+	data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
 	data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
 
 	EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
