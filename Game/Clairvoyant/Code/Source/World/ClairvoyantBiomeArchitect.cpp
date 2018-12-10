@@ -9,6 +9,7 @@
 #include <Math/PerlinNoise.h>
 
 //World.
+#include <World/BiomeTest.h>
 #include <World/BiomeDesert.h>
 #include <World/BiomeGrass.h>
 #include <World/BiomeSnow.h>
@@ -41,7 +42,7 @@ void ClairvoyantBiomeArchitect::GetBiomeWeightsAtPosition(const Vector3<float> &
 	{
 		if (true)
 		{
-			weights->At(biome) = biome == UNDERLYING(ClairvoyantBiome::Desert) ? 1.0f : 0.0f;
+			weights->At(biome) = biome == UNDERLYING(ClairvoyantBiome::Test) ? 1.0f : 0.0f;
 		}
 
 		else
@@ -58,6 +59,11 @@ float ClairvoyantBiomeArchitect::GetBiomeHeightAtPosition(const ClairvoyantBiome
 {
 	switch (biome)
 	{
+		case ClairvoyantBiome::Test:
+		{
+			return BiomeTest::Height(position);
+		}
+
 		case ClairvoyantBiome::Desert:
 		{
 			return BiomeDesert::Height(position);

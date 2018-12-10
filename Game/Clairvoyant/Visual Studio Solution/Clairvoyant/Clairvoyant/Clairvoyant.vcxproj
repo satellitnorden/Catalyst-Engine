@@ -365,6 +365,7 @@
     <ClInclude Include="..\..\..\Code\Include\World\BiomeDesert.h" />
     <ClInclude Include="..\..\..\Code\Include\World\BiomeGrass.h" />
     <ClInclude Include="..\..\..\Code\Include\World\BiomeSnow.h" />
+    <ClInclude Include="..\..\..\Code\Include\World\BiomeTest.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantBiomeArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantGrassVegetationArchitect.h" />
     <ClInclude Include="..\..\..\Code\Include\World\ClairvoyantLocationArchitect.h" />

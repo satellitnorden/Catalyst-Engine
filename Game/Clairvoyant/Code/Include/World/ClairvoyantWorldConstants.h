@@ -16,6 +16,8 @@ namespace ClairvoyantWorldConstants
 //Enumeration covering all Clairvoyant biomes.
 enum class ClairvoyantBiome : uint8
 {
+	Test,
+
 	Desert,
 	Grass,
 	Snow,
@@ -26,6 +28,8 @@ enum class ClairvoyantBiome : uint8
 //Enumeration covering all Clairvoyant terrain materials.
 enum class ClairvoyantTerrainMaterial : uint8
 {
+	Grass_1,
+	Grass_2,
 	Sand_1,
 	Sand_2,
 	Sand_3,
