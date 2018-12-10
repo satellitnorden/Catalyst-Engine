@@ -8,7 +8,9 @@
 #include <Core/General/HashString.h>
 
 //Entities.
+#include <Entities/Creation/DynamicPhysicalinitializationData.h>
 #include <Entities/Creation/ParticleSystemInitializationData.h>
+#include <Entities/Types/DynamicPhysicalEntity.h>
 #include <Entities/Types/ParticleSystemEntity.h>
 
 //Math.
@@ -50,6 +52,23 @@ void ClairvoyantWorldArchitect::Initialize() NOEXCEPT
 
 	//Register the Clairvoyant world architect for updates.
 	UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(this);
+
+	//Create the barrel!
+	DynamicPhysicalEntity *const RESTRICT cube{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
+
+	DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+
+	data->_Properties = EntityInitializationData::EntityProperty::None;
+	data->_PhysicalFlags = PhysicalFlag::Physical;
+	data->_Model = ResourceLoader::GetPhysicalModel(HashString("BarrelModel"));
+	data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("BarrelMaterial"));
+	data->_Position = Vector3<float>(0.0f, 0.0f, 0.0f);
+	TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &data->_Position._Y);
+	data->_Rotation = Vector3<float>(0.0f, 0.0f, 0.0f);
+	data->_Scale = Vector3<float>(50.0f, 1'000.0f, 50.0f);
+	data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
+
+	EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
 }
 
 /*

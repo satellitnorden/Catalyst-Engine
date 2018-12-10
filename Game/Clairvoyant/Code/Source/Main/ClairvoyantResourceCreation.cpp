@@ -73,6 +73,23 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 	}
 
 	{
+		//Create the barrel material.
+		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Materials\\BarrelMaterial";
+		parameters._ID = "BarrelMaterial";
+		parameters._MipmapLevels = 9;
+		parameters._AlbedoFile = "..\\..\\..\\Resources\\Raw\\Textures\\Props\\Barrel\\Albedo.png";
+		parameters._NormalMapFile = "..\\..\\..\\Resources\\Raw\\Textures\\Props\\Barrel\\NormalMap.png";
+		parameters._RoughnessFile = "..\\..\\..\\Resources\\Raw\\Textures\\Props\\Barrel\\Roughness.png";
+		parameters._MetallicFile = "..\\..\\..\\Resources\\Raw\\Textures\\Props\\Barrel\\Metallic.png";
+		parameters._AmbientOcclusionFile = nullptr;
+		parameters._VariantFile = nullptr;
+
+		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
+
+	{
 		//Create the tower material.
 		PhysicalMaterialCreator::PhysicalMaterialCreationParameters parameters;
 
@@ -87,6 +104,17 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		parameters._VariantFile = nullptr;
 
 		PhysicalMaterialCreator::CreatePhysicalMaterial(parameters);
+	}
+
+	{
+		//Create the barrel model.
+		PhysicalModelCreator::PhysicalModelCreationParameters parameters;
+
+		parameters._Output = "..\\..\\..\\Resources\\Intermediate\\Models\\BarrelModel";
+		parameters._ID = "BarrelModel";
+		parameters._File = "..\\..\\..\\Resources\\Raw\\Models\\Props\\Barrel.fbx";
+
+		PhysicalModelCreator::CreatePhysicalModel(parameters);
 	}
 
 	{
@@ -113,7 +141,9 @@ void ClairvoyantResourceCreation::CreateResources() NOEXCEPT
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\MorningEnvironmentMaterial.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\EveningEnvironmentMaterial.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\DefaultOceanMaterial.cr");
+		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\BarrelMaterial.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Materials\\TowerMaterial.cr");
+		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\BarrelModel.cr");
 		parameters._Resources.EmplaceSlow("..\\..\\..\\Resources\\Intermediate\\Models\\TestModel.cr");
 
 		ResourceCollectionCreator::CreateResourceCollection(parameters);
