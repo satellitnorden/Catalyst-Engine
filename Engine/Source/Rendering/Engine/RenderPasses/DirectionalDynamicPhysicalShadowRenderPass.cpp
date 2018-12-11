@@ -147,7 +147,6 @@ void DirectionalDynamicPhysicalShadowRenderPass::RenderInternal() NOEXCEPT
 
 	//Track the previous state, so if two dynamic physical entities share the same state, it doesn't have to be rebound.
 	ConstantBufferHandle previousBuffer{ nullptr };
-	RenderDataTableHandle previousRenderDataTable{ nullptr };
 
 	for (uint64 i = 0; i < numberOfDynamicPhysicalComponents; ++i, ++renderComponent, ++transformComponent)
 	{
