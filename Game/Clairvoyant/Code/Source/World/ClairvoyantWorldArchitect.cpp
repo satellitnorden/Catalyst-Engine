@@ -53,22 +53,36 @@ void ClairvoyantWorldArchitect::Initialize() NOEXCEPT
 	//Register the Clairvoyant world architect for updates.
 	UpdateSystem::Instance->RegisterAsynchronousLogicUpdate(this);
 
-	//Create the barrel!
-	DynamicPhysicalEntity *const RESTRICT cube{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
+	//Create the barrels!
+	constexpr StaticArray<Vector3<float>, 5> positions
+	{
+		Vector3<float>(-0.55f, 0.0f, -0.55f),
+		Vector3<float>(-0.55f, 0.0f, 0.55f),
+		Vector3<float>(0.55f, 0.0f, 0.55f),
+		Vector3<float>(0.55f, 0.0f, -0.55f),
+		Vector3<float>(0.0f, 1.25f, 0.0f)
+	};
 
-	DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
+	for (uint8 i{ 0 }; i < 5; ++i)
+	{
+		DynamicPhysicalEntity *const RESTRICT cube{ EntityCreationSystem::Instance->CreateEntity<DynamicPhysicalEntity>() };
 
-	data->_Properties = EntityInitializationData::EntityProperty::None;
-	data->_PhysicalFlags = PhysicalFlag::Physical;
-	data->_Model = ResourceLoader::GetPhysicalModel(HashString("BarrelModel"));
-	data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("BarrelMaterial"));
-	data->_Position = Vector3<float>(0.0f, 0.0f, 0.0f);
-	TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &data->_Position._Y);
-	data->_Rotation = Vector3<float>(-90.0f, 0.0f, 0.0f);
-	data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
-	data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
+		DynamicPhysicalInitializationData *const RESTRICT data{ EntityCreationSystem::Instance->CreateInitializationData<DynamicPhysicalInitializationData>() };
 
-	EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
+		data->_Properties = EntityInitializationData::EntityProperty::None;
+		data->_PhysicalFlags = PhysicalFlag::Physical;
+		data->_Model = ResourceLoader::GetPhysicalModel(HashString("BarrelModel"));
+		data->_Material = ResourceLoader::GetPhysicalMaterial(HashString("BarrelMaterial"));
+		float terrainHeight;
+		TerrainSystem::Instance->GetTerrainHeightAtPosition(data->_Position, &terrainHeight);
+		data->_Position = positions[i] + Vector3<float>(0.0f, terrainHeight, 0.0f);
+		data->_Rotation = Vector3<float>(-90.0f, 0.0f, 0.0f);
+		data->_Scale = Vector3<float>(1.0f, 1.0f, 1.0f);
+		data->_OutlineColor = Vector3<float>(0.0f, 0.0f, 0.0f);
+
+		EntityCreationSystem::Instance->RequestInitialization(cube, data, false);
+	}
+	
 }
 
 /*

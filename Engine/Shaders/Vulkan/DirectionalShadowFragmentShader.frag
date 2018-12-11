@@ -9,7 +9,7 @@
 
 //Preprocessor defines.
 #define MAXIMUM_OFFSET (0.00025f)
-#define SHADOW_BIAS (0.004f)
+#define SHADOW_BIAS (0.0035f)
 
 //Layout specification.
 layout (early_fragment_tests) in;
