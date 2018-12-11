@@ -7,56 +7,10 @@
 //Includes.
 #include "CatalystShaderCommon.glsl"
 
-//The cube map vertices.
-vec3 cubeMapVertices[36] = vec3[]
-(
-  vec3(-1.0f, 1.0f, -1.0f),
-  vec3(-1.0f, -1.0f, -1.0f),
-  vec3(1.0f, -1.0f, -1.0f),
-  vec3(1.0f, -1.0f, -1.0f),
-  vec3(1.0f, 1.0f, -1.0f),
-  vec3(-1.0f, 1.0f, -1.0f),
-
-  vec3(-1.0f, -1.0f, 1.0f),
-  vec3(-1.0f, -1.0f, -1.0f),
-  vec3(-1.0f, 1.0f, -1.0f),
-  vec3(-1.0f, 1.0f, -1.0f),
-  vec3(-1.0f, 1.0f, 1.0f),
-  vec3(-1.0f, -1.0f, 1.0f),
-
-  vec3(1.0f, -1.0f, -1.0f),
-  vec3(1.0f, -1.0f, 1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(1.0f, 1.0f, -1.0f),
-  vec3(1.0f, -1.0f, -1.0f),
-
-  vec3(-1.0f, -1.0f, 1.0f),
-  vec3(-1.0f, 1.0f, 1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(1.0f, -1.0f, 1.0f),
-  vec3(-1.0f, -1.0f, 1.0f),
-
-  vec3(-1.0f, 1.0f, -1.0f),
-  vec3(1.0f, 1.0f, -1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(1.0f, 1.0f, 1.0f),
-  vec3(-1.0f, 1.0f, 1.0f),
-  vec3(-1.0f, 1.0f, -1.0f),
-
-  vec3(-1.0f, -1.0f, -1.0f),
-  vec3(-1.0f, -1.0f, 1.0f),
-  vec3(1.0f, -1.0f, -1.0f),
-  vec3(1.0f, -1.0f, -1.0f),
-  vec3(-1.0f, -1.0f, 1.0f),
-  vec3(1.0f, -1.0f, 1.0f)
-);
-
 //Model uniform buffer.
 layout (push_constant) uniform ModelData
 {
-    mat4 modelMatrix;
+    layout (offset = 0) mat4 modelMatrix;
 };
 
 //In parameters.
